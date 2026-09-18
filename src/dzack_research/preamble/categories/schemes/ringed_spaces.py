@@ -204,6 +204,19 @@ class StructureSheaf(Parent):
         r"""The actual module-valued presheaf underlying ``O_X`` on the represented affine site."""
         return _AffineStructurePresheaf(self.ringed_space())
 
+    @cached_method(key=lambda self, cover: id(cover))
+    def module_descent_datum(self, cover):
+        r"""The rank-one module descent presentation of ``O_X`` on ``cover``."""
+        if cover.ambient_scheme() is not self.ringed_space():
+            raise ValueError("structure-sheaf descent requires a cover of this ringed space")
+        from dzack_research.preamble.categories.schemes.gluing import ModuleGluingData
+
+        return ModuleGluingData(cover).an_object()
+
+    def cech_sheaf(self, cover):
+        r"""The canonical module-valued sheaf object on the finite Čech site of ``cover``."""
+        return self.module_descent_datum(cover).sheaf()
+
     def ringed_space(self):
         return self._ringed_space
 
