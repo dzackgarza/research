@@ -88,10 +88,16 @@ def _scalar_morphism(source, target, scalar):
 def test_inverse_image_and_module_pullback_keep_the_structural_map_distinct() -> None:
     coarse, fine, refinement = _projective_line_refinement()
     source = _rank_one_sheaf(coarse)
+    inverse_image_functor = refinement.inverse_image_functor()
+    scalar_extension = refinement.inverse_image_scalar_extension_functor()
     pullback = refinement.module_pullback_functor()
-    inverse_image = pullback.inverse_image(source)
+    inverse_image = inverse_image_functor(source)
     pulled = inverse_image.module_pullback()
 
+    assert pullback.factors() == (inverse_image_functor, scalar_extension)
+    assert inverse_image.category() is inverse_image_functor.codomain()
+    assert pulled is scalar_extension(inverse_image)
+    assert pulled is pullback(source)
     assert inverse_image.scheme_morphism() is refinement.comparison_morphism()
     assert inverse_image.scheme() is fine.scheme()
     for fine_index in fine.chart_indices():
@@ -130,10 +136,10 @@ def test_module_pullback_preserves_nonidentity_maps_identity_and_composition() -
     assert pulled_identity == pullback.on_object(source).gluing_datum().identity_morphism()
 
     for fine_index in fine.chart_indices():
-        module = pulled_composite.source().local_module(fine_index)
+        module = pulled_composite.domain().gluing_datum().local_module(fine_index)
         label = module.module_generating_set()[0]
         image = pulled_composite.local_map(fine_index)(module.module_generator(label))
-        codomain = pulled_composite.target().local_module(fine_index)
+        codomain = pulled_composite.codomain().gluing_datum().local_module(fine_index)
         target_label = codomain.module_generating_set()[0]
         assert image == codomain.scalar_multiple(
             codomain.base_ring()(6), codomain.module_generator(target_label)
@@ -147,13 +153,17 @@ def test_inverse_image_functor_preserves_composition_before_scalar_extension() -
     target = _rank_one_sheaf(coarse)
     times_two = _scalar_morphism(source, middle, 2)
     times_three = _scalar_morphism(middle, target, 3)
-    pullback = refinement.module_pullback_functor()
+    inverse_image = refinement.inverse_image_functor()
 
-    inverse_two = pullback.inverse_image_morphism(times_two)
-    inverse_three = pullback.inverse_image_morphism(times_three)
-    inverse_composite = pullback.inverse_image_morphism(times_three * times_two)
+    inverse_two = inverse_image(times_two)
+    inverse_three = inverse_image(times_three)
+    inverse_composite = inverse_image(times_three * times_two)
     composed = inverse_three * inverse_two
 
+    assert inverse_two.parent() is inverse_image.codomain().Mor(
+        inverse_two.domain(),
+        inverse_two.codomain(),
+    )
     for fine_index in refinement.fine_datum().chart_indices():
         assert composed.local_map(fine_index) == inverse_composite.local_map(fine_index)
 
