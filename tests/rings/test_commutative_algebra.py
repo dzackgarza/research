@@ -258,6 +258,10 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
     assert restriction.codomain() is open_module
     assert restriction(global_module(x)).underlying_element() == punctured_open.inclusion().coordinate_algebra_morphism()(x)
     cover = affine_line.distinguished_open_cover(x, spectrum.ring().one() - x)
+    assert sheaf in cover.coverage().sheaves(Modules(spectrum.ring()))
+    assert sheaf.presheaf() is sheaf.functor()
+    assert sheaf.descent_data().coverage() is cover.coverage()
+    assert sheaf.descent_data().presheaf() is sheaf.presheaf()
     cech_structure = sheaf.cech_sheaf(cover)
     structure_datum = sheaf.module_descent_datum(cover)
     assert cech_structure in cover.cech_coverage().sheaves(Modules(spectrum.ring()))

@@ -21,12 +21,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
     Coverage,
     CoveringFamilies,
+    DescentData,
 )
 from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.owned_category import _object_of
 
 
 class SchemeUnderlyingSpace(SageObject):
@@ -190,10 +190,9 @@ class _StructureSheafEngine:
         self._restriction_maps = {}
         super().__init__(**rest)
 
-    @cached_method
     def presheaf(self):
         r"""The actual module-valued presheaf underlying ``O_X`` on the represented affine site."""
-        return _AffineStructurePresheaf(self.ringed_space())
+        return self.functor()
 
     @cached_method(key=lambda self, cover: id(cover))
     def module_descent_datum(self, cover):
@@ -303,17 +302,26 @@ class _StructureSheafEngine:
 
 
 def _structure_sheaf(ringed_space):
-    r"""Construct ``O_X`` through its owned sheaf refinements with a private realization."""
-    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+    r"""Construct ``O_X`` by the shared sheaf entry from its affine-site presheaf and descent rule."""
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-    category = Cat().meet((
-        AlgebraSheaves(ringed_space),
-        QuasiCoherentSheaves(ringed_space),
-    ))
-    return _object_of(
-        category,
-        _engine=(SheafObjects(ringed_space), _StructureSheafEngine, None),
-        ringed_space=ringed_space,
+    coverage = distinguished_affine_coverage(ringed_space)
+    value_category = Modules(ringed_space.coordinate_algebra())
+    presheaf = _AffineStructurePresheaf(ringed_space)
+
+    def inverse_for(equalizer):
+        return equalizer.canonical_map().inverse()
+
+    descent = DescentData(coverage, presheaf, inverse_for)
+    return coverage.sheaves(value_category).object(
+        presheaf,
+        descent,
+        categories=(
+            AlgebraSheaves(ringed_space),
+            QuasiCoherentSheaves(ringed_space),
+        ),
+        construction_data={"ringed_space": ringed_space},
+        _engine=_StructureSheafEngine,
     )
 
 
