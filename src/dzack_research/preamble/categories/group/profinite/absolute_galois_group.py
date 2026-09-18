@@ -11,7 +11,6 @@ from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import Element
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.group.groups import OwnedGroups
@@ -956,26 +955,36 @@ def OpenAbsoluteGaloisSubgroup(supergroup, extension):
     return OpenAbsoluteGaloisSubgroups(supergroup)(extension)
 
 
-class OpenGaloisSubgroupConjugacyClass(SageObject):
+def _same_k_extension(
+    supergroup,
+    left_field,
+    left_base_embedding,
+    right_field,
+    right_base_embedding,
+) -> bool:
+    r"""Whether two represented finite extensions are isomorphic over ``K``."""
+    if _relative_degree(supergroup.base_field(), left_field) != _relative_degree(
+        supergroup.base_field(), right_field
+    ):
+        return False
+    return any(
+        all(
+            isomorphism(left_base_embedding(generator))
+            == right_base_embedding(generator)
+            for generator in supergroup.base_field().field_generators()
+        )
+        for isomorphism in left_field.exact_embeddings(right_field)
+    )
+
+
+class _OpenGaloisSubgroupConjugacyClassEngine:
     r"""The conjugacy class obtained by forgetting (E\hookrightarrow\bar K)."""
 
-    def __init__(self, supergroup, extension_field) -> None:
+    def __init__(self, supergroup, extension_field, base_embedding, **rest) -> None:
         self._supergroup = supergroup
-        if extension_field not in OwnedRings():
-            if extension_field.base_field() is not supergroup.base_field():
-                raise ValueError("the extension has the wrong supergroup base field")
-            self._extension_field = extension_field.field()
-            self._base_embedding = extension_field.base_embedding()
-        else:
-            self._extension_field = extension_field
-            base_embeddings = supergroup.base_field().exact_embeddings(
-                self._extension_field
-            )
-            if len(base_embeddings) != 1:
-                raise ValueError(
-                    "the K-structure must be supplied as finite extension data"
-                )
-            self._base_embedding = base_embeddings[0]
+        self._extension_field = extension_field
+        self._base_embedding = base_embedding
+        super().__init__(**rest)
 
     def supergroup(self):
         return self._supergroup
@@ -1023,20 +1032,36 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
         )
         return self._supergroup.open_subgroup(stage)
 
+    def __contains__(self, candidate) -> bool:
+        if candidate not in OpenAbsoluteGaloisSubgroups(self._supergroup):
+            return False
+        fixed_extension = candidate.fixed_extension()
+        return _same_k_extension(
+            self._supergroup,
+            self._extension_field,
+            self._base_embedding,
+            candidate.fixed_field(),
+            fixed_extension.base_embedding(),
+        )
+
+    def _element_constructor_(self, candidate):
+        if candidate not in self:
+            raise ValueError(
+                "the subgroup is not in this open-subgroup conjugacy class"
+            )
+        return candidate
+
     def __eq__(self, other) -> bool:
-        if not isinstance(other, OpenGaloisSubgroupConjugacyClass):
+        if not isinstance(other, _OpenGaloisSubgroupConjugacyClassEngine):
             return False
-        if other._supergroup is not self._supergroup or other.index() != self.index():
+        if other._supergroup is not self._supergroup:
             return False
-        return any(
-            all(
-                isomorphism(self._base_embedding(generator))
-                == other._base_embedding(generator)
-                for generator in self._supergroup.base_field().field_generators()
-            )
-            for isomorphism in self._extension_field.exact_embeddings(
-                other._extension_field
-            )
+        return _same_k_extension(
+            self._supergroup,
+            self._extension_field,
+            self._base_embedding,
+            other._extension_field,
+            other._base_embedding,
         )
 
     def __hash__(self) -> int:
@@ -1047,6 +1072,30 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
             f"Conjugacy class of index-{self.index()} open subgroups of "
             f"{self._supergroup} corresponding to {self._extension_field}"
         )
+
+
+def OpenGaloisSubgroupConjugacyClass(supergroup, extension_field):
+    r"""Construct the conjugacy orbit of an open subgroup as a represented set."""
+    if extension_field not in OwnedRings():
+        if extension_field.base_field() is not supergroup.base_field():
+            raise ValueError("the extension has the wrong supergroup base field")
+        field = extension_field.field()
+        base_embedding = extension_field.base_embedding()
+    else:
+        field = extension_field
+        base_embeddings = supergroup.base_field().exact_embeddings(field)
+        if len(base_embeddings) != 1:
+            raise ValueError(
+                "the K-structure must be supplied as finite extension data"
+            )
+        base_embedding = base_embeddings[0]
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _OpenGaloisSubgroupConjugacyClassEngine, None),
+        supergroup=supergroup,
+        extension_field=field,
+        base_embedding=base_embedding,
+    )
 
 
 
