@@ -697,6 +697,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             base_embedding,
             self._closure,
             closure_embedding,
+            extension_object=self.extension_object(),
         )
 
     @cached_method(key=lambda group, degree: ZZ(degree))

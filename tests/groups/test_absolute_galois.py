@@ -213,7 +213,13 @@ def test_finite_stages_and_quotients_are_cached_by_the_defining_diagram() -> Non
         embedding=stage.embedding(),
         base_embedding=stage.base_embedding(),
     )
+    stage_category = group.slice_category().SliceOver(group.extension_object())
 
+    assert stage.category() is stage_category
+    assert stage in stage_category
+    assert stage.target_object() is group.extension_object()
+    assert stage.source_object().arrow() is stage.base_embedding()
+    assert stage.arrow().right() is stage.embedding()
     assert group.finite_extension(2) is stage
     assert same_stage is not stage
     assert same_stage == stage

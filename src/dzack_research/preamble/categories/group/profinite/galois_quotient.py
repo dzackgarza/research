@@ -6,13 +6,12 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.richcmp import richcmp
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_ring, _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -38,57 +37,29 @@ def _relative_degree(base_field, extension_field):
     return extension_degree // base_degree
 
 
-class FiniteGaloisExtension(SageObject):
-    r"""A finite separable field (L/K\subset\bar K) with both exact embeddings."""
+class _FiniteGaloisExtensionEngine:
+    r"""Computational vocabulary on a finite stage ``K -> L -> Kbar``.
 
-    def __init__(
-        self,
-        base_field,
-        field,
-        base_embedding: ExactFieldMorphism,
-        closure,
-        closure_embedding: ExactFieldMorphism,
-    ) -> None:
-        self._base_field = _own_ring(base_field)
-        self._field = _own_ring(field)
-        self._closure = _own_ring(closure)
-        assert base_embedding.parent() is self._base_field.exact_morphisms_to(self._field), (
-            "the base inclusion K -> L is an exact field morphism from the base field to the field"
-        )
-        assert closure_embedding.parent() is self._field.exact_morphisms_to(self._closure), (
-            "the realization L -> Kbar is an exact field morphism from the field to the closure"
-        )
-        self._base_embedding = base_embedding
-        self._closure_embedding = closure_embedding
-        compatible_embeddings = finite_ordered_set(
-            tuple(
-                candidate
-                for candidate in self._field.exact_embeddings(self._closure)
-                if all(
-                    candidate(self._base_embedding(generator))
-                    == self._closure_embedding(self._base_embedding(generator))
-                    for generator in self._base_field.field_generators()
-                )
-            )
-        )
-        assert compatible_embeddings.cardinality() == cardinal(self.degree()), (
-            "a represented finite extension is separable over its base field: it has [L:K] K-embeddings into Kbar"
-        )
+    The stage itself is not this engine.  It is the factorization object in
+    ``(K / Fields) / (K -> Kbar)``.  Consequently all four fields/maps below
+    are read from that slice object and no copy of the construction datum is
+    retained by the realization.
+    """
 
     def base_field(self):
-        return self._base_field
+        return self.source_object().source_object()
 
     def field(self):
-        return self._field
+        return self.source_object().target_object()
 
     def algebraic_closure(self):
-        return self._closure
+        return self.target_object().target_object()
 
     def base_embedding(self) -> ExactFieldMorphism:
-        return self._base_embedding
+        return self.source_object().arrow()
 
     def embedding(self) -> ExactFieldMorphism:
-        return self._closure_embedding
+        return self.arrow().right()
 
     def degree(self):
         return _relative_degree(self.base_field(), self.field())
@@ -127,7 +98,7 @@ class FiniteGaloisExtension(SageObject):
         embeddings by their values on field generators.
         """
         return (
-            isinstance(other, FiniteGaloisExtension)
+            isinstance(other, _FiniteGaloisExtensionEngine)
             and other.base_field() is self.base_field()
             and other.field() is self.field()
             and other.algebraic_closure() is self.algebraic_closure()
@@ -141,16 +112,82 @@ class FiniteGaloisExtension(SageObject):
     def __hash__(self) -> int:
         return hash(
             (
-                id(self._base_field),
-                id(self._field),
-                id(self._closure),
-                self._base_embedding,
-                self._closure_embedding,
+                id(self.base_field()),
+                id(self.field()),
+                id(self.algebraic_closure()),
+                self.base_embedding(),
+                self.embedding(),
             )
         )
 
     def _repr_(self) -> str:
         return f"Finite separable extension {self.field()} / {self.base_field()} in {self.algebraic_closure()}"
+
+
+def FiniteGaloisExtension(
+    base_field,
+    field,
+    base_embedding: ExactFieldMorphism,
+    closure,
+    closure_embedding: ExactFieldMorphism,
+    *,
+    extension_object=None,
+):
+    r"""Construct the finite stage ``K -> L -> Kbar`` as a factorization.
+
+    For the fixed geometric point ``e: K -> Kbar``, a finite stage is exactly
+    an object of the slice ``(K / Fields) / e``: its source object is
+    ``K -> L`` and its arrow to ``e`` has right edge ``L -> Kbar``.  The
+    optional ``extension_object`` is the already-constructed object ``e`` of
+    ``K / Fields``; absolute Galois groups supply it so every stage is visibly
+    a factorization of that very geometric point.
+    """
+    base_field = _own_ring(base_field)
+    field = _own_ring(field)
+    closure = _own_ring(closure)
+    assert base_embedding.parent() is base_field.exact_morphisms_to(field), (
+        "the base inclusion K -> L is an exact field morphism from the base field to the field"
+    )
+    assert closure_embedding.parent() is field.exact_morphisms_to(closure), (
+        "the realization L -> Kbar is an exact field morphism from the field to the closure"
+    )
+
+    coslice = OwnedFields().CosliceUnder(base_field)
+    source_object = coslice(base_embedding)
+    composite = closure_embedding * base_embedding
+    if extension_object is None:
+        extension_object = coslice(composite)
+    else:
+        assert extension_object in coslice, (
+            "the fixed geometric point is an object of the same field coslice"
+        )
+        assert extension_object.target_object() is closure, (
+            "the fixed geometric point has the stated algebraic closure as target"
+        )
+        assert extension_object.arrow() == composite, (
+            "the finite stage factors the fixed geometric point K -> Kbar"
+        )
+
+    factorization = coslice.Mor(source_object, extension_object)(closure_embedding)
+    stage = coslice.SliceOver(extension_object).object(
+        factorization,
+        _engine=_FiniteGaloisExtensionEngine,
+    )
+    compatible_embeddings = finite_ordered_set(
+        tuple(
+            candidate
+            for candidate in field.exact_embeddings(closure)
+            if all(
+                candidate(base_embedding(generator))
+                == closure_embedding(base_embedding(generator))
+                for generator in base_field.field_generators()
+            )
+        )
+    )
+    assert compatible_embeddings.cardinality() == cardinal(stage.degree()), (
+        "a represented finite extension is separable over its base field: it has [L:K] K-embeddings into Kbar"
+    )
+    return stage
 
 
 def _morphism_signature(morphism: ExactFieldMorphism) -> tuple:
