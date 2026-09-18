@@ -93,7 +93,6 @@ from dzack_research.preamble.categories.schemes.polytopes import (
 from dzack_research.preamble.categories.schemes.ade_surfaces import (
     ADELogPairs,
     SideDecoration,
-    AT21ADEDoubleCover,
 )
 
 from dzack_research.preamble.categories.schemes.log_pairs import (
@@ -131,7 +130,6 @@ from dzack_research.preamble.categories.schemes.bertini_families import HesseBer
 
 __all__ = [
     'HesseBertiniFamily',
-    'AT21ADEDoubleCover',
     'HorikawaEnriquesSurface',
     'ADELogPairs',
     'SideDecoration',

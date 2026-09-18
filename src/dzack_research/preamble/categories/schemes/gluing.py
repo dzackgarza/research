@@ -560,8 +560,10 @@ def _glued_scheme(datum, placements, level_data):
         category = Category.join((category, *placements))
     data = dict(level_data)
     native = data.pop("scheme_engine", None)
+    object_engine = data.pop("_object_engine", None)
     return _object_of(
         category,
+        _engine=None if object_engine is None else (category, object_engine, None),
         scheme_base_ring=base,
         scheme_engine=_GluedScheme(datum, native),
         **data,
@@ -612,8 +614,21 @@ class _GluedScheme(SageObject):
             datum.charts().map(lambda chart: _affine_structure_morphism_to_base(chart, base))
         )
 
-    def chartwise_closed_subscheme(self, local_closed_subschemes, *, name="Chartwise closed subscheme"):
-        return _chartwise_closed_subscheme(self.gluing_datum(), local_closed_subschemes, name=name)
+    def chartwise_closed_subscheme(
+        self,
+        local_closed_subschemes,
+        *,
+        name="Chartwise closed subscheme",
+        _engine=None,
+        construction_data=None,
+    ):
+        return _chartwise_closed_subscheme(
+            self.gluing_datum(),
+            local_closed_subschemes,
+            name=name,
+            _engine=_engine,
+            construction_data=construction_data,
+        )
 
     def chartwise_fixed_subscheme(self, local_automorphisms):
         return _chartwise_fixed_subscheme(self.gluing_datum(), local_automorphisms)
@@ -4726,7 +4741,14 @@ class FiniteAtlasLineBundlePullbackComparison(SageObject):
 
 
 
-def _chartwise_closed_subscheme(datum, local_closed_subschemes, *, name="Chartwise closed subscheme"):
+def _chartwise_closed_subscheme(
+    datum,
+    local_closed_subschemes,
+    *,
+    name="Chartwise closed subscheme",
+    _engine=None,
+    construction_data=None,
+):
     r"""Glue compatible closed subschemes of one finite affine atlas.
 
     A closed immersion is local on the target.  Each supplied ``Z_i -> U_i``
@@ -4751,7 +4773,13 @@ def _chartwise_closed_subscheme(datum, local_closed_subschemes, *, name="Chartwi
     for index in indices:
         if local_closed[index].inclusion().codomain() is not datum.chart(index):
             raise ValueError("each chartwise closed subscheme lies in its selected chart of the glued scheme")
-    return _glued_chartwise_subscheme(datum, local_closed, (ClosedEmbeddings(datum.scheme()), ClosedSubschemes(datum.base_ring())))
+    return _glued_chartwise_subscheme(
+        datum,
+        local_closed,
+        (ClosedEmbeddings(datum.scheme()), ClosedSubschemes(datum.base_ring())),
+        _engine=_engine,
+        construction_data=construction_data,
+    )
 
 
 def _chartwise_fixed_subscheme(datum, local_automorphisms):
@@ -4789,7 +4817,14 @@ def _chartwise_fixed_subscheme(datum, local_automorphisms):
     return _glued_chartwise_subscheme(datum, local_fixed, (ClosedEmbeddings(datum.scheme()), ClosedSubschemes(datum.base_ring())))
 
 
-def _glued_chartwise_subscheme(datum, local_closed, placements):
+def _glued_chartwise_subscheme(
+    datum,
+    local_closed,
+    placements,
+    *,
+    _engine=None,
+    construction_data=None,
+):
     r"""Glue closed subschemes ``Z_i <= U_i`` that agree through the atlas transitions.
 
     ``Z_i cap U_ij`` is the distinguished open of ``Z_i`` cut out by the
@@ -4831,6 +4866,8 @@ def _glued_chartwise_subscheme(datum, local_closed, placements):
             lambda index: datum.chart_embedding(index) * local_closed[index].inclusion(),
             name="Local inclusions of a glued closed subscheme",
         ),
+        _object_engine=_engine,
+        **dict(construction_data or {}),
     )
 
 

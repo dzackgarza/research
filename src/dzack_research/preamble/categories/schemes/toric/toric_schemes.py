@@ -1096,7 +1096,15 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 local_components[cone] = module.scalar_multiple(local_coefficient, generator)
             return selected_line.compatible_sections()(local_components)
 
-        def zero_subscheme_of_divisor_section(self, divisor, section, *, line_bundle=None):
+        def zero_subscheme_of_divisor_section(
+            self,
+            divisor,
+            section,
+            *,
+            line_bundle=None,
+            _engine=None,
+            construction_data=None,
+        ):
             r"""Return the effective Cartier zero scheme of a represented toric section."""
             divisor = self.torus_invariant_divisor_group()(divisor)
             selected_line = self.invertible_sheaf_of_divisor(divisor) if line_bundle is None else line_bundle
@@ -1117,6 +1125,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return self.chartwise_closed_subscheme(
                 local_closed,
                 name="Zero scheme of a toric divisor section",
+                _engine=_engine,
+                construction_data=construction_data,
             )
 
         def divisor_section_characters(self, divisor):

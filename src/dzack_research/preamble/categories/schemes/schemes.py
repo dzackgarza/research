@@ -1864,10 +1864,22 @@ class Schemes(OwnedCategoryOverBaseRing):
             assert self._is_glued_from_affine_atlas(), f"{self} was not glued from an affine gluing datum"
             return self._scheme_engine_realization.gluing_datum()
 
-        def chartwise_closed_subscheme(self, local_closed_subschemes, *, name="Chartwise closed subscheme"):
+        def chartwise_closed_subscheme(
+            self,
+            local_closed_subschemes,
+            *,
+            name="Chartwise closed subscheme",
+            _engine=None,
+            construction_data=None,
+        ):
             r"""The closed subscheme glued from closed subschemes ``Z_i <= U_i`` that agree on the overlaps."""
             assert self._is_glued_from_affine_atlas(), "a chartwise closed subscheme is glued on the charts of a gluing datum"
-            return self._scheme_engine_realization.chartwise_closed_subscheme(local_closed_subschemes, name=name)
+            return self._scheme_engine_realization.chartwise_closed_subscheme(
+                local_closed_subschemes,
+                name=name,
+                _engine=_engine,
+                construction_data=construction_data,
+            )
 
         def chartwise_fixed_subscheme(self, local_automorphisms):
             r"""The fixed subscheme of an automorphism preserving each chart, glued from the charts' fixed subschemes."""

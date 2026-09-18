@@ -844,7 +844,7 @@ class _AT21ToricADEPairEngine:
             if section is None
             else self.branch_section_space()(section)
         )
-        return AT21ADEDoubleCover(self, selected)
+        return _at21_ade_double_cover(self, selected)
 
     def _repr_(self):
         prefix = "affine " if self.is_affine_type() else ""
@@ -852,71 +852,65 @@ class _AT21ToricADEPairEngine:
 
 
 
-class AT21ADEDoubleCover(SageObject):
-    r"""The AT21 double cover as a hypersurface in the toric pyramid threefold.
+class _AT21ADEDoubleCoverEngine:
+    r"""Private realization of the AT21 hypersurface scheme with its cover data."""
 
-    If ``Q`` is the branch polytope and ``p*`` its distinguished point, the
-    pyramid ``P=conv(Q x {0},(p*,2))`` has a polarizing linear system containing
-    ``F=z^2+f``.  Its zero scheme is the actual cover ``X``.  Projection on the
-    first two character coordinates induces the cover map ``X -> Y``.  The
-    torus point ``(1,1,-1)`` preserves ``F`` and restricts to the deck
-    involution.  This is the toric hypersurface realization of AT21 Sections
-    2--3, so it remains valid when ``omega_Y(C)`` is rank-one reflexive rather
-    than invertible.
-    """
+    def __init__(
+        self,
+        *,
+        base_pair,
+        branch_section,
+        ambient_toric_threefold,
+        ambient_polarizing_divisor,
+        ambient_hypersurface_section,
+        ambient_projection,
+        **rest,
+    ) -> None:
+        self._base_pair = base_pair
+        self._branch_section = branch_section
+        self._ambient = ambient_toric_threefold
+        self._ambient_divisor = ambient_polarizing_divisor
+        self._ambient_section = ambient_hypersurface_section
+        self._ambient_projection = ambient_projection
+        super().__init__(**rest)
 
-    def __init__(self, base_pair, branch_section) -> None:
+    def base_pair(self):
+        return self._base_pair
+
+    def base_scheme(self):
+        return self.base_pair().scheme()
+
+    def branch_section(self):
+        return self._branch_section
+
+    def branch_subscheme(self):
+        return self.base_pair().branch_subscheme(self.branch_section())
+
+    def ambient_toric_threefold(self):
+        return self._ambient
+
+    def ambient_polarizing_divisor(self):
+        return self._ambient_divisor
+
+    def ambient_hypersurface_section(self):
+        return self._ambient_section
+
+    def scheme(self):
+        return self
+
+    def ambient_projection(self):
+        return self._ambient_projection
+
+    @cached_method
+    def _cover_structure(self):
         from dzack_research.preamble.categories.sets.indexed_families import (
             finite_indexed_family,
         )
 
-        self._base_pair = base_pair
-        self._branch_section = base_pair.branch_section_space()(branch_section)
-        ambient = base_pair.cover_toric_threefold()
-        ambient_divisor = ambient.polarizing_divisor()
-        ambient_sections = ambient.divisor_section_space(ambient_divisor)
-        ambient_by_coordinates = {
-            tuple(int(coordinate) for coordinate in character): character
-            for character in ambient_sections.module_generating_set()
-        }
-        coefficients = {}
-        branch_coefficients = base_pair.branch_section_space().framing_coefficients(self._branch_section)
-        for character, coefficient in branch_coefficients.items():
-            key = (*tuple(int(value) for value in character), 0)
-            if key not in ambient_by_coordinates:
-                raise ArithmeticError("a branch character is absent from the pyramid hyperplane section")
-            coefficients[ambient_by_coordinates[key]] = coefficient
-        apex = (
-            *tuple(int(value) for value in base_pair.distinguished_point()),
-            2,
-        )
-        if apex not in ambient_by_coordinates:
-            raise ArithmeticError("the pyramid apex is absent from its polarizing section space")
-        coefficients[ambient_by_coordinates[apex]] = base_pair.scheme().scheme_base_ring().one()
-        ambient_section = ambient_sections.linear_combination(coefficients)
-        cover = ambient.zero_subscheme_of_divisor_section(
-            ambient_divisor,
-            ambient_section,
-        )
-
-        source_lattice = ambient.cocharacter_lattice()
-        target_lattice = base_pair.scheme().cocharacter_lattice()
-        source_labels = tuple(source_lattice.module_generating_set())
-        target_labels = tuple(target_lattice.module_generating_set())
-        if len(source_labels) != 3 or len(target_labels) != 2:
-            raise ArithmeticError("the ADE pyramid projection expects ranks three and two")
-        projection_lattice_map = source_lattice.module_category().Mor(source_lattice, target_lattice)(
-            {
-                source_labels[0]: target_lattice.module_generator(target_labels[0]),
-                source_labels[1]: target_lattice.module_generator(target_labels[1]),
-                source_labels[2]: target_lattice.zero(),
-            }
-        )
-        ambient_projection = ambient.toric_morphism(
-            projection_lattice_map,
-            base_pair.scheme(),
-        )
-
+        cover = self
+        ambient = self.ambient_toric_threefold()
+        base_pair = self.base_pair()
+        ambient_projection = self.ambient_projection()
         cover_atlas = cover.gluing_datum()
         local_cover_maps = {}
         local_global_cover_maps = {}
@@ -959,6 +953,11 @@ class AT21ADEDoubleCover(SageObject):
                 for cone in cover.gluing_datum().chart_indices()
             }
         )
+        local_cover_family = finite_indexed_family(
+            cover.gluing_datum().chart_index_set(),
+            lambda cone: local_cover_maps[cone],
+            name="Local maps of the AT21 double cover to the toric base charts",
+        )
         local_deck_family = finite_indexed_family(
             cover.gluing_datum().chart_index_set(),
             lambda cone: local_deck[cone],
@@ -986,80 +985,51 @@ class AT21ADEDoubleCover(SageObject):
             target_cone = ambient_projection.chart_target(cone)
             local_boundary = base_boundary_atlas.chart(target_cone)
             pullback = local_cover_maps[cone].coordinate_algebra_morphism()
-            equations = tuple(pullback(equation) for equation in local_boundary.defining_equations())
+            equations = tuple(
+                pullback(equation) for equation in local_boundary.defining_equations()
+            )
             pulled_boundary_local[cone] = cover_atlas.chart(cone).closed_subscheme(equations)
         pulled_boundary = cover.chartwise_closed_subscheme(
             pulled_boundary_local,
             name="Pulled-back AT21 boundary",
         )
-
-        self._ambient = ambient
-        self._ambient_divisor = ambient_divisor
-        self._ambient_section = ambient_section
-        self._cover = cover
-        self._ambient_projection = ambient_projection
-        self._cover_morphism = cover_morphism
-        self._local_cover_maps = finite_indexed_family(
-            cover.gluing_datum().chart_index_set(),
-            lambda cone: local_cover_maps[cone],
-            name="Local maps of the AT21 double cover to the toric base charts",
-        )
-        self._local_deck = local_deck_family
-        self._deck = deck
-        self._ramification = ramification
-        self._base_boundary = base_boundary
-        self._pulled_boundary = pulled_boundary
-
-    def base_pair(self):
-        return self._base_pair
-
-    def base_scheme(self):
-        return self.base_pair().scheme()
-
-    def branch_section(self):
-        return self._branch_section
-
-    def branch_subscheme(self):
-        return self.base_pair().branch_subscheme(self.branch_section())
-
-    def ambient_toric_threefold(self):
-        return self._ambient
-
-    def ambient_polarizing_divisor(self):
-        return self._ambient_divisor
-
-    def ambient_hypersurface_section(self):
-        return self._ambient_section
-
-    def scheme(self):
-        return self._cover
+        return {
+            "cover_morphism": cover_morphism,
+            "local_cover_maps": local_cover_family,
+            "local_deck": local_deck_family,
+            "deck": deck,
+            "ramification": ramification,
+            "base_boundary": base_boundary,
+            "pulled_boundary": pulled_boundary,
+        }
 
     def cover_morphism(self):
-        return self._cover_morphism
-
-    def ambient_projection(self):
-        return self._ambient_projection
+        return self._cover_structure()["cover_morphism"]
 
     def local_cover_map(self, cone):
-        return self._local_cover_maps[self.scheme().gluing_datum().normalize_chart_index(cone)]
+        return self._cover_structure()["local_cover_maps"][
+            self.gluing_datum().normalize_chart_index(cone)
+        ]
 
     def deck_involution(self):
-        return self._deck
+        return self._cover_structure()["deck"]
 
     def local_deck_involution(self, cone):
-        return self._local_deck[self.scheme().gluing_datum().normalize_chart_index(cone)]
+        return self._cover_structure()["local_deck"][
+            self.gluing_datum().normalize_chart_index(cone)
+        ]
 
     def ramification_subscheme(self):
-        return self._ramification
+        return self._cover_structure()["ramification"]
 
     def boundary_subscheme(self):
         r"""Return ``D=pi^{-1}(C)`` scheme-theoretically."""
-        return self._pulled_boundary
+        return self._cover_structure()["pulled_boundary"]
 
     pulled_back_boundary = boundary_subscheme
 
     def base_boundary_subscheme(self):
-        return self._base_boundary
+        return self._cover_structure()["base_boundary"]
 
     def boundary_divisor(self):
         from dzack_research.preamble.categories.divisors.divisor_groups import FormalDivisorGroups
@@ -1070,7 +1040,6 @@ class AT21ADEDoubleCover(SageObject):
 
     @cached_method
     def log_boundary_coefficient_ring(self):
-
         return _rationals().polynomial_ring("epsilon")
 
     def log_boundary_divisor(self):
@@ -1088,7 +1057,7 @@ class AT21ADEDoubleCover(SageObject):
 
     def equipped_pair(self):
         r"""Return the live equipped pair ``(X, D + epsilon R)``."""
-        return self.scheme(), self.log_boundary_divisor()
+        return self, self.log_boundary_divisor()
 
     def dynkin_diagram(self):
         return self.base_pair().coxeter_diagram()
@@ -1097,12 +1066,7 @@ class AT21ADEDoubleCover(SageObject):
         return self.base_pair().polygon()
 
     def local_surface_singularity(self):
-        r"""Return the source normal-form surface singularity for the E8 orbit specimen.
-
-        AT21 Section 7 records ``xyz=z^2+y^3+x^5`` for the E8 orbit.  This
-        local object is provided only for that selected source specialization;
-        the global Dynkin label remains independent classification data.
-        """
+        r"""Return the source normal-form surface singularity for the E8 orbit specimen."""
         from dzack_research.preamble.categories.schemes.singularities import (
             IsolatedHypersurfaceSingularity,
         )
@@ -1133,8 +1097,65 @@ class AT21ADEDoubleCover(SageObject):
         return f"AT21 double cover of {self.base_pair()}"
 
 
+def _at21_ade_double_cover(base_pair, branch_section):
+    r"""Construct the AT21 hypersurface through the toric zero-subscheme owner."""
+    selected_branch = base_pair.branch_section_space()(branch_section)
+    ambient = base_pair.cover_toric_threefold()
+    ambient_divisor = ambient.polarizing_divisor()
+    ambient_sections = ambient.divisor_section_space(ambient_divisor)
+    ambient_by_coordinates = {
+        tuple(int(coordinate) for coordinate in character): character
+        for character in ambient_sections.module_generating_set()
+    }
+    coefficients = {}
+    branch_coefficients = base_pair.branch_section_space().framing_coefficients(selected_branch)
+    for character, coefficient in branch_coefficients.items():
+        key = (*tuple(int(value) for value in character), 0)
+        if key not in ambient_by_coordinates:
+            raise ArithmeticError("a branch character is absent from the pyramid hyperplane section")
+        coefficients[ambient_by_coordinates[key]] = coefficient
+    apex = (
+        *tuple(int(value) for value in base_pair.distinguished_point()),
+        2,
+    )
+    if apex not in ambient_by_coordinates:
+        raise ArithmeticError("the pyramid apex is absent from its polarizing section space")
+    coefficients[ambient_by_coordinates[apex]] = base_pair.scheme().scheme_base_ring().one()
+    ambient_section = ambient_sections.linear_combination(coefficients)
+
+    source_lattice = ambient.cocharacter_lattice()
+    target_lattice = base_pair.scheme().cocharacter_lattice()
+    source_labels = tuple(source_lattice.module_generating_set())
+    target_labels = tuple(target_lattice.module_generating_set())
+    if len(source_labels) != 3 or len(target_labels) != 2:
+        raise ArithmeticError("the ADE pyramid projection expects ranks three and two")
+    projection_lattice_map = source_lattice.module_category().Mor(source_lattice, target_lattice)(
+        {
+            source_labels[0]: target_lattice.module_generator(target_labels[0]),
+            source_labels[1]: target_lattice.module_generator(target_labels[1]),
+            source_labels[2]: target_lattice.zero(),
+        }
+    )
+    ambient_projection = ambient.toric_morphism(
+        projection_lattice_map,
+        base_pair.scheme(),
+    )
+    return ambient.zero_subscheme_of_divisor_section(
+        ambient_divisor,
+        ambient_section,
+        _engine=_AT21ADEDoubleCoverEngine,
+        construction_data={
+            "base_pair": base_pair,
+            "branch_section": selected_branch,
+            "ambient_toric_threefold": ambient,
+            "ambient_polarizing_divisor": ambient_divisor,
+            "ambient_hypersurface_section": ambient_section,
+            "ambient_projection": ambient_projection,
+        },
+    )
+
+
 __all__ = [
     "ADELogPairs",
-    "AT21ADEDoubleCover",
     "SideDecoration",
 ]
