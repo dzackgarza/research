@@ -70,59 +70,6 @@ class PointedAnalyticFundamentalGroup(SageObject):
 
 
 
-class IntegralLocalSystem(Parent):
-    r"""A pointed integral local system represented by a ``pi_1`` action.
-
-    On a connected pointed space, local systems of finitely generated modules
-    are equivalent to representations of the pointed fundamental group.  This
-    object retains both sides of that equivalence: the actual stalk module and
-    the actual action functor ``B pi_1 -> FormMod_ZZ``.
-    """
-
-    def __init__(self, base, pointed_fundamental_group, stalk_module, action_functor) -> None:
-        assert pointed_fundamental_group.space() is base, "the local system fundamental group belongs to a different base"
-        assert action_functor.group() is pointed_fundamental_group.group(), "the monodromy action has the wrong fundamental group"
-        assert action_functor.underlying_object() is stalk_module, "the monodromy action must select the local-system stalk"
-        self._base = base
-        self._pointed_fundamental_group = pointed_fundamental_group
-        self._stalk_module = stalk_module
-        self._action_functor = action_functor
-        Parent.__init__(self, category=SheafObjects(base))
-
-    def base_space(self):
-        return self._base
-
-    def base_point(self):
-        return self._pointed_fundamental_group.base_point()
-
-    def pointed_fundamental_group(self):
-        return self._pointed_fundamental_group
-
-    def stalk(self, point):
-        assert point is self.base_point(), (
-            "this selected local-system model materializes the stalk at its chosen base point"
-        )
-        return self._stalk_module
-
-    def monodromy_representation(self):
-        return self._action_functor
-
-    def is_locally_constant(self) -> bool:
-        return True
-
-    def rank(self):
-        return self._stalk_module.module_rank()
-
-    def monodromy_of(self, loop):
-        group = self.pointed_fundamental_group().group()
-        loop = group(loop)
-        classifying = self.monodromy_representation().domain()
-        point = classifying.an_object()
-        return self.monodromy_representation()(classifying.Mor(point, point)(loop))
-
-    def _repr_(self) -> str:
-        return f"Integral local system of rank {self.rank()} on {self.base_space()} with stalk {self.stalk()}"
-
 
 
 class HigherDirectImageSheaf(Parent):
@@ -155,7 +102,11 @@ class HigherDirectImageSheaf(Parent):
         return self._local_system
 
     def stalk(self, point):
-        return self.restriction_to_smooth_stratum().stalk(point)
+        assert point is self.family_data().base_point(), (
+            "this selected higher-direct-image model materializes the stalk at its chosen smooth base point"
+        )
+        representation = self.restriction_to_smooth_stratum().functor()
+        return representation(representation.domain().an_object())
 
     def stalk_to_fiber_comparison(self, point):
         r"""Topological proper-base-change comparison at the selected smooth point."""
@@ -269,12 +220,12 @@ class LegendreMonodromyFamily(SageObject):
             cohomology,
             loop_action,
         )
-        local_system = IntegralLocalSystem(
-            smooth_stratum,
-            pointed_pi_one,
-            cohomology,
-            action_functor,
-        )
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        local_system = Cat().Mor(
+            action_functor.domain(),
+            action_functor.codomain(),
+        ).object(action_functor)
         higher_direct_image = HigherDirectImageSheaf(
             self,
             1,
@@ -335,7 +286,7 @@ class LegendreMonodromyFamily(SageObject):
         return self._local_system
 
     def monodromy_representation(self):
-        return self.local_system().monodromy_representation()
+        return self.local_system().functor()
 
     def positive_monodromy(self):
         return self._positive_monodromy
@@ -366,7 +317,6 @@ class LegendreMonodromyFamily(SageObject):
 
 __all__ = [
     "HigherDirectImageSheaf",
-    "IntegralLocalSystem",
     "LegendreMonodromyFamily",
     "PointedAnalyticFundamentalGroup",
 ]

@@ -370,7 +370,6 @@ from dzack_research.preamble.categories.schemes import (
     HorikawaEnriquesSurface,
     HorikawaK3DoubleCover,
     HorikawaK3Family,
-    IntegralLocalSystem,
     IntegralSchemes,
     IntegralSingularCohomologyGroups,
     IntegralTopologicalCohomologyGroups,
