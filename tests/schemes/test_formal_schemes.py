@@ -37,13 +37,14 @@ def test_precision_changes_only_the_completion_realization_not_the_formal_object
     comparison = formal.compare_precisions(3, 7)
     third_stage = formal.thickening_ring(3)
 
-    assert comparison.formal_spectrum() is formal
-    assert comparison.first_completion().computation_precision() == 3
-    assert comparison.second_completion().computation_precision() == 7
+    assert comparison.domain() is formal.completion(3)
+    assert comparison.codomain() is formal.completion(7)
+    assert comparison.domain().computation_precision() == 3
+    assert comparison.codomain().computation_precision() == 7
     assert formal.completion_projection(3, 3).codomain() is third_stage
     assert formal.completion_projection(7, 3).codomain() is third_stage
-    assert comparison.forward().domain() is comparison.first_completion()
-    assert comparison.forward().codomain() is comparison.second_completion()
+    assert comparison.forward().domain() is comparison.domain()
+    assert comparison.forward().codomain() is comparison.codomain()
 
 
 def test_continuous_formal_map_descends_compatibly_to_every_thickening() -> None:

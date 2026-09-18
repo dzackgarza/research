@@ -12,31 +12,6 @@ from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.categories.schemes.schemes import Schemes, _affine_spec_morphism
 
 
-class FormalCompletionComparison(SageObject):
-    r"""Two computational realizations of one adic completion."""
-
-    def __init__(self, formal_spectrum, first_precision, second_precision) -> None:
-        self._formal_spectrum = formal_spectrum
-        self._first = formal_spectrum.completion(first_precision)
-        self._second = formal_spectrum.completion(second_precision)
-        identity = formal_spectrum.source_ring().Mor(formal_spectrum.source_ring()).identity()
-        self._forward = self._first.induced_map(identity, self._second)
-        self._backward = self._second.induced_map(identity, self._first)
-
-    def formal_spectrum(self):
-        return self._formal_spectrum
-
-    def first_completion(self):
-        return self._first
-
-    def second_completion(self):
-        return self._second
-
-    def forward(self):
-        return self._forward
-
-    def backward(self):
-        return self._backward
 
 
 class _FormalThickeningSystem(Functor):
@@ -158,10 +133,14 @@ class _FormalSpectrumEngine:
         return self.completion(precision).adic_projection(exponent)
 
     def compare_precisions(self, first_precision, second_precision):
-        return FormalCompletionComparison(
-            self,
-            first_precision,
-            second_precision,
+        r"""Return the canonical isomorphism between two realizations of the same completion."""
+        first = self.completion(first_precision)
+        second = self.completion(second_precision)
+        identity = self.source_ring().Mor(self.source_ring()).identity()
+        forward = first.induced_map(identity, second)
+        backward = second.induced_map(identity, first)
+        return first.category().Core().Mor(first, second)._from_known_inverse_pair(
+            forward, backward
         )
 
     def morphism_to(self, codomain, coordinate_ring_morphism):
@@ -258,6 +237,5 @@ def FormalAffineMorphism(domain, codomain, coordinate_ring_morphism):
 
 __all__ = [
     "FormalAffineMorphism",
-    "FormalCompletionComparison",
     "FormalSpectrum",
 ]
