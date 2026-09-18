@@ -73,18 +73,24 @@ Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` be
 
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
 
-## Delete a reproduction tree when the reproduction is finished
+## Reproductions and scratch stay inside this repository
 
-A repro that copies the tree costs about 270 MB here, and two of them from 2026-09-12 were still
-in `/tmp` a day later, holding half a gigabyte on a host at 93% disk. Nothing collects them: the
-directory outlives the turn, the worker that made it, and the chat.
+A repro that copies the tree costs about 270 MB here. Two such copies created
+under `/tmp` on 2026-09-12 survived their turns and held half a gigabyte on a
+host already at 93% disk. The defect is creating those external copies in the
+first place, not failing to sweep them later.
 
-So remove the tree in the same turn that finishes with it, and where a repro needs to survive for
-comparison, say in its own filename what it is for and when it can go. `mktemp -d` names tell a
-later reader nothing, which is why these two were left alone by everyone who saw them.
+Do not create repository copies, worktrees, virtual environments, build trees,
+or bulk caches under global `/tmp` or `~/.cache`. Use the repository's ignored
+`.tmp/` surface for a reproduction that genuinely needs files outside the main
+tree, and prefer a small specimen over copying the repository. A clean validation
+surface does not justify another checkout.
 
-The same applies to log captures that run to megabytes. Keep the finding, not the capture — a
-recorded line number and message outlives a `.log` file and costs nothing.
+If an upstream command defaults to a host-global temp/cache path, redirect its
+`TMPDIR`, cache, or equivalent variable into project-owned scratch before
+running it. Remove disposable scratch in the same unit that consumes it. The
+same applies to log captures that run to megabytes: keep the finding, not the
+capture.
 
 ## Bank before you wait
 

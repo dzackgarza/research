@@ -6991,6 +6991,27 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: the schemes agent's report naming the axiom-descent mechanism with its source line, which became a ruling in `AGENTS.md`, a row in `TRAPS.md`, and the removal of every base-restriction edge; a placement left abstract with its missing construction recorded in `COMPLAINTS.md` and scheduled in `TODO.md`.
 
+#### `DEV-66`: Keep Bulk Scratch Repository-Local
+
+- **Rule**: Repository work does not create full-tree reproductions, worktrees,
+  virtual environments, build trees, or bulk caches under global `/tmp` or
+  `~/.cache`. Use the ignored repository `.tmp/` surface for genuinely
+  necessary scratch and prefer a minimal specimen to a repository copy. Redirect
+  tools whose default temp/cache roots are host-global before executing them.
+
+- **Rationale**: External scratch outlives the worker that created it and makes
+  unrelated repositories pay the disk cost. Multiple 270 MB reproduction trees
+  accumulated under `/tmp` on a nearly full host even though the active
+  mathematical unit did not need duplicate repositories.
+
+- **Violation Example**: create `/tmp/research-owner-iso-tests` as a full
+  checkout just to obtain a clean test surface; leave a package/build cache under
+  `~/.cache` because the tool chose that default.
+
+- **Correct Example**: reproduce the failure with the smallest specimen in
+  `.tmp/repro-name/`, point `TMPDIR` or the tool cache there, and delete that
+  disposable state when the unit is done.
+
 
 * * *
 
