@@ -5,10 +5,15 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.number_field_ideal import NumberFieldIdeal
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.group.groups import OwnedGroups, Subgroups
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     PredicateSubgroups,
     StabilizerSubgroups,
+)
+from dzack_research.preamble.categories.group.profinite.profinite_groups import (
+    ProfiniteGroups,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -181,16 +186,15 @@ def _finite_frobenius_class(quotient, base_prime, prime_above):
     return FiniteElementConjugacyClass(quotient, candidates[0])
 
 
-class AbsoluteDecompositionGroup(SageObject):
-    def __init__(self, supergroup, prime, prolongation) -> None:
+class _AbsoluteDecompositionGroupEngine:
+    r"""Finite-quotient realization of the decomposition subgroup at ``prolongation``."""
+
+    def __init__(self, prime, prolongation, **rest) -> None:
         if prolongation.base_prime() != prime:
             raise ValueError("the prolongation lies over a different base prime")
-        self._supergroup = supergroup
         self._prime = prime
         self._prolongation = prolongation
-
-    def supergroup(self):
-        return self._supergroup
+        super().__init__(**rest)
 
     def ambient(self):
         r"""Return the ambient absolute Galois group."""
@@ -208,22 +212,57 @@ class AbsoluteDecompositionGroup(SageObject):
         )
 
     def conjugacy_class(self):
-        return DecompositionGroupConjugacyClass(self._supergroup, self._prime)
+        return DecompositionGroupConjugacyClass(self.supergroup(), self._prime)
+
+    def one(self):
+        return self.supergroup().one()
+
+    def __contains__(self, element) -> bool:
+        ambient = self.supergroup()
+        if element not in ambient:
+            return False
+        if element == ambient.one():
+            return True
+        assert False, (
+            "membership in an absolute decomposition subgroup is the compatible "
+            "stabilizer condition over every finite quotient; finitely many realized "
+            "coordinates do not decide it"
+        )
+
+    def _element_constructor_(self, datum):
+        ambient = self.supergroup()
+        element = datum if datum in ambient else ambient(datum)
+        if element == ambient.one():
+            return element
+        assert False, (
+            "constructing a nonidentity element of an absolute decomposition subgroup "
+            "requires a complete compatible prolongation-stabilizer witness"
+        )
 
     def _repr_(self) -> str:
-        return f"Decomposition group at {self._prolongation} in {self._supergroup}"
+        return f"Decomposition group at {self._prolongation} in {self.supergroup()}"
 
 
-class AbsoluteInertiaGroup(SageObject):
-    def __init__(self, supergroup, prime, prolongation) -> None:
+def AbsoluteDecompositionGroup(supergroup, prime, prolongation):
+    r"""Construct the profinite subgroup ``D_pbar <= G_K`` from its finite images."""
+    return _object_of(
+        Cat().meet((ProfiniteGroups(), Subgroups(supergroup))),
+        _engine=(OwnedGroups(), _AbsoluteDecompositionGroupEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+        prolongation=prolongation,
+    )
+
+
+class _AbsoluteInertiaGroupEngine:
+    r"""Finite-quotient realization of the inertia subgroup at ``prolongation``."""
+
+    def __init__(self, prime, prolongation, **rest) -> None:
         if prolongation.base_prime() != prime:
             raise ValueError("the prolongation lies over a different base prime")
-        self._supergroup = supergroup
         self._prime = prime
         self._prolongation = prolongation
-
-    def supergroup(self):
-        return self._supergroup
+        super().__init__(**rest)
 
     def ambient(self):
         r"""Return the ambient absolute Galois group."""
@@ -241,10 +280,46 @@ class AbsoluteInertiaGroup(SageObject):
         )
 
     def conjugacy_class(self):
-        return InertiaGroupConjugacyClass(self._supergroup, self._prime)
+        return InertiaGroupConjugacyClass(self.supergroup(), self._prime)
+
+    def one(self):
+        return self.supergroup().one()
+
+    def __contains__(self, element) -> bool:
+        ambient = self.supergroup()
+        if element not in ambient:
+            return False
+        if element == ambient.one():
+            return True
+        assert False, (
+            "membership in an absolute inertia subgroup is the compatible residue-"
+            "triviality condition over every finite quotient; finitely many realized "
+            "coordinates do not decide it"
+        )
+
+    def _element_constructor_(self, datum):
+        ambient = self.supergroup()
+        element = datum if datum in ambient else ambient(datum)
+        if element == ambient.one():
+            return element
+        assert False, (
+            "constructing a nonidentity element of an absolute inertia subgroup "
+            "requires a complete compatible inertia witness"
+        )
 
     def _repr_(self) -> str:
-        return f"Inertia group at {self._prolongation} in {self._supergroup}"
+        return f"Inertia group at {self._prolongation} in {self.supergroup()}"
+
+
+def AbsoluteInertiaGroup(supergroup, prime, prolongation):
+    r"""Construct the profinite subgroup ``I_pbar <= G_K`` from its finite images."""
+    return _object_of(
+        Cat().meet((ProfiniteGroups(), Subgroups(supergroup))),
+        _engine=(OwnedGroups(), _AbsoluteInertiaGroupEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+        prolongation=prolongation,
+    )
 
 
 class DecompositionGroupConjugacyClass(SageObject):
