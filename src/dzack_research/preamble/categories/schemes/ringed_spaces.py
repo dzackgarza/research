@@ -196,26 +196,17 @@ class _StructureSheafEngine:
     scheme = ringed_space
 
     def global_sections(self):
-        r"""Return ``Gamma(X,O_X)`` in the exact cases represented live."""
-        operation = getattr(self.ringed_space(), "_structure_sheaf_global_sections", None)
-        assert callable(operation), (
-            f"global sections of the structure sheaf of {self.ringed_space()} require a selected represented operation"
-        )
-        return operation()
+        r"""Return ``Gamma(X,O_X)=O(X)`` for the represented affine scheme."""
+        return self.ringed_space().coordinate_algebra()
 
     sections = global_sections
 
     def sections_on_distinguished_open(self, distinguished_open):
-        r"""Return ``O_X(D(f)) = Gamma(X,O_X)_f`` for an affine scheme."""
-        operation = getattr(
-            self.ringed_space(),
-            "_structure_sheaf_sections_on_distinguished_open",
-            None,
+        r"""Return ``O_X(D(f)) = O(D(f))`` for a represented distinguished open."""
+        assert _is_distinguished_open_of(distinguished_open, self.ringed_space()), (
+            "structure-sheaf sections are requested on a distinguished open of this affine scheme"
         )
-        assert callable(operation), (
-            "distinguished-open structure-sheaf sections require a selected represented operation on this ringed space"
-        )
-        return operation(distinguished_open)
+        return distinguished_open.coordinate_algebra()
 
     def restriction_map(self, source_open, target_open):
         r"""Return the represented restriction ``O(source_open) -> O(target_open)``.
@@ -274,11 +265,10 @@ class _StructureSheafEngine:
 
     def stalk(self, point):
         r"""Return ``O_{X,p}`` for a represented affine prime point."""
-        operation = getattr(self.ringed_space(), "_structure_sheaf_stalk", None)
-        assert callable(operation), (
-            "structure-sheaf stalks require a selected represented stalk operation on this ringed space"
+        assert point.parent() is self.ringed_space().underlying_space(), (
+            "a structure-sheaf stalk is taken at a point of this affine scheme"
         )
-        return operation(point)
+        return point.local_ring()
 
     def _repr_(self) -> str:
         return f"Structure sheaf O_{{{self.scheme()}}}"
@@ -383,13 +373,11 @@ class _AffineStructurePresheaf(Functor):
 
 
 def _is_distinguished_open_of(open_subscheme, ambient) -> bool:
-    is_distinguished_open = getattr(open_subscheme, "is_distinguished_open", None)
-    inclusion = getattr(open_subscheme, "inclusion", None)
+    from dzack_research.preamble.categories.schemes.schemes import OpenImmersions
+
     return (
-        callable(is_distinguished_open)
-        and is_distinguished_open()
-        and callable(inclusion)
-        and inclusion().codomain() is ambient
+        open_subscheme in OpenImmersions(ambient)
+        and open_subscheme.is_distinguished_open() is True
     )
 
 
