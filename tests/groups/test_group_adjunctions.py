@@ -174,7 +174,11 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     group_morphism = adjunction.hom_set_isomorphism_inverse(set_morphism, target)
     recovered = adjunction.hom_set_isomorphism_forward(group_morphism, source)
     _assert_maps_agree(set_morphism, recovered, source)
+    assert group_morphism.generator_morphism().parent() is Sets().Mor(source, target)
     assert group_morphism(free.free_generator(2) * free.free_generator(3) ** -1) == target_generator**-1
+
+    direct = free.Mor(target)({ZZ(2): target_generator, ZZ(3): target_generator**2})
+    assert direct.generator_morphism().parent() is Sets().Mor(source, target)
 
     source_map = Sets().Mor(source, second_source)(lambda point: ZZ(5) if point == 2 else ZZ(7))
     left, right = adjunction.unit_transformation().naturality_square(source_map)

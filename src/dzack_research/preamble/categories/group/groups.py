@@ -1320,9 +1320,8 @@ class IndexedFreeGroupHomomorphism(Morphism):
         )
         indices = self.domain().free_basis()
         return self.domain().Mor(morphism.codomain())(
-            SetMorphism(
-                Sets().Mor(indices, morphism.codomain()),
-                lambda index: morphism(self.generator_morphism()(index)),
+            Sets().Mor(indices, morphism.codomain())(
+                lambda index: morphism(self.generator_morphism()(index))
             )
         )
 
@@ -1336,9 +1335,8 @@ class IndexedFreeGroupHomomorphism(Morphism):
         if source not in GroupsWithChosenFreeBasis() or not right.parent().hom_family().base_category().is_subcategory(OwnedGroups()):
             return NotImplemented
         return source.Mor(self.codomain())(
-            SetMorphism(
-                Sets().Mor(source.free_basis(), self.codomain()),
-                lambda index: self(right(source.free_generator(index))),
+            Sets().Mor(source.free_basis(), self.codomain())(
+                lambda index: self(right(source.free_generator(index)))
             )
         )
 
@@ -1390,9 +1388,9 @@ class IndexedFreeGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
                 assert all(index in images for index in indices), (
                     "the generator assignment names every point of the free basis"
                 )
-                generator_morphism = SetMorphism(set_homset, images.__getitem__)
+                generator_morphism = set_homset(images.__getitem__)
             case _ if callable(images):
-                generator_morphism = SetMorphism(set_homset, images)
+                generator_morphism = set_homset(images)
             case _:
                 raise TypeError("an indexed-free-group morphism is specified on its free basis")
         return self.element_class(self, generator_morphism)
