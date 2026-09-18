@@ -427,9 +427,11 @@ class DistinguishedAffineCovers(OwnedCategory):
         )
     )
     def __classcall__(cls, scheme=None):
-        if isinstance(cls, DynamicMetaclass):
-            return cls.__base__(scheme)
-        return typecall(cls, scheme)
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(scheme)
+            case _:
+                return typecall(cls, scheme)
 
     def __init__(self, scheme=None) -> None:
         self._scheme = scheme
@@ -739,9 +741,11 @@ class _DistinguishedCechCoveringFamilies(OwnedCategory):
     @staticmethod
     @cached_function(key=lambda cls, cover: (cls, id(cover)))
     def __classcall__(cls, cover):
-        if isinstance(cls, DynamicMetaclass):
-            return cls.__base__(cover)
-        return typecall(cls, cover)
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(cover)
+            case _:
+                return typecall(cls, cover)
 
     def __init__(self, cover) -> None:
         self._cover = cover
