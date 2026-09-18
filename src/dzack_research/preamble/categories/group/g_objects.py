@@ -373,12 +373,13 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
             match self.underlying_category():
                 case Schemes():
-                    pass
+                    return self.restrict_action(
+                        group_element.cyclic_subgroup().inclusion()
+                    )
                 case other:
                     assert False, (
                         f"the fixed locus of a single group element is constructed for schemes; {other} supplies no owned equalizer of an automorphism with the identity"
                     )
-            return self.restrict_action(group_element.cyclic_subgroup().inclusion())
 
         def fixed_subobject_of(self, group_element):
             r"""Return ``X^g``, the equalizer of ``rho(g)`` and the identity of ``X``.

@@ -433,8 +433,6 @@ class RestrictionOfGroupActionFunctor(Functor):
                         acted,
                         lambda group_element: acted.action_of(morphism(group_element)),
                     )
-            case _:
-                pass
 
         action = _action_functor_of(acted, morphism.codomain(), category)
         from dzack_research.preamble.categories.group.classifying_categories import (

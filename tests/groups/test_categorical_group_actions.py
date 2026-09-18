@@ -98,6 +98,7 @@ def test_restriction_is_precomposition_by_the_classifying_functor() -> None:
     classifying = group.classifying_category()
     arrow = classifying.Mor(classifying.an_object(), classifying.an_object())(generator)
 
+    assert restricted in GObjects(group, Sets())
     assert action.domain() is classifying
     assert action(arrow)(Sets.Δ[1](0)) == Sets.Δ[1](1)
     assert action.factors()[0].group_morphism() is phi

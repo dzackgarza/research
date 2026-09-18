@@ -122,7 +122,9 @@ def test_restriction_along_a_subgroup_inclusion_keeps_the_scheme_and_the_action(
     restriction = GObjects(group, Schemes(field)).restriction(shear_subgroup.inclusion())
     restricted = restriction(acted)
 
+    assert restricted in GObjects(shear_subgroup, Schemes(field))
     assert restricted.acting_group() is shear_subgroup
+    assert restricted.underlying_category() is Schemes(field)
     assert restricted.coordinate_algebra() is algebra
     original = acted.action_of(generators[1]).coordinate_algebra_morphism()
     transported = restricted.action_of(generators[1]).coordinate_algebra_morphism()
