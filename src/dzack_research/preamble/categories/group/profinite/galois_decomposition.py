@@ -3,7 +3,6 @@ r"""Decomposition, inertia, and Frobenius projections of (G_K)."""
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.number_field_ideal import NumberFieldIdeal
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
@@ -20,7 +19,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.categories.sets.set_categories import Set, Sets
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -322,10 +321,11 @@ def AbsoluteInertiaGroup(supergroup, prime, prolongation):
     )
 
 
-class DecompositionGroupConjugacyClass(SageObject):
-    def __init__(self, supergroup, prime) -> None:
+class _DecompositionGroupConjugacyClassEngine:
+    def __init__(self, supergroup, prime, **rest) -> None:
         self._supergroup = supergroup
         self._prime = prime
+        super().__init__(**rest)
 
     def supergroup(self):
         return self._supergroup
@@ -343,9 +343,23 @@ class DecompositionGroupConjugacyClass(SageObject):
             prolongation=prolongation,
         )
 
+    def __contains__(self, candidate) -> bool:
+        return (
+            isinstance(candidate, _AbsoluteDecompositionGroupEngine)
+            and candidate.supergroup() is self._supergroup
+            and candidate.prime() == self._prime
+        )
+
+    def _element_constructor_(self, candidate):
+        if candidate not in self:
+            raise ValueError(
+                "the subgroup is not in this decomposition-group conjugacy class"
+            )
+        return candidate
+
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, DecompositionGroupConjugacyClass)
+            isinstance(other, _DecompositionGroupConjugacyClassEngine)
             and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
@@ -357,10 +371,21 @@ class DecompositionGroupConjugacyClass(SageObject):
         return f"Conjugacy class of decomposition groups at {self._prime} in {self._supergroup}"
 
 
-class InertiaGroupConjugacyClass(SageObject):
-    def __init__(self, supergroup, prime) -> None:
+def DecompositionGroupConjugacyClass(supergroup, prime):
+    r"""Construct the conjugacy class of decomposition subgroups as a set."""
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _DecompositionGroupConjugacyClassEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+    )
+
+
+class _InertiaGroupConjugacyClassEngine:
+    def __init__(self, supergroup, prime, **rest) -> None:
         self._supergroup = supergroup
         self._prime = prime
+        super().__init__(**rest)
 
     def supergroup(self):
         return self._supergroup
@@ -378,9 +403,23 @@ class InertiaGroupConjugacyClass(SageObject):
             prolongation=prolongation,
         )
 
+    def __contains__(self, candidate) -> bool:
+        return (
+            isinstance(candidate, _AbsoluteInertiaGroupEngine)
+            and candidate.supergroup() is self._supergroup
+            and candidate.prime() == self._prime
+        )
+
+    def _element_constructor_(self, candidate):
+        if candidate not in self:
+            raise ValueError(
+                "the subgroup is not in this inertia-group conjugacy class"
+            )
+        return candidate
+
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, InertiaGroupConjugacyClass)
+            isinstance(other, _InertiaGroupConjugacyClassEngine)
             and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
@@ -392,12 +431,23 @@ class InertiaGroupConjugacyClass(SageObject):
         return f"Conjugacy class of inertia groups at {self._prime} in {self._supergroup}"
 
 
-class FrobeniusConjugacyClass(SageObject):
+def InertiaGroupConjugacyClass(supergroup, prime):
+    r"""Construct the conjugacy class of inertia subgroups as a set."""
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _InertiaGroupConjugacyClassEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+    )
+
+
+class _FrobeniusConjugacyClassEngine:
     r"""The canonical global Frobenius class at an unramified base prime."""
 
-    def __init__(self, supergroup, prime) -> None:
+    def __init__(self, supergroup, prime, **rest) -> None:
         self._supergroup = supergroup
         self._prime = prime
+        super().__init__(**rest)
 
     def supergroup(self):
         return self._supergroup
@@ -417,7 +467,7 @@ class FrobeniusConjugacyClass(SageObject):
 
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, FrobeniusConjugacyClass)
+            isinstance(other, _FrobeniusConjugacyClassEngine)
             and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
@@ -427,6 +477,16 @@ class FrobeniusConjugacyClass(SageObject):
 
     def _repr_(self) -> str:
         return f"Frobenius conjugacy class at {self._prime} in {self._supergroup}"
+
+
+def FrobeniusConjugacyClass(supergroup, prime):
+    r"""Construct the choice-independent global Frobenius datum."""
+    return _object_of(
+        Objects(),
+        _engine=(Objects(), _FrobeniusConjugacyClassEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+    )
 
 
 __all__ = [
