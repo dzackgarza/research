@@ -822,14 +822,30 @@ class SchemeMorphism(Morphism):
         r"""``f_* N~ = (Res_{f^#} N)~`` for affine ``f: Spec B -> Spec A`` (Stacks, Tag 01I8)."""
         return self.direct_image_functor().on_object(sheaf)
 
+    @cached_method(key=lambda self, sheaf: id(sheaf))
     def module_pullback(self, sheaf):
-        r"""``f^* M~ = (M tensor_A B)~``, scalar extension along ``f^#`` (Stacks, Tag 01I8).
+        r"""Return the represented object ``f^*F``.
 
-        This is the pullback of quasi-coherent modules, ``O_X tensor f^{-1}O_Y
-        f^{-1} M~``; the inverse-image sheaf ``f^{-1} M~`` itself is not
-        quasi-coherent and is not represented here.
+        For affine ``f : Spec B -> Spec A`` this is ``(M tensor_A B)~``
+        (Stacks, Tag 01I8), through the affine pullback functor.  For a
+        represented closed immersion ``i : Z -> P`` into projective space, the
+        standard twists ``O_P(d)`` have their object pullback represented
+        directly.  The latter is not advertised as a functor until the common
+        non-affine quasi-coherent Hom supplies its arrow action.
         """
-        return self.module_pullback_functor().on_object(sheaf)
+        base = self.domain().scheme_base_ring()
+        match (
+            self.domain() in ClosedEmbeddings(self.codomain()),
+            self.codomain() in ProjectiveSpaces(base),
+        ):
+            case (True, True):
+                from dzack_research.preamble.categories.schemes.sheaf_functors import (
+                    _projective_closed_immersion_module_pullback,
+                )
+
+                return _projective_closed_immersion_module_pullback(self, sheaf)
+            case _:
+                return self.module_pullback_functor().on_object(sheaf)
 
     def inverse_image_sheaf(self, sheaf):
         r"""``f^{-1} F``, the topological inverse image of a sheaf."""

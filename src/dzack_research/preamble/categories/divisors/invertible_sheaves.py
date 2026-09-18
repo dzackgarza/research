@@ -621,8 +621,8 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         return _projective_section_restriction(self, closed_subscheme)
 
     def restrict_to(self, closed_subscheme):
-        r"""Return ``i^* O(d)`` for a represented projective closed immersion ``i``."""
-        return ProjectiveSubschemeLineBundle(closed_subscheme, self)
+        r"""Return the pullback of O(d) along a represented projective closed immersion."""
+        return closed_subscheme.inclusion().module_pullback(self)
 
     def pullback(self, morphism):
         r"""Return ``f^*O(d)`` for a represented projective-product projection.
@@ -786,7 +786,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
 
 
-class ProjectiveSubschemeLineBundle(SageObject):
+class ProjectiveSubschemeLineBundle(Parent):
     r"""The pullback ``i^* O_P(d)`` along a projective closed immersion.
 
     The defining datum is the actual closed immersion together with the
@@ -796,7 +796,13 @@ class ProjectiveSubschemeLineBundle(SageObject):
     use the existing image-valued restriction map separately.
     """
 
-    def __init__(self, closed_subscheme, ambient_line_bundle) -> None:
+    def __init__(
+        self,
+        closed_subscheme,
+        ambient_line_bundle,
+        *,
+        pullback_morphism=None,
+    ) -> None:
         from dzack_research.preamble.categories.schemes.schemes import (
             ClosedSubschemes,
             ProjectiveSpaces,
@@ -812,9 +818,23 @@ class ProjectiveSubschemeLineBundle(SageObject):
             raise TypeError("the ambient bundle must be a represented projective O(d)")
         if ambient_line_bundle.projective_space() is not ambient:
             raise ValueError("the ambient line bundle belongs to a different projective space")
+        match pullback_morphism:
+            case None:
+                selected_pullback = closed_subscheme.inclusion()
+            case _:
+                selected_pullback = pullback_morphism
+        match (
+            selected_pullback.domain() is closed_subscheme,
+            selected_pullback.codomain() is ambient,
+        ):
+            case (True, True):
+                pass
+            case _:
+                raise ValueError("the selected pullback morphism is not this closed immersion")
         self._scheme = closed_subscheme
         self._ambient_line_bundle = ambient_line_bundle
-        self._pullback_morphism = closed_subscheme.inclusion()
+        self._pullback_morphism = selected_pullback
+        Parent.__init__(self, category=QuasiCoherentSheaves(closed_subscheme))
 
     def scheme(self):
         return self._scheme
@@ -835,22 +855,22 @@ class ProjectiveSubschemeLineBundle(SageObject):
             raise TypeError("restricted projective tensor product requires two O_X(d) bundles")
         if other.scheme() is not self.scheme():
             raise ValueError("restricted line-bundle tensor product requires one scheme")
-        return type(self)(
-            self.scheme(),
-            self.ambient_line_bundle().tensor_product(other.ambient_line_bundle()),
+        return self.pullback_morphism().module_pullback(
+            self.ambient_line_bundle().tensor_product(other.ambient_line_bundle())
         )
 
     def tensor_power(self, exponent):
         exponent = _own_ring(SageZZ)(exponent)
         if exponent == 1:
             return self
-        return type(self)(
-            self.scheme(),
-            self.ambient_line_bundle().tensor_power(exponent),
+        return self.pullback_morphism().module_pullback(
+            self.ambient_line_bundle().tensor_power(exponent)
         )
 
     def dual_sheaf(self):
-        return type(self)(self.scheme(), self.ambient_line_bundle().dual_sheaf())
+        return self.pullback_morphism().module_pullback(
+            self.ambient_line_bundle().dual_sheaf()
+        )
 
     def is_ample(self) -> bool:
         r"""Decide ampleness for restrictions of ``O(d)`` to projective subschemes."""

@@ -8,6 +8,7 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/framework/test_base_change_and_bundles.sage",
@@ -124,6 +125,22 @@ def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
         local = comparison.line_bundle_refinement().local_isomorphism(index)
         assert local.forward().domain().base_ring() is fine.chart(index).coordinate_algebra()
         assert local.forward().codomain() is pulled.local_module(index)
+
+
+def test_projective_closed_subscheme_restriction_is_the_closed_immersion_pullback_image() -> None:
+    plane = ProjectiveSpaces(QQ)(2)
+    x, y, z = plane.homogeneous_coordinate_generators()
+    conic = plane.closed_subscheme(x * z - y**2)
+    inclusion = conic.inclusion()
+    bundle = plane.O(2)
+
+    restricted = bundle.restrict_to(conic)
+
+    assert restricted is inclusion.module_pullback(bundle)
+    assert restricted in QuasiCoherentSheaves(conic)
+    assert restricted.pullback_morphism() is inclusion
+    assert restricted.ambient_line_bundle() is bundle
+    assert restricted.degree() == 2
 
 
 def test_projection_pullback_places_degree_in_the_selected_product_factor() -> None:

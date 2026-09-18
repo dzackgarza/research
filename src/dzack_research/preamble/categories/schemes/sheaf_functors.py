@@ -11,6 +11,10 @@ base-change adjunction through the affine module/sheaf equivalence and retains
 one associated sheaf for every cached module image. The topological inverse
 image ``f^{-1}`` remains distinct; finite-atlas inverse images are represented
 in ``categories.schemes.gluing`` before scalar extension to module pullback.
+For a represented closed immersion into projective space this module also
+realizes the object ``i^*O_P(d)``; it does not call that specialization a
+functor before the separate non-affine quasi-coherent Hom supplies its arrow
+action.
 """
 
 from sage.structure.sage_object import SageObject
@@ -128,6 +132,34 @@ class AffineQuasiCoherentAdjunction(SageObject):
 def _affine_quasi_coherent_adjunction(scheme_morphism):
     r"""Return the affine ``f^* \dashv f_*`` owner for ``scheme_morphism``."""
     return AffineQuasiCoherentAdjunction(scheme_morphism)
+
+
+def _projective_closed_immersion_module_pullback(scheme_morphism, sheaf):
+    r"""Realize ``i^* O_P(d)`` for a represented projective closed immersion.
+
+    This is the object part of quasi-coherent pullback in the one non-affine
+    regime whose target object is already represented.  It is deliberately not
+    exposed as a ``Functor`` until the common non-affine quasi-coherent Hom
+    supplies the arrow action.
+    """
+    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+        ProjectiveSpaceLineBundle,
+        ProjectiveSubschemeLineBundle,
+    )
+
+    match sheaf:
+        case ProjectiveSpaceLineBundle() if (
+            sheaf.projective_space() is scheme_morphism.codomain()
+        ):
+            return ProjectiveSubschemeLineBundle(
+                scheme_morphism.domain(),
+                sheaf,
+                pullback_morphism=scheme_morphism,
+            )
+        case _:
+            raise AssertionError(
+                "projective closed-immersion pullback is presently realized for standard O(d) objects"
+            )
 
 
 __all__ = [
