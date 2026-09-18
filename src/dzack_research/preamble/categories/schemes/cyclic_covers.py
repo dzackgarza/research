@@ -366,24 +366,24 @@ def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
     )
 
 
-class RelativeCyclicCoverLift(SageObject):
-    r"""One lift of a base automorphism through a represented relative cyclic cover."""
+class _RelativeCyclicCoverLiftSquare(CommutativeSquare):
+    r"""A cyclic-cover lift as an endomorphism square of the cover map."""
 
     def __init__(
         self,
+        parent,
+        transformation,
+        *,
         cyclic_algebra,
         linearization,
         group_element,
-        base_automorphism,
         local_automorphisms,
-        automorphism,
     ) -> None:
         self._cyclic_algebra = cyclic_algebra
         self._linearization = linearization
         self._group_element = linearization.acting_group()(group_element)
-        self._base_automorphism = base_automorphism
         self._local_automorphisms = local_automorphisms
-        self._automorphism = automorphism
+        super().__init__(parent, transformation)
 
     def cyclic_algebra(self):
         return self._cyclic_algebra
@@ -395,10 +395,12 @@ class RelativeCyclicCoverLift(SageObject):
         return self._group_element
 
     def base_automorphism(self):
-        return self._base_automorphism
+        r"""The right edge of the lift square."""
+        return self.right()
 
     def automorphism(self):
-        return self._automorphism
+        r"""The left edge of the lift square."""
+        return self.left()
 
     def local_automorphisms(self):
         return self._local_automorphisms
@@ -437,7 +439,34 @@ class RelativeCyclicCoverLift(SageObject):
         )
 
     def _repr_(self) -> str:
-        return f"Lift of {self.group_element()} to {self.cyclic_algebra()} over {self.base_automorphism()}"
+        return f"Lift square of {self.group_element()} on {self.cyclic_algebra()}"
+
+
+def RelativeCyclicCoverLift(
+    cyclic_algebra,
+    linearization,
+    group_element,
+    base_automorphism,
+    local_automorphisms,
+    automorphism,
+):
+    r"""Construct the lift as the commuting endomorphism square of its cover map."""
+    relative = cyclic_algebra.relative_spectrum()
+    morphisms = base_automorphism.parent().homset_category()
+    arrows = morphisms.ArrowCategory()
+    cover_map = arrows(relative.arrow())
+    return arrows.Mor(cover_map, cover_map)._square(
+        automorphism,
+        base_automorphism,
+        verify=True,
+        element_class=_RelativeCyclicCoverLiftSquare,
+        construction_data={
+            "cyclic_algebra": cyclic_algebra,
+            "linearization": linearization,
+            "group_element": group_element,
+            "local_automorphisms": local_automorphisms,
+        },
+    )
 
 
 

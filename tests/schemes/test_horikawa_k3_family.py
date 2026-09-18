@@ -81,6 +81,10 @@ def test_two_tau_lifts_are_involutions_with_actual_fixed_subschemes_and_top_form
     enriques_fixed, nikulin_fixed = member.fixed_subschemes()
 
     assert member.both_lifts_have_order_two()
+    assert enriques.automorphism() is enriques.left()
+    assert enriques.base_automorphism() is enriques.right()
+    assert enriques.domain() is enriques.codomain()
+    assert enriques.domain().arrow() is member.cover_morphism()
     assert enriques.automorphism().domain() is member.scheme()
     assert nikulin.automorphism().domain() is member.scheme()
     assert enriques.base_automorphism() is nikulin.base_automorphism()
