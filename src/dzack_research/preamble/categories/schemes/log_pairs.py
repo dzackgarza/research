@@ -94,7 +94,14 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
         r"""The projective plane with the sum of its three invariant lines."""
         return LogPairs(self.base_ring()).an_object()
 
-    def _call_(self, toric_variety, boundary_divisor):
+    def _call_(
+        self,
+        toric_variety,
+        boundary_divisor,
+        *,
+        _engine=None,
+        construction_data=None,
+    ):
         r"""The toric log pair of a toric variety and a torus-invariant boundary."""
         assert toric_variety.scheme_base_ring() == self.base_ring(), (
             f"the variety of an object of {self} lies over {self.base_ring()}"
@@ -102,7 +109,13 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
         assert boundary_divisor.parent() is toric_variety.torus_invariant_divisor_group(), (
             "the boundary of a toric log pair is a torus-invariant divisor"
         )
-        return _object_of(self, log_scheme=toric_variety, boundary_divisor=boundary_divisor)
+        return _object_of(
+            self,
+            _engine=None if _engine is None else (self, _engine, None),
+            log_scheme=toric_variety,
+            boundary_divisor=boundary_divisor,
+            **dict(construction_data or {}),
+        )
 
     def _repr_object_names(self):
         return f"toric log pairs over {self.base_ring()}"

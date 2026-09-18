@@ -350,7 +350,6 @@ from dzack_research.preamble.categories.schemes import (
     AffineSpaces,
     AnalyticDiscFamily,
     AT21ADEDoubleCover,
-    AT21ToricADEPair,
     ClosedEmbeddings,
     ClosedSubschemes,
     ConvexPolygons,

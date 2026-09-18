@@ -207,6 +207,48 @@ def _supports_point(engine_polyhedron, engine_ray, engine_point):
     return value == min(_engine_pairing_values(engine_polyhedron, engine_ray))
 
 
+def _validated_at21_low_level_variant(letter, rank, variant, affine):
+    if letter not in ("A", "D", "E"):
+        raise ValueError("an AT21 ADE shape has type A, D or E")
+    if rank < 1:
+        raise ValueError("an AT21 ADE rank is positive")
+    if affine:
+        if variant != "pure":
+            raise ValueError("the represented toric affine shapes are the pure source shapes")
+        if letter == "D" and rank >= 4 and rank % 2 == 0:
+            return ()
+        if letter == "E" and rank in (7, 8):
+            return ()
+        raise ValueError(
+            "AT21 toric affine shapes represented here are tilde D_even, tilde E7 and tilde E8; tilde A is nontoric"
+        )
+    if letter == "A":
+        if variant == "pure" and rank % 2 == 1:
+            return ()
+        if variant == "short" and rank % 2 == 0:
+            return ("long", "short")
+        if variant == "both-short" and rank % 2 == 1:
+            return ("short", "short")
+        if variant == "prime":
+            return ("prime",)
+        raise ValueError(
+            "finite toric A shapes use odd pure A, even one-short A, odd both-short A, or the AT21 toric priming"
+        )
+    if letter == "D":
+        if variant == "pure" and rank >= 4 and rank % 2 == 0:
+            return ()
+        if variant == "short" and rank >= 5 and rank % 2 == 1:
+            return ("short",)
+        if variant == "prime" and rank >= 4 and rank % 2 == 0:
+            return ("prime",)
+        raise ValueError(
+            "finite toric D shapes use even D, odd one-short D, or the even toric priming of AT21 Lemma 3.25"
+        )
+    if rank not in (6, 7, 8) or variant != "pure":
+        raise ValueError("finite toric E shapes are the source E6, E7 and E8 pure shapes")
+    return ()
+
+
 class ADELogPairs(OwnedCategoryOverBaseRing):
     r"""Toric log pairs equipped with an ADE type, its polygon and ``p*``."""
 
@@ -253,14 +295,32 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         rank = int(dynkin_rank)
         source_variant = str(variant).lower().replace("_", "-")
         affine = bool(affine)
-        low_variant = AT21ToricADEPair._validated_low_level_variant(
+        low_variant = _validated_at21_low_level_variant(
             letter,
             rank,
             source_variant,
             affine,
         )
         pair = self(letter, rank, variant=low_variant, affine=affine)
-        return AT21ToricADEPair(pair, source_variant=source_variant)
+        branch_class = pair.log_scheme().polarizing_divisor()
+        expected = _own_ring(SageZZ)(2) * pair.complementary_divisor()
+        if branch_class != expected:
+            raise ArithmeticError(
+                "the selected polygon does not satisfy AT21 Lemma 3.4: "
+                "L=-2(K_Y+C)=2C'"
+            )
+        branch_line_bundle = pair.log_scheme().invertible_sheaf_of_divisor(branch_class)
+        return ToricLogPairs(self.base_ring())(
+            pair.log_scheme(),
+            pair.blue_divisor(),
+            _engine=_AT21ToricADEPairEngine,
+            construction_data={
+                "base_pair": pair,
+                "source_variant": source_variant,
+                "branch_divisor_class": branch_class,
+                "branch_line_bundle": branch_line_bundle,
+            },
+        )
 
     def _repr_object_names(self):
         return f"ADE log pairs over {self.base_ring()}"
@@ -612,7 +672,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 __all__ = ["ADELogPairs", "SideDecoration"]
 
 
-class AT21ToricADEPair(SageObject):
+class _AT21ToricADEPairEngine:
     r"""A source-admitted toric ADE base pair with its branch linear system.
 
     This is the toric part of Alexeev--Thompson's classification, not a second
@@ -627,86 +687,28 @@ class AT21ToricADEPair(SageObject):
     parser to infer parity from a loose token sequence.
     """
 
-    def __init__(self, base_pair, *, source_variant) -> None:
-        base = base_pair.log_scheme().scheme_base_ring()
-        if base_pair not in ADELogPairs(base):
-            raise TypeError("an AT21 toric ADE enhancement requires an owned ADE log pair")
-        pair = base_pair
-        source_variant = str(source_variant).lower().replace("_", "-")
-        expected_variant = self._validated_low_level_variant(
-            pair.dynkin_letter(),
-            int(pair.dynkin_rank()),
-            source_variant,
-            pair.is_affine_type(),
-        )
-        if tuple(pair.dynkin_variant()) != tuple(expected_variant):
-            raise ValueError(
-                "the supplied ADE log pair does not have the polygon variant selected by the AT21 source shape"
-            )
-        branch_class = pair.log_scheme().polarizing_divisor()
-        expected = _own_ring(SageZZ)(2) * pair.complementary_divisor()
-        if branch_class != expected:
-            raise ArithmeticError(
-                "the selected polygon does not satisfy AT21 Lemma 3.4: "
-                "L=-2(K_Y+C)=2C'"
-            )
-        self._base_pair = pair
+    def __init__(
+        self,
+        *,
+        base_pair,
+        source_variant,
+        branch_divisor_class,
+        branch_line_bundle,
+        **rest,
+    ) -> None:
+        self._base_pair = base_pair
         self._source_variant = source_variant
-        self._branch_divisor_class = branch_class
-        self._branch_line_bundle = pair.log_scheme().invertible_sheaf_of_divisor(branch_class)
-
-    @staticmethod
-    def _validated_low_level_variant(letter, rank, variant, affine):
-        if letter not in ("A", "D", "E"):
-            raise ValueError("an AT21 ADE shape has type A, D or E")
-        if rank < 1:
-            raise ValueError("an AT21 ADE rank is positive")
-        if affine:
-            if variant != "pure":
-                raise ValueError("the represented toric affine shapes are the pure source shapes")
-            if letter == "D" and rank >= 4 and rank % 2 == 0:
-                return ()
-            if letter == "E" and rank in (7, 8):
-                return ()
-            raise ValueError(
-                "AT21 toric affine shapes represented here are tilde D_even, tilde E7 and tilde E8; tilde A is nontoric"
-            )
-        if letter == "A":
-            if variant == "pure" and rank % 2 == 1:
-                return ()
-            if variant == "short" and rank % 2 == 0:
-                return ("long", "short")
-            if variant == "both-short" and rank % 2 == 1:
-                return ("short", "short")
-            if variant == "prime":
-                return ("prime",)
-            raise ValueError(
-                "finite toric A shapes use odd pure A, even one-short A, odd both-short A, or the AT21 toric priming"
-            )
-        if letter == "D":
-            if variant == "pure" and rank >= 4 and rank % 2 == 0:
-                return ()
-            if variant == "short" and rank >= 5 and rank % 2 == 1:
-                return ("short",)
-            if variant == "prime" and rank >= 4 and rank % 2 == 0:
-                return ("prime",)
-            raise ValueError(
-                "finite toric D shapes use even D, odd one-short D, or the even toric priming of AT21 Lemma 3.25"
-            )
-        if rank not in (6, 7, 8) or variant != "pure":
-            raise ValueError("finite toric E shapes are the source E6, E7 and E8 pure shapes")
-        return ()
+        self._branch_divisor_class = branch_divisor_class
+        self._branch_line_bundle = branch_line_bundle
+        super().__init__(**rest)
 
     def base_pair(self):
         return self._base_pair
 
     def scheme(self):
-        return self.base_pair().log_scheme()
+        return self.log_scheme()
 
     toric_scheme = scheme
-
-    def boundary_divisor(self):
-        return self.base_pair().blue_divisor()
 
     def complementary_divisor(self):
         return self.base_pair().complementary_divisor()
@@ -1134,6 +1136,5 @@ class AT21ADEDoubleCover(SageObject):
 __all__ = [
     "ADELogPairs",
     "AT21ADEDoubleCover",
-    "AT21ToricADEPair",
     "SideDecoration",
 ]
