@@ -3,9 +3,9 @@ from sage.libs.singular.function import lib as singular_lib
 from sage.libs.singular.function import singular_function
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.abstract_categories.hom_categories import CategoricalIsomorphism
 from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebras,
 )
@@ -59,53 +59,22 @@ def _ade_normal_form_equation(polynomial_ring, ade_type):
             raise ValueError("a supported simple plane curve has type A, D or E")
 
 
-class PlaneLinearRightEquivalence(SageObject):
-    r"""An explicit linear right-equivalence between two plane-curve germs.
+class _PlaneLinearRightEquivalence(CategoricalIsomorphism):
+    r"""A polynomial-ring automorphism carrying one selected germ equation to another."""
 
-    This is the supported equivalence notion used here: an automorphism of the
-    selected polynomial ring carrying the source equation to the target
-    equation.  Both directions are retained as owned algebra morphisms.  This
-    does not claim to decide arbitrary formal or analytic right-equivalence.
-
-    A right-equivalence is an isomorphism of hypersurface germs ``(A, f)``.
-    Those germs have no owned category, so this holds the two germs and the
-    coordinate change without a Hom it could be an arrow of.
-    """
-
-    def __init__(self, source, target, forward, inverse) -> None:
-        ring = source.polynomial_ring()
-        assert target.polynomial_ring() is ring, "a represented linear right-equivalence uses one polynomial ring"
-        assert forward.domain() is ring and forward.codomain() is ring, (
-            "the forward coordinate change is an automorphism of the plane ring"
-        )
-        assert inverse.domain() is ring and inverse.codomain() is ring, (
-            "the inverse coordinate change is an automorphism of the plane ring"
-        )
-        assert all(
-            inverse(forward(generator)) == generator and forward(inverse(generator)) == generator
-            for generator in ring.algebra_generators()
-        ), "the selected coordinate maps are not inverse on the generators"
-        assert forward(source.equation()) == target.equation(), (
-            "the coordinate change does not carry the source equation to the target equation"
-        )
-        self._source = source
-        self._target = target
-        self._forward = forward
-        self._inverse = inverse
+    def __init__(self, parent, forward, inverse, *, source, target) -> None:
+        self._source_germ = source
+        self._target_germ = target
+        super().__init__(parent, forward, inverse, verify=False)
 
     def source(self):
-        return self._source
+        return self._source_germ
 
     def target(self):
-        return self._target
+        return self._target_germ
 
-    def forward(self):
-        return self._forward
-
-    coordinate_change = forward
-
-    def inverse(self):
-        return self._inverse
+    def coordinate_change(self):
+        return self.forward()
 
     def ade_type(self):
         r"""Return the target ADE normal-form label, when the target is one."""
@@ -113,6 +82,38 @@ class PlaneLinearRightEquivalence(SageObject):
 
     def _repr_(self):
         return f"Linear right-equivalence {self.source()} -> {self.target()}"
+
+
+def PlaneLinearRightEquivalence(source, target, forward, inverse):
+    r"""Return the selected linear right-equivalence as an algebra automorphism."""
+    ring = source.polynomial_ring()
+    assert target.polynomial_ring() is ring, (
+        "a represented linear right-equivalence uses one polynomial ring"
+    )
+    assert forward.domain() is ring and forward.codomain() is ring, (
+        "the forward coordinate change is an automorphism of the plane ring"
+    )
+    assert inverse.domain() is ring and inverse.codomain() is ring, (
+        "the inverse coordinate change is an automorphism of the plane ring"
+    )
+    assert all(
+        inverse(forward(generator)) == generator
+        and forward(inverse(generator)) == generator
+        for generator in ring.algebra_generators()
+    ), "the selected coordinate maps are not inverse on the generators"
+    assert forward(source.equation()) == target.equation(), (
+        "the coordinate change does not carry the source equation to the target equation"
+    )
+    algebras = Algebras(ring.base_ring()).Associative().Unital()
+    core_hom = algebras.Core().Mor(ring, ring)
+    core_hom._require_base_morphisms(forward, inverse)
+    return _PlaneLinearRightEquivalence(
+        core_hom,
+        forward,
+        inverse,
+        source=source,
+        target=target,
+    )
 
 
 class IsolatedHypersurfaceSingularity:
