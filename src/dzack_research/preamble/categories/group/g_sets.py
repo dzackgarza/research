@@ -553,9 +553,14 @@ def _owned_point_set(point_set):
     if point_set in FiniteSets():
         return point_set
     integers = _own_ring(SageZZ)
-    return finite_ordered_set(
-        tuple(integers(point) if isinstance(point, int) else point for point in point_set)
-    )
+    def own_point(point):
+        match point:
+            case int():
+                return integers(point)
+            case _:
+                return point
+
+    return finite_ordered_set(tuple(own_point(point) for point in point_set))
 
 
 def _finite_g_set_from_action(group, point_set, action):
