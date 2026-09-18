@@ -24,7 +24,6 @@ from sage.groups.abelian_gps.abelian_group import (
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
 from sage.groups.indexed_free_group import IndexedFreeGroup
-from sage.groups.libgap_morphism import GroupHomset_libgap, GroupMorphism_libgap
 from sage.groups.libgap_wrapper import ParentLibGAP
 from sage.groups.matrix_gps.coxeter_group import CoxeterMatrixGroup
 from sage.groups.matrix_gps.finitely_generated import (
@@ -50,7 +49,6 @@ from sage.rings.infinity import infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.galois_group import GaloisGroup_v2 as SageGaloisGroup
-from sage.structure.category_object import CategoryObject
 from sage.structure.element import Element, MultiplicativeGroupElement, RingElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
@@ -1395,8 +1393,23 @@ class IndexedFreeGroupHomset(CategoricalHomset):
         return f"Hom({self.domain()}, {self.codomain()})"
 
 
-class GroupHomomorphism(GroupMorphism_libgap):
-    """A group homomorphism represented by Sage's maintained GAP morphism."""
+class GroupHomomorphism(Morphism):
+    r"""An owned group morphism computed by a private GAP homomorphism."""
+
+    def __init__(self, parent, gap_homomorphism, check=True) -> None:
+        Morphism.__init__(self, parent)
+        if check:
+            assert gap_homomorphism.Source() == _gap_model(self.domain()), (
+                "the GAP homomorphism has the wrong source"
+            )
+            assert gap_homomorphism.Range() == _gap_model(self.codomain()), (
+                "the GAP homomorphism has the wrong range"
+            )
+        self._gap_homomorphism = gap_homomorphism
+
+    def gap(self):
+        r"""Return the private GAP realization of this owned morphism."""
+        return self._gap_homomorphism
 
     def __eq__(self, other):
         r"""Decide equality on the generators of the source's GAP model."""
@@ -1509,7 +1522,7 @@ class GroupHomomorphism(GroupMorphism_libgap):
         return bool(self.gap().IsSurjective())
 
 
-class GroupHomset(GroupHomset_libgap, CategoricalHomset):
+class GroupHomset(CategoricalHomset):
     """The canonical owned homset Hom(G,H)."""
 
     Element = GroupHomomorphism
@@ -1519,22 +1532,18 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         return typecall(cls, family, domain, codomain)
 
     def __init__(self, hom_family, domain, codomain, *, category=None):
-        self._family = hom_family
-        self._end_family = None
-        self._aut_family = None
-        self._domain_object = domain
-        self._codomain_object = codomain
-        self._super_categories_for_classes = [Objects()]
-        Category.__init__(self)
-        GroupHomset_libgap.__init__(self, domain, codomain, category=SageGroups(), check=False)
         placement = []
         if domain is codomain:
             placement.append(Monoids())
         if category is not None:
             placement.append(category)
-        if placement:
-            CategoryObject._refine_category_(self, Cat().meet(tuple(placement)))
-            realize_owned_category(self)
+        CategoricalHomset.__init__(
+            self,
+            hom_family,
+            domain,
+            codomain,
+            category=Cat().meet(tuple(placement)) if placement else None,
+        )
 
     @cached_method
     def _is_twisted(self) -> bool:

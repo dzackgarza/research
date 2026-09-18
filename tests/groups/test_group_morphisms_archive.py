@@ -14,8 +14,11 @@ def test_generator_images_define_an_actual_checked_group_homomorphism() -> None:
     target = Groups.C(2)
     source_generator = source.group_generators()[0]
     target_generator = target.group_generators()[0]
-    morphism = source.Mor(target)({source_generator: target_generator})
+    hom = source.Mor(target)
+    morphism = hom({source_generator: target_generator})
 
+    assert hom is Groups().HomCategory().Of(source, target)
+    assert morphism.parent() is hom
     assert morphism.domain() is source
     assert morphism.codomain() is target
     assert morphism(source_generator) == target_generator
