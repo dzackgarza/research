@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    AlgebraSheaves,
     DistinguishedAffineCovers,
     QuasiCoherentSheaves,
     SheafObjects,
@@ -3497,6 +3498,58 @@ class AlgebraGluingHomCategoryConstruction(HomCategoryConstruction):
         return AlgebraGluingHomset
 
 
+class _AlgebraGluingSheafEngine:
+    r"""Private realization of an algebra sheaf with one chosen affine descent presentation."""
+
+    def __init__(self, algebra_gluing_datum, **rest) -> None:
+        self._algebra_gluing_datum = algebra_gluing_datum
+        super().__init__(**rest)
+
+    def gluing_datum(self):
+        return self._algebra_gluing_datum
+
+    def cover(self):
+        return self.gluing_datum().cover()
+
+    def ringed_space(self):
+        return self.gluing_datum().scheme()
+
+    scheme = ringed_space
+
+    def sections_on_chart(self, index):
+        return self.gluing_datum().local_algebra(index)
+
+    local_algebra = sections_on_chart
+
+    def sections_on_intersection(self, chart_index, *intersection_indices):
+        return self.gluing_datum().restricted_algebra(
+            chart_index, *intersection_indices
+        )
+
+    def restriction_map(self, chart_index, *intersection_indices):
+        return self.gluing_datum().restriction_map(
+            chart_index, *intersection_indices
+        )
+
+    def transition(self, source_index, target_index, *intersection_indices):
+        match intersection_indices:
+            case ():
+                return self.gluing_datum().transition(source_index, target_index)
+            case _:
+                return self.gluing_datum().transition_on_intersection(
+                    source_index, target_index, *intersection_indices
+                )
+
+    def global_sections(self):
+        return self.gluing_datum().compatible_sections()
+
+    def underlying_module_sheaf(self):
+        return self.gluing_datum().underlying_module_datum().sheaf()
+
+    def relative_spectrum(self):
+        return self.gluing_datum().relative_spectrum()
+
+
 class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""Descent data for unital associative algebras on one distinguished affine cover.
 
@@ -3806,9 +3859,19 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
         @cached_method
         def sheaf(self):
             r"""Return the glued sheaf, an object of ``Sh(Čech site, unital associative O(X)-algebras)``."""
-            return self.cover().cech_coverage().sheaves(
+            sheaves = self.cover().cech_coverage().sheaves(
                 Algebras(self.scheme().coordinate_algebra()).Associative().Unital()
-            ).object(self.descent_presheaf(), self.descent_data())
+            )
+            return sheaves.object(
+                self.descent_presheaf(),
+                self.descent_data(),
+                categories=(
+                    AlgebraSheaves(self.scheme()),
+                    QuasiCoherentSheaves(self.scheme()),
+                ),
+                construction_data={"algebra_gluing_datum": self},
+                _engine=_AlgebraGluingSheafEngine,
+            )
 
         def Mor(self, target):
             return self.category().Mor(self, target)

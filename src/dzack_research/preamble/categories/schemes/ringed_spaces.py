@@ -630,10 +630,10 @@ class DistinguishedAffineCovers(OwnedCategory):
             return ModuleGluingData(self)(local_modules, transitions).sheaf()
 
         def glue_algebras(self, local_algebras, transitions):
-            r"""Return finite algebra descent data on this affine cover."""
-            from dzack_research.preamble.categories.schemes.gluing import AlgebraGluingDatum
+            r"""Return the glued algebra sheaf on this affine cover."""
+            from dzack_research.preamble.categories.schemes.gluing import AlgebraGluingData
 
-            return AlgebraGluingDatum(self, local_algebras, transitions)
+            return AlgebraGluingData(self)(local_algebras, transitions).sheaf()
 
         def common_refinement(self, other):
             r"""The refinement ``{D(f_i g_j)}`` of this cover and ``other``, with its comparison maps."""

@@ -38,7 +38,7 @@ def _two_chart_sign_datum():
     left_overlap = cover.restrict_algebra(local_algebras[0], 0, 1)
     right_overlap = cover.restrict_algebra(local_algebras[1], 1, 0)
     transition = _sign_transition(left_overlap, right_overlap, -1)
-    datum = cover.glue_algebras(local_algebras, {(0, 1): transition})
+    datum = cover.glue_algebras(local_algebras, {(0, 1): transition}).gluing_datum()
     return algebra, cover, local_algebras, datum
 
 
@@ -47,10 +47,13 @@ def test_two_chart_algebra_descent_has_algebra_sections_and_algebra_restrictions
         Algebras,
     )
 
-    algebra, _cover, local_algebras, datum = _two_chart_sign_datum()
+    algebra, cover, local_algebras, datum = _two_chart_sign_datum()
     sections = datum.compatible_sections()
     sheaf = datum.sheaf()
 
+    assert sheaf in cover.cech_coverage().sheaves(
+        Algebras(algebra).Associative().Unital()
+    )
     assert sections in Algebras(algebra)
     assert sections in Algebras(algebra).Associative().Unital().Commutative()
     assert sections.algebra_base_ring() is algebra
@@ -120,7 +123,7 @@ def test_three_chart_algebra_descent_checks_the_algebra_cocycle() -> None:
             sign,
         )
 
-    datum = cover.glue_algebras(local_algebras, transitions)
+    datum = cover.glue_algebras(local_algebras, transitions).gluing_datum()
     triple_left = datum.transition_on_intersection(0, 1, 0, 1, 2)
     triple_right = datum.transition_on_intersection(1, 2, 0, 1, 2)
     triple_direct = datum.transition_on_intersection(0, 2, 0, 1, 2)
@@ -167,8 +170,8 @@ def test_algebra_descent_morphisms_use_endpoint_homs_and_compose() -> None:
 
     algebra, cover, local_algebras, source = _two_chart_sign_datum()
     transition = source.transition(0, 1)
-    middle = cover.glue_algebras(local_algebras, {(0, 1): transition})
-    target = cover.glue_algebras(local_algebras, {(0, 1): transition})
+    middle = cover.glue_algebras(local_algebras, {(0, 1): transition}).gluing_datum()
+    target = cover.glue_algebras(local_algebras, {(0, 1): transition}).gluing_datum()
 
     sign_maps = tuple(
         local_algebra.Mor(local_algebra)(
@@ -211,7 +214,7 @@ def test_algebra_descent_morphisms_use_endpoint_homs_and_compose() -> None:
     incompatible_target = cover.glue_algebras(
         local_algebras,
         {(0, 1): identity_transition},
-    )
+    ).gluing_datum()
     local_identities = tuple(
         local_algebra.Mor(local_algebra).identity()
         for local_algebra in local_algebras

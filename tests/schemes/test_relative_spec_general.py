@@ -19,7 +19,7 @@ def _polynomial_algebra_descent(variable):
     datum = cover.glue_algebras(
         local_algebras,
         {(0, 1): transition},
-    )
+    ).gluing_datum()
     return scheme, cover, datum
 
 
@@ -65,7 +65,7 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
     target = source_cover.glue_algebras(
         target_local,
         {(0, 1): target_transition},
-    )
+    ).gluing_datum()
     local_maps = tuple(
         source.local_algebra(index).Mor(target.local_algebra(index))(
             {"z": target.local_algebra(index).algebra_generator("w") ** 2}
