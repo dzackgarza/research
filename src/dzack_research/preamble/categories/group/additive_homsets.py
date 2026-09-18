@@ -256,10 +256,10 @@ class AdditiveHomset(CategoricalHomset):
     def __init__(self, family, domain, codomain) -> None:
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
-        self._preamble_base_ring = _own_ring(SageZZ)
+        self._base_ring = _own_ring(SageZZ)
         self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
-        category = AdditiveEndomorphismRings(self._preamble_base_ring) if domain is codomain else AdditiveHomGroups()
-        super().__init__(family, domain, codomain, category=category, base=self._preamble_base_ring)
+        category = AdditiveEndomorphismRings(self._base_ring) if domain is codomain else AdditiveHomGroups()
+        super().__init__(family, domain, codomain, category=category, base=self._base_ring)
         if domain is codomain:
             from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
@@ -279,7 +279,7 @@ class AdditiveHomset(CategoricalHomset):
         if callable(datum):
             return self.elementwise(datum)
         assert self.domain() is self.codomain(), "integer scalars embed in an endomorphism ring"
-        return self._owned_scalar_multiple(self._preamble_base_ring(datum), self.identity())
+        return self._owned_scalar_multiple(self._base_ring(datum), self.identity())
 
     def elementwise(self, function):
         r"""Construct the additive map declared by ``function``."""
@@ -287,7 +287,7 @@ class AdditiveHomset(CategoricalHomset):
         return self.element_class(self, function)
 
     def _apply_pointwise_scalar(self, scalar, element):
-        return self._integer_action(int(self._preamble_base_ring(scalar)), element)
+        return self._integer_action(int(self._base_ring(scalar)), element)
 
     def _scalar_identity(self, scalar):
         return self.elementwise(_ScalarIdentityEvaluation(self, scalar))
@@ -296,6 +296,6 @@ class AdditiveHomset(CategoricalHomset):
         r"""Realize the canonical integer action through Sage's additive action."""
         coefficient = _scalar_identity_coefficient(morphism)
         if coefficient is not None:
-            return self._scalar_identity(self._preamble_base_ring(scalar) * coefficient)
-        integer = int(self._preamble_base_ring(scalar))
+            return self._scalar_identity(self._base_ring(scalar) * coefficient)
+        integer = int(self._base_ring(scalar))
         return self.elementwise(lambda element: self._integer_action(integer, morphism(element)))
