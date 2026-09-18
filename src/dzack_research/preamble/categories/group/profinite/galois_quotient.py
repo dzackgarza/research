@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring, _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -427,15 +428,16 @@ class GaloisRestrictionMap(Morphism):
         return f"Restriction {self.domain()} -> {self.codomain()}"
 
 
-class LiftCoset(SageObject):
-    r"""The coset of all global extensions of one finite-level automorphism."""
+class _LiftCosetEngine:
+    r"""Private realization of the fiber of a finite Galois restriction map."""
 
-    def __init__(self, restriction_map: GaloisRestrictionMap, element) -> None:
+    def __init__(self, restriction_map, element, **rest) -> None:
         self._restriction_map = restriction_map
         self._element = restriction_map.codomain()(element)
+        super().__init__(**rest)
 
     def supergroup(self):
-        return self._restriction_map.domain()
+        return self.codomain()
 
     def ambient(self):
         r"""Return the ambient absolute Galois group containing this coset."""
@@ -447,11 +449,11 @@ class LiftCoset(SageObject):
     def extension(self) -> FiniteGaloisExtension:
         return self._restriction_map.extension()
 
+    def restriction_map(self):
+        return self._restriction_map
+
     def kernel(self):
         return self._restriction_map.kernel()
-
-    def __contains__(self, candidate) -> bool:
-        return candidate in self.supergroup() and self._restriction_map(candidate) == self._element
 
     def representative(self, candidate=None):
         r"""Return a supplied representative, or the canonical finite-field one.
@@ -472,6 +474,24 @@ class LiftCoset(SageObject):
 
     def _repr_(self) -> str:
         return f"Lift coset of {self._element} in {self.supergroup()}"
+
+
+def LiftCoset(restriction_map: GaloisRestrictionMap, element):
+    r"""The actual fiber ``{sigma in G_K : sigma|_L = element}`` as a subset of ``G_K``."""
+    target = restriction_map.codomain()(element)
+    ambient = restriction_map.domain()
+    inclusion = ambient.condition_set(
+        lambda candidate: restriction_map(candidate) == target
+    ).inclusion()
+    return Sets().Subobjects(ambient).object(
+        inclusion,
+        _engine=_LiftCosetEngine,
+        construction_data={
+            "restriction_map": restriction_map,
+            "element": target,
+        },
+    )
+
 
 
 __all__ = [

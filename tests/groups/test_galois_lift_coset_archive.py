@@ -4,6 +4,7 @@ from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def test_lift_coset_retains_ambient_kernel_and_finite_coordinate() -> None:
@@ -14,6 +15,8 @@ def test_lift_coset_retains_ambient_kernel_and_finite_coordinate() -> None:
     sigma = restriction(group.frobenius())
     coset = group.lifts(sigma)
 
+    assert coset in Sets().Subobjects(group)
+    assert coset.inclusion().codomain() is group
     assert coset.ambient() is group
     assert coset.supergroup() is group
     assert coset.kernel().fixed_extension() is stage

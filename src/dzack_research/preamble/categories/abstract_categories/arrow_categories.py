@@ -1154,13 +1154,21 @@ class SetSubobjectCategory(SliceCategory):
             and self.base_category().MonomorphismArrowCategory().admits_arrow(arrow)
         )
 
-    def object(self, arrow: Morphism, *, categories=(), construction_data=None):
-        r"""Construct this represented subset, optionally with stronger owned structure."""
+    def object(
+        self,
+        arrow: Morphism,
+        *,
+        categories=(),
+        construction_data=None,
+        _engine=None,
+    ):
+        r"""Construct this represented subset, optionally with stronger owned structure or a private realization."""
         if not self.admits_arrow(arrow):
             raise TypeError("the supplied morphism is not a monomorphism into this base set")
         category = Cat().meet((self, *tuple(categories)))
         return _object_of(
             category,
+            _engine=None if _engine is None else (self, _engine, None),
             functor=_walking_arrow_functor(self.base_category(), arrow),
             **dict(construction_data or {}),
         )
