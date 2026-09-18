@@ -160,6 +160,8 @@ def test_finite_coordinates_restriction_maps_and_extension_cosets_obey_their_law
     restriction_two = group.restriction_map(degree_two)
     restriction_four = group.restriction_map(degree_four)
 
+    assert restriction_two.parent() is group.Mor(quotient_two)
+    assert restriction_four.parent() is group.Mor(quotient_four)
     assert quotient_two.order() == 2
     assert quotient_four.order() == 4
     with pytest.raises(ValueError, match="outside this finite quotient"):

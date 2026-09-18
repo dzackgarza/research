@@ -1778,6 +1778,53 @@ class GroupAutomorphismGroup(GroupHomset):
         )
 
 
+class GeneralGroupHomset(CategoricalHomset):
+    r"""The owned group Hom for endpoints without a selected GAP realization.
+
+    Specialized morphism constructions (for example profinite restriction maps
+    and characters) parent their arrows here directly.  This Hom does not
+    manufacture a group map from arbitrary literals when no representation-
+    specific constructor has been selected.
+    """
+
+    Element = Morphism
+
+    def __init__(self, hom_family, domain, codomain) -> None:
+        category = Monoids() if domain is codomain else None
+        CategoricalHomset.__init__(
+            self, hom_family, domain, codomain, category=category
+        )
+
+    def _element_constructor_(self, datum):
+        match datum:
+            case Morphism() if datum.parent() is self:
+                return datum
+            case _:
+                assert False, (
+                    "this group Hom has no generic conversion constructor; use the mathematical "
+                    "specialization that supplies the represented morphism"
+                )
+
+    def identity(self):
+        assert self.domain() is self.codomain(), "identity belongs to a group endomorphism Hom"
+        domain = self.domain()
+        return _ElementwiseGroupMorphism(self, lambda element: domain(element))
+
+
+class _ElementwiseGroupMorphism(Morphism):
+    r"""Private elementwise realization used only when the group law supplies the map."""
+
+    def __init__(self, parent, function) -> None:
+        self._function = function
+        Morphism.__init__(self, parent)
+
+    def _call_(self, element):
+        return self.codomain()(self._function(self.domain()(element)))
+
+    def _in_homset(self, homset):
+        return _ElementwiseGroupMorphism(homset, self._function)
+
+
 class GroupHomCategoryConstruction(HomCategoryConstruction):
     r"""The represented Hom categories of owned groups."""
 
@@ -1789,9 +1836,15 @@ class GroupHomCategoryConstruction(HomCategoryConstruction):
         cached = self._cached_between(domain, codomain)
         if cached is not None:
             return cached
+        from dzack_research.preamble.categories.group.profinite.profinite_groups import (
+            ProfiniteGroups,
+        )
+
         match domain:
             case _ if domain in GroupsWithChosenFreeBasis():
                 result = IndexedFreeGroupHomset(self, domain, codomain)
+            case _ if domain in ProfiniteGroups():
+                result = GeneralGroupHomset(self, domain, codomain)
             case _:
                 result = GroupHomset(self, domain, codomain)
         return self._remember_between(domain, codomain, result)

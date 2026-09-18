@@ -1,8 +1,6 @@
 r"""Finite coordinates and restriction maps of an absolute Galois group."""
 
 from sage.categories.finite_fields import FiniteFields as SageFiniteFields
-from sage.categories.groups import Groups as SageGroups
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ
@@ -378,15 +376,6 @@ def FiniteGaloisQuotient(extension):
     return FiniteExtensionAutomorphismGroup(extension)
 
 
-class _ContinuousGroupHomset(Homset):
-    def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=SageGroups())
-
-
-@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def _continuous_group_homset(domain, codomain):
-    r"""Return the canonical continuous-group Hom for these exact endpoints."""
-    return _ContinuousGroupHomset(domain, codomain)
 
 
 class GaloisRestrictionMap(Morphism):
