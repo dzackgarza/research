@@ -1886,10 +1886,23 @@ class Schemes(OwnedCategoryOverBaseRing):
             assert self._is_glued_from_affine_atlas(), "a chartwise fixed subscheme is glued on the charts of a gluing datum"
             return self._scheme_engine_realization.chartwise_fixed_subscheme(local_automorphisms)
 
-        def c2_chartwise_invariant_quotient(self, acting_group, local_actions):
+        def c2_chartwise_invariant_quotient(
+            self,
+            acting_group,
+            local_actions,
+            *,
+            _engine=None,
+            construction_data=None,
+        ):
             r"""This scheme modulo a ``C_2`` action preserving each chart, glued from the charts' invariant quotients."""
             assert self._is_glued_from_affine_atlas(), "a chartwise invariant quotient is glued on the charts of a gluing datum"
-            return self._scheme_engine_realization.c2_chartwise_invariant_quotient(self, acting_group, local_actions)
+            return self._scheme_engine_realization.c2_chartwise_invariant_quotient(
+                self,
+                acting_group,
+                local_actions,
+                _engine=_engine,
+                construction_data=construction_data,
+            )
 
         def _locally_ringed_homset_class(self):
             r"""The arrow engine for this scheme's affine/native or gluing presentation."""

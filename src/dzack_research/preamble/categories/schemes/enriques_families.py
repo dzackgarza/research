@@ -158,28 +158,21 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
 
 
 
-class HorikawaEnriquesSurface(SageObject):
-    r"""The quotient of a Horikawa K3 member by its fixed-point-free lift."""
+class _HorikawaEnriquesSurfaceEngine:
+    r"""Private realization of the Enriques quotient on its actual quotient scheme."""
 
-    def __init__(self, k3_member=None) -> None:
-        if k3_member is None:
-            k3_member = HorikawaK3Family().member()
-        assert k3_member.is_k3(), "the quotient source has not satisfied the K3 double-cover hypotheses"
-        assert int(k3_member.base_ring().characteristic()) != 2, (
-            "the fixed-free involution quotient requires characteristic not two"
-        )
-        assert k3_member.enriques_lift_is_fixed_point_free(), "the selected K3 involution is not fixed-point-free"
-        group = k3_member.family().acting_group()
-        quotient_data = k3_member.scheme().c2_chartwise_invariant_quotient(
-            group,
-            k3_member.enriques_lift().local_automorphisms(),
-        )
-        assert quotient_data.source_scheme() is k3_member.scheme(), "the Enriques quotient did not retain the actual K3 source"
-        assert quotient_data.action_is_free(), "the descended K3 action is not free on its affine cover"
+    def __init__(
+        self,
+        *,
+        k3_member,
+        acting_group,
+        quotient_data,
+        **rest,
+    ) -> None:
         self._k3_member = k3_member
-        self._group = group
+        self._group = acting_group
         self._quotient_data = quotient_data
-        self._cohomology = None
+        super().__init__(**rest)
 
     def k3_member(self):
         return self._k3_member
@@ -191,7 +184,7 @@ class HorikawaEnriquesSurface(SageObject):
         return self._quotient_data
 
     def scheme(self):
-        return self.quotient_data().quotient_scheme()
+        return self
 
     def quotient_morphism(self):
         return self.quotient_data().quotient_morphism()
@@ -223,7 +216,39 @@ class HorikawaEnriquesSurface(SageObject):
         return _HorikawaEnriquesBaseChangeComparison(self, ring_map)
 
     def _repr_(self) -> str:
-        return f"Horikawa Enriques surface {self.scheme()} from {self.k3_member()}"
+        return f"Horikawa Enriques quotient of {self.k3_member()}"
+
+
+def HorikawaEnriquesSurface(k3_member=None):
+    r"""Return the fixed-point-free Horikawa quotient as the quotient scheme itself."""
+    if k3_member is None:
+        k3_member = HorikawaK3Family().member()
+    assert k3_member.is_k3(), (
+        "the quotient source has not satisfied the K3 double-cover hypotheses"
+    )
+    assert int(k3_member.base_ring().characteristic()) != 2, (
+        "the fixed-free involution quotient requires characteristic not two"
+    )
+    assert k3_member.enriques_lift_is_fixed_point_free(), (
+        "the selected K3 involution is not fixed-point-free"
+    )
+    group = k3_member.family().acting_group()
+    quotient_data = k3_member.c2_chartwise_invariant_quotient(
+        group,
+        k3_member.enriques_lift().local_automorphisms(),
+        _engine=_HorikawaEnriquesSurfaceEngine,
+        construction_data={
+            "k3_member": k3_member,
+            "acting_group": group,
+        },
+    )
+    assert quotient_data.source_scheme() is k3_member, (
+        "the Enriques quotient did not retain the actual K3 source"
+    )
+    assert quotient_data.action_is_free(), (
+        "the descended K3 action is not free on its affine cover"
+    )
+    return quotient_data.quotient_scheme()
 
 
 

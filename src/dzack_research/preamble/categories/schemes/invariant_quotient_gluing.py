@@ -66,7 +66,18 @@ class FiniteGluedInvariantQuotient(SageObject):
     the same charts and transitions is used as the source.
     """
 
-    def __init__(self, base_ring, acting_group, acted_charts, source_transitions, quotient_transitions, source_scheme=None) -> None:
+    def __init__(
+        self,
+        base_ring,
+        acting_group,
+        acted_charts,
+        source_transitions,
+        quotient_transitions,
+        source_scheme=None,
+        *,
+        quotient_scheme_engine=None,
+        quotient_scheme_data=None,
+    ) -> None:
         assert acting_group in FiniteGroups(), (
             "glued invariant quotients are represented here for a finite acting group"
         )
@@ -94,6 +105,8 @@ class FiniteGluedInvariantQuotient(SageObject):
         )
         self._source_transitions = source_transitions
         self._quotient_transitions = quotient_transitions
+        self._quotient_scheme_engine = quotient_scheme_engine
+        self._quotient_scheme_data = dict(quotient_scheme_data or {})
         match source_scheme:
             case None:
                 self._source_scheme = Schemes(base_ring).glue_affine_atlas(self.source_charts(), source_transitions)
@@ -199,7 +212,14 @@ class FiniteGluedInvariantQuotient(SageObject):
     @cached_method
     def quotient_scheme(self):
         r"""``X/G``, glued from the ``U_i/G`` along the descended transitions."""
-        return Schemes(self.base_ring()).glue_affine_atlas(self.local_quotients(), self.quotient_transitions())
+        data = dict(self._quotient_scheme_data)
+        data.setdefault("quotient_data", self)
+        return Schemes(self.base_ring()).glue_affine_atlas(
+            self.local_quotients(),
+            self.quotient_transitions(),
+            _object_engine=self._quotient_scheme_engine,
+            **data,
+        )
 
     quotient = quotient_scheme
 
@@ -464,7 +484,14 @@ def _c2_quotient_overlap_transition(
     )
 
 
-def _c2_chartwise_glued_invariant_quotient(source_scheme, acting_group, local_actions):
+def _c2_chartwise_glued_invariant_quotient(
+    source_scheme,
+    acting_group,
+    local_actions,
+    *,
+    quotient_scheme_engine=None,
+    quotient_scheme_data=None,
+):
     r"""Quotient a glued scheme by a chart-preserving C2 action.
 
     Every source overlap is a stable distinguished open.  Its defining element
@@ -526,6 +553,8 @@ def _c2_chartwise_glued_invariant_quotient(source_scheme, acting_group, local_ac
         source_transitions,
         quotient_transitions,
         source_scheme=source_scheme,
+        quotient_scheme_engine=quotient_scheme_engine,
+        quotient_scheme_data=quotient_scheme_data,
     )
 
 

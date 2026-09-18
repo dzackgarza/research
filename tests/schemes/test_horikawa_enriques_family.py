@@ -1,6 +1,6 @@
 r"""The Enriques surface is the actual fixed-free quotient of the Horikawa K3 member."""
 
-from dzack_research.preamble.all import QQ, QuadraticField
+from dzack_research.preamble.all import QQ, QuadraticField, Schemes
 from dzack_research.preamble.catalogue import NamedLattices
 from dzack_research.preamble.categories.schemes.enriques_families import (
     HorikawaEnriquesSurface,
@@ -11,6 +11,8 @@ def test_fixed_free_horikawa_lift_constructs_the_enriques_quotient() -> None:
     surface = HorikawaEnriquesSurface()
     quotient = surface.quotient_morphism()
 
+    assert surface.scheme() is surface
+    assert surface in Schemes(QQ)
     assert quotient.domain() is surface.k3_member().scheme()
     assert quotient.codomain() is surface.scheme()
     assert surface.k3_member().enriques_lift_is_fixed_point_free()

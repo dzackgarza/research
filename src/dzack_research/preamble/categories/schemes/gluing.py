@@ -633,13 +633,27 @@ class _GluedScheme(SageObject):
     def chartwise_fixed_subscheme(self, local_automorphisms):
         return _chartwise_fixed_subscheme(self.gluing_datum(), local_automorphisms)
 
-    def c2_chartwise_invariant_quotient(self, scheme, acting_group, local_actions):
+    def c2_chartwise_invariant_quotient(
+        self,
+        scheme,
+        acting_group,
+        local_actions,
+        *,
+        _engine=None,
+        construction_data=None,
+    ):
         r"""The glued scheme ``scheme`` modulo a chart-preserving ``C2`` action."""
         from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import (
             _c2_chartwise_glued_invariant_quotient,
         )
 
-        return _c2_chartwise_glued_invariant_quotient(scheme, acting_group, local_actions)
+        return _c2_chartwise_glued_invariant_quotient(
+            scheme,
+            acting_group,
+            local_actions,
+            quotient_scheme_engine=_engine,
+            quotient_scheme_data=construction_data,
+        )
 
     def _repr_(self):
         return f"Gluing realization over the affine atlas indexed by {self.gluing_datum().chart_index_set()}"
