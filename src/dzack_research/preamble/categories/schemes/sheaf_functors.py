@@ -15,55 +15,39 @@ in ``categories.schemes.gluing`` before scalar extension to module pullback.
 
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheaves,
 )
 
 
-class _AffineQuasiCoherentFunctor(SageObject):
+class _AffineQuasiCoherentFunctor(Functor):
     r"""Common raising layer for one affine quasi-coherent sheaf functor."""
 
     def __init__(self, scheme_morphism, underlying_functor, domain_scheme, codomain_scheme) -> None:
         self._scheme_morphism = scheme_morphism
         self._underlying_functor = underlying_functor
-        self._domain_category = QuasiCoherentSheaves(domain_scheme)
-        self._codomain_category = QuasiCoherentSheaves(codomain_scheme)
-        self._object_images = []
+        super().__init__(
+            QuasiCoherentSheaves(domain_scheme),
+            QuasiCoherentSheaves(codomain_scheme),
+        )
 
     def scheme_morphism(self):
         return self._scheme_morphism
 
-    def domain(self):
-        return self._domain_category
-
-    def codomain(self):
-        return self._codomain_category
-
     def underlying_module_functor(self):
         return self._underlying_functor
 
-    def _cached_object_image(self, sheaf):
-        for source, target in self._object_images:
-            if source is sheaf:
-                return target
-        return None
-
-    def on_object(self, sheaf):
-        if sheaf not in self.domain():
-            raise TypeError("the affine quasi-coherent functor requires a quasi-coherent sheaf on its source")
-        cached = self._cached_object_image(sheaf)
-        if cached is not None:
-            return cached
+    def _apply_object(self, sheaf):
         source_module = self.domain().global_sections(sheaf)
         target_module = self.underlying_module_functor()(source_module)
-        target = self.codomain().associated_sheaf(target_module)
-        self._object_images.append((sheaf, target))
-        return target
+        return self.codomain().associated_sheaf(target_module)
 
-    def on_morphism(self, morphism):
+    def _apply_morphism(self, morphism):
         r"""Apply the underlying module functor to an affine sheaf morphism."""
         return self.underlying_module_functor()(morphism)
+
 
 class AffineQuasiCoherentPullbackFunctor(_AffineQuasiCoherentFunctor):
     r"""``f^* : QCoh(Y) -> QCoh(X)`` for an affine ``f:X->Y``."""

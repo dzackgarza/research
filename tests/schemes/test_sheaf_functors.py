@@ -205,6 +205,11 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     pullback = morphism.module_pullback_functor()
     direct = morphism.direct_image_functor()
 
+    assert pullback.functor_category().domain_category() is pullback.domain()
+    assert pullback.functor_category().codomain_category() is pullback.codomain()
+    assert direct.functor_category().domain_category() is direct.domain()
+    assert direct.functor_category().codomain_category() is direct.codomain()
+
     target_module = plane.coordinate_algebra().free_module(1)
     target_sheaf = plane.associated_module_sheaf(target_module)
     target_label = target_module.module_generating_set()[0]
@@ -219,6 +224,7 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     target_identity = target_module.module_category().Mor(target_module, target_module).identity()
 
     pulled = pullback.on_object(target_sheaf)
+    assert pullback(target_sheaf) is pulled
     assert morphism.module_pullback(target_sheaf) is pulled
     pulled_two = pullback.on_morphism(times_two)
     pulled_identity = pullback.on_morphism(target_identity)
