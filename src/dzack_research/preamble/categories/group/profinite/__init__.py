@@ -1,106 +1,81 @@
-'Lazy public aggregation for profinite.'
+'Owned profinite and Galois vocabulary.'
 
-from importlib import import_module as _import_module
+from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+    AbsoluteGaloisGroup,
+    AbsoluteGaloisGroupElement,
+    AbsoluteGaloisSliceAutomorphism,
+    ElementConjugacyClass,
+    FrobeniusElement,
+    OpenAbsoluteGaloisSubgroup,
+    OpenGaloisSubgroupConjugacyClass,
+    OpenSubgroupInclusion,
+)
 
-_EXPORTS = {'AbsoluteGaloisGroup': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                         'AbsoluteGaloisGroup'),
- 'AbsoluteGaloisGroupElement': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                                'AbsoluteGaloisGroupElement'),
- 'AbsoluteGaloisSliceAutomorphism': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                                     'AbsoluteGaloisSliceAutomorphism'),
- 'ElementConjugacyClass': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                           'ElementConjugacyClass'),
- 'FrobeniusElement': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                      'FrobeniusElement'),
- 'OpenAbsoluteGaloisSubgroup': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                                'OpenAbsoluteGaloisSubgroup'),
- 'OpenGaloisSubgroupConjugacyClass': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                                      'OpenGaloisSubgroupConjugacyClass'),
- 'OpenSubgroupInclusion': ('dzack_research.preamble.categories.group.profinite.absolute_galois_group',
-                           'OpenSubgroupInclusion'),
- 'AbsoluteGaloisGroups': ('dzack_research.preamble.categories.group.profinite.absolute_galois_groups',
-                          'AbsoluteGaloisGroups'),
- 'AbsoluteGaloisGroupsOfFiniteFields': ('dzack_research.preamble.categories.group.profinite.absolute_galois_groups',
-                                        'AbsoluteGaloisGroupsOfFiniteFields'),
- 'OpenAbsoluteGaloisSubgroups': ('dzack_research.preamble.categories.group.profinite.absolute_galois_groups',
-                                 'OpenAbsoluteGaloisSubgroups'),
- 'ExactFieldMorphism': ('dzack_research.preamble.categories.group.profinite.field_morphisms',
-                        'ExactFieldMorphism'),
- 'CyclotomicCharacter': ('dzack_research.preamble.categories.group.profinite.galois_characters',
-                         'CyclotomicCharacter'),
- 'ProfiniteCharacter': ('dzack_research.preamble.categories.group.profinite.galois_characters',
-                        'ProfiniteCharacter'),
- 'QuadraticCharacter': ('dzack_research.preamble.categories.group.profinite.galois_characters',
-                        'QuadraticCharacter'),
- 'RestrictedProfiniteCharacter': ('dzack_research.preamble.categories.group.profinite.galois_characters',
-                                  'RestrictedProfiniteCharacter'),
- 'AbsoluteDecompositionGroup': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                                'AbsoluteDecompositionGroup'),
- 'AbsoluteInertiaGroup': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                          'AbsoluteInertiaGroup'),
- 'DecompositionGroupConjugacyClass': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                                      'DecompositionGroupConjugacyClass'),
- 'FiniteElementConjugacyClass': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                                 'FiniteElementConjugacyClass'),
- 'FiniteGaloisSubgroup': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                          'FiniteGaloisSubgroup'),
- 'FrobeniusConjugacyClass': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                             'FrobeniusConjugacyClass'),
- 'InertiaGroupConjugacyClass': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                                'InertiaGroupConjugacyClass'),
- 'PrimeProlongation': ('dzack_research.preamble.categories.group.profinite.galois_decomposition',
-                       'PrimeProlongation'),
- 'FiniteGaloisAutomorphism': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
-                              'FiniteGaloisAutomorphism'),
- 'FiniteGaloisExtension': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
-                           'FiniteGaloisExtension'),
- 'FiniteGaloisQuotient': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
-                          'FiniteGaloisQuotient'),
- 'GaloisRestrictionMap': ('dzack_research.preamble.categories.group.profinite.galois_quotient',
-                          'GaloisRestrictionMap'),
- 'LiftCoset': ('dzack_research.preamble.categories.group.profinite.galois_quotient', 'LiftCoset'),
- 'ProfiniteGroups': ('dzack_research.preamble.categories.group.profinite.profinite_groups',
-                     'ProfiniteGroups')}
+from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
+    AbsoluteGaloisGroups,
+    AbsoluteGaloisGroupsOfFiniteFields,
+    OpenAbsoluteGaloisSubgroups,
+)
 
-__all__ = ['AbsoluteDecompositionGroup',
- 'AbsoluteGaloisGroup',
- 'AbsoluteGaloisGroupElement',
- 'AbsoluteGaloisGroups',
- 'AbsoluteGaloisGroupsOfFiniteFields',
- 'AbsoluteGaloisSliceAutomorphism',
- 'AbsoluteInertiaGroup',
- 'CyclotomicCharacter',
- 'DecompositionGroupConjugacyClass',
- 'ElementConjugacyClass',
- 'ExactFieldMorphism',
- 'FiniteElementConjugacyClass',
- 'FiniteGaloisAutomorphism',
- 'FiniteGaloisExtension',
- 'FiniteGaloisQuotient',
- 'FiniteGaloisSubgroup',
- 'FrobeniusConjugacyClass',
- 'FrobeniusElement',
- 'GaloisRestrictionMap',
- 'InertiaGroupConjugacyClass',
- 'LiftCoset',
- 'OpenAbsoluteGaloisSubgroup',
- 'OpenAbsoluteGaloisSubgroups',
- 'OpenGaloisSubgroupConjugacyClass',
- 'OpenSubgroupInclusion',
- 'PrimeProlongation',
- 'ProfiniteCharacter',
- 'ProfiniteGroups',
- 'QuadraticCharacter',
- 'RestrictedProfiniteCharacter',
+from dzack_research.preamble.categories.group.profinite.field_morphisms import ExactFieldMorphism
+
+from dzack_research.preamble.categories.group.profinite.galois_characters import (
+    CyclotomicCharacter,
+    ProfiniteCharacter,
+    QuadraticCharacter,
+    RestrictedProfiniteCharacter,
+)
+
+from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
+    AbsoluteDecompositionGroup,
+    AbsoluteInertiaGroup,
+    DecompositionGroupConjugacyClass,
+    FiniteElementConjugacyClass,
+    FiniteGaloisSubgroup,
+    FrobeniusConjugacyClass,
+    InertiaGroupConjugacyClass,
+    PrimeProlongation,
+)
+
+from dzack_research.preamble.categories.group.profinite.galois_quotient import (
+    FiniteGaloisAutomorphism,
+    FiniteGaloisExtension,
+    FiniteGaloisQuotient,
+    GaloisRestrictionMap,
+    LiftCoset,
+)
+
+from dzack_research.preamble.categories.group.profinite.profinite_groups import ProfiniteGroups
+
+__all__ = [
+    'AbsoluteDecompositionGroup',
+    'AbsoluteGaloisGroup',
+    'AbsoluteGaloisGroupElement',
+    'AbsoluteGaloisGroups',
+    'AbsoluteGaloisGroupsOfFiniteFields',
+    'AbsoluteGaloisSliceAutomorphism',
+    'AbsoluteInertiaGroup',
+    'CyclotomicCharacter',
+    'DecompositionGroupConjugacyClass',
+    'ElementConjugacyClass',
+    'ExactFieldMorphism',
+    'FiniteElementConjugacyClass',
+    'FiniteGaloisAutomorphism',
+    'FiniteGaloisExtension',
+    'FiniteGaloisQuotient',
+    'FiniteGaloisSubgroup',
+    'FrobeniusConjugacyClass',
+    'FrobeniusElement',
+    'GaloisRestrictionMap',
+    'InertiaGroupConjugacyClass',
+    'LiftCoset',
+    'OpenAbsoluteGaloisSubgroup',
+    'OpenAbsoluteGaloisSubgroups',
+    'OpenGaloisSubgroupConjugacyClass',
+    'OpenSubgroupInclusion',
+    'PrimeProlongation',
+    'ProfiniteCharacter',
+    'ProfiniteGroups',
+    'QuadraticCharacter',
+    'RestrictedProfiniteCharacter',
 ]
-
-def __getattr__(name):
-    if name not in _EXPORTS:
-        raise AttributeError(name)
-    module_name, attribute = _EXPORTS[name]
-    value = getattr(_import_module(module_name), attribute)
-    globals()[name] = value
-    return value
-
-def __dir__():
-    return sorted((*globals(), *__all__))
