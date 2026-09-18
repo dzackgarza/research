@@ -650,6 +650,28 @@ class SliceCategory(_SubcategoryOfArrows):
     def base_object(self) -> Parent:
         return self._base_object
 
+    def object(
+        self,
+        arrow: Morphism,
+        *,
+        _engine=None,
+        construction_data=None,
+    ) -> Parent:
+        r"""Construct an object of ``C/X``, optionally with a private realization."""
+        if not self.admits_arrow(arrow):
+            raise TypeError("the supplied morphism is not an object of this slice")
+        functor = _walking_arrow_functor(self.base_category(), arrow)
+        if _engine is None and construction_data is None:
+            return self._object_on(functor)
+        return _object_of(
+            self,
+            _engine=None if _engine is None else (self, _engine, None),
+            functor=functor,
+            **dict(construction_data or {}),
+        )
+
+    __call__ = object
+
     def super_categories(self):
         from dzack_research.preamble.categories.abstract_categories.products import (
             FiniteOrdinalCategory,

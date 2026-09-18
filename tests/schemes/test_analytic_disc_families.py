@@ -19,6 +19,8 @@ def test_selected_disc_family_is_an_actual_holomorphic_family_over_an_open_disc(
     assert base.disc_radius() == 1.0
     assert arrow.domain() is total
     assert arrow.codomain() is base
+    assert family in ComplexManifolds().SliceOver(base)
+    assert family.analytic_family_object() is family
     assert arrow.coordinate_expressions() == (
         total.atlas()["standard"].coordinate(1),
     )
