@@ -1,9 +1,14 @@
 r"""Owned categories for absolute Galois groups."""
 
+from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.group.groups import OwnedAbelianGroups
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
+from dzack_research.preamble.categories.group.groups import OwnedAbelianGroups, Subgroups
 from dzack_research.preamble.categories.group.profinite.profinite_groups import (
     ProfiniteGroups,
 )
@@ -109,25 +114,57 @@ class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
             return self.topological_group_generators()
 
 
-class OpenAbsoluteGaloisSubgroups(OwnedCategory):
+class OpenAbsoluteGaloisSubgroups(OwnedParameterizedCategory):
     r"""Open subgroups (G_E\subseteq G_K) carrying the embedding (E\to\bar K)."""
 
+    @staticmethod
+    def __classcall__(cls, supergroup):
+        if supergroup not in AbsoluteGaloisGroups():
+            raise TypeError(
+                "an open absolute-Galois subgroup requires an ambient absolute Galois group"
+            )
+        return OwnedParameterizedCategory.__classcall__(cls, supergroup)
+
+    def parameter_category(self):
+        return AbsoluteGaloisGroups()
+
+    def supergroup(self):
+        return self.base()
+
     def an_object(self):
-        r"""The index-two open subgroup of ``G_GF(2)``."""
-        group = _finite_field_absolute_galois_group()
-        return group.open_subgroup(group.finite_extension(2))
+        r"""The whole ambient group, viewed as its index-one open subgroup."""
+        group = self.supergroup()
+        return self(group.extension_data(group.base_field()))
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "open subgroups of absolute Galois groups"
 
     def super_categories(self):
-        return [AbsoluteGaloisGroups()]
+        return [AbsoluteGaloisGroups(), Subgroups(self.supergroup())]
+
+    def _call_(self, extension):
+        from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+            _OpenAbsoluteGaloisSubgroupEngine,
+            _realized_absolute_galois_group,
+        )
+
+        group = self.supergroup()
+        extension = group.extension_data(extension)
+        category = Cat().meet(
+            (self, _absolute_galois_group_category(extension.field()))
+        )
+        return _realized_absolute_galois_group(
+            extension.field(),
+            closure=group.algebraic_closure(),
+            embedding=extension.embedding(),
+            category=category,
+            engine=_OpenAbsoluteGaloisSubgroupEngine,
+            supergroup=group,
+            fixed_extension=extension,
+        )
 
     class ParentMethods:
-        def supergroup(self):
-            return self._supergroup
-
         def ambient(self):
             r"""Return the ambient absolute Galois group ``G_K``."""
             return self.supergroup()
@@ -144,8 +181,13 @@ class OpenAbsoluteGaloisSubgroups(OwnedCategory):
         def index(self):
             return self._fixed_extension.degree()
 
+        @cached_method
         def inclusion(self):
-            return self._inclusion
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+                OpenSubgroupInclusion,
+            )
+
+            return OpenSubgroupInclusion(self)
 
 
 def _absolute_galois_group_category(field):

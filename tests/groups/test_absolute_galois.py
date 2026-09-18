@@ -5,7 +5,7 @@ from sage.categories.homset import Homset
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
 from dzack_research.preamble.all import GF, QQ, QuadraticField
-from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.group.groups import OwnedGroups, Subgroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
     OpenAbsoluteGaloisSubgroup,
@@ -93,13 +93,12 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     field_endomorphisms = group.arrow_set()
     assert field_endomorphisms is group.field_automorphism_hom()
     assert not isinstance(group, Homset)
-    assert field_endomorphisms in group.super_categories()
     assert frobenius.as_morphism().parent() is field_endomorphisms
     assert frobenius.as_morphism() is frobenius.as_morphism()
     assert "_preamble_underlying_field_morphism" not in frobenius.__dict__
     assert "_preamble_absolute_galois_element" not in frobenius.as_morphism().__dict__
     assert frobenius in group
-    assert frobenius.as_morphism() in group
+    assert group(frobenius.as_morphism()) == frobenius
 
 
 def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_maps() -> (
@@ -328,7 +327,8 @@ def test_open_subgroups_are_actual_subgroups_and_classes_forget_the_embedding() 
     index_three = group.open_subgroup(group.finite_extension(3))
     intersection = index_two.intersection(index_three)
 
-    assert index_two in OpenAbsoluteGaloisSubgroups()
+    assert index_two in OpenAbsoluteGaloisSubgroups(group)
+    assert index_two in Subgroups(group)
     assert index_two.supergroup() is group
     assert index_two.supergroup() is group
     assert index_two.index() == 2
