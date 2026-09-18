@@ -27,6 +27,9 @@ def test_projective_O_one_is_descent_on_the_actual_projective_space() -> None:
     )
 
     assert isinstance(bundle, FiniteAtlasInvertibleSheaf)
+    assert bundle in QuasiCoherentSheaves(line).Invertible()
+    assert bundle in QuasiCoherentSheaves(line).Invertible().WithChosenTrivialization()
+    assert bundle.trivializing_cover() is atlas
     assert bundle.scheme() is line
     assert atlas.scheme() is line
     assert atlas.chart_embedding(0).codomain() is line
@@ -138,6 +141,10 @@ def test_projective_closed_subscheme_restriction_is_the_closed_immersion_pullbac
 
     assert restricted is inclusion.module_pullback(bundle)
     assert restricted in QuasiCoherentSheaves(conic)
+    assert restricted in QuasiCoherentSheaves(conic).Invertible()
+    assert restricted not in (
+        QuasiCoherentSheaves(conic).Invertible().WithChosenTrivialization()
+    )
     assert restricted.pullback_morphism() is inclusion
     assert restricted.ambient_line_bundle() is bundle
     assert restricted.degree() == 2

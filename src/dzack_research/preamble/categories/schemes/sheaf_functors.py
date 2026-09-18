@@ -144,14 +144,14 @@ def _projective_closed_immersion_module_pullback(scheme_morphism, sheaf):
     """
     from dzack_research.preamble.categories.divisors.invertible_sheaves import (
         ProjectiveSpaceLineBundle,
-        ProjectiveSubschemeLineBundle,
+        _projective_subscheme_line_bundle,
     )
 
     match sheaf:
         case ProjectiveSpaceLineBundle() if (
             sheaf.projective_space() is scheme_morphism.codomain()
         ):
-            return ProjectiveSubschemeLineBundle(
+            return _projective_subscheme_line_bundle(
                 scheme_morphism.domain(),
                 sheaf,
                 pullback_morphism=scheme_morphism,

@@ -1403,7 +1403,7 @@ class FiniteAtlasRefinement(SageObject):
         local module isomorphisms from the chartwise scalar pullbacks.
         """
         from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-            FiniteAtlasInvertibleSheaf,
+            _finite_atlas_invertible_sheaf,
         )
 
         if line_bundle.gluing_datum() is not self.coarse_datum():
@@ -1425,7 +1425,7 @@ class FiniteAtlasRefinement(SageObject):
                 units[source_index, target_index] = ring_map(
                     line_bundle.transition_unit(coarse_source, coarse_target)
                 )
-        refined = FiniteAtlasInvertibleSheaf(fine, units)
+        refined = _finite_atlas_invertible_sheaf(fine, units)
         return FiniteAtlasInvertibleSheafRefinement(self, line_bundle, refined)
 
     def compare_line_bundle_pullback(self, line_bundle):
@@ -3368,18 +3368,47 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                 equalizer_for=presheaf.selected_equalizer_construction,
             )
 
-        @cached_method
-        def sheaf(self):
-            r"""Return the glued sheaf, an object of ``Sh(Čech site, Modules(O(X)))``."""
+        def _construct_sheaf(
+            self,
+            *,
+            categories=(),
+            construction_data=None,
+            _engine=_ModuleGluingSheafEngine,
+        ):
+            r"""Construct this descent datum's sheaf with optional stronger placement."""
             sheaves = self.cover().cech_coverage().sheaves(
                 Modules(self.scheme().coordinate_algebra())
             )
+            data = dict(construction_data or {})
+            if "module_gluing_datum" in data:
+                raise ValueError("module_gluing_datum is fixed by this descent datum")
+            data["module_gluing_datum"] = self
             return sheaves.object(
                 self.descent_presheaf(),
                 self.descent_data(),
-                categories=(QuasiCoherentSheaves(self.scheme()),),
-                construction_data={"module_gluing_datum": self},
-                _engine=_ModuleGluingSheafEngine,
+                categories=(QuasiCoherentSheaves(self.scheme()), *tuple(categories)),
+                construction_data=data,
+                _engine=_engine,
+            )
+
+        @cached_method
+        def _canonical_sheaf(self):
+            return self._construct_sheaf()
+
+        def sheaf(self, *, categories=(), construction_data=None, _engine=None):
+            r"""Return the glued sheaf, optionally placed in stronger sheaf categories.
+
+            With no additional placement this is the canonical cached sheaf
+            represented by the datum.  A specialization may add semantic
+            categories and a private engine, but construction still passes
+            through the same ``Sheaves.object`` entry.
+            """
+            if not categories and construction_data is None and _engine is None:
+                return self._canonical_sheaf()
+            return self._construct_sheaf(
+                categories=categories,
+                construction_data=construction_data,
+                _engine=_ModuleGluingSheafEngine if _engine is None else _engine,
             )
 
         def Mor(self, target):

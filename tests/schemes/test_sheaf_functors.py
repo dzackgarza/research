@@ -1,10 +1,10 @@
 from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    FiniteAtlasInvertibleSheaf,
-)
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasRefinement,
+)
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    QuasiCoherentSheaves,
 )
 
 
@@ -174,7 +174,10 @@ def test_generic_module_pullback_agrees_with_transition_unit_line_bundle_pullbac
     ratio = source_overlap.inclusion().coordinate_algebra_morphism()(
         coarse.chart(0).coordinate_algebra().algebra_generator("x1_over_x0")
     )
-    bundle = FiniteAtlasInvertibleSheaf(coarse, {(0, 1): ratio})
+    bundle = QuasiCoherentSheaves(coarse.scheme()).Invertible().WithChosenTrivialization()(
+        coarse,
+        {(0, 1): ratio},
+    )
     comparison = refinement.compare_line_bundle_pullback(bundle)
     generic = comparison.generic_pullback().gluing_datum()
     specialized = comparison.specialized_module_sheaf().gluing_datum()

@@ -25,10 +25,11 @@ def _transition(source: Any, target: Any, unit: Any) -> Any:
 def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     from sage.rings.rational_field import QQ as SageQQ
 
-    from dzack_research.preamble.all import (
-        InvertibleSheaf,
-        )
+    from dzack_research.preamble.all import InvertibleSheaf
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        QuasiCoherentSheaves,
+    )
 
     QQ = _own_ring(SageQQ)
 
@@ -51,8 +52,14 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
         {(0, 1): _transition(left_overlap, right_overlap, overlap_x)},
     )
     datum = sheaf.gluing_datum()
-    line = InvertibleSheaf(datum)
+    invertible = QuasiCoherentSheaves(scheme).Invertible()
+    trivialized = invertible.WithChosenTrivialization()
+    line = trivialized(datum)
 
+    assert line in invertible
+    assert line in trivialized
+    assert line.trivializing_cover() is cover
+    assert line.is_invertible()
     assert line.scheme() is scheme
     assert line.cover() is cover
     assert line.transition_unit(0, 1) == overlap_x
@@ -70,13 +77,32 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     assert trivial.transition_unit(0, 1) == overlap_x.parent().one()
 
 
+def test_rank_two_quasi_coherent_sheaf_is_not_placed_as_invertible() -> None:
+    from sage.rings.rational_field import QQ as SageQQ
+
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        QuasiCoherentSheaves,
+    )
+
+    QQ = _own_ring(SageQQ)
+    algebra = QQ.polynomial_ring("x")
+    scheme = algebra.affine_spectrum()
+    sheaves = QuasiCoherentSheaves(scheme)
+    rank_two = sheaves.associated_sheaf(algebra.free_module(2))
+
+    assert scheme.structure_sheaf() in sheaves.Invertible()
+    assert rank_two in sheaves
+    assert rank_two not in sheaves.Invertible()
+
+
 def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
     from sage.rings.rational_field import QQ as SageQQ
 
-    from dzack_research.preamble.all import (
-        InvertibleSheaf,
-        )
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        QuasiCoherentSheaves,
+    )
 
     QQ = _own_ring(SageQQ)
 
@@ -94,7 +120,7 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
         scheme,
         cover.overlap(0, 1),
     )(x)
-    line = InvertibleSheaf(
+    line = QuasiCoherentSheaves(scheme).Invertible().WithChosenTrivialization()(
         cover.glue_modules(
             local_modules,
             {(0, 1): _transition(left_overlap, right_overlap, overlap_x)},
@@ -135,10 +161,10 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
     from pytest import raises
     from sage.rings.rational_field import QQ as SageQQ
 
-    from dzack_research.preamble.all import (
-        InvertibleSheaf,
-        )
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        QuasiCoherentSheaves,
+    )
 
     QQ = _own_ring(SageQQ)
 
@@ -173,4 +199,4 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
         },
     ).gluing_datum()
     with raises(TypeError, match="rank-one finite free"):
-        InvertibleSheaf(datum)
+        QuasiCoherentSheaves(scheme).Invertible().WithChosenTrivialization()(datum)

@@ -3,6 +3,7 @@
 from itertools import combinations
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.dynamic_class import DynamicMetaclass
@@ -27,6 +28,11 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+
+
+if "Invertible" not in all_axioms:
+    all_axioms.add("Invertible")
 
 
 class SchemeUnderlyingSpace(SageObject):
@@ -292,6 +298,7 @@ def _structure_sheaf(ringed_space):
         categories=(
             AlgebraSheaves(ringed_space),
             QuasiCoherentSheaves(ringed_space),
+            QuasiCoherentSheaves(ringed_space).Invertible(),
         ),
         construction_data={"ringed_space": ringed_space},
         _engine=_StructureSheafEngine,
@@ -980,6 +987,46 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
     def an_object(self):
         return self.scheme().structure_sheaf()
 
+    def object(self, *, categories=(), construction_data=None, _engine):
+        r"""Construct one represented quasi-coherent sheaf through this owner.
+
+        ``_engine`` is the private realization of the sheaf in the represented
+        regime selected by the caller.  Stronger semantic placement is joined
+        here so specializations do not initialize a second ``Parent`` shell.
+        """
+        category = (
+            self
+            if not categories
+            else Category.join((self, *tuple(categories)))
+        )
+        return _object_of(
+            category,
+            _engine=(self, _engine, None),
+            **dict(construction_data or {}),
+        )
+
+    class SubcategoryMethods:
+        def Invertible(self):
+            r"""Return the full subcategory of invertible ``O_X``-modules."""
+            return self._with_axiom("Invertible")
+
+    class Invertible(CategoryWithAxiom):
+        r"""Invertible quasi-coherent sheaves on ``X``.
+
+        Schemes are locally ringed spaces, so an invertible ``O_X``-module is
+        equivalently a locally free ``O_X``-module of rank one (Stacks,
+        Tag 0B8M).  A particular trivializing cover is additional data and is
+        recorded separately by the line-bundle descent category.
+        """
+
+        class ParentMethods:
+            def is_invertible(self) -> bool:
+                return True
+
+        def WithChosenTrivialization(self):
+            r"""Return invertible sheaves carrying one selected trivializing cover."""
+            return InvertibleSheavesWithChosenTrivialization(self.base_category().scheme())
+
     def module_category(self):
         r"""``Modules(A)``: the category this one is equivalent to, for affine ``X``."""
         from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -998,11 +1045,9 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         assert module in self.module_category(), (
             "the associated sheaf is taken of a module over the coordinate algebra"
         )
-        return _object_of(
-            self,
-            _engine=(self, _AffineModuleSheafEngine, None),
-            scheme=self.scheme(),
-            module=module,
+        return self.object(
+            construction_data={"scheme": self.scheme(), "module": module},
+            _engine=_AffineModuleSheafEngine,
         )
 
     def global_sections(self, sheaf):
@@ -1034,6 +1079,81 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
             "presentation of the module it comes from"
         )
         return module.presentation()
+
+
+class InvertibleSheavesWithChosenTrivialization(OwnedParameterizedCategory):
+    r"""Invertible sheaves on ``X`` with one selected trivializing affine cover.
+
+    The choice of cover is structure on an invertible sheaf, not part of the
+    invertibility property.  Forgetting that choice lands in
+    ``QuasiCoherentSheaves(X).Invertible()``.
+    """
+
+    def scheme(self):
+        return self.base()
+
+    def super_categories(self):
+        return [QuasiCoherentSheaves(self.scheme()).Invertible()]
+
+    def _repr_object_names(self):
+        return f"invertible sheaves on {self.scheme()} with a chosen trivialization"
+
+    def _realize(self, engine, **construction_data):
+        r"""Realize one represented trivialization through the quasi-coherent sheaf owner."""
+        return QuasiCoherentSheaves(self.scheme()).object(
+            categories=(self,),
+            construction_data=construction_data,
+            _engine=engine,
+        )
+
+    def _call_(
+        self,
+        gluing_datum,
+        transition_units=None,
+        *,
+        section_space=None,
+        associated_divisor=None,
+    ):
+        r"""Construct an invertible sheaf from rank-one affine descent data.
+
+        A distinguished-cover module descent datum already contains its
+        transition isomorphisms.  A finite affine atlas supplies the equivalent
+        rank-one datum by its transition units.
+        """
+        assert gluing_datum.scheme() is self.scheme(), (
+            "a chosen trivialization belongs to an invertible sheaf on this scheme"
+        )
+        match transition_units:
+            case None:
+                assert section_space is None and associated_divisor is None, (
+                    "section-space and divisor data belong to finite-atlas trivializations"
+                )
+                from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                    InvertibleSheaf,
+                )
+
+                return gluing_datum.sheaf(
+                    categories=(self,),
+                    construction_data={"gluing_datum": gluing_datum},
+                    _engine=InvertibleSheaf,
+                )
+            case _:
+                from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                    FiniteAtlasInvertibleSheaf,
+                )
+
+                return self._realize(
+                    FiniteAtlasInvertibleSheaf,
+                    gluing_datum=gluing_datum,
+                    transition_units=transition_units,
+                    section_space=section_space,
+                    associated_divisor=associated_divisor,
+                )
+
+    class ParentMethods:
+        def trivializing_cover(self):
+            r"""Return the selected affine cover on which this line bundle is trivialized."""
+            return self.cover()
 
 
 class RingedSpaces(CategoryPacketMethods, OwnedCategory):

@@ -10,8 +10,10 @@ def _generator(module: Any) -> Any:
 def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
     from sage.rings.rational_field import QQ as SageQQ
 
-    from dzack_research.preamble.all import InvertibleSheaf
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        QuasiCoherentSheaves,
+    )
 
     QQ = _own_ring(SageQQ)
     algebra = QQ.polynomial_ring("x")
@@ -47,7 +49,7 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
         forward,
         inverse,
     )
-    line = InvertibleSheaf(
+    line = QuasiCoherentSheaves(scheme).Invertible().WithChosenTrivialization()(
         cover.glue_modules(local_modules, {(0, 1): transition}).gluing_datum()
     )
     return line, x, overlap_x

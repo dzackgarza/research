@@ -1404,7 +1404,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             cocycle additively.
             """
             from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                FiniteAtlasInvertibleSheaf,
+                _finite_atlas_invertible_sheaf,
             )
 
             divisor = self.weil_divisor_group()(divisor)
@@ -1430,7 +1430,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 if self.fan().is_complete()
                 else None
             )
-            return FiniteAtlasInvertibleSheaf(
+            return _finite_atlas_invertible_sheaf(
                 datum,
                 units,
                 section_space=section_space,

@@ -3772,10 +3772,10 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
         def O(self, *degrees):
             r"""Return ``O(d_1, ..., d_r)`` on this product of projective spaces."""
             from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                ProductProjectiveLineBundle,
+                _product_projective_o,
             )
 
-            return ProductProjectiveLineBundle(self, _family_ingress(degrees))
+            return _product_projective_o(self, _family_ingress(degrees))
 
         @cached_method
         def canonical_line_bundle(self):

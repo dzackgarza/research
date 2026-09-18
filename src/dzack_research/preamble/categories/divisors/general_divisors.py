@@ -17,7 +17,9 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-from dzack_research.preamble.categories.divisors.invertible_sheaves import FiniteAtlasInvertibleSheaf
+from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+    _finite_atlas_invertible_sheaf,
+)
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
 from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -186,7 +188,7 @@ class FiniteAtlasCartierDivisor(SageObject):
 
     def associated_invertible_sheaf(self):
         r"""\(\mathcal{O}_X(D)\), trivialized on the atlas by the local equations."""
-        return FiniteAtlasInvertibleSheaf(
+        return _finite_atlas_invertible_sheaf(
             self.gluing_datum(),
             self._transition_units,
             associated_divisor=self,

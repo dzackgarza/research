@@ -2,7 +2,6 @@ r"""Invertible sheaves represented by rank-one affine module descent data."""
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -13,8 +12,10 @@ from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAffineAtlasPresentation,
     ModuleGluingData,
     _FiniteSchemeGluingDatum,
+    _ModuleGluingSheafEngine,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    InvertibleSheavesWithChosenTrivialization,
     QuasiCoherentSheaves,
 )
 
@@ -42,10 +43,40 @@ def _rank_one_transition(source, target, unit):
     return source.module_category().Core().Mor(source, target)(forward, inverse)
 
 
-class InvertibleSheaf(Parent):
+def _invertible_sheaf(gluing_datum):
+    r"""Construct a rank-one distinguished-cover descent object through its sheaf owner."""
+    return InvertibleSheavesWithChosenTrivialization(gluing_datum.scheme())(
+        gluing_datum
+    )
+
+
+def _finite_atlas_invertible_sheaf(
+    gluing_datum,
+    transition_units,
+    *,
+    section_space=None,
+    associated_divisor=None,
+):
+    r"""Construct finite-atlas rank-one descent through its sheaf owner."""
+    return InvertibleSheavesWithChosenTrivialization(gluing_datum.scheme())(
+        gluing_datum,
+        transition_units,
+        section_space=section_space,
+        associated_divisor=associated_divisor,
+    )
+
+
+class InvertibleSheaf(_ModuleGluingSheafEngine):
     r"""A line bundle represented by rank-one free descent on one affine cover."""
 
-    def __init__(self, gluing_datum) -> None:
+    def __init__(self, gluing_datum, module_gluing_datum, **rest) -> None:
+        match module_gluing_datum is gluing_datum:
+            case True:
+                pass
+            case False:
+                raise ValueError(
+                    "the invertible-sheaf realization and its underlying module sheaf require one descent datum"
+                )
         assert gluing_datum in ModuleGluingData(gluing_datum.cover()), (
             "an invertible sheaf requires module descent data on its distinguished affine cover"
         )
@@ -64,7 +95,7 @@ class InvertibleSheaf(Parent):
                     left,
                     right,
                 )
-        Parent.__init__(self, category=QuasiCoherentSheaves(gluing_datum.scheme()))
+        super().__init__(module_gluing_datum=module_gluing_datum, **rest)
 
     def gluing_datum(self):
         return self._gluing_datum
@@ -78,7 +109,7 @@ class InvertibleSheaf(Parent):
     ringed_space = scheme
 
     def sheaf(self):
-        return self.gluing_datum().sheaf()
+        return self
 
     def local_module(self, index):
         return self.gluing_datum().local_module(index)
@@ -150,7 +181,8 @@ class InvertibleSheaf(Parent):
                     target,
                     transition_units[left, right],
                 )
-        return cls(ModuleGluingData(cover)(local_modules, transitions))
+        datum = ModuleGluingData(cover)(local_modules, transitions)
+        return _invertible_sheaf(datum)
 
     @classmethod
     def trivial(cls, cover):
@@ -203,7 +235,7 @@ class InvertibleSheaf(Parent):
         return f"Invertible sheaf on {self.scheme()} trivialized by {self.cover()}"
 
 
-class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
+class FiniteAtlasInvertibleSheaf:
     r"""A line bundle on a finite glued affine atlas via transition functions.
 
     Unlike :class:`InvertibleSheaf`, whose descent datum lives on one affine
@@ -226,6 +258,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         *,
         section_space=None,
         associated_divisor=None,
+        **rest,
     ) -> None:
         if not isinstance(
             gluing_datum,
@@ -253,7 +286,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
                 raise ValueError("a finite-atlas line-bundle transition must be a unit on the overlap")
             self._transition_units[source_index, target_index] = unit
         self._verify_finite_atlas_cocycle()
-        Parent.__init__(self, category=QuasiCoherentSheaves(gluing_datum.scheme()))
+        super().__init__(**rest)
 
     def gluing_datum(self):
         return self._finite_gluing_datum
@@ -355,7 +388,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
 
     @classmethod
     def _from_transition_units(cls, cover, transition_units):
-        return cls(cover, transition_units)
+        return _finite_atlas_invertible_sheaf(cover, transition_units)
 
     @classmethod
     def trivial(cls, gluing_datum):
@@ -363,7 +396,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
             pair: gluing_datum.overlap(*pair).coordinate_algebra().one()
             for pair in gluing_datum.transition_index_set()
         }
-        return cls(gluing_datum, units)
+        return _finite_atlas_invertible_sheaf(gluing_datum, units)
 
     def tensor_product(self, other):
         if not isinstance(other, FiniteAtlasInvertibleSheaf):
@@ -374,7 +407,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
             pair: self.transition_unit(*pair) * other.transition_unit(*pair)
             for pair in self.gluing_datum().transition_index_set()
         }
-        return type(self)(self.gluing_datum(), units)
+        return _finite_atlas_invertible_sheaf(self.gluing_datum(), units)
 
     @cached_method
     def tensor_power(self, exponent):
@@ -387,7 +420,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
                 if exponent >= 0
                 else unit.inverse_of_unit() ** (-exponent)
             )
-        return type(self)(self.gluing_datum(), units)
+        return _finite_atlas_invertible_sheaf(self.gluing_datum(), units)
 
     def dual_sheaf(self):
         return self.tensor_power(-1)
@@ -552,6 +585,24 @@ def _tensor_power_base_change_image(bundle, exponent):
             )
 
 
+def _chosen_trivialization_object(scheme, engine, **construction_data):
+    r"""Realize one line-bundle engine in the chosen-trivialization owner."""
+    return InvertibleSheavesWithChosenTrivialization(scheme)._realize(
+        engine,
+        **construction_data,
+    )
+
+
+def _invertible_sheaf_object(scheme, engine, **construction_data):
+    r"""Realize one line-bundle engine directly in ``QCoh(scheme).Invertible()``."""
+    category = QuasiCoherentSheaves(scheme).Invertible()
+    return QuasiCoherentSheaves(scheme).object(
+        categories=(category,),
+        construction_data=construction_data,
+        _engine=engine,
+    )
+
+
 class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     r"""The standard ``O(d)`` on one represented projective space.
 
@@ -560,7 +611,14 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     product therefore adds degrees and duality negates them.
     """
 
-    def __init__(self, projective_space, degree, *, base_change_image=None) -> None:
+    def __init__(
+        self,
+        projective_space,
+        degree,
+        *,
+        base_change_image=None,
+        **rest,
+    ) -> None:
         from dzack_research.preamble.categories.divisors.linear_systems import (
             _homogeneous_polynomial_section_space,
         )
@@ -599,7 +657,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             if self._degree >= 0
             else None
         )
-        super().__init__(atlas, units, section_space=section_space)
+        super().__init__(atlas, units, section_space=section_space, **rest)
 
     def projective_space(self):
         return self._projective_space
@@ -611,7 +669,10 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         if isinstance(other, ProjectiveSpaceLineBundle):
             if other.projective_space() is not self.projective_space():
                 raise ValueError("projective line-bundle tensor product requires one projective space")
-            return type(self)(self.projective_space(), self.degree() + other.degree())
+            return _projective_o(
+                self.projective_space(),
+                self.degree() + other.degree(),
+            )
         return super().tensor_product(other)
 
     @cached_method
@@ -621,14 +682,14 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             case True:
                 return self
             case False:
-                return type(self)(
+                return _projective_o(
                     self.projective_space(),
                     exponent * self.degree(),
                     base_change_image=_tensor_power_base_change_image(self, exponent),
                 )
 
     def dual_sheaf(self):
-        return type(self)(self.projective_space(), -self.degree())
+        return _projective_o(self.projective_space(), -self.degree())
 
     def is_ample(self) -> bool:
         return int(self.projective_space().relative_dimension()) == 0 or self.degree() > 0
@@ -787,7 +848,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         return SectionRings(self.scheme().scheme_base_ring())(self)
 
     def base_change(self, ring_map):
-        return type(self)(
+        return _projective_o(
             self.projective_space().base_change(ring_map),
             self.degree(),
             base_change_image=_LineBundleBaseChangeImage(self, ring_map),
@@ -811,7 +872,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
 
 
-class ProjectiveSubschemeLineBundle(Parent):
+class ProjectiveSubschemeLineBundle:
     r"""The pullback ``i^* O_P(d)`` along a projective closed immersion.
 
     The defining datum is the actual closed immersion together with the
@@ -827,6 +888,7 @@ class ProjectiveSubschemeLineBundle(Parent):
         ambient_line_bundle,
         *,
         pullback_morphism=None,
+        **rest,
     ) -> None:
         from dzack_research.preamble.categories.schemes.schemes import (
             ClosedSubschemes,
@@ -859,7 +921,7 @@ class ProjectiveSubschemeLineBundle(Parent):
         self._scheme = closed_subscheme
         self._ambient_line_bundle = ambient_line_bundle
         self._pullback_morphism = selected_pullback
-        Parent.__init__(self, category=QuasiCoherentSheaves(closed_subscheme))
+        super().__init__(**rest)
 
     def scheme(self):
         return self._scheme
@@ -961,15 +1023,44 @@ class _ProjectiveSubschemeLineBundleIsomorphism(SageObject):
     def _repr_(self):
         return f"Line-bundle isomorphism {self.domain()} ~= {self.codomain()}"
 
-def _projective_o(projective_space, degree):
+def _projective_o(projective_space, degree, *, base_change_image=None):
     r"""Return the standard line bundle ``O(d)`` on ``P^n``."""
-    return ProjectiveSpaceLineBundle(projective_space, degree)
+    return _chosen_trivialization_object(
+        projective_space,
+        ProjectiveSpaceLineBundle,
+        projective_space=projective_space,
+        degree=degree,
+        base_change_image=base_change_image,
+    )
+
+
+def _projective_subscheme_line_bundle(
+    closed_subscheme,
+    ambient_line_bundle,
+    *,
+    pullback_morphism=None,
+):
+    r"""Return the invertible pullback of ``ambient_line_bundle`` to ``closed_subscheme``."""
+    return _invertible_sheaf_object(
+        closed_subscheme,
+        ProjectiveSubschemeLineBundle,
+        closed_subscheme=closed_subscheme,
+        ambient_line_bundle=ambient_line_bundle,
+        pullback_morphism=pullback_morphism,
+    )
 
 
 class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
     r"""The standard ``O(d_1,...,d_r)`` on a product of projective spaces."""
 
-    def __init__(self, projective_product, degrees, *, base_change_image=None) -> None:
+    def __init__(
+        self,
+        projective_product,
+        degrees,
+        *,
+        base_change_image=None,
+        **rest,
+    ) -> None:
         from dzack_research.preamble.categories.divisors.linear_systems import (
             _multihomogeneous_polynomial_section_space,
         )
@@ -1046,7 +1137,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             if all(self.multidegree()[label] >= 0 for label in factor_labels)
             else None
         )
-        super().__init__(atlas, units, section_space=section_space)
+        super().__init__(atlas, units, section_space=section_space, **rest)
 
     def projective_product(self):
         return self._projective_product
@@ -1059,7 +1150,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             if other.projective_product() is not self.projective_product():
                 raise ValueError("multiprojective line-bundle tensor product requires one scheme")
             labels = tuple(self.multidegree().index_set())
-            return type(self)(
+            return _product_projective_o(
                 self.projective_product(),
                 tuple(
                     self.multidegree()[label] + other.multidegree()[label]
@@ -1075,7 +1166,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             case True:
                 return self
             case False:
-                return type(self)(
+                return _product_projective_o(
                     self.projective_product(),
                     tuple(
                         exponent * self.multidegree()[label]
@@ -1105,7 +1196,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def restrict_to(self, closed_subscheme):
         r"""Return the restricted multiprojective line bundle on ``closed_subscheme``."""
-        return ProductProjectiveSubschemeLineBundle(closed_subscheme, self)
+        return _product_projective_subscheme_line_bundle(closed_subscheme, self)
 
     def linearize(self, scheme_action_functor, character):
         from dzack_research.preamble.categories.divisors.linearizations import (
@@ -1230,7 +1321,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
         return SectionRings(self.scheme().scheme_base_ring())(self)
 
     def base_change(self, ring_map):
-        return type(self)(
+        return _product_projective_o(
             self.projective_product().base_change(ring_map),
             tuple(
                 self.multidegree()[label]
@@ -1258,10 +1349,10 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
 
 
-class ProductProjectiveSubschemeLineBundle(SageObject):
+class ProductProjectiveSubschemeLineBundle:
     r"""The pullback of ``O(d_1,...,d_r)`` to a closed multiprojective subscheme."""
 
-    def __init__(self, closed_subscheme, ambient_line_bundle) -> None:
+    def __init__(self, closed_subscheme, ambient_line_bundle, **rest) -> None:
         from dzack_research.preamble.categories.schemes.schemes import (
             ClosedSubschemes,
             ProductProjectiveSpaces,
@@ -1280,6 +1371,7 @@ class ProductProjectiveSubschemeLineBundle(SageObject):
         self._scheme = closed_subscheme
         self._ambient_line_bundle = ambient_line_bundle
         self._pullback_morphism = closed_subscheme.inclusion()
+        super().__init__(**rest)
 
     def scheme(self):
         return self._scheme
@@ -1300,7 +1392,7 @@ class ProductProjectiveSubschemeLineBundle(SageObject):
             raise TypeError("restricted multiprojective tensor product requires two line bundles")
         if other.scheme() is not self.scheme():
             raise ValueError("restricted line-bundle tensor product requires one scheme")
-        return type(self)(
+        return _product_projective_subscheme_line_bundle(
             self.scheme(),
             self.ambient_line_bundle().tensor_product(other.ambient_line_bundle()),
         )
@@ -1309,13 +1401,16 @@ class ProductProjectiveSubschemeLineBundle(SageObject):
         exponent = _own_ring(SageZZ)(exponent)
         if exponent == 1:
             return self
-        return type(self)(
+        return _product_projective_subscheme_line_bundle(
             self.scheme(),
             self.ambient_line_bundle().tensor_power(exponent),
         )
 
     def dual_sheaf(self):
-        return type(self)(self.scheme(), self.ambient_line_bundle().dual_sheaf())
+        return _product_projective_subscheme_line_bundle(
+            self.scheme(),
+            self.ambient_line_bundle().dual_sheaf(),
+        )
 
     def is_ample(self) -> bool:
         r"""Return a theorem-backed positive ampleness decision from the ambient product."""
@@ -1379,6 +1474,27 @@ class _ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
 
     def _repr_(self) -> str:
         return f"Line-bundle isomorphism {self.domain()} ~= {self.codomain()}"
+
+
+def _product_projective_o(projective_product, degrees, *, base_change_image=None):
+    r"""Return ``O(degrees)`` on one represented product of projective spaces."""
+    return _chosen_trivialization_object(
+        projective_product,
+        ProductProjectiveLineBundle,
+        projective_product=projective_product,
+        degrees=degrees,
+        base_change_image=base_change_image,
+    )
+
+
+def _product_projective_subscheme_line_bundle(closed_subscheme, ambient_line_bundle):
+    r"""Return the invertible pullback of a multiprojective line bundle."""
+    return _invertible_sheaf_object(
+        closed_subscheme,
+        ProductProjectiveSubschemeLineBundle,
+        closed_subscheme=closed_subscheme,
+        ambient_line_bundle=ambient_line_bundle,
+    )
 
 
 __all__ = [

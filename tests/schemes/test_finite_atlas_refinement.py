@@ -1,8 +1,8 @@
 from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    FiniteAtlasInvertibleSheaf,
-)
 from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasRefinement
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    QuasiCoherentSheaves,
+)
 
 
 def _projective_line_with_redundant_overlap_chart():
@@ -80,7 +80,10 @@ def test_nontrivial_line_bundle_pulls_back_with_actual_local_isomorphisms() -> N
             "x1_over_x0"
         )
     )
-    bundle = FiniteAtlasInvertibleSheaf(coarse, {(0, 1): ratio})
+    bundle = QuasiCoherentSheaves(coarse.scheme()).Invertible().WithChosenTrivialization()(
+        coarse,
+        {(0, 1): ratio},
+    )
     comparison = refinement.pullback_invertible_sheaf(bundle)
     refined = comparison.refined_bundle()
 

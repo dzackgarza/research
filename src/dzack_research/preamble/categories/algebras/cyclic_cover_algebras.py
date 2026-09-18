@@ -23,26 +23,12 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         ModuleMorphism,
     )
-    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-        InvertibleSheaf,
-    )
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
         DistinguishedAffineCovers,
     )
 
 
 CYCLIC_COVER_VARIABLE = "z"
-
-
-@cached_function
-def _invertible_sheaf_implementations():
-    r"""Load concrete line-bundle realizations only when cyclic-cover data are constructed."""
-    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-        FiniteAtlasInvertibleSheaf,
-        InvertibleSheaf,
-    )
-
-    return InvertibleSheaf, FiniteAtlasInvertibleSheaf
 
 
 def _cyclic_cover_presentation(
@@ -92,16 +78,30 @@ class CyclicCoverAlgebra(SageObject):
 
     def __init__(
         self,
-        line_bundle: InvertibleSheaf,
+        line_bundle: Parent,
         branch_section: Element,
         degree: Integer,
         *,
         relative_spectrum_engine=None,
         relative_spectrum_data=None,
     ) -> None:
-        InvertibleSheaf, FiniteAtlasInvertibleSheaf = _invertible_sheaf_implementations()
-        if not isinstance(line_bundle, InvertibleSheaf):
-            raise TypeError("cyclic-cover data requires an invertible sheaf")
+        from dzack_research.preamble.categories.schemes.ringed_spaces import (
+            DistinguishedAffineCovers,
+            QuasiCoherentSheaves,
+        )
+
+        trivialized = (
+            QuasiCoherentSheaves(line_bundle.scheme())
+            .Invertible()
+            .WithChosenTrivialization()
+        )
+        match line_bundle in trivialized:
+            case True:
+                pass
+            case False:
+                raise TypeError(
+                    "cyclic-cover data requires an invertible sheaf with a chosen affine trivialization"
+                )
         degree = Integer(degree)
         if degree < 2:
             raise ValueError("a cyclic cover has degree at least two")
@@ -114,43 +114,44 @@ class CyclicCoverAlgebra(SageObject):
             ) from error
 
         branch_power = line_bundle.tensor_power(int(degree))
-        if isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
-            branch_datum = branch_power.module_sheaf().gluing_datum()
-            branch_parent = branch_datum.compatible_sections()
-            if supplied_parent is not branch_parent:
-                raise ValueError(
-                    "the branch section is not represented as a section of the stated L^n"
-                )
-            if branch_power.gluing_datum() is not line_bundle.gluing_datum():
-                raise ValueError("the branch section and line bundle require one affine atlas")
-            charts = line_bundle.gluing_datum().chart_index_set()
-            for left, right in line_bundle.gluing_datum().transition_index_set():
-                expected = line_bundle.transition_unit(left, right) ** degree
-                actual = branch_power.transition_unit(left, right)
-                if actual != expected:
+        match line_bundle.cover() in DistinguishedAffineCovers():
+            case False:
+                branch_datum = branch_power.module_sheaf().gluing_datum()
+                branch_parent = branch_datum.compatible_sections()
+                if supplied_parent is not branch_parent:
                     raise ValueError(
                         "the branch section is not represented as a section of the stated L^n"
                     )
-        else:
-            branch_datum = branch_power.gluing_datum()
-            branch_parent = branch_datum.compatible_sections()
-            if supplied_parent is not branch_parent:
-                raise ValueError(
-                    "the branch section is not represented as a section of the stated L^n"
-                )
-            if branch_power.cover() is not line_bundle.cover():
-                raise ValueError("the branch section and line bundle require one affine cover")
-            charts = line_bundle.cover().atlas()
-            for left in charts:
-                for right in charts:
-                    if left >= right:
-                        continue
+                if branch_power.gluing_datum() is not line_bundle.gluing_datum():
+                    raise ValueError("the branch section and line bundle require one affine atlas")
+                charts = line_bundle.gluing_datum().chart_index_set()
+                for left, right in line_bundle.gluing_datum().transition_index_set():
                     expected = line_bundle.transition_unit(left, right) ** degree
                     actual = branch_power.transition_unit(left, right)
                     if actual != expected:
                         raise ValueError(
                             "the branch section is not represented as a section of the stated L^n"
                         )
+            case True:
+                branch_datum = branch_power.gluing_datum()
+                branch_parent = branch_datum.compatible_sections()
+                if supplied_parent is not branch_parent:
+                    raise ValueError(
+                        "the branch section is not represented as a section of the stated L^n"
+                    )
+                if branch_power.cover() is not line_bundle.cover():
+                    raise ValueError("the branch section and line bundle require one affine cover")
+                charts = line_bundle.cover().atlas()
+                for left in charts:
+                    for right in charts:
+                        if left >= right:
+                            continue
+                        expected = line_bundle.transition_unit(left, right) ** degree
+                        actual = branch_power.transition_unit(left, right)
+                        if actual != expected:
+                            raise ValueError(
+                                "the branch section is not represented as a section of the stated L^n"
+                            )
 
         self._line_bundle = line_bundle
         self._branch_power = branch_power
@@ -177,10 +178,10 @@ class CyclicCoverAlgebra(SageObject):
         )
         self._gluing_datum = self._build_algebra_gluing_datum()
 
-    def line_bundle(self) -> InvertibleSheaf:
+    def line_bundle(self) -> Parent:
         return self._line_bundle
 
-    def branch_power(self) -> InvertibleSheaf:
+    def branch_power(self) -> Parent:
         return self._branch_power
 
     def branch_section(self) -> Element:
@@ -202,10 +203,15 @@ class CyclicCoverAlgebra(SageObject):
 
     def _chart_scheme(self, index):
         cover = self.cover()
-        _InvertibleSheaf, FiniteAtlasInvertibleSheaf = _invertible_sheaf_implementations()
-        if isinstance(self.line_bundle(), FiniteAtlasInvertibleSheaf):
-            return cover.chart(index)
-        return cover.open(index)
+        from dzack_research.preamble.categories.schemes.ringed_spaces import (
+            DistinguishedAffineCovers,
+        )
+
+        match cover in DistinguishedAffineCovers():
+            case True:
+                return cover.open(index)
+            case False:
+                return cover.chart(index)
 
     def local_branch_coefficient(self, index: Integer) -> Element:
         return self._local_branch_coefficients[self.chart_index_set()(index)]
@@ -275,39 +281,43 @@ class CyclicCoverAlgebra(SageObject):
 
     def _build_algebra_gluing_datum(self) -> Parent:
         charts = self.chart_index_set()
-        _InvertibleSheaf, FiniteAtlasInvertibleSheaf = _invertible_sheaf_implementations()
-        if isinstance(self.line_bundle(), FiniteAtlasInvertibleSheaf):
-            from dzack_research.preamble.categories.schemes.gluing import (
-                FiniteAtlasAlgebraGluingDatum,
-            )
+        from dzack_research.preamble.categories.schemes.ringed_spaces import (
+            DistinguishedAffineCovers,
+        )
 
-            transitions = {}
-            for left, right in self.cover().transition_index_set():
-                left_unit = self.line_bundle().transition_unit(left, right)
-                right_unit = self.line_bundle().transition_unit(right, left)
+        match self.cover() in DistinguishedAffineCovers():
+            case False:
+                from dzack_research.preamble.categories.schemes.gluing import (
+                    FiniteAtlasAlgebraGluingDatum,
+                )
 
-                def forward(label, _domain, codomain, unit=left_unit):
-                    return codomain(unit.inverse_of_unit()) * codomain.algebra_generator(label)
+                transitions = {}
+                for left, right in self.cover().transition_index_set():
+                    left_unit = self.line_bundle().transition_unit(left, right)
+                    right_unit = self.line_bundle().transition_unit(right, left)
 
-                def inverse(label, _domain, codomain, unit=right_unit):
-                    return codomain(unit.inverse_of_unit()) * codomain.algebra_generator(label)
+                    def forward(label, _domain, codomain, unit=left_unit):
+                        return codomain(unit.inverse_of_unit()) * codomain.algebra_generator(label)
 
-                transitions[left, right] = (forward, inverse)
-            return FiniteAtlasAlgebraGluingDatum(
-                self.cover(),
-                self.local_algebras(),
-                transitions,
-            )
+                    def inverse(label, _domain, codomain, unit=right_unit):
+                        return codomain(unit.inverse_of_unit()) * codomain.algebra_generator(label)
 
-        from dzack_research.preamble.categories.schemes.gluing import AlgebraGluingData
+                    transitions[left, right] = (forward, inverse)
+                return FiniteAtlasAlgebraGluingDatum(
+                    self.cover(),
+                    self.local_algebras(),
+                    transitions,
+                )
+            case True:
+                from dzack_research.preamble.categories.schemes.gluing import AlgebraGluingData
 
-        transitions = {
-            (left, right): self._transition(left, right)
-            for left in charts
-            for right in charts
-            if left < right
-        }
-        return AlgebraGluingData(self.cover())(self.local_algebras(), transitions)
+                transitions = {
+                    (left, right): self._transition(left, right)
+                    for left in charts
+                    for right in charts
+                    if left < right
+                }
+                return AlgebraGluingData(self.cover())(self.local_algebras(), transitions)
 
     def gluing_datum(self) -> Parent:
         r"""The algebra descent datum ``(B_i, phi_ij)`` on the cover."""
