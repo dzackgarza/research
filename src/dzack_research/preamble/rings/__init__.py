@@ -4,13 +4,13 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     AdicCompletions,
-    DistinguishedOpenSubobject,
+    DistinguishedOpenSubobjects,
     FormalPowerSeriesRings,
     GeneratedIdealView,
     PrimeLocalizations,
     PrimeSpectra,
     QuotientRings,
-    ZariskiClosedSubobject,
+    ZariskiClosedSubobjects,
     Zp,
 )
 from dzack_research.preamble.categories.rings.commutative_ideals import (
@@ -213,7 +213,7 @@ __all__ = [
     "CompleteLocalRings",
     "ComplexField",
     "CyclotomicField",
-    "DistinguishedOpenSubobject",
+    "DistinguishedOpenSubobjects",
     "DivisionRings",
     "ExactRealField",
     "ExactRealNumber",
@@ -264,7 +264,7 @@ __all__ = [
     "RingMorphism",
     "Rings",
     "UnitInterval",
-    "ZariskiClosedSubobject",
+    "ZariskiClosedSubobjects",
     "Zmod",
     "Zp",
     "ring_constructor_surface",

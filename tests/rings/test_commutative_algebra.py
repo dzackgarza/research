@@ -224,10 +224,16 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
     assert spectrum.generic_point() == generic
 
     closed_origin = spectrum.V(x)
+    assert closed_origin in ZariskiClosedSubobjects(spectrum)
+    assert closed_origin in Sets().Subobjects(spectrum)
+    assert closed_origin.inclusion().codomain() is spectrum
     assert closed_origin.defining_ideal() in Modules(spectrum.ring()).Subobjects(
         spectrum.ring().regular_module()
     )
     punctured_line = spectrum.D(x)
+    assert punctured_line in DistinguishedOpenSubobjects(spectrum)
+    assert punctured_line in Sets().Subobjects(spectrum)
+    assert punctured_line.inclusion().codomain() is spectrum
     assert generic not in closed_origin
     assert origin in closed_origin
     assert generic in punctured_line

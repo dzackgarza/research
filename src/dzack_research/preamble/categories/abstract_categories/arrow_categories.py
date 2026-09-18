@@ -1123,6 +1123,19 @@ class SetSubobjectCategory(SliceCategory):
             and self.base_category().MonomorphismArrowCategory().admits_arrow(arrow)
         )
 
+    def object(self, arrow: Morphism, *, categories=(), construction_data=None):
+        r"""Construct this represented subset, optionally with stronger owned structure."""
+        if not self.admits_arrow(arrow):
+            raise TypeError("the supplied morphism is not a monomorphism into this base set")
+        category = Cat().meet((self, *tuple(categories)))
+        return _object_of(
+            category,
+            functor=_walking_arrow_functor(self.base_category(), arrow),
+            **dict(construction_data or {}),
+        )
+
+    __call__ = object
+
     def cardinality(self):
         r"""The number of represented subsets of the fixed base set."""
         return self.base_object().power_set().cardinality()
@@ -1158,29 +1171,34 @@ class SetSubobjectCategory(SliceCategory):
         def factor_through(self, target):
             return self.inclusion().factor_through(target.inclusion())
 
+        def _set_subobject_category(self):
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            return Sets().Subobjects(self.codomain())
+
         def __le__(self, other):
             return self.inclusion() <= other.inclusion()
 
         def union(self, other):
-            return self.category()(self.inclusion().union(other.inclusion()))
+            return self._set_subobject_category()(self.inclusion().union(other.inclusion()))
 
         def intersection(self, other):
-            return self.category()(self.inclusion().intersection(other.inclusion()))
+            return self._set_subobject_category()(self.inclusion().intersection(other.inclusion()))
 
         def difference(self, other):
-            return self.category()(self.inclusion().difference(other.inclusion()))
+            return self._set_subobject_category()(self.inclusion().difference(other.inclusion()))
 
         def symmetric_difference(self, other):
-            return self.category()(self.inclusion().symmetric_difference(other.inclusion()))
+            return self._set_subobject_category()(self.inclusion().symmetric_difference(other.inclusion()))
 
         def complement(self):
-            return self.category()(self.inclusion().complement())
+            return self._set_subobject_category()(self.inclusion().complement())
 
         def __or__(self, other):
             return self.union(other)
 
         def __eq__(self, other):
-            return other in self.category() and self.inclusion() == other.inclusion()
+            return other in self._set_subobject_category() and self.inclusion() == other.inclusion()
 
         __hash__ = None
 

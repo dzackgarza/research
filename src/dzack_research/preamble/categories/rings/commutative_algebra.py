@@ -22,7 +22,10 @@ from sage.structure.element import CommutativeRingElement, Element
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.abstract_categories.products import (
     InverseSystem,
     PosetCategory,
@@ -59,6 +62,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     PartiallyOrderedSets,
     SetInclusion,
+    Sets,
     UncountableSets,
 )
 from dzack_research.preamble.owned_category import _object_of
@@ -457,12 +461,12 @@ class PrimeSpectra(OwnedCategory):
             )
 
         def closed_set(self, ideal):
-            return ZariskiClosedSubobject(self, _owned_ideal(self.ring(), ideal))
+            return _zariski_closed_subobject(self, _owned_ideal(self.ring(), ideal))
 
         V = closed_set
 
         def distinguished_open(self, function):
-            return DistinguishedOpenSubobject(self, function)
+            return _distinguished_open_subobject(self, function)
 
         D = distinguished_open
 
@@ -564,64 +568,78 @@ def _canonical_map(domain, codomain, engine_map=None):
 
 
 
-class ZariskiClosedSubobject(SetInclusion):
-    r"""The closed subobject ``V(I) -> Spec(R)``."""
+class ZariskiClosedSubobjects(OwnedParameterizedCategory):
+    r"""Closed subsets of one prime spectrum, retaining their defining ideal."""
 
-    def __init__(self, spectrum, ideal) -> None:
-        self._defining_ideal = ideal
-        from sage.sets.condition_set import ConditionSet
+    def parameter_category(self):
+        return PrimeSpectra()
 
-        domain = spectrum.condition_set(lambda point: bool(
-                _engine_ideal(spectrum.ring(), self.defining_ideal())
-                <= _engine_ideal(spectrum.ring(), point.ideal())
-            ))
-        SetInclusion.__init__(self, domain, spectrum)
+    def super_categories(self):
+        return [Sets().Subobjects(self.base())]
 
-    def defining_ideal(self):
-        return self._defining_ideal
+    class ParentMethods:
+        def __init__(self, defining_ideal, **rest):
+            self._defining_ideal = defining_ideal
+            super().__init__(**rest)
 
-    def __contains__(self, point) -> bool:
-        try:
-            point = self.codomain()(point)
-        except (TypeError, ValueError):
-            return False
-        ring = self.codomain().ring()
-        return bool(
-            _engine_ideal(ring, self.defining_ideal())
-            <= _engine_ideal(ring, point.ideal())
+        def defining_ideal(self):
+            return self._defining_ideal
+
+        def _repr_(self):
+            return f"V({self.defining_ideal()}) in {self.codomain()}"
+
+
+class DistinguishedOpenSubobjects(OwnedParameterizedCategory):
+    r"""Distinguished open subsets of one prime spectrum, retaining ``f``."""
+
+    def parameter_category(self):
+        return PrimeSpectra()
+
+    def super_categories(self):
+        return [Sets().Subobjects(self.base())]
+
+    class ParentMethods:
+        def __init__(self, function, **rest):
+            self._function = function
+            super().__init__(**rest)
+
+        def function(self):
+            return self._function
+
+        def coordinate_ring(self):
+            return self.codomain().ring().localization(self.function())
+
+        def _repr_(self):
+            return f"D({self.function()}) in {self.codomain()}"
+
+
+def _zariski_closed_subobject(spectrum, ideal):
+    domain = spectrum.condition_set(
+        lambda point: bool(
+            _engine_ideal(spectrum.ring(), ideal)
+            <= _engine_ideal(spectrum.ring(), point.ideal())
         )
+    )
+    inclusion = SetInclusion(domain, spectrum)
+    return Sets().Subobjects(spectrum).object(
+        inclusion,
+        categories=(ZariskiClosedSubobjects(spectrum),),
+        construction_data={"defining_ideal": ideal},
+    )
 
-    def _repr_(self):
-        return f"V({self.defining_ideal()}) in {self.codomain()}"
 
-
-class DistinguishedOpenSubobject(SetInclusion):
-    r"""The distinguished open subobject ``D(f) -> Spec(R)``."""
-
-    def __init__(self, spectrum, function) -> None:
-        self._function = spectrum.ring()(function)
-        from sage.sets.condition_set import ConditionSet
-
-        domain = spectrum.condition_set(lambda point: _engine_element(spectrum.ring(), self.function())
-            not in _engine_ideal(spectrum.ring(), point.ideal()))
-        SetInclusion.__init__(self, domain, spectrum)
-
-    def function(self):
-        return self._function
-
-    def __contains__(self, point) -> bool:
-        try:
-            point = self.codomain()(point)
-        except (TypeError, ValueError):
-            return False
-        ring = self.codomain().ring()
-        return _engine_element(ring, self.function()) not in _engine_ideal(ring, point.ideal())
-
-    def coordinate_ring(self):
-        return self.codomain().ring().localization(self.function())
-
-    def _repr_(self):
-        return f"D({self.function()}) in {self.codomain()}"
+def _distinguished_open_subobject(spectrum, function):
+    function = spectrum.ring()(function)
+    domain = spectrum.condition_set(
+        lambda point: _engine_element(spectrum.ring(), function)
+        not in _engine_ideal(spectrum.ring(), point.ideal())
+    )
+    inclusion = SetInclusion(domain, spectrum)
+    return Sets().Subobjects(spectrum).object(
+        inclusion,
+        categories=(DistinguishedOpenSubobjects(spectrum),),
+        construction_data={"function": function},
+    )
 
 
 
@@ -3556,9 +3574,11 @@ def _dual_numbers(base_ring, name="epsilon"):
 
 __all__ = [
     "AdicCompletions",
+    "DistinguishedOpenSubobjects",
     "GeneratedIdealView",
     "LocalizationRings",
     "PrimeLocalizations",
     "QuotientRings",
+    "ZariskiClosedSubobjects",
     "Zp",
 ]

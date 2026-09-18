@@ -488,7 +488,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     CommutativeIdeals,
     CommutativeRings,
     CompleteLocalRings,
-    DistinguishedOpenSubobject,
+    DistinguishedOpenSubobjects,
     DivisionRings,
     ExactRealField,
     ExactRealNumber,
@@ -516,7 +516,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     RealApproximation,
     Rings,
     UnitInterval,
-    ZariskiClosedSubobject,
+    ZariskiClosedSubobjects,
     _restore_session_ring_bindings,  # noqa: F401
 )
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
