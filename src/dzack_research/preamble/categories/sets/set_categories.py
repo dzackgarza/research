@@ -1392,12 +1392,24 @@ class SetMonoCategoryConstruction(MonoCategoryConstruction):
     def fixed_category_class(self):
         return SetInjectionHomset
 
+    def accepts(self, arrow):
+        r"""A monomorphism of sets is exactly an injective set map."""
+        if arrow.domain() not in Sets() or arrow.codomain() not in Sets():
+            return False
+        return self.Of(arrow.domain(), arrow.codomain()).accepts(arrow)
+
 
 class SetEpiCategoryConstruction(EpiCategoryConstruction):
     r"""The declared epimorphisms of sets."""
 
     def fixed_category_class(self):
         return SetSurjectionHomset
+
+    def accepts(self, arrow):
+        r"""An epimorphism of sets is exactly a surjective set map."""
+        if arrow.domain() not in Sets() or arrow.codomain() not in Sets():
+            return False
+        return self.Of(arrow.domain(), arrow.codomain()).accepts(arrow)
 
 
 Sets._MonoCategory = SetMonoCategoryConstruction

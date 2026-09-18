@@ -100,11 +100,11 @@ class DirectSumObjects(OwnedCategory):
                     pass
                 case _:
                     raise TypeError("a selected direct-sum decomposition is an indexed family")
-            self._preamble_direct_sum_summands = summands
+            self._summands = summands
             super().__init__(**rest)
 
         def summands(self) -> IndexedFamily:
-            return self._preamble_direct_sum_summands
+            return self._summands
 
         def summand_index_set(self) -> Parent:
             return self.summands().index_set()

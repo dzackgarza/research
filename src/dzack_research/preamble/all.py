@@ -26,7 +26,6 @@ from dzack_research.preamble.catalogue import (  # noqa: F401
     two_elementary_orthogonal_sums,
 )
 from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
-    BiproductCategory,
     Cat,
     CategoricalIsomorphism,
     CategoryFunctorMorphism,
@@ -39,7 +38,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     DescentEqualizer,
     DescentEqualizerComparison,
     DirectedSystem,
-    DirectSumCategory,
     DirectSumObjects,
     HomCategories,
     InverseSystem,
@@ -50,7 +48,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     Sheaves,
     SubobjectHomset,
     SubobjectMorphism,
-    TensorProductCategory,
     TrivialCoveringFamilies,
     trivial_coverage,
 )

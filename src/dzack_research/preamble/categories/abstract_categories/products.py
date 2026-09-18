@@ -1147,21 +1147,18 @@ class _LimitsOfCategory(OwnedCategoryBase):
         if diagram.codomain() is not self.target_category():
             raise ValueError("a selected limit diagram has the wrong target category")
         shape = self.index_category()
-        object_set_function = getattr(shape, "object_set", None)
-        objects_function = getattr(shape, "objects", None)
-        arrows_function = getattr(shape, "arrows", None)
-        assert callable(object_set_function) and callable(objects_function), (
-            "the theorem-backed realization requires an indexing category with represented object data"
-        )
-        assert callable(arrows_function), (
-            "the theorem-backed realization requires an indexing category with a represented arrow set"
-        )
-        object_set = object_set_function()
-        objects = objects_function()
+        # This is the computational frontier of the finite product/equalizer
+        # realization, not a test for mathematical category structure.  Its
+        # input is a represented finite shape, whose selected representation
+        # supplies these owned families.  Do not probe an arbitrary category
+        # for optional methods and silently change algorithms when they are
+        # absent.
+        object_set = shape.object_set()
+        objects = shape.objects()
         assert cardinal(object_set.cardinality()).is_finite(), (
             "the current product/equalizer realization enumerates a finite represented shape"
         )
-        arrows = arrows_function()
+        arrows = shape.arrows()
         assert cardinal(arrows.cardinality()).is_finite(), (
             "the current product/equalizer realization enumerates a finite represented arrow set"
         )
@@ -1452,55 +1449,6 @@ def _two_factors_of(factors, *, name="Selected factors"):
     return family[labels[0]], family[labels[1]]
 
 
-class BiproductCategory(OwnedCategoryBase):
-    r"""Objects equipped with the selected finite biproduct structure."""
-
-    def __init__(self, factors: IndexedFamily | Iterable[Parent]) -> None:
-        self._factors = _finite_factor_family(factors, name="Biproduct factors")
-        super().__init__()
-
-    def _make_named_class_key(self, name):
-        return self._factors
-
-    def factors(self) -> IndexedFamily:
-        return self._factors
-
-    def super_categories(self):
-        return [OwnedObjects()]
-
-    def __contains__(self, candidate: Any) -> bool:
-        try:
-            return candidate.biproduct_factors() == self.factors()
-        except (AttributeError, TypeError, ValueError):
-            return False
-
-
-DirectSumCategory = BiproductCategory
-
-
-class TensorProductCategory(OwnedCategoryBase):
-    r"""Objects equipped with a chosen tensor-product universal bilinear map."""
-
-    def __init__(self, factors: IndexedFamily | Iterable[Parent]) -> None:
-        self._factors = _finite_factor_family(factors, name="Tensor factors")
-        super().__init__()
-
-    def _make_named_class_key(self, name):
-        return self._factors
-
-    def tensor_factors(self) -> IndexedFamily:
-        return self._factors
-
-    def super_categories(self):
-        return [OwnedObjects()]
-
-    def __contains__(self, candidate: Any) -> bool:
-        try:
-            return candidate.tensor_factors() == self.tensor_factors()
-        except (AttributeError, TypeError, ValueError):
-            return False
-
-
 def _discrete_diagram(factors, target_category=None):
     family = _factor_family(factors)
     if family.cardinality() == cardinal(0):
@@ -1521,10 +1469,8 @@ def _discrete_diagram(factors, target_category=None):
 
 
 __all__ = [
-    "BiproductCategory",
     "CoconeMorphism",
     "ConeMorphism",
-    "DirectSumCategory",
     "DirectedSystem",
     "FiniteOrdinalCategory",
     "FiniteSequenceDiagram",
@@ -1535,5 +1481,4 @@ __all__ = [
     "RestrictedDiagram",
     "SelectedColimitConstruction",
     "SelectedLimitConstruction",
-    "TensorProductCategory",
 ]

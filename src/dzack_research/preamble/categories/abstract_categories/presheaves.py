@@ -242,6 +242,102 @@ def _finite_family(values, *, name: str) -> IndexedFamily:
     )
 
 
+class _CoverPresentationDiagram(Functor):
+    r"""The finite diagram in ``C`` underlying one represented cover presentation.
+
+    The shape has one terminal vertex for the covered object, one vertex for
+    each cover domain, and one vertex for each selected pairwise overlap.  Its
+    nonidentity arrows are exactly overlap-to-member, member-to-target and the
+    forced overlap-to-target composites.  It is thin, so the two routes from
+    an overlap to the target are one arrow; functoriality is precisely the
+    commuting condition checked by the covering-family entry.
+    """
+
+    def __init__(
+        self,
+        site: Category,
+        target: Parent,
+        members: IndexedFamily,
+        overlaps: IndexedFamily,
+    ) -> None:
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            PosetCategory,
+        )
+
+        self._target = target
+        self._members = members
+        self._overlaps = overlaps
+        self._member_labels = tuple(members.index_set())
+        self._pair_labels = tuple(overlaps.index_set())
+        shape_labels = finite_ordered_set(
+            (
+                ("target", 0),
+                *(("member", position) for position in range(len(self._member_labels))),
+                *(("overlap", position) for position in range(len(self._pair_labels))),
+            )
+        )
+
+        def precedes(left, right):
+            if left == right:
+                return True
+            left_kind, left_position = left
+            right_kind, right_position = right
+            if right_kind == "target" and left_kind in {"member", "overlap"}:
+                return True
+            if left_kind != "overlap" or right_kind != "member":
+                return False
+            pair = self._pair_labels[int(left_position)]
+            member = self._member_labels[int(right_position)]
+            return member in pair
+
+        self._shape = PosetCategory(shape_labels, le=precedes)
+        super().__init__(self._shape, site)
+
+    def _label(self, obj: Parent):
+        return obj.value()
+
+    def _member_index(self, position):
+        return self._member_labels[int(position)]
+
+    def _pair(self, position):
+        return self._pair_labels[int(position)]
+
+    def _apply_object(self, obj: Parent) -> Parent:
+        kind, position = self._label(obj)
+        match kind:
+            case "target":
+                return self._target
+            case "member":
+                return self._members[self._member_index(position)].domain()
+            case "overlap":
+                return self._overlaps[self._pair(position)].apex()
+            case _:
+                raise ValueError("unknown vertex of a covering-family presentation")
+
+    def _apply_morphism(self, morphism: Map) -> Map:
+        source_kind, source_position = self._label(morphism.domain())
+        target_kind, target_position = self._label(morphism.codomain())
+        source_object = self(morphism.domain())
+        target_object = self(morphism.codomain())
+        if morphism.domain() is morphism.codomain():
+            return _category_homset(self.codomain(), source_object, source_object).identity()
+        if source_kind == "member" and target_kind == "target":
+            return self._members[self._member_index(source_position)]
+        if source_kind == "overlap" and target_kind == "member":
+            pair = self._pair(source_position)
+            span = self._overlaps[pair]
+            member = self._member_index(target_position)
+            if member == pair[0]:
+                return span.left_leg()
+            if member == pair[1]:
+                return span.right_leg()
+        if source_kind == "overlap" and target_kind == "target":
+            pair = self._pair(source_position)
+            span = self._overlaps[pair]
+            return self._members[pair[0]] * span.left_leg()
+        raise ValueError("the covering-family presentation has no such nonidentity arrow")
+
+
 def _covering_family(category: Category, target: Parent, members, overlaps, **data):
     r"""The covering family of ``target`` by ``members`` in ``category``, a category of covering families.
 
@@ -309,8 +405,14 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
         lambda pair: spans[pair],
         name="Pair overlaps of a covering family",
     )
+    presentation = _CoverPresentationDiagram(site, target, family, overlap_family)
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+        _walking_arrow_functor,
+    )
+
     return _object_of(
         category,
+        functor=_walking_arrow_functor(Cat(), Cat().arrow(presentation)),
         covered_object=target,
         members=family,
         overlaps=overlap_family,
@@ -324,8 +426,26 @@ class CoveringFamilies(OwnedCategory):
     An object is a finite family of arrows ``u_i: U_i -> U`` of ``C`` with a
     common target, together with a chosen overlap for each pair of indices:
     a span ``U_i <- U_ij -> U_j`` of ``C`` whose two composites with the cover
-    arrows agree.  Every category of covering families -- a coverage, which
-    selects some of them -- builds its objects by :meth:`SubcategoryMethods.family`.
+    arrows agree.  Forgetting which vertices are target/member/overlap leaves
+    the finite presentation functor ``J -> C`` itself, hence an object of the
+    slice ``Cat/C``.  A refinement is a slice morphism: a functor between the
+    two finite presentation shapes commuting with their functors to ``C``.
+    Every coverage, which selects some of these objects, builds them by
+    :meth:`SubcategoryMethods.family`.
+
+    Unverified specimen: the cover is literally placed over its presentation
+    functor, not recognized afterwards from methods on an arbitrary object::
+
+        sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: points = finite_ordered_set(("a", "b"))
+        sage: identity = Sets().Mor(points, points).identity()
+        sage: covers = CoveringFamilies(Sets())
+        sage: cover = covers.family(points, (identity,), {})
+        sage: cover.presentation().codomain() is Sets()
+        True
+        sage: cover in covers.presentation_category()
+        True
     """
 
     @staticmethod
@@ -339,8 +459,16 @@ class CoveringFamilies(OwnedCategory):
     def site_category(self) -> Category:
         return self._site_category
 
+    def presentation_category(self):
+        r"""The slice ``Cat/C`` containing the finite presentation diagrams."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            SliceCategory,
+        )
+
+        return SliceCategory(Cat(), Cat().object(self.site_category()))
+
     def super_categories(self):
-        return [Objects()]
+        return [self.presentation_category()]
 
     def an_object(self):
         target = self.site_category().an_object()
@@ -358,6 +486,10 @@ class CoveringFamilies(OwnedCategory):
 
         def covering_family_category(self) -> Category:
             return self.category()
+
+        def presentation(self) -> Functor:
+            r"""The finite diagram ``J -> C`` carrying this cover presentation."""
+            return self.arrow().functor()
 
         def site_category(self) -> Category:
             return self.category().site_category()
@@ -481,6 +613,16 @@ class DescentDataOnCover(OwnedCategoryBase):
     for its transition maps, cocycle law, and morphisms; this category records
     the cover-relative mathematical placement instead of rediscovering it by
     inspecting the implementation class afterwards.
+
+    The root ``Objects()`` declaration below is deliberate.  A descent datum
+    in the sense of Definition 31.3 of ``mathematical-theory-foundations.md``
+    is relative to a fibred category.  Module and algebra descent therefore
+    have no stronger *same-object* common parent: forgetting to the family of
+    local objects or to its Čech diagram changes the object and is a functor,
+    not a supercategory declaration (``CAT-16``).  The cover itself has a
+    genuine in-place presentation parent, ``Cat/C``, supplied by
+    :class:`CoveringFamilies`; the fibre theory remains with each concrete
+    descent category.
     """
 
     @staticmethod
@@ -566,7 +708,13 @@ def _identity_equalizer_construction(value_category: Category, obj: Parent):
 
 
 class DescentEqualizer(SageObject):
-    r"""The canonical Čech equalizer comparison for one presheaf and cover."""
+    r"""The canonical Čech equalizer comparison for one presheaf and cover.
+
+    This is a retained construction record, not a second public category of
+    equalizer outputs: the products and equalizer are selected universal
+    constructions of the value category, and the comparison is an owned
+    morphism between their owned objects.
+    """
 
     def __init__(
         self,
@@ -730,7 +878,11 @@ class DescentEqualizer(SageObject):
 
 
 class DescentEqualizerComparison(SageObject):
-    r"""An actual isomorphism from ``F(U)`` to its selected descent equalizer."""
+    r"""An actual isomorphism from ``F(U)`` to its selected descent equalizer.
+
+    The record retains the Čech construction beside the already-owned
+    :class:`CategoricalIsomorphism`; it does not classify a new kind of object.
+    """
 
     def __init__(self, equalizer: DescentEqualizer, inverse: Morphism) -> None:
         self._equalizer = equalizer
@@ -760,6 +912,10 @@ class DescentData(SageObject):
     checked by :class:`CategoricalIsomorphism` when that cover is requested.
     Thus an unbounded coverage is represented by a rule for all of its covers,
     rather than by pretending they can be enumerated.
+
+    This is selected proof/construction data carried by a sheaf object.  The
+    sheaf itself is constructed by :class:`Sheaves`; no category of these
+    retained records is introduced.
 
     Unverified separating specimen: the same presheaf fails descent for a
     two-member cover but has canonical descent data for the trivial coverage::

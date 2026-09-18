@@ -5,10 +5,6 @@ from dzack_research.preamble.categories.abstract_categories.functors import Disc
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategories,
 )
-from dzack_research.preamble.categories.abstract_categories.products import (
-    BiproductCategory,
-    TensorProductCategory,
-)
 from dzack_research.preamble.categories.functors.core import IdentityFunctor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -66,8 +62,6 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
         HomCategories(),
         Sets().HomCategory(),
         Sets().Limits(discrete),
-        BiproductCategory((points, points)),
-        TensorProductCategory((points, points)),
         Cat().Mor(Sets(), Sets()),
     )
 

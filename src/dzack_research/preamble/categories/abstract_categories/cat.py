@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
     _precomposable,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedParent
 from dzack_research.preamble.categories.functors.core import (
     _CompositeFunctor,
     Functor,
@@ -37,7 +37,7 @@ from dzack_research.preamble.categories.sets.indexed_families import IndexedFami
 from dzack_research.preamble.owned_category import _object_of
 
 
-class CategoryObject(Parent):
+class CategoryObject(OwnedParent, Parent):
     r"""A Sage category regarded as an object of ``Cat``."""
 
     def __init__(
@@ -47,7 +47,7 @@ class CategoryObject(Parent):
     ) -> None:
         self._category_of_categories = category_of_categories
         self._represented_category = represented_category
-        Parent.__init__(self, category=category_of_categories)
+        super().__init__(category=category_of_categories)
 
     def category_of_categories(self) -> Cat:
         return self._category_of_categories

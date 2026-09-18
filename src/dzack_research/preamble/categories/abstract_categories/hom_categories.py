@@ -1106,7 +1106,10 @@ def _declared_construction(category, declaration_name):
     This reads the ``_HomCategory`` / ``_EndCategory`` / ... declarations a
     category class makes, the same way the owned root reads a category's
     ``ParentMethods`` declaration: off the declaring class graph, never off
-    an instance.  It is the reader of that declaration protocol.
+    an instance.  This is the ``OWN-06`` runtime adapter for that declaration
+    protocol: class/descriptor inspection here selects the implementation of
+    a mathematical Hom construction already chosen by category placement; it
+    does not infer mathematical structure from an owned object.
     """
     declaring = type(category)
     if declaring.__name__.endswith("_with_category"):
@@ -1252,8 +1255,9 @@ class _HomCategoryOf(OwnedCategoryBase):
     def Of(self, domain: Parent, codomain: Parent) -> FixedHomObject:
         r"""Select the defining Hom object without losing inherited structure.
 
-        This is the constructor entry for the objects of this family, so the
-        one place the runtime class a fixed Hom is realized by is compared:
+        This is the constructor entry for the objects of this family and the
+        ``OWN-06`` realization adapter, so the one place the runtime class a
+        fixed Hom is realized by is compared:
         a property subcategory inherits the declaration of the category it
         refines and reuses the parent that category built.
 
@@ -1504,6 +1508,28 @@ class _RestrictedHomCategoryOf(_HomCategoryOf):
     def accepts(self, arrow: Morphism) -> bool:
         r"""Whether ``arrow`` belongs to this restricted Hom family."""
 
+    def _accepts_by_placement(self, arrow: Morphism) -> bool:
+        r"""Whether a stronger represented Hom already places ``arrow`` here.
+
+        A restriction with no theory-specific decision procedure cannot infer
+        its predicate from methods exposed by an arbitrary arrow.  What it can
+        know is construction: an arrow parent which is this fixed restricted
+        Hom, or a declared subcategory of it, already carries the restriction.
+        Concrete theories such as sets may override :meth:`accepts` with a
+        theorem-backed decision procedure for their own morphisms.
+        """
+        if (
+            arrow.domain() not in self.base_category()
+            or arrow.codomain() not in self.base_category()
+        ):
+            return False
+        selected = self.Of(arrow.domain(), arrow.codomain())
+        arrow_parent = arrow.parent()
+        return arrow_parent is selected or (
+            arrow_parent in HomCategories()
+            and _declared_category_reaches(arrow_parent, selected)
+        )
+
     def super_categories(self):
         inherited = [
             self.family_over(category)
@@ -1516,29 +1542,38 @@ _RestrictedCategoryOf = _RestrictedHomCategoryOf
 
 
 class _MonoCategoryOf(_RestrictedHomCategoryOf):
+    r"""Represented monomorphisms absent a stronger theory-specific decision.
+
+    The generic family is placement-only.  It does not interpret an
+    ``is_injective`` method as categorical monicity; categories such as sets
+    that have a theorem identifying the two override :meth:`accepts` at their
+    own declaration.
+    """
+
     _declaration_name = "_MonoCategory"
 
     def family_over(self, category: Category) -> _MonoCategoryOf:
         return _category_packet(category).Monos()
 
     def accepts(self, arrow: Morphism) -> bool:
-        try:
-            return arrow.is_injective() is True
-        except (AttributeError, NotImplementedError):
-            return False
+        return self._accepts_by_placement(arrow)
 
 
 class _EpiCategoryOf(_RestrictedHomCategoryOf):
+    r"""Represented epimorphisms absent a stronger theory-specific decision.
+
+    An arbitrary ``is_surjective`` method is likewise not the definition of a
+    categorical epimorphism.  Theory-specific declarations may supply their
+    own exact admission rule.
+    """
+
     _declaration_name = "_EpiCategory"
 
     def family_over(self, category: Category) -> _EpiCategoryOf:
         return _category_packet(category).Epis()
 
     def accepts(self, arrow: Morphism) -> bool:
-        try:
-            return arrow.is_surjective() is True
-        except (AttributeError, NotImplementedError):
-            return False
+        return self._accepts_by_placement(arrow)
 
 
 class _IsoCategoryOf(_HomCategoryOf):

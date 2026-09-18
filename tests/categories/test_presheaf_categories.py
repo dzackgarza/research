@@ -113,7 +113,8 @@ def test_cover_overlap_reverses_its_two_legs_without_changing_the_overlap() -> N
     inclusion = site.Mor(small, large).unique()
     identity_small = site.Mor(small, small).identity()
     identity_large = site.Mor(large, large).identity()
-    cover = CoveringFamilies(site).family(
+    families = CoveringFamilies(site)
+    cover = families.family(
         large,
         (inclusion, identity_large),
         {(0, 1): (small, identity_small, inclusion)},
@@ -124,6 +125,8 @@ def test_cover_overlap_reverses_its_two_legs_without_changing_the_overlap() -> N
     assert overlap.apex() is small and reverse.apex() is small
     assert reverse.left_leg() is overlap.right_leg()
     assert reverse.right_leg() is overlap.left_leg()
+    assert cover in families.presentation_category()
+    assert cover.presentation().codomain() is site
 
 
 def test_sheaf_entry_retains_the_functor_and_its_descent_datum() -> None:
