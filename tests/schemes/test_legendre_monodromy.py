@@ -28,13 +28,11 @@ def test_legendre_family_retains_singular_fiber_and_smooth_punctured_stratum() -
 
 def test_R1_is_a_local_system_with_actual_stalk_to_fiber_comparison() -> None:
     data = LegendreMonodromyFamily()
-    direct_image = data.higher_direct_image()
-    local_system = direct_image.restriction_to_smooth_stratum()
+    local_system = data.higher_direct_image()
     point = data.base_point()
-    comparison = direct_image.stalk_to_fiber_comparison(point)
+    comparison = data.stalk_to_fiber_comparison()
 
-    assert direct_image.cohomological_degree() == 1
-    assert direct_image.smooth_stratum() is data.smooth_stratum()
+    assert data.cohomological_degree() == 1
     representation = local_system.functor()
     assert local_system in representation.functor_category()
     assert representation(representation.domain().an_object()) is data.fiber_cohomology(point)

@@ -22,7 +22,6 @@ created without its own comparison theorem.
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
-from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
@@ -35,7 +34,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
-from dzack_research.preamble.categories.schemes.ringed_spaces import SheafObjects
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
@@ -71,73 +69,6 @@ class PointedAnalyticFundamentalGroup(SageObject):
 
 
 
-
-class HigherDirectImageSheaf(Parent):
-    r"""A selected ``R^i pi_* ZZ`` with its smooth-stratum local system."""
-
-    def __init__(self, family_data, degree, smooth_stratum, local_system) -> None:
-        self._family_data = family_data
-        self._degree = int(degree)
-        self._smooth_stratum = smooth_stratum
-        self._local_system = local_system
-        assert local_system.base_space() is smooth_stratum, "the higher-direct-image restriction lives on the selected smooth stratum"
-        Parent.__init__(self, category=SheafObjects(smooth_stratum))
-
-    def family_data(self):
-        return self._family_data
-
-    def family_morphism(self):
-        return self.family_data().family_morphism()
-
-    def cohomological_degree(self):
-        return self._degree
-
-    def coefficients(self):
-        return _own_ring(SageZZ)
-
-    def smooth_stratum(self):
-        return self._smooth_stratum
-
-    def restriction_to_smooth_stratum(self):
-        return self._local_system
-
-    def stalk(self, point):
-        assert point is self.family_data().base_point(), (
-            "this selected higher-direct-image model materializes the stalk at its chosen smooth base point"
-        )
-        representation = self.restriction_to_smooth_stratum().functor()
-        return representation(representation.domain().an_object())
-
-    def stalk_to_fiber_comparison(self, point):
-        r"""Topological proper-base-change comparison at the selected smooth point."""
-        assert point is self.restriction_to_smooth_stratum().base_point(), (
-            "the selected proper-base-change comparison is materialized at the chosen smooth base point"
-        )
-        assert self.family_data().proper_base_change_hypotheses_hold(point), (
-            "topological proper base change requires a proper family over the selected smooth point"
-        )
-        stalk = self.stalk(point)
-        fiber = self.family_data().fiber_cohomology(point)
-        forward = stalk.Mor(fiber).identity() if stalk is fiber else stalk.Mor(fiber)(
-            stalk.module_category().Mor(stalk, fiber)(
-                {
-                    label: fiber.module_generator(label)
-                    for label in stalk.module_generating_set()
-                }
-            )
-        )
-        inverse = fiber.Mor(stalk).identity() if stalk is fiber else fiber.Mor(stalk)(
-            fiber.module_category().Mor(fiber, stalk)(
-                {
-                    label: stalk.module_generator(label)
-                    for label in fiber.module_generating_set()
-                }
-            )
-        )
-        return stalk.module_category().Core().Mor(stalk, fiber)(forward, inverse)
-
-    def _repr_(self) -> str:
-        return f"R^{self.cohomological_degree()} of {self.family_morphism()} on {self.smooth_stratum()}"
 
 
 
@@ -226,13 +157,6 @@ class LegendreMonodromyFamily(SageObject):
             action_functor.domain(),
             action_functor.codomain(),
         ).object(action_functor)
-        higher_direct_image = HigherDirectImageSheaf(
-            self,
-            1,
-            smooth_stratum,
-            local_system,
-        )
-
         self._parameter_algebra = parameter
         self._family = family
         self._singular_fiber = singular_fiber
@@ -244,7 +168,6 @@ class LegendreMonodromyFamily(SageObject):
         self._positive_monodromy = forward
         self._negative_monodromy = inverse
         self._local_system = local_system
-        self._higher_direct_image = higher_direct_image
 
     def parameter_algebra(self):
         return self._parameter_algebra
@@ -280,7 +203,11 @@ class LegendreMonodromyFamily(SageObject):
         return self._fiber_h1
 
     def higher_direct_image(self):
-        return self._higher_direct_image
+        r"""The represented restriction of ``R^1 pi_* ZZ`` to the smooth stratum."""
+        return self.local_system()
+
+    def cohomological_degree(self):
+        return 1
 
     def local_system(self):
         return self._local_system
@@ -308,7 +235,31 @@ class LegendreMonodromyFamily(SageObject):
         )
 
     def stalk_to_fiber_comparison(self):
-        return self.higher_direct_image().stalk_to_fiber_comparison(self.base_point())
+        r"""Topological proper-base-change comparison at the selected smooth point."""
+        point = self.base_point()
+        assert self.proper_base_change_hypotheses_hold(point), (
+            "topological proper base change requires a proper family over the selected smooth point"
+        )
+        representation = self.monodromy_representation()
+        stalk = representation(representation.domain().an_object())
+        fiber = self.fiber_cohomology(point)
+        forward = stalk.Mor(fiber).identity() if stalk is fiber else stalk.Mor(fiber)(
+            stalk.module_category().Mor(stalk, fiber)(
+                {
+                    label: fiber.module_generator(label)
+                    for label in stalk.module_generating_set()
+                }
+            )
+        )
+        inverse = fiber.Mor(stalk).identity() if stalk is fiber else fiber.Mor(stalk)(
+            fiber.module_category().Mor(fiber, stalk)(
+                {
+                    label: stalk.module_generator(label)
+                    for label in fiber.module_generating_set()
+                }
+            )
+        )
+        return stalk.module_category().Core().Mor(stalk, fiber)(forward, inverse)
 
     def _repr_(self) -> str:
         return f"Legendre monodromy family over {self.parameter_algebra()} with smooth stratum {self.smooth_stratum()}"
@@ -316,7 +267,6 @@ class LegendreMonodromyFamily(SageObject):
 
 
 __all__ = [
-    "HigherDirectImageSheaf",
     "LegendreMonodromyFamily",
     "PointedAnalyticFundamentalGroup",
 ]

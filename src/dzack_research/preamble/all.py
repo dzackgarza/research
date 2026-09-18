@@ -366,7 +366,6 @@ from dzack_research.preamble.categories.schemes import (
     FiniteGluedInvariantQuotient,
     GeometricFundamentalGroups,
     HesseBertiniFamily,
-    HigherDirectImageSheaf,
     HorikawaEnriquesSurface,
     HorikawaK3DoubleCover,
     HorikawaK3Family,
