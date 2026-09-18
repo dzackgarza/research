@@ -1489,7 +1489,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             class _HomCategory(HomCategoryConstruction):
                 def fixed_category_class(self):
-                    from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                    from dzack_research.preamble.categories.rings.field_morphisms import (
                         _ExactFieldHomset,
                     )
 
@@ -1530,7 +1530,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             class ParentMethods:
                 def field_generators(self):
                     r"""Return exact elements which determine a unital map out of this field."""
-                    from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                    from dzack_research.preamble.categories.rings.field_morphisms import (
                         _field_generators,
                     )
 
@@ -1542,7 +1542,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 def exact_embeddings(self, codomain):
                     r"""Return the exact embeddings of this field into ``codomain``."""
-                    from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+                    from dzack_research.preamble.categories.rings.field_morphisms import (
                         _exact_embeddings,
                     )
 

@@ -8,7 +8,7 @@ from sage.structure.element import Element
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+from dzack_research.preamble.categories.rings.field_morphisms import (
     ExactFieldMorphism,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_ring, _own_ring

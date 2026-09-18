@@ -16,8 +16,6 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
     OpenAbsoluteGaloisSubgroups,
 )
 
-from dzack_research.preamble.categories.group.profinite.field_morphisms import ExactFieldMorphism
-
 from dzack_research.preamble.categories.group.profinite.galois_characters import (
     CyclotomicCharacter,
     ProfiniteCharacter,
@@ -56,7 +54,6 @@ __all__ = [
     'CyclotomicCharacter',
     'DecompositionGroupConjugacyClass',
     'ElementConjugacyClass',
-    'ExactFieldMorphism',
     'FiniteElementConjugacyClass',
     'FiniteGaloisAutomorphism',
     'FiniteGaloisExtension',

@@ -1,4 +1,4 @@
-r"""Exact field maps used by realized absolute Galois groups.
+r"""Exact morphisms of owned fields with private Sage-map backends.
 
 The owned scalar parents are facades over Sage computation fields.  A native
 Sage field map therefore has engine fields as its endpoints, while the public

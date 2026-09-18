@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
     AbsoluteGaloisGroupsOfFiniteFields,
     OpenAbsoluteGaloisSubgroups,
 )
-from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+from dzack_research.preamble.categories.rings.field_morphisms import (
     ExactFieldMorphism,
 )
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (

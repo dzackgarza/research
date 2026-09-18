@@ -18,7 +18,7 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
     OpenAbsoluteGaloisSubgroups,
     _absolute_galois_group_category,
 )
-from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+from dzack_research.preamble.categories.rings.field_morphisms import (
     ExactFieldMorphism,
     _exact_field_morphism_from_engine,
 )
