@@ -186,7 +186,15 @@ class ArrowHomset(NaturalTransformationHomset):
             left, right = left
         return self._square(left, right, verify=True)
 
-    def _square(self, left: Morphism, right: Morphism, *, verify: bool) -> CommutativeSquare:
+    def _square(
+        self,
+        left: Morphism,
+        right: Morphism,
+        *,
+        verify: bool,
+        element_class=None,
+        construction_data=None,
+    ) -> CommutativeSquare:
         r"""The transformation with these two edges, after checking they bound a square here."""
         source = self.domain().arrow()
         target = self.codomain().arrow()
@@ -207,7 +215,8 @@ class ArrowHomset(NaturalTransformationHomset):
             self.target(),
             lambda obj: edges[obj.position()],
         )
-        return self.element_class(self, transformation)
+        selected = self.element_class if element_class is None else element_class
+        return selected(self, transformation, **dict(construction_data or {}))
 
     def _from_commuting_edges(self, left: Morphism, right: Morphism) -> CommutativeSquare:
         r"""Construct edges whose commutativity follows from their construction."""

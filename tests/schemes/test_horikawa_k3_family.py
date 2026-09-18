@@ -102,7 +102,12 @@ def test_cover_and_all_three_involutions_commute_with_nontrivial_scalar_base_cha
     field = QuadraticField(2, "s")
     extension = QQ.Mor(field)(lambda element: field(element))
     comparison = member.base_change(extension)
+    cyclic_square = comparison.cyclic_cover_comparison()
 
+    assert cyclic_square.projection() is cyclic_square.left()
+    assert cyclic_square.base_projection() is cyclic_square.right()
+    assert cyclic_square.domain().arrow() is cyclic_square.changed_cyclic_algebra().relative_spectrum().arrow()
+    assert cyclic_square.codomain().arrow() is member.cyclic_algebra().relative_spectrum().arrow()
     assert comparison.cover_projection().domain() is comparison.changed_scheme()
     assert comparison.cover_projection().codomain() is member.scheme()
     assert comparison.base_projection().codomain() is member.base_surface()

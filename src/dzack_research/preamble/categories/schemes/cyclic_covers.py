@@ -53,6 +53,7 @@ from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import CommutativeSquare
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CYCLIC_COVER_VARIABLE,
@@ -170,104 +171,28 @@ def _cyclic_cover_base_change(cyclic_algebra, ring_map):
     return CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map)
 
 
-class CyclicCoverBaseChangeComparison(SageObject):
-    r"""Scalar change of a finite-atlas cyclic cover with its actual projection."""
+class _CyclicCoverBaseChangeSquare(CommutativeSquare):
+    r"""The commuting square comparing a cyclic cover with its scalar change."""
 
-    def __init__(self, cyclic_algebra, ring_map) -> None:
-        self._source = cyclic_algebra
+    def __init__(
+        self,
+        parent,
+        transformation,
+        *,
+        source_cyclic_algebra,
+        ring_map,
+        changed_line_bundle,
+        changed_branch_power,
+        changed_cyclic_algebra,
+        local_projections,
+    ) -> None:
+        self._source = source_cyclic_algebra
         self._ring_map = ring_map
-        line_bundle = cyclic_algebra.line_bundle()
-        branch_power = cyclic_algebra.branch_power()
-        changed_line_bundle = line_bundle.base_change(ring_map)
-        changed_branch_power = branch_power.base_change(ring_map)
-        changed_branch = changed_branch_power.pullback_compatible_section(
-            cyclic_algebra.branch_section()
-        )
-        changed_cyclic = type(cyclic_algebra)(
-            changed_line_bundle,
-            changed_branch,
-            cyclic_algebra.degree(),
-        )
-
-        source_relative = cyclic_algebra.relative_spectrum()
-        changed_relative = changed_cyclic.relative_spectrum()
-        source_cover = source_relative.arrow().domain()
-        changed_cover = changed_relative.arrow().domain()
-        source_atlas = line_bundle.gluing_datum()
-        changed_atlas = changed_line_bundle.gluing_datum()
-        base_projection = changed_line_bundle.base_change_projection()
-        morphisms = base_projection.parent().homset_category()
-        local_projections = {}
-        local_maps_to_cover = {}
-        for source_index in cyclic_algebra.chart_index_set():
-            changed_index = changed_atlas.normalize_chart_index(source_index)
-            changed_chart = changed_atlas.chart(changed_index)
-            into_source_base = base_projection * changed_atlas.chart_embedding(changed_index)
-            chart_projection = source_atlas.chart(source_index).corestriction(
-                into_source_base
-            )
-            base_pullback = chart_projection.coordinate_algebra_morphism()
-            source_local = cyclic_algebra.local_algebra(source_index)
-            changed_local = changed_cyclic.local_algebra(changed_index)
-            source_labels = source_local.module_generating_set()
-            changed_labels = changed_local.module_generating_set()
-            source_rank = source_labels.ranking_map()
-
-            def image(
-                element,
-                *,
-                source_algebra=source_local,
-                target_algebra=changed_local,
-                coefficient_map=base_pullback,
-                source_ranking=source_rank,
-                target_labels=changed_labels,
-            ):
-                coefficients = source_algebra.framing_coefficients(source_algebra(element))
-                result = target_algebra.zero()
-                for label, coefficient in coefficients.items():
-                    position = int(source_ranking(label))
-                    result += target_algebra.scalar_multiple(
-                        coefficient_map(coefficient),
-                        target_algebra.module_generator(target_labels[position]),
-                    )
-                return result
-
-            algebra_map = source_local.Mor(changed_local)(image)
-            local_projection = morphisms.Mor(
-                changed_cover.gluing_datum().chart(changed_index),
-                source_cover.gluing_datum().chart(source_index),
-            )(algebra_map)
-            local_projections[source_index] = local_projection
-            local_maps_to_cover[source_index] = (
-                source_cover.gluing_datum().chart_embedding(source_index) * local_projection
-            )
-        projection = morphisms.Mor(changed_cover, source_cover)(local_maps_to_cover)
-        if any(
-            source_relative.arrow().local_map(source_index)
-            * local_projections[source_index]
-            != base_projection
-            * changed_relative.arrow().local_map(
-                changed_atlas.normalize_chart_index(source_index)
-            )
-            for source_index in cyclic_algebra.chart_index_set()
-        ):
-            raise ArithmeticError(
-                "the scalar-changed cyclic-cover projection does not commute with the base projection"
-            )
         self._changed_line_bundle = changed_line_bundle
         self._changed_branch_power = changed_branch_power
-        self._changed_cyclic = changed_cyclic
-        self._base_projection = base_projection
-        self._projection = projection
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        self._local_projections = finite_indexed_family(
-            cyclic_algebra.chart_index_set(),
-            lambda index: local_projections[index],
-            name="Local projections of a scalar-changed cyclic cover",
-        )
+        self._changed_cyclic = changed_cyclic_algebra
+        self._local_projections = local_projections
+        super().__init__(parent, transformation)
 
     def source_cyclic_algebra(self):
         return self._source
@@ -285,25 +210,18 @@ class CyclicCoverBaseChangeComparison(SageObject):
         return self._changed_cyclic
 
     def base_projection(self):
-        return self._base_projection
+        r"""The right edge of the cover square: the base-change projection."""
+        return self.right()
 
     def projection(self):
-        return self._projection
+        r"""The left edge of the cover square: the projection of changed covers."""
+        return self.left()
 
     def cover_square_commutes(self) -> bool:
-        source = self.source_cyclic_algebra()
-        changed = self.changed_cyclic_algebra()
-        source_relative = source.relative_spectrum()
-        changed_relative = changed.relative_spectrum()
-        changed_atlas = self.changed_line_bundle().gluing_datum()
-        return all(
-            source_relative.arrow().local_map(index) * self.local_projection(index)
-            == self.base_projection()
-            * changed_relative.arrow().local_map(
-                changed_atlas.normalize_chart_index(index)
-            )
-            for index in source.chart_index_set()
-        )
+        return (
+            self.base_projection() * self.domain().arrow()
+            == self.codomain().arrow() * self.projection()
+        ) is True
 
     def local_projection(self, index):
         return self._local_projections[
@@ -336,8 +254,116 @@ class CyclicCoverBaseChangeComparison(SageObject):
         )
 
     def _repr_(self) -> str:
-        return f"Cyclic-cover base change along {self.ring_map()} for {self.source_cyclic_algebra()}"
+        return f"Cyclic-cover base-change square along {self.ring_map()} for {self.source_cyclic_algebra()}"
 
+
+def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
+    r"""Return the actual commuting square comparing a cyclic cover with its scalar change."""
+    line_bundle = cyclic_algebra.line_bundle()
+    branch_power = cyclic_algebra.branch_power()
+    changed_line_bundle = line_bundle.base_change(ring_map)
+    changed_branch_power = branch_power.base_change(ring_map)
+    changed_branch = changed_branch_power.pullback_compatible_section(
+        cyclic_algebra.branch_section()
+    )
+    changed_cyclic = type(cyclic_algebra)(
+        changed_line_bundle,
+        changed_branch,
+        cyclic_algebra.degree(),
+    )
+
+    source_relative = cyclic_algebra.relative_spectrum()
+    changed_relative = changed_cyclic.relative_spectrum()
+    source_cover = source_relative.arrow().domain()
+    changed_cover = changed_relative.arrow().domain()
+    source_atlas = line_bundle.gluing_datum()
+    changed_atlas = changed_line_bundle.gluing_datum()
+    base_projection = changed_line_bundle.base_change_projection()
+    morphisms = base_projection.parent().homset_category()
+    local_projections = {}
+    local_maps_to_cover = {}
+    for source_index in cyclic_algebra.chart_index_set():
+        changed_index = changed_atlas.normalize_chart_index(source_index)
+        changed_chart = changed_atlas.chart(changed_index)
+        into_source_base = base_projection * changed_atlas.chart_embedding(changed_index)
+        chart_projection = source_atlas.chart(source_index).corestriction(
+            into_source_base
+        )
+        base_pullback = chart_projection.coordinate_algebra_morphism()
+        source_local = cyclic_algebra.local_algebra(source_index)
+        changed_local = changed_cyclic.local_algebra(changed_index)
+        source_labels = source_local.module_generating_set()
+        changed_labels = changed_local.module_generating_set()
+        source_rank = source_labels.ranking_map()
+
+        def image(
+            element,
+            *,
+            source_algebra=source_local,
+            target_algebra=changed_local,
+            coefficient_map=base_pullback,
+            source_ranking=source_rank,
+            target_labels=changed_labels,
+        ):
+            coefficients = source_algebra.framing_coefficients(source_algebra(element))
+            result = target_algebra.zero()
+            for label, coefficient in coefficients.items():
+                position = int(source_ranking(label))
+                result += target_algebra.scalar_multiple(
+                    coefficient_map(coefficient),
+                    target_algebra.module_generator(target_labels[position]),
+                )
+            return result
+
+        algebra_map = source_local.Mor(changed_local)(image)
+        local_projection = morphisms.Mor(
+            changed_cover.gluing_datum().chart(changed_index),
+            source_cover.gluing_datum().chart(source_index),
+        )(algebra_map)
+        local_projections[source_index] = local_projection
+        local_maps_to_cover[source_index] = (
+            source_cover.gluing_datum().chart_embedding(source_index) * local_projection
+        )
+    projection = morphisms.Mor(changed_cover, source_cover)(local_maps_to_cover)
+    if any(
+        source_relative.arrow().local_map(source_index)
+        * local_projections[source_index]
+        != base_projection
+        * changed_relative.arrow().local_map(
+            changed_atlas.normalize_chart_index(source_index)
+        )
+        for source_index in cyclic_algebra.chart_index_set()
+    ):
+        raise ArithmeticError(
+            "the scalar-changed cyclic-cover projection does not commute with the base projection"
+        )
+
+    from dzack_research.preamble.categories.sets.indexed_families import (
+        finite_indexed_family,
+    )
+
+    local_projection_family = finite_indexed_family(
+        cyclic_algebra.chart_index_set(),
+        lambda index: local_projections[index],
+        name="Local projections of a scalar-changed cyclic cover",
+    )
+    arrows = morphisms.ArrowCategory()
+    changed_cover_map = arrows(changed_relative.arrow())
+    source_cover_map = arrows(source_relative.arrow())
+    return arrows.Mor(changed_cover_map, source_cover_map)._square(
+        projection,
+        base_projection,
+        verify=True,
+        element_class=_CyclicCoverBaseChangeSquare,
+        construction_data={
+            "source_cyclic_algebra": cyclic_algebra,
+            "ring_map": ring_map,
+            "changed_line_bundle": changed_line_bundle,
+            "changed_branch_power": changed_branch_power,
+            "changed_cyclic_algebra": changed_cyclic,
+            "local_projections": local_projection_family,
+        },
+    )
 
 
 class RelativeCyclicCoverLift(SageObject):
