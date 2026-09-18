@@ -1059,9 +1059,6 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def underlying_space(self):
-            specialized = getattr(self, "_scheme_underlying_space", None)
-            if specialized is not None:
-                return specialized()
             return SchemeUnderlyingSpace(self)
 
 

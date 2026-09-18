@@ -2222,6 +2222,11 @@ class Schemes(OwnedCategoryOverBaseRing):
                 r"""The coordinate algebra, under the name the ring layer uses."""
                 return self.coordinate_algebra()
 
+            @cached_method
+            def underlying_space(self):
+                r"""The prime spectrum ``Spec A`` underlying the affine scheme ``Spec A``."""
+                return self.coordinate_algebra().spectrum()
+
             def is_affine(self):
                 return True
 

@@ -22,6 +22,7 @@ def test_archived_ringed_space_structure_is_live_on_affine_schemes() -> None:
     assert line in RingedSpaces()
     assert line in LocallyRingedSpaces()
     assert line.underlying_space() is line.underlying_space()
+    assert line.underlying_space() is line.coordinate_algebra().spectrum()
     assert sheaf.ringed_space() is line
     assert sheaf.global_sections() is line.coordinate_ring()
 
