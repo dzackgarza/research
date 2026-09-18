@@ -1072,9 +1072,13 @@ class NaturalTransformationHomset(CategoricalHomset):
 
     def _element_constructor_(self, transformation):
         r"""A natural transformation between these two functors, given as one or by its components."""
+        return self._transformation(transformation)
+
+    def _transformation(self, transformation, *, element_class=None, construction_data=None):
+        r"""Construct one transformation, optionally with a private realization."""
         match transformation:
             case NaturalTransformationMorphism():
-                if transformation.parent() is self:
+                if transformation.parent() is self and element_class is None and construction_data is None:
                     return transformation
                 transformation = transformation.transformation()
             case NaturalTransformation():
@@ -1083,7 +1087,8 @@ class NaturalTransformationHomset(CategoricalHomset):
                 transformation = NaturalTransformation(
                     self.domain().functor(), self.codomain().functor(), transformation
                 )
-        return NaturalTransformationMorphism(self, transformation)
+        selected = NaturalTransformationMorphism if element_class is None else element_class
+        return selected(self, transformation, **dict(construction_data or {}))
 
     @cached_method
     def identity(self) -> NaturalTransformationMorphism:

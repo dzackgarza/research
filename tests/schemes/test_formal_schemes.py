@@ -57,8 +57,14 @@ def test_continuous_formal_map_descends_compatibly_to_every_thickening() -> None
     morphism = formal_source.morphism_to(formal_target, ring_map)
     stage = morphism.thickening_ring_map(3)
 
+    assert morphism.parent() is formal_source.category().Mor(formal_source, formal_target)
+    assert morphism.domain() is formal_source
+    assert morphism.codomain() is formal_target
     assert stage.domain() is formal_target.thickening_ring(3)
     assert stage.codomain() is formal_source.thickening_ring(3)
     assert stage(stage.domain().quotient_map()(y)) == stage.codomain().quotient_map()(x)
+    stage_scheme_map = morphism.thickening_morphism(3)
+    assert stage_scheme_map.domain() is formal_source.thickening(3)
+    assert stage_scheme_map.codomain() is formal_target.thickening(3)
     assert morphism.completed_ring_map(4, 6).domain() is formal_target.completion(6)
     assert morphism.completed_ring_map(4, 6).codomain() is formal_source.completion(4)

@@ -4,7 +4,8 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.products import DirectedSystem, PosetCategory
-from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.abstract_categories.cat import NaturalTransformationMorphism
+from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.sets.set_categories import NN
 
 
@@ -180,38 +181,12 @@ def FormalSpectrum(source_ring, ideal_of_definition):
     )
 
 
-class FormalAffineMorphism(SageObject):
-    r"""A continuous affine formal morphism ``Spf(A,I) -> Spf(B,J)``.
+class _FormalAffineNaturalTransformation(NaturalTransformationMorphism):
+    r"""A same-power formal-affine morphism as a natural transformation of thickening systems."""
 
-    It is given contravariantly by a ring map ``phi: B -> A`` with
-    ``phi(J)`` contained in ``I``.  This sufficient continuity hypothesis
-    also gives maps at matching powers ``B/J^n -> A/I^n``.  General adic
-    continuity may instead require different powers and is not equivalent
-    to this chosen same-power presentation.
-    """
-
-    def __init__(self, domain, codomain, coordinate_ring_morphism) -> None:
-        assert coordinate_ring_morphism.domain() is codomain.source_ring(), (
-            "a formal affine morphism has the wrong coordinate-ring source"
-        )
-        assert coordinate_ring_morphism.codomain() is domain.source_ring(), (
-            "a formal affine morphism has the wrong coordinate-ring target"
-        )
-        assert all(
-            domain.ideal_of_definition().contains_ambient_element(
-                coordinate_ring_morphism(generator)
-            )
-            for generator in codomain.ideal_of_definition().ideal_generators()
-        ), "the same-power formal presentation requires phi(J) contained in I"
-        self._domain = domain
-        self._codomain = codomain
+    def __init__(self, parent, transformation, *, coordinate_ring_morphism) -> None:
         self._ring_map = coordinate_ring_morphism
-
-    def domain(self):
-        return self._domain
-
-    def codomain(self):
-        return self._codomain
+        super().__init__(parent, transformation)
 
     def coordinate_ring_morphism(self):
         return self._ring_map
@@ -226,7 +201,9 @@ class FormalAffineMorphism(SageObject):
         )
 
     def thickening_morphism(self, exponent):
-        return _affine_spec_morphism(self.thickening_ring_map(exponent))
+        exponent = int(exponent)
+        index = self.domain().functor().base_index_category()(NN(exponent - 1))
+        return self.component(index)
 
     def completed_ring_map(self, domain_precision=20, codomain_precision=20):
         r"""Return the continuous map on selected completion realizations."""
@@ -236,6 +213,47 @@ class FormalAffineMorphism(SageObject):
             self.coordinate_ring_morphism(),
             domain_completion,
         )
+
+    def _repr_(self):
+        return f"Formal morphism {self.domain()} -> {self.codomain()}"
+
+
+def FormalAffineMorphism(domain, codomain, coordinate_ring_morphism):
+    r"""Return the same-power formal morphism as a natural transformation of thickenings."""
+    assert coordinate_ring_morphism.domain() is codomain.source_ring(), (
+        "a formal affine morphism has the wrong coordinate-ring source"
+    )
+    assert coordinate_ring_morphism.codomain() is domain.source_ring(), (
+        "a formal affine morphism has the wrong coordinate-ring target"
+    )
+    assert all(
+        domain.ideal_of_definition().contains_ambient_element(
+            coordinate_ring_morphism(generator)
+        )
+        for generator in codomain.ideal_of_definition().ideal_generators()
+    ), "the same-power formal presentation requires phi(J) contained in I"
+
+    def component(index):
+        exponent = domain.functor().exponent(index)
+        source = codomain.thickening_ring(exponent)
+        target = domain.thickening_ring(exponent)
+        target_projection = target.quotient_map()
+        ring_map = coordinate_ring_morphism
+        stage_map = source.Mor(target).elementwise(
+            lambda element: target_projection(ring_map(element.lift()))
+        )
+        return _affine_spec_morphism(stage_map)
+
+    transformation = NaturalTransformation(
+        domain.functor(),
+        codomain.functor(),
+        component,
+    )
+    return domain.category().Mor(domain, codomain)._transformation(
+        transformation,
+        element_class=_FormalAffineNaturalTransformation,
+        construction_data={"coordinate_ring_morphism": coordinate_ring_morphism},
+    )
 
 
 __all__ = [
