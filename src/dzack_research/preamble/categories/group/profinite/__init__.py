@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_group im
     FrobeniusElement,
     OpenAbsoluteGaloisSubgroup,
     OpenGaloisSubgroupConjugacyClass,
-    OpenSubgroupInclusion,
 )
 
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
@@ -38,7 +37,6 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteGaloisAutomorphism,
     FiniteGaloisExtension,
     FiniteGaloisQuotient,
-    GaloisRestrictionMap,
     LiftCoset,
 )
 
@@ -61,13 +59,11 @@ __all__ = [
     'FiniteGaloisSubgroup',
     'FrobeniusConjugacyClass',
     'FrobeniusElement',
-    'GaloisRestrictionMap',
     'InertiaGroupConjugacyClass',
     'LiftCoset',
     'OpenAbsoluteGaloisSubgroup',
     'OpenAbsoluteGaloisSubgroups',
     'OpenGaloisSubgroupConjugacyClass',
-    'OpenSubgroupInclusion',
     'PrimeProlongation',
     'ProfiniteCharacter',
     'ProfiniteGroups',

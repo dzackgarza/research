@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     PrimeProlongation,
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
-    GaloisRestrictionMap,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 from dzack_research.preamble.categories.sets import Sets
@@ -318,7 +317,7 @@ def test_extension_data_extends_a_nondefault_chosen_base_embedding() -> None:
         lambda: foreign_group.extension_data(stage),
         lambda: foreign_group.open_subgroup(stage),
         lambda: OpenAbsoluteGaloisSubgroup(foreign_group, stage),
-        lambda: GaloisRestrictionMap(foreign_group, quotient),
+        lambda: foreign_group.restriction_map(stage),
         lambda: foreign_group.lift(finite_automorphism),
         lambda: foreign_group.lifts(finite_automorphism),
     ):
@@ -340,7 +339,10 @@ def test_open_subgroups_are_actual_subgroups_and_classes_forget_the_embedding() 
     assert index_two.index() == 2
     assert frobenius not in index_two
     assert frobenius**2 in index_two
-    assert index_two.inclusion()(index_two.frobenius()) == frobenius**2
+    inclusion = index_two.inclusion()
+    assert inclusion.parent() is index_two.Mor(group)
+    assert inclusion.is_continuous()
+    assert inclusion(index_two.frobenius()) == frobenius**2
     assert intersection.index() == 6
     assert intersection <= index_two
     assert intersection <= index_three

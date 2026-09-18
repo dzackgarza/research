@@ -19,6 +19,7 @@ def test_restriction_map_is_the_actual_finite_galois_quotient_coordinate() -> No
     quotient = group.finite_quotient(stage)
     restriction = group.restriction_map(stage)
 
+    assert restriction.parent() is group.Mor(quotient)
     assert restriction.domain() is group
     assert restriction.codomain() is quotient
     assert restriction.is_continuous()

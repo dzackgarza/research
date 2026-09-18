@@ -37,8 +37,8 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteExtensionAutomorphismGroup,
     FiniteGaloisExtension,
     FiniteGaloisQuotient,
-    GaloisRestrictionMap,
     LiftCoset,
+    _galois_restriction_rule,
     _relative_degree,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -626,7 +626,11 @@ class _AbsoluteGaloisGroupEngine:
         return FiniteGaloisQuotient(stage)
 
     def restriction_map(self, extension):
-        return GaloisRestrictionMap(self, self.finite_quotient(extension))
+        stage = self.extension_data(extension)
+        quotient = self.finite_quotient(stage)
+        return self.Mor(quotient)._from_realization_rule(
+            _galois_restriction_rule(stage)
+        )
 
     def lift(self, finite_automorphism):
         quotient = finite_automorphism.parent()
@@ -650,7 +654,7 @@ class _AbsoluteGaloisGroupEngine:
         quotient = finite_automorphism.parent()
         stage = self.extension_data(quotient.extension_data())
         quotient = FiniteGaloisQuotient(stage)
-        return LiftCoset(GaloisRestrictionMap(self, quotient), quotient(finite_automorphism))
+        return LiftCoset(self.restriction_map(stage), quotient(finite_automorphism))
 
     def open_subgroup(self, extension, embedding=None):
         stage = self.extension_data(extension, embedding=embedding)
@@ -745,10 +749,10 @@ def AbsoluteGaloisGroup(field, closure=None, embedding=None):
 class OpenSubgroupInclusion(Morphism):
     r"""The literal inclusion of a realized open subgroup into its supergroup group."""
 
-    def __init__(self, subgroup) -> None:
-        Morphism.__init__(
-            self,
-            subgroup.continuous_morphisms_to(subgroup.supergroup()),
+    def __init__(self, parent) -> None:
+        Morphism.__init__(self, parent)
+        assert self.domain().supergroup() is self.codomain(), (
+            "an open-subgroup inclusion must target its represented supergroup"
         )
 
     def _call_(self, element):
@@ -767,6 +771,11 @@ class OpenSubgroupInclusion(Morphism):
 
     def is_continuous(self) -> bool:
         return True
+
+
+def _open_subgroup_inclusion_rule(homset):
+    r"""The group-Hom realization rule for an open absolute-Galois subgroup inclusion."""
+    return OpenSubgroupInclusion(homset)
 
 
 class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
@@ -1059,5 +1068,4 @@ __all__ = [
     "FrobeniusElement",
     "OpenAbsoluteGaloisSubgroup",
     "OpenGaloisSubgroupConjugacyClass",
-    "OpenSubgroupInclusion",
 ]

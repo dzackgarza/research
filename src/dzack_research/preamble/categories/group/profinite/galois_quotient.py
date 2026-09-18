@@ -419,10 +419,12 @@ def FiniteGaloisQuotient(extension):
 class GaloisRestrictionMap(Morphism):
     r"""The continuous quotient map (G_K\to\operatorname{Gal}(L/K))."""
 
-    def __init__(self, domain, codomain) -> None:
-        extension = domain.extension_data(codomain.extension_data())
-        Morphism.__init__(self, domain.continuous_morphisms_to(codomain))
-        self._extension = extension
+    def __init__(self, parent, extension) -> None:
+        Morphism.__init__(self, parent)
+        self._extension = self.domain().extension_data(extension)
+        assert self.codomain() is self.domain().finite_quotient(self._extension), (
+            "a Galois restriction map lands in the quotient of its represented finite stage"
+        )
 
     def extension(self) -> FiniteGaloisExtension:
         return self._extension
@@ -463,6 +465,11 @@ class GaloisRestrictionMap(Morphism):
 
     def _repr_(self) -> str:
         return f"Restriction {self.domain()} -> {self.codomain()}"
+
+
+def _galois_restriction_rule(extension):
+    r"""The group-Hom realization rule for restriction to one finite Galois stage."""
+    return lambda homset: GaloisRestrictionMap(homset, extension)
 
 
 class _LiftCosetEngine:
@@ -536,6 +543,5 @@ __all__ = [
     "FiniteGaloisAutomorphism",
     "FiniteGaloisExtension",
     "FiniteGaloisQuotient",
-    "GaloisRestrictionMap",
     "LiftCoset",
 ]

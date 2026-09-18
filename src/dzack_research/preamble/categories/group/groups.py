@@ -1282,7 +1282,9 @@ class SubgroupInclusion(SetMorphism):
 def _canonical_subgroup_inclusion(subgroup):
     r"""The inclusion ``H -> G`` of a subgroup whose elements are elements of ``G``."""
     containing_group = subgroup.supergroup()
-    return SubgroupInclusion(subgroup.Mor(containing_group), containing_group)
+    return subgroup.Mor(containing_group)._from_realization_rule(
+        lambda homset: SubgroupInclusion(homset, containing_group)
+    )
 
 
 class IndexedFreeGroupHomomorphism(Morphism):
@@ -1341,7 +1343,17 @@ class IndexedFreeGroupHomomorphism(Morphism):
         )
 
 
-class IndexedFreeGroupHomset(CategoricalHomset):
+class _GroupHomRealizationMixin:
+    def _from_realization_rule(self, rule):
+        r"""Realize a specialized group arrow through this canonical Hom parent."""
+        morphism = rule(self)
+        assert morphism.parent() is self, (
+            "a group-Hom realization rule must return an arrow parented by this Hom"
+        )
+        return morphism
+
+
+class IndexedFreeGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
     """The canonical Hom-set out of the free group on a chosen set."""
 
     Element = IndexedFreeGroupHomomorphism
@@ -1522,7 +1534,7 @@ class GroupHomomorphism(Morphism):
         return bool(self.gap().IsSurjective())
 
 
-class GroupHomset(CategoricalHomset):
+class GroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
     """The canonical owned homset Hom(G,H)."""
 
     Element = GroupHomomorphism
@@ -1782,7 +1794,7 @@ class GroupAutomorphismGroup(GroupHomset):
         )
 
 
-class GeneralGroupHomset(CategoricalHomset):
+class GeneralGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
     r"""The owned group Hom for endpoints without a selected GAP realization.
 
     Specialized morphism constructions (for example profinite restriction maps

@@ -184,10 +184,12 @@ class OpenAbsoluteGaloisSubgroups(OwnedParameterizedCategory):
         @cached_method
         def inclusion(self):
             from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
-                OpenSubgroupInclusion,
+                _open_subgroup_inclusion_rule,
             )
 
-            return OpenSubgroupInclusion(self)
+            return self.Mor(self.supergroup())._from_realization_rule(
+                _open_subgroup_inclusion_rule
+            )
 
 
 def _absolute_galois_group_category(field):
