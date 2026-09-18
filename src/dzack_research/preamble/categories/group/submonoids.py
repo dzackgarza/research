@@ -54,11 +54,11 @@ class _SubmonoidEngine:
             raise TypeError(f"{ambient} is not an owned monoid")
         if generators is None and predicate is None:
             raise ValueError("a represented submonoid needs generators or a membership predicate")
-        self._preamble_ambient_monoid = ambient
-        self._preamble_defining_predicate = predicate
-        self._preamble_description = description
-        self._preamble_submonoid_structure_data = dict(structure_data or {})
-        self._preamble_monoid_generators = (
+        self._ambient_monoid = ambient
+        self._defining_predicate = predicate
+        self._description = description
+        self._submonoid_structure_data = dict(structure_data or {})
+        self._monoid_generators = (
             None if generators is None else finite_ordered_set(tuple(generators))
         )
         super().__init__(facade=ambient, **rest)
@@ -66,7 +66,7 @@ class _SubmonoidEngine:
             raise ValueError("a submonoid must contain the ambient multiplicative identity")
 
     def ambient_monoid(self):
-        return self._preamble_ambient_monoid
+        return self._ambient_monoid
 
     supermonoid = ambient_monoid
 
@@ -77,19 +77,19 @@ class _SubmonoidEngine:
         )
 
     def structure_data(self):
-        return dict(self._preamble_submonoid_structure_data)
+        return dict(self._submonoid_structure_data)
 
     def defining_predicate(self):
-        assert self._preamble_defining_predicate is not None, (
+        assert self._defining_predicate is not None, (
             "defining_predicate requires a submonoid represented by a selected membership predicate"
         )
-        return self._preamble_defining_predicate
+        return self._defining_predicate
 
     def monoid_generators(self):
-        assert self._preamble_monoid_generators is not None, (
+        assert self._monoid_generators is not None, (
             "monoid_generators requires a submonoid represented by a chosen generating set"
         )
-        return self._preamble_monoid_generators
+        return self._monoid_generators
 
 
     def one(self):
@@ -97,20 +97,21 @@ class _SubmonoidEngine:
 
     def _normalize(self, datum):
         ambient = self.ambient_monoid()
-        if getattr(datum, "parent", lambda: None)() is ambient:
-            return datum
+        assert datum in ambient, "a submonoid element belongs to its ambient monoid"
         return ambient(datum)
 
     def __contains__(self, datum):
-        try:
-            element = self._normalize(datum)
-        except (TypeError, ValueError):
-            return False
-        if self._preamble_defining_predicate is not None:
-            return bool(self._preamble_defining_predicate(element))
+        ambient = self.ambient_monoid()
+        match datum:
+            case _ if datum not in ambient:
+                return False
+            case _:
+                element = ambient(datum)
+        if self._defining_predicate is not None:
+            return bool(self._defining_predicate(element))
         if element == self.one():
             return True
-        generators = tuple(self._preamble_monoid_generators)
+        generators = tuple(self._monoid_generators)
         is_selected_generator = any(element == generator for generator in generators)
         assert is_selected_generator, (
             "membership beyond the identity and selected generators requires a represented "
@@ -126,8 +127,8 @@ class _SubmonoidEngine:
         return element
 
     def _repr_(self):
-        if self._preamble_description is not None:
-            return self._preamble_description
+        if self._description is not None:
+            return self._description
         return f"Submonoid of {self.ambient_monoid()}"
 
 
