@@ -45,9 +45,18 @@ class _ScalarExtensionFunctor(Functor):
         # Restriction of scalars does not erase relations.  In particular
         # S tensor_R Res_f(M) cannot be replaced by a free module merely
         # because a generating family of Res_f(M) was selected.
-        return module.base_change(self.ring_map())
+        match self.ring_map():
+            case ring_map if ring_map.is_identity():
+                return module
+            case _:
+                return module.base_change(self.ring_map())
 
     def _apply_morphism(self, morphism):
+        match self.ring_map():
+            case ring_map if ring_map.is_identity():
+                return morphism
+            case _:
+                pass
         source = self(morphism.domain())
         target = self(morphism.codomain())
 

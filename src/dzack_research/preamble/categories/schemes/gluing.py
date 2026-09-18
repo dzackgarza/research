@@ -35,6 +35,11 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
+from dzack_research.preamble.categories.modules.base_change import _base_change_element
+from dzack_research.preamble.categories.modules.fibered_modules import (
+    ModulesOverCommutativeRings,
+    SemilinearModuleMorphism,
+)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
@@ -1336,11 +1341,11 @@ class FiniteAtlasRefinement(SageObject):
                 image = coarse_transition.pullback()(
                     coarse_target_pair.module_generator(label)
                 )
-                return _change_coefficients(
-                    image,
+                return _base_change_element(
                     coarse_source_pair,
                     codomain,
                     source_ring_map,
+                    image,
                 )
 
             def inverse_images(
@@ -1355,11 +1360,11 @@ class FiniteAtlasRefinement(SageObject):
                 image = coarse_transition.inverse_pullback()(
                     coarse_source_pair.module_generator(label)
                 )
-                return _change_coefficients(
-                    image,
+                return _base_change_element(
                     coarse_target_pair,
                     codomain,
                     target_ring_map,
+                    image,
                 )
 
             transition_data[source_index, target_index] = (
@@ -1483,19 +1488,6 @@ def _finite_framing(module):
     return labels
 
 
-def _change_coefficients(element, source, target, ring_map):
-    r"""Base-change one framed module element along ``ring_map``."""
-
-    coefficients = source.framing_coefficients(source(element))
-    return target.linear_combination(
-        {
-            label: ring_map(coefficient)
-            for label, coefficient in coefficients.items()
-            if ring_map(coefficient) != target.base_ring().zero()
-        }
-    )
-
-
 def _maps_agree_on_framing(left, right) -> bool:
     if left.domain() is not right.domain() or left.codomain() is not right.codomain():
         return False
@@ -1505,130 +1497,6 @@ def _maps_agree_on_framing(left, right) -> bool:
         == right(right.domain().module_generator(label))
         for label in labels
     )
-
-
-class SemilinearModuleMorphism(SageObject):
-    r"""A semilinear map represented by its scalar map and linearization.
-
-    For ``sigma : R -> S``, a ``sigma``-semilinear map ``M -> N`` is stored as
-    the equivalent ``S``-linear map ``S tensor_R M -> N``.  Composition is
-    formed from the action on the original source generators and the composed
-    scalar map, so it never relies on literal identity between iterated
-    scalar-extension parents.
-    """
-
-    def __init__(self, source, target, scalar_map, images) -> None:
-        if scalar_map.domain() is not source.base_ring():
-            raise ValueError("a semilinear scalar map starts at the source module base ring")
-        if scalar_map.codomain() is not target.base_ring():
-            raise ValueError("a semilinear scalar map ends at the target module base ring")
-        _finite_framing(source)
-        _finite_framing(target)
-        self._source = source
-        self._target = target
-        self._scalar_map = scalar_map
-        self._extended_source = source.base_change(scalar_map)
-        if callable(images):
-            linear_images = {
-                label: images(label)
-                for label in source.module_generating_set()
-            }
-        else:
-            linear_images = dict(images)
-        self._linearization = self._extended_source.module_category().Mor(self._extended_source, target)(
-            linear_images
-        )
-
-    def source(self):
-        return self._source
-
-    domain = source
-
-    def target(self):
-        return self._target
-
-    codomain = target
-
-    def scalar_map(self):
-        return self._scalar_map
-
-    def linearization(self):
-        return self._linearization
-
-    def extended_source(self):
-        return self._extended_source
-
-    def _extended_element(self, element):
-        return _change_coefficients(
-            self.source()(element),
-            self.source(),
-            self.extended_source(),
-            self.scalar_map(),
-        )
-
-    def __call__(self, element):
-        return self.linearization()(self._extended_element(element))
-
-    def __mul__(self, other):
-        if other.target() is not self.source():
-            return NotImplemented
-        scalar_map = self.scalar_map() * other.scalar_map()
-        return SemilinearModuleMorphism(
-            other.source(),
-            self.target(),
-            scalar_map,
-            {
-                label: self(other(other.source().module_generator(label)))
-                for label in other.source().module_generating_set()
-            },
-        )
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, SemilinearModuleMorphism)
-            and other.source() is self.source()
-            and other.target() is self.target()
-            and other.scalar_map() == self.scalar_map()
-            and all(
-                other(self.source().module_generator(label))
-                == self(self.source().module_generator(label))
-                for label in self.source().module_generating_set()
-            )
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    @classmethod
-    def identity(cls, module):
-        scalar_map = module.base_ring().Mor(module.base_ring()).identity()
-        return cls(
-            module,
-            module,
-            scalar_map,
-            {
-                label: module.module_generator(label)
-                for label in module.module_generating_set()
-            },
-        )
-
-    @classmethod
-    def from_linear(cls, morphism):
-        r"""Regard one linear map as semilinear over the identity scalar map."""
-        source = morphism.domain()
-        target = morphism.codomain()
-        if source.base_ring() is not target.base_ring():
-            raise ValueError("a linear map has one scalar ring")
-        scalar_map = source.base_ring().Mor(source.base_ring()).identity()
-        return cls(
-            source,
-            target,
-            scalar_map,
-            {
-                label: morphism(source.module_generator(label))
-                for label in source.module_generating_set()
-            },
-        )
 
 
 class SemilinearAlgebraMorphism(SageObject):
@@ -2052,15 +1920,12 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         pullback_images, inverse_images = self._transition_images(
             source_index, target_index
         )
-        pullback = SemilinearModuleMorphism(
-            target,
-            source,
+        fibered_modules = ModulesOverCommutativeRings()
+        pullback = fibered_modules.Mor(target, source)(
             scheme_transition.forward().coordinate_algebra_morphism(),
             self._images_from_coordinates(target, source, pullback_images),
         )
-        inverse_pullback = SemilinearModuleMorphism(
-            source,
-            target,
+        inverse_pullback = fibered_modules.Mor(source, target)(
             scheme_transition.inverse().coordinate_algebra_morphism(),
             self._images_from_coordinates(source, target, inverse_images),
         )
@@ -2105,16 +1970,15 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         triple_scheme_transition = datum.transition_on_triple(
             source_index, target_index, third_index
         )
-        pullback = SemilinearModuleMorphism(
-            target_triple,
-            source_triple,
+        fibered_modules = ModulesOverCommutativeRings()
+        pullback = fibered_modules.Mor(target_triple, source_triple)(
             triple_scheme_transition.coordinate_algebra_morphism(),
             {
-                label: _change_coefficients(
-                    pair_transition.pullback()(target_pair.module_generator(label)),
+                label: _base_change_element(
                     source_pair,
                     source_triple,
                     source_restriction,
+                    pair_transition.pullback()(target_pair.module_generator(label)),
                 )
                 for label in target_pair.module_generating_set()
             },
@@ -2122,16 +1986,14 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         inverse_scheme_transition = datum.transition_on_triple(
             target_index, source_index, third_index
         )
-        inverse_pullback = SemilinearModuleMorphism(
-            source_triple,
-            target_triple,
+        inverse_pullback = fibered_modules.Mor(source_triple, target_triple)(
             inverse_scheme_transition.coordinate_algebra_morphism(),
             {
-                label: _change_coefficients(
-                    pair_transition.inverse_pullback()(source_pair.module_generator(label)),
+                label: _base_change_element(
                     target_pair,
                     target_triple,
                     target_restriction,
+                    pair_transition.inverse_pullback()(source_pair.module_generator(label)),
                 )
                 for label in source_pair.module_generating_set()
             },
@@ -2175,11 +2037,11 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         ring_map = overlap.inclusion().coordinate_algebra_morphism()
         return source_pair.module_category().Mor(source_pair, target_pair)(
             {
-                label: _change_coefficients(
-                    local_map(self.local_module(chart_index).module_generator(label)),
+                label: _base_change_element(
                     target_datum.local_module(chart_index),
                     target_pair,
                     ring_map,
+                    local_map(self.local_module(chart_index).module_generator(label)),
                 )
                 for label in self.local_module(chart_index).module_generating_set()
             }
@@ -2227,17 +2089,17 @@ class FiniteAtlasModuleGluingDatum(SageObject):
             name="Compatible finite-atlas section components",
         )
         for source_index, target_index in atlas.transition_index_set():
-            source_value = _change_coefficients(
-                components[source_index],
+            source_value = _base_change_element(
                 self.local_module(source_index),
                 self.pair_module(source_index, target_index),
                 atlas.overlap(source_index, target_index).inclusion().coordinate_algebra_morphism(),
+                components[source_index],
             )
-            target_value = _change_coefficients(
-                components[target_index],
+            target_value = _base_change_element(
                 self.local_module(target_index),
                 self.pair_module(target_index, source_index),
                 atlas.overlap(target_index, source_index).inclusion().coordinate_algebra_morphism(),
+                components[target_index],
             )
             if self.transition(source_index, target_index).pullback()(target_value) != source_value:
                 raise ValueError("the finite-atlas local sections do not agree on an overlap")
@@ -3140,11 +3002,11 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             source = self.restricted_module(source_label, *labels)
             target = self.restricted_module(target_label, *labels)
             return source.module_category().Mor(source, target)(
-                lambda label: _change_coefficients(
-                    transition(pair_source.module_generator(label)),
+                lambda label: _base_change_element(
                     pair_target,
                     target,
                     ring_map,
+                    transition(pair_source.module_generator(label)),
                 )
             )
 
@@ -3414,11 +3276,11 @@ class ModuleGluingMorphism(Morphism):
         local_source = self.domain().local_module(chart)
         local_target = self.codomain().local_module(chart)
         return source.module_category().Mor(source, target)(
-            lambda label: _change_coefficients(
-                local_map(local_source.module_generator(label)),
+            lambda label: _base_change_element(
                 local_target,
                 target,
                 ring_map,
+                local_map(local_source.module_generator(label)),
             )
         )
 

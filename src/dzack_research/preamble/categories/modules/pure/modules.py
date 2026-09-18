@@ -253,6 +253,7 @@ class Modules(OwnedCategoryOverBaseRing):
     # ``S tensor_R - -| Res_f -| Hom_R(S, -)``, each functor spelled on its
     # domain category and each adjunction on its left adjoint's domain.
 
+    @cached_method(key=lambda self, ring_map: id(ring_map))
     def scalar_extension(self, ring_map):
         r"""``S tensor_R - : Modules(R) -> Modules(S)`` along ``ring_map: R -> S``."""
         from dzack_research.preamble.categories.functors.scalar_change import (
@@ -721,6 +722,12 @@ class Modules(OwnedCategoryOverBaseRing):
         return self.base_ring().free_module(1)
 
     def super_categories(self):
+        if self.base_ring() in OwnedRings().Commutative():
+            from dzack_research.preamble.categories.modules.fibered_modules import (
+                ModulesOverCommutativeRings,
+            )
+
+            return [ModulesOverCommutativeRings()]
         return [AdditiveGroups().AdditiveCommutative()]
 
     def Mor(self, domain, codomain):

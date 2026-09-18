@@ -23,3 +23,14 @@ def _base_change_scalar(ring_map, scalar):
     r"""Apply ``R -> S`` and return the resulting element of the owned ring ``S``."""
     target = _owned_ring(ring_map.codomain())
     return target(ring_map(scalar))
+
+
+def _base_change_element(module, changed_module, ring_map, element):
+    r"""Apply the represented scalar-extension unit to one framed-module element."""
+    coefficients = module.framing_coefficients(module(element))
+    return changed_module.linear_combination(
+        {
+            label: _base_change_scalar(ring_map, coefficient)
+            for label, coefficient in coefficients.items()
+        }
+    )

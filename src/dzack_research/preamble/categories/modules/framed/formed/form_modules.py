@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.forms.forms import (
 )
 from dzack_research.preamble.categories.modules.base_change import (
     _base_change_codomain,
+    _base_change_element,
     _base_change_scalar,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -506,24 +507,6 @@ class FormedModuleMonoCategoryConstruction(MonoCategoryConstruction):
         return FormEmbeddingHomset
 
 
-def _base_change_element(module, changed_module, ring_map, element):
-    r"""Transport one represented framed-module element along ``ring_map``.
-
-    This is the elementwise form of the scalar-extension unit on the selected
-    presentation.  It is used only to compose morphisms in different scalar
-    fibers; the public scalar-extension object remains ``changed_module``.
-    """
-
-    coefficients = module.framing_coefficients(element)
-    target_ring = changed_module.base_ring()
-    return changed_module.linear_combination(
-        {
-            label: target_ring(ring_map(coefficient))
-            for label, coefficient in coefficients.items()
-        }
-    )
-
-
 class FiberedFormedModuleMorphism(Morphism):
     r"""A formed-module morphism over a coefficient-ring map ``g:S1 -> S2``.
 
@@ -554,6 +537,10 @@ class FiberedFormedModuleMorphism(Morphism):
             raise ValueError("the value map has the wrong target value module")
         self._module_morphism = module_morphism
         self._value_morphism = value_morphism
+        self._underlying_semilinear_morphism = parent.module_homset()(
+            self.ring_map(),
+            module_morphism,
+        )
         self._check_form_square()
 
     def ring_map(self):
@@ -564,6 +551,10 @@ class FiberedFormedModuleMorphism(Morphism):
 
     def module_morphism(self):
         return self._module_morphism
+
+    def underlying_semilinear_morphism(self):
+        r"""Forget the form and retain the arrow in the varying-ring module category."""
+        return self._underlying_semilinear_morphism
 
     def value_morphism(self):
         return self._value_morphism
@@ -611,13 +602,7 @@ class FiberedFormedModuleMorphism(Morphism):
 
     def _call_(self, element):
         r"""Apply the equivalent semilinear map to an element of the original source."""
-        changed_element = _base_change_element(
-            self.domain(),
-            self.base_changed_domain(),
-            self.ring_map(),
-            element,
-        )
-        return self.module_morphism()(changed_element)
+        return self.underlying_semilinear_morphism()(element)
 
     def __call__(self, element):
         return self._call_(element)
@@ -634,16 +619,13 @@ class FiberedFormedModuleMorphism(Morphism):
 
         direct_changed = homset.base_changed_domain()
         middle_changed = self.base_changed_domain()
-
-        module_images = {}
-        for label in other.domain().module_generating_set():
-            other_source_generator = other.base_changed_domain().module_generator(label)
-            middle_element = other.module_morphism()(other_source_generator)
-            lifted_middle = _base_change_element(
-                self.domain(), middle_changed, self.ring_map(), middle_element
-            )
-            module_images[label] = self.module_morphism()(lifted_middle)
-        module_map = direct_changed.module_category().Mor(direct_changed, self.codomain())(module_images)
+        module_semilinear = (
+            self.underlying_semilinear_morphism()
+            * other.underlying_semilinear_morphism()
+        )
+        module_map = module_semilinear.linearization()
+        if module_map.domain() is not direct_changed:
+            raise ValueError("formed scalar extension disagrees with its module owner")
 
         other_values = _represented_value_module(other.base_changed_domain())
         middle_values = _represented_value_module(self.domain())
@@ -675,8 +657,13 @@ class FiberedFormedModuleHomset(CategoricalHomset):
         target_ring = _base_change_codomain(domain, ring_map)
         if target_ring != codomain.base_ring():
             raise ValueError("the coefficient map does not land at the target base ring")
+        from dzack_research.preamble.categories.modules.fibered_modules import (
+            ModulesOverCommutativeRings,
+        )
+
         self._ring_map = ring_map
-        self._base_changed_domain = domain.base_change(ring_map)
+        self._module_homset = ModulesOverCommutativeRings().Mor(domain, codomain)
+        self._base_changed_domain = self._module_homset.extended_domain(ring_map)
         # The endpoints sit over different base rings; the Hom is filed under
         # the Hom category of the source fibre.
         CategoricalHomset.__init__(
@@ -692,6 +679,10 @@ class FiberedFormedModuleHomset(CategoricalHomset):
     def base_changed_domain(self):
         return self._base_changed_domain
 
+    def module_homset(self):
+        r"""Return the underlying Hom in the varying-ring module category."""
+        return self._module_homset
+
     def _element_constructor_(self, datum):
         module_morphism, value_morphism = datum
         return self.element_class(self, module_morphism, value_morphism)
@@ -703,12 +694,9 @@ class FiberedFormedModuleHomset(CategoricalHomset):
             raise ValueError("the fibered identity must lie over the identity ring map")
 
         changed = self.base_changed_domain()
-        module_map = changed.module_category().Mor(changed, self.domain())(
-            {
-                label: self.domain().module_generator(label)
-                for label in self.domain().module_generating_set()
-            }
-        )
+        module_map = self.module_homset().identity().linearization()
+        if module_map.domain() is not changed:
+            raise ValueError("formed identity scalar extension disagrees with its module owner")
         source_values = _represented_value_module(changed)
         target_values = _represented_value_module(self.domain())
         value_map = source_values.module_category().Mor(source_values, target_values)(

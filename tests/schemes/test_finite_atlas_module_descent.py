@@ -3,6 +3,9 @@ from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasModuleGluingMorphism,
     FiniteAtlasModuleTransition,
+)
+from dzack_research.preamble.categories.modules.fibered_modules import (
+    ModulesOverCommutativeRings,
     SemilinearModuleMorphism,
 )
 from dzack_research.preamble.categories.schemes.schemes import Schemes
@@ -113,15 +116,12 @@ def test_semilinear_module_transition_keeps_distinct_overlap_rings() -> None:
     target_label = next(iter(target.module_generating_set()))
     forward_scalar = scheme_transition.forward().coordinate_algebra_morphism()
     reverse_scalar = scheme_transition.inverse().coordinate_algebra_morphism()
-    pullback = SemilinearModuleMorphism(
-        target,
-        source,
+    fibered_modules = ModulesOverCommutativeRings()
+    pullback = fibered_modules.Mor(target, source)(
         forward_scalar,
         {target_label: source.module_generator(source_label)},
     )
-    inverse_pullback = SemilinearModuleMorphism(
-        source,
-        target,
+    inverse_pullback = fibered_modules.Mor(source, target)(
         reverse_scalar,
         {source_label: target.module_generator(target_label)},
     )
@@ -135,7 +135,13 @@ def test_semilinear_module_transition_keeps_distinct_overlap_rings() -> None:
 
     assert transition.pullback().scalar_map().domain() is right_overlap.coordinate_algebra()
     assert transition.pullback().scalar_map().codomain() is left_overlap.coordinate_algebra()
-    assert transition.pullback() * transition.inverse_pullback() == SemilinearModuleMorphism.identity(source)
+    assert target in fibered_modules and source in fibered_modules
+    assert transition.pullback() in fibered_modules.Mor(target, source)
+    assert fibered_modules.projection()(transition.pullback()) is forward_scalar
+    assert fibered_modules.projection()(target) is target.base_ring()
+    left_identity = transition.pullback() * transition.inverse_pullback()
+    assert fibered_modules.projection()(left_identity) == forward_scalar * reverse_scalar
+    assert left_identity == SemilinearModuleMorphism.identity(source)
     assert transition.inverse_pullback() * transition.pullback() == SemilinearModuleMorphism.identity(target)
 
 
