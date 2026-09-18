@@ -87,10 +87,13 @@ def test_chosen_presentations_are_exposed_on_native_group_objects() -> None:
 
 def test_subgroup_inclusion_is_a_real_morphism() -> None:
     group = Groups.S(4)
-    subgroup = group.subgroup([group.group_generators()[0]])
+    generators = group.group_generators()
+    subgroup = group.subgroup([generators[0]])
     inclusion = subgroup.inclusion()
 
     assert subgroup.supergroup() is group
+    assert generators[0] in subgroup
+    assert generators[1] not in subgroup
     assert inclusion.domain() is subgroup
     assert inclusion.codomain() is group
     assert inclusion.is_injective()

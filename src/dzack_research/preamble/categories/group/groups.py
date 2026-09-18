@@ -285,17 +285,12 @@ def _engine_generated_subgroup(engine, engine_generators):
 def _engine_subgroup_admits(subgroup, element) -> bool:
     r"""Whether the engine subgroup computing ``subgroup`` contains ``element``.
 
-    The engine decides membership by accepting or rejecting the crossing of
-    a containing-group element into the engine subgroup; a rejection is a
-    ``TypeError`` or ``ValueError``, which is also how Sage's own
-    ``Parent.__contains__`` decides (``sage/structure/parent.pyx``).  This is
-    the one site catching that rejection (``OWN-06``).
+    This is the private engine-membership adapter (``OWN-06``): cross the
+    owned element once through its containing group, then ask the represented
+    engine subgroup whether that engine element belongs to it.  Membership is
+    therefore a predicate, not exception-driven control flow.
     """
-    try:
-        subgroup.supergroup()._to_subgroup_engine(element, _engine_group(subgroup))
-    except (TypeError, ValueError):
-        return False
-    return True
+    return subgroup.supergroup()._to_engine(element) in _engine_group(subgroup)
 
 
 def _engine_cosets(group, subgroup, side):
