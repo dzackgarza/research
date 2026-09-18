@@ -67,14 +67,15 @@ class RegularPolytopes(OwnedCategory):
 
         from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
 
-        if isinstance(symbol, str):
-            written = symbol.strip()
-            if not (written.startswith("{") and written.endswith("}")):
-                raise ValueError("a Schlaefli symbol is written {p1,...,pr}")
-            body = written[1:-1].strip()
-            bonds = () if not body else tuple(int(part.strip()) for part in body.split(","))
-        else:
-            bonds = tuple(int(bond) for bond in symbol)
+        match symbol:
+            case str() as written:
+                written = written.strip()
+                if not (written.startswith("{") and written.endswith("}")):
+                    raise ValueError("a Schlaefli symbol is written {p1,...,pr}")
+                body = written[1:-1].strip()
+                bonds = () if not body else tuple(int(part.strip()) for part in body.split(","))
+            case _:
+                bonds = tuple(int(bond) for bond in symbol)
         if not bonds or any(bond < 3 for bond in bonds):
             raise ValueError("a finite regular polytope symbol has bond orders at least three")
         rank = len(bonds) + 1
