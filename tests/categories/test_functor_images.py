@@ -22,6 +22,9 @@ def test_cat_reifies_live_functors_and_functor_categories_have_natural_transform
     functor_category = cat.Mor(source, target)
     functor_object = functor_category(functor)
     identity_transformation = functor_category.identity(functor_object)
+    assert functor_category in cat
+    assert functor_object in functor_category
+    assert functor_object not in cat
     assert source.objects().index_set() is source.object_set()
     for index in source.objects():
         component = identity_transformation.component(index)
@@ -49,6 +52,9 @@ def test_functor_forward_cache_and_chosen_image_presentations_are_distinct_data(
     assert free(identity) is image_identity
 
     presented = free.Image()(source)
+    assert free.Image() in Cat()
+    assert presented in free.Image()
+    assert presented not in Cat()
     assert presented.preimage() is source
     assert presented.underlying_image() is image
     assert presented.constructing_functor() is free

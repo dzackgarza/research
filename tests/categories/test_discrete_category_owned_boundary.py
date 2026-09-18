@@ -19,6 +19,9 @@ def test_discrete_category_family_is_owned_and_retains_a_nonidentity_functor() -
     assert isinstance(DiscreteCategories(), OwnedCategory)
     assert source in DiscreteCategories()
     assert target in DiscreteCategories()
+    assert source in Cat()
+    assert source(0) in source
+    assert source(0) not in Cat()
 
     functor = Cat().Mor(source, target).from_object_map(
         lambda value: "b" if value == 0 else "a",

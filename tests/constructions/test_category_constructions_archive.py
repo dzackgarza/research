@@ -32,6 +32,10 @@ def test_opposite_category_reverses_underlying_composition() -> None:
     obj = opposite(points)
     hom = opposite.Mor(obj, obj)
 
+    assert opposite in Cat()
+    assert obj in opposite
+    assert obj not in Cat()
+    assert obj.underlying_object() is points
     first = hom(swap) * hom(collapse)
     second = hom(collapse) * hom(swap)
 
@@ -49,6 +53,9 @@ def test_product_category_composes_nonidentity_maps_componentwise() -> None:
     arrow = hom(swap, collapse)
     involution = hom(swap, swap)
 
+    assert product in Cat()
+    assert obj in product
+    assert obj not in Cat()
     assert arrow.first() is swap
     assert arrow.second() is collapse
     assert (involution * involution) == hom.identity()

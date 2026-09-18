@@ -1,6 +1,7 @@
 r"""Classifying categories and categorical group actions ``BG -> C``."""
 
 from dzack_research.preamble.all import (
+    Cat,
     QQ,
     GObjects,
     Groups,
@@ -24,6 +25,8 @@ def test_classifying_category_and_the_quotient_from_c4_to_c2() -> None:
 
     assert point is category.an_object()
     assert point in category
+    assert category in Cat()
+    assert point not in Cat()
     assert point is not group
     assert category.group() is group
     assert (arrow * arrow).group_element() == generator * generator
