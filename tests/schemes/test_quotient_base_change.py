@@ -33,6 +33,7 @@ def test_invariant_quotient_base_change_has_canonical_comparison_and_reynolds_is
     arrow = comparison.comparison_morphism()
     isomorphism = comparison.reynolds_isomorphism()
 
+    assert arrow is comparison
     assert comparison.reynolds_hypothesis_holds()
     assert arrow.domain() is comparison.quotient_after_base_change()
     assert arrow.codomain() is comparison.base_change_after_quotient()
