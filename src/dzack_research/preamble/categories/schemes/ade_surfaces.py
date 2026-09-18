@@ -341,14 +341,14 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             side_decorations,
             **rest,
         ) -> None:
-            self._preamble_dynkin_letter = dynkin_letter
-            self._preamble_dynkin_rank = dynkin_rank
-            self._preamble_dynkin_variant = dynkin_variant
-            self._preamble_is_affine_type = is_affine_type
-            self._preamble_polygon = polygon
-            self._preamble_polygon_vertex_order = polygon_vertex_order
-            self._preamble_distinguished_point = distinguished_point
-            self._preamble_side_decorations = side_decorations
+            self._dynkin_letter = dynkin_letter
+            self._dynkin_rank = dynkin_rank
+            self._dynkin_variant = dynkin_variant
+            self._is_affine_type = is_affine_type
+            self._polygon = polygon
+            self._polygon_vertex_order = polygon_vertex_order
+            self._distinguished_point = distinguished_point
+            self._side_decorations = side_decorations
             super().__init__(**rest)
 
         def scheme(self):
@@ -374,10 +374,10 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             return _own_ring(SageZZ).zero()
 
         def dynkin_letter(self) -> str:
-            return self._preamble_dynkin_letter
+            return self._dynkin_letter
 
         def dynkin_rank(self):
-            return _own_ring(SageZZ)(self._preamble_dynkin_rank)
+            return _own_ring(SageZZ)(self._dynkin_rank)
 
         def letter(self) -> str:
             r"""Return the ADE letter; archived synonym for :meth:`dynkin_letter`."""
@@ -390,12 +390,12 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         def dynkin_variant(self):
             r"""The decorations naming this member of its family."""
             return finite_family(
-                self._preamble_dynkin_variant,
+                self._dynkin_variant,
                 name="Dynkin variant",
             )
 
         def is_affine_type(self) -> bool:
-            return self._preamble_is_affine_type
+            return self._is_affine_type
 
         def variant(self):
             r"""Return the selected ADE side-decoration variant."""
@@ -423,7 +423,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
         def polygon(self):
             r"""The integral ADE polygon ``Q``."""
-            return self._preamble_polygon
+            return self._polygon
 
         def polygon_vertex_order(self):
             r"""Return the boundary-ordered vertices used by the ADE side data.
@@ -432,7 +432,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             A polytope as an unordered convex hull does not retain that
             presentation, so the ADE structure owns the order separately.
             """
-            return self._preamble_polygon_vertex_order
+            return self._polygon_vertex_order
 
         @cached_method
         def vertices(self):
@@ -441,7 +441,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
         def distinguished_point(self):
             r"""The distinguished rational point ``p*`` on the boundary of ``Q``."""
-            return self._preamble_distinguished_point
+            return self._distinguished_point
 
         def p_star(self):
             r"""Return the distinguished point ``p*``; archived mathematical name."""
@@ -453,7 +453,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
         def side_decorations(self):
             r"""The decorations of the sides of ``Q`` incident to ``p*``."""
-            return self._preamble_side_decorations
+            return self._side_decorations
 
         def ade_svg(self):
             r"""Return a deterministic SVG view of the retained ADE polygon data.
