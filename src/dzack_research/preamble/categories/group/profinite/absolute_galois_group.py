@@ -286,58 +286,6 @@ def _as_exact_embedding(domain, codomain, embedding) -> ExactFieldMorphism:
     return _own_ring(domain).exact_morphisms_to(_own_ring(codomain))(embedding)
 
 
-class AbsoluteGaloisSliceAutomorphism(Morphism):
-    r"""The commuting square in (K/\mathbf{Fields}) defined by an element of (G_K)."""
-
-    def __init__(self, parent, element) -> None:
-        Morphism.__init__(self, parent)
-        if not element.fixes_base_field():
-            raise ValueError("the closure automorphism does not commute with K -> Kbar")
-        self._element = element
-        base = element.parent().base_field()
-        self._left = OwnedFields().category_packet().Homs().Of(base, base).identity()
-        self._right = element.as_morphism()
-
-    def left(self):
-        return self._left
-
-    def right(self):
-        return self._right
-
-    def components(self):
-        return self._left, self._right
-
-    def __mul__(self, other):
-        if not isinstance(other, AbsoluteGaloisSliceAutomorphism):
-            return NotImplemented
-        if other._element.parent() is not self._element.parent():
-            return NotImplemented
-        group = self._element.parent()
-        return group.slice_automorphism(self._element * other._element)
-
-    def inverse(self):
-        return self._element.parent().slice_automorphism(self._element.inverse())
-
-    def __invert__(self):
-        return self.inverse()
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, AbsoluteGaloisSliceAutomorphism)
-            and other._element.parent() is self._element.parent()
-            and other._element == self._element
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __hash__(self) -> int:
-        return hash((id(self._element.parent()), self._element))
-
-    def _repr_(self) -> str:
-        return f"Slice automorphism induced by {self._element}"
-
-
 class _AbsoluteGaloisGroupEngine:
     r"""The automorphism group of one exact extension object (K\to\bar K).
 
@@ -414,12 +362,17 @@ class _AbsoluteGaloisGroupEngine:
     slice_object = extension_object
 
     def slice_automorphism(self, element):
-        r"""Regard ``element`` as the commuting automorphism square of (K\to\bar K)."""
+        r"""Regard ``element`` as an isomorphism of the coslice object (K\to\bar K)."""
         element = element if element in self else self(element)
         extension = self.extension_object()
-        return AbsoluteGaloisSliceAutomorphism(
-            self.slice_category().Mor(extension, extension),
-            element,
+        hom = self.slice_category().Mor(extension, extension)
+        forward = hom(element.as_morphism())
+        inverse = hom(element.inverse().as_morphism())
+        return self.slice_category().Core().Mor(
+            extension, extension
+        )._from_known_inverse_pair(
+            forward,
+            inverse,
         )
 
     def is_profinite(self) -> bool:
@@ -1102,7 +1055,6 @@ def OpenGaloisSubgroupConjugacyClass(supergroup, extension_field):
 __all__ = [
     "AbsoluteGaloisGroup",
     "AbsoluteGaloisGroupElement",
-    "AbsoluteGaloisSliceAutomorphism",
     "ElementConjugacyClass",
     "FrobeniusElement",
     "OpenAbsoluteGaloisSubgroup",

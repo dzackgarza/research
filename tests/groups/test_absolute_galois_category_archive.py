@@ -86,7 +86,7 @@ def test_absolute_galois_element_is_the_automorphism_square_of_the_slice_object(
 
     assert square.domain() is group.extension_object()
     assert square.codomain() is group.extension_object()
-    left, right = square.components()
+    left, right = square.forward().components()
     assert left.domain() is group.base_field()
     assert left.codomain() is group.base_field()
     assert right == frobenius.as_morphism()

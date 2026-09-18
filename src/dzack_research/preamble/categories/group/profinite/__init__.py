@@ -3,7 +3,6 @@
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
     AbsoluteGaloisGroupElement,
-    AbsoluteGaloisSliceAutomorphism,
     ElementConjugacyClass,
     FrobeniusElement,
     OpenAbsoluteGaloisSubgroup,
@@ -53,7 +52,6 @@ __all__ = [
     'AbsoluteGaloisGroupElement',
     'AbsoluteGaloisGroups',
     'AbsoluteGaloisGroupsOfFiniteFields',
-    'AbsoluteGaloisSliceAutomorphism',
     'AbsoluteInertiaGroup',
     'CyclotomicCharacter',
     'DecompositionGroupConjugacyClass',

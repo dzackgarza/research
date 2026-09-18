@@ -177,7 +177,6 @@ from dzack_research.preamble.categories.group import (
     AbsoluteGaloisGroupElement,
     AbsoluteGaloisGroups,
     AbsoluteGaloisGroupsOfFiniteFields,
-    AbsoluteGaloisSliceAutomorphism,
     AbsoluteInertiaGroup,
     AdditiveGroups,
     CyclicGroups,

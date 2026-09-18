@@ -72,6 +72,7 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     alpha = degree_four.embedding()(degree_four.field().field_generators()[0])
     base_generator = field.field_generators()[0]
     square = group.slice_automorphism(frobenius)
+    square_map = square.forward()
 
     assert frobenius.parent() is group
     assert frobenius.domain() is group.algebraic_closure()
@@ -79,15 +80,18 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert frobenius(alpha) == alpha**9
     assert frobenius(alpha) != alpha**3
     assert frobenius(embedding(base_generator)) == embedding(base_generator)
-    assert square.domain() is extension_object
-    assert square.codomain() is extension_object
-    assert square.right() is frobenius.as_morphism()
-    assert square.left()(base_generator) == base_generator
+    assert square.parent() is group.slice_category().Core().Mor(
+        extension_object, extension_object
+    )
+    assert square_map.domain() is extension_object
+    assert square_map.codomain() is extension_object
+    assert square_map.right() is frobenius.as_morphism()
+    assert square_map.left()(base_generator) == base_generator
     assert (~frobenius * frobenius)(alpha) == alpha
     assert square * group.slice_automorphism(frobenius**2) == group.slice_automorphism(
         frobenius**3
     )
-    assert ~square == group.slice_automorphism(~frobenius)
+    assert square.inverse() == group.slice_automorphism(~frobenius).forward()
     assert group.slice_automorphism(group.one()) * square == square
     assert tuple(group.topological_group_generators()) == (frobenius,)
 
