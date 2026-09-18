@@ -64,6 +64,8 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalIsomorphism,
+    CategoricalHomset,
+    HomCategoryConstruction,
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -242,6 +244,35 @@ def _finite_family(values, *, name: str) -> IndexedFamily:
     )
 
 
+def _family_on_index_set(index_set, values, *, name: str) -> IndexedFamily:
+    r"""Read finite data on the exact supplied index set."""
+
+    match values:
+        case IndexedFamily():
+            if values.cardinality() != index_set.cardinality():
+                raise ValueError(f"{name} has the wrong number of entries")
+            if set(values.index_set()) == set(index_set):
+                return finite_indexed_family(index_set, values.__getitem__, name=name)
+            return finite_indexed_family(
+                index_set,
+                lambda label: values[values.index_set()[int(index_set.ranking_map()(label))]],
+                name=name,
+            )
+        case Mapping():
+            if set(values) != set(index_set):
+                raise ValueError(f"{name} has exactly the selected index set")
+            return finite_indexed_family(index_set, values.__getitem__, name=name)
+    entries = tuple(values)
+    if len(entries) != int(index_set.cardinality().finite_value()):
+        raise ValueError(f"{name} has the wrong number of entries")
+    ranking = index_set.ranking_map()
+    return finite_indexed_family(
+        index_set,
+        lambda label: entries[int(ranking(label))],
+        name=name,
+    )
+
+
 class _CoverPresentationDiagram(Functor):
     r"""The finite diagram in ``C`` underlying one represented cover presentation.
 
@@ -338,6 +369,161 @@ class _CoverPresentationDiagram(Functor):
         raise ValueError("the covering-family presentation has no such nonidentity arrow")
 
 
+class CoveringFamilyMorphism(Morphism):
+    r"""A comparison of represented covering families.
+
+    For covers ``(U_i -> U)`` and ``(V_a -> V)`` in one category ``C``, a
+    morphism from the latter to the former is a map ``V -> U``, a map
+    ``a |-> i(a)`` of index sets, and arrows ``V_a -> U_{i(a)}`` whose
+    triangles to the covered objects commute.  A refinement in the usual
+    sense is the case where ``V = U`` and the target map is the identity
+    (Stacks Project, Tag 00VI).
+
+    The selected pairwise overlap spans carried by a cover are computational
+    presentation data.  Concrete refinements such as finite affine atlases may
+    impose additional compatibility with those spans in a subclass.
+    """
+
+    def __init__(self, parent, index_map, member_maps, *, target_map=None) -> None:
+        Morphism.__init__(self, parent)
+        source = self.domain()
+        target = self.codomain()
+        if source.site_category() is not target.site_category():
+            raise ValueError("a covering-family comparison uses one site category")
+        site = source.site_category()
+        self._index_map = _family_on_index_set(
+            source.index_set(),
+            index_map,
+            name="Fine-to-coarse covering-family indices",
+        ).map(
+            target.index_set(),
+            name="Fine-to-coarse covering-family indices",
+        )
+        self._member_maps = _family_on_index_set(
+            source.index_set(),
+            member_maps,
+            name="Component maps of a covering-family comparison",
+        )
+        if target_map is None:
+            if source.target() is not target.target():
+                raise ValueError("a comparison of covers with different targets needs its target map")
+            target_map = _category_homset(site, source.target(), source.target()).identity()
+        if target_map not in site.Mor(source.target(), target.target()):
+            raise TypeError("the target comparison is a morphism of the site category")
+        self._target_map = target_map
+        for label in source.index_set():
+            coarse_label = self.index_map(label)
+            component = self.component(label)
+            fine_member = source.member(label)
+            coarse_member = target.member(coarse_label)
+            if component not in site.Mor(fine_member.domain(), coarse_member.domain()):
+                raise TypeError("a cover-comparison component has the wrong site Hom")
+            if coarse_member * component != self.target_map() * fine_member:
+                raise ValueError("a cover-comparison component does not commute over the target map")
+
+    def index_map(self, fine_index):
+        return self._index_map[self.domain().index_set()(fine_index)]
+
+    def component(self, fine_index):
+        return self._member_maps[self.domain().index_set()(fine_index)]
+
+    member_map = component
+
+    def target_map(self):
+        return self._target_map
+
+    def __mul__(self, other):
+        match other:
+            case CoveringFamilyMorphism() if other.codomain() is self.domain():
+                category = self.parent().base_category()
+                return category.Mor(other.domain(), self.codomain())(
+                    {
+                        label: self.index_map(other.index_map(label))
+                        for label in other.domain().index_set()
+                    },
+                    {
+                        label: self.component(other.index_map(label)) * other.component(label)
+                        for label in other.domain().index_set()
+                    },
+                    target_map=self.target_map() * other.target_map(),
+                )
+            case _:
+                return NotImplemented
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, CoveringFamilyMorphism)
+            and other.parent() is self.parent()
+            and other.target_map() == self.target_map()
+            and all(
+                other.index_map(label) == self.index_map(label)
+                and other.component(label) == self.component(label)
+                for label in self.domain().index_set()
+            )
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+
+class CoveringFamilyHomset(CategoricalHomset):
+    r"""Comparisons between two represented covering families."""
+
+    Element = CoveringFamilyMorphism
+
+    def _element_constructor_(self, index_map, member_maps=None, *, target_map=None):
+        match index_map:
+            case CoveringFamilyMorphism() if member_maps is None:
+                if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
+                    raise ValueError("the covering-family comparison has the wrong endpoints")
+                if index_map.parent() is self:
+                    return index_map
+                if target_map is None:
+                    target_map = index_map.target_map()
+                member_maps = {
+                    label: index_map.component(label)
+                    for label in self.domain().index_set()
+                }
+                index_map = {
+                    label: index_map.index_map(label)
+                    for label in self.domain().index_set()
+                }
+        if member_maps is None:
+            raise TypeError("a covering-family comparison requires component maps")
+        return self.element_class(
+            self,
+            index_map,
+            member_maps,
+            target_map=target_map,
+        )
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only for one covering family")
+        cover = self.domain()
+        site = cover.site_category()
+        return self(
+            {label: label for label in cover.index_set()},
+            {
+                label: _category_homset(
+                    site,
+                    cover.member(label).domain(),
+                    cover.member(label).domain(),
+                ).identity()
+                for label in cover.index_set()
+            },
+            target_map=_category_homset(site, cover.target(), cover.target()).identity(),
+        )
+
+
+class CoveringFamilyHomCategoryConstruction(HomCategoryConstruction):
+    r"""The Hom family of represented covering families."""
+
+    def fixed_category_class(self):
+        return CoveringFamilyHomset
+
+
 def _covering_family(category: Category, target: Parent, members, overlaps, **data):
     r"""The covering family of ``target`` by ``members`` in ``category``, a category of covering families.
 
@@ -428,9 +614,9 @@ class CoveringFamilies(OwnedCategory):
     a span ``U_i <- U_ij -> U_j`` of ``C`` whose two composites with the cover
     arrows agree.  Forgetting which vertices are target/member/overlap leaves
     the finite presentation functor ``J -> C`` itself, hence an object of the
-    slice ``Cat/C``.  A refinement is a slice morphism: a functor between the
-    two finite presentation shapes commuting with their functors to ``C``.
-    Every coverage, which selects some of these objects, builds them by
+    slice ``Cat/C``.  Morphisms in this covering-family level are the
+    cover comparisons/refinements above: an index map, component maps and a
+    target map.  Every coverage, which selects some of these objects, builds them by
     :meth:`SubcategoryMethods.family`.
 
     Unverified specimen: the cover is literally placed over its presentation
@@ -447,6 +633,8 @@ class CoveringFamilies(OwnedCategory):
         sage: cover in covers.presentation_category()
         True
     """
+
+    _HomCategory = CoveringFamilyHomCategoryConstruction
 
     @staticmethod
     def __classcall__(cls, site_category: Category):
@@ -478,7 +666,13 @@ class CoveringFamilies(OwnedCategory):
     class ParentMethods:
         r"""A finite family ``{U_i -> U}`` with its chosen pairwise overlap spans."""
 
-        def __init__(self, covered_object: Parent, members: IndexedFamily, overlaps: IndexedFamily, **rest) -> None:
+        def __init__(
+            self,
+            covered_object: Parent,
+            members: IndexedFamily,
+            overlaps: IndexedFamily,
+            **rest,
+        ) -> None:
             self._covered_object = covered_object
             self._members = members
             self._overlaps = overlaps

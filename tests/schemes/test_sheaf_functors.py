@@ -1,7 +1,7 @@
 from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
 from dzack_research.preamble.categories.schemes.gluing import (
-    FiniteAtlasModuleGluingDatum,
-    FiniteAtlasRefinement,
+    FiniteAffineAtlases,
+    FiniteAtlasModuleGluingData,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheaves,
@@ -10,7 +10,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
 
 def _projective_line_refinement():
     line = ProjectiveSpaces(QQ)(1)
-    coarse = line.glued_from_standard_charts().gluing_datum()
+    coarse = line.standard_affine_atlas()
     left = coarse.chart(0)
     right = coarse.chart(1)
     overlap = coarse.overlap(0, 1)
@@ -27,17 +27,20 @@ def _projective_line_refinement():
     right_to_overlap = Schemes(QQ).Core().Mor(
         right_forward.domain(), right_forward.codomain()
     )(right_forward, right_inverse)
-    fine = Schemes(QQ).glue_affine_atlas(
+    fine = FiniteAffineAtlases(line)(
         (left, right, overlap),
         (
             coarse.transition_between(0, 1),
             left_to_overlap,
             right_to_overlap,
         ),
-    ).gluing_datum()
-    refinement = FiniteAtlasRefinement(
-        coarse,
-        fine,
+        (
+            coarse.chart_embedding(0),
+            coarse.chart_embedding(1),
+            coarse.chart_embedding(0) * overlap.inclusion(),
+        ),
+    )
+    refinement = FiniteAffineAtlases(line).Mor(fine, coarse)(
         (0, 1, 0),
         (
             left.categorical_identity_morphism(),
@@ -63,7 +66,7 @@ def _rank_one_sheaf(datum):
         pair: (_identity_transition, _identity_transition)
         for pair in datum.transition_index_set()
     }
-    return FiniteAtlasModuleGluingDatum(datum, local_modules, transitions).sheaf()
+    return FiniteAtlasModuleGluingData(datum)(local_modules, transitions).sheaf()
 
 
 def _scalar_morphism(source, target, scalar):

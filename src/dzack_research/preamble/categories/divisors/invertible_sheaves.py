@@ -13,9 +13,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.gluing import (
-    FiniteAffineAtlasPresentation,
+    FiniteAffineAtlases,
     ModuleGluingData,
-    _FiniteSchemeGluingDatum,
     _ModuleGluingSheafEngine,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
@@ -259,10 +258,7 @@ class FiniteAtlasInvertibleSheaf:
         associated_divisor=None,
         **rest,
     ) -> None:
-        if not isinstance(
-            gluing_datum,
-            (_FiniteSchemeGluingDatum, FiniteAffineAtlasPresentation),
-        ):
+        if gluing_datum not in FiniteAffineAtlases(gluing_datum.scheme()):
             raise TypeError(
                 "finite-atlas line-bundle descent requires a represented finite affine atlas"
             )
@@ -390,12 +386,12 @@ class FiniteAtlasInvertibleSheaf:
         return _finite_atlas_invertible_sheaf(cover, transition_units)
 
     @classmethod
-    def trivial(cls, gluing_datum):
+    def trivial(cls, atlas):
         units = {
-            pair: gluing_datum.overlap(*pair).coordinate_algebra().one()
-            for pair in gluing_datum.transition_index_set()
+            pair: atlas.overlap(*pair).coordinate_algebra().one()
+            for pair in atlas.transition_index_set()
         }
-        return _finite_atlas_invertible_sheaf(gluing_datum, units)
+        return _finite_atlas_invertible_sheaf(atlas, units)
 
     def tensor_product(self, other):
         if not isinstance(other, FiniteAtlasInvertibleSheaf):

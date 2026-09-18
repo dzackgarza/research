@@ -864,6 +864,8 @@ class SchemeMorphism(Morphism):
         inclusion.  A representation whose arrows factor that way by their
         construction states it by overriding this method.
         """
+        if self._is_the_identity():
+            return True
         source = self.domain()
         return source in OpenImmersions(self.codomain()) and self is source.inclusion()
 
@@ -1285,6 +1287,43 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
 
     def _repr_(self):
         return f"Projective morphism from {self.domain()} to {self.codomain()} defined by {tuple(self.homogeneous_coordinates())}"
+
+
+class _StandardProjectiveChartEmbedding(_ProjectiveCoordinateMorphism):
+    r"""The standard open immersion ``D_+(x_i) -> P^n`` in its coordinate presentation.
+
+    The source is the standard chart of ``ProjectiveSpaces.ParentMethods``;
+    that construction identifies it with ``D_+(x_i)`` (Stacks Project,
+    Tag 01M3), so openness is part of this selected morphism's defining datum,
+    not a predicate inferred from its coordinate implementation.
+    """
+
+    def is_open_immersion(self) -> bool:
+        return True
+
+    def _in_homset(self, homset):
+        return _StandardProjectiveChartEmbedding(
+            homset,
+            tuple(self.homogeneous_coordinates()),
+            coefficient_map=self.coefficient_map(),
+            cone_construction=self.cone_construction(),
+            point_coordinates=self._represented_point_coordinates(),
+        )
+
+
+class _StandardMultiprojectiveChartEmbedding(SchemeMorphism):
+    r"""The product of selected standard projective-chart open immersions."""
+
+    def is_open_immersion(self) -> bool:
+        return True
+
+    def _in_homset(self, homset):
+        return _StandardMultiprojectiveChartEmbedding(
+            self.native_morphism(),
+            homset=homset,
+            cone_construction=self.cone_construction(),
+            point_coordinates=self._represented_point_coordinates(),
+        )
 
 
 class _RepresentedAffineSchemeMorphism(SchemeMorphism):
@@ -1879,6 +1918,96 @@ class Schemes(OwnedCategoryOverBaseRing):
             """
             assert self._is_glued_from_affine_atlas(), f"{self} was not glued from an affine gluing datum"
             return self._scheme_engine_realization.gluing_datum()
+
+        @cached_method
+        def finite_affine_atlas(self):
+            r"""Return the finite affine atlas selected when this scheme was glued.
+
+            The gluing datum remains the private transition/cocycle engine;
+            the public atlas is the object of ``FiniteAffineAtlases(X)`` whose
+            chart arrows are this glued scheme's represented open embeddings.
+            """
+            assert self._is_glued_from_affine_atlas(), (
+                "a selected finite affine atlas is available for a scheme glued from one"
+            )
+            from dzack_research.preamble.categories.schemes.gluing import (
+                FiniteAffineAtlases,
+            )
+
+            return FiniteAffineAtlases(self)._from_gluing_presentation(
+                self.gluing_datum(),
+            )
+
+        def is_covered_by_open_immersions(self, embeddings) -> bool:
+            r"""Decide joint coverage for the represented open-cover regimes owned here.
+
+            The input maps are open immersions ``U_i -> X``.  Joint coverage is
+            exact in the regimes represented by the scheme construction itself:
+            an identity member, the selected affine-gluing atlas, and a family of
+            distinguished opens of an affine scheme.  More specialized scheme
+            categories add their own theorem-backed regimes (for example the
+            standard projective atlas) before delegating here.
+
+            This is the admission decision used by the represented Zariski
+            coverage; an unrepresented cover is rejected rather than silently
+            acquiring a coverage placement.
+            """
+            family = finite_family(
+                tuple(embeddings),
+                name="Open immersions proposed as a Zariski cover",
+            )
+            identity = self.categorical_identity_morphism()
+            match any(embedding == identity for embedding in family):
+                case True:
+                    return True
+                case False:
+                    pass
+
+            match self._is_glued_from_affine_atlas():
+                case True:
+                    selected = self.gluing_datum()
+                    match all(
+                        any(
+                            embedding == selected.chart_embedding(index)
+                            for embedding in family
+                        )
+                        for index in selected.chart_indices()
+                    ):
+                        case True:
+                            return True
+                        case False:
+                            pass
+                case False:
+                    pass
+
+            base = self.scheme_base_ring()
+            match self in Schemes(base).Affine():
+                case True:
+                    match all(
+                        embedding.domain() in OpenImmersions(self)
+                        and embedding == embedding.domain().inclusion()
+                        and embedding.domain().is_distinguished_open()
+                        for embedding in family
+                    ):
+                        case True:
+                            algebra = self.coordinate_algebra()
+                            elements = tuple(
+                                embedding.domain().distinguished_open_element()
+                                for embedding in family
+                            )
+                            return bool(
+                                algebra.ideal(*elements).contains_ambient_element(
+                                    algebra.one()
+                                )
+                            )
+                        case False:
+                            pass
+                case False:
+                    pass
+
+            raise ValueError(
+                "joint Zariski coverage is not established by the represented cover constructions"
+            )
 
         def chartwise_closed_subscheme(
             self,
@@ -3355,6 +3484,11 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             r"""``U_i = D_+(x_i)``, the ``i``-th standard affine chart."""
             return self.standard_affine_charts()[int(index)]
 
+        @cached_method
+        def standard_affine_chart_embedding(self, index):
+            r"""The standard open immersion ``U_i = D_+(x_i) -> P^n_R``."""
+            return _standard_projective_chart_embedding(self, int(index))
+
         def standard_chart_overlap(self, chart_index, other_index):
             r"""``U_i cap U_j = D(x_j/x_i)``, an open of the ``i``-th chart."""
             chart = self.standard_affine_chart(chart_index)
@@ -3451,16 +3585,37 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         def standard_affine_atlas(self):
             r"""Return the verified standard affine atlas on this exact projective space."""
             from dzack_research.preamble.categories.schemes.gluing import (
-                FiniteAffineAtlasPresentation,
+                FiniteAffineAtlases,
             )
 
             indices = tuple(range(int(self.relative_dimension()) + 1))
-            return FiniteAffineAtlasPresentation(
-                self,
+            return FiniteAffineAtlases(self)(
                 tuple(self.standard_affine_chart(index) for index in indices),
                 tuple(self.standard_chart_transition(left, right) for left, right in combinations(indices, 2)),
-                tuple(_standard_projective_chart_embedding(self, index) for index in indices),
+                tuple(self.standard_affine_chart_embedding(index) for index in indices),
             )
+
+        def is_covered_by_open_immersions(self, embeddings) -> bool:
+            r"""Recognize the standard projective cover before the general scheme cases."""
+            family = finite_family(
+                tuple(embeddings),
+                name="Open immersions proposed as a projective Zariski cover",
+            )
+            standard = finite_family(
+                tuple(
+                    self.standard_affine_chart_embedding(index)
+                    for index in range(int(self.relative_dimension()) + 1)
+                ),
+                name="Standard projective affine cover embeddings",
+            )
+            match all(
+                any(embedding == standard_embedding for embedding in family)
+                for standard_embedding in standard
+            ):
+                case True:
+                    return True
+                case False:
+                    return super().is_covered_by_open_immersions(family)
 
         def glued_from_standard_charts(self):
             r"""``P^n_R`` presented as the gluing of its standard affine charts.
@@ -3505,7 +3660,10 @@ def _standard_projective_chart_embedding(projective, chart_index):
         algebra.one() if numerator == chart_index else projective._standard_chart_coordinate(chart_index, numerator)
         for numerator in range(int(projective.relative_dimension()) + 1)
     )
-    return _ProjectiveCoordinateMorphism(_scheme_mor_category(chart, projective), coordinates)
+    return _StandardProjectiveChartEmbedding(
+        _scheme_mor_category(chart, projective),
+        coordinates,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -3690,12 +3848,8 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
             return _c2_diagonal_product_projective_action(self, group)
 
         @cached_method
-        def standard_affine_atlas(self):
-            r"""Return the product of the factors' standard affine atlases."""
-            from dzack_research.preamble.categories.schemes.gluing import (
-                FiniteAffineAtlasPresentation,
-            )
-
+        def _standard_affine_cover_charts_and_embeddings(self):
+            r"""The charts and open immersions of the standard multiprojective cover."""
             factors = self.factors()
             factor_indices = factors.index_set()
             factor_labels = tuple(factor_indices)
@@ -3729,7 +3883,41 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
                         )
                         for coordinate in range(int(factor.relative_dimension()) + 1)
                     )
-                embeddings[choice] = _scheme_mor_category(chart, self)(_native_scheme_homset(chart, self)(engine_coordinates, check=False))
+                embeddings[choice] = _StandardMultiprojectiveChartEmbedding(
+                    _native_scheme_homset(chart, self)(engine_coordinates, check=False),
+                    homset=_scheme_mor_category(chart, self),
+                )
+
+            return choices, charts, embeddings
+
+        def is_covered_by_open_immersions(self, embeddings) -> bool:
+            r"""Recognize the standard product-projective cover before general cases."""
+            family = finite_family(
+                tuple(embeddings),
+                name="Open immersions proposed as a multiprojective Zariski cover",
+            )
+            _choices, _charts, standard_embeddings = self._standard_affine_cover_charts_and_embeddings()
+            match all(
+                any(embedding == standard_embedding for embedding in family)
+                for standard_embedding in standard_embeddings.values()
+            ):
+                case True:
+                    return True
+                case False:
+                    return super().is_covered_by_open_immersions(family)
+
+        @cached_method
+        def standard_affine_atlas(self):
+            r"""Return the product of the factors' standard affine atlases."""
+            from dzack_research.preamble.categories.schemes.gluing import (
+                FiniteAffineAtlases,
+            )
+
+            factors = self.factors()
+            factor_indices = factors.index_set()
+            factor_labels = tuple(factor_indices)
+            positions = {label: position for position, label in enumerate(factor_labels)}
+            choices, charts, embeddings = self._standard_affine_cover_charts_and_embeddings()
 
             @cached_function
             def overlap(source_choice, target_choice):
@@ -3767,7 +3955,11 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
                 (left, right): _scheme_isomorphism(transition(left, right), transition(right, left))
                 for left, right in combinations(choices, 2)
             }
-            return FiniteAffineAtlasPresentation(self, charts, transitions, embeddings)
+            return FiniteAffineAtlases(self)(
+                charts,
+                transitions,
+                embeddings,
+            )
 
         def O(self, *degrees):
             r"""Return ``O(d_1, ..., d_r)`` on this product of projective spaces."""

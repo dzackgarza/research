@@ -240,7 +240,7 @@ def _affine_cover_refinement_cochain_map(refinement, sheaf):
     ``CochainComplexes(R).cohomology(d)`` applied to this map.
     """
     assert refinement.ambient_scheme() is sheaf.scheme(), "the cover refinement belongs to a different affine scheme"
-    source = _affine_geometric_cohomology_complex(sheaf, cover=refinement.coarse_cover(0))
+    source = _affine_geometric_cohomology_complex(sheaf, cover=refinement.coarse_cover())
     target = _affine_geometric_cohomology_complex(sheaf, cover=refinement.fine_cover())
     source_degree_zero = source.graded_piece(0)
     degree_zero = source_degree_zero.module_category().Mor(source_degree_zero, target.graded_piece(0)).identity()

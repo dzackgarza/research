@@ -19,6 +19,9 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
+    CoveringFamilyHomCategoryConstruction,
+    CoveringFamilyHomset,
+    CoveringFamilyMorphism,
     DescentData,
     DescentDataOnCover,
 )
@@ -48,6 +51,8 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     DistinguishedAffineCovers,
     QuasiCoherentSheaves,
     SheafObjects,
+    ZariskiCoveringFamilies,
+    zariski_coverage,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     OpenImmersions,
@@ -1044,53 +1049,30 @@ class _FiniteSchemeGluingDatum(SageObject):
         return f"Finite affine scheme gluing datum indexed by {self.chart_index_set()}"
 
 
-class FiniteAffineAtlasPresentation(SageObject):
-    r"""A verified finite affine atlas presenting an already selected scheme.
+class _FiniteAffineAtlasEngine:
+    r"""Private realization retaining the chart-transition presentation of an owned atlas."""
 
-    The transition/cocycle data are owned by an ordinary finite scheme gluing;
-    this wrapper retains a second, already selected scheme and the actual open
-    chart embeddings into it.  Thus constructions such as line-bundle descent
-    can use the common finite-atlas mathematics without replacing ``P^n`` by a
-    separately glued copy.
-    """
-
-    def __init__(self, scheme, charts, transitions, chart_embeddings) -> None:
-        base = scheme.scheme_base_ring()
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
-
-        self._presentation = _FiniteSchemeGluingDatum(
-            Schemes(base),
-            charts,
-            transitions,
-        )
-        self._scheme = scheme
-        raw_embeddings = _family_on_finite_ordered_set(
-            self.chart_index_set(),
-            chart_embeddings,
-            name="Affine-atlas chart embeddings",
-            noun="finite affine-atlas chart embeddings",
-        )
-        self._chart_embeddings = finite_indexed_family(
-            self.chart_index_set(),
-            lambda index: self.chart(index).Mor(scheme)(raw_embeddings[index]),
-            name="Affine-atlas chart embeddings",
-        )
-        self._verify_chart_embeddings()
+    def __init__(self, gluing_presentation, **rest) -> None:
+        self._gluing_presentation = gluing_presentation
+        super().__init__(**rest)
 
     def presentation(self):
-        return self._presentation
+        return self._gluing_presentation
 
     def base_ring(self):
-        return self.presentation().base_ring()
+        return self.scheme().scheme_base_ring()
 
     def scheme(self):
-        return self._scheme
+        return self.target().arrow().codomain()
 
     def charts(self):
-        return self.presentation().charts()
+        return self.members().map(
+            lambda member: member.domain().arrow().domain(),
+            name="Affine charts",
+        )
 
     def chart_index_set(self):
-        return self.presentation().chart_index_set()
+        return self.index_set()
 
     def chart_indices(self):
         return self.chart_index_set()
@@ -1102,7 +1084,7 @@ class FiniteAffineAtlasPresentation(SageObject):
         return self.presentation().number_of_charts()
 
     def chart(self, index):
-        return self.presentation().chart(index)
+        return self.member(self.normalize_chart_index(index)).domain().arrow().domain()
 
     def transition_index_set(self):
         return self.presentation().transition_index_set()
@@ -1127,35 +1109,13 @@ class FiniteAffineAtlasPresentation(SageObject):
         )
 
     def chart_embedding(self, index):
-        return self._chart_embeddings[self.normalize_chart_index(index)]
-
-    def _verify_chart_embeddings(self) -> None:
-        for index in self.chart_indices():
-            embedding = self.chart_embedding(index)
-            if embedding.domain() is not self.chart(index):
-                raise ValueError("an affine-atlas embedding has the wrong chart domain")
-            if embedding.codomain() is not self.scheme():
-                raise ValueError("an affine-atlas embedding has the wrong scheme codomain")
-        for source_index, target_index in self.transition_index_set():
-            source_overlap = self.overlap(source_index, target_index)
-            target_overlap = self.overlap(target_index, source_index)
-            forward = self.transition_between(source_index, target_index).forward()
-            from_source = self.chart_embedding(source_index) * source_overlap.inclusion()
-            from_target = (
-                self.chart_embedding(target_index)
-                * target_overlap.inclusion()
-                * forward
-            )
-            if from_source != from_target:
-                raise ValueError(
-                    "affine-atlas chart embeddings do not agree through their overlap transition"
-                )
+        return self.member(self.normalize_chart_index(index)).domain().arrow()
 
     def _repr_(self):
         return f"Finite affine atlas of {self.scheme()} indexed by {self.chart_index_set()}"
 
 
-class FiniteAtlasRefinement(SageObject):
+class FiniteAtlasRefinement(CoveringFamilyMorphism):
     r"""A represented refinement of one finite affine atlas by another.
 
     A refinement consists of a map from fine chart labels to coarse chart
@@ -1164,17 +1124,18 @@ class FiniteAtlasRefinement(SageObject):
     they glue to a comparison morphism from the scheme presented by the fine
     atlas to the scheme presented by the coarse atlas.
 
-    The two schemes the atlases present need not be literally identical
-    objects.  The comparison morphism is retained explicitly; a consumer that
-    knows the refinement is an isomorphism may also construct and retain its
-    inverse.
+    Both atlases cover the same scheme ``X``.  The refinement is therefore a
+    morphism of covering families in the slice ``Sch_R/X``; its target edge is
+    the identity of ``id_X``.  ``chart_map`` and ``comparison_morphism`` expose
+    the underlying scheme arrows of those slice morphisms to geometric
+    consumers.
     """
 
-    def __init__(self, coarse_datum, fine_datum, index_map, chart_maps) -> None:
-        if coarse_datum.base_ring() is not fine_datum.base_ring():
-            raise ValueError("a finite-atlas refinement keeps the scheme base ring")
-        self._coarse_datum = coarse_datum
-        self._fine_datum = fine_datum
+    def __init__(self, parent, index_map, chart_maps, *, target_map=None) -> None:
+        fine_datum = parent.domain()
+        coarse_datum = parent.codomain()
+        if coarse_datum.scheme() is not fine_datum.scheme():
+            raise ValueError("a finite-atlas refinement compares covers of one scheme")
         fine_indices = fine_datum.chart_index_set()
         raw_index_map = _family_on_finite_ordered_set(
             fine_indices,
@@ -1182,41 +1143,57 @@ class FiniteAtlasRefinement(SageObject):
             name="Fine-to-coarse chart labels",
             noun="finite-atlas refinement index data",
         )
-        self._index_map = finite_indexed_family(
+        normalized_index_map = finite_indexed_family(
             fine_indices,
             lambda index: coarse_datum.normalize_chart_index(raw_index_map[index]),
             name="Fine-to-coarse chart map",
         )
-        self._chart_maps = _family_on_finite_ordered_set(
+        supplied_chart_maps = _family_on_finite_ordered_set(
             fine_indices,
             chart_maps,
             name="Chart morphisms of a finite-atlas refinement",
             noun="finite-atlas refinement chart maps",
         )
+        site = fine_datum.site_category()
+        scheme_category = Schemes(fine_datum.base_ring())
+        normalized_chart_maps = {}
         for fine_index in fine_indices:
-            chart_map = self._chart_maps[fine_index]
-            coarse_index = self._index_map[fine_index]
+            chart_map = supplied_chart_maps[fine_index]
+            coarse_index = normalized_index_map[fine_index]
             fine_chart = fine_datum.chart(fine_index)
             coarse_chart = coarse_datum.chart(coarse_index)
-            if chart_map not in Schemes(fine_datum.base_ring()).Mor(fine_chart, coarse_chart):
-                raise TypeError(
-                    "a finite-atlas refinement chart map is a scheme morphism from its fine chart to its coarse chart"
-                )
-        self._verify_overlap_compatibility()
-        self._comparison_morphism = fine_datum.scheme().Mor(coarse_datum.scheme())(
-            finite_indexed_family(
-                fine_indices,
-                lambda index: coarse_datum.chart_embedding(self._index_map[index])
-                * self._chart_maps[index],
-                name="Local maps of the finite-atlas refinement comparison",
-            )
+            fine_member = fine_datum.member(fine_index).domain()
+            coarse_member = coarse_datum.member(coarse_index).domain()
+            slice_hom = site.Mor(fine_member, coarse_member)
+            match chart_map in slice_hom:
+                case True:
+                    normalized_chart_maps[fine_index] = chart_map
+                case False:
+                    if chart_map not in scheme_category.Mor(fine_chart, coarse_chart):
+                        raise TypeError(
+                            "a finite-atlas refinement chart map is a scheme morphism from its fine chart to its coarse chart"
+                        )
+                    normalized_chart_maps[fine_index] = slice_hom(chart_map)
+        normalized_chart_maps = finite_indexed_family(
+            fine_indices,
+            normalized_chart_maps.__getitem__,
+            name="Slice morphisms of a finite-atlas refinement",
         )
+        if target_map is None:
+            target_map = site.Mor(fine_datum.target(), coarse_datum.target()).identity()
+        super().__init__(
+            parent,
+            normalized_index_map,
+            normalized_chart_maps,
+            target_map=target_map,
+        )
+        self._verify_overlap_compatibility()
 
     def coarse_datum(self):
-        return self._coarse_datum
+        return self.codomain()
 
     def fine_datum(self):
-        return self._fine_datum
+        return self.domain()
 
     def coarse_scheme(self):
         return self.coarse_datum().scheme()
@@ -1226,14 +1203,14 @@ class FiniteAtlasRefinement(SageObject):
 
     def coarse_index(self, fine_index):
         fine_index = self.fine_datum().normalize_chart_index(fine_index)
-        return self._index_map[fine_index]
+        return self.index_map(fine_index)
 
     def chart_map(self, fine_index):
         fine_index = self.fine_datum().normalize_chart_index(fine_index)
-        return self._chart_maps[fine_index]
+        return self.component(fine_index).left()
 
     def comparison_morphism(self):
-        return self._comparison_morphism
+        return self.target_map().left()
 
     def overlap_map(self, source_index, target_index):
         r"""Map one fine overlap to the corresponding coarse overlap or chart."""
@@ -1390,11 +1367,7 @@ class FiniteAtlasRefinement(SageObject):
                 forward_images,
                 inverse_images,
             )
-        return FiniteAtlasModuleGluingDatum(
-            fine,
-            local_modules,
-            transition_data,
-        )
+        return FiniteAtlasModuleGluingData(fine)(local_modules, transition_data)
 
     def pullback_invertible_sheaf(self, line_bundle):
         r"""Pull a finite-atlas line bundle across this atlas refinement.
@@ -1431,6 +1404,211 @@ class FiniteAtlasRefinement(SageObject):
     def compare_line_bundle_pullback(self, line_bundle):
         r"""Compare generic and specialized line-bundle pullback along this refinement."""
         return FiniteAtlasLineBundlePullbackComparison(self, line_bundle)
+
+
+class FiniteAtlasHomset(CoveringFamilyHomset):
+    r"""Refinements/comparisons between two finite affine atlases."""
+
+    Element = FiniteAtlasRefinement
+
+    def _element_constructor_(self, index_map, chart_maps=None, *, target_map=None):
+        match index_map:
+            case FiniteAtlasRefinement() if chart_maps is None and target_map is None:
+                if index_map.parent() is self:
+                    return index_map
+                if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
+                    raise ValueError("the finite-atlas refinement has the wrong endpoints")
+                target_map = index_map.target_map()
+                chart_maps = {
+                    label: index_map.chart_map(label)
+                    for label in index_map.domain().chart_indices()
+                }
+                index_map = {
+                    label: index_map.coarse_index(label)
+                    for label in self.domain().chart_indices()
+                }
+        if chart_maps is None:
+            raise TypeError("a finite-atlas refinement requires one chart map on each fine chart")
+        return self.element_class(
+            self,
+            index_map,
+            chart_maps,
+            target_map=target_map,
+        )
+
+
+class FiniteAtlasHomCategoryConstruction(CoveringFamilyHomCategoryConstruction):
+    r"""The Hom family of finite affine atlases."""
+
+    def fixed_category_class(self):
+        return FiniteAtlasHomset
+
+
+class FiniteAffineAtlases(OwnedParameterizedCategory):
+    r"""Finite affine covering atlases of one scheme ``X``.
+
+    For ``X`` over ``R``, an object is a finite covering family in the Zariski
+    coverage of the slice ``Sch_R/X``.  Its members are the slice objects
+    ``U_i -> X`` for affine ``U_i`` with represented open-immersion structure,
+    and the family arrows land in the terminal slice object ``id_X``.  The
+    selected pair overlaps and their cocycle are retained by the finite gluing
+    presentation.  Morphisms are refinements in that same slice, specialized
+    to chart maps compatible with the selected overlap transitions.
+
+    The covering/refinement convention is Stacks Project, Tag 00VI; the gluing
+    presentation uses the finite affine gluing convention already cited at the
+    scheme owner (Tag 01JA).
+
+    Unverified specimen: the standard atlas of projective space is constructed
+    here, and its identity refinement is a morphism of this category::
+
+        sage: from dzack_research.preamble.all import QQ, ProjectiveSpaces
+        sage: from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
+        sage: line = ProjectiveSpaces(QQ)(1)
+        sage: atlas = line.standard_affine_atlas()
+        sage: atlas in FiniteAffineAtlases(line)
+        True
+        sage: atlas in zariski_coverage(line)
+        True
+        sage: atlas.coverage() is zariski_coverage(line)
+        True
+        sage: atlas.site_category().base_object() is line
+        True
+        sage: atlas.target().arrow() == line.categorical_identity_morphism()
+        True
+        sage: identity = FiniteAffineAtlases(line).Mor(atlas, atlas).identity()
+        sage: identity.domain() is atlas and identity.codomain() is atlas
+        True
+    """
+
+    _HomCategory = FiniteAtlasHomCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, scheme):
+        return OwnedParameterizedCategory.__classcall__(cls, scheme)
+
+    def __init__(self, scheme) -> None:
+        OwnedParameterizedCategory.__init__(self, scheme)
+
+    def parameter_category(self):
+        return Schemes(self.scheme().scheme_base_ring())
+
+    def scheme(self):
+        return self.base()
+
+    def base_ring(self):
+        return self.scheme().scheme_base_ring()
+
+    def coverage(self):
+        return zariski_coverage(self.scheme())
+
+    def site_category(self):
+        return self.coverage().site_category()
+
+    @cached_method
+    def slice_target(self):
+        r"""The terminal object ``id_X`` of ``Sch_R/X`` used by every atlas here."""
+        return self.coverage().slice_target()
+
+    def super_categories(self):
+        return [ZariskiCoveringFamilies(self.scheme())]
+
+    class ParentMethods:
+        def coverage(self):
+            r"""The Zariski coverage of ``Sch_R/X`` containing this atlas."""
+            return self.category().coverage()
+
+    def _call_(self, charts, transitions, chart_embeddings):
+        presentation = _FiniteSchemeGluingDatum(
+            Schemes(self.base_ring()),
+            charts,
+            transitions,
+        )
+        return self._from_gluing_presentation(
+            presentation,
+            chart_embeddings,
+        )
+
+    def _from_gluing_presentation(self, presentation, chart_embeddings=None):
+        if presentation.base_ring() is not self.base_ring():
+            raise ValueError("an affine-atlas presentation uses the category's base ring")
+        scheme = self.scheme()
+        indices = presentation.chart_index_set()
+        if chart_embeddings is None:
+            if presentation.scheme() is not scheme:
+                raise ValueError("a foreign gluing presentation needs explicit chart embeddings")
+            chart_embeddings = finite_indexed_family(
+                indices,
+                presentation.chart_embedding,
+                name="Affine-atlas chart embeddings",
+            )
+        raw_embeddings = _family_on_finite_ordered_set(
+            indices,
+            chart_embeddings,
+            name="Affine-atlas chart embeddings",
+            noun="finite affine-atlas chart embeddings",
+        )
+        scheme_category = Schemes(self.base_ring())
+        embeddings = finite_indexed_family(
+            indices,
+            lambda index: scheme_category.Mor(
+                presentation.chart(index),
+                scheme,
+            )(raw_embeddings[index]),
+            name="Affine-atlas chart embeddings",
+        )
+        affine = Schemes(self.base_ring()).Affine()
+        for index in indices:
+            chart = presentation.chart(index)
+            embedding = embeddings[index]
+            if chart not in affine:
+                raise TypeError("every chart of a finite affine atlas is affine")
+            if embedding.is_open_immersion() is not True:
+                raise TypeError("every chart map of a finite affine atlas is an open immersion")
+        site = self.site_category()
+        target = self.slice_target()
+        chart_objects = finite_indexed_family(
+            indices,
+            lambda index: site.object(embeddings[index]),
+            name="Affine charts in the scheme slice",
+        )
+        members = finite_indexed_family(
+            indices,
+            lambda index: site.Mor(chart_objects[index], target)(embeddings[index]),
+            name="Affine-atlas cover arrows in the scheme slice",
+        )
+        overlaps = {}
+        for left, right in presentation.transition_index_set():
+            source_overlap = presentation.overlap(left, right)
+            target_overlap = presentation.overlap(right, left)
+            forward = presentation.transition_between(left, right).forward()
+            left_leg = source_overlap.inclusion()
+            right_leg = target_overlap.inclusion() * forward
+            overlap_object = site.object(embeddings[left] * left_leg)
+            overlaps[left, right] = (
+                overlap_object,
+                site.Mor(overlap_object, chart_objects[left])(left_leg),
+                site.Mor(overlap_object, chart_objects[right])(right_leg),
+            )
+        return self.family(
+            target,
+            members,
+            overlaps,
+            _engine=(self, _FiniteAffineAtlasEngine, None),
+            gluing_presentation=presentation,
+        )
+
+    def an_object(self):
+        scheme = self.scheme()
+        assert scheme in Schemes(self.base_ring()).Affine(), (
+            "the automatic finite-atlas witness is currently available for an affine scheme parameter"
+        )
+        identity = scheme.Mor(scheme).identity()
+        return self(
+            (scheme,),
+            {},
+            (identity,),
+        )
 
 
 class FiniteAtlasInvertibleSheafRefinement(SageObject):
@@ -1790,7 +1968,7 @@ class FiniteAtlasModuleTransition(SageObject):
         return self._inverse_pullback
 
 
-class FiniteAtlasModuleGluingDatum(SageObject):
+class _FiniteAtlasModuleGluingDatumEngine:
     r"""Module descent on a finite affine atlas with distinct overlap rings.
 
     Pair ``(i,j)`` transition data are supplied as two generator-image
@@ -1801,7 +1979,7 @@ class FiniteAtlasModuleGluingDatum(SageObject):
     on canonical source/target parents rather than on iterated base changes.
     """
 
-    def __init__(self, gluing_datum, local_modules, transitions) -> None:
+    def __init__(self, gluing_datum, local_modules, transitions, **rest) -> None:
         self._gluing_datum = gluing_datum
         indices = gluing_datum.chart_index_set()
         self._local_modules = _family_on_finite_ordered_set(
@@ -1825,6 +2003,7 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         self._triple_modules = []
         self._transitions = []
         self._triple_transitions = []
+        super().__init__(**rest)
         for pair in gluing_datum.transition_index_set():
             self.transition(*pair)
         self._verify_cocycle()
@@ -2315,11 +2494,11 @@ class FiniteAtlasModuleGluingDatum(SageObject):
                 tensor_transition(self, other, source_index, target_index),
                 tensor_transition(self, other, target_index, source_index),
             )
-        return FiniteAtlasModuleGluingDatum(datum, local_modules, transitions)
+        return FiniteAtlasModuleGluingData(datum)(local_modules, transitions)
 
 
 class FiniteAtlasModuleGluingMorphism(Morphism):
-    r"""A morphism of finite-atlas module sheaves with chosen descent data.
+    r"""A morphism of finite-atlas module descent data.
 
     One linear map is supplied on every affine chart.  On each pair overlap
     the target pullback after the target-chart map must equal the source-chart
@@ -2348,10 +2527,10 @@ class FiniteAtlasModuleGluingMorphism(Morphism):
         self._verify_overlap_compatibility()
 
     def source_datum(self):
-        return self.domain().gluing_datum()
+        return self.domain()
 
     def target_datum(self):
-        return self.codomain().gluing_datum()
+        return self.codomain()
 
     def local_maps(self):
         return self._local_maps
@@ -2461,7 +2640,7 @@ class FiniteAtlasModuleGluingMorphism(Morphism):
                 kernel_transition(source_index, target_index),
                 kernel_transition(target_index, source_index),
             )
-        return FiniteAtlasModuleGluingDatum(datum, local_kernels, transitions)
+        return FiniteAtlasModuleGluingData(datum)(local_kernels, transitions)
 
     def cokernel_datum(self):
         r"""Return the finite-atlas descent datum of the sheaf cokernel."""
@@ -2499,7 +2678,7 @@ class FiniteAtlasModuleGluingMorphism(Morphism):
                 cokernel_transition(source_index, target_index),
                 cokernel_transition(target_index, source_index),
             )
-        return FiniteAtlasModuleGluingDatum(datum, local_cokernels, transitions)
+        return FiniteAtlasModuleGluingData(datum)(local_cokernels, transitions)
 
     def stalk_map(self, chart_index, point):
         r"""Return the induced map on the stalk at ``point`` of one affine chart."""
@@ -2545,16 +2724,26 @@ class FiniteAtlasModuleGluingMorphism(Morphism):
                 )
 
 
+class FiniteAtlasModuleSheafMorphism(FiniteAtlasModuleGluingMorphism):
+    r"""The sheaf-endpoint realization of a finite-atlas descent morphism."""
+
+    def source_datum(self):
+        return self.domain().gluing_datum()
+
+    def target_datum(self):
+        return self.codomain().gluing_datum()
+
+
 class FiniteAtlasModuleSheafHomset(CategoricalHomset):
     r"""The represented Hom between two finite-atlas module sheaves."""
 
-    Element = FiniteAtlasModuleGluingMorphism
+    Element = FiniteAtlasModuleSheafMorphism
 
     def _element_constructor_(self, local_maps):
         match local_maps:
-            case FiniteAtlasModuleGluingMorphism() if local_maps.parent() is self:
+            case FiniteAtlasModuleSheafMorphism() if local_maps.parent() is self:
                 return local_maps
-            case FiniteAtlasModuleGluingMorphism():
+            case FiniteAtlasModuleSheafMorphism():
                 if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
                     raise ValueError("a finite-atlas sheaf morphism keeps its represented endpoints")
                 local_maps = local_maps.local_maps()
@@ -2584,10 +2773,112 @@ class FiniteAtlasModuleSheafHomCategoryConstruction(HomCategoryConstruction):
         return FiniteAtlasModuleSheafHomset
 
 
-class FiniteAtlasAlgebraGluingDatum(SageObject):
+class FiniteAtlasModuleGluingHomset(CategoricalHomset):
+    r"""Compatible local maps between two module descent data on one finite atlas."""
+
+    Element = FiniteAtlasModuleGluingMorphism
+
+    def __init__(self, family, domain, codomain) -> None:
+        if domain.gluing_datum() is not codomain.gluing_datum():
+            raise ValueError("a finite-atlas module descent Hom uses one atlas")
+        super().__init__(family, domain, codomain)
+
+    def _element_constructor_(self, local_maps):
+        match local_maps:
+            case FiniteAtlasModuleGluingMorphism() if local_maps.parent() is self:
+                return local_maps
+            case FiniteAtlasModuleGluingMorphism():
+                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
+                    raise ValueError("the module descent morphism has the wrong endpoints")
+                local_maps = local_maps.local_maps()
+            case _:
+                pass
+        return self.element_class(self, local_maps)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity belongs to a descent endomorphism Hom")
+        datum = self.domain()
+        return self(
+            {
+                index: datum.local_module(index).module_category()
+                .Mor(datum.local_module(index), datum.local_module(index))
+                .identity()
+                for index in datum.chart_indices()
+            }
+        )
+
+
+class FiniteAtlasModuleGluingHomCategoryConstruction(HomCategoryConstruction):
+    r"""The Hom family of finite-atlas module descent data."""
+
+    def fixed_category_class(self):
+        return FiniteAtlasModuleGluingHomset
+
+
+class FiniteAtlasModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
+    r"""Module descent data on one owned finite affine atlas.
+
+    The atlas is the cover parameter.  Objects retain finitely framed local
+    modules and semilinear transition isomorphisms satisfying the represented
+    triple-overlap cocycle; morphisms are compatible local linear maps.  Thus
+    this is the finite-atlas specialization of ``DescentDataOnCover`` rather
+    than a host record carrying a private gluing presentation.
+    """
+
+    _HomCategory = FiniteAtlasModuleGluingHomCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, atlas):
+        return OwnedParameterizedCategory.__classcall__(cls, atlas)
+
+    def __init__(self, atlas) -> None:
+        OwnedParameterizedCategory.__init__(self, atlas)
+
+    def parameter_category(self):
+        return FiniteAffineAtlases(self.atlas().scheme())
+
+    def atlas(self):
+        return self.base()
+
+    cover = atlas
+
+    def super_categories(self):
+        return [DescentDataOnCover(self.atlas().coverage(), self.atlas())]
+
+    def object(self, local_modules, transitions):
+        return _object_of(
+            self,
+            _engine=(self, _FiniteAtlasModuleGluingDatumEngine, None),
+            gluing_datum=self.atlas(),
+            local_modules=local_modules,
+            transitions=transitions,
+        )
+
+    __call__ = object
+
+    def an_object(self):
+        atlas = self.atlas()
+        local_modules = {
+            index: atlas.chart(index).coordinate_algebra().free_module(1)
+            for index in atlas.chart_indices()
+        }
+
+        def identity_images(label, _domain, codomain):
+            return codomain.module_generator(label)
+
+        transitions = {
+            pair: (identity_images, identity_images)
+            for pair in atlas.transition_index_set()
+        }
+        return self(local_modules, transitions)
+
+
+class _FiniteAtlasAlgebraGluingDatumEngine:
     r"""Algebra descent on a finite affine atlas with distinct overlap rings."""
 
-    def __init__(self, gluing_datum, local_algebras, transitions) -> None:
+    def __init__(self, gluing_datum, local_algebras, transitions, **rest) -> None:
         self._gluing_datum = gluing_datum
         indices = gluing_datum.chart_index_set()
         self._local_algebras = _family_on_finite_ordered_set(
@@ -2610,6 +2901,7 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
         self._triple_algebras = []
         self._transitions = []
         self._triple_transitions = []
+        super().__init__(**rest)
         for pair in gluing_datum.transition_index_set():
             self.transition(*pair)
         self._verify_cocycle()
@@ -2804,7 +3096,7 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
         )
 
     def morphism_to(self, target, local_maps):
-        return FiniteAtlasAlgebraGluingMorphism(self, target, local_maps)
+        return self.category().Mor(self, target)(local_maps)
 
     def relative_spectrum(self, *, _engine=None, construction_data=None):
         from dzack_research.preamble.categories.schemes.relative_spec import (
@@ -2818,14 +3110,15 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
         )
 
 
-class FiniteAtlasAlgebraGluingMorphism(SageObject):
+class FiniteAtlasAlgebraGluingMorphism(Morphism):
     r"""A morphism of finite-atlas algebra descent data."""
 
-    def __init__(self, source, target, local_maps) -> None:
+    def __init__(self, parent, local_maps) -> None:
+        Morphism.__init__(self, parent)
+        source = self.domain()
+        target = self.codomain()
         if source.gluing_datum() is not target.gluing_datum():
             raise ValueError("finite-atlas algebra morphisms require one underlying affine atlas")
-        self._source = source
-        self._target = target
         self._local_maps = _family_on_finite_ordered_set(
             source.gluing_datum().chart_index_set(),
             local_maps,
@@ -2842,20 +3135,41 @@ class FiniteAtlasAlgebraGluingMorphism(SageObject):
         self._verify_overlap_compatibility()
 
     def source(self):
-        return self._source
-
-    domain = source
+        return self.domain()
 
     def target(self):
-        return self._target
-
-    codomain = target
+        return self.codomain()
 
     def local_maps(self):
         return self._local_maps
 
     def local_map(self, index):
         return self.local_maps()[self.source().gluing_datum().normalize_chart_index(index)]
+
+    def __mul__(self, other):
+        match other:
+            case FiniteAtlasAlgebraGluingMorphism() if other.codomain() is self.domain():
+                return self.domain().category().Mor(other.domain(), self.codomain())(
+                    {
+                        index: self.local_map(index) * other.local_map(index)
+                        for index in other.source().chart_indices()
+                    }
+                )
+            case _:
+                return NotImplemented
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, FiniteAtlasAlgebraGluingMorphism)
+            and other.parent() is self.parent()
+            and all(
+                other.local_map(index) == self.local_map(index)
+                for index in self.source().chart_indices()
+            )
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
 
     def _verify_overlap_compatibility(self) -> None:
         for source_index, target_index in self.source().gluing_datum().transition_index_set():
@@ -2875,6 +3189,106 @@ class FiniteAtlasAlgebraGluingMorphism(SageObject):
                 raise ValueError(
                     "finite-atlas local algebra maps are incompatible with an overlap transition"
                 )
+
+
+class FiniteAtlasAlgebraGluingHomset(CategoricalHomset):
+    r"""Compatible local algebra maps between two descent data on one finite atlas."""
+
+    Element = FiniteAtlasAlgebraGluingMorphism
+
+    def __init__(self, family, domain, codomain) -> None:
+        if domain.gluing_datum() is not codomain.gluing_datum():
+            raise ValueError("a finite-atlas algebra descent Hom uses one atlas")
+        super().__init__(family, domain, codomain)
+
+    def _element_constructor_(self, local_maps):
+        match local_maps:
+            case FiniteAtlasAlgebraGluingMorphism() if local_maps.parent() is self:
+                return local_maps
+            case FiniteAtlasAlgebraGluingMorphism():
+                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
+                    raise ValueError("the algebra descent morphism has the wrong endpoints")
+                local_maps = local_maps.local_maps()
+            case _:
+                pass
+        return self.element_class(self, local_maps)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity belongs to a descent endomorphism Hom")
+        datum = self.domain()
+        return self(
+            {
+                index: _algebra_homset(
+                    datum.local_algebra(index),
+                    datum.local_algebra(index),
+                ).identity()
+                for index in datum.chart_indices()
+            }
+        )
+
+
+class FiniteAtlasAlgebraGluingHomCategoryConstruction(HomCategoryConstruction):
+    r"""The Hom family of finite-atlas algebra descent data."""
+
+    def fixed_category_class(self):
+        return FiniteAtlasAlgebraGluingHomset
+
+
+class FiniteAtlasAlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
+    r"""Unital associative algebra descent data on one finite affine atlas."""
+
+    _HomCategory = FiniteAtlasAlgebraGluingHomCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, atlas):
+        return OwnedParameterizedCategory.__classcall__(cls, atlas)
+
+    def __init__(self, atlas) -> None:
+        OwnedParameterizedCategory.__init__(self, atlas)
+
+    def parameter_category(self):
+        return FiniteAffineAtlases(self.atlas().scheme())
+
+    def atlas(self):
+        return self.base()
+
+    cover = atlas
+
+    def super_categories(self):
+        return [DescentDataOnCover(self.atlas().coverage(), self.atlas())]
+
+    def object(self, local_algebras, transitions):
+        return _object_of(
+            self,
+            _engine=(self, _FiniteAtlasAlgebraGluingDatumEngine, None),
+            gluing_datum=self.atlas(),
+            local_algebras=local_algebras,
+            transitions=transitions,
+        )
+
+    __call__ = object
+
+    def an_object(self):
+        r"""Polynomial-algebra descent with identity transition on the selected atlas."""
+        atlas = self.atlas()
+        local_algebras = {
+            index: atlas.chart(index)
+            .coordinate_algebra()
+            .free_module(("z",))
+            .symmetric_algebra()
+            for index in atlas.chart_indices()
+        }
+
+        def identity_images(label, _domain, codomain):
+            return codomain.algebra_generator(label)
+
+        transitions = {
+            pair: (identity_images, identity_images)
+            for pair in atlas.transition_index_set()
+        }
+        return self(local_algebras, transitions)
 
 
 def _cover_chart_family(cover, values, *, name):
@@ -4457,13 +4871,12 @@ class QuasiCoherentSheavesWithChosenDescentDatum(OwnedParameterizedCategory):
 
     def an_object(self):
         r"""``O_X`` presented by rank-one free chart modules on the atlas ``X`` was glued from."""
-        atlas = self.scheme().gluing_datum()
+        atlas = self.scheme().finite_affine_atlas()
 
         def identity(label, _domain, codomain):
             return codomain.module_generator(label)
 
-        return FiniteAtlasModuleGluingDatum(
-            atlas,
+        return FiniteAtlasModuleGluingData(atlas)(
             {
                 index: atlas.chart(index).coordinate_algebra().free_module(1)
                 for index in atlas.chart_indices()
@@ -4471,11 +4884,28 @@ class QuasiCoherentSheavesWithChosenDescentDatum(OwnedParameterizedCategory):
             {pair: (identity, identity) for pair in atlas.transition_index_set()},
         ).sheaf()
 
-    def object(self, module_gluing_datum):
+    def object(
+        self,
+        module_gluing_datum,
+        *,
+        categories=(),
+        construction_data=None,
+        _engine=None,
+    ):
         r"""The quasi-coherent sheaf presented by ``module_gluing_datum``."""
         if module_gluing_datum.scheme() is not self.scheme():
             raise ValueError("the descent datum presents a sheaf on a different scheme")
-        return _object_of(self, module_gluing_datum=module_gluing_datum)
+        category = (
+            self
+            if not categories
+            else Category.join((self, *tuple(categories)))
+        )
+        data = dict(construction_data or {})
+        if "module_gluing_datum" in data:
+            raise ValueError("module_gluing_datum is fixed by this descent datum")
+        data["module_gluing_datum"] = module_gluing_datum
+        engine = None if _engine is None else (self, _engine, None)
+        return _object_of(category, _engine=engine, **data)
 
     __call__ = object
 
@@ -4779,12 +5209,14 @@ class _FiniteAtlasInverseImageScalarExtensionFunctor(Functor):
         return f"Extension of inverse-image module scalars along {self.scheme_morphism()}"
 
 
-class _FiniteAtlasLineBundleModuleGluingDatum(FiniteAtlasModuleGluingDatum):
+class _FiniteAtlasLineBundleModuleGluingDatumEngine(_FiniteAtlasModuleGluingDatumEngine):
     r"""Module descent whose defining source is one finite-atlas line bundle."""
 
-    def __init__(self, line_bundle, local_modules, transitions) -> None:
+    def __init__(self, line_bundle, gluing_datum, local_modules, transitions, **rest) -> None:
+        if gluing_datum is not line_bundle.gluing_datum():
+            raise ValueError("the line-bundle module datum uses the line bundle's selected atlas")
         self._line_bundle = line_bundle
-        super().__init__(line_bundle.gluing_datum(), local_modules, transitions)
+        super().__init__(gluing_datum, local_modules, transitions, **rest)
 
     def line_bundle(self):
         r"""Return the line bundle whose rank-one descent this datum represents."""
@@ -4823,9 +5255,16 @@ def _finite_atlas_line_bundle_module_sheaf(line_bundle):
         )
         for source_index, target_index in datum.transition_index_set()
     }
-    return _FiniteAtlasLineBundleModuleGluingDatum(
-        line_bundle, local_modules, transitions
-    ).sheaf()
+    category = FiniteAtlasModuleGluingData(datum)
+    descent = _object_of(
+        category,
+        _engine=(category, _FiniteAtlasLineBundleModuleGluingDatumEngine, None),
+        line_bundle=line_bundle,
+        gluing_datum=datum,
+        local_modules=local_modules,
+        transitions=transitions,
+    )
+    return descent.sheaf()
 
 
 class FiniteAtlasLineBundlePullbackComparison(SageObject):
@@ -5043,14 +5482,14 @@ __all__ = [
     "AlgebraGluingData",
     "AlgebraGluingHomset",
     "AlgebraGluingMorphism",
-    "FiniteAtlasAlgebraGluingDatum",
+    "FiniteAtlasAlgebraGluingData",
     "FiniteAtlasAlgebraGluingMorphism",
     "FiniteAtlasAlgebraTransition",
-    "FiniteAffineAtlasPresentation",
+    "FiniteAffineAtlases",
     "FiniteAtlasInvertibleSheafRefinement",
     "FiniteAtlasLineBundlePullbackComparison",
     "FiniteAtlasRefinement",
-    "FiniteAtlasModuleGluingDatum",
+    "FiniteAtlasModuleGluingData",
     "FiniteAtlasModuleGluingMorphism",
     "QuasiCoherentSheavesWithChosenDescentDatum",
     "FiniteAtlasModuleTransition",

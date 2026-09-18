@@ -63,7 +63,7 @@ def test_projective_space_keeps_a_nontrivial_base_picard_factor() -> None:
 
 def test_cartier_local_equations_produce_units_and_the_associated_line_bundle() -> None:
     line = ProjectiveSpaces(QQ)(1)
-    datum = line.glued_from_standard_charts().gluing_datum()
+    datum = line.standard_affine_atlas()
     left_ring = datum.chart(0).coordinate_algebra()
     right_ring = datum.chart(1).coordinate_algebra()
     x0_over_x1 = right_ring.algebra_generator("x0_over_x1")

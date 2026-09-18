@@ -1266,7 +1266,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             section_space = system.section_space()
             basis = tuple(section_space.module_generators())
             sections = tuple(self.compatible_divisor_section(divisor, section, line_bundle=line) for section in basis)
-            datum = self.gluing_datum()
+            datum = self.finite_affine_atlas()
             section_datum = line.module_sheaf().gluing_datum()
 
             def local_map(index):

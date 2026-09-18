@@ -1,14 +1,8 @@
 'Owned algebraic-geometry and polyhedral categories.'
 
-from dzack_research.preamble.categories.schemes.covering_families import (
-    AffineOverlapRefinement,
-    RingedCoveringFamily,
-    RingedCoveringOverlap,
-)
-
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     AlgebraSheaves,
-    CoverRefinement,
+    DistinguishedAffineCoverRefinement,
     DistinguishedAffineCovers,
     distinguished_affine_coverage,
     LocallyRingedSpaces,
@@ -18,6 +12,8 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     SchemeUnderlyingSpace,
     SheafObjects,
     SheafedSpaces,
+    ZariskiCoveringFamilies,
+    zariski_coverage,
 )
 
 from dzack_research.preamble.categories.schemes.analytic_families import AnalyticDiscFamily
@@ -132,7 +128,6 @@ __all__ = [
     'HorikawaEnriquesSurface',
     'ADELogPairs',
     'SideDecoration',
-    'AffineOverlapRefinement',
     'AlgebraSheaves',
     'AnalyticDiscFamily',
     'CyclicCoverBaseChangeComparison',
@@ -150,7 +145,7 @@ __all__ = [
     'ClosedSubschemes',
     'ConvexPolygons',
     'ConvexPolytopes',
-    'CoverRefinement',
+    'DistinguishedAffineCoverRefinement',
     'DistinguishedAffineCovers',
     'distinguished_affine_coverage',
     'Curves',
@@ -166,8 +161,6 @@ __all__ = [
     'RegularPolytopes',
     'LocallyRingedSpaces',
     'ModuleSheaves',
-    'RingedCoveringFamily',
-    'RingedCoveringOverlap',
     'LogPairs',
     'NormalSchemes',
     'OpenImmersions',
@@ -183,6 +176,8 @@ __all__ = [
     'SchemeUnderlyingSpace',
     'SheafObjects',
     'SheafedSpaces',
+    'ZariskiCoveringFamilies',
+    'zariski_coverage',
     'SchemeMorphism',
     'Schemes',
     'SmoothSchemes',

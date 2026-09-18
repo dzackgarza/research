@@ -1,7 +1,7 @@
 from dzack_research.preamble.all import QQ, AffineSpaces
+from dzack_research.preamble.categories.abstract_categories.presheaves import DescentDataOnCover
 from dzack_research.preamble.categories.schemes.gluing import (
-    FiniteAtlasModuleGluingDatum,
-    FiniteAtlasModuleGluingMorphism,
+    FiniteAtlasModuleGluingData,
     FiniteAtlasModuleTransition,
 )
 from dzack_research.preamble.categories.modules.fibered_modules import (
@@ -162,7 +162,7 @@ def test_three_chart_module_descent_composes_after_overlap_transport() -> None:
         ("middle", "right"): _renaming_overlap_isomorphism(middle, y, right, z),
     }
     glued = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions)
-    datum = glued.gluing_datum()
+    datum = glued.finite_affine_atlas()
     local_modules = {
         label: datum.chart(label).coordinate_algebra().free_module(1)
         for label in labels
@@ -180,11 +180,12 @@ def test_three_chart_module_descent_composes_after_overlap_transport() -> None:
             {source_generator: {target_generator: 1}},
         )
 
-    descent = FiniteAtlasModuleGluingDatum(
-        datum,
+    descent = FiniteAtlasModuleGluingData(datum)(
         local_modules,
         module_transitions,
     )
+    assert descent in FiniteAtlasModuleGluingData(datum)
+    assert descent in DescentDataOnCover(datum.coverage(), datum)
 
     left_middle = descent.transition_on_triple("left", "middle", "right")
     middle_right = descent.transition_on_triple("middle", "right", "left")
@@ -230,7 +231,7 @@ def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> 
         ("left", "right"): _renaming_overlap_isomorphism(left, x, right, z),
         ("middle", "right"): _renaming_overlap_isomorphism(middle, y, right, z),
     }
-    datum = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions).gluing_datum()
+    datum = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions).finite_affine_atlas()
     local_modules = {
         label: datum.chart(label).coordinate_algebra().free_module(1)
         for label in labels
@@ -243,8 +244,8 @@ def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> 
             {target_generator: {source_generator: 1}},
             {source_generator: {target_generator: 1}},
         )
-    source = FiniteAtlasModuleGluingDatum(datum, local_modules, transition_data)
-    target = FiniteAtlasModuleGluingDatum(datum, local_modules, transition_data)
+    source = FiniteAtlasModuleGluingData(datum)(local_modules, transition_data)
+    target = FiniteAtlasModuleGluingData(datum)(local_modules, transition_data)
     local_maps = {}
     for label in labels:
         module = local_modules[label]
@@ -255,7 +256,7 @@ def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> 
 
     morphism = source.morphism_to(target, local_maps)
 
-    assert isinstance(morphism, FiniteAtlasModuleGluingMorphism)
+    assert morphism in FiniteAtlasModuleGluingData(datum).Mor(source, target)
     for label in labels:
         module = local_modules[label]
         generator = next(iter(module.module_generating_set()))

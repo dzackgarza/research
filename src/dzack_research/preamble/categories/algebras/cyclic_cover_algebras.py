@@ -288,7 +288,7 @@ class CyclicCoverAlgebra(SageObject):
         match self.cover() in DistinguishedAffineCovers():
             case False:
                 from dzack_research.preamble.categories.schemes.gluing import (
-                    FiniteAtlasAlgebraGluingDatum,
+                    FiniteAtlasAlgebraGluingData,
                 )
 
                 transitions = {}
@@ -303,8 +303,7 @@ class CyclicCoverAlgebra(SageObject):
                         return codomain(unit.inverse_of_unit()) * codomain.algebra_generator(label)
 
                     transitions[left, right] = (forward, inverse)
-                return FiniteAtlasAlgebraGluingDatum(
-                    self.cover(),
+                return FiniteAtlasAlgebraGluingData(self.cover())(
                     self.local_algebras(),
                     transitions,
                 )

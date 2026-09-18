@@ -92,12 +92,13 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
 
 
 def test_relative_spectrum_atlas_refinement_keeps_the_same_map_to_the_base() -> None:
-    from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasRefinement
+    from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
     scheme, _cover, datum = _polynomial_algebra_descent("z")
     relative = datum.relative_spectrum()
-    coarse = relative.arrow().domain().gluing_datum()
+    total_space = relative.arrow().domain()
+    coarse = total_space.finite_affine_atlas()
     left = coarse.chart(0)
     right = coarse.chart(1)
     overlap = coarse.overlap(0, 1)
@@ -121,17 +122,20 @@ def test_relative_spectrum_atlas_refinement_keeps_the_same_map_to_the_base() -> 
         right_forward,
         right_inverse,
     )
-    fine = schemes.glue_affine_atlas(
+    fine = FiniteAffineAtlases(total_space)(
         (left, right, overlap),
         (
             coarse.transition_between(0, 1),
             left_to_overlap,
             right_to_overlap,
         ),
-    ).gluing_datum()
-    refinement = FiniteAtlasRefinement(
-        coarse,
-        fine,
+        (
+            coarse.chart_embedding(0),
+            coarse.chart_embedding(1),
+            coarse.chart_embedding(0) * overlap.inclusion(),
+        ),
+    )
+    refinement = FiniteAffineAtlases(total_space).Mor(fine, coarse)(
         (0, 1, 0),
         (
             left.categorical_identity_morphism(),
@@ -142,8 +146,7 @@ def test_relative_spectrum_atlas_refinement_keeps_the_same_map_to_the_base() -> 
 
     comparison = refinement.comparison_morphism()
     refined_structure = relative.arrow() * comparison
-    assert comparison.domain() is fine.scheme()
-    assert comparison.codomain() is coarse.scheme()
+    assert comparison == total_space.categorical_identity_morphism()
     assert refined_structure.codomain() is scheme
     for fine_index in fine.chart_indices():
         coarse_index = refinement.coarse_index(fine_index)

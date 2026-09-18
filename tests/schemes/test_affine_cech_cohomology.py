@@ -49,7 +49,7 @@ def test_unit_cover_refinement_has_an_actual_cochain_and_cohomology_comparison()
     one = scheme.coordinate_algebra().one()
     coarse = scheme.distinguished_open_cover(one)
     repeated = scheme.distinguished_open_cover(one, one)
-    refinement = coarse.common_refinement(repeated)
+    refinement = coarse.common_refinement(repeated).left_leg()
     cochain_map = refinement.geometric_cochain_map(sheaf)
     comparison = refinement.geometric_cohomology_comparison(sheaf, 0)
 

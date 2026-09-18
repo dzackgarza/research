@@ -98,31 +98,21 @@ def test_projective_line_bundle_base_change_retains_projection_and_section_compa
 
 def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
     from dzack_research.preamble.categories.schemes.gluing import (
-        FiniteAtlasRefinement,
+        FiniteAffineAtlases,
     )
 
     line = ProjectiveSpaces(QQ)(1)
     bundle = line.O(1)
     coarse = bundle.gluing_datum()
-    fine = coarse.presentation()
-    indices = tuple(coarse.chart_indices())
-    refinement = FiniteAtlasRefinement(
-        coarse,
-        fine,
-        {index: index for index in indices},
-        {
-            index: coarse.chart(index).categorical_identity_morphism()
-            for index in indices
-        },
-    )
+    fine = coarse
+    refinement = FiniteAffineAtlases(line).Mor(fine, coarse).identity()
     comparison = refinement.compare_line_bundle_pullback(bundle)
     pulled = comparison.line_bundle_refinement().refined_bundle()
 
-    assert refinement.comparison_morphism().domain() is fine.scheme()
-    assert refinement.comparison_morphism().codomain() is line
-    assert refinement.comparison_morphism().domain() is not line
+    assert refinement in FiniteAffineAtlases(line).Mor(fine, coarse)
+    assert refinement.comparison_morphism() == line.categorical_identity_morphism()
     assert comparison.line_bundle() is bundle
-    assert pulled.scheme() is fine.scheme()
+    assert pulled.scheme() is line
     assert pulled.gluing_datum() is fine
     for index in fine.chart_indices():
         local = comparison.line_bundle_refinement().local_isomorphism(index)

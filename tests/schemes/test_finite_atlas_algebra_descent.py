@@ -1,8 +1,9 @@
 r"""Algebra descent across affine atlases with genuinely distinct overlap rings."""
 
 from dzack_research.preamble.all import QQ, AffineSpaces
+from dzack_research.preamble.categories.abstract_categories.presheaves import DescentDataOnCover
 from dzack_research.preamble.categories.schemes.gluing import (
-    FiniteAtlasAlgebraGluingDatum,
+    FiniteAtlasAlgebraGluingData,
     SemilinearAlgebraMorphism,
 )
 from dzack_research.preamble.categories.schemes.schemes import Schemes
@@ -75,7 +76,7 @@ def _three_chart_datum():
         ("left", "right"): _renaming_overlap_isomorphism(left, x, right, z),
         ("middle", "right"): _renaming_overlap_isomorphism(middle, y, right, z),
     }
-    datum = Schemes(QQ).glue_affine_atlas(charts, transitions).gluing_datum()
+    datum = Schemes(QQ).glue_affine_atlas(charts, transitions).finite_affine_atlas()
     return labels, datum
 
 
@@ -99,11 +100,12 @@ def _identity_transition_data(_labels, datum, _local_algebras):
 def test_pair_transition_is_an_actual_semilinear_algebra_isomorphism() -> None:
     labels, datum = _three_chart_datum()
     local_algebras = _rank_one_polynomial_algebras(labels, datum)
-    descent = FiniteAtlasAlgebraGluingDatum(
-        datum,
+    descent = FiniteAtlasAlgebraGluingData(datum)(
         local_algebras,
         _identity_transition_data(labels, datum, local_algebras),
     )
+    assert descent in FiniteAtlasAlgebraGluingData(datum)
+    assert descent in DescentDataOnCover(datum.coverage(), datum)
 
     transition = descent.transition("left", "middle")
     pullback = transition.pullback()
@@ -126,8 +128,7 @@ def test_pair_transition_is_an_actual_semilinear_algebra_isomorphism() -> None:
 def test_three_chart_algebra_descent_uses_actual_triple_overlap_cocycle() -> None:
     labels, datum = _three_chart_datum()
     local_algebras = _rank_one_polynomial_algebras(labels, datum)
-    descent = FiniteAtlasAlgebraGluingDatum(
-        datum,
+    descent = FiniteAtlasAlgebraGluingData(datum)(
         local_algebras,
         _identity_transition_data(labels, datum, local_algebras),
     )
@@ -146,8 +147,8 @@ def test_nonidentity_local_algebra_maps_glue_on_distinct_charts() -> None:
     labels, datum = _three_chart_datum()
     local_algebras = _rank_one_polynomial_algebras(labels, datum)
     transitions = _identity_transition_data(labels, datum, local_algebras)
-    source = FiniteAtlasAlgebraGluingDatum(datum, local_algebras, transitions)
-    target = FiniteAtlasAlgebraGluingDatum(datum, local_algebras, transitions)
+    source = FiniteAtlasAlgebraGluingData(datum)(local_algebras, transitions)
+    target = FiniteAtlasAlgebraGluingData(datum)(local_algebras, transitions)
     local_maps = {}
     for label in labels:
         algebra = local_algebras[label]
@@ -156,6 +157,7 @@ def test_nonidentity_local_algebra_maps_glue_on_distinct_charts() -> None:
         local_maps[label] = algebra.Mor(algebra)({generator_label: generator * generator})
 
     morphism = source.morphism_to(target, local_maps)
+    assert morphism in FiniteAtlasAlgebraGluingData(datum).Mor(source, target)
     for label in labels:
         algebra = local_algebras[label]
         generator_label = next(iter(algebra.algebra_generating_set()))

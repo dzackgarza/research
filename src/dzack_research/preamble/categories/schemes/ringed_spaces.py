@@ -23,6 +23,9 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
     Coverage,
     CoveringFamilies,
+    CoveringFamilyHomCategoryConstruction,
+    CoveringFamilyHomset,
+    CoveringFamilyMorphism,
     DescentData,
 )
 from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
@@ -418,6 +421,160 @@ def _localization_restriction_map(source, target):
     return source.Mor(target)(restrict)
 
 
+class DistinguishedAffineCoverRefinement(CoveringFamilyMorphism):
+    r"""A refinement morphism between distinguished affine covers of one affine scheme.
+
+    This is a morphism in :class:`DistinguishedAffineCovers`, hence already a
+    morphism of :class:`CoveringFamilies` in ``AffSch_R/X``.  Its component on
+    a fine chart is the corresponding inclusion in that slice; geometric
+    consumers can recover the underlying scheme inclusion with
+    :meth:`inclusion`.
+    """
+
+    def fine_cover(self):
+        return self.domain()
+
+    def coarse_cover(self):
+        return self.codomain()
+
+    def ambient_scheme(self):
+        return self.fine_cover().ambient_scheme()
+
+    def inclusion(self, fine_index):
+        fine_index = self.fine_cover().chart_label(fine_index)
+        return self.component(fine_index).left()
+
+    chart_map = inclusion
+
+    def geometric_cochain_map(self, sheaf):
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+            _affine_cover_refinement_cochain_map,
+        )
+
+        return _affine_cover_refinement_cochain_map(self, sheaf)
+
+    def geometric_cohomology_comparison(self, sheaf, degree):
+        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+            _affine_cover_refinement_cohomology_map,
+        )
+
+        return _affine_cover_refinement_cohomology_map(self, sheaf, degree)
+
+
+class DistinguishedAffineCoverHomset(CoveringFamilyHomset):
+    r"""The refinement Hom between two distinguished affine covers."""
+
+    Element = DistinguishedAffineCoverRefinement
+
+
+class DistinguishedAffineCoverHomCategoryConstruction(
+    CoveringFamilyHomCategoryConstruction
+):
+    r"""The Hom family of distinguished affine covers."""
+
+    def fixed_category_class(self):
+        return DistinguishedAffineCoverHomset
+
+
+class ZariskiCoveringFamilies(OwnedParameterizedCategory):
+    r"""Finite covering families in the big Zariski site ``Sch_R/X``.
+
+    For a scheme ``X`` over ``R`` the underlying site category is the slice
+    ``Sch_R/X``.  This category is the represented Zariski coverage on that
+    slice: its objects are finite covering families selected by Zariski-open
+    cover constructions.  Specializations such as finite affine atlases build
+    their objects here rather than using all covering families of the slice as
+    though every family were a Zariski cover.
+
+    The singleton identity family is the canonical specimen and is available
+    for every scheme, affine or not::
+
+        sage: from dzack_research.preamble.all import QQ, ProjectiveSpaces
+        sage: line = ProjectiveSpaces(QQ)(1)
+        sage: coverage = zariski_coverage(line)
+        sage: coverage.site_category().base_object() is line
+        True
+        sage: identity_cover = coverage.an_object()
+        sage: identity_cover in coverage
+        True
+        sage: identity_cover.target().arrow() == line.categorical_identity_morphism()
+        True
+    """
+
+    def parameter_category(self):
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        return Schemes(self.scheme().scheme_base_ring())
+
+    def scheme(self):
+        return self.base()
+
+    def site_category(self):
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        return Schemes(self.scheme().scheme_base_ring()).SliceCategory(self.scheme())
+
+    @cached_method
+    def slice_target(self):
+        r"""The terminal object ``id_X`` of ``Sch_R/X``."""
+        return self.site_category().an_object()
+
+    def super_categories(self):
+        return [CoveringFamilies(self.site_category())]
+
+    def an_object(self):
+        target = self.slice_target()
+        identity = self.site_category().Mor(target, target).identity()
+        return self.family(target, (identity,), {})
+
+    class ParentMethods:
+        r"""A finite family admitted by the represented Zariski coverage."""
+
+        def __init__(self, **rest) -> None:
+            super().__init__(**rest)
+            target_arrow = self.target().arrow()
+            scheme = target_arrow.codomain()
+            match target_arrow == scheme.categorical_identity_morphism():
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        "a Zariski covering family of X has target id_X in Sch_R/X"
+                    )
+            embeddings = tuple(
+                self.member(index).left()
+                for index in self.index_set()
+            )
+            match all(
+                embedding.is_open_immersion() is True
+                for embedding in embeddings
+            ):
+                case True:
+                    pass
+                case False:
+                    raise TypeError(
+                        "a Zariski covering family consists of open immersions"
+                    )
+            match scheme.is_covered_by_open_immersions(embeddings):
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        "the represented open immersions do not jointly cover the scheme"
+                    )
+
+    def _repr_object_names(self):
+        return f"finite Zariski covering families of {self.scheme()}"
+
+
+@cached_function(key=lambda scheme: id(scheme))
+def zariski_coverage(scheme) -> Category:
+    r"""The represented finite Zariski coverage of ``Sch_R/X``."""
+
+    category = ZariskiCoveringFamilies(scheme)
+    return Coverage(category.site_category(), category)
+
+
 class DistinguishedAffineCovers(OwnedCategory):
     r"""Represented distinguished affine covering families.
 
@@ -427,6 +584,8 @@ class DistinguishedAffineCovers(OwnedCategory):
     families in the slice ``AffSch_R/X`` and is the selected family category
     for the distinguished-affine coverage of ``X``.
     """
+
+    _HomCategory = DistinguishedAffineCoverHomCategoryConstruction
 
     @staticmethod
     @cached_function(
@@ -463,6 +622,11 @@ class DistinguishedAffineCovers(OwnedCategory):
         if scheme is None:
             raise ValueError("the global cover catalogue does not select one coverage")
         return distinguished_affine_coverage(scheme)
+
+    @cached_method
+    def slice_target(self):
+        r"""The terminal slice object ``id_X`` shared by covers in this fibre."""
+        return self.site_category().an_object()
 
     def super_categories(self):
         scheme = self.scheme()
@@ -502,7 +666,7 @@ class DistinguishedAffineCovers(OwnedCategory):
             name="Defining elements of the distinguished opens",
         )
         site = self.site_category()
-        target = site.an_object()
+        target = self.slice_target()
         opens = finite_indexed_family(
             labels, lambda label: scheme.distinguished_open(defining_elements[label]),
             name="Distinguished opens",
@@ -725,9 +889,48 @@ class DistinguishedAffineCovers(OwnedCategory):
             return AlgebraGluingData(self)(local_algebras, transitions).sheaf()
 
         def common_refinement(self, other):
-            r"""The refinement ``{D(f_i g_j)}`` of this cover and ``other``, with its comparison maps."""
+            r"""The span of refinements from ``{D(f_i g_j)}`` to these two covers.
+
+            The returned object is a categorical span in this cover category.
+            Its apex is the common refinement; its two legs are actual
+            :class:`DistinguishedAffineCoverRefinement` morphisms.
+            """
             assert other.ambient_scheme() is self.ambient_scheme(), "covers of one scheme are refined together"
-            return CoverRefinement(self, other)
+            category = self.category()
+            index_pairs = tuple(
+                (left, right)
+                for left in self.atlas()
+                for right in other.atlas()
+            )
+            fine = category(
+                tuple(
+                    self.defining_element(left) * other.defining_element(right)
+                    for left, right in index_pairs
+                )
+            )
+            site = self.site_category()
+
+            def refinement_to(coarse, which):
+                index_map = {
+                    fine_index: index_pairs[fine.chart_position(fine_index)][which]
+                    for fine_index in fine.atlas()
+                }
+                components = {}
+                for fine_index in fine.atlas():
+                    coarse_index = index_map[fine_index]
+                    inclusion = fine.open(fine_index).inclusion_into(
+                        coarse.open(coarse_index)
+                    )
+                    components[fine_index] = site.Mor(
+                        fine.member(fine_index).domain(),
+                        coarse.member(coarse_index).domain(),
+                    )(inclusion)
+                return category.Mor(fine, coarse)(index_map, components)
+
+            return category.span(
+                refinement_to(self, 0),
+                refinement_to(other, 1),
+            )
 
         def _repr_(self):
             return f"Distinguished affine cover of {self.ambient_scheme()} by {self.atlas().cardinality()} opens"
@@ -774,68 +977,6 @@ class _DistinguishedCechCoveringFamilies(OwnedCategory):
 
     def _repr_object_names(self):
         return f"chosen Čech covering family of {self.cover()}"
-
-
-class CoverRefinement(SageObject):
-    r"""``{D(f_i g_j)}`` refining ``{D(f_i)}`` and ``{D(g_j)}`` on one affine scheme.
-
-    A refinement of a cover ``U = {U_i}`` is a cover ``V = {V_k}`` with a map
-    ``k |-> i(k)`` of index sets and inclusions ``V_k <= U_{i(k)}`` (Stacks,
-    Tag 00VI).  The common refinement of two distinguished covers is indexed
-    by pairs ``(i, j)``, refines both through the two projections, and its
-    inclusions are open immersions whose pullbacks are the restriction maps of
-    the structure sheaf, so restriction along ``X > U_i > V_{ij}`` composes
-    to restriction along ``X > V_{ij}``.
-    """
-
-    def __init__(self, first_cover, second_cover) -> None:
-        self._coarse_covers = (first_cover, second_cover)
-        self._index_pairs = tuple(
-            (left, right)
-            for left in first_cover.atlas()
-            for right in second_cover.atlas()
-        )
-        self._fine_cover = DistinguishedAffineCovers(first_cover.ambient_scheme())(
-            tuple(
-                first_cover.defining_element(left) * second_cover.defining_element(right)
-                for left, right in self._index_pairs
-            ),
-        )
-
-    def ambient_scheme(self):
-        return self._fine_cover.ambient_scheme()
-
-    def coarse_cover(self, which):
-        return self._coarse_covers[int(which)]
-
-    def fine_cover(self):
-        return self._fine_cover
-
-    def geometric_cochain_map(self, sheaf):
-        r"""The actual cochain map of the selected affine cover refinement."""
-        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-            _affine_cover_refinement_cochain_map,
-        )
-        return _affine_cover_refinement_cochain_map(self, sheaf)
-
-    def geometric_cohomology_comparison(self, sheaf, degree):
-        r"""The cohomology image of this refinement's actual cochain map."""
-        from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-            _affine_cover_refinement_cohomology_map,
-        )
-        return _affine_cover_refinement_cohomology_map(self, sheaf, degree)
-
-    def index_map(self, which, fine_index):
-        r"""``k |-> i(k)``: the coarse chart of cover ``which`` containing fine chart ``k``."""
-        return self._index_pairs[int(fine_index)][int(which)]
-
-    def inclusion(self, which, fine_index):
-        r"""The open immersion ``V_k -> U_{i(k)}`` into the chosen coarse cover."""
-        coarse_open = self.coarse_cover(which).open(self.index_map(which, fine_index))
-        return self.fine_cover().open(fine_index).inclusion_into(coarse_open)
-
-    def _repr_(self):
-        return f"Common refinement of {self.coarse_cover(0)} and {self.coarse_cover(1)}"
 
 
 class _AffineModuleSheafEngine:
@@ -1346,18 +1487,38 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
             *,
             ambient_chart_index,
         ):
-            r"""Return a represented finite covering family of this ringed space.
+            r"""Return the represented covering family in ``LRS/X``.
 
-            The currently verified regime contains this ambient space as one
-            chart.  Non-affine overlaps remain spaces with their two embeddings;
-            they are never replaced by spectra of global sections.
+            The currently represented covering certificate contains this
+            ambient space as one chart embedded by ``id_X``.  Non-affine
+            overlaps remain slice objects with both overlap legs; they are not
+            replaced by spectra of global sections.
+
+            Unverified specimen: the overlap itself is the apex of the owned
+            overlap span, not a private overlap record::
+
+                sage: from dzack_research.preamble.all import QQ, AffineSpaces
+                sage: plane = AffineSpaces(QQ)(2, names=("x", "y"))
+                sage: x, y = plane.coordinate_algebra().algebra_generators()
+                sage: punctured = plane.closed_subscheme(x, y).open_complement()
+                sage: cover = plane.covering_family(
+                ....:     {"whole": plane, "punctured": punctured},
+                ....:     {"whole": plane.categorical_identity_morphism(), "punctured": punctured.inclusion()},
+                ....:     {("whole", "punctured"): (punctured, punctured.inclusion(), punctured.categorical_identity_morphism())},
+                ....:     ambient_chart_index="whole",
+                ....: )
+                sage: overlap = cover.overlap_span("whole", "punctured")
+                sage: overlap.apex().arrow().domain() is punctured
+                True
             """
             from dzack_research.preamble.categories.schemes.covering_families import (
-                RingedCoveringFamily,
+                _ringed_covering_family,
             )
 
-            return RingedCoveringFamily(
+            site = LocallyRingedSpaces().SliceCategory(self)
+            return _ringed_covering_family(
                 self,
+                site,
                 charts,
                 embeddings,
                 overlaps,
@@ -1367,7 +1528,7 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
 
 __all__ = [
     "AlgebraSheaves",
-    "CoverRefinement",
+    "DistinguishedAffineCoverRefinement",
     "DistinguishedAffineCovers",
     "distinguished_affine_coverage",
     "LocallyRingedSpaces",
@@ -1377,4 +1538,6 @@ __all__ = [
     "SchemeUnderlyingSpace",
     "SheafObjects",
     "SheafedSpaces",
+    "ZariskiCoveringFamilies",
+    "zariski_coverage",
 ]
