@@ -131,7 +131,18 @@ def _relative_transition(datum, presentation, pullback_of, left_index, right_ind
     return schemes.Core().Mor(forward.domain(), forward.codomain())(forward, inverse)
 
 
-def _glued_relative_spectrum(datum, indices, pair_indices, base_chart, base_chart_embedding, presentation, pullback_of):
+def _glued_relative_spectrum(
+    datum,
+    indices,
+    pair_indices,
+    base_chart,
+    base_chart_embedding,
+    presentation,
+    pullback_of,
+    *,
+    _engine=None,
+    construction_data=None,
+):
     r"""Glue ``Spec(B_i)`` and return ``Spec_X(B) -> X`` in the slice over ``X``."""
     base_scheme = datum.scheme()
     base_ring = base_scheme.scheme_base_ring()
@@ -140,7 +151,12 @@ def _glued_relative_spectrum(datum, indices, pair_indices, base_chart, base_char
         (left, right): _relative_transition(datum, presentation, pullback_of, left, right)
         for left, right in pair_indices
     }
-    glued = Schemes(base_ring).glue_affine_atlas(charts, transitions)
+    glued = Schemes(base_ring).glue_affine_atlas(
+        charts,
+        transitions,
+        _object_engine=_engine,
+        **dict(construction_data or {}),
+    )
     local_maps = {
         index: base_chart_embedding(index)
         * _affine_morphism_from_pullback(
@@ -159,7 +175,7 @@ def _glued_relative_spectrum(datum, indices, pair_indices, base_chart, base_char
 
 
 @cached_function(key=lambda datum: id(datum))
-def _relative_spectrum(datum):
+def _relative_spectrum(datum, *, _engine=None, construction_data=None):
     r"""``Spec_X(A)`` for algebra data on a distinguished affine cover."""
     cover = datum.cover()
     indices = tuple(cover.atlas())
@@ -168,17 +184,21 @@ def _relative_spectrum(datum):
         cover.open, lambda index: cover.open(index).inclusion(),
         _cover_overlap_presentation,
         lambda source, target: datum.transition(source, target).inverse(),
+        _engine=_engine,
+        construction_data=construction_data,
     )
 
 
 @cached_function(key=lambda datum: id(datum))
-def _finite_atlas_relative_spectrum(datum):
+def _finite_atlas_relative_spectrum(datum, *, _engine=None, construction_data=None):
     r"""``Spec_X(A)`` for algebra data on a finite affine atlas of any scheme."""
     atlas = datum.gluing_datum()
     return _glued_relative_spectrum(
         datum, tuple(atlas.chart_indices()), tuple(atlas.transition_index_set()),
         atlas.chart, atlas.chart_embedding, _atlas_overlap_presentation,
         lambda source, target: datum.transition(source, target).pullback(),
+        _engine=_engine,
+        construction_data=construction_data,
     )
 
 

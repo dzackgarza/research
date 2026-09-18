@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.schemes.cyclic_covers import (
 )
 
 from dzack_research.preamble.categories.schemes.k3_families import (
-    HorikawaK3DoubleCover,
     HorikawaK3Family,
 )
 
@@ -138,7 +137,6 @@ __all__ = [
     'AnalyticDiscFamily',
     'CyclicCoverBaseChangeComparison',
     'RelativeCyclicCoverLift',
-    'HorikawaK3DoubleCover',
     'HorikawaK3Family',
     'LegendreMonodromyFamily',
     'PointedAnalyticFundamentalGroup',

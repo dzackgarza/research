@@ -2732,12 +2732,16 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
     def morphism_to(self, target, local_maps):
         return FiniteAtlasAlgebraGluingMorphism(self, target, local_maps)
 
-    def relative_spectrum(self):
+    def relative_spectrum(self, *, _engine=None, construction_data=None):
         from dzack_research.preamble.categories.schemes.relative_spec import (
             _finite_atlas_relative_spectrum,
         )
 
-        return _finite_atlas_relative_spectrum(self)
+        return _finite_atlas_relative_spectrum(
+            self,
+            _engine=_engine,
+            construction_data=construction_data,
+        )
 
 
 class FiniteAtlasAlgebraGluingMorphism(SageObject):
@@ -3891,13 +3895,17 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
         def Mor(self, target):
             return self.category().Mor(self, target)
 
-        def relative_spectrum(self):
+        def relative_spectrum(self, *, _engine=None, construction_data=None):
             r"""Return ``Spec_X(A)`` for this represented quasi-coherent algebra datum."""
             from dzack_research.preamble.categories.schemes.relative_spec import (
                 _relative_spectrum,
             )
 
-            return _relative_spectrum(self)
+            return _relative_spectrum(
+                self,
+                _engine=_engine,
+                construction_data=construction_data,
+            )
 
         def _repr_(self):
             return f"Algebra gluing datum on {self.cover()}"

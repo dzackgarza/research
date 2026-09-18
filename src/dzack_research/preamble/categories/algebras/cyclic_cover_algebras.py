@@ -95,6 +95,9 @@ class CyclicCoverAlgebra(SageObject):
         line_bundle: InvertibleSheaf,
         branch_section: Element,
         degree: Integer,
+        *,
+        relative_spectrum_engine=None,
+        relative_spectrum_data=None,
     ) -> None:
         InvertibleSheaf, FiniteAtlasInvertibleSheaf = _invertible_sheaf_implementations()
         if not isinstance(line_bundle, InvertibleSheaf):
@@ -152,6 +155,8 @@ class CyclicCoverAlgebra(SageObject):
         self._branch_power = branch_power
         self._branch_section = branch_parent(branch_section)
         self._degree = degree
+        self._relative_spectrum_engine = relative_spectrum_engine
+        self._relative_spectrum_data = dict(relative_spectrum_data or {})
         self._chart_index_set = charts
         self._local_branch_coefficients = indexed_family(
             charts,
@@ -324,7 +329,11 @@ class CyclicCoverAlgebra(SageObject):
             _relative_cyclic_cover,
         )
 
-        return _relative_cyclic_cover(self)
+        return _relative_cyclic_cover(
+            self,
+            _engine=self._relative_spectrum_engine,
+            construction_data=self._relative_spectrum_data,
+        )
 
     def local_deck_group_scheme_action(self, chart_index):
         r"""Return the canonical ``mu_n`` action on one affine cover chart."""

@@ -1,6 +1,6 @@
 r"""The Horikawa ``(4,4)`` family is built from the shared equivariant cover owners."""
 
-from dzack_research.preamble.all import QQ, QuadraticField
+from dzack_research.preamble.all import QQ, QuadraticField, Schemes
 from dzack_research.preamble.categories.schemes.k3_families import HorikawaK3Family
 
 ARCHIVE_RECONCILIATIONS = (
@@ -50,6 +50,8 @@ def test_branch_section_action_computes_the_source_specified_13_plus_12_split() 
 
 def test_selected_invariant_branch_builds_a_smooth_anticanonical_double_cover() -> None:
     member = HorikawaK3Family().member()
+    assert member.scheme() is member
+    assert member in Schemes(QQ)
     cyclic = member.cyclic_algebra()
     cover = member.scheme()
     projection = member.cover_morphism()

@@ -185,43 +185,30 @@ class HorikawaK3Family(SageObject):
         assert self.branch_linearization().is_eigensection(section, trivial), (
             "a Horikawa double cover in this family requires a tau-invariant branch section"
         )
-        return HorikawaK3DoubleCover(self, section)
+        return _horikawa_k3_double_cover(self, section)
 
     def _repr_(self) -> str:
         return f"Horikawa K3 family over {self.base_ring()} on {self.base_surface()}"
 
 
 
-class HorikawaK3DoubleCover(SageObject):
-    r"""One represented member of :class:`HorikawaK3Family`."""
+class _HorikawaK3DoubleCoverEngine:
+    r"""Private realization of one Horikawa K3 member on its cyclic-cover scheme."""
 
-    def __init__(self, family, branch_section) -> None:
+    def __init__(
+        self,
+        *,
+        family,
+        branch_section,
+        compatible_branch_section,
+        cyclic_algebra,
+        **rest,
+    ) -> None:
         self._family = family
-        self._branch_section = family.branch_section_space()(branch_section)
-        compatible_branch = family.branch_line_bundle().compatible_section(
-            self._branch_section
-        )
-        cyclic_algebra = CyclicCoverAlgebra(
-            family.cover_line_bundle(),
-            compatible_branch,
-            2,
-        )
-        relative = cyclic_algebra.relative_spectrum()
-        generator = next(iter(family.acting_group().group_generators()))
-        nikulin_lift = cyclic_algebra.lift_linearized_group_element(
-            family.nikulin_linearization(),
-            generator,
-        )
-        enriques_lift = cyclic_algebra.lift_linearized_group_element(
-            family.enriques_linearization(),
-            generator,
-        )
-        self._compatible_branch = compatible_branch
+        self._branch_section = branch_section
+        self._compatible_branch = compatible_branch_section
         self._cyclic_algebra = cyclic_algebra
-        self._relative_cover = relative
-        self._nikulin_lift = nikulin_lift
-        self._enriques_lift = enriques_lift
-        self._deck_involution = cyclic_algebra.constant_deck_transformation()
+        super().__init__(**rest)
 
     def family(self):
         return self._family
@@ -242,22 +229,33 @@ class HorikawaK3DoubleCover(SageObject):
         return self._cyclic_algebra
 
     def relative_cover(self):
-        return self._relative_cover
+        return self.cyclic_algebra().relative_spectrum()
 
     def scheme(self):
-        return self.relative_cover().arrow().domain()
+        return self
 
     def cover_morphism(self):
         return self.relative_cover().arrow()
 
+    @cached_method
     def deck_involution(self):
-        return self._deck_involution
+        return self.cyclic_algebra().constant_deck_transformation()
 
+    @cached_method
     def nikulin_lift(self):
-        return self._nikulin_lift
+        generator = next(iter(self.family().acting_group().group_generators()))
+        return self.cyclic_algebra().lift_linearized_group_element(
+            self.family().nikulin_linearization(),
+            generator,
+        )
 
+    @cached_method
     def enriques_lift(self):
-        return self._enriques_lift
+        generator = next(iter(self.family().acting_group().group_generators()))
+        return self.cyclic_algebra().lift_linearized_group_element(
+            self.family().enriques_linearization(),
+            generator,
+        )
 
     def branch_chart(self, index):
         chart = self.family().branch_line_bundle().gluing_datum().chart(index)
@@ -303,7 +301,7 @@ class HorikawaK3DoubleCover(SageObject):
         )
 
     def is_k3(self) -> bool:
-        r"""Apply the smooth anticanonical double-cover theorem to this member."""
+        r"""Apply the smooth anticanonical double-cover theorem to this scheme."""
         return self.k3_theorem_hypotheses_hold()
 
     def deck_top_form_scalar(self):
@@ -343,7 +341,26 @@ class HorikawaK3DoubleCover(SageObject):
         return _HorikawaK3BaseChangeComparison(self, ring_map)
 
     def _repr_(self) -> str:
-        return f"Horikawa K3 double cover {self.scheme()} -> {self.base_surface()}"
+        return f"Horikawa K3 double cover over {self.base_surface()}"
+
+
+def _horikawa_k3_double_cover(family, branch_section):
+    r"""Construct one Horikawa member as the cyclic-cover scheme itself."""
+    selected = family.branch_section_space()(branch_section)
+    compatible_branch = family.branch_line_bundle().compatible_section(selected)
+    cyclic_algebra = CyclicCoverAlgebra(
+        family.cover_line_bundle(),
+        compatible_branch,
+        2,
+        relative_spectrum_engine=_HorikawaK3DoubleCoverEngine,
+        relative_spectrum_data={
+            "family": family,
+            "branch_section": selected,
+            "compatible_branch_section": compatible_branch,
+        },
+    )
+    relative = cyclic_algebra.relative_spectrum()
+    return relative.arrow().domain()
 
 
 
@@ -438,6 +455,5 @@ class _HorikawaK3BaseChangeComparison(SageObject):
 
 
 __all__ = [
-    "HorikawaK3DoubleCover",
     "HorikawaK3Family",
 ]

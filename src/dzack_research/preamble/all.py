@@ -364,7 +364,6 @@ from dzack_research.preamble.categories.schemes import (
     GeometricFundamentalGroups,
     HesseBertiniFamily,
     HorikawaEnriquesSurface,
-    HorikawaK3DoubleCover,
     HorikawaK3Family,
     IntegralSchemes,
     IntegralSingularCohomologyGroups,

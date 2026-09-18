@@ -79,9 +79,14 @@ from dzack_research.preamble.categories.schemes.schemes import (
 _ROOT_OF_UNITY_VARIABLE = "t"
 
 
-def _relative_cyclic_cover(cyclic_algebra):
+def _relative_cyclic_cover(cyclic_algebra, *, _engine=None, construction_data=None):
     r"""Return the cyclic cover through the general relative-Spec owner."""
-    return cyclic_algebra.gluing_datum().relative_spectrum()
+    data = dict(construction_data or {})
+    data.setdefault("cyclic_algebra", cyclic_algebra)
+    return cyclic_algebra.gluing_datum().relative_spectrum(
+        _engine=_engine,
+        construction_data=data,
+    )
 
 
 def _relative_cover_chart(cyclic_algebra, chart_index):
