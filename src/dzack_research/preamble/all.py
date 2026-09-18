@@ -410,7 +410,6 @@ from dzack_research.preamble.categories.schemes import (
     SheafedSpaces,
     SideDecoration,
     SmoothSchemes,
-    StructureSheaf,
     Surfaces,
     ToricFixedPointBlowups,
     ToricFundamentalGroups,

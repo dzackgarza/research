@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.abstract_categories.products import Pose
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.owned_category import _object_of
 
 
 class SchemeUnderlyingSpace(SageObject):
@@ -181,23 +182,13 @@ class AlgebraSheaves(OwnedParameterizedCategory):
         return self.scheme().structure_sheaf()
 
 
-class StructureSheaf(Parent):
+class _StructureSheafEngine:
     r"""The represented structure sheaf ``O_X`` of a ringed space ``X``."""
 
-    def __init__(self, ringed_space) -> None:
+    def __init__(self, ringed_space, **rest) -> None:
         self._ringed_space = ringed_space
         self._restriction_maps = {}
-        from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
-        Parent.__init__(
-            self,
-            category=Cat().meet(
-                (
-                    AlgebraSheaves(ringed_space),
-                    QuasiCoherentSheaves(ringed_space),
-                )
-            ),
-        )
+        super().__init__(**rest)
 
     @cached_method
     def presheaf(self):
@@ -309,6 +300,21 @@ class StructureSheaf(Parent):
 
     def _repr_(self) -> str:
         return f"Structure sheaf O_{{{self.scheme()}}}"
+
+
+def _structure_sheaf(ringed_space):
+    r"""Construct ``O_X`` through its owned sheaf refinements with a private realization."""
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+    category = Cat().meet((
+        AlgebraSheaves(ringed_space),
+        QuasiCoherentSheaves(ringed_space),
+    ))
+    return _object_of(
+        category,
+        _engine=(SheafObjects(ringed_space), _StructureSheafEngine, None),
+        ringed_space=ringed_space,
+    )
 
 
 class _AffineStructurePresheaf(Functor):
@@ -1064,7 +1070,7 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
     class ParentMethods:
         @cached_method
         def structure_sheaf(self):
-            return StructureSheaf(self)
+            return _structure_sheaf(self)
 
         @cached_method
         def underlying_space(self):
@@ -1146,5 +1152,4 @@ __all__ = [
     "SchemeUnderlyingSpace",
     "SheafObjects",
     "SheafedSpaces",
-    "StructureSheaf",
 ]
