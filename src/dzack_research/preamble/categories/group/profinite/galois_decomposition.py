@@ -5,6 +5,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.number_field_ideal import NumberFieldIdeal
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     PredicateSubgroups,
     StabilizerSubgroups,
@@ -15,16 +16,18 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.owned_category import _object_of
 
 
-class PrimeProlongation(SageObject):
+class _PrimeProlongationEngine:
     r"""A coherent finite-stage oracle for a chosen prolongation (\bar v)."""
 
-    def __init__(self, base_prime, at_stage) -> None:
+    def __init__(self, base_prime, at_stage, **rest) -> None:
         if not callable(at_stage):
             raise TypeError("a prolongation must supply a finite-stage prime function")
         self._base_prime = base_prime
         self._at_stage = at_stage
+        super().__init__(**rest)
 
     def base_prime(self):
         return self._base_prime
@@ -37,6 +40,16 @@ class PrimeProlongation(SageObject):
 
     def _repr_(self) -> str:
         return f"Chosen prolongation of {self._base_prime}"
+
+
+def PrimeProlongation(base_prime, at_stage):
+    r"""Construct a chosen prime prolongation as represented mathematical data."""
+    return _object_of(
+        Objects(),
+        _engine=(Objects(), _PrimeProlongationEngine, None),
+        base_prime=base_prime,
+        at_stage=at_stage,
+    )
 
 
 def _engine_prime(prime):
@@ -169,7 +182,7 @@ def _finite_frobenius_class(quotient, base_prime, prime_above):
 
 
 class AbsoluteDecompositionGroup(SageObject):
-    def __init__(self, supergroup, prime, prolongation: PrimeProlongation) -> None:
+    def __init__(self, supergroup, prime, prolongation) -> None:
         if prolongation.base_prime() != prime:
             raise ValueError("the prolongation lies over a different base prime")
         self._supergroup = supergroup
@@ -202,7 +215,7 @@ class AbsoluteDecompositionGroup(SageObject):
 
 
 class AbsoluteInertiaGroup(SageObject):
-    def __init__(self, supergroup, prime, prolongation: PrimeProlongation) -> None:
+    def __init__(self, supergroup, prime, prolongation) -> None:
         if prolongation.base_prime() != prime:
             raise ValueError("the prolongation lies over a different base prime")
         self._supergroup = supergroup

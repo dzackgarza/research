@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_group im
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
     PrimeProlongation,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/profinite/galois_decomposition.sage",
@@ -22,6 +23,7 @@ def test_chosen_decomposition_and_inertia_groups_project_to_finite_quotients() -
     quotient = group.finite_quotient(stage)
     prime_above_two = field.primes_above(2)[0]
     prolongation = PrimeProlongation(2, lambda _extension: prime_above_two)
+    assert prolongation in Objects()
 
     decomposition = group.decomposition_group(2, prolongation=prolongation)
     inertia = group.inertia_group(2, prolongation=prolongation)
