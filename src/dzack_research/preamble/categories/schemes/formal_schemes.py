@@ -3,8 +3,12 @@ r"""Adic formal spectra and their compatible infinitesimal thickenings."""
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.products import DirectedSystem, PosetCategory
+from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.sets.set_categories import NN
 
-from dzack_research.preamble.categories.schemes.schemes import _affine_spec_morphism
+
+from dzack_research.preamble.categories.schemes.schemes import Schemes, _affine_spec_morphism
 
 
 class FormalCompletionComparison(SageObject):
@@ -34,14 +38,8 @@ class FormalCompletionComparison(SageObject):
         return self._backward
 
 
-class FormalSpectrum(SageObject):
-    r"""The formal affine scheme ``Spf(A,I)``, distinct from ``Spec(A^)``.
-
-    The formal object is the pair ``(A,I)`` together with its compatible
-    thickenings ``Spec(A/I^n)``.  A completion precision is only a selected
-    computational realization and is never stored as part of this object's
-    identity.
-    """
+class _FormalThickeningSystem(Functor):
+    r"""The directed system ``Spec(A/I) -> Spec(A/I^2) -> ...``."""
 
     def __init__(self, source_ring, ideal_of_definition) -> None:
         assert ideal_of_definition.ring() is source_ring, (
@@ -49,6 +47,13 @@ class FormalSpectrum(SageObject):
         )
         self._source_ring = source_ring
         self._ideal = ideal_of_definition
+        self._base_index = PosetCategory(NN)
+        self._scheme_base_ring = source_ring.affine_spectrum().scheme_base_ring()
+        self._system_category = DirectedSystem(
+            self._base_index,
+            Schemes(self._scheme_base_ring),
+        )
+        super().__init__(self._base_index, Schemes(self._scheme_base_ring))
 
     def source_ring(self):
         return self._source_ring
@@ -56,18 +61,17 @@ class FormalSpectrum(SageObject):
     def ideal_of_definition(self):
         return self._ideal
 
-    @cached_method(key=lambda self, precision=20: int(precision))
-    def completion(self, precision=20):
-        r"""The ``I``-adic completion ``A^`` realized at one computation precision."""
-        return self.source_ring().adic_completion(
-            self.ideal_of_definition(),
-            precision=int(precision),
-        )
+    def scheme_base_ring(self):
+        return self._scheme_base_ring
 
-    def completed_affine_scheme(self, precision=20):
-        r"""Return ``Spec(A^)`` for one computational realization, not ``Spf(A,I)``."""
-        completion = self.completion(precision)
-        return (completion).affine_spectrum(base_ring=completion)
+    def base_index_category(self):
+        return self._base_index
+
+    def system_category(self):
+        return self._system_category
+
+    def exponent(self, index) -> int:
+        return int(index.value()) + 1
 
     def thickening_ring(self, exponent):
         exponent = int(exponent)
@@ -76,13 +80,7 @@ class FormalSpectrum(SageObject):
             self.ideal_of_definition().power(exponent)
         )
 
-    def thickening(self, exponent):
-        r"""Return the finite stage ``Spec(A/I^exponent)``."""
-        quotient = self.thickening_ring(exponent)
-        return (quotient).affine_spectrum(base_ring=quotient)
-
     def transition_ring_map(self, higher_exponent, lower_exponent):
-        r"""Return ``A/I^higher -> A/I^lower`` in the inverse system."""
         higher_exponent = int(higher_exponent)
         lower_exponent = int(lower_exponent)
         assert higher_exponent >= lower_exponent > 0, (
@@ -95,11 +93,64 @@ class FormalSpectrum(SageObject):
             lambda element: lower_projection(element.lift())
         )
 
-    def formal_restriction(self, higher_exponent, lower_exponent):
-        r"""Return ``Spec(A/I^lower) -> Spec(A/I^higher)`` contravariantly."""
+    def _apply_object(self, index):
+        quotient = self.thickening_ring(self.exponent(index))
+        return quotient.affine_spectrum(base_ring=self.scheme_base_ring())
+
+    def _apply_morphism(self, morphism):
+        lower = self.exponent(morphism.domain())
+        higher = self.exponent(morphism.codomain())
         return _affine_spec_morphism(
-            self.transition_ring_map(higher_exponent, lower_exponent)
+            self.transition_ring_map(higher, lower)
         )
+
+    def _repr_(self):
+        return f"Formal thickening system of ({self.source_ring()}, {self.ideal_of_definition()})"
+
+
+class _FormalSpectrumEngine:
+    r"""Private realization of ``Spf(A,I)`` by its directed system of thickenings."""
+
+    def source_ring(self):
+        return self.functor().source_ring()
+
+    def ideal_of_definition(self):
+        return self.functor().ideal_of_definition()
+
+    def scheme_base_ring(self):
+        return self.functor().scheme_base_ring()
+
+    @cached_method(key=lambda self, precision=20: int(precision))
+    def completion(self, precision=20):
+        r"""The ``I``-adic completion ``A^`` realized at one computation precision."""
+        return self.source_ring().adic_completion(
+            self.ideal_of_definition(),
+            precision=int(precision),
+        )
+
+    def completed_affine_scheme(self, precision=20):
+        r"""Return ``Spec(A^)`` for one computational realization, not ``Spf(A,I)``."""
+        completion = self.completion(precision)
+        return completion.affine_spectrum(base_ring=self.scheme_base_ring())
+
+    def thickening_ring(self, exponent):
+        return self.functor().thickening_ring(exponent)
+
+    def thickening(self, exponent):
+        r"""Return the finite stage ``Spec(A/I^exponent)`` from the owned directed system."""
+        exponent = int(exponent)
+        assert exponent > 0, "an infinitesimal thickening exponent is positive"
+        return self.functor()(self.functor().base_index_category()(NN(exponent - 1)))
+
+    def transition_ring_map(self, higher_exponent, lower_exponent):
+        return self.functor().transition_ring_map(higher_exponent, lower_exponent)
+
+    def formal_restriction(self, higher_exponent, lower_exponent):
+        r"""Return ``Spec(A/I^lower) -> Spec(A/I^higher)`` from the directed-system arrow."""
+        index = self.functor().base_index_category()
+        lower = index(NN(int(lower_exponent) - 1))
+        higher = index(NN(int(higher_exponent) - 1))
+        return self.functor()(index.Mor(lower, higher).unique())
 
     def completion_projection(self, precision, exponent):
         r"""Return the actual map ``A^ -> A/I^exponent`` from one realization."""
@@ -118,6 +169,15 @@ class FormalSpectrum(SageObject):
 
     def _repr_(self):
         return f"Spf({self.source_ring()}, {self.ideal_of_definition()}-adic)"
+
+
+def FormalSpectrum(source_ring, ideal_of_definition):
+    r"""Return ``Spf(A,I)`` through its represented directed system of finite thickenings."""
+    functor = _FormalThickeningSystem(source_ring, ideal_of_definition)
+    return functor.system_category().object(
+        functor,
+        _engine=_FormalSpectrumEngine,
+    )
 
 
 class FormalAffineMorphism(SageObject):

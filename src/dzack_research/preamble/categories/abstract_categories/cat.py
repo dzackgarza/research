@@ -1264,18 +1264,32 @@ class _FunctorCategory(FixedHomCategory):
         def _repr_(self) -> str:
             return f"Functor object ({self.functor()})"
 
-    def object(self, functor: Functor | CategoryFunctorMorphism):
+    def object(
+        self,
+        functor: Functor | CategoryFunctorMorphism,
+        *,
+        _engine=None,
+        construction_data=None,
+    ):
         r"""The object of ``[C, D]`` on a functor ``C -> D``: this category's one entry.
 
         The input is the functor, or the morphism of ``Cat`` that is the same
-        functor.  One object per functor.
+        functor.  A private realization may retain construction-specific data
+        without creating a second public object path.
         """
         match functor:
             case CategoryFunctorMorphism():
                 functor = functor.functor()
         if not self._has_endpoints_of(functor):
             raise ValueError("the functor has the wrong functor-category endpoints")
-        return self._object_on(functor)
+        if _engine is None and construction_data is None:
+            return self._object_on(functor)
+        return _object_of(
+            self,
+            _engine=None if _engine is None else (self, _engine, None),
+            functor=functor,
+            **dict(construction_data or {}),
+        )
 
     def _has_endpoints_of(self, functor: Functor) -> bool:
         r"""Whether ``functor`` runs from this category's domain to its codomain."""

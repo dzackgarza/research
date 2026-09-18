@@ -7,6 +7,12 @@ def test_formal_spectrum_is_distinct_from_completion_and_its_finite_stages() -> 
     ring = QQ.polynomial_ring("t")
     t = ring.algebra_generator("t")
     formal = ring.formal_spectrum(ring.ideal(t))
+    from dzack_research.preamble.categories.abstract_categories.products import DirectedSystem
+    from dzack_research.preamble.categories.sets.set_categories import NN
+
+    system = formal.functor()
+    assert formal in DirectedSystem(system.base_index_category(), system.codomain())
+    assert formal.category() is system.system_category()
     second = formal.thickening_ring(2)
     third = formal.thickening_ring(3)
     transition = formal.transition_ring_map(3, 2)
@@ -17,6 +23,11 @@ def test_formal_spectrum_is_distinct_from_completion_and_its_finite_stages() -> 
     assert transition.domain() is third
     assert transition.codomain() is second
     assert transition(third.quotient_map()(t)) == second.quotient_map()(t)
+    lower = system.base_index_category()(NN(1))
+    higher = system.base_index_category()(NN(2))
+    restriction = system(system.base_index_category().Mor(lower, higher).unique())
+    assert restriction.domain() is formal.thickening(2)
+    assert restriction.codomain() is formal.thickening(3)
 
 
 def test_precision_changes_only_the_completion_realization_not_the_formal_object() -> None:
