@@ -39,6 +39,7 @@ def test_mu_two_is_a_group_scheme_not_an_abstract_group() -> None:
     mu_two = AffineGroupSchemes(QQ).roots_of_unity(2)
 
     assert mu_two in AffineGroupSchemes(QQ)
+    assert mu_two.category().is_subcategory(AffineGroupSchemes(QQ))
     assert mu_two.scheme().scheme_base_ring() is QQ
     assert mu_two.multiplication().domain().factors()[0] is mu_two.scheme()
     assert mu_two.multiplication().domain().factors()[1] is mu_two.scheme()
@@ -57,6 +58,7 @@ def test_mu_two_scales_the_affine_line_by_a_scheme_morphism() -> None:
     point_pullback = product.projection(1).coordinate_algebra_morphism()
 
     assert acted.group_scheme() is mu_two
+    assert acted.category().is_subcategory(AffineGroupSchemeActions(mu_two))
     assert acted.scheme() is line
     assert action.codomain() is line
     assert action.coordinate_algebra_morphism()(x) == (

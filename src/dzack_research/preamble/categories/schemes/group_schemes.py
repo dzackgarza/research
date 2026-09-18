@@ -11,7 +11,6 @@ the latter is an action of an abstract group through a functor ``BG -> Sch_R``.
 
 from sage.categories.morphism import Morphism
 from sage.misc.classcall_metaclass import typecall
-from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -28,6 +27,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _affine_morphism_from_pullback,
 )
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _product_has_factors(product, factors) -> bool:
@@ -58,12 +58,13 @@ class AffineGroupSchemes(OwnedCategoryOverBaseRing):
         return f"affine group schemes over {self.base_ring()}"
 
     def _call_(self, scheme, multiplication, unit, inverse):
-        return AffineGroupScheme(
+        return _object_of(
             self,
-            scheme,
-            multiplication,
-            unit,
-            inverse,
+            _engine=(self, _AffineGroupSchemeEngine, None),
+            scheme=scheme,
+            multiplication=multiplication,
+            unit=unit,
+            inverse=inverse,
         )
 
     def roots_of_unity(self, degree: int):
@@ -76,15 +77,16 @@ class AffineGroupSchemes(OwnedCategoryOverBaseRing):
     _HomCategory = AffineGroupSchemeHomCategoryConstruction
 
 
-class AffineGroupScheme(Parent):
+class _AffineGroupSchemeEngine:
     r"""One affine group scheme with actual scheme-theoretic structure morphisms."""
 
-    def __init__(self, category, scheme, multiplication, unit, inverse) -> None:
+    def __init__(self, scheme, multiplication, unit, inverse, **rest) -> None:
         self._scheme = scheme
         self._multiplication = multiplication
         self._unit = unit
         self._inverse = inverse
-        base = category.base_ring()
+        super().__init__(**rest)
+        base = self.category().base_ring()
         if scheme not in Schemes(base).Affine():
             raise TypeError("an affine group scheme requires an affine scheme over its base")
         square = multiplication.domain()
@@ -97,7 +99,6 @@ class AffineGroupScheme(Parent):
         if unit.domain() is not scheme.base_scheme():
             raise ValueError("the group-scheme unit must start at the represented base scheme")
         self._verify_group_diagrams()
-        Parent.__init__(self, category=category)
 
     def scheme(self):
         return self._scheme
@@ -250,7 +251,12 @@ class AffineGroupSchemeActions(CategoryPacketMethods, OwnedCategory):
         return f"affine schemes acted on by {self.group_scheme()}"
 
     def _call_(self, scheme, action_morphism):
-        return AffineGroupSchemeAction(self, scheme, action_morphism)
+        return _object_of(
+            self,
+            _engine=(self, _AffineGroupSchemeActionEngine, None),
+            scheme=scheme,
+            action_morphism=action_morphism,
+        )
 
     def an_object(self):
         group = self.group_scheme()
@@ -262,13 +268,14 @@ class AffineGroupSchemeActions(CategoryPacketMethods, OwnedCategory):
     _HomCategory = AffineGroupSchemeActionHomCategoryConstruction
 
 
-class AffineGroupSchemeAction(Parent):
+class _AffineGroupSchemeActionEngine:
     r"""An affine ``G``-scheme represented by ``a: G x_S X -> X``."""
 
-    def __init__(self, category, scheme, action_morphism) -> None:
+    def __init__(self, scheme, action_morphism, **rest) -> None:
         self._scheme = scheme
         self._action_morphism = action_morphism
-        group = category.group_scheme()
+        super().__init__(**rest)
+        group = self.category().group_scheme()
         self._group_scheme = group
         base = group.base_ring()
         if scheme not in Schemes(base).Affine():
@@ -281,7 +288,6 @@ class AffineGroupSchemeAction(Parent):
         if action_morphism.codomain() is not scheme:
             raise ValueError("a group-scheme action must land in X")
         self._verify_action_diagrams()
-        Parent.__init__(self, category=category)
 
     def scheme(self):
         return self._scheme
