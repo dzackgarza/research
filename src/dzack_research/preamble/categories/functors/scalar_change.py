@@ -57,12 +57,20 @@ class _ScalarExtensionFunctor(Functor):
                 return morphism
             case _:
                 pass
-        source = self(morphism.domain())
-        target = self(morphism.codomain())
+        source_module = morphism.domain()
+        target_module = morphism.codomain()
+        assert source_module in FramedModules(source_module.base_ring()), (
+            "represented scalar extension of a module morphism currently requires a selected source framing"
+        )
+        assert target_module in FramedModules(target_module.base_ring()), (
+            "represented scalar extension of a module morphism currently requires a selected target framing"
+        )
+        source = self(source_module)
+        target = self(target_module)
 
         def image(label):
-            original = morphism.domain().module_generator(label)
-            coefficients = morphism.codomain().framing_coefficients(morphism(original))
+            original = source_module.module_generator(label)
+            coefficients = target_module.framing_coefficients(morphism(original))
             return target.linear_combination(
                 {
                     target_label: self._target_ring(

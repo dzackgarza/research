@@ -206,11 +206,17 @@ class SemilinearModuleHomset(CategoricalHomset):
             linearization = scalar_map.linearization()
             scalar_map = scalar_map.scalar_map()
         extended = self.extended_domain(scalar_map)
-        if not isinstance(linearization, Morphism):
-            linearization = Modules(self.codomain().base_ring()).Mor(
-                extended,
-                self.codomain(),
-            )(linearization)
+        linear_hom = Modules(self.codomain().base_ring()).Mor(
+            extended,
+            self.codomain(),
+        )
+        match linearization:
+            case Morphism() if linearization in linear_hom:
+                pass
+            case Morphism():
+                raise TypeError("the semilinear linearization is not a morphism of the target module fiber")
+            case _:
+                linearization = linear_hom(linearization)
         return self.element_class(self, scalar_map, linearization)
 
     def identity(self):
