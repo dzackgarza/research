@@ -284,9 +284,9 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
         category = self.underlying_category()
         sample = category.an_object()
-        if category is Sets():
-            return FiniteGSets(self.acting_group()).trivial(sample)
         match category:
+            case _ if category is Sets():
+                return FiniteGSets(self.acting_group()).trivial(sample)
             case Schemes():
                 return AffineGSchemes(self.acting_group(), category.base_ring()).an_object()
         assert category.is_subcategory(Modules(category.base_ring())), f"no owned constructor equips an object of {category} with a group action"
@@ -297,17 +297,17 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     class ParentMethods:
         def __init__(self, acting_group, action, underlying_category, **rest) -> None:
-            self._preamble_acting_group = acting_group
-            self._preamble_action_datum = action
-            self._preamble_underlying_category = underlying_category
+            self._acting_group = acting_group
+            self._action_datum = action
+            self._underlying_category = underlying_category
             super().__init__(**rest)
 
         def acting_group(self):
-            return self._preamble_acting_group
+            return self._acting_group
 
         def underlying_category(self):
             r"""Return the category in which this object is acted on."""
-            return self._preamble_underlying_category
+            return self._underlying_category
 
         @cached_method
         def action_functor(self):
@@ -317,7 +317,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             )
 
             endomorphisms = self.underlying_category().Mor(self, self)
-            datum = self._preamble_action_datum
+            datum = self._action_datum
             functor = GroupActionFunctor(
                 self.acting_group(),
                 self.underlying_category(),
