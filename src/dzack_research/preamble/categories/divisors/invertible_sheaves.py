@@ -178,6 +178,7 @@ class InvertibleSheaf(Parent):
         }
         return self._from_transition_units(self.cover(), units)
 
+    @cached_method
     def tensor_power(self, exponent):
         r"""Return ``self^tensor exponent`` using powers of the transition units."""
 
@@ -375,6 +376,7 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         }
         return type(self)(self.gluing_datum(), units)
 
+    @cached_method
     def tensor_power(self, exponent):
         exponent = int(exponent)
         units = {}
@@ -456,9 +458,13 @@ class _LineBundleBaseChangeImage:
         )
 
         source = self.source_bundle()
-        section = source.compatible_sections()(section)
+        source_sections = source.compatible_sections()
+        if section.parent() is not source_sections:
+            raise ValueError("the section belongs to a different line-bundle power")
         source_atlas = source.gluing_datum()
+        source_module_datum = source.module_sheaf().gluing_datum()
         target_atlas = changed_bundle.gluing_datum()
+        target_module_datum = changed_bundle.module_sheaf().gluing_datum()
         projection = self.projection(changed_bundle)
 
         def component(index):
@@ -472,13 +478,13 @@ class _LineBundleBaseChangeImage:
             target_module = changed_bundle.local_module(target_index)
             label = next(iter(source_module.module_generating_set()))
             coefficient = source_module.framing_coefficients(
-                section.component(source_index)
+                source_module_datum.compatible_section_component(section, source_index)
             ).get(label, source_module.base_ring().zero())
             return target_module.scalar_multiple(
                 pullback(coefficient), _rank_one_generator(target_module)
             )
 
-        return changed_bundle.compatible_sections()(
+        return target_module_datum.compatible_section(
             finite_indexed_family(target_atlas.chart_index_set(), component)
         )
 
@@ -532,6 +538,18 @@ def _base_change_projection(bundle):
 
 def _section_base_change_comparison_of(bundle):
     return _base_change_image(bundle).section_comparison(bundle)
+
+
+def _tensor_power_base_change_image(bundle, exponent):
+    r"""Return the scalar-change provenance inherited by one tensor power."""
+    match bundle._base_change_image:
+        case None:
+            return None
+        case image:
+            return _LineBundleBaseChangeImage(
+                image.source_bundle().tensor_power(exponent),
+                image.ring_map(),
+            )
 
 
 class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
@@ -596,11 +614,18 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             return type(self)(self.projective_space(), self.degree() + other.degree())
         return super().tensor_product(other)
 
+    @cached_method
     def tensor_power(self, exponent):
         exponent = _own_ring(SageZZ)(exponent)
-        if exponent == 1:
-            return self
-        return type(self)(self.projective_space(), exponent * self.degree())
+        match exponent == 1:
+            case True:
+                return self
+            case False:
+                return type(self)(
+                    self.projective_space(),
+                    exponent * self.degree(),
+                    base_change_image=_tensor_power_base_change_image(self, exponent),
+                )
 
     def dual_sheaf(self):
         return type(self)(self.projective_space(), -self.degree())
@@ -1043,17 +1068,21 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             )
         return super().tensor_product(other)
 
+    @cached_method
     def tensor_power(self, exponent):
         exponent = _own_ring(SageZZ)(exponent)
-        if exponent == 1:
-            return self
-        return type(self)(
-            self.projective_product(),
-            tuple(
-                exponent * self.multidegree()[label]
-                for label in self.multidegree().index_set()
-            ),
-        )
+        match exponent == 1:
+            case True:
+                return self
+            case False:
+                return type(self)(
+                    self.projective_product(),
+                    tuple(
+                        exponent * self.multidegree()[label]
+                        for label in self.multidegree().index_set()
+                    ),
+                    base_change_image=_tensor_power_base_change_image(self, exponent),
+                )
 
     def dual_sheaf(self):
         return self.tensor_power(-1)
@@ -1192,7 +1221,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             module = module_sheaf.sections_on_chart(choice)
             generator = _rank_one_generator(module)
             components[choice] = module.scalar_multiple(local_coefficient, generator)
-        return self.compatible_sections()(components)
+        return module_sheaf.gluing_datum().compatible_section(components)
 
     @cached_method
     def section_ring(self):

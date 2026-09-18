@@ -59,7 +59,7 @@ def _branch_section(line: Any, x: Any, degree: int) -> Any:
         line.scheme(),
         line.cover().open(1),
     )(x)
-    return power.global_sections()(
+    return power.gluing_datum().compatible_section(
         (
             _generator(power.local_module(0)),
             power.local_module(1).scalar_multiple(
@@ -137,7 +137,7 @@ def test_cyclic_cover_rejects_branch_section_with_wrong_line_power_descent() -> 
 
     line, _x, _overlap_x = _line_bundle_with_x_transition()
     trivial_power = InvertibleSheaf.trivial(line.cover()).tensor_power(2)
-    wrong_branch = trivial_power.global_sections()(
+    wrong_branch = trivial_power.gluing_datum().compatible_section(
         tuple(_generator(trivial_power.local_module(index)) for index in range(2))
     )
 

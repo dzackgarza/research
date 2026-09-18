@@ -503,6 +503,88 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return $\prod_{i \in I} M_i$, created on underlying sets in general."""
             return self._categorical_product_construction(factors).object()
 
+        def product_element(self, construction, components):
+            r"""Return the element of a selected module product with these components.
+
+            ``components`` is an indexed family over the product diagram's
+            object set.  A finite biproduct assembles it through its canonical
+            injections; a product created by the underlying-set functor uses
+            the corresponding dependent-set section.  This is one semantic
+            operation at the module owner, not a representation choice for
+            callers.
+            """
+            diagram = construction.diagram()
+            match diagram.codomain() is self:
+                case True:
+                    pass
+                case False:
+                    raise ValueError("the selected product belongs to a different module category")
+            factors = diagram.diagram_objects()
+            match components.index_set() == factors.index_set():
+                case True:
+                    pass
+                case False:
+                    raise ValueError("a product element has one component for each factor")
+            product = construction.object()
+            match product:
+                case _ if product in BiproductModules(self.base_ring()):
+                    value = product.zero()
+                    for index in factors.index_set():
+                        value += product.injection(index)(
+                            factors.value(index)(components.value(index))
+                        )
+                    return value
+                case _:
+                    from dzack_research.preamble.categories.modules.general_modules import (
+                        GeneralModules,
+                    )
+
+                    assert product in GeneralModules(self.base_ring()), (
+                        "the general module product is created on an underlying Cartesian product"
+                    )
+                    underlying = product.underlying_set()
+                    return product(
+                        underlying(
+                            lambda index: factors.value(index)(components.value(index))
+                        )
+                    )
+
+        def product_component(self, construction, element, index):
+            r"""Project an element of a selected module product to one factor."""
+            diagram = construction.diagram()
+            match diagram.codomain() is self:
+                case True:
+                    pass
+                case False:
+                    raise ValueError("the selected product belongs to a different module category")
+            return construction.structure_morphism(diagram.domain()(index))(element)
+
+        def equalizer_element(self, construction, ambient_element):
+            r"""Lift an ambient element satisfying a selected equalizer relation."""
+            diagram = construction.diagram()
+            match diagram.codomain() is self:
+                case True:
+                    pass
+                case False:
+                    raise ValueError("the selected equalizer belongs to a different module category")
+            shape = diagram.domain()
+            ambient = diagram(shape.source())
+            ambient_element = ambient(ambient_element)
+            equalizer = construction.object()
+            inclusion = construction.structure_morphism(shape.source())
+            match equalizer:
+                case _ if equalizer in ModuleSubobjects(self.base_ring()):
+                    return inclusion.lift(ambient_element)
+                case _:
+                    from dzack_research.preamble.categories.modules.general_modules import (
+                        GeneralModules,
+                    )
+
+                    assert equalizer in GeneralModules(self.base_ring()), (
+                        "the general module equalizer is created on an underlying condition set"
+                    )
+                    return equalizer(ambient_element)
+
         def _categorical_product(self, left, right):
             return self._categorical_product_construction((left, right)).object()
 

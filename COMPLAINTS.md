@@ -167,7 +167,7 @@ the group \(\mathrm{CDiv}(X) = \Gamma(X, \mathcal{K}_X^{*}/\mathcal{O}_X^{*})\);
 finite affine atlases as covering families in the Zariski coverage of \(\mathbf{Sch}_R/X\);
 the fibered category of modules over varying rings, whose arrows are semilinear maps;
 the general projectivization functor, as distinct from the projective-space entry now used by linear systems.
-Underneath, general module products and equalizers are still missing for the section-limit construction. The unframed tensor quotient and classifier exist, but the algebra of global sections has not yet been constructed through them at `Algebras(R)`.
+Underneath, general module products and equalizers now exist at `Modules(R)`, and the module of compatible sections is their selected Čech equalizer with its universal cone retained. The unframed tensor quotient and classifier exist, but the algebra of global sections has not yet been constructed through them at `Algebras(R)`.
 
 **Dependency path.**
 Sheaves on \(\mathrm{Open}(X)\) with descent → sheaves of modules over \(\mathcal{O}_X\) → quasi-coherent and invertible sheaves and their morphisms → line bundles, Cartier divisors and linear systems.
@@ -175,19 +175,19 @@ Gluing needs finite atlases, the glued-scheme entry, semilinear transitions and 
 
 **Observed evidence.**
 Read from source at `d83d43c2` (gluing) and `cf26db85` (divisors), after both subtrees were rebuilt through their categories as far as these foundations allow.
-The glued scheme and its Hom now use `Schemes(R)` through a private realization (`6faa74327`, `755c1250b`). The remaining atlas, refinement and finite-atlas descent records still need their owners; `GlobalSectionModules(R)` and `GlobalSectionAlgebras(R)` still locally construct \(\Gamma(X,F)\).
+The glued scheme and its Hom now use `Schemes(R)` through a private realization (`6faa74327`, `755c1250b`). The remaining atlas, refinement and finite-atlas descent records still need their owners. Module-valued \(\Gamma(X,F)\) is now the selected equalizer in `Modules(O(X))`; `GlobalSectionModules(R)` remains only as legacy superclass scaffolding for the still-local `GlobalSectionAlgebras(R)` construction and is removed with that later placement work.
 `divisors/invertible_sheaves.py` keeps five hand-assembled line-bundle classes; `divisors/general_divisors.py:116` keeps `FiniteAtlasCartierDivisor` as a `SageObject`; the linear systems now use the shared projective-space entry with construction-time data (`39062eadb`, `31cfd1ea4`), while the invertible-sheaf and Cartier-divisor owners remain unfinished.
 
 **Existing partial capability.**
-`Sheaves(coverage, D)` with `DescentEqualizer`, `DescentData` and the entry `Sheaves.object`; `ModuleGluingData(cover)` and `AlgebraGluingData(cover)`; `QuasiCoherentSheaves(X)` with the affine equivalence; and the varying-ring module category used by finite-atlas transitions. Current main returns the distinguished-cover module/algebra sheaves through `Sheaves.object` (`6a16a08b0`, `62006ee37`), represents the affine structure presheaf on the affine slice (`dd72f722a`), retains exact Čech structure-sheaf descent presentations (`fa1593da9`), constructs `X.structure_sheaf()` through `Sheaves.object` with the universal descent comparison inverted at the module Hom owner (`79d2caa83`), and represents finite-atlas inverse image and pullback as functors before scalar extension. The remaining non-affine sheaf work is the independent finite-atlas, quasi-coherent Hom, invertible-sheaf, Cartier-divisor and module-limit theory scheduled below, not another structure-sheaf or inverse-image entry.
+`Sheaves(coverage, D)` with `DescentEqualizer`, `DescentData` and the entry `Sheaves.object`; `ModuleGluingData(cover)` and `AlgebraGluingData(cover)`; `QuasiCoherentSheaves(X)` with the affine equivalence; and the varying-ring module category used by finite-atlas transitions. Current main returns the distinguished-cover module/algebra sheaves through `Sheaves.object` (`6a16a08b0`, `62006ee37`), represents the affine structure presheaf on the affine slice (`dd72f722a`), retains exact Čech structure-sheaf descent presentations (`fa1593da9`), constructs `X.structure_sheaf()` through `Sheaves.object` with the universal descent comparison inverted at the module Hom owner (`79d2caa83`), represents finite-atlas inverse image and pullback as functors before scalar extension, and constructs module-valued compatible sections through the `Modules(R)` limit owner. The remaining non-affine sheaf work is the independent finite-atlas, quasi-coherent Hom, invertible-sheaf, Cartier-divisor and unframed-tensor/global-section-algebra theory scheduled below, not another structure-sheaf, inverse-image or module-limit entry.
 
 **Affected consumers.**
 Glued schemes and their sheaves; line bundles on projective space and its subschemes; Cartier divisors on finite atlases; complete and imposed-multiplicity linear systems.
 
 **Coverage boundary.**
 Read from source; no session was run.
-Whether Sage or Singular supplies any of these constructions for the specimens in question was not surveyed.
-Scheduled in [TODO.md](TODO.md) as `quasi-coherent-sheaf-morphisms-on-non-affine-schemes`, `invertible-sheaf-axiom`, `cartier-divisors-as-sections`, `finite-affine-atlases`, `limits-of-modules-created-by-underlying-sets` and `tensor-products-of-unframed-modules`.
+Whether Sage or Singular supplies any of the remaining constructions for the specimens in question was not surveyed.
+Scheduled in [TODO.md](TODO.md) as `quasi-coherent-sheaf-morphisms-on-non-affine-schemes`, `invertible-sheaf-axiom`, `cartier-divisors-as-sections`, `finite-affine-atlases` and `tensor-products-of-unframed-modules`.
 
 ### Schemes and gluing branch review: rejected regressions
 

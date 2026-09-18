@@ -1094,7 +1094,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 module = module_sheaf.sections_on_chart(cone)
                 generator = module.module_generator(next(iter(module.module_generating_set())))
                 local_components[cone] = module.scalar_multiple(local_coefficient, generator)
-            return selected_line.compatible_sections()(local_components)
+            return module_sheaf.gluing_datum().compatible_section(local_components)
 
         def zero_subscheme_of_divisor_section(
             self,
@@ -1113,11 +1113,14 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 section,
                 line_bundle=selected_line,
             )
+            section_datum = selected_line.module_sheaf().gluing_datum()
             local_closed = {}
             for cone in self.gluing_datum().chart_indices():
                 module = selected_line.module_sheaf().sections_on_chart(cone)
                 label = next(iter(module.module_generating_set()))
-                coefficient = module.framing_coefficients(compatible.component(cone)).get(
+                coefficient = module.framing_coefficients(
+                    section_datum.compatible_section_component(compatible, cone)
+                ).get(
                     label,
                     module.base_ring().zero(),
                 )
@@ -1264,12 +1267,18 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             basis = tuple(section_space.module_generators())
             sections = tuple(self.compatible_divisor_section(divisor, section, line_bundle=line) for section in basis)
             datum = self.gluing_datum()
+            section_datum = line.module_sheaf().gluing_datum()
 
             def local_map(index):
                 module = line.local_module(index)
                 label = next(iter(module.module_generating_set()))
                 zero = module.base_ring().zero()
-                coordinates = tuple(module.framing_coefficients(section.component(index)).get(label, zero) for section in sections)
+                coordinates = tuple(
+                    module.framing_coefficients(
+                        section_datum.compatible_section_component(section, index)
+                    ).get(label, zero)
+                    for section in sections
+                )
                 return datum.chart(index).projective_morphism_from_coordinates(system, coordinates)
 
             return self.Mor(system)(finite_indexed_family(datum.chart_index_set(), local_map))

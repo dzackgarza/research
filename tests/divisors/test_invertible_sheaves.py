@@ -104,7 +104,7 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
     left_generator = _generator(local_modules[0])
     right_generator = _generator(local_modules[1])
     right_x = scheme.structure_sheaf().restriction_map(scheme, cover.open(1))(x)
-    section = line.global_sections()(
+    section = line.gluing_datum().compatible_section(
         (
             left_generator,
             local_modules[1].scalar_multiple(right_x, right_generator),
@@ -123,8 +123,12 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
     image = morphism.global_sections_map()(section)
 
     assert image.parent() is line.global_sections()
-    assert image.component(0) == local_maps[0](left_generator)
-    assert image.component(1) == local_maps[1](section.component(1))
+    assert line.gluing_datum().compatible_section_component(image, 0) == local_maps[0](
+        left_generator
+    )
+    assert line.gluing_datum().compatible_section_component(image, 1) == local_maps[1](
+        line.gluing_datum().compatible_section_component(section, 1)
+    )
 
 
 def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:

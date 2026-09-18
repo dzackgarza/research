@@ -54,18 +54,28 @@ def test_two_chart_module_descent_builds_the_actual_compatible_section_module() 
     gluing = _gluing_datum(sheaf)
     assert sheaf in cover.cech_coverage().sheaves(Modules(algebra))
     sections = sheaf.global_sections()
+    construction = gluing.compatible_sections_construction()
+    diagram = construction.diagram()
+    shape = diagram.domain()
     left_generator = _rank_one_generator(left_module)
     right_generator = _rank_one_generator(right_module)
     right_x = scheme.structure_sheaf().restriction_map(scheme, right)(x)
-    compatible = sections(
+    compatible = gluing.compatible_section(
         (
             left_generator,
             right_module.scalar_multiple(right_x, right_generator),
         )
     )
 
+    assert construction.object() is sections
+    assert diagram.codomain() is Modules(algebra)
+    assert diagram(shape.source()) is gluing.local_section_product_construction().object()
+    assert diagram(shape.target()) is gluing.matching_section_product_construction().object()
+    inclusion = construction.structure_morphism(shape.source())
+    assert inclusion.codomain() is gluing.local_section_product_construction().object()
+    assert diagram(shape.left()) * inclusion == diagram(shape.right()) * inclusion
     assert compatible in sections
-    assert compatible.component(0) == left_generator
+    assert gluing.compatible_section_component(compatible, 0) == left_generator
     assert sheaf.sections_on_chart(0) is left_module
     assert sheaf.sections_on_intersection(0, 0, 1) is left_overlap
     assert sheaf.transition(0, 1).domain() is left_overlap
@@ -73,15 +83,40 @@ def test_two_chart_module_descent_builds_the_actual_compatible_section_module() 
 
     scaled = sections.scalar_multiple(x, compatible)
     left_x = scheme.structure_sheaf().restriction_map(scheme, left)(x)
-    assert scaled.component(0) == left_module.scalar_multiple(left_x, left_generator)
+    assert gluing.compatible_section_component(scaled, 0) == left_module.scalar_multiple(
+        left_x,
+        left_generator,
+    )
     assert sections.scalar_action()(x)(compatible) == scaled
 
     try:
-        sections((left_generator, right_generator))
+        gluing.compatible_section((left_generator, right_generator))
     except ValueError as error:
         assert "do not agree" in str(error)
     else:
         raise AssertionError("the noncompatible local tuple must not define a global section")
+
+
+def test_one_chart_module_descent_retains_the_empty_matching_product() -> None:
+    from dzack_research.preamble.all import QQ
+
+    algebra = QQ.polynomial_ring("x")
+    scheme = algebra.affine_spectrum()
+    cover = scheme.distinguished_open_cover(algebra.one())
+    local_module = cover.open(0).coordinate_algebra().free_module(1)
+    sheaf = cover.glue_modules((local_module,), {})
+    gluing = _gluing_datum(sheaf)
+    matching = gluing.matching_section_product_construction()
+    construction = gluing.compatible_sections_construction()
+    diagram = construction.diagram()
+    shape = diagram.domain()
+    generator = _rank_one_generator(local_module)
+    section = gluing.compatible_section((generator,))
+
+    assert matching.diagram().diagram_objects().cardinality() == 0
+    assert diagram(shape.target()) is matching.object()
+    assert construction.object() is sheaf.global_sections()
+    assert gluing.compatible_section_component(section, 0) == generator
 
 
 def test_three_chart_module_descent_checks_the_transition_cocycle() -> None:
@@ -209,7 +244,7 @@ def test_module_descent_morphism_restricts_to_overlap_and_maps_global_sections()
         scheme,
         cover.open(1),
     )(x)
-    section = source.compatible_sections()(
+    section = source.compatible_section(
         (
             left_generator,
             local_modules[1].scalar_multiple(right_x, right_generator),
@@ -217,8 +252,10 @@ def test_module_descent_morphism_restricts_to_overlap_and_maps_global_sections()
     )
     image = morphism.global_sections_map()(section)
     assert image.parent() is target.compatible_sections()
-    assert image.component(0) == local_maps[0](left_generator)
-    assert image.component(1) == local_maps[1](section.component(1))
+    assert target.compatible_section_component(image, 0) == local_maps[0](left_generator)
+    assert target.compatible_section_component(image, 1) == local_maps[1](
+        source.compatible_section_component(section, 1)
+    )
     assert morphism.global_sections_map().domain() is source.compatible_sections()
     assert morphism.global_sections_map().codomain() is target.compatible_sections()
 
@@ -366,10 +403,12 @@ def test_presented_local_modules_descend_with_their_relations() -> None:
 
     assert left_overlap in FinitelyPresentedModules(cover.overlap(0, 1).coordinate_algebra())
     assert right_overlap in FinitelyPresentedModules(cover.overlap(0, 1).coordinate_algebra())
-    compatible = sheaf.global_sections()(
+    compatible = gluing.compatible_section(
         tuple(_rank_one_generator(module) for module in local_modules)
     )
-    assert compatible.component(0) == _rank_one_generator(local_modules[0])
+    assert gluing.compatible_section_component(compatible, 0) == _rank_one_generator(
+        local_modules[0]
+    )
     assert transition.forward()(_rank_one_generator(left_overlap)) == _rank_one_generator(
         right_overlap
     )

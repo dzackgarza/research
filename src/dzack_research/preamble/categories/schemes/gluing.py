@@ -2131,9 +2131,147 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         return components
 
     @cached_method
+    def local_section_product_construction(self):
+        r"""Return the product of chart modules after restriction to the scheme base ring."""
+        base = self.scheme().scheme_base_ring()
+        factors = finite_indexed_family(
+            self.chart_index_set(),
+            lambda index: self.local_module(index).restrict_scalars(
+                self.gluing_datum().chart(index).coordinate_algebra().algebra_structure_morphism()
+            ),
+            name="Finite-atlas chart modules over the scheme base ring",
+        )
+        return Modules(base).product_construction(factors)
+
+    @cached_method
+    def matching_section_product_construction(self):
+        r"""Return the product of source-side overlap modules over the scheme base ring."""
+        base = self.scheme().scheme_base_ring()
+        factors = finite_indexed_family(
+            self.gluing_datum().transition_index_set(),
+            lambda pair: self.pair_module(*pair).restrict_scalars(
+                self.gluing_datum().overlap(*pair).coordinate_algebra().algebra_structure_morphism()
+            ),
+            name="Finite-atlas overlap modules over the scheme base ring",
+        )
+        return Modules(base).product_construction(factors)
+
+    def _matching_section_leg(self, pair, side):
+        r"""One finite-atlas Čech leg from chart sections to a source-side overlap."""
+        source_index, target_index = tuple(pair)
+        local_product = self.local_section_product_construction()
+        matching_product = self.matching_section_product_construction()
+        local_factors = local_product.diagram().diagram_objects()
+        matching_factor = matching_product.diagram().diagram_objects().value(pair)
+
+        match side:
+            case "left":
+                chart_index = source_index
+                local_module = self.local_module(source_index)
+                pair_module = self.pair_module(source_index, target_index)
+                ring_map = self.gluing_datum().overlap(
+                    source_index,
+                    target_index,
+                ).inclusion().coordinate_algebra_morphism()
+
+                def image(element):
+                    return matching_factor.wrap(
+                        _base_change_element(
+                            local_module,
+                            pair_module,
+                            ring_map,
+                            element.underlying_element(),
+                        )
+                    )
+
+            case "right":
+                chart_index = target_index
+                local_module = self.local_module(target_index)
+                pair_module = self.pair_module(target_index, source_index)
+                ring_map = self.gluing_datum().overlap(
+                    target_index,
+                    source_index,
+                ).inclusion().coordinate_algebra_morphism()
+                transition = self.transition(source_index, target_index).pullback()
+
+                def image(element):
+                    target_value = _base_change_element(
+                        local_module,
+                        pair_module,
+                        ring_map,
+                        element.underlying_element(),
+                    )
+                    return matching_factor.wrap(transition(target_value))
+
+            case _:
+                raise ValueError("a finite-atlas Čech side is left or right")
+
+        local_factor = local_factors.value(chart_index)
+        restriction = local_factor.module_category().Mor(
+            local_factor,
+            matching_factor,
+        ).elementwise(image, verify_linearity=False)
+        projection = local_product.structure_morphism(
+            local_product.diagram().domain()(chart_index)
+        )
+        return restriction * projection
+
+    @cached_method
+    def compatible_sections_construction(self):
+        r"""Return the selected equalizer defining finite-atlas global sections over the base ring."""
+        base = self.scheme().scheme_base_ring()
+        modules = Modules(base)
+        local_product = self.local_section_product_construction()
+        matching_product = self.matching_section_product_construction()
+        matching_diagram = matching_product.diagram()
+
+        def side_map(side):
+            cone = matching_diagram.Cones().cone(
+                local_product.object(),
+                lambda index: self._matching_section_leg(index.value(), side),
+            )
+            return matching_product.factor(cone).apex_map()
+
+        return modules.equalizer_construction(
+            side_map("left"),
+            side_map("right"),
+        )
+
+    @cached_method
     def compatible_sections(self):
         r"""Return ``Gamma(X, F)`` over the base ring of the glued scheme."""
-        return GlobalSectionModules(self.scheme().scheme_base_ring())(self)
+        return self.compatible_sections_construction().object()
+
+    def compatible_section(self, sections):
+        r"""Construct a finite-atlas global section from compatible chart components."""
+        components = self.compatible_local_sections(sections)
+        base = self.scheme().scheme_base_ring()
+        modules = Modules(base)
+        local_product = self.local_section_product_construction()
+        factors = local_product.diagram().diagram_objects()
+        restricted_components = finite_indexed_family(
+            self.chart_index_set(),
+            lambda index: factors.value(index)(components[index]),
+            name="Finite-atlas section components over the scheme base ring",
+        )
+        product_element = modules.product_element(local_product, restricted_components)
+        return modules.equalizer_element(
+            self.compatible_sections_construction(),
+            product_element,
+        )
+
+    def compatible_section_component(self, section, chart_index):
+        r"""Project a finite-atlas global section to one chart component."""
+        chart_index = self.gluing_datum().normalize_chart_index(chart_index)
+        construction = self.compatible_sections_construction()
+        shape = construction.diagram().domain()
+        local_element = construction.structure_morphism(shape.source())(section)
+        component = Modules(self.scheme().scheme_base_ring()).product_component(
+            self.local_section_product_construction(),
+            local_element,
+            chart_index,
+        )
+        return self.local_module(chart_index)(component.underlying_element())
 
     def tensor_product(self, other):
         r"""Return the descent datum for the chartwise tensor product with ``other``."""
@@ -3104,9 +3242,103 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             return components
 
         @cached_method
+        def local_section_product_construction(self):
+            r"""Return ``prod_i F(U_i)`` in ``Modules(O(X))`` with its projections."""
+            presheaf = self.descent_presheaf()
+            values = finite_indexed_family(
+                self.chart_index_set(),
+                lambda label: presheaf.value_on_label((label,)),
+                name="Čech chart modules over O(X)",
+            )
+            return Modules(self.scheme().coordinate_algebra()).product_construction(values)
+
+        @cached_method
+        def matching_section_product_construction(self):
+            r"""Return ``prod_{i<j} F(U_ij)`` in ``Modules(O(X))``."""
+            pair_indices = self.cover().cech_covering_family().pair_index_set()
+            presheaf = self.descent_presheaf()
+            values = finite_indexed_family(
+                pair_indices,
+                lambda pair: presheaf.value_on_label(tuple(pair)),
+                name="Čech overlap modules over O(X)",
+            )
+            return Modules(self.scheme().coordinate_algebra()).product_construction(values)
+
+        def _local_overlap_leg(self, pair, side):
+            r"""One leg ``prod_i F(U_i) -> F(U_ij)`` of the Čech parallel pair."""
+            pair = tuple(pair)
+            match side:
+                case "left":
+                    chart = pair[0]
+                case "right":
+                    chart = pair[1]
+                case _:
+                    raise ValueError("a Čech overlap side is left or right")
+            presheaf = self.descent_presheaf()
+            local_product = self.local_section_product_construction()
+            projection = local_product.structure_morphism(
+                local_product.diagram().domain()(chart)
+            )
+            return presheaf.restriction_between_labels((chart,), pair) * projection
+
+        @cached_method
+        def compatible_sections_construction(self):
+            r"""Return the selected Čech equalizer defining ``Gamma(X,F)`` in ``Modules(O(X))``."""
+            modules = Modules(self.scheme().coordinate_algebra())
+            local_product = self.local_section_product_construction()
+            local_object = local_product.object()
+            matching_product = self.matching_section_product_construction()
+            matching_diagram = matching_product.diagram()
+
+            def side_map(side):
+                cone = matching_diagram.Cones().cone(
+                    local_object,
+                    lambda index: self._local_overlap_leg(index.value(), side),
+                )
+                return matching_product.factor(cone).apex_map()
+
+            return modules.equalizer_construction(
+                side_map("left"),
+                side_map("right"),
+            )
+
+        @cached_method
         def compatible_sections(self):
             r"""Return ``Gamma(X, F)``, the ``O(X)``-module of compatible local sections."""
-            return GlobalSectionModules(self.scheme().coordinate_algebra())(self)
+            return self.compatible_sections_construction().object()
+
+        def compatible_section(self, sections):
+            r"""Construct a global section from one compatible family of local sections."""
+            components = self.compatible_local_sections(sections)
+            modules = Modules(self.scheme().coordinate_algebra())
+            local_product = self.local_section_product_construction()
+            factors = local_product.diagram().diagram_objects()
+            restricted_components = finite_indexed_family(
+                self.chart_index_set(),
+                lambda label: factors.value(label)(components[label]),
+                name="Restricted-scalar components of a global section",
+            )
+            product_element = modules.product_element(
+                local_product,
+                restricted_components,
+            )
+            return modules.equalizer_element(
+                self.compatible_sections_construction(),
+                product_element,
+            )
+
+        def compatible_section_component(self, section, chart_index):
+            r"""Project a global section to its component on one affine chart."""
+            chart = self.cover().chart_label(chart_index)
+            construction = self.compatible_sections_construction()
+            shape = construction.diagram().domain()
+            local_element = construction.structure_morphism(shape.source())(section)
+            component = Modules(self.scheme().coordinate_algebra()).product_component(
+                self.local_section_product_construction(),
+                local_element,
+                chart,
+            )
+            return self.local_module(chart)(component.underlying_element())
 
         @cached_method
         def descent_presheaf(self):
@@ -3193,7 +3425,11 @@ class _ModuleGluingCechPresheaf(Functor):
         return tuple(opposite_object.underlying_object().value())
 
     def _apply_object(self, opposite_object):
-        return self._value(self._label(opposite_object))
+        return self.value_on_label(self._label(opposite_object))
+
+    def value_on_label(self, label):
+        r"""Return the presheaf value at one represented Čech label."""
+        return self._value(tuple(label))
 
     @cached_method
     def _value(self, label):
@@ -3217,7 +3453,7 @@ class _ModuleGluingCechPresheaf(Functor):
         owner = target_label[0]
         match source_label:
             case ():
-                local = datum.compatible_sections()(element).component(owner)
+                local = datum.compatible_section_component(element, owner)
                 match target_label:
                     case (_chart,):
                         return target.wrap(local)
@@ -3230,54 +3466,83 @@ class _ModuleGluingCechPresheaf(Functor):
                 return target.wrap(restricted)
         assert False, "the Čech site of a cover has no arrow out of a pair overlap"
 
+    def restriction_between_labels(self, source_label, target_label):
+        r"""Return the represented restriction between two Čech-labelled module values."""
+        source_label = tuple(source_label)
+        target_label = tuple(target_label)
+        source = self.value_on_label(source_label)
+        target = self.value_on_label(target_label)
+        homset = source.module_category().Mor(source, target)
+        match source_label == target_label:
+            case True:
+                return homset.identity()
+            case False:
+                return homset.elementwise(
+                    lambda element: self._restriction_value(
+                        source_label,
+                        target_label,
+                        element,
+                    ),
+                    verify_linearity=False,
+                )
+
     def _apply_morphism(self, opposite_arrow):
         underlying = opposite_arrow.underlying_arrow()
         source_label = tuple(underlying.codomain().value())
         target_label = tuple(underlying.domain().value())
-        source = self(opposite_arrow.domain())
-        target = self(opposite_arrow.codomain())
-        homset = source.module_category().Mor(source, target)
-        if source_label == target_label:
-            return homset.identity()
-        return homset.elementwise(
-            lambda element: self._restriction_value(source_label, target_label, element),
-            verify_linearity=False,
-        )
+        return self.restriction_between_labels(source_label, target_label)
 
     def selected_equalizer_construction(self, equalizer):
-        r"""Select ``Gamma(X, F)`` and its inclusion into the chart product as the equalizer."""
+        r"""Read the owner-built ``Gamma(X,F)`` through this Čech family's exact inclusion."""
         selected_cover = self.cover().cech_covering_family()
-        if equalizer.covering_family() is not selected_cover:
-            raise ValueError("the selected affine equalizer belongs to a different Čech family")
-        compatible = self.gluing_datum().compatible_sections()
-        local_product = equalizer.local_product_construction().object()
+        match equalizer.covering_family() is selected_cover:
+            case True:
+                pass
+            case False:
+                raise ValueError("the selected affine equalizer belongs to a different Čech family")
+        compatible_construction = self.gluing_datum().compatible_sections_construction()
+        compatible = compatible_construction.object()
         inclusion = equalizer.restriction_to_product()
         left, right = equalizer.parallel_maps()
         diagram = _parallel_pair_diagram(left, right, self.codomain())
         shape = diagram.domain()
+
+        def universal_leg(index):
+            match index is shape.source():
+                case True:
+                    return inclusion
+                case False:
+                    return left * inclusion
+
         universal_cone = diagram.Cones().cone(
             compatible,
-            lambda index: inclusion if index is shape.source() else left * inclusion,
+            universal_leg,
         )
 
         def factorizer(cone):
             source = cone.apex()
             source_leg = cone.structure_morphism(shape.source())
+            owner_diagram = compatible_construction.diagram()
+            owner_shape = owner_diagram.domain()
 
-            def image(element):
-                product_element = source_leg(element)
-                return compatible(
-                    finite_indexed_family(
-                        self.cover().atlas(),
-                        lambda chart: local_product.projection(chart)(product_element).underlying_element(),
-                        name="Components of a factorization through the Čech equalizer",
-                    )
-                )
+            match owner_diagram(owner_shape.source()) is source_leg.codomain():
+                case True:
+                    pass
+                case False:
+                    raise ArithmeticError("the Čech equalizer changed its local product object")
 
-            return source.module_category().Mor(source, compatible).elementwise(
-                image,
-                verify_linearity=False,
+            def owner_leg(index):
+                match index is owner_shape.source():
+                    case True:
+                        return source_leg
+                    case False:
+                        return owner_diagram(owner_shape.left()) * source_leg
+
+            owner_cone = owner_diagram.Cones().cone(
+                source,
+                owner_leg,
             )
+            return compatible_construction.factor(owner_cone).apex_map()
 
         return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
@@ -3361,15 +3626,18 @@ class ModuleGluingMorphism(Morphism):
     @cached_method
     def global_sections_map(self):
         r"""Return the induced ``O(X)``-linear map on compatible global sections."""
+        source_datum = self.domain()
+        target_datum = self.codomain()
         source_sections = self.domain().compatible_sections()
         target_sections = self.codomain().compatible_sections()
 
         def image(section):
-            section = source_sections(section)
-            return target_sections(
+            return target_datum.compatible_section(
                 finite_indexed_family(
                     self.cover().atlas(),
-                    lambda label: self.local_map(label)(section.component(label)),
+                    lambda label: self.local_map(label)(
+                        source_datum.compatible_section_component(section, label)
+                    ),
                     name="Components of an induced global section",
                 )
             )

@@ -195,6 +195,24 @@ def test_three_chart_module_descent_composes_after_overlap_transport() -> None:
         is not descent.pair_module("middle", "left").base_ring()
     )
 
+    construction = descent.compatible_sections_construction()
+    shape = construction.diagram().domain()
+    assert construction.object() is descent.compatible_sections()
+    assert construction.diagram()(shape.source()) is descent.local_section_product_construction().object()
+    assert (
+        construction.diagram()(shape.target())
+        is descent.matching_section_product_construction().object()
+    )
+    components = {
+        label: local_modules[label].module_generator(
+            next(iter(local_modules[label].module_generating_set()))
+        )
+        for label in labels
+    }
+    section = descent.compatible_section(components)
+    for label in labels:
+        assert descent.compatible_section_component(section, label) == components[label]
+
 
 def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> None:
     left, x, _left_overlap = _punctured_line("x")

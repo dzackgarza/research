@@ -107,23 +107,19 @@ class CyclicCoverAlgebra(SageObject):
             raise ValueError("a cyclic cover has degree at least two")
 
         try:
-            branch_parent = branch_section.parent()
-            branch_datum = branch_parent.gluing_datum()
+            supplied_parent = branch_section.parent()
         except AttributeError as error:
             raise TypeError(
                 "the branch section must be a represented compatible section of L^n"
             ) from error
 
+        branch_power = line_bundle.tensor_power(int(degree))
         if isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
-            try:
-                branch_power = branch_datum.line_bundle()
-            except AttributeError as error:
+            branch_datum = branch_power.module_sheaf().gluing_datum()
+            branch_parent = branch_datum.compatible_sections()
+            if supplied_parent is not branch_parent:
                 raise ValueError(
-                    "a finite-atlas cyclic branch must come from a represented line-bundle power"
-                ) from error
-            if not isinstance(branch_power, FiniteAtlasInvertibleSheaf):
-                raise ValueError(
-                    "a finite-atlas cyclic branch must come from a represented line-bundle power"
+                    "the branch section is not represented as a section of the stated L^n"
                 )
             if branch_power.gluing_datum() is not line_bundle.gluing_datum():
                 raise ValueError("the branch section and line bundle require one affine atlas")
@@ -136,9 +132,14 @@ class CyclicCoverAlgebra(SageObject):
                         "the branch section is not represented as a section of the stated L^n"
                     )
         else:
-            if branch_datum.cover() is not line_bundle.cover():
+            branch_datum = branch_power.gluing_datum()
+            branch_parent = branch_datum.compatible_sections()
+            if supplied_parent is not branch_parent:
+                raise ValueError(
+                    "the branch section is not represented as a section of the stated L^n"
+                )
+            if branch_power.cover() is not line_bundle.cover():
                 raise ValueError("the branch section and line bundle require one affine cover")
-            branch_power = InvertibleSheaf(branch_datum)
             charts = line_bundle.cover().atlas()
             for left in charts:
                 for right in charts:
@@ -162,7 +163,10 @@ class CyclicCoverAlgebra(SageObject):
             charts,
             lambda index: _rank_one_coefficient(
                 branch_power.local_module(index),
-                self._branch_section.component(index),
+                branch_datum.compatible_section_component(
+                    self._branch_section,
+                    index,
+                ),
             ),
             name="Cyclic-cover local branch coefficients",
         )

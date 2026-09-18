@@ -137,8 +137,8 @@ def test_branch_linear_system_and_double_cover_form_one_composite_construction()
     assert system.associated_morphism().domain() is family.base_surface()
     assert member.cyclic_algebra().degree() == 2
     assert member.cyclic_algebra().branch_power() is branch_bundle
-    branch_local = member.cyclic_algebra().branch_section().parent()
-    assert branch_local.gluing_datum().line_bundle() is branch_bundle
+    branch_local = member.cyclic_algebra().branch_section()
+    assert branch_local.parent() is branch_bundle.compatible_sections()
     assert "_preamble_line_bundle" not in branch_local.__dict__
     assert cover.domain() is member.scheme()
     assert cover.codomain() is family.base_surface()
@@ -159,6 +159,8 @@ def test_cyclic_cover_base_change_uses_the_section_after_addition() -> None:
     extension = QQ.Mor(field)(field)
     comparison = cyclic.base_change(extension)
     changed = comparison.changed_cyclic_algebra()
+    assert changed.branch_power() is changed.line_bundle().tensor_power(2)
+    assert changed.branch_section().parent() is changed.branch_power().compatible_sections()
     assert comparison.cover_square_commutes()
     assert comparison.projection().codomain() is cyclic.relative_spectrum().arrow().domain()
     for index in cyclic.chart_index_set():

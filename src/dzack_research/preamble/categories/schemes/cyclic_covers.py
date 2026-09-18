@@ -265,9 +265,8 @@ class _CyclicCoverBaseChangeSquare(CommutativeSquare):
 def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
     r"""Return the actual commuting square comparing a cyclic cover with its scalar change."""
     line_bundle = cyclic_algebra.line_bundle()
-    branch_power = cyclic_algebra.branch_power()
     changed_line_bundle = line_bundle.base_change(ring_map)
-    changed_branch_power = branch_power.base_change(ring_map)
+    changed_branch_power = changed_line_bundle.tensor_power(int(cyclic_algebra.degree()))
     changed_branch = changed_branch_power.pullback_compatible_section(
         cyclic_algebra.branch_section()
     )
