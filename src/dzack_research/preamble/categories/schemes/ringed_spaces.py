@@ -6,7 +6,6 @@ from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.dynamic_class import DynamicMetaclass
-from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -54,14 +53,17 @@ class SchemeUnderlyingSpace(SageObject):
 class SheafObjects(OwnedParameterizedCategory):
     r"""Represented sheaves on one base space.
 
-    This is the semantic placement shared by the concrete sheaf carriers in
-    the scheme, divisor, and monodromy subtrees.  A sheaf that materializes a
+    This is the semantic placement shared by represented sheaves on one
+    ringed space.  A sheaf that materializes a
     specific site/coverage additionally lies in the corresponding
     :class:`~dzack_research.preamble.categories.abstract_categories.presheaves.Sheaves`
     full subcategory; this base-space category does not replace that descent
     datum or pretend that every represented space currently exposes one common
     site presentation.
     """
+
+    def parameter_category(self):
+        return RingedSpaces()
 
     def space(self):
         return self.base()
@@ -73,7 +75,7 @@ class SheafObjects(OwnedParameterizedCategory):
         return [Objects()]
 
     def an_object(self):
-        return _TerminalSheaf(self.space())
+        return self.space().structure_sheaf()
 
 
 class SheafedSpaces(OwnedCategory):
@@ -97,26 +99,6 @@ class SheafedSpaces(OwnedCategory):
         return RingedSpaces().an_object()
 
 
-class _TerminalSheaf(Parent):
-    r"""The terminal one-section sheaf on a represented base space.
-
-    This is the canonical inhabitant of :class:`SheafObjects`: it exists on
-    every site/topological space and therefore does not assume that the base
-    has ringed-space structure merely to witness that the sheaf category is
-    inhabited.  Concrete sheaves retain their own section/stalk models.
-    """
-
-    def __init__(self, space) -> None:
-        self._space = space
-        Parent.__init__(self, category=SheafObjects(space))
-
-    def base_space(self):
-        return self._space
-
-    space = base_space
-
-    def _repr_(self) -> str:
-        return f"Terminal sheaf on {self.base_space()}"
 
 
 class ModuleSheaves(OwnedParameterizedCategory):

@@ -7,6 +7,19 @@ from dzack_research.preamble.all import (
 )
 
 
+def test_sheaf_objects_are_parameterized_by_ringed_spaces_with_a_genuine_specimen() -> None:
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        RingedSpaces,
+        SheafObjects,
+    )
+
+    line = AffineSpaces(QQ)(1, names=("x",))
+    sheaves = SheafObjects(line)
+    assert sheaves.parameter_category() is RingedSpaces()
+    assert sheaves.an_object() is line.structure_sheaf()
+    assert sheaves.an_object() in sheaves
+
+
 def test_restrictions_compose_along_a_common_refinement_of_two_covers() -> None:
     algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
