@@ -17,7 +17,6 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
-    AffineModuleSheaf,
     QuasiCoherentSheaves,
 )
 
@@ -51,8 +50,8 @@ class _AffineQuasiCoherentFunctor(SageObject):
         return None
 
     def on_object(self, sheaf):
-        if not isinstance(sheaf, AffineModuleSheaf) or sheaf not in self.domain():
-            raise TypeError("the affine quasi-coherent functor requires an associated module sheaf")
+        if sheaf not in self.domain():
+            raise TypeError("the affine quasi-coherent functor requires a quasi-coherent sheaf on its source")
         cached = self._cached_object_image(sheaf)
         if cached is not None:
             return cached

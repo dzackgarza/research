@@ -346,7 +346,6 @@ from dzack_research.preamble.categories.schemes import (
     AffineGroupSchemes,
     AffineGSchemes,
     AffineInvariantQuotientBaseChangeComparison,
-    AffineModuleSheaf,
     AffineSchemes,
     AffineSpaces,
     AnalyticDiscFamily,

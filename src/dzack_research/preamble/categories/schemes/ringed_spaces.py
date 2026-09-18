@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.abstract_categories.products import Pose
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.owned_category import _object_of
 
 
 class SchemeUnderlyingSpace(SageObject):
@@ -287,7 +288,7 @@ class _StructureSheafEngine:
     def associated_module_sheaf(self, module):
         r"""Return the represented affine sheaf ``M~`` on the distinguished-open basis."""
 
-        return AffineModuleSheaf(self.ringed_space(), module)
+        return QuasiCoherentSheaves(self.ringed_space()).associated_sheaf(module)
 
     def stalk(self, point):
         r"""Return ``O_{X,p}`` for a represented affine prime point."""
@@ -854,17 +855,17 @@ class CoverRefinement(SageObject):
         return f"Common refinement of {self.coarse_cover(0)} and {self.coarse_cover(1)}"
 
 
-class AffineModuleSheaf(Parent):
+class _AffineModuleSheafEngine:
     r"""The quasi-coherent sheaf ``M~`` on the represented distinguished-open basis."""
 
-    def __init__(self, scheme, module) -> None:
+    def __init__(self, scheme, module, **rest) -> None:
         algebra = scheme.coordinate_algebra()
         if module.base_ring() is not algebra:
             raise ValueError("an affine module sheaf requires a module over the scheme coordinate ring")
         self._scheme = scheme
         self._module = module
         self._local_sections = {}
-        Parent.__init__(self, category=QuasiCoherentSheaves(scheme))
+        super().__init__(**rest)
 
     def ringed_space(self):
         return self._scheme
@@ -1017,12 +1018,18 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         )
         return Modules(scheme.coordinate_algebra())
 
+    @cached_method(key=lambda self, module: id(module))
     def associated_sheaf(self, module):
         r"""``M |-> M~``, the equivalence out of ``Modules(A)``."""
         assert module in self.module_category(), (
             "the associated sheaf is taken of a module over the coordinate algebra"
         )
-        return AffineModuleSheaf(self.scheme(), module)
+        return _object_of(
+            self,
+            _engine=(self, _AffineModuleSheafEngine, None),
+            scheme=self.scheme(),
+            module=module,
+        )
 
     def global_sections(self, sheaf):
         r"""``M~ |-> M``, the inverse equivalence."""
@@ -1149,7 +1156,6 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
 
 __all__ = [
     "AlgebraSheaves",
-    "AffineModuleSheaf",
     "CoverRefinement",
     "DistinguishedAffineCovers",
     "distinguished_affine_coverage",
