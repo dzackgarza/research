@@ -46,10 +46,11 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
         scheme,
         cover.overlap(0, 1),
     )(x)
-    datum = cover.glue_modules(
+    sheaf = cover.glue_modules(
         local_modules,
         {(0, 1): _transition(left_overlap, right_overlap, overlap_x)},
     )
+    datum = sheaf.gluing_datum()
     line = InvertibleSheaf(datum)
 
     assert line.scheme() is scheme
@@ -97,7 +98,7 @@ def test_invertible_sheaf_sections_and_morphisms_use_module_descent() -> None:
         cover.glue_modules(
             local_modules,
             {(0, 1): _transition(left_overlap, right_overlap, overlap_x)},
-        )
+        ).gluing_datum()
     )
 
     left_generator = _generator(local_modules[0])
@@ -166,6 +167,6 @@ def test_invertible_sheaf_rejects_non_rank_one_local_modules() -> None:
             .Core()
             .Mor(left_overlap, right_overlap)(forward, inverse)
         },
-    )
+    ).gluing_datum()
     with raises(TypeError, match="rank-one finite free"):
         InvertibleSheaf(datum)

@@ -25,8 +25,12 @@ def _rank_one_map(source, target, scalar):
     )
 
 
+def _gluing_datum(sheaf):
+    return sheaf.gluing_datum()
+
+
 def test_two_chart_module_descent_builds_the_actual_compatible_section_module() -> None:
-    from dzack_research.preamble.all import QQ
+    from dzack_research.preamble.all import Modules, QQ
 
     algebra = QQ.polynomial_ring("x")
     x = algebra.algebra_generator("x")
@@ -43,12 +47,12 @@ def test_two_chart_module_descent_builds_the_actual_compatible_section_module() 
         cover.overlap(0, 1),
     )(x)
     transition = _rank_one_transition(left_overlap, right_overlap, overlap_x)
-    gluing = cover.glue_modules(
+    sheaf = cover.glue_modules(
         (left_module, right_module),
         {(0, 1): transition},
     )
-
-    sheaf = gluing.sheaf()
+    gluing = _gluing_datum(sheaf)
+    assert sheaf in cover.cech_coverage().sheaves(Modules(algebra))
     sections = sheaf.global_sections()
     left_generator = _rank_one_generator(left_module)
     right_generator = _rank_one_generator(right_module)
@@ -114,7 +118,8 @@ def test_three_chart_module_descent_checks_the_transition_cocycle() -> None:
                 left_overlap.base_ring().one(),
             )
 
-    gluing = cover.glue_modules(local_modules, identity_transitions)
+    sheaf = cover.glue_modules(local_modules, identity_transitions)
+    gluing = _gluing_datum(sheaf)
     triple_left = gluing.restricted_module(0, 0, 1, 2)
     triple_right = gluing.restricted_module(2, 0, 1, 2)
     triple_transition = gluing.transition_on_intersection(0, 2, 0, 1, 2)
@@ -139,7 +144,7 @@ def test_three_chart_module_descent_checks_the_transition_cocycle() -> None:
     assert pair_to_triple.domain() is pair_left
     assert via_pair == direct_to_triple(local_generator).underlying_element()
 
-    sections = gluing.sheaf().global_sections()
+    sections = sheaf.global_sections()
     assert sections in Modules(algebra)
     assert sections.zero() + sections.zero() == sections.zero()
 
@@ -177,8 +182,8 @@ def test_module_descent_morphism_restricts_to_overlap_and_maps_global_sections()
         cover.overlap(0, 1),
     )(x)
     transition = _rank_one_transition(left_overlap, right_overlap, overlap_x)
-    source = cover.glue_modules(local_modules, {(0, 1): transition})
-    target = cover.glue_modules(local_modules, {(0, 1): transition})
+    source = _gluing_datum(cover.glue_modules(local_modules, {(0, 1): transition}))
+    target = _gluing_datum(cover.glue_modules(local_modules, {(0, 1): transition}))
 
     scalar = algebra(2)
     local_maps = tuple(
@@ -236,8 +241,8 @@ def test_module_descent_morphism_rejects_an_incompatible_overlap_square() -> Non
         right_overlap,
         left_overlap.base_ring().one(),
     )
-    source = cover.glue_modules(local_modules, {(0, 1): identity_transition})
-    target = cover.glue_modules(local_modules, {(0, 1): identity_transition})
+    source = _gluing_datum(cover.glue_modules(local_modules, {(0, 1): identity_transition}))
+    target = _gluing_datum(cover.glue_modules(local_modules, {(0, 1): identity_transition}))
     right_x = scheme.structure_sheaf().restriction_map(
         scheme,
         cover.open(1),
@@ -277,9 +282,9 @@ def test_module_descent_morphisms_have_identities_and_compose_chartwise() -> Non
         right_overlap,
         left_overlap.base_ring().one(),
     )
-    source = cover.glue_modules(local_modules, {(0, 1): identity_transition})
-    middle = cover.glue_modules(local_modules, {(0, 1): identity_transition})
-    target = cover.glue_modules(local_modules, {(0, 1): identity_transition})
+    source = _gluing_datum(cover.glue_modules(local_modules, {(0, 1): identity_transition}))
+    middle = _gluing_datum(cover.glue_modules(local_modules, {(0, 1): identity_transition}))
+    target = _gluing_datum(cover.glue_modules(local_modules, {(0, 1): identity_transition}))
 
     twice = source.Mor(middle)(
         tuple(
@@ -353,14 +358,15 @@ def test_presented_local_modules_descend_with_their_relations() -> None:
         right_overlap,
         left_overlap.base_ring().one(),
     )
-    gluing = cover.glue_modules(
+    sheaf = cover.glue_modules(
         local_modules,
         {(0, 1): transition},
     )
+    gluing = _gluing_datum(sheaf)
 
     assert left_overlap in FinitelyPresentedModules(cover.overlap(0, 1).coordinate_algebra())
     assert right_overlap in FinitelyPresentedModules(cover.overlap(0, 1).coordinate_algebra())
-    compatible = gluing.sheaf().global_sections()(
+    compatible = sheaf.global_sections()(
         tuple(_rank_one_generator(module) for module in local_modules)
     )
     assert compatible.component(0) == _rank_one_generator(local_modules[0])

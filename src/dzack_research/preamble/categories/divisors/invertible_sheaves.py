@@ -150,7 +150,7 @@ class InvertibleSheaf(Parent):
                     target,
                     transition_units[left, right],
                 )
-        return cls(cover.glue_modules(local_modules, transitions))
+        return cls(ModuleGluingData(cover)(local_modules, transitions))
 
     @classmethod
     def trivial(cls, cover):

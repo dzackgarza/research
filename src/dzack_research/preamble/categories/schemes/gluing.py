@@ -2830,6 +2830,41 @@ class ModuleGluingHomCategoryConstruction(HomCategoryConstruction):
         return ModuleGluingHomset
 
 
+class _ModuleGluingSheafEngine:
+    r"""Private realization of a module sheaf with one chosen affine descent presentation."""
+
+    def __init__(self, module_gluing_datum, **rest) -> None:
+        self._module_gluing_datum = module_gluing_datum
+        super().__init__(**rest)
+
+    def gluing_datum(self):
+        return self._module_gluing_datum
+
+    def cover(self):
+        return self.gluing_datum().cover()
+
+    def ringed_space(self):
+        return self.gluing_datum().scheme()
+
+    scheme = ringed_space
+
+    def sections_on_chart(self, index):
+        return self.gluing_datum().local_module(index)
+
+    local_module = sections_on_chart
+
+    def sections_on_intersection(self, chart_index, *intersection_indices):
+        return self.gluing_datum().restricted_module(
+            chart_index, *intersection_indices
+        )
+
+    def transition(self, source_index, target_index):
+        return self.gluing_datum().transition(source_index, target_index)
+
+    def global_sections(self):
+        return self.gluing_datum().compatible_sections()
+
+
 class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""Descent data for modules on one distinguished affine cover.
 
@@ -3148,9 +3183,16 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
         @cached_method
         def sheaf(self):
             r"""Return the glued sheaf, an object of ``Sh(Čech site, Modules(O(X)))``."""
-            return self.cover().cech_coverage().sheaves(
+            sheaves = self.cover().cech_coverage().sheaves(
                 Modules(self.scheme().coordinate_algebra())
-            ).object(self.descent_presheaf(), self.descent_data())
+            )
+            return sheaves.object(
+                self.descent_presheaf(),
+                self.descent_data(),
+                categories=(QuasiCoherentSheaves(self.scheme()),),
+                construction_data={"module_gluing_datum": self},
+                _engine=_ModuleGluingSheafEngine,
+            )
 
         def Mor(self, target):
             r"""Return the represented Hom category of descent morphisms to ``target``."""

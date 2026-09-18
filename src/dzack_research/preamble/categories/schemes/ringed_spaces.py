@@ -623,11 +623,11 @@ class DistinguishedAffineCovers(OwnedCategory):
             return restricted
 
         def glue_modules(self, local_modules, transitions):
-            r"""Return the descent datum and glued module sheaf on this affine cover."""
+            r"""Return the glued module sheaf on this affine cover."""
 
-            from dzack_research.preamble.categories.schemes.gluing import ModuleGluingDatum
+            from dzack_research.preamble.categories.schemes.gluing import ModuleGluingData
 
-            return ModuleGluingDatum(self, local_modules, transitions)
+            return ModuleGluingData(self)(local_modules, transitions).sheaf()
 
         def glue_algebras(self, local_algebras, transitions):
             r"""Return finite algebra descent data on this affine cover."""

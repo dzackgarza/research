@@ -48,7 +48,7 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
         inverse,
     )
     line = InvertibleSheaf(
-        cover.glue_modules(local_modules, {(0, 1): transition})
+        cover.glue_modules(local_modules, {(0, 1): transition}).gluing_datum()
     )
     return line, x, overlap_x
 

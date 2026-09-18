@@ -984,7 +984,15 @@ class Sheaves(OwnedCategoryBase):
         def _repr_(self) -> str:
             return f"Sheaf object ({self.functor()})"
 
-    def object(self, presheaf, descent_data: DescentData):
+    def object(
+        self,
+        presheaf,
+        descent_data: DescentData,
+        *,
+        categories=(),
+        construction_data=None,
+        _engine=None,
+    ):
         r"""The sheaf on ``presheaf`` with ``descent_data``: this category's one entry."""
         functor = _presheaf_functor(presheaf)
         if functor.domain() != self.site_category().opposite():
@@ -995,6 +1003,17 @@ class Sheaves(OwnedCategoryBase):
             raise ValueError("the descent datum belongs to a different coverage")
         if descent_data.presheaf() is not functor:
             raise ValueError("the descent datum belongs to a different presheaf")
+        if categories or construction_data is not None or _engine is not None:
+            category = Cat().meet((self, *tuple(categories)))
+            data = dict(construction_data or {})
+            engine = None if _engine is None else (self, _engine, None)
+            return _object_of(
+                category,
+                _engine=engine,
+                functor=functor,
+                descent_data=descent_data,
+                **data,
+            )
         return self._object_on(functor, descent_data)
 
     @cached_method(key=lambda self, functor, descent_data: (id(functor), id(descent_data)))

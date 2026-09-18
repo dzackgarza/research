@@ -100,10 +100,11 @@ def test_descent_data_is_keyed_by_pairs_of_atlas_labels() -> None:
             source.base_ring().one(),
         )
 
-    datum = cover.glue_modules(
+    sheaf = cover.glue_modules(
         tuple(local_modules[label] for label in atlas),
         transitions,
     )
+    datum = sheaf.gluing_datum()
 
     for left, right in combinations(atlas, 2):
         assert datum.transition(left, right) is transitions[left, right]
