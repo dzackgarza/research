@@ -6,9 +6,7 @@ from itertools import combinations, permutations
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
-from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
-from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -44,7 +42,6 @@ from dzack_research.preamble.categories.modules.fibered_modules import (
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
-    OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     AlgebraSheaves,
@@ -4053,9 +4050,68 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             return ModuleGluingData(self.cover())(self.local_algebras(), transitions)
 
         @cached_method
+        def compatible_sections_multiplication(self):
+            r"""Return the chartwise product ``Gamma(X,A) tensor Gamma(X,A) -> Gamma(X,A)``."""
+            module_datum = self.underlying_module_datum()
+            sections = module_datum.compatible_sections()
+            tensor_square = Modules(self.scheme().coordinate_algebra()).tensor_product(
+                (sections, sections)
+            )
+
+            def product(left, right):
+                return module_datum.compatible_section(
+                    finite_indexed_family(
+                        self.chart_index_set(),
+                        lambda label: self.local_algebra(label)(
+                            module_datum.compatible_section_component(left, label)
+                        )
+                        * self.local_algebra(label)(
+                            module_datum.compatible_section_component(right, label)
+                        ),
+                        name="Components of a product of compatible algebra sections",
+                    )
+                )
+
+            return tensor_square.from_bilinear_map(sections, product)
+
+        @cached_method
+        def compatible_sections_unit(self):
+            r"""Return the compatible family of local algebra units in ``Gamma(X,U(A))``."""
+            module_datum = self.underlying_module_datum()
+            return module_datum.compatible_section(
+                self.local_algebras().map(lambda algebra: algebra.one())
+            )
+
+        @cached_method
         def compatible_sections(self):
-            r"""Return ``Gamma(X, A)``, the ``O(X)``-algebra of compatible local sections."""
-            return GlobalSectionAlgebras(self.scheme().coordinate_algebra())(self)
+            r"""Return ``Gamma(X,A)`` through its module, tensor multiplication, and unit."""
+            ring = self.scheme().coordinate_algebra()
+            module = self.underlying_module_datum().compatible_sections()
+            multiplication = self.compatible_sections_multiplication()
+            unit = self.compatible_sections_unit()
+            algebras = Algebras(ring).Associative().Unital()
+            commutative = algebras.Commutative()
+            match all(
+                algebra in Algebras(algebra.base_ring()).Associative().Unital().Commutative()
+                for algebra in self.local_algebras()
+            ):
+                case True:
+                    return commutative(module, multiplication, unit)
+                case False:
+                    return algebras(module, multiplication, unit)
+
+        def compatible_section(self, sections):
+            r"""Construct a global algebra section from compatible chart components."""
+            module_section = self.underlying_module_datum().compatible_section(sections)
+            return self.compatible_sections()(module_section)
+
+        def compatible_section_component(self, section, chart_index):
+            r"""Project a global algebra section to one chart component."""
+            module_datum = self.underlying_module_datum()
+            return module_datum.compatible_section_component(
+                module_datum.compatible_sections()(section),
+                chart_index,
+            )
 
         @cached_method
         def descent_presheaf(self):
@@ -4170,7 +4226,7 @@ class _AlgebraGluingCechPresheaf(Functor):
         owner = target_label[0]
         match source_label:
             case ():
-                local = datum.compatible_sections()(element).component(owner)
+                local = datum.compatible_section_component(element, owner)
                 match target_label:
                     case (_chart,):
                         return target(local)
@@ -4273,15 +4329,18 @@ class AlgebraGluingMorphism(Morphism):
 
     @cached_method
     def global_sections_map(self):
+        source_datum = self.domain()
+        target_datum = self.codomain()
         source = self.domain().compatible_sections()
         target = self.codomain().compatible_sections()
 
         def image(section):
-            section = source(section)
-            return target(
+            return target_datum.compatible_section(
                 finite_indexed_family(
                     self.cover().atlas(),
-                    lambda label: self.local_map(label)(section.component(label)),
+                    lambda label: self.local_map(label)(
+                        source_datum.compatible_section_component(section, label)
+                    ),
                     name="Components of an induced global algebra section",
                 )
             )
@@ -4341,239 +4400,6 @@ class AlgebraGluingHomset(CategoricalHomset):
                 lambda algebra: _algebra_homset(algebra, algebra).identity()
             )
         )
-
-
-class GlobalSectionModules(OwnedCategoryOverBaseRing):
-    r"""Modules of global sections ``Gamma(X, F)`` of a chosen module descent datum.
-
-    For a module descent datum ``F = (M_i, phi_ij)`` on a finite affine cover
-    of a scheme ``X``, a global section is a family ``(s_i)`` of local
-    sections ``s_i in M_i`` whose restrictions to every pair overlap agree
-    through the transitions.  These families are the equalizer of the two
-    restriction maps ``prod_i M_i -> prod_{i,j} M_ij`` on underlying sets,
-    with componentwise addition and with a scalar acting on each chart
-    through its restriction to that chart; the forgetful functor from modules
-    to sets creates this limit.
-
-    The descent datum is the defining datum of this level, and
-    ``GlobalSectionModules(R)(F)`` is the one entry.  The descent datum
-    answers ``chart_index_set``, ``local_module``,
-    ``compatible_local_sections`` and ``restrict_scalar_to_chart``, which is
-    everything this level reads from it.
-    """
-
-    def an_object(self):
-        r"""``Gamma(Spec R, O)`` for the one-chart cover of ``Spec R``."""
-        scheme = self.base_ring().affine_spectrum()
-        cover = scheme.distinguished_open_cover(scheme.coordinate_algebra().one())
-        return ModuleGluingData(cover).an_object().compatible_sections()
-
-    def _repr_object_names(self):
-        return f"modules of global sections over {self.base_ring()}"
-
-    def super_categories(self):
-        return [Modules(self.base_ring())]
-
-    def object(self, gluing_datum):
-        r"""``Gamma(X, F)`` for the module descent datum ``F``."""
-        return _object_of(self, base_ring=self.base_ring(), gluing_datum=gluing_datum)
-
-    __call__ = object
-
-    class ElementMethods(ModuleElement):
-        r"""A global section, the family of its compatible local sections."""
-
-        def __init__(self, parent, components) -> None:
-            super().__init__(parent)
-            self._components = components
-
-        def components(self):
-            return self._components
-
-        def component(self, index):
-            return self.components()[index]
-
-        def _add_(self, other):
-            return self.parent()(
-                finite_indexed_family(
-                    self.components().index_set(),
-                    lambda label: self.component(label) + other.component(label),
-                    name="Components of a sum of global sections",
-                )
-            )
-
-        def _neg_(self):
-            return self.parent()(self.components().map(lambda component: -component))
-
-        def _lmul_(self, scalar):
-            return self.parent().scalar_multiple(scalar, self)
-
-        def _acted_upon_(self, actor, self_on_left):
-            if actor not in self.parent().base_ring():
-                return None
-            return self.parent().scalar_multiple(actor, self)
-
-        def _richcmp_(self, other, op):
-            if op not in (op_EQ, op_NE):
-                return NotImplemented
-            equal = other.parent() is self.parent() and all(
-                self.component(label) == other.component(label)
-                for label in self.components().index_set()
-            )
-            return equal if op == op_EQ else not equal
-
-        def _repr_(self):
-            return f"compatible local sections {self.components()}"
-
-    class ParentMethods:
-        def __init__(self, gluing_datum, **rest) -> None:
-            self._gluing_datum = gluing_datum
-            super().__init__(**rest)
-
-        def gluing_datum(self):
-            r"""The module descent datum whose global sections this module is."""
-            return self._gluing_datum
-
-        def _element_constructor_(self, value):
-            if isinstance(value, self.element_class) and value.parent() is self:
-                return value
-            index_set = self.gluing_datum().chart_index_set()
-            if isinstance(value, IndexedFamily):
-                supplied = value
-            elif isinstance(value, Mapping):
-                supplied = finite_indexed_family(index_set, value.__getitem__)
-            else:
-                entries = finite_family(value)
-                supplied = finite_indexed_family(
-                    index_set,
-                    lambda label: entries[int(index_set.ranking_map()(label))],
-                )
-                if entries.cardinality() != supplied.cardinality():
-                    raise ValueError("a global section needs one local section on each chart")
-            return self.element_class(
-                self,
-                self.gluing_datum().compatible_local_sections(supplied),
-            )
-
-        def zero(self):
-            datum = self.gluing_datum()
-            return self(
-                finite_indexed_family(
-                    datum.chart_index_set(),
-                    lambda label: datum.local_module(label).zero(),
-                    name="Components of the zero global section",
-                )
-            )
-
-        def scalar_multiple(self, scalar, section):
-            datum = self.gluing_datum()
-            scalar = self.base_ring()(scalar)
-            section = self(section)
-            return self(
-                finite_indexed_family(
-                    datum.chart_index_set(),
-                    lambda label: datum.local_module(label).scalar_multiple(
-                        datum.restrict_scalar_to_chart(label, scalar),
-                        section.component(label),
-                    ),
-                    name="Components of a scalar multiple of a global section",
-                )
-            )
-
-        def an_element(self):
-            return self.zero()
-
-        def _repr_(self):
-            return f"Compatible local sections of {self.gluing_datum()}"
-
-
-class GlobalSectionAlgebras(OwnedCategoryOverBaseRing):
-    r"""Algebras of global sections ``Gamma(X, A)`` of a chosen algebra descent datum.
-
-    The underlying module is ``Gamma(X, U(A))`` for the module descent datum
-    obtained by forgetting the local multiplications, and the product and
-    unit are taken chart by chart.  Both routes from this category to
-    ``Modules(R)``, through global section modules and through algebras,
-    forget to the same module.
-
-    ``GlobalSectionAlgebras(R)(A)`` is the one entry.  The multiplication is
-    not supplied to the algebra level as a morphism ``M tensor_R M -> M``:
-    the tensor square of a module of global sections is not represented,
-    since such a module carries no finite framing.
-    """
-
-    def an_object(self):
-        r"""``Gamma(Spec R, O[z])`` for the one-chart cover of ``Spec R``."""
-        scheme = self.base_ring().affine_spectrum()
-        cover = scheme.distinguished_open_cover(scheme.coordinate_algebra().one())
-        return AlgebraGluingData(cover).an_object().compatible_sections()
-
-    def _repr_object_names(self):
-        return f"algebras of global sections over {self.base_ring()}"
-
-    def super_categories(self):
-        return [
-            GlobalSectionModules(self.base_ring()),
-            Algebras(self.base_ring()).Associative().Unital(),
-        ]
-
-    def object(self, algebra_gluing_datum):
-        r"""``Gamma(X, A)`` for the algebra descent datum ``A``.
-
-        When every local algebra is commutative, so is the algebra of
-        compatible sections, and it is constructed in the commutative
-        refinement.
-        """
-        ring = self.base_ring()
-        commutative = Algebras(ring).Associative().Unital().Commutative()
-        local_algebras = algebra_gluing_datum.local_algebras()
-        placement = (
-            Category.join((self, commutative))
-            if all(
-                algebra in Algebras(algebra.base_ring()).Associative().Unital().Commutative()
-                for algebra in local_algebras
-            )
-            else self
-        )
-        return _object_of(
-            placement,
-            base_ring=ring,
-            gluing_datum=algebra_gluing_datum.underlying_module_datum(),
-            algebra_gluing_datum=algebra_gluing_datum,
-        )
-
-    __call__ = object
-
-    class ElementMethods:
-        def _mul_(self, other):
-            return self.parent().multiply(self, other)
-
-    class ParentMethods:
-        def __init__(self, algebra_gluing_datum, **rest) -> None:
-            self._algebra_gluing_datum = algebra_gluing_datum
-            super().__init__(**rest)
-
-        def algebra_gluing_datum(self):
-            r"""The algebra descent datum whose global sections this algebra is."""
-            return self._algebra_gluing_datum
-
-        def one(self):
-            datum = self.algebra_gluing_datum()
-            return self(datum.local_algebras().map(lambda algebra: algebra.one()))
-
-        def multiply(self, left, right):
-            left = self(left)
-            right = self(right)
-            return self(
-                finite_indexed_family(
-                    self.algebra_gluing_datum().chart_index_set(),
-                    lambda label: left.component(label) * right.component(label),
-                    name="Components of a product of global sections",
-                )
-            )
-
-        def _repr_(self):
-            return f"Compatible local algebra sections of {self.algebra_gluing_datum()}"
 
 
 class QuasiCoherentSheavesWithChosenDescentDatum(OwnedParameterizedCategory):
@@ -5199,8 +5025,6 @@ __all__ = [
     "FiniteAtlasModuleGluingMorphism",
     "QuasiCoherentSheavesWithChosenDescentDatum",
     "FiniteAtlasModuleTransition",
-    "GlobalSectionAlgebras",
-    "GlobalSectionModules",
     "ModuleGluingData",
     "ModuleGluingHomset",
     "ModuleGluingMorphism",

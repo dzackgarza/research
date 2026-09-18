@@ -20,9 +20,11 @@ def test_unframed_tensor_has_its_universal_bilinear_classifier() -> None:
     tensor = Modules(QQ).tensor_product((module, module))
     pairing = lambda x, y: module(x.underlying_element() * y.underlying_element())
     classified = tensor.from_bilinear_map(module, pairing)
+    universal = tensor.universal_bilinear_map()
     x, y = module(QQ(2)), module(QQ(3))
     pure = tensor.pure_tensor(x, y)
 
+    assert universal(x, y) == pure
     assert classified.domain() is tensor
     assert classified.codomain() is module
     assert classified(pure) == module(QQ(6))

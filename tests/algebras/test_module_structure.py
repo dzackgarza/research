@@ -142,10 +142,16 @@ def test_multiplication_morphism_is_the_module_map_out_of_the_tensor_product() -
     )
 
 
-def test_unframed_algebra_has_no_constructed_tensor_multiplication() -> None:
+def test_unframed_algebra_multiplication_uses_its_owned_tensor_square() -> None:
     polynomials = QQ.free_module(["x"]).symmetric_algebra()
-    with pytest.raises(TypeError, match="finitely presented"):
-        polynomials.multiplication_morphism()
+    multiplication = polynomials.multiplication_morphism()
+    tensor = multiplication.domain()
+    x = polynomials.algebra_generator("x")
+
+    assert tensor.tensor_factor(0) is polynomials
+    assert tensor.tensor_factor(1) is polynomials
+    assert multiplication.codomain() is polynomials
+    assert multiplication(tensor.pure_tensor(x, x)) == x * x
 
 
 def test_algebras_intern_a_module_from_its_multiplication_morphism() -> None:
