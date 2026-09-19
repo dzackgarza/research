@@ -1,4 +1,5 @@
 from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAffineAtlases,
     FiniteAtlasModuleGluingData,
@@ -73,7 +74,21 @@ def test_finite_atlas_sheaf_kernel_cokernel_tensor_and_stalk_map_are_chartwise()
     target_datum = _rank_two_descent(datum)
     source = source_datum.sheaf()
     target = target_datum.sheaf()
+    global_functions = datum.global_function_algebra()
+    concrete_sheaves = datum.cech_coverage().sheaves(
+        Modules(global_functions)
+    )
     assert source in QuasiCoherentSheaves(datum.scheme())
+    assert source.category().is_subcategory(concrete_sheaves)
+    assert target.category().is_subcategory(concrete_sheaves)
+    assert source.global_sections().base_ring() is global_functions
+    assert source.descent_data().coverage() is datum.cech_coverage()
+    assert source.descent_data().presheaf() is source.functor()
+    assert source.gluing_datum() is source_datum
+    for index in datum.chart_indices():
+        restriction = datum.global_function_restriction(index)
+        assert restriction.domain() is global_functions
+        assert restriction.codomain() is datum.chart(index).coordinate_algebra()
 
     local_maps = {}
     for index in datum.chart_indices():
@@ -86,6 +101,7 @@ def test_finite_atlas_sheaf_kernel_cokernel_tensor_and_stalk_map_are_chartwise()
             }
         )
     morphism = source.morphism_to(target, local_maps)
+    assert morphism.parent() is QuasiCoherentSheaves(datum.scheme()).Mor(source, target)
     kernel = morphism.kernel_sheaf()
     cokernel = morphism.cokernel_sheaf()
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Hashable, Iterator
+from collections.abc import Callable, Hashable, Iterator, Mapping
 from itertools import islice
 from typing import Any
 
@@ -200,8 +200,78 @@ def indexed_family[IndexT, ValueT](
 finite_indexed_family = indexed_family
 
 
+def finite_indexed_family_from_values(
+    index_set,
+    values,
+    *,
+    name: str | None = None,
+) -> IndexedFamily:
+    r"""Read finite literal data as an indexed family, preserving its labels.
+
+    ``values`` may already be an indexed family, a mapping keyed by labels, or
+    an ordinary finite iterable.  When ``index_set`` is omitted, those three
+    cases use the family's own labels, the mapping keys, or the ordinal of the
+    iterable positions respectively.  Literal-container interpretation belongs
+    here, at the indexed-family owner; mathematical consumers only state the
+    index set they require.
+    """
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+        finite_ordered_set,
+    )
+
+    match values:
+        case IndexedFamily():
+            match index_set:
+                case None:
+                    labels = finite_ordered_set(tuple(values.index_set()))
+                case _:
+                    labels = index_set
+            family = indexed_family(labels, values.value, name=name)
+            supplied_cardinality = values.cardinality()
+            match supplied_cardinality.is_finite():
+                case True:
+                    pass
+                case _:
+                    raise TypeError("finite indexed-family literal ingress requires finite data")
+            supplied_size = int(supplied_cardinality.finite_value())
+        case Mapping():
+            match index_set:
+                case None:
+                    labels = finite_ordered_set(tuple(values))
+                case _:
+                    labels = index_set
+            family = indexed_family(labels, values.__getitem__, name=name)
+            supplied_size = len(values)
+        case _:
+            entries = tuple(values)
+            match index_set:
+                case None:
+                    labels = finite_ordered_set(range(len(entries)))
+                case _:
+                    labels = index_set
+            family = indexed_family(
+                labels,
+                lambda label: entries[int(labels.ranking_map()(label))],
+                name=name,
+            )
+            supplied_size = len(entries)
+
+    match family.cardinality().is_finite():
+        case True:
+            pass
+        case _:
+            raise TypeError("finite indexed-family literal ingress requires a finite index set")
+    match int(family.cardinality().finite_value()) == supplied_size:
+        case True:
+            pass
+        case False:
+            raise ValueError("finite indexed-family literal data has the wrong number of entries")
+    return family
+
+
 __all__ = [
     "IndexedFamily",
     "finite_indexed_family",
+    "finite_indexed_family_from_values",
     "indexed_family",
 ]

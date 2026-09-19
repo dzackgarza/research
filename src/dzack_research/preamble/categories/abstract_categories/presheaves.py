@@ -746,6 +746,44 @@ class CoveringFamilies(OwnedCategory):
         return f"Covering families in {self.site_category()}"
 
 
+class _CechCoveringFamilies(OwnedCategoryBase):
+    r"""The selected family coverage of one represented finite Cech diagram.
+
+    A represented cover supplies its finite Cech site and the distinguished
+    family of chart arrows on that site. This subcategory of
+    :class:`CoveringFamilies` selects that family; its morphisms remain the
+    covering-family comparison morphisms inherited from the common owner.
+    """
+
+    @staticmethod
+    @cached_function(key=lambda cls, presentation: (cls, id(presentation)))
+    def __classcall__(cls, presentation):
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(presentation)
+            case _:
+                return typecall(cls, presentation)
+
+    def __init__(self, presentation) -> None:
+        self._presentation = presentation
+        OwnedCategoryBase.__init__(self)
+
+    def presentation(self):
+        return self._presentation
+
+    def site_category(self) -> Category:
+        return self.presentation().cech_site()
+
+    def super_categories(self):
+        return [CoveringFamilies(self.site_category())]
+
+    def an_object(self):
+        return self.presentation().cech_covering_family()
+
+    def _repr_object_names(self):
+        return f"chosen Cech covering family of {self.presentation()}"
+
+
 class TrivialCoveringFamilies(OwnedCategoryBase):
     r"""Singleton identity covers, the trivial coverage on ``C``."""
 
