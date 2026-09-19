@@ -119,6 +119,8 @@ Where to look first for existing algorithms before writing new code. Check these
 | q-analogues (q-integers, q-factorials, Gaussian binomials, Jackson calculus, and basic hypergeometric series) | User intake 2026-09-19 | Comprehensive q-analogue infrastructure: q-numbers [n]_q, q-factorials [n]_q!, Gaussian binomial/multinomial coefficients \binom{n}{k}_q (subspace counts in Gr(k,n)(F_q), Bruhat inversions); Jackson q-derivative and integral; q-Pochhammer symbols (a;q)_n, (a;q)_\infty; basic hypergeometric series {}_r\phi_s; q-exponential/gamma; Poincaré polynomials of Coxeter groups and Hecke/quantum group algebra connections | `categories/combinatorics/q_analogues.py` + `categories/special_functions/q_hypergeometric.py` + `categories/quantum_groups/quantum_integers.py` + `categories/algebras/hecke_algebra.py` | Proposed — see note below |
 | Elliptic surfaces, fibrations, Weierstrass forms, Néron models, and Mordell-Weil lattices | User intake 2026-09-19 | Comprehensive elliptic surface architecture: fibrations \pi: S \to C, Jacobian fibrations with zero section O, fundamental line bundle L = (R^1 \pi_* O_S)^\vee, canonical bundle formula; Weierstrass models y^2 = 4x^3 - g_2 x - g_3, discriminant \Delta, j-invariant J(t), Miranda resolution; Néron models, Kodaira singular fiber classification (I_n, I_n^*, II, III, IV, II^*, III^*, IV^*) via Tate's algorithm; Mordell-Weil group MW(S/C) of sections, Shioda-Tate formula, Mordell-Weil lattice with height pairing \langle P, Q \rangle and local correction terms contr_v(P, Q) | `categories/schemes/elliptic_surfaces/elliptic_surface.py` + `categories/schemes/elliptic_surfaces/weierstrass_models.py` + `categories/schemes/elliptic_surfaces/kodaira.py` + `categories/schemes/elliptic_surfaces/mordell_weil.py` | Proposed — see note below |
 | Euler operator $\theta = t \partial_t$ and standard formal power series operators on $R[[t]]$ | User intake 2026-09-19 | Complete differential and algebraic operator calculus on $R[[t]]$: Euler/theta operator $\theta = t \frac{d}{dt}$ ($\theta(t^n) = n t^n$, Stirling conversions $\theta^k \leftrightarrow t^j \partial_t^j$, ODE Euler forms $P(\theta)$); formal derivation $\partial_t$ and integration $\int$; forward/backward shifts $S^{\pm}$, coefficient extraction $[t^n]$; multiplications (Cauchy, Hadamard $\odot$, Hurwitz binomial convolution); composition $f \circ g$ and formal inversion via Lagrange Inversion Formula / Lagrange-Bürmann; logarithmic derivatives $\operatorname{dlog}(f) = f'/f$ and $\operatorname{dlog}_\theta(f) = \theta f / f$; exponential of integral $\exp(\int f)$ (integrating factors, combinatorial exponential formula) and formal logarithm $\log(f)$; Witt algebra generators $L_n = -t^n \theta$ | `categories/rings/formal_power_series.py` + `categories/differential_operators/formal_series.py` + `categories/generating_functions/operators.py` + `categories/algebras/weyl_algebra.py` | Proposed — see note below |
+| Known mirror family pairs from the literature (Greene-Plesser, Batyrev-Borisov, Dolgachev-Nikulin, BHK, 14 hypergeometric CY3s, Doran-Harder-Thompson) | Literature survey + user intake 2026-09-19 | Comprehensive classification and catalogue of mirror family pairs across dimensions: (1) Greene-Plesser orbifold pairs (quintic $X_5 \leftrightarrow Y_5$ and 27 weighted projective complete intersections); (2) Batyrev-Borisov dual reflexive polytopes $(\Delta, \Delta^\circ)$ (16 in 2D, 4319 in 3D, 473M in 4D) and nef-partitions; (3) Dolgachev-Nikulin lattice-polarized K3 mirror pairs ($M \leftrightarrow \check{M} = U \oplus M^\perp$, e.g. quartic $\leftrightarrow$ Dwork pencil); (4) Berglund-Hübsch-Krawitz (BHK) transpose polynomials $(W, G) \leftrightarrow (W^\mathrm{T}, G^\mathrm{T})$ (Fermat, loop, chain); (5) The 14 one-parameter hypergeometric Calabi-Yau threefolds (Doran-Morgan / Morrison / AESZ, 7 arithmetic / 7 thin monodromy); (6) Doran-Harder-Thompson fibration / degeneration mirrors (K3 fibrations over $\mathbb{P}^1$ and Kulikov component gluing); (7) Fano / Landau-Ginzburg mirrors $(X \leftrightarrow (\mathbb{C}^\times)^n, W)$; (8) Abelian varieties and SYZ dual tori | `categories/schemes/mirror_symmetry/mirror_catalogue.py` + `categories/schemes/mirror_symmetry/batyrev_borisov.py` + `categories/schemes/mirror_symmetry/dolgachev_nikulin.py` + `categories/schemes/mirror_symmetry/bhk.py` + `categories/schemes/mirror_symmetry/hypergeometric_cy3.py` | Proposed — see note below |
+
 
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
@@ -2818,6 +2820,154 @@ Intended owners: `categories/schemes/elliptic_surfaces/elliptic_surface.py` (`El
     - `ExponentialFormula(connected_egf)`: maps connected EGF $A(t)$ to total EGF $\exp(A(t))$.
 
 Intended owners: `categories/rings/formal_power_series.py` (`FormalPowerSeries` operator suite), `categories/differential_operators/formal_series.py` (`EulerOperator`, `FormalDifferentialOperator`, `IntegratingFactor`), `categories/generating_functions/operators.py` (`LagrangeInversion`, `PlethysticExponential`, `ExponentialFormula`), `categories/algebras/weyl_algebra.py` (`WeylAlgebra`, `WittAlgebra`).
+
+
+## Desired capability: Catalogue of known mirror family pairs from the literature — intake 2026-09-19
+
+* **Mathematical background & classification frameworks of mirror pairs:**
+  * **(1) Greene-Plesser Orbifold Mirror Families:**
+    * Construction: Hypersurfaces in projective or weighted projective space $\mathbb{P}(w_0, \dots, w_{n+1})$ cut out by Fermat-type polynomials with complex structure deformation parameter $\psi$, quotiented by a maximal group of phase symmetries $G \subset \operatorname{SL}(n+2, \mathbb{C})$.
+    * **The quintic threefold mirror pair:**
+      - Large family: $X_\psi \subset \mathbb{P}^4$ defined by $\sum_{i=0}^4 x_i^5 - 5\psi x_0 x_1 x_2 x_3 x_4 = 0$.
+      - Discrete symmetry group: $G = \{ (a_0, \dots, a_4) \in (\mathbb{Z}/5\mathbb{Z})^5 \mid \sum a_i \equiv 0 \pmod 5\} / \text{diag} \cong (\mathbb{Z}/5\mathbb{Z})^3$.
+      - Mirror Calabi-Yau threefold: $Y_\psi \coloneqq \widetilde{X_\psi / G}$ (crepant resolution of singularities).
+      - Hodge number exchange: $(h^{1,1}(X), h^{2,1}(X)) = (1, 101) \longleftrightarrow (h^{1,1}(Y), h^{2,1}(Y)) = (101, 1)$.
+      - Euler characteristics: $\chi(X) = 2(1 - 101) = -200 \longleftrightarrow \chi(Y) = 2(101 - 1) = +200$.
+    * **The 27 Greene-Plesser mirror pairs in weighted projective spaces:**
+      - Hypersurfaces in $\mathbb{P}(w_0, \dots, w_4)$ with $\sum w_i = d$:
+        * Sextic $X_6 \subset \mathbb{P}(1,1,1,1,2)$, $\chi = -252 \longleftrightarrow Y_6$, $\chi = +252$.
+        * Octic $X_8 \subset \mathbb{P}(1,1,1,1,4)$, $\chi = -296 \longleftrightarrow Y_8$, $\chi = +296$.
+        * Decic $X_{10} \subset \mathbb{P}(1,1,1,2,5)$, $\chi = -288 \longleftrightarrow Y_{10}$, $\chi = +288$.
+        * Duodecic $X_{12} \subset \mathbb{P}(1,1,1,3,6)$, $\chi = -252 \longleftrightarrow Y_{12}$, $\chi = +252$.
+      - Complete intersections:
+        * Two cubics $X_{3,3} \subset \mathbb{P}^5$, $\chi = -144 \longleftrightarrow Y_{3,3}$, $\chi = +144$.
+        * Quadric and quartic $X_{2,4} \subset \mathbb{P}^5$, $\chi = -168 \longleftrightarrow Y_{2,4}$, $\chi = +168$.
+        * Two quadrics and a cubic $X_{2,2,3} \subset \mathbb{P}^6$, $\chi = -144 \longleftrightarrow Y_{2,2,3}$, $\chi = +144$.
+        * Four quadrics $X_{2,2,2,2} \subset \mathbb{P}^7$, $\chi = -128 \longleftrightarrow Y_{2,2,2,2}$, $\chi = +128$.
+      - Homological mirror symmetry proven by Sheridan and Smith (2021).
+
+  * **(2) Batyrev-Borisov Toric Mirror Symmetry (Reflexive Polytopes & Nef-Partitions):**
+    * **Polar duality of reflexive polytopes (Batyrev 1994):**
+      - Let $M \cong \mathbb{Z}^n$ be a lattice, $N = \operatorname{Hom}(M, \mathbb{Z})$ its dual.
+      - A convex lattice polytope $\Delta \subset M_\mathbb{R}$ containing the origin in its interior is *reflexive* if all vertices are primitive and its polar dual:
+        $$
+        \Delta^\circ \;\coloneqq\; \{ y \in N_\mathbb{R} \mid \langle x, y \rangle \ge -1 \; \forall x \in \Delta \}
+        $$
+        is also a lattice polytope in $N$.
+      - Anticanonical Calabi-Yau hypersurfaces $X_\Delta \subset \mathbb{P}_{\Sigma(\Delta)}$ and $Y_{\Delta^\circ} \subset \mathbb{P}_{\Sigma(\Delta^\circ)}$.
+      - Combinatorial Hodge numbers:
+        $$
+        h^{1,1}(X_\Delta) \;=\; l(\Delta^\circ) - (n+1) - \sum_{\operatorname{codim} \theta^\circ = 1} l^*(\theta^\circ) + \sum_{\operatorname{codim} \theta^\circ = 2} l^*(\theta^\circ) l^*(\theta) \;=\; h^{n-2, 1}(Y_{\Delta^\circ}).
+        $$
+    * **Kreuzer-Skarke classification of reflexive polytopes:**
+      - Dimension 2 (elliptic curves): exactly 16 reflexive polygons (self-dual and dual pairs).
+      - Dimension 3 (K3 surfaces): exactly 4,319 reflexive 3-polytopes.
+      - Dimension 4 (Calabi-Yau 3-folds): exactly 473,800,776 reflexive 4-polytopes, generating 30,108 distinct Hodge pairs $(h^{1,1}, h^{2,1})$.
+    * **Nef-partitions for complete intersections (Borisov 1993):**
+      - Partitions of the vertices of $\Delta = \Delta_1 + \dots + \Delta_r$ and $\nabla = \nabla_1 + \dots + \nabla_r$ in $M$ and $N$.
+      - Generates mirror pairs of Calabi-Yau complete intersections in Gorenstein toric Fano varieties.
+
+  * **(3) Dolgachev-Nikulin Lattice-Polarized Mirror Symmetry for K3 Surfaces:**
+    * K3 cohomology lattice: $\Lambda_{K3} \cong U^{\oplus 3} \oplus E_8(-1)^{\oplus 2}$, even unimodular of signature $(3, 19)$.
+    * Let $M \hookrightarrow \Lambda_{K3}$ be an even non-degenerate primitive sublattice of signature $(1, \rho - 1)$ ($1 \le \rho \le 19$).
+    * An $M$-polarized K3 surface has a primitive embedding $M \hookrightarrow \operatorname{Pic}(X)$.
+    * The transcendental lattice is $T_X = M^\perp \subset \Lambda_{K3}$, signature $(2, 20 - \rho)$.
+    * **Dolgachev's mirror lattice $\check{M}$:**
+      When $M^\perp$ contains a hyperbolic plane $U$, the mirror polarization lattice is defined by:
+      $$
+      \check{M} \;\coloneqq\; U \oplus (M^\perp \cap U^\perp) \;\subset\; \Lambda_{K3}.
+      $$
+      Satisfies $\operatorname{rank}(\check{M}) = 22 - \rho$, exchanging the Picard rank and transcendental rank:
+      $$
+      \dim \mathcal{M}_M \;=\; 20 - \rho, \qquad \dim \mathcal{M}_{\check{M}} \;=\; \rho - 2, \qquad \dim \mathcal{M}_M + \dim \mathcal{M}_{\check{M}} \;=\; 18.
+      $$
+    * **Canonical K3 mirror pairs:**
+      - Quartic in $\mathbb{P}^3$ ($M = \langle 4 \rangle$, $\rho = 1$, $\dim = 19$) $\longleftrightarrow$ Dwork pencil mirror ($M^\vee = U \oplus E_8^{\oplus 2} \oplus \langle -4 \rangle$, $\rho = 19$, $\dim = 1$).
+      - Degree 2 K3 (double cover of $\mathbb{P}^2$ branched along sextic, $M = \langle 2 \rangle$) $\longleftrightarrow$ Mirror with $\rho = 19$, $M^\vee = U \oplus E_8^{\oplus 2} \oplus \langle -2 \rangle$.
+      - Degree 6 K3 (complete intersection of quadric and cubic in $\mathbb{P}^4$, $M = \langle 6 \rangle$) $\longleftrightarrow$ rank 19 mirror.
+      - Degree 8 K3 (complete intersection of three quadrics in $\mathbb{P}^5$, $M = \langle 8 \rangle$) $\longleftrightarrow$ rank 19 mirror.
+      - Kummer surfaces $\operatorname{Km}(A)$ ($M = \operatorname{Kum} \cong \mathbb{Z}^{16}$) $\longleftrightarrow$ Kummer surfaces of the dual abelian surface $\operatorname{Km}(\widehat{A})$.
+      - Elliptic K3 surfaces with section: $M = U \oplus W$ (where $W$ is the root lattice of singular fibers) $\longleftrightarrow$ Shioda-Inose partners.
+
+  * **(4) Berglund-Hübsch-Krawitz (BHK) Landau-Ginzburg Mirror Symmetry:**
+    * Invertible potential: $W(x_1, \dots, x_n) = \sum_{i=1}^n \prod_{j=1}^n x_j^{A_{ij}}$ where $A = (A_{ij}) \in \operatorname{Mat}_n(\mathbb{Z}_{\ge 0})$ is invertible over $\mathbb{Q}$.
+    * Transpose polynomial: $W^\mathrm{T}(y_1, \dots, y_n) \coloneqq \sum_{i=1}^n \prod_{j=1}^n y_j^{(A^\mathrm{T})_{ij}}$.
+    * Symmetry groups: Maximal diagonal symmetry group $G_W^{\mathrm{max}} = \{ (\lambda_1, \dots, \lambda_n) \in (\mathbb{C}^\times)^n \mid W(\lambda \cdot x) = W(x) \}$.
+    * Krawitz duality: For any subgroup $G \le G_W \cap \operatorname{SL}(n, \mathbb{C})$, the dual group $G^\mathrm{T} \le G_{W^\mathrm{T}} \cap \operatorname{SL}(n, \mathbb{C})$ is defined via the pairing on characters.
+    * BHK mirror pair: $(W, G) \longleftrightarrow (W^\mathrm{T}, G^\mathrm{T})$.
+    * Kreuzer-Skarke classification of invertible potentials: Every invertible potential is a decoupled sum of atomic potentials of three elementary types:
+      1. Fermat: $x^a$.
+      2. Loop: $x_1^{a_1} x_2 + x_2^{a_2} x_3 + \dots + x_n^{a_n} x_1$.
+      3. Chain: $x_1^{a_1} x_2 + x_2^{a_2} x_3 + \dots + x_{n-1}^{a_{n-1}} x_n + x_n^{a_n}$.
+    * Proved by Artebani-Boissière-Sarti and Kelly to coincide with Dolgachev-Nikulin lattice-polarized mirror symmetry for K3 surfaces admitting non-symplectic automorphisms.
+
+  * **(5) The 14 One-Parameter Hypergeometric Calabi-Yau 3-Fold Families (Doran-Morgan / AESZ / Morrison):**
+    * Classification of all fourth-order Calabi-Yau Picard-Fuchs operators of hypergeometric type over $\mathbb{P}^1 \setminus \{0, 1, \infty\}$ with MUM at $z=0$:
+      $$
+      \theta^4 - C z (\theta + \alpha_1)(\theta + \alpha_2)(\theta + \alpha_3)(\theta + \alpha_4) = 0, \quad \text{with } \alpha_4 = 1 - \alpha_1, \; \alpha_3 = 1 - \alpha_2.
+      $$
+    * Table of the 14 families with geometric realizations:
+      1. $\boldsymbol{\alpha} = (1/5, 2/5, 3/5, 4/5)$, $C = 5^5 = 3125$: Quintic threefold $X_5 \subset \mathbb{P}^4$, $\chi = -200$.
+      2. $\boldsymbol{\alpha} = (1/6, 1/3, 2/3, 5/6)$, $C = 2^4 3^3 = 432$: Complete intersection $X_{3,3} \subset \mathbb{P}^5$, $\chi = -144$.
+      3. $\boldsymbol{\alpha} = (1/4, 1/2, 1/2, 3/4)$, $C = 2^8 = 256$: Complete intersection $X_{2,4} \subset \mathbb{P}^5$, $\chi = -168$.
+      4. $\boldsymbol{\alpha} = (1/3, 1/2, 1/2, 2/3)$, $C = 108$: Complete intersection $X_{2,2,3} \subset \mathbb{P}^6$, $\chi = -144$.
+      5. $\boldsymbol{\alpha} = (1/2, 1/2, 1/2, 1/2)$, $C = 2^8 = 256$: Complete intersection $X_{2,2,2,2} \subset \mathbb{P}^7$, $\chi = -128$.
+      6. $\boldsymbol{\alpha} = (1/8, 3/8, 5/8, 7/8)$, $C = 2^{14} = 16384$: Hypersurface $X_8 \subset \mathbb{P}(1,1,1,1,4)$, $\chi = -296$.
+      7. $\boldsymbol{\alpha} = (1/10, 3/10, 7/10, 9/10)$, $C = 2^4 5^5 = 50000$: Hypersurface $X_{10} \subset \mathbb{P}(1,1,1,2,5)$, $\chi = -288$.
+      8. $\boldsymbol{\alpha} = (1/12, 5/12, 7/12, 11/12)$, $C = 2^{10} 3^3 = 27648$: Hypersurface $X_6 \subset \mathbb{P}(1,1,1,1,2)$ / $X_{12} \subset \mathbb{P}(1,1,1,3,6)$, $\chi = -252$.
+      9. $\boldsymbol{\alpha} = (1/6, 1/2, 1/2, 5/6)$, $C = 2^6 3^3 = 1728$: Complete intersection $X_{4,4} \subset \mathbb{P}(1,1,1,1,2,2)$.
+      10. $\boldsymbol{\alpha} = (1/6, 1/4, 3/4, 5/6)$, $C = 2^6 3^3 = 1728$: Complete intersection $X_{3,4} \subset \mathbb{P}(1,1,1,1,1,2)$.
+      11. $\boldsymbol{\alpha} = (1/12, 5/12, 1/2, 1/2)$, $C = 2^8 3^3 = 6912$: Complete intersection $X_{2,6} \subset \mathbb{P}(1,1,1,1,1,3)$.
+      12. $\boldsymbol{\alpha} = (1/8, 3/8, 1/2, 1/2)$, $C = 2^{10} = 1024$: Complete intersection $X_{2,4} \subset \mathbb{P}(1,1,1,1,2,2)$.
+      13. $\boldsymbol{\alpha} = (1/10, 3/10, 1/2, 1/2)$, $C = 2^6 5^5 = 200000$: Complete intersection $X_{2,10} \subset \mathbb{P}(1,1,1,2,2,5)$.
+      14. $\boldsymbol{\alpha} = (1/6, 1/3, 1/2, 2/3)$, $C = 432$: Pfaffian Calabi-Yau threefold in $\mathbb{P}^6$ / Grassmannian section.
+    * **Monodromy arithmeticity dichotomy:**
+      - 7 families have arithmetic monodromy in $\operatorname{Sp}(4, \mathbb{Z})$ (cases 1, 2, 3, 4, 5, 8, 9).
+      - 7 families have thin monodromy (non-arithmetic Zariski-dense subgroups of infinite index, Brav-Thomas 2014, Singh-Venkataramana 2014).
+
+  * **(6) Doran-Harder-Thompson Mirror Symmetry for Fibrations & Degenerations:**
+    * K3 fibrations: Calabi-Yau 3-folds admitting a fibration $\pi \colon X \to \mathbb{P}^1$ by K3 surfaces.
+    * Mirror family $\check{X} \to \mathbb{P}^1$ is fibered by dual lattice-polarized K3 surfaces.
+    * **Kulikov Type II degeneration gluing:**
+      At a degeneration point $0 \in \mathbb{P}^1$ where $X_0 = V \cup_D W$ is a Type II Kulikov degeneration (with $V, W$ quasi-Fano surfaces glued along a smooth anticanonical elliptic curve $D$), the mirror $\check{X}$ is constructed by gluing the Landau-Ginzburg mirror models of $(V, D)$ and $(W, D)$.
+    * Connects fibration mirror symmetry directly to the Gross-Siebert program and the Strominger-Yau-Zaslow (SYZ) fibration.
+
+  * **(7) Fano Varieties and Landau-Ginzburg Models (Coates-Corti-Galkin-Golyshev-Kasprzyk):**
+    * For a smooth Fano variety $X$ of dimension $n$, its mirror is a Landau-Ginzburg model $(\check{X}, W)$, where $\check{X} \cong (\mathbb{C}^\times)^n$ is an algebraic torus and $W \colon (\mathbb{C}^\times)^n \to \mathbb{C}$ is a Laurent polynomial (superpotential).
+    * **Quantum period matching:**
+      $$
+      I_0^X(t) \;=\; 1 + \sum_{d=1}^\infty J_d t^d \;=\; \frac{1}{(2\pi i)^n} \oint \frac{1}{1 - t W(x)} \frac{dx_1}{x_1} \cdots \frac{dx_n}{x_n} \;=\; \sum_{k=0}^\infty [x^0](W(x)^k) t^k.
+      $$
+    * Canonical pairings:
+      - Projective space $\mathbb{P}^n \longleftrightarrow W = x_1 + \dots + x_n + \frac{1}{x_1 \cdots x_n}$.
+      - Quadric hypersurface $Q^n \subset \mathbb{P}^{n+1} \longleftrightarrow W = x_1 + \dots + x_n + \frac{1}{x_1 \cdots x_{n-1}} + \frac{1}{x_n}$.
+      - del Pezzo surfaces $dP_k = \mathrm{Bl}_k \mathbb{P}^2$ ($0 \le k \le 8$) $\longleftrightarrow$ Givental Laurent polynomials; under Doran-Malmendier twist, their periods yield Picard-Fuchs operators of 17 rank-1 Fano K3 mirror families.
+      - 105 smooth Fano 3-folds $\longleftrightarrow$ 105 Laurent polynomials in 3 variables classified in the Fano / GRDB project.
+
+  * **(8) Abelian Varieties and Dual Tori (SYZ Mirror Symmetry):**
+    * Dimension 1 (elliptic curves): Complex elliptic curve $E_\tau = \mathbb{C}/(\mathbb{Z} \oplus \tau \mathbb{Z})$ with complex structure $\tau \in \mathbb{H}$ and complexified symplectic area $\rho = b + i A$ is mirror to $E_{\check{\tau}}$ with $\check{\tau} = \rho$ and $\check{\rho} = \tau$.
+    * Higher dimension: Principally polarized abelian variety $A = V/\Lambda \longleftrightarrow$ dual abelian variety $\check{A} = \operatorname{Pic}^0(A) = V^\vee / \Lambda^\vee$.
+    * SYZ T-duality: Special Lagrangian torus fibration $\pi \colon X \to B$ with fiber $T^n \cong (S^1)^n$; the mirror $\check{X} \to B$ has fibers given by the dual tori $\check{T}^n = H^1(T^n, \mathbb{R}/\mathbb{Z})$.
+
+* **Preamble implementation requirements:**
+  * **Mirror catalogue registry:** `categories/schemes/mirror_symmetry/mirror_catalogue.py`
+    - `MirrorPair(source_family, target_family, duality_type, invariants)`: unified interface for mirror pairs.
+    - `DualityType` enum: `GREENE_PLESSER`, `BATYREV_BORISOV`, `DOLGACHEV_NIKULIN`, `BHK`, `DORAN_MORGAN_14`, `DORAN_HARDER_THOMPSON`, `FANO_LG`, `SYZ_ABELIAN`.
+    - Methods: `picard_fuchs_operator()`, `mirror_map()`, `yukawa_coupling()`, `instanton_numbers()`.
+  * **Toric reflexive polytope mirror symmetry:** `categories/schemes/mirror_symmetry/batyrev_borisov.py`
+    - `ReflexivePolytope(vertices)`: polar dual $\Delta^\circ$, Hodge numbers $h^{1,1}, h^{n-2,1}$, Kreuzer-Skarke database lookup.
+    - `NefPartition(polytope, partition)`: computes dual partition and complete intersection mirror.
+  * **Lattice-polarized K3 mirror symmetry:** `categories/schemes/mirror_symmetry/dolgachev_nikulin.py`
+    - `LatticePolarizedK3(polarization_lattice)`: computes dual polarization lattice $\check{M} = U \oplus (M^\perp \cap U^\perp)$, Picard number $\check{\rho} = 22 - \rho$, transcendental lattice $T_X$.
+  * **Berglund-Hübsch-Krawitz (BHK) duality:** `categories/schemes/mirror_symmetry/bhk.py`
+    - `InvertiblePolynomial(matrix_or_terms)`: computes transpose polynomial $W^\mathrm{T}$, dual group $G^\mathrm{T}$, and atomic decomposition (Fermat, loop, chain).
+  * **14 hypergeometric Calabi-Yau threefolds:** `categories/schemes/mirror_symmetry/hypergeometric_cy3.py`
+    - `HypergeometricCY3(index)`: index 1..14, rational parameters $(\alpha_1, \alpha_2, \alpha_3, \alpha_4)$, constant $C$, Picard-Fuchs operator, Euler characteristic $\chi$, and arithmeticity predicate (`is_arithmetic`).
+  * **Fano / Landau-Ginzburg models:** `categories/schemes/mirror_symmetry/fano_lg.py`
+    - `FanoLGMirror(fano_variety)`: superpotential $W(x_1, \dots, x_n)$, constant term sequence $[x^0](W^k)$, Picard-Fuchs operator of $I_0(t)$.
+
+Intended owners: `categories/schemes/mirror_symmetry/mirror_catalogue.py` (`MirrorPair`, `DualityType`), `categories/schemes/mirror_symmetry/batyrev_borisov.py` (`ReflexivePolytope`, `NefPartition`), `categories/schemes/mirror_symmetry/dolgachev_nikulin.py` (`LatticePolarizedK3`, `DualPolarizationLattice`), `categories/schemes/mirror_symmetry/bhk.py` (`InvertiblePolynomial`, `KrawitzDuality`), `categories/schemes/mirror_symmetry/hypergeometric_cy3.py` (`HypergeometricCY3`), `categories/schemes/mirror_symmetry/fano_lg.py` (`FanoLGMirror`, `Superpotential`).
+
 
 
 
