@@ -114,6 +114,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Projectivization of linear groups and subgroups (PGL, PO, PSL, PSp) | User intake 2026-09-19 | Projectivization functor P: G ↦ PG = G / (G ∩ R^×·id) for linear groups G ≤ GL(V) (e.g. GL_n → PGL_n, O(b) → PO(b) ≅ O(b)/{±id}, SL_n → PSL_n, Sp_{2g} → PSp_{2g}, and arithmetic subgroups Γ ≤ O(L)); quotient projection π: G ↠ PG; faithful action on projective space PP(V) and hyperbolic space HH^n | `categories/groups/projectivization.py` + `categories/groups/matrix_groups.py` + `categories/lattices/orthogonal_group.py` | Proposed — see note below |
 | Lambert expansions of generating functions | User intake 2026-09-19 | Lambert series L(q) = \sum a_n q^n/(1-q^n) and bidirectional conversion to/from OGF \sum b_N q^N via divisor convolution b_N = \sum_{d|N} a_d and Mobius inversion a_n = \sum_{d|n} \mu(n/d) b_d; Dirichlet series link D_b(s) = D_a(s)\zeta(s); q-expansions of Eisenstein series E_{2k}, Dedekind \eta, and Euler products | `categories/generating_functions/lambert.py` + `categories/rings/formal_power_series.py` + `categories/modular/eisenstein.py` | Proposed — see note below |
 | Computing Picard-Fuchs operators of families (Gauss-Manin, Weierstrass, twists, and Fano/K3 mirrors) | https://arxiv.org/abs/2403.07349 + user intake 2026-09-19 | Computation of Picard-Fuchs differential operators for algebraic families \pi: X \to B; explicit Weierstrass reduction \nabla = d/dt - M(t) with \Delta, \delta (arXiv:2403.07349 p. 13 Eq. 2.17); Doran-Malmendier Hadamard twist construction L_{n+1} = L_twist \star L_n; recovery of 17 rank-1 Fano anticanonical K3 operators L_{3,N} (Table 1), modular elliptic pencils L_{2,n} (Table 4), quantum differential operators D_{4,N} = \theta \cdot L_{3,N} (Table 2), and P^3 instanton pullback (Eq. 6.1) | `categories/differential_equations/picard_fuchs.py` + `categories/schemes/elliptic_surfaces/weierstrass_picard_fuchs.py` + `categories/cohomology/gauss_manin.py` + `categories/schemes/k3/fano_mirrors.py` | Proposed — see note below |
+| Converting linear recurrences to differential equations symbolically (Ore algebras, D-finite/holonomic systems) | User intake 2026-09-19 | Symbolic translation from linear recurrence relations \sum p_i(n) a_{n+i} = 0 (shift Ore algebra K[n]\langle S_n \rangle) to linear differential equations \sum q_j(t) F^{(j)}(t) = 0 and Euler form \mathcal{L}(\theta) F(t) = P(t) (Weyl/differential Ore algebra K[t]\langle \partial_t \rangle); handles initial conditions, OGF/EGF (Borel/Laplace transform); connects Apéry sequences to Calabi-Yau Picard-Fuchs operators | `categories/differential_equations/ore_algebra.py` + `categories/differential_equations/recurrence_to_diffeq.py` + `categories/algebras/ore_algebras.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -2278,6 +2279,101 @@ Intended owners: `categories/generating_functions/lambert.py` (`LambertSeries`, 
     `L.pullback(t_map)` computing the operator under substitution $t \mapsto f(s)$.
 
 Intended owners: `categories/differential_equations/picard_fuchs.py` (`FuchsianOperator`, `PicardFuchsEquation`), `categories/schemes/elliptic_surfaces/weierstrass_picard_fuchs.py` (`WeierstrassPicardFuchs`), `categories/cohomology/gauss_manin.py` (`GaussManinConnection`, `GriffithsDworkReduction`), `categories/schemes/k3/fano_mirrors.py` (`FanoK3PicardFuchsCatalogue`).
+
+
+## Desired capability: Converting linear recurrences to differential equations symbolically — intake 2026-09-19
+
+* **Mathematical background & algorithms:**
+  * **Holonomic / D-finite correspondence:**
+    A sequence $a = (a_n)_{n \ge 0}$ over a field $K$ of characteristic zero (e.g. $\mathbb{Q}$ or $\mathbb{Q}(t)$) is *P-recursive* (or holonomic) of order $r$ if it satisfies a linear recurrence relation with polynomial coefficients:
+    $$
+    \sum_{i=0}^r p_i(n) a_{n+i} = 0 \quad (\text{or } = g(n)), \qquad p_i(n) \in K[n], \; p_r(n) \neq 0.
+    $$
+    A formal power series $F(t) = \sum_{n=0}^\infty a_n t^n$ (ordinary generating function, OGF) or $E(t) = \sum_{n=0}^\infty a_n \frac{t^n}{n!}$ (exponential generating function, EGF) is *D-finite* (differentially finite) if its formal derivatives generate a finite-dimensional $K(t)$-vector space, i.e., it satisfies a linear ordinary differential equation:
+    $$
+    \sum_{j=0}^d q_j(t) F^{(j)}(t) = 0 \quad (\text{or } = P(t)), \qquad q_j(t) \in K[t], \; q_d(t) \neq 0.
+    $$
+    A foundational theorem of Stanley, Lipshitz, and Zeilberger establishes that a sequence $(a_n)_{n \ge 0}$ is P-recursive if and only if its OGF $F(t)$ is D-finite, if and only if its EGF $E(t)$ is D-finite.
+
+  * **Ore algebras and non-commutative operator rings:**
+    The transformation is algebraically formulated as an isomorphism / module transition between Ore algebras $R[X; \sigma, \delta]$ with commutation relation $X \cdot r = \sigma(r) X + \delta(r)$:
+    1. **Shift Ore algebra (recurrence operators):**
+       $\mathbb{A}_{\mathrm{shift}} \coloneqq K[n]\langle S_n \rangle$, where $\sigma(n) = n+1$ and $\delta = 0$, so that $S_n \cdot n = (n+1) S_n$.
+       A recurrence is an annihilating operator $L_{\mathrm{rec}} = \sum_{i=0}^r p_i(n) S_n^i \in K[n]\langle S_n \rangle$.
+    2. **Differential / Weyl Ore algebra:**
+       $\mathbb{A}_{\mathrm{diff}} \coloneqq K[t]\langle \partial_t \rangle$, where $\sigma = \mathrm{id}$ and $\delta = \frac{d}{dt}$, with Heisenberg commutation $[\partial_t, t] = \partial_t t - t \partial_t = 1$.
+    3. **Euler / theta Ore algebra:**
+       $\mathbb{A}_{\theta} \coloneqq K[t]\langle \theta \rangle$, where $\theta \coloneqq t \partial_t$, with commutation $[\theta, t] = \theta t - t \theta = t$, or equivalently $\theta \cdot t = t(\theta + 1)$.
+
+  * **Symbolic conversion dictionary for ordinary generating functions (OGF):**
+    For $F(t) = \sum_{n=0}^\infty a_n t^n$:
+    * Multiplication by $n$:
+      $$
+      \sum_{n=0}^\infty n a_n t^n = t \frac{d}{dt} F(t) = \theta F(t), \qquad \sum_{n=0}^\infty n^k a_n t^n = \theta^k F(t).
+      $$
+    * Shifted terms:
+      Writing the recurrence in backward form with shifts $a_{n-j}$:
+      $$
+      \sum_{n=j}^\infty a_{n-j} n^k t^n = t^j \sum_{m=0}^\infty a_m (m+j)^k t^m = t^j (\theta + j)^k F(t).
+      $$
+    * General operator translation:
+      Given a recurrence $\sum_{j=0}^r \sum_{k=0}^d c_{j,k} n^k a_{n-j} = 0$ valid for $n \ge n_0$:
+      $$
+      \mathcal{L}(\theta, t) \coloneqq \sum_{j=0}^r t^j P_j(\theta), \qquad P_j(\theta) = \sum_{k=0}^d c_{j,k} (\theta + j)^k.
+      $$
+      Initial terms $a_0, \dots, a_{n_0-1}$ generate an explicit polynomial inhomogeneous right-hand side $P(t) \in K[t]$:
+      $$
+      \mathcal{L}(\theta, t) F(t) = P(t).
+      $$
+    * Converting from Euler operator $\theta = t \partial_t$ to standard derivatives $\partial_t^m = \frac{d^m}{dt^m}$:
+      $$
+      \theta^k = \sum_{m=0}^k \left\{ \begin{matrix} k \\ m \end{matrix} \right\} t^m \partial_t^m,
+      $$
+      where $\left\{ \begin{matrix} k \\ m \end{matrix} \right\}$ are the Stirling numbers of the second kind.
+
+  * **Symbolic conversion dictionary for exponential generating functions (EGF):**
+    For $E(t) = \sum_{n=0}^\infty a_n \frac{t^n}{n!}$:
+    $$
+    a_{n+1} \longleftrightarrow \partial_t E(t), \qquad n a_n \longleftrightarrow t \partial_t E(t).
+    $$
+    This realizes a direct algebra isomorphism between the shift algebra $K[n]\langle S_n \rangle$ and the Weyl algebra $K[t]\langle \partial_t \rangle$.
+    The map between OGF and EGF differential equations corresponds to the formal Borel and Laplace transforms on differential operators ($\partial_t \longleftrightarrow t^{-1} \theta$).
+
+* **Canonical specimens & test benchmarks:**
+  1. **Apéry recurrence for $\zeta(2)$:**
+     Recurrence: $n^2 a_n - (11n^2 - 11n + 3) a_{n-1} - (n-1)^2 a_{n-2} = 0$, with $a_0 = 1, a_1 = 3$.
+     Transforms into the second-order Picard-Fuchs operator for $X_1(5)$ modular curves:
+     $$
+     \mathcal{L}_2 = \theta^2 - t(11\theta^2 + 11\theta + 3) - t^2(\theta+1)^2.
+     $$
+     The second Apéry sequence $b_0=0, b_1=5$ satisfies the non-homogeneous equation $\mathcal{L}_2(b(t)) = 5t$.
+  2. **Apéry recurrence for $\zeta(3)$:**
+     Recurrence: $n^3 A_n - (2n-1)(17n^2 - 17n + 5) A_{n-1} + (n-1)^3 A_{n-2} = 0$, with $A_0 = 1, A_1 = 5$.
+     Transforms into the third-order Calabi-Yau Picard-Fuchs operator for the Beukers-Peters K3 pencil:
+     $$
+     \mathcal{L}_3 = \theta^3 - t(2\theta+1)(17\theta^2 + 17\theta + 5) + t^2(\theta+1)^3.
+     $$
+     The auxiliary sequence $B_n$ satisfies the non-homogeneous equation $\mathcal{L}_3(B(t)) = 6t$.
+  3. **Hypergeometric sequence:**
+     $(n+1)^2 a_{n+1} - (n + 1/2)^2 a_n = 0 \implies \left( \theta^2 - 4t(\theta + 1/2)^2 \right) F(t) = 0$ (the twist operator $\mathcal{L}_1$).
+  4. **Factorial / divergent series:**
+     $a_n - n a_{n-1} = 0 \implies (1 - t(\theta + 1)) F(t) = 1 \implies t^2 F'' + (3t - 1) F' + F = -1$.
+
+* **Preamble implementation requirements:**
+  * **Ore algebra representation:**
+    `OreAlgebra(BaseRing, generator_name, derivation=None, endomorphism=None)`:
+    Representing non-commutative polynomial rings $R[X; \sigma, \delta]$, covering the shift ring $K[n]\langle S_n \rangle$, the Weyl algebra $K[t]\langle \partial_t \rangle$, and the Euler ring $K[t]\langle \theta \rangle$.
+  * **Recurrence-to-differential-equation conversion:**
+    `recurrence_to_diffeq(rec_expr, a_seq, n_var, t_var, form='theta', kind='ogf', initial_values=None)`:
+    Translates a polynomial linear recurrence into an annihilating differential operator $\mathcal{L} \in K[t][\theta]$ or $K[t][\partial_t]$, tracking the exact inhomogeneous polynomial $P(t)$ contributed by initial values.
+  * **Differential-equation-to-recurrence conversion:**
+    `diffeq_to_recurrence(diffeq_op, t_var, n_var, a_seq, form='theta', kind='ogf')`:
+    Inverse translation from a Fuchsian / linear differential operator to the corresponding recurrence on series coefficients.
+  * **Algorithmic reuse and adapters:**
+    Wrap existing CAS implementations (e.g. SageMath `sage.rings.polynomial.ore_algebra` / `rectodiffeq` and `diffeqtorec`, SymPy `sympy.holonomic.recurrence_to_diffeq`, and Maple `gfun` reference algorithms) behind owned preamble interfaces adhering strictly to `OWN-01` through `OWN-14`.
+
+Intended owners: `categories/differential_equations/ore_algebra.py` (`OreAlgebra`, `OrePolynomial`), `categories/differential_equations/recurrence_to_diffeq.py` (`recurrence_to_diffeq`, `diffeq_to_recurrence`), `categories/algebras/weyl_algebra.py` (`WeylAlgebra`, `EulerAlgebra`).
+
 
 
 
