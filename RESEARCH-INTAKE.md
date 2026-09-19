@@ -110,6 +110,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Scheme and morphism adjectives, automated property deduction (The Adjectives Project) | https://adjectivesproject.org/ + https://github.com/jessetvogel/adjectives-project-data | 19 scheme properties, 44 morphism properties, 95 implication theorems, 107 concrete examples/counterexamples; operationalized property calculus and oracle test suite for Schemes and Hom(Sch) | `categories/schemes/properties.py` + `categories/schemes/morphism_properties.py` + `categories/schemes/theorems.py` | Proposed — see note below |
 | General topology counterexamples, 246 properties, 931 theorems, universal constructions (pi-Base) | https://topology.pi-base.org/ + https://github.com/pi-base/data | 246 topological properties (separation, compactness, countability, connectedness, metrizability), 224 canonical spaces, 931 theorems, universal constructions (subspaces, products, coproducts, quotients); operationalized topological predicate suite | `categories/topology/spaces.py` + `categories/topology/properties.py` + `categories/topology/constructions.py` + `categories/topology/theorems.py` | Proposed — see note below |
 | Bilinear forms to polynomial schemes and 1-parameter quadric families | User intake 2026-09-19 | Passage from bilinear form b: M⊗_R M→R on free M≅R^n to polynomial b(x,x)∈R[x_0..x_{n-1}] (and b(x,y)); 1-parameter family V(b(x,x)-t) over AA^1(R); transport problem b(v,v)=t to finding integral points on fibers, utilizing specialized number theory and lattice algorithms | `categories/forms/polynomial.py` + `categories/schemes/families.py` + `categories/schemes/quadrics.py` + `categories/lattices/representations.py` | Proposed — see note below |
+| Category of Hodge structures (pure, mixed, polarized) and operations | User intake 2026-09-19 | Category of pure Hodge structures HS_k(R), mixed Hodge structures MHS(R) (Deligne), polarized HS_k^{pol}(R); standard operations: tensor product, direct sum, dual, internal Hom, exterior powers ⋀^n H, symmetric powers Sym^n H, Tate twist ZZ(m) / H(m), weight and Hodge filtrations, Hodge classes, intermediate Jacobians | `categories/hodge/hodge_structures.py` + `categories/hodge/mixed_hodge.py` + `categories/hodge/polarized.py` + `categories/hodge/tate_twist.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -1939,6 +1940,101 @@ Intake note from user 2026-09-19.
   * The preamble must not route $\mathcal{X}_{t_0}(R)$ for quadric fibers through generic commutative algebra or generic Gröbner basis / Diophantine solvers; it must identify the quadratic/bilinear form origin and delegate directly to maintained lattice and number-theoretic engines behind the private adapter.
 
 Intended owners: `categories/forms/polynomial.py` (`b.as_polynomial(basis)`), `categories/schemes/families.py` (`b.as_family(parameter='t')`), `categories/schemes/quadrics.py` (`QuadricHypersurface`, fiber specialization), `categories/lattices/representations.py` (integral points $\mathcal{X}_t(R)$ via Fincke–Pohst and Siegel mass computation).
+
+## Desired capability: Category of Hodge structures (pure, mixed, polarized) and operations — intake 2026-09-19
+
+Intake note from user 2026-09-19.
+
+* **Pure Hodge structures ($\mathbf{HS}_k(R)$):**
+  * Base ring $R \in \{\mathbb{Z}, \mathbb{Q}, \mathbb{R}\}$.
+  * A pure Hodge structure of weight $k \in \mathbb{Z}$ over $R$ is a finite-rank $R$-module $H_R$ together with a Hodge decomposition of its complexification $H_\mathbb{C} \coloneqq H_R \otimes_R \mathbb{C}$:
+    $$
+    H_\mathbb{C} = \bigoplus_{p + q = k} H^{p,q}, \qquad \text{with } \overline{H^{p,q}} = H^{q,p},
+    $$
+    where conjugation is with respect to the real form $H_\mathbb{R} = H_R \otimes_R \mathbb{R}$.
+  * Equivalent specification via decreasing Hodge filtration $F^\bullet$ on $H_\mathbb{C}$:
+    $$
+    F^p H_\mathbb{C} = \bigoplus_{r \ge p} H^{r, k-r}, \qquad \text{satisfying } F^p H_\mathbb{C} \oplus \overline{F^{k-p+1} H_\mathbb{C}} = H_\mathbb{C},
+    $$
+    with recovery $H^{p,q} = F^p H_\mathbb{C} \cap \overline{F^q H_\mathbb{C}}$.
+  * Category $\mathbf{HS}(R) = \bigoplus_{k \in \mathbb{Z}} \mathbf{HS}_k(R)$: abelian, semi-simple for $R = \mathbb{Q}, \mathbb{R}$. Morphisms $f\colon H \to H'$ are $R$-linear maps preserving the bigrading $f_\mathbb{C}(H^{p,q}) \subseteq H'^{p,q}$ (or equivalently, strictly preserving the Hodge filtration).
+  * Invariants: weight $k$, Hodge numbers $h^{p,q} = \dim_\mathbb{C} H^{p,q}$, Hodge diamond, and Hodge polynomial $\sum h^{p,q} u^p v^q$.
+
+* **Polarized Hodge structures ($\mathbf{HS}_k^{\mathrm{pol}}(R)$):**
+  * A polarization of $(H_R, H^{p,q})$ of weight $k$ is a bilinear form $Q\colon H_R \otimes_R H_R \to R$ satisfying:
+    1. Symmetry: $Q(u, v) = (-1)^k Q(v, u)$ (symmetric for $k$ even, alternating for $k$ odd).
+    2. Hodge-Riemann bilinear relations:
+       - Orthogonality: $Q_\mathbb{C}(H^{p,q}, H^{p',q'}) = 0$ unless $p = q'$ and $q = p'$ (equivalently, $Q_\mathbb{C}(F^p, F^{k-p+1}) = 0$).
+       - Positivity: The Hermitian form $h(u, v) \coloneqq i^{p-q} Q_\mathbb{C}(u, \bar{v})$ is positive definite on $H^{p,q}$.
+  * The Weil operator $C\colon H_\mathbb{C} \to H_\mathbb{C}$, acting as $i^{p-q} \operatorname{id}$ on $H^{p,q}$, defines a positive-definite Riemannian metric $Q(C u, \bar{v}) > 0$ on $H_\mathbb{C}$.
+  * Category $\mathbf{HS}_k^{\mathrm{pol}}(\mathbb{Q})$ is a semi-simple neutral Tannakian category.
+
+* **Mixed Hodge structures ($\mathbf{MHS}(R)$ / Deligne):**
+  * A mixed Hodge structure consists of:
+    1. A finite-rank $R$-module $H_R$.
+    2. An increasing weight filtration $W_\bullet$ on $H_\mathbb{Q} \coloneqq H_R \otimes_R \mathbb{Q}$:
+       $$
+       \cdots \subseteq W_{k-1} H_\mathbb{Q} \subseteq W_k H_\mathbb{Q} \subseteq W_{k+1} H_\mathbb{Q} \subseteq \cdots
+       $$
+    3. A decreasing Hodge filtration $F^\bullet$ on $H_\mathbb{C}$:
+       $$
+       \cdots \supseteq F^{p-1} H_\mathbb{C} \supseteq F^p H_\mathbb{C} \supseteq F^{p+1} H_\mathbb{C} \supseteq \cdots
+       $$
+    such that for each $k \in \mathbb{Z}$, the induced filtration $F^\bullet$ on the graded piece
+    $$
+    \operatorname{Gr}_k^W(H) \coloneqq W_k H_\mathbb{Q} / W_{k-1} H_\mathbb{Q}
+    $$
+    is a pure $\mathbb{Q}$-Hodge structure of weight $k$.
+  * Deligne canonical bigrading: $H_\mathbb{C} = \bigoplus_{p,q} I^{p,q}$ with
+    $$
+    I^{p,q} = F^p \cap W_{p+q} \cap \left( \overline{F^q} \cap W_{p+q} + \sum_{j \ge 2} \overline{F^{q-j+1}} \cap W_{p+q-j} \right),
+    $$
+    satisfying $I^{p,q} \equiv \overline{I^{q,p}} \pmod{W_{p+q-2}}$.
+  * Morphisms in $\mathbf{MHS}$: $R$-linear maps strictly compatible with both $W_\bullet$ and $F^\bullet$.
+  * Theorem (Deligne): $\mathbf{MHS}$ is an abelian category; every morphism is strictly compatible with both filtrations; kernels, cokernels, images exist and inherit mixed Hodge structures.
+  * Polarized mixed Hodge structures: graded-polarized MHS, where each pure graded piece $\operatorname{Gr}_k^W(H)$ is equipped with a polarization $Q_k$.
+
+* **Tate twists and $\mathbb{Z}(1)$:**
+  * The fundamental Tate twist $\mathbb{Z}(1) \coloneqq 2\pi i \mathbb{Z} \subset \mathbb{C}$ is the pure Hodge structure of weight $-2$, rank 1, with $H^{-1,-1} = \mathbb{C}$ and $H^{p,q} = 0$ otherwise.
+  * For $m \in \mathbb{Z}$, $\mathbb{Z}(m) \coloneqq (2\pi i)^m \mathbb{Z}$ is pure of weight $-2m$ and type $(-m, -m)$.
+  * Tate twist of a Hodge structure $H$: $H(m) \coloneqq H \otimes \mathbb{Z}(m)$.
+    * Weight shift: $\operatorname{Gr}_{k-2m}^W(H(m)) = \operatorname{Gr}_k^W(H)(m)$ (weight lowered by $2m$).
+    * Hodge filtration shift: $F^p(H(m)_\mathbb{C}) = F^{p+m}(H_\mathbb{C})$.
+    * Bigrading shift: $H(m)^{p,q} = H^{p+m, q+m}$.
+
+* **Standard operations and symmetric monoidal structure:**
+  * **Direct Sum ($H \oplus H'$):**
+    $W_k(H \oplus H') = W_k H \oplus W_k H'$, $F^p(H \oplus H') = F^p H \oplus F^p H'$, $(H \oplus H')^{p,q} = H^{p,q} \oplus H'^{p,q}$.
+  * **Tensor Product ($H \otimes H'$):**
+    * Weight filtration: $W_k(H \otimes H') = \sum_{i+j=k} W_i H \otimes W_j H'$.
+    * Hodge filtration: $F^p(H \otimes H')_\mathbb{C} = \sum_{r+s=p} F^r H_\mathbb{C} \otimes F^s H'_\mathbb{C}$.
+    * Bigrading: $(H \otimes H')^{p,q} = \bigoplus_{r+r'=p, s+s'=q} H^{r,s} \otimes H'^{r',s'}$.
+    * Unit object: $\mathbb{Z}(0) = \mathbb{Z}$ of weight 0, type $(0,0)$.
+  * **Dual ($H^\vee$) and Internal Hom ($\underline{\operatorname{Hom}}(H, H')$):**
+    * $H^\vee \coloneqq \underline{\operatorname{Hom}}(H, \mathbb{Z}(0))$ with $W_{-k}(H^\vee) = (W_{k-1} H)^\perp$ and $(H^\vee)^{p,q} = (H^{-p, -q})^\vee$.
+    * $\underline{\operatorname{Hom}}(H, H') \cong H^\vee \otimes H'$ with Hodge components $\underline{\operatorname{Hom}}(H, H')^{p,q} = \bigoplus_{r,s} \operatorname{Hom}(H^{r,s}, H'^{r+p, s+q})$.
+  * **Exterior Powers ($\bigwedge^n H$) and Symmetric Powers ($\operatorname{Sym}^n H$):**
+    * Sub- and quotient Hodge structures of $H^{\otimes n}$ via Young symmetrizers.
+    * For pure $H$ of weight $k$, $\bigwedge^n H$ is pure of weight $n k$ with components $(\bigwedge^n H)^{p,q} = \sum_{\sum p_i = p, \sum q_i = q} \bigwedge^{p_1, q_1} \otimes \cdots$.
+    * Determinant line: $\det(H) = \bigwedge^{\operatorname{rk}(H)} H$, rank-1 pure Hodge structure of weight $k \cdot \operatorname{rk}(H)$.
+  * **Hodge classes:**
+    $$
+    \operatorname{Hdg}^{2p}(H) \coloneqq \operatorname{Hom}_{\mathbf{HS}}(\mathbb{Z}(-p), H) = H_R \cap H^{p,p}.
+    $$
+  * **Extensions and Intermediate Jacobians:**
+    * The extension group $\operatorname{Ext}^1_{\mathbf{MHS}}(\mathbb{Z}(0), H)$ in the abelian category $\mathbf{MHS}$ is canonically identified with the generalized intermediate Jacobian:
+      $$
+      J(H) \coloneqq H_\mathbb{C} / (F^0 H_\mathbb{C} + H_\mathbb{Z}).
+      $$
+    * For $X$ smooth projective of dimension $n$, $J^k(X) = \operatorname{Ext}^1_{\mathbf{MHS}}(\mathbb{Z}(0), H^{2k-1}(X, \mathbb{Z})(k))$.
+
+* **Preamble implementation requirement:**
+  * Provide categories `PureHodgeStructures(R, weight=k)` (`HS`), `MixedHodgeStructures(R)` (`MHS`), `PolarizedHodgeStructures(R, weight=k)` (`PolHS`) in `categories/hodge/`.
+  * Morphisms must be strictly filtered $R$-linear maps with exact kernel, cokernel, image, and direct sum functors.
+  * Implement symmetric monoidal operations on objects: `H + H'`, `H * H'` (tensor), `H.dual()`, `H.exterior_power(n)`, `H.symmetric_power(n)`, `H.tate_twist(m)`, `H.weight()`, `H.hodge_diamond()`, `H.polarization()`, `H.intermediate_jacobian()`, and `H.hodge_classes()`.
+
+Intended owners: `categories/hodge/hodge_structures.py` (`PureHodgeStructure`, `HodgeDecomposition`), `categories/hodge/mixed_hodge.py` (`MixedHodgeStructure`, `WeightFiltration`, `DeligneBigrading`), `categories/hodge/polarized.py` (`PolarizedHodgeStructure`, `RiemannHodgeRelations`), `categories/hodge/tate_twist.py` (`TateTwist` $\mathbb{Z}(m)$, $H(m)$), `categories/hodge/operations.py` (tensor, exterior, symmetric, dual, intermediate Jacobian).
+
 
 
 
