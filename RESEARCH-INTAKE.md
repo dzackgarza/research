@@ -109,6 +109,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Generalized Grassmannians G/P, Schubert calculus, exceptional collections (Grassmannian.info) | https://www.grassmannian.info/ + https://github.com/pbelmans/grassmannian.info | Homogeneous varieties G/P for all Dynkin types, dimension, index, Picard number, Betti numbers (Schubert calculus, Bruhat order), cohomology rings H^*(G/P;ZZ), Borel–Weil–Bott, full exceptional collections in D^b(G/P) | `categories/schemes/grassmannian.py` + `categories/lie/homogeneous_spaces.py` + `categories/derived/exceptional_collections.py` | Proposed — see note below |
 | Scheme and morphism adjectives, automated property deduction (The Adjectives Project) | https://adjectivesproject.org/ + https://github.com/jessetvogel/adjectives-project-data | 19 scheme properties, 44 morphism properties, 95 implication theorems, 107 concrete examples/counterexamples; operationalized property calculus and oracle test suite for Schemes and Hom(Sch) | `categories/schemes/properties.py` + `categories/schemes/morphism_properties.py` + `categories/schemes/theorems.py` | Proposed — see note below |
 | General topology counterexamples, 246 properties, 931 theorems, universal constructions (pi-Base) | https://topology.pi-base.org/ + https://github.com/pi-base/data | 246 topological properties (separation, compactness, countability, connectedness, metrizability), 224 canonical spaces, 931 theorems, universal constructions (subspaces, products, coproducts, quotients); operationalized topological predicate suite | `categories/topology/spaces.py` + `categories/topology/properties.py` + `categories/topology/constructions.py` + `categories/topology/theorems.py` | Proposed — see note below |
+| Bilinear forms to polynomial schemes and 1-parameter quadric families | User intake 2026-09-19 | Passage from bilinear form b: M⊗_R M→R on free M≅R^n to polynomial b(x,x)∈R[x_0..x_{n-1}] (and b(x,y)); 1-parameter family V(b(x,x)-t) over AA^1(R); transport problem b(v,v)=t to finding integral points on fibers, utilizing specialized number theory and lattice algorithms | `categories/forms/polynomial.py` + `categories/schemes/families.py` + `categories/schemes/quadrics.py` + `categories/lattices/representations.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -1893,6 +1894,52 @@ Intake item from https://topology.pi-base.org/ (repositories: https://github.com
       * Deductive theorem inference engine in `categories/topology/theorems.py` resolving implications across all 931 theorems.
 
 Intended owners: `categories/topology/spaces.py` (`TopologicalSpace`, canonical space catalogue), `categories/topology/properties.py` (`TopologicalProperties`, 246 predicates), `categories/topology/constructions.py` (`Product`, `Coproduct`, `Quotient`, `Subspace`, `Alexandroff`, `StoneCech`), `categories/topology/theorems.py` (931 deduction rules).
+
+## Desired capability: Bilinear forms to polynomial schemes, 1-parameter quadric families, and integral point transport — intake 2026-09-19
+
+Intake note from user 2026-09-19.
+
+* **Algebraic translation from bilinear forms to polynomials:**
+  * Let $R$ be a commutative ring and let $M$ be a free $R$-module of finite rank $n$ equipped with an ordered basis $(e_0, \dots, e_{n-1})$ identifying $M \cong R^n$.
+  * Any $R$-bilinear form $b\colon M \otimes_R M \to R$ induces an explicit homogeneous degree-2 polynomial in the polynomial ring $R[x_0, \dots, x_{n-1}]$ by evaluating on coordinate vectors $\vec{x} \coloneqq [x_0, \dots, x_{n-1}]^t$:
+    $$
+    f_b(\vec{x}) \coloneqq b(\vec{x}, \vec{x}) = \sum_{i,j=0}^{n-1} b(e_i, e_j)\, x_i x_j \in R[x_0, \dots, x_{n-1}].
+    $$
+    This is the associated polynomial equation of the quadratic/bilinear form.
+  * More generally, adjoining a second set of variables $\vec{y} \coloneqq [y_0, \dots, y_{m-1}]^t$ for a bilinear pairing $b\colon M \otimes_R N \to R$ on free modules produces the bilinear polynomial:
+    $$
+    b(\vec{x}, \vec{y}) = \sum_{i=0}^{n-1}\sum_{j=0}^{m-1} b(e_i, f_j)\, x_i y_j \in R[x_0, \dots, x_{n-1}, y_0, \dots, y_{m-1}].
+    $$
+  * Functorial passage: defines a canonical passage $\mathrm{Sym}^2(M^\vee) \to R[x_0, \dots, x_{n-1}]$ mapping a form module $(M, b)$ to a graded algebra element / hypersurface equation in $\mathbb{A}^n_R$.
+
+* **1-parameter family of schemes over $\mathbb{A}^1_R$:**
+  * Adjoining a parameter $t$ as coordinate on the affine line $\mathbb{A}^1_R = \operatorname{Spec}(R[t])$, the relative equation
+    $$
+    b(\vec{x}, \vec{x}) - t = 0
+    $$
+    defines an affine relative scheme:
+    $$
+    \mathcal{X} \coloneqq \operatorname{Spec}\bigl(R[t, x_0, \dots, x_{n-1}] / (b(\vec{x}, \vec{x}) - t)\bigr) \longrightarrow \mathbb{A}^1_R = \operatorname{Spec}(R[t]).
+    $$
+  * This morphism $\pi\colon \mathcal{X} \to \mathbb{A}^1_R$ defines an honest flat 1-parameter family of quadric hypersurfaces over $\mathbb{A}^1_R$.
+  * For each scalar $t_0 \in R$ (an $R$-point of the base $\mathbb{A}^1_R$), the scheme-theoretic fiber is the affine quadric:
+    $$
+    \mathcal{X}_{t_0} \coloneqq \pi^{-1}(t_0) = V(b(\vec{x}, \vec{x}) - t_0) \subset \mathbb{A}^n_R.
+    $$
+
+* **Transport of representation problems to integral points on scheme fibers:**
+  * The fundamental problem in lattice and form theory — "find $v \in M$ such that $b(v, v) = t_0$" (e.g. finding roots, minimal vectors, or representations of numbers by quadratic forms) — is canonically transported to finding $R$-integral points on the fiber $\mathcal{X}_{t_0}$:
+    $$
+    \{v \in M \mid b(v, v) = t_0\} \;\cong\; \mathcal{X}_{t_0}(R) \;\coloneqq\; \operatorname{Hom}_{\mathbf{Sch}/R}(\operatorname{Spec}(R), \mathcal{X}_{t_0}).
+    $$
+  * Preamble dispatch rule: schemes cut out by bilinear and quadratic forms admit highly optimized, specialized algorithms from algebraic number theory and classical lattice theory:
+    * Finite search and enumeration: Fincke–Pohst algorithm, Schnorr–Euchner enumeration, sphere decoding, and Voronoi cell algorithms for definite lattices over $\mathbb{Z}$.
+    * Reduction algorithms: LLL, Korkine–Zolotarev (HKZ), and Minkowski reduction on the underlying free $\mathbb{Z}$-module.
+    * Arithmetic geometry: Hasse–Minkowski local-global principle for representation over $\mathbb{Q}$, Siegel mass formulas, representation densities / local densities, and theta series coefficients generating modular forms.
+  * The preamble must not route $\mathcal{X}_{t_0}(R)$ for quadric fibers through generic commutative algebra or generic Gröbner basis / Diophantine solvers; it must identify the quadratic/bilinear form origin and delegate directly to maintained lattice and number-theoretic engines behind the private adapter.
+
+Intended owners: `categories/forms/polynomial.py` (`b.as_polynomial(basis)`), `categories/schemes/families.py` (`b.as_family(parameter='t')`), `categories/schemes/quadrics.py` (`QuadricHypersurface`, fiber specialization), `categories/lattices/representations.py` (integral points $\mathcal{X}_t(R)$ via Fincke–Pohst and Siegel mass computation).
+
 
 
 
