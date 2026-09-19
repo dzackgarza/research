@@ -1,3 +1,5 @@
+import pytest
+
 from dzack_research.preamble.all import (
     GF,
     QQ,
@@ -684,6 +686,9 @@ def test_general_module_localization_uses_fraction_model_and_detects_s_torsion()
     assert localized.fraction(module(3)).equality_status(localized.zero()) is True
     assert localized.fraction(module(1)).equality_status(localized.zero()) is False
 
+    with pytest.raises(ValueError, match="does not become invertible"):
+        localized.fraction(module(1), 3)
+
     assert (localization(3) / localization(2)) * half == localized.fraction(module(3), 4)
 
     unit = localized.localization_unit()
@@ -948,3 +953,18 @@ def test_map_induced_out_of_a_localization_is_independent_of_the_representative(
     assert plane_induced(inverse_product) * plane_to_fractions(x_plane * y_plane) == (
         plane_to_fractions(plane.one())
     )
+
+
+def test_integer_localization_universal_map_factors_exactly_when_two_becomes_a_unit() -> None:
+    inverted_two = ZZ.localization(2)
+    to_rationals = ZZ.Mor(QQ)(lambda integer: QQ(integer))
+    factor = inverted_two.induced_morphism(to_rationals)
+    half = inverted_two.fraction(ZZ.one(), ZZ(2))
+
+    assert factor.domain() is inverted_two
+    assert factor.codomain() is QQ
+    assert factor * inverted_two.localization_map() == to_rationals
+    assert factor(half) == QQ(1) / QQ(2)
+
+    with pytest.raises(ValueError, match="does not carry.*to a unit"):
+        inverted_two.induced_morphism(ZZ.Mor(ZZ).identity())

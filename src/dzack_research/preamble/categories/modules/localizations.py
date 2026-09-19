@@ -36,10 +36,14 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         localization_ring = self.base_ring()
-        assert localization_ring in LocalizationRings(), (
-            f"{localization_ring} is not a represented localization, so no module "
-            "over it is a localization of a module over its source"
-        )
+        match localization_ring in LocalizationRings():
+            case True:
+                pass
+            case False:
+                raise TypeError(
+                    f"{localization_ring} is not a represented localization, so no module "
+                    "over it is a localization of a module over its source"
+                )
         source = localization_ring.localization_source().free_module(finite_ordinal_set(2))
         return localization_ring.localize_module(source)
 
@@ -105,12 +109,11 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             if op not in (op_EQ, op_NE):
                 return NotImplemented
             status = self.equality_status(other)
-            assert status is not Unknown, (
-                "equality of these fractions needs a witness in the inverted submonoid "
-                "killing their cross difference, and none is decidable from the "
-                "represented source module"
-            )
-            return bool(status) if op == op_EQ else not bool(status)
+            match status:
+                case Unknown:
+                    return Unknown
+                case _:
+                    return bool(status) if op == op_EQ else not bool(status)
 
         def _repr_(self):
             if self.denominator() == self.parent().source_ring().one():
@@ -187,9 +190,18 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             numerator = source_module(numerator)
             source = self.source_ring()
             denominator = source.one() if denominator is None else source(denominator)
-            assert self.localization_ring().localization_map()(denominator).is_unit(), (
-                f"{denominator} does not become invertible in {self.localization_ring()}"
-            )
+            status = self.localization_ring().localization_map()(denominator).is_unit()
+            match status:
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        f"{denominator} does not become invertible in {self.localization_ring()}"
+                    )
+                case _:
+                    raise ValueError(
+                        f"invertibility of {denominator} in {self.localization_ring()} is unresolved"
+                    )
             return self.element_class(self, numerator, denominator)
 
         def _element_constructor_(self, value):
@@ -358,10 +370,14 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             )
 
             localization_ring = self.localization_ring()
-            assert localization_ring in PrimeLocalizations(), (
-                f"{localization_ring} does not invert the complement of a prime, so "
-                f"{self} is not the localization of a module at a point of a spectrum"
-            )
+            match localization_ring in PrimeLocalizations():
+                case True:
+                    pass
+                case False:
+                    raise TypeError(
+                        f"{localization_ring} does not invert the complement of a prime, so "
+                        f"{self} is not the localization of a module at a point of a spectrum"
+                    )
             return self.source_ring().spectrum()(localization_ring.localized_prime())
 
 

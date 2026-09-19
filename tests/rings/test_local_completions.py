@@ -46,11 +46,16 @@ def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> Non
     fourth = completion.adic_truncation(4)
     second = completion.adic_truncation(2)
     transition = completion.adic_transition_map(4, 2)
+    fourth_projection = completion.adic_projection(4)
+    second_projection = completion.adic_projection(2)
 
+    assert completion is not fourth
+    assert completion is not second
     assert transition.domain() is fourth
     assert transition.codomain() is second
     assert transition(fourth.quotient_map()(x)) == second.quotient_map()(x)
     assert transition(fourth.quotient_map()(x**2)) == second.zero()
+    assert transition * fourth_projection == second_projection
 
     system = completion.adic_inverse_system()
     diagram = system.functor()

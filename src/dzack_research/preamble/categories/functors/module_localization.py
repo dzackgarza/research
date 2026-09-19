@@ -80,9 +80,11 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
     def __init__(self, localization_ring) -> None:
         from dzack_research.preamble.categories.rings.ring_foundation import LocalizationRings
 
-        assert localization_ring in LocalizationRings(), (
-            "module localization is induced by a ring localization"
-        )
+        match localization_ring in LocalizationRings():
+            case True:
+                pass
+            case False:
+                raise TypeError("module localization is induced by a ring localization")
         self._localization_ring = localization_ring
         super().__init__(localization_ring.localization_map())
 
@@ -152,9 +154,13 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
                             return target.scalar_multiple(denominator.inverse_of_unit(), numerator)
                 elementwise = True
             case _ if target in LocalizedModules(target.base_ring()):
-                assert source in FramedModules(source.base_ring()), (
-                    "the mixed localization image uses its selected source framing"
-                )
+                match source in FramedModules(source.base_ring()):
+                    case True:
+                        pass
+                    case False:
+                        raise TypeError(
+                            "the mixed localization image uses its selected source framing"
+                        )
 
                 def action(label):
                     return target.fraction(morphism(morphism.domain().module_generator(label)))

@@ -494,7 +494,7 @@ class PredicateSubrings(OwnedCategory):
 
 
 class _LocalizationConstruction:
-    r"""The selected source, submonoid, and comparison data defining ``S^-1 R``."""
+    r"""The selected source, submonoid, and private realization data defining ``S^-1 R``."""
 
     def __init__(
         self,
@@ -512,7 +512,6 @@ class _LocalizationConstruction:
         self._engine_units_exact = bool(engine_units_exact)
         self._algebra_source = algebra_source
         self._fraction_field_realization = fraction_field_realization
-        self._localization_map = None
 
     def source(self):
         return self._source
@@ -531,18 +530,6 @@ class _LocalizationConstruction:
 
     def fraction_field_realization(self):
         return self._fraction_field_realization
-
-    def set_localization_map(self, morphism) -> None:
-        if self._localization_map is not None and self._localization_map is not morphism:
-            raise ValueError("this localization construction already has its canonical map")
-        self._localization_map = morphism
-
-    def localization_map(self):
-        assert self._localization_map is not None, (
-            "a localization construction must acquire its canonical map during construction"
-        )
-        return self._localization_map
-
 
 class LocalizationRings(OwnedCategory):
     r"""Commutative localizations carrying their selected source and submonoid."""
@@ -565,14 +552,12 @@ class LocalizationRings(OwnedCategory):
             return self.parent().fraction(
                 self.numerator() * other.denominator() + other.numerator() * self.denominator(),
                 self.denominator() * other.denominator(),
-                _trusted_denominator=True,
             )
 
         def _mul_(self, other):
             return self.parent().fraction(
                 self.numerator() * other.numerator(),
                 self.denominator() * other.denominator(),
-                _trusted_denominator=True,
             )
 
         def __mul__(self, other):
@@ -600,7 +585,13 @@ class LocalizationRings(OwnedCategory):
             which is larger than ``S^{-1}R`` whenever it inverts more.
             """
             parent = self.parent()
-            assert self.is_unit(), f"{self} is not a unit of {parent}"
+            match self.is_unit():
+                case True:
+                    pass
+                case False:
+                    raise ValueError(f"{self} is not a unit of {parent}")
+                case _:
+                    raise ValueError(f"invertibility of {self} in {parent} is unresolved")
             engine = parent._selected_engine_ring()
             represented = parent._engine_element(self)
             inverse = engine(represented) ** -1
@@ -666,7 +657,6 @@ class LocalizationRings(OwnedCategory):
             return self.parent().fraction(
                 -self.numerator(),
                 self.denominator(),
-                _trusted_denominator=True,
             )
 
         def _sub_(self, other):
@@ -763,11 +753,6 @@ class LocalizationRings(OwnedCategory):
                         LocalizationRings.ParentMethods.one(self),
                         lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)))
 
-            localization_map = source.Mor(self, category=OwnedRings())(
-                lambda element: self.fraction(element),
-            )
-            self._localization_construction.set_localization_map(localization_map)
-
         def algebra_base_ring(self):
             algebra_source = self._localization_construction.algebra_source()
             return (
@@ -818,12 +803,24 @@ class LocalizationRings(OwnedCategory):
                 case _:
                     return bool(self.localization_map()(denominator).is_unit())
 
-        def fraction(self, numerator, denominator=None, *, _trusted_denominator=False):
+        def fraction(self, numerator, denominator=None):
+            r"""Construct ``a/s`` after admitting ``s`` through the selected submonoid.
+
+            Arithmetic and private engine crossings use this same constructor.
+            There is no trusted spelling that can manufacture a localization
+            element with a denominator outside the represented saturation of
+            the selected multiplicative system.
+            """
             source = self.localization_source()
             numerator = source(numerator)
             denominator = source.one() if denominator is None else source(denominator)
-            if not _trusted_denominator and not self._valid_denominator(denominator):
-                raise ValueError(f"{denominator} is not represented in the localization submonoid")
+            match self._valid_denominator(denominator):
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        f"{denominator} is not represented in the localization submonoid"
+                    )
             return self.element_class(self, numerator, denominator)
 
         def _element_constructor_(self, value):
@@ -843,13 +840,11 @@ class LocalizationRings(OwnedCategory):
                     engine_value = _engine_element(value_parent, value) if value_parent in OwnedRings() else value
                     represented = self._preamble_engine_ring(engine_value)
                     structure = self.localization_submonoid().structure_data()
-                    trusted_denominator = structure.get("kind") != "prime_complement"
                     source = self.localization_source()
                     source_engine = _engine_ring(source)
                     return self.fraction(
                         source._from_engine_element(source_engine(represented.numerator())),
                         source._from_engine_element(source_engine(represented.denominator())),
-                        _trusted_denominator=trusted_denominator,
                     )
                 except (AttributeError, TypeError, ValueError):
                     pass
@@ -880,7 +875,6 @@ class LocalizationRings(OwnedCategory):
                 return self.fraction(
                     decoder(represented.numerator()),
                     decoder(represented.denominator()),
-                    _trusted_denominator=True,
                 )
 
             # A localization of a quotient is realized privately by the
@@ -916,7 +910,6 @@ class LocalizationRings(OwnedCategory):
                                 term *= self.fraction(
                                     source.one(),
                                     inverted[position],
-                                    _trusted_denominator=True,
                                 ) ** int(exponent)
                         result += term
                     return result
@@ -926,7 +919,6 @@ class LocalizationRings(OwnedCategory):
             return self.fraction(
                 source._from_engine_element(source_engine(represented.numerator())),
                 source._from_engine_element(source_engine(represented.denominator())),
-                _trusted_denominator=True,
             )
 
         def _engine_element(self, value):
@@ -1119,10 +1111,14 @@ class LocalizationRings(OwnedCategory):
             number; that reading is not stated here.
             """
             inverted = self.inverted_elements()
-            assert inverted.cardinality() == 1, (
-                f"{self} inverts {inverted.cardinality()} elements, and an inverted element "
-                "is named here only for a localization at a single element"
-            )
+            match inverted.cardinality() == 1:
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        f"{self} inverts {inverted.cardinality()} elements, and an inverted element "
+                        "is named here only for a localization at a single element"
+                    )
             return inverted[0]
 
         def induced_morphism(self, morphism):
@@ -1156,15 +1152,31 @@ class LocalizationRings(OwnedCategory):
             )
 
             source = self.localization_source()
-            assert morphism.domain() is source, (
-                f"a map induced out of {self} extends a ring morphism out of {source}"
-            )
-            if self not in PrimeLocalizations():
-                for inverted in self.inverted_elements():
-                    assert morphism(inverted).is_unit(), (
-                        f"{morphism} does not carry {inverted} to a unit, so it does not "
-                        f"factor through {self}"
+            match morphism.domain() is source:
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        f"a map induced out of {self} extends a ring morphism out of {source}"
                     )
+            match self in PrimeLocalizations():
+                case True:
+                    pass
+                case False:
+                    for inverted in self.inverted_elements():
+                        match morphism(inverted).is_unit():
+                            case True:
+                                pass
+                            case False:
+                                raise ValueError(
+                                    f"{morphism} does not carry {inverted} to a unit, so it does not "
+                                    f"factor through {self}"
+                                )
+                            case _:
+                                raise ValueError(
+                                    f"invertibility of {morphism(inverted)} is unresolved, so a map out of "
+                                    f"{self} is not admitted"
+                                )
 
             def image(element):
                 fraction = self(element)
@@ -1199,8 +1211,13 @@ class LocalizationRings(OwnedCategory):
                 engine_morphism,
             )
 
+        @cached_method
         def localization_map(self):
-            return self._localization_construction.localization_map()
+            r"""Return the canonical map ``R -> S^-1 R`` derived from this localization datum."""
+            source = self.localization_source()
+            return source.Mor(self, category=OwnedRings())(
+                lambda element: self.fraction(element),
+            )
 
         def restriction_to(self, target):
             r"""Return the unique map ``S^{-1}R -> T^{-1}R`` commuting with the maps from ``R``.
@@ -1235,36 +1252,62 @@ class LocalizationRings(OwnedCategory):
                 PrimeLocalizations,
             )
 
-            assert target in LocalizationRings(), (
-                "a localization restriction lands in another localization of the same ring"
-            )
+            match target in LocalizationRings():
+                case True:
+                    pass
+                case False:
+                    raise TypeError(
+                        "a localization restriction lands in another localization of the same ring"
+                    )
             if target.localization_source() is self:
                 # The overlap was built by localizing this chart, so the map
                 # over it is that localization's own map: it is already the
                 # unique map out of this ring inverting what the target adds.
                 return target.localization_map()
-            assert target.localization_source() is self.localization_source(), (
-                f"{self} and {target} localize different rings, so no map over the source exists"
-            )
+            match target.localization_source() is self.localization_source():
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        f"{self} and {target} localize different rings, so no map over the source exists"
+                    )
             if self in PrimeLocalizations():
-                assert target in PrimeLocalizations(), (
-                    f"{self} inverts the complement of {self.localized_prime()}, which has no "
-                    f"finite generating set, so {target} is asked to invert it by being "
-                    "another prime localization of the same ring"
-                )
-                assert all(
+                match target in PrimeLocalizations():
+                    case True:
+                        pass
+                    case False:
+                        raise ValueError(
+                            f"{self} inverts the complement of {self.localized_prime()}, which has no "
+                            f"finite generating set, so {target} is asked to invert it by being "
+                            "another prime localization of the same ring"
+                        )
+                match all(
                     self.localized_prime().contains_ambient_element(generator)
                     for generator in target.localized_prime().ideal_generators()
-                ), (
-                    f"{target.localized_prime()} is not contained in {self.localized_prime()}, "
-                    f"so {target} does not invert everything {self} inverts and the universal "
-                    "property of localization gives no map between them"
-                )
+                ):
+                    case True:
+                        pass
+                    case False:
+                        raise ValueError(
+                            f"{target.localized_prime()} is not contained in {self.localized_prime()}, "
+                            f"so {target} does not invert everything {self} inverts and the universal "
+                            "property of localization gives no map between them"
+                        )
             else:
-                assert all(target(inverted).is_unit() for inverted in self.inverted_elements()), (
-                    f"{target} does not invert everything {self} inverts, so the universal "
-                    "property of localization gives no map between them"
-                )
+                for inverted in self.inverted_elements():
+                    match target(inverted).is_unit():
+                        case True:
+                            pass
+                        case False:
+                            raise ValueError(
+                                f"{target} does not invert {inverted}, so the universal "
+                                f"property of localization gives no map from {self}"
+                            )
+                        case _:
+                            raise ValueError(
+                                f"invertibility of {inverted} in {target} is unresolved, so the "
+                                f"universal property of localization does not admit a map from {self}"
+                            )
 
             def image(element):
                 numerator = target(element.numerator())

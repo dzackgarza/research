@@ -206,7 +206,6 @@ class Derivation(ModuleElement):
             denominator_inverse = algebra.fraction(
                 source.one(),
                 denominator,
-                _trusted_denominator=True,
             )
             target = self.codomain()
             first = target.scalar_multiple(
