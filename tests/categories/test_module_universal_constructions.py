@@ -1,4 +1,5 @@
 import pytest
+from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -239,17 +240,20 @@ def test_general_module_product_is_created_by_the_underlying_set_product() -> No
             lambda index: line(ZZ(int(index) + 1))
         )
     )
-    assert selected.structure_morphism(shape(NN(0)))(section) == line(ZZ(1))
-    assert selected.structure_morphism(shape(NN(1000)))(section) == line(ZZ(1001))
+    projection_zero = selected.structure_morphism(shape(NN(0)))
+    projection_thousand = selected.structure_morphism(shape(NN(1000)))
+    assert projection_zero.linearity_decision() is True
+    assert projection_thousand.linearity_decision() is True
+    assert projection_zero(section) == line(ZZ(1))
+    assert projection_thousand(section) == line(ZZ(1001))
 
-    probe = _general_integer_module()
+    probe = line
+    endomorphisms = line.module_category().Mor(line, line)
     legs = indexed_family(
         NN,
-        lambda index: probe.module_category().Mor(probe, line).elementwise(
-            lambda element, index=index: line(
-                ZZ((int(index) + 1) * element.underlying_element())
-            ),
-            verify_linearity=False,
+        lambda index: endomorphisms.scalar_multiple(
+            ZZ(int(index) + 1),
+            endomorphisms.identity(),
         ),
         name="Cone legs into the countable product",
     )
@@ -258,38 +262,47 @@ def test_general_module_product_is_created_by_the_underlying_set_product() -> No
         lambda index: legs.value(index.value()),
     )
     factor = selected.factor(cone).apex_map()
+    assert factor.linearity_decision() is Unknown
     probe_element = probe(ZZ(2))
     assert selected.structure_morphism(shape(NN(0)))(factor(probe_element)) == line(ZZ(2))
     assert selected.structure_morphism(shape(NN(10)))(factor(probe_element)) == line(ZZ(22))
 
+    undecided_leg = endomorphisms.elementwise(
+        lambda element: line(element.underlying_element()),
+        verify_linearity=False,
+    )
+    undecided_cone = selected.diagram().Cones().cone(
+        line,
+        lambda _index: undecided_leg,
+    )
+    assert selected.factor(undecided_cone).apex_map().linearity_decision() is Unknown
+
 
 def test_general_module_equalizer_is_created_by_the_underlying_set_equalizer() -> None:
     source = _general_integer_module()
-    target = _general_integer_module()
-    zero = source.module_category().Mor(source, target).elementwise(
-        lambda _element: target.zero(),
-        verify_linearity=False,
+    target = source
+    endomorphisms = source.module_category().Mor(source, target)
+    zero = endomorphisms.zero()
+    twice = endomorphisms.scalar_multiple(
+        ZZ(2),
+        endomorphisms.identity(),
     )
-    twice = source.module_category().Mor(source, target).elementwise(
-        lambda element: target(ZZ(2 * element.underlying_element())),
-        verify_linearity=False,
-    )
+    assert zero.linearity_decision() is True
+    assert twice.linearity_decision() is True
     selected = Modules(ZZ).equalizer_construction(zero, twice)
     equalizer = selected.object()
     shape = selected.diagram().domain()
     inclusion = selected.structure_morphism(shape.source())
 
     assert equalizer in GeneralModules(ZZ)
+    assert inclusion.linearity_decision() is True
     assert source.zero() in equalizer.underlying_set()
     assert source(ZZ(1)) not in equalizer.underlying_set()
     assert inclusion(equalizer.zero()) == source.zero()
     assert zero(inclusion(equalizer.zero())) == twice(inclusion(equalizer.zero()))
 
-    probe = GeneralModules(ZZ).an_object()
-    to_source = probe.module_category().Mor(probe, source).elementwise(
-        lambda _element: source.zero(),
-        verify_linearity=False,
-    )
+    probe = source
+    to_source = endomorphisms.zero()
 
     def cone_leg(index):
         match index:
@@ -303,9 +316,41 @@ def test_general_module_equalizer_is_created_by_the_underlying_set_equalizer() -
         cone_leg,
     )
     factor = selected.factor(cone).apex_map()
+    assert factor.linearity_decision() is True
     assert factor.domain() is probe
     assert factor.codomain() is equalizer
     assert inclusion(factor(probe.zero())) == to_source(probe.zero())
+
+    undecided_zero = endomorphisms.elementwise(
+        lambda _element: source.zero(),
+        verify_linearity=False,
+    )
+
+    def undecided_cone_leg(index):
+        match index:
+            case _ if index is shape.source():
+                return undecided_zero
+            case _:
+                return zero * undecided_zero
+
+    undecided_cone = selected.diagram().Cones().cone(
+        source,
+        undecided_cone_leg,
+    )
+    assert selected.factor(undecided_cone).apex_map().linearity_decision() is Unknown
+
+    nonlinear = endomorphisms.elementwise(
+        lambda element: source(ZZ(element.underlying_element() ** 2)),
+        verify_linearity=False,
+    )
+    conditional_equalizer = Modules(ZZ).equalizer_construction(nonlinear, zero)
+    conditional_shape = conditional_equalizer.diagram().domain()
+    assert (
+        conditional_equalizer.structure_morphism(
+            conditional_shape.source()
+        ).linearity_decision()
+        is Unknown
+    )
 
 
 def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> None:

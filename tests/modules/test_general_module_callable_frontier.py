@@ -1,10 +1,10 @@
 r"""The callable frontier for genuinely unframed infinite modules.
 
 Two Python callables can define the same linear map without carrying a finite
-presentation on which equality can be decided.  The Hom owner must retain that
-boundary: construction is permitted as a declared elementwise linear map, but
-equality is refused rather than guessed from callable identity or a finite
-sample.
+presentation on which its laws or equality can be decided.  The Hom owner must
+retain that boundary: the elementwise realization carries ``Unknown`` linearity,
+and equality is likewise refused rather than guessed from callable identity or
+a finite sample.
 """
 
 from sage.misc.unknown import Unknown
@@ -31,5 +31,7 @@ def test_extensionally_equal_callable_maps_do_not_acquire_a_false_equality_decis
         verify_linearity=False,
     )
 
+    assert first.linearity_decision() is Unknown
+    assert second.linearity_decision() is Unknown
     assert first(module(ZZ(7))) == second(module(ZZ(7)))
     assert (first == second) is Unknown

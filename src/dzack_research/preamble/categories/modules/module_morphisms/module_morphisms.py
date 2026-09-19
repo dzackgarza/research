@@ -186,6 +186,15 @@ class ModuleMorphism(Morphism):
     _scalar_extension_functor = None
     _lift_function = None
 
+    def _elementwise_linearity_derivation(self):
+        r"""Return the construction-derived linearity decision, or ``None``.
+
+        Ordinary elementwise callables do not.  Private universal-construction
+        morphisms override this at their declaration, so callers cannot select
+        a derivation with a string or boolean flag.
+        """
+        return None
+
     def __init__(
         self,
         parent,
@@ -207,6 +216,7 @@ class ModuleMorphism(Morphism):
         self._scalar_extension_functor = scalar_extension_functor
         self._lift_function = lift
         self._element_function = None
+        self._linearity_decision = True
         domain = self.domain()
         if elementwise or domain not in FramedModules(domain.base_ring()):
             if not callable(images):
@@ -214,8 +224,14 @@ class ModuleMorphism(Morphism):
             self._element_function = images
             self._generator_image = None
             self._generator_morphism = None
-            if verify_linearity:
-                self._verify_elementwise_linearity_when_decidable()
+            derivation = self._elementwise_linearity_derivation()
+            match derivation:
+                case None if verify_linearity:
+                    self._linearity_decision = self._verify_elementwise_linearity_when_decidable()
+                case None:
+                    self._linearity_decision = Unknown
+                case _:
+                    self._linearity_decision = derivation
             return
         labels = self.domain().module_generating_set()
         set_homset = Sets().Mor(labels, self.codomain())
@@ -306,9 +322,19 @@ class ModuleMorphism(Morphism):
             self._generator_morphism = set_homset(self._generator_image)
         else:
             raise TypeError("a module morphism is specified on the domain framing")
-        self._check_selected_domain_relations()
+        self._linearity_decision = self._check_selected_domain_relations()
 
-    def _verify_elementwise_linearity_when_decidable(self) -> None:
+    def linearity_decision(self):
+        r"""Return ``True`` when linearity is established, otherwise ``Unknown``.
+
+        Generator-image maps are linear extensions after their source relations
+        are checked.  Elementwise maps are either decided in an effective
+        regime, derived by a named universal construction, or retain the
+        unresolved hypothesis explicitly.
+        """
+        return self._linearity_decision
+
+    def _verify_elementwise_linearity_when_decidable(self):
         r"""Check an elementwise callable exactly in represented decidable regimes.
 
         A Python callable does not carry a proof of linearity.  When the source
@@ -317,8 +343,8 @@ class ModuleMorphism(Morphism):
         subring, so a ring generating set decides scalar-linearity over all of
         ``R``.  Over ``ZZ`` that generating set is empty: every additive-group
         map is automatically ``ZZ``-linear.  Outside such regimes the callable
-        is a declared linear map; a DEBUG diagnostic records that no exhaustive
-        verification was available.
+        retains an ``Unknown`` linearity hypothesis; a DEBUG diagnostic records
+        that no exhaustive verification was available.
 
         A map given by images of a framing is not reached here at all.  Its
         linear extension is linear by construction, and the relations of the
@@ -328,14 +354,13 @@ class ModuleMorphism(Morphism):
 
         function = self._element_function
         if function is None:
-            return
+            return True
 
         domain = self.domain()
         codomain = self.codomain()
         source_elements = self._finite_source_elements_for_verification()
         if source_elements is not None:
-            self._verify_elementwise_on_finite_source(source_elements)
-            return
+            return self._verify_elementwise_on_finite_source(source_elements)
 
         ring = domain.base_ring()
         match domain:
@@ -346,8 +371,9 @@ class ModuleMorphism(Morphism):
                     domain,
                     codomain,
                 )
+                return Unknown
             case _ if domain in EnumeratedSets() or domain in Modules(ring).FinitelyPresented().Torsion():
-                self._verify_elementwise_on_finite_source(tuple(domain))
+                return self._verify_elementwise_on_finite_source(tuple(domain))
             case _:
                 self._check_elementwise_zero()
                 _LOGGER.debug(
@@ -355,6 +381,7 @@ class ModuleMorphism(Morphism):
                     domain,
                     codomain,
                 )
+                return Unknown
 
     def _finite_source_elements_for_verification(self):
         r"""Enumerate a finitely generated module over a finite ring via its framing.
@@ -391,28 +418,43 @@ class ModuleMorphism(Morphism):
             case _:
                 elements = []
                 for element in combinations:
-                    if not any(element == previous for previous in elements):
+                    duplicate = False
+                    for previous in elements:
+                        equal = element == previous
+                        if equal is True:
+                            duplicate = True
+                            break
+                        if equal is not False:
+                            return None
+                    if not duplicate:
                         elements.append(element)
                 return tuple(elements)
 
-    def _verify_elementwise_on_finite_source(self, source_elements) -> None:
+    def _verify_elementwise_on_finite_source(self, source_elements):
         function = self._element_function
         domain = self.domain()
         codomain = self.codomain()
         ring = domain.base_ring()
         zero = domain.zero()
 
-        if function(zero) != codomain.zero():
+        decision = True
+        zero_holds = function(zero) == codomain.zero()
+        if zero_holds is False:
             raise ValueError("an elementwise module morphism must send zero to zero")
+        if zero_holds is not True:
+            decision = Unknown
         for left in source_elements:
             for right in source_elements:
-                if function(left + right) != function(left) + function(right):
+                additive = function(left + right) == function(left) + function(right)
+                if additive is False:
                     raise ValueError("the supplied elementwise map is not additive")
+                if additive is not True:
+                    decision = Unknown
 
         from sage.rings.integer_ring import ZZ as SageZZ
 
         if _engine_ring(ring) is SageZZ:
-            return
+            return decision
 
         scalars = _scalar_linearity_generating_scalars(ring)
         if scalars is None:
@@ -424,30 +466,50 @@ class ModuleMorphism(Morphism):
                 codomain,
                 ring,
             )
-            return
+            return Unknown
         for scalar in scalars:
             for element in source_elements:
-                if function(domain.scalar_multiple(scalar, element)) != codomain.scalar_multiple(scalar, function(element)):
+                scalar_linear = (
+                    function(domain.scalar_multiple(scalar, element))
+                    == codomain.scalar_multiple(scalar, function(element))
+                )
+                if scalar_linear is False:
                     raise ValueError("the supplied elementwise map is not scalar-linear")
+                if scalar_linear is not True:
+                    decision = Unknown
+        return decision
 
-    def _check_elementwise_zero(self) -> None:
+    def _check_elementwise_zero(self):
         r"""A linear map sends zero to zero."""
-        if self._element_function(self.domain().zero()) != self.codomain().zero():
+        zero_holds = self._element_function(self.domain().zero()) == self.codomain().zero()
+        if zero_holds is False:
             raise ValueError("an elementwise module morphism must send zero to zero")
+        return True if zero_holds is True else Unknown
 
-    def _check_selected_domain_relations(self) -> None:
+    def _check_selected_domain_relations(self):
         if self._element_function is not None:
-            return
+            return self._linearity_decision
         domain = self.domain()
         rows = domain._selected_presentation_rows()
         if rows is None:
-            return
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+            )
+
+            if domain in FramedFreeModules(domain.base_ring()):
+                return True
+            return Unknown
         zero = self.codomain().zero()
         labels = domain.module_generating_set()
+        decision = True
         for row in rows:
             relation_image = self._linear_combination_of_generator_images({label: coefficient for label, coefficient in zip(labels, row, strict=True) if coefficient})
-            if relation_image != zero:
+            relation_holds = relation_image == zero
+            if relation_holds is False:
                 raise ValueError("the selected module-generator images do not kill the domain relations")
+            if relation_holds is not True:
+                decision = Unknown
+        return decision
 
     def module_generator_morphism(self):
         assert self._generator_morphism is not None, (
@@ -1479,10 +1541,135 @@ class ModuleMorphism(Morphism):
         return Modules(module.base_ring()).Aut(module)(CategoricalIsomorphism(self.parent(), self, self.inverse(), verify=False))
 
 
+def _combined_linearity_decision(morphisms):
+    r"""Conjoin the linearity decisions of actual morphism premises."""
+    match morphisms:
+        case IndexedFamily():
+            size = morphisms.cardinality()
+            if not size.is_finite():
+                return Unknown
+        case _:
+            pass
+    decision = True
+    for morphism in morphisms:
+        current = morphism.linearity_decision()
+        if current is False:
+            return False
+        if current is not True:
+            decision = Unknown
+    return decision
+
+
+class _ScalarIdentityModuleMorphism(ModuleMorphism):
+    r"""The scalar multiple of the identity, linear by the module action."""
+
+    def __init__(self, parent, scalar) -> None:
+        from dzack_research.preamble.categories.group.additive_homsets import _ScalarIdentityEvaluation
+
+        evaluation = _ScalarIdentityEvaluation(parent, scalar)
+        super().__init__(parent, evaluation, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
+class _ZeroModuleMorphism(ModuleMorphism):
+    r"""The zero map between two modules, linear by the zero element laws."""
+
+    def __init__(self, parent) -> None:
+        super().__init__(
+            parent,
+            lambda _element: self.codomain().zero(),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
+class _ProductProjectionModuleMorphism(ModuleMorphism):
+    r"""Projection from a set-created module product, linear by componentwise construction."""
+
+    def __init__(self, parent, underlying_projection) -> None:
+        self._underlying_projection = underlying_projection
+        super().__init__(
+            parent,
+            lambda element: self.codomain()(
+                underlying_projection(element.underlying_element())
+            ),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
+class _ProductFactorModuleMorphism(ModuleMorphism):
+    r"""Product factor induced by a cone of linear maps, hence linear componentwise."""
+
+    def __init__(self, parent, underlying_factor, legs) -> None:
+        self._underlying_factor = underlying_factor
+        self._legs = legs
+        super().__init__(
+            parent,
+            lambda element: self.codomain()(underlying_factor(element)),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return _combined_linearity_decision(self._legs)
+
+
+class _EqualizerInclusionModuleMorphism(ModuleMorphism):
+    r"""The inclusion of a set-created equalizer with inherited module operations."""
+
+    def __init__(self, parent, underlying_inclusion, parallel_maps) -> None:
+        self._underlying_inclusion = underlying_inclusion
+        self._parallel_maps = parallel_maps
+        super().__init__(
+            parent,
+            lambda element: self.codomain()(
+                underlying_inclusion(element.underlying_element())
+            ),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return _combined_linearity_decision(self._parallel_maps)
+
+
+class _EqualizerFactorModuleMorphism(ModuleMorphism):
+    r"""The unique linear factor through an equalizer inclusion."""
+
+    def __init__(self, parent, source_leg, inclusion=None) -> None:
+        self._source_leg = source_leg
+        self._equalizer_inclusion = inclusion
+
+        def factor(element):
+            image = source_leg(element)
+            match inclusion:
+                case None:
+                    return self.codomain()(image)
+                case _:
+                    return inclusion.lift(image)
+
+        super().__init__(parent, factor, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        dependencies = [self._source_leg]
+        match self._equalizer_inclusion:
+            case None:
+                pass
+            case inclusion:
+                dependencies.append(inclusion)
+        return _combined_linearity_decision(dependencies)
+
+
 class FramingMorphism(ModuleMorphism):
-    r"""A declared surjective linear map from a free framed module."""
+    r"""The selected framing epimorphism from a free module."""
 
     def is_surjective(self) -> bool:
+        r"""True: the codomain's framing coefficients supply a preimage in the selected free source."""
         return True
 
 
@@ -1717,9 +1904,7 @@ class _ModuleHomsetCommonMethods:
         return self.codomain().scalar_multiple(self.base_ring()(scalar), element)
 
     def _scalar_identity(self, scalar):
-        from dzack_research.preamble.categories.group.additive_homsets import _ScalarIdentityEvaluation
-
-        return self.elementwise(_ScalarIdentityEvaluation(self, scalar), verify_linearity=False)
+        return _ScalarIdentityModuleMorphism(self, scalar)
 
     def _owned_scalar_multiple(self, scalar, morphism):
         r"""Realize the pointwise action defining this Hom's scalar enrichment."""
@@ -1744,9 +1929,9 @@ class _ModuleHomsetCommonMethods:
 
         Exact verification is performed when the represented source/scalar
         underlying sets make it decidable (notably finite ones).  Otherwise the
-        callable is accepted as the defining elementwise realization and a
-        DEBUG diagnostic records that its linearity was not mechanically
-        certified.  For finitely generated/presented objects, prefer the
+        callable is retained with ``Unknown`` linearity and a DEBUG diagnostic
+        records that no decision procedure was available.  For finitely
+        generated/presented objects, prefer the
         generator-assignment constructor when possible: its linear extension
         is linear by construction and presentation relations are checked.
         """
@@ -1757,6 +1942,30 @@ class _ModuleHomsetCommonMethods:
             function,
             elementwise=True,
             verify_linearity=verify_linearity,
+        )
+
+    def _product_projection(self, underlying_projection):
+        r"""Admit the projection created by the underlying-set module product."""
+        return _ProductProjectionModuleMorphism(self, underlying_projection)
+
+    def _product_factor(self, underlying_factor, legs):
+        r"""Admit the factor induced by a cone into a componentwise module product."""
+        return _ProductFactorModuleMorphism(self, underlying_factor, legs)
+
+    def _equalizer_inclusion(self, underlying_inclusion, parallel_maps):
+        r"""Admit the inclusion created by the underlying-set equalizer."""
+        return _EqualizerInclusionModuleMorphism(
+            self,
+            underlying_inclusion,
+            parallel_maps,
+        )
+
+    def _equalizer_factor(self, source_leg, *, inclusion=None):
+        r"""Admit the universal factor through a represented module equalizer."""
+        return _EqualizerFactorModuleMorphism(
+            self,
+            source_leg,
+            inclusion=inclusion,
         )
 
     def source_module(self):
@@ -1779,10 +1988,7 @@ class _ModuleHomsetCommonMethods:
     def zero(self):
         if self.domain() is self.codomain():
             return self._scalar_identity(self.base_ring().zero())
-        return self.elementwise(
-            lambda _element: self.codomain().zero(),
-            verify_linearity=False,
-        )
+        return _ZeroModuleMorphism(self)
 
     @cached_method
     def identity(self):

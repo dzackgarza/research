@@ -727,15 +727,16 @@ class Modules(OwnedCategoryOverBaseRing):
                 source = cone.apex()
                 match equalizer:
                     case _ if equalizer in ModuleSubobjects(left_morphism.domain().base_ring()):
-                        return source.module_category().Mor(source, equalizer).elementwise(
-                            lambda element: inclusion.lift(source_leg(element)),
-                            verify_linearity=False,
+                        return source.module_category().Mor(source, equalizer)._equalizer_factor(
+                            source_leg,
+                            inclusion=inclusion,
                         )
                     case _:
                         return _module_equalizer_factor(
                             equalizer,
                             source,
                             source_leg,
+                            inclusion,
                         )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
@@ -2883,7 +2884,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         # The selected framing epimorphism ``F_R(S) -> M``, this level's datum.
         _selected_framing_source = None
-        _selected_framing_images = None
+        _selected_framing_generator_morphism = None
 
         def __init__(
             self,
@@ -2929,14 +2930,24 @@ class FramedModules(OwnedCategoryOverBaseRing):
             those labels; it stores the framing epimorphism.
             """
             assert self._selected_framing_source is None, f"{self} already has a framing"
+            if not callable(module_generator_function):
+                raise TypeError("a selected framing supplies the image of every free generator")
             source = framing_source
             if source is None:
                 source = self.base_ring().free_module(module_generating_set)
+            if source.base_ring() is not self.base_ring():
+                raise ValueError("the selected framing source is a free module over this module's base ring")
             assert source.module_generating_set() == module_generating_set, (
                 "the selected framing source does not have the requested generator set"
             )
+            generator_morphism = Sets().Mor(
+                source.module_generating_set(),
+                self,
+            )(
+                lambda label: self(module_generator_function(label))
+            )
             self._selected_framing_source = source
-            self._selected_framing_images = module_generator_function
+            self._selected_framing_generator_morphism = generator_morphism
 
         def module_generating_set(self):
             return self.framing_source().module_generating_set()
@@ -2945,7 +2956,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
             source = self.framing_source()
             if label not in source.module_generating_set():
                 raise ValueError(f"{label!r} is not a module-generator label")
-            return self.framing_morphism()(source.module_generator(label))
+            return self.module_generator_morphism()(source.module_generating_set()(label))
 
         def number_of_module_generators(self):
             return self.module_generating_set().cardinality()
@@ -2961,7 +2972,9 @@ class FramedModules(OwnedCategoryOverBaseRing):
             )
 
         def module_generator_morphism(self):
-            return self.framing_morphism().module_generator_morphism()
+            morphism = self._selected_framing_generator_morphism
+            assert morphism is not None, f"{self} was constructed without its framing generator map"
+            return morphism
 
         def framing_source(self):
             r"""Return the actual free module selected as the source of this framing."""
@@ -2988,7 +3001,11 @@ class FramedModules(OwnedCategoryOverBaseRing):
             Mor would ask for that Mor module's framing, and repeat without
             end. No underlying module or framing choice is reconstructed here.
             """
-            return _framing_morphism(self.framing_source(), self, self._selected_framing_images)
+            return _framing_morphism(
+                self.framing_source(),
+                self,
+                self.module_generator_morphism(),
+            )
 
         @cached_method
         def framing_object(self):
@@ -3665,9 +3682,8 @@ def _module_product_projection(product, factors, index):
         case _:
             underlying_projection = product.underlying_set().projection(index)
             target = factors.value(index)
-            return product.module_category().Mor(product, target).elementwise(
-                lambda element: underlying_projection(element.underlying_element()),
-                verify_linearity=False,
+            return product.module_category().Mor(product, target)._product_projection(
+                underlying_projection
             )
 
 
@@ -3681,9 +3697,9 @@ def _module_product_factor(product, factors, source, legs):
         forgetful(source),
         lambda index: forgetful(legs.value(index)),
     )
-    return source.module_category().Mor(source, product).elementwise(
-        lambda element: product(underlying_factor(element)),
-        verify_linearity=False,
+    return source.module_category().Mor(source, product)._product_factor(
+        underlying_factor,
+        legs,
     )
 
 
@@ -3710,18 +3726,18 @@ def _module_equalizer_created_by_underlying_sets(left_morphism, right_morphism):
     )
     shape = set_equalizer.diagram().domain()
     underlying_inclusion = set_equalizer.structure_morphism(shape.source())
-    inclusion = equalizer.module_category().Mor(equalizer, source).elementwise(
-        lambda element: underlying_inclusion(element.underlying_element()),
-        verify_linearity=False,
+    inclusion = equalizer.module_category().Mor(equalizer, source)._equalizer_inclusion(
+        underlying_inclusion,
+        (left_morphism, right_morphism),
     )
     return equalizer, inclusion
 
 
-def _module_equalizer_factor(equalizer, source, source_leg):
+def _module_equalizer_factor(equalizer, source, source_leg, inclusion):
     r"""Factor an equalizing module map through a set-created equalizer."""
-    return source.module_category().Mor(source, equalizer).elementwise(
-        lambda element: equalizer(source_leg(element)),
-        verify_linearity=False,
+    return source.module_category().Mor(source, equalizer)._equalizer_factor(
+        source_leg,
+        inclusion=inclusion,
     )
 
 
