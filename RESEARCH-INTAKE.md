@@ -130,7 +130,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | DG-modules over DG-algebras, graded module foundations, derived categories $\mathcal{D}(A)$, and semi-free resolutions | User intake 2026-09-19 | Complete categorical and homological hierarchy for differential graded (DG) modules over DG-algebras: (1) Graded foundations: $\mathbb{Z}$-graded modules $\mathbf{GrMod}_k$, Koszul braiding $\tau(x \otimes y) = (-1)^{|x||y|} y \otimes x$, graded associative/commutative algebras, graded module categories; (2) Differential graded objects: cochain complexes $(\mathbf{Ch}_k, \otimes, \underline{\operatorname{Hom}})$, Koszul sign convention $d(x \otimes y) = d(x) \otimes y + (-1)^{|x|} x \otimes d(y)$, $[d, f] = d \circ f - (-1)^{|f|} f \circ d$; (3) DG-algebras $(A, d_A)$ with Leibniz rule $d(a b) = d(a) b + (-1)^{|a|} a d(b)$ and CDGAs; (4) DG-modules $(M, d_M)$ over $A$ with module Leibniz rule $d_M(a m) = d_A(a) m + (-1)^{|a|} a d_M(m)$, DG-bimodules, cohomology modules $H^*(M) \in H^*(A)\mathbf{-Mod}$; (5) The DG-category $\underline{\mathbf{DGMod}}_A$: Hom complexes $\underline{\operatorname{Hom}}_A(M, N)$, shifts $M[k]$, mapping cones $\operatorname{Cone}(f)$; (6) Homological & model structures: quasi-isomorphisms, derived category $\mathcal{D}(A)$, projective model structure, semi-free (cell) resolutions $\mathbf{p} M \xrightarrow{\sim} M$, semi-injective resolutions, compact/perfect DG-modules $\operatorname{Perf}(A)$; (7) Derived operations: derived tensor product $M \otimes_A^{\mathbf{L}} N$, derived Hom $\mathbf{R}\operatorname{Hom}_A(M, N)$, Tor and Ext groups, two-sided bar resolution $B(A, A, M)$; (8) Computational engine: polynomial/exterior DGAs (Koszul complexes), matrix factorizations, de Rham flat modules, and semi-free resolution generators | `categories/algebras/dg_algebras.py` + `categories/modules/dg_modules.py` + `categories/derived/dg_derived_category.py` + `categories/modules/graded_modules.py` + `categories/homology/bar_cobar.py` | Proposed — see note below |
 | Witt vectors, $p$-adics as explicit power series, and ghost vector representations (exact and symbolic arithmetic) | User intake 2026-09-19 | Algebraic and algorithmic infrastructure for $p$-typical and big Witt vectors, and $p$-adic series arithmetic: (1) $p$-typical Witt ring $W(R)$ and truncated $W_n(R)$: ghost map $w_n = \sum_{i=0}^n p^i x_i^{p^{n-i}}$, bijection over $\mathbb{Q}$-algebras, componentwise ghost addition/multiplication, universal polynomials $S_n, P_n \in \mathbb{Z}[X, Y]$, and triangular back-substitution; (2) Perfect field Witt vectors $W(k)$ as complete DVR of characteristic 0, $W(\mathbb{F}_p) \cong \mathbb{Z}_p$, unramified extensions $W(\mathbb{F}_{p^d}) \cong \mathbb{Z}_{p^d}$; (3) Teichmüller lifts $[a] = (a, 0, \dots)$, $p$-adic expansion $x = \sum [c_n] p^n$, Newton-Hensel quadratic convergence; (4) Operators: Verschiebung $V(x) = (0, x_0, \dots)$, Frobenius $F$, relations $FV = p$, $VF = p$, Dieudonné ring $W(k)[F, V]$; (5) Big Witt vectors $\mathbb{W}(R) \cong 1 + t R[[t]]^\times$, power series multiplication link, Cartier decomposition $\mathbb{W}(R) \cong \prod_{(k, p)=1} W(R)$; (6) Explicit $p$-adic series in $\mathbb{Z}_p, \mathbb{Q}_p$: formal power series expansions $\sum a_n p^n$, ultrametric valuations $v_p$, Hensel's lemma, Artin-Hasse exponential $E_p(t) = \exp(\sum t^{p^n}/p^n) \in \mathbb{Z}_p[[t]]$, and symbolic ghost arithmetic engine | `categories/number_theory/witt_vectors.py` + `categories/number_theory/p_adics.py` + `categories/rings/formal_power_series.py` + `categories/algebraic_geometry/dieudonne.py` | Proposed — see note below |
 | Operationalized algebraic topology calculational theorems (Mayer-Vietoris, Universal Coefficient Theorems, Künneth formulas, cellular homology, excision, Poincaré duality, van Kampen, and Hurewicz) | User intake 2026-09-19 | Comprehensive computational framework implementing Hatcher-style topological theorems as exact solvers: (1) Mayer-Vietoris sequence solver for homology and cohomology: $H_n(A \cap B) \to H_n(A) \oplus H_n(B) \to H_n(X) \to H_{n-1}(A \cap B)$, reduced/relative variants, connecting homomorphisms $\partial, \delta$; (2) Universal Coefficient Theorems (UCT): automated evaluation of $H_n(X; G) \cong (H_n(X) \otimes G) \oplus \operatorname{Tor}_1(H_{n-1}(X), G)$ and $H^n(X; G) \cong \operatorname{Hom}(H_n(X), G) \oplus \operatorname{Ext}^1(H_{n-1}(X), G)$ across arbitrary coefficients ($\mathbb{Q}, \mathbb{F}_p, \mathbb{Z}/m$); (3) Künneth formula solver for products $X \times Y$ with $\otimes$ and $\operatorname{Tor}_1$ terms; (4) Cellular homology engine: attaching maps, cellular boundary matrices $d_n = [\deg(\Delta_{\alpha, \beta})]$, and Euler characteristic $\chi(X) = \sum (-1)^n c_n$; (5) Long exact sequences of pairs $(X, A)$, excision, suspension isomorphisms $\widetilde{H}_{n+1}(\Sigma X) \cong \widetilde{H}_n(X)$, and wedge sums; (6) Cohomology rings: cup and cap products, Poincaré duality isomorphisms $H^k(M) \cong H_{n-k}(M)$, and intersection pairings; (7) Homotopy theory solvers: Seifert-van Kampen amalgamated free product solver $\pi_1(A) *_{\pi_1(A \cap B)} \pi_1(B)$, Hurewicz abelianization $\pi_1^{\mathrm{ab}} \cong H_1$ and higher Hurewicz isomorphisms $\pi_n(X) \cong H_n(X)$ | `categories/topology/computational_topology.py` + `categories/topology/mayer_vietoris.py` + `categories/topology/uct.py` + `categories/topology/kunneth.py` + `categories/topology/cellular.py` + `categories/topology/poincare_duality.py` + `categories/topology/van_kampen.py` | Proposed — see note below |
-
+| Concrete combinatorial models for small categories, walking diagrams, deloopings BG, and finitely presented 2-categories | User intake 2026-09-19 | Concrete combinatorial and computational models for finite/small categories and 2-categories: (1) Quiver presentations $F(Q)/R$: directed multigraphs $Q=(V, E, s, t)$, path categories $F(Q)$, 2-sided path relations $R$, rewriting systems, normal forms, and Cayley multiplication tables; (2) Simplex categories $\Delta^n = [n]$ (chains $0 \to 1 \to \dots \to n$), simplex category $\mathbf{\Delta}$ with coface $d^i$ and codegeneracy $s^i$ operators, and nerves $N(\mathcal{C})$; (3) Universal classifying "walking" diagrams: walking object $\mathbf{1} = [0]$, walking arrow $\mathbf{2} = [1]$, walking parallel pair $\{0 \rightrightarrows 1\}$, walking span and cospan, walking commutative square, walking isomorphism $\mathbb{I}$, walking retraction, and walking idempotent $\bullet \circlearrowleft e$; (4) Delooping groupoids $BG$ for groups/monoids $G$, action/translation groupoids $X // G$, pair groupoids $\operatorname{Pair}(S)$, and fundamental groupoids $\Pi_1$; (5) Finitely presented 2-categories: 2-quivers/computads (0-cells, 1-cells, 2-cells), horizontal $\circ_0$ and vertical $\circ_1$ compositions, interchange law, walking natural transformation, walking adjunction $\mathbf{Adj}$ with zigzag identities, walking monad $\mathbf{Mnd}$ with pentagon/triangle identities, and walking comonad | `categories/finitely_presented/quiver.py` + `categories/finitely_presented/category_presentation.py` + `categories/finitely_presented/walking.py` + `categories/finitely_presented/simplex_category.py` + `categories/groups/delooping.py` + `categories/finitely_presented/two_category.py` + `categories/finitely_presented/walking_two_category.py` | Proposed — see note below |
 
 
 
@@ -4517,24 +4517,270 @@ Intended owners: `categories/topology/exact_sequence.py` (`LongExactSequence`, `
 
 
 
+## Desired capability: Concrete combinatorial models for small categories, walking diagrams, deloopings BG, and finitely presented 2-categories — intake 2026-09-19
 
+* **Mathematical background & foundational structures:**
+  * **Quiver presentations and path categories ($F(Q)/R$):**
+    * **Finite quivers:** A quiver (directed multigraph) is a 4-tuple $Q = (Q_0, Q_1, s, t)$ where $Q_0$ is a finite set of vertices (objects), $Q_1$ is a finite set of directed edges (generating arrows), and $s, t \colon Q_1 \to Q_0$ assign source and target vertices to each edge.
+    * **Free path category $F(Q)$:**
+      - Objects: $\operatorname{Obj}(F(Q)) = Q_0$.
+      - Morphisms: $\operatorname{Hom}_{F(Q)}(x, y)$ consists of all directed paths from $x$ to $y$, i.e. formal sequences $p = (e_k, e_{k-1}, \dots, e_1)$ of edges $e_i \in Q_1$ with $s(e_1) = x$, $t(e_i) = s(e_{i+1})$ for $1 \le i < k$, and $t(e_k) = y$.
+      - Identity morphisms: For each $x \in Q_0$, the empty path $\operatorname{id}_x = ()_x$ has length 0, with $s(\operatorname{id}_x) = t(\operatorname{id}_x) = x$.
+      - Composition: Concatenation of paths. For composable paths $p = (e_k, \dots, e_1)$ from $x$ to $y$ and $q = (e'_m, \dots, e'_1)$ from $y$ to $z$:
+        $$
+        q \circ p \coloneqq (e'_m, \dots, e'_1, e_k, \dots, e_1) \colon x \longrightarrow z.
+        $$
+        Composition is strictly associative, with strict two-sided identity $\operatorname{id}_y \circ p = p = p \circ \operatorname{id}_x$.
+    * **Finitely presented categories $F(Q)/\sim_R$:**
+      - Generating relations $R$: A finite collection of pairs of parallel paths $(p_1, p_2)$ with $s(p_1) = s(p_2)$ and $t(p_1) = t(p_2)$.
+      - Congruence relation $\sim_R$: The smallest equivalence relation on $\operatorname{Mor}(F(Q))$ containing $R$ that is compatible with composition (for all parallel $p \sim_R p'$ and composable $u, v$, $u \circ p \circ v \sim_R u \circ p' \circ v$).
+      - Quotient category $\mathcal{C} = F(Q)/\sim_R$: Objects are $Q_0$; morphisms are equivalence classes of paths $[p]$.
+      - Rewriting and normal forms: A directed path rewriting system $(Q, R_{\mathrm{dir}})$ where relations are oriented $l \to r$. A terminating, confluent rewriting system (computed via categorical Knuth-Bendix completion) yields unique canonical normal forms for every morphism class, solving the word problem.
+      - Cayley / multiplication tables: For finite categories (finite objects and finite morphism sets), explicit multiplication tables record the composition law $\operatorname{comp} \colon \operatorname{Mor} \times_{Q_0} \operatorname{Mor} \to \operatorname{Mor}$.
 
+  * **Posetal and thin categories:**
+    * A category $\mathcal{C}$ is thin (or posetal) if $|\operatorname{Hom}(x, y)| \le 1$ for all objects $x, y$.
+    * Equivalent to a preordered set $(P, \le)$ where $x \le y \iff \operatorname{Hom}(x, y) \neq \emptyset$.
+    * Reflexivity corresponds to identity morphisms $\operatorname{id}_x \colon x \to x$. Transitivity corresponds to morphism composition.
+    * A poset is a skeletal thin category ($x \cong y \implies x = y$).
+    * Concrete examples:
+      - Finite chains: $[n] = \{0 < 1 < \dots < n\}$.
+      - Power set lattices: $(\mathcal{P}(S), \subseteq)$ for finite sets $S$, yielding hypercube categories $\mathbf{2}^n$.
+      - Face posets of simplicial complexes and CW complexes.
 
+  * **The simplex categories $\Delta^n$ (walking chains $[n]$) and $\mathbf{\Delta}$:**
+    * **The categories $\Delta^n \coloneqq [n]$:**
+      - Objects: $0, 1, \dots, n$ ($n+1$ objects).
+      - Morphisms: A unique arrow $i \to j$ for each pair $0 \le i \le j \le n$.
+      - Generating quiver: $Q_0 = \{0, 1, \dots, n\}$, $Q_1 = \{e_i \colon i \to i+1 \mid 0 \le i < n\}$. Since the quiver is a finite directed linear tree, the free path category $F(Q)$ is already thin and acyclic; no relations are required ($F(Q) \cong \Delta^n$).
+      - Total number of morphisms: $\binom{n+2}{2} = \frac{(n+1)(n+2)}{2}$.
+    * **The ambient simplex category $\mathbf{\Delta}$:**
+      - Objects: Finite nonempty ordinals $[n] = \{0, 1, \dots, n\}$ for $n \ge 0$.
+      - Morphisms: Order-preserving (monotone) functions $f \colon [m] \to [n]$ ($i \le j \implies f(i) \le f(j)$).
+      - Generating coface operators $d^i \colon [n-1] \to [n]$ ($0 \le i \le n$): The unique order-preserving injection omitting $i$.
+      - Generating codegeneracy operators $s^i \colon [n+1] \to [n]$ ($0 \le i \le n$): The unique order-preserving surjection repeating $i$ ($s^i(i) = s^i(i+1) = i$).
+      - Cosimplicial relations:
+        $$
+        d^j d^i = d^i d^{j-1} \quad (i < j), \qquad s^j s^i = s^i s^{j+1} \quad (i \le j),
+        $$
+        $$
+        s^j d^i = \begin{cases} d^i s^{j-1} & i < j \\ \operatorname{id}_{[n]} & i = j \text{ or } i = j+1 \\ d^{i-1} s^j & i > j+1. \end{cases}
+        $$
+      - Nerves and classifying spaces: The nerve of a small category $\mathcal{C}$ is the simplicial set $N(\mathcal{C})_\bullet \colon \mathbf{\Delta}^{\mathrm{op}} \to \mathbf{Set}$ defined by $N(\mathcal{C})_n \coloneqq \operatorname{Fun}([n], \mathcal{C})$, whose elements are chains of $n$ composable arrows $x_0 \xrightarrow{f_1} x_1 \xrightarrow{f_2} \dots \xrightarrow{f_n} x_n$. For $\mathcal{C} = [n]$, $N([n])$ is the standard $n$-simplex $\Delta[n]$.
 
+  * **Catalogue of "Walking" Structures (Classifying Diagrams):**
+    By the Yoneda lemma, a functor $F \colon \mathcal{W} \to \mathcal{C}$ from a "walking" category $\mathcal{W}$ freely generated by a diagrammatic shape is equivalent to a chosen specimen of that structure in $\mathcal{C}$ ($\operatorname{Fun}(\mathcal{W}, \mathcal{C}) \cong \operatorname{Str}(\mathcal{C})$).
+    * **Walking Object $\mathbf{1} \coloneqq [0] = \Delta^0$:**
+      - Objects: $\{0\}$. Morphisms: $\{\operatorname{id}_0\}$.
+      - Universal property: $\operatorname{Fun}(\mathbf{1}, \mathcal{C}) \cong \operatorname{Obj}(\mathcal{C})$.
+    * **Walking Arrow (Walking Morphism) $\mathbf{2} \coloneqq [1] = \Delta^1$:**
+      - Objects: $\{0, 1\}$. Generating arrow: $f \colon 0 \to 1$.
+      - Morphisms: $\{\operatorname{id}_0, \operatorname{id}_1, f\}$.
+      - Universal property: $\operatorname{Fun}(\mathbf{2}, \mathcal{C}) \cong \operatorname{Mor}(\mathcal{C})$. Classifies an arrow in $\mathcal{C}$.
+    * **Walking Parallel Pair $\mathbf{P}$:**
+      - Objects: $\{0, 1\}$. Generating arrows: $f, g \colon 0 \rightrightarrows 1$.
+      - Morphisms: $\{\operatorname{id}_0, \operatorname{id}_1, f, g\}$.
+      - Universal property: $\operatorname{Fun}(\mathbf{P}, \mathcal{C})$ classifies a pair of parallel morphisms $X \rightrightarrows Y$. This is the indexing category for equalizers and coequalizers.
+    * **Walking Span $\mathbf{\Lambda}_0^2$ (Walking Pushout Diagram):**
+      - Objects: $\{0, 1, 2\}$. Generating arrows: $f \colon 0 \to 1$ and $g \colon 0 \to 2$.
+      - Morphisms: $\{\operatorname{id}_0, \operatorname{id}_1, \operatorname{id}_2, f, g\}$.
+      - Universal property: $\operatorname{Fun}(\mathbf{\Lambda}_0^2, \mathcal{C})$ classifies spans $X_1 \xleftarrow{f} X_0 \xrightarrow{g} X_2$ (the domain category of pushouts).
+    * **Walking Cospan $\mathbf{\Lambda}_2^2$ (Walking Pullback Diagram):**
+      - Objects: $\{0, 1, 2\}$. Generating arrows: $f \colon 1 \to 0$ and $g \colon 2 \to 0$.
+      - Morphisms: $\{\operatorname{id}_0, \operatorname{id}_1, \operatorname{id}_2, f, g\}$.
+      - Opposite category: $(\mathbf{\Lambda}_0^2)^{\mathrm{op}} \cong \mathbf{\Lambda}_2^2$.
+      - Universal property: $\operatorname{Fun}(\mathbf{\Lambda}_2^2, \mathcal{C})$ classifies cospans $Y_1 \xrightarrow{f} Y_0 \xleftarrow{g} Y_2$ (the domain category of pullbacks / fiber products).
+    * **Walking Commutative Square $\mathbf{\Box}$:**
+      - Objects: $\{(0,0), (1,0), (0,1), (1,1)\}$.
+      - Generating arrows: $f \colon (0,0) \to (1,0)$, $g \colon (0,0) \to (0,1)$, $h \colon (0,1) \to (1,1)$, $k \colon (1,0) \to (1,1)$.
+      - Generating relation: $k \circ f = h \circ g$.
+      - Universal property: $\operatorname{Fun}(\mathbf{\Box}, \mathcal{C})$ classifies commutative squares in $\mathcal{C}$.
+    * **Walking Isomorphism $\mathbb{I}$:**
+      - Objects: $\{0, 1\}$. Generating arrows: $f \colon 0 \to 1$, $g \colon 1 \to 0$.
+      - Relations: $g \circ f = \operatorname{id}_0$ and $f \circ g = \operatorname{id}_1$.
+      - Universal property: $\operatorname{Fun}(\mathbb{I}, \mathcal{C}) \cong \operatorname{Iso}(\mathcal{C})$. Classifies an isomorphism in $\mathcal{C}$.
+    * **Walking Retraction / Split Epimorphism:**
+      - Objects: $\{0, 1\}$. Generating arrows: $i \colon 0 \to 1$ (section), $r \colon 1 \to 0$ (retraction).
+      - Relation: $r \circ i = \operatorname{id}_0$.
+      - Morphisms: $\{\operatorname{id}_0, \operatorname{id}_1, i, r, i \circ r\}$. The composite $e = i \circ r \in \operatorname{End}(1)$ satisfies $e^2 = i(ri)r = i r = e$ (an idempotent).
+    * **Walking Idempotent:**
+      - Objects: $\{0\}$. Generating arrow: $e \colon 0 \to 0$.
+      - Relation: $e^2 = e$.
+      - Morphisms: $\{\operatorname{id}_0, e\}$. Classifies an idempotent endomorphism in $\mathcal{C}$.
+    * **Walking Split Idempotent:**
+      - Objects: $\{0, 1\}$. Generating arrows: $r \colon 0 \to 1$, $s \colon 1 \to 0$.
+      - Relation: $r \circ s = \operatorname{id}_1$.
+      - The endomorphism $e = s \circ r \colon 0 \to 0$ satisfies $e^2 = e$ and splits through $1$.
 
+  * **Deloopings $BG$, Action Groupoids, and Pair Groupoids:**
+    * **Delooping category $BG$ of a group or monoid $G$:**
+      - Objects: A single object $*$.
+      - Morphisms: $\operatorname{Hom}_{BG}(*, *) = G$.
+      - Composition: $g \circ h \coloneqq g \cdot h$, with identity $\operatorname{id}_* \coloneqq 1_G$.
+      - If $G$ is a group, every morphism $g$ has inverse $g^{-1}$, making $BG$ a one-object groupoid.
+      - Representation and action classification:
+        - A functor $F \colon BG \to \mathbf{Set}$ specifies a set $X = F(*)$ and a group homomorphism $\rho \colon G \to \operatorname{Sym}(X)$ ($g \mapsto F(g)$). This is precisely a $G$-set (permutation action).
+        - A functor $F \colon BG \to \mathbf{Vect}_k$ specifies a vector space $V = F(*)$ and a linear representation $\rho \colon G \to \operatorname{GL}(V)$.
+        - A natural transformation $\alpha \colon F \Rightarrow F'$ between functors $BG \to \mathcal{C}$ is an arrow $\alpha_* \colon F(*) \to F'(*)$ satisfying $\alpha_* \circ F(g) = F'(g) \circ \alpha_*$ for all $g \in G$ ($G$-equivariant morphism / intertwiner).
+    * **Action groupoids (translation groupoids) $X // G$:**
+      - Given a left group action $\alpha \colon G \times X \to X$:
+        - Objects: Points $x \in X$.
+        - Morphisms: An arrow $(g, x) \colon x \to g \cdot x$ for each $g \in G$ and $x \in X$.
+        - Composition: $(h, g \cdot x) \circ (g, x) = (h \cdot g, x)$.
+        - Inverses: $(g, x)^{-1} = (g^{-1}, g \cdot x)$.
+        - Connected components: $\pi_0(X // G) \cong X/G$ (the orbit space).
+        - Vertex stabilizer: $\operatorname{Aut}_{X // G}(x) = \{(g, x) \mid g \cdot x = x\} \cong G_x \le G$.
+        - Canonical projection functor $\pi \colon X // G \to BG$ with $\pi(x) = *$ and $\pi(g, x) = g$.
+    * **Pair groupoid $\operatorname{Pair}(S)$:**
+      - For any set $S$: Objects are elements $s \in S$; morphisms are pairs $(s, t) \colon s \to t$ for all $s, t \in S$.
+      - Composition: $(t, u) \circ (s, t) = (s, u)$. Identity: $\operatorname{id}_s = (s, s)$. Inverse: $(s, t)^{-1} = (t, s)$.
+      - $\operatorname{Pair}(S)$ is an indiscrete (chaotic) groupoid with unique morphisms between any two points.
+    * **Fundamental groupoid $\Pi_1(X)$:**
+      - Objects: Points $x \in X$. Morphisms: Homotopy classes of paths $[\gamma]$ relative to endpoints.
 
+  * **Finitely Presented 2-Categories (Points, Arrows, and Arrows Between Arrows):**
+    * **Globular sets and 2-quivers (2-computads / polygraphs):**
+      - 0-cells: Finite set of vertices/objects $X_0$.
+      - 1-cells: Finite set of directed edges $X_1$ with source and target maps $s_0, t_0 \colon X_1 \to X_0$.
+      - 2-cells: Finite set of 2-dimensional globes $X_2$ with source and target 1-cells $s_1, t_1 \colon X_2 \to X_1$.
+      - Globular identities: Every 2-cell $\alpha \in X_2$ connects parallel 1-cells:
+        $$
+        s_0(s_1(\alpha)) = s_0(t_1(\alpha)) \quad \text{and} \quad t_0(s_1(\alpha)) = t_0(t_1(\alpha)).
+        $$
+    * **Compositions in a 2-category:**
+      - Horizontal composition of 1-cells: $g \circ_0 f \colon x \to z$ for $f \colon x \to y$ and $g \colon y \to z$.
+      - Vertical composition of 2-cells ($\circ_1$): For parallel 1-cells $f, g, h \colon x \to y$ and 2-cells $\alpha \colon f \Rightarrow g$, $\beta \colon g \Rightarrow h$:
+        $$
+        \beta \circ_1 \alpha \colon f \Longrightarrow h.
+        $$
+        Associative with identity 2-cells $\operatorname{id}_f \colon f \Rightarrow f$.
+      - Horizontal composition of 2-cells ($\circ_0$): For 1-cells $f, f' \colon x \to y$ and $g, g' \colon y \to z$, and 2-cells $\alpha \colon f \Rightarrow f'$ and $\beta \colon g \Rightarrow g'$:
+        $$
+        \beta \circ_0 \alpha \colon g \circ_0 f \Longrightarrow g' \circ_0 f'.
+        $$
+      - **The Interchange Law (Middle-Four Exchange):**
+        For composable 2-cells in horizontal and vertical configurations:
+        $$
+        (\beta_2 \circ_1 \beta_1) \circ_0 (\alpha_2 \circ_1 \alpha_1) = (\beta_2 \circ_0 \alpha_2) \circ_1 (\beta_1 \circ_0 \alpha_1).
+        $$
+      - Whiskering operations: Left whiskering $g \star \alpha \coloneqq \operatorname{id}_g \circ_0 \alpha$ and right whiskering $\alpha \star f \coloneqq \alpha \circ_0 \operatorname{id}_f$.
+    * **Walking 2-Categorical Structures:**
+      - **Walking 2-Cell (Walking Natural Transformation):**
+        - 0-cells: $\{0, 1\}$. Parallel 1-cells: $f, g \colon 0 \to 1$.
+        - Generating 2-cell: $\alpha \colon f \Rightarrow g$.
+        - Universal property: Classifies a 2-cell / natural transformation in any 2-category.
+      - **Walking Adjunction $\mathbf{Adj}$:**
+        - 0-cells: $\{A, B\}$.
+        - 1-cells: Left adjoint $L \colon A \to B$, right adjoint $R \colon B \to A$.
+        - 2-cells: Unit $\eta \colon \operatorname{id}_A \Rightarrow R \circ_0 L$, counit $\epsilon \colon L \circ_0 R \Rightarrow \operatorname{id}_B$.
+        - Relations (Triangle / Zigzag identities):
+          $$
+          (\epsilon \star L) \circ_1 (L \star \eta) = \operatorname{id}_L \colon L \Longrightarrow L,
+          $$
+          $$
+          (R \star \epsilon) \circ_1 (\eta \star R) = \operatorname{id}_R \colon R \Longrightarrow R.
+          $$
+        - Universal property: A 2-functor $\mathbf{Adj} \to \mathbf{Cat}$ is precisely an adjunction $(L \dashv R, \eta, \epsilon)$ between categories!
+      - **Walking Monad $\mathbf{Mnd}$:**
+        - 0-cells: Single object $*$.
+        - 1-cells: Endomorphism $T \colon * \to *$.
+        - 2-cells: Multiplication $\mu \colon T \circ_0 T \Rightarrow T$, unit $\eta \colon \operatorname{id}_* \Rightarrow T$.
+        - Relations:
+          - Associativity: $\mu \circ_1 (\mu \star T) = \mu \circ_1 (T \star \mu) \colon T^{\circ 3} \Rightarrow T$.
+          - Unit laws: $\mu \circ_1 (\eta \star T) = \operatorname{id}_T = \mu \circ_1 (T \star \eta) \colon T \Rightarrow T$.
+        - Universal property: A 2-functor $\mathbf{Mnd} \to \mathbf{Cat}$ is a monad $(T, \mu, \eta)$ on a category.
+      - **Walking Comonad $\mathbf{Comnd}$:** Dual structure with comultiplication $\delta \colon T \Rightarrow T \circ_0 T$ and counit $\varepsilon \colon T \Rightarrow \operatorname{id}_*$.
 
+* **Operational & algorithmic representation:**
+  1. **Quiver and Path Category Engine:**
+     - `FiniteQuiver` class storing vertices $V$, edges $E$, and source/target mappings.
+     - `Path` representation as a tuple of edge identifiers with verified connectivity.
+     - `PathCategory` implementing morphism composition via path concatenation, identity paths, and path equality.
+     - `FinitelyPresentedCategory` implementing 2-sided path relations $R = \{(p_1, p_2)\}$.
+     - `RewritingSystem` implementing string/path rewriting with Knuth-Bendix completion for generating confluent, terminating reduction rules to canonical normal forms.
+     - `CayleyTableCategory` for small finite categories, computing full Hom sets and multiplication matrices for fast $O(1)$ composition lookups.
+  2. **Simplex and Chain Engine:**
+     - `DeltaN(n)` constructing the ordinal category $[n]$ with objects $0, \dots, n$ and unique arrows $i \le j$.
+     - `SimplexCategory` generating coface maps $d^i \colon [n-1] \to [n]$ and codegeneracy maps $s^i \colon [n+1] \to [n]$, verifying cosimplicial identities.
+     - `SimplicialNerve` computing the $n$-th simplicial stage $N(\mathcal{C})_n$ as composable sequences of arrows for any finite category $\mathcal{C}$.
+  3. **Walking Catalog Factory:**
+     - Pre-built instances with verified universal properties:
+       - `walking_object()`: $\mathbf{1} = [0]$.
+       - `walking_arrow()`: $\mathbf{2} = [1]$.
+       - `walking_parallel_pair()`: $\{0 \rightrightarrows 1\}$.
+       - `walking_span()`: $\{1 \leftarrow 0 \to 2\}$.
+       - `walking_cospan()`: $\{1 \to 0 \leftarrow 2\}$.
+       - `walking_square()`: Commutative square with $k \circ f = h \circ g$.
+       - `walking_isomorphism()`: $\mathbb{I} = \{0 \rightleftarrows 1\}$ with inverse relations.
+       - `walking_retraction()`: Split epimorphism with $r \circ i = \operatorname{id}$.
+       - `walking_idempotent()`: $\bullet \circlearrowleft e$ with $e^2 = e$.
+       - `walking_split_idempotent()`: Retraction-section pair splitting an idempotent.
+  4. **Delooping and Groupoid Engine:**
+     - `DeloopingCategory(G)` constructing $BG$ from an owned finite group or monoid $G$.
+     - Automated functor conversion:
+       - Given a permutation representation $\rho \colon G \to S_n$, builds the functor $F \colon BG \to \mathbf{Set}$.
+       - Given a matrix representation $\rho \colon G \to \operatorname{GL}_n(k)$, builds the functor $F \colon BG \to \mathbf{Vect}_k$.
+     - `ActionGroupoid(G, X, action)` constructing $X // G$, computing connected components $\pi_0 \cong X/G$ and vertex stabilizers $\operatorname{Aut}(x) \cong G_x$.
+     - `PairGroupoid(S)` constructing the chaotic groupoid on a finite set $S$.
+  5. **Finitely Presented 2-Category Engine:**
+     - `GlobularSet` and `TwoQuiver` data structures tracking 0-cells, 1-cells, and 2-cells with source/target boundaries.
+     - `FinitelyPresentedTwoCategory` evaluating horizontal $\circ_0$ and vertical $\circ_1$ compositions.
+     - Automated verification of the interchange law $(\beta_2 \circ_1 \beta_1) \circ_0 (\alpha_2 \circ_1 \alpha_1) = (\beta_2 \circ_0 \alpha_2) \circ_1 (\beta_1 \circ_0 \alpha_1)$.
+     - 2-dimensional path rewriting for 2-cell relations.
+     - Concrete 2-categories:
+       - `WalkingNaturalTransformation`: parallel 1-cells with single 2-cell.
+       - `WalkingAdjunction`: 2 objects, $L, R$, $\eta, \epsilon$, enforcing zigzag equations.
+       - `WalkingMonad`: 1 object, $T$, $\mu, \eta$, enforcing monad associativity and unit equations.
 
+* **Preamble implementation requirements:**
+  * `categories/finitely_presented/quiver.py`:
+    - `FiniteQuiver(vertices, edges, source_map, target_map)`: directed multigraph model.
+    - `Path(source, target, edge_sequence)`: directed path representation.
+    - `PathCategory(quiver)`: free category on a quiver.
+    - `is_acyclic(quiver)`: tests if quiver is a DAG.
+  * `categories/finitely_presented/category_presentation.py`:
+    - `PathRelation(lhs_path, rhs_path)`: 2-sided path relation.
+    - `FinitelyPresentedCategory(quiver, relations)`: quotient category $F(Q)/R$.
+    - `RewritingSystem(relations)`: Knuth-Bendix completion for path rewrite systems.
+    - `CayleyTableCategory(objects, morphisms, composition_table)`: tabular finite category.
+    - `is_thin(category)`: verifies if $|\operatorname{Hom}(x, y)| \le 1$ for all objects.
+    - `opposite_category(category)`: constructs $\mathcal{C}^{\mathrm{op}}$.
+  * `categories/finitely_presented/simplex_category.py`:
+    - `DeltaN(n)`: ordinal category $[n]$ with objects $0, \dots, n$.
+    - `SimplexCategory()`: the ambient simplex category $\mathbf{\Delta}$.
+    - `CofaceMap(n, i)`: coface map $d^i \colon [n-1] \to [n]$.
+    - `CodegeneracyMap(n, i)`: codegeneracy map $s^i \colon [n+1] \to [n]$.
+    - `SimplicialNerve(category, max_degree)`: computes nerve $N(\mathcal{C})_{\le n}$.
+  * `categories/finitely_presented/walking.py`:
+    - `WalkingObject()`: classifies objects ($\mathbf{1} = [0]$).
+    - `WalkingArrow()`: classifies morphisms ($\mathbf{2} = [1]$).
+    - `WalkingParallelPair()`: classifies parallel arrows $\{0 \rightrightarrows 1\}$.
+    - `WalkingSpan()`: classifies span diagrams (pushout domain).
+    - `WalkingCospan()`: classifies cospan diagrams (pullback domain).
+    - `WalkingSquare(is_commutative=True)`: classifies commutative squares.
+    - `WalkingIsomorphism()`: classifies isomorphisms $\mathbb{I}$.
+    - `WalkingRetraction()`: classifies retraction-section pairs.
+    - `WalkingIdempotent()`: classifies idempotents $e^2 = e$.
+    - `WalkingSplitIdempotent()`: classifies split idempotents.
+  * `categories/groups/delooping.py`:
+    - `DeloopingCategory(G)`: builds $BG$ from group/monoid $G$.
+    - `to_action_functor(G_set)`: constructs functor $BG \to \mathbf{Set}$.
+    - `to_representation_functor(rep)`: constructs functor $BG \to \mathbf{Vect}_k$.
+    - `ActionGroupoid(G, X, action)`: builds translation groupoid $X // G$.
+    - `PairGroupoid(S)`: builds pair groupoid $\operatorname{Pair}(S)$.
+  * `categories/finitely_presented/two_category.py`:
+    - `GlobularSet(zero_cells, one_cells, two_cells, source_maps, target_maps)`: globular 2-quiver.
+    - `TwoCell(source_1cell, target_1cell, label)`: 2-cell object.
+    - `FinitelyPresentedTwoCategory(two_quiver, relations)`: 2-category with compositions and interchange.
+    - `horizontal_compose(alpha, beta)`: computes $\beta \circ_0 \alpha$.
+    - `vertical_compose(alpha, beta)`: computes $\beta \circ_1 \alpha$.
+    - `verify_interchange(alpha1, alpha2, beta1, beta2)`: checks middle-four interchange.
+  * `categories/finitely_presented/walking_two_category.py`:
+    - `WalkingNaturalTransformation()`: classifies 2-cells $\alpha \colon f \Rightarrow g$.
+    - `WalkingAdjunction()`: classifies adjunctions $(L \dashv R, \eta, \epsilon)$ with triangle identities.
+    - `WalkingMonad()`: classifies monads $(T, \mu, \eta)$ with pentagon and triangle identities.
+    - `WalkingComonad()`: classifies comonads $(T, \delta, \varepsilon)$.
 
-
-
-
-
-
-
-
-
-
-
+Intended owners: `categories/finitely_presented/quiver.py` (`FiniteQuiver`, `Path`, `PathCategory`), `categories/finitely_presented/category_presentation.py` (`FinitelyPresentedCategory`, `PathRelation`, `RewritingSystem`, `CayleyTableCategory`), `categories/finitely_presented/simplex_category.py` (`DeltaN`, `SimplexCategory`, `CofaceMap`, `CodegeneracyMap`, `SimplicialNerve`), `categories/finitely_presented/walking.py` (`WalkingObject`, `WalkingArrow`, `WalkingParallelPair`, `WalkingSpan`, `WalkingCospan`, `WalkingSquare`, `WalkingIsomorphism`, `WalkingRetraction`, `WalkingIdempotent`, `WalkingSplitIdempotent`), `categories/groups/delooping.py` (`DeloopingCategory`, `ActionGroupoid`, `PairGroupoid`), `categories/finitely_presented/two_category.py` (`GlobularSet`, `TwoQuiver`, `TwoCell`, `FinitelyPresentedTwoCategory`), `categories/finitely_presented/walking_two_category.py` (`WalkingNaturalTransformation`, `WalkingAdjunction`, `WalkingMonad`, `WalkingComonad`).
 
 
