@@ -1881,10 +1881,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             def spectrum(self):
                 from dzack_research.preamble.categories.rings.commutative_algebra import (
                     PrimeSpectra,
+                    _PrimeSpectrumTopologyData,
                 )
                 from dzack_research.preamble.owned_category import _object_of
 
-                return _object_of(PrimeSpectra(), ring=self)
+                return _object_of(
+                    PrimeSpectra(),
+                    ring=self,
+                    topology_data=_PrimeSpectrumTopologyData(self),
+                )
 
             def total_quotient_ring(self):
                 r"""Return ``Q(R) = S^{-1}R`` for ``S`` the regular elements of ``R``.

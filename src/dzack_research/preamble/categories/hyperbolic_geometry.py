@@ -1,15 +1,114 @@
 r"""Positive-cone components and their projectivized hyperbolic geometry."""
 
+from itertools import count, product
+
 from sage.arith.misc import gcd
 from sage.misc.cachefunc import cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
+from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.rings.real import RR
+
+
+def _real_ambient_vector(lattice, ambient, vector):
+    match element_parent(vector):
+        case parent if parent is ambient:
+            return vector
+        case parent if parent is lattice:
+            coefficients = lattice.framing_coefficients(vector)
+            return ambient.linear_combination(
+                {
+                    label: RR(coefficient)
+                    for label, coefficient in coefficients.items()
+                }
+            )
+        case _:
+            return ambient(vector)
+
+
+def _real_pairing(lattice, ambient, left, right):
+    left = _real_ambient_vector(lattice, ambient, left)
+    right = _real_ambient_vector(lattice, ambient, right)
+    labels = tuple(lattice.module_generating_set())
+    left_coefficients = ambient.framing_coefficients(left)
+    right_coefficients = ambient.framing_coefficients(right)
+    zero = RR.zero()
+    return sum(
+        (
+            left_coefficients.get(left_label, zero)
+            * right_coefficients.get(right_label, zero)
+            * RR(
+                lattice.b(
+                    lattice.module_generator(left_label),
+                    lattice.module_generator(right_label),
+                )
+            )
+            for left_label in labels
+            for right_label in labels
+        ),
+        zero,
+    )
+
+
+def _positive_component_contains(lattice, ambient, timelike, vector, *, closure=False) -> bool:
+    vector = _real_ambient_vector(lattice, ambient, vector)
+    square = _real_pairing(lattice, ambient, vector, vector)
+    pairing = _real_pairing(lattice, ambient, vector, timelike)
+    match closure:
+        case True:
+            return square >= RR.zero() and pairing >= RR.zero()
+        case False:
+            return square > RR.zero() and pairing > RR.zero()
+
+
+def _timelike_witness(lattice):
+    r"""Find an integral vector in the nonempty positive cone of a ``(1,n)`` lattice."""
+    assert lattice.module_rank().is_finite(), "a represented positive-cone component requires finite rank"
+    rank = int(lattice.module_rank())
+    for height in count(1):
+        for coordinates in product(range(-height, height + 1), repeat=rank):
+            match max((abs(value) for value in coordinates), default=0) == height:
+                case False:
+                    continue
+                case True:
+                    vector = lattice(coordinates)
+                    match lattice.q(vector) > lattice.base_ring().zero():
+                        case True:
+                            return vector
+                        case False:
+                            pass
+
+
+class _HyperbolicTopologyData(SageObject):
+    r"""Private standard topology of one represented hyperbolic projectivization."""
+
+    def open_subsets(self, space):
+        return space.power_set().condition_set(
+            lambda subset: self.is_open_subset(space, subset)
+        )
+
+    def is_open_subset(self, space, subset) -> bool:
+        power = space.power_set()
+        selected = power(subset)
+        match selected:
+            case _ if selected == power.bottom():
+                return True
+            case _ if selected == power.top():
+                return True
+            case _:
+                assert False, (
+                    "openness of an arbitrary subset of the represented rational-ray "
+                    "hyperbolic space requires a selected geometric open presentation"
+                )
 
 
 def _primitive_on_selected_ray(lattice, vector, timelike):
@@ -25,15 +124,37 @@ def _primitive_on_selected_ray(lattice, vector, timelike):
     return primitive
 
 
-class PositiveConeComponents(OwnedCategory):
+class PositiveConeComponents(OwnedParameterizedCategory):
     r"""Chosen components of ``{x : q(x)>0}`` for lattices of signature ``(1,n)``."""
+
+    def __init__(self, lattice) -> None:
+        signature = lattice.signature_pair()
+        assert int(signature.first()) == 1 and int(signature.second()) >= 1, (
+            "positive-cone components are parameterized here by a lattice of signature (1,n)"
+        )
+        super().__init__(lattice)
+
+    def parameter_category(self):
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(_own_ring(SageZZ))
+
+    def lattice(self):
+        return self.base()
+
+    @cached_method
+    def ambient_space(self):
+        return RR.free_module(self.lattice().module_generating_set())
 
     @classmethod
     def _repr_object_names(cls):
         return "positive-cone components"
 
     def super_categories(self):
-        return [Sets()]
+        return [Sets().Subobjects(self.ambient_space())]
+
+    def an_object(self):
+        return _positive_cone_component(self.lattice(), _timelike_witness(self.lattice()))
 
     class ParentMethods:
         def __init__(self, lattice, timelike, **rest) -> None:
@@ -50,18 +171,28 @@ class PositiveConeComponents(OwnedCategory):
         def lattice(self):
             return self._lattice
 
+        def ambient_space(self):
+            return self.codomain()
+
         def timelike_vector(self):
             return self._timelike
 
-        def __contains__(self, vector) -> bool:
-            lattice = self.lattice()
-            vector = lattice(vector)
-            return lattice.q(vector) > 0 and lattice.b(vector, self.timelike_vector()) > 0
+        def contains(self, vector) -> bool:
+            return _positive_component_contains(
+                self.lattice(),
+                self.ambient_space(),
+                self.timelike_vector(),
+                vector,
+            )
 
         def closure_contains(self, vector) -> bool:
-            lattice = self.lattice()
-            vector = lattice(vector)
-            return lattice.q(vector) >= 0 and lattice.b(vector, self.timelike_vector()) >= 0
+            return _positive_component_contains(
+                self.lattice(),
+                self.ambient_space(),
+                self.timelike_vector(),
+                vector,
+                closure=True,
+            )
 
         def opposite(self):
             return _positive_cone_component(self.lattice(), -self.timelike_vector())
@@ -74,15 +205,25 @@ class PositiveConeComponents(OwnedCategory):
             return f"Positive-cone component of {self.lattice()} selected by {self.timelike_vector()}"
 
 
-class HyperbolicSpaces(OwnedCategory):
+class HyperbolicSpaces(OwnedParameterizedCategory):
     r"""Projectivizations of chosen positive-cone components."""
+
+    def parameter_category(self):
+        component = self.parameter()
+        return PositiveConeComponents(component.lattice())
+
+    def positive_cone_component(self):
+        return self.base()
 
     @classmethod
     def _repr_object_names(cls):
         return "hyperbolic spaces"
 
     def super_categories(self):
-        return [Sets()]
+        return [TopologicalSpaces()]
+
+    def an_object(self):
+        return _hyperbolic_space(self.positive_cone_component())
 
     class ElementMethods(Element):
         r"""A rational point of a hyperbolic space: the ray of a positive vector of the component."""
@@ -121,6 +262,17 @@ class HyperbolicSpaces(OwnedCategory):
         def lattice(self):
             return self._component.lattice()
 
+        def __contains__(self, datum) -> bool:
+            match element_parent(datum):
+                case parent if parent is self:
+                    return True
+                case parent if parent is self.lattice():
+                    return self._component.contains(datum)
+                case _:
+                    return False
+
+        is_parent_of = __contains__
+
         def __call__(self, *args, **kwargs):
             r"""Construct a point through the owned element construction directly."""
             return self._element_constructor_(*args, **kwargs)
@@ -131,7 +283,7 @@ class HyperbolicSpaces(OwnedCategory):
                 case _ if element_parent(datum) is self:
                     return datum
                 case _:
-                    assert datum in self._component, (
+                    assert self._component.contains(datum), (
                         "a rational point of a hyperbolic space is the ray of a "
                         "positive vector in the selected component"
                     )
@@ -164,28 +316,54 @@ class HyperbolicSpaces(OwnedCategory):
             primitive = _primitive_on_selected_ray(
                 lattice, vector, self._component.timelike_vector()
             )
-            return RationalPolyhedralCones().from_rays(lattice, (primitive,))
+            return RationalPolyhedralCones(lattice).from_rays((primitive,))
 
         def projectivize_cone(self, cone):
             if cone.ambient_lattice() is not self.lattice():
                 raise ValueError("a hyperbolic polyhedron cone must live in the space's lattice")
             if not cone.lies_in_closed_positive_cone(self._component.timelike_vector()):
                 raise ValueError("the cone is not contained in the selected closed positive cone")
-            return _object_of(HyperbolicPolyhedra(), space=self, cone=cone)
+            category = HyperbolicPolyhedra(self)
+            subset = self.condition_set(
+                lambda point: cone.contains(point.representative())
+            )
+            return Sets().Subobjects(self).object(
+                subset.inclusion(),
+                categories=(category,),
+                construction_data={"space": self, "cone": cone},
+            )
 
         def _repr_(self):
             return f"Hyperbolic projectivization of {self._component}"
 
 
-class HyperbolicPolyhedra(OwnedCategory):
+class HyperbolicPolyhedra(OwnedParameterizedCategory):
     r"""Projectivized rational polyhedral cones in a chosen hyperbolic space."""
+
+    def parameter_category(self):
+        space = self.parameter()
+        return HyperbolicSpaces(space.positive_cone_component())
+
+    def hyperbolic_space(self):
+        return self.base()
 
     @classmethod
     def _repr_object_names(cls):
         return "hyperbolic polyhedra"
 
     def super_categories(self):
-        return [Sets()]
+        return [Sets().Subobjects(self.hyperbolic_space())]
+
+    def an_object(self):
+        from dzack_research.preamble.categories.polyhedral_cones import (
+            RationalPolyhedralCones,
+        )
+
+        space = self.hyperbolic_space()
+        ray = RationalPolyhedralCones(space.lattice()).from_rays(
+            (space.positive_cone_component().timelike_vector(),)
+        )
+        return space.projectivize_cone(ray)
 
     class ParentMethods:
         def __init__(self, space, cone, **rest) -> None:
@@ -232,11 +410,30 @@ class HyperbolicPolyhedra(OwnedCategory):
 
 
 def _positive_cone_component(lattice, timelike):
-    return _object_of(PositiveConeComponents(), lattice=lattice, timelike=timelike)
+    category = PositiveConeComponents(lattice)
+    ambient = category.ambient_space()
+    timelike = lattice(timelike)
+    subset = ambient.condition_set(
+        lambda vector: _positive_component_contains(
+            lattice,
+            ambient,
+            timelike,
+            vector,
+        )
+    )
+    return Sets().Subobjects(ambient).object(
+        subset.inclusion(),
+        categories=(category,),
+        construction_data={"lattice": lattice, "timelike": timelike},
+    )
 
 
 def _hyperbolic_space(component):
-    return _object_of(HyperbolicSpaces(), component=component)
+    return _object_of(
+        HyperbolicSpaces(component),
+        topology_data=_HyperbolicTopologyData(),
+        component=component,
+    )
 
 
 __all__ = [

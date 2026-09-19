@@ -519,16 +519,12 @@ def _voronoi_region(lattice, bound=None):
 def _voronoi_cell(lattice, bound=None):
     r"""Return the Voronoi cell of ``lattice``: a convex polytope in ``L tensor QQ``.
 
-    The cell is built by ``ConvexPolytopes()`` on the vertices of the region,
+    The cell is built by ``ConvexPolytopes(lattice)`` on the vertices of the region,
     with ``lattice`` as its ambient coordinate lattice.  Its facets and their
     relevant vectors are :func:`_voronoi_facets`.
     """
     region = _voronoi_region(lattice, bound=bound)
-    match int(lattice.module_rank()):
-        case 0:
-            return ConvexPolytopes()(region.vertices_list())
-        case _:
-            return ConvexPolytopes()(region.vertices_list(), lattice=lattice)
+    return ConvexPolytopes(lattice)(region.vertices_list())
 
 
 def _relevant_vector_of_inequality(lattice, inequality):
@@ -592,8 +588,8 @@ def _voronoi_facets(lattice):
         relevant_vector = _relevant_vector_of_inequality(lattice, inequalities[0])
         if relevant_vector is None or relevant_vector == lattice.zero():
             raise ArithmeticError("a Voronoi facet has a nonzero relevant lattice vector")
-        facets[relevant_vector] = ConvexPolytopes()(
-            face.as_polyhedron().vertices_list(), lattice=lattice
+        facets[relevant_vector] = ConvexPolytopes(lattice)(
+            face.as_polyhedron().vertices_list()
         )
     return finite_indexed_family(
         finite_ordered_set(tuple(facets)),
@@ -729,9 +725,7 @@ def _contact_polytope(lattice):
         ]
         for vector in lattice.shortest_vectors()
     ]
-    return ConvexPolytopes()(
-        Polyhedron(vertices=vertices, base_ring=SageQQ)
-    )
+    return ConvexPolytopes(lattice)(vertices)
 
 
 def _coordinate_tuple(lattice, element):

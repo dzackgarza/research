@@ -7,6 +7,7 @@ from sage.categories.morphism import Morphism
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
+from sage.structure.element import parent as element_parent
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.sage_object import SageObject
 
@@ -32,6 +33,7 @@ from dzack_research.preamble.categories.abstract_categories.products import Pose
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -40,13 +42,16 @@ if "Invertible" not in all_axioms:
     all_axioms.add("Invertible")
 
 
-class SchemeUnderlyingSpace(SageObject):
-    r"""The underlying topological space of a represented ringed space.
+class _SchemeUnderlyingSpaceTopologyData(SageObject):
+    r"""The topology of ``|X|`` retained by the represented ringed space ``X``.
 
-    Sage's scheme parents do not expose a separate topological-space parent.
-    The owned API nevertheless keeps the mathematical structure explicit: this
-    object remembers the represented scheme and is the space on which open
-    and closed-subspace structure can later be attached.
+    The public topology is the collection of open subsets of ``|X|``.  The
+    ringed-space layer already owns open immersions and Zariski coverings, but
+    it does not yet own a pointwise decision procedure turning an arbitrary
+    subset of a non-affine scheme into an open immersion.  The topology is
+    therefore represented as the exact subobject of the power set cut out by
+    openness, with arbitrary membership assertion-gated until such a
+    presentation is supplied.  The empty and whole opens are unconditional.
     """
 
     def __init__(self, ringed_space) -> None:
@@ -55,10 +60,65 @@ class SchemeUnderlyingSpace(SageObject):
     def ringed_space(self):
         return self._ringed_space
 
+    def open_subsets(self, space):
+        return space.power_set().condition_set(
+            lambda subset: self.is_open_subset(space, subset)
+        )
+
+    def is_open_subset(self, space, subset) -> bool:
+        power = space.power_set()
+        selected = power(subset)
+        match selected:
+            case _ if selected == power.bottom():
+                return True
+            case _ if selected == power.top():
+                return True
+            case _:
+                assert False, (
+                    "openness of an arbitrary subset of a non-affine underlying "
+                    "scheme space requires a represented open-immersion presentation"
+                )
+
+
+class _SchemeUnderlyingSpaceEngine:
+    r"""Private realization of ``|X|`` as an object of ``TopologicalSpaces``."""
+
+    def __init__(self, ringed_space, **rest) -> None:
+        self._ringed_space = ringed_space
+        super().__init__(**rest)
+
+    def ringed_space(self):
+        return self._ringed_space
+
     scheme = ringed_space
+
+    def __contains__(self, point) -> bool:
+        return element_parent(point) is self
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, point):
+        match element_parent(point) is self:
+            case True:
+                return point
+            case False:
+                assert False, (
+                    "a point of a non-affine underlying scheme space requires a "
+                    "represented affine-chart point and its gluing identification"
+                )
 
     def _repr_(self) -> str:
         return f"Underlying topological space of {self.ringed_space()}"
+
+
+@cached_function(key=lambda ringed_space: id(ringed_space))
+def _scheme_underlying_space(ringed_space):
+    return _object_of(
+        TopologicalSpaces(),
+        _engine=(TopologicalSpaces(), _SchemeUnderlyingSpaceEngine, None),
+        topology_data=_SchemeUnderlyingSpaceTopologyData(ringed_space),
+        ringed_space=ringed_space,
+    )
 
 
 class SheafObjects(OwnedParameterizedCategory):
@@ -92,11 +152,10 @@ class SheafObjects(OwnedParameterizedCategory):
 class SheafedSpaces(OwnedCategory):
     r"""Represented spaces equipped with a chosen sheaf.
 
-    The topological-space ancestor is intentionally not guessed here: the
-    repository does not yet own that category, and ``geometric-space-placement``
-    is the node that introduces it.  This category records the independent
-    sheaf-bearing structure now, so a ringed space is no longer declared as a
-    set merely because the space category is absent.
+    A sheafed-space object retains its underlying space as construction data;
+    it is not identified with that underlying point-set parent.  Consequently
+    this category remains an object-level owner, while ``underlying_space()``
+    returns the actual object of ``TopologicalSpaces``.
     """
 
     @classmethod
@@ -1475,7 +1534,7 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def underlying_space(self):
-            return SchemeUnderlyingSpace(self)
+            return _scheme_underlying_space(self)
 
 
 class LocallyRingedHomCategoryConstruction(HomCategoryConstruction):
@@ -1566,7 +1625,6 @@ __all__ = [
     "ModuleSheaves",
     "QuasiCoherentSheaves",
     "RingedSpaces",
-    "SchemeUnderlyingSpace",
     "SheafObjects",
     "SheafedSpaces",
     "ZariskiCoveringFamilies",

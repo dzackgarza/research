@@ -66,13 +66,6 @@ Reading each member against the definition in its own docstring separates the gr
 
 | Category | Its own definition | The category that should be declared | Source |
 | --- | --- | --- | --- |
-| `TopologicalManifolds` | "finite-dimensional topological manifolds" | topological spaces | `manifolds.py:151` |
-| `LogPairs` | "pairs ``(X, Delta)`` of a variety and a chosen boundary divisor" | a scheme with a divisor | `schemes/log_pairs.py:22` |
-| `HyperbolicSpaces` | "projectivizations of chosen positive-cone components" | the projectivization of a cone component | `hyperbolic_geometry.py:111` |
-| `HyperbolicPolyhedra` | "projectivized rational polyhedral cones in a chosen hyperbolic space" | projectivized cones | `hyperbolic_geometry.py:161` |
-| `PositiveConeComponents` | "chosen components of ``{x : q(x)>0}``" | a subspace of `L (x) RR` | `hyperbolic_geometry.py:26` |
-| `ConvexPolytopes` | "rational convex polytopes in a chosen coordinate lattice" | convex bodies in `L (x) QQ` | `schemes/polytopes.py:117` |
-| `RationalPolyhedralCones` | "rational polyhedral cones in a selected integral coordinate lattice" | convex cones in `L (x) QQ` | `polyhedral_cones.py:38` |
 | `RegularPolytopes` | "finite spherical regular abstract polytopes named by Schlaefli symbols" | graded posets -- an abstract polytope is a poset, and `PartiallyOrderedSets` exists | `schemes/polytopes.py:37` |
 | `CoxeterDiagrams` | "a symmetric matrix of vertex angles" | labelled graphs | `coxeter_diagrams.py:162` |
 | `ProjectiveWeightedGraphs` | "finite graphs or digraphs with exact projective vertex and edge weights" | graphs and digraphs | `vinberg_invariants.py:62` |
@@ -81,16 +74,14 @@ Reading each member against the definition in its own docstring separates the gr
 | `CharacterSets` | "the owned sets ``Char(G)`` of ordinary characters of finite ``G``" | undecided: `Char(G)` carries a ring structure, and whether this category is of the sets or of the rings is a decision, not an oversight | `group/characters.py:32` |
 
 **Categories the table asks for and the tree does not have.**
-Topological spaces.
 Graphs, digraphs, and labelled graphs.
 Chamber systems.
-Convex bodies and convex cones in a module over an ordered field.
 The functor category and the opposite category both exist and are what the presheaf construction is built from, so that one is placement rather than new theory.
 
 **Required end state.**
 No category declares a supercategory its own definition contradicts.
 Where the honest category is missing it is built; where it is not yet decided, `super_categories()` is left abstract so the category refuses to construct.
-Scheduled as `geometric-space-placement` and `combinatorial-object-placement` in [TODO.md](TODO.md).
+Scheduled as `combinatorial-object-placement` in [TODO.md](TODO.md).
 
 **Coverage boundary.**
 Read from source: the declared graph, and each listed category's own class docstring.
@@ -191,8 +182,6 @@ The source of `origin/remediate/scheme-gluing` at `f54a1c14b` and `origin/remedi
 **Global sections and finite-atlas sheaves.** `5082ce117` replaces the existing algebra of sections by `assert False`. `5856584aa` restores it by directly calling `Parent.__init__` instead of `Algebras(R)(M,m)`. Its module replacement removes the descent interpretation from section parents without migrating cyclic-cover admission: `CyclicCoverAlgebra` reads that interpretation to identify and compare the actual power of the line bundle. Changing arithmetic to `GeneralModules` while leaving that consumer undefined is a regression, not a completed owner integration. `f54a1c14b` similarly directly initializes a parent in `QuasiCoherentSheaves(X)` instead of constructing the sheaf. Preserve the existing section/descent capabilities while completing their genuine module, algebra and sheaf owners.
 
 **Zariski sheaves, covers and affine sheaf functors.** In `f098e06d7`, `_ZariskiPresheaf` claims the big `Sch/X` domain but asserts every input affine; `_AssociatedModulePresheaf` uses localization on arbitrary affine arrows, including quotient maps. Its descent inverse only admits singleton identity covers and returns an identity on the global value, not the general equalizer comparison. `_placed_sheaf` finishes with `refine` after allocation. In `97fd35ccd`, the functors and adjunction declared between quasi-coherent-sheaf categories return module arrows rather than arrows between their sheaf endpoints. The `912bdc333` covering rewrite still uses public records and breaks custom labels: `_labelled_family` numbers a sequence by integers even when its given index set has noninteger chart labels. The live finite-atlas path now replaces those records by the `CoveringFamilies`/Zariski-coverage owners and retains supplied labels; the rejected branch still does not discharge the remaining sheaf-Hom or constructor obligations.
-
-**Geometric-space owner.** The final `2cf3d4a2e` checkpoint adds `TopologicalSpaces` with an abstract `open_sets` but no topology constructor or continuous-map Hom: a stub, not the missing owner.  The live tree still needs that genuine owner for topological manifolds and for the generic non-affine `SchemeUnderlyingSpace` fallback.  Affine scheme spaces already use the actual prime spectrum; do not generalize that affine presentation to arbitrary schemes.
 
 **Preserved and repaired behavior.** Restriction of base cannot be a placement refinement without the new structural morphism; cross-base arrows now use the locally ringed-space Hom without mutating endpoints. Complete-intersection admission uses successive ideal quotients, not final height: `(tx,ty,1-t)` has the height of three generators but is not that regular sequence. Cyclic scalar change retains compatible branch-section pullback rather than requiring a remembered homogeneous source. Supplied glued quotient sources retain their exact chart set and transition checks, dropped by the checkpoint. The normalization datum enters through `Curves`, not an extra `CurvesWithChosenNormalization` category. These repairs are source-banked, with the complete terminal execution obligation still open.
 

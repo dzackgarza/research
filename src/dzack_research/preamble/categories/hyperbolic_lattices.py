@@ -1034,8 +1034,8 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                     case False:
                         pass
                 vertices.append(
-                    RationalPolyhedralCones().from_rays(
-                        self, (self(tuple(generator_row)),), wall_roots=incident
+                    RationalPolyhedralCones(self).from_rays(
+                        (self(tuple(generator_row)),), wall_roots=incident
                     )
                 )
 

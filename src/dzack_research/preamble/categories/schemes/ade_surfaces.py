@@ -270,23 +270,29 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             variant,
             bool(affine),
         )
-        polygon = LatticePolygons()(vertices)
+        polygon_lattice = _own_ring(SageZZ).free_module(2)
+        polygon = LatticePolygons(polygon_lattice)(vertices)
         toric_base = polygon.toric_variety(self.base_ring())
-        return _object_of(
+        from dzack_research.preamble.categories.schemes.schemes import _scheme_with_structure
+
+        return _scheme_with_structure(
+            toric_base,
             self,
-            dynkin_letter=letter,
-            dynkin_rank=rank,
-            dynkin_variant=variant,
-            is_affine_type=bool(affine),
-            polygon=polygon,
-            polygon_vertex_order=finite_family(
-                tuple(_rational_point(vertex) for vertex in vertices),
-                name="ADE polygon boundary order",
-            ),
-            distinguished_point=_rational_point(point),
-            side_decorations=decorations,
-            log_scheme=toric_base,
-            boundary_divisor=toric_base.toric_boundary_divisor(),
+            construction_data={
+                "dynkin_letter": letter,
+                "dynkin_rank": rank,
+                "dynkin_variant": variant,
+                "is_affine_type": bool(affine),
+                "polygon": polygon,
+                "polygon_vertex_order": finite_family(
+                    tuple(_rational_point(vertex) for vertex in vertices),
+                    name="ADE polygon boundary order",
+                ),
+                "distinguished_point": _rational_point(point),
+                "side_decorations": decorations,
+                "log_scheme": toric_base,
+                "boundary_divisor": toric_base.toric_boundary_divisor(),
+            },
         )
 
     def at21(self, dynkin_letter, dynkin_rank, *, variant="pure", affine=False):
@@ -650,7 +656,8 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
                 *polygon._engine_coordinates(self.distinguished_point()),
                 SageQQ(2),
             )
-            return ConvexPolytopes()((*base, apex))
+            pyramid_lattice = _own_ring(SageZZ).free_module(3)
+            return ConvexPolytopes(pyramid_lattice)((*base, apex))
 
         def cover_toric_threefold(self):
             r"""``V_P``, the toric threefold the double cover is cut out of."""
@@ -793,7 +800,7 @@ class _AT21ToricADEPairEngine:
         )
         if len(support) < 3:
             raise ValueError("a branch Newton polygon requires two-dimensional support")
-        return LatticePolygons()(support, lattice=self.scheme().character_lattice())
+        return LatticePolygons(self.scheme().character_lattice())(support)
 
     def source_normal_form_section(self, *, constant=1):
         r"""Return the AT21 Table 5 normal-form specimen in the D/E families.

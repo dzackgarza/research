@@ -1004,10 +1004,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 )
                 for ray in self.fan().cones(1)
             )
-            return ConvexPolytopes().from_halfspaces(
-                halfspaces,
-                lattice=self.character_lattice(),
-            )
+            return ConvexPolytopes(self.character_lattice()).from_halfspaces(halfspaces)
 
         @cached_method
         def polarizing_divisor(self):

@@ -28,7 +28,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -126,11 +126,47 @@ class ManifoldAtlasTransition(SageObject):
         )
 
 
+class _ManifoldTopologyData(SageObject):
+    r"""Private topology realization supplied by SageManifolds.
+
+    The native manifold is the maintained representation of the complete
+    topology.  The owned topology exposes its open-set object without
+    pretending that arbitrary subsets of an infinite manifold are enumerable.
+    Exact arbitrary-subset openness is assertion-gated until a represented
+    subset is carried by a native open-submanifold construction.
+    """
+
+    def __init__(self, engine_manifold) -> None:
+        self._engine_manifold = engine_manifold
+
+    def engine_manifold(self):
+        return self._engine_manifold
+
+    def open_subsets(self, space):
+        return space.power_set().condition_set(
+            lambda subset: self.is_open_subset(space, subset)
+        )
+
+    def is_open_subset(self, space, subset) -> bool:
+        power = space.power_set()
+        selected = power(subset)
+        match selected:
+            case _ if selected == power.bottom():
+                return True
+            case _ if selected == power.top():
+                return True
+            case _:
+                assert False, (
+                    "openness of an arbitrary represented subset of a manifold "
+                    "requires a selected native open-submanifold presentation"
+                )
+
+
 class TopologicalManifolds(OwnedCategory):
     r"""Owned finite-dimensional topological manifolds."""
 
     def super_categories(self):
-        return [Sets()]
+        return [TopologicalSpaces()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -151,6 +187,7 @@ class TopologicalManifolds(OwnedCategory):
         )
         return _object_of(
             self,
+            topology_data=_ManifoldTopologyData(engine),
             engine_manifold=engine,
             manifold_dimension=dimension,
             manifold_name=str(name),
@@ -379,6 +416,7 @@ class DifferentiableManifolds(OwnedCategory):
         )
         return _object_of(
             self,
+            topology_data=_ManifoldTopologyData(engine),
             engine_manifold=engine,
             manifold_dimension=dimension,
             manifold_name=str(name),
@@ -413,6 +451,7 @@ class SmoothManifolds(OwnedCategory):
         )
         return _object_of(
             self,
+            topology_data=_ManifoldTopologyData(engine),
             engine_manifold=engine,
             manifold_dimension=dimension,
             manifold_name=str(name),
@@ -590,6 +629,7 @@ class ComplexManifolds(OwnedCategory):
         )
         return _object_of(
             self,
+            topology_data=_ManifoldTopologyData(engine),
             engine_manifold=engine,
             manifold_dimension=dimension,
             manifold_name=str(name),
@@ -626,6 +666,7 @@ class ComplexManifolds(OwnedCategory):
             coord_def={chart._engine_chart(): restriction},
         )
         return {
+            "topology_data": _ManifoldTopologyData(engine_open),
             "engine_manifold": engine_open,
             "manifold_dimension": containing_manifold.dimension(),
             "manifold_name": str(name),

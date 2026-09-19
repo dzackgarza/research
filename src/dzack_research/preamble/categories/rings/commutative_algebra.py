@@ -65,6 +65,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
     UncountableSets,
 )
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category
 
@@ -72,6 +73,35 @@ from dzack_research.preamble.owned_category_bases import Category
 def _refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
     r"""Construct the commutative owned algebra view over ``base_ring``."""
     return _refine_algebra(algebra, base_ring, labels, *categories)
+
+
+class _PrimeSpectrumTopologyData:
+    r"""Private topology datum for the Zariski space ``Spec R``."""
+
+    def __init__(self, ring) -> None:
+        self._ring = ring
+
+    def ring(self):
+        return self._ring
+
+    def open_subsets(self, spectrum):
+        return spectrum.power_set().condition_set(
+            lambda subset: self.is_open_subset(spectrum, subset)
+        )
+
+    def is_open_subset(self, spectrum, subset) -> bool:
+        power = spectrum.power_set()
+        selected = power(subset)
+        match selected:
+            case _ if selected == power.bottom():
+                return True
+            case _ if selected == power.top():
+                return True
+            case _:
+                assert False, (
+                    "openness of a nontrivial arbitrary subset of Spec(R) requires "
+                    "a represented Zariski-open presentation"
+                )
 
 
 class PrimeSpectra(OwnedCategory):
@@ -86,7 +116,7 @@ class PrimeSpectra(OwnedCategory):
         return _own_ring(SageZZ).spectrum()
 
     def super_categories(self):
-        return [PartiallyOrderedSets()]
+        return [PartiallyOrderedSets(), TopologicalSpaces()]
 
     class ElementMethods(Element):
         r"""What a prime point is."""
@@ -395,12 +425,11 @@ class PrimeSpectra(OwnedCategory):
 
     class ParentMethods:
 
-        def __init__(self, ring, ringed_space=None, **rest) -> None:
+        def __init__(self, ring, **rest) -> None:
             self._ring = _own_ring(ring)
             assert self._ring in OwnedRings().Commutative(), (
                 "Spec(R) requires a commutative ring"
             )
-            self._ringed_space = ringed_space
             super().__init__(**rest)
 
         def ring(self):
@@ -420,17 +449,8 @@ class PrimeSpectra(OwnedCategory):
             )
 
         def ringed_space(self):
-            r"""Return the ringed space whose underlying space this spectrum represents.
-
-            A bare ring spectrum has no selected structure sheaf presentation.
-            When an affine scheme asks for its underlying space, the same prime
-            spectrum is constructed with that scheme as its retained ringed-space
-            datum, so points keep their prime-ideal semantics while the space can
-            recover the structure it underlies.
-            """
-            if self._ringed_space is None:
-                raise ValueError("this prime spectrum has no selected ringed-space presentation")
-            return self._ringed_space
+            r"""Return the affine locally ringed space ``Spec(R)`` this spectrum underlies."""
+            return self.ring().affine_spectrum()
 
         coordinate_ring = ring
 

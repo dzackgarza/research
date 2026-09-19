@@ -1564,6 +1564,37 @@ def _scheme_isomorphism(forward, inverse):
     return schemes.Core().Mor(forward.domain(), forward.codomain())(forward, inverse)
 
 
+def _scheme_with_structure(
+    scheme,
+    category,
+    *,
+    _engine=None,
+    construction_data=None,
+):
+    r"""Rebuild ``scheme`` once in a stronger scheme category carrying selected data.
+
+    This is the owner-side route for structures whose underlying mathematical
+    object is still the same represented scheme, such as a chosen boundary
+    divisor.  The private realization is retained verbatim; consumers outside
+    the scheme owner never inspect it.  The stronger category must already
+    declare ``Schemes(R)`` through its supercategory chain.
+    """
+
+    base = scheme.scheme_base_ring()
+    assert category.is_subcategory(Schemes(base)), (
+        "additional scheme structure must refine the scheme category over the same base"
+    )
+    realization = scheme._scheme_engine_realization
+    data = dict(construction_data or {})
+    return _object_of(
+        category,
+        _engine=None if _engine is None else (category, _engine, None),
+        scheme_base_ring=base,
+        scheme_engine=realization,
+        **data,
+    )
+
+
 def _affine_morphism_from_pullback(domain, codomain, pullback):
     r"""The affine morphism ``domain -> codomain`` defined by its coordinate pullback."""
     return _scheme_mor_category(domain, codomain)(pullback)

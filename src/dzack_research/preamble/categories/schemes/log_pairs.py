@@ -15,8 +15,7 @@ log Calabi--Yau -- a statement this layer computes rather than asserts.
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.schemes.schemes import Schemes, _scheme_with_structure
 
 
 class LogPairs(OwnedCategoryOverBaseRing):
@@ -42,13 +41,20 @@ class LogPairs(OwnedCategoryOverBaseRing):
         assert log_scheme.scheme_base_ring() == self.base_ring(), (
             f"the scheme of an object of {self} lies over {self.base_ring()}"
         )
-        return _object_of(self, log_scheme=log_scheme, boundary_divisor=boundary_divisor)
+        return _scheme_with_structure(
+            log_scheme,
+            self,
+            construction_data={
+                "log_scheme": log_scheme,
+                "boundary_divisor": boundary_divisor,
+            },
+        )
 
     def _repr_object_names(self):
         return f"log pairs over {self.base_ring()}"
 
     def super_categories(self):
-        return [Sets()]
+        return [Schemes(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, log_scheme, boundary_divisor, **rest) -> None:
@@ -109,12 +115,16 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
         assert boundary_divisor.parent() is toric_variety.torus_invariant_divisor_group(), (
             "the boundary of a toric log pair is a torus-invariant divisor"
         )
-        return _object_of(
-            self,
-            _engine=None if _engine is None else (self, _engine, None),
-            log_scheme=toric_variety,
-            boundary_divisor=boundary_divisor,
+        data = {
+            "log_scheme": toric_variety,
+            "boundary_divisor": boundary_divisor,
             **dict(construction_data or {}),
+        }
+        return _scheme_with_structure(
+            toric_variety,
+            self,
+            _engine=_engine,
+            construction_data=data,
         )
 
     def _repr_object_names(self):

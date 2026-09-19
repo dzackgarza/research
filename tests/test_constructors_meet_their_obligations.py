@@ -115,6 +115,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
     u = list(Lattices(ZZ)("U").module_generators())
     uu = Lattices(ZZ)("U") + Lattices(ZZ)("U")
     g = list(uu.module_generators())
+    polytope_lattice = ZZ.free_module(2)
     return {
         "Lattices(ring)": lambda: Lattices(ZZ),
         "Lattices(name)": lambda: NamedLattices.LK3,
@@ -247,10 +248,10 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # ---- schemes ----
         "affine space": lambda: AffineSpaces(QQ)(2),
         "projective space": lambda: ProjectiveSpaces(QQ)(2),
-        "convex polytope": lambda: ConvexPolytopes()([[0, 0], [1, 0], [0, 1]]),
-        "convex polygon": lambda: ConvexPolygons()([[0, 0], [1, 0], [0, 1]]),
-        "lattice polytope": lambda: LatticePolytopes()([[0, 0], [1, 0], [0, 1]]),
-        "lattice polygon": lambda: LatticePolygons()([[0, 0], [1, 0], [0, 1]]),
+        "convex polytope": lambda: ConvexPolytopes(polytope_lattice)([[0, 0], [1, 0], [0, 1]]),
+        "convex polygon": lambda: ConvexPolygons(polytope_lattice)([[0, 0], [1, 0], [0, 1]]),
+        "lattice polytope": lambda: LatticePolytopes(polytope_lattice)([[0, 0], [1, 0], [0, 1]]),
+        "lattice polygon": lambda: LatticePolygons(polytope_lattice)([[0, 0], [1, 0], [0, 1]]),
         "equation-defined closed subscheme": lambda: _affine_divisor(),
         # ---- algebras on an existing module ----
         # A different construction from the ``...On`` rows above: those build

@@ -167,7 +167,7 @@ class MarkedReductionCell(SageObject):
     """
 
     def __init__(self, cell, marked_vectors) -> None:
-        assert cell in RationalPolyhedralCones(), (
+        assert cell in RationalPolyhedralCones(cell.ambient_lattice()), (
             "a marked reduction cell is a rational polyhedral cone with marks"
         )
         assert marked_vectors.cardinality().is_finite(), (
@@ -588,12 +588,12 @@ def _perfect_domain_traversal_from_records(lattice, records):
     records = tuple(records)
     if not records:
         raise ArithmeticError("the perfect-domain provider returned no orbit representatives")
-    cones = RationalPolyhedralCones()
+    cones = RationalPolyhedralCones(lattice)
     raw_rays = tuple(
         tuple(tuple(SageZZ(entry) for entry in row) for row in record["x"]["EXT"])
         for record in records
     )
-    cells = tuple(cones.from_rays(lattice, tuple(lattice(row) for row in rays)) for rays in raw_rays)
+    cells = tuple(cones.from_rays(tuple(lattice(row) for row in rays)) for rays in raw_rays)
     orthogonal_group = lattice.O()
     stabilizer_by_cell = {}
     for cell, rays, record in zip(cells, raw_rays, records, strict=True):
@@ -626,14 +626,14 @@ def _perfect_domain_traversal_from_records(lattice, records):
             )
             target_to_neighbor = orthogonal_group._from_backend_row_action(row_action)
             neighbor_rays = tuple(target_to_neighbor(lattice(row)) for row in target_rays)
-            neighbor = cones.from_rays(lattice, neighbor_rays)
+            neighbor = cones.from_rays(neighbor_rays)
             incidence = tuple(int(value) for value in adjacency_record["x"]["eInc"])
             if len(incidence) != len(source_rays):
                 raise ArithmeticError("a perfect-domain facet incidence has the wrong length")
             face_rays = tuple(
                 lattice(ray) for ray, selected in zip(source_rays, incidence, strict=True) if selected
             )
-            common_face = cones.from_rays(lattice, face_rays)
+            common_face = cones.from_rays(face_rays)
             adjacencies.append(
                 PerfectDomainOrbitAdjacency(
                     source,

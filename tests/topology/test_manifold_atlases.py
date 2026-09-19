@@ -6,6 +6,7 @@ from dzack_research.preamble.categories.manifolds import (
     SmoothManifolds,
     TopologicalManifolds,
 )
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 
 
 def _two_chart_translation(manifold, shift):
@@ -22,6 +23,7 @@ def test_topological_atlas_retains_labels_and_nonidentity_transition() -> None:
     source, target, transition = _two_chart_translation(manifold, 1)
 
     assert manifold in TopologicalManifolds()
+    assert manifold in TopologicalSpaces()
     assert manifold.regularity() == "topological"
     assert tuple(manifold.chart_labels()) == ("x", "y")
     assert manifold.atlas()["x"] is source
@@ -40,6 +42,7 @@ def test_finite_Ck_atlas_retains_exact_differentiability_degree() -> None:
 
     assert manifold in DifferentiableManifolds()
     assert manifold in TopologicalManifolds()
+    assert manifold in TopologicalSpaces()
     assert manifold.differentiability_degree() == 2
     assert manifold.regularity() == "C^2"
     assert not manifold.is_smooth()
@@ -55,6 +58,7 @@ def test_smooth_atlas_is_a_differentiable_and_topological_atlas() -> None:
     assert manifold in SmoothManifolds()
     assert manifold in DifferentiableManifolds()
     assert manifold in TopologicalManifolds()
+    assert manifold in TopologicalSpaces()
     assert manifold.differentiability_degree() == Infinity
     assert manifold.regularity() == "smooth"
     assert manifold.is_smooth()

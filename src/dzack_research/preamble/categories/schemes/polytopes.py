@@ -10,7 +10,10 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as engine_parent
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -20,7 +23,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.tensors.tensor import tensor
 
 for _axiom in ("Integral", "Polygon"):
     if _axiom not in all_axioms:
@@ -123,7 +125,7 @@ class RegularPolytopes(OwnedCategory):
             return f"Regular polytope {{{symbol}}}"
 
 
-class ConvexPolytopes(OwnedCategory):
+class ConvexPolytopes(OwnedParameterizedCategory):
     r"""Rational convex polytopes in a chosen coordinate lattice.
 
     Public coordinate data live in the owned modules ``ZZ^n`` and ``QQ^n``.
@@ -131,22 +133,35 @@ class ConvexPolytopes(OwnedCategory):
     computation engine.
     """
 
-    def an_object(self):
-        r"""The rational simplex on ``0, e_1/2, e_2, e_3`` in ``QQ^3``."""
-        from sage.rings.rational import Rational
-
-        return self(
-            (
-                (0, 0, 0),
-                (Rational((1, 2)), 0, 0),
-                (0, 1, 0),
-                (0, 0, 1),
-            )
+    def parameter_category(self):
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
         )
+
+        return FramedFreeModules(_own_ring(SageZZ))
+
+    def ambient_lattice(self):
+        return self.base()
+
+    @cached_method
+    def ambient_space(self):
+        rationals = _own_ring(SageQQ)
+        return rationals.free_module(self.ambient_lattice().module_generating_set())
+
+    def an_object(self):
+        r"""The standard simplex in this category's rational coordinate space."""
+        labels = tuple(self.ambient_lattice().module_generating_set())
+        zero = tuple(0 for _label in labels)
+        vertices = [zero]
+        for selected in labels:
+            vertices.append(tuple(1 if label == selected else 0 for label in labels))
+        return self(vertices)
 
     def _call_(self, vertices, lattice=None):
         r"""Construct the convex polytope on the selected vertices."""
-        return _convex_polytope(vertices, lattice=lattice)
+        if lattice is not None and lattice is not self.ambient_lattice():
+            raise ValueError("the supplied lattice differs from this polytope category's ambient lattice")
+        return _convex_polytope(vertices, lattice=self.ambient_lattice())
 
     def from_halfspaces(self, halfspaces, lattice=None):
         r"""The polytope cut out by a family of affine halfspaces.
@@ -173,16 +188,27 @@ class ConvexPolytopes(OwnedCategory):
         assert polyhedron.is_compact(), (
             "a polytope is a bounded intersection of halfspaces"
         )
-        return _convex_polytope(engine_polyhedron=polyhedron, lattice=lattice)
+        if lattice is not None and lattice is not self.ambient_lattice():
+            raise ValueError("the supplied lattice differs from this polytope category's ambient lattice")
+        return _convex_polytope(
+            engine_polyhedron=polyhedron,
+            lattice=self.ambient_lattice(),
+        )
 
     @classmethod
     def _repr_object_names(cls):
         return "convex polytopes"
 
     def super_categories(self):
-        return [Sets()]
+        return [Sets().Subobjects(self.ambient_space())]
 
     class SubcategoryMethods:
+        def ambient_lattice(self):
+            return self.base_category().ambient_lattice()
+
+        def ambient_space(self):
+            return self.base_category().ambient_space()
+
         def Integral(self) -> Category:
             r"""Return this category with the axiom that every vertex is a lattice point."""
             return self._with_axiom("Integral")
@@ -233,9 +259,13 @@ class ConvexPolytopes(OwnedCategory):
 
         def _engine_coordinates(self, point):
             rationals = _own_ring(SageQQ)
+            ambient = self.ambient_space()
+            point = ambient(point)
+            coefficients = ambient.framing_coefficients(point)
+            zero = rationals.zero()
             return tuple(
-                _engine_element(rationals, rationals(coordinate))
-                for coordinate in point
+                _engine_element(rationals, coefficients.get(label, zero))
+                for label in ambient.module_generating_set()
             )
 
         def ambient_lattice(self):
@@ -244,9 +274,7 @@ class ConvexPolytopes(OwnedCategory):
 
         def ambient_space(self):
             r"""Return the owned rational coordinate module ``QQ^n``."""
-
-            rationals = _own_ring(SageQQ)
-            return rationals.free_module(self.ambient_lattice().module_generating_set())
+            return self.codomain()
 
         def dimension(self):
             return _own_ring(SageZZ)(int(self._engine_polyhedron().dim()))
@@ -267,8 +295,7 @@ class ConvexPolytopes(OwnedCategory):
             rationals = _own_ring(SageQQ)
             return finite_ordered_set(
                 tuple(
-                    tensor.vector(
-                        rationals,
+                    self.ambient_space()(
                         tuple(
                             self._owned_rational_coordinate(coordinate)
                             for coordinate in vertex
@@ -411,9 +438,8 @@ class ConvexPolytopes(OwnedCategory):
             assert scalar >= integers.zero(), (
                 "Ehrhart dilation factors are nonnegative"
             )
-            return ConvexPolytopes().Integral()(
+            return ConvexPolytopes(self.ambient_lattice()).Integral()(
                 [tuple(scalar * coordinate for coordinate in vertex) for vertex in self.vertices()],
-                lattice=self.ambient_lattice(),
             )
 
         def ehrhart_polynomial(self, variable="t"):
@@ -490,7 +516,7 @@ class ConvexPolytopes(OwnedCategory):
                 "the polar dual is bounded only when the origin is interior"
             )
             polar = self._engine_polyhedron().polar()
-            return ConvexPolytopes()(polar.vertices())
+            return ConvexPolytopes(self.ambient_lattice().dual_module())(polar.vertices())
 
         def is_smooth(self) -> bool:
             if not self.is_lattice_polytope():
@@ -509,8 +535,8 @@ class ConvexPolytopes(OwnedCategory):
         r"""Convex polytopes all of whose vertices are lattice points."""
 
         def an_object(self):
-            r"""The standard simplex in ``ZZ^3``."""
-            return self(((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)))
+            r"""The standard simplex in this category's coordinate lattice."""
+            return self.base_category().an_object()
 
         @classmethod
         def _repr_object_names(cls):
@@ -538,6 +564,9 @@ class ConvexPolytopes(OwnedCategory):
                 "the represented reflexive-polytope classification covers "
                 "dimensions two and three"
             )
+            assert int(self.ambient_lattice().module_rank()) == dimension, (
+                "the reflexive-polytope classification dimension equals the ambient lattice rank"
+            )
             return finite_ordered_set(
                 tuple(
                     self(
@@ -554,8 +583,16 @@ class ConvexPolytopes(OwnedCategory):
             r"""Lattice polytopes of affine dimension two."""
 
             def an_object(self):
-                r"""The standard triangle in ``ZZ^2``."""
-                return self(((0, 0), (1, 0), (0, 1)))
+                r"""The standard triangle in the first two coordinates."""
+                labels = tuple(self.ambient_lattice().module_generating_set())
+                assert len(labels) >= 2, "a polygon requires ambient lattice rank at least two"
+                return self(
+                    (
+                        tuple(0 for _label in labels),
+                        tuple(1 if label == labels[0] else 0 for label in labels),
+                        tuple(1 if label == labels[1] else 0 for label in labels),
+                    )
+                )
 
             @classmethod
             def _repr_object_names(cls):
@@ -569,10 +606,18 @@ class ConvexPolytopes(OwnedCategory):
         r"""Convex polytopes of affine dimension two."""
 
         def an_object(self):
-            r"""The triangle on ``0, e_1/2, e_2``, whose vertices are not integral."""
+            r"""The triangle on ``0, e_1/2, e_2`` in the first two coordinates."""
             from sage.rings.rational import Rational
 
-            return self(((0, 0), (Rational((1, 2)), 0), (0, 1)))
+            labels = tuple(self.ambient_lattice().module_generating_set())
+            assert len(labels) >= 2, "a polygon requires ambient lattice rank at least two"
+            return self(
+                (
+                    tuple(0 for _label in labels),
+                    tuple(Rational((1, 2)) if label == labels[0] else 0 for label in labels),
+                    tuple(1 if label == labels[1] else 0 for label in labels),
+                )
+            )
 
         @classmethod
         def _repr_object_names(cls):
@@ -641,23 +686,25 @@ class ConvexPolytopes(OwnedCategory):
                 )
 
 
-def LatticePolytopes() -> Category:
+def LatticePolytopes(lattice) -> Category:
     r"""The category of lattice polytopes."""
-    return ConvexPolytopes().Integral()
+    return ConvexPolytopes(lattice).Integral()
 
 
-def ConvexPolygons() -> Category:
+def ConvexPolygons(lattice) -> Category:
     r"""The category of convex polygons."""
-    return ConvexPolytopes().Polygon()
+    return ConvexPolytopes(lattice).Polygon()
 
 
-def LatticePolygons() -> Category:
+def LatticePolygons(lattice) -> Category:
     r"""The category of lattice polygons."""
-    return ConvexPolytopes().Integral().Polygon()
+    return ConvexPolytopes(lattice).Integral().Polygon()
 
 
 def _polytope_in(category, vertices, lattice):
     r"""The polytope on ``vertices``, which the caller asserts lies in ``category``."""
+    if lattice is None:
+        lattice = category.ambient_lattice()
     polytope = _convex_polytope(vertices, lattice=lattice)
     assert polytope in category, f"the vertices do not span an object of {category}"
     return polytope
@@ -690,10 +737,6 @@ def _convex_polytope(
     rationals = _own_ring(SageQQ)
     if engine_polyhedron is not None:
         polyhedron = engine_polyhedron
-    elif vertices in ConvexPolytopes():
-        polyhedron = vertices._engine_polyhedron()
-        if lattice is None:
-            lattice = vertices.ambient_lattice()
     else:
         engine_vertices = [
             tuple(
@@ -705,8 +748,7 @@ def _convex_polytope(
         polyhedron = Polyhedron(vertices=engine_vertices, base_ring=SageQQ)
 
     ambient_dimension = int(polyhedron.ambient_dim())
-    if lattice is None:
-        lattice = integers.free_module(ambient_dimension)
+    assert lattice is not None, "a convex-polytope construction names its ambient lattice"
     assert lattice.base_ring() is integers, (
         "the ambient lattice of a rational polytope is an owned ZZ-module"
     )
@@ -714,15 +756,32 @@ def _convex_polytope(
         "the ambient lattice rank must equal the coordinate dimension"
     )
 
-    placement = ConvexPolytopes()
+    placement = ConvexPolytopes(lattice)
     if _engine_vertices_are_integral(polyhedron):
         placement = placement.Integral()
     if int(polyhedron.dim()) == 2:
         placement = placement.Polygon()
-    return _object_of(
-        placement,
-        engine_polyhedron=polyhedron,
-        ambient_lattice=lattice,
+    ambient = ConvexPolytopes(lattice).ambient_space()
+    labels = tuple(ambient.module_generating_set())
+    zero = rationals.zero()
+
+    def contains(point):
+        point = ambient(point)
+        coefficients = ambient.framing_coefficients(point)
+        coordinates = tuple(
+            _engine_element(rationals, coefficients.get(label, zero))
+            for label in labels
+        )
+        return bool(polyhedron.contains(coordinates))
+
+    subset = ambient.condition_set(contains)
+    return Sets().Subobjects(ambient).object(
+        subset.inclusion(),
+        categories=(placement,),
+        construction_data={
+            "engine_polyhedron": polyhedron,
+            "ambient_lattice": lattice,
+        },
     )
 
 

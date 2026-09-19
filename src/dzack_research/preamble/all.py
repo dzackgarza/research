@@ -392,7 +392,6 @@ from dzack_research.preamble.categories.schemes import (
     Schemes,
     ZariskiCoveringFamilies,
     zariski_coverage,
-    SchemeUnderlyingSpace,
     SheafObjects,
     SheafedSpaces,
     SideDecoration,
@@ -453,6 +452,11 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     omega,
     omega0,
     ordinal,
+)
+from dzack_research.preamble.categories.topological_spaces import (  # noqa: F401
+    ContinuousMap,
+    TopologicalSpaceHomset,
+    TopologicalSpaces,
 )
 from dzack_research.preamble.categories.vector_configurations import (  # noqa: F401
     VectorConfigurations,

@@ -9,6 +9,7 @@ from dzack_research.preamble.all import (
     LogPairs,
     QQ,
     RationalPolyhedralFans,
+    Schemes,
     ToricLogPairs,
     ZZ,
 )
@@ -58,6 +59,8 @@ def test_the_toric_log_pair_is_log_calabi_yau() -> None:
 
     assert pair in LogPairs(QQ)
     assert pair in ToricLogPairs(QQ)
+    assert pair in Schemes(QQ)
+    assert pair.scheme_base_ring() is QQ
     assert pair.log_scheme() is plane
     assert pair.boundary_divisor() == plane.toric_boundary_divisor()
     assert pair.is_toric_boundary()
