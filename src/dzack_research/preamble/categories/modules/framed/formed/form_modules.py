@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.modules.base_change import (
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    _module_subobject_constructor_data,
+    _module_subobject_spanning,
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.hodge import (
@@ -2149,19 +2149,19 @@ def _form_module(
     _subobject_lift=None,
     _subobject_inclusion_factory=None,
 ):
-    r"""Return the same represented module construction equipped with ``form``.
+    r"""Equip the exact represented module carrying ``form`` with that form.
 
-    The result remains a module object; it is not a wrapper around an
-    ``underlying`` module.  A distinct represented parent is used so that two
-    different selected forms on isomorphic modules remain distinct structured
-    objects.
+    The module owner chooses the realization of the stronger object.  The
+    formed layer supplies only its selected form and, for a subobject, the
+    retained inclusion datum.  A distinct structured parent still represents
+    each choice of form, but this owner does not rebuild the module's framing
+    or presentation.
     """
 
     if not (_is_bilinear_form(form) or _is_quadratic_form(form)):
         raise TypeError("a formed module is classified by a bilinear or quadratic form")
     module = form.module()
     base_ring = module.base_ring()
-    labels = module.module_generating_set()
     categories = [FormModules(base_ring)]
     if module in VectorSpaces(base_ring):
         categories.append(VectorSpaces(base_ring))
@@ -2186,55 +2186,41 @@ def _form_module(
     categories.extend(tuple(_extra_categories))
     construction_data = dict(_extra_construction_data or {})
     construction_data["source_form"] = form
-    common = {
-        "_subobject_ambient": _subobject_ambient,
-        "_subobject_generator_images": _subobject_generator_images,
-        "_subobject_lift": _subobject_lift,
-        "_subobject_inclusion_factory": _subobject_inclusion_factory,
-        "_extra_categories": tuple(categories),
-        "_extra_construction_data": construction_data,
-    }
-    if is_free:
-        return base_ring._fresh_free_module_on(labels, **common)
-    if is_presented:
-        from sage.categories.category import Category
-        from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+    match (_subobject_ambient, _subobject_inclusion_factory):
+        case (None, None):
+            pass
+        case _:
+            from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
-        if _subobject_ambient is not None or _subobject_inclusion_factory is not None:
             categories.append(ModuleSubobjects(base_ring))
-            if _subobject_ambient is not None:
-                categories.append(Modules(base_ring).Subobjects(_subobject_ambient))
+            match _subobject_ambient:
+                case None:
+                    pass
+                case ambient:
+                    categories.append(Modules(base_ring).Subobjects(ambient))
             construction_data.update(
                 subobject_ambient=_subobject_ambient,
                 subobject_generator_images=_subobject_generator_images,
                 subobject_lift=_subobject_lift,
                 subobject_inclusion_factory=_subobject_inclusion_factory,
             )
-        return ModulesWithChosenFinitePresentation(base_ring)(
-            module.presentation(), category=Category.join(categories), **construction_data
-        )
-    raise TypeError(
-        "the active formed-module constructor requires a framed free or chosen finitely presented module"
-    )
+    return module._module_with_structure(tuple(categories), construction_data)
 
 
 @cached_function(key=lambda module, basis: (id(module), basis))
 def _form_subobject_spanning(module, basis):
     r"""Return the canonical formed subobject on a finite span basis."""
 
-    labels, embedded, lift = _module_subobject_constructor_data(module, basis)
-    free_source = module.base_ring().free_module(labels)
-    preliminary = free_source.Mono(module)(embedded)
-
-    def inclusion_factory(source):
-        return source.Mono(module)(embedded)
+    subobject = _module_subobject_spanning(module, basis)
+    construction = subobject.module_subobject_construction()
+    restricted = module._formed_form().pullback(subobject.inclusion())
 
     return FormModules(module.base_ring())(
-        module._formed_form().pullback(preliminary),
-        _subobject_ambient=module,
-        _subobject_generator_images=embedded,
-        _subobject_lift=lift,
-        _subobject_inclusion_factory=inclusion_factory,
+        restricted,
+        _subobject_ambient=construction.ambient_module(),
+        _subobject_generator_images=construction.generator_images(),
+        _subobject_lift=construction.selected_lift(),
+        _subobject_inclusion_factory=construction.inclusion_factory(),
     )
 
 

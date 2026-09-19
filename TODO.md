@@ -207,12 +207,7 @@ Preserve the phase-T execution rules.
 
 Paths below are relative to `src/dzack_research/preamble/categories/` unless a different root is given. These nodes repair existing constructions. A requested source review is an unresolved obligation, not a claim that every named path is broken.
 
-- [ ] **`formed-module-data`**. **Needs:** none.
-  **Owner and delta:** `modules/framed/formed/form_modules.py`, `forms/forms.py` and their form/lattice constructors: inherit module operations on the retained module and add exactly the selected form.
-  **Invariants:** two different forms on M retain M but give distinct structured objects; no copy-and-identify module or object-level forget/equip morphism pair remains. A subobject i:N -> M carries the restricted form b composed with i tensor i; genuine inclusions remain available (`OWN-16`).
-  **Closure specimens:** two forms on Z^2 give different pairings with the same unformed input; scaling an inclusion by 2 scales its restricted bilinear form by 4. Generic addition, scalar multiplication and morphism composition work before form accessors are called.
-
-- [ ] **`group-module-data`**. **Needs:** `formed-module-data`.
+- [ ] **`group-module-data`**. **Needs:** none.
   **Owner and delta:** `modules/group_modules/` and `functors/group_scalar_change.py`: thread the R[G]-module datum, action and scalar change through the shared owners on objects and arrows.
   **Invariants:** a group action is by linear automorphisms satisfying its relations; the linearized module and original selected module agree through their construction. Group scalar change consumes the ordinary scalar functor, rather than maintaining another extension algorithm. A group lattice also retains its form and action compatibility.
   **Closure specimens:** trivial and sign C2-actions on Z are distinct and become equal in characteristic two under the specified scalar extension. An action generator failing the group relation is rejected; an underlying linear map that is not equivariant is rejected as a group-module morphism. Preserve transported forms under their stated hypotheses.
@@ -272,12 +267,12 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Forms, actions and arithmetic realizations
 
-- [ ] **`involution-primitive-extension`**. **Needs:** `formed-module-data`.
+- [ ] **`involution-primitive-extension`**. **Needs:** none.
   **Owner and delta:** `lattice_morphisms.py::primitive_extension`, the retained construction in `lattice_centralizers.py`, and its Enriques marked-cohomology consumer: repair the owned invariant/orthogonal-complement extension and its maps, preserving the existing arithmetic realization.
   **Invariants:** for an integral nondegenerate lattice L with an involutive isometry g, retain S=ker(g-id), T=S-perp, their actual inclusions and forms, S direct-sum T -> L, and the finite discriminant gluing that reconstructs this extension. The orthogonal complement is not the module coinvariant quotient. Discriminant anti-isometries retain their domain subgroups and applicable integral/even hypotheses; no full-discriminant isomorphism is inferred without the necessary hypotheses. The geometric consumer retains the selected marking and the surface theorem's hypotheses; matching a signature does not construct cohomology or its pullback.
   **Closure specimens and consumer:** on the hyperbolic plane with g swapping its two isotropic basis vectors, S and T have Gram entries 2 and -2 and their sum has index 2 in L; the gluing reconstructs L with its inclusions. The Enriques consumer recovers the invariant inclusion, free H^2 pullback scaling the form by 2, zero pullback on the canonical Z/2 class, and the same discriminant gluing. These maps are the delivered output; computing every centralizer or orbit is a separate obligation.
 
-- [ ] **`infinite-form-contract`**. **Needs:** `formed-module-data`.
+- [ ] **`infinite-form-contract`**. **Needs:** none.
   **Owner and delta:** infinite formed modules and their lattice specializations: retain actual functional, dual and inverse data where claimed.
   **Invariants:** nondegeneracy is over the declared coefficient ring; unimodularity requires an isomorphism with the full algebraic dual. An infinite free module's finite-support dual is not its full dual. Infinite signatures, pairings or colimits cannot be decided from sampled finite stages; exact computations require the stated sufficient data.
   **Closure specimens:** multiplication by 2 as the Gram map on Z is injective but not unimodular; the diagonal form on a countable direct sum over a field maps into the full dual without surjecting onto all functionals. Contrast a genuinely supplied dual inverse. Preserve the mathematical objects when a requested invariant is undecidable (`DEV-52`).
@@ -373,7 +368,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** rename the entire owned definition/reference family coherently without compatibility aliases or fake upstream stubs. Endpoint categories and inherited operations are preserved. Protected expectation subtrees are never rewritten to make the new implementation pass.
   **Closure specimens:** direct session construction and composition in module, algebra and scheme morphism spaces use Mor and exercise nonidentity maps. Source review covers owned definitions and dynamic exports as well as call sites. A spelling-only search cannot certify that the resulting morphism belongs to the right category.
 
-- [ ] **`coordinate-firewall`**. **Needs:** `formed-module-data`.
+- [ ] **`coordinate-firewall`**. **Needs:** none.
   **Owner and delta:** ordinary lattice, module, tensor and morphism coordinate/storage accessors and all research consumers of them.
   **Invariants:** coordinate views belong to a specified finite framing/presentation; a coordinate matrix of a linear map requires the chosen free endpoint framings (`CON-04`). Nonfree generators are not a basis. Ordinary operations use owned morphisms, tensors and universal constructions, without extracting raw engine storage.
   **Closure specimens:** express the same map in two selected bases and preserve its semantic action; a relationful module cannot acquire a free-module matrix by listing generators. Include an unframed/infinite object. Migrate actual consumers before removing to_list/to_tuple/to_vector/components/list escapes; their mathematical needs remain required.
