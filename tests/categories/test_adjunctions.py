@@ -1,3 +1,5 @@
+import pytest
+
 from dzack_research.preamble.all import (
     ZZ,
     Groups,
@@ -6,6 +8,7 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Sets,
 )
+from dzack_research.preamble.categories.functors.core import Adjunction
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -32,6 +35,17 @@ def _swap_group_module():
         )
 
     return group, Modules(ZZ[group])(module, swap)
+
+
+def test_adjunction_rejects_parallel_public_equivalent_data() -> None:
+    with pytest.raises(TypeError, match="equivalent public data"):
+
+        class _IndependentlySpecifiedAdjunction(Adjunction):
+            def unit(self, obj):
+                return obj
+
+            def hom_set_isomorphism_forward(self, morphism, source):
+                return morphism
 
 
 def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() -> None:

@@ -458,7 +458,7 @@ class _LatticeLinearizationEquivalence(Adjunction):
             _RestrictionAlongGroupInclusionLatticeFunctor(group_algebra),
         )
 
-    def unit(self, acted):
+    def _unit_component(self, acted):
         from dzack_research.preamble.categories.functors.group_actions import (
             _action_functor_of,
         )
@@ -472,7 +472,7 @@ class _LatticeLinearizationEquivalence(Adjunction):
             lambda _obj: component
         )
 
-    def counit(self, lattice):
+    def _counit_component(self, lattice):
         relinearized = self.left_adjoint()(self.right_adjoint()(lattice))
         return self.right_adjoint().domain().Mor(relinearized, lattice)(lattice.module_generator)
 

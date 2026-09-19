@@ -288,14 +288,14 @@ class _AlgebraBaseChangeAdjunction(Adjunction):
             _AlgebraRestrictionOfScalarsFunctor(ring_map),
         )
 
-    def unit(self, algebra):
+    def _unit_component(self, algebra):
         extended = self.left_adjoint()(algebra)
         restricted = self.right_adjoint()(extended)
         return Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, restricted)(
             lambda label: restricted(extended.algebra_generator(label))
         )
 
-    def counit(self, algebra):
+    def _counit_component(self, algebra):
         restricted = self.right_adjoint()(algebra)
         extended = self.left_adjoint()(restricted)
         return Algebras(extended.base_ring()).Associative().Unital().Mor(extended, algebra)(

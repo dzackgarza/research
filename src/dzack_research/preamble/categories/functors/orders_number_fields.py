@@ -65,14 +65,14 @@ class _OrderNumberFieldAdjunction(Adjunction):
     def __init__(self) -> None:
         super().__init__(_FractionFieldFunctor(), _RingOfIntegersFunctor())
 
-    def unit(self, order):
+    def _unit_component(self, order):
         field = self.left_adjoint()(order)
         maximal_order = self.right_adjoint()(field)
         return order.Mor(maximal_order)(
             field.Mor(field).identity()
         )
 
-    def counit(self, field):
+    def _counit_component(self, field):
         source = self.left_adjoint()(self.right_adjoint()(field))
         if _engine_ring(source) is _engine_ring(field):
             if source is field:

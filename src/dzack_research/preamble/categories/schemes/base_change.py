@@ -393,7 +393,7 @@ class _SliceBaseChangeAdjunction(Adjunction):
     def base_morphism(self):
         return self._base_morphism
 
-    def unit(self, family):
+    def _unit_component(self, family):
         r"""``X -> X x_S S'`` over ``S'``, the cone with legs ``id_X`` and ``X -> S'``."""
         composed = self.left_adjoint()(family)
         pulled_back = self.right_adjoint()(composed)
@@ -401,7 +401,7 @@ class _SliceBaseChangeAdjunction(Adjunction):
         cone = pulled_back.arrow().domain().from_pullback_cone(scheme.categorical_identity_morphism(), family.arrow())
         return self.left_adjoint().domain().Mor(family, pulled_back)(cone)
 
-    def counit(self, family):
+    def _counit_component(self, family):
         r"""``Y x_S S' -> Y`` over ``S``, the projection to the family."""
         pulled_back = self.right_adjoint()(family)
         composed = self.left_adjoint()(pulled_back)

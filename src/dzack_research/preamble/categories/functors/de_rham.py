@@ -141,13 +141,13 @@ class _DeRhamAdjunction(Adjunction):
     def base_ring(self):
         return self._base_ring
 
-    def unit(self, algebra):
+    def _unit_component(self, algebra):
         degree_zero = self.right_adjoint()(self.left_adjoint()(algebra))
         return Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, degree_zero)(
             {label: degree_zero.algebra_generator(label) for label in algebra.algebra_generating_set()}
         )
 
-    def counit(self, dga):
+    def _counit_component(self, dga):
         degree_zero = self.right_adjoint()(dga)
         source = self.left_adjoint()(degree_zero)
         identity = Algebras(degree_zero.base_ring()).Associative().Unital().Mor(degree_zero, degree_zero).identity()

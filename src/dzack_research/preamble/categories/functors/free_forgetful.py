@@ -61,13 +61,13 @@ class _FreeForgetfulAdjunction(Adjunction):
             _UnderlyingSetFunctor(self._base_ring),
         )
 
-    def unit(self, set_object):
+    def _unit_component(self, set_object):
         free = self.left_adjoint()(set_object)
         return Sets().Mor(set_object, free)(
             lambda element: free.module_generator(element)
         )
 
-    def counit(self, module):
+    def _counit_component(self, module):
         free = self.left_adjoint()(self.right_adjoint()(module))
         return free.module_category().Mor(free, module)(lambda element: element)
 

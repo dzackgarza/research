@@ -65,11 +65,11 @@ class _FreeGroupUnderlyingSetAdjunction(Adjunction):
     def __init__(self) -> None:
         super().__init__(_FreeGroupFunctor(), _GroupUnderlyingSetFunctor())
 
-    def unit(self, set_object):
+    def _unit_component(self, set_object):
         free_group = self.left_adjoint()(set_object)
         return Sets().Mor(set_object, free_group)(free_group.free_generator)
 
-    def counit(self, group):
+    def _counit_component(self, group):
         free_group = self.left_adjoint()(self.right_adjoint()(group))
         return free_group.Mor(group)(
             Sets().Mor(free_group.free_basis(), group)(

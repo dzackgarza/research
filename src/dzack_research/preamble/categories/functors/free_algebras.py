@@ -170,7 +170,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
     def base_ring(self):
         return self._base_ring
 
-    def unit(self, module):
+    def _unit_component(self, module):
         r"""The degree-one inclusion \(M\to U(F(M))\)."""
         free_algebra = self.left_adjoint()(module)
         underlying = self.right_adjoint()(free_algebra)
@@ -178,7 +178,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
             free_algebra.algebra_generator
         )
 
-    def counit(self, algebra):
+    def _counit_component(self, algebra):
         r"""Evaluation \(F(U(A))\to A\) when ``U(A)`` is represented."""
         module = self.right_adjoint()(algebra)
         free_algebra = self.left_adjoint()(module)

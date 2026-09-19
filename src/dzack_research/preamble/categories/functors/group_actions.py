@@ -321,13 +321,13 @@ class _TrivialInvariantsAdjunction(_RestrictionCoextensionAdjunction):
     _restriction_functor = _TrivialActionFunctor
     _coextension_functor = _InvariantsFunctor
 
-    def unit(self, module):
+    def _unit_component(self, module):
         invariants = self.right_adjoint()(self.left_adjoint()(module))
         return module.module_category().Mor(module, invariants)(
             lambda label: invariants.module_generator(label)
         )
 
-    def counit(self, group_module):
+    def _counit_component(self, group_module):
         invariants = self.right_adjoint()(group_module)
         trivial = self.left_adjoint()(invariants)
         return trivial.Mor(group_module)(
@@ -348,7 +348,7 @@ class _CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
     _extension_functor = _CoinvariantsFunctor
     _restriction_functor = _TrivialActionFunctor
 
-    def unit(self, group_module):
+    def _unit_component(self, group_module):
         coinvariants = self.left_adjoint()(group_module)
         trivial = self.right_adjoint()(coinvariants)
         return group_module.Mor(trivial)(
@@ -361,7 +361,7 @@ class _CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
             )
         )
 
-    def counit(self, module):
+    def _counit_component(self, module):
         coinvariants = self.left_adjoint()(self.right_adjoint()(module))
         if coinvariants is not module:
             raise ValueError("coinvariants of the trivial action must be the original module")

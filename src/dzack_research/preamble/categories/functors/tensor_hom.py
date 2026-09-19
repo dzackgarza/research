@@ -78,7 +78,7 @@ class _TensorHomAdjunction(Adjunction):
         return self._fixed_module
 
 
-    def unit(self, module):
+    def _unit_component(self, module):
         tensor = self.left_adjoint()(module)
         internal_hom = self.right_adjoint()(tensor)
         fixed = self.fixed_module()
@@ -91,7 +91,7 @@ class _TensorHomAdjunction(Adjunction):
             )
         )
 
-    def counit(self, module):
+    def _counit_component(self, module):
         internal_hom = self.right_adjoint()(module)
         return BilinearMap(
             internal_hom,

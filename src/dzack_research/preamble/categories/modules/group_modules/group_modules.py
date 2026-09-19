@@ -1397,7 +1397,7 @@ class _LinearizationEquivalence(Adjunction):
             _RestrictionAlongGroupInclusionFunctor(group_algebra),
         )
 
-    def unit(self, acted):
+    def _unit_component(self, acted):
         linearized = self.left_adjoint()(acted)
         underlying = linearized.unformed_module()
         identity = underlying.module_category().Mor(underlying, underlying).identity()
@@ -1405,7 +1405,7 @@ class _LinearizationEquivalence(Adjunction):
             lambda _obj: identity
         )
 
-    def counit(self, module):
+    def _counit_component(self, module):
         relinearized = self.left_adjoint()(self.right_adjoint()(module))
         underlying = module.unformed_module()
         identity = underlying.module_category().Mor(underlying, underlying).identity()

@@ -111,12 +111,12 @@ class GSetOrbitsTrivialAdjunction(Adjunction):
     def _repr_(self):
         return f"Orbit/trivial-action adjunction (-)/G ⊣ Triv_G for {self.right_adjoint().group()}"
 
-    def unit(self, g_set):
+    def _unit_component(self, g_set):
         orbit_set = self.left_adjoint()(g_set)
         trivial_orbits = self.right_adjoint()(orbit_set)
         return g_set.Mor(trivial_orbits)(orbit_set.orbit_of)
 
-    def counit(self, set_object):
+    def _counit_component(self, set_object):
         trivial = self.right_adjoint()(set_object)
         orbit_set = self.left_adjoint()(trivial)
         return Sets().Mor(orbit_set, set_object)(lambda orbit: orbit.representative())
@@ -133,12 +133,12 @@ class GSetTrivialFixedAdjunction(Adjunction):
     def _repr_(self):
         return f"Trivial-action/fixed-point adjunction Triv_G ⊣ (-)^G for {self.left_adjoint().group()}"
 
-    def unit(self, set_object):
+    def _unit_component(self, set_object):
         trivial = self.left_adjoint()(set_object)
         fixed = self.right_adjoint()(trivial)
         return Sets().Mor(set_object, fixed)(lambda point: point)
 
-    def counit(self, g_set):
+    def _counit_component(self, g_set):
         fixed = self.right_adjoint()(g_set)
         trivial_fixed = self.left_adjoint()(fixed)
         return trivial_fixed.Mor(g_set)(lambda point: point)
@@ -293,7 +293,7 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
     def _repr_(self):
         return f"Free/underlying adjunction G x - ⊣ U for {self.left_adjoint().group()}"
 
-    def unit(self, set_object):
+    def _unit_component(self, set_object):
         free = self.left_adjoint()(set_object)
         return Sets().Mor(set_object, free)(
             lambda point: self.left_adjoint().free_point(
@@ -301,7 +301,7 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
             )
         )
 
-    def counit(self, g_set):
+    def _counit_component(self, g_set):
         free = self.left_adjoint()(self.right_adjoint()(g_set))
         return free.Mor(g_set)(
             lambda point: g_set.act(point[0], point[1])
@@ -319,7 +319,7 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
     def _repr_(self):
         return f"Underlying/cofree adjunction U ⊣ Map(G, -) for {self.right_adjoint().group()}"
 
-    def unit(self, g_set):
+    def _unit_component(self, g_set):
         cofree = self.right_adjoint()(self.left_adjoint()(g_set))
         return g_set.Mor(cofree)(
             lambda point: self.right_adjoint().function_point(
@@ -328,7 +328,7 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
             )
         )
 
-    def counit(self, set_object):
+    def _counit_component(self, set_object):
         cofree = self.right_adjoint()(set_object)
         return Sets().Mor(cofree, set_object)(
             lambda function_point: self.right_adjoint().function_value(

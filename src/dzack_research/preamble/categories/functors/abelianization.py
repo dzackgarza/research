@@ -126,10 +126,10 @@ class _AbelianizationAdjunction(Adjunction):
     def __init__(self) -> None:
         super().__init__(_AbelianizationFunctor(), _AbelianGroupInclusionFunctor())
 
-    def unit(self, group):
+    def _unit_component(self, group):
         return self.left_adjoint().quotient_projection(group)
 
-    def counit(self, abelian_group):
+    def _counit_component(self, abelian_group):
         abelianization = self.left_adjoint()(abelian_group)
         projection = self.left_adjoint().quotient_projection(abelian_group).gap()
         quotient_model = _gap_model(abelianization)

@@ -207,7 +207,7 @@ Preserve the phase-T execution rules.
 
 Paths below are relative to `src/dzack_research/preamble/categories/` unless a different root is given. These nodes repair existing constructions. A requested source review is an unresolved obligation, not a claim that every named path is broken.
 
-- [ ] **`module-scalar-change`**. **Needs:** `functor-adjunction-coherence`.
+- [ ] **`module-scalar-change`**. **Needs:** none.
   **Owner and delta:** the scalar restriction/extension adjunction in `functors/scalar_change.py` and its module consumers; source review must establish object and morphism actions through one authority.
   **Invariants:** a specified ring map R -> S controls scalar change; extension is S tensor_R M with its universal map, restriction retains the original action through that map. Units, counits, compositions and semilinearity have exact owned endpoints. Preserve the existing group-scalar functor's delegation when it satisfies this contract.
   **Closure specimens:** extension along Z -> Z/2 takes Z/2 to a nonzero module and takes multiplication by 2 on Z to the zero map; extension along Z -> Q takes Z/2 to zero. Identity and composed base maps agree through the specified comparisons. No identification by rank or implicit base-ring replacement is admitted.
@@ -229,7 +229,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Diagrams, rings and geometric consumers
 
-- [ ] **`diagram-specializations`**. **Needs:** `functor-adjunction-coherence`.
+- [ ] **`diagram-specializations`**. **Needs:** none.
   **Owner and delta:** the common diagram/cone/limit owner and directed/inverse-system specializations under `OWN-09` and `OWN-14`: inspect every existing specialization's retained general object and repair duplicated authority.
   **Invariants:** represented indexing categories, functors, restrictions and induced maps live at the common owner. Category-specific realization retains its universal cone/cocone and uses the construction theorem under its existence hypotheses. General directed indices are not silently replaced by N; finite restrictions are different objects from the full system.
   **Closure specimens:** a branching finite diagram whose equalizer imposes a real compatibility condition, and an inverse system with nonidentity transition maps, preserve their indexing maps and universal composites. A disconnected diagram cannot be computed as a sequence. Ordinary limits do not stand in for homotopy limits.
@@ -310,12 +310,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`functor-adjunction-coherence`**. **Needs:** none.
-  **Owner and delta:** `abstract_categories/functors.py` and `functors/core.py`: close the equivalent-data complaint for contravariant functors, bifunctors and adjunctions at the shared owner.
-  **Invariants:** contravariance is a functor on the opposite category; a bifunctor uses the product category. An adjunction selects one complete defining datum and derives the equivalent unit/counit/transposes through it. Actual endpoints, variance, naturality and triangle identities agree; no parallel mutable authorities remain.
-  **Closure specimens:** a contravariant map reverses a nonidentity composite; a bifunctor respects composition in both variables. The free/forgetful adjunction recovers both transposes and triangle identities from its selected datum. A tuple of independently supplied inconsistent transposes is rejected or is not an admitted adjunction.
-
-- [ ] **`owned-product-results`**. **Needs:** `functor-adjunction-coherence`.
+- [ ] **`owned-product-results`**. **Needs:** none.
   **Owner and delta:** `CommutativeSquare.components()`, `NaturalTransformation.naturality_square()` and the complete public tuple-result family under `CON-15`.
   **Invariants:** genuinely mathematical products and indexed families have owned parents, projections and component codomains. Use existing product/family constructions; do not introduce a record class for each pair. Private adapter tuples remain representation data at their boundary.
   **Closure specimens:** project each square component into its actual morphism space and recover the naturality equation on a nonidentity arrow. Tensor shape/valence and invariant-factor families retain their mathematical indexing rather than a Python positional convention.

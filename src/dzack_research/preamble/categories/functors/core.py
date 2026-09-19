@@ -512,6 +512,85 @@ class NaturalTransformation:
         return self.source().functor_category().Mor(self.source(), self.target())(self)
 
 
+class _UnitCounitPresentation:
+    r"""One fixed unit-counit presentation of an adjunction.
+
+    This is the complete defining datum consumed by :class:`Adjunction`: the
+    two adjoint functors and the two component families.  It validates the
+    actual component endpoints once at their shared owner.  Hom transposes,
+    natural transformations and the public component accessors are derived
+    from this presentation rather than supplied as parallel interfaces.
+    """
+
+    def __init__(
+        self,
+        left_adjoint: Functor,
+        right_adjoint: Functor,
+        unit_component: Callable[[Parent], Morphism],
+        counit_component: Callable[[Parent], Morphism],
+    ) -> None:
+        match (
+            left_adjoint.domain() == right_adjoint.codomain(),
+            left_adjoint.codomain() == right_adjoint.domain(),
+        ):
+            case (True, True):
+                pass
+            case (False, _):
+                raise ValueError("the right adjoint must return to the left adjoint's domain")
+            case (_, False):
+                raise ValueError("the adjoints must run between the same two categories")
+        self._left_adjoint = left_adjoint
+        self._right_adjoint = right_adjoint
+        self._unit_component = unit_component
+        self._counit_component = counit_component
+
+    def left_adjoint(self) -> Functor:
+        return self._left_adjoint
+
+    def right_adjoint(self) -> Functor:
+        return self._right_adjoint
+
+    def unit(self, obj: Parent) -> Morphism:
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            _category_hom,
+        )
+
+        category = self.left_adjoint().domain()
+        match obj in category:
+            case True:
+                pass
+            case False:
+                raise TypeError("a unit component is indexed by an object of the left-adjoint domain")
+        target = self.right_adjoint()(self.left_adjoint()(obj))
+        arrow = self._unit_component(obj)
+        match arrow in _category_hom(category, obj, target):
+            case True:
+                pass
+            case False:
+                raise TypeError("the selected unit component has the wrong adjunction endpoints")
+        return arrow
+
+    def counit(self, obj: Parent) -> Morphism:
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            _category_hom,
+        )
+
+        category = self.right_adjoint().domain()
+        match obj in category:
+            case True:
+                pass
+            case False:
+                raise TypeError("a counit component is indexed by an object of the right-adjoint domain")
+        source = self.left_adjoint()(self.right_adjoint()(obj))
+        arrow = self._counit_component(obj)
+        match arrow in _category_hom(category, source, obj):
+            case True:
+                pass
+            case False:
+                raise TypeError("the selected counit component has the wrong adjunction endpoints")
+        return arrow
+
+
 class Adjunction:
     r"""Construction/proof data for an adjunction ``F ⊣ U``.
 
@@ -525,7 +604,10 @@ class Adjunction:
     ``F: C -> D`` and ``U: D -> C`` with natural transformations
     ``eta: 1_C => UF`` and ``epsilon: FU => 1_D`` satisfying the triangle
     identities ``U(epsilon) o eta_U = 1_U`` and ``epsilon_F o F(eta) = 1_F``.
-    A subclass supplies exactly this datum, :meth:`unit` and :meth:`counit`.
+    A subclass supplies exactly this datum through the private component
+    formulas :meth:`_unit_component` and :meth:`_counit_component`.  Construction
+    fixes those formulas in one :class:`_UnitCounitPresentation`; subclasses
+    cannot replace any of the public equivalent-data interfaces independently.
 
     Everything else is derived from it and is not supplied again: the natural
     Hom-set bijection ``Phi: Hom_D(F(A), B) -> Hom_C(A, U(B))``, with
@@ -535,19 +617,45 @@ class Adjunction:
     not re-checked here.
     """
 
+    _DERIVED_PUBLIC_INTERFACES = frozenset((
+        "unit",
+        "counit",
+        "hom_set_isomorphism_forward",
+        "hom_set_isomorphism_inverse",
+        "unit_transformation",
+        "counit_transformation",
+    ))
+
+    def __init_subclass__(cls, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        independently_supplied = cls._DERIVED_PUBLIC_INTERFACES.intersection(cls.__dict__)
+        match len(independently_supplied):
+            case 0:
+                pass
+            case _:
+                names = ", ".join(sorted(independently_supplied))
+                raise TypeError(
+                    f"an adjunction subclass supplies only _unit_component and _counit_component; "
+                    f"the equivalent public data are derived ({names})"
+                )
+
     def __init__(self, left_adjoint: Functor, right_adjoint: Functor) -> None:
-        if left_adjoint.domain() != right_adjoint.codomain():
-            raise ValueError("the right adjoint must return to the left adjoint's domain")
-        if left_adjoint.codomain() != right_adjoint.domain():
-            raise ValueError("the adjoints must run between the same two categories")
-        self._left_adjoint = left_adjoint
-        self._right_adjoint = right_adjoint
+        self._presentation = _UnitCounitPresentation(
+            left_adjoint,
+            right_adjoint,
+            self._unit_component,
+            self._counit_component,
+        )
+
+    def _unit_counit_presentation(self) -> _UnitCounitPresentation:
+        r"""Return this adjunction's one selected complete defining datum."""
+        return self._presentation
 
     def left_adjoint(self) -> Functor:
-        return self._left_adjoint
+        return self._unit_counit_presentation().left_adjoint()
 
     def right_adjoint(self) -> Functor:
-        return self._right_adjoint
+        return self._unit_counit_presentation().right_adjoint()
 
     def then(self, second: "Adjunction") -> "Adjunction":
         r"""Compose this adjunction with ``second``."""
@@ -564,12 +672,22 @@ class Adjunction:
         return label if endpoints in label else f"{label}: {endpoints}"
 
     @abstract_method
-    def unit(self, obj: Parent) -> Morphism:
-        r"""Return the unit component ``eta_A: A -> U(F(A))`` at ``obj``."""
+    def _unit_component(self, obj: Parent) -> Morphism:
+        r"""Construct the selected unit component before shared endpoint admission."""
 
     @abstract_method
+    def _counit_component(self, obj: Parent) -> Morphism:
+        r"""Construct the selected counit component before shared endpoint admission."""
+
+    @final
+    def unit(self, obj: Parent) -> Morphism:
+        r"""Return the unit component ``eta_A: A -> U(F(A))`` from the selected presentation."""
+        return self._unit_counit_presentation().unit(obj)
+
+    @final
     def counit(self, obj: Parent) -> Morphism:
-        r"""Return the counit component ``epsilon_B: F(U(B)) -> B`` at ``obj``."""
+        r"""Return the counit component ``epsilon_B: F(U(B)) -> B`` from the selected presentation."""
+        return self._unit_counit_presentation().counit(obj)
 
     @final
     def hom_set_isomorphism_forward(
@@ -646,11 +764,11 @@ class _CompositeAdjunction(Adjunction):
     def second(self) -> Adjunction:
         return self._second
 
-    def unit(self, obj: Parent) -> Morphism:
+    def _unit_component(self, obj: Parent) -> Morphism:
         first_unit = self.first().unit(obj)
         second_unit = self.second().unit(self.first().left_adjoint()(obj))
         return self.first().right_adjoint()(second_unit) * first_unit
 
-    def counit(self, obj: Parent) -> Morphism:
+    def _counit_component(self, obj: Parent) -> Morphism:
         first_counit = self.first().counit(self.second().right_adjoint()(obj))
         return self.second().counit(obj) * self.second().left_adjoint()(first_counit)

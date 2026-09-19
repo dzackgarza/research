@@ -83,11 +83,11 @@ class _SubobjectImageAdjunction(Adjunction):
     def _repr_(self):
         return f"Galois connection f_* ⊣ f^(-1) along {self._morphism}"
 
-    def unit(self, subobject):
+    def _unit_component(self, subobject):
         target = self.right_adjoint()(self.left_adjoint()(subobject))
         return self.left_adjoint().domain().Mor(subobject, target).canonical_morphism()
 
-    def counit(self, subobject):
+    def _counit_component(self, subobject):
         source = self.left_adjoint()(self.right_adjoint()(subobject))
         return self.left_adjoint().codomain().Mor(source, subobject).canonical_morphism()
 

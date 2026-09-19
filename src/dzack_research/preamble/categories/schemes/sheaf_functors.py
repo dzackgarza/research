@@ -115,7 +115,7 @@ class AffineQuasiCoherentAdjunction(Adjunction):
     def underlying_module_adjunction(self):
         return self._module_adjunction
 
-    def unit(self, sheaf):
+    def _unit_component(self, sheaf):
         r"""Return ``F -> f_* f^* F`` in the quasi-coherent sheaf Hom."""
         pulled = self.left_adjoint().on_object(sheaf)
         pushed = self.right_adjoint().on_object(pulled)
@@ -124,7 +124,7 @@ class AffineQuasiCoherentAdjunction(Adjunction):
             raise ArithmeticError("the affine sheaf adjunction unit has the wrong module endpoints")
         return self.left_adjoint().domain().Mor(sheaf, pushed)(unit)
 
-    def counit(self, sheaf):
+    def _counit_component(self, sheaf):
         r"""Return ``f^* f_* G -> G`` in the quasi-coherent sheaf Hom."""
         pushed = self.right_adjoint().on_object(sheaf)
         pulled = self.left_adjoint().on_object(pushed)

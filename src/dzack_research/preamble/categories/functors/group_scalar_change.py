@@ -135,7 +135,7 @@ class _GroupModuleBaseChangeAdjunction(Adjunction):
     def _underlying_adjunction(self):
         return self._underlying
 
-    def unit(self, group_module):
+    def _unit_component(self, group_module):
         extended = self.left_adjoint()(group_module)
         restricted = self.right_adjoint()(extended)
         underlying = self._underlying_adjunction()
@@ -145,7 +145,7 @@ class _GroupModuleBaseChangeAdjunction(Adjunction):
             unit,
         )
 
-    def counit(self, group_module):
+    def _counit_component(self, group_module):
         restricted = self.right_adjoint()(group_module)
         extended = self.left_adjoint()(restricted)
         underlying = self._underlying_adjunction()

@@ -421,7 +421,7 @@ class _InductionRestrictionAdjunction(_BaseChangeAdjunction):
     _extension_functor = _InductionFunctor
     _restriction_functor = _RestrictionOfActingGroupFunctor
 
-    def unit(self, group_module):
+    def _unit_component(self, group_module):
         induced = self.left_adjoint()(group_module)
         restricted = self.right_adjoint()(induced)
         representative = self.left_adjoint().identity_representative()
@@ -436,7 +436,7 @@ class _InductionRestrictionAdjunction(_BaseChangeAdjunction):
             }
         )
 
-    def counit(self, group_module):
+    def _counit_component(self, group_module):
         restricted = self.right_adjoint()(group_module)
         induced = self.left_adjoint()(restricted)
         return _equivariant_hom(induced, group_module,
@@ -456,7 +456,7 @@ class _RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
     _restriction_functor = _RestrictionOfActingGroupFunctor
     _coextension_functor = _CoinductionFunctor
 
-    def unit(self, group_module):
+    def _unit_component(self, group_module):
         restricted = self.left_adjoint()(group_module)
         coinduced = self.right_adjoint()(restricted)
         return _equivariant_hom(group_module, coinduced,
@@ -477,7 +477,7 @@ class _RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
             }
         )
 
-    def counit(self, group_module):
+    def _counit_component(self, group_module):
         coinduced = self.right_adjoint()(group_module)
         restricted = self.left_adjoint()(coinduced)
         representative = self.right_adjoint().identity_representative()

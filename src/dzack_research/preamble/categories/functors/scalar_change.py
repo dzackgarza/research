@@ -320,14 +320,14 @@ class _BaseChangeAdjunction(Adjunction):
             self._restriction_functor(ring_map),
         )
 
-    def unit(self, module):
+    def _unit_component(self, module):
         extended = self.left_adjoint()(module)
         restricted = self.right_adjoint()(extended)
         return module.module_category().Mor(module, restricted)(
             lambda label: restricted(extended.module_generator(label))
         )
 
-    def counit(self, module):
+    def _counit_component(self, module):
         restricted = self.right_adjoint()(module)
         extended = self.left_adjoint()(restricted)
         return extended.module_category().Mor(extended, module)(
@@ -355,7 +355,7 @@ class _RestrictionCoextensionAdjunction(Adjunction):
             self._coextension_functor(ring_map),
         )
 
-    def unit(self, module):
+    def _unit_component(self, module):
         restricted = self.left_adjoint()(module)
         coextended = self.right_adjoint()(restricted)
         scalars = self.right_adjoint().scalars_as_module()
@@ -377,7 +377,7 @@ class _RestrictionCoextensionAdjunction(Adjunction):
 
         return self.right_adjoint()._linear_map(module, coextended, image)
 
-    def counit(self, module):
+    def _counit_component(self, module):
         coextended = self.right_adjoint()(module)
         restricted = self.left_adjoint()(coextended)
         one = self.right_adjoint().scalars_as_module().one()
