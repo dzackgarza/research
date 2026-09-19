@@ -207,22 +207,17 @@ Preserve the phase-T execution rules.
 
 Paths below are relative to `src/dzack_research/preamble/categories/` unless a different root is given. These nodes repair existing constructions. A requested source review is an unresolved obligation, not a claim that every named path is broken.
 
-- [ ] **`module-scalar-change`**. **Needs:** none.
-  **Owner and delta:** the scalar restriction/extension adjunction in `functors/scalar_change.py` and its module consumers; source review must establish object and morphism actions through one authority.
-  **Invariants:** a specified ring map R -> S controls scalar change; extension is S tensor_R M with its universal map, restriction retains the original action through that map. Units, counits, compositions and semilinearity have exact owned endpoints. Preserve the existing group-scalar functor's delegation when it satisfies this contract.
-  **Closure specimens:** extension along Z -> Z/2 takes Z/2 to a nonzero module and takes multiplication by 2 on Z to the zero map; extension along Z -> Q takes Z/2 to zero. Identity and composed base maps agree through the specified comparisons. No identification by rank or implicit base-ring replacement is admitted.
-
 - [ ] **`formed-module-data`**. **Needs:** none.
   **Owner and delta:** `modules/framed/formed/form_modules.py`, `forms/forms.py` and their form/lattice constructors: inherit module operations on the retained module and add exactly the selected form.
   **Invariants:** two different forms on M retain M but give distinct structured objects; no copy-and-identify module or object-level forget/equip morphism pair remains. A subobject i:N -> M carries the restricted form b composed with i tensor i; genuine inclusions remain available (`OWN-16`).
   **Closure specimens:** two forms on Z^2 give different pairings with the same unformed input; scaling an inclusion by 2 scales its restricted bilinear form by 4. Generic addition, scalar multiplication and morphism composition work before form accessors are called.
 
-- [ ] **`group-module-data`**. **Needs:** `module-scalar-change`, `formed-module-data`.
+- [ ] **`group-module-data`**. **Needs:** `formed-module-data`.
   **Owner and delta:** `modules/group_modules/` and `functors/group_scalar_change.py`: thread the R[G]-module datum, action and scalar change through the shared owners on objects and arrows.
   **Invariants:** a group action is by linear automorphisms satisfying its relations; the linearized module and original selected module agree through their construction. Group scalar change consumes the ordinary scalar functor, rather than maintaining another extension algorithm. A group lattice also retains its form and action compatibility.
   **Closure specimens:** trivial and sign C2-actions on Z are distinct and become equal in characteristic two under the specified scalar extension. An action generator failing the group relation is rejected; an underlying linear map that is not equivariant is rejected as a group-module morphism. Preserve transported forms under their stated hypotheses.
 
-- [ ] **`graded-complex-connection-data`**. **Needs:** `module-scalar-change`.
+- [ ] **`graded-complex-connection-data`**. **Needs:** none.
   **Owner and delta:** `modules/graded_direct_sums.py`, `cochain_complexes.py`, `connections.py` and their existing algebra/derived consumers: settle the remaining construction and membership reviews at these owners.
   **Invariants:** grading, differential and connection are actual owned data with fixed domains and codomains. Direct sums retain finite-support semantics for arbitrary grading sets; a complex has d squared zero; a connection states its base derivation and Leibniz law. No category label supplies a missing map.
   **Closure specimens:** a nonzero two-term differential, a graded map that changes degree incorrectly, and a connection with a nontrivial Leibniz term distinguish the promised structures. Include an infinite graded direct sum so product semantics cannot substitute for finite support. Derived/DGA operations must consume these objects, not repeat their general API.
@@ -234,7 +229,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** represented indexing categories, functors, restrictions and induced maps live at the common owner. Category-specific realization retains its universal cone/cocone and uses the construction theorem under its existence hypotheses. General directed indices are not silently replaced by N; finite restrictions are different objects from the full system.
   **Closure specimens:** a branching finite diagram whose equalizer imposes a real compatibility condition, and an inverse system with nonidentity transition maps, preserve their indexing maps and universal composites. A disconnected diagram cannot be computed as a sequence. Ordinary limits do not stand in for homotopy limits.
 
-- [ ] **`localization-completion-threading`**. **Needs:** `diagram-specializations`, `module-scalar-change`.
+- [ ] **`localization-completion-threading`**. **Needs:** `diagram-specializations`.
   **Owner and delta:** ring/ideal localization and adic completion, module localization and existing formal consumers; inspect the live completed constructions and repair only remaining owner/representation mismatches.
   **Invariants:** localization retains the selected multiplicative system and universal map. Completion retains the full ideal-power inverse system, universal cone and maintained series realization where supported. A quotient modulo I^n is a stage, not the completion; a precision request is not its defining ideal. Scalar-change and restriction maps have their actual hypotheses.
   **Closure specimens:** localize Z at powers of 2 and factor a map inverting 2; a target where 2 is not invertible cannot supply that factorization. For a polynomial ring and its variable ideal, reduction from the completion to two different finite stages commutes with transition maps; the completion is not identified with either quotient.
@@ -257,7 +252,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** inherited additive/module behavior is usable without reimplementation; multiplication, unit when selected, augmentation and derivations carry their true maps and laws. `WithChosen` is reserved for an additional choice, never the defining multiplication. Keep private native realizations instead of deleting them to satisfy a class scan.
   **Closure specimens:** a relationful algebra, a cyclic cover and a derivation exercise inherited arithmetic and the Leibniz equation. Review every initialization, refinement, side assignment, probe and exception in the subtree. Constructor convenience, native raising and free functors establish the same datum. Inherited universal constructions require their preservation/creation theorem: the inclusion of the diagonal Cartan in sl_2(Q) has zero Lie cokernel but a two-dimensional linear cokernel. Quotienting only by the image module cannot implement the Lie cokernel.
 
-- [ ] **`varying-ring-modules`**. **Needs:** `module-scalar-change`.
+- [ ] **`varying-ring-modules`**. **Needs:** none.
   **Owner and delta:** the existing varying-ring module category and finite-atlas transition consumers in `schemes/gluing.py`: establish the fibred category over rings and its semilinear arrows.
   **Invariants:** an arrow consists of its base ring map and compatible additive map; identity and composition preserve that square. Fixed-base Modules(R) is the appropriate fibre, not a replacement base_ring method on an object falsely placed in another fibre. Cartesian/cocartesian transport is supplied by restriction/extension under its hypotheses.
   **Closure specimens:** compose semilinear maps across two nonidentity coefficient maps; an additive map incompatible with the claimed scalar map is rejected. Localizations on distinct affine chart rings retain those rings and their transition maps when used by descent.

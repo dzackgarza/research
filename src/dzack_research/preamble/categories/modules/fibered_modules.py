@@ -30,33 +30,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
-def _scalar_extension_associator(source, direct, iterated):
-    r"""Represent ``T tensor_R M ~= T tensor_S (S tensor_R M)``.
-
-    Scalar extension is a pseudofunctor.  Its direct and iterated values are
-    canonically isomorphic by associativity of tensor product.  The currently
-    materialized framed scalar extensions retain the source framing, so this
-    comparison and its inverse are the identity on those labels.
-    """
-
-    source_ring = source.base_ring()
-    target_ring = direct.base_ring()
-    assert source in FramedModules(source_ring), (
-        "represented scalar-extension coherence currently requires a selected source framing"
-    )
-    assert direct in FramedModules(target_ring) and iterated in FramedModules(target_ring), (
-        "represented scalar-extension coherence must preserve the selected framing"
-    )
-    modules = Modules(target_ring)
-    forward = modules.Mor(direct, iterated)(
-        lambda label: iterated.module_generator(label)
-    )
-    inverse = modules.Mor(iterated, direct)(
-        lambda label: direct.module_generator(label)
-    )
-    return modules.Core().Mor(direct, iterated)(forward, inverse)
-
-
 class SemilinearModuleMorphism(Morphism):
     r"""A module arrow over a morphism of commutative scalar rings.
 
@@ -137,13 +110,14 @@ class SemilinearModuleMorphism(Morphism):
             case _:
                 return NotImplemented
         source = other.domain()
+        first_extension = Modules(source.base_ring()).scalar_extension(other.scalar_map())
         match self.scalar_map(), other.scalar_map():
             case left, right if left.is_identity():
                 scalar_map = right
             case left, right if right.is_identity():
                 scalar_map = left
             case left, right:
-                scalar_map = left * right
+                scalar_map = first_extension.composite_ring_map(left)
         hom = ModulesOverCommutativeRings().Mor(source, self.codomain())
         direct_extension = hom.extended_domain(scalar_map)
 
@@ -159,10 +133,15 @@ class SemilinearModuleMorphism(Morphism):
             case True:
                 linearization = iterated_linearization
             case False:
-                reassociation = _scalar_extension_associator(
+                reassociation = first_extension.composition_comparison(
+                    self.scalar_map(),
                     source,
-                    direct_extension,
-                    iterated_extension,
+                )
+                assert reassociation.domain() is direct_extension, (
+                    "the scalar-extension composition comparison starts at the direct extension"
+                )
+                assert reassociation.codomain() is iterated_extension, (
+                    "the scalar-extension composition comparison ends at the iterated extension"
                 )
                 linearization = iterated_linearization * reassociation.forward()
         return hom(scalar_map, linearization)

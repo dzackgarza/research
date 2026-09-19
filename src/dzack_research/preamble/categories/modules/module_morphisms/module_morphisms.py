@@ -1424,26 +1424,18 @@ class ModuleMorphism(Morphism):
         return _divided_power_morphism(self, degree)
 
     def base_change(self, ring_map):
-        r"""Extend this represented linear map along ``ring_map : R -> S``."""
+        r"""Extend this represented linear map along ``ring_map : R -> S``.
+
+        The scalar-extension functor owns both object and morphism transport;
+        this method is the module-morphism entry to that same action.
+        """
         ring = self.domain().base_ring()
         assert self.codomain().base_ring() is ring and ring_map.domain() is ring, (
             "module-morphism base change requires one source scalar ring"
         )
-        source = self.domain().base_change(ring_map)
-        target = self.codomain().base_change(ring_map)
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        return source.module_category().Mor(source, target)(
-            {
-                label: target.linear_combination(
-                    {
-                        target_label: ring_map(coefficient)
-                        for target_label, coefficient in self.codomain().framing_coefficients(self(self.domain().module_generator(label))).items()
-                        if coefficient
-                    }
-                )
-                for label in self.domain().module_generating_set()
-            }
-        )
+        return Modules(ring).scalar_extension(ring_map)(self)
 
     def adic_completion(self, ideal, *, precision=20):
         r"""Return ``self tensor_R R_hat`` using one shared completion parent.

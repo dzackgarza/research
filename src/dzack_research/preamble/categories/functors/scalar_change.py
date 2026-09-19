@@ -8,10 +8,11 @@ Exercise 2.3.6).  Induction, restriction and coinduction along a subgroup
 realization lives in ``group_induction``.
 """
 
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.modules.base_change import _base_change_element
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -72,6 +73,39 @@ class _ScalarChangeStructureMorphism(ModuleMorphism):
         return True
 
 
+def _scalar_extension_comparison(source, direct, iterated):
+    r"""Return ``T tensor_R M ~= T tensor_S (S tensor_R M)``.
+
+    The currently represented scalar extensions preserve the selected framing
+    of ``M``.  The associativity comparison is therefore the unique linear
+    isomorphism carrying each directly extended generator to the iterated
+    generator with the same source label.  This is the scalar-extension
+    pseudofunctor comparison; downstream semilinear categories consume it
+    rather than owning another associator.
+    """
+    source_ring = source.base_ring()
+    target_ring = direct.base_ring()
+    match (
+        source in FramedModules(source_ring),
+        direct in FramedModules(target_ring),
+        iterated in FramedModules(target_ring),
+    ):
+        case (True, True, True):
+            pass
+        case _:
+            raise TypeError(
+                "represented scalar-extension comparison requires the retained selected framing"
+            )
+    modules = Modules(target_ring)
+    forward = modules.Mor(direct, iterated)(
+        lambda label: iterated.module_generator(label)
+    )
+    inverse = modules.Mor(iterated, direct)(
+        lambda label: direct.module_generator(label)
+    )
+    return modules.Core().Mor(direct, iterated)(forward, inverse)
+
+
 class _ScalarExtensionFunctor(Functor):
     r"""``S tensor_R - : Mod_R -> Mod_S`` along ``f:R -> S``.
 
@@ -118,14 +152,11 @@ class _ScalarExtensionFunctor(Functor):
 
         def image(label):
             original = source_module.module_generator(label)
-            coefficients = target_module.framing_coefficients(morphism(original))
-            return target.linear_combination(
-                {
-                    target_label: self._target_ring(
-                        self.ring_map()(coefficient)
-                    )
-                    for target_label, coefficient in coefficients.items()
-                }
+            return _base_change_element(
+                target_module,
+                target,
+                self.ring_map(),
+                morphism(original),
             )
 
         hom = source.module_category().Mor(source, target)
@@ -135,6 +166,44 @@ class _ScalarExtensionFunctor(Functor):
             image,
             self,
         )
+
+    def identity_comparison(self, module):
+        r"""Return the canonical comparison ``id_* M ~= M`` for an identity scalar map."""
+        match self.ring_map().is_identity():
+            case True:
+                pass
+            case False:
+                raise ValueError("the identity comparison belongs to scalar extension along an identity map")
+        changed = self(module)
+        match changed is module:
+            case True:
+                identity = module.module_category().Mor(module, module).identity()
+                return module.module_category().Core().Mor(module, module)(identity, identity)
+            case False:
+                raise ArithmeticError("scalar extension along the identity changed the module object")
+
+    @cached_method(key=lambda self, second_ring_map: id(second_ring_map))
+    def composite_ring_map(self, second_ring_map):
+        r"""Return the selected composite ``R -> S -> T`` for this extension."""
+        match second_ring_map.domain() is self.ring_map().codomain():
+            case True:
+                return second_ring_map * self.ring_map()
+            case False:
+                raise ValueError("composed scalar extension requires matching intermediate rings")
+
+    def composition_comparison(self, second_ring_map, module):
+        r"""Return ``(second * self)_* M ~= second_* (self_* M)``.
+
+        ``self`` is extension along ``R -> S`` and ``second_ring_map`` is
+        ``S -> T``.  The result is the specified associativity comparison of
+        scalar extension, not an equality inferred from rank or presentation.
+        """
+        first = self(module)
+        second = Modules(second_ring_map.domain()).scalar_extension(second_ring_map)
+        iterated = second(first)
+        composite = self.composite_ring_map(second_ring_map)
+        direct = Modules(self.ring_map().domain()).scalar_extension(composite)(module)
+        return _scalar_extension_comparison(module, direct, iterated)
 
     def _repr_(self):
         return f"Scalar extension along {self.ring_map()}"

@@ -69,6 +69,66 @@ def test_extension_of_scalars_of_a_torsion_module_over_the_integers() -> None:
     assert torsion.base_change(two).module_rank() == 1
 
 
+def test_scalar_extension_distinguishes_surviving_and_vanishing_torsion_and_maps() -> None:
+    torsion = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2,))
+    mod_two = ZZ.Mor(GF(2))(lambda element: GF(2)(element))
+    rational = ZZ.Mor(QQ)(lambda element: QQ(element))
+
+    over_f2 = Modules(ZZ).scalar_extension(mod_two)(torsion)
+    over_q = Modules(ZZ).scalar_extension(rational)(torsion)
+
+    assert over_f2.is_zero() is False
+    assert over_f2.module_generator(0) != over_f2.zero()
+    assert over_q.is_zero() is True
+
+    line = ZZ.free_module(("e",))
+    e = line.module_generator("e")
+    doubling = line.Mor(line)({"e": 2 * e})
+    changed_doubling = Modules(ZZ).scalar_extension(mod_two)(doubling)
+    zero_map = changed_doubling.domain().module_category().Mor(
+        changed_doubling.domain(), changed_doubling.codomain()
+    ).zero()
+
+    assert doubling.base_change(mod_two) is changed_doubling
+    assert changed_doubling == zero_map
+    assert changed_doubling(
+        changed_doubling.domain().module_generator("e")
+    ) == changed_doubling.codomain().zero()
+
+
+def test_scalar_extension_identity_and_composition_have_explicit_comparisons() -> None:
+    module = ZZ.free_module(("e", "f"))
+
+    identity_extension = Modules(ZZ).scalar_extension(ZZ.Mor(ZZ).identity())
+    identity_comparison = identity_extension.identity_comparison(module)
+    identity = module.module_category().Mor(module, module).identity()
+    assert identity_comparison.domain() is module
+    assert identity_comparison.codomain() is module
+    assert identity_comparison.forward() == identity
+    assert identity_comparison.inverse() == identity
+
+    middle = GF(5)
+    target = GF(25)
+    first_map = ZZ.Mor(middle)(lambda scalar: middle(scalar))
+    second_map = middle.Mor(target)(lambda scalar: target(scalar))
+    first_extension = Modules(ZZ).scalar_extension(first_map)
+    comparison = first_extension.composition_comparison(second_map, module)
+    composite_map = first_extension.composite_ring_map(second_map)
+    direct = Modules(ZZ).scalar_extension(composite_map)(module)
+    iterated = Modules(middle).scalar_extension(second_map)(first_extension(module))
+
+    assert first_extension.composite_ring_map(second_map) is composite_map
+    assert composite_map.domain() is ZZ
+    assert composite_map.codomain() is target
+    assert comparison.domain() is direct
+    assert comparison.codomain() is iterated
+    for label in module.module_generating_set():
+        direct_generator = direct.module_generator(label)
+        iterated_generator = iterated.module_generator(label)
+        assert comparison.forward()(direct_generator) == iterated_generator
+        assert comparison.inverse()(iterated_generator) == direct_generator
+
+
 def test_restriction_of_scalars(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
