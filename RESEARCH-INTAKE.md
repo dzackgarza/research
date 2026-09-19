@@ -124,6 +124,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Gerstenhaber algebra structure on Hochschild cohomology $HH^*(A, A)$ (operadic $e_2$ algebra, brace algebra, Schouten bracket) | User intake 2026-09-19 | Full Gerstenhaber algebra structure $(\smile, [-,-])$ on Hochschild cohomology $HH^*(A, A)$: graded commutative cup product $HH^p \otimes HH^q \to HH^{p+q}$, graded Lie bracket $[-,-] \colon HH^p \otimes HH^q \to HH^{p+q-1}$ (degree -1, degree 0 on $HH^*[1]$), Poisson/derivation compatibility $[a, b \smile c] = [a, b] \smile c + (-1)^{(|a|-1)|b|} b \smile [a, c]$; cochain realization via Gerstenhaber circle product $f \circ g = \sum (-1)^{(i-1)(q-1)} f \circ_i g$, graded pre-Lie algebra $C^*(A, A)[1]$, DGLA differential $d = [m, -]$; brace algebra $B_\infty$ operations $f\{g_1, \dots, g_k\}$; Deligne's conjecture ($E_2$ / little 2-disks operad action on $C^*(A, A)$); HKR isomorphism matching $[-,-]$ with Schouten-Nijenhuis bracket on polyvector fields $\bigwedge^* T_X$; deformation theory (Maurer-Cartan equation $d\alpha + \frac{1}{2}[\alpha, \alpha] = 0$, obstructions in $HH^3$); Batalin-Vilkovisky (BV) structure $\Delta$ on Calabi-Yau / Frobenius algebras | `categories/homology/gerstenhaber.py` + `categories/homology/hochschild.py` + `categories/operads/little_disks.py` + `categories/algebras/brace_algebras.py` + `categories/deformation/deformation_quantization.py` | Proposed — see note below |
 | Continuous actions of topological groups on topological spaces (G-Top, orbit spaces, proper actions, slice theorem, and equivariant topology) | User intake 2026-09-19 | Comprehensive topological group action framework: topological group $G \in \mathbf{TopGrp}$ and continuous left/right actions $\alpha \colon G \times X \to X$ in $\mathbf{Top}$; orbits $G \cdot x$, stabilizers $G_x \le G$ (closed subgroups), canonical homeomorphism $G/G_x \cong G \cdot x$; quotient orbit space $X/G$ with open projection $\pi \colon X \twoheadrightarrow X/G$, separation criteria ($T_1 \iff$ closed orbits, $T_2 \iff$ closed orbit relation); action predicates: transitive ($X \cong G/H$), free, faithful, proper ($(g,x) \mapsto (gx, x)$ proper, compact stabilizers, Hausdorff quotient), properly discontinuous, cocompact; Palais-Koszul slice theorem $G \times_H S \cong U$; equivariant category $G\mathbf{-Top}$ ($G$-maps, invariant subspaces, fixed points $X^G$, induction $\operatorname{Ind}_H^G = G \times_H -$, coinduction $\operatorname{CoInd}_H^G$); Borel homotopy quotient $X_{hG} = EG \times_G X$, equivariant cohomology $H_G^*(X) = H^*(X_{hG})$; principal $G$-bundles and associated bundles $P \times_G F$ | `categories/topology/topological_groups.py` + `categories/topology/group_actions.py` + `categories/topology/equivariant.py` + `categories/topology/principal_bundles.py` | Proposed — see note below |
 | Associated real/complex torus $T(L) = L_\mathbb{R}/L$ and abelian varieties from $\mathbb{Z}$-lattices | User intake 2026-09-19 | Construction of the associated torus $T(L) = L_\mathbb{R}/L \cong (S^1)^n$ for any $\mathbb{Z}$-lattice $L$: compact abelian Lie group, $\pi_1 \cong L$, $H_1 \cong L$, $H^1 \cong L^\vee$, dual torus $T(L)^\vee = L_\mathbb{R}^\vee/L^\vee$; complex structures $J$ ($J^2 = -\operatorname{id}$ on $L_\mathbb{R}$ for $\operatorname{rank}(L) = 2g$) yielding complex tori $V/\Lambda$; Riemann bilinear relations for polarizations $E \in \bigwedge^2 L^\vee$: $E(Ju, Jv) = E(u, v)$ and $E(u, Ju) > 0$ (Hodge type (1,1) + positive-definiteness); criterion for $T(L)$ to be an abelian variety (existence of Riemann form $E$); elementary divisors $(d_1, \dots, d_g)$, principal polarizations ($d_i = 1$) and period matrices $Z \in \mathbb{H}_g$ in Siegel upper half-space; Appell-Humbert theorem and theta functions $\theta(z)$; Euclidean lattices with symmetric form $b$ as flat Riemannian tori, Laplace spectrum from $L^\vee$, and Milnor isospectral pairs; Jacobian $\operatorname{Jac}(C) = H_1(C, \mathbb{R})/H_1(C, \mathbb{Z})$ and Albanese $\operatorname{Alb}(X)$ varieties | `categories/lattices/torus.py` + `categories/complex_geometry/complex_tori.py` + `categories/abelian_varieties/abelian_variety.py` + `categories/modular/siegel_half_space.py` + `categories/riemannian/flat_tori.py` | Proposed — see note below |
+| Cartier and Pontryagin dualities (LCA groups, finite commutative group schemes, Hopf algebras, and Weil pairings) | User intake 2026-09-19 | Categorical duality theories for abelian topological groups and commutative group schemes: (1) Pontryagin duality on locally compact abelian groups $\mathbf{LCA}$: character group $\widehat{G} = \operatorname{Hom}_{\mathbf{LCA}}(G, \mathbb{T})$, biduality isomorphism $G \xrightarrow{\sim} \widehat{\widehat{G}}$, compact-discrete duality, torsion-profinite duality, connected-torsion-free duality, annihilators $H^\perp \cong \widehat{G/H}$, dual exact sequences, Haar measure, Fourier transform, and Plancherel theorem; (2) Cartier duality on finite locally free commutative group schemes over $S$ (and finite-dimensional commutative cocommutative Hopf algebras $A$ via dual Hopf algebra $A^*$): $D(G) = \underline{\operatorname{Hom}}(G, \mathbb{G}_m)$, canonical biduality $G \xrightarrow{\sim} D(D(G))$, dual pairs $(\mathbb{Z}/n)_k \leftrightarrow \mu_{n,k}$ and self-dual $\alpha_p$, four Oort-Tate classes (étale-étale, étale-local, local-étale, local-local), Frobenius-Verschiebung exchange $D(F) = V_{D(G)}$; (3) Dieudonné module duality $\mathbb{M}(D(G))$; (4) Abelian varieties: Cartier duality $D(A[n]) \cong A^\vee[n]$ yielding the Weil pairing $e_n \colon A[n] \times A^\vee[n] \to \mu_n$; (5) Barsotti-Tate ($p$-divisible) groups and Serre-Tate duality | `categories/topology/pontryagin.py` + `categories/schemes/group_schemes/cartier_duality.py` + `categories/algebras/hopf_algebras.py` + `categories/abelian_varieties/weil_pairing.py` + `categories/schemes/group_schemes/p_divisible.py` | Proposed — see note below |
 
 
 
@@ -3500,6 +3501,162 @@ Intended owners: `categories/topology/topological_groups.py` (`TopologicalGroup`
     - `AlbaneseVariety(variety)`: universal morphism to Albanese variety.
 
 Intended owners: `categories/lattices/torus.py` (`LatticeTorus`, `DualTorus`), `categories/complex_geometry/complex_tori.py` (`ComplexTorus`, `PeriodMatrix`), `categories/abelian_varieties/abelian_variety.py` (`AbelianVariety`, `RiemannForm`, `Polarization`), `categories/riemannian/flat_tori.py` (`FlatRiemannianTorus`, `LaplaceSpectrum`), `categories/abelian_varieties/jacobians.py` (`JacobianVariety`, `AlbaneseVariety`).
+
+## Desired capability: Cartier and Pontryagin dualities — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Pontryagin duality on locally compact abelian groups ($\mathbf{LCA}$):**
+    * Let $\mathbf{LCA}$ be the category of Hausdorff, locally compact topological abelian groups with continuous group homomorphisms.
+    * **Circle group:** $\mathbb{T} \coloneqq \mathbb{R}/\mathbb{Z} \cong U(1) = \{ z \in \mathbb{C} \mid |z| = 1 \}$, a compact connected abelian Lie group.
+    * **Pontryagin dual (character group):** For $G \in \mathbf{LCA}$, the dual group is:
+      $$
+      \widehat{G} \;\coloneqq\; \operatorname{Hom}_{\mathbf{LCA}}(G, \mathbb{T}),
+      $$
+      endowed with the compact-open topology (uniform convergence on compact sets $K \subset G$). $\widehat{G}$ is also an object of $\mathbf{LCA}$.
+    * **Pontryagin Duality Theorem:** The canonical evaluation homomorphism
+      $$
+      \alpha_G \colon G \longrightarrow \widehat{\widehat{G}}, \quad \alpha_G(x)(\chi) \coloneqq \chi(x),
+      $$
+      is an isomorphism of topological groups (both an algebraic isomorphism and a homeomorphism).
+    * **Categorical equivalence:** The functor $(-)\,\widehat{}\colon \mathbf{LCA}^{\mathrm{op}} \xrightarrow{\sim} \mathbf{LCA}$ is a contravariant equivalence of categories, and is canonically self-inverse.
+    * **Dual pairs & topological correspondences:**
+      - **Compact $\longleftrightarrow$ Discrete:** $G$ is compact if and only if $\widehat{G}$ is discrete.
+        Examples: $\widehat{\mathbb{Z}} \cong \mathbb{T}$, $\widehat{\mathbb{T}} \cong \mathbb{Z}$.
+      - **Finite groups are self-dual:** For finite abelian $G$, $\widehat{G} \cong G$ (non-canonically).
+      - **Self-dual continuous groups:** $\widehat{\mathbb{R}} \cong \mathbb{R}$ under $(x, y) \mapsto e^{2\pi i x y}$; $p$-adic fields $\widehat{\mathbb{Q}_p} \cong \mathbb{Q}_p$ under additive characters $\psi_p(x) = e^{2\pi i \{x\}_p}$; adele ring $\widehat{\mathbb{A}_\mathbb{Q}} \cong \mathbb{A}_\mathbb{Q}$ (Tate's thesis).
+      - **Connected $\longleftrightarrow$ Torsion-free:** $G$ is connected if and only if $\widehat{G}$ is torsion-free.
+      - **Torsion $\longleftrightarrow$ Profinite:** Discrete torsion groups dualize to compact totally disconnected (profinite) groups (e.g. $\widehat{\mathbb{Q}/\mathbb{Z}} \cong \widehat{\mathbb{Z}} = \varprojlim \mathbb{Z}/n\mathbb{Z}$).
+    * **Annihilators and exact sequences:**
+      - For a closed subgroup $H \le G$, its **annihilator** is the closed subgroup
+        $$
+        H^\perp \;\coloneqq\; \{ \chi \in \widehat{G} \mid \chi(h) = 1 \text{ for all } h \in H \} \le \widehat{G}.
+        $$
+      - Canonical isomorphisms:
+        $$
+        \widehat{G/H} \;\cong\; H^\perp, \qquad \widehat{H} \;\cong\; \widehat{G} / H^\perp.
+        $$
+      - Double annihilator: $(H^\perp)^\perp = \alpha_G(H) \cong H$.
+      - Duality turns short exact sequences in $\mathbf{LCA}$ into short exact sequences:
+        $$
+        0 \to A \to B \to C \to 0 \quad \Longrightarrow \quad 0 \to \widehat{C} \to \widehat{B} \to \widehat{A} \to 0.
+        $$
+    * **Harmonic analysis and Fourier transform:**
+      - Unique (up to scale) Haar measure $\mu_G$ on $G$ determines a dual Haar measure $\mu_{\widehat{G}}$ on $\widehat{G}$.
+      - Fourier transform $\mathcal{F} \colon L^1(G) \to C_0(\widehat{G})$, $\widehat{f}(\chi) = \int_G f(x) \overline{\chi(x)} \, d\mu_G(x)$.
+      - Plancherel theorem: $\mathcal{F}$ extends to a unitary isomorphism $L^2(G) \xrightarrow{\sim} L^2(\widehat{G})$.
+      - Poisson summation formula: for discrete cocompact $\Gamma \subset G$, $\sum_{\gamma \in \Gamma} f(\gamma) = \operatorname{Vol}(G/\Gamma)^{-1} \sum_{\chi \in \Gamma^\perp} \widehat{f}(\chi)$.
+
+  * **Cartier duality on finite commutative group schemes and Hopf algebras:**
+    * Let $S$ be a base scheme. Let $\mathbf{FinCommGrp}_S$ be the category of finite locally free commutative group schemes over $S$.
+    * **Functor of points definition:** The **Cartier dual** $D(G)$ (or $G^\vee$) represents the functor:
+      $$
+      D(G)(T) \;\coloneqq\; \operatorname{Hom}_{T\mathbf{-Grp}}(G \times_S T, \mathbb{G}_{m, T})
+      $$
+      for any $S$-scheme $T$, where $\mathbb{G}_m \coloneqq \operatorname{Spec}(\mathcal{O}_S[t, t^{-1}])$ is the multiplicative group scheme.
+    * **Hopf algebra formulation over a commutative ring $k$:**
+      - An affine group scheme $G = \operatorname{Spec}(A)$ is finite locally free and commutative if and only if $A$ is a finite locally free $k$-algebra endowed with the structure of a commutative, cocommutative Hopf algebra:
+        * Multiplication $m \colon A \otimes_k A \to A$, unit $\eta \colon k \to A$.
+        * Comultiplication $\Delta \colon A \to A \otimes_k A$, counit $\epsilon \colon A \to k$.
+        * Antipode $S \colon A \to A$.
+      - The Cartier dual is $D(G) \coloneqq \operatorname{Spec}(A^*)$, where $A^* \coloneqq \operatorname{Hom}_k(A, k)$ is the $k$-linear dual:
+        * Product on $A^*$: $m_{A^*} = \Delta^*$ (dual of comultiplication).
+        * Coproduct on $A^*$: $\Delta_{A^*} = m^*$ (dual of multiplication).
+        * Unit on $A^*$: $\eta_{A^*} = \epsilon^*$.
+        * Counit on $A^*$: $\epsilon_{A^*} = \eta^*$.
+        * Antipode on $A^*$: $S_{A^*} = S^*$.
+      - Since $A$ is commutative and cocommutative, $A^*$ is also commutative and cocommutative, defining a finite commutative group scheme of the same rank $\operatorname{rk}_k(A^*) = \operatorname{rk}_k(A)$.
+    * **Cartier Duality Theorem:**
+      - The canonical biduality homomorphism $G \to D(D(G))$ is an isomorphism.
+      - Cartier duality gives a contravariant anti-equivalence:
+        $$
+        D \colon \mathbf{FinCommGrp}_S^{\mathrm{op}} \xrightarrow{\sim} \mathbf{FinCommGrp}_S, \qquad D \circ D \cong \operatorname{id}.
+        $$
+      - Preserves rank: $[D(G) : S] = [G : S]$.
+      - Short exact sequences dualize: $0 \to G' \to G \to G'' \to 0 \implies 0 \to D(G'') \to D(G) \to D(G') \to 0$.
+    * **Fundamental dual pairs over a field $k$:**
+      1. **Constant group schemes $\longleftrightarrow$ Roots of unity:**
+         $$
+         D\big((\mathbb{Z}/n\mathbb{Z})_k\big) \;\cong\; \mu_{n, k} \;\coloneqq\; \operatorname{Spec}\big(k[t]/(t^n - 1)\big).
+         $$
+         - When $\operatorname{char}(k) \nmid n$ and $k$ contains all $n$-th roots of unity, $(\mathbb{Z}/n)_k \cong \mu_{n, k}$.
+         - In $\operatorname{char}(k) = p > 0$: $\mu_p = \operatorname{Spec}(k[t]/(t^p - 1)) \cong \operatorname{Spec}(k[u]/(u^p))$ ($u = t - 1$) is non-reduced and local/connected, while $(\mathbb{Z}/p)_k$ is reduced and étale.
+      2. **The infinitesimal group $\alpha_p$:**
+         - In characteristic $p > 0$: $\alpha_p \coloneqq \operatorname{Spec}(k[x]/(x^p))$ with additive coproduct $\Delta(x) = x \otimes 1 + 1 \otimes x$.
+         - **Self-duality:** $D(\alpha_p) \cong \alpha_p$.
+    * **Classification of finite $p$-group schemes (Oort-Tate / connected-étale decomposition):**
+      - Over a perfect field $k$ of characteristic $p$, every finite commutative $p$-group scheme has a canonical connected-étale composition:
+        $$
+        0 \to G^0 \to G \to G^{\mathrm{et}} \to 0.
+        $$
+      - Combining $G$ and $D(G)$ yields four distinct Oort-Tate types:
+        - **étale-étale:** $G$ and $D(G)$ are both étale (order coprime to $p$, or Galois modules).
+        - **étale-local:** $G$ étale, $D(G)$ connected (e.g., $\mathbb{Z}/p\mathbb{Z}$, with dual $\mu_p$).
+        - **local-étale:** $G$ connected, $D(G)$ étale (e.g., $\mu_p$, with dual $\mathbb{Z}/p\mathbb{Z}$).
+        - **local-local:** both $G$ and $D(G)$ connected (e.g., $\alpha_p$).
+    * **Frobenius and Verschiebung exchange:**
+      - Relative Frobenius $F \colon G \to G^{(p)}$ and Verschiebung $V \colon G^{(p)} \to G$.
+      - Cartier duality exchanges $F$ and $V$:
+        $$
+        D(F_G) \;=\; V_{D(G)}, \qquad D(V_G) \;=\; F_{D(G)}.
+        $$
+      - $G$ is étale $\iff F_G$ is an isomorphism $\iff V_{D(G)}$ is an isomorphism $\iff D(G)$ is of multiplicative type.
+    * **Dieudonné module duality:**
+      - Under the contravariant Dieudonné module equivalence $\mathbb{M}$ over a perfect field of characteristic $p$:
+        $$
+        \mathbb{M}(D(G)) \;\cong\; \operatorname{Ext}^1_W(\mathbb{M}(G), W) \;\cong\; \mathbb{M}(G)^*,
+        $$
+        with operators swapped: $F_{\mathbb{M}(D(G))} = V_{\mathbb{M}(G)}^*$ and $V_{\mathbb{M}(D(G))} = F_{\mathbb{M}(G)}^*$.
+    * **Abelian varieties and the Weil pairing:**
+      - For an abelian variety $A$ over $k$ and its dual abelian variety $A^\vee = \operatorname{Pic}^0(A)$:
+        The $n$-torsion subgroup scheme $A[n]$ has Cartier dual canonically isomorphic to $A^\vee[n]$:
+        $$
+        D(A[n]) \;\cong\; A^\vee[n].
+        $$
+      - The canonical Cartier pairing
+        $$
+        e_n \colon A[n] \times A^\vee[n] \longrightarrow \mathbb{G}_m
+        $$
+        factors through $\mu_n$ and is the **Weil pairing**.
+      - For a principal polarization $\lambda \colon A \xrightarrow{\sim} A^\vee$, the induced pairing $e_n \colon A[n] \times A[n] \to \mu_n$ is alternating and non-degenerate.
+    * **Barsotti-Tate ($p$-divisible) groups and Serre-Tate duality:**
+      - A $p$-divisible group $G = \varinjlim G[p^\nu]$ has Cartier dual $G^\vee \coloneqq \varinjlim D(G[p^\nu])$.
+      - Invariants: $\operatorname{ht}(G^\vee) = \operatorname{ht}(G)$, $\dim(G^\vee) = \operatorname{ht}(G) - \dim(G)$.
+
+  * **Comparison and bridge between Pontryagin and Cartier dualities:**
+    - For a finite abstract abelian group $G$, the constant group scheme $G_\mathbb{C}$ over $\mathbb{C}$ has Cartier dual:
+      $$
+      D(G_\mathbb{C}) \;\cong\; \underline{\operatorname{Hom}}(G, \mathbb{G}_{m, \mathbb{C}}) \;\cong\; \operatorname{Spec}\big(\mathbb{C}[G]^*\big) \;\cong\; (\widehat{G})_\mathbb{C}.
+      $$
+      Thus over $\mathbb{C}$, Cartier duality on finite group schemes coincides with classical Pontryagin duality.
+    - In arithmetic geometry and positive characteristic, Cartier duality refines Pontryagin duality by retaining infinitesimal (nilpotent) coordinate structures ($\mu_p \not\cong \mathbb{Z}/p\mathbb{Z}$, $\alpha_p$).
+
+* **Preamble implementation requirements:**
+  * `categories/topology/pontryagin.py`:
+    - `LCAGroup(G)`: object in $\mathbf{LCA}$ with topology and group operations.
+    - `CharacterGroup(G)`: constructs Pontryagin dual $\widehat{G} = \operatorname{Hom}_{\mathbf{LCA}}(G, \mathbb{T})$ with compact-open topology.
+    - `EvaluationMap(G)`: certifies topological isomorphism $\alpha_G \colon G \xrightarrow{\sim} \widehat{\widehat{G}}$.
+    - `Annihilator(G, H)`: computes closed subgroup $H^\perp \le \widehat{G}$ for $H \le G$.
+    - `DualHomomorphism(f)`: computes $\widehat{f} \colon \widehat{H} \to \widehat{G}$ for $f \colon G \to H$.
+    - `StandardDuals`: canonical duals for $\mathbb{Z}$, $\mathbb{T}$, $\mathbb{R}$, $\mathbb{Z}/n\mathbb{Z}$, $\mathbb{Q}_p$, and finite abelian groups.
+    - `HaarMeasure(G)` and `FourierTransform(f)`: harmonic analysis and Plancherel transform on $L^2(G)$.
+  * `categories/schemes/group_schemes/cartier_duality.py`:
+    - `FiniteCommutativeGroupScheme(S, A, Delta, epsilon, S_antipode)`: finite flat commutative group scheme over $S$.
+    - `CartierDual(G)`: constructs $D(G) = \operatorname{Spec}(A^*)$ with dual Hopf operations $\Delta^*, m^*$.
+    - `BidualityIsomorphism(G)`: canonical isomorphism $G \xrightarrow{\sim} D(D(G))$.
+    - `CartierPairing(G)`: canonical pairing $G \times_S D(G) \to \mathbb{G}_m$.
+    - `connected_etale_type(G)`: classifies $G$ into one of the four Oort-Tate types (étale/connected $\times$ étale/connected).
+    - `frobenius_verschiebung_check(G)`: verifies $D(F) = V_{D(G)}$ and $D(V) = F_{D(G)}$.
+    - `ConstantGroupScheme(G, k)` and `RootsOfUnity(n, k)`: certifies $D((\mathbb{Z}/n)_k) \cong \mu_{n, k}$.
+    - `AlphaP(p, k)`: certifies self-duality $D(\alpha_p) \cong \alpha_p$.
+  * `categories/abelian_varieties/weil_pairing.py`:
+    - `TorsionSubgroupScheme(A, n)`: represents $A[n]$ as a finite commutative group scheme.
+    - `WeilPairing(A, n)`: computes the Cartier duality pairing $A[n] \times A^\vee[n] \to \mu_n$.
+  * `categories/schemes/group_schemes/p_divisible.py`:
+    - `BarsottiTateGroup(stages)`: inductive system $G = \varinjlim G[p^\nu]$.
+    - `SerreTateDual(G)`: dual $p$-divisible group $G^\vee = \varinjlim D(G[p^\nu])$.
+
+Intended owners: `categories/topology/pontryagin.py` (`LCAGroup`, `CharacterGroup`, `PontryaginDual`, `Annihilator`), `categories/schemes/group_schemes/cartier_duality.py` (`FiniteCommutativeGroupScheme`, `CartierDual`, `CartierPairing`, `RootsOfUnity`, `AlphaP`), `categories/algebras/hopf_algebras.py` (`HopfAlgebra`, `DualHopfAlgebra`), `categories/abelian_varieties/weil_pairing.py` (`WeilPairing`, `TorsionSubgroupScheme`), `categories/schemes/group_schemes/p_divisible.py` (`BarsottiTateGroup`, `SerreTateDual`).
+
 
 
 
