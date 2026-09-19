@@ -134,7 +134,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Cyclotomic spectra, topological cyclic homology ($TC$), Tate constructions, and motivic prismatic filtrations | Literature survey + user intake 2026-09-19 | Comprehensive stable homotopy and cyclotomic spectra framework for topological cyclic homology ($TC$): (1) Modern Nikolaus-Scholze cyclotomic spectra: $S^1$-equivariant spectra $\mathbf{Sp}^{BS^1}$, Tate construction $X^{tC_p} = \operatorname{cofib}(X_{hC_p} \xrightarrow{N} X^{hC_p})$ with residual $S^1/C_p \cong S^1$-action, and $S^1$-equivariant cyclotomic Frobenius $\phi_p \colon X \to X^{tC_p}$; (2) Core topological invariants: Topological Hochschild Homology $THH(R)$ as an $E_\infty$-cyclotomic spectrum (cyclic bar construction, cyclotomic diagonal $\Delta_p$); Topological Negative Cyclic Homology $TC^-(X; p) \coloneqq X^{hS^1}$; Topological Periodic Homology $TP(X; p) \coloneqq X^{tS^1}$; and Topological Cyclic Homology $TC(X; p) \coloneqq \operatorname{fib}(X^{hS^1} \xrightarrow{\phi_p^{hS^1} - \operatorname{can}} (X^{tC_p})^{hS^1})$; (3) Spectral sequences: Homotopy Fixed Point Spectral Sequence (HFPSS) $E_2 = H^*(BS^1; \pi_*(X)) \implies \pi_*(X^{hS^1})$, Tate Spectral Sequence (TSS) $\widehat{E}_2 = \widehat{H}^*(S^1; \pi_*(X)) \implies \pi_*(X^{tS^1})$ ($u$-periodicity), and Bökstedt spectral sequence for $THH$; (4) Concrete calculational engines: exact evaluations for perfect fields $k = \mathbb{F}_p$ ($THH_*(\mathbb{F}_p) = \mathbb{F}_p[\sigma]$, $TC(\mathbb{F}_p) \cong \mathbb{Z}_p \oplus \Sigma^{-1} \mathbb{Z}_p$), truncated polynomials $k[x]/(x^m)$, $p$-adic integers $\mathbb{Z}_p$ (recovering Lichtenbaum-Quillen), and sphere spectrum $\mathbb{S}$; (5) Bhatt-Morrow-Scholze (BMS) motivic filtration: decreasing filtration on $THH, TC^-, TP, TC$ recovering prismatic cohomology $\Delta_R$ on $\operatorname{gr}^i TP$ and syntomic cohomology $\mathbb{Z}_p(i)$ on $\operatorname{gr}^i TC$ | `categories/spectra/spectrum.py` + `categories/spectra/equivariant.py` + `categories/spectra/cyclotomic.py` + `categories/spectra/tate_spectral_sequence.py` + `categories/spectra/tc_calculators.py` + `categories/spectra/bms_motivic.py` | Proposed — see note below |
 | Bernoulli and Bell numbers, polylogarithms, Bloch-Wigner dilogarithm, multiple zeta values, p-adic integration, Dedekind zeta residues, and BSD invariants | Literature survey + user intake 2026-09-19 | Comprehensive analytic, arithmetic, and motivic invariants framework: (1) Bernoulli and Bell numbers: generating functions, Faulhaber power sums, von Staudt-Clausen denominators, Kummer congruences, Kubota-Leopoldt $p$-adic $L$-values, Bell/Touchard polynomials, and Stirling numbers of the second kind; (2) Polylogarithms and Bloch-Wigner dilogarithm: $\operatorname{Li}_s(z)$, single-valued Bloch-Wigner $D(z) = \operatorname{Im}(\operatorname{Li}_2(z)) + \arg(1-z)\log|z|$, 5-term functional equations, hyperbolic 3-manifold volumes, and the Bloch group $B(F)$; (3) Multiple zeta values (MZVs) and multiple polylogarithms: iterated Kontsevich integrals, weight/depth, stuffle and shuffle products, double shuffle relations, and motivic MZVs; (4) $p$-adic integration and analysis: Volkenborn integration on $\mathbb{Z}_p$, Mahler polynomial expansions, Coleman integration of differentials on curves, Coleman-Chabauty bounds, and Fontaine-Mazur $\mathcal{L}$-invariants; (5) Dedekind zeta functions $\zeta_K(s)$: functional equations, analytic class number formula at $s=1$ ($\lim (s-1)\zeta_K = \frac{2^{r_1}(2\pi)^{r_2} h R}{w \sqrt{|d|}}$), leading terms at $s=0$, and Borel higher regulators; (6) BSD conjecture and equality invariants: Birch and Swinnerton-Dyer leading term $\lim L(E,s)/(s-1)^r = \frac{\Omega_E R_E |\Sha| \prod c_v}{|E_{\mathrm{tors}}|^2}$, arithmetic volume / real periods $\Omega_E$, Néron-Tate regulator $R_E$, Tate-Shafarevich group $\Sha(E/K)$, Tamagawa indices $c_v$ via Tate's algorithm, and Bloch-Kato Tamagawa number conjecture | `categories/number_theory/bernoulli.py` + `categories/analysis/polylogarithms.py` + `categories/analysis/multiple_zeta.py` + `categories/number_theory/p_adic_analysis.py` + `categories/number_theory/dedekind_zeta.py` + `categories/elliptic_curves/bsd_conjecture.py` | Proposed — see note below |
 | Lie coalgebras, Chevalley-Eilenberg complexes, and spectral K-theories (algebraic K, Grothendieck-Witt, and Milnor-Witt as spectra) | User intake 2026-09-19 | Complete framework for Lie coalgebras, Chevalley-Eilenberg complexes, and spectrum-level $K$-theories: (1) Lie coalgebras $(\mathfrak{c}, \delta)$: co-Jacobi identity, coadjoint representations, co-Lie operad, and Koszul duality with commutative DGAs; (2) Chevalley-Eilenberg complexes: cochain complex $C_{\mathrm{CE}}^*(\mathfrak{g}, M) = \operatorname{Hom}_k(\bigwedge^* \mathfrak{g}, M)$ as a CDGA when $M=k$, Lie algebra homology complexes $C_*^{\mathrm{CE}}(\mathfrak{g}, M)$, and coalgebroid CE complexes; (3) Algebraic $K$-theory as a spectrum: connective and non-connective $\mathbf{K}(R)$ via Waldhausen $S_\bullet$-construction, Karoubi filtration, and motivic spectrum $\mathbf{KGL} \in \mathbf{SH}(S)$ representing algebraic $K$-theory; (4) Grothendieck-Witt (Hermitian $K$-theory) spectrum $\mathbf{GW}(R) \simeq \mathbf{KQ}(R)$: quadratic forms, Witt spectra $\mathbf{W}(R)$, and 12-term Karoubi periodicity sequence relating $\mathbf{GW}$, $\mathbf{K}$, and $L$-theory; (5) Milnor-Witt $K$-theory spectrum $\mathbf{K}^{\mathrm{MW}}$: Morel-Hopkins graded generators $[u]$ and $\eta$, Steinberg $[u][1-u]=0$, hyperbolic plane $h = 2 + \eta[-1]$, specialization to $K^{\mathrm{M}}$ mod $\eta$ and $W$ inverted $\eta$, and motivic spectrum representing Chow-Witt groups and Euler classes | `categories/algebras/lie_coalgebra.py` + `categories/homology/chevalley_eilenberg.py` + `categories/k_theory/algebraic_k_spectrum.py` + `categories/k_theory/grothendieck_witt_spectrum.py` + `categories/k_theory/milnor_witt_spectrum.py` | Proposed — see note below |
-
+| Logarithmic differentials $\Omega_{R/S}(\log D)$, Stasheff associahedra, and Coxiter invariant integration | User intake 2026-09-19 | Comprehensive framework for logarithmic differential calculus, Stasheff polytopes, and Coxeter group invariants: (1) Workable logarithmic differential forms $\Omega_{R/S}^1(\log D)$ and de Rham complexes $\Omega^\bullet(\log D)$: Saito's logarithmic derivations $\operatorname{Der}(-\log D)$, free divisors (Saito's criterion), Poincaré residue sequences $0 \to \Omega^1 \to \Omega^1(\log D) \xrightarrow{\operatorname{Res}} \mathcal{O}_D \to 0$, Deligne's weight filtration $W_k$, and logarithmic connections; (2) Stasheff associahedra $K_n$: dimension $n-2$, Catalan $C_{n-1}$ vertices (binary planar trees / parenthesizations / triangulations), face poset of tree contractions, Loday coordinates in $\mathbb{R}^{n-1}$, and $A_\infty$-operad composition/boundary relations; (3) Coxiter group invariants and integration: complete classification (spherical, affine, compact hyperbolic / Lanner, finite-covolume / quasi-Lanner, Lorentzian), rational growth series $W(t) = \sum t^{\ell(w)}$ and growth rates, Euler characteristic $\chi(W)$, Poincaré polynomials, degrees/exponents, parabolic lattices, Coxeter polyhedral hyperbolic volumes via Schläfli formulas, and full bridge to existing `categories/coxeter_diagrams.py` | `categories/differential_forms/logarithmic.py` + `categories/polytopes/associahedron.py` + `categories/operads/associahedra.py` + `categories/coxeter/coxiter_invariants.py` + `categories/coxeter/hyperbolic_volumes.py` | Proposed — see note below |
 
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
@@ -5452,6 +5452,157 @@ Intended owners: `categories/number_theory/bernoulli.py` (`bernoulli_number`, `b
     - `MilnorWittMotivicSpectrum(field)`: motivic spectrum $\mathbf{H}\widetilde{\mathbb{Z}}$ representing Chow-Witt groups.
 
 Intended owners: `categories/algebras/lie_coalgebra.py` (`LieCoalgebra`, `verify_cojacobi`, `dual_lie_algebra`), `categories/homology/chevalley_eilenberg.py` (`ChevalleyEilenbergComplex`, `chevalley_eilenberg_homology`, `lie_algebra_cohomology_groups`), `categories/k_theory/algebraic_k_spectrum.py` (`AlgebraicKSpectrum`, `k_group`, `bott_element`), `categories/k_theory/grothendieck_witt_spectrum.py` (`GrothendieckWittSpectrum`, `witt_spectrum`, `grothendieck_witt_group`, `witt_group`), `categories/k_theory/milnor_witt_spectrum.py` (`MilnorWittRing`, `milnor_witt_symbol`, `hopf_element`, `hyperbolic_element`, `MilnorWittMotivicSpectrum`).
+
+
+## Desired capability: Logarithmic differentials $\Omega_{R/S}(\log D)$, Stasheff associahedra, and Coxiter invariant integration — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Logarithmic Differential Forms ($\Omega_{R/S}^1(\log D)$ and $\Omega^\bullet(\log D)$):**
+    * Let $X = \operatorname{Spec}(R)$ be a smooth scheme over $S = \operatorname{Spec}(k)$ and $D \subset X$ an effective Cartier divisor defined by ideal $I_D \subset R$.
+    * **Module of Logarithmic Differential 1-forms $\Omega_{R/S}^1(\log D)$:**
+      - Defined algebraically as the sub-module of meromorphic differential 1-forms $\Omega_{K/S}^1$ (where $K = \operatorname{Frac}(R)$) such that both $\omega$ and $d\omega$ have at most simple poles along $D$:
+        $$
+        \Omega_{R/S}^1(\log D) \;\coloneqq\; \big\{ \omega \in \Omega_{K/S}^1 \;\big|\; f \omega \in \Omega_{R/S}^1 \text{ and } f d\omega \in \Omega_{R/S}^2 \text{ for all } f \in I_D \big\}.
+        $$
+      - Local basis for simple normal crossings divisor $D = \{x_1 \dots x_k = 0\}$:
+        $$
+        \Omega_{R/S}^1(\log D) \;=\; R \frac{dx_1}{x_1} \oplus \dots \oplus R \frac{dx_k}{x_k} \oplus R dx_{k+1} \oplus \dots \oplus R dx_n.
+        $$
+    * **Logarithmic Derivations $\operatorname{Der}_{R/S}(-\log D)$:**
+      - Dually, logarithmic vector fields are derivations tangent to $D$:
+        $$
+        \operatorname{Der}_{R/S}(-\log D) \;\coloneqq\; \big\{ \theta \in \operatorname{Der}_{R/S}(R) \;\big|\; \theta(I_D) \subseteq I_D \big\}.
+        $$
+      - Natural duality: $\Omega_{R/S}^1(\log D) \cong \operatorname{Hom}_R(\operatorname{Der}_{R/S}(-\log D), R)$.
+      - Free divisors (K. Saito): $D$ is a free divisor if $\operatorname{Der}_{R/S}(-\log D)$ (or $\Omega_{R/S}^1(\log D)$) is a locally free $R$-module.
+      - **Saito's Criterion:** If $\theta_1, \dots, \theta_n \in \operatorname{Der}_{R/S}(-\log D)$ are derivations with $\theta_i = \sum_{j=1}^n a_{ij} \frac{\partial}{\partial x_j}$, then they form a free basis of $\operatorname{Der}(-\log D)$ if and only if:
+        $$
+        \det(a_{ij}) \;\doteq\; c \cdot f
+        $$
+        where $D = \{f = 0\}$ and $c \in R^\times$.
+    * **Poincaré Residue and Exact Sequences:**
+      - Short exact sequence of sheaves:
+        $$
+        0 \longrightarrow \Omega_{X/S}^1 \longrightarrow \Omega_{X/S}^1(\log D) \xrightarrow{\;\operatorname{Res}_D\;} \bigoplus_i \mathcal{O}_{D_i} \longrightarrow 0
+        $$
+        where for $\omega = g \frac{dx_1}{x_1} + \eta$ (with $\eta$ regular), $\operatorname{Res}_{D_1}(\omega) = g|_{D_1}$.
+      - Higher residues on logarithmic de Rham complex $\Omega_X^\bullet(\log D) = \bigwedge^\bullet \Omega_X^1(\log D)$:
+        $$
+        \operatorname{Res}_{D_1} \colon \Omega_X^p(\log D) \longrightarrow \Omega_{D_1}^{p-1}(\log D').
+        $$
+    * **Deligne's Weight Filtration $W_k$:**
+      - $W_k \Omega_X^p(\log D)$ is the sub-sheaf generated by forms with at most $k$ logarithmic poles ($\bigwedge^k \Omega_X^1(\log D) \wedge \Omega_X^{p-k}$).
+      - Graded pieces compute the cohomology of stratum intersections: $\operatorname{gr}_k^W \Omega_X^\bullet(\log D) \cong \Omega_{\widetilde{D}^{(k)}}^\bullet[-k]$.
+      - Comparison theorem: The natural inclusion $\Omega_X^\bullet(\log D) \hookrightarrow j_* \Omega_U^\bullet$ (where $U = X \setminus D$) is a quasi-isomorphism, computing the hypercohomology $\mathbb{H}^*(X, \Omega_X^\bullet(\log D)) \cong H^*(U, \mathbb{C})$.
+
+  * **Stasheff Associahedra ($K_n$):**
+    * **Combinatorics:**
+      - Dimension: $\dim K_n = n - 2$ (parameterizing parenthesizations of $n$ factors).
+      - Vertices: Full bracketings of $n$ symbols / binary planar rooted trees with $n$ leaves / triangulations of a convex $(n+1)$-gon.
+      - Vertex count: Catalan number $C_{n-1} = \frac{1}{n} \binom{2n-2}{n-1}$.
+        ($K_2 = \text{point}$, $K_3 = \text{interval } [0, 1]$, $K_4 = \text{pentagon}$, $K_5 = \text{3D polyhedron with 14 vertices, 21 edges, 9 faces}$).
+      - Edges: Single associativity relations $(a b) c \leftrightarrow a (b c)$ / diagonal flips in triangulations / tree rotations.
+      - Face poset: Faces of codimension $k$ correspond to planar trees with $n$ leaves having $k$ internal edges collapsed / partial parenthesizations / dissections of $(n+1)$-gon by non-crossing diagonals.
+    * **Geometric Realizations:**
+      - Loday's realization in $\mathbb{R}^{n-1}$ (lying in affine hyperplane $\sum x_i = \binom{n+1}{3}$):
+        For a binary planar tree $T$ with $n$ leaves, vertex coordinates $M(T) = (x_1, \dots, x_{n-1})$ where $x_i = a_i \cdot b_i$, with $a_i$ the number of leaves in the left subtree of the $i$-th internal vertex, and $b_i$ the number of leaves in the right subtree.
+      - Secondary polytope of a convex $(n+1)$-gon (Gelfand-Kapranov-Zelevinsky GKZ).
+    * **$A_\infty$-Operad Structure:**
+      - Operadic compositions: $\circ_i \colon K_r \times K_s \to K_{r+s-1}$ given by grafting planar trees at the $i$-th leaf.
+      - Cellular boundary: $\partial K_n = \bigcup_{r+s=n+1} \bigcup_{i=1}^r K_r \circ_i K_s$.
+      - $A_\infty$-algebra relations on operations $m_n \colon A^{\otimes n} \to A[2-n]$:
+        $$
+        \sum_{r+s=n+1} \sum_{j=1}^r (-1)^{j(s+1)+r} m_r\left( \operatorname{id}^{\otimes (j-1)} \otimes m_s \otimes \operatorname{id}^{\otimes (r-j)} \right) \;=\; 0.
+        $$
+
+  * **Coxeter Groups, Diagrams, and Coxiter Integration:**
+    * **Coxeter System $(W, S)$:**
+      - Generators $S = \{s_1, \dots, s_n\}$, relations $(s_i s_j)^{m_{ij}} = 1$ with $m_{ii} = 1$ and $m_{ij} = m_{ji} \ge 2$ (or $m_{ij} = \infty$).
+      - Coxeter matrix $M = (m_{ij})$, Schläfli matrix / Gram matrix $G = (-\cos(\pi / m_{ij}))$.
+      - Coxeter-Dynkin diagram $\Gamma$: vertices $S$, edge $\{s_i, s_j\}$ labeled by $m_{ij}$ (omitted if $m_{ij}=3$, no edge if $m_{ij}=2$).
+    * **Classification Hierarchy (bridging Coxiter / Vinberg):**
+      1. **Spherical (Finite):** $G$ is positive-definite. Groups: $A_n, B_n/C_n, D_n, E_6, E_7, E_8, F_4, G_2, H_3, H_4, I_2(p)$.
+      2. **Affine (Euclidean):** $G$ is positive-semidefinite of corank 1. Groups: $\widetilde{A}_n, \widetilde{B}_n, \widetilde{C}_n, \widetilde{D}_n, \widetilde{E}_6, \widetilde{E}_7, \widetilde{E}_8, \widetilde{F}_4, \widetilde{G}_2$.
+      3. **Hyperbolic (Lorentzian of signature $(n, 1)$):**
+         - **Compact Hyperbolic (Lanner groups):** Fundamental Coxeter polyhedron in $\mathbb{H}^n$ is compact. Characterized by: $\Gamma$ is not spherical or affine, but *every* proper subdiagram is spherical. (Finite list: 9 groups in dim 2, 9 in dim 3, 5 in dim 4).
+         - **Non-compact Finite-Volume (Quasi-Lanner groups):** Fundamental polyhedron has finite hyperbolic volume. Characterized by: every proper subdiagram is either spherical or affine. (Finite list in dimensions up to 9, Vinberg).
+         - **General Hyperbolic / Lorentzian:** Fundamental polyhedron in $\mathbb{H}^n$ with possible divergent mirrors.
+    * **Invariants Computed (Coxiter Feature Parity):**
+      - **Growth Series and Rational Functions:**
+        Growth series $W(t) \coloneqq \sum_{w \in W} t^{\ell(w)}$ where $\ell(w)$ is the word length.
+        For any Coxeter group, $W(t)$ is a rational function $P(t)/Q(t)$, computed via Steinberg's inversion formula:
+        $$
+        \frac{1}{W(t^{-1})} \;=\; \sum_{J \subseteq S, |W_J| < \infty} \frac{(-1)^{|J|}}{W_J(t)}.
+        $$
+        Growth rate $\tau \coloneqq \limsup_{k \to \infty} |W_k|^{1/k} = 1 / R$ (where $R$ is the radius of convergence; frequently a Salem number).
+      - **Euler Characteristic:**
+        $$
+        \chi(W) \;\coloneqq\; \sum_{J \subseteq S, |W_J| < \infty} \frac{(-1)^{|J|}}{|W_J|}.
+        $$
+        For hyperbolic groups in even dimension $2k$, $\chi(W) = (-1)^k \frac{2 \operatorname{Vol}(P)}{\operatorname{Vol}(S^{2k})}$.
+      - **Poincaré Polynomials of Finite Groups:**
+        $W(t) = \prod_{i=1}^n [d_i]_t = \prod_{i=1}^n \frac{1 - t^{d_i}}{1 - t}$, where $d_i$ are the Coxeter degrees and $e_i = d_i - 1$ are the Coxeter exponents.
+      - **Hyperbolic Coxeter Polyhedra Volumes:**
+        Computation of $\operatorname{Vol}(P)$ for fundamental simplices and polyhedra via Vinberg's algorithm and Schläfli's differential volume formula:
+        $$
+        d \operatorname{Vol}_n(P) \;=\; -\frac{1}{n-1} \sum_{F \in \text{facets}} \operatorname{Vol}_{n-2}(F) d\theta_F.
+        $$
+      - **Bridge to existing preamble:** Direct bidirectional conversion and extension of `src/dzack_research/preamble/categories/coxeter_diagrams.py` (`CoxeterDiagrams`, `CoxeterDiagramMorphism`, `VinbergInvariantMatrices`).
+
+* **Operational & algorithmic representation:**
+  1. **Logarithmic Differential Module Engine:**
+     - `LogarithmicDifferentialModule` storing divisor ideal $I_D \subset R$, local logarithmic basis $\{dx_i/x_i, dx_j\}$, and relations.
+     - `LogarithmicDerivationModule` computing logarithmic vector fields $\operatorname{Der}_{R/S}(-\log D)$.
+     - `SaitoFreeDivisorTest` checking Saito's determinant criterion $\det(a_{ij}) \doteq f$.
+     - `PoincareResidueMap` implementing residue maps on logarithmic $p$-forms.
+     - `WeightFiltration` computing $W_k \Omega^p(\log D)$ and graded stratum quotients.
+  2. **Stasheff Associahedron Polytope Engine:**
+     - `StasheffAssociahedron(n)` constructing the $(n-2)$-dimensional polytope $K_n$.
+     - Generator for Catalan $C_{n-1}$ binary trees / parenthesizations / polygon triangulations.
+     - Rotation graph / flip graph computing edges of $K_n$.
+     - `LodayCoordinates` computing integer vertex coordinates in $\mathbb{R}^{n-1}$.
+     - Face poset generator indexing partial parenthesizations and dissections.
+     - Operadic grafting operator $K_r \circ_i K_s \to K_{r+s-1}$ and boundary identity verifier.
+  3. **Coxiter Invariants and Reflection Group Engine:**
+     - Bridge to `CoxeterDiagrams` in `categories/coxeter_diagrams.py`.
+     - Exact classification decider: spherical, affine, Lanner, quasi-Lanner, Lorentzian.
+     - Rational growth series solver $W(t) = P(t)/Q(t)$ via Steinberg's formula over spherical parabolic subdiagrams.
+     - Exact growth rate $\tau$ extraction (smallest real root of $Q(t)$ outside unit circle, checking Salem property).
+     - Euler characteristic $\chi(W)$ exact rational calculator.
+     - Poincaré polynomial and degree/exponent extractor for finite reflection groups.
+     - Hyperbolic volume evaluator for Coxeter simplices via Schläfli differential integration.
+
+* **Preamble implementation requirements:**
+  * `categories/differential_forms/logarithmic.py`:
+    - `LogarithmicDifferentialModule(base_ring, divisor_ideal)`: module $\Omega_{R/S}^1(\log D)$.
+    - `LogarithmicDerivationModule(base_ring, divisor_ideal)`: module $\operatorname{Der}_{R/S}(-\log D)$.
+    - `saito_free_divisor_criterion(derivations, divisor_poly)`: checks $\det(a_{ij}) \doteq f$.
+    - `PoincareResidue(log_module, component)`: residue homomorphism.
+    - `LogarithmicDeRhamComplex(log_module)`: complex $(\Omega^\bullet(\log D), d)$.
+    - `weight_filtration(log_complex, k)`: weight filtration $W_k$.
+  * `categories/polytopes/associahedron.py`:
+    - `StasheffAssociahedron(n)`: associahedron $K_n$.
+    - `binary_tree_vertices(n)`: generates all $C_{n-1}$ binary planar trees.
+    - `loday_coordinates(tree)`: computes Loday embedding coordinates.
+    - `associahedron_face_poset(n)`: face poset of tree contractions.
+    - `associahedron_f_vector(n)`: $f$-vector $(f_0, \dots, f_{n-2})$.
+  * `categories/operads/associahedra.py`:
+    - `AInfinityOperad()`: operad of associahedra $\{K_n\}$.
+    - `operadic_composition(K_r, i, K_s)`: grafting $K_r \circ_i K_s$.
+    - `ainfinity_relation(operations, n)`: checks $A_\infty$-boundary equation.
+  * `categories/coxeter/coxiter_invariants.py`:
+    - `CoxiterClassification(coxeter_diagram)`: classifies spherical, affine, Lanner, quasi-Lanner, Lorentzian.
+    - `growth_series_rational(coxeter_diagram)`: computes rational growth function $W(t)$.
+    - `growth_rate(coxeter_diagram)`: computes growth rate $\tau$.
+    - `coxeter_euler_characteristic(coxeter_diagram)`: computes $\chi(W)$.
+    - `poincare_polynomial(finite_coxeter_diagram)`: computes $\prod [d_i]_t$.
+    - `lanner_subdiagrams(coxeter_diagram)`: extracts minimal non-spherical parabolic subdiagrams.
+  * `categories/coxeter/hyperbolic_volumes.py`:
+    - `hyperbolic_coxeter_simplex_volume(coxeter_diagram)`: computes volume $\operatorname{Vol}(P)$ via Schläfli formula / Vinberg integration.
+    - `gram_matrix_signature(coxeter_diagram)`: computes signature $(p, q, r)$ of Gram matrix.
+
+Intended owners: `categories/differential_forms/logarithmic.py` (`LogarithmicDifferentialModule`, `LogarithmicDerivationModule`, `saito_free_divisor_criterion`, `PoincareResidue`), `categories/polytopes/associahedron.py` (`StasheffAssociahedron`, `binary_tree_vertices`, `loday_coordinates`, `associahedron_face_poset`), `categories/operads/associahedra.py` (`AInfinityOperad`, `operadic_composition`, `ainfinity_relation`), `categories/coxeter/coxiter_invariants.py` (`CoxiterClassification`, `growth_series_rational`, `growth_rate`, `coxeter_euler_characteristic`, `poincare_polynomial`), `categories/coxeter/hyperbolic_volumes.py` (`hyperbolic_coxeter_simplex_volume`, `gram_matrix_signature`).
+
 
 
 
