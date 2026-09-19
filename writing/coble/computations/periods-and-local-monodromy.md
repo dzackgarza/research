@@ -17,6 +17,49 @@ tags:
 \longref{def:kulikov-types} classifies a degeneration by the nilpotency index of $N = \log T$, and \longref{thm:lmhs} reads the boundary stratum off the same operator.
 This page records how $T$ and $N$ are computed for an explicit one-parameter family, by two constructions with different hypotheses and different failure modes.
 
+## Periods and the period map
+
+::: {.Definition #def:period-map}
+### Period matrix and period map
+
+Let $\pi \colon \mathcal{X} \to M$ be a smooth projective (or compact Kähler) family of complex $m$-dimensional varieties over a connected complex quasi-projective variety (or complex manifold) $M$.
+Fix a reference fiber $X = X_{t_0} = \pi^{-1}(t_0)$, and let $\{\Sigma_0, \dots, \Sigma_{k-1}\} \subset H_m(X, \mathbb{Z})/\mathrm{tors}$ be an integral basis of the middle homology modulo torsion, where $k = b_m(X)$ is the middle Betti number.
+For each $t \in M$, let $\{\omega_1(t), \dots, \omega_p(t)\}$ be a basis of a holomorphic subbundle of the relative de Rham cohomology, such as $H^{m,0}(X_t) \subset H^m_{\mathrm{dR}}(X_t)$ where $p = h^{m,0}(X)$, varying holomorphically with $t$.
+
+1. **The general period matrix and period map:**
+   The *period matrix* of the fiber $X_t$ with respect to the chosen bases is the $p \times k$ matrix of period integrals
+   $$
+   \Pi(t) \;\coloneqq\; \begin{pmatrix}
+   \displaystyle\int_{\Sigma_0(t)} \omega_1(t) & \cdots & \displaystyle\int_{\Sigma_{k-1}(t)} \omega_1(t) \\
+   \vdots & \ddots & \vdots \\
+   \displaystyle\int_{\Sigma_0(t)} \omega_p(t) & \cdots & \displaystyle\int_{\Sigma_{k-1}(t)} \omega_p(t)
+   \end{pmatrix}
+   \;\in\; \operatorname{Mat}_{p \times k}(\mathbb{C}).
+   $$
+   Because the basis of holomorphic forms is determined only up to an invertible change of basis in $\operatorname{GL}_p(\mathbb{C})$, the $p$-dimensional subspace spanned by the rows of $\Pi(t)$ defines a point in the Grassmannian $\operatorname{Gr}(p, H^m(X, \mathbb{C}))$, or more precisely in the Griffiths period domain $\mathcal{D} \subset \operatorname{Gr}(p, k)$ cut out by the Riemann–Hodge bilinear relations.
+   Modulo the global monodromy group $\Gamma \le \operatorname{Aut}(H_m(X, \mathbb{Z}), Q)$, this association defines the *period map* of the family
+   $$
+   \mathcal{P} \colon M \longrightarrow \mathcal{D}/\Gamma.
+   $$
+
+2. **Specialization to the one-form case ($p = 1$, Calabi–Yau varieties):**
+   When $X$ is a smooth $m$-dimensional Calabi–Yau variety (such as an elliptic curve with $m=1$, a K3 surface with $m=2$, or a Calabi–Yau threefold with $m=3$), the space of holomorphic top forms is one-dimensional: $h^{m,0}(X) = 1$.
+   There is therefore a unique (up to scaling) non-vanishing holomorphic $m$-form $\Omega \in H^{m,0}(X)$.
+   In this setting, there is exactly one form to integrate ($p = 1$), and the general period matrix specializes to a single row vector of $k = b_m$ period integrals $\omega_0, \dots, \omega_{k-1}$, given by
+   $$
+   \omega_i \;=\; \int_{\Sigma_i} \Omega \qquad (i = 0, \dots, k-1).
+   $$
+   Since $\Omega$ is determined up to an arbitrary non-zero constant $\lambda \in \mathbb{C}^\times$, the period integrals are determined up to scalar multiplication, and their totality defines a well-defined point $P_X$ in projective space $\mathbb{P}^{k-1}(\mathbb{C})$:
+   $$
+   P_X \;=\; [\omega_0 : \dots : \omega_{k-1}] \;\in\; \mathbb{P}^{k-1}.
+   $$
+   When $X = X_t = \pi^{-1}(t)$ varies in a family $\pi \colon \mathcal{X} \to M$, with $\pi$ determining a locally topologically trivial fibration over a complex quasi-projective variety $M$ and $t \in M$, the association $t \mapsto P_{X_t}$ extends to a holomorphic map
+   $$
+   \omega \colon M \longrightarrow \mathbb{P}^{k-1}, \qquad t \longmapsto P_{X_t} = [\omega_0(t) : \dots : \omega_{k-1}(t)],
+   $$
+   called the *projective period map* of the family.
+:::
+
 ## The algebraic construction
 
 ::: {.Construction #cons:pf-from-jacobian}
