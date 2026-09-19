@@ -1365,6 +1365,17 @@ from the breadth of this specification.
   procedure. A theorem-backed construction supplies the actual defining data
   and the hypotheses under which its laws follow through the same owner.
 
+  For each required law, distinguish a decision, a derivation from the supplied
+  construction, and an unresolved hypothesis. A decision names an applicable
+  procedure; a derivation names the construction, its actual endpoints and the
+  premises that imply the equation. A caller-supplied label such as "linear",
+  "assumed" or "theorem-backed" establishes none of these. Conditional data may
+  remain meaningful under explicit hypotheses, but every dependent conclusion
+  retains those hypotheses. A consumer requiring an established law must obtain
+  its evidence or fail at that frontier; placement alone cannot discharge it.
+  Composition, scalar change and lazy realization preserve the dependencies of
+  the laws they use. Refuted premises are rejected, never changed to `Unknown`.
+
   `verify_linearity=False`, `check=False`, a trusted constructor, a direct
   concrete-class allocation, or a renamed internal equivalent may not turn off
   admission. Moving the switch into a private helper is the same bypass.
@@ -1379,6 +1390,11 @@ from the breadth of this specification.
   one-dimensional module over GF(3), the constant nonzero function is rejected
   as nonlinear by every route; the zero map is admitted. No construction flag
   makes the former a linear map.
+  On Z, the function n -> n^2 preserves zero but is not additive. Over GF(4),
+  Frobenius is additive but not GF(4)-linear. An infinite product projection is
+  linear by its componentwise construction, without enumeration. These require
+  different admission evidence; passing the finite-field specimen alone cannot
+  establish the general contract.
 
 ### `OWN-23`: Lazy realization fixes all defining choices before exposure
 
@@ -1396,6 +1412,14 @@ from the breadth of this specification.
   of the module's datum and realization of that morphism must be stratified at
   their common owner; `_install_*` helpers and post-allocation refinement are
   not alternative public constructors.
+
+  Settle mutually recursive constructor obligations together before their
+  consumers rely on either one. Follow actual initialization and accessor calls
+  and identify the already-fixed datum on which each step depends. The chain
+  must terminate without demanding its own enriched framing or proving a law
+  from the very placement that law is needed to admit. Preserve this argument
+  when adding a new realization; a cache or delayed callback alone does not
+  establish well-founded construction.
 - **Rationale:** Requiring eager evaluation of every enriched map produces a
   constructor cycle; accepting arbitrary delayed choices produces invalid
   objects. Neither follows from the mathematical definition.
@@ -7077,12 +7101,39 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   the owner, entry routes, coefficient/hypothesis regimes and unexecuted proof.
   Before T this is source delivery, not a claim that the specimens pass.
 
+  Derive that family from the original requirement and source declarations,
+  constructors, overrides, exports and consuming calls before comparing the
+  delivered routes. Search hits and the changed-file list do not define it.
+  Match each requirement clause to the route and regime that discharge it;
+  distinguish definition, representation and effective computation. A few
+  positive and negative specimens separate particular wrong constructions but
+  do not prove an "every" claim. Record coverage in the delivery commit, with
+  concrete residue in the existing open row rather than a new compliance ledger.
+
+  The producer and the consumers of its changed contract close together.
+  Admission, private access, placement, inherited operations and ownership
+  defects on that route block its delivery even when a later sweep has the
+  same topic. Those sweeps own only independently untouched residue. A later
+  consumer must preserve the producer's established contract and its separating
+  specimens. If a counterexample defeats a shared repair, reopen the affected
+  obligation and inspect the other uses of that repair method before proceeding;
+  do not reopen unrelated work or patch only the reported spelling.
+
   Required residue stays in the DAG with its full objects, maps and hypotheses.
   An aggregate cannot close while any required descendant remains open. A split
   transfers every obligation and redirects the affected edges before delivery;
   recording a new child is not satisfying it. At T, execute the banked specimens
   against the repaired source, including inherited operations and alternative
   construction routes. A previous green run cannot certify a later revision.
+
+  For a finite audit, fix its source population and obligations at entry, cover
+  them once, then review each repair and its affected uses. Completed coverage
+  remains valid for unchanged, unaffected routes. New relevant findings remain
+  required repairs; neither a repair nor a newly consulted skill restarts the
+  whole-repository pass or adds an unrelated audit lens. Close when the stated
+  coverage is complete, its findings are repaired, and affected proof has been
+  re-established under the current verification phase. Repeated rediscovery of
+  the same cause requires a repair at its shared owner, not another broad scan.
 - **Violation Example:** close category membership after changing only schemes
   while functor/arrow categories retain the same predicate; close provenance
   after renaming fields; close an aggregate because its repairs have new names.
