@@ -1187,28 +1187,31 @@ class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
         )
 
         descent = QuasiCoherentSheavesWithChosenDescentDatum(scheme)
-        if domain in descent and codomain in descent:
-            return FiniteAtlasModuleSheafHomset
+        match (domain in descent, codomain in descent):
+            case (True, True):
+                return FiniteAtlasModuleSheafHomset
+            case _:
+                pass
 
         trivialized = category.Invertible().WithChosenTrivialization()
-        if domain in trivialized and codomain in trivialized:
-            from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                ChosenTrivializationQuasiCoherentHomset,
-            )
+        match (domain in trivialized, codomain in trivialized):
+            case (True, True):
+                from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                    _ChosenTrivializationQuasiCoherentHomset,
+                )
 
-            return ChosenTrivializationQuasiCoherentHomset
+                return _ChosenTrivializationQuasiCoherentHomset
+            case _:
+                pass
 
-        from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-            ProductProjectiveSubschemeLineBundle,
-            ProjectiveSubschemeLineBundle,
-            PullbackLineBundleQuasiCoherentHomset,
-        )
+        invertible = category.Invertible()
+        match (domain in invertible, codomain in invertible):
+            case (True, True):
+                from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                    _PullbackLineBundleQuasiCoherentHomset,
+                )
 
-        match domain, codomain:
-            case ProjectiveSubschemeLineBundle(), ProjectiveSubschemeLineBundle():
-                return PullbackLineBundleQuasiCoherentHomset
-            case ProductProjectiveSubschemeLineBundle(), ProductProjectiveSubschemeLineBundle():
-                return PullbackLineBundleQuasiCoherentHomset
+                return _PullbackLineBundleQuasiCoherentHomset
             case _:
                 pass
 
@@ -1390,26 +1393,35 @@ class InvertibleSheavesWithChosenTrivialization(OwnedParameterizedCategory):
                     "section-space and divisor data belong to finite-atlas trivializations"
                 )
                 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                    InvertibleSheaf,
+                    _DistinguishedCoverInvertibleSheafEngine,
                 )
 
                 return gluing_datum.sheaf(
                     categories=(self,),
                     construction_data={"gluing_datum": gluing_datum},
-                    _engine=InvertibleSheaf,
+                    _engine=_DistinguishedCoverInvertibleSheafEngine,
                 )
             case _:
                 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                    FiniteAtlasInvertibleSheaf,
+                    _FiniteAtlasInvertibleSheafEngine,
                 )
 
                 return self._realize(
-                    FiniteAtlasInvertibleSheaf,
+                    _FiniteAtlasInvertibleSheafEngine,
                     gluing_datum=gluing_datum,
                     transition_units=transition_units,
                     section_space=section_space,
                     associated_divisor=associated_divisor,
                 )
+
+    def trivial(self, cover):
+        r"""Return ``O_X`` with the selected distinguished affine trivialization ``cover``."""
+        from dzack_research.preamble.categories.schemes.gluing import ModuleGluingData
+
+        assert cover.ambient_scheme() is self.scheme(), (
+            "a trivialized structure sheaf uses a cover of this scheme"
+        )
+        return self(ModuleGluingData(cover).an_object())
 
     class ParentMethods:
         def trivializing_cover(self):

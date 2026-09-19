@@ -2642,7 +2642,14 @@ class Schemes(OwnedCategoryOverBaseRing):
             def is_projective(self):
                 return True
 
-            def closed_subscheme(self, *equations, placements=(), **level_data):
+            def closed_subscheme(
+                self,
+                *equations,
+                placements=(),
+                _object_engine=None,
+                construction_data=None,
+                **level_data,
+            ):
                 r"""``V_+(f_1, ..., f_k)``, cut out by homogeneous equations.
 
                 The equations are owned homogeneous polynomials, or elements of
@@ -2653,10 +2660,26 @@ class Schemes(OwnedCategoryOverBaseRing):
                 object of further categories -- a complete intersection, a blowup
                 -- states them in ``placements``, with their level data.
                 """
-                return _projective_closed_subscheme(self, equations, placements=placements, **level_data)
+                return _projective_closed_subscheme(
+                    self,
+                    equations,
+                    placements=placements,
+                    _object_engine=_object_engine,
+                    construction_data=construction_data,
+                    **level_data,
+                )
 
 
-def _projective_closed_subscheme(ambient, equations, placements=(), *, _engine=None, **level_data):
+def _projective_closed_subscheme(
+    ambient,
+    equations,
+    placements=(),
+    *,
+    _engine=None,
+    _object_engine=None,
+    construction_data=None,
+    **level_data,
+):
     r"""The one projective closed-subscheme construction, with its inclusion.
 
     The private engine argument is used by a construction that must decide
@@ -2667,11 +2690,21 @@ def _projective_closed_subscheme(ambient, equations, placements=(), *, _engine=N
     equations = _projective_equation_family(_equation_family(equations))
     base = ambient.scheme_base_ring()
     engine = _engine_projective_subscheme(_engine_scheme(ambient), equations) if _engine is None else _engine
+    category = Category.join(
+        (Schemes(base).Projective(), ClosedEmbeddings(ambient), ClosedSubschemes(base), *placements)
+    )
+    data = dict(construction_data or {})
+    match _object_engine:
+        case None:
+            object_realization = None
+        case _:
+            object_realization = (Schemes(base), _object_engine, None)
     return _object_of(
-        Category.join((Schemes(base).Projective(), ClosedEmbeddings(ambient), ClosedSubschemes(base), *placements)),
+        category,
+        _engine=object_realization,
         scheme_base_ring=base, scheme_engine=engine,
         inclusion_codomain=ambient, inclusion_datum=_native_embedding_rule,
-        defining_equations=equations, **level_data,
+        defining_equations=equations, **data, **level_data,
     )
 
 

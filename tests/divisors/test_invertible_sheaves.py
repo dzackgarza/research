@@ -25,7 +25,6 @@ def _transition(source: Any, target: Any, unit: Any) -> Any:
 def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     from sage.rings.rational_field import QQ as SageQQ
 
-    from dzack_research.preamble.all import InvertibleSheaf
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
         QuasiCoherentSheaves,
@@ -69,7 +68,7 @@ def test_rank_one_descent_is_an_invertible_sheaf_with_tensor_powers() -> None:
     square = line.tensor_power(2)
     dual = line.dual_sheaf()
     neutral = line.tensor_product(dual)
-    trivial = InvertibleSheaf.trivial(cover)
+    trivial = trivialized.trivial(cover)
     assert square.transition_unit(0, 1) == overlap_x**2
     assert dual.transition_unit(0, 1) == overlap_x.inverse_of_unit()
     assert neutral.transition_unit(0, 1) == overlap_x.parent().one()

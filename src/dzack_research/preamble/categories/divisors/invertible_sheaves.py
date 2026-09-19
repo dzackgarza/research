@@ -3,7 +3,6 @@ r"""Invertible sheaves represented by rank-one affine module descent data."""
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.categories.morphism import Morphism
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -69,7 +68,7 @@ def _finite_atlas_invertible_sheaf(
     )
 
 
-class InvertibleSheaf(_ModuleGluingSheafEngine):
+class _DistinguishedCoverInvertibleSheafEngine(_ModuleGluingSheafEngine):
     r"""A line bundle represented by rank-one free descent on one affine cover."""
 
     def __init__(self, gluing_datum, module_gluing_datum, **rest) -> None:
@@ -195,9 +194,8 @@ class InvertibleSheaf(_ModuleGluingSheafEngine):
 
     def tensor_product(self, other):
         r"""Tensor two line bundles by multiplying their transition units."""
-
-        if not isinstance(other, InvertibleSheaf):
-            raise TypeError("line-bundle tensor product requires two invertible sheaves")
+        if other not in InvertibleSheavesWithChosenTrivialization(self.scheme()):
+            raise TypeError("line-bundle tensor product requires two represented trivialized invertible sheaves")
         if other.cover() is not self.cover():
             raise ValueError("line-bundle tensor product currently requires one affine cover")
         units = {
@@ -233,10 +231,10 @@ class InvertibleSheaf(_ModuleGluingSheafEngine):
         return f"Invertible sheaf on {self.scheme()} trivialized by {self.cover()}"
 
 
-class FiniteAtlasInvertibleSheaf:
+class _FiniteAtlasInvertibleSheafEngine:
     r"""A line bundle on a finite glued affine atlas via transition functions.
 
-    Unlike :class:`InvertibleSheaf`, whose descent datum lives on one affine
+    Unlike the distinguished-cover realization, whose descent datum lives on one affine
     scheme's distinguished-open cover and hence has a literal common overlap
     ring, a finite glued atlas has two isomorphic presentations of every
     overlap.  A transition unit ``u_ij`` therefore lives on the source-side
@@ -394,8 +392,8 @@ class FiniteAtlasInvertibleSheaf:
         return _finite_atlas_invertible_sheaf(atlas, units)
 
     def tensor_product(self, other):
-        if not isinstance(other, FiniteAtlasInvertibleSheaf):
-            raise TypeError("finite-atlas tensor product requires two finite-atlas invertible sheaves")
+        if other not in InvertibleSheavesWithChosenTrivialization(self.scheme()):
+            raise TypeError("finite-atlas tensor product requires two represented trivialized invertible sheaves")
         if other.gluing_datum() is not self.gluing_datum():
             raise ValueError("line-bundle tensor product requires one finite atlas")
         units = {
@@ -580,25 +578,39 @@ def _tensor_power_base_change_image(bundle, exponent):
             )
 
 
-def _chosen_trivialization_object(scheme, engine, **construction_data):
+def _chosen_trivialization_object(
+    scheme,
+    engine,
+    *,
+    placements=(),
+    **construction_data,
+):
     r"""Realize one line-bundle engine in the chosen-trivialization owner."""
-    return InvertibleSheavesWithChosenTrivialization(scheme)._realize(
-        engine,
-        **construction_data,
-    )
-
-
-def _invertible_sheaf_object(scheme, engine, **construction_data):
-    r"""Realize one line-bundle engine directly in ``QCoh(scheme).Invertible()``."""
-    category = QuasiCoherentSheaves(scheme).Invertible()
+    category = InvertibleSheavesWithChosenTrivialization(scheme)
     return QuasiCoherentSheaves(scheme).object(
-        categories=(category,),
+        categories=(category, *placements),
         construction_data=construction_data,
         _engine=engine,
     )
 
 
-class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
+def _invertible_sheaf_object(
+    scheme,
+    engine,
+    *,
+    placements=(),
+    **construction_data,
+):
+    r"""Realize one line-bundle engine directly in ``QCoh(scheme).Invertible()``."""
+    category = QuasiCoherentSheaves(scheme).Invertible()
+    return QuasiCoherentSheaves(scheme).object(
+        categories=(category, *placements),
+        construction_data=construction_data,
+        _engine=engine,
+    )
+
+
+class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
     r"""The standard ``O(d)`` on one represented projective space.
 
     This is a specialization of finite-atlas invertible-sheaf descent.  Its
@@ -661,14 +673,16 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         return self._degree
 
     def tensor_product(self, other):
-        if isinstance(other, ProjectiveSpaceLineBundle):
-            if other.projective_space() is not self.projective_space():
+        match other:
+            case _ProjectiveSpaceLineBundleEngine() if other.projective_space() is self.projective_space():
+                return _projective_o(
+                    self.projective_space(),
+                    self.degree() + other.degree(),
+                )
+            case _ProjectiveSpaceLineBundleEngine():
                 raise ValueError("projective line-bundle tensor product requires one projective space")
-            return _projective_o(
-                self.projective_space(),
-                self.degree() + other.degree(),
-            )
-        return super().tensor_product(other)
+            case _:
+                return super().tensor_product(other)
 
     @cached_method
     def tensor_power(self, exponent):
@@ -733,14 +747,10 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     def linearize(self, scheme_action_functor, character):
         from dzack_research.preamble.categories.divisors.linearizations import (
-            _ProjectiveLineBundleLinearization,
+            _line_bundle_linearization,
         )
 
-        return _ProjectiveLineBundleLinearization(
-            self,
-            scheme_action_functor,
-            character,
-        )
+        return _line_bundle_linearization(self, scheme_action_functor, character)
 
     def c2_coordinate_swap_linearization(self, twist=1):
         r"""Linearize this ``O(d)`` for coordinate swap with the selected C2 character."""
@@ -807,10 +817,13 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     def section_multiplication(self, other):
         from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 
-        if not isinstance(other, ProjectiveSpaceLineBundle):
-            raise TypeError("section multiplication requires two projective-space line bundles")
-        if other.projective_space() is not self.projective_space():
-            raise ValueError("section multiplication requires one projective space")
+        match other:
+            case _ProjectiveSpaceLineBundleEngine() if other.projective_space() is self.projective_space():
+                pass
+            case _ProjectiveSpaceLineBundleEngine():
+                raise ValueError("section multiplication requires one projective space")
+            case _:
+                raise TypeError("section multiplication requires two projective-space line bundles")
         assert self.degree() >= 0 and other.degree() >= 0, (
             "homogeneous-polynomial section multiplication is represented here in nonnegative degrees"
         )
@@ -867,7 +880,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
 
 
-class ProjectiveSubschemeLineBundle:
+class _ProjectiveSubschemeLineBundleEngine:
     r"""The pullback ``i^* O_P(d)`` along a projective closed immersion.
 
     The defining datum is the actual closed immersion together with the
@@ -896,10 +909,13 @@ class ProjectiveSubschemeLineBundle:
         ambient = closed_subscheme.inclusion().codomain()
         if ambient not in ProjectiveSpaces(base):
             raise TypeError("the selected O_X(d) construction requires projective-space ambient")
-        if not isinstance(ambient_line_bundle, ProjectiveSpaceLineBundle):
-            raise TypeError("the ambient bundle must be a represented projective O(d)")
-        if ambient_line_bundle.projective_space() is not ambient:
-            raise ValueError("the ambient line bundle belongs to a different projective space")
+        match ambient_line_bundle:
+            case _ProjectiveSpaceLineBundleEngine() if ambient_line_bundle.projective_space() is ambient:
+                pass
+            case _ProjectiveSpaceLineBundleEngine():
+                raise ValueError("the ambient line bundle belongs to a different projective space")
+            case _:
+                raise TypeError("the ambient bundle must be a represented projective O(d)")
         match pullback_morphism:
             case None:
                 selected_pullback = closed_subscheme.inclusion()
@@ -933,10 +949,13 @@ class ProjectiveSubschemeLineBundle:
         return self.ambient_line_bundle().degree()
 
     def tensor_product(self, other):
-        if not isinstance(other, ProjectiveSubschemeLineBundle):
-            raise TypeError("restricted projective tensor product requires two O_X(d) bundles")
-        if other.scheme() is not self.scheme():
-            raise ValueError("restricted line-bundle tensor product requires one scheme")
+        match other:
+            case _ProjectiveSubschemeLineBundleEngine() if other.scheme() is self.scheme():
+                pass
+            case _ProjectiveSubschemeLineBundleEngine():
+                raise ValueError("restricted line-bundle tensor product requires one scheme")
+            case _:
+                raise TypeError("restricted projective tensor product requires two O_X(d) bundles")
         return self.pullback_morphism().module_pullback(
             self.ambient_line_bundle().tensor_product(other.ambient_line_bundle())
         )
@@ -968,10 +987,13 @@ class ProjectiveSubschemeLineBundle:
 
     def canonical_isomorphism_to(self, target):
         r"""Return the canonical comparison with an equal-degree presentation on this scheme."""
-        if not isinstance(target, ProjectiveSubschemeLineBundle):
-            raise TypeError("this line-bundle isomorphism compares two represented O_X(d) bundles")
-        if self.scheme() is not target.scheme():
-            raise ValueError("a line-bundle isomorphism lies over one scheme")
+        match target:
+            case _ProjectiveSubschemeLineBundleEngine() if target.scheme() is self.scheme():
+                pass
+            case _ProjectiveSubschemeLineBundleEngine():
+                raise ValueError("a line-bundle isomorphism lies over one scheme")
+            case _:
+                raise TypeError("this line-bundle isomorphism compares two represented O_X(d) bundles")
         if self.degree() != target.degree():
             raise ValueError("the selected projective line-bundle comparison requires equal degrees")
         ambient = _chosen_trivialization_isomorphism(
@@ -991,7 +1013,7 @@ def _projective_o(projective_space, degree, *, base_change_image=None):
     r"""Return the standard line bundle ``O(d)`` on ``P^n``."""
     return _chosen_trivialization_object(
         projective_space,
-        ProjectiveSpaceLineBundle,
+        _ProjectiveSpaceLineBundleEngine,
         projective_space=projective_space,
         degree=degree,
         base_change_image=base_change_image,
@@ -1007,14 +1029,14 @@ def _projective_subscheme_line_bundle(
     r"""Return the invertible pullback of ``ambient_line_bundle`` to ``closed_subscheme``."""
     return _invertible_sheaf_object(
         closed_subscheme,
-        ProjectiveSubschemeLineBundle,
+        _ProjectiveSubschemeLineBundleEngine,
         closed_subscheme=closed_subscheme,
         ambient_line_bundle=ambient_line_bundle,
         pullback_morphism=pullback_morphism,
     )
 
 
-class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
+class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
     r"""The standard ``O(d_1,...,d_r)`` on a product of projective spaces."""
 
     def __init__(
@@ -1042,16 +1064,17 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
         factors = projective_product.factors()
         factor_indices = factors.index_set()
         factor_labels = tuple(factor_indices)
-        if isinstance(degrees, IndexedFamily):
-            if degrees.index_set() is not factor_indices:
-                raise ValueError("a line-bundle multidegree uses the exact factor index set")
-            degree_values = tuple(
-                _own_ring(SageZZ)(degrees[label]) for label in factor_labels
-            )
-        else:
-            degree_values = tuple(_own_ring(SageZZ)(degree) for degree in degrees)
-            if len(degree_values) != len(factor_labels):
-                raise ValueError("a line-bundle multidegree has one degree per projective factor")
+        match degrees:
+            case IndexedFamily():
+                if degrees.index_set() is not factor_indices:
+                    raise ValueError("a line-bundle multidegree uses the exact factor index set")
+                degree_values = tuple(
+                    _own_ring(SageZZ)(degrees[label]) for label in factor_labels
+                )
+            case _:
+                degree_values = tuple(_own_ring(SageZZ)(degree) for degree in degrees)
+                if len(degree_values) != len(factor_labels):
+                    raise ValueError("a line-bundle multidegree has one degree per projective factor")
         self._projective_product = projective_product
         self._base_change_image = base_change_image
         self._multidegree = finite_indexed_family(
@@ -1110,18 +1133,20 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
         return self._multidegree
 
     def tensor_product(self, other):
-        if isinstance(other, ProductProjectiveLineBundle):
-            if other.projective_product() is not self.projective_product():
+        match other:
+            case _ProductProjectiveLineBundleEngine() if other.projective_product() is self.projective_product():
+                labels = tuple(self.multidegree().index_set())
+                return _product_projective_o(
+                    self.projective_product(),
+                    tuple(
+                        self.multidegree()[label] + other.multidegree()[label]
+                        for label in labels
+                    ),
+                )
+            case _ProductProjectiveLineBundleEngine():
                 raise ValueError("multiprojective line-bundle tensor product requires one scheme")
-            labels = tuple(self.multidegree().index_set())
-            return _product_projective_o(
-                self.projective_product(),
-                tuple(
-                    self.multidegree()[label] + other.multidegree()[label]
-                    for label in labels
-                ),
-            )
-        return super().tensor_product(other)
+            case _:
+                return super().tensor_product(other)
 
     @cached_method
     def tensor_power(self, exponent):
@@ -1164,14 +1189,10 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def linearize(self, scheme_action_functor, character):
         from dzack_research.preamble.categories.divisors.linearizations import (
-            _ProductProjectiveLineBundleLinearization,
+            _line_bundle_linearization,
         )
 
-        return _ProductProjectiveLineBundleLinearization(
-            self,
-            scheme_action_functor,
-            character,
-        )
+        return _line_bundle_linearization(self, scheme_action_functor, character)
 
     def c2_diagonal_sign_linearization(self, twist=1):
         r"""Linearize this multidegree for the diagonal sign action and selected C2 character."""
@@ -1209,10 +1230,13 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
     def section_multiplication(self, other):
         from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 
-        if not isinstance(other, ProductProjectiveLineBundle):
-            raise TypeError("multihomogeneous section multiplication requires two multiprojective line bundles")
-        if other.projective_product() is not self.projective_product():
-            raise ValueError("multihomogeneous section multiplication requires one scheme")
+        match other:
+            case _ProductProjectiveLineBundleEngine() if other.projective_product() is self.projective_product():
+                pass
+            case _ProductProjectiveLineBundleEngine():
+                raise ValueError("multihomogeneous section multiplication requires one scheme")
+            case _:
+                raise TypeError("multihomogeneous section multiplication requires two multiprojective line bundles")
         target_bundle = self.tensor_product(other)
         left = self.global_sections()
         right = other.global_sections()
@@ -1313,7 +1337,7 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
 
 
-class ProductProjectiveSubschemeLineBundle:
+class _ProductProjectiveSubschemeLineBundleEngine:
     r"""The pullback of ``O(d_1,...,d_r)`` to a closed multiprojective subscheme."""
 
     def __init__(self, closed_subscheme, ambient_line_bundle, **rest) -> None:
@@ -1328,10 +1352,13 @@ class ProductProjectiveSubschemeLineBundle:
         ambient = closed_subscheme.inclusion().codomain()
         if ambient not in ProductProjectiveSpaces(base):
             raise TypeError("this restricted bundle requires a product-projective ambient")
-        if not isinstance(ambient_line_bundle, ProductProjectiveLineBundle):
-            raise TypeError("the ambient bundle must be a represented multiprojective O(d_1,...,d_r)")
-        if ambient_line_bundle.projective_product() is not ambient:
-            raise ValueError("the ambient line bundle belongs to a different projective product")
+        match ambient_line_bundle:
+            case _ProductProjectiveLineBundleEngine() if ambient_line_bundle.projective_product() is ambient:
+                pass
+            case _ProductProjectiveLineBundleEngine():
+                raise ValueError("the ambient line bundle belongs to a different projective product")
+            case _:
+                raise TypeError("the ambient bundle must be a represented multiprojective O(d_1,...,d_r)")
         self._scheme = closed_subscheme
         self._ambient_line_bundle = ambient_line_bundle
         self._pullback_morphism = closed_subscheme.inclusion()
@@ -1352,10 +1379,13 @@ class ProductProjectiveSubschemeLineBundle:
         return self.ambient_line_bundle().multidegree()
 
     def tensor_product(self, other):
-        if not isinstance(other, ProductProjectiveSubschemeLineBundle):
-            raise TypeError("restricted multiprojective tensor product requires two line bundles")
-        if other.scheme() is not self.scheme():
-            raise ValueError("restricted line-bundle tensor product requires one scheme")
+        match other:
+            case _ProductProjectiveSubschemeLineBundleEngine() if other.scheme() is self.scheme():
+                pass
+            case _ProductProjectiveSubschemeLineBundleEngine():
+                raise ValueError("restricted line-bundle tensor product requires one scheme")
+            case _:
+                raise TypeError("restricted multiprojective tensor product requires two line bundles")
         return _product_projective_subscheme_line_bundle(
             self.scheme(),
             self.ambient_line_bundle().tensor_product(other.ambient_line_bundle()),
@@ -1385,10 +1415,13 @@ class ProductProjectiveSubschemeLineBundle:
 
     def canonical_isomorphism_to(self, target):
         r"""Return the canonical comparison with an equal-multidegree presentation on this scheme."""
-        if not isinstance(target, ProductProjectiveSubschemeLineBundle):
-            raise TypeError("this comparison requires restricted multiprojective line bundles")
-        if self.scheme() is not target.scheme():
-            raise ValueError("a line-bundle comparison lies over one scheme")
+        match target:
+            case _ProductProjectiveSubschemeLineBundleEngine() if target.scheme() is self.scheme():
+                pass
+            case _ProductProjectiveSubschemeLineBundleEngine():
+                raise ValueError("a line-bundle comparison lies over one scheme")
+            case _:
+                raise TypeError("this comparison requires restricted multiprojective line bundles")
         source_degrees = self.multidegree()
         target_degrees = target.multidegree()
         if source_degrees.index_set() is not target_degrees.index_set():
@@ -1432,7 +1465,7 @@ def _line_bundle_identity_local_maps(source, target):
     }
 
 
-class ChosenTrivializationQuasiCoherentMorphism(Morphism):
+class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
     r"""A line-bundle sheaf morphism represented by compatible maps in one trivialization."""
 
     def __init__(self, parent, local_maps) -> None:
@@ -1441,16 +1474,12 @@ class ChosenTrivializationQuasiCoherentMorphism(Morphism):
         target = self.codomain()
         if source.gluing_datum() is not target.gluing_datum():
             raise ValueError("line-bundle sheaf morphisms require one represented trivializing cover")
-        match source:
-            case InvertibleSheaf():
-                if not isinstance(target, InvertibleSheaf):
-                    raise TypeError("the two line bundles use different descent presentations")
+        match (source, target):
+            case (_DistinguishedCoverInvertibleSheafEngine(), _DistinguishedCoverInvertibleSheafEngine()):
                 self._descent_morphism = source.gluing_datum().Mor(
                     target.gluing_datum()
                 )(local_maps)
-            case FiniteAtlasInvertibleSheaf():
-                if not isinstance(target, FiniteAtlasInvertibleSheaf):
-                    raise TypeError("the two line bundles use different descent presentations")
+            case (_FiniteAtlasInvertibleSheafEngine(), _FiniteAtlasInvertibleSheafEngine()):
                 source_sheaf = source.module_sheaf()
                 target_sheaf = target.module_sheaf()
                 self._descent_morphism = QuasiCoherentSheaves(source.scheme()).Mor(
@@ -1470,10 +1499,10 @@ class ChosenTrivializationQuasiCoherentMorphism(Morphism):
     def global_sections_map(self):
         r"""Return the induced map on the compatible-section modules of the trivializations."""
         match self.domain():
-            case InvertibleSheaf():
+            case _DistinguishedCoverInvertibleSheafEngine():
                 source_datum = self.domain().gluing_datum()
                 target_datum = self.codomain().gluing_datum()
-            case FiniteAtlasInvertibleSheaf():
+            case _FiniteAtlasInvertibleSheafEngine():
                 source_datum = self.domain().module_sheaf().gluing_datum()
                 target_datum = self.codomain().module_sheaf().gluing_datum()
             case _:
@@ -1497,21 +1526,24 @@ class ChosenTrivializationQuasiCoherentMorphism(Morphism):
         ).elementwise(image, verify_linearity=False)
 
     def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, ChosenTrivializationQuasiCoherentMorphism)
-            and other.parent() is self.parent()
-            and all(
-                self.local_map(index) == other.local_map(index)
-                for index in self.domain().gluing_datum().chart_index_set()
-            )
-        )
+        match other:
+            case _ChosenTrivializationQuasiCoherentMorphism() if other.parent() is self.parent():
+                return all(
+                    self.local_map(index) == other.local_map(index)
+                    for index in self.domain().gluing_datum().chart_index_set()
+                )
+            case _:
+                return False
 
     def __ne__(self, other) -> bool:
         return not self == other
 
     def __mul__(self, other):
-        if not isinstance(other, ChosenTrivializationQuasiCoherentMorphism):
-            return NotImplemented
+        match other:
+            case _ChosenTrivializationQuasiCoherentMorphism():
+                pass
+            case _:
+                return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
         return self.parent().homset_category().Mor(
@@ -1525,16 +1557,16 @@ class ChosenTrivializationQuasiCoherentMorphism(Morphism):
         )
 
 
-class ChosenTrivializationQuasiCoherentHomset(CategoricalHomset):
+class _ChosenTrivializationQuasiCoherentHomset(CategoricalHomset):
     r"""The QCoh Hom of line bundles carrying one represented trivializing cover."""
 
-    Element = ChosenTrivializationQuasiCoherentMorphism
+    Element = _ChosenTrivializationQuasiCoherentMorphism
 
     def _element_constructor_(self, local_maps):
         match local_maps:
-            case ChosenTrivializationQuasiCoherentMorphism() if local_maps.parent() is self:
+            case _ChosenTrivializationQuasiCoherentMorphism() if local_maps.parent() is self:
                 return local_maps
-            case ChosenTrivializationQuasiCoherentMorphism():
+            case _ChosenTrivializationQuasiCoherentMorphism():
                 if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
                     raise ValueError("the line-bundle morphism has the wrong endpoints")
                 local_maps = {
@@ -1560,7 +1592,7 @@ def _chosen_trivialization_isomorphism(source, target):
     return sheaves.Core().Mor(source, target)(forward, inverse)
 
 
-class PullbackLineBundleQuasiCoherentMorphism(Morphism):
+class _PullbackLineBundleQuasiCoherentMorphism(Morphism):
     r"""The pullback of a represented ambient line-bundle morphism along one closed immersion."""
 
     def __init__(self, parent, ambient_morphism) -> None:
@@ -1581,18 +1613,21 @@ class PullbackLineBundleQuasiCoherentMorphism(Morphism):
         return self._ambient_morphism
 
     def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, PullbackLineBundleQuasiCoherentMorphism)
-            and other.parent() is self.parent()
-            and other.ambient_morphism() == self.ambient_morphism()
-        )
+        match other:
+            case _PullbackLineBundleQuasiCoherentMorphism() if other.parent() is self.parent():
+                return other.ambient_morphism() == self.ambient_morphism()
+            case _:
+                return False
 
     def __ne__(self, other) -> bool:
         return not self == other
 
     def __mul__(self, other):
-        if not isinstance(other, PullbackLineBundleQuasiCoherentMorphism):
-            return NotImplemented
+        match other:
+            case _PullbackLineBundleQuasiCoherentMorphism():
+                pass
+            case _:
+                return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
         return self.parent().homset_category().Mor(
@@ -1601,16 +1636,16 @@ class PullbackLineBundleQuasiCoherentMorphism(Morphism):
         )(self.ambient_morphism() * other.ambient_morphism())
 
 
-class PullbackLineBundleQuasiCoherentHomset(CategoricalHomset):
+class _PullbackLineBundleQuasiCoherentHomset(CategoricalHomset):
     r"""The QCoh Hom represented by pullback from ambient line-bundle morphisms."""
 
-    Element = PullbackLineBundleQuasiCoherentMorphism
+    Element = _PullbackLineBundleQuasiCoherentMorphism
 
     def _element_constructor_(self, ambient_morphism):
         match ambient_morphism:
-            case PullbackLineBundleQuasiCoherentMorphism() if ambient_morphism.parent() is self:
+            case _PullbackLineBundleQuasiCoherentMorphism() if ambient_morphism.parent() is self:
                 return ambient_morphism
-            case PullbackLineBundleQuasiCoherentMorphism():
+            case _PullbackLineBundleQuasiCoherentMorphism():
                 if ambient_morphism.domain() is not self.domain() or ambient_morphism.codomain() is not self.codomain():
                     raise ValueError("the pullback line-bundle morphism has the wrong endpoints")
                 ambient_morphism = ambient_morphism.ambient_morphism()
@@ -1630,7 +1665,7 @@ def _product_projective_o(projective_product, degrees, *, base_change_image=None
     r"""Return ``O(degrees)`` on one represented product of projective spaces."""
     return _chosen_trivialization_object(
         projective_product,
-        ProductProjectiveLineBundle,
+        _ProductProjectiveLineBundleEngine,
         projective_product=projective_product,
         degrees=degrees,
         base_change_image=base_change_image,
@@ -1641,17 +1676,13 @@ def _product_projective_subscheme_line_bundle(closed_subscheme, ambient_line_bun
     r"""Return the invertible pullback of a multiprojective line bundle."""
     return _invertible_sheaf_object(
         closed_subscheme,
-        ProductProjectiveSubschemeLineBundle,
+        _ProductProjectiveSubschemeLineBundleEngine,
         closed_subscheme=closed_subscheme,
         ambient_line_bundle=ambient_line_bundle,
     )
 
 
 __all__ = [
-    "FiniteAtlasInvertibleSheaf",
-    "InvertibleSheaf",
-    "ProductProjectiveLineBundle",
-    "ProductProjectiveSubschemeLineBundle",
-    "ProjectiveSubschemeLineBundle",
-    "ProjectiveSpaceLineBundle",
+    # Realization engines are intentionally private; public objects are placed
+    # through the quasi-coherent/invertible sheaf owners.
 ]

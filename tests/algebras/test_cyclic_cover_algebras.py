@@ -135,10 +135,17 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
 def test_cyclic_cover_rejects_branch_section_with_wrong_line_power_descent() -> None:
     from pytest import raises
 
-    from dzack_research.preamble.all import CyclicCoverAlgebra, InvertibleSheaf
+    from dzack_research.preamble.all import CyclicCoverAlgebra
+    from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 
     line, _x, _overlap_x = _line_bundle_with_x_transition()
-    trivial_power = InvertibleSheaf.trivial(line.cover()).tensor_power(2)
+    trivial_power = (
+        QuasiCoherentSheaves(line.scheme())
+        .Invertible()
+        .WithChosenTrivialization()
+        .trivial(line.cover())
+        .tensor_power(2)
+    )
     wrong_branch = trivial_power.gluing_datum().compatible_section(
         tuple(_generator(trivial_power.local_module(index)) for index in range(2))
     )

@@ -18,7 +18,6 @@ from dzack_research.preamble.all import (
     ClassGroups,
     CompleteLinearSystems,
     CoxRings,
-    FiniteAtlasInvertibleSheaf,
     HomogeneousPolynomialSectionSpaces,
     ImposedMultiplicityLinearSystems,
     LineBundleCohomologySpaces,
@@ -29,6 +28,7 @@ from dzack_research.preamble.all import (
     TorusInvariantCycleGroups,
     WeilDivisorGroups,
 )
+from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two
@@ -269,7 +269,7 @@ def test_a_cartier_divisor_constructs_its_line_bundle_on_the_toric_atlas() -> No
     bundle = plane.invertible_sheaf_of_divisor(line)
     square = plane.invertible_sheaf_of_divisor(ZZ(2) * line)
 
-    assert isinstance(bundle, FiniteAtlasInvertibleSheaf)
+    assert bundle in QuasiCoherentSheaves(plane).Invertible()
     assert bundle.scheme() is plane
     assert bundle.associated_divisor() == line
     assert bundle.global_sections() is plane.divisor_section_space(line)

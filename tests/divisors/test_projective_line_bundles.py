@@ -2,7 +2,6 @@ r"""Standard projective line bundles use the generic finite-atlas descent owner.
 
 from dzack_research.preamble.all import (
     QQ,
-    FiniteAtlasInvertibleSheaf,
     ProjectiveSpaces,
     Schemes,
 )
@@ -26,7 +25,6 @@ def test_projective_O_one_is_descent_on_the_actual_projective_space() -> None:
         line._standard_chart_coordinate(0, 1)
     )
 
-    assert isinstance(bundle, FiniteAtlasInvertibleSheaf)
     assert bundle in QuasiCoherentSheaves(line).Invertible()
     assert bundle in QuasiCoherentSheaves(line).Invertible().WithChosenTrivialization()
     assert bundle.trivializing_cover() is atlas

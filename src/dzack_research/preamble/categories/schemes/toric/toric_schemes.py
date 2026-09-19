@@ -1398,7 +1398,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             assert self.is_cartier(divisor), (
                 "the invertible sheaf O_X(D) is constructed for a Cartier divisor"
             )
-            datum = self.gluing_datum()
+            datum = self.finite_affine_atlas()
             units = {}
             for source_cone, target_cone in datum.transition_index_set():
                 face = source_cone.intersection(target_cone)
