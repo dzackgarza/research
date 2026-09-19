@@ -346,7 +346,9 @@ class GSetMorphism(SetMorphism):
         component = Sets().Mor(self.domain(), self.codomain())(
             lambda point: self(point)
         )
-        return NaturalTransformation(source, target, lambda _obj: component)
+        return NaturalTransformation(
+            source, target, lambda _obj: component
+        ).morphism()
 
     def is_injective(self) -> bool:
         return self._as_set_map().is_injective()

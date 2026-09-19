@@ -102,6 +102,12 @@ def _coordinate_family[CoordinateValueInputT](
 ) -> IndexedFamily:
     r"""Parse finite coordinate data, a family over pairs of labels or rows, as a family over ``left × right``.
 
+    Declared representation ingress (``OWN-06``) for the quadratic-lift
+    element constructor: an already-indexed family and literal rows are two
+    representations of the same finite coordinate datum.  The family engine
+    is owned by ``Objects()`` rather than by a fabricated family category, so
+    this is representation dispatch rather than categorical membership.
+
     The shared literal ingress of the quadratic-lift element constructor in
     ``modules/powers.py``, which admits either presentation in one branch; it
     reads which presentation ``datum`` is and hands it to the parser for it.

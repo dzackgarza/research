@@ -83,7 +83,7 @@ class EquivariantMorphism(Morphism):
             self.domain().action_functor(),
             self.codomain().action_functor(),
             lambda _obj: self.underlying_arrow(),
-        )
+        ).morphism()
 
     def _call_(self, element):
         return self._arrow(element)

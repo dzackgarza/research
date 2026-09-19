@@ -32,7 +32,7 @@ from sage.rings.infinity import Infinity
 from sage.structure.element import ModuleElement
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
-from sage.structure.richcmp import op_EQ, op_NE, richcmp
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
@@ -53,10 +53,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    FiniteOrderedSets,
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -76,37 +73,29 @@ def index_rank_family(ranks):
     )
 
 
-def _owned_set_pair(first, second):
-    r"""Return ``(first, second)`` as an object of the categorical product ``Set x Set``."""
+def _owned_object_pair(first, second):
+    r"""Return two mathematical objects as an object of ``Objects x Objects``."""
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
+    from dzack_research.preamble.categories.abstract_categories.objects import Objects
 
-    return Cat().product((Sets(), Sets()))(first, second)
+    return Cat().product((Objects(), Objects()))(first, second)
 
 
 def _tensor_richcmp(left, right, op):
-    r"""Compare finite tensors by variance, shape, and components.
+    r"""Implement only the mathematical equality relation on tensors.
 
-    Tensor implementations may use different storage classes.  Equality is a
-    mathematical comparison in one tensor space, not a storage-class test.
+    Tensor spaces carry no selected order.  The former componentwise Python
+    tuple ordering was therefore a storage shadow, not a tensor operation.
+    Arbitrary-operand recognition lives in :meth:`Tensor.__eq__`, the declared
+    equality boundary.
     """
-    if not isinstance(right, Tensor):
-        if op == op_EQ:
-            return False
-        if op == op_NE:
-            return True
-        return NotImplemented
-    if (
-        left.tensor_valence() != right.tensor_valence()
-        or left.tensor_shape() != right.tensor_shape()
-    ):
-        if op == op_EQ:
-            return False
-        if op == op_NE:
-            return True
-        # Tensors of different variance or shape lie in different spaces, and
-        # there is no order between those spaces to report.
-        return NotImplemented
-    return richcmp(tuple(left.list()), tuple(right.list()), op)
+    match op:
+        case _ if op == op_EQ:
+            return Tensor.__eq__(left, right)
+        case _ if op == op_NE:
+            return not Tensor.__eq__(left, right)
+        case _:
+            return NotImplemented
 
 _BLACKBOARD_RING_NAMES = {
     "Z": "ZZ",
@@ -340,7 +329,7 @@ class Tensor:
         return self.tensor_space().covariant_index_modules()
 
     def index_modules(self):
-        r"""Return the contravariant/covariant module families as an object of ``Set x Set``."""
+        r"""Return the contravariant/covariant module families as an object of ``Objects x Objects``."""
         return self.tensor_space().index_modules()
 
     def contravariant_index_generating_sets(self):
@@ -352,7 +341,7 @@ class Tensor:
         return self.tensor_space().covariant_index_generating_sets()
 
     def tensor_indices(self):
-        r"""Return the two variance-indexed generating-set families as an object of ``Set x Set``."""
+        r"""Return the two variance-indexed generating-set families as an object of ``Objects x Objects``."""
         return self.tensor_space().tensor_indices()
 
     def components(self):
@@ -394,12 +383,13 @@ class Tensor:
             (self.tensor_valence(), self._index_ranks(), tuple(self.list()))
         )
 
-    def is_equal_tensor(self, other: "Tensor") -> bool:
-        r"""Return whether the tensor ``other`` is the same tensor mathematically.
+    def __eq__(self, other) -> bool:
+        r"""Whether ``other`` is the same mathematical tensor.
 
-        This deliberately ignores the concrete storage parent.  Tensor spaces
-        built from equal owned/engine ring facades can have distinct Sage
-        parents while representing the same variance, ranks, and components.
+        This is the arbitrary-operand equality boundary.  Tensor
+        implementations may use different storage parents, so equality
+        compares variance, slot ranks, coefficient ring, and components rather
+        than concrete parent identity.
         """
         if not isinstance(other, Tensor):
             return False
@@ -411,7 +401,22 @@ class Tensor:
             return False
         if Infinity in self._index_ranks():
             return self is other
-        return all(left == right for left, right in zip(self.list(), other.list(), strict=True))
+        return all(
+            left == right
+            for left, right in zip(self.list(), other.list(), strict=True)
+        )
+
+    def __ne__(self, other) -> bool:
+        return not Tensor.__eq__(self, other)
+
+    def is_equal_tensor(self, other: "Tensor") -> bool:
+        r"""Return whether the tensor ``other`` is the same tensor mathematically.
+
+        This deliberately ignores the concrete storage parent.  Tensor spaces
+        built from equal owned/engine ring facades can have distinct Sage
+        parents while representing the same variance, ranks, and components.
+        """
+        return Tensor.__eq__(self, other)
 
     def change_ring(self, ring):
         r"""Change coefficients without changing tensor variance."""
@@ -1409,9 +1414,10 @@ class _CoordinateTensorModule:
             return self.base_ring().free_module(int(rank))
 
         slots = Sets.Δ[len(ranks) - 1]
-        return FiniteOrderedSets().from_indexed(
+        return indexed_family(
             slots,
             lambda slot: free_of_rank(ranks[int(slot)]),
+            name="Tensor-index modules",
         )
 
     def contravariant_index_modules(self):
@@ -1423,15 +1429,15 @@ class _CoordinateTensorModule:
         return self._index_modules_for(self._lower_ranks)
 
     def index_modules(self):
-        r"""Return the two variance module families as an object of ``Set x Set``."""
-        return _owned_set_pair(
+        r"""Return the two variance module families as an object of ``Objects x Objects``."""
+        return _owned_object_pair(
             self.contravariant_index_modules(),
             self.covariant_index_modules(),
         )
 
     @staticmethod
     def _index_generating_sets(modules):
-        return FiniteOrderedSets().from_indexed(
+        return indexed_family(
             modules.index_set(),
             lambda slot: modules[slot].module_generating_set(),
             name="Tensor-index generating sets",
@@ -1446,8 +1452,8 @@ class _CoordinateTensorModule:
         return self._index_generating_sets(self.covariant_index_modules())
 
     def tensor_indices(self):
-        r"""Return the two variance generating-set families as an object of ``Set x Set``."""
-        return _owned_set_pair(
+        r"""Return the two variance generating-set families as an object of ``Objects x Objects``."""
+        return _owned_object_pair(
             self.contravariant_index_generating_sets(),
             self.covariant_index_generating_sets(),
         )
@@ -1495,6 +1501,8 @@ class _CoordinateTensorModule:
 def _is_coordinate_tensor(value, ring):
     r"""Recognize this private tensor engine at the component-conversion boundary.
 
+    Declared engine adapter (``OWN-06``): this is representation dispatch for
+    the private coordinate-tensor realization, not mathematical membership.
     Gram pairing rules and component tensors use the same module engine.
     This is representation dispatch, not a new mathematical category.
     """

@@ -120,6 +120,11 @@ def test_nonidentity_natural_transformation_induces_maps_on_selected_constructio
         diagram,
         lambda index: twice_plane if index is shape.source() else twice_line,
     )
+    transformation_morphism = transformation.morphism()
+    functor_category = diagram.functor_category()
+    assert transformation not in functor_category.Mor(diagram, diagram)
+    assert transformation_morphism in functor_category.Mor(diagram, diagram)
+    assert transformation_morphism.transformation() is transformation
     induced_equalizer = equalizer.induced_map(transformation, equalizer)
     inclusion = equalizer.structure_morphism(shape.source())
     assert inclusion * induced_equalizer == twice_plane * inclusion

@@ -8,12 +8,9 @@ from dzack_research.preamble.categories.forms.forms import (
     QuadraticFormMorphism,
     QuadraticMapMorphism,
 )
-from dzack_research.preamble.categories.forms.gram_matrices import GramTensorGraph
-
 __all__ = [
     "BilinearFormHomset",
     "BilinearFormMorphism",
-    "GramTensorGraph",
     "PairingMorphism",
     "QuadraticFormHomset",
     "QuadraticFormMorphism",

@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.algebras.finitely_presented_algebras imp
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedOrders,
     _engine_element,
     _engine_ring,
     _owned_ring,
@@ -49,7 +50,12 @@ def _engine_ring_map(ring_map):
 
 
 def _base_change_presented_element(algebra, element, target, ring_map):
-    r"""Carry one element through the selected finite presentation."""
+    r"""Carry one element through the selected finite presentation.
+
+    Declared polynomial-engine adapter (``OWN-06``): the selected presentation
+    may return either its native polynomial representative or an owned element
+    that must be lowered once at this boundary.
+    """
     presentation_ring = algebra.presentation_ring()
     presentation = _engine_ring(presentation_ring)
     target_engine = _engine_ring(target)
@@ -72,13 +78,17 @@ def _base_change_presented_element(algebra, element, target, ring_map):
 
 
 def _base_change_symmetric_element(algebra, element, target, ring_map):
-    r"""Carry one element of a finitely framed symmetric algebra through scalar extension."""
+    r"""Carry one element of a finitely framed symmetric algebra through scalar extension.
+
+    Declared polynomial-engine adapter (``OWN-06``): native monomial keys have
+    the univariate and multivariate shapes supplied by the maintained algebra
+    engines, and their representation is decoded only here.
+    """
 
     labels = algebra.algebra_generating_set()
-    if not labels.cardinality().is_finite():
-        raise NotImplementedError(
-            "scalar extension of a symmetric-algebra morphism currently requires a finite algebra framing"
-        )
+    assert labels.cardinality().is_finite(), (
+        "scalar extension of a symmetric-algebra morphism requires a finite algebra framing"
+    )
     labels = tuple(labels)
     backend = _engine_element(algebra, algebra(element))
     result = target.zero()
@@ -150,15 +160,12 @@ class _AlgebraScalarExtensionFunctor(Functor):
                     OrdersWithChosenIntegralBasis,
                 )
 
-                match algebra in OrdersWithChosenIntegralBasis():
-                    case True:
-                        return algebra.base_change(self.ring_map())
-                    case False:
-                        raise NotImplementedError(
-                            "algebra scalar extension is currently materialized for algebras "
-                            "with a chosen finite commutative polynomial presentation or a "
-                            "number-field order with a chosen integral basis"
-                        )
+                assert algebra in OrdersWithChosenIntegralBasis(), (
+                    "algebra scalar extension is materialized for algebras with a chosen "
+                    "finite commutative polynomial presentation or a number-field order "
+                    "with a chosen integral basis"
+                )
+                return algebra.base_change(self.ring_map())
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -166,9 +173,10 @@ class _AlgebraScalarExtensionFunctor(Functor):
         from dzack_research.preamble.categories.algebras.free_algebras import (
             SymmetricAlgebras,
         )
-        from dzack_research.preamble.categories.rings.embeddings import OrderEmbedding
-
-        match isinstance(morphism, OrderEmbedding):
+        match (
+            morphism.domain() in OwnedOrders()
+            and morphism.codomain() in OwnedOrders()
+        ):
             case True:
                 source_field = morphism.domain().fraction_field()
                 target_field = morphism.codomain().fraction_field()
@@ -177,14 +185,10 @@ class _AlgebraScalarExtensionFunctor(Functor):
                         return Algebras(source.base_ring()).Associative().Unital().Mor(source, target).identity()
                     case False:
                         pass
-                match _engine_ring(source_field).is_absolute():
-                    case True:
-                        pass
-                    case False:
-                        raise NotImplementedError(
-                            "order-morphism scalar extension currently uses the selected "
-                            "absolute primitive-element presentation"
-                        )
+                assert _engine_ring(source_field).is_absolute(), (
+                    "order-morphism scalar extension uses the selected absolute "
+                    "primitive-element presentation"
+                )
                 primitive_image = morphism.field_embedding()(
                     source_field.primitive_element()
                 )

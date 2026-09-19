@@ -1,7 +1,8 @@
 r"""Localization of modules as scalar extension along a ring localization."""
 
-from sage.structure.sage_object import SageObject
-
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    _isomorphism_from_known_inverse_pair,
+)
 from dzack_research.preamble.categories.functors.scalar_change import (
     _ScalarExtensionFunctor,
 )
@@ -139,155 +140,82 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
 
     def cokernel_comparison(self, morphism):
         r"""Return ``S^{-1}coker(f) ~= coker(S^{-1}f)`` in represented regimes."""
-        return LocalizationCokernelComparison(self, morphism)
+        return _localization_cokernel_comparison(self, morphism)
 
     def kernel_comparison(self, morphism):
         r"""Return ``S^{-1}ker(f) ~= ker(S^{-1}f)``."""
-        return LocalizationKernelComparison(self, morphism)
+        return _localization_kernel_comparison(self, morphism)
 
     def _repr_(self):
         return f"Module localization along {self.localization_ring().localization_map()}"
 
 
-class LocalizationCokernelComparison(SageObject):
-    r"""The canonical right-exactness comparison for module localization."""
+def _localization_cokernel_comparison(functor, morphism):
+    r"""The canonical represented isomorphism ``S^-1 coker(f) ~= coker(S^-1 f)``.
 
-    def __init__(self, functor, morphism) -> None:
+    The comparison is an arrow in the core of the module category, not a
+    separate record carrying two arrows.  The current explicit construction
+    uses the selected finite framings of the two represented cokernels.
+    """
 
-        self._functor = functor
-        self._morphism = morphism
-        self._localized_morphism = functor(morphism)
-        self._source_cokernel = morphism.cokernel()
-        self._localized_source_cokernel = functor(self._source_cokernel)
-        self._target_cokernel = self._localized_morphism.cokernel()
+    localized_morphism = functor(morphism)
+    source_cokernel = morphism.cokernel()
+    localized_source_cokernel = functor(source_cokernel)
+    target_cokernel = localized_morphism.cokernel()
+    localized_codomain = localized_morphism.codomain()
+    assert (
+        localized_source_cokernel in FramedModules(functor.localization_ring())
+        and target_cokernel in FramedModules(functor.localization_ring())
+        and localized_codomain in FramedModules(functor.localization_ring())
+    ), "the represented cokernel comparison requires selected finite framings"
 
-        localized_codomain = self._localized_morphism.codomain()
-        if (
-            self._localized_source_cokernel
-            not in FramedModules(functor.localization_ring())
-            or self._target_cokernel not in FramedModules(functor.localization_ring())
-            or localized_codomain not in FramedModules(functor.localization_ring())
-        ):
-            raise NotImplementedError(
-                "the represented cokernel comparison currently requires selected finite framings"
+    source_projection = source_cokernel.cokernel_projection()
+    localized_source_projection = functor(source_projection)
+    target_projection = target_cokernel.cokernel_projection()
+    left_labels = tuple(localized_source_cokernel.module_generating_set())
+    right_labels = tuple(target_cokernel.module_generating_set())
+    codomain_labels = tuple(localized_codomain.module_generating_set())
+    assert left_labels == codomain_labels and right_labels == codomain_labels, (
+        "localized cokernel framings agree with the selected codomain framing"
+    )
+
+    forward = localized_source_cokernel.module_category().Mor(
+        localized_source_cokernel,
+        target_cokernel,
+    )(
+        {
+            label: target_projection(localized_codomain.module_generator(label))
+            for label in codomain_labels
+        }
+    )
+    inverse = target_cokernel.module_category().Mor(
+        target_cokernel,
+        localized_source_cokernel,
+    )(
+        {
+            label: localized_source_projection(
+                localized_codomain.module_generator(label)
             )
-
-        source_projection = self._source_cokernel.cokernel_projection()
-        localized_source_projection = functor(source_projection)
-        target_projection = self._target_cokernel.cokernel_projection()
-
-        left_labels = tuple(self._localized_source_cokernel.module_generating_set())
-        right_labels = tuple(self._target_cokernel.module_generating_set())
-        codomain_labels = tuple(localized_codomain.module_generating_set())
-        if left_labels != codomain_labels or right_labels != codomain_labels:
-            raise ArithmeticError(
-                "localized cokernel framings no longer match the selected codomain framing"
-            )
-
-        self._forward = self._localized_source_cokernel.module_category().Mor(
-            self._localized_source_cokernel,
-            self._target_cokernel,
-        )(
-            {
-                label: target_projection(localized_codomain.module_generator(label))
-                for label in codomain_labels
-            }
-        )
-        self._inverse = self._target_cokernel.module_category().Mor(
-            self._target_cokernel,
-            self._localized_source_cokernel,
-        )(
-            {
-                label: localized_source_projection(
-                    localized_codomain.module_generator(label)
-                )
-                for label in codomain_labels
-            }
-        )
-
-    def functor(self):
-        return self._functor
-
-    def morphism(self):
-        return self._morphism
-
-    def localized_morphism(self):
-        return self._localized_morphism
-
-    def localized_cokernel(self):
-        return self._localized_source_cokernel
-
-    def cokernel_of_localized_morphism(self):
-        return self._target_cokernel
-
-    def forward(self):
-        return self._forward
-
-    isomorphism = forward
-
-    def inverse(self):
-        return self._inverse
-
-    def _repr_(self):
-        return (
-            f"{self.localized_cokernel()} ~= "
-            f"{self.cokernel_of_localized_morphism()}"
-        )
+            for label in codomain_labels
+        }
+    )
+    return _isomorphism_from_known_inverse_pair(forward, inverse)
 
 
-class LocalizationKernelComparison(SageObject):
-    r"""The canonical left-exactness comparison for module localization."""
+def _localization_kernel_comparison(functor, morphism):
+    r"""The canonical represented isomorphism ``S^-1 ker(f) ~= ker(S^-1 f)``."""
 
-    def __init__(self, functor, morphism) -> None:
-
-        self._functor = functor
-        self._morphism = morphism
-        self._localized_morphism = functor(morphism)
-        self._source_kernel = morphism.kernel()
-        self._localized_source_kernel = functor(self._source_kernel)
-        self._target_kernel = self._localized_morphism.kernel()
-        if self._target_kernel is not self._localized_source_kernel:
-            raise ArithmeticError(
-                "the image of the localized kernel inclusion is not the selected kernel of the localized morphism"
-            )
-        identity = self._localized_source_kernel.module_category().Mor(
-            self._localized_source_kernel,
-            self._target_kernel,
-        ).identity()
-        self._forward = identity
-        self._inverse = identity
-
-    def functor(self):
-        return self._functor
-
-    def morphism(self):
-        return self._morphism
-
-    def localized_morphism(self):
-        return self._localized_morphism
-
-    def localized_kernel(self):
-        return self._localized_source_kernel
-
-    def kernel_of_localized_morphism(self):
-        return self._target_kernel
-
-    def forward(self):
-        return self._forward
-
-    isomorphism = forward
-
-    def inverse(self):
-        return self._inverse
-
-    def _repr_(self):
-        return (
-            f"{self.localized_kernel()} ~= "
-            f"{self.kernel_of_localized_morphism()}"
-        )
+    localized_morphism = functor(morphism)
+    localized_source_kernel = functor(morphism.kernel())
+    target_kernel = localized_morphism.kernel()
+    assert target_kernel is localized_source_kernel, (
+        "localization preserves the selected kernel object in the represented regime"
+    )
+    identity = localized_source_kernel.module_category().Mor(
+        localized_source_kernel,
+        target_kernel,
+    ).identity()
+    return _isomorphism_from_known_inverse_pair(identity, identity)
 
 
-__all__ = [
-    "LocalizationCokernelComparison",
-    "LocalizationKernelComparison",
-]
+__all__ = []

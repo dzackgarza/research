@@ -21,11 +21,15 @@ from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
-from sage.structure.sage_object import SageObject
 
 
-class Functor(SageObject):
-    r"""A functor with explicit actions on objects and morphisms.
+class Functor:
+    r"""Construction data for a functor with explicit object and arrow actions.
+
+    The mathematical object is ``self.object()`` in the existing functor
+    category ``[C,D]``.  This class is the retained action engine used by that
+    object and by the corresponding arrow of ``Cat``; it is not a second
+    uncategorized functor object.
 
     Unverified specimen: a proposed identity on underlying sets is not a
     functor to the category of injections when applied to a noninjective map::
@@ -259,6 +263,16 @@ class Functor(SageObject):
 
         return Cat().Mor(self.domain(), self.codomain())
 
+    def object(self):
+        r"""Return this datum as the object of its functor category ``[C,D]``."""
+        return self.functor_category().object(self)
+
+    def arrow(self):
+        r"""Return this same functor as the corresponding morphism in ``Cat``."""
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().arrow(self)
+
     def natural_transformations_to(self, target: Functor):
         r"""Return the Hom of natural transformations ``self ⇒ target``."""
         if self.domain() != target.domain() or self.codomain() != target.codomain():
@@ -404,8 +418,8 @@ class _CompositeFunctor(Functor):
         return f"{self._second} ∘ {self._first}"
 
 
-class NaturalTransformation(SageObject):
-    r"""A natural transformation ``source => target`` given by its components.
+class NaturalTransformation:
+    r"""Construction data for a natural transformation ``source => target``.
 
     The datum is the family of components ``eta_X: F(X) -> G(X)`` indexed by
     the objects of the common domain.  Naturality is the equation
@@ -490,9 +504,21 @@ class NaturalTransformation(SageObject):
     def _repr_(self) -> str:
         return f"{self.source()} => {self.target()}"
 
+    def __repr__(self) -> str:
+        return self._repr_()
 
-class Adjunction(SageObject):
-    r"""An adjunction ``F ⊣ U`` given by its unit and counit.
+    def morphism(self):
+        r"""Return this datum as the arrow ``F => G`` of the functor category."""
+        return self.source().functor_category().Mor(self.source(), self.target())(self)
+
+
+class Adjunction:
+    r"""Construction/proof data for an adjunction ``F ⊣ U``.
+
+    Unlike a functor or a natural transformation, the current category tree
+    has no category whose objects are adjunction presentations.  This retained
+    record therefore does not pretend to be a Sage mathematical object: its
+    constituent functors and its unit/counit are placed at their actual owners.
 
     The defining datum is the unit-counit presentation (Mathlib,
     ``CategoryTheory.Adjunction.CoreUnitCounit``): functors
@@ -579,22 +605,22 @@ class Adjunction(SageObject):
         return self.counit(codomain) * self.left_adjoint()(morphism)
 
     @final
-    def unit_transformation(self) -> NaturalTransformation:
+    def unit_transformation(self):
         r"""The unit ``eta: 1_C => UF`` as a natural transformation, from :meth:`unit`."""
         return NaturalTransformation(
             IdentityFunctor(self.left_adjoint().domain()),
             _CompositeFunctor(self.left_adjoint(), self.right_adjoint()),
             self.unit,
-        )
+        ).morphism()
 
     @final
-    def counit_transformation(self) -> NaturalTransformation:
+    def counit_transformation(self):
         r"""The counit ``epsilon: FU => 1_D`` as a natural transformation, from :meth:`counit`."""
         return NaturalTransformation(
             _CompositeFunctor(self.right_adjoint(), self.left_adjoint()),
             IdentityFunctor(self.left_adjoint().codomain()),
             self.counit,
-        )
+        ).morphism()
 
 
 class _CompositeAdjunction(Adjunction):

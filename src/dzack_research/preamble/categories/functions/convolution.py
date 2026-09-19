@@ -38,6 +38,11 @@ def _space_at_degree(degree):
 def _symbolic_convolution(left, right):
     r"""Private SymPy integral of the existing representative formulas.
 
+    Declared private engine adapter (``OWN-06``).  SymPy may signal that its
+    exact integrator has no implementation for the supplied expression by
+    raising ``NotImplementedError`` or ``ValueError``; the mathematical result
+    is then the exact unevaluated ``Integral``, not a failed convolution.
+
     Uses integrate over the full real line, not quadrature or finite samples.
     A remaining Integral is retained as an unevaluated exact expression.
     Opaque callable representatives keep their integral definition but have
@@ -60,16 +65,39 @@ def _symbolic_convolution(left, right):
     return expression, x
 
 
+def _engine_global_continuous_formula(expression, variable):
+    r"""Return whether SymPy proves this exact expression continuous on ``RR``.
+
+    Declared private engine adapter (``OWN-06``).  ``continuous_domain`` may
+    raise when its protocol cannot decide a symbolic domain.  That engine
+    failure means only that no display formula is selected; point evaluation
+    continues through the exact integral expression.
+    """
+    import sympy
+    from sympy.calculus.util import continuous_domain
+
+    try:
+        return (
+            not expression.has(sympy.Integral)
+            and continuous_domain(expression, variable, sympy.S.Reals)
+            == sympy.S.Reals
+        )
+    except (NotImplementedError, TypeError, ValueError):
+        return False
+
+
 def _convolution_representative(space, left, right):
     r"""The integral representative, zero at exceptional nonintegrable points.
 
+    This is the second declared SymPy boundary (``OWN-06``): it asks the
+    maintained ``continuous_domain`` operation whether a closed formula is
+    globally represented before crossing it into the owned function space.
     Young's hypotheses guarantee those exceptions form a null set. This
     convention never supplies a product for an inadmissible exponent pair.
     The symbolic adapter may leave exact evaluations undecided; that is not
     evidence of divergence and must not be turned into zero.
     """
     import sympy
-    from sympy.calculus.util import continuous_domain
 
     symbolic = _symbolic_convolution(left, right)
     formula = None
@@ -78,11 +106,8 @@ def _convolution_representative(space, left, right):
         assert expression not in (sympy.oo, -sympy.oo, sympy.zoo, sympy.nan), (
             "the supplied representatives violate their stated Young integrability hypotheses"
         )
-        try:
-            if not expression.has(sympy.Integral) and continuous_domain(expression, variable, sympy.S.Reals) == sympy.S.Reals:
-                formula = SR(expression).subs({SR(str(variable)): space.indeterminate()})
-        except (NotImplementedError, TypeError, ValueError):
-            formula = None
+        if _engine_global_continuous_formula(expression, variable):
+            formula = SR(expression).subs({SR(str(variable)): space.indeterminate()})
 
     def evaluate(point):
         assert symbolic is not None, "this integral evaluator requires formulas for the two supplied measurable maps"

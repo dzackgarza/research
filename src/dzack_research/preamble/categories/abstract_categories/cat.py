@@ -152,7 +152,7 @@ class CategoryFunctorHomset(CategoricalHomset):
         return self.functor_category()._hom_endpoint(obj)
 
     def __contains__(self, candidate: Any) -> bool:
-        return candidate in self.functor_category()
+        return parent(candidate) is self
 
     def _element_constructor_(self, functor):
         match functor:
@@ -1320,17 +1320,11 @@ class _FunctorCategory(FixedHomCategory):
     def __contains__(self, candidate: Any) -> bool:
         r"""Whether ``candidate`` is an object of ``[C, D]``.
 
-        An object built by this category's entry, or in a subcategory of it,
-        is one by placement.  A functor ``C -> D`` is the defining datum of
-        one, and so is the morphism of ``Cat`` that is that functor.
+        Membership is placement only.  A raw ``Functor`` or the corresponding
+        arrow of ``Cat`` is defining/equivalent data; it enters this category
+        through :meth:`object` rather than being admitted by endpoint shape.
         """
-        match candidate:
-            case Functor():
-                return self._has_endpoints_of(candidate)
-            case CategoryFunctorMorphism():
-                return self._has_endpoints_of(candidate.functor())
-            case _:
-                return Category.__contains__(self, candidate)
+        return Category.__contains__(self, candidate)
 
     def Mor(
         self,

@@ -7,7 +7,7 @@ from sage.categories.fields import Fields
 from sage.misc.unknown import Unknown
 from sage.rings.real_mpfr import RR as SageRR
 
-from dzack_research.preamble.logic import ask
+from dzack_research.preamble.logic import Propositions, ask
 from dzack_research.preamble.rings import RR, RealApproximation
 
 
@@ -112,6 +112,7 @@ def test_unresolved_equality_is_a_predicate_for_ask() -> None:
     q = QQ(3141592653589793238462643383279502884197) / 10**39
     proposition = RR(pi) == RR(q)
 
+    assert proposition in Propositions
     with pytest.raises(TypeError):
         bool(proposition)
     assert ask(proposition, max_prec=128) is Unknown

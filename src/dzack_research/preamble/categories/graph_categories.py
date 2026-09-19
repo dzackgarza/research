@@ -9,7 +9,7 @@ and Bang-Jensen--Gutin, *Digraphs*, Chapter 1).
 """
 
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     _precomposable,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -97,6 +98,21 @@ class _FiniteDigraphEngine:
                 return self._edge_labels[reverse]
             case False:
                 raise ValueError("the selected vertices are not joined by a labelled edge")
+
+
+@cached_function
+def _finite_digraph_engine_with(mixin):
+    r"""Compose one consumer's private realization with the graph owner's engine.
+
+    The consumer supplies only its additional private operations/data.  The
+    graph owner retains authority over vertices, edges, adjacency, labels and
+    the underlying Parent realization.
+    """
+    return type(
+        f"_{mixin.__name__.lstrip('_')}OnFiniteDigraph",
+        (mixin, _FiniteDigraphEngine),
+        {},
+    )
 
 
 class GraphMorphism(Morphism):
@@ -319,7 +335,23 @@ class LabelledGraphs(OwnedCategory):
             {(0, 1): "edge"},
         )
 
-    def from_labels(self, vertices, edges, vertex_labels, edge_labels):
+    def object(
+        self,
+        vertices,
+        edges,
+        vertex_labels,
+        edge_labels,
+        *,
+        categories=(),
+        construction_data=None,
+        _engine=None,
+    ):
+        r"""Construct a labelled graph, optionally with stronger owned structure.
+
+        ``LabelledGraphs`` owns the private finite-graph realization.  A
+        mathematical specialization supplies only its additional category and
+        construction data; it never imports or subclasses that private engine.
+        """
         vertices = finite_ordered_set(vertices)
         edge_space = vertices**2
         edges = finite_ordered_set(tuple(edge_space(edge) for edge in edges))
@@ -335,15 +367,25 @@ class LabelledGraphs(OwnedCategory):
         }
         if set(normalized_edge_labels) != set(edges):
             raise ValueError("a labelled graph has one edge label per edge")
+        category = Cat().meet((self, *tuple(categories)))
+        realization = (
+            _FiniteDigraphEngine
+            if _engine is None
+            else _finite_digraph_engine_with(_engine)
+        )
         return _object_of(
-            self,
-            _engine=(self, _FiniteDigraphEngine, None),
+            category,
+            _engine=(self, realization, None),
             vertices=vertices,
             edges=edges,
             symmetric=True,
             vertex_labels=dict(vertex_labels),
             edge_labels=normalized_edge_labels,
+            **dict(construction_data or {}),
         )
+
+    def from_labels(self, vertices, edges, vertex_labels, edge_labels):
+        return self.object(vertices, edges, vertex_labels, edge_labels)
 
 
 __all__ = [

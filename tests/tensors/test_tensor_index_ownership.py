@@ -1,4 +1,5 @@
-from dzack_research.preamble.all import NN, ZZ, Sets
+from dzack_research.preamble.all import NN, ZZ
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.tensors.tensor import tensor
 
 
@@ -7,8 +8,8 @@ def test_repeated_tensor_slots_remain_distinct_owned_index_families() -> None:
     indices = value.tensor_indices()
     upper, lower = indices
 
-    assert indices.category().first_category() is Sets()
-    assert indices.category().second_category() is Sets()
+    assert indices.category().first_category() is Objects()
+    assert indices.category().second_category() is Objects()
     assert upper is indices.first() and lower is indices.second()
     assert upper.cardinality() == 2
     assert lower.cardinality() == 1
@@ -23,8 +24,8 @@ def test_infinite_rank_pairing_keeps_the_actual_owned_basis_set_per_slot() -> No
     indices = gram.tensor_indices()
     upper, lower = indices
 
-    assert indices.category().first_category() is Sets()
-    assert indices.category().second_category() is Sets()
+    assert indices.category().first_category() is Objects()
+    assert indices.category().second_category() is Objects()
     assert upper is indices.first() and lower is indices.second()
     assert upper.cardinality() == 0
     assert lower.cardinality() == 2

@@ -928,7 +928,7 @@ class _ConeCategory(OwnedCategory):
         def __init__(
             self,
             apex: Parent,
-            transformation: NaturalTransformation,
+            transformation: Morphism,
             **rest,
         ) -> None:
             self._apex = apex
@@ -944,7 +944,7 @@ class _ConeCategory(OwnedCategory):
         def apex(self) -> Parent:
             return self._apex
 
-        def transformation(self) -> NaturalTransformation:
+        def transformation(self) -> Morphism:
             return self._transformation
 
         def structure_morphism(self, index: Parent) -> Morphism:
@@ -986,7 +986,9 @@ class _ConeCategory(OwnedCategory):
         constant = Cat().Mor(
             self.diagram().domain(), self.target_category()
         ).constant_functor(apex)
-        transformation = NaturalTransformation(constant, self.diagram(), components)
+        transformation = NaturalTransformation(
+            constant, self.diagram(), components
+        ).morphism()
         return _object_of(self, apex=apex, transformation=transformation)
 
     def Mor(self, domain: Parent, codomain: Parent) -> ConeHomset:
@@ -1005,7 +1007,7 @@ class _CoconeCategory(OwnedCategory):
         def __init__(
             self,
             apex: Parent,
-            transformation: NaturalTransformation,
+            transformation: Morphism,
             **rest,
         ) -> None:
             self._apex = apex
@@ -1021,7 +1023,7 @@ class _CoconeCategory(OwnedCategory):
         def apex(self) -> Parent:
             return self._apex
 
-        def transformation(self) -> NaturalTransformation:
+        def transformation(self) -> Morphism:
             return self._transformation
 
         def costructure_morphism(self, index: Parent) -> Morphism:
@@ -1063,7 +1065,9 @@ class _CoconeCategory(OwnedCategory):
         constant = Cat().Mor(
             self.diagram().domain(), self.target_category()
         ).constant_functor(apex)
-        transformation = NaturalTransformation(self.diagram(), constant, components)
+        transformation = NaturalTransformation(
+            self.diagram(), constant, components
+        ).morphism()
         return _object_of(self, apex=apex, transformation=transformation)
 
     def Mor(self, domain: Parent, codomain: Parent) -> CoconeHomset:

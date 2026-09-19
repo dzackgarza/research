@@ -23,7 +23,7 @@ from dzack_research.preamble.rings.real import RR
 def _symbolic_ae_equality(left, right):
     r"""Decide nullity of the nonzero locus by the maintained symbolic set solver.
 
-    Private function adapter: SymPy solveset returns the full solution set
+    Declared private engine adapter (``OWN-06``): SymPy ``solveset`` returns the full solution set
     (including ConditionSet for unresolved parts), not a list of found roots.
     Set.measure is its Lebesgue measure.  Only a decided zero/positive measure
     of the complement settles equality.  No point sample disproves a.e.
@@ -65,6 +65,7 @@ class AlmostEverywhereEquality(Predicate):
         assert left.parent().codomain() is RR and right.parent().codomain() is RR
         self._left = left
         self._right = right
+        super().__init__()
 
     def left(self):
         return self._left
@@ -209,5 +210,11 @@ def _lebesgue_quotient(space):
 
 
 def _is_lebesgue_quotient(space):
-    r"""Private realization recognition for literal ingress of a Lebesgue class."""
+    r"""Recognize the private Lebesgue quotient realization at literal ingress.
+
+    Declared engine adapter (``OWN-06``): the quotient is mathematically placed
+    in its module/vector-space categories; this predicate distinguishes its
+    private representative engine only where the element constructor must
+    decode literal quotient data.
+    """
     return isinstance(space, _LebesgueQuotient)

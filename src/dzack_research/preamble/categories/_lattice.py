@@ -69,7 +69,7 @@ from dzack_research.preamble.tensors.tensor import (
     TensorModule,
     _component_shape,
     _engine_component_matrix,
-    _owned_set_pair,
+    _owned_object_pair,
     _tensor_richcmp,
     tensor,
 )
@@ -537,7 +537,7 @@ class _PairingGram(ModuleElement, Tensor):
         )
 
     def tensor_indices(self):
-        return _owned_set_pair(
+        return _owned_object_pair(
             self.contravariant_index_generating_sets(),
             self.covariant_index_generating_sets(),
         )

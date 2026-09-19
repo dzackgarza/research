@@ -289,8 +289,15 @@ class CardinalityMorphism(Morphism):
         protocol: like ``__eq__``, this decides about anything and answers
         ``NotImplemented`` for what is not a composable order arrow.
         """
-        if not isinstance(other, CardinalityMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
+        other_parent = element_parent(other)
+        match other_parent:
+            case CategoricalHomset() if (
+                other_parent.homset_category().is_subcategory(Cardinalities())
+                and other.codomain() is self.domain()
+            ):
+                pass
+            case _:
+                return NotImplemented
         return Cardinalities().Mor(other.domain(), self.codomain()).unique_morphism()
 
     def _repr_(self) -> str:
@@ -978,8 +985,15 @@ class OrdinalSemiringMorphism(Morphism):
         protocol: like ``__eq__``, this decides about anything and answers
         ``NotImplemented`` for what is not a composable semiring morphism.
         """
-        if not isinstance(other, OrdinalSemiringMorphism) or other.codomain() is not self.domain():
-            return NotImplemented
+        other_parent = element_parent(other)
+        match other_parent:
+            case CategoricalHomset() if (
+                other_parent.homset_category().is_subcategory(OrdinalSemirings())
+                and other.codomain() is self.domain()
+            ):
+                pass
+            case _:
+                return NotImplemented
         if self.is_identity():
             return other
         if other.is_identity():

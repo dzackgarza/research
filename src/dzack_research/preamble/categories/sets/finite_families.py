@@ -18,6 +18,10 @@ def finite_family[ValueT](
 
     A finite sequence of owned values is a family, not a set: two of them may be
     equal, which a set would collapse, and each is addressed by its position.
+    The ``IndexedFamily`` case is declared representation ingress (``OWN-06``):
+    it preserves an already-owned family rather than reindexing it by positions.
+    ``IndexedFamily`` itself is an engine object in ``Objects()``, not a category
+    whose membership could honestly replace this representation distinction.
     """
     if isinstance(values, IndexedFamily):
         return values

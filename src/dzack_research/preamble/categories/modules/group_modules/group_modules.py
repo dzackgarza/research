@@ -942,7 +942,9 @@ class GroupModuleMorphism(ModuleMorphism):
         source = self.domain().action_functor()
         target = self.codomain().action_functor()
         component = self.underlying_module_morphism()
-        return NaturalTransformation(source, target, lambda _obj: component)
+        return NaturalTransformation(
+            source, target, lambda _obj: component
+        ).morphism()
 
     def restrict_to(self, inclusion):
         r"""Restrict this equivariant endomorphism along an equivariant inclusion.

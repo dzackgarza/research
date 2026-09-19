@@ -82,13 +82,14 @@ def _action_functor_of(acted, group, category):
 def _underlying_equivariant_arrow(arrow, group, category):
     r"""Forget equivariance from either a natural transformation or a concrete arrow."""
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
-    from dzack_research.preamble.categories.group.g_objects import EquivariantMorphism
+    from dzack_research.preamble.categories.group.g_objects import GObjects
 
     functor_category = Cat().Mor(group.classifying_category(), category)
     if arrow.domain() in functor_category and arrow.codomain() in functor_category:
         point = group.classifying_category().an_object()
         return arrow.component(point)
-    if isinstance(arrow, EquivariantMorphism):
+    acted = GObjects(group, category)
+    if arrow in acted.Mor(arrow.domain(), arrow.codomain()):
         return arrow.underlying_arrow()
     return category.Mor(arrow.domain(), arrow.codomain())(arrow)
 

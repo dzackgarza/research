@@ -821,12 +821,9 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
 
     kernel_comparison = functor.kernel_comparison(morphism)
     assert functor.is_exact()
+    assert kernel_comparison.domain() is kernel_comparison.codomain()
     assert (
-        kernel_comparison.localized_kernel()
-        is kernel_comparison.kernel_of_localized_morphism()
-    )
-    assert (
-        kernel_comparison.localized_kernel().inclusion().codomain()
+        kernel_comparison.domain().inclusion().codomain()
         is functor(source)
     )
 
@@ -836,8 +833,8 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
         {0: 6 * generator}
     )
     cokernel_comparison = functor.cokernel_comparison(multiplication_by_six)
-    left = cokernel_comparison.localized_cokernel()
-    right = cokernel_comparison.cokernel_of_localized_morphism()
+    left = cokernel_comparison.domain()
+    right = cokernel_comparison.codomain()
     left_generator = left.module_generator(0)
     right_generator = right.module_generator(0)
     assert cokernel_comparison.inverse()(

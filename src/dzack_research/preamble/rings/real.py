@@ -47,7 +47,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import UncountableSets
-from dzack_research.preamble.logic import Predicate, ask
+from dzack_research.preamble.logic import Propositions, ask
 from dzack_research.preamble.refine import realize_owned_category
 
 
@@ -218,6 +218,7 @@ class RealRelation(Predicate):
         self._left = left
         self._right = right
         self._relation = relation
+        super().__init__()
 
     def left(self) -> ExactRealNumber:
         return self._left
@@ -349,7 +350,7 @@ class ExactRealNumber(FieldElement):
     def _div_(self, other):
         nonzero = self.parent().relation(other, self.parent().zero(), operator.ne)
 
-        decision = ask(nonzero) if isinstance(nonzero, Predicate) else nonzero
+        decision = ask(nonzero) if nonzero in Propositions else nonzero
         if decision is False:
             raise ZeroDivisionError("division by zero")
         if decision is Unknown:
