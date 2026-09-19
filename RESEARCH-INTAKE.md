@@ -122,6 +122,8 @@ Where to look first for existing algorithms before writing new code. Check these
 | Known mirror family pairs from the literature (Greene-Plesser, Batyrev-Borisov, Dolgachev-Nikulin, BHK, 14 hypergeometric CY3s, Doran-Harder-Thompson) | Literature survey + user intake 2026-09-19 | Comprehensive classification and catalogue of mirror family pairs across dimensions: (1) Greene-Plesser orbifold pairs (quintic $X_5 \leftrightarrow Y_5$ and 27 weighted projective complete intersections); (2) Batyrev-Borisov dual reflexive polytopes $(\Delta, \Delta^\circ)$ (16 in 2D, 4319 in 3D, 473M in 4D) and nef-partitions; (3) Dolgachev-Nikulin lattice-polarized K3 mirror pairs ($M \leftrightarrow \check{M} = U \oplus M^\perp$, e.g. quartic $\leftrightarrow$ Dwork pencil); (4) Berglund-Hübsch-Krawitz (BHK) transpose polynomials $(W, G) \leftrightarrow (W^\mathrm{T}, G^\mathrm{T})$ (Fermat, loop, chain); (5) The 14 one-parameter hypergeometric Calabi-Yau threefolds (Doran-Morgan / Morrison / AESZ, 7 arithmetic / 7 thin monodromy); (6) Doran-Harder-Thompson fibration / degeneration mirrors (K3 fibrations over $\mathbb{P}^1$ and Kulikov component gluing); (7) Fano / Landau-Ginzburg mirrors $(X \leftrightarrow (\mathbb{C}^\times)^n, W)$; (8) Abelian varieties and SYZ dual tori | `categories/schemes/mirror_symmetry/mirror_catalogue.py` + `categories/schemes/mirror_symmetry/batyrev_borisov.py` + `categories/schemes/mirror_symmetry/dolgachev_nikulin.py` + `categories/schemes/mirror_symmetry/bhk.py` + `categories/schemes/mirror_symmetry/hypergeometric_cy3.py` | Proposed — see note below |
 | Operationalized convergence criteria, Dirichlet irrationality, symbolic integration by parts, and L-function zeta regularization | User intake 2026-09-19 | Operationalized convergence and analytic toolkit: (1) Dirichlet's irrationality criterion (Diophantine approximation $|\alpha - p/q| < 1/(qN) \le 1/q^2$, continued fractions, Apéry-type certificates, irrationality measures $\mu(\alpha)$); (2) Dirichlet's convergence test for series $\sum a_n b_n$ (bounded partial sums + monotonic $b_n \to 0$ via Abel summation by parts, alternating/Fourier/Dirichlet series); (3) Cauchy condensation test $\sum a_n \leftrightarrow \sum 2^k a_{2^k}$ (automated logarithmic/geometric convergence decider); (4) Symbolic integration by parts (recursive, tabular, reduction formulas, LIATE heuristic, cyclic integral solver in differential algebra); (5) Zeta and L-function regularization (spectral zeta functions $\zeta_A(s) = \operatorname{Tr}(A^{-s})$, functional determinants $\operatorname{det}_\zeta(A) = \exp(-\zeta_A'(0))$, Ramanujan/Euler-Maclaurin summation, completed L-functions $\Lambda(s, \pi)$, and values at integers) | `categories/analysis/convergence_tests.py` + `categories/number_theory/diophantine_approximation.py` + `categories/calculus/symbolic_integration.py` + `categories/zeta/regularization.py` + `categories/l_functions/analytic_continuation.py` | Proposed — see note below |
 | Gerstenhaber algebra structure on Hochschild cohomology $HH^*(A, A)$ (operadic $e_2$ algebra, brace algebra, Schouten bracket) | User intake 2026-09-19 | Full Gerstenhaber algebra structure $(\smile, [-,-])$ on Hochschild cohomology $HH^*(A, A)$: graded commutative cup product $HH^p \otimes HH^q \to HH^{p+q}$, graded Lie bracket $[-,-] \colon HH^p \otimes HH^q \to HH^{p+q-1}$ (degree -1, degree 0 on $HH^*[1]$), Poisson/derivation compatibility $[a, b \smile c] = [a, b] \smile c + (-1)^{(|a|-1)|b|} b \smile [a, c]$; cochain realization via Gerstenhaber circle product $f \circ g = \sum (-1)^{(i-1)(q-1)} f \circ_i g$, graded pre-Lie algebra $C^*(A, A)[1]$, DGLA differential $d = [m, -]$; brace algebra $B_\infty$ operations $f\{g_1, \dots, g_k\}$; Deligne's conjecture ($E_2$ / little 2-disks operad action on $C^*(A, A)$); HKR isomorphism matching $[-,-]$ with Schouten-Nijenhuis bracket on polyvector fields $\bigwedge^* T_X$; deformation theory (Maurer-Cartan equation $d\alpha + \frac{1}{2}[\alpha, \alpha] = 0$, obstructions in $HH^3$); Batalin-Vilkovisky (BV) structure $\Delta$ on Calabi-Yau / Frobenius algebras | `categories/homology/gerstenhaber.py` + `categories/homology/hochschild.py` + `categories/operads/little_disks.py` + `categories/algebras/brace_algebras.py` + `categories/deformation/deformation_quantization.py` | Proposed — see note below |
+| Continuous actions of topological groups on topological spaces (G-Top, orbit spaces, proper actions, slice theorem, and equivariant topology) | User intake 2026-09-19 | Comprehensive topological group action framework: topological group $G \in \mathbf{TopGrp}$ and continuous left/right actions $\alpha \colon G \times X \to X$ in $\mathbf{Top}$; orbits $G \cdot x$, stabilizers $G_x \le G$ (closed subgroups), canonical homeomorphism $G/G_x \cong G \cdot x$; quotient orbit space $X/G$ with open projection $\pi \colon X \twoheadrightarrow X/G$, separation criteria ($T_1 \iff$ closed orbits, $T_2 \iff$ closed orbit relation); action predicates: transitive ($X \cong G/H$), free, faithful, proper ($(g,x) \mapsto (gx, x)$ proper, compact stabilizers, Hausdorff quotient), properly discontinuous, cocompact; Palais-Koszul slice theorem $G \times_H S \cong U$; equivariant category $G\mathbf{-Top}$ ($G$-maps, invariant subspaces, fixed points $X^G$, induction $\operatorname{Ind}_H^G = G \times_H -$, coinduction $\operatorname{CoInd}_H^G$); Borel homotopy quotient $X_{hG} = EG \times_G X$, equivariant cohomology $H_G^*(X) = H^*(X_{hG})$; principal $G$-bundles and associated bundles $P \times_G F$ | `categories/topology/topological_groups.py` + `categories/topology/group_actions.py` + `categories/topology/equivariant.py` + `categories/topology/principal_bundles.py` | Proposed — see note below |
+
 
 
 
@@ -3271,6 +3273,141 @@ Intended owners: `categories/analysis/convergence_tests.py` (`DirichletTest`, `C
     - `BVOperator(HH_cohomology, connes_B, vdb_dual)`: computes $\Delta \colon HH^n \to HH^{n-1}$ and verifies $[a, b] = (-1)^{|a|} (\Delta(a \smile b) - \dots)$.
 
 Intended owners: `categories/homology/gerstenhaber.py` (`GerstenhaberBracket`, `CircleProduct`, `PreLieAlgebra`), `categories/homology/hochschild.py` (`GerstenhaberAlgebra`, `HochschildCohomology`), `categories/algebras/brace_algebras.py` (`BraceAlgebra`), `categories/schemes/hochschild_kostant_rosenberg.py` (`HKR_Schouten`), `categories/deformation/deformation_quantization.py` (`MaurerCartan`, `AssociativeDeformation`), `categories/homology/batalin_vilkovisky.py` (`BVAlgebra`, `BVOperator`).
+
+
+## Desired capability: Continuous actions of topological groups on topological spaces — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Topological groups ($G \in \mathbf{TopGrp}$):**
+    * A *topological group* is a group $G$ equipped with a topology such that the group multiplication $\mu \colon G \times G \to G$, $(g, h) \mapsto g h$, and the inversion $\iota \colon G \to G$, $g \mapsto g^{-1}$, are continuous maps (with $G \times G$ endowed with the product topology).
+    * Homogeneity: Left translations $L_g \colon h \mapsto g h$ and right translations $R_g \colon h \mapsto h g$ are homeomorphisms of $G$ for all $g \in G$.
+    * Uniform structures: The topology of $G$ is induced by canonical left and right uniform structures. Every topological group satisfying the $T_0$ separation axiom is completely regular ($T_{3\frac{1}{2}}$) and Hausdorff ($T_2$).
+    * Subgroups: Any subgroup $H \le G$ is a topological group with the subspace topology. If $H$ is open, then $H$ is also closed.
+    * Quotient groups: For a normal subgroup $N \triangleleft G$, the quotient group $G/N$ with the quotient topology is a topological group, and the projection $\pi \colon G \twoheadrightarrow G/N$ is a continuous open homomorphism. $G/N$ is Hausdorff iff $N$ is closed in $G$.
+    * Identity component: The connected component $G_0$ of the identity $e \in G$ is a closed normal subgroup, and the quotient group $G/G_0$ is totally disconnected.
+
+  * **Continuous group actions ($G \curvearrowright X$ in $\mathbf{Top}$):**
+    * A *continuous left action* of a topological group $G$ on a topological space $X$ is a continuous map $\alpha \colon G \times X \to X$, $(g, x) \mapsto g \cdot x$, such that:
+      1. $e \cdot x = x$ for all $x \in X$.
+      2. $g \cdot (h \cdot x) = (g h) \cdot x$ for all $g, h \in G, x \in X$.
+    * Equivalently, a group homomorphism $\rho \colon G \to \operatorname{Homeo}(X)$ into the homeomorphism group of $X$. When $X$ is locally compact Hausdorff, the action $\alpha$ is continuous if and only if $\rho \colon G \to \operatorname{Homeo}(X)$ is continuous when $\operatorname{Homeo}(X)$ carries the compact-open topology.
+    * Continuous right actions $\beta \colon X \times G \to X$ defined symmetrically or via $x \cdot g \coloneqq g^{-1} \cdot x$.
+
+  * **Orbits, stabilizers, and quotient orbit spaces ($X/G$):**
+    * **Stabilizer (isotropy subgroup):** For each $x \in X$, the stabilizer is:
+      $$
+      G_x \;\coloneqq\; \{ g \in G \mid g \cdot x = x \}.
+      $$
+      If $X$ is $T_1$, $G_x$ is a closed subgroup of $G$ (as the preimage of the closed point $\{x\}$ under the continuous orbit map $g \mapsto g \cdot x$).
+    * **Orbit:** The orbit of $x \in X$ is the subset $G \cdot x \coloneqq \{ g \cdot x \mid g \in G \} \subseteq X$.
+      The canonical orbit map induces a continuous bijection:
+      $$
+      \phi_x \colon G / G_x \longrightarrow G \cdot x, \qquad g G_x \longmapsto g \cdot x.
+      $$
+      If $G$ is compact, or if $G$ is locally compact $\sigma$-compact and $X$ is Baire with locally closed orbit, $\phi_x$ is a homeomorphism onto its image.
+    * **Orbit space $X/G$:**
+      The set of orbits $X/G$ equipped with the quotient topology induced by the canonical surjective projection $\pi \colon X \twoheadrightarrow X/G$, $x \mapsto G \cdot x$.
+      - **Open mapping theorem for orbit projections:** The quotient projection $\pi \colon X \to X/G$ is always an **open map**:
+        For any open set $U \subset X$, $\pi^{-1}(\pi(U)) = \bigcup_{g \in G} g \cdot U$ is an open set in $X$ (as an arbitrary union of open homeomorphic images $g \cdot U$), hence $\pi(U)$ is open in $X/G$.
+      - **Separation criteria for $X/G$:**
+        * $X/G$ is $T_1$ if and only if every orbit $G \cdot x$ is a closed subset of $X$.
+        * $X/G$ is Hausdorff ($T_2$) if and only if the orbit equivalence relation:
+          $$
+          R \;\coloneqq\; \{ (x, y) \in X \times X \mid \exists g \in G \text{ with } y = g \cdot x \} \;\subset\; X \times X
+          $$
+          is a closed subset of $X \times X$.
+
+  * **Action predicates and geometric classifications:**
+    * **Transitive action:** $X$ consists of a single orbit ($G \cdot x = X$). Then $X \cong G/H$ is a homogeneous space for $H = G_{x_0}$.
+    * **Free action:** $G_x = \{e\}$ for all $x \in X$ (no non-trivial fixed points).
+    * **Faithful / effective action:** $\bigcap_{x \in X} G_x = \{e\}$ (the kernel of the action is trivial, so $G \hookrightarrow \operatorname{Homeo}(X)$).
+    * **Proper action:**
+      The action $\alpha \colon G \times X \to X$ is *proper* if the map:
+      $$
+      \Theta \colon G \times X \longrightarrow X \times X, \qquad (g, x) \longmapsto (g \cdot x, x)
+      $$
+      is a proper continuous map (i.e. the preimage of every compact subset of $X \times X$ is compact in $G \times X$).
+      - **Structural consequences of properness:**
+        * Every stabilizer $G_x$ is a compact subgroup of $G$.
+        * Every orbit $G \cdot x$ is closed in $X$, and $G/G_x \cong G \cdot x$ is a homeomorphism.
+        * The orbit space $X/G$ is Hausdorff (and locally compact if $X$ is).
+      - **Discrete case (properly discontinuous actions):**
+        When $G$ is a discrete group, an action on a locally compact Hausdorff space $X$ is proper if and only if for every compact subset $K \subset X$, the set $\{ g \in G \mid (g \cdot K) \cap K \neq \emptyset \}$ is finite.
+    * **Cocompact action:** The quotient space $X/G$ is compact.
+    * **Slice theorem (Koszul, Palais):**
+      Let $G$ be a Lie group acting properly on a smooth manifold $X$. For every $x \in X$ with compact stabilizer $H = G_x$, there exists an $H$-invariant submanifold $S \subset X$ containing $x$ (a *slice* at $x$) such that the equivariant map:
+      $$
+      G \times_H S \longrightarrow X, \qquad [g, s] \longmapsto g \cdot s
+      $$
+      is an open equivariant embedding onto a $G$-invariant neighborhood of $G \cdot x$.
+
+  * **The category of $G$-spaces ($G\mathbf{-Top}$):**
+    * **Category $G\mathbf{-Top}$:**
+      - Objects: $G$-spaces $(X, \alpha)$, where $X \in \mathbf{Top}$ and $\alpha \colon G \times X \to X$ is a continuous action.
+      - Morphisms: Continuous $G$-equivariant maps $f \colon X \to Y$ satisfying $f(g \cdot x) = g \cdot f(x)$ for all $g \in G, x \in X$.
+    * **Universal constructions in $G\mathbf{-Top}$:**
+      - **Fixed point space:** $X^G \coloneqq \{ x \in X \mid g \cdot x = x \; \forall g \in G \}$. If $X$ is Hausdorff, $X^G$ is a closed subspace of $X$.
+      - **Subgroup fixed points:** For any subgroup $H \le G$, $X^H \coloneqq \{ x \in X \mid h \cdot x = x \; \forall h \in H \}$, which is a $W(H)$-space where $W(H) \coloneqq N_G(H)/H$ is the Weyl group.
+      - **Products:** $X \times Y$ with diagonal action $g \cdot (x, y) = (g \cdot x, g \cdot y)$.
+      - **Equivariant mapping spaces:** $\operatorname{Map}(X, Y)$ with conjugation action $(g \cdot f)(x) \coloneqq g \cdot f(g^{-1} \cdot x)$, where $G$-equivariant maps are the fixed points $\operatorname{Map}_G(X, Y) = \operatorname{Map}(X, Y)^G$.
+      - **Induction and restriction adjunction:**
+        For a closed subgroup $H \le G$, the restriction functor $\operatorname{Res}_H^G \colon G\mathbf{-Top} \to H\mathbf{-Top}$ has:
+        * Left adjoint (induction): $\operatorname{Ind}_H^G(Y) \coloneqq G \times_H Y = (G \times Y) / H$, where $(g h, y) \sim (g, h \cdot y)$.
+        * Right adjoint (coinduction): $\operatorname{CoInd}_H^G(Y) \coloneqq \operatorname{Map}_H(G, Y)$.
+        Natural bijection: $\operatorname{Hom}_G(G \times_H Y, X) \cong \operatorname{Hom}_H(Y, \operatorname{Res}_H^G X)$.
+
+  * **Equivariant homotopy and Borel equivariant cohomology:**
+    * **Borel construction (homotopy quotient):**
+      Let $EG \to BG$ be the universal principal $G$-bundle, where $EG$ is a contractible space with a continuous free $G$-action, and $BG = EG/G$ is the classifying space.
+      The *homotopy quotient* (or Borel construction) is:
+      $$
+      X_{hG} \;\coloneqq\; EG \times_G X \;=\; (EG \times X) / G.
+      $$
+      - If the action $G \curvearrowright X$ is free, the canonical projection $X_{hG} \to X/G$ is a homotopy equivalence.
+      - If $X = \text{pt}$, then $X_{hG} = BG$.
+    * **Borel equivariant cohomology:**
+      $$
+      H_G^*(X; R) \;\coloneqq\; H^*(X_{hG}; R) \;=\; H^*(EG \times_G X; R).
+      $$
+      Equipped with the canonical $H^*(BG; R)$-algebra structure via the fibration $X \to X_{hG} \to BG$.
+    * **Equivariant localization theorem (Borel-Atiyah-Segal):**
+      For a compact torus $T \cong (S^1)^r$ acting on a compact space $X$, the restriction homomorphism $H_T^*(X; \mathbb{Q}) \to H_T^*(X^T; \mathbb{Q})$ becomes an isomorphism upon inverting the non-zero elements of $H^*(BT; \mathbb{Q}) \cong \mathbb{Q}[t_1, \dots, t_r]$.
+    * **Homotopy fixed points:** $X^{hG} \coloneqq \operatorname{Map}_G(EG, X)$.
+
+  * **Principal bundles and associated bundles:**
+    * A *principal $G$-bundle* is a continuous map $p \colon P \to B$ equipped with a continuous right action $P \times G \to P$ such that $p$ is locally trivial and $G$ acts freely and transitively on the fibers ($P/G \cong B$).
+    * **Associated bundle functor:**
+      Given a principal $G$-bundle $P \to B$ and a left $G$-space $F$, the associated fiber bundle is:
+      $$
+      P \times_G F \;\coloneqq\; (P \times F) / G \longrightarrow B,
+      $$
+      with standard fiber $F$.
+
+* **Preamble implementation requirements:**
+  * **Topological groups:** `categories/topology/topological_groups.py`
+    - `TopologicalGroup(underlying_group, topology)`: verifies continuity of multiplication $\mu$ and inversion $\iota$.
+    - Properties & predicates: `is_connected()`, `identity_component()`, `is_compact()`, `is_locally_compact()`, `is_hausdorff()`.
+    - `quotient_group(N)`: constructs $G/N$ with quotient topology.
+  * **Continuous group actions:** `categories/topology/group_actions.py`
+    - `TopologicalGroupAction(G, X, action_map, side='left')`: validates action axioms $e \cdot x = x$, $(g h) x = g(h x)$ and continuity.
+    - `orbit(x)`: returns $G \cdot x \subset X$.
+    - `stabilizer(x)`: returns $G_x \le G$ as a closed subgroup.
+    - `orbit_space()`: constructs quotient space $X/G$ with open projection map $\pi$.
+    - Predicates: `is_transitive()`, `is_free()`, `is_faithful()`, `is_proper()`, `is_properly_discontinuous()`, `is_cocompact()`.
+    - `slice(x)`: Palais slice $S$ and diffeomorphism $G \times_H S \cong U$ for proper Lie actions.
+  * **Equivariant category $G\mathbf{-Top}$:** `categories/topology/equivariant.py`
+    - `GSpace(G, X, action)`: object in $G\mathbf{-Top}$.
+    - `EquivariantMap(f, source_gspace, target_gspace)`: certifies $f(g x) = g f(x)$.
+    - `fixed_points(H=None)`: constructs $X^G$ or $X^H$.
+    - `induction(H, Y)`: evaluates $G \times_H Y$.
+    - `borel_construction(EG)`: constructs homotopy quotient $X_{hG} = EG \times_G X$.
+    - `equivariant_cohomology(coeff_ring)`: computes $H_G^*(X; R) = H^*(X_{hG}; R)$.
+  * **Principal and associated bundles:** `categories/topology/principal_bundles.py`
+    - `PrincipalBundle(P, B, G, action, projection)`: validates principal $G$-bundle structure.
+    - `associated_bundle(F)`: constructs $P \times_G F \to B$.
+
+Intended owners: `categories/topology/topological_groups.py` (`TopologicalGroup`, `QuotientGroup`), `categories/topology/group_actions.py` (`TopologicalGroupAction`, `OrbitSpace`, `Stabilizer`, `Slice`), `categories/topology/equivariant.py` (`GSpace`, `EquivariantMap`, `BorelConstruction`, `EquivariantCohomology`), `categories/topology/principal_bundles.py` (`PrincipalBundle`, `AssociatedBundle`).
+
 
 
 
