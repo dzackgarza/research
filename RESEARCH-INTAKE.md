@@ -121,6 +121,8 @@ Where to look first for existing algorithms before writing new code. Check these
 | Euler operator $\theta = t \partial_t$ and standard formal power series operators on $R[[t]]$ | User intake 2026-09-19 | Complete differential and algebraic operator calculus on $R[[t]]$: Euler/theta operator $\theta = t \frac{d}{dt}$ ($\theta(t^n) = n t^n$, Stirling conversions $\theta^k \leftrightarrow t^j \partial_t^j$, ODE Euler forms $P(\theta)$); formal derivation $\partial_t$ and integration $\int$; forward/backward shifts $S^{\pm}$, coefficient extraction $[t^n]$; multiplications (Cauchy, Hadamard $\odot$, Hurwitz binomial convolution); composition $f \circ g$ and formal inversion via Lagrange Inversion Formula / Lagrange-Bürmann; logarithmic derivatives $\operatorname{dlog}(f) = f'/f$ and $\operatorname{dlog}_\theta(f) = \theta f / f$; exponential of integral $\exp(\int f)$ (integrating factors, combinatorial exponential formula) and formal logarithm $\log(f)$; Witt algebra generators $L_n = -t^n \theta$ | `categories/rings/formal_power_series.py` + `categories/differential_operators/formal_series.py` + `categories/generating_functions/operators.py` + `categories/algebras/weyl_algebra.py` | Proposed — see note below |
 | Known mirror family pairs from the literature (Greene-Plesser, Batyrev-Borisov, Dolgachev-Nikulin, BHK, 14 hypergeometric CY3s, Doran-Harder-Thompson) | Literature survey + user intake 2026-09-19 | Comprehensive classification and catalogue of mirror family pairs across dimensions: (1) Greene-Plesser orbifold pairs (quintic $X_5 \leftrightarrow Y_5$ and 27 weighted projective complete intersections); (2) Batyrev-Borisov dual reflexive polytopes $(\Delta, \Delta^\circ)$ (16 in 2D, 4319 in 3D, 473M in 4D) and nef-partitions; (3) Dolgachev-Nikulin lattice-polarized K3 mirror pairs ($M \leftrightarrow \check{M} = U \oplus M^\perp$, e.g. quartic $\leftrightarrow$ Dwork pencil); (4) Berglund-Hübsch-Krawitz (BHK) transpose polynomials $(W, G) \leftrightarrow (W^\mathrm{T}, G^\mathrm{T})$ (Fermat, loop, chain); (5) The 14 one-parameter hypergeometric Calabi-Yau threefolds (Doran-Morgan / Morrison / AESZ, 7 arithmetic / 7 thin monodromy); (6) Doran-Harder-Thompson fibration / degeneration mirrors (K3 fibrations over $\mathbb{P}^1$ and Kulikov component gluing); (7) Fano / Landau-Ginzburg mirrors $(X \leftrightarrow (\mathbb{C}^\times)^n, W)$; (8) Abelian varieties and SYZ dual tori | `categories/schemes/mirror_symmetry/mirror_catalogue.py` + `categories/schemes/mirror_symmetry/batyrev_borisov.py` + `categories/schemes/mirror_symmetry/dolgachev_nikulin.py` + `categories/schemes/mirror_symmetry/bhk.py` + `categories/schemes/mirror_symmetry/hypergeometric_cy3.py` | Proposed — see note below |
 | Operationalized convergence criteria, Dirichlet irrationality, symbolic integration by parts, and L-function zeta regularization | User intake 2026-09-19 | Operationalized convergence and analytic toolkit: (1) Dirichlet's irrationality criterion (Diophantine approximation $|\alpha - p/q| < 1/(qN) \le 1/q^2$, continued fractions, Apéry-type certificates, irrationality measures $\mu(\alpha)$); (2) Dirichlet's convergence test for series $\sum a_n b_n$ (bounded partial sums + monotonic $b_n \to 0$ via Abel summation by parts, alternating/Fourier/Dirichlet series); (3) Cauchy condensation test $\sum a_n \leftrightarrow \sum 2^k a_{2^k}$ (automated logarithmic/geometric convergence decider); (4) Symbolic integration by parts (recursive, tabular, reduction formulas, LIATE heuristic, cyclic integral solver in differential algebra); (5) Zeta and L-function regularization (spectral zeta functions $\zeta_A(s) = \operatorname{Tr}(A^{-s})$, functional determinants $\operatorname{det}_\zeta(A) = \exp(-\zeta_A'(0))$, Ramanujan/Euler-Maclaurin summation, completed L-functions $\Lambda(s, \pi)$, and values at integers) | `categories/analysis/convergence_tests.py` + `categories/number_theory/diophantine_approximation.py` + `categories/calculus/symbolic_integration.py` + `categories/zeta/regularization.py` + `categories/l_functions/analytic_continuation.py` | Proposed — see note below |
+| Gerstenhaber algebra structure on Hochschild cohomology $HH^*(A, A)$ (operadic $e_2$ algebra, brace algebra, Schouten bracket) | User intake 2026-09-19 | Full Gerstenhaber algebra structure $(\smile, [-,-])$ on Hochschild cohomology $HH^*(A, A)$: graded commutative cup product $HH^p \otimes HH^q \to HH^{p+q}$, graded Lie bracket $[-,-] \colon HH^p \otimes HH^q \to HH^{p+q-1}$ (degree -1, degree 0 on $HH^*[1]$), Poisson/derivation compatibility $[a, b \smile c] = [a, b] \smile c + (-1)^{(|a|-1)|b|} b \smile [a, c]$; cochain realization via Gerstenhaber circle product $f \circ g = \sum (-1)^{(i-1)(q-1)} f \circ_i g$, graded pre-Lie algebra $C^*(A, A)[1]$, DGLA differential $d = [m, -]$; brace algebra $B_\infty$ operations $f\{g_1, \dots, g_k\}$; Deligne's conjecture ($E_2$ / little 2-disks operad action on $C^*(A, A)$); HKR isomorphism matching $[-,-]$ with Schouten-Nijenhuis bracket on polyvector fields $\bigwedge^* T_X$; deformation theory (Maurer-Cartan equation $d\alpha + \frac{1}{2}[\alpha, \alpha] = 0$, obstructions in $HH^3$); Batalin-Vilkovisky (BV) structure $\Delta$ on Calabi-Yau / Frobenius algebras | `categories/homology/gerstenhaber.py` + `categories/homology/hochschild.py` + `categories/operads/little_disks.py` + `categories/algebras/brace_algebras.py` + `categories/deformation/deformation_quantization.py` | Proposed — see note below |
+
 
 
 
@@ -3115,6 +3117,161 @@ Intended owners: `categories/schemes/mirror_symmetry/mirror_catalogue.py` (`Mirr
     - `SpecialLValues(l_function, s_points)`: computes regularized values at negative integers and critical points.
 
 Intended owners: `categories/analysis/convergence_tests.py` (`DirichletTest`, `CauchyCondensation`, `AbelSummation`), `categories/number_theory/diophantine_approximation.py` (`DirichletApproximation`, `IrrationalityCertificate`), `categories/calculus/symbolic_integration.py` (`IntegrationByParts`, `TabularIntegration`, `ReductionFormula`), `categories/zeta/regularization.py` (`SpectralZetaFunction`, `ZetaRegularizedDeterminant`, `RamanujanSum`), `categories/l_functions/analytic_continuation.py` (`CompletedLFunction`, `SpecialLValues`).
+
+
+## Desired capability: Gerstenhaber algebra structure on Hochschild cohomology $HH^*(A, A)$ — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Definition of a Gerstenhaber algebra:**
+    * A *Gerstenhaber algebra* (or $G$-algebra) is a graded vector space $V = \bigoplus_{n \in \mathbb{Z}} V^n$ over a field $k$ (or commutative ring $R$) equipped with two bilinear operations:
+      1. **Graded commutative associative cup product:**
+         $$
+         \smile \colon V^p \otimes V^q \longrightarrow V^{p+q}, \qquad a \smile b = (-1)^{p q} b \smile a, \qquad (a \smile b) \smile c = a \smile (b \smile c).
+         $$
+      2. **Graded Lie bracket of degree $-1$ (Gerstenhaber bracket):**
+         $$
+         [- , -] \colon V^p \otimes V^q \longrightarrow V^{p+q-1}.
+         $$
+         Equivalently, on the desuspended graded space $\mathfrak{g} \coloneqq V[1]$ with shifted grading $|a|' \coloneqq |a| - 1 = p - 1$, the bracket $[-,-]$ has degree 0 and satisfies:
+         - Graded skew-symmetry:
+           $$
+           [a, b] \;=\; -(-1)^{(|a|-1)(|b|-1)} [b, a] \;=\; -(-1)^{p' q'} [b, a].
+           $$
+         - Graded Jacobi identity:
+           $$
+           [a, [b, c]] \;=\; [[a, b], c] + (-1)^{(|a|-1)(|b|-1)} [b, [a, c]].
+           $$
+      3. **Poisson derivation rule (Leibniz compatibility):**
+         The adjoint action $[a, -]$ is a graded derivation of the cup product of degree $|a| - 1$:
+         $$
+         [a, b \smile c] \;=\; [a, b] \smile c + (-1)^{(|a|-1) |b|} b \smile [a, c].
+         $$
+    * Operadic interpretation: A Gerstenhaber algebra is an algebra over the operad $e_2 \coloneqq H_*(\mathcal{D}_2, k)$, the homology of the little 2-disks operad.
+
+  * **Hochschild cochains and the Gerstenhaber bracket at cochain level:**
+    * For an associative $k$-algebra $A$, the Hochschild cochain complex is $C^*(A, A) \coloneqq \bigoplus_{n \ge 0} C^n(A, A)$ where $C^n(A, A) \coloneqq \operatorname{Hom}_k(A^{\otimes n}, A)$ (with $C^0(A, A) = A$).
+    * **Cup product at cochain level:** For $f \in C^p(A, A)$ and $g \in C^q(A, A)$:
+      $$
+      (f \smile g)(a_1, \dots, a_{p+q}) \;\coloneqq\; f(a_1, \dots, a_p) g(a_{p+1}, \dots, a_{p+q}).
+      $$
+      Associative, but not graded commutative on cochains ($f \smile g - (-1)^{p q} g \smile f$ is a coboundary).
+    * **Gerstenhaber circle products (insertion operations):**
+      For $1 \le i \le p$, the $i$-th composition $f \circ_i g \in C^{p+q-1}(A, A)$ substitutes $g$ into the $i$-th input of $f$:
+      $$
+      (f \circ_i g)(a_1, \dots, a_{p+q-1}) \;\coloneqq\; f(a_1, \dots, a_{i-1}, g(a_i, \dots, a_{i+q-1}), a_{i+q}, \dots, a_{p+q-1}).
+      $$
+      The total circle product is:
+      $$
+      f \circ g \;\coloneqq\; \sum_{i=1}^p (-1)^{(i-1)(q-1)} f \circ_i g \;\in\; C^{p+q-1}(A, A).
+      $$
+    * **Graded pre-Lie algebra structure:**
+      On the shifted space $C^*(A, A)[1]$, the circle product $\circ$ satisfies the graded right pre-Lie identity:
+      $$
+      (f \circ g) \circ h - f \circ (g \circ h) \;=\; (-1)^{(q-1)(r-1)} \left( (f \circ h) \circ g - f \circ (h \circ g) \right).
+      $$
+    * **Cochain Gerstenhaber bracket:**
+      The graded commutator of the pre-Lie product:
+      $$
+      [f, g] \;\coloneqq\; f \circ g - (-1)^{(p-1)(q-1)} g \circ f \;\in\; C^{p+q-1}(A, A).
+      $$
+      Equips $C^*(A, A)[1]$ with the structure of a differential graded Lie algebra (DGLA).
+    * **Hochschild differential via multiplication $m$:**
+      Let $m \in C^2(A, A)$ be the algebra multiplication $m(a, b) = a b$.
+      Associativity of $A$ is equivalent to $[m, m] = 2 m \circ m = 0$.
+      The Hochschild coboundary operator $d \colon C^n(A, A) \to C^{n+1}(A, A)$ is given by the adjoint action of $m$:
+      $$
+      d(f) \;=\; [m, f] \;=\; m \circ f - (-1)^{p-1} f \circ m.
+      $$
+      Nilpotence $d^2 = 0$ follows immediately from Jacobi: $d^2(f) = [m, [m, f]] = \frac{1}{2} [[m, m], f] = 0$.
+    * **Descent to cohomology:**
+      The Hochschild differential is a derivation of both the cup product and the Gerstenhaber bracket:
+      $$
+      d(f \smile g) \;=\; d(f) \smile g + (-1)^p f \smile d(g), \qquad d[f, g] \;=\; [d(f), g] + (-1)^{p-1} [f, d(g)].
+      $$
+      The Leibniz rule holds up to homotopy at the cochain level, inducing an exact Gerstenhaber algebra structure on $HH^*(A, A) = H^*(C^*(A, A), d)$.
+
+  * **Brace algebras and higher homotopy structures ($B_\infty$):**
+    * Brace operations (Getzler, Kadeishvili, Voronov):
+      $f\{g_1, \dots, g_k\} \in C^{p + \sum q_j - k}(A, A)$ simultaneously substitutes $k$ cochains into disjoint slots of $f$.
+      $f\{g\} = f \circ g$.
+    * Satisfies the higher brace relations:
+      $$
+      f\{g_1, \dots, g_k\}\{h_1, \dots, h_m\} \;=\; \sum \pm f\{h_1, \dots, g_1\{h_i, \dots\}, \dots, g_k\{ \dots \}, \dots, h_m\}.
+      $$
+    * **Deligne's conjecture (proved by Tamarkin, Kontsevich, Voronov, McClure-Smith):**
+      The Hochschild cochain complex $C^*(A, A)$ carries the action of an operad quasi-isomorphic to the singular chain operad $C_*(\mathcal{D}_2)$ of the little 2-disks operad $E_2$.
+      Passing to cohomology $H^*(C^*(A, A))$ yields the Gerstenhaber operad $H_*(E_2) = \operatorname{Gerst}$.
+
+  * **Hochschild-Kostant-Rosenberg (HKR) isomorphism and Schouten bracket:**
+    * For a smooth affine variety $X$ (or smooth commutative algebra $A = \mathcal{O}(X)$ over a field of characteristic 0):
+      The HKR map defines an isomorphism of graded commutative algebras:
+      $$
+      \operatorname{HKR} \colon HH^*(A, A) \;\xrightarrow{\sim}\; \Gamma(X, \bigwedge\nolimits^{\!*} T_X) \;=\; \operatorname{PolyVect}^*(X).
+      $$
+    * Under the HKR isomorphism:
+      - The cup product $\smile$ on $HH^*(A, A)$ corresponds to the exterior product $\wedge$ of polyvector fields.
+      - The Gerstenhaber bracket $[-,-]$ on $HH^*(A, A)$ corresponds to the **Schouten-Nijenhuis bracket** $[-,-]_{\mathrm{SN}}$ on polyvector fields $\bigwedge^* T_X$.
+    * At the cochain level, Kontsevich's Formality Theorem establishes an $L_\infty$ quasi-isomorphism between the DGLA $C^*(A, A)[1]$ and the DGLA of polyvector fields $\operatorname{PolyVect}^*(X)[1]$ (with zero differential), yielding deformation quantization (star-products).
+
+  * **Low-degree interpretations and deformation theory:**
+    * **Degree 0:** $HH^0(A, A) = Z(A)$ (the center of $A$).
+      Cup product is algebra multiplication in $Z(A)$.
+      The bracket $[z, f] = 0$ for all $z \in HH^0(A)$ and $f \in HH^*(A)$ (since degree is $0 + p - 1 = p - 1 < p$).
+    * **Degree 1:** $HH^1(A, A) = \operatorname{Der}_k(A) / \operatorname{InnDer}(A) = \operatorname{OutDer}(A)$ (outer derivations).
+      For $D_1, D_2 \in HH^1(A)$: $[D_1, D_2]$ is the standard Lie bracket of derivations $[D_1, D_2] = D_1 \circ D_2 - D_2 \circ D_1$.
+      For $D \in HH^1(A)$ and $z \in HH^0(A)$: $[D, z] = D(z)$ (derivation applied to center).
+      For $D \in HH^1(A)$ and $\omega \in HH^p(A)$: $[D, \omega] = \mathcal{L}_D(\omega)$ (Lie derivative).
+    * **Degree 2:** $HH^2(A, A)$ classifies infinitesimal associative deformations of $A$:
+      A first-order deformation $a \ast_t b = a b + t \mu_1(a, b) + \mathcal{O}(t^2)$ is associative mod $t^2$ iff $d \mu_1 = 0 \in C^3(A, A)$.
+      Primary obstruction to second-order extension is $\frac{1}{2}[\mu_1, \mu_1] \in HH^3(A, A)$.
+      The Maurer-Cartan equation in $C^*(A, A)[1]$:
+      $$
+      d \alpha + \frac{1}{2} [\alpha, \alpha] \;=\; 0, \qquad \alpha \in t C^2(A, A)[[t]],
+      $$
+      classifies formal deformations / star-products $A[[t]]$.
+
+  * **Batalin-Vilkovisky (BV) structure on Frobenius and Calabi-Yau algebras:**
+    * When $A$ is a symmetric Frobenius algebra or Calabi-Yau algebra of dimension $d$:
+      Van den Bergh duality yields an isomorphism:
+      $$
+      HH^n(A, A) \;\cong\; HH_{d-n}(A, A).
+      $$
+    * Transporting the Connes boundary operator $B \colon HH_k(A) \to HH_{k+1}(A)$ across Van den Bergh duality yields a degree $-1$ operator:
+      $$
+      \Delta \colon HH^n(A, A) \longrightarrow HH^{n-1}(A, A), \qquad \Delta^2 = 0.
+      $$
+    * The Gerstenhaber bracket is recovered from $\Delta$ and the cup product via the 7-term relation / BV deviation formula:
+      $$
+      [a, b] \;=\; (-1)^{|a|} \left( \Delta(a \smile b) - \Delta(a) \smile b - (-1)^{|a|} a \smile \Delta(b) \right).
+      $$
+      Equips $HH^*(A, A)$ with the structure of a **Batalin-Vilkovisky (BV) algebra** (algebra over the framed little 2-disks operad $f\mathcal{D}_2$).
+
+* **Preamble implementation requirements:**
+  * **Hochschild cochains and pre-Lie/bracket operations:** `categories/homology/gerstenhaber.py`
+    - `HochschildCochain(A, degree, map)`: cochain $f \colon A^{\otimes n} \to A$.
+    - `cup_product(f, g)`: associative cochain cup product $f \smile g \in C^{p+q}(A, A)$.
+    - `circle_product_i(f, g, i)`: substitution $f \circ_i g$.
+    - `circle_product(f, g)`: total graded pre-Lie product $f \circ g = \sum (-1)^{(i-1)(q-1)} f \circ_i g$.
+    - `gerstenhaber_bracket(f, g)`: graded commutator $[f, g] = f \circ g - (-1)^{(p-1)(q-1)} g \circ f$.
+    - `hochschild_differential(f, m)`: evaluates $[m, f]$.
+  * **Gerstenhaber algebra structure on cohomology:** `categories/homology/hochschild.py`
+    - `GerstenhaberAlgebra`: structure on `HH^*(A, A)` providing:
+      * `cup(a, b)`: graded commutative product $HH^p \otimes HH^q \to HH^{p+q}$.
+      * `bracket(a, b)`: graded Lie bracket $HH^p \otimes HH^q \to HH^{p+q-1}$.
+      * `check_poisson_rule(a, b, c)`: certifies $[a, b \smile c] = [a, b] \smile c + (-1)^{(|a|-1)|b|} b \smile [a, c]$.
+      * `check_jacobi_identity(a, b, c)`: certifies graded Jacobi on $HH^*[1]$.
+  * **Brace algebra structure:** `categories/algebras/brace_algebras.py`
+    - `BraceAlgebra`: implementation of operations $f\{g_1, \dots, g_k\}$ and higher homotopy relations.
+  * **Schouten-Nijenhuis bracket comparison:** `categories/schemes/hochschild_kostant_rosenberg.py`
+    - `HKR_Gerstenhaber_isomorphism(X)`: maps Gerstenhaber bracket on $HH^*(\mathcal{O}(X))$ to Schouten-Nijenhuis bracket on $\bigwedge^* T_X$.
+  * **Deformation and Maurer-Cartan:** `categories/deformation/deformation_quantization.py`
+    - `MaurerCartanElement(C_star)`: cochain $\alpha \in C^2(A, A)$ satisfying $d\alpha + \frac{1}{2}[\alpha, \alpha] = 0$.
+    - `DeformationObstruction(mu)`: evaluates $[\mu, \mu] \in HH^3(A, A)$.
+  * **Batalin-Vilkovisky operator:** `categories/homology/batalin_vilkovisky.py`
+    - `BVOperator(HH_cohomology, connes_B, vdb_dual)`: computes $\Delta \colon HH^n \to HH^{n-1}$ and verifies $[a, b] = (-1)^{|a|} (\Delta(a \smile b) - \dots)$.
+
+Intended owners: `categories/homology/gerstenhaber.py` (`GerstenhaberBracket`, `CircleProduct`, `PreLieAlgebra`), `categories/homology/hochschild.py` (`GerstenhaberAlgebra`, `HochschildCohomology`), `categories/algebras/brace_algebras.py` (`BraceAlgebra`), `categories/schemes/hochschild_kostant_rosenberg.py` (`HKR_Schouten`), `categories/deformation/deformation_quantization.py` (`MaurerCartan`, `AssociativeDeformation`), `categories/homology/batalin_vilkovisky.py` (`BVAlgebra`, `BVOperator`).
+
 
 
 
