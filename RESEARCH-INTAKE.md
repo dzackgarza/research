@@ -133,7 +133,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Concrete combinatorial models for small categories, walking diagrams, deloopings BG, and finitely presented 2-categories | User intake 2026-09-19 | Concrete combinatorial and computational models for finite/small categories and 2-categories: (1) Quiver presentations $F(Q)/R$: directed multigraphs $Q=(V, E, s, t)$, path categories $F(Q)$, 2-sided path relations $R$, rewriting systems, normal forms, and Cayley multiplication tables; (2) Simplex categories $\Delta^n = [n]$ (chains $0 \to 1 \to \dots \to n$), simplex category $\mathbf{\Delta}$ with coface $d^i$ and codegeneracy $s^i$ operators, and nerves $N(\mathcal{C})$; (3) Universal classifying "walking" diagrams: walking object $\mathbf{1} = [0]$, walking arrow $\mathbf{2} = [1]$, walking parallel pair $\{0 \rightrightarrows 1\}$, walking span and cospan, walking commutative square, walking isomorphism $\mathbb{I}$, walking retraction, and walking idempotent $\bullet \circlearrowleft e$; (4) Delooping groupoids $BG$ for groups/monoids $G$, action/translation groupoids $X // G$, pair groupoids $\operatorname{Pair}(S)$, and fundamental groupoids $\Pi_1$; (5) Finitely presented 2-categories: 2-quivers/computads (0-cells, 1-cells, 2-cells), horizontal $\circ_0$ and vertical $\circ_1$ compositions, interchange law, walking natural transformation, walking adjunction $\mathbf{Adj}$ with zigzag identities, walking monad $\mathbf{Mnd}$ with pentagon/triangle identities, and walking comonad | `categories/finitely_presented/quiver.py` + `categories/finitely_presented/category_presentation.py` + `categories/finitely_presented/walking.py` + `categories/finitely_presented/simplex_category.py` + `categories/groups/delooping.py` + `categories/finitely_presented/two_category.py` + `categories/finitely_presented/walking_two_category.py` | Proposed — see note below |
 | Cyclotomic spectra, topological cyclic homology ($TC$), Tate constructions, and motivic prismatic filtrations | Literature survey + user intake 2026-09-19 | Comprehensive stable homotopy and cyclotomic spectra framework for topological cyclic homology ($TC$): (1) Modern Nikolaus-Scholze cyclotomic spectra: $S^1$-equivariant spectra $\mathbf{Sp}^{BS^1}$, Tate construction $X^{tC_p} = \operatorname{cofib}(X_{hC_p} \xrightarrow{N} X^{hC_p})$ with residual $S^1/C_p \cong S^1$-action, and $S^1$-equivariant cyclotomic Frobenius $\phi_p \colon X \to X^{tC_p}$; (2) Core topological invariants: Topological Hochschild Homology $THH(R)$ as an $E_\infty$-cyclotomic spectrum (cyclic bar construction, cyclotomic diagonal $\Delta_p$); Topological Negative Cyclic Homology $TC^-(X; p) \coloneqq X^{hS^1}$; Topological Periodic Homology $TP(X; p) \coloneqq X^{tS^1}$; and Topological Cyclic Homology $TC(X; p) \coloneqq \operatorname{fib}(X^{hS^1} \xrightarrow{\phi_p^{hS^1} - \operatorname{can}} (X^{tC_p})^{hS^1})$; (3) Spectral sequences: Homotopy Fixed Point Spectral Sequence (HFPSS) $E_2 = H^*(BS^1; \pi_*(X)) \implies \pi_*(X^{hS^1})$, Tate Spectral Sequence (TSS) $\widehat{E}_2 = \widehat{H}^*(S^1; \pi_*(X)) \implies \pi_*(X^{tS^1})$ ($u$-periodicity), and Bökstedt spectral sequence for $THH$; (4) Concrete calculational engines: exact evaluations for perfect fields $k = \mathbb{F}_p$ ($THH_*(\mathbb{F}_p) = \mathbb{F}_p[\sigma]$, $TC(\mathbb{F}_p) \cong \mathbb{Z}_p \oplus \Sigma^{-1} \mathbb{Z}_p$), truncated polynomials $k[x]/(x^m)$, $p$-adic integers $\mathbb{Z}_p$ (recovering Lichtenbaum-Quillen), and sphere spectrum $\mathbb{S}$; (5) Bhatt-Morrow-Scholze (BMS) motivic filtration: decreasing filtration on $THH, TC^-, TP, TC$ recovering prismatic cohomology $\Delta_R$ on $\operatorname{gr}^i TP$ and syntomic cohomology $\mathbb{Z}_p(i)$ on $\operatorname{gr}^i TC$ | `categories/spectra/spectrum.py` + `categories/spectra/equivariant.py` + `categories/spectra/cyclotomic.py` + `categories/spectra/tate_spectral_sequence.py` + `categories/spectra/tc_calculators.py` + `categories/spectra/bms_motivic.py` | Proposed — see note below |
 | Bernoulli and Bell numbers, polylogarithms, Bloch-Wigner dilogarithm, multiple zeta values, p-adic integration, Dedekind zeta residues, and BSD invariants | Literature survey + user intake 2026-09-19 | Comprehensive analytic, arithmetic, and motivic invariants framework: (1) Bernoulli and Bell numbers: generating functions, Faulhaber power sums, von Staudt-Clausen denominators, Kummer congruences, Kubota-Leopoldt $p$-adic $L$-values, Bell/Touchard polynomials, and Stirling numbers of the second kind; (2) Polylogarithms and Bloch-Wigner dilogarithm: $\operatorname{Li}_s(z)$, single-valued Bloch-Wigner $D(z) = \operatorname{Im}(\operatorname{Li}_2(z)) + \arg(1-z)\log|z|$, 5-term functional equations, hyperbolic 3-manifold volumes, and the Bloch group $B(F)$; (3) Multiple zeta values (MZVs) and multiple polylogarithms: iterated Kontsevich integrals, weight/depth, stuffle and shuffle products, double shuffle relations, and motivic MZVs; (4) $p$-adic integration and analysis: Volkenborn integration on $\mathbb{Z}_p$, Mahler polynomial expansions, Coleman integration of differentials on curves, Coleman-Chabauty bounds, and Fontaine-Mazur $\mathcal{L}$-invariants; (5) Dedekind zeta functions $\zeta_K(s)$: functional equations, analytic class number formula at $s=1$ ($\lim (s-1)\zeta_K = \frac{2^{r_1}(2\pi)^{r_2} h R}{w \sqrt{|d|}}$), leading terms at $s=0$, and Borel higher regulators; (6) BSD conjecture and equality invariants: Birch and Swinnerton-Dyer leading term $\lim L(E,s)/(s-1)^r = \frac{\Omega_E R_E |\Sha| \prod c_v}{|E_{\mathrm{tors}}|^2}$, arithmetic volume / real periods $\Omega_E$, Néron-Tate regulator $R_E$, Tate-Shafarevich group $\Sha(E/K)$, Tamagawa indices $c_v$ via Tate's algorithm, and Bloch-Kato Tamagawa number conjecture | `categories/number_theory/bernoulli.py` + `categories/analysis/polylogarithms.py` + `categories/analysis/multiple_zeta.py` + `categories/number_theory/p_adic_analysis.py` + `categories/number_theory/dedekind_zeta.py` + `categories/elliptic_curves/bsd_conjecture.py` | Proposed — see note below |
-
+| Lie coalgebras, Chevalley-Eilenberg complexes, and spectral K-theories (algebraic K, Grothendieck-Witt, and Milnor-Witt as spectra) | User intake 2026-09-19 | Complete framework for Lie coalgebras, Chevalley-Eilenberg complexes, and spectrum-level $K$-theories: (1) Lie coalgebras $(\mathfrak{c}, \delta)$: co-Jacobi identity, coadjoint representations, co-Lie operad, and Koszul duality with commutative DGAs; (2) Chevalley-Eilenberg complexes: cochain complex $C_{\mathrm{CE}}^*(\mathfrak{g}, M) = \operatorname{Hom}_k(\bigwedge^* \mathfrak{g}, M)$ as a CDGA when $M=k$, Lie algebra homology complexes $C_*^{\mathrm{CE}}(\mathfrak{g}, M)$, and coalgebroid CE complexes; (3) Algebraic $K$-theory as a spectrum: connective and non-connective $\mathbf{K}(R)$ via Waldhausen $S_\bullet$-construction, Karoubi filtration, and motivic spectrum $\mathbf{KGL} \in \mathbf{SH}(S)$ representing algebraic $K$-theory; (4) Grothendieck-Witt (Hermitian $K$-theory) spectrum $\mathbf{GW}(R) \simeq \mathbf{KQ}(R)$: quadratic forms, Witt spectra $\mathbf{W}(R)$, and 12-term Karoubi periodicity sequence relating $\mathbf{GW}$, $\mathbf{K}$, and $L$-theory; (5) Milnor-Witt $K$-theory spectrum $\mathbf{K}^{\mathrm{MW}}$: Morel-Hopkins graded generators $[u]$ and $\eta$, Steinberg $[u][1-u]=0$, hyperbolic plane $h = 2 + \eta[-1]$, specialization to $K^{\mathrm{M}}$ mod $\eta$ and $W$ inverted $\eta$, and motivic spectrum representing Chow-Witt groups and Euler classes | `categories/algebras/lie_coalgebra.py` + `categories/homology/chevalley_eilenberg.py` + `categories/k_theory/algebraic_k_spectrum.py` + `categories/k_theory/grothendieck_witt_spectrum.py` + `categories/k_theory/milnor_witt_spectrum.py` | Proposed — see note below |
 
 
 
@@ -5276,6 +5276,183 @@ Intended owners: `categories/spectra/spectrum.py` (`Spectrum`, `SphereSpectrum`,
     - `bloch_kato_tamagawa(motive)`: evaluates Bloch-Kato conjecture for general motives.
 
 Intended owners: `categories/number_theory/bernoulli.py` (`bernoulli_number`, `bernoulli_polynomial`, `faulhaber_sum`, `bell_number`, `stirling_second`), `categories/analysis/polylogarithms.py` (`polylog`, `dilogarithm`, `bloch_wigner`, `five_term_relation`, `bloch_group_boundary`), `categories/analysis/multiple_zeta.py` (`multiple_zeta_value`, `stuffle_product`, `shuffle_product`, `double_shuffle_solver`), `categories/number_theory/p_adic_analysis.py` (`volkenborn_integral`, `mahler_expansion`, `coleman_integral`, `fontaine_mazur_l_invariant`), `categories/number_theory/dedekind_zeta.py` (`DedekindZeta`, `analytic_class_number_formula`, `dirichlet_regulator`, `zeta_residue_at_one`), `categories/elliptic_curves/bsd_conjecture.py` (`BSDConjecture`, `real_period`, `neron_tate_regulator`, `tamagawa_numbers`, `analytic_sha_order`, `verify_bsd_equality`, `bloch_kato_tamagawa`).
+
+
+## Desired capability: Lie coalgebras, Chevalley-Eilenberg complexes, and spectral K-theories (algebraic K, Grothendieck-Witt, and Milnor-Witt as spectra) — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Lie Coalgebras:**
+    * **Definition:** A Lie coalgebra over a commutative ring $k$ is a $k$-module $\mathfrak{c}$ equipped with a $k$-linear cobracket:
+      $$
+      \delta \colon \mathfrak{c} \longrightarrow \mathfrak{c} \wedge \mathfrak{c} \;\subset\; \mathfrak{c} \otimes_k \mathfrak{c}.
+      $$
+    * **Axioms:**
+      - Skew-symmetry: $\tau \circ \delta = -\delta$, where $\tau(x \otimes y) = y \otimes x$ is the tensor transposition.
+      - Co-Jacobi identity: In $\mathfrak{c} \otimes \mathfrak{c} \otimes \mathfrak{c}$,
+        $$
+        (\operatorname{id} \otimes \delta) \circ \delta \;+\; \tau_{(1 2 3)} \circ (\operatorname{id} \otimes \delta) \circ \delta \;+\; \tau_{(1 3 2)} \circ (\operatorname{id} \otimes \delta) \circ \delta \;=\; 0
+        $$
+        where $\tau_{(1 2 3)}(x \otimes y \otimes z) = y \otimes z \otimes x$ and $\tau_{(1 3 2)}(x \otimes y \otimes z) = z \otimes x \otimes y$.
+    * **Duality with Lie algebras:**
+      - If $\mathfrak{g}$ is a finite-dimensional Lie algebra over a field $k$ with bracket $[-,-] \colon \bigwedge^2 \mathfrak{g} \to \mathfrak{g}$, its dual space $\mathfrak{g}^* = \operatorname{Hom}_k(\mathfrak{g}, k)$ carries a canonical Lie coalgebra structure with cobracket $\delta \colon \mathfrak{g}^* \to \bigwedge^2 \mathfrak{g}^*$ defined by:
+        $$
+        \langle \delta(\xi), x \wedge y \rangle \;\coloneqq\; \langle \xi, [x, y] \rangle.
+        $$
+      - Conversely, if $\mathfrak{c}$ is any Lie coalgebra, its linear dual $\mathfrak{c}^*$ is a topological Lie algebra (and a discrete Lie algebra if $\dim \mathfrak{c} < \infty$).
+    * **Co-representations (Lie comodules):** A $k$-module $M$ equipped with a comodule map $\rho \colon M \to \mathfrak{c} \otimes M$ satisfying $(\delta \otimes \operatorname{id}) \circ \rho = (\operatorname{id} \otimes \rho) \circ \rho - (\tau \otimes \operatorname{id}) \circ (\operatorname{id} \otimes \rho) \circ \rho$.
+    * **Koszul duality:** The Lie operad $\mathcal{L}ie$ and commutative operad $\mathcal{C}om$ are Koszul dual ($\mathcal{L}ie^! = \mathcal{C}om$). Lie coalgebras are coalgebras over $\mathcal{L}ie$, dual to commutative DGAs.
+
+  * **Chevalley-Eilenberg (CE) Complexes:**
+    * **Lie algebra cohomology cochain complex:**
+      - For a Lie algebra $\mathfrak{g}$ over $k$ and a $\mathfrak{g}$-module $M$:
+        $$
+        C_{\mathrm{CE}}^n(\mathfrak{g}, M) \;\coloneqq\; \operatorname{Hom}_k\left( \bigwedge^n \mathfrak{g}, M \right).
+        $$
+      - Differential $d \colon C_{\mathrm{CE}}^n(\mathfrak{g}, M) \to C_{\mathrm{CE}}^{n+1}(\mathfrak{g}, M)$:
+        $$
+        \begin{aligned}
+        (d\omega)(x_1, \dots, x_{n+1}) \;\coloneqq\;& \sum_{i=1}^{n+1} (-1)^{i+1} x_i \cdot \omega(x_1, \dots, \widehat{x}_i, \dots, x_{n+1}) \\
+        &+\; \sum_{1 \le i < j \le n+1} (-1)^{i+j} \omega([x_i, x_j], x_1, \dots, \widehat{x}_i, \dots, \widehat{x}_j, \dots, x_{n+1}).
+        \end{aligned}
+        $$
+      - Nilpotence: $d^2 = 0$ follows directly from the Jacobi identity and module action axioms.
+      - Cohomology groups: $H_{\mathrm{CE}}^*(\mathfrak{g}, M) \coloneqq H^*(C_{\mathrm{CE}}^*(\mathfrak{g}, M), d)$.
+    * **CDGA structure for trivial coefficients ($M = k$):**
+      - $C_{\mathrm{CE}}^*(\mathfrak{g}, k) \cong \bigwedge^* \mathfrak{g}^*$ is a commutative differential graded algebra (CDGA) under the wedge product:
+        $$
+        \omega \wedge \eta \;=\; (-1)^{p q} \eta \wedge \omega, \qquad d(\omega \wedge \eta) \;=\; d\omega \wedge \eta \;+\; (-1)^p \omega \wedge d\eta.
+        $$
+      - In degree 1, the differential $d \colon \mathfrak{g}^* \to \bigwedge^2 \mathfrak{g}^*$ is precisely the Lie cobracket $\delta$!
+      - Sullivan minimal models in rational homotopy theory: The CE complex of the homotopy Lie algebra $\pi_*(\Omega X) \otimes \mathbb{Q}$ models the rational Sullivan minimal model $A_{\mathrm{PL}}(X)$.
+    * **Lie algebra homology chain complex:**
+      - $C_n^{\mathrm{CE}}(\mathfrak{g}, M) \coloneqq M \otimes_k \bigwedge^n \mathfrak{g}$.
+      - Boundary operator $\partial \colon C_n^{\mathrm{CE}}(\mathfrak{g}, M) \to C_{n-1}^{\mathrm{CE}}(\mathfrak{g}, M)$:
+        $$
+        \begin{aligned}
+        \partial(m \otimes x_1 \wedge \dots \wedge x_n) \;\coloneqq\;& \sum_{i=1}^n (-1)^{i+1} (x_i \cdot m) \otimes x_1 \wedge \dots \widehat{x}_i \dots \wedge x_n \\
+        &+\; \sum_{1 \le i < j \le n} (-1)^{i+j} m \otimes [x_i, x_j] \wedge x_1 \wedge \dots \widehat{x}_i \dots \widehat{x}_j \dots \wedge x_n.
+        \end{aligned}
+        $$
+      - Homology groups: $H_*^{\mathrm{CE}}(\mathfrak{g}, M) \coloneqq H_*(C_*^{\mathrm{CE}}(\mathfrak{g}, M), \partial)$.
+    * **Coalgebroid CE complex:**
+      - For a Lie coalgebra $(\mathfrak{c}, \delta)$, the symmetric algebra on the suspension $\operatorname{Sym}^*(\mathfrak{c}[1])$ carries a differential induced by $\delta$, forming a co-free differential graded coalgebra.
+
+  * **Algebraic $K$-Theory as a Spectrum $\mathbf{K}(R)$:**
+    * Non-connective and connective algebraic $K$-theory spectra $\mathbf{K}(R)$ for a ring $R$ (or exact/Waldhausen/stable $\infty$-category $\mathcal{C}$):
+      - Homotopy groups: $\pi_n(\mathbf{K}(R)) \cong K_n(R)$ for all $n \in \mathbb{Z}$.
+      - Connective cover $\mathbf{k}(R) = \tau_{\ge 0} \mathbf{K}(R)$ has $\pi_0 = K_0(R)$, $\pi_1 = K_1(R) = GL(R)^{\mathrm{ab}}$, $\pi_2 = K_2(R) = H_2(E(R); \mathbb{Z})$, and higher Quillen $K$-groups.
+      - Construction via Waldhausen's $S_\bullet$-construction: $\mathbf{K}(\mathcal{C}) \coloneqq |n \mapsto \Omega |w S_\bullet^{(n)} \mathcal{C}||$.
+      - Additivity and localization fiber sequences: For a Karoubi / Serre subcategory $\mathcal{A} \subset \mathcal{B}$:
+        $$
+        \mathbf{K}(\mathcal{A}) \longrightarrow \mathbf{K}(\mathcal{B}) \longrightarrow \mathbf{K}(\mathcal{B}/\mathcal{A}).
+        $$
+      - Motivic algebraic $K$-theory spectrum $\mathbf{KGL} \in \mathbf{SH}(S)$:
+        Represents algebraic $K$-theory on smooth schemes $\operatorname{Map}_{\mathbf{SH}(S)}(\Sigma^\infty X_+, \mathbf{KGL}) \cong \mathbf{K}(X)$.
+        Satisfies Bott periodicity $\mathbf{KGL} \cong \mathbf{KGL}(1)[2]$ with inverted Bott element $\beta \in \pi_{2, 1}(\mathbf{KGL})$.
+
+  * **Grothendieck-Witt Theory (Hermitian $K$-Theory) as a Spectrum $\mathbf{GW}(R)$:**
+    * For a ring with involution $(R, \sigma)$ (or scheme with vector bundles and symmetric/quadratic forms):
+    * $\mathbf{GW}(R)$ (often denoted $\mathbf{KQ}(R)$): Hermitian $K$-theory spectrum of non-degenerate quadratic/symmetric forms.
+    * Homotopy groups: $\pi_0(\mathbf{GW}(R)) \cong GW(R)$ (Grothendieck-Witt ring of quadratic forms over $R$).
+    * The Witt spectrum $\mathbf{W}(R)$: obtained by quotienting/killing hyperbolic spaces $\mathbb{H}(P) = P \oplus P^*$.
+    * Four-fold / 12-term Karoubi periodicity:
+      Inverting symmetries $\epsilon = \pm 1$ gives 4-periodic theories $\mathbf{GW}^{[n]}(R)$.
+      Fundamental fiber sequence of spectra (Karoubi sequence):
+      $$
+      \mathbf{GW}^{[-n]}(R) \xrightarrow{\quad\text{forget}\quad} \mathbf{K}(R) \xrightarrow{\quad 1 + \tau\quad} \mathbf{GW}^{[n]}(R) \xrightarrow{\quad\eta\quad} \Sigma \mathbf{GW}^{[-n]}(R).
+      $$
+    * Motivic Hermitian $K$-theory spectrum $\mathbf{KQ} \in \mathbf{SH}(S)$:
+      Slices $s_n(\mathbf{KQ})$ compute generalized motivic cohomology with coefficients in Milnor-Witt sheaves.
+
+  * **Milnor-Witt $K$-Theory and its Spectrum $\mathbf{K}^{\mathrm{MW}}$:**
+    * **Milnor-Witt $K$-theory ring $K_*^{\mathrm{MW}}(k)$ (Morel-Hopkins):**
+      Graded associative ring generated by elements $[u]$ in degree $+1$ for each $u \in k^\times$, and an element $\eta$ in degree $-1$ (the algebraic Hopf map), subject to relations:
+      1. Steinberg relation: $[u] [1-u] = 0$ for all $u \in k^\times \setminus \{1\}$.
+      2. Scaling relation: $[u v] = [u] + [v] + \eta [u] [v]$ for all $u, v \in k^\times$.
+      3. Commutativity: $[u] \eta = \eta [u]$ for all $u \in k^\times$.
+      4. Hyperbolic relation: $\eta h = 0$, where $h \coloneqq 2 + \eta [-1] \in K_0^{\mathrm{MW}}(k)$ represents the hyperbolic plane.
+    * **Specializations and Quotients:**
+      - Modulo $\eta$: $K_*^{\mathrm{MW}}(k) / (\eta) \cong K_*^{\mathrm{M}}(k)$ (ordinary Milnor $K$-theory!).
+      - Inverting $\eta$: $K_*^{\mathrm{MW}}(k)[\eta^{-1}] \cong W(k)[\eta^{\pm 1}]$ (the Witt ring of quadratic forms with Laurent polynomial generator $\eta$).
+      - Degree 0: $K_0^{\mathrm{MW}}(k) \cong GW(k)$ (the Grothendieck-Witt ring of quadratic forms).
+      - Fiber square:
+        $$
+        \begin{CD}
+        K_*^{\mathrm{MW}}(k) @>>> K_*^{\mathrm{M}}(k) \\
+        @VVV @VVV \\
+        W(k)[\eta^{\pm 1}] @>>> k_*^{\mathrm{M}}(k)[\eta^{\pm 1}]
+        \end{CD}
+        $$
+        where $k_*^{\mathrm{M}}(k) = K_*^{\mathrm{M}}(k)/2$.
+    * **Morel's $\mathbb{A}^1$-Homotopy Theorem:**
+      The endomorphism ring of the motivic sphere spectrum $\mathbb{S} \in \mathbf{SH}(k)$ in degree $(0, 0)$ is canonically isomorphic to the Grothendieck-Witt ring:
+      $$
+      \pi_{0, 0}^{\mathbb{A}^1}(\mathbb{S}) \;\cong\; GW(k) \;\cong\; K_0^{\mathrm{MW}}(k),
+      $$
+      and more generally, the stable homotopy groups of spheres in the Milnor-Witt diagonal are:
+      $$
+      \pi_{n, n}^{\mathbb{A}^1}(\mathbb{S}) \;\cong\; K_n^{\mathrm{MW}}(k).
+      $$
+    * **The Milnor-Witt Motivic Spectrum $\mathbf{K}^{\mathrm{MW}}$ and $\mathbf{H}\widetilde{\mathbb{Z}}$:**
+      - $\mathbf{H}\widetilde{\mathbb{Z}}$: the Milnor-Witt motivic cohomology spectrum (representing Chow-Witt groups $\widetilde{CH}^p(X)$, oriented intersection theory, and Euler classes of vector bundles).
+      - The 0-th slice of the motivic sphere spectrum is precisely $\mathbf{H}\widetilde{\mathbb{Z}}$: $s_0(\mathbb{S}) \cong \mathbf{H}\widetilde{\mathbb{Z}}$.
+
+* **Operational & algorithmic representation:**
+  1. **Lie Coalgebra and CE Complex Engine:**
+     - `LieCoalgebra` storing basis elements and skew-symmetric cobracket structure constants $\delta(e_k) = \sum c_{ij}^k e_i \wedge e_j$.
+     - Automated co-Jacobi verification algorithm across all basis triples $(e_i, e_j, e_k)$.
+     - `ChevalleyEilenbergComplex` computing cochain spaces $\operatorname{Hom}(\bigwedge^n \mathfrak{g}, M)$ and explicit matrix differentials $d_n$.
+     - Wedge product algebra in $C_{\mathrm{CE}}^*(\mathfrak{g}, k)$ and CDGA cohomology solver using Smith Normal Form.
+     - Dual conversion: `dual_lie_algebra(c)` and `dual_lie_coalgebra(g)`.
+  2. **Algebraic $K$-Theory Spectrum Engine:**
+     - `AlgebraicKSpectrum` modeling connective and non-connective $\mathbf{K}(R)$ via homotopy group presentations $\pi_n$.
+     - Automated evaluation of $K_0, K_1, K_2$ for fields, number rings, and finite fields.
+     - Bott periodicity generator $\beta \in \pi_{2, 1}(\mathbf{KGL})$.
+     - Exact Karoubi localization fiber sequence solver.
+  3. **Grothendieck-Witt and Hermitian $K$-Theory Engine:**
+     - `GrothendieckWittSpectrum` modeling $\mathbf{GW}(R) \simeq \mathbf{KQ}(R)$.
+     - Evaluator for $GW(k)$ (symmetric bilinear forms modulo isometry) and Witt ring $W(k) = GW(k)/\mathbb{H}$.
+     - 12-term Karoubi periodicity long exact sequence solver relating $\mathbf{GW}^{[n]}$, $\mathbf{K}$, and $\mathbf{L}$-theory.
+  4. **Milnor-Witt $K$-Theory Engine:**
+     - `MilnorWittRing` implementing exact word reduction for $K_*^{\mathrm{MW}}(k)$ symbols $[u_1] \dots [u_n] \eta^m$.
+     - Automated term rewriting using Steinberg relations $[u][1-u] = 0$, scaling relations, and $\eta h = 0$.
+     - Projections: quotient map modulo $\eta$ onto Milnor $K$-theory $K_*^{\mathrm{M}}(k)$, and localization inverting $\eta$ onto $W(k)[\eta^{\pm 1}]$.
+     - `MilnorWittMotivicSpectrum` representing $\mathbf{H}\widetilde{\mathbb{Z}}$ and computing Chow-Witt groups $\widetilde{CH}^p(X)$.
+
+* **Preamble implementation requirements:**
+  * `categories/algebras/lie_coalgebra.py`:
+    - `LieCoalgebra(basis, cobracket_table)`: Lie coalgebra data structure.
+    - `verify_cojacobi(coalgebra)`: tests the co-Jacobi identity.
+    - `dual_lie_algebra(coalgebra)`: constructs dual Lie algebra $\mathfrak{c}^*$.
+    - `coadjoint_representation(coalgebra)`: computes coadjoint action.
+  * `categories/homology/chevalley_eilenberg.py`:
+    - `ChevalleyEilenbergComplex(lie_algebra, coefficients)`: cochain complex $C_{\mathrm{CE}}^*(\mathfrak{g}, M)$.
+    - `chevalley_eilenberg_homology(lie_algebra, coefficients)`: chain complex $C_*^{\mathrm{CE}}(\mathfrak{g}, M)$.
+    - `ce_differential(omega, elements)`: evaluates differential $d\omega$.
+    - `ce_cdga_product(omega, eta)`: computes wedge product in $C_{\mathrm{CE}}^*(\mathfrak{g}, k)$.
+    - `lie_algebra_cohomology_groups(lie_algebra, coefficients)`: computes $H_{\mathrm{CE}}^n(\mathfrak{g}, M)$.
+  * `categories/k_theory/algebraic_k_spectrum.py`:
+    - `AlgebraicKSpectrum(ring)`: spectrum $\mathbf{K}(R)$.
+    - `k_group(ring, n)`: computes $K_n(R)$.
+    - `bott_element(field)`: returns Bott generator $\beta \in K_2(k)$ / $\pi_{2, 1}(\mathbf{KGL})$.
+    - `karoubi_localization_sequence(A, B, quotient)`: fiber sequence of $K$-theory spectra.
+  * `categories/k_theory/grothendieck_witt_spectrum.py`:
+    - `GrothendieckWittSpectrum(ring, involution)`: spectrum $\mathbf{GW}(R) \simeq \mathbf{KQ}(R)$.
+    - `witt_spectrum(ring)`: Witt spectrum $\mathbf{W}(R)$.
+    - `grothendieck_witt_group(ring)`: computes $GW_0(R)$.
+    - `witt_group(ring)`: computes $W(R) = GW(R)/\mathbb{H}$.
+    - `karoubi_periodicity_sequence(ring, n)`: 12-term exact sequence relating $\mathbf{GW}$, $\mathbf{K}$, and $L$-theory.
+  * `categories/k_theory/milnor_witt_spectrum.py`:
+    - `MilnorWittRing(field)`: graded ring $K_*^{\mathrm{MW}}(k)$.
+    - `milnor_witt_symbol(u)`: generator $[u] \in K_1^{\mathrm{MW}}(k)$.
+    - `hopf_element()`: generator $\eta \in K_{-1}^{\mathrm{MW}}(k)$.
+    - `hyperbolic_element(field)`: hyperbolic plane $h = 2 + \eta [-1] \in K_0^{\mathrm{MW}}(k)$.
+    - `to_milnor_k(element)`: projection modulo $\eta$ to $K_*^{\mathrm{M}}(k)$.
+    - `to_witt_ring(element)`: localization inverting $\eta$ to $W(k)[\eta^{\pm 1}]$.
+    - `MilnorWittMotivicSpectrum(field)`: motivic spectrum $\mathbf{H}\widetilde{\mathbb{Z}}$ representing Chow-Witt groups.
+
+Intended owners: `categories/algebras/lie_coalgebra.py` (`LieCoalgebra`, `verify_cojacobi`, `dual_lie_algebra`), `categories/homology/chevalley_eilenberg.py` (`ChevalleyEilenbergComplex`, `chevalley_eilenberg_homology`, `lie_algebra_cohomology_groups`), `categories/k_theory/algebraic_k_spectrum.py` (`AlgebraicKSpectrum`, `k_group`, `bott_element`), `categories/k_theory/grothendieck_witt_spectrum.py` (`GrothendieckWittSpectrum`, `witt_spectrum`, `grothendieck_witt_group`, `witt_group`), `categories/k_theory/milnor_witt_spectrum.py` (`MilnorWittRing`, `milnor_witt_symbol`, `hopf_element`, `hyperbolic_element`, `MilnorWittMotivicSpectrum`).
+
 
 
 
