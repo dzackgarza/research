@@ -120,6 +120,8 @@ Where to look first for existing algorithms before writing new code. Check these
 | Elliptic surfaces, fibrations, Weierstrass forms, Néron models, and Mordell-Weil lattices | User intake 2026-09-19 | Comprehensive elliptic surface architecture: fibrations \pi: S \to C, Jacobian fibrations with zero section O, fundamental line bundle L = (R^1 \pi_* O_S)^\vee, canonical bundle formula; Weierstrass models y^2 = 4x^3 - g_2 x - g_3, discriminant \Delta, j-invariant J(t), Miranda resolution; Néron models, Kodaira singular fiber classification (I_n, I_n^*, II, III, IV, II^*, III^*, IV^*) via Tate's algorithm; Mordell-Weil group MW(S/C) of sections, Shioda-Tate formula, Mordell-Weil lattice with height pairing \langle P, Q \rangle and local correction terms contr_v(P, Q) | `categories/schemes/elliptic_surfaces/elliptic_surface.py` + `categories/schemes/elliptic_surfaces/weierstrass_models.py` + `categories/schemes/elliptic_surfaces/kodaira.py` + `categories/schemes/elliptic_surfaces/mordell_weil.py` | Proposed — see note below |
 | Euler operator $\theta = t \partial_t$ and standard formal power series operators on $R[[t]]$ | User intake 2026-09-19 | Complete differential and algebraic operator calculus on $R[[t]]$: Euler/theta operator $\theta = t \frac{d}{dt}$ ($\theta(t^n) = n t^n$, Stirling conversions $\theta^k \leftrightarrow t^j \partial_t^j$, ODE Euler forms $P(\theta)$); formal derivation $\partial_t$ and integration $\int$; forward/backward shifts $S^{\pm}$, coefficient extraction $[t^n]$; multiplications (Cauchy, Hadamard $\odot$, Hurwitz binomial convolution); composition $f \circ g$ and formal inversion via Lagrange Inversion Formula / Lagrange-Bürmann; logarithmic derivatives $\operatorname{dlog}(f) = f'/f$ and $\operatorname{dlog}_\theta(f) = \theta f / f$; exponential of integral $\exp(\int f)$ (integrating factors, combinatorial exponential formula) and formal logarithm $\log(f)$; Witt algebra generators $L_n = -t^n \theta$ | `categories/rings/formal_power_series.py` + `categories/differential_operators/formal_series.py` + `categories/generating_functions/operators.py` + `categories/algebras/weyl_algebra.py` | Proposed — see note below |
 | Known mirror family pairs from the literature (Greene-Plesser, Batyrev-Borisov, Dolgachev-Nikulin, BHK, 14 hypergeometric CY3s, Doran-Harder-Thompson) | Literature survey + user intake 2026-09-19 | Comprehensive classification and catalogue of mirror family pairs across dimensions: (1) Greene-Plesser orbifold pairs (quintic $X_5 \leftrightarrow Y_5$ and 27 weighted projective complete intersections); (2) Batyrev-Borisov dual reflexive polytopes $(\Delta, \Delta^\circ)$ (16 in 2D, 4319 in 3D, 473M in 4D) and nef-partitions; (3) Dolgachev-Nikulin lattice-polarized K3 mirror pairs ($M \leftrightarrow \check{M} = U \oplus M^\perp$, e.g. quartic $\leftrightarrow$ Dwork pencil); (4) Berglund-Hübsch-Krawitz (BHK) transpose polynomials $(W, G) \leftrightarrow (W^\mathrm{T}, G^\mathrm{T})$ (Fermat, loop, chain); (5) The 14 one-parameter hypergeometric Calabi-Yau threefolds (Doran-Morgan / Morrison / AESZ, 7 arithmetic / 7 thin monodromy); (6) Doran-Harder-Thompson fibration / degeneration mirrors (K3 fibrations over $\mathbb{P}^1$ and Kulikov component gluing); (7) Fano / Landau-Ginzburg mirrors $(X \leftrightarrow (\mathbb{C}^\times)^n, W)$; (8) Abelian varieties and SYZ dual tori | `categories/schemes/mirror_symmetry/mirror_catalogue.py` + `categories/schemes/mirror_symmetry/batyrev_borisov.py` + `categories/schemes/mirror_symmetry/dolgachev_nikulin.py` + `categories/schemes/mirror_symmetry/bhk.py` + `categories/schemes/mirror_symmetry/hypergeometric_cy3.py` | Proposed — see note below |
+| Operationalized convergence criteria, Dirichlet irrationality, symbolic integration by parts, and L-function zeta regularization | User intake 2026-09-19 | Operationalized convergence and analytic toolkit: (1) Dirichlet's irrationality criterion (Diophantine approximation $|\alpha - p/q| < 1/(qN) \le 1/q^2$, continued fractions, Apéry-type certificates, irrationality measures $\mu(\alpha)$); (2) Dirichlet's convergence test for series $\sum a_n b_n$ (bounded partial sums + monotonic $b_n \to 0$ via Abel summation by parts, alternating/Fourier/Dirichlet series); (3) Cauchy condensation test $\sum a_n \leftrightarrow \sum 2^k a_{2^k}$ (automated logarithmic/geometric convergence decider); (4) Symbolic integration by parts (recursive, tabular, reduction formulas, LIATE heuristic, cyclic integral solver in differential algebra); (5) Zeta and L-function regularization (spectral zeta functions $\zeta_A(s) = \operatorname{Tr}(A^{-s})$, functional determinants $\operatorname{det}_\zeta(A) = \exp(-\zeta_A'(0))$, Ramanujan/Euler-Maclaurin summation, completed L-functions $\Lambda(s, \pi)$, and values at integers) | `categories/analysis/convergence_tests.py` + `categories/number_theory/diophantine_approximation.py` + `categories/calculus/symbolic_integration.py` + `categories/zeta/regularization.py` + `categories/l_functions/analytic_continuation.py` | Proposed — see note below |
+
 
 
 
@@ -2967,6 +2969,153 @@ Intended owners: `categories/rings/formal_power_series.py` (`FormalPowerSeries` 
     - `FanoLGMirror(fano_variety)`: superpotential $W(x_1, \dots, x_n)$, constant term sequence $[x^0](W^k)$, Picard-Fuchs operator of $I_0(t)$.
 
 Intended owners: `categories/schemes/mirror_symmetry/mirror_catalogue.py` (`MirrorPair`, `DualityType`), `categories/schemes/mirror_symmetry/batyrev_borisov.py` (`ReflexivePolytope`, `NefPartition`), `categories/schemes/mirror_symmetry/dolgachev_nikulin.py` (`LatticePolarizedK3`, `DualPolarizationLattice`), `categories/schemes/mirror_symmetry/bhk.py` (`InvertiblePolynomial`, `KrawitzDuality`), `categories/schemes/mirror_symmetry/hypergeometric_cy3.py` (`HypergeometricCY3`), `categories/schemes/mirror_symmetry/fano_lg.py` (`FanoLGMirror`, `Superpotential`).
+
+
+## Desired capability: Operationalized convergence criteria, Dirichlet irrationality, symbolic integration by parts, and L-function zeta regularization — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **(1) Dirichlet's Irrationality Criterion and Diophantine Approximation:**
+    * **Dirichlet's criterion:** A real number $\alpha \in \mathbb{R}$ is irrational if and only if for every $\epsilon > 0$, there exist integers $p, q \in \mathbb{Z}$ with $q > 0$ such that:
+      $$
+      0 \;<\; |q\alpha - p| \;<\; \epsilon.
+      $$
+    * **Dirichlet's approximation theorem (effective bound):** For any $\alpha \in \mathbb{R}$ and any integer $N \ge 1$, there exist $p, q \in \mathbb{Z}$ with $1 \le q \le N$ such that:
+      $$
+      \left| \alpha - \frac{p}{q} \right| \;<\; \frac{1}{q N} \;\le\; \frac{1}{q^2}.
+      $$
+    * **Operational certificate of irrationality:**
+      A sequence of pairs $(p_n, q_n) \in \mathbb{Z} \times \mathbb{Z}_{>0}$ constitutes a formal certificate of irrationality for $\alpha$ if:
+      $$
+      q_n \alpha - p_n \;\neq\; 0 \quad \forall n, \qquad \text{and} \qquad \lim_{n \to \infty} |q_n \alpha - p_n| \;=\; 0.
+      $$
+      - Recovers Apéry's proofs: For $\zeta(3) = \sum \frac{1}{n^3}$ and $\zeta(2) = \frac{\pi^2}{6}$, sequences $a_n, b_n$ generated by second-order recurrences satisfy $2 \operatorname{lcm}(1, \dots, n)^3 |a_n \zeta(3) - b_n| \to 0$.
+      - Legendre's theorem: Any fraction $p/q$ satisfying $|\alpha - p/q| < \frac{1}{2q^2}$ is necessarily a continued fraction convergent $p_n/q_n$.
+    * **Irrationality measure / exponent $\mu(\alpha)$:**
+      $$
+      \mu(\alpha) \;\coloneqq\; \inf \left\{ \mu \in \mathbb{R} \;\middle|\; \left| \alpha - \frac{p}{q} \right| > \frac{1}{q^\mu} \text{ for all but finitely many } (p, q) \in \mathbb{Z} \times \mathbb{Z}_{>0} \right\}.
+      $$
+      - For rational numbers: $\mu(p/q) = 1$.
+      - Roth's theorem: For any algebraic irrational number $\alpha$, $\mu(\alpha) = 2$.
+      - Transcendental numbers: $\mu(e) = 2$, $\mu(\pi) \le 7.10320533$, $\mu(\zeta(3)) \le 5.513891$. Liouville numbers have $\mu = \infty$.
+
+  * **(2) Dirichlet's Convergence Test and Summation by Parts:**
+    * **Dirichlet's test:** Let $(a_n)_{n \ge 1}$ be a sequence of complex numbers with bounded partial sums:
+      $$
+      \left| \sum_{n=1}^N a_n \right| \;\le\; M \quad \forall N \ge 1,
+      $$
+      and let $(b_n)_{n \ge 1}$ be a sequence of real numbers that is monotonic and converges to $0$ ($\lim_{n \to \infty} b_n = 0$).
+      Then the series $\sum_{n=1}^\infty a_n b_n$ converges, and its tail satisfies the effective bound:
+      $$
+      \left| \sum_{n=N+1}^\infty a_n b_n \right| \;\le\; 2 M b_{N+1}.
+      $$
+    * **Summation by parts (Abel transformation):**
+      With $A_n \coloneqq \sum_{k=1}^n a_k$ and $A_0 = 0$:
+      $$
+      \sum_{n=1}^N a_n b_n \;=\; A_N b_{N+1} + \sum_{n=1}^N A_n (b_n - b_{n+1}).
+      $$
+    * **Operational specializations:**
+      - Alternating series (Leibniz test): $a_n = (-1)^n$, $A_N \in \{0, -1\}$, bounded by $M = 1$.
+      - Trigonometric series: $\sum_{n=1}^\infty \frac{\sin(n x)}{n^\alpha}$ and $\sum_{n=1}^\infty \frac{\cos(n x)}{n^\alpha}$ for $\alpha > 0$ and $x \not\in 2\pi\mathbb{Z}$, with Dirichlet kernel bound $|D_N(x)| \le \frac{1}{|\sin(x/2)|}$.
+      - General Dirichlet series $\sum_{n=1}^\infty \frac{a_n}{n^s}$: Determines the abscissa of convergence $\sigma_c \le \sigma_b \le \sigma_a$.
+
+  * **(3) Cauchy Condensation Test:**
+    * **Cauchy criterion:** Let $(a_n)_{n \ge 1}$ be a non-negative, monotonically non-increasing sequence ($a_1 \ge a_2 \ge \dots \ge 0$).
+      The series $\sum_{n=1}^\infty a_n$ converges if and only if the condensed series:
+      $$
+      \sum_{k=0}^\infty 2^k a_{2^k} \;=\; a_1 + 2 a_2 + 4 a_4 + 8 a_8 + \dots
+      $$
+      converges.
+    * **Two-sided bounds:**
+      $$
+      \sum_{k=0}^K 2^k a_{2^{k+1}} \;\le\; \sum_{n=1}^{2^{K+1}-1} a_n \;\le\; \sum_{k=0}^K 2^k a_{2^k}.
+      $$
+    * **Base-$b$ condensation (Schlömilch generalization):** For any fixed integer $b \ge 2$:
+      $\sum a_n$ converges $\iff \sum_{k=0}^\infty b^k a_{b^k}$ converges.
+    * **Algorithmic condensation engine:**
+      Transforms slow logarithmic/harmonic scales into geometric/exponential scales:
+      - $a_n = \frac{1}{n^p} \implies 2^k a_{2^k} = 2^k \frac{1}{2^{k p}} = (2^{1-p})^k$ (geometric series, converges iff $p > 1$).
+      - $a_n = \frac{1}{n (\log n)^p} \implies 2^k a_{2^k} = \frac{1}{(k \log 2)^p} = \frac{1}{(\log 2)^p} \frac{1}{k^p}$ (reduces to $p$-series).
+      - Iterated logarithms $\frac{1}{n \log n \log \log n \cdots (\log^{(m)} n)^p}$ reduced inductively in $m$ steps.
+
+  * **(4) Symbolic Integration by Parts and Differential Algebra:**
+    * **Integration by parts:**
+      $$
+      \int u(x) v'(x) \, dx \;=\; u(x) v(x) - \int u'(x) v(x) \, dx, \qquad \int u \, dv \;=\; u v - \int v \, du.
+      $$
+    * **Repeated / Tabular integration by parts:**
+      For smooth functions $f, g$:
+      $$
+      \int f(x) g(x) \, dx \;=\; \sum_{k=0}^{n-1} (-1)^k f^{(k)}(x) g^{(-k-1)}(x) + (-1)^n \int f^{(n)}(x) g^{(-n)}(x) \, dx,
+      $$
+      where $g^{(-j)}$ denotes the $j$-th iterated anti-derivative.
+      When $f$ is a polynomial of degree $d$, choosing $n = d+1$ yields an exact closed-form anti-derivative without remaining integrals.
+    * **Reduction formulas and recurrences:**
+      Systematic generation of contiguous relation recurrences for parameterized integral families:
+      - $I_n(x) \coloneqq \int x^n e^{a x} dx \implies I_n = \frac{x^n e^{a x}}{a} - \frac{n}{a} I_{n-1}$.
+      - $S_n(x) \coloneqq \int \sin^n(x) dx \implies S_n = -\frac{1}{n} \sin^{n-1}(x) \cos(x) + \frac{n-1}{n} S_{n-2}$.
+      - $L_n(x) \coloneqq \int (\log x)^n dx \implies L_n = x (\log x)^n - n L_{n-1}$.
+    * **Cyclic integral solver (linear system in anti-derivatives):**
+      Recognizes loops in repeated integration by parts:
+      $$
+      \int e^{a x} \cos(b x) dx \;=\; \frac{e^{a x} (a \cos(b x) + b \sin(b x))}{a^2 + b^2}.
+      $$
+    * **LIATE rule & differential algebra pass:**
+      Logarithmic > Inverse trigonometric > Algebraic > Trigonometric > Exponential priority heuristic for assigning $u$ versus $dv$, integrated within the differential field framework $(K, \partial)$ and Risch integration algorithm.
+
+  * **(5) Zeta Regularization and L-Function Analytic Continuation:**
+    * **Spectral zeta function of an operator:**
+      For an elliptic differential operator $A$ (e.g. Laplace-Beltrami operator $\Delta$ on a compact Riemannian manifold $(M, g)$) with discrete positive spectrum $0 < \lambda_1 \le \lambda_2 \le \dots \to \infty$:
+      $$
+      \zeta_A(s) \;\coloneqq\; \operatorname{Tr}(A^{-s}) \;=\; \sum_{n=1}^\infty \frac{1}{\lambda_n^s} \quad (\text{for } \operatorname{Re}(s) > \frac{\dim M}{2}).
+      $$
+      Admits a meromorphic continuation to $s \in \mathbb{C}$ with $s = 0$ as a regular point.
+    * **Zeta-regularized functional determinant (Ray-Singer / Hawking):**
+      $$
+      \operatorname{det}_\zeta(A) \;\coloneqq\; \exp\left( - \left. \frac{d}{ds} \zeta_A(s) \right|_{s=0} \right) \;=\; \exp(-\zeta_A'(0)).
+      $$
+      - Harmonic oscillator: $A = -\frac{d^2}{dx^2} + \omega^2$ on $L^2(\mathbb{R})$.
+      - Circle Laplacian: $A = -\frac{d^2}{dx^2}$ on $S^1$ has $\zeta_A(s) = 2 \left(\frac{L}{2\pi}\right)^{2s} \zeta(2s)$, yielding $\operatorname{det}_\zeta(A) = 4 \sin^2(\pi \dots)$ or $L^2$.
+    * **Ramanujan and Euler-Maclaurin regularization:**
+      Regularized summation of divergent series $\sum_{n=1}^\infty f(n)$:
+      $$
+      \sum_{n=1}^\infty n^k \;\rightsquigarrow\; \zeta(-k) \;=\; -\frac{B_{k+1}}{k+1}.
+      $$
+      Specifically: $\sum_{n=1}^\infty 1 = \zeta(0) = -\frac{1}{2}$, $\sum_{n=1}^\infty n = \zeta(-1) = -\frac{1}{12}$, $\sum_{n=1}^\infty n^2 = \zeta(-2) = 0$, $\sum_{n=1}^\infty n^3 = \zeta(-3) = \frac{1}{120}$.
+    * **General $L$-functions and functional equations:**
+      For an automorphic or motivic $L$-function $L(s, \pi) = \sum_{n=1}^\infty \frac{a_n}{n^s}$:
+      - Completed $L$-function:
+        $$
+        \Lambda(s, \pi) \;\coloneqq\; N^{s/2} \gamma(s) L(s, \pi), \qquad \gamma(s) = \prod_{j=1}^r \Gamma_{\mathbb{R}}(s + \mu_j).
+        $$
+      - Functional equation: $\Lambda(s, \pi) = \epsilon(\pi) \Lambda(1 - s, \widetilde{\pi})$, where $|\epsilon(\pi)| = 1$.
+      - Regularization at non-convergent points: evaluation of $L(s, \pi)$ at critical and non-critical integers $s \in \mathbb{Z}_{\le 0}$ via reflection formula and Bernoulli / modular symbols (Deligne's period conjecture, Beilinson regulator).
+
+* **Preamble implementation requirements:**
+  * **Convergence test suite:** `categories/analysis/convergence_tests.py`
+    - `DirichletTest(a_seq, b_seq)`: certifies convergence of $\sum a_n b_n$ with explicit tail error bound $2 M b_{N+1}$.
+    - `AbelSummation(a_seq, b_seq, N)`: formal summation by parts $A_N b_{N+1} + \sum_{n=1}^N A_n (b_n - b_{n+1})$.
+    - `CauchyCondensation(a_seq, base=2)`: transforms monotonic sequence $a_n$ into condensed series $\sum b^k a_{b^k}$; automated decider for logarithmic/power series.
+    - `AlternatingSeriesTest(b_seq)`: Leibniz test specialization.
+  * **Diophantine approximation and irrationality:** `categories/number_theory/diophantine_approximation.py`
+    - `DirichletApproximation(alpha, N)`: computes $p, q$ with $q \le N$ such that $|\alpha - p/q| < 1/(qN)$.
+    - `IrrationalityCertificate(alpha, p_seq, q_seq)`: verifies condition $q_n \alpha - p_n \neq 0$ and $|q_n \alpha - p_n| \to 0$.
+    - `ContinuedFractionConvergents(alpha, terms)`: generates best rational approximations $p_n/q_n$.
+    - `IrrationalityMeasure(alpha)`: upper and lower bounds on $\mu(\alpha)$.
+  * **Symbolic integration by parts:** `categories/calculus/symbolic_integration.py`
+    - `IntegrationByParts(u, dv, var='x')`: applies $u v - \int v du$.
+    - `TabularIntegration(f, g, var='x')`: generates tabular differentiation/integration table for polynomial $\times$ transcendental.
+    - `ReductionFormula(integrand_family, param='n')`: derives contiguous recurrence relation.
+    - `CyclicIntegralSolver(integrand, var='x')`: detects linear algebraic loop in repeated integration by parts and solves for $\int f dx$.
+  * **Zeta regularization and functional determinants:** `categories/zeta/regularization.py`
+    - `SpectralZetaFunction(eigenvalues_or_symbol)`: computes $\zeta_A(s) = \sum \lambda_n^{-s}$ and its analytic continuation.
+    - `ZetaRegularizedDeterminant(spectral_zeta)`: computes $\operatorname{det}_\zeta(A) = \exp(-\zeta_A'(0))$.
+    - `RamanujanSum(divergent_series)`: evaluates Euler-Maclaurin regularized sum $\sum^{\mathcal{R}} f(n)$.
+  * **L-function analytic continuation:** `categories/l_functions/analytic_continuation.py`
+    - `CompletedLFunction(l_series, gamma_factors, conductor, root_number)`: evaluates $\Lambda(s)$ and computes $L(s)$ via functional equation $\Lambda(s) = \epsilon \Lambda(1 - s)$.
+    - `SpecialLValues(l_function, s_points)`: computes regularized values at negative integers and critical points.
+
+Intended owners: `categories/analysis/convergence_tests.py` (`DirichletTest`, `CauchyCondensation`, `AbelSummation`), `categories/number_theory/diophantine_approximation.py` (`DirichletApproximation`, `IrrationalityCertificate`), `categories/calculus/symbolic_integration.py` (`IntegrationByParts`, `TabularIntegration`, `ReductionFormula`), `categories/zeta/regularization.py` (`SpectralZetaFunction`, `ZetaRegularizedDeterminant`, `RamanujanSum`), `categories/l_functions/analytic_continuation.py` (`CompletedLFunction`, `SpecialLValues`).
+
 
 
 
