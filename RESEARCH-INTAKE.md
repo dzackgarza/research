@@ -111,6 +111,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | General topology counterexamples, 246 properties, 931 theorems, universal constructions (pi-Base) | https://topology.pi-base.org/ + https://github.com/pi-base/data | 246 topological properties (separation, compactness, countability, connectedness, metrizability), 224 canonical spaces, 931 theorems, universal constructions (subspaces, products, coproducts, quotients); operationalized topological predicate suite | `categories/topology/spaces.py` + `categories/topology/properties.py` + `categories/topology/constructions.py` + `categories/topology/theorems.py` | Proposed — see note below |
 | Bilinear forms to polynomial schemes and 1-parameter quadric families | User intake 2026-09-19 | Passage from bilinear form b: M⊗_R M→R on free M≅R^n to polynomial b(x,x)∈R[x_0..x_{n-1}] (and b(x,y)); 1-parameter family V(b(x,x)-t) over AA^1(R); transport problem b(v,v)=t to finding integral points on fibers, utilizing specialized number theory and lattice algorithms | `categories/forms/polynomial.py` + `categories/schemes/families.py` + `categories/schemes/quadrics.py` + `categories/lattices/representations.py` | Proposed — see note below |
 | Category of Hodge structures (pure, mixed, polarized) and operations | User intake 2026-09-19 | Category of pure Hodge structures HS_k(R), mixed Hodge structures MHS(R) (Deligne), polarized HS_k^{pol}(R); standard operations: tensor product, direct sum, dual, internal Hom, exterior powers ⋀^n H, symmetric powers Sym^n H, Tate twist ZZ(m) / H(m), weight and Hodge filtrations, Hodge classes, intermediate Jacobians | `categories/hodge/hodge_structures.py` + `categories/hodge/mixed_hodge.py` + `categories/hodge/polarized.py` + `categories/hodge/tate_twist.py` | Proposed — see note below |
+| Projectivization of linear groups and subgroups (PGL, PO, PSL, PSp) | User intake 2026-09-19 | Projectivization functor P: G ↦ PG = G / (G ∩ R^×·id) for linear groups G ≤ GL(V) (e.g. GL_n → PGL_n, O(b) → PO(b) ≅ O(b)/{±id}, SL_n → PSL_n, Sp_{2g} → PSp_{2g}, and arithmetic subgroups Γ ≤ O(L)); quotient projection π: G ↠ PG; faithful action on projective space PP(V) and hyperbolic space HH^n | `categories/groups/projectivization.py` + `categories/groups/matrix_groups.py` + `categories/lattices/orthogonal_group.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -2034,6 +2035,58 @@ Intake note from user 2026-09-19.
   * Implement symmetric monoidal operations on objects: `H + H'`, `H * H'` (tensor), `H.dual()`, `H.exterior_power(n)`, `H.symmetric_power(n)`, `H.tate_twist(m)`, `H.weight()`, `H.hodge_diamond()`, `H.polarization()`, `H.intermediate_jacobian()`, and `H.hodge_classes()`.
 
 Intended owners: `categories/hodge/hodge_structures.py` (`PureHodgeStructure`, `HodgeDecomposition`), `categories/hodge/mixed_hodge.py` (`MixedHodgeStructure`, `WeightFiltration`, `DeligneBigrading`), `categories/hodge/polarized.py` (`PolarizedHodgeStructure`, `RiemannHodgeRelations`), `categories/hodge/tate_twist.py` (`TateTwist` $\mathbb{Z}(m)$, $H(m)$), `categories/hodge/operations.py` (tensor, exterior, symmetric, dual, intermediate Jacobian).
+
+## Desired capability: Projectivization of linear groups and matrix subgroups — intake 2026-09-19
+
+Intake note from user 2026-09-19.
+
+* **General algebraic projectivization of linear groups:**
+  * Let $R$ be a commutative ring and let $V$ be a free $R$-module (or vector space over a field $k$).
+  * For any linear group $G \le \operatorname{GL}(V)$ (or representation $\rho\colon G \to \operatorname{GL}(V)$), the *projectivization* of $G$ is the quotient by the central normal subgroup of scalar homotheties:
+    $$
+    \mathrm{P}G \coloneqq G / \bigl(G \cap (R^\times \cdot \operatorname{id}_V)\bigr),
+    $$
+    equipped with the canonical surjective projection homomorphism $\pi\colon G \twoheadrightarrow \mathrm{P}G$.
+  * Realization as quotient by central signs: For groups over $\mathbb{Z}$, $\mathbb{R}$, or fields where the intersection consists of signs, $\mathrm{P}G$ typically realizes as:
+    $$
+    \mathrm{P}G = G / (G \cap \{\pm \operatorname{id}_V\}) = G / \langle -\operatorname{id}_V \rangle \quad (\text{when } -\operatorname{id}_V \in G).
+    $$
+
+* **Standard family specializations:**
+  1. **General linear group:** $\operatorname{PGL}_n(R) \coloneqq \operatorname{GL}_n(R) / (R^\times \cdot I_n)$.
+  2. **Special linear group:** $\operatorname{PSL}_n(R) \coloneqq \operatorname{SL}_n(R) / (\mu_n(R) \cdot I_n)$, where $\mu_n(R) = \{\lambda \in R^\times \mid \lambda^n = 1\}$. For $R = \mathbb{Z}$ or $\mathbb{R}$ with $n$ even, $\mu_n(R) = \{\pm 1\}$, so $\operatorname{PSL}_n(R) = \operatorname{SL}_n(R) / \{\pm I_n\}$.
+  3. **Orthogonal groups of forms and lattices:** For a nondegenerate symmetric bilinear form module or lattice $(M, b)$, the center of the orthogonal group $\operatorname{O}(b)$ is $\{\pm \operatorname{id}_M\}$ (for char $\neq 2$). The projectivized orthogonal group is:
+     $$
+     \operatorname{PO}(b) \coloneqq \operatorname{O}(b) / \{\pm \operatorname{id}_M\}.
+     $$
+     Similarly, for the special orthogonal group $\operatorname{SO}(b)$, $\operatorname{PSO}(b) = \operatorname{SO}(b) / (\operatorname{SO}(b) \cap \{\pm \operatorname{id}_M\})$.
+  4. **Symplectic groups:** $\operatorname{PSp}_{2g}(R) \coloneqq \operatorname{Sp}_{2g}(R) / \{\pm I_{2g}\}$.
+  5. **Subgroups and arithmetic lattices:** For any subgroup $H \le \operatorname{GL}(V)$ (including arithmetic groups $\Gamma \le \operatorname{O}(L)$, congruence subgroups $\Gamma(N) \le \operatorname{SL}_2(\mathbb{Z})$, and Coxeter/reflection groups $W \le \operatorname{O}(L)$):
+     $$
+     \mathrm{P}H \coloneqq H / (H \cap \{\pm \operatorname{id}_V\}).
+     $$
+
+* **Geometric action on projective and hyperbolic spaces:**
+  * **Projective space:** While $G \curvearrowright V$ has kernel $G \cap R^\times \cdot \operatorname{id}_V$, the projectivization $\mathrm{P}G$ acts faithfully on the projective space $\mathbb{P}(V) \coloneqq (V \setminus \{0\}) / R^\times$:
+    $$
+    \mathrm{P}G \curvearrowright \mathbb{P}(V), \qquad [g] \cdot [v] = [g(v)].
+    $$
+  * **Hyperbolic geometry:** For a Lorentzian lattice $L$ of signature $(1, n)$ (or $(n, 1)$), the hyperbolic space $\mathbb{H}^n$ is realized as an open convex domain in $\mathbb{P}(L_\mathbb{R})$ (the projective Klein model, or the future cone in $\mathbb{P}(L_\mathbb{R})$). The group of isometries preserving $\mathbb{H}^n$ acts faithfully via the projectivization:
+    $$
+    \operatorname{Isom}(\mathbb{H}^n) \cong \operatorname{PO}^+(1, n) \coloneqq \operatorname{O}^+(1, n) / \{\pm \operatorname{id}_L\}.
+    $$
+  * **Period domains:** For K3 and Enriques lattices, the period domain $\mathcal{D}_L \subset \mathbb{P}(L_\mathbb{C})$ admits a faithful action of the arithmetic quotient $\operatorname{PO}^+(L) \coloneqq \operatorname{O}^+(L) / \{\pm \operatorname{id}\}$.
+
+* **Preamble implementation requirement:**
+  * Provide an operational projectivization constructor/functor on matrix and linear groups:
+    `G.projectivization() -> PG : ProjectiveGroups`
+    with canonical projection morphism `G.projection_to_projectivization() -> Hom(G, PG)`.
+  * Specialized subclasses: `PGL(n, R)`, `PSL(n, R)`, `PO(b)`, `PSO(b)`, `PSp(2g, R)`.
+  * Support for arbitrary subgroups: `H.projectivization()` computing $H / (H \cap Z(\operatorname{GL}(V)))$ with explicit quotient presentation or permutation representation via GAP / libGAP adapter.
+  * Faithful action on projective spaces: `PG.action_on(ProjectiveSpace(V))`.
+
+Intended owners: `categories/groups/projectivization.py` (`ProjectiveGroup`, `ProjectivizationFunctor`), `categories/groups/matrix_groups.py` (`PGL`, `PSL`, `PSp`), `categories/lattices/orthogonal_group.py` (`PO(L)`, `PSO(L)`), `categories/hyperbolic/isometries.py` ($\operatorname{PO}^+(1,n)$ action on $\mathbb{H}^n$).
+
 
 
 
