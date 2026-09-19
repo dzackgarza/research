@@ -131,7 +131,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Witt vectors, $p$-adics as explicit power series, and ghost vector representations (exact and symbolic arithmetic) | User intake 2026-09-19 | Algebraic and algorithmic infrastructure for $p$-typical and big Witt vectors, and $p$-adic series arithmetic: (1) $p$-typical Witt ring $W(R)$ and truncated $W_n(R)$: ghost map $w_n = \sum_{i=0}^n p^i x_i^{p^{n-i}}$, bijection over $\mathbb{Q}$-algebras, componentwise ghost addition/multiplication, universal polynomials $S_n, P_n \in \mathbb{Z}[X, Y]$, and triangular back-substitution; (2) Perfect field Witt vectors $W(k)$ as complete DVR of characteristic 0, $W(\mathbb{F}_p) \cong \mathbb{Z}_p$, unramified extensions $W(\mathbb{F}_{p^d}) \cong \mathbb{Z}_{p^d}$; (3) Teichmüller lifts $[a] = (a, 0, \dots)$, $p$-adic expansion $x = \sum [c_n] p^n$, Newton-Hensel quadratic convergence; (4) Operators: Verschiebung $V(x) = (0, x_0, \dots)$, Frobenius $F$, relations $FV = p$, $VF = p$, Dieudonné ring $W(k)[F, V]$; (5) Big Witt vectors $\mathbb{W}(R) \cong 1 + t R[[t]]^\times$, power series multiplication link, Cartier decomposition $\mathbb{W}(R) \cong \prod_{(k, p)=1} W(R)$; (6) Explicit $p$-adic series in $\mathbb{Z}_p, \mathbb{Q}_p$: formal power series expansions $\sum a_n p^n$, ultrametric valuations $v_p$, Hensel's lemma, Artin-Hasse exponential $E_p(t) = \exp(\sum t^{p^n}/p^n) \in \mathbb{Z}_p[[t]]$, and symbolic ghost arithmetic engine | `categories/number_theory/witt_vectors.py` + `categories/number_theory/p_adics.py` + `categories/rings/formal_power_series.py` + `categories/algebraic_geometry/dieudonne.py` | Proposed — see note below |
 | Operationalized algebraic topology calculational theorems (Mayer-Vietoris, Universal Coefficient Theorems, Künneth formulas, cellular homology, excision, Poincaré duality, van Kampen, and Hurewicz) | User intake 2026-09-19 | Comprehensive computational framework implementing Hatcher-style topological theorems as exact solvers: (1) Mayer-Vietoris sequence solver for homology and cohomology: $H_n(A \cap B) \to H_n(A) \oplus H_n(B) \to H_n(X) \to H_{n-1}(A \cap B)$, reduced/relative variants, connecting homomorphisms $\partial, \delta$; (2) Universal Coefficient Theorems (UCT): automated evaluation of $H_n(X; G) \cong (H_n(X) \otimes G) \oplus \operatorname{Tor}_1(H_{n-1}(X), G)$ and $H^n(X; G) \cong \operatorname{Hom}(H_n(X), G) \oplus \operatorname{Ext}^1(H_{n-1}(X), G)$ across arbitrary coefficients ($\mathbb{Q}, \mathbb{F}_p, \mathbb{Z}/m$); (3) Künneth formula solver for products $X \times Y$ with $\otimes$ and $\operatorname{Tor}_1$ terms; (4) Cellular homology engine: attaching maps, cellular boundary matrices $d_n = [\deg(\Delta_{\alpha, \beta})]$, and Euler characteristic $\chi(X) = \sum (-1)^n c_n$; (5) Long exact sequences of pairs $(X, A)$, excision, suspension isomorphisms $\widetilde{H}_{n+1}(\Sigma X) \cong \widetilde{H}_n(X)$, and wedge sums; (6) Cohomology rings: cup and cap products, Poincaré duality isomorphisms $H^k(M) \cong H_{n-k}(M)$, and intersection pairings; (7) Homotopy theory solvers: Seifert-van Kampen amalgamated free product solver $\pi_1(A) *_{\pi_1(A \cap B)} \pi_1(B)$, Hurewicz abelianization $\pi_1^{\mathrm{ab}} \cong H_1$ and higher Hurewicz isomorphisms $\pi_n(X) \cong H_n(X)$ | `categories/topology/computational_topology.py` + `categories/topology/mayer_vietoris.py` + `categories/topology/uct.py` + `categories/topology/kunneth.py` + `categories/topology/cellular.py` + `categories/topology/poincare_duality.py` + `categories/topology/van_kampen.py` | Proposed — see note below |
 | Concrete combinatorial models for small categories, walking diagrams, deloopings BG, and finitely presented 2-categories | User intake 2026-09-19 | Concrete combinatorial and computational models for finite/small categories and 2-categories: (1) Quiver presentations $F(Q)/R$: directed multigraphs $Q=(V, E, s, t)$, path categories $F(Q)$, 2-sided path relations $R$, rewriting systems, normal forms, and Cayley multiplication tables; (2) Simplex categories $\Delta^n = [n]$ (chains $0 \to 1 \to \dots \to n$), simplex category $\mathbf{\Delta}$ with coface $d^i$ and codegeneracy $s^i$ operators, and nerves $N(\mathcal{C})$; (3) Universal classifying "walking" diagrams: walking object $\mathbf{1} = [0]$, walking arrow $\mathbf{2} = [1]$, walking parallel pair $\{0 \rightrightarrows 1\}$, walking span and cospan, walking commutative square, walking isomorphism $\mathbb{I}$, walking retraction, and walking idempotent $\bullet \circlearrowleft e$; (4) Delooping groupoids $BG$ for groups/monoids $G$, action/translation groupoids $X // G$, pair groupoids $\operatorname{Pair}(S)$, and fundamental groupoids $\Pi_1$; (5) Finitely presented 2-categories: 2-quivers/computads (0-cells, 1-cells, 2-cells), horizontal $\circ_0$ and vertical $\circ_1$ compositions, interchange law, walking natural transformation, walking adjunction $\mathbf{Adj}$ with zigzag identities, walking monad $\mathbf{Mnd}$ with pentagon/triangle identities, and walking comonad | `categories/finitely_presented/quiver.py` + `categories/finitely_presented/category_presentation.py` + `categories/finitely_presented/walking.py` + `categories/finitely_presented/simplex_category.py` + `categories/groups/delooping.py` + `categories/finitely_presented/two_category.py` + `categories/finitely_presented/walking_two_category.py` | Proposed — see note below |
-
+| Cyclotomic spectra, topological cyclic homology ($TC$), Tate constructions, and motivic prismatic filtrations | Literature survey + user intake 2026-09-19 | Comprehensive stable homotopy and cyclotomic spectra framework for topological cyclic homology ($TC$): (1) Modern Nikolaus-Scholze cyclotomic spectra: $S^1$-equivariant spectra $\mathbf{Sp}^{BS^1}$, Tate construction $X^{tC_p} = \operatorname{cofib}(X_{hC_p} \xrightarrow{N} X^{hC_p})$ with residual $S^1/C_p \cong S^1$-action, and $S^1$-equivariant cyclotomic Frobenius $\phi_p \colon X \to X^{tC_p}$; (2) Core topological invariants: Topological Hochschild Homology $THH(R)$ as an $E_\infty$-cyclotomic spectrum (cyclic bar construction, cyclotomic diagonal $\Delta_p$); Topological Negative Cyclic Homology $TC^-(X; p) \coloneqq X^{hS^1}$; Topological Periodic Homology $TP(X; p) \coloneqq X^{tS^1}$; and Topological Cyclic Homology $TC(X; p) \coloneqq \operatorname{fib}(X^{hS^1} \xrightarrow{\phi_p^{hS^1} - \operatorname{can}} (X^{tC_p})^{hS^1})$; (3) Spectral sequences: Homotopy Fixed Point Spectral Sequence (HFPSS) $E_2 = H^*(BS^1; \pi_*(X)) \implies \pi_*(X^{hS^1})$, Tate Spectral Sequence (TSS) $\widehat{E}_2 = \widehat{H}^*(S^1; \pi_*(X)) \implies \pi_*(X^{tS^1})$ ($u$-periodicity), and Bökstedt spectral sequence for $THH$; (4) Concrete calculational engines: exact evaluations for perfect fields $k = \mathbb{F}_p$ ($THH_*(\mathbb{F}_p) = \mathbb{F}_p[\sigma]$, $TC(\mathbb{F}_p) \cong \mathbb{Z}_p \oplus \Sigma^{-1} \mathbb{Z}_p$), truncated polynomials $k[x]/(x^m)$, $p$-adic integers $\mathbb{Z}_p$ (recovering Lichtenbaum-Quillen), and sphere spectrum $\mathbb{S}$; (5) Bhatt-Morrow-Scholze (BMS) motivic filtration: decreasing filtration on $THH, TC^-, TP, TC$ recovering prismatic cohomology $\Delta_R$ on $\operatorname{gr}^i TP$ and syntomic cohomology $\mathbb{Z}_p(i)$ on $\operatorname{gr}^i TC$ | `categories/spectra/spectrum.py` + `categories/spectra/equivariant.py` + `categories/spectra/cyclotomic.py` + `categories/spectra/tate_spectral_sequence.py` + `categories/spectra/tc_calculators.py` + `categories/spectra/bms_motivic.py` | Proposed — see note below |
 
 
 
@@ -4782,5 +4782,208 @@ Intended owners: `categories/topology/exact_sequence.py` (`LongExactSequence`, `
     - `WalkingComonad()`: classifies comonads $(T, \delta, \varepsilon)$.
 
 Intended owners: `categories/finitely_presented/quiver.py` (`FiniteQuiver`, `Path`, `PathCategory`), `categories/finitely_presented/category_presentation.py` (`FinitelyPresentedCategory`, `PathRelation`, `RewritingSystem`, `CayleyTableCategory`), `categories/finitely_presented/simplex_category.py` (`DeltaN`, `SimplexCategory`, `CofaceMap`, `CodegeneracyMap`, `SimplicialNerve`), `categories/finitely_presented/walking.py` (`WalkingObject`, `WalkingArrow`, `WalkingParallelPair`, `WalkingSpan`, `WalkingCospan`, `WalkingSquare`, `WalkingIsomorphism`, `WalkingRetraction`, `WalkingIdempotent`, `WalkingSplitIdempotent`), `categories/groups/delooping.py` (`DeloopingCategory`, `ActionGroupoid`, `PairGroupoid`), `categories/finitely_presented/two_category.py` (`GlobularSet`, `TwoQuiver`, `TwoCell`, `FinitelyPresentedTwoCategory`), `categories/finitely_presented/walking_two_category.py` (`WalkingNaturalTransformation`, `WalkingAdjunction`, `WalkingMonad`, `WalkingComonad`).
+
+
+## Desired capability: Cyclotomic spectra, topological cyclic homology (TC), Tate constructions, and motivic prismatic filtrations — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Spectra and stable homotopy foundations:**
+    * The symmetric monoidal stable $\infty$-category of spectra $\mathbf{Sp} = (\mathbf{Sp}, \otimes, \mathbb{S})$.
+    * Homotopy groups $\pi_n(X) = [S^n, X] = \pi_0(\underline{\operatorname{Map}}(\Sigma^n \mathbb{S}, X))$.
+    * Connective spectra $\mathbf{Sp}_{\ge 0}$, Eilenberg-MacLane spectra $H R$ for rings/abelian groups $R$.
+    * Shifts/suspensions $\Sigma^n X$, cofiber and fiber sequences, smash products $X \otimes Y$, mapping spectra $\underline{\operatorname{Map}}(X, Y)$.
+
+  * **Borel equivariant spectra and group actions ($S^1$ and $C_p$):**
+    * For a compact Lie group $G$ (circle group $S^1 \cong \mathbb{T} \cong \mathbb{R}/\mathbb{Z}$ or cyclic subgroups $C_n \subset S^1$):
+    * The $\infty$-category of spectra with $G$-action (Borel $G$-equivariant spectra) is the functor category $\mathbf{Sp}^{B G} \coloneqq \operatorname{Fun}(B G, \mathbf{Sp})$.
+    * Universal contractible space $E G$ and classifying space $B G = E G / G$.
+    * Homotopy orbits: $X_{h G} \coloneqq \operatorname{colim}_{B G} X \cong X \otimes_G E G_+$.
+    * Homotopy fixed points: $X^{h G} \coloneqq \lim_{B G} X \cong \underline{\operatorname{Map}}_G(E G_+, X)$.
+    * The Norm map: For finite groups $G$ (and compact Lie groups via dimension shifts), there is a canonical norm morphism $N \colon X_{h G} \to X^{h G}$.
+    * **The Tate construction (Tate spectrum):**
+      $$
+      X^{t G} \coloneqq \operatorname{cofib}\big(N \colon X_{h G} \longrightarrow X^{h G}\big).
+      $$
+      Equivalently, via the cofiber sequence of pointed spaces $E G_+ \to S^0 \to \widetilde{E G}$, the Tate spectrum is the homotopy fixed point spectrum $X^{t G} \cong (X \otimes \widetilde{E G})^{h G}$.
+    * Residual circle action: When $G = C_p \subset S^1$ is the cyclic group of order $p$, the quotient group is $S^1 / C_p \cong S^1$. Hence, for any spectrum with circle action $X \in \mathbf{Sp}^{B S^1}$, the Tate spectrum $X^{t C_p}$ canonically inherits a residual $S^1$-action!
+
+  * **Nikolaus-Scholze Cyclotomic Spectra (Modern Formulation):**
+    * **$p$-cyclotomic spectrum:** A spectrum $X$ equipped with an $S^1$-action ($X \in \mathbf{Sp}^{B S^1}$) together with an $S^1$-equivariant morphism:
+      $$
+      \phi_p \colon X \longrightarrow X^{t C_p}
+      $$
+      termed the *cyclotomic Frobenius*. Here $X^{t C_p}$ is considered with its residual $S^1 \cong S^1/C_p$-action.
+    * **Integral cyclotomic spectrum:** A spectrum $X \in \mathbf{Sp}^{B S^1}$ equipped with an $S^1$-equivariant cyclotomic Frobenius map $\phi_p \colon X \to X^{t C_p}$ for *every* prime number $p$.
+    * **$E_\infty$-cyclotomic spectrum:** A cyclotomic spectrum $X$ where $X$ is an $E_\infty$-algebra in $\mathbf{Sp}^{B S^1}$ and each $\phi_p$ is a map of $E_\infty$-algebras in $\mathbf{Sp}^{B S^1}$.
+    * Comparison with genuine equivariant homotopy theory (Hesselholt-Madsen): Classical formulations required genuine $S^1$-spectra with genuine fixed points $X^{C_p}$ and equivariant equivalences $r_p \colon \rho_p^* X^{C_p} \xrightarrow{\sim} X$. Nikolaus and Scholze proved that on bounded-below spectra, genuine fixed point data is completely and faithfully recovered from the Borel $S^1$-action and the Tate Frobenius maps $\phi_p \colon X \to X^{t C_p}$.
+
+  * **Topological Invariants: $THH$, $TC^-$, $TP$, and $TC$:**
+    * **Topological Hochschild Homology ($THH$):**
+      - For any $E_1$-ring spectrum $R$ (e.g. discrete associative ring, scheme, or ring spectrum), $THH(R)$ is defined as the cyclic bar construction:
+        $$
+        THH(R) \;\coloneqq\; B^{\mathrm{cyc}}(R) \;=\; \big| [n] \mapsto R^{\otimes (n+1)} \big| \;\cong\; R \otimes_{R \otimes R^{\mathrm{op}}} R.
+        $$
+      - The cyclic structure equips $THH(R)$ with an action of the circle group $S^1$.
+      - The cyclotomic diagonal $\Delta_p \colon R \to (R^{\otimes p})^{t C_p}$ induces an $S^1$-equivariant map:
+        $$
+        \phi_p \colon THH(R) \longrightarrow THH(R)^{t C_p}.
+        $$
+        Thus $THH(R)$ is naturally an integral cyclotomic spectrum!
+    * **Topological Negative Cyclic Homology ($TC^-$):**
+      $$
+      TC^-(X; p) \;\coloneqq\; X^{h S^1}
+      $$
+      (homotopy fixed points under the circle action).
+    * **Topological Periodic Homology ($TP$):**
+      $$
+      TP(X; p) \;\coloneqq\; X^{t S^1}
+      $$
+      (the Tate construction under the circle action). $TP$ is the topological analogue of periodic cyclic homology $HP$.
+    * **Topological Cyclic Homology ($TC$):**
+      In the Nikolaus-Scholze framework, $TC(X; p)$ is the homotopy fiber (equalizer) of the difference between the Frobenius and the canonical map:
+      $$
+      TC(X; p) \;\coloneqq\; \operatorname{fib}\left( X^{h S^1} \xrightarrow{\phi_p^{h S^1} - \operatorname{can}} (X^{t C_p})^{h (S^1/C_p)} \right)
+      $$
+      where:
+      - $\operatorname{can} \colon X^{h S^1} \to (X^{t C_p})^{h S^1} \cong X^{t S^1}$ is the canonical comparison map from homotopy fixed points to the Tate spectrum.
+      - $\phi_p^{h S^1} \colon X^{h S^1} \to (X^{t C_p})^{h S^1}$ is the map induced on homotopy fixed points by the cyclotomic Frobenius $\phi_p \colon X \to X^{t C_p}$.
+      - For an integral cyclotomic spectrum:
+        $$
+        TC(X) \;\coloneqq\; \operatorname{fib}\left( X^{h S^1} \xrightarrow{\prod_p (\phi_p^{h S^1} - \operatorname{can})} \prod_p (X^{t C_p})^{h S^1} \right).
+        $$
+    * **Dundas-Goodwillie-McCarthy (DGM) Theorem & Algebraic $K$-Theory:**
+      The cyclotomic trace map $\operatorname{trc} \colon K(R) \to TC(R)$ induces an equivalence on relative fibers for any nilpotent ideal $I \subset R$ (or connective map of ring spectra):
+      $$
+      K(R, I) \;\xrightarrow{\sim}\; TC(R, I).
+      $$
+      This reduces non-trivial algebraic $K$-theory computations to topological cyclic homology.
+
+  * **Spectral Sequences for Concrete Calculations:**
+    * **Homotopy Fixed Point Spectral Sequence (HFPSS):**
+      For $X \in \mathbf{Sp}^{B S^1}$:
+      $$
+      E_2^{s, t} \;=\; H^s(B S^1; \pi_t(X)) \;\implies\; \pi_{t-s}(X^{h S^1}).
+      $$
+      Since $H^*(B S^1; \mathbb{Z}) \cong \mathbb{Z}[u]$ with $|u| = 2$, the $E_2$-page is a formal power series $\pi_*(X)[[u]]$.
+    * **Tate Spectral Sequence (TSS):**
+      For $X \in \mathbf{Sp}^{B S^1}$:
+      $$
+      \widehat{E}_2^{s, t} \;=\; \widehat{H}^s(S^1; \pi_t(X)) \;\implies\; \pi_{t-s}(X^{t S^1}).
+      $$
+      The Tate cohomology inverts the Euler class: $\widehat{H}^*(S^1; \mathbb{Z}) \cong \mathbb{Z}[u^{\pm 1}]$. The $E_2$-page is $\pi_*(X)[u^{\pm 1}]$.
+    * **$C_p$-Tate Spectral Sequence:**
+      For $X \in \mathbf{Sp}^{B C_p}$:
+      $$
+      \widehat{E}_2^{s, t} \;=\; \widehat{H}^s(C_p; \pi_t(X)) \;\implies\; \pi_{t-s}(X^{t C_p}).
+      $$
+      For $p$ odd: $\widehat{H}^*(C_p; \mathbb{F}_p) \cong \Lambda(\epsilon) \otimes \mathbb{F}_p[\sigma^{\pm 1}]$ with $|\epsilon| = 1, |\sigma| = 2$.
+    * **Bökstedt Spectral Sequence:**
+      For a ring spectrum $R$:
+      $$
+      E_2^{p, q} \;=\; HH_p(\pi_*(R))_q \;\implies\; \pi_{p+q}(THH(R)).
+      $$
+      Differentials are governed by Connes' $B$-operator (degree $+1$).
+
+  * **Bhatt-Morrow-Scholze (BMS) Motivic Filtration and Prismatic Cohomology:**
+    * For quasisyntomic rings $R$, $THH(R), TC^-(R), TP(R), TC(R)$ carry a complete, descending motivic filtration $\mathrm{Fil}_{\mathrm{mot}}^*$.
+    * **Topological Periodic Homology and Prismatic Cohomology:**
+      The graded pieces of $TP(R)$ are isomorphic to Breuil-Kisin-Fargues / prismatic cohomology complexes:
+      $$
+      \operatorname{gr}^i TP(R) \;\cong\; \widehat{\Delta}_{R/\mathbb{Z}_p}\{i\}[2i].
+      $$
+      Evaluating at the Nygaard filtration recovers the Frobenius $\phi_p$.
+    * **Topological Cyclic Homology and Syntomic Cohomology:**
+      The graded pieces of $TC(R)$ recover $p$-adic étale / syntomic cohomology:
+      $$
+      \operatorname{gr}^i TC(R) \;\cong\; \mathbb{Z}_p(i)(R)[2i].
+      $$
+      The motivic spectral sequence $E_2^{s, t} = H^{s-t}_{\mathrm{syn}}(R; \mathbb{Z}_p(-t)) \implies TC_{-s-t}(R)$ computes $TC$ from prismatic and crystalline cohomology.
+
+  * **Calculational Catalogue and Explicit Specimen Computations:**
+    1. **Finite field $k = \mathbb{F}_p$:**
+       - Bökstedt's calculation: $THH_*(\mathbb{F}_p) \cong \mathbb{F}_p[\sigma]$ with $|\sigma| = 2$.
+       - Homotopy fixed points: $TC^-_*(\mathbb{F}_p) \cong \mathbb{Z}_p[[u, \sigma]] / (u \sigma - p)$ with $|u| = -2, |\sigma| = 2$.
+       - Periodic homology: $TP_*(\mathbb{F}_p) \cong \mathbb{Z}_p[u^{\pm 1}, \sigma] / (u \sigma - p) \cong \mathbb{Z}_p((u))$.
+       - Frobenius map: $\phi_p(u) = p^{-1} u$ on the Tate spectrum, giving the exact homotopy groups:
+         $$
+         TC_n(\mathbb{F}_p; p) \;\cong\; \begin{cases} \mathbb{Z}_p & n = 0, -1 \\ 0 & \text{otherwise}. \end{cases}
+         $$
+         Recovering Quillen's $K$-theory $K(\mathbb{F}_p)_p^\wedge$!
+    2. **$p$-adic integers $\mathbb{Z}_p$ and local fields (Bökstedt-Madsen):**
+       - Homotopy groups of $TC(\mathbb{Z}_p; p)$:
+         $$
+         TC_n(\mathbb{Z}_p; p) \;\cong\; \begin{cases} \mathbb{Z}_p & n = 0, -1 \\ \mathbb{Z}/p^{v_p(k) + 1} & n = 2k-1 > 0 \\ 0 & \text{even } n > 0. \end{cases}
+         $$
+         Verifying the Lichtenbaum-Quillen conjecture and matching étale cohomology $H_{\text{ét}}^*(\mathbb{Z}_p[1/p]; \mathbb{Z}_p)$.
+    3. **Dual numbers and truncated polynomials $k[x]/(x^m)$:**
+       - Computes $TC(k[x]/(x^m); p)$ and relative $K$-theory via the big de Rham-Witt complex $W\Omega_{k[x]/(x^m)}^\bullet$.
+    4. **The Sphere Spectrum $\mathbb{S}$:**
+       - $THH(\mathbb{S}) \cong \mathbb{S}$.
+       - $TC(\mathbb{S})_p^\wedge \cong \mathbb{S}_p^\wedge \oplus \Sigma \mathbb{Z}_p$.
+
+* **Operational & algorithmic representation:**
+  1. **Spectrum Data Structures and Calculus:**
+     - `Spectrum` representing stable homotopy objects via graded homotopy abelian groups $\pi_n$, suspension/desuspension shifts $\Sigma^{\pm k}$, and smash products.
+     - `CircleSpectrum` tracking $S^1$-actions via the Euler class $u \in H^2(BS^1)$ and Connes' $B$-operator on chains.
+     - `TateConstruction` implementing the norm cofiber sequence $X_{hG} \xrightarrow{N} X^{hG} \to X^{tG}$ and Tate spectrum evaluations.
+  2. **Cyclotomic Engine:**
+     - `CyclotomicSpectrum` modeling Nikolaus-Scholze cyclotomic spectra with explicit Frobenius maps $\phi_p \colon X \to X^{tC_p}$.
+     - `TopologicalHochschildHomology` computing the cyclic bar construction for commutative and associative rings, generating Bökstedt algebra generators.
+     - `TopologicalNegativeCyclicHomology` evaluating $X^{hS^1}$ via the HFPSS filtration.
+     - `TopologicalPeriodicHomology` evaluating $X^{tS^1}$ via the Laurent series Tate spectral sequence.
+     - `TopologicalCyclicHomology` computing the equalizer fiber $\operatorname{fib}(\phi_p^{hS^1} - \operatorname{can})$.
+  3. **Spectral Sequence Engines:**
+     - `TateSpectralSequence` engine managing $u^{\pm 1}$-graded pages, differential propagation, and convergence.
+     - `HomotopyFixedPointSpectralSequence` managing $u$-adic filtration and extension problems.
+     - `BokstedtSpectralSequence` resolving Hochschild homology inputs into $THH_*$.
+  4. **BMS Prismatic Motivic Engine:**
+     - `BMSMotivicFiltration` computing graded pieces $\operatorname{gr}^i TP$ and $\operatorname{gr}^i TC$.
+     - Integrates with prismatic complexes $\widehat{\Delta}_{R/\mathbb{Z}_p}$ and Nygaard filtrations.
+  5. **Exact Calculators:**
+     - Automated pipelines computing $TC$ homotopy groups for:
+       - Finite fields $\mathbb{F}_p$ and unramified extensions $\mathbb{F}_{p^d}$.
+       - $p$-adic integers $\mathbb{Z}_p$ and local DVRs.
+       - Truncated polynomials $k[x]/(x^m)$.
+       - Sphere spectrum $\mathbb{S}$.
+
+* **Preamble implementation requirements:**
+  * `categories/spectra/spectrum.py`:
+    - `Spectrum(homotopy_groups)`: abstract spectrum representation.
+    - `SphereSpectrum()`: sphere spectrum $\mathbb{S}$.
+    - `EilenbergMacLaneSpectrum(ring)`: Eilenberg-MacLane spectrum $HR$.
+    - `smash_product(X, Y)`: smash product $X \otimes Y$.
+    - `mapping_spectrum(X, Y)`: function spectrum $\underline{\operatorname{Map}}(X, Y)$.
+    - `suspension(X, n)`: suspension $\Sigma^n X$.
+    - `cofiber(f)`: mapping cone / cofiber spectrum.
+  * `categories/spectra/equivariant.py`:
+    - `CircleSpectrum(spectrum, s1_action)`: spectrum with circle action ($X \in \mathbf{Sp}^{BS^1}$).
+    - `HomotopyFixedPoints(X, group)`: computes $X^{hG}$.
+    - `HomotopyOrbits(X, group)`: computes $X_{hG}$.
+    - `TateSpectrum(X, group)`: computes $X^{tG} = \operatorname{cofib}(N)$.
+    - `norm_map(X, group)`: canonical norm morphism $N \colon X_{hG} \to X^{hG}$.
+    - `connes_operator(THH_obj)`: degree $+1$ differential $B$.
+  * `categories/spectra/cyclotomic.py`:
+    - `CyclotomicSpectrum(circle_spectrum, frobenius_maps)`: Nikolaus-Scholze cyclotomic spectrum.
+    - `CyclotomicFrobenius(X, p)`: $S^1$-equivariant map $\phi_p \colon X \to X^{tC_p}$.
+    - `TopologicalHochschildHomology(ring_spectrum)`: computes $THH(R)$ as a cyclotomic spectrum.
+    - `TopologicalNegativeCyclicHomology(cyclotomic_spec, p)`: computes $TC^-(X; p) = X^{hS^1}$.
+    - `TopologicalPeriodicHomology(cyclotomic_spec, p)`: computes $TP(X; p) = X^{tS^1}$.
+    - `TopologicalCyclicHomology(cyclotomic_spec, p)`: computes $TC(X; p) = \operatorname{fib}(\phi_p^{hS^1} - \operatorname{can})$.
+  * `categories/spectra/tate_spectral_sequence.py`:
+    - `TateSpectralSequence(X, group)`: Tate spectral sequence engine with $u^{\pm 1}$.
+    - `HomotopyFixedPointSpectralSequence(X, group)`: HFPSS engine with $u$-series.
+    - `BokstedtSpectralSequence(ring)`: computes $THH_*(R)$.
+  * `categories/spectra/tc_calculators.py`:
+    - `calculate_tc_finite_field(p)`: computes $TC(\mathbb{F}_p; p) \cong \mathbb{Z}_p \oplus \Sigma^{-1} \mathbb{Z}_p$.
+    - `calculate_tc_p_adic_integers(p, max_degree)`: computes $TC(\mathbb{Z}_p; p)$.
+    - `calculate_tc_dual_numbers(k, m, p)`: computes $TC(k[x]/(x^m); p)$.
+    - `calculate_tc_sphere(p)`: computes $TC(\mathbb{S}; p) \cong \mathbb{S}_p \oplus \Sigma \mathbb{Z}_p$.
+  * `categories/spectra/bms_motivic.py`:
+    - `BMSMotivicFiltration(ring, p)`: motivic filtration on $THH, TC^-, TP, TC$.
+    - `prismatic_specialization(R, p, weight)`: computes $\operatorname{gr}^i TP(R) \cong \widehat{\Delta}_{R/\mathbb{Z}_p}\{i\}[2i]$.
+    - `syntomic_specialization(R, p, weight)`: computes $\operatorname{gr}^i TC(R) \cong \mathbb{Z}_p(i)(R)[2i]$.
+
+Intended owners: `categories/spectra/spectrum.py` (`Spectrum`, `SphereSpectrum`, `EilenbergMacLaneSpectrum`), `categories/spectra/equivariant.py` (`CircleSpectrum`, `HomotopyFixedPoints`, `HomotopyOrbits`, `TateSpectrum`), `categories/spectra/cyclotomic.py` (`CyclotomicSpectrum`, `CyclotomicFrobenius`, `TopologicalHochschildHomology`, `TopologicalNegativeCyclicHomology`, `TopologicalPeriodicHomology`, `TopologicalCyclicHomology`), `categories/spectra/tate_spectral_sequence.py` (`TateSpectralSequence`, `HomotopyFixedPointSpectralSequence`, `BokstedtSpectralSequence`), `categories/spectra/tc_calculators.py` (`calculate_tc_finite_field`, `calculate_tc_p_adic_integers`, `calculate_tc_dual_numbers`, `calculate_tc_sphere`), `categories/spectra/bms_motivic.py` (`BMSMotivicFiltration`, `prismatic_specialization`, `syntomic_specialization`).
+
 
 
