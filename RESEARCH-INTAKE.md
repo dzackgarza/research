@@ -118,6 +118,8 @@ Where to look first for existing algorithms before writing new code. Check these
 | Large poset navigation, 2D grid layouts, Coxeter subdiagrams, and G-poset quotients | User intake 2026-09-19 | 2D grid/ranked layout and interactive navigation for extremely large posets (10^3–10^6 nodes); subdiagram posets of Coxeter diagrams (< 25 nodes): elliptic, parabolic, Lanner, and their maximal elements; chain tracing to maximal/minimal elements; diagram quotients by symmetries G = Aut(Γ) or Aut(M); G-posets and bidirectional projection/unrolling P \leftrightarrow P/G | `categories/posets/large_poset.py` + `categories/coxeter/subdiagram_posets.py` + `categories/graphs/diagram_automorphisms.py` + `src/dzack_research/preamble/visualization/` | Proposed — see note below |
 | q-analogues (q-integers, q-factorials, Gaussian binomials, Jackson calculus, and basic hypergeometric series) | User intake 2026-09-19 | Comprehensive q-analogue infrastructure: q-numbers [n]_q, q-factorials [n]_q!, Gaussian binomial/multinomial coefficients \binom{n}{k}_q (subspace counts in Gr(k,n)(F_q), Bruhat inversions); Jackson q-derivative and integral; q-Pochhammer symbols (a;q)_n, (a;q)_\infty; basic hypergeometric series {}_r\phi_s; q-exponential/gamma; Poincaré polynomials of Coxeter groups and Hecke/quantum group algebra connections | `categories/combinatorics/q_analogues.py` + `categories/special_functions/q_hypergeometric.py` + `categories/quantum_groups/quantum_integers.py` + `categories/algebras/hecke_algebra.py` | Proposed — see note below |
 | Elliptic surfaces, fibrations, Weierstrass forms, Néron models, and Mordell-Weil lattices | User intake 2026-09-19 | Comprehensive elliptic surface architecture: fibrations \pi: S \to C, Jacobian fibrations with zero section O, fundamental line bundle L = (R^1 \pi_* O_S)^\vee, canonical bundle formula; Weierstrass models y^2 = 4x^3 - g_2 x - g_3, discriminant \Delta, j-invariant J(t), Miranda resolution; Néron models, Kodaira singular fiber classification (I_n, I_n^*, II, III, IV, II^*, III^*, IV^*) via Tate's algorithm; Mordell-Weil group MW(S/C) of sections, Shioda-Tate formula, Mordell-Weil lattice with height pairing \langle P, Q \rangle and local correction terms contr_v(P, Q) | `categories/schemes/elliptic_surfaces/elliptic_surface.py` + `categories/schemes/elliptic_surfaces/weierstrass_models.py` + `categories/schemes/elliptic_surfaces/kodaira.py` + `categories/schemes/elliptic_surfaces/mordell_weil.py` | Proposed — see note below |
+| Euler operator $\theta = t \partial_t$ and standard formal power series operators on $R[[t]]$ | User intake 2026-09-19 | Complete differential and algebraic operator calculus on $R[[t]]$: Euler/theta operator $\theta = t \frac{d}{dt}$ ($\theta(t^n) = n t^n$, Stirling conversions $\theta^k \leftrightarrow t^j \partial_t^j$, ODE Euler forms $P(\theta)$); formal derivation $\partial_t$ and integration $\int$; forward/backward shifts $S^{\pm}$, coefficient extraction $[t^n]$; multiplications (Cauchy, Hadamard $\odot$, Hurwitz binomial convolution); composition $f \circ g$ and formal inversion via Lagrange Inversion Formula / Lagrange-Bürmann; logarithmic derivatives $\operatorname{dlog}(f) = f'/f$ and $\operatorname{dlog}_\theta(f) = \theta f / f$; exponential of integral $\exp(\int f)$ (integrating factors, combinatorial exponential formula) and formal logarithm $\log(f)$; Witt algebra generators $L_n = -t^n \theta$ | `categories/rings/formal_power_series.py` + `categories/differential_operators/formal_series.py` + `categories/generating_functions/operators.py` + `categories/algebras/weyl_algebra.py` | Proposed — see note below |
+
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -2651,6 +2653,172 @@ Intended owners: `categories/combinatorics/q_analogues.py` (`QBracket`, `QFactor
     - `narrow_mordell_weil_lattice(elliptic_surface)`.
 
 Intended owners: `categories/schemes/elliptic_surfaces/elliptic_surface.py` (`EllipticSurface`, `JacobianEllipticSurface`), `categories/schemes/elliptic_surfaces/weierstrass_models.py` (`WeierstrassModel`, `MirandaResolution`), `categories/schemes/elliptic_surfaces/kodaira.py` (`KodairaFiberType`, `TateAlgorithm`), `categories/schemes/elliptic_surfaces/neron_model.py` (`NeronModel`, `ComponentGroup`), `categories/schemes/elliptic_surfaces/mordell_weil.py` (`MordellWeilGroup`, `MordellWeilLattice`, `HeightPairing`).
+
+
+## Desired capability: Euler operator $\theta = t \partial_t$ and standard formal operators on $R[[t]]$ — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Formal power series ring $R[[t]]$ and operator algebras:**
+    * Let $R$ be a commutative ring (or $\mathbb{Q}$-algebra when dividing by integers is required, such as for integration, exponential, logarithm, or Lagrange inversion).
+    * $R[[t]]$ is the ring of formal power series $f(t) = \sum_{n=0}^\infty a_n t^n$ equipped with the $(t)$-adic topology, with filtration ideals $F^k = t^k R[[t]]$.
+    * Continuous $R$-linear endomorphisms $\operatorname{End}_R^{\mathrm{cont}}(R[[t]])$ and derivations $\operatorname{Der}_R(R[[t]])$.
+    * Ring of formal differential operators $\mathcal{D}(R[[t]]) \coloneqq R[[t]]\langle \partial_t \rangle \cong R[[t]]\langle \theta \rangle$, where $\partial_t = \frac{d}{dt}$ and $\theta = t \partial_t$.
+
+  * **The Euler operator $\theta \coloneqq t \frac{d}{dt} = t \partial_t$ (degree / scaling operator):**
+    * Action on monomials: $\theta(t^n) = n t^n$. Thus $\theta$ diagonalizes the grading on $R[[t]]$, acting as the infinitesimal generator of dilatations $t \mapsto e^{\epsilon} t$.
+    * Action on series:
+      $$
+      \theta\left(\sum_{n=0}^\infty a_n t^n\right) \;=\; \sum_{n=0}^\infty n a_n t^n.
+      $$
+    * Powers and polynomial operators: For any polynomial $P(x) \in R[x]$:
+      $$
+      P(\theta)\left(\sum_{n=0}^\infty a_n t^n\right) \;=\; \sum_{n=0}^\infty P(n) a_n t^n.
+      $$
+    * Stirling number conversions:
+      $$
+      \theta^k \;=\; \sum_{j=1}^k \left\{ \begin{matrix} k \\ j \end{matrix} \right\} t^j \partial_t^j, \qquad t^k \partial_t^k \;=\; \theta(\theta - 1)\cdots(\theta - k + 1) \;=\; (\theta)_k,
+      $$
+      where $\left\{ \begin{matrix} k \\ j \end{matrix} \right\}$ are Stirling numbers of the second kind and $(\theta)_k$ is the falling factorial.
+    * Commutation relations:
+      $$
+      [\theta, t] \;=\; t, \qquad [\theta, \partial_t] \;=\; -\partial_t, \qquad [\partial_t, t] \;=\; 1,
+      $$
+      and more generally $[\theta, t^k] = k t^k$, $[\theta, \partial_t^k] = -k \partial_t^k$.
+    * Euler form of differential equations (Picard-Fuchs and D-finite systems):
+      A linear differential operator with a regular singularity at $t = 0$ is canonically written in Euler form:
+      $$
+      \mathcal{L} \;=\; P_0(\theta) + t P_1(\theta) + \dots + t^m P_m(\theta),
+      $$
+      where $P_0(s) = 0$ is the indicial equation governing local exponents at $t=0$.
+
+  * **Derivation, formal integration, and shifts:**
+    * **Formal derivative:** $\partial_t \colon R[[t]] \to R[[t]]$, $\partial_t\left(\sum_{n=0}^\infty a_n t^n\right) = \sum_{n=0}^\infty (n+1) a_{n+1} t^n$.
+    * **Formal integration (anti-derivation):** For $R$ a $\mathbb{Q}$-algebra, $\int \colon R[[t]] \to t R[[t]]$, defined by:
+      $$
+      \int \left(\sum_{n=0}^\infty a_n t^n\right) dt \;\coloneqq\; \sum_{n=0}^\infty \frac{a_n}{n+1} t^{n+1}.
+      $$
+      Satisfies the fundamental theorem of calculus: $\partial_t \left(\int f dt\right) = f(t)$, and $\int (\partial_t f) dt = f(t) - f(0)$.
+    * **Backward shift (difference quotient / division by $t$):**
+      $$
+      S^-(f)(t) \;\coloneqq\; \frac{f(t) - f(0)}{t} \;=\; \sum_{n=0}^\infty a_{n+1} t^n.
+      $$
+      Higher-order backward shifts: $S^{-m}(f)(t) \coloneqq \frac{f(t) - \sum_{k=0}^{m-1} a_k t^k}{t^m} = \sum_{n=0}^\infty a_{n+m} t^n$.
+    * **Forward shift (multiplication by $t^m$):** $S^{+m}(f)(t) \coloneqq t^m f(t)$.
+    * **Coefficient extraction functional:** $[t^n] \colon R[[t]] \to R$, sending $f \mapsto a_n$.
+
+  * **Multiplication, convolutions, and dilations:**
+    * **Cauchy product (ring multiplication):** Operator $M_g \colon f \mapsto g \cdot f$, with $[t^n](g \cdot f) = \sum_{k=0}^n a_k b_{n-k}$.
+    * **Hadamard product (coefficient-wise / Schur multiplication):**
+      $$
+      (f \odot g)(t) \;\coloneqq\; \sum_{n=0}^\infty a_n b_n t^n.
+      $$
+      Endows $R[[t]]$ with a second commutative ring structure with unit $\frac{1}{1-t} = \sum_{n=0}^\infty t^n$.
+      Euler operator via Hadamard product: $\theta f = f \odot \frac{t}{(1-t)^2}$.
+    * **Hurwitz product (binomial convolution for EGFs):**
+      $$
+      (f \ast_H g)(t) \;\coloneqq\; \sum_{n=0}^\infty \left(\sum_{k=0}^n \binom{n}{k} a_k b_{n-k}\right) \frac{t^n}{n!}.
+      $$
+    * **Dilation / Scaling operator (Adams operator):**
+      $\sigma_c(f)(t) \coloneqq f(ct) = \sum_{n=0}^\infty a_n c^n t^n$, with infinitesimal generator $\theta = \left. \frac{d}{dc} \sigma_c \right|_{c=1}$.
+
+  * **Composition and formal inversion (Lagrange inversion):**
+    * **Composition operator:** For $g(t) \in R[[t]]$ with $\operatorname{ord}(g) \ge 1$ (or $g(0)$ nilpotent):
+      $$
+      C_g(f)(t) \;\coloneqq\; (f \circ g)(t) \;=\; f(g(t)) \;=\; \sum_{n=0}^\infty a_n (g(t))^n.
+      $$
+      Continuous $R$-algebra homomorphism. Chain rules: $\partial_t(f \circ g) = (\partial_t f \circ g) \cdot \partial_t g$, and $\theta(f \circ g) = (\theta f \circ g) \cdot \frac{\theta g}{g}$.
+    * **Formal inversion (Lagrange Inversion Formula / LIF):**
+      For a reversible series $g(t) = c_1 t + c_2 t^2 + \dots \in R[[t]]$ with $c_1 \in R^\times$, there exists a unique compositional inverse $\check{g}(t) = g^{\langle -1 \rangle}(t) \in t R[[t]]$ satisfying $g(\check{g}(t)) = \check{g}(g(t)) = t$.
+      - **Lagrange Inversion Formula:**
+        $$
+        [t^n] \check{g}(t) \;=\; \frac{1}{n} [t^{n-1}] \left( \frac{t}{g(t)} \right)^n.
+        $$
+      - **Lagrange-Bürmann formula:** For any series $H(t) \in R[[t]]$:
+        $$
+        [t^n] H(\check{g}(t)) \;=\; \frac{1}{n} [t^{n-1}] \left( H'(t) \left( \frac{t}{g(t)} \right)^n \right).
+        $$
+
+  * **Logarithmic derivatives and formal logarithm:**
+    * **Standard logarithmic derivative:**
+      $$
+      \operatorname{dlog}(f) \;\coloneqq\; \frac{\partial_t f}{f} \;=\; \frac{f'(t)}{f(t)} \in R[[t]] \quad (\text{for } f(0) \in R^\times).
+      $$
+    * **Euler logarithmic derivative:**
+      $$
+      \operatorname{dlog}_\theta(f) \;\coloneqq\; \frac{\theta f}{f} \;=\; t \frac{f'(t)}{f(t)} \in t R[[t]].
+      $$
+    * Group homomorphism: $\operatorname{dlog}(f \cdot g) = \operatorname{dlog}(f) + \operatorname{dlog}(g)$, $\operatorname{dlog}(f^k) = k \operatorname{dlog}(f)$, $\operatorname{dlog}(1/f) = -\operatorname{dlog}(f)$.
+    * **Relation to Newton sums and power sums:**
+      If $f(t) = \prod_{i=1}^d (1 - \alpha_i t)$ is the reverse characteristic polynomial, then:
+      $$
+      - \operatorname{dlog}_\theta(f) \;=\; - t \frac{f'(t)}{f(t)} \;=\; \sum_{k=1}^\infty p_k t^k, \quad \text{where } p_k = \sum_{i=1}^d \alpha_i^k.
+      $$
+    * **Formal logarithm:** For $f(t) \in 1 + t R[[t]]$ ($R$ a $\mathbb{Q}$-algebra):
+      $$
+      \log(f(t)) \;\coloneqq\; \int \frac{f'(t)}{f(t)} dt \;=\; \sum_{k=1}^\infty \frac{(-1)^{k-1}}{k} (f(t) - 1)^k.
+      $$
+
+  * **Formal exponential of an integral ($e^{\int f}$):**
+    * For $f(t) \in R[[t]]$ ($R$ a $\mathbb{Q}$-algebra), let $F(t) = \int f(t) dt \in t R[[t]]$.
+    * Then:
+      $$
+      y(t) \;\coloneqq\; \exp\left(\int f(t) dt\right) \;=\; \sum_{k=0}^\infty \frac{1}{k!} \left( \int f(t) dt \right)^k \in 1 + t R[[t]].
+      $$
+    * **First-order ODE and integrating factor:**
+      $y(t)$ is the unique solution to the homogeneous initial value problem:
+      $$
+      \partial_t y \;=\; f(t) y, \quad y(0) = 1, \qquad \text{or equivalently} \quad \theta y \;=\; (t f(t)) y.
+      $$
+      For an inhomogeneous equation $y' + a(t) y = b(t)$, the integrating factor $\mu(t) = \exp(\int a(t) dt)$ yields:
+      $$
+      y(t) \;=\; \mu(t)^{-1} \left( y(0) + \int_0^t b(s) \mu(s) ds \right).
+      $$
+    * **Combinatorial exponential formula:**
+      Let $A(t) = \sum_{n=1}^\infty a_n \frac{t^n}{n!}$ be the EGF of connected combinatorial structures. Then:
+      $$
+      \exp(A(t)) \;=\; \sum_{n=0}^\infty c_n \frac{t^n}{n!}
+      $$
+      is the EGF of all structures (sets of connected components).
+    * **Plethystic exponential $\operatorname{PE}[f]$:**
+      For $f(t) \in t R[[t]]$:
+      $$
+      \operatorname{PE}[f(t)] \;\coloneqq\; \exp\left( \sum_{k=1}^\infty \frac{f(t^k)}{k} \right) \;=\; \prod_{n=1}^\infty \frac{1}{(1 - t^n)^{a_n}} \quad (\text{when } f(t) = \sum a_n t^n).
+      $$
+
+  * **Lie algebra of vector fields / Witt algebra generators on $R[[t]]$:**
+    * Derivations $\operatorname{Der}_R(R[[t]]) \cong R[[t]] \partial_t$.
+    * Witt algebra basis: $L_n \coloneqq -t^{n+1} \partial_t = -t^n \theta$ for $n \in \mathbb{Z}_{\ge -1}$.
+    * Commutation relations:
+      $$
+      [L_m, L_n] \;=\; (m - n) L_{m+n}.
+      $$
+      Here $L_{-1} = -\partial_t$ (translation), $L_0 = -\theta$ (dilation/Euler), $L_1 = -t\theta$ (special conformal).
+
+* **Preamble implementation requirements:**
+  * **Formal power series operator methods:** `categories/rings/formal_power_series.py`
+    - `FormalPowerSeries.derivative()`: formal differentiation $\partial_t f$.
+    - `FormalPowerSeries.euler_derivative()` (or `f.theta()`): Euler derivative $\theta f = t \partial_t f$.
+    - `FormalPowerSeries.integral()`: formal integration $\int f dt$ (asserting $\mathbb{Q} \subseteq R$).
+    - `FormalPowerSeries.shift(k)`: backward shift $S^{-k} f = (f - \sum_{j<k} a_j t^j)/t^k$ or forward shift $t^k f$.
+    - `FormalPowerSeries.hadamard(g)`: coefficient-wise product $(f \odot g)(t)$.
+    - `FormalPowerSeries.hurwitz_product(g)`: binomial convolution for exponential generating functions.
+    - `FormalPowerSeries.compose(g)`: composition $f(g(t))$ for $\operatorname{ord}(g) \ge 1$.
+    - `FormalPowerSeries.revert()`: functional/compositional inverse $f^{\langle -1 \rangle}(t)$ via Lagrange inversion.
+    - `FormalPowerSeries.dlog()`: standard logarithmic derivative $f'/f$.
+    - `FormalPowerSeries.dlog_theta()`: Euler logarithmic derivative $\theta f / f = t f'/f$.
+    - `FormalPowerSeries.exp_integral()`: formal exponential of integral $\exp(\int f dt)$.
+    - `FormalPowerSeries.log()`: formal logarithm $\log f(t)$.
+  * **Differential operator calculus on formal series:** `categories/differential_operators/formal_series.py`
+    - `EulerOperator(ring, var='t')`: standalone operator $\theta = t \partial_t$.
+    - `FormalDifferentialOperator`: polynomial expression in $\theta$ or $(t, \partial_t)$; supports evaluation on series, composition, and conversion between $\theta$-basis and $\partial_t$-basis via Stirling numbers of the second kind.
+    - `IntegratingFactor(a, b)`: solves $y' + a(t) y = b(t)$ via formal exponential of integral.
+  * **Combinatorial and generating function operators:** `categories/generating_functions/operators.py`
+    - `LagrangeInversion(g, H=None, n=10)`: coefficient extractor using Lagrange-Bürmann formula.
+    - `PlethysticExponential(f, prec=20)`: evaluates $\operatorname{PE}[f(t)]$.
+    - `ExponentialFormula(connected_egf)`: maps connected EGF $A(t)$ to total EGF $\exp(A(t))$.
+
+Intended owners: `categories/rings/formal_power_series.py` (`FormalPowerSeries` operator suite), `categories/differential_operators/formal_series.py` (`EulerOperator`, `FormalDifferentialOperator`, `IntegratingFactor`), `categories/generating_functions/operators.py` (`LagrangeInversion`, `PlethysticExponential`, `ExponentialFormula`), `categories/algebras/weyl_algebra.py` (`WeylAlgebra`, `WittAlgebra`).
+
 
 
 
