@@ -129,6 +129,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Operationalized Riemann-Hurwitz formula, ramification theory, different and discriminant ideals (curves, varieties, Dedekind domains, and number fields) | Literature survey + user intake 2026-09-19 | Unified operational ramification theory and Hurwitz formulas across algebraic geometry and algebraic number theory: (1) Ramification invariants: ramification index $e_i = e(\mathfrak{P}_i/\mathfrak{p})$, inertia degree $f_i = f(\mathfrak{P}_i/\mathfrak{p})$, fundamental identity $\sum e_i f_i = n$, tame ($p \nmid e$) vs wild ($p \mid e$) ramification; (2) Different ideal $\mathfrak{D}_{B/A}$ and discriminant $\mathfrak{d}_{B/A} = N(\mathfrak{D}_{B/A})$, Dedekind's different theorem ($\mathfrak{P} \mid \mathfrak{D} \iff e > 1$), lower and upper bounds $e - 1 \le d \le e - 1 + v_\mathfrak{P}(e)$, equality $d = e - 1$ for tame; (3) Galois ramification filtration: decomposition group $D_\mathfrak{P}$, inertia group $I_\mathfrak{P} = G_0$, lower ramification groups $G_i$, Hilbert's different formula $d = \sum_{i=0}^\infty (|G_i| - 1) = (e - 1) + \text{wild excess}$; (4) Riemann-Hurwitz formula for curves: canonical divisor $K_X \sim f^* K_Y + R$ where $R = \sum d_P P$, genus formula $2 g_X - 2 = n(2 g_Y - 2) + \deg(R)$, topological Euler characteristic $\chi(X) = n \chi(Y) - \deg(R)$; (5) Normal varieties: purity of the branch locus (Zariski-Nagata) in codimension 1, ramification divisor $R = \sum d_D D$, canonical class formula $K_X \sim f^* K_Y + R$; (6) Automated solver: genus solver, prime factorization $\mathfrak{p} \mathcal{O}_L = \prod \mathfrak{P}_i^{e_i}$, different/discriminant computer, and branch locus verifier | `categories/algebraic_geometry/hurwitz.py` + `categories/number_theory/ramification.py` + `categories/schemes/ramification_divisor.py` + `categories/galois/ramification_groups.py` | Proposed — see note below |
 | DG-modules over DG-algebras, graded module foundations, derived categories $\mathcal{D}(A)$, and semi-free resolutions | User intake 2026-09-19 | Complete categorical and homological hierarchy for differential graded (DG) modules over DG-algebras: (1) Graded foundations: $\mathbb{Z}$-graded modules $\mathbf{GrMod}_k$, Koszul braiding $\tau(x \otimes y) = (-1)^{|x||y|} y \otimes x$, graded associative/commutative algebras, graded module categories; (2) Differential graded objects: cochain complexes $(\mathbf{Ch}_k, \otimes, \underline{\operatorname{Hom}})$, Koszul sign convention $d(x \otimes y) = d(x) \otimes y + (-1)^{|x|} x \otimes d(y)$, $[d, f] = d \circ f - (-1)^{|f|} f \circ d$; (3) DG-algebras $(A, d_A)$ with Leibniz rule $d(a b) = d(a) b + (-1)^{|a|} a d(b)$ and CDGAs; (4) DG-modules $(M, d_M)$ over $A$ with module Leibniz rule $d_M(a m) = d_A(a) m + (-1)^{|a|} a d_M(m)$, DG-bimodules, cohomology modules $H^*(M) \in H^*(A)\mathbf{-Mod}$; (5) The DG-category $\underline{\mathbf{DGMod}}_A$: Hom complexes $\underline{\operatorname{Hom}}_A(M, N)$, shifts $M[k]$, mapping cones $\operatorname{Cone}(f)$; (6) Homological & model structures: quasi-isomorphisms, derived category $\mathcal{D}(A)$, projective model structure, semi-free (cell) resolutions $\mathbf{p} M \xrightarrow{\sim} M$, semi-injective resolutions, compact/perfect DG-modules $\operatorname{Perf}(A)$; (7) Derived operations: derived tensor product $M \otimes_A^{\mathbf{L}} N$, derived Hom $\mathbf{R}\operatorname{Hom}_A(M, N)$, Tor and Ext groups, two-sided bar resolution $B(A, A, M)$; (8) Computational engine: polynomial/exterior DGAs (Koszul complexes), matrix factorizations, de Rham flat modules, and semi-free resolution generators | `categories/algebras/dg_algebras.py` + `categories/modules/dg_modules.py` + `categories/derived/dg_derived_category.py` + `categories/modules/graded_modules.py` + `categories/homology/bar_cobar.py` | Proposed — see note below |
 | Witt vectors, $p$-adics as explicit power series, and ghost vector representations (exact and symbolic arithmetic) | User intake 2026-09-19 | Algebraic and algorithmic infrastructure for $p$-typical and big Witt vectors, and $p$-adic series arithmetic: (1) $p$-typical Witt ring $W(R)$ and truncated $W_n(R)$: ghost map $w_n = \sum_{i=0}^n p^i x_i^{p^{n-i}}$, bijection over $\mathbb{Q}$-algebras, componentwise ghost addition/multiplication, universal polynomials $S_n, P_n \in \mathbb{Z}[X, Y]$, and triangular back-substitution; (2) Perfect field Witt vectors $W(k)$ as complete DVR of characteristic 0, $W(\mathbb{F}_p) \cong \mathbb{Z}_p$, unramified extensions $W(\mathbb{F}_{p^d}) \cong \mathbb{Z}_{p^d}$; (3) Teichmüller lifts $[a] = (a, 0, \dots)$, $p$-adic expansion $x = \sum [c_n] p^n$, Newton-Hensel quadratic convergence; (4) Operators: Verschiebung $V(x) = (0, x_0, \dots)$, Frobenius $F$, relations $FV = p$, $VF = p$, Dieudonné ring $W(k)[F, V]$; (5) Big Witt vectors $\mathbb{W}(R) \cong 1 + t R[[t]]^\times$, power series multiplication link, Cartier decomposition $\mathbb{W}(R) \cong \prod_{(k, p)=1} W(R)$; (6) Explicit $p$-adic series in $\mathbb{Z}_p, \mathbb{Q}_p$: formal power series expansions $\sum a_n p^n$, ultrametric valuations $v_p$, Hensel's lemma, Artin-Hasse exponential $E_p(t) = \exp(\sum t^{p^n}/p^n) \in \mathbb{Z}_p[[t]]$, and symbolic ghost arithmetic engine | `categories/number_theory/witt_vectors.py` + `categories/number_theory/p_adics.py` + `categories/rings/formal_power_series.py` + `categories/algebraic_geometry/dieudonne.py` | Proposed — see note below |
+| Operationalized algebraic topology calculational theorems (Mayer-Vietoris, Universal Coefficient Theorems, Künneth formulas, cellular homology, excision, Poincaré duality, van Kampen, and Hurewicz) | User intake 2026-09-19 | Comprehensive computational framework implementing Hatcher-style topological theorems as exact solvers: (1) Mayer-Vietoris sequence solver for homology and cohomology: $H_n(A \cap B) \to H_n(A) \oplus H_n(B) \to H_n(X) \to H_{n-1}(A \cap B)$, reduced/relative variants, connecting homomorphisms $\partial, \delta$; (2) Universal Coefficient Theorems (UCT): automated evaluation of $H_n(X; G) \cong (H_n(X) \otimes G) \oplus \operatorname{Tor}_1(H_{n-1}(X), G)$ and $H^n(X; G) \cong \operatorname{Hom}(H_n(X), G) \oplus \operatorname{Ext}^1(H_{n-1}(X), G)$ across arbitrary coefficients ($\mathbb{Q}, \mathbb{F}_p, \mathbb{Z}/m$); (3) Künneth formula solver for products $X \times Y$ with $\otimes$ and $\operatorname{Tor}_1$ terms; (4) Cellular homology engine: attaching maps, cellular boundary matrices $d_n = [\deg(\Delta_{\alpha, \beta})]$, and Euler characteristic $\chi(X) = \sum (-1)^n c_n$; (5) Long exact sequences of pairs $(X, A)$, excision, suspension isomorphisms $\widetilde{H}_{n+1}(\Sigma X) \cong \widetilde{H}_n(X)$, and wedge sums; (6) Cohomology rings: cup and cap products, Poincaré duality isomorphisms $H^k(M) \cong H_{n-k}(M)$, and intersection pairings; (7) Homotopy theory solvers: Seifert-van Kampen amalgamated free product solver $\pi_1(A) *_{\pi_1(A \cap B)} \pi_1(B)$, Hurewicz abelianization $\pi_1^{\mathrm{ab}} \cong H_1$ and higher Hurewicz isomorphisms $\pi_n(X) \cong H_n(X)$ | `categories/topology/computational_topology.py` + `categories/topology/mayer_vietoris.py` + `categories/topology/uct.py` + `categories/topology/kunneth.py` + `categories/topology/cellular.py` + `categories/topology/poincare_duality.py` + `categories/topology/van_kampen.py` | Proposed — see note below |
 
 
 
@@ -4347,6 +4348,173 @@ Intended owners: `categories/modules/graded_modules.py` (`GradedModule`, `Graded
     - `DieudonneModule(generators, relations, p, k)`: Dieudonné module over $W(k)$.
 
 Intended owners: `categories/number_theory/witt_vectors.py` (`WittVector`, `GhostVector`, `TeichmullerLift`), `categories/number_theory/big_witt_vectors.py` (`BigWittVector`, `CartierDecomposition`), `categories/number_theory/p_adics.py` (`PadicSeries`, `ArtinHasseExponential`, `PadicLog`, `PadicExp`), `categories/algebraic_geometry/dieudonne.py` (`DieudonneRing`, `DieudonneModule`).
+
+## Desired capability: Operationalized algebraic topology calculational theorems (Hatcher toolkit) — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Mayer-Vietoris sequences for homology and cohomology:**
+    * Excisive triad $(X; A, B)$ with $X = A \cup B$ (open covers or CW subcomplexes whose union is $X$ and whose intersection is a deformation retract of a neighborhood).
+    * **Short exact sequence of chain complexes:**
+      $$
+      0 \longrightarrow C_n(A \cap B) \xrightarrow{(i_A, -i_B)} C_n(A) \oplus C_n(B) \xrightarrow{j_A + j_B} C_n(A + B) \longrightarrow 0.
+      $$
+    * **Homology Mayer-Vietoris sequence:**
+      $$
+      \dots \longrightarrow H_n(A \cap B) \xrightarrow{(i_A_*, -i_B_*)} H_n(A) \oplus H_n(B) \xrightarrow{j_A_* + j_B_*} H_n(X) \xrightarrow{\partial_*} H_{n-1}(A \cap B) \longrightarrow \dots
+      $$
+      Connecting homomorphism $\partial_* \colon H_n(X) \to H_{n-1}(A \cap B)$ comes from the Snake Lemma: for cycle $\gamma = \alpha + \beta$ ($\alpha \in C_n(A), \beta \in C_n(B)$), $\partial_*[\gamma] = [\partial \alpha] = -[\partial \beta] \in H_{n-1}(A \cap B)$.
+    * Reduced homology Mayer-Vietoris: for non-empty $A \cap B$, replaces $H_0$ with $\widetilde{H}_0$, terminating with $\widetilde{H}_0(X) \to 0$.
+    * Relative Mayer-Vietoris sequence: for pairs $(X, Y) = (A \cup B, C \cup D)$.
+    * **Cohomology Mayer-Vietoris sequence:**
+      $$
+      \dots \longrightarrow H^{n-1}(A \cap B) \xrightarrow{\delta^*} H^n(X) \longrightarrow H^n(A) \oplus H^n(B) \longrightarrow H^n(A \cap B) \longrightarrow \dots
+      $$
+      Compatible with cup products.
+
+  * **Universal Coefficient Theorems (UCT):**
+    * **UCT for Homology:**
+      Let $C_\bullet$ be a chain complex of free abelian groups, and $G$ an abelian group.
+      Functorial split short exact sequence:
+      $$
+      0 \longrightarrow H_n(C) \otimes_\mathbb{Z} G \xrightarrow{\alpha} H_n(C; G) \xrightarrow{\beta} \operatorname{Tor}_1^\mathbb{Z}(H_{n-1}(C), G) \longrightarrow 0.
+      $$
+      Splitting yields the isomorphism:
+      $$
+      H_n(C; G) \;\cong\; \big(H_n(C) \otimes_\mathbb{Z} G\big) \;\oplus\; \operatorname{Tor}_1^\mathbb{Z}\big(H_{n-1}(C), G\big).
+      $$
+      For finitely generated homology $H_n(C) \cong \mathbb{Z}^{b_n} \oplus \bigoplus_i \mathbb{Z}/p_i^{k_i}$:
+      - Field coefficients $\mathbb{Q}$: $H_n(X; \mathbb{Q}) \cong \mathbb{Q}^{b_n}$.
+      - Finite field coefficients $\mathbb{F}_p$: $H_n(X; \mathbb{F}_p) \cong \mathbb{F}_p^{b_n + t_n(p) + t_{n-1}(p)}$, where $t_k(p)$ is the number of $\mathbb{Z}/p^r$ factors in $H_k(X)$.
+    * **UCT for Cohomology:**
+      Let $C_\bullet$ be a chain complex of free abelian groups, and $G$ an abelian group.
+      Functorial split short exact sequence:
+      $$
+      0 \longrightarrow \operatorname{Ext}_\mathbb{Z}^1\big(H_{n-1}(C), G\big) \xrightarrow{\delta} H^n(C; G) \xrightarrow{h} \operatorname{Hom}_\mathbb{Z}\big(H_n(C), G\big) \longrightarrow 0.
+      $$
+      Splitting yields the isomorphism:
+      $$
+      H^n(C; G) \;\cong\; \operatorname{Hom}_\mathbb{Z}\big(H_n(C), G\big) \;\oplus\; \operatorname{Ext}_\mathbb{Z}^1\big(H_{n-1}(C), G\big).
+      $$
+      The Kronecker evaluation map $h([\phi])([\alpha]) = \phi(\alpha)$ is surjective with kernel $\operatorname{Ext}^1$.
+      For $G = \mathbb{Z}$:
+      $$
+      H^n(X; \mathbb{Z}) \;\cong\; \operatorname{Free}\big(H_n(X)\big) \;\oplus\; \operatorname{Tors}\big(H_{n-1}(X)\big).
+      $$
+      Torsion in $H_{n-1}(X)$ shifts by degree $+1$ into $H^n(X)$.
+
+  * **Künneth Formulas for Product Spaces:**
+    * **Künneth formula for Homology:**
+      For chain complexes $C, C'$ over a PID $R$ with $C$ flat:
+      $$
+      0 \longrightarrow \bigoplus_{i+j=n} H_i(C) \otimes_R H_j(C') \longrightarrow H_n(C \otimes C') \longrightarrow \bigoplus_{i+j=n-1} \operatorname{Tor}_1^R\big(H_i(C), H_j(C')\big) \longrightarrow 0.
+      $$
+      For product topological spaces $X \times Y$:
+      $$
+      H_n(X \times Y; R) \;\cong\; \bigoplus_{p+q=n} \big(H_p(X; R) \otimes_R H_q(Y; R)\big) \;\oplus\; \bigoplus_{p+q=n-1} \operatorname{Tor}_1^R\big(H_p(X; R), H_q(Y; R)\big).
+      $$
+    * **Künneth formula for Cohomology:**
+      Cross product $\times \colon H^p(X; R) \otimes_R H^q(Y; R) \to H^{p+q}(X \times Y; R)$.
+      Over a field $k$, cross product is an isomorphism of graded rings:
+      $$
+      H^*(X \times Y; k) \;\cong\; H^*(X; k) \otimes_k H^*(Y; k).
+      $$
+      Over a PID $R$, split exact sequence with $\operatorname{Ext}_R^1$ terms.
+
+  * **Cellular Homology and CW Complexes:**
+    * For a CW complex $X = \bigcup X^n$:
+      - Cellular chain complex: $C_n^{\mathrm{CW}}(X) \coloneqq H_n(X^n, X^{n-1}) \cong \mathbb{Z}^{c_n}$, where $c_n$ is the number of $n$-cells $e_\alpha^n$.
+      - Cellular boundary map $d_n \colon C_n^{\mathrm{CW}}(X) \to C_{n-1}^{\mathrm{CW}}(X)$:
+        Matrix entries $d_{\alpha, \beta} = \deg(\Delta_{\alpha, \beta})$ where $\Delta_{\alpha, \beta} \colon S^{n-1} \xrightarrow{\phi_\alpha} X^{n-1} \twoheadrightarrow S_\beta^{n-1}$ is the attaching map collapsed to the $\beta$-th cell.
+      - Homology isomorphism: $H_n^{\mathrm{CW}}(X) \cong H_n(X)$.
+      - Euler characteristic theorem: $\chi(X) = \sum_{n} (-1)^n c_n = \sum_n (-1)^n b_n$.
+
+  * **Excision, Pairs, Suspensions, and Wedges:**
+    * Long exact sequence of a pair $(X, A)$:
+      $$
+      \dots \longrightarrow H_n(A) \xrightarrow{i_*} H_n(X) \xrightarrow{j_*} H_n(X, A) \xrightarrow{\partial} H_{n-1}(A) \longrightarrow \dots
+      $$
+    * Excision theorem: If $Z \subset A \subset X$ with $\bar{Z} \subset \operatorname{int}(A)$, then $(X \setminus Z, A \setminus Z) \hookrightarrow (X, A)$ induces isomorphism $H_n(X \setminus Z, A \setminus Z) \xrightarrow{\sim} H_n(X, A)$.
+    * Suspension isomorphism: $\widetilde{H}_{n+1}(\Sigma X) \cong \widetilde{H}_n(X)$ and $\widetilde{H}^{n+1}(\Sigma X) \cong \widetilde{H}^n(X)$.
+    * Wedge sum theorem: $\widetilde{H}_n(\bigvee_\alpha X_\alpha) \cong \bigoplus_\alpha \widetilde{H}_n(X_\alpha)$.
+
+  * **Cohomology Rings, Cup and Cap Products, and Poincaré Duality:**
+    * Cup product: $\smile \colon H^p(X; R) \times H^q(X; R) \to H^{p+q}(X; R)$.
+      Graded commutativity: $\alpha \smile \beta = (-1)^{p q} \beta \smile \alpha$.
+    * Cap product: $\frown \colon H_n(X; R) \times H^k(X; R) \to H_{n-k}(X; R)$, satisfying $\psi(\sigma \frown \phi) = (\phi \smile \psi)(\sigma)$.
+    * Poincaré Duality: For a closed, $R$-orientable $n$-manifold $M$ with fundamental class $[M] \in H_n(M; R)$:
+      $$
+      D_M \coloneqq - \frown [M] \colon H^k(M; R) \xrightarrow{\sim} H_{n-k}(M; R)
+      $$
+      is an isomorphism for all $k$.
+    * Intersection pairing: $H^k(M) \times H^{n-k}(M) \to R$, $(\alpha, \beta) \mapsto \langle \alpha \smile \beta, [M] \rangle$.
+
+  * **Fundamental Group, Seifert-van Kampen, and Hurewicz Theorem:**
+    * **Seifert-van Kampen Theorem:**
+      For $X = A \cup B$ with $A, B, A \cap B$ path-connected and $x_0 \in A \cap B$:
+      $$
+      \pi_1(X, x_0) \;\cong\; \pi_1(A, x_0) *_{\pi_1(A \cap B, x_0)} \pi_1(B, x_0)
+      $$
+      (amalgamated free product / pushout in $\mathbf{Grp}$).
+    * **Hurewicz Theorem:**
+      - Degree 1: For path-connected $X$, the Hurewicz homomorphism $h \colon \pi_1(X, x_0) \to H_1(X; \mathbb{Z})$ induces an isomorphism:
+        $$
+        \pi_1(X, x_0)^{\mathrm{ab}} \;\cong\; H_1(X; \mathbb{Z}).
+        $$
+      - Higher degrees: If $X$ is $(n-1)$-connected ($n \ge 2$, so $\pi_i(X) = 0$ for $i < n$):
+        $\widetilde{H}_i(X) = 0$ for $i < n$, and $h \colon \pi_n(X) \xrightarrow{\sim} H_n(X; \mathbb{Z})$ is an isomorphism, with $h \colon \pi_{n+1}(X) \twoheadrightarrow H_{n+1}(X)$ surjective.
+
+* **Operationalization and effective computation engine:**
+  * **Algorithmic Exact Sequence Solver (`ExactSequenceSolver`):**
+    - Solves long exact sequences $\dots \to A_n \xrightarrow{\alpha_n} B_n \xrightarrow{\beta_n} C_n \xrightarrow{\gamma_n} A_{n-1} \to \dots$:
+      * Zero propagation: $A_n = 0 \implies \beta_n$ injective; $C_n = 0 \implies \alpha_n$ surjective; $A_n = 0$ and $A_{n-1} = 0 \implies B_n \cong C_n$.
+      * Rank / Euler characteristic conservation: $\sum (-1)^i \operatorname{rank}(V_i) = 0$ for exact sequences of free modules / vector spaces.
+      * Short exact sequence splitter: detects split extensions when the quotient is free.
+      * Boundary map deduction via Smith Normal Form on partial homomorphisms.
+  * **Automated UCT Calculator (`UCTCalculator`):**
+    - Takes finitely generated homology $H_*(X; \mathbb{Z})$ presented as Betti numbers $b_k$ and torsion lists $[d_1, \dots, d_m]$.
+    - Evaluates $H_*(X; G)$ and $H^*(X; G)$ for any $G \in \{\mathbb{Q}, \mathbb{R}, \mathbb{C}, \mathbb{F}_p, \mathbb{Z}/m\mathbb{Z}, \mathbb{Z}\}$.
+    - Handles $\operatorname{Tor}_1^\mathbb{Z}$ and $\operatorname{Ext}_\mathbb{Z}^1$ table lookups:
+      $\operatorname{Tor}_1(\mathbb{Z}/a, \mathbb{Z}/b) \cong \mathbb{Z}/\gcd(a, b)$, $\operatorname{Ext}^1(\mathbb{Z}/a, \mathbb{Z}/b) \cong \mathbb{Z}/\gcd(a, b)$, $\operatorname{Ext}^1(\mathbb{Z}/a, \mathbb{Z}) \cong \mathbb{Z}/a$.
+  * **Künneth Product Engine (`KunnethCalculator`):**
+    - Computes homology and cohomology of $X \times Y$ given $H_*(X)$ and $H_*(Y)$.
+    - Computes graded cohomology rings $H^*(X \times Y; k) \cong H^*(X; k) \otimes H^*(Y; k)$ with cup product multiplication matrices.
+  * **Cellular Complex Homology Engine (`CellularComplex`):**
+    - Constructs cellular chain complexes from cell numbers and attaching degree matrices $[d_{\alpha, \beta}]$.
+    - Computes homology groups $H_n^{\mathrm{CW}}(X)$ with cycle generators and boundary boundaries.
+    - Computes Euler characteristics and Betti numbers.
+  * **Seifert-van Kampen Engine (`VanKampenSolver`):**
+    - Computes amalgamated free products of finitely presented groups $\langle X_A \mid R_A \rangle *_{\langle X_\cap \mid R_\cap \rangle} \langle X_B \mid R_B \rangle$ via Tietze transformations and abelianization.
+  * **Poincaré Duality & Intersection Pairing Engine (`PoincareDuality`):**
+    - Verifies orientation and calculates intersection matrix on middle cohomology $H^{n/2}(M)$ for even-dimensional manifolds (signature, type I/II definite/indefinite).
+
+* **Preamble implementation requirements:**
+  * `categories/topology/exact_sequence.py`:
+    - `LongExactSequence(terms, maps)`: exact sequence data model with automated deduction.
+    - `solve_exact_sequence(les)`: infers unknown groups and maps.
+  * `categories/topology/mayer_vietoris.py`:
+    - `MayerVietoris(A, B, A_cap_B)`: Mayer-Vietoris homology and cohomology solver.
+    - `RelativeMayerVietoris(pair_A, pair_B)`: relative Mayer-Vietoris solver.
+  * `categories/topology/uct.py`:
+    - `UniversalCoefficientHomology(H_Z, G)`: evaluates $H_*(X; G)$.
+    - `UniversalCoefficientCohomology(H_Z, G)`: evaluates $H^*(X; G)$.
+    - `tor_group(A, B)`: computes $\operatorname{Tor}_1^\mathbb{Z}(A, B)$.
+    - `ext_group(A, B)`: computes $\operatorname{Ext}_\mathbb{Z}^1(A, B)$.
+  * `categories/topology/kunneth.py`:
+    - `KunnethHomology(H_X, H_Y, ring)`: computes $H_*(X \times Y)$.
+    - `KunnethCohomologyRing(H_X, H_Y, field)`: computes graded cohomology ring.
+  * `categories/topology/cellular.py`:
+    - `CWComplex(cells_per_dim, attaching_degrees)`: CW complex model.
+    - `cellular_homology()`: computes $H_n^{\mathrm{CW}}(X)$.
+    - `euler_characteristic()`: computes $\chi(X)$.
+  * `categories/topology/van_kampen.py`:
+    - `VanKampen(G_A, G_B, G_cap, phi_A, phi_B)`: amalgamated free product.
+    - `hurewicz_abelianization(G)`: computes $\pi_1^{\mathrm{ab}} \cong H_1$.
+  * `categories/topology/poincare_duality.py`:
+    - `PoincareDuality(M, orientation_class)`: cap product isomorphism $H^k(M) \cong H_{n-k}(M)$.
+    - `intersection_form(M)`: intersection pairing on middle cohomology.
+
+Intended owners: `categories/topology/exact_sequence.py` (`LongExactSequence`, `ExactSequenceSolver`), `categories/topology/mayer_vietoris.py` (`MayerVietoris`), `categories/topology/uct.py` (`UniversalCoefficientHomology`, `UniversalCoefficientCohomology`), `categories/topology/kunneth.py` (`KunnethHomology`, `KunnethCohomologyRing`), `categories/topology/cellular.py` (`CWComplex`), `categories/topology/van_kampen.py` (`VanKampen`, `Hurewicz`), `categories/topology/poincare_duality.py` (`PoincareDuality`, `IntersectionForm`).
+
 
 
 
