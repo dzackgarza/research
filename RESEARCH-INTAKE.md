@@ -125,7 +125,8 @@ Where to look first for existing algorithms before writing new code. Check these
 | Continuous actions of topological groups on topological spaces (G-Top, orbit spaces, proper actions, slice theorem, and equivariant topology) | User intake 2026-09-19 | Comprehensive topological group action framework: topological group $G \in \mathbf{TopGrp}$ and continuous left/right actions $\alpha \colon G \times X \to X$ in $\mathbf{Top}$; orbits $G \cdot x$, stabilizers $G_x \le G$ (closed subgroups), canonical homeomorphism $G/G_x \cong G \cdot x$; quotient orbit space $X/G$ with open projection $\pi \colon X \twoheadrightarrow X/G$, separation criteria ($T_1 \iff$ closed orbits, $T_2 \iff$ closed orbit relation); action predicates: transitive ($X \cong G/H$), free, faithful, proper ($(g,x) \mapsto (gx, x)$ proper, compact stabilizers, Hausdorff quotient), properly discontinuous, cocompact; Palais-Koszul slice theorem $G \times_H S \cong U$; equivariant category $G\mathbf{-Top}$ ($G$-maps, invariant subspaces, fixed points $X^G$, induction $\operatorname{Ind}_H^G = G \times_H -$, coinduction $\operatorname{CoInd}_H^G$); Borel homotopy quotient $X_{hG} = EG \times_G X$, equivariant cohomology $H_G^*(X) = H^*(X_{hG})$; principal $G$-bundles and associated bundles $P \times_G F$ | `categories/topology/topological_groups.py` + `categories/topology/group_actions.py` + `categories/topology/equivariant.py` + `categories/topology/principal_bundles.py` | Proposed — see note below |
 | Associated real/complex torus $T(L) = L_\mathbb{R}/L$ and abelian varieties from $\mathbb{Z}$-lattices | User intake 2026-09-19 | Construction of the associated torus $T(L) = L_\mathbb{R}/L \cong (S^1)^n$ for any $\mathbb{Z}$-lattice $L$: compact abelian Lie group, $\pi_1 \cong L$, $H_1 \cong L$, $H^1 \cong L^\vee$, dual torus $T(L)^\vee = L_\mathbb{R}^\vee/L^\vee$; complex structures $J$ ($J^2 = -\operatorname{id}$ on $L_\mathbb{R}$ for $\operatorname{rank}(L) = 2g$) yielding complex tori $V/\Lambda$; Riemann bilinear relations for polarizations $E \in \bigwedge^2 L^\vee$: $E(Ju, Jv) = E(u, v)$ and $E(u, Ju) > 0$ (Hodge type (1,1) + positive-definiteness); criterion for $T(L)$ to be an abelian variety (existence of Riemann form $E$); elementary divisors $(d_1, \dots, d_g)$, principal polarizations ($d_i = 1$) and period matrices $Z \in \mathbb{H}_g$ in Siegel upper half-space; Appell-Humbert theorem and theta functions $\theta(z)$; Euclidean lattices with symmetric form $b$ as flat Riemannian tori, Laplace spectrum from $L^\vee$, and Milnor isospectral pairs; Jacobian $\operatorname{Jac}(C) = H_1(C, \mathbb{R})/H_1(C, \mathbb{Z})$ and Albanese $\operatorname{Alb}(X)$ varieties | `categories/lattices/torus.py` + `categories/complex_geometry/complex_tori.py` + `categories/abelian_varieties/abelian_variety.py` + `categories/modular/siegel_half_space.py` + `categories/riemannian/flat_tori.py` | Proposed — see note below |
 | Cartier and Pontryagin dualities (LCA groups, finite commutative group schemes, Hopf algebras, and Weil pairings) | User intake 2026-09-19 | Categorical duality theories for abelian topological groups and commutative group schemes: (1) Pontryagin duality on locally compact abelian groups $\mathbf{LCA}$: character group $\widehat{G} = \operatorname{Hom}_{\mathbf{LCA}}(G, \mathbb{T})$, biduality isomorphism $G \xrightarrow{\sim} \widehat{\widehat{G}}$, compact-discrete duality, torsion-profinite duality, connected-torsion-free duality, annihilators $H^\perp \cong \widehat{G/H}$, dual exact sequences, Haar measure, Fourier transform, and Plancherel theorem; (2) Cartier duality on finite locally free commutative group schemes over $S$ (and finite-dimensional commutative cocommutative Hopf algebras $A$ via dual Hopf algebra $A^*$): $D(G) = \underline{\operatorname{Hom}}(G, \mathbb{G}_m)$, canonical biduality $G \xrightarrow{\sim} D(D(G))$, dual pairs $(\mathbb{Z}/n)_k \leftrightarrow \mu_{n,k}$ and self-dual $\alpha_p$, four Oort-Tate classes (étale-étale, étale-local, local-étale, local-local), Frobenius-Verschiebung exchange $D(F) = V_{D(G)}$; (3) Dieudonné module duality $\mathbb{M}(D(G))$; (4) Abelian varieties: Cartier duality $D(A[n]) \cong A^\vee[n]$ yielding the Weil pairing $e_n \colon A[n] \times A^\vee[n] \to \mu_n$; (5) Barsotti-Tate ($p$-divisible) groups and Serre-Tate duality | `categories/topology/pontryagin.py` + `categories/schemes/group_schemes/cartier_duality.py` + `categories/algebras/hopf_algebras.py` + `categories/abelian_varieties/weil_pairing.py` + `categories/schemes/group_schemes/p_divisible.py` | Proposed — see note below |
-| Operationalized Grothendieck spectral sequences (generic functor composition, automated differentials, 5-term solver, and concrete specializations: Leray, Serre, LHS, local-to-global Ext/Tor, Frölicher) | Literature survey + user intake 2026-09-19 | Comprehensive computational framework for Grothendieck spectral sequences: (1) Abstract Grothendieck spectral sequence $E_2^{p, q} = (R^p F)(R^q G(A)) \implies R^{p+q}(F \circ G)(A)$ for composable functors $\mathcal{A} \xrightarrow{G} \mathcal{B} \xrightarrow{F} \mathcal{C}$ with $G(\operatorname{Inj})$ $F$-acyclic, homological dual $E^2_{p, q} = (L_p F)(L_q G(A)) \implies L_{p+q}(F \circ G)(A)$, Cartan-Eilenberg double complex resolutions; (2) Algorithmic engine: bigraded page structures $E_r^{p, q}$, differential complexes $d_r$, page transitions $E_{r+1} = H(E_r, d_r)$, automated quadrant/sparsity vanishing, 5-term exact sequence solver ($0 \to E_2^{1, 0} \to H^1 \to E_2^{0, 1} \xrightarrow{d_2} E_2^{2, 0} \to \dots$), multiplicative Leibniz propagation $d_r(xy) = d_r(x)y + (-1)^{|x|} x d_r(y)$, transgression tracking, abutment filtration reconstruction, and extension problem solving; (3) Concrete computable specializations: Leray SS ($H^p(Y, R^q f_* \mathcal{F}) \implies H^{p+q}(X, \mathcal{F})$), Serre fibration SS ($H^p(B; \mathcal{H}^q(F)) \implies H^{p+q}(E)$), Lyndon-Hochschild-Serre (LHS) for group cohomology ($H^p(G/N, H^q(N, M)) \implies H^{p+q}(G, M)$), Lie algebra Hochschild-Serre, local-to-global Ext ($H^p(X, \mathcal{E}xt^q(\mathcal{F}, \mathcal{G})) \implies \operatorname{Ext}^{p+q}(\mathcal{F}, \mathcal{G})$), local-to-global Tor, change of rings (Cartan-Eilenberg Ext/Tor), Frölicher/Hodge-to-de Rham ($H^q(X, \Omega_X^p) \implies H_{\mathrm{dR}}^{p+q}$), and local cohomology SS | `categories/homology/spectral_sequences/grothendieck.py` + `categories/homology/spectral_sequences/spectral_sequence.py` + `categories/homology/spectral_sequences/leray.py` + `categories/homology/spectral_sequences/lyndon_hochschild_serre.py` + `categories/homology/spectral_sequences/local_ext.py` + `categories/homology/spectral_sequences/froelicher.py` | Proposed — see note below |
+| Operationalized Grothendieck spectral sequences (generic functor composition, automated differentials, 5-term solver, and concrete specializations: Leray, Serre, LHS, local-to-global Ext/Tor, Frölicher) | Literature survey + user intake 2026-09-19 | Comprehensive computational framework for Grothendieck spectral sequences: (1) Abstract Grothendieck spectral sequence $E_2^{p, q} = (R^p F)(R^q G(A)) \implies R^{p+q}(F \circ G)(A)$ for composable functors $\mathcal{A} \xrightarrow{G} \mathcal{B} \xrightarrow{F} \mathcal{C}$ with $G(\operatorname{Inj})$ $F$-acyclic, homological dual $E^2_{p, q} = (L_p F)(L_q G(A)) \implies L_{p+q}(F \circ G)(A), Cartan-Eilenberg double complex resolutions; (2) Algorithmic engine: bigraded page structures $E_r^{p, q}$, differential complexes $d_r$, page transitions $E_{r+1} = H(E_r, d_r)$, automated quadrant/sparsity vanishing, 5-term exact sequence solver ($0 \to E_2^{1, 0} \to H^1 \to E_2^{0, 1} \xrightarrow{d_2} E_2^{2, 0} \to \dots$), multiplicative Leibniz propagation $d_r(xy) = d_r(x)y + (-1)^{|x|} x d_r(y)$, transgression tracking, abutment filtration reconstruction, and extension problem solving; (3) Concrete computable specializations: Leray SS ($H^p(Y, R^q f_* \mathcal{F}) \implies H^{p+q}(X, \mathcal{F})$), Serre fibration SS ($H^p(B; \mathcal{H}^q(F)) \implies H^{p+q}(E)$), Lyndon-Hochschild-Serre (LHS) for group cohomology ($H^p(G/N, H^q(N, M)) \implies H^{p+q}(G, M)$), Lie algebra Hochschild-Serre, local-to-global Ext ($H^p(X, \mathcal{E}xt^q(\mathcal{F}, \mathcal{G})) \implies \operatorname{Ext}^{p+q}(\mathcal{F}, \mathcal{G})$), local-to-global Tor, change of rings (Cartan-Eilenberg Ext/Tor), Frölicher/Hodge-to-de Rham ($H^q(X, \Omega_X^p) \implies H_{\mathrm{dR}}^{p+q}$), and local cohomology SS | `categories/homology/spectral_sequences/grothendieck.py` + `categories/homology/spectral_sequences/spectral_sequence.py` + `categories/homology/spectral_sequences/leray.py` + `categories/homology/spectral_sequences/lyndon_hochschild_serre.py` + `categories/homology/spectral_sequences/local_ext.py` + `categories/homology/spectral_sequences/froelicher.py` | Proposed — see note below |
+| Operationalized Riemann-Hurwitz formula, ramification theory, different and discriminant ideals (curves, varieties, Dedekind domains, and number fields) | Literature survey + user intake 2026-09-19 | Unified operational ramification theory and Hurwitz formulas across algebraic geometry and algebraic number theory: (1) Ramification invariants: ramification index $e_i = e(\mathfrak{P}_i/\mathfrak{p})$, inertia degree $f_i = f(\mathfrak{P}_i/\mathfrak{p})$, fundamental identity $\sum e_i f_i = n$, tame ($p \nmid e$) vs wild ($p \mid e$) ramification; (2) Different ideal $\mathfrak{D}_{B/A}$ and discriminant $\mathfrak{d}_{B/A} = N(\mathfrak{D}_{B/A})$, Dedekind's different theorem ($\mathfrak{P} \mid \mathfrak{D} \iff e > 1$), lower and upper bounds $e - 1 \le d \le e - 1 + v_\mathfrak{P}(e)$, equality $d = e - 1$ for tame; (3) Galois ramification filtration: decomposition group $D_\mathfrak{P}$, inertia group $I_\mathfrak{P} = G_0$, lower ramification groups $G_i$, Hilbert's different formula $d = \sum_{i=0}^\infty (|G_i| - 1) = (e - 1) + \text{wild excess}$; (4) Riemann-Hurwitz formula for curves: canonical divisor $K_X \sim f^* K_Y + R$ where $R = \sum d_P P$, genus formula $2 g_X - 2 = n(2 g_Y - 2) + \deg(R)$, topological Euler characteristic $\chi(X) = n \chi(Y) - \deg(R)$; (5) Normal varieties: purity of the branch locus (Zariski-Nagata) in codimension 1, ramification divisor $R = \sum d_D D$, canonical class formula $K_X \sim f^* K_Y + R$; (6) Automated solver: genus solver, prime factorization $\mathfrak{p} \mathcal{O}_L = \prod \mathfrak{P}_i^{e_i}$, different/discriminant computer, and branch locus verifier | `categories/algebraic_geometry/hurwitz.py` + `categories/number_theory/ramification.py` + `categories/schemes/ramification_divisor.py` + `categories/galois/ramification_groups.py` | Proposed — see note below |
 
 
 
@@ -3852,6 +3853,185 @@ Intended owners: `categories/topology/pontryagin.py` (`LCAGroup`, `CharacterGrou
     - `FroelicherSpectralSequence(X)`: Hodge-to-de Rham spectral sequence $E_1^{p, q} = H^q(X, \Omega_X^p) \implies H_{\mathrm{dR}}^{p+q}(X)$ with Deligne-Illusie degeneration check.
 
 Intended owners: `categories/homology/spectral_sequences/grothendieck.py` (`GrothendieckSpectralSequence`, `CartanEilenbergResolution`), `categories/homology/spectral_sequences/spectral_sequence.py` (`SpectralSequence`, `Page`, `Differential`, `FiveTermSequenceSolver`), `categories/homology/spectral_sequences/leray.py` (`LeraySpectralSequence`, `SerreFibrationSpectralSequence`), `categories/homology/spectral_sequences/lyndon_hochschild_serre.py` (`LyndonHochschildSerre`), `categories/homology/spectral_sequences/local_ext.py` (`LocalToGlobalExt`, `LocalToGlobalTor`), `categories/homology/spectral_sequences/froelicher.py` (`FroelicherSpectralSequence`).
+
+## Desired capability: Operationalized Riemann-Hurwitz formula and ramification theory — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Unified setting: 1-dimensional regular schemes and Dedekind covers:**
+    * Morphism $f \colon X \to Y$ of smooth projective curves over an algebraically closed field $k$, or $\operatorname{Spec} B \to \operatorname{Spec} A$ where $A$ is a Dedekind domain and $B$ is the integral closure of $A$ in a finite separable extension $L/K$ of degree $n = [L : K] = [k(X) : k(Y)]$.
+    * For any maximal ideal / closed point $\mathfrak{P}$ lying over $\mathfrak{p} = f(\mathfrak{P})$:
+      - **Ramification index:** $e_i = e(\mathfrak{P}_i/\mathfrak{p}) = v_{\mathfrak{P}_i}(f^* t_\mathfrak{p})$, where $\mathfrak{p} B = \prod_{i=1}^g \mathfrak{P}_i^{e_i}$.
+      - **Inertia (residue) degree:** $f_i = f(\mathfrak{P}_i/\mathfrak{p}) = [\kappa(\mathfrak{P}_i) : \kappa(\mathfrak{p})] = [B/\mathfrak{P}_i : A/\mathfrak{p}]$.
+      - **Fundamental identity:**
+        $$
+        \sum_{i=1}^g e_i f_i \;=\; n \;=\; [L : K].
+        $$
+      - **Ramification classification:**
+        * **Unramified:** $e_i = 1$ for all $i$, and $\kappa(\mathfrak{P}_i)/\kappa(\mathfrak{p})$ is separable.
+        * **Tamely ramified:** $\operatorname{char}(\kappa(\mathfrak{p})) \nmid e_i$ for all $i$, and $\kappa(\mathfrak{P}_i)/\kappa(\mathfrak{p})$ is separable.
+        * **Wildly ramified:** $\operatorname{char}(\kappa(\mathfrak{p})) = p > 0$ and $p \mid e_i$ for some $i$.
+        * **Totally ramified:** $g = 1$, $f = 1$, $e = n$.
+        * **Completely split:** $g = n$, all $e_i = 1, f_i = 1$.
+        * **Inert:** $g = 1$, $e = 1$, $f = n$.
+
+  * **Different and discriminant ideals in Dedekind domains and number fields:**
+    * **Trace pairing:** Non-degenerate $K$-bilinear form $\operatorname{Tr}_{L/K} \colon L \times L \to K$.
+    * **Inverse different (codifferent):**
+      $$
+      \mathfrak{D}_{B/A}^{-1} \;\coloneqq\; \{ x \in L \mid \operatorname{Tr}_{L/K}(x B) \subseteq A \}.
+      $$
+      $\mathfrak{D}_{B/A}^{-1}$ is a fractional ideal of $B$ containing $B$.
+    * **Different ideal $\mathfrak{D}_{B/A}$:** The integral ideal $\mathfrak{D}_{B/A} \coloneqq (\mathfrak{D}_{B/A}^{-1})^{-1} \subseteq B$:
+      $$
+      \mathfrak{D}_{B/A} \;=\; \prod_{i=1}^g \mathfrak{P}_i^{d(\mathfrak{P}_i/\mathfrak{p})}.
+      $$
+      - **Dedekind's Different Theorem:** $\mathfrak{P} \mid \mathfrak{D}_{B/A} \iff e(\mathfrak{P}/\mathfrak{p}) > 1$ (ramification criterion).
+      - **Bounds on different exponent $d$:**
+        $$
+        e - 1 \;\le\; d(\mathfrak{P}/\mathfrak{p}) \;\le\; e - 1 + v_\mathfrak{P}(e).
+        $$
+        Equality $d(\mathfrak{P}/\mathfrak{p}) = e - 1$ holds if and only if $\mathfrak{P}$ is tamely ramified over $\mathfrak{p}$.
+      - **Kähler differentials relation:**
+        $$
+        \Omega_{B/A}^1 \;\cong\; B / \mathfrak{D}_{B/A}.
+        $$
+        The different ideal is the 0-th Fitting ideal / annihilator of relative Kähler differentials.
+    * **Discriminant ideal $\mathfrak{d}_{B/A}$:** The ideal of $A$ defined by the norm of the different:
+      $$
+      \mathfrak{d}_{B/A} \;\coloneqq\; N_{B/A}(\mathfrak{D}_{B/A}) \;=\; \prod_\mathfrak{p} \mathfrak{p}^{\sum_i f_i d(\mathfrak{P}_i/\mathfrak{p})}.
+      $$
+      - **Dedekind's Discriminant Theorem:** A prime $\mathfrak{p} \subset A$ ramifies in $L$ if and only if $\mathfrak{p} \mid \mathfrak{d}_{B/A}$.
+
+  * **Galois ramification filtration and Hilbert's Different Formula:**
+    * When $L/K$ is a Galois extension with Galois group $G = \operatorname{Gal}(L/K)$:
+      - The primes $\mathfrak{P}_1, \dots, \mathfrak{P}_g$ over $\mathfrak{p}$ are transitively permuted by $G$; all $e_i = e$ and $f_i = f$ are equal, with $e f g = n$.
+      - **Decomposition group:** $D_\mathfrak{P} \coloneqq \{ \sigma \in G \mid \sigma(\mathfrak{P}) = \mathfrak{P} \}$, order $|D_\mathfrak{P}| = e f$.
+      - **Inertia group:** $I_\mathfrak{P} \coloneqq \{ \sigma \in D_\mathfrak{P} \mid \sigma(x) \equiv x \pmod \mathfrak{P} \text{ for all } x \in B \}$, order $|I_\mathfrak{P}| = e$.
+      - **Lower ramification groups:** For integer $i \ge -1$:
+        $$
+        G_i \;\coloneqq\; \{ \sigma \in D_\mathfrak{P} \mid v_\mathfrak{P}(\sigma(x) - x) \ge i + 1 \text{ for all } x \in B \}.
+        $$
+        * $G_{-1} = D_\mathfrak{P}$, $G_0 = I_\mathfrak{P}$.
+        * $G_1 = P_\mathfrak{P}$ is the unique $p$-Sylow subgroup of $I_\mathfrak{P}$ (wild inertia group).
+        * Quotient $G_0/G_1$ is cyclic of order prime to $p$ (tame inertia quotient).
+        * Quotients $G_i/G_{i+1}$ for $i \ge 1$ are elementary abelian $p$-groups.
+      - **Hilbert's Different Formula:**
+        $$
+        d(\mathfrak{P}/\mathfrak{p}) \;=\; \sum_{i=0}^\infty (|G_i| - 1) \;=\; (e - 1) \;+\; \sum_{i=1}^\infty (|G_i| - 1).
+        $$
+        The excess $\sum_{i=1}^\infty (|G_i| - 1)$ is the wild ramification contribution (Artin conductor / Swan conductor).
+      - **Herbrand's transition function:**
+        $$
+        \phi(u) \;=\; \int_0^u \frac{dt}{[G_0 : G_t]},
+        $$
+        inducing the upper ramification filtration $G^v = G_{\psi(v)}$ ($\psi = \phi^{-1}$), invariant under quotient group passage (fundamental in local class field theory).
+
+  * **The Riemann-Hurwitz formula for curves and Riemann surfaces:**
+    * Let $f \colon X \to Y$ be a finite separable morphism of smooth projective curves over an algebraically closed field $k$ (or a branched cover of compact Riemann surfaces) of degree $n$.
+    * **Ramification divisor:**
+      $$
+      R \;\coloneqq\; \sum_{P \in X} d_P \cdot P
+      $$
+      where $d_P = d(P/f(P))$ is the order of vanishing of the canonical bundle map $f^* \Omega_Y^1 \to \Omega_X^1$.
+      - Tame ramification: $d_P = e_P - 1$.
+      - Wild ramification: $d_P \ge e_P$ with wild excess computed via Hilbert's formula.
+    * **Canonical divisor formula:**
+      $$
+      K_X \;\sim\; f^* K_Y \;+\; R, \qquad \Omega_X^1 \;\cong\; f^* \Omega_Y^1 \otimes \mathcal{O}_X(R).
+      $$
+    * **Riemann-Hurwitz genus formula:**
+      Taking degrees ($\deg K_X = 2 g_X - 2$ and $\deg f^* K_Y = n(2 g_Y - 2)$):
+      $$
+      2 g_X - 2 \;=\; n(2 g_Y - 2) \;+\; \deg(R) \;=\; n(2 g_Y - 2) \;+\; \sum_{P \in X} d_P.
+      $$
+      For tame covers (including all covers in characteristic 0):
+      $$
+      2 g_X - 2 \;=\; n(2 g_Y - 2) \;+\; \sum_{P \in X} (e_P - 1).
+      $$
+    * **Topological Euler characteristic (over $\mathbb{C}$):**
+      $$
+      \chi_{\mathrm{top}}(X) \;=\; n \cdot \chi_{\mathrm{top}}(Y) \;-\; \sum_{P \in X} (e_P - 1).
+      $$
+    * **Special cases & geometric consequences:**
+      - If $f$ is unramified ($\deg R = 0$): $2 g_X - 2 = n(2 g_Y - 2)$. Thus $g_Y = 1 \implies g_X = 1$ (étale covers of elliptic curves are elliptic curves).
+      - Lüroth's theorem: if $X = \mathbb{P}^1$ ($g_X = 0$) and $f$ is non-constant, then $g_Y = 0$, so any subfield of $k(t)$ is rational.
+      - Hyperelliptic curves ($n = 2, Y = \mathbb{P}^1$): $2 g - 2 = 2(-2) + \sum (2 - 1) = -4 + 2g + 2$, exactly $2g + 2$ branch points (Weierstrass points).
+
+  * **Generalization to higher-dimensional normal varieties:**
+    * Let $f \colon X \to Y$ be a finite, surjective morphism of normal integral varieties of dimension $m \ge 1$.
+    * **Purity of the branch locus (Zariski-Nagata theorem):**
+      If $Y$ is regular and $X$ is normal, the branch locus $B \subset Y$ is either empty or of pure codimension 1!
+      Consequently, ramification is completely governed in codimension 1 by the discrete valuation rings $\mathcal{O}_{X, D}$ and $\mathcal{O}_{Y, f(D)}$ associated to prime divisors.
+    * **Ramification divisor on varieties:**
+      $$
+      R \;\coloneqq\; \sum_{D \subset X} d_D \cdot D,
+      $$
+      summed over all prime divisors $D \subset X$, where $d_D$ is the length of $\Omega_{X/Y}^1$ along the generic point $\eta_D$.
+      For tame covers, $d_D = e_D - 1$.
+    * **Canonical class formula:**
+      $$
+      K_X \;\sim\; f^* K_Y \;+\; R.
+      $$
+    * **Chern classes and cyclic covers:**
+      - First Chern class: $c_1(X) = f^* c_1(Y) - [R]$.
+      - Cyclic covers: let $D \subset Y$ be a smooth divisor with $D \sim n L$ for some line bundle $L$. The cyclic $n$-fold cover $X \to Y$ branched over $D$ has ramification divisor $R = (n - 1) f^* D_{\mathrm{red}}$, yielding canonical class $K_X \sim f^*(K_Y + (n - 1) L)$.
+
+* **Operationalization and effective computation engine:**
+  * **Unified Ramification Datum:**
+    - `RamificationDatum`: represents ramification at a prime or point:
+      * `prime_up`: $\mathfrak{P}$ or point $P \in X$.
+      * `prime_down`: $\mathfrak{p}$ or point $Q \in Y$.
+      * `ramification_index`: integer $e \ge 1$.
+      * `inertia_degree`: integer $f \ge 1$.
+      * `different_exponent`: integer $d \ge e - 1$.
+      * `is_tame`: predicate $p \nmid e$ and separable residue.
+      * `is_wild`: predicate $p \mid e$.
+      * `is_unramified`: predicate $e = 1$ and $d = 0$.
+  * **Computational capabilities:**
+    1. **Hurwitz Genus & Topology Solver:**
+       - Forward evaluation: computes $g_X$ from $g_Y, n$, and branch profile.
+       - Inverse Hurwitz solver: determines all admissible integer tuples of ramification indices $(e_1, \dots, e_k)$ and branch orders satisfying $2 g_X - 2 = n(2 g_Y - 2) + \sum (e_i - 1)$ and Riemann surface monodromy conditions.
+       - Computes topological Euler characteristics $\chi(X) = n \chi(Y) - \deg(R)$.
+    2. **Kummer-Dedekind & Prime Decomposition:**
+       - Computes factorization of primes $\mathfrak{p} \mathcal{O}_L = \prod \mathfrak{P}_i^{e_i}$ for number fields $L/\mathbb{Q}$ and function fields $k(C)$.
+       - Evaluates residue degrees $f_i$ and certifies the fundamental identity $\sum e_i f_i = n$.
+    3. **Different and Discriminant Ideals:**
+       - Relative trace matrix computation of codifferent $\mathfrak{D}_{B/A}^{-1} = \{ x \in L \mid \operatorname{Tr}(x B) \subseteq A \}$ and different $\mathfrak{D}_{B/A}$.
+       - Relative norm computation of discriminant ideal $\mathfrak{d}_{B/A} = N(\mathfrak{D}_{B/A})$.
+       - Verifies Dedekind's criterion: ramification occurs precisely at prime divisors of $\mathfrak{d}_{B/A}$.
+    4. **Galois Ramification Filtration Engine:**
+       - For Galois number fields or Galois curve covers, computes decomposition groups $D_\mathfrak{P}$, inertia groups $I_\mathfrak{P} = G_0$, and lower ramification subgroups $G_i$ for $i \ge 0$.
+       - Evaluates Hilbert's different formula $d = \sum_{i=0}^\infty (|G_i| - 1)$ and separates tame ($e - 1$) from wild excess.
+       - Computes Herbrand's function $\phi(u)$ and upper filtration $G^v$.
+    5. **Variety Ramification Divisor & Cover Constructor:**
+       - Evaluates codimension-1 branch divisors and ramification divisors $R = \sum d_D D$.
+       - Computes canonical class $K_X \sim f^* K_Y + R$.
+       - Explicit constructions for cyclic covers, double covers ($y^2 = f(x)$), and abelian covers.
+
+* **Preamble implementation requirements:**
+  * `categories/algebraic_geometry/hurwitz.py`:
+    - `HurwitzFormula(g_Y, n, ramification_data)`: computes genus $g_X$, Euler characteristic $\chi(X)$, and canonical divisor.
+    - `HurwitzInverseSolver(g_X, g_Y, n)`: solves for all valid ramification profiles and branch number combinations.
+    - `CurveCover(f, X, Y)`: finite morphism of smooth projective curves.
+  * `categories/number_theory/ramification.py`:
+    - `PrimeRamification(P, p, e, f, d)`: unified data container for prime/place ramification.
+    - `DedekindCover(B, A)`: finite extension of Dedekind domains / number fields $\mathcal{O}_L / \mathcal{O}_K$.
+    - `different_ideal(B, A)`: computes codifferent $\mathfrak{D}^{-1}$ and different $\mathfrak{D}_{B/A}$.
+    - `discriminant_ideal(B, A)`: computes discriminant $\mathfrak{d}_{B/A} = N(\mathfrak{D}_{B/A})$.
+    - `verify_fundamental_identity(primes, n)`: asserts $\sum e_i f_i = n$.
+  * `categories/galois/ramification_groups.py`:
+    - `DecompositionGroup(G, P)`: computes $D_\mathfrak{P} \le G$.
+    - `InertiaGroup(G, P)`: computes $I_\mathfrak{P} \le D_\mathfrak{P}$.
+    - `LowerRamificationFiltration(G, P)`: computes filtration $G_i$ for $i \ge -1$.
+    - `HilbertDifferentFormula(G, P)`: computes $d = \sum (|G_i| - 1)$.
+    - `UpperRamificationFiltration(G, P)`: computes Herbrand function $\phi$ and $G^v$.
+  * `categories/schemes/ramification_divisor.py`:
+    - `RamificationDivisor(f, X, Y)`: evaluates codimension-1 ramification divisor $R$ on normal varieties.
+    - `CanonicalClassCover(f, K_Y, R)`: calculates $K_X \sim f^* K_Y + R$.
+    - `CyclicCover(Y, D, n)`: constructs cyclic cover $X \to Y$ branched along divisor $D$.
+
+Intended owners: `categories/algebraic_geometry/hurwitz.py` (`HurwitzFormula`, `HurwitzInverseSolver`, `CurveCover`), `categories/number_theory/ramification.py` (`PrimeRamification`, `DedekindCover`, `DifferentIdeal`, `DiscriminantIdeal`), `categories/galois/ramification_groups.py` (`DecompositionGroup`, `InertiaGroup`, `LowerRamificationFiltration`, `HilbertDifferentFormula`), `categories/schemes/ramification_divisor.py` (`RamificationDivisor`, `CanonicalClassCover`, `CyclicCover`).
+
 
 
 
