@@ -113,6 +113,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Category of Hodge structures (pure, mixed, polarized) and operations | User intake 2026-09-19 | Category of pure Hodge structures HS_k(R), mixed Hodge structures MHS(R) (Deligne), polarized HS_k^{pol}(R); standard operations: tensor product, direct sum, dual, internal Hom, exterior powers ⋀^n H, symmetric powers Sym^n H, Tate twist ZZ(m) / H(m), weight and Hodge filtrations, Hodge classes, intermediate Jacobians | `categories/hodge/hodge_structures.py` + `categories/hodge/mixed_hodge.py` + `categories/hodge/polarized.py` + `categories/hodge/tate_twist.py` | Proposed — see note below |
 | Projectivization of linear groups and subgroups (PGL, PO, PSL, PSp) | User intake 2026-09-19 | Projectivization functor P: G ↦ PG = G / (G ∩ R^×·id) for linear groups G ≤ GL(V) (e.g. GL_n → PGL_n, O(b) → PO(b) ≅ O(b)/{±id}, SL_n → PSL_n, Sp_{2g} → PSp_{2g}, and arithmetic subgroups Γ ≤ O(L)); quotient projection π: G ↠ PG; faithful action on projective space PP(V) and hyperbolic space HH^n | `categories/groups/projectivization.py` + `categories/groups/matrix_groups.py` + `categories/lattices/orthogonal_group.py` | Proposed — see note below |
 | Lambert expansions of generating functions | User intake 2026-09-19 | Lambert series L(q) = \sum a_n q^n/(1-q^n) and bidirectional conversion to/from OGF \sum b_N q^N via divisor convolution b_N = \sum_{d|N} a_d and Mobius inversion a_n = \sum_{d|n} \mu(n/d) b_d; Dirichlet series link D_b(s) = D_a(s)\zeta(s); q-expansions of Eisenstein series E_{2k}, Dedekind \eta, and Euler products | `categories/generating_functions/lambert.py` + `categories/rings/formal_power_series.py` + `categories/modular/eisenstein.py` | Proposed — see note below |
+| Computing Picard-Fuchs operators of families (Gauss-Manin, Weierstrass, twists, and Fano/K3 mirrors) | https://arxiv.org/abs/2403.07349 + user intake 2026-09-19 | Computation of Picard-Fuchs differential operators for algebraic families \pi: X \to B; explicit Weierstrass reduction \nabla = d/dt - M(t) with \Delta, \delta (arXiv:2403.07349 p. 13 Eq. 2.17); Doran-Malmendier Hadamard twist construction L_{n+1} = L_twist \star L_n; recovery of 17 rank-1 Fano anticanonical K3 operators L_{3,N} (Table 1), modular elliptic pencils L_{2,n} (Table 4), quantum differential operators D_{4,N} = \theta \cdot L_{3,N} (Table 2), and P^3 instanton pullback (Eq. 6.1) | `categories/differential_equations/picard_fuchs.py` + `categories/schemes/elliptic_surfaces/weierstrass_picard_fuchs.py` + `categories/cohomology/gauss_manin.py` + `categories/schemes/k3/fano_mirrors.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -2188,6 +2189,96 @@ Intended owners: `categories/groups/projectivization.py` (`ProjectiveGroup`, `Pr
     * Integration with modular forms: provide explicit Lambert series representations for $E_2, E_4, E_6$, Jacobi theta functions, and partition generating functions.
 
 Intended owners: `categories/generating_functions/lambert.py` (`LambertSeries`, `LambertExpansions`), `categories/rings/formal_power_series.py` (`to_lambert_series`, `from_lambert_series`), `categories/modular/eisenstein.py` (`EisensteinSeries.lambert_expansion()`).
+
+
+## Desired capability: Computing Picard-Fuchs operators of families — intake 2026-09-19
+
+* **Reference:** Malmendier & Schultz, *On mirror symmetry and irrationality of zeta values*, [arXiv:2403.07349v1](https://arxiv.org/abs/2403.07349) (see specifically p. 12–14 Eq. (2.17), Table 1, Table 2, Table 4, Section 5, and Section 6).
+
+* **Mathematical background & algorithms:**
+  * **Gauss-Manin connection and Picard-Fuchs equations:**
+    For a smooth algebraic family $\pi \colon \mathcal{X} \to B$ over a 1-dimensional base curve $B$ (parameterized by $t \in \mathbb{P}^1$), the relative algebraic de Rham cohomology bundle $\mathcal{H}^k_{\mathrm{dR}}(\mathcal{X}/B) \coloneqq R^k \pi_* \Omega^\bullet_{\mathcal{X}/B}$ is equipped with the flat Gauss-Manin connection $\nabla \colon \mathcal{H}^k_{\mathrm{dR}} \to \mathcal{H}^k_{\mathrm{dR}} \otimes \Omega^1_B$.
+    Periods $\omega_i(t) = \int_{\gamma_i} \Omega_t$ of a relative holomorphic form $\Omega_t \in H^{k,0}(X_t)$ over locally constant topological cycles $\gamma_i \in H_k(X_t, \mathbb{Z})$ are annihilated by a linear ordinary differential operator $\mathcal{L} \in \mathbb{C}(t)[\frac{d}{dt}]$ (or in terms of the Euler operator $\theta \coloneqq t \frac{d}{dt}$):
+    $$
+    \mathcal{L}(\omega) = a_n(t) \frac{d^n \omega}{dt^n} + \dots + a_1(t) \frac{d\omega}{dt} + a_0(t) \omega = 0.
+    $$
+  * **Explicit Weierstrass reduction (arXiv:2403.07349, p. 13, Eq. (2.17)):**
+    For any 1-parameter family of elliptic curves in Weierstrass form:
+    $$
+    E_t \colon y^2 = 4x^3 - g_2(t)x - g_3(t),
+    $$
+    with discriminant $\Delta(t) = g_2(t)^3 - 27g_3(t)^2 \neq 0$ and the invariant differential $\delta(t) \coloneqq 3g_3(t)g_2'(t) - 2g_2(t)g_3'(t)$, the period vector $\vec{\omega}(t) = \begin{pmatrix} \omega_0(t) \\ \omega_1(t) \end{pmatrix}$ for the holomorphic 1-form $\Omega_t = \frac{dx}{y}$ and quasi-holomorphic forms satisfies the first-order Gauss-Manin system:
+    $$
+    \frac{d}{dt} \begin{pmatrix} \omega_0 \\ \omega_1 \end{pmatrix} = \begin{pmatrix} -\frac{1}{12} \frac{\Delta'(t)}{\Delta(t)} & \frac{3}{2}\frac{\delta(t)}{\Delta(t)} \\ -\frac{1}{8}\frac{g_2(t)\delta(t)}{\Delta(t)} & \frac{1}{12} \frac{\Delta'(t)}{\Delta(t)} \end{pmatrix} \begin{pmatrix} \omega_0 \\ \omega_1 \end{pmatrix}.
+    $$
+    Eliminating $\omega_1$ yields the explicit second-order Picard-Fuchs operator $\mathcal{L}_2$:
+    $$
+    \omega_1 = \frac{2\Delta}{3\delta} \left( \frac{d\omega_0}{dt} + \frac{1}{12}\frac{\Delta'}{\Delta} \omega_0 \right) \implies \mathcal{L}_2(\omega_0) = 0.
+    $$
+  * **Doran-Malmendier twist construction and Hadamard product:**
+    Given an elliptic Calabi-Yau family $\mathcal{X} \to \mathbb{P}^1$ with Weierstrass model $W_t$ and a generalized functional invariant $(i, j, \alpha)$, the twist construction produces a new family $\widetilde{\mathcal{X}} \to \mathbb{P}^1$ of dimension $\dim X_t + 1$ (e.g. $M_n$-polarized K3 surfaces or Calabi-Yau threefolds).
+    The periods of the twisted family are given by the Hadamard product:
+    $$
+    \widetilde{\omega}(t) = (\omega \star h)(t) = \sum_{n=0}^\infty a_n b_n t^n,
+    $$
+    where $h(t) = {}_2F_1(\dots)$ is the hypergeometric twist function. Consequently, the Picard-Fuchs operator of the twisted family factorizes as the Hadamard convolution of differential operators:
+    $$
+    \mathcal{L}_{n+1} = \mathcal{L}_{\mathrm{twist}} \star \mathcal{L}_n.
+    $$
+    For generalized functional invariant $(1, 1, 1)$, the twist function is $h(t) = {}_2F_1(1/2, 1/2; 1; 4t) = \sum_{n=0}^\infty \binom{2n}{n}^2 t^n$, annihilated by $\mathcal{L}_1 = \theta - 4t(2\theta + 1)$ (or $t(2+4\theta) - \theta$).
+  * **Quantum differential operators and almost Calabi-Yau operators:**
+    For an $n$-th order Calabi-Yau operator $\mathcal{L}_n$, the $(n+1)$-th order operator $\mathcal{D}_{n+1} \coloneqq \theta \cdot \mathcal{L}_n$ is maximally unipotent (MUM) at $t=0$, having canonical solutions $\omega_0, \dots, \omega_n$ with maximal log-depth $\log^n(t)$, recovering the quantum differential equation and virtual Yukawa coupling.
+
+* **Explicit benchmarks & models from arXiv:2403.07349 to recover:**
+  1. **Modular elliptic pencils (Table 4):**
+     * **$X_0(3)$ (Hesse mirror):**
+       $y^2 = 4x^3 + (-27 + 648t)x - (5832t^2 - 972t + 27)$,
+       $\mathcal{L}_{2,3} = \theta^2 - 3t(3\theta+1)(3\theta+2)$.
+     * **$X_0(4)$:**
+       $\mathcal{L}_{2,4} = \theta^2 - 4t(2\theta+1)^2$.
+     * **$X_1(5)$ (Apéry elliptic pencil for $\zeta(2)$):**
+       $y^2 = 4x^3 - \frac{1}{12}(1 - 12t + 14t^2)x - \frac{1}{216}(1 - 18t + 30t^2 - t^3)$,
+       $\mathcal{L}_{2,5} = \theta^2 - t(11\theta^2+11\theta+3) - t^2(\theta+1)^2$.
+     * **$X_0(6)$:**
+       $\mathcal{L}_{2,6} = \theta^2 - t(7\theta^2+7\theta+2) - 8t^2(\theta+1)^2$.
+  2. **Anticanonical K3 pencils of rank-1 Fano threefolds $\mathcal{L}_{3,N}$ (Table 1):**
+     * $N=2$ (Dwork K3 mirror / $M_2$-polarized):
+       $\mathcal{L}_{3,2} = \theta^3 - 8t(2\theta+1)(4\theta+1)(4\theta+3) = \mathcal{L}_3 \star \mathcal{L}_{2,3}$.
+     * $N=3$ ($M_3$-polarized):
+       $\mathcal{L}_{3,3} = \theta^3 - 6t(2\theta+1)(3\theta+1)(3\theta+2) = \mathcal{L}_1 \star \mathcal{L}_{2,3}$.
+     * $N=4$:
+       $\mathcal{L}_{3,4} = \theta^3 - 8t(2\theta+1)^3$.
+     * $N=5$:
+       $\mathcal{L}_{3,5} = \theta^3 - 2t(2\theta+1)(11\theta^2+11\theta+3) - 4t^2(\theta+1)(2\theta+1)(2\theta+3)$.
+     * $N=6$ (Beukers-Peters K3 pencil for Apéry $\zeta(3)$):
+       $\mathcal{L}_{3,6} = \theta^3 - t(2\theta+1)(17\theta^2+17\theta+5) + t^2(\theta+1)^3$.
+     * $N=7$:
+       $\mathcal{L}_{3,7} = \theta^3 - 3t(2\theta+1)(13\theta^2+13\theta+4) - 3t^2(\theta+1)(3\theta+2)(3\theta+4)$.
+     * $N=8$:
+       $\mathcal{L}_{3,8} = \theta^3 - 4t(2\theta+1)(3\theta^2+3\theta+1) + 16t^2(\theta+1)^3$.
+     * $N=9$:
+       $\mathcal{L}_{3,9} = \theta^3 - 3t(2\theta+1)(3\theta^2+3\theta+1) - 27t^2(\theta+1)^3$.
+     * $N=11$:
+       $\mathcal{L}_{3,11} = \theta^3 - \frac{2}{5}t(2\theta+1)(17\theta^2+17\theta+6) - \frac{56}{25}t^2(\theta+1)(11\theta^2+22\theta+12) - \frac{126}{125}t^3(\theta+1)(\theta+2)(2\theta+3) - \frac{1504}{625}t^4(\theta+1)(\theta+2)(\theta+3)$.
+  3. **Associated quantum operators and local Calabi-Yau 4-folds (Table 2 & Section 6):**
+     * $\mathcal{D}_{4,N} = \theta \cdot \mathcal{L}_{3,N}$.
+     * For $(N, d) = (2, 4)$ corresponding to Fano threefold $\mathbb{P}^3$, the pullback under $t \mapsto t^4$ of $\mathcal{L}_{3,2}$ gives the operator whose normalized dual instanton numbers $\mathsf{N}_k = -\frac{1}{4} \widetilde{N}_k$ match the genus-zero Gromov-Witten invariants of local $K_{\mathbb{P}^3}$ (Klemm-Pandharipande):
+       $\mathsf{N}_1 = -20, \mathsf{N}_2 = -820, \mathsf{N}_3 = -68060, \mathsf{N}_4 = -7486440, \dots$
+
+* **Preamble implementation requirements:**
+  * **Fuchsian differential operator algebra:**
+    `FuchsianDifferentialOperator(R, var='t', d_var='theta')` supporting algebraic operations, conversion between $\frac{d}{dt}$ and $\theta = t\frac{d}{dt}$, indicial equation at singular points, and MUM classification.
+  * **Weierstrass Picard-Fuchs constructor:**
+    `PicardFuchsFromWeierstrass(g2, g3, t)` implementing Stiller's matrix formula Eq. (2.17) via $\Delta(t)$ and $\delta(t)$, automatically eliminating to output $\mathcal{L}_2$.
+  * **Griffiths-Dwork reduction:**
+    For projective hypersurfaces $F(x_0, \dots, x_n; t) = 0$, pole-order reduction of rational differential forms in the Jacobian ideal $J(F)$ to generate the Gauss-Manin matrix and Picard-Fuchs operator.
+  * **Hadamard convolution of differential operators:**
+    `hadamard_product_operator(L1, L2)` computing the differential operator annihilating the Hadamard product $\sum a_n b_n t^n$.
+  * **Pullback and base-change:**
+    `L.pullback(t_map)` computing the operator under substitution $t \mapsto f(s)$.
+
+Intended owners: `categories/differential_equations/picard_fuchs.py` (`FuchsianOperator`, `PicardFuchsEquation`), `categories/schemes/elliptic_surfaces/weierstrass_picard_fuchs.py` (`WeierstrassPicardFuchs`), `categories/cohomology/gauss_manin.py` (`GaussManinConnection`, `GriffithsDworkReduction`), `categories/schemes/k3/fano_mirrors.py` (`FanoK3PicardFuchsCatalogue`).
+
 
 
 
