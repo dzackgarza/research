@@ -128,6 +128,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Operationalized Grothendieck spectral sequences (generic functor composition, automated differentials, 5-term solver, and concrete specializations: Leray, Serre, LHS, local-to-global Ext/Tor, Frölicher) | Literature survey + user intake 2026-09-19 | Comprehensive computational framework for Grothendieck spectral sequences: (1) Abstract Grothendieck spectral sequence $E_2^{p, q} = (R^p F)(R^q G(A)) \implies R^{p+q}(F \circ G)(A)$ for composable functors $\mathcal{A} \xrightarrow{G} \mathcal{B} \xrightarrow{F} \mathcal{C}$ with $G(\operatorname{Inj})$ $F$-acyclic, homological dual $E^2_{p, q} = (L_p F)(L_q G(A)) \implies L_{p+q}(F \circ G)(A), Cartan-Eilenberg double complex resolutions; (2) Algorithmic engine: bigraded page structures $E_r^{p, q}$, differential complexes $d_r$, page transitions $E_{r+1} = H(E_r, d_r)$, automated quadrant/sparsity vanishing, 5-term exact sequence solver ($0 \to E_2^{1, 0} \to H^1 \to E_2^{0, 1} \xrightarrow{d_2} E_2^{2, 0} \to \dots$), multiplicative Leibniz propagation $d_r(xy) = d_r(x)y + (-1)^{|x|} x d_r(y)$, transgression tracking, abutment filtration reconstruction, and extension problem solving; (3) Concrete computable specializations: Leray SS ($H^p(Y, R^q f_* \mathcal{F}) \implies H^{p+q}(X, \mathcal{F})$), Serre fibration SS ($H^p(B; \mathcal{H}^q(F)) \implies H^{p+q}(E)$), Lyndon-Hochschild-Serre (LHS) for group cohomology ($H^p(G/N, H^q(N, M)) \implies H^{p+q}(G, M)$), Lie algebra Hochschild-Serre, local-to-global Ext ($H^p(X, \mathcal{E}xt^q(\mathcal{F}, \mathcal{G})) \implies \operatorname{Ext}^{p+q}(\mathcal{F}, \mathcal{G})$), local-to-global Tor, change of rings (Cartan-Eilenberg Ext/Tor), Frölicher/Hodge-to-de Rham ($H^q(X, \Omega_X^p) \implies H_{\mathrm{dR}}^{p+q}$), and local cohomology SS | `categories/homology/spectral_sequences/grothendieck.py` + `categories/homology/spectral_sequences/spectral_sequence.py` + `categories/homology/spectral_sequences/leray.py` + `categories/homology/spectral_sequences/lyndon_hochschild_serre.py` + `categories/homology/spectral_sequences/local_ext.py` + `categories/homology/spectral_sequences/froelicher.py` | Proposed — see note below |
 | Operationalized Riemann-Hurwitz formula, ramification theory, different and discriminant ideals (curves, varieties, Dedekind domains, and number fields) | Literature survey + user intake 2026-09-19 | Unified operational ramification theory and Hurwitz formulas across algebraic geometry and algebraic number theory: (1) Ramification invariants: ramification index $e_i = e(\mathfrak{P}_i/\mathfrak{p})$, inertia degree $f_i = f(\mathfrak{P}_i/\mathfrak{p})$, fundamental identity $\sum e_i f_i = n$, tame ($p \nmid e$) vs wild ($p \mid e$) ramification; (2) Different ideal $\mathfrak{D}_{B/A}$ and discriminant $\mathfrak{d}_{B/A} = N(\mathfrak{D}_{B/A})$, Dedekind's different theorem ($\mathfrak{P} \mid \mathfrak{D} \iff e > 1$), lower and upper bounds $e - 1 \le d \le e - 1 + v_\mathfrak{P}(e)$, equality $d = e - 1$ for tame; (3) Galois ramification filtration: decomposition group $D_\mathfrak{P}$, inertia group $I_\mathfrak{P} = G_0$, lower ramification groups $G_i$, Hilbert's different formula $d = \sum_{i=0}^\infty (|G_i| - 1) = (e - 1) + \text{wild excess}$; (4) Riemann-Hurwitz formula for curves: canonical divisor $K_X \sim f^* K_Y + R$ where $R = \sum d_P P$, genus formula $2 g_X - 2 = n(2 g_Y - 2) + \deg(R)$, topological Euler characteristic $\chi(X) = n \chi(Y) - \deg(R)$; (5) Normal varieties: purity of the branch locus (Zariski-Nagata) in codimension 1, ramification divisor $R = \sum d_D D$, canonical class formula $K_X \sim f^* K_Y + R$; (6) Automated solver: genus solver, prime factorization $\mathfrak{p} \mathcal{O}_L = \prod \mathfrak{P}_i^{e_i}$, different/discriminant computer, and branch locus verifier | `categories/algebraic_geometry/hurwitz.py` + `categories/number_theory/ramification.py` + `categories/schemes/ramification_divisor.py` + `categories/galois/ramification_groups.py` | Proposed — see note below |
 | DG-modules over DG-algebras, graded module foundations, derived categories $\mathcal{D}(A)$, and semi-free resolutions | User intake 2026-09-19 | Complete categorical and homological hierarchy for differential graded (DG) modules over DG-algebras: (1) Graded foundations: $\mathbb{Z}$-graded modules $\mathbf{GrMod}_k$, Koszul braiding $\tau(x \otimes y) = (-1)^{|x||y|} y \otimes x$, graded associative/commutative algebras, graded module categories; (2) Differential graded objects: cochain complexes $(\mathbf{Ch}_k, \otimes, \underline{\operatorname{Hom}})$, Koszul sign convention $d(x \otimes y) = d(x) \otimes y + (-1)^{|x|} x \otimes d(y)$, $[d, f] = d \circ f - (-1)^{|f|} f \circ d$; (3) DG-algebras $(A, d_A)$ with Leibniz rule $d(a b) = d(a) b + (-1)^{|a|} a d(b)$ and CDGAs; (4) DG-modules $(M, d_M)$ over $A$ with module Leibniz rule $d_M(a m) = d_A(a) m + (-1)^{|a|} a d_M(m)$, DG-bimodules, cohomology modules $H^*(M) \in H^*(A)\mathbf{-Mod}$; (5) The DG-category $\underline{\mathbf{DGMod}}_A$: Hom complexes $\underline{\operatorname{Hom}}_A(M, N)$, shifts $M[k]$, mapping cones $\operatorname{Cone}(f)$; (6) Homological & model structures: quasi-isomorphisms, derived category $\mathcal{D}(A)$, projective model structure, semi-free (cell) resolutions $\mathbf{p} M \xrightarrow{\sim} M$, semi-injective resolutions, compact/perfect DG-modules $\operatorname{Perf}(A)$; (7) Derived operations: derived tensor product $M \otimes_A^{\mathbf{L}} N$, derived Hom $\mathbf{R}\operatorname{Hom}_A(M, N)$, Tor and Ext groups, two-sided bar resolution $B(A, A, M)$; (8) Computational engine: polynomial/exterior DGAs (Koszul complexes), matrix factorizations, de Rham flat modules, and semi-free resolution generators | `categories/algebras/dg_algebras.py` + `categories/modules/dg_modules.py` + `categories/derived/dg_derived_category.py` + `categories/modules/graded_modules.py` + `categories/homology/bar_cobar.py` | Proposed — see note below |
+| Witt vectors, $p$-adics as explicit power series, and ghost vector representations (exact and symbolic arithmetic) | User intake 2026-09-19 | Algebraic and algorithmic infrastructure for $p$-typical and big Witt vectors, and $p$-adic series arithmetic: (1) $p$-typical Witt ring $W(R)$ and truncated $W_n(R)$: ghost map $w_n = \sum_{i=0}^n p^i x_i^{p^{n-i}}$, bijection over $\mathbb{Q}$-algebras, componentwise ghost addition/multiplication, universal polynomials $S_n, P_n \in \mathbb{Z}[X, Y]$, and triangular back-substitution; (2) Perfect field Witt vectors $W(k)$ as complete DVR of characteristic 0, $W(\mathbb{F}_p) \cong \mathbb{Z}_p$, unramified extensions $W(\mathbb{F}_{p^d}) \cong \mathbb{Z}_{p^d}$; (3) Teichmüller lifts $[a] = (a, 0, \dots)$, $p$-adic expansion $x = \sum [c_n] p^n$, Newton-Hensel quadratic convergence; (4) Operators: Verschiebung $V(x) = (0, x_0, \dots)$, Frobenius $F$, relations $FV = p$, $VF = p$, Dieudonné ring $W(k)[F, V]$; (5) Big Witt vectors $\mathbb{W}(R) \cong 1 + t R[[t]]^\times$, power series multiplication link, Cartier decomposition $\mathbb{W}(R) \cong \prod_{(k, p)=1} W(R)$; (6) Explicit $p$-adic series in $\mathbb{Z}_p, \mathbb{Q}_p$: formal power series expansions $\sum a_n p^n$, ultrametric valuations $v_p$, Hensel's lemma, Artin-Hasse exponential $E_p(t) = \exp(\sum t^{p^n}/p^n) \in \mathbb{Z}_p[[t]]$, and symbolic ghost arithmetic engine | `categories/number_theory/witt_vectors.py` + `categories/number_theory/p_adics.py` + `categories/rings/formal_power_series.py` + `categories/algebraic_geometry/dieudonne.py` | Proposed — see note below |
 
 
 
@@ -4195,6 +4196,158 @@ Intended owners: `categories/algebraic_geometry/hurwitz.py` (`HurwitzFormula`, `
     - `BarResolution(A, M)`: canonical two-sided bar resolution $B(A, A, M)$.
 
 Intended owners: `categories/modules/graded_modules.py` (`GradedModule`, `GradedTensor`), `categories/algebras/dg_algebras.py` (`DGAlgebra`, `CDGAlgebra`, `KoszulDGA`), `categories/modules/dg_modules.py` (`DGModule`, `DGBimodule`, `MappingCone`), `categories/derived/dg_derived_category.py` (`DGDerivedCategory`, `SemiFreeResolution`, `DerivedHom`, `DerivedTensor`), `categories/homology/bar_cobar.py` (`BarResolution`).
+
+## Desired capability: Witt vectors, $p$-adics as explicit power series, and ghost vector representations — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **The $p$-typical Witt ring $W(R)$ and truncated rings $W_n(R)$:**
+    * Let $R$ be a commutative ring with unit, and $p$ a prime number.
+    * The $n$-truncated $p$-typical Witt ring $W_n(R)$ has underlying set $R^n$; the infinite Witt ring $W(R) \coloneqq \varprojlim W_n(R)$ has underlying set $R^{\mathbb{N}}$.
+    * Element coordinates (Witt components): $x = (x_0, x_1, x_2, \dots) \in W(R)$.
+    * **Ghost map (ghost coordinates):**
+      The ghost map $w = (w_0, w_1, w_2, \dots) \colon W(R) \to R^{\mathbb{N}}$ assigns to each Witt vector its ghost components via the universal Witt polynomials:
+      $$
+      w_n(x_0, \dots, x_n) \;\coloneqq\; \sum_{i=0}^n p^i x_i^{p^{n-i}} \;=\; x_0^{p^n} + p x_1^{p^{n-1}} + p^2 x_2^{p^{n-2}} + \dots + p^n x_n.
+      $$
+    * **Ghost component ring operations:**
+      When $p$ is invertible in $R$ (e.g. $R$ is a $\mathbb{Q}$-algebra), the ghost map $w \colon W(R) \to R^{\mathbb{N}}$ is a ring isomorphism:
+      $$
+      w_n(x + y) \;=\; w_n(x) + w_n(y), \qquad w_n(x \cdot y) \;=\; w_n(x) \cdot w_n(y).
+      $$
+    * **Universal Witt polynomials:**
+      There exist unique universal polynomials $S_n, P_n \in \mathbb{Z}[X_0, \dots, X_n, Y_0, \dots, Y_n]$ defining ring addition and multiplication on $W(R)$ for any commutative ring $R$:
+      $$
+      (x + y)_n \;=\; S_n(x_0, \dots, x_n, y_0, \dots, y_n), \qquad (x \cdot y)_n \;=\; P_n(x_0, \dots, x_n, y_0, \dots, y_n).
+      $$
+      Lowest terms:
+      - $S_0(X_0, Y_0) = X_0 + Y_0$.
+      - $S_1(X_0, X_1, Y_0, Y_1) = X_1 + Y_1 - \sum_{i=1}^{p-1} \frac{1}{p} \binom{p}{i} X_0^i Y_0^{p-i}$.
+      - $P_0(X_0, Y_0) = X_0 Y_0$.
+      - $P_1(X_0, X_1, Y_0, Y_1) = X_0^p Y_1 + X_1 Y_0^p + p X_1 Y_1$.
+    * **Triangular back-substitution (Ghost inversion):**
+      In any torsion-free ring $R$, Witt components are uniquely recovered from ghost components:
+      $$
+      x_0 = w_0, \qquad x_n \;=\; \frac{1}{p^n} \left( w_n - \sum_{i=0}^{n-1} p^i x_i^{p^{n-i}} \right).
+      $$
+
+  * **Witt vectors over perfect fields and $p$-adic integers:**
+    * For a perfect field $k$ of characteristic $p > 0$ (such as $\mathbb{F}_p$ or finite field extensions $\mathbb{F}_{p^d}$):
+      - $W(k)$ is a complete, Hausdorff discrete valuation ring of characteristic 0, with unique maximal ideal $\mathfrak{m} = p W(k)$ and residue field $W(k)/p W(k) \cong k$.
+      - Canonical identification for $k = \mathbb{F}_p$: $W(\mathbb{F}_p) \cong \mathbb{Z}_p$ ($p$-adic integers).
+      - For $k = \mathbb{F}_{p^d}$: $W(\mathbb{F}_{p^d}) \cong \mathbb{Z}_{p^d} = \mathcal{O}_{K}$, the ring of integers in the unique unramified extension $K/\mathbb{Q}_p$ of degree $d$.
+    * **Teichmüller representative map:**
+      $$
+      [- ] \colon k \longrightarrow W(k), \quad [a] \;\coloneqq\; (a, 0, 0, \dots).
+      $$
+      Multiplicative: $[a \cdot b] = [a] \cdot [b]$, and $[a]^p = [a^p]$.
+      In ghost coordinates: $w_n([a]) = a^{p^n}$.
+    * **$p$-adic expansion via Teichmüller digits:**
+      Every element $x \in W(k)$ has a unique, canonical convergent $p$-adic series expansion:
+      $$
+      x \;=\; \sum_{n=0}^\infty [c_n] p^n, \quad \text{where } c_n = x_n^{p^{-n}} \in k.
+      $$
+      Conversion to standard base-$p$ digit expansions $a_n \in \{0, \dots, p-1\}$ is performed via Hensel's lemma Newton iteration on $t^{p-1} - 1 = 0$.
+
+  * **Operators and Dieudonné structure:**
+    * **Verschiebung (Shift operator):**
+      $$
+      V \colon W(R) \longrightarrow W(R), \quad V(x_0, x_1, \dots) \;\coloneqq\; (0, x_0, x_1, \dots).
+      $$
+      Ghost effect: $w(V(x)) = (0, p w_0(x), p w_1(x), \dots)$. $V$ is additive.
+    * **Frobenius operator:**
+      $$
+      F \colon W(R) \longrightarrow W(R), \quad w_n(F(x)) \;=\; w_{n+1}(x).
+      $$
+      When $\operatorname{char}(R) = p$: $F(x_0, x_1, \dots) = (x_0^p, x_1^p, \dots)$, acting as the Frobenius ring endomorphism.
+    * **Operator commutation relations:**
+      $$
+      F \circ V \;=\; p \cdot \operatorname{id}_{W(R)}, \qquad V(F(x) \cdot y) \;=\; x \cdot V(y), \qquad V(x) \cdot V(y) \;=\; p V(x \cdot y).
+      $$
+      When $\operatorname{char}(R) = p$, also $V \circ F = p \cdot \operatorname{id}_{W(R)}$.
+    * **Dieudonné ring:**
+      The non-commutative polynomial ring $\mathbb{D}_k \coloneqq W(k)[F, V] / (FV - p, VF - p, Fa - \sigma(a)F, aV - V\sigma(a))$, where $\sigma$ is the Frobenius automorphism on $W(k)$.
+
+  * **Big Witt vectors $\mathbb{W}(R)$ and formal power series:**
+    * Big Witt vectors are indexed by positive integers $n \in \mathbb{Z}_{\ge 1}$: $x = (x_1, x_2, x_3, \dots) \in \mathbb{W}(R)$.
+    * Ghost components: $w_n(x) = \sum_{d \mid n} d x_d^{n/d}$.
+    * **Universal isomorphism with formal power series:**
+      $$
+      \Lambda(R) \;\coloneqq\; 1 + t R[[t]]^\times \;\xrightarrow{\sim}\; \mathbb{W}(R), \quad \gamma(x)(t) \;\coloneqq\; \prod_{n=1}^\infty (1 - x_n t^n)^{-1} \;=\; \exp\left( \sum_{n=1}^\infty \frac{w_n(x)}{n} t^n \right).
+      $$
+      - Addition in $\mathbb{W}(R)$ is power series multiplication: $\gamma(x +_{\mathbb{W}} y)(t) = \gamma(x)(t) \cdot \gamma(y)(t)$.
+      - Multiplication in $\mathbb{W}(R)$ is the unique functorial continuous operation satisfying $(1 - a t^n)^{-1} \star (1 - b t^m)^{-1} = (1 - a^{m/d} b^{n/d} t^{nm/d})^{-d}$ with $d = \gcd(n, m)$.
+    * **Cartier decomposition:** Over any $\mathbb{Z}_{(p)}$-algebra $R$, the big Witt ring splits into a product of $p$-typical Witt rings:
+      $$
+      \mathbb{W}(R) \;\cong\; \prod_{k \ge 1, \; p \nmid k} W(R).
+      $$
+
+  * **Explicit $p$-adic series and analysis ($\mathbb{Z}_p$ and $\mathbb{Q}_p$):**
+    * Representation of $x \in \mathbb{Q}_p$ as formal Laurent power series in $p$:
+      $$
+      x \;=\; \sum_{n = v_p(x)}^\infty a_n p^n, \quad a_n \in \{0, 1, \dots, p-1\}, \quad a_{v_p(x)} \neq 0.
+      $$
+    * Non-archimedean valuation $v_p(x) \in \mathbb{Z} \cup \{+\infty\}$, absolute value $|x|_p = p^{-v_p(x)}$.
+    * Ultrametric property: $|x + y|_p \le \max(|x|_p, |y|_p)$, with equality whenever $|x|_p \neq |y|_p$.
+    * **Artin-Hasse exponential:**
+      $$
+      E_p(t) \;\coloneqq\; \exp\left( \sum_{n=0}^\infty \frac{t^{p^n}}{p^n} \right) \;\in\; \mathbb{Z}_p[[t]].
+      $$
+      Has integral $p$-adic coefficients in $\mathbb{Z}_p$ and ghost components $(t, t^p, t^{p^2}, \dots)$.
+    * **$p$-adic logarithm and exponential:**
+      - $\log_p(1 + x) = \sum_{n=1}^\infty (-1)^{n-1} \frac{x^n}{n}$, convergent for $v_p(x) > 0$.
+      - $\exp_p(x) = \sum_{n=0}^\infty \frac{x^n}{n!}$, convergent for $v_p(x) > \frac{1}{p-1}$.
+
+* **Operationalization and effective computation engine:**
+  * **Layered representation:**
+    1. `WittVector`: exact truncated/infinite $p$-typical vector $(x_0, \dots, x_{n-1})$ over an arbitrary ring $R$.
+    2. `GhostVector`: vector of ghost components $(w_0, \dots, w_{n-1}) \in R^n$ with $O(n)$ componentwise ring operations.
+    3. `BigWittVector`: elements of $\mathbb{W}_n(R)$ represented as truncated polynomials in $1 + t R[[t]]$.
+    4. `PadicSeries`: exact/symbolic $p$-adic number $\sum a_n p^n$ with tracking of precision $O(p^N)$, exact rational reconstruction via lattice reduction / Farey fractions.
+  * **Fast and exact algorithmic workflows:**
+    1. **Universal Witt Polynomial Generator:**
+       - Computes $S_n(X, Y)$ and $P_n(X, Y)$ via ghost coordinates and polynomial interpolation/elimination over $\mathbb{Q}$ and reduction to $\mathbb{Z}$.
+       - Caches polynomials $S_n, P_n$ for reusable arithmetic.
+    2. **Ghost Vector Round-Trip Engine:**
+       - Forward map: $x \mapsto w(x)$ via Horner's evaluation of Witt polynomials.
+       - Backward map: $w \mapsto x$ via fast triangular inversion $\frac{1}{p^n}(w_n - \dots)$.
+       - Enables exact symbolic multiplication of Witt vectors by transforming to ghost coordinates in characteristic 0 extensions.
+    3. **Teichmüller Extraction and Conversion:**
+       - Converts between standard $p$-adic digit expansion $a = \sum a_n p^n$ and Teichmüller expansion $a = \sum [\tau_n] p^n$.
+       - Implements Hensel's lemma quadratic Newton iteration for Teichmüller lifts in $W(\mathbb{F}_p)$ or $W(\mathbb{F}_{p^d})$.
+    4. **Operator Evaluation:**
+       - Exact action of Frobenius $F$ and Verschiebung $V$.
+       - Dieudonné module linear algebra over $W(k)[F, V]$.
+    5. **Artin-Hasse and Formal Group Operations:**
+       - Power series expansion of Artin-Hasse exponential $E_p(t)$ and formal group law of $W$.
+
+* **Preamble implementation requirements:**
+  * `categories/number_theory/witt_vectors.py`:
+    - `WittVector(components, p, ring)`: $p$-typical Witt vector.
+    - `witt_addition_polynomial(n, p)`: computes $S_n(X, Y) \in \mathbb{Z}[X, Y]$.
+    - `witt_multiplication_polynomial(n, p)`: computes $P_n(X, Y) \in \mathbb{Z}[X, Y]$.
+    - `to_ghost(x)`: evaluates ghost vector $w(x)$.
+    - `from_ghost(w, p, ring)`: triangular back-substitution from ghost coordinates.
+    - `frobenius(x)`: evaluates $F(x)$.
+    - `verschiebung(x)`: evaluates $V(x)$.
+    - `teichmuller_lift(a, p, precision)`: computes $[a] \in W_n(R)$.
+  * `categories/number_theory/big_witt_vectors.py`:
+    - `BigWittVector(components, ring)`: universal Witt vectors.
+    - `to_power_series(x, precision)`: converts to $1 + t R[[t]]$.
+    - `from_power_series(series)`: converts from monic formal power series.
+    - `cartier_component(x, p)`: projects to $p$-typical Witt vector.
+  * `categories/number_theory/p_adics.py`:
+    - `PadicSeries(valuation, digits, p, precision)`: exact $p$-adic number representation.
+    - `teichmuller_expansion(x)`: computes $\sum [\tau_n] p^n$.
+    - `padic_valuation(x, p)`: computes $v_p(x)$.
+    - `artin_hasse_exponential(t, p, precision)`: computes $E_p(t) \in \mathbb{Z}_p[[t]]$.
+    - `padic_log(x, precision)`: evaluates $\log_p(x)$.
+    - `padic_exp(x, precision)`: evaluates $\exp_p(x)$.
+  * `categories/algebraic_geometry/dieudonne.py`:
+    - `DieudonneRing(p, k)`: non-commutative ring $W(k)[F, V]$.
+    - `DieudonneModule(generators, relations, p, k)`: Dieudonné module over $W(k)$.
+
+Intended owners: `categories/number_theory/witt_vectors.py` (`WittVector`, `GhostVector`, `TeichmullerLift`), `categories/number_theory/big_witt_vectors.py` (`BigWittVector`, `CartierDecomposition`), `categories/number_theory/p_adics.py` (`PadicSeries`, `ArtinHasseExponential`, `PadicLog`, `PadicExp`), `categories/algebraic_geometry/dieudonne.py` (`DieudonneRing`, `DieudonneModule`).
+
 
 
 
