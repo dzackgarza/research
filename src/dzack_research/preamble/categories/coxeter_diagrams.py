@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.graph_categories import LabelledGraphs
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
@@ -28,7 +29,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
@@ -160,7 +160,7 @@ class CoxeterDiagramHomCategoryConstruction(HomCategoryConstruction):
 
 
 class CoxeterDiagrams(OwnedCategory):
-    r"""Finite Coxeter diagrams: a symmetric matrix of vertex angles."""
+    r"""Finite Coxeter diagrams: labelled graphs encoding a symmetric angle matrix."""
 
     _HomCategory = CoxeterDiagramHomCategoryConstruction
 
@@ -173,7 +173,7 @@ class CoxeterDiagrams(OwnedCategory):
         return "Coxeter diagrams"
 
     def super_categories(self):
-        return [Sets()]
+        return [LabelledGraphs()]
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
@@ -248,6 +248,45 @@ class CoxeterDiagrams(OwnedCategory):
 
         def vertices(self):
             return self.index_set()
+
+        def __contains__(self, vertex) -> bool:
+            return vertex in self.index_set()
+
+        is_parent_of = __contains__
+
+        def _element_constructor_(self, vertex):
+            return self.index_set()(vertex)
+
+        def __iter__(self):
+            return iter(self.index_set())
+
+        def has_edge(self, left, right) -> bool:
+            return left != right and self.coxeter_entry(left, right) != 2
+
+        def edges(self):
+            edge_space = self.index_set()**2
+            return finite_ordered_set(
+                tuple(
+                    edge_space((left, right))
+                    for left, right in combinations(tuple(self.index_set()), 2)
+                    if self.has_edge(left, right)
+                )
+            )
+
+        def is_directed(self) -> bool:
+            return False
+
+        def is_symmetric(self) -> bool:
+            return True
+
+        def vertex_label(self, vertex):
+            self.index_set()(vertex)
+            return "Coxeter vertex"
+
+        def edge_label(self, left, right):
+            if not self.has_edge(left, right):
+                raise ValueError("the selected Coxeter vertices are not joined by an edge")
+            return self.coxeter_entry(left, right)
 
         def num_vertices(self):
             return int(self.cardinality())

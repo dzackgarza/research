@@ -2,6 +2,7 @@ r"""Weyl chambers retain exact wall crossings and transporters."""
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
+from dzack_research.preamble.categories.chamber_systems import ChamberSystems
 from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -25,6 +26,7 @@ def test_simple_reflection_crosses_the_retained_wall() -> None:
     complex_ = chamber.chamber_complex()
     adjacency = complex_.fundamental_adjacencies()[root]
 
+    assert complex_ in ChamberSystems()
     reflection = lattice.reflection(root)
     assert adjacency.source() is chamber
     assert adjacency.transporter() == reflection

@@ -20,7 +20,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -51,6 +51,8 @@ class RegularPolytopes(OwnedCategory):
     owner records that abstract regular-polytope datum; it is distinct from the
     rational-coordinate convex-polytope owner below, since examples such as the
     dodecahedron require ``sqrt(5)`` coordinates in a Euclidean realization.
+    Its underlying combinatorial object is the graded face poset, hence the
+    immediate placement in ``PartiallyOrderedSets``.
     """
 
     def an_object(self):
@@ -61,7 +63,7 @@ class RegularPolytopes(OwnedCategory):
         return "finite spherical regular polytopes"
 
     def super_categories(self):
-        return [Sets()]
+        return [PartiallyOrderedSets()]
 
     def from_schlafli_symbol(self, symbol):
         r"""Return the finite regular abstract polytope with Schlaefli symbol ``symbol``."""

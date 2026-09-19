@@ -111,6 +111,15 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.coxeter_diagrams import (
     CoxeterDiagrams as CoxeterDiagrams,
 )
+from dzack_research.preamble.categories.chamber_systems import (  # noqa: F401
+    ChamberSystems,
+)
+from dzack_research.preamble.categories.graph_categories import (  # noqa: F401
+    Digraphs,
+    Graphs,
+    LabelledDigraphs,
+    LabelledGraphs,
+)
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
     AlgebraicCycleGroups,
     CartierDivisorGroups,

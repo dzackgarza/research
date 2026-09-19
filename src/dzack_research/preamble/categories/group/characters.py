@@ -29,7 +29,14 @@ from dzack_research.preamble.owned_category import _object_of
 
 
 class CharacterSets(OwnedParameterizedCategory):
-    r"""The owned sets ``Char(G)`` of ordinary characters of finite ``G``."""
+    r"""The owned sets ``Char(G)`` of genuine ordinary characters of finite ``G``.
+
+    These are characters of actual finite-dimensional representations, not
+    virtual characters.  Direct sum and tensor product make genuine characters
+    a commutative semiring; additive inverses appear only after Grothendieck
+    completion to the virtual-character/representation ring.  This owner keeps
+    the genuine character set, so its immediate placement remains ``Sets()``.
+    """
 
     @staticmethod
     def __classcall__(cls, group):

@@ -81,9 +81,12 @@ def test_three_dimensional_polytope_delegates_to_sages_local_threejs_view() -> N
 
 
 def test_dodecahedron_schlafli_symbol_has_h3_full_reflection_symmetry() -> None:
+    from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets
+
     dodecahedron = RegularPolytopes().from_schlafli_symbol("{5,3}")
     diagram = dodecahedron.symmetry_coxeter_diagram()
 
+    assert dodecahedron in PartiallyOrderedSets()
     assert tuple(dodecahedron.schlafli_symbol()) == (5, 3)
     assert dodecahedron.dimension() == 3
     assert diagram.coxeter_matrix()[0, 1] == 5

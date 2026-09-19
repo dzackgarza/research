@@ -216,6 +216,8 @@ def test_the_invariant_matrix_restricts_and_draws_its_weighted_graph() -> None:
 
 
 def test_projective_weighted_digraphs_keep_orientation_and_exact_weights() -> None:
+    from dzack_research.preamble.categories.graph_categories import LabelledDigraphs
+
     graph = ProjectiveWeightedGraphs(ZZ).from_weights(
         ("a", "b"),
         {("a", "b"): (2, 3)},
@@ -224,6 +226,7 @@ def test_projective_weighted_digraphs_keep_orientation_and_exact_weights() -> No
         symmetric=False,
     )
 
+    assert graph in LabelledDigraphs()
     assert graph.is_directed()
     assert not graph.is_symmetric()
     assert graph.has_edge("a", "b")
@@ -244,6 +247,9 @@ def test_the_invariant_matrix_can_be_stated_without_any_mirrors() -> None:
         ZZ, [[4, 1, 1], [1, 4, 1], [1, 1, 4]]
     )
 
+    from dzack_research.preamble.categories.graph_categories import LabelledGraphs
+
+    assert invariants in LabelledGraphs()
     assert invariants.cardinality() == 3
     assert invariants.coxeter_entry(0, 1) == 3
     assert invariants.is_crystallographic()
