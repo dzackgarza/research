@@ -125,6 +125,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Continuous actions of topological groups on topological spaces (G-Top, orbit spaces, proper actions, slice theorem, and equivariant topology) | User intake 2026-09-19 | Comprehensive topological group action framework: topological group $G \in \mathbf{TopGrp}$ and continuous left/right actions $\alpha \colon G \times X \to X$ in $\mathbf{Top}$; orbits $G \cdot x$, stabilizers $G_x \le G$ (closed subgroups), canonical homeomorphism $G/G_x \cong G \cdot x$; quotient orbit space $X/G$ with open projection $\pi \colon X \twoheadrightarrow X/G$, separation criteria ($T_1 \iff$ closed orbits, $T_2 \iff$ closed orbit relation); action predicates: transitive ($X \cong G/H$), free, faithful, proper ($(g,x) \mapsto (gx, x)$ proper, compact stabilizers, Hausdorff quotient), properly discontinuous, cocompact; Palais-Koszul slice theorem $G \times_H S \cong U$; equivariant category $G\mathbf{-Top}$ ($G$-maps, invariant subspaces, fixed points $X^G$, induction $\operatorname{Ind}_H^G = G \times_H -$, coinduction $\operatorname{CoInd}_H^G$); Borel homotopy quotient $X_{hG} = EG \times_G X$, equivariant cohomology $H_G^*(X) = H^*(X_{hG})$; principal $G$-bundles and associated bundles $P \times_G F$ | `categories/topology/topological_groups.py` + `categories/topology/group_actions.py` + `categories/topology/equivariant.py` + `categories/topology/principal_bundles.py` | Proposed — see note below |
 | Associated real/complex torus $T(L) = L_\mathbb{R}/L$ and abelian varieties from $\mathbb{Z}$-lattices | User intake 2026-09-19 | Construction of the associated torus $T(L) = L_\mathbb{R}/L \cong (S^1)^n$ for any $\mathbb{Z}$-lattice $L$: compact abelian Lie group, $\pi_1 \cong L$, $H_1 \cong L$, $H^1 \cong L^\vee$, dual torus $T(L)^\vee = L_\mathbb{R}^\vee/L^\vee$; complex structures $J$ ($J^2 = -\operatorname{id}$ on $L_\mathbb{R}$ for $\operatorname{rank}(L) = 2g$) yielding complex tori $V/\Lambda$; Riemann bilinear relations for polarizations $E \in \bigwedge^2 L^\vee$: $E(Ju, Jv) = E(u, v)$ and $E(u, Ju) > 0$ (Hodge type (1,1) + positive-definiteness); criterion for $T(L)$ to be an abelian variety (existence of Riemann form $E$); elementary divisors $(d_1, \dots, d_g)$, principal polarizations ($d_i = 1$) and period matrices $Z \in \mathbb{H}_g$ in Siegel upper half-space; Appell-Humbert theorem and theta functions $\theta(z)$; Euclidean lattices with symmetric form $b$ as flat Riemannian tori, Laplace spectrum from $L^\vee$, and Milnor isospectral pairs; Jacobian $\operatorname{Jac}(C) = H_1(C, \mathbb{R})/H_1(C, \mathbb{Z})$ and Albanese $\operatorname{Alb}(X)$ varieties | `categories/lattices/torus.py` + `categories/complex_geometry/complex_tori.py` + `categories/abelian_varieties/abelian_variety.py` + `categories/modular/siegel_half_space.py` + `categories/riemannian/flat_tori.py` | Proposed — see note below |
 | Cartier and Pontryagin dualities (LCA groups, finite commutative group schemes, Hopf algebras, and Weil pairings) | User intake 2026-09-19 | Categorical duality theories for abelian topological groups and commutative group schemes: (1) Pontryagin duality on locally compact abelian groups $\mathbf{LCA}$: character group $\widehat{G} = \operatorname{Hom}_{\mathbf{LCA}}(G, \mathbb{T})$, biduality isomorphism $G \xrightarrow{\sim} \widehat{\widehat{G}}$, compact-discrete duality, torsion-profinite duality, connected-torsion-free duality, annihilators $H^\perp \cong \widehat{G/H}$, dual exact sequences, Haar measure, Fourier transform, and Plancherel theorem; (2) Cartier duality on finite locally free commutative group schemes over $S$ (and finite-dimensional commutative cocommutative Hopf algebras $A$ via dual Hopf algebra $A^*$): $D(G) = \underline{\operatorname{Hom}}(G, \mathbb{G}_m)$, canonical biduality $G \xrightarrow{\sim} D(D(G))$, dual pairs $(\mathbb{Z}/n)_k \leftrightarrow \mu_{n,k}$ and self-dual $\alpha_p$, four Oort-Tate classes (étale-étale, étale-local, local-étale, local-local), Frobenius-Verschiebung exchange $D(F) = V_{D(G)}$; (3) Dieudonné module duality $\mathbb{M}(D(G))$; (4) Abelian varieties: Cartier duality $D(A[n]) \cong A^\vee[n]$ yielding the Weil pairing $e_n \colon A[n] \times A^\vee[n] \to \mu_n$; (5) Barsotti-Tate ($p$-divisible) groups and Serre-Tate duality | `categories/topology/pontryagin.py` + `categories/schemes/group_schemes/cartier_duality.py` + `categories/algebras/hopf_algebras.py` + `categories/abelian_varieties/weil_pairing.py` + `categories/schemes/group_schemes/p_divisible.py` | Proposed — see note below |
+| Operationalized Grothendieck spectral sequences (generic functor composition, automated differentials, 5-term solver, and concrete specializations: Leray, Serre, LHS, local-to-global Ext/Tor, Frölicher) | Literature survey + user intake 2026-09-19 | Comprehensive computational framework for Grothendieck spectral sequences: (1) Abstract Grothendieck spectral sequence $E_2^{p, q} = (R^p F)(R^q G(A)) \implies R^{p+q}(F \circ G)(A)$ for composable functors $\mathcal{A} \xrightarrow{G} \mathcal{B} \xrightarrow{F} \mathcal{C}$ with $G(\operatorname{Inj})$ $F$-acyclic, homological dual $E^2_{p, q} = (L_p F)(L_q G(A)) \implies L_{p+q}(F \circ G)(A)$, Cartan-Eilenberg double complex resolutions; (2) Algorithmic engine: bigraded page structures $E_r^{p, q}$, differential complexes $d_r$, page transitions $E_{r+1} = H(E_r, d_r)$, automated quadrant/sparsity vanishing, 5-term exact sequence solver ($0 \to E_2^{1, 0} \to H^1 \to E_2^{0, 1} \xrightarrow{d_2} E_2^{2, 0} \to \dots$), multiplicative Leibniz propagation $d_r(xy) = d_r(x)y + (-1)^{|x|} x d_r(y)$, transgression tracking, abutment filtration reconstruction, and extension problem solving; (3) Concrete computable specializations: Leray SS ($H^p(Y, R^q f_* \mathcal{F}) \implies H^{p+q}(X, \mathcal{F})$), Serre fibration SS ($H^p(B; \mathcal{H}^q(F)) \implies H^{p+q}(E)$), Lyndon-Hochschild-Serre (LHS) for group cohomology ($H^p(G/N, H^q(N, M)) \implies H^{p+q}(G, M)$), Lie algebra Hochschild-Serre, local-to-global Ext ($H^p(X, \mathcal{E}xt^q(\mathcal{F}, \mathcal{G})) \implies \operatorname{Ext}^{p+q}(\mathcal{F}, \mathcal{G})$), local-to-global Tor, change of rings (Cartan-Eilenberg Ext/Tor), Frölicher/Hodge-to-de Rham ($H^q(X, \Omega_X^p) \implies H_{\mathrm{dR}}^{p+q}$), and local cohomology SS | `categories/homology/spectral_sequences/grothendieck.py` + `categories/homology/spectral_sequences/spectral_sequence.py` + `categories/homology/spectral_sequences/leray.py` + `categories/homology/spectral_sequences/lyndon_hochschild_serre.py` + `categories/homology/spectral_sequences/local_ext.py` + `categories/homology/spectral_sequences/froelicher.py` | Proposed — see note below |
 
 
 
@@ -3656,6 +3657,202 @@ Intended owners: `categories/lattices/torus.py` (`LatticeTorus`, `DualTorus`), `
     - `SerreTateDual(G)`: dual $p$-divisible group $G^\vee = \varinjlim D(G[p^\nu])$.
 
 Intended owners: `categories/topology/pontryagin.py` (`LCAGroup`, `CharacterGroup`, `PontryaginDual`, `Annihilator`), `categories/schemes/group_schemes/cartier_duality.py` (`FiniteCommutativeGroupScheme`, `CartierDual`, `CartierPairing`, `RootsOfUnity`, `AlphaP`), `categories/algebras/hopf_algebras.py` (`HopfAlgebra`, `DualHopfAlgebra`), `categories/abelian_varieties/weil_pairing.py` (`WeilPairing`, `TorsionSubgroupScheme`), `categories/schemes/group_schemes/p_divisible.py` (`BarsottiTateGroup`, `SerreTateDual`).
+
+## Desired capability: Operationalized Grothendieck spectral sequences and concrete specializations — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **The abstract Grothendieck spectral sequence (composition of derived functors):**
+    * Let $\mathcal{A}, \mathcal{B}, \mathcal{C}$ be abelian categories.
+    * Let $G \colon \mathcal{A} \to \mathcal{B}$ and $F \colon \mathcal{B} \to \mathcal{C}$ be additive functors.
+    * **Right-derived (cohomological) hypotheses:**
+      - $\mathcal{A}$ and $\mathcal{B}$ have enough injectives.
+      - $G$ sends injective objects of $\mathcal{A}$ to $F$-acyclic objects of $\mathcal{B}$ (i.e. $(R^q F)(G(I)) = 0$ for all $q > 0$ whenever $I \in \operatorname{Inj}(\mathcal{A})$).
+    * **The Grothendieck Spectral Sequence Theorem:**
+      For any object $A \in \mathcal{A}$, there is a first-quadrant cohomological spectral sequence:
+      $$
+      E_2^{p, q} \;=\; (R^p F)\big(R^q G(A)\big) \;\Longrightarrow\; R^{p+q}(F \circ G)(A).
+      $$
+      Differentials on page $r \ge 2$:
+      $$
+      d_r \colon E_r^{p, q} \longrightarrow E_r^{p+r, q-r+1}, \quad d_r \circ d_r = 0.
+      $$
+      Page transitions: $E_{r+1}^{p, q} = \ker(d_r^{p, q}) / \operatorname{im}(d_r^{p-r, q+r-1})$.
+    * **Left-derived (homological) hypotheses & variant:**
+      - $\mathcal{A}$ and $\mathcal{B}$ have enough projectives; $G$ and $F$ are right exact.
+      - $G$ sends projective objects of $\mathcal{A}$ to $F$-acyclic objects of $\mathcal{B}$ (i.e. $(L_q F)(G(P)) = 0$ for all $q > 0$ whenever $P \in \operatorname{Proj}(\mathcal{A})$).
+      - Yields the homological spectral sequence:
+        $$
+        E^2_{p, q} \;=\; (L_p F)\big(L_q G(A)\big) \;\Longrightarrow\; L_{p+q}(F \circ G)(A),
+        $$
+        with differentials $d^r \colon E^r_{p, q} \to E^r_{p-r, q+r-1}$.
+    * **Cartan-Eilenberg double complex construction:**
+      - Choose an injective resolution $A \to I^\bullet$ in $\mathcal{A}$.
+      - Applying $G$ produces a complex $G(I^\bullet)$ in $\mathcal{B}$.
+      - Choose a Cartan-Eilenberg injective resolution $I^{\bullet, \bullet}$ of $G(I^\bullet)$ in $\mathcal{B}$ (resolving objects, boundaries, and cohomologies by injectives).
+      - Applying $F$ yields a double complex $K^{p, q} = F(I^{p, q})$.
+      - Vertical filtration $'F$ produces $'E_1^{p, q} = R^q F(G(I^p)) = 0$ for $q > 0$ by the acyclicity hypothesis, so $'E_2^{p, 0} = R^p(F \circ G)(A)$ and the spectral sequence degenerates at $'E_2$.
+      - Horizontal filtration $''F$ produces $''E_2^{p, q} = R^p F(R^q G(A))$.
+      - Since both filtrations converge to the cohomology of the total complex $\operatorname{Tot}(K)$, $''E_r^{p, q} \implies R^{p+q}(F \circ G)(A)$.
+    * **Low-degree terms and the five-term exact sequence:**
+      - Every first-quadrant spectral sequence induces an exact sequence of low-degree terms:
+        $$
+        0 \longrightarrow R^1 F(G(A)) \longrightarrow R^1(F \circ G)(A) \longrightarrow F(R^1 G(A)) \xrightarrow{d_2^{0, 1}} R^2 F(G(A)) \longrightarrow R^2(F \circ G)(A),
+        $$
+        associated with edge homomorphisms:
+        * Inflation / Inclusion: $E_2^{1, 0} = R^1 F(G(A)) \hookrightarrow H^1$.
+        * Restriction / Projection: $H^1 \twoheadrightarrow E_\infty^{0, 1} \subseteq E_2^{0, 1} = F(R^1 G(A))$.
+        * Transgression / Connecting map: $d_2^{0, 1} \colon E_2^{0, 1} \to E_2^{2, 0}$.
+
+  * **Catalogue of concrete specializations from the literature:**
+    1. **Leray spectral sequence (sheaf cohomology under continuous or scheme maps):**
+       - Map: $f \colon X \to Y$ (continuous map of topological spaces or morphism of schemes).
+       - Functors: $G = f_* \colon \mathbf{Sh}(X) \to \mathbf{Sh}(Y)$ (direct image / pushforward) and $F = \Gamma(Y, -) \colon \mathbf{Sh}(Y) \to \mathbf{Ab}$ (global sections).
+       - Composition: $F \circ G = \Gamma(Y, f_*(-)) = \Gamma(X, -)$.
+       - Acyclicity: injective sheaves are flasque; pushforwards of flasque sheaves are flasque; flasque sheaves on $Y$ are $\Gamma(Y, -)$-acyclic ($H^q(Y, \mathcal{F}) = 0$ for $q > 0$).
+       - Grothendieck SS yields:
+         $$
+         E_2^{p, q} \;=\; H^p(Y, R^q f_* \mathcal{F}) \;\Longrightarrow\; H^{p+q}(X, \mathcal{F}).
+         $$
+    2. **Serre spectral sequence of a fibration:**
+       - Specialization of Leray for a Serre fibration $F \to E \xrightarrow{p} B$:
+         The higher direct images $R^q p_* \underline{A}$ form a local coefficient system on $B$ with fiber isomorphic to $H^q(F; A)$.
+       - Grothendieck SS yields:
+         $$
+         E_2^{p, q} \;=\; H^p(B; \mathcal{H}^q(F; A)) \;\Longrightarrow\; H^{p+q}(E; A).
+         $$
+         When $B$ is simply connected or the monodromy action of $\pi_1(B)$ on $H^*(F; A)$ is trivial, $E_2^{p, q} \cong H^p(B; A) \otimes H^q(F; A)$.
+    3. **Local-to-global Ext spectral sequence:**
+       - Category: $\mathcal{O}_X\mathbf{-Mod}$ for a ringed space or scheme $X$.
+       - Functors: $G = \mathcal{H}om_{\mathcal{O}_X}(\mathcal{F}, -) \colon \mathcal{O}_X\mathbf{-Mod} \to \mathcal{O}_X\mathbf{-Mod}$ and $F = \Gamma(X, -) \colon \mathcal{O}_X\mathbf{-Mod} \to \mathbf{Ab}$.
+       - Composition: $\Gamma(X, \mathcal{H}om(\mathcal{F}, \mathcal{G})) = \operatorname{Hom}_{\mathcal{O}_X}(\mathcal{F}, \mathcal{G})$.
+       - Acyclicity: injective $\mathcal{O}_X$-modules are flasque, hence $\Gamma(X, -)$-acyclic.
+       - Grothendieck SS yields:
+         $$
+         E_2^{p, q} \;=\; H^p\big(X, \mathcal{E}xt^q_{\mathcal{O}_X}(\mathcal{F}, \mathcal{G})\big) \;\Longrightarrow\; \operatorname{Ext}^{p+q}_{\mathcal{O}_X}(\mathcal{F}, \mathcal{G}).
+         $$
+    4. **Local-to-global Tor spectral sequence (homological):**
+       - Functors: $G = \mathcal{F} \otimes_{\mathcal{O}_X} -$, $F = \Gamma(X, -)$.
+       - Grothendieck SS yields:
+         $$
+         E^2_{p, q} \;=\; H_p\big(X, \mathcal{T}or_q^{\mathcal{O}_X}(\mathcal{F}, \mathcal{G})\big) \;\Longrightarrow\; \operatorname{Tor}_{p+q}^{\mathcal{O}_X}(\mathcal{F}, \mathcal{G}).
+         $$
+    5. **Lyndon-Hochschild-Serre (LHS) spectral sequence (group cohomology):**
+       - Group extension: $1 \to N \to G \to Q \to 1$ with $Q = G/N$, and $G$-module $M$.
+       - Functors: $G\text{-functor} = (-)^N \colon \mathbb{Z}[G]\mathbf{-Mod} \to \mathbb{Z}[Q]\mathbf{-Mod}$ ($N$-invariants) and $F\text{-functor} = (-)^Q \colon \mathbb{Z}[Q]\mathbf{-Mod} \to \mathbf{Ab}$ ($Q$-invariants).
+       - Composition: $((-)^N)^Q = (-)^G$.
+       - Acyclicity: an injective $G$-module $I$ is coinduced, its restriction to $N$ is coinduced, and $I^N$ is coinduced as a $Q$-module, hence $H^q(Q, I^N) = 0$ for $q > 0$.
+       - Grothendieck SS yields:
+         $$
+         E_2^{p, q} \;=\; H^p(G/N, H^q(N, M)) \;\Longrightarrow\; H^{p+q}(G, M).
+         $$
+       - Homology version:
+         $$
+         E^2_{p, q} \;=\; H_p(G/N, H_q(N, M)) \;\Longrightarrow\; H_{p+q}(G, M).
+         $$
+       - 5-term exact sequence recovers the classical inflation-restriction sequence:
+         $$
+         0 \longrightarrow H^1(G/N, M^N) \xrightarrow{\operatorname{inf}} H^1(G, M) \xrightarrow{\operatorname{res}} H^1(N, M)^{G/N} \xrightarrow{d_2^{0, 1}} H^2(G/N, M^N) \xrightarrow{\operatorname{inf}} H^2(G, M).
+         $$
+    6. **Hochschild-Serre spectral sequence for Lie algebras:**
+       - Ideal $\mathfrak{h} \trianglelefteq \mathfrak{g}$ in Lie algebra $\mathfrak{g}$ over a field $k$, representation $M$.
+       - Functors: $(-)^{\mathfrak{h}} \colon \mathfrak{g}\mathbf{-Mod} \to (\mathfrak{g}/\mathfrak{h})\mathbf{-Mod}$ and $(-)^{\mathfrak{g}/\mathfrak{h}} \colon (\mathfrak{g}/\mathfrak{h})\mathbf{-Mod} \to k\mathbf{-Mod}$.
+       - Grothendieck SS yields:
+         $$
+         E_2^{p, q} \;=\; H^p(\mathfrak{g}/\mathfrak{h}, H^q(\mathfrak{h}, M)) \;\Longrightarrow\; H^{p+q}(\mathfrak{g}, M).
+         $$
+    7. **Change of rings spectral sequences (Cartan-Eilenberg):**
+       - Ring homomorphism $f \colon R \to S$, $S$-module $N$, $R$-module $M$.
+       - Ext variant ($F = \operatorname{Hom}_S(N, -)$, $G = \operatorname{Hom}_R(S, -)$):
+         $$
+         E_2^{p, q} \;=\; \operatorname{Ext}_S^p(N, \operatorname{Ext}_R^q(S, M)) \;\Longrightarrow\; \operatorname{Ext}_R^{p+q}(N, M).
+         $$
+       - Tor variant ($F = N \otimes_S -$, $G = S \otimes_R -$):
+         $$
+         E^2_{p, q} \;=\; \operatorname{Tor}_p^S(N, \operatorname{Tor}_q^R(S, M)) \;\Longrightarrow\; \operatorname{Tor}_{p+q}^R(N, M).
+         $$
+    8. **Local cohomology spectral sequence:**
+       - Closed subschemes $Z \subseteq Y \subseteq X$ and sheaf $\mathcal{F}$.
+       - Functors: $\Gamma_Y$ (sections supported on $Y$) and $\Gamma_Z$.
+       - Grothendieck SS yields:
+         $$
+         E_2^{p, q} \;=\; H_Z^p(X, \mathcal{H}_Y^q(\mathcal{F})) \;\Longrightarrow\; H_Z^{p+q}(X, \mathcal{F}).
+         $$
+    9. **Čech-to-derived functor spectral sequence:**
+       - Open cover $\mathcal{U} = \{U_i\}_{i \in I}$ of $X$.
+       - Grothendieck SS yields:
+         $$
+         E_2^{p, q} \;=\; \check{H}^p(\mathcal{U}, \mathcal{H}^q(\mathcal{F})) \;\Longrightarrow\; H^{p+q}(X, \mathcal{F}).
+         $$
+    10. **Frölicher (Hodge-to-de Rham) spectral sequence:**
+        - Hypercohomology of the algebraic de Rham complex $\Omega_X^\bullet$ via horizontal filtration:
+          $$
+          E_1^{p, q} \;=\; H^q(X, \Omega_X^p) \;\Longrightarrow\; H_{\mathrm{dR}}^{p+q}(X).
+          $$
+        - Deligne-Illusie theorem: degenerates at $E_1$ for smooth projective varieties over characteristic 0 (or over characteristic $p$ lifting to $W_2(k)$ with $\dim X < p$).
+    11. **Hochschild-Serre spectral sequence for étale cohomology:**
+        - Scheme $X$ over field $k$, separable closure $k^s$, Galois group $\Gamma = \operatorname{Gal}(k^s/k)$.
+        - Grothendieck SS yields:
+          $$
+          E_2^{p, q} \;=\; H^p\big(\Gamma, H^q(X_{k^s}, \mathcal{F})\big) \;\Longrightarrow\; H_{\mathrm{et}}^{p+q}(X, \mathcal{F}).
+          $$
+
+* **Operationalization and effective computation engine:**
+  * **Bigraded page data structures and linear algebra:**
+    - `SpectralSequence`: manages bigraded components $E_r^{p, q}$ over a ground ring $R$ (fields $\mathbb{Q}, \mathbb{F}_p$ or PID $\mathbb{Z}$).
+    - Sparse matrix representation for differentials $d_r^{p, q} \colon E_r^{p, q} \to E_r^{p+r, q-r+1}$.
+    - Complex validation: automatically checks $d_r^{p+r, q-r+1} \circ d_r^{p, q} = 0$.
+    - Exact homology computation: $E_{r+1}^{p, q} = \ker(d_r^{p, q}) / \operatorname{im}(d_r^{p-r, q+r-1})$ via Smith Normal Form (over $\mathbb{Z}$) or Gaussian elimination (over fields).
+  * **Automated differential deduction and inference rules:**
+    - **Quadrant and bounding box vanishing:**
+      Differentials $d_r^{p, q}$ are automatically asserted to be zero whenever either source $(p, q)$ or target $(p+r, q-r+1)$ lies outside the support window $[p_{\min}, p_{\max}] \times [q_{\min}, q_{\max}]$.
+    - **Parity / lacunary sparsity:**
+      When $E_2^{p, q} = 0$ for all odd $q$ (e.g. spaces with cohomology concentrated in even degrees, such as $\mathbb{C}\mathbb{P}^n$), $d_2^{p, q} \colon E_2^{p, q} \to E_2^{p+2, q-1}$ must land in an odd row, hence $d_2 = 0$ identically and $E_2 = E_3$. The engine automatically bypasses zero-differential pages.
+    - **Five-term exact sequence solver:**
+      Given the five-term exact sequence $0 \to E_2^{1, 0} \to H^1 \to E_2^{0, 1} \xrightarrow{d_2} E_2^{2, 0} \to H^2$, the engine inverts ranks or maps to solve for unknown differentials (e.g. computing $d_2^{0, 1}$ from known $H^1$).
+    - **Multiplicative Leibniz rule propagation:**
+      For spectral sequences with an algebra structure (cup product on Serre, de Rham, or LHS), $d_r$ satisfies the graded derivation law:
+      $$
+      d_r(u \smile v) \;=\; d_r(u) \smile v \;+\; (-1)^{\operatorname{deg}(u)} u \smile d_r(v).
+      $$
+      The user provides $d_r$ only on algebra generators; the engine automatically computes $d_r$ on all basis monomials.
+    - **Transgression tracker:**
+      Identifies transgressive classes $x \in E_2^{0, q}$ where $d_2(x) = \dots = d_q(x) = 0$, giving $d_{q+1}(x) \in E_{q+1}^{q+1, 0}$, connecting fiber cohomology classes directly to base classes.
+  * **Convergence and abutment reconstruction:**
+    - Detects stability at degree $n$: when all differentials into and out of diagonal $p + q = n$ vanish for $r \ge r_0$, the terms $E_{r_0}^{p, n-p}$ are certified as stable $E_\infty^{p, n-p}$.
+    - Target filtration reconstruction: computes filtration quotients $\operatorname{gr}^p H^n \cong E_\infty^{p, n-p}$.
+    - Solves extension problems:
+      * Over fields $k$: $\dim_k H^n = \sum_{p=0}^n \dim_k E_\infty^{p, n-p}$.
+      * Over $\mathbb{Z}$: analyzes extension groups $\operatorname{Ext}^1_\mathbb{Z}(E_\infty^{p, n-p}, E_\infty^{p+1, n-p-1})$ to bound or resolve group extension ambiguities.
+
+* **Preamble implementation requirements:**
+  * `categories/homology/spectral_sequences/spectral_sequence.py`:
+    - `SpectralSequence(r_start=2, ring=QQ)`: generic first-quadrant spectral sequence engine.
+    - `set_term(p, q, module)`: populates $E_{r_{\mathrm{start}}}^{p, q}$.
+    - `set_differential(r, p, q, matrix)`: assigns differential $d_r^{p, q}$.
+    - `verify_differentials(r)`: verifies $d_r \circ d_r = 0$.
+    - `step_page(r)`: computes $E_{r+1}$ homology page.
+    - `is_stable(n)`: checks if total degree $n$ has stabilized ($E_\infty$).
+    - `abutment(n)`: returns the filtration layers and graded components of $H^n$.
+    - `solve_extension(graded_pieces, base_ring)`: reconstructs $H^n$.
+  * `categories/homology/spectral_sequences/grothendieck.py`:
+    - `GrothendieckSpectralSequence(F, G, A, p_max=4, q_max=4)`: generic Grothendieck spectral sequence constructor.
+    - `check_acyclicity(G, F, inj_generator)`: tests $R^q F(G(I)) = 0$ for $q > 0$.
+    - `five_term_exact_sequence()`: extracts and solves the 5-term exact sequence.
+    - `cartan_eilenberg_double_complex(complex, F, G)`: explicit double complex generation.
+  * `categories/homology/spectral_sequences/leray.py`:
+    - `LeraySpectralSequence(f, sheaf)`: constructs Leray SS for continuous / scheme maps.
+    - `SerreFibrationSpectralSequence(base, fiber, coeff_ring)`: Serre SS with automated cup-product Leibniz propagation.
+  * `categories/homology/spectral_sequences/lyndon_hochschild_serre.py`:
+    - `LyndonHochschildSerre(G, N, M, mode='cohomology')`: computes $H^p(G/N, H^q(N, M))$ using GAP/Sage group cohomology algorithms.
+    - `inflation_restriction_sequence()`: computes 5-term sequence for group extensions.
+  * `categories/homology/spectral_sequences/local_ext.py`:
+    - `LocalToGlobalExt(F, G, X)`: computes $H^p(X, \mathcal{E}xt^q(\mathcal{F}, \mathcal{G})) \implies \operatorname{Ext}^{p+q}(\mathcal{F}, \mathcal{G})$ on projective schemes via syzygies.
+    - `LocalToGlobalTor(F, G, X)`: computes $H_p(X, \mathcal{T}or_q(\mathcal{F}, \mathcal{G})) \implies \operatorname{Tor}_{p+q}(\mathcal{F}, \mathcal{G})$.
+  * `categories/homology/spectral_sequences/froelicher.py`:
+    - `FroelicherSpectralSequence(X)`: Hodge-to-de Rham spectral sequence $E_1^{p, q} = H^q(X, \Omega_X^p) \implies H_{\mathrm{dR}}^{p+q}(X)$ with Deligne-Illusie degeneration check.
+
+Intended owners: `categories/homology/spectral_sequences/grothendieck.py` (`GrothendieckSpectralSequence`, `CartanEilenbergResolution`), `categories/homology/spectral_sequences/spectral_sequence.py` (`SpectralSequence`, `Page`, `Differential`, `FiveTermSequenceSolver`), `categories/homology/spectral_sequences/leray.py` (`LeraySpectralSequence`, `SerreFibrationSpectralSequence`), `categories/homology/spectral_sequences/lyndon_hochschild_serre.py` (`LyndonHochschildSerre`), `categories/homology/spectral_sequences/local_ext.py` (`LocalToGlobalExt`, `LocalToGlobalTor`), `categories/homology/spectral_sequences/froelicher.py` (`FroelicherSpectralSequence`).
+
 
 
 
