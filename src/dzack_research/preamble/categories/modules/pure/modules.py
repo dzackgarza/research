@@ -58,6 +58,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     OwnedRings,
     PrincipalIdealDomains,
+    _OwnedRingParent,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -188,12 +189,23 @@ class Modules(OwnedCategoryOverBaseRing):
         over, so the group algebra selects the category class that knows its
         group; every other ring reaches the generic construction.
         """
-        if cls is Modules and _is_group_algebra(base_ring):
-            from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-                ModulesOverGroupAlgebra,
-            )
+        match base_ring:
+            case _OwnedRingParent():
+                # Native ring hosts are the regular rings adopted by the ring
+                # owner, never the structured objects produced by the group-
+                # algebra functor.  During the initial ZZ bootstrap their full
+                # category placement is still being assembled, so do not ask
+                # that unfinished placement merely to reject the group-algebra
+                # specialization.
+                pass
+            case _ if cls is Modules and _is_group_algebra(base_ring):
+                from dzack_research.preamble.categories.modules.group_modules.group_modules import (
+                    ModulesOverGroupAlgebra,
+                )
 
-            return ModulesOverGroupAlgebra(base_ring)
+                return ModulesOverGroupAlgebra(base_ring)
+            case _:
+                pass
         return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, *args, **kwargs)
 
     def _augmentation(self, group):
@@ -861,13 +873,15 @@ class Modules(OwnedCategoryOverBaseRing):
         return self.base_ring().free_module(1)
 
     def super_categories(self):
-        if self.base_ring() in OwnedRings().Commutative():
-            from dzack_research.preamble.categories.modules.fibered_modules import (
-                ModulesOverCommutativeRings,
-            )
+        match self.base_ring().is_commutative():
+            case True:
+                from dzack_research.preamble.categories.modules.fibered_modules import (
+                    ModulesOverCommutativeRings,
+                )
 
-            return [ModulesOverCommutativeRings()]
-        return [AdditiveGroups().AdditiveCommutative()]
+                return [ModulesOverCommutativeRings()]
+            case _:
+                return [AdditiveGroups().AdditiveCommutative()]
 
     def Mor(self, domain, codomain):
         r"""Return the unique Hom-set ``Hom_R(domain,codomain)``."""

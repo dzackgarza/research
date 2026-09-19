@@ -2322,11 +2322,8 @@ class OwnedOrders(OwnedCategory):
     def super_categories(self):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-        # The engine view, not ``_own_ring``: this runs inside the refinement
-        # that places the integers here, which ``_own_ring`` would re-enter.
-        integers = _owned_engine_ring(SageZZ)
         return [
-            Algebras(integers).Associative().Unital().Commutative().FinitelyGenerated(),
+            Algebras(_owned_integers()).Associative().Unital().Commutative().FinitelyGenerated(),
             OwnedRings().Commutative().NoZeroDivisors().Noetherian(),
         ]
 
@@ -2505,6 +2502,20 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
             *args,
             **kwargs,
         )
+
+    def __init__(self, base_ring) -> None:
+        match base_ring:
+            case _OwnedRingParent():
+                # The host type is itself the owned-ring construction.  During
+                # its bootstrap the category being built is precisely what
+                # will establish ``base_ring in OwnedRings()``; asking that
+                # membership here would make the declaration depend on its
+                # own result.  Fix the parameter and construct the category
+                # without re-asking the theorem under construction.
+                self._owned_parameter = base_ring
+                OwnedCategory.__init__(self)
+            case _:
+                OwnedParameterizedCategory.__init__(self, base_ring)
 
     def base_ring(self):
         return self.base()
@@ -3172,35 +3183,42 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         """
         canonical_native = base is None and category is None
         self._engine = engine
-        if base is None:
-            scalars = _engine_scalar_ring(engine)
-            base = self if scalars is None else _own_ring(scalars)
-            category_base = None if scalars is None else base
-        else:
-            base = _own_ring(base)
-            category_base = base
-        placement = _owned_ring_category(engine, scalar_base=category_base)
-        if category is not None:
-            placement = Category.join((placement, category))
-        Parent.__init__(self, base=base, category=placement)
-        realize_owned_category(self)
-        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
-
-        # The primitive owned ring already exists; its regular module must
-        # use this same scalar object when it constructs the rank-one cover.
-        # Sage CachedFunction.set_cache(value,*args) is the native cache API.
-        # Only this canonical factory path interns early, never another base
-        # structure over the same computation ring.
-        if canonical_native:
+        integer_bootstrap = canonical_native and engine is SageZZ
+        # ``OwnedOrders`` is declared using ``Algebras(ZZ)``.  The canonical
+        # integer object therefore has to be the parameter of that category
+        # while its own initial placement is being assembled.  Seed only this
+        # initial-object identity before category construction; every other
+        # native ring keeps the ordinary post-Parent interning below.
+        if integer_bootstrap:
             _owned_engine_ring.set_cache(self, engine)
-            if engine is SageZZ:
-                _owned_integers.set_cache(self)
+            _owned_integers.set_cache(self)
         try:
+            if base is None:
+                scalars = _engine_scalar_ring(engine)
+                base = self if scalars is None else _own_ring(scalars)
+                category_base = None if scalars is None else base
+            else:
+                base = _own_ring(base)
+                category_base = base
+            placement = _owned_ring_category(engine, scalar_base=category_base)
+            if category is not None:
+                placement = Category.join((placement, category))
+            Parent.__init__(self, base=base, category=placement)
+            realize_owned_category(self)
+
+            # The primitive owned ring now exists as a Parent.  Cache every
+            # canonical native ring before its regular module/algebra datum is
+            # constructed so those owners reuse this exact scalar object.
+            if canonical_native and not integer_bootstrap:
+                _owned_engine_ring.set_cache(self, engine)
+
+            from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
+
             _algebra_from_native_ring(self, lambda left, right: left * right,
                 self._from_engine_element(engine.one()), self._native_scalar_action,
                 module_basis=self._native_module_basis)
         except BaseException:
-            # A failed constructor cannot leave its incomplete refinement in
+            # A failed constructor cannot leave its incomplete owned ring in
             # the canonical cache. Remove only this exact object's entries.
             if canonical_native:
                 key = _owned_engine_ring.get_key(engine)
@@ -3437,11 +3455,9 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
     else:
         placement = OwnedRings()
     joined = Category.join((placement, _owned_ring_size(engine), *extra))
-    # The integers are placed as an order after their construction, in
-    # ``_own_ring``: the category of orders is stated over ``Algebras(ZZ)``,
-    # which needs the owned integers to exist.
-    if isinstance(engine, SageNumberFieldOrder) and (
-        scalar_base is None or _engine_ring(scalar_base) is SageZZ
+    if engine is SageZZ or (
+        isinstance(engine, SageNumberFieldOrder)
+        and (scalar_base is None or _engine_ring(scalar_base) is SageZZ)
     ):
         return Category.join((joined, OwnedOrders()))
     return joined
@@ -3513,9 +3529,10 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
 def _own_ring(ring):
     r"""Private backend adapter: build the preamble ring represented by ``ring``.
 
-    One engine has one owned view: the number-field and order views refine
-    this object in place, so ``ZZ.base_ring() is ZZ`` and every morphism
-    ``R[G] -> R`` finds one common base ring.
+    One engine has one owned view.  Later chosen number-field or integral-basis
+    data refine this same object in place; semantic ring/order/algebra placement
+    belongs to its construction.  Thus ``ZZ.base_ring() is ZZ`` and every
+    morphism ``R[G] -> R`` finds one common base ring.
     """
     if ring in OwnedRings():
         return ring
@@ -3528,14 +3545,8 @@ def _own_ring(ring):
 
 @cached_function
 def _owned_integers() -> _OwnedRingParent:
-    r"""The owned integers, placed as an order once they exist.
-
-    ``OwnedOrders()`` is stated over ``Algebras(ZZ)``, so the integers cannot
-    be placed there inside their own construction; the placement is the
-    refinement that follows it.
-    """
-    integers = _owned_engine_ring(SageZZ)
-    return refine(integers, OwnedOrders())
+    r"""The canonical owned integers, including their initial order placement."""
+    return _owned_engine_ring(SageZZ)
 
 
 def _owned_ring(ring):
