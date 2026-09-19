@@ -93,8 +93,7 @@ class _TensorHomAdjunction(Adjunction):
 
     def counit(self, module):
         internal_hom = self.right_adjoint()(module)
-        tensor = self.left_adjoint()(internal_hom)
-        evaluation = BilinearMap(
+        return BilinearMap(
             internal_hom,
             self.fixed_module(),
             module,
@@ -102,7 +101,6 @@ class _TensorHomAdjunction(Adjunction):
                 self.fixed_module().module_generator(fixed_label)
             ),
         )
-        return tensor.from_bilinear(evaluation)
 
     def _repr_(self):
         return f"Tensor/internal-Hom adjunction with {self.fixed_module()}"

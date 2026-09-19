@@ -2515,6 +2515,55 @@ class TensorProductModuleMorphism(ModuleMorphism):
         return self.parent().scalar_multiple(self.domain().base_ring()(2), self)
 
 
+class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
+    r"""Conditional classifier of a two-variable evaluation on framed factors.
+
+    The selected tensor framing determines the only possible linear extension
+    from the values on pairs of factor generators, and ordinary module-Hom
+    admission still rejects any selected tensor relation that those values do
+    not kill.  A Python callable, however, does not establish that its values
+    on arbitrary factor elements agree with that bilinear extension.  Retain
+    that bilinearity premise as ``Unknown`` instead of promoting agreement on
+    the selected framing to a proof.
+    """
+
+    def __init__(self, parent, evaluation) -> None:
+        self._bilinear_evaluation = evaluation
+        source = parent.domain()
+        left = source.tensor_factor(0)
+        right = source.tensor_factor(1)
+
+        def generator_image(pair):
+            value = evaluation(
+                left.module_generator(pair.component(0)),
+                right.module_generator(pair.component(1)),
+            )
+            match element_parent(value) is parent.codomain():
+                case True:
+                    return value
+                case False:
+                    return parent.codomain()(value)
+
+        super().__init__(parent, generator_image)
+        self._linearity_decision = Unknown
+
+    def __call__(self, *arguments):
+        match len(arguments):
+            case 2:
+                left, right = arguments
+                value = self._bilinear_evaluation(
+                    self.left_module()(left),
+                    self.right_module()(right),
+                )
+                match element_parent(value) is self.codomain():
+                    case True:
+                        return value
+                    case False:
+                        return self.codomain()(value)
+            case _:
+                return super().__call__(*arguments)
+
+
 
 class ModuleAutomorphism(CategoricalIsomorphism):
     r"""An invertible module endomorphism, as an element of ``Aut_R(M)``."""
@@ -2711,16 +2760,7 @@ class TensorProductModuleHomset(ModuleHomset):
 
             images = generator_image
         elif self._is_two_argument_callable(images):
-            raw = images
-
-            def generator_image(pair):
-                value = raw(
-                    left.module_generator(pair.component(0)),
-                    right.module_generator(pair.component(1)),
-                )
-                return value if element_parent(value) is self.codomain() else self.codomain()(value)
-
-            images = generator_image
+            return self._from_bilinear_evaluation(images)
         elif isinstance(images, (tuple, list)) and all(isinstance(row, (tuple, list)) for row in images):
             left_size = left_labels.cardinality()
             right_size = right_labels.cardinality()
@@ -2740,3 +2780,11 @@ class TensorProductModuleHomset(ModuleHomset):
             images = generator_image
 
         return super()._element_constructor_(images)
+
+    def _from_bilinear_evaluation(self, evaluation):
+        r"""Classify a stated bilinear evaluation without proving it from a framing sample."""
+        match callable(evaluation):
+            case True:
+                return _FramedTensorBilinearEvaluationMorphism(self, evaluation)
+            case False:
+                raise TypeError("a bilinear evaluation must be callable")

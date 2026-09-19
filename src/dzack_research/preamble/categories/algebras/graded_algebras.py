@@ -76,13 +76,11 @@ def _rank_one_unit_algebra(category):
     module = _concentrated_graded_module(ring, category.grading_monoid())
     label = module.module_generating_set()[0]
     generator = module.module_generator(label)
-    multiplication = Modules(ring).tensor_product((module, module)).from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {(label, label): generator},
-        )
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        {(label, label): generator},
     )
     return _algebra_on_module(
         module,

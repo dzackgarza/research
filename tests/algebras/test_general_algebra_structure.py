@@ -43,33 +43,27 @@ def _two_products_on_one_module():
     module = QQ.free_module(finite_ordered_set(("1", "x")))
     one = module.module_generator("1")
     x = module.module_generator("x")
-    tensor_square = Modules(QQ).tensor_product((module, module))
-
-    dual_numbers = tensor_square.from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                ("1", "1"): one,
-                ("1", "x"): x,
-                ("x", "1"): x,
-                ("x", "x"): module.zero(),
-            },
-        )
+    dual_numbers = BilinearMap(
+        module,
+        module,
+        module,
+        {
+            ("1", "1"): one,
+            ("1", "x"): x,
+            ("x", "1"): x,
+            ("x", "x"): module.zero(),
+        },
     )
-    split_idempotent = tensor_square.from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                ("1", "1"): one,
-                ("1", "x"): x,
-                ("x", "1"): x,
-                ("x", "x"): x,
-            },
-        )
+    split_idempotent = BilinearMap(
+        module,
+        module,
+        module,
+        {
+            ("1", "1"): one,
+            ("1", "x"): x,
+            ("x", "1"): x,
+            ("x", "x"): x,
+        },
     )
     return module, dual_numbers, split_idempotent
 
@@ -177,19 +171,16 @@ def test_general_algebra_node_does_not_impose_associativity_or_unit() -> None:
     module = QQ.free_module(finite_ordered_set(("a", "b")))
     a = module.module_generator("a")
     b = module.module_generator("b")
-    tensor_square = Modules(QQ).tensor_product((module, module))
-    multiplication = tensor_square.from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                ("a", "a"): b,
-                ("b", "a"): a,
-                ("a", "b"): module.zero(),
-                ("b", "b"): module.zero(),
-            },
-        )
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        {
+            ("a", "a"): b,
+            ("b", "a"): a,
+            ("a", "b"): module.zero(),
+            ("b", "b"): module.zero(),
+        },
     )
     algebra = Algebras(QQ)(module, multiplication)
     a = algebra.module_generator("a")

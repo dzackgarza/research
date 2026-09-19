@@ -167,14 +167,11 @@ def _group_algebra(base_ring, group):
     ring = _owned_ring(base_ring)
     group = _owned_group(group)
     module = ring.free_module(group)
-    tensor_square = Modules(ring).tensor_product((module, module))
-    multiplication = tensor_square.from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            lambda left, right: module.module_generator(left * right),
-        )
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        lambda left, right: module.module_generator(left * right),
     )
     # The group law decides the placement (Lam, A First Course in
     # Noncommutative Rings, §1): the multiplication extending an associative

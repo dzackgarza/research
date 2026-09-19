@@ -1,4 +1,4 @@
-r"""The tensor product without a chosen module framing.
+r"""The algebraic tensor product without a chosen module framing.
 
 For a finite family ``(M_i)`` over a commutative ring ``R``, start with the
 free R-module on ``prod_i M_i`` and quotient by additivity and R-linearity
@@ -23,8 +23,12 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
-from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    TensorProductModuleMorphism,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    TensorProductModules,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -144,11 +148,16 @@ class _TensorClasses:
         return "Classes in the multilinear tensor presentation"
 
 
-class _TensorQuotientClassifierMorphism(ModuleMorphism):
-    r"""The linear classifier induced by an admitted bilinear map."""
+class _TensorQuotientClassifierMorphism(TensorProductModuleMorphism):
+    r"""The classifier induced by one elementwise bilinear evaluation.
+
+    A raw Python evaluation does not prove its own bilinearity.  The map is an
+    element of the tensor Hom with that premise retained as ``Unknown``; named
+    constructions whose bilinearity is derived override that decision.
+    """
 
     def __init__(self, parent, bilinear) -> None:
-        self._bilinear_map = bilinear
+        self._bilinear_evaluation = bilinear
         source = parent.domain()
         target = parent.codomain()
         super().__init__(
@@ -162,8 +171,17 @@ class _TensorQuotientClassifierMorphism(ModuleMorphism):
         )
 
     def _elementwise_linearity_derivation(self):
-        # The quotient relations are exactly additivity and scalar-linearity in
-        # each tensor slot; the admitted BilinearMap kills them by construction.
+        return None
+
+
+class _UniversalTensorClassifierMorphism(_TensorQuotientClassifierMorphism):
+    r"""The quotient's balanced pure-tensor map, bilinear by construction."""
+
+    def __init__(self, parent) -> None:
+        tensor = parent.domain()
+        super().__init__(parent, lambda left, right: tensor.pure_tensor(left, right))
+
+    def _elementwise_linearity_derivation(self):
         return True
 
 
@@ -174,34 +192,32 @@ class _TensorQuotientModule:
         return self(self.underlying_set().pure(values))
 
     def universal_bilinear_map(self):
-        left, right = self._two_factors()
-        return left.pairings_with(right, self)(lambda x, y: self.pure_tensor(x, y))
+        return _UniversalTensorClassifierMorphism(
+            self.module_category().Mor(self, self)
+        )
 
     def from_bilinear_map(self, codomain, bilinear):
         r"""Classify the stated R-bilinear evaluation, which kills the relations.
 
-        The input is a bilinear map, not a function whose bilinearity is
-        inferred by testing finitely many points.  Evaluation of its linear
-        extension on each defining relation is zero by its two linearities.
-        Pure tensors generate the quotient, which proves uniqueness.
+        The callable states the two-variable evaluation.  The resulting Hom
+        element retains ``Unknown`` linearity unless its construction derives
+        bilinearity; no finite framing is invented to certify it.
         """
-        left, right = self._two_factors()
-        assert codomain in self.module_category(), "the classifier has an R-module codomain"
-        assert bilinear.left_factor() is left and bilinear.right_factor() is right, (
-            "the bilinear map has the tensor quotient's two factors"
-        )
-        assert bilinear.codomain() is codomain, "the bilinear map has the classifier codomain"
+        self._two_factors()
+        match codomain in self.module_category():
+            case True:
+                pass
+            case False:
+                raise TypeError("the tensor classifier has an R-module codomain")
+        match callable(bilinear):
+            case True:
+                pass
+            case False:
+                raise TypeError("a bilinear evaluation must be callable")
         return _TensorQuotientClassifierMorphism(
             self.module_category().Mor(self, codomain),
             bilinear,
         )
-
-    def from_bilinear(self, bilinear):
-        left, right = self._two_factors()
-        assert bilinear.left_factor() is left and bilinear.right_factor() is right, (
-            "the bilinear map has these tensor factors"
-        )
-        return self.from_bilinear_map(bilinear.codomain(), bilinear)
 
 
 def _tensor_quotient(factors, *, extra_categories=(), extra_construction_data=None):

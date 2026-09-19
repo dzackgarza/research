@@ -35,8 +35,8 @@ def test_veronese_section_ring_uses_actual_section_modules_and_component_maps() 
     assert degree_one is bundle.global_sections()
     assert degree_one.module_rank() == 3
     assert degree_two.module_rank() == 5
-    assert multiplication.left_factor() is degree_one
-    assert multiplication.right_factor() is degree_one
+    assert multiplication.left_module() is degree_one
+    assert multiplication.right_module() is degree_one
     assert multiplication.codomain() is degree_two
     left_in_ring = ring.homogeneous_component_element(1, polynomial_left)
     right_in_ring = ring.homogeneous_component_element(1, polynomial_right)

@@ -10,19 +10,16 @@ def _dual_numbers():
     module = ZZ.free_module(finite_ordered_set(("1", "e")))
     one = module.module_generator("1")
     epsilon = module.module_generator("e")
-    tensor_square = Modules(ZZ).tensor_product([module, module])
-    multiplication = tensor_square.from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                ("1", "1"): one,
-                ("1", "e"): epsilon,
-                ("e", "1"): epsilon,
-                ("e", "e"): module.zero(),
-            },
-        )
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        {
+            ("1", "1"): one,
+            ("1", "e"): epsilon,
+            ("e", "1"): epsilon,
+            ("e", "e"): module.zero(),
+        },
     )
     return Algebras(ZZ)(multiplication)
 

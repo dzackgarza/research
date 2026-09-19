@@ -66,8 +66,8 @@ def test_projective_section_multiplication_is_polynomial_multiplication_on_actua
 
     product = multiplication(x0, x1)
 
-    assert multiplication.left_factor() is linear.global_sections()
-    assert multiplication.right_factor() is linear.global_sections()
+    assert multiplication.left_module() is linear.global_sections()
+    assert multiplication.right_module() is linear.global_sections()
     assert multiplication.codomain() is quadratic.global_sections()
     assert product.parent() is quadratic.global_sections()
     assert comparison.forward()(product) == product

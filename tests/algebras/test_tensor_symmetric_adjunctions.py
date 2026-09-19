@@ -33,18 +33,16 @@ def _dual_numbers_mod_four():
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
     one = module.module_generator(0)
     epsilon = module.module_generator(1)
-    multiplication = Modules(module.base_ring()).tensor_product([module, module]).from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                (0, 0): one,
-                (0, 1): epsilon,
-                (1, 0): epsilon,
-                (1, 1): module.zero(),
-            },
-        )
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        {
+            (0, 0): one,
+            (0, 1): epsilon,
+            (1, 0): epsilon,
+            (1, 1): module.zero(),
+        },
     )
     algebra = Algebras(ZZ)(multiplication)
     one = algebra.module_generator(0)
@@ -359,18 +357,16 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     dual_module = ZZ.free_module(finite_ordered_set(("one", "epsilon")))
     dual_one = dual_module.module_generator("one")
     dual_epsilon = dual_module.module_generator("epsilon")
-    dual_multiplication = Modules(dual_module.base_ring()).tensor_product([dual_module, dual_module]).from_bilinear(
-        BilinearMap(
-            dual_module,
-            dual_module,
-            dual_module,
-            {
-                ("one", "one"): dual_one,
-                ("one", "epsilon"): dual_epsilon,
-                ("epsilon", "one"): dual_epsilon,
-                ("epsilon", "epsilon"): dual_module.zero(),
-            },
-        )
+    dual_multiplication = BilinearMap(
+        dual_module,
+        dual_module,
+        dual_module,
+        {
+            ("one", "one"): dual_one,
+            ("one", "epsilon"): dual_epsilon,
+            ("epsilon", "one"): dual_epsilon,
+            ("epsilon", "epsilon"): dual_module.zero(),
+        },
     )
     dual_numbers = Algebras(ZZ)(dual_multiplication)
     module_map_to_sparse = dual_numbers.module_category().Mor(dual_numbers, iterated_free)(

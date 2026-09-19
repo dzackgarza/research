@@ -468,11 +468,14 @@ class Modules(OwnedCategoryOverBaseRing):
             return _quadratic_free_form_adjunction(self.base_ring())
 
         def tensor_product(self, factors):
-            r"""Return $\bigotimes_{i \in I} M_i$ for an indexed family of modules.
+            r"""Return the algebraic $\bigotimes_{i \in I} M_i$ for an indexed family of modules.
 
             The tensor product is taken over the index set: its generating set
             is the product of the factors' generating sets over $I$, so a
             generator is a section of that family rather than a nest of pairs.
+            Completion and scalar change retain their own selected ring maps
+            and completion data; neither is silently substituted for this
+            algebraic tensor construction.
             """
             family = _finite_factor_family(factors, name="Tensor factors")
             assert all(factor in self for factor in family), (
@@ -3389,112 +3392,95 @@ def _tensor_pair(label_set, left_label, right_label):
     return label_set(lambda index: left_label if int(index) == 0 else right_label)
 
 
-class BilinearMap(SageObject):
-    r"""A bilinear map specified on the selected product framing."""
+def BilinearMap(left, right, codomain, generator_images):
+    r"""Construct the represented bilinear map in ``Hom_R(left tensor right, codomain)``.
 
-    def __init__(self, left, right, codomain, generator_images) -> None:
-        if left.base_ring() != right.base_ring() or left.base_ring() != codomain.base_ring():
-            raise ValueError("a bilinear map requires one common base ring")
-        self._left = left
-        self._right = right
-        self._codomain = codomain
-        self._generator_indices = _tensor_label_set(
-            _factor_family((left, right), name="Tensor factors")
-        )
+    ``BilinearMap`` is generator-image ingress, not a second representation of
+    a pairing.  The returned object is the actual tensor-domain module
+    morphism.  Consequently its ordinary module-Hom admission is the one
+    authority that checks every selected tensor relation.
+    """
+    ring = left.base_ring()
+    match right.base_ring() == ring, codomain in Modules(ring):
+        case True, True:
+            pass
+        case _:
+            raise ValueError("a bilinear map requires two modules and a module codomain over one base ring")
+    match left in FramedModules(ring), right in FramedModules(ring):
+        case True, True:
+            pass
+        case _:
+            raise TypeError(
+                "generator-image bilinear syntax requires selected factor framings; "
+                "use the tensor Hom with an elementwise bilinear evaluation otherwise"
+            )
 
-        if isinstance(generator_images, dict):
-            size = self._generator_indices.cardinality()
-            if not size.is_finite():
-                raise TypeError("an infinite bilinear generator assignment is specified by a callable")
+    factor_family = _factor_family((left, right), name="Tensor factors")
+    pair_labels = _tensor_label_set(factor_family)
+    match generator_images:
+        case dict() as assignment:
+            size = pair_labels.cardinality()
+            match size.is_finite():
+                case True:
+                    pass
+                case False:
+                    raise TypeError(
+                        "an infinite bilinear generator assignment is specified by a callable"
+                    )
 
             def raw_image(pair):
-                ingress_key = (pair.component(0), pair.component(1))
-                if ingress_key not in generator_images:
-                    raise ValueError(f"bilinear generator assignment omits {ingress_key!r}")
-                return generator_images[ingress_key]
+                key = (pair.component(0), pair.component(1))
+                match key in assignment:
+                    case True:
+                        return assignment[key]
+                    case False:
+                        raise ValueError(f"bilinear generator assignment omits {key!r}")
 
-            # Validate the finite syntactic assignment once, without retaining
-            # a sequence-valued mathematical representation.
-            for pair in self._generator_indices:
+            for pair in pair_labels:
                 raw_image(pair)
-        elif callable(generator_images):
+        case _ if callable(generator_images):
 
             def raw_image(pair):
                 return generator_images(pair.component(0), pair.component(1))
-        else:
-            raise TypeError("a bilinear map is specified by a callable or finite assignment")
+        case _:
+            raise TypeError(
+                "a bilinear map is specified by callable generator images or a finite assignment"
+            )
 
-        self._generator_images = indexed_family(
-            self._generator_indices,
-            lambda pair: self.codomain()(raw_image(pair)),
-            name="Generator images",
-        )
-        self._check_relations()
+    tensor_product = Modules(ring).tensor_product(factor_family)
+    match tensor_product in FramedModules(ring):
+        case True:
+            labels = tensor_product.module_generating_set()
+            images = indexed_family(
+                labels,
+                lambda pair: codomain(raw_image(pair)),
+                name="Bilinear generator images",
+            )
+            return tensor_product.module_category().Mor(tensor_product, codomain)(images)
+        case False:
+            def evaluation(left_element, right_element):
+                left_coefficients = left.framing_coefficients(left_element)
+                right_coefficients = right.framing_coefficients(right_element)
+                return sum(
+                    (
+                        left_coefficient
+                        * right_coefficient
+                        * codomain(
+                            raw_image(
+                                _tensor_pair(
+                                    pair_labels,
+                                    left_label,
+                                    right_label,
+                                )
+                            )
+                        )
+                        for left_label, left_coefficient in left_coefficients.items()
+                        for right_label, right_coefficient in right_coefficients.items()
+                    ),
+                    codomain.zero(),
+                )
 
-    def left_factor(self):
-        return self._left
-
-    def right_factor(self):
-        return self._right
-
-    def codomain(self):
-        return self._codomain
-
-    def generator_index_set(self):
-        return self._generator_indices
-
-    def generator_image(self, left_label, right_label):
-        pair = _tensor_pair(
-            self.generator_index_set(),
-            left_label,
-            right_label,
-        )
-        return self._generator_images[pair]
-
-    def _check_relations(self) -> None:
-        zero = self.codomain().zero()
-        left = self.left_factor()
-        right = self.right_factor()
-        left_labels = left.module_generating_set()
-        right_labels = right.module_generating_set()
-
-        left_relations = left._selected_presentation_rows()
-        if left_relations is not None:
-            for row in left_relations:
-                for right_label in right_labels:
-                    value = sum(
-                        (coefficient * self.generator_image(left_label, right_label) for left_label, coefficient in zip(left_labels, row, strict=True) if coefficient),
-                        zero,
-                    )
-                    if value != zero:
-                        raise ValueError("the bilinear map does not kill a left-factor relation")
-
-        right_relations = right._selected_presentation_rows()
-        if right_relations is not None:
-            for row in right_relations:
-                for left_label in left_labels:
-                    value = sum(
-                        (coefficient * self.generator_image(left_label, right_label) for right_label, coefficient in zip(right_labels, row, strict=True) if coefficient),
-                        zero,
-                    )
-                    if value != zero:
-                        raise ValueError("the bilinear map does not kill a right-factor relation")
-
-    def __call__(self, left_element, right_element):
-
-        left_coefficients = self.left_factor().framing_coefficients(left_element)
-        right_coefficients = self.right_factor().framing_coefficients(right_element)
-        return sum(
-            (
-                left_coefficient * right_coefficient * self.generator_image(left_label, right_label)
-                for left_label, left_coefficient in left_coefficients.items()
-                for right_label, right_coefficient in right_coefficients.items()
-            ),
-            self.codomain().zero(),
-        )
-
-    def _repr_(self) -> str:
-        return f"Bilinear map {self.left_factor()} x {self.right_factor()} -> {self.codomain()}"
+            return tensor_product.from_bilinear_map(codomain, evaluation)
 
 
 
@@ -3535,8 +3521,7 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
             A tensor product over an index set of any size is constructed
             here, but its universal multilinear map is represented only for
-            two factors, because ``BilinearMap`` is the only multilinear map
-            the preamble owns.
+            two factors, where the classifier is the tensor-domain module Hom.
             """
             factors = self.tensor_factors()
             assert factors.cardinality() == cardinal(2), (
@@ -3562,34 +3547,21 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             )
 
         def universal_bilinear_map(self):
-            left, right = self._two_factors()
+            self._two_factors()
             labels = self.module_generating_set()
-            return BilinearMap(
-                left,
-                right,
-                self,
-                lambda left_label, right_label: self.module_generator(_tensor_pair(labels, left_label, right_label)),
+            return self.module_category().Mor(self, self)(
+                indexed_family(
+                    labels,
+                    self.module_generator,
+                    name="Universal pure-tensor generator images",
+                )
             )
 
         def from_bilinear_map(self, codomain, bilinear):
-            r"""The unique linear map induced by an R-bilinear evaluation."""
-            left, right = self._two_factors()
-            return self.from_bilinear(BilinearMap(
-                left, right, codomain,
-                lambda i, j: bilinear(left.module_generator(i), right.module_generator(j)),
-            ))
-
-        def from_bilinear(self, bilinear):
-            left, right = self._two_factors()
-            if bilinear.left_factor() is not left or bilinear.right_factor() is not right:
-                raise ValueError("the bilinear map has different tensor factors")
-
-            return self.module_category().Mor(self, bilinear.codomain())(
-                lambda pair: bilinear.generator_image(
-                    pair.component(0),
-                    pair.component(1),
-                )
-            )
+            r"""Classify a stated R-bilinear evaluation without inferring its law from framing values."""
+            self._two_factors()
+            hom = self.module_category().Mor(self, codomain)
+            return hom._from_bilinear_evaluation(bilinear)
 
 
 def _represented_finite_presentation(module) -> bool:

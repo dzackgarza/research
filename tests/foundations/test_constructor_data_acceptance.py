@@ -15,18 +15,16 @@ def _rank_two_module():
 def _multiplication(module, square_of_x):
     one = module.module_generator("one")
     x = module.module_generator("x")
-    return Modules(QQ).tensor_product((module, module)).from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                ("one", "one"): one,
-                ("one", "x"): x,
-                ("x", "one"): x,
-                ("x", "x"): square_of_x,
-            },
-        )
+    return BilinearMap(
+        module,
+        module,
+        module,
+        {
+            ("one", "one"): one,
+            ("one", "x"): x,
+            ("x", "one"): x,
+            ("x", "x"): square_of_x,
+        },
     )
 
 

@@ -217,7 +217,7 @@ class _BilinearFreeFormAdjunction(_FreeFormAdjunction):
                 ),
             ),
         )
-        return free_formed.value_module().from_bilinear(bilinear)
+        return bilinear
 
 
 class _QuadraticFreeFormAdjunction(_FreeFormAdjunction):

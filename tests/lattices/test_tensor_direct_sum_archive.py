@@ -93,8 +93,8 @@ def test_tensor_universal_map_is_bilinear_and_factors_uniquely() -> None:
     tensor = left @ right
     universal = tensor.universal_bilinear_map()
 
-    assert universal.left_factor() is left
-    assert universal.right_factor() is right
+    assert universal.left_module() is left
+    assert universal.right_module() is right
     assert universal.codomain() is tensor
     x1, x2 = left.module_generators()
     y = right.module_generator(0)
@@ -110,7 +110,7 @@ def test_tensor_universal_map_is_bilinear_and_factors_uniquely() -> None:
             left.module_generator(left_label), right.module_generator(right_label)
         ),
     )
-    factored = tensor.from_bilinear(negated)
+    factored = negated
     direct = tensor.module_category().Mor(tensor, tensor)(
         {
             label: -tensor.module_generator(label)

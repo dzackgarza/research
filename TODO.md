@@ -207,17 +207,12 @@ Preserve the phase-T execution rules.
 
 Paths below are relative to `src/dzack_research/preamble/categories/` unless a different root is given. These nodes repair existing constructions. A requested source review is an unresolved obligation, not a claim that every named path is broken.
 
-- [ ] **`module-scalar-change`**. **Needs:** `tensor-universal-construction`, `functor-adjunction-coherence`.
+- [ ] **`module-scalar-change`**. **Needs:** `functor-adjunction-coherence`.
   **Owner and delta:** the scalar restriction/extension adjunction in `functors/scalar_change.py` and its module consumers; source review must establish object and morphism actions through one authority.
   **Invariants:** a specified ring map R -> S controls scalar change; extension is S tensor_R M with its universal map, restriction retains the original action through that map. Units, counits, compositions and semilinearity have exact owned endpoints. Preserve the existing group-scalar functor's delegation when it satisfies this contract.
   **Closure specimens:** extension along Z -> Z/2 takes Z/2 to a nonzero module and takes multiplication by 2 on Z to the zero map; extension along Z -> Q takes Z/2 to zero. Identity and composed base maps agree through the specified comparisons. No identification by rank or implicit base-ring replacement is admitted.
 
-- [ ] **`tensor-universal-construction`**. **Needs:** none.
-  **Owner and delta:** `modules/tensor_products.py`, `modules/tensor_quotients.py` and bilinear classifiers; review and repair the unframed tensor route consumed by algebra multiplication and sheaf sections.
-  **Invariants:** the balanced universal map and classifier are one construction, with full source relations; a tensor is not a free module on a convenient generator list. Tensor-square multiplication enters the same module morphism owner.
-  **Closure specimens:** Z/2 tensor_Z Z/4 is Z/2 with its bilinear map and factorization, not merely that cardinality; a proposed bilinear map violating a relation is rejected. Keep arbitrary represented generating sets and the distinction between algebraic tensor products and completed tensor products.
-
-- [ ] **`algebra-defining-data`**. **Needs:** `tensor-universal-construction`.
+- [ ] **`algebra-defining-data`**. **Needs:** none.
   **Owner and delta:** `algebras/algebras.py` and native ring/algebra adoption: all routes construct `Algebras(R)(M,m)` on the exact module with its bilinear multiplication, as fixed by `CON-16`.
   **Invariants:** scalar action is M's action; nonunital/nonassociative algebras remain legitimate. Associative, unital, commutative, Lie and augmented structures add precisely their own laws or selected maps. Native adoption, quotient, endomorphism and convenience routes neither construct a second module nor use a trusted entry. Multiplicativity is an equation in owned morphisms, not a finite-framing requirement.
   **Closure specimens:** a nonassociative multiplication, a Lie bracket, a polynomial algebra and a quotient with relations retain the selected module/multiplication and inherited operations. A linear map that is not multiplicative fails algebra-morphism admission; the zero map of a nonzero field is multiplicative but is not unital. A characteristic-two Lie specimen checks alternation rather than substituting skew-symmetry. The commutator functor changes the multiplication and cannot be an inclusion that returns an unchanged algebra. Check the same datum via direct construction, convenience and engine raising.
@@ -227,7 +222,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** the generating module V, the underlying module of T(V) or Sym(V), its homogeneous pieces, and the free-functor unit are distinct data. The full word/monomial module supplies the underlying module factor; every realization routes to the same algebra entry. A genuine functor source accessor is not deleted as wrapper provenance.
   **Closure specimens:** on two free generators, T(V) distinguishes xy from yx while Sym(V) identifies them; the universal extension restricts to its supplied generator map. Exercise native and sparse routes and scalar change, preserving relations and grading, not just generator counts.
 
-- [ ] **`formed-module-data`**. **Needs:** `tensor-universal-construction`.
+- [ ] **`formed-module-data`**. **Needs:** none.
   **Owner and delta:** `modules/framed/formed/form_modules.py`, `forms/forms.py` and their form/lattice constructors: inherit module operations on the retained module and add exactly the selected form.
   **Invariants:** two different forms on M retain M but give distinct structured objects; no copy-and-identify module or object-level forget/equip morphism pair remains. A subobject i:N -> M carries the restricted form b composed with i tensor i; genuine inclusions remain available (`OWN-16`).
   **Closure specimens:** two forms on Z^2 give different pairings with the same unformed input; scaling an inclusion by 2 scales its restricted bilinear form by 4. Generic addition, scalar multiplication and morphism composition work before form accessors are called.

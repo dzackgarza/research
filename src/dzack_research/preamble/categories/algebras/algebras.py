@@ -1002,16 +1002,13 @@ class Algebras(OwnedCategoryOverBaseRing):
             assert ideal.inclusion().codomain() is self, "an algebra quotient is taken by an ideal of the algebra"
             projection = ideal.inclusion().cokernel_projection()
             quotient_module = projection.codomain()
-            tensor = _algebra_tensor_square_functor(ring)(quotient_module)
-            multiplication = tensor.from_bilinear(
-                BilinearMap(
-                    quotient_module,
-                    quotient_module,
-                    quotient_module,
-                    lambda left, right: projection(
-                        self.product(self.module_generator(left), self.module_generator(right))
-                    ),
-                )
+            multiplication = BilinearMap(
+                quotient_module,
+                quotient_module,
+                quotient_module,
+                lambda left, right: projection(
+                    self.product(self.module_generator(left), self.module_generator(right))
+                ),
             )
             algebras = Algebras(ring)
             descended = tuple(
@@ -1368,16 +1365,13 @@ def _center_algebra(algebra, submodule):
     """
     ring = algebra.algebra_base_ring()
     inclusion = submodule.inclusion()
-    tensor = _algebra_tensor_square_functor(ring)(submodule)
-    multiplication = tensor.from_bilinear(
-        BilinearMap(
-            submodule,
-            submodule,
-            submodule,
-            lambda left, right: inclusion.lift(
-                inclusion(submodule.module_generator(left)) * inclusion(submodule.module_generator(right))
-            ),
-        )
+    multiplication = BilinearMap(
+        submodule,
+        submodule,
+        submodule,
+        lambda left, right: inclusion.lift(
+            inclusion(submodule.module_generator(left)) * inclusion(submodule.module_generator(right))
+        ),
     )
     algebras = Algebras(ring)
     match algebra:

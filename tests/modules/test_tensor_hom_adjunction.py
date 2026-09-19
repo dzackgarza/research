@@ -1,9 +1,13 @@
+import pytest
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.all import (
     BilinearMap,
     FinitelyPresentedTorsionModules,
+    Modules,
     ZZ,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 
 
 def _assert_module_maps_agree(left, right) -> None:
@@ -19,25 +23,33 @@ def _cyclic(order):
 
 
 def test_tensor_product_of_presented_modules_has_the_bilinear_universal_property() -> None:
-    left = _cyclic(4)
-    right = _cyclic(2)
+    left = _cyclic(2)
+    right = _cyclic(4)
     left_generator = left.module_generator(0)
     right_generator = right.module_generator(0)
 
     tensor = left.tensor_product(right)
     pure = tensor.pure_tensor(left_generator, right_generator)
+    universal = tensor.universal_bilinear_map()
 
+    assert tuple(tensor.invariant_factors()) == (ZZ(2),)
     assert pure != tensor.zero()
     assert 2 * pure == tensor.zero()
     assert pure.additive_order() == 2
+    assert universal.domain() is tensor
+    assert universal.left_module() is left
+    assert universal.right_module() is right
+    assert universal.codomain() is tensor
+    assert universal(left_generator, right_generator) == pure
 
     beta = BilinearMap(
         left,
         right,
-        right,
-        {(0, 0): right_generator},
+        left,
+        {(0, 0): left_generator},
     )
-    factorization = tensor.from_bilinear(beta)
+    factorization = beta
+    assert factorization.domain() is tensor
 
     assert factorization(pure) == beta(left_generator, right_generator)
 
@@ -45,10 +57,51 @@ def test_tensor_product_of_presented_modules_has_the_bilinear_universal_property
     # the required value on the universal pure tensor agrees on the selected
     # generating set of the tensor product and hence on every element.
     tensor_label = tensor.module_generating_set()[0]
-    competing = tensor.module_category().Mor(tensor, right)(
+    competing = tensor.module_category().Mor(tensor, left)(
         {tensor_label: beta(left_generator, right_generator)}
     )
     _assert_module_maps_agree(factorization, competing)
+
+    # The left relation 2e=0 cannot be sent to a generator of order four.
+    # Rejection happens at the bilinear datum, before a tensor classifier can
+    # pretend that the assignment descends through the source relations.
+    with pytest.raises(ValueError, match="domain relations"):
+        BilinearMap(
+            left,
+            right,
+            right,
+            {(0, 0): right_generator},
+        )
+
+
+def test_elementwise_bilinear_callable_is_not_certified_from_framing_values() -> None:
+    module = ZZ.free_module(finite_ordered_set(("e",)))
+    tensor = Modules(ZZ).tensor_product((module, module))
+    proposed = tensor.from_bilinear_map(
+        ZZ,
+        lambda _left, _right: ZZ.one(),
+    )
+
+    assert proposed.domain() is tensor
+    assert proposed.linearity_decision() is Unknown
+
+
+def test_bilinear_classifier_preserves_an_infinite_selected_factor_framing() -> None:
+    left = ZZ.free_module(NN)
+    right = ZZ.free_module(finite_ordered_set(("e",)))
+    tensor = Modules(ZZ).tensor_product((left, right))
+    pairing = BilinearMap(
+        left,
+        right,
+        ZZ,
+        lambda _left_label, _right_label: ZZ.one(),
+    )
+
+    assert pairing.domain() is tensor
+    assert pairing.left_module() is left
+    assert pairing.right_module() is right
+    assert pairing.linearity_decision() is True
+    assert pairing(left.module_generator(NN(137)), right.module_generator("e")) == ZZ.one()
 
 
 def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_and_triangles() -> None:
@@ -72,7 +125,8 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
             ("b", 0): 2 * target_generator,
         },
     )
-    morphism = tensor_source.from_bilinear(beta)
+    morphism = beta
+    assert morphism.domain() is tensor_source
     transpose = adjunction.hom_set_isomorphism_forward(morphism, source)
     recovered = adjunction.hom_set_isomorphism_inverse(transpose, target)
     _assert_module_maps_agree(recovered, morphism)

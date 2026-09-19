@@ -119,10 +119,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
                 else integers.zero()
             ),
         )
-        tensor_product = FinitelyGeneratedFreeModules(integers).tensor_product(
-            (characters, cocharacters)
-        )
-        return tensor_product.from_bilinear(dual_frames)
+        return dual_frames
 
     def character_cocharacter_value(self, character, cocharacter):
         r"""Return the scalar integer ``<character, cocharacter>``.

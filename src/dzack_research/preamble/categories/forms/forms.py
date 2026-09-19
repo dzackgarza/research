@@ -143,25 +143,33 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
             return _descended_bilinear_form(self, morphism, value_projection)
 
 
-def _form_classifier_is_represented(left_module, right_module, value_module) -> bool:
-    r"""Whether forms on these modules are arrows out of a represented universal object.
+def _bilinear_classifier_is_represented(left_module, right_module, value_module) -> bool:
+    r"""Whether ``X x Y -> W`` is represented by ``Hom_R(X tensor Y, W)``.
 
-    Bilinear maps ``X x Y -> W`` are classified by ``X \otimes_R Y`` and quadratic
-    maps ``M -> W`` by ``\Gamma^2_R(M)`` (take ``X = Y = M``).  A form is an arrow
-    of ``Modules(R)`` only when ``W`` is an ``R``-module, and the module owner
-    constructs both universal objects exactly when every module involved carries
-    its free framing or every one carries a chosen finite presentation
-    (``_module_tensor_product_with_data`` and ``_presented_degree_power``).  This
-    is that routing asked as placement, once, for every form construction here.
+    The module owner now represents the algebraic tensor product for arbitrary
+    represented modules, including the unframed quotient route.  Thus a
+    module-valued bilinear map always has the tensor-Hom classifier; scalar or
+    otherwise non-module-valued forms retain the callable-value owner.
     """
     ring = left_module.base_ring()
-    if value_module not in Modules(ring):
-        return False
+    match right_module.base_ring() == ring, value_module in Modules(ring):
+        case True, True:
+            return True
+        case _:
+            return False
+
+
+def _quadratic_classifier_is_represented(module, value_module) -> bool:
+    r"""Whether ``M -> W`` is represented by ``Hom_R(Gamma^2(M), W)``."""
+    ring = module.base_ring()
+    match value_module in Modules(ring):
+        case True:
+            pass
+        case False:
+            return False
     return (
-        left_module in FramedFreeModules(ring) and right_module in FramedFreeModules(ring)
-    ) or (
-        left_module in ModulesWithChosenFinitePresentation(ring)
-        and right_module in ModulesWithChosenFinitePresentation(ring)
+        module in FramedFreeModules(ring)
+        or module in ModulesWithChosenFinitePresentation(ring)
     )
 
 
@@ -717,14 +725,14 @@ def _is_bilinear_form(form) -> bool:
     A bilinear form on ``M`` classified by a represented tensor square is an
     arrow out of ``M \otimes_R M``; otherwise it is an element of the space of
     bilinear maps.  Which of the two applies is the routing that built the
-    form's space (:func:`_form_classifier_is_represented`).  A pairing of two
+    form's space.  A pairing of two
     distinct modules is not a form on one module, and ``form.module()``
     refuses it.
     """
     module = form.module()
     forms = element_parent(form)
     match module:
-        case _ if _form_classifier_is_represented(module, module, form.codomain()):
+        case _ if _bilinear_classifier_is_represented(module, module, form.codomain()):
             return forms.domain() in TensorProductModules(module.base_ring())
         case _:
             return forms.kind() == "bilinear"
@@ -740,7 +748,7 @@ def _is_quadratic_form(form) -> bool:
     module = form.module()
     forms = element_parent(form)
     match module:
-        case _ if _form_classifier_is_represented(module, module, form.codomain()):
+        case _ if _quadratic_classifier_is_represented(module, form.codomain()):
             return forms.domain() in DividedSquareModules(module.base_ring())
         case _:
             return forms.kind() == "quadratic"
@@ -749,13 +757,14 @@ def _is_quadratic_form(form) -> bool:
 def _pairings(left_module, right_module, value_module):
     r"""Return the ``R``-bilinear maps ``X x Y -> W``.
 
-    That is ``Hom_R(X \otimes_R Y, W)`` when the tensor product is represented,
-    and the space of bilinear maps given by their evaluation otherwise.
+    For an R-module ``W`` this is always ``Hom_R(X \otimes_R Y, W)``; the
+    tensor owner chooses a free, presented, or general quotient realization.
+    Non-module-valued pairings retain the callable-value owner.
     """
     match right_module:
         case _ if right_module is left_module:
             return left_module.bilinear_forms(value_module)
-        case _ if _form_classifier_is_represented(left_module, right_module, value_module):
+        case _ if _bilinear_classifier_is_represented(left_module, right_module, value_module):
             tensor_product = left_module.module_category().tensor_product(
                 (left_module, right_module)
             )
@@ -765,9 +774,9 @@ def _pairings(left_module, right_module, value_module):
 
 
 def _bilinear_forms(module, value_module):
-    r"""Return ``Hom_R(M \otimes_R M, W)``, or the bilinear maps when the square is not represented."""
+    r"""Return ``Hom_R(M \otimes_R M, W)`` for module values, else extensional forms."""
     match module:
-        case _ if _form_classifier_is_represented(module, module, value_module):
+        case _ if _bilinear_classifier_is_represented(module, module, value_module):
             tensor_product = module.module_category().tensor_product((module, module))
             return tensor_product.module_category().Mor(tensor_product, value_module)
         case _:
@@ -777,7 +786,7 @@ def _bilinear_forms(module, value_module):
 def _quadratic_forms(module, value_module):
     r"""Return ``Hom_R(\Gamma^2(M), W)``, or the quadratic maps when the square is not represented."""
     match module:
-        case _ if _form_classifier_is_represented(module, module, value_module):
+        case _ if _quadratic_classifier_is_represented(module, value_module):
             square = module.divided_square()
             return square.module_category().Mor(square, value_module)
         case _:

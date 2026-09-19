@@ -24,9 +24,7 @@ def _gaussian_integers():
 
 
 def _multiplication_from_structure_constants(module, images):
-    return Modules(module.base_ring()).tensor_product([module, module]).from_bilinear(
-        BilinearMap(module, module, module, images)
-    )
+    return BilinearMap(module, module, module, images)
 
 
 def test_algebra_structure_morphism_lands_in_the_center() -> None:

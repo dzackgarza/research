@@ -24,18 +24,16 @@ def test_center_of_unital_associative_algebra_retains_its_unit() -> None:
 
 def test_nonassociative_center_remains_a_central_submodule() -> None:
     module = QQ.free_module(finite_ordered_set(("x", "y")))
-    multiplication = Modules(QQ).tensor_product((module, module)).from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                ("x", "x"): module.module_generator("y"),
-                ("x", "y"): module.module_generator("x"),
-                ("y", "x"): module.module_generator("x"),
-                ("y", "y"): module.zero(),
-            },
-        )
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        {
+            ("x", "x"): module.module_generator("y"),
+            ("x", "y"): module.module_generator("x"),
+            ("y", "x"): module.module_generator("x"),
+            ("y", "y"): module.zero(),
+        },
     )
     algebra = Algebras(QQ)(module, multiplication)
     center = algebra.center()
