@@ -2853,6 +2853,57 @@ class FreeResolutionHomotopy:
         return source.module_category().Mor(source, target).zero()
 
 
+class _SelectedModuleFramingData:
+    r"""The fixed data whose lazy realization is one selected module framing.
+
+    The mathematical datum is the source free module together with the image of
+    each of its selected generators in the target module.  The Set-morphism and
+    enriched module morphism are representations of those already-fixed data;
+    they are realized only after the target parent itself has finished
+    construction.
+    """
+
+    def __init__(self, module, base_ring, labels, generator_function, source) -> None:
+        if not callable(generator_function):
+            raise TypeError("a selected framing supplies the image of every free generator")
+        if source.base_ring() is not base_ring:
+            raise ValueError("the selected framing source is a free module over this module's base ring")
+        if source.module_generating_set() != labels:
+            raise ValueError("the selected framing source does not have the requested generator set")
+        self._module = module
+        self._source = source
+        self._generator_function = generator_function
+        self._generator_morphism = None
+
+    def source(self):
+        return self._source
+
+    def generator_morphism(self):
+        selected = self._generator_morphism
+        if selected is None:
+            labels = self.source().module_generating_set()
+            selected = Sets().Mor(labels, self._module)(
+                lambda label: self._module(self._generator_function(label))
+            )
+            self._generator_morphism = selected
+        return selected
+
+
+def _fix_selected_module_framing(module, base_ring, labels, generator_function, source=None) -> None:
+    r"""Fix one framing datum before ``module`` is exposed as framed."""
+    if module.__dict__.get("_selected_module_framing") is not None:
+        raise ValueError(f"{module} already has a selected framing")
+    if source is None:
+        source = base_ring.free_module(labels)
+    module._selected_module_framing = _SelectedModuleFramingData(
+        module,
+        base_ring,
+        labels,
+        generator_function,
+        source,
+    )
+
+
 class FramedModules(OwnedCategoryOverBaseRing):
     r"""Modules carrying a selected epimorphism from a free module."""
 
@@ -2880,8 +2931,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         # The selected framing epimorphism ``F_R(S) -> M``, this level's datum.
-        _selected_framing_source = None
-        _selected_framing_generator_morphism = None
+        _selected_module_framing = None
 
         def __init__(
             self,
@@ -2899,52 +2949,17 @@ class FramedModules(OwnedCategoryOverBaseRing):
             one arrow and never reconstruct an isomorphic source from labels.
             """
             super().__init__(**rest)
-            if module_generating_set is not None:
-                self._install_framing(
-                    module_generating_set,
-                    module_generator_function,
-                    framing_source,
-                )
-
-        def _install_framing(
-            self,
-            module_generating_set,
-            module_generator_function,
-            framing_source=None,
-        ) -> None:
-            r"""Establish the framing epimorphism of this module.
-
-            Protected contract of ``FramedModules(R)``.  Its callers are this
-            level's constructor and a construction whose framing is computed
-            from the datum it introduces -- the localization of a framed
-            module carries the source framing to fractions, a restriction of
-            scalars frames by products of framings -- when that construction
-            is placed beside ``FramedModules(R)`` in a join rather than below
-            it, so that this level's constructor may run before the datum the
-            framing is computed from exists.  It is called once, before the
-            constructed object is returned, with the framing labels, the
-            images of the free generators, and optionally the free module on
-            those labels; it stores the framing epimorphism.
-            """
-            assert self._selected_framing_source is None, f"{self} already has a framing"
-            if not callable(module_generator_function):
-                raise TypeError("a selected framing supplies the image of every free generator")
-            source = framing_source
-            if source is None:
-                source = self.base_ring().free_module(module_generating_set)
-            if source.base_ring() is not self.base_ring():
-                raise ValueError("the selected framing source is a free module over this module's base ring")
-            assert source.module_generating_set() == module_generating_set, (
-                "the selected framing source does not have the requested generator set"
-            )
-            generator_morphism = Sets().Mor(
-                source.module_generating_set(),
+            if module_generating_set is None:
+                if self.__dict__.get("_selected_module_framing") is None:
+                    raise ValueError("a framed module requires selected framing data at construction")
+                return
+            _fix_selected_module_framing(
                 self,
-            )(
-                lambda label: self(module_generator_function(label))
+                self.base_ring(),
+                module_generating_set,
+                module_generator_function,
+                framing_source,
             )
-            self._selected_framing_source = source
-            self._selected_framing_generator_morphism = generator_morphism
 
         def module_generating_set(self):
             return self.framing_source().module_generating_set()
@@ -2969,15 +2984,15 @@ class FramedModules(OwnedCategoryOverBaseRing):
             )
 
         def module_generator_morphism(self):
-            morphism = self._selected_framing_generator_morphism
-            assert morphism is not None, f"{self} was constructed without its framing generator map"
-            return morphism
+            framing = self.__dict__.get("_selected_module_framing")
+            assert framing is not None, f"{self} was constructed without its framing data"
+            return framing.generator_morphism()
 
         def framing_source(self):
             r"""Return the actual free module selected as the source of this framing."""
-            source = self._selected_framing_source
-            assert source is not None, f"{self} was constructed without its framing source"
-            return source
+            framing = self.__dict__.get("_selected_module_framing")
+            assert framing is not None, f"{self} was constructed without its framing data"
+            return framing.source()
 
         def sub_framing_morphism(self, codomain):
             r"""Return the inclusion induced by this framing inside ``codomain``'s framing."""
@@ -2997,11 +3012,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
             Mor would ask for that Mor module's framing, and repeat without
             end. No underlying module or framing choice is reconstructed here.
             """
-            return _framing_morphism(
-                self.framing_source(),
-                self,
-                self.module_generator_morphism(),
-            )
+            return _framing_morphism(self)
 
         @cached_method
         def framing_object(self):
@@ -3111,34 +3122,22 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             return repr(self._underlying_element)
 
     class ParentMethods:
-        _derived_construction_parameters = frozenset({"base_ring"})
+        _derived_construction_parameters = frozenset(
+            {"base_ring", "module_generating_set", "module_generator_function"}
+        )
 
-        def __init__(self, module_over_extension, ring_map, **rest) -> None:
+        def __init__(self, module_over_extension, ring_map, framing_source=None, **rest) -> None:
             self._module_over_extension = module_over_extension
             self._ring_map = ring_map
             ring = _owned_ring(ring_map.domain())
-            super().__init__(base_ring=ring, **rest)
-            match self:
-                case _ if self in FramedModules(ring):
-                    # The products ``s_i m_j`` frame ``Res_f(M)``; a chosen
-                    # presentation of it is written on the free module over
-                    # those products, which is then the framing source.
-                    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-                        _SelectedFinitePresentationModules,
-                    )
-
-                    match self:
-                        case _ if self in _SelectedFinitePresentationModules(ring):
-                            source = self.presentation().codomain()
-                        case _:
-                            source = ring._fresh_free_module_on(
-                                _restricted_scalar_framing_labels(module_over_extension)
-                            )
-                    self._install_framing(
-                        source.module_generating_set(),
-                        self._restricted_scalar_generator,
-                        source,
-                    )
+            framing = {}
+            if framing_source is not None:
+                framing.update(
+                    module_generating_set=framing_source.module_generating_set(),
+                    module_generator_function=self._restricted_scalar_generator,
+                    framing_source=framing_source,
+                )
+            super().__init__(base_ring=ring, **framing, **rest)
 
         def ring_map(self):
             r"""Return the selected scalar map ``R -> S``."""
@@ -3331,9 +3330,16 @@ def _restricted_scalars_view(
                 _restricted_scalar_framing_labels(module),
             )
             placement.append(_SelectedFinitePresentationModules(base_ring))
-            data.update(relation_matrix=relations, presentation=presentation)
+            data.update(
+                relation_matrix=relations,
+                presentation=presentation,
+                framing_source=presentation.codomain(),
+            )
         case _ if framed_over_finite_free_scalars:
             placement.extend((FramedModules(base_ring), Modules(base_ring).FinitelyGenerated()))
+            data["framing_source"] = base_ring._fresh_free_module_on(
+                _restricted_scalar_framing_labels(module)
+            )
 
     if _subobject_inclusion_factory is not None or (
         _subobject_ambient is not None and _subobject_generator_images is not None

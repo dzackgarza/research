@@ -465,12 +465,15 @@ class _WordModule:
     def __init__(self, word_presentation, **rest):
         self._word_presentation = word_presentation
         classes = _word_class_set(word_presentation)
+        cover = word_presentation.cover()
         super().__init__(
             underlying_set=classes, addition=classes.add, zero=classes.zero(),
-            negation=classes.negate, scalar_action=classes.scale, verify=False, **rest,
+            negation=classes.negate, scalar_action=classes.scale, verify=False,
+            module_generating_set=cover.module_generating_set(),
+            module_generator_function=lambda label: self(classes(cover.module_generator(label))),
+            framing_source=cover,
+            **rest,
         )
-        cover = word_presentation.cover()
-        self._install_framing(cover.module_generating_set(), lambda label: self(classes(cover.module_generator(label))), cover)
 
     def generating_module(self):
         r"""The module whose letters generate this word-module construction."""
@@ -598,13 +601,19 @@ class _WordDegreeModule:
             int(label.summand_index()) == word_degree
             for label in classes.presentation().cover().framing_coefficients(value._representative)
         ))
+        cover = word_module.base_ring().free_module(word_module.degree_basis(word_degree))
         super().__init__(
             underlying_set=subset, addition=classes.add, zero=classes.zero(),
-            negation=classes.negate, scalar_action=classes.scale, verify=False, **rest,
+            negation=classes.negate, scalar_action=classes.scale, verify=False,
+            module_generating_set=cover.module_generating_set(),
+            module_generator_function=lambda label: self(
+                word_module.module_generator(
+                    word_module.basis_label(word_degree, label)
+                ).underlying_element()
+            ),
+            framing_source=cover,
+            **rest,
         )
-        cover = self.base_ring().free_module(word_module.degree_basis(word_degree))
-        self._install_framing(cover.module_generating_set(), lambda label:
-            self(word_module.module_generator(word_module.basis_label(word_degree, label)).underlying_element()), cover)
 
     def degree(self):
         return self._word_degree

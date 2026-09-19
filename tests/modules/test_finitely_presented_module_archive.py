@@ -48,11 +48,11 @@ def test_selected_presentation_retains_its_quotient_map_as_the_module_framing() 
     )
 
     module = presentation.cokernel()
-    framing = module.__dict__.get("_preamble_framing_morphism")
+    framing = module.framing_morphism()
 
-    assert framing is not None
     assert module.framing_morphism() is framing
     assert module.framing_source() is free
+    assert module.presentation().codomain() is module.framing_source()
     assert module.presentation_projection() is framing
     assert module.module_generator("x") == framing(free.module_generator("x"))
     displayed = repr(module.module_generators())

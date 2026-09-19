@@ -129,6 +129,63 @@ def _matrix_space_like(module, nrows, ncols):
     return source.module_category().Mor(source, target)
 
 
+class _SelectedModulePresentationData:
+    r"""The fixed relation arrow and coordinate realization of one chosen presentation."""
+
+    def __init__(self, base_ring, relation_matrix, presentation, cokernel_morphism=None) -> None:
+        if presentation.domain().base_ring() is not base_ring or presentation.codomain().base_ring() is not base_ring:
+            raise ValueError("a selected presentation has free endpoints over the module base ring")
+        if not presentation.domain().module_generating_set().cardinality().is_finite():
+            raise ValueError("a selected finite presentation has finitely many relation generators")
+        if not presentation.codomain().module_generating_set().cardinality().is_finite():
+            raise ValueError("a selected finite presentation has finitely many module generators")
+        rows = relation_matrix.parent().row_index_set().cardinality()
+        columns = relation_matrix.parent().column_index_set().cardinality()
+        if rows != presentation.domain().module_generating_set().cardinality():
+            raise ValueError("the selected relation matrix has one row per relation generator")
+        if columns != presentation.codomain().module_generating_set().cardinality():
+            raise ValueError("the selected relation matrix has one column per module generator")
+        target_labels = presentation.codomain().module_generating_set()
+        for relation_label, row in zip(
+            presentation.domain().module_generating_set(),
+            _matrix_coordinate_rows(relation_matrix),
+            strict=True,
+        ):
+            represented = presentation.codomain().linear_combination(
+                {
+                    target_label: coefficient
+                    for target_label, coefficient in zip(target_labels, row, strict=True)
+                    if coefficient
+                }
+            )
+            if presentation(presentation.domain().module_generator(relation_label)) != represented:
+                raise ValueError("the selected relation matrix does not represent the selected presentation morphism")
+        self._relation_matrix = relation_matrix
+        self._presentation = presentation
+        self._cokernel_morphism = cokernel_morphism
+
+    def relation_matrix(self):
+        return self._relation_matrix
+
+    def presentation(self):
+        return self._presentation
+
+    def cokernel_morphism(self):
+        return self._cokernel_morphism
+
+
+def _fix_selected_module_presentation(module, base_ring, relation_matrix, presentation, cokernel_morphism=None) -> None:
+    r"""Fix one chosen presentation before ``module`` is exposed in its data category."""
+    if module.__dict__.get("_selected_module_presentation") is not None:
+        raise ValueError(f"{module} already has a selected presentation")
+    module._selected_module_presentation = _SelectedModulePresentationData(
+        base_ring,
+        relation_matrix,
+        presentation,
+        cokernel_morphism,
+    )
+
+
 class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
     r"""Implementation refinement for modules with a selected finite presentation."""
 
@@ -170,12 +227,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return self.zero()
             return self._from_smith_engine_element(smith.linear_combination_of_smith_form_gens(reduced))
 
-        # The selected presentation ``F_1 -> F_0``, its relation rows in the
-        # framing of ``F_0``, and the morphism this module is the cokernel of
-        # when it was constructed as one: this level's datum.
-        _presentation = None
-        _relation_matrix = None
-        _cokernel_morphism = None
+        # The selected presentation is fixed before this refinement is exposed.
+        _selected_module_presentation = None
 
         def __init__(
             self,
@@ -184,28 +237,14 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             cokernel_morphism=None,
             **rest,
         ) -> None:
-            # The framing level constructs the Hom out of the presentation's
-            # target, and that Hom reads this presentation, so it is
-            # established before the levels below run.
-            self._install_presentation(relation_matrix, presentation, cokernel_morphism)
+            _fix_selected_module_presentation(
+                self,
+                presentation.codomain().base_ring(),
+                relation_matrix,
+                presentation,
+                cokernel_morphism,
+            )
             super().__init__(**rest)
-
-        def _install_presentation(self, relation_matrix, presentation, cokernel_morphism=None) -> None:
-            r"""Establish the selected finite presentation of this module.
-
-            Protected contract of this level.  Its callers are this level's
-            constructor and the construction of ``Hom_R(M, N)`` between
-            modules with chosen finite presentations, which is refined into
-            this category rather than constructed through it and is presented
-            by the model its endpoints determine.  It is called once, before
-            the object is returned, with the relation rows as a matrix
-            morphism, the presentation morphism ``F_1 -> F_0``, and the
-            morphism this module is the cokernel of when there is one.
-            """
-            assert self._presentation is None, f"{self} already has a presentation"
-            self._relation_matrix = relation_matrix
-            self._presentation = presentation
-            self._cokernel_morphism = cokernel_morphism
 
         def _same_selected_presentation_as(self, other):
             r"""Return whether ``other`` is a module with the same selected presentation over this ring."""
@@ -316,7 +355,9 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             :meth:`cokernel_projection`.  Dually, a kernel subgroup answers
             ``kernel_morphism()``.
             """
-            morphism = self._cokernel_morphism
+            selected = self.__dict__.get("_selected_module_presentation")
+            assert selected is not None, f"{self} was constructed without selected presentation data"
+            morphism = selected.cokernel_morphism()
             assert morphism is not None, (
                 f"{self} was not constructed as the cokernel of a morphism"
             )
@@ -459,11 +500,15 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation(self):
             r"""Return the selected relation morphism ``F_1 -> F_0``."""
-            return self._presentation
+            selected = self.__dict__.get("_selected_module_presentation")
+            assert selected is not None, f"{self} was constructed without selected presentation data"
+            return selected.presentation()
 
         def presentation_matrix(self):
             r"""Return its relation rows in the selected target framing."""
-            return self._relation_matrix
+            selected = self.__dict__.get("_selected_module_presentation")
+            assert selected is not None, f"{self} was constructed without selected presentation data"
+            return selected.relation_matrix()
 
         def _selected_presentation_rows(self):
             return _matrix_coordinate_rows(self.presentation_matrix())

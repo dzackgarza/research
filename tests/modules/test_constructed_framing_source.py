@@ -1,6 +1,11 @@
 r"""Framing sources are fixed before their morphisms are represented."""
 
+import pytest
+
 from dzack_research.preamble.all import Modules, QQ, ZZ, QuadraticField
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    FramingMorphism,
+)
 from dzack_research.preamble.categories.sets import NN
 
 
@@ -69,8 +74,10 @@ def test_relationful_module_framing_data_are_fixed_before_arrow_realization() ->
     module = relation_map.cokernel()
 
     source = module.framing_source()
+    selected_presentation = module.presentation()
     generator = module.module_generator("x")
     assert module.framing_source() is source
+    assert selected_presentation.codomain() is source
     assert generator + module.zero() == generator
 
     framing = module.framing_morphism()
@@ -82,7 +89,26 @@ def test_relationful_module_framing_data_are_fixed_before_arrow_realization() ->
     assert framing(
         source.linear_combination(module.framing_coefficients(generator))
     ) == generator
+    assert module.presentation_projection() is framing
     assert module.framing_source() is source
+
+    endomorphisms = Modules(ZZ).Mor(module, module)
+    hom_presentation = endomorphisms.presentation()
+    hom_source = endomorphisms.framing_source()
+    assert hom_presentation.codomain() is hom_source
+    hom_framing = endomorphisms.framing_morphism()
+    assert hom_framing.domain() is hom_source
+    assert endomorphisms.presentation_projection() is hom_framing
+
+
+def test_a_nonsurjective_module_map_cannot_be_relabelled_as_the_selected_framing() -> None:
+    line = ZZ.free_module(("e",))
+    endomorphisms = Modules(ZZ).Mor(line, line)
+    zero = endomorphisms({"e": line.zero()})
+
+    assert zero.is_surjective() is False
+    with pytest.raises(ValueError, match="selected generator map"):
+        FramingMorphism(endomorphisms, zero.module_generator_morphism())
 
 
 def test_infinite_free_framing_is_linear_without_finite_presentation_rows() -> None:

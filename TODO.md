@@ -207,11 +207,6 @@ Preserve the phase-T execution rules.
 
 Paths below are relative to `src/dzack_research/preamble/categories/` unless a different root is given. These nodes repair existing constructions. A requested source review is an unresolved obligation, not a claim that every named path is broken.
 
-- [ ] **`framing-presentation-data`**. **Needs:** none.
-  **Owner and delta:** `modules/pure/modules.py`, `modules/framed/framed_free_modules.py`, `modules/framed/finitely_generated/finitely_presented_modules.py` and presented internal morphism spaces: converge `_install_framing` and `_install_presentation` with the canonical constructor.
-  **Invariants:** a framing is a selected epi `Free_R(S) -> M`; a presentation retains the relation map and quotient map. Fix the actual source, images, endpoints and law hypotheses before exposure. Realization may be lazy under `OWN-23`; it must not choose the data later or demand an infinite tower of eagerly constructed enriched morphisms.
-  **Closure specimens:** a free module, a relationful module such as Z/2, an integral order and a nested module morphism space expose the same selected framing in every accessor order. A proper nonsurjective generating map is not a framing. An infinite generating set stays an allowed datum. Generic module operations work before any framing accessor is queried. Distinguish a finite-presentation property from a selected presentation diagram: adding a contractible free presentation summand preserves the cokernel but not an isomorphism of the selected diagrams. State whether arrows preserve the chosen framing/presentation or merely act on the underlying module; do not infer that choice from a common method name.
-
 - [ ] **`module-scalar-change`**. **Needs:** `tensor-universal-construction`, `functor-adjunction-coherence`.
   **Owner and delta:** the scalar restriction/extension adjunction in `functors/scalar_change.py` and its module consumers; source review must establish object and morphism actions through one authority.
   **Invariants:** a specified ring map R -> S controls scalar change; extension is S tensor_R M with its universal map, restriction retains the original action through that map. Units, counits, compositions and semilinearity have exact owned endpoints. Preserve the existing group-scalar functor's delegation when it satisfies this contract.
@@ -232,12 +227,12 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** scalar action is M's action; nonunital/nonassociative algebras remain legitimate. Associative, unital, commutative, Lie and augmented structures add precisely their own laws or selected maps. Native adoption, quotient, endomorphism and convenience routes neither construct a second module nor use a trusted entry. Multiplicativity is an equation in owned morphisms, not a finite-framing requirement.
   **Closure specimens:** a nonassociative multiplication, a Lie bracket, a polynomial algebra and a quotient with relations retain the selected module/multiplication and inherited operations. A linear map that is not multiplicative fails algebra-morphism admission; the zero map of a nonzero field is multiplicative but is not unital. A characteristic-two Lie specimen checks alternation rather than substituting skew-symmetry. The commutator functor changes the multiplication and cannot be an inclusion that returns an unchanged algebra. Check the same datum via direct construction, convenience and engine raising.
 
-- [ ] **`free-algebra-module-factor`**. **Needs:** `algebra-defining-data`, `framing-presentation-data`.
+- [ ] **`free-algebra-module-factor`**. **Needs:** `algebra-defining-data`.
   **Owner and delta:** `algebras/free_algebras.py`, `sparse_free_algebras.py`, `power_algebras.py` and the free/forgetful functors; determine and deliver any remaining delta from the current native/free routes, rather than rebuilding their already-integrated factor.
   **Invariants:** the generating module V, the underlying module of T(V) or Sym(V), its homogeneous pieces, and the free-functor unit are distinct data. The full word/monomial module supplies the underlying module factor; every realization routes to the same algebra entry. A genuine functor source accessor is not deleted as wrapper provenance.
   **Closure specimens:** on two free generators, T(V) distinguishes xy from yx while Sym(V) identifies them; the universal extension restricts to its supplied generator map. Exercise native and sparse routes and scalar change, preserving relations and grading, not just generator counts.
 
-- [ ] **`formed-module-data`**. **Needs:** `framing-presentation-data`, `tensor-universal-construction`.
+- [ ] **`formed-module-data`**. **Needs:** `tensor-universal-construction`.
   **Owner and delta:** `modules/framed/formed/form_modules.py`, `forms/forms.py` and their form/lattice constructors: inherit module operations on the retained module and add exactly the selected form.
   **Invariants:** two different forms on M retain M but give distinct structured objects; no copy-and-identify module or object-level forget/equip morphism pair remains. A subobject i:N -> M carries the restricted form b composed with i tensor i; genuine inclusions remain available (`OWN-16`).
   **Closure specimens:** two forms on Z^2 give different pairings with the same unformed input; scaling an inclusion by 2 scales its restricted bilinear form by 4. Generic addition, scalar multiplication and morphism composition work before form accessors are called.
@@ -247,7 +242,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** a group action is by linear automorphisms satisfying its relations; the linearized module and original selected module agree through their construction. Group scalar change consumes the ordinary scalar functor, rather than maintaining another extension algorithm. A group lattice also retains its form and action compatibility.
   **Closure specimens:** trivial and sign C2-actions on Z are distinct and become equal in characteristic two under the specified scalar extension. An action generator failing the group relation is rejected; an underlying linear map that is not equivariant is rejected as a group-module morphism. Preserve transported forms under their stated hypotheses.
 
-- [ ] **`graded-complex-connection-data`**. **Needs:** `framing-presentation-data`, `module-scalar-change`.
+- [ ] **`graded-complex-connection-data`**. **Needs:** `module-scalar-change`.
   **Owner and delta:** `modules/graded_direct_sums.py`, `cochain_complexes.py`, `connections.py` and their existing algebra/derived consumers: settle the remaining construction and membership reviews at these owners.
   **Invariants:** grading, differential and connection are actual owned data with fixed domains and codomains. Direct sums retain finite-support semantics for arbitrary grading sets; a complex has d squared zero; a connection states its base derivation and Leibniz law. No category label supplies a missing map.
   **Closure specimens:** a nonzero two-term differential, a graded map that changes degree incorrectly, and a connection with a nontrivial Leibniz term distinguish the promised structures. Include an infinite graded direct sum so product semantics cannot substitute for finite support. Derived/DGA operations must consume these objects, not repeat their general API.
@@ -391,7 +386,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Maintained computation and honest frontiers
 
-- [ ] **`singular-kernel-delegation`**. **Needs:** `framing-presentation-data`.
+- [ ] **`singular-kernel-delegation`**. **Needs:** none.
   **Owner and delta:** `_singular_presentation_kernel` in `modules/framed/finitely_generated/finitely_presented_modules.py`: replace locally reconstructed kernel/presentation computation with the suitable maintained operation and owned integration.
   **Invariants:** inspect the installed Sage/Singular contract for input relations, coefficient rings, output presentation, inclusion and lifting/factorization. `homolog.lib::hom_kernel` and `modules.lib::kerHom` are discovery candidates, not interchangeable promises. Representation conversion remains private; two low-level `modulo` calls inside the old Python algorithm do not count as delegation. Preserve exact unsupported coefficient frontiers.
   **Closure specimens:** over A=Q[x,y]/(xy), the kernel of multiplication by x is the ideal (y), with its nonfree presentation, inclusion and factorization. Recover the relation x*y=0 inside that kernel presentation; a free rank-one substitute fails. Source review establishes maintained computation and all owned maps, not merely agreement of dimensions.

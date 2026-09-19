@@ -70,16 +70,14 @@ def _native_fgp_morphism(morphism):
     return FGP_Morphism(FGP_Homset(domain_engine, codomain_engine), native_linear)
 
 
-@cached_function(key=lambda homset: id(homset))
-def _internal_hom_model_data(homset):
-    r"""Compute the endpoint-determined finite presentation of one Hom parent.
+@cached_function(key=lambda source, target: (id(source), id(target)))
+def _internal_hom_model_data_from_endpoints(source, target):
+    r"""Compute the endpoint-determined finite presentation of ``Hom_R(source,target)``.
 
-    The Hom parent receives its structural categories when it is constructed.
-    This helper only realizes that already-determined presentation lazily; it
-    never mutates the Hom parent's category or installs provenance on it.
+    This datum depends only on the two selected endpoint presentations.  In
+    particular, it is fixed before the represented Hom parent is constructed;
+    realizing the parent later cannot select another presentation.
     """
-    source = homset.domain()
-    target = homset.codomain()
     ring = _owned_ring(source.base_ring())
     assert _represented_finite_presentation(source) and _represented_finite_presentation(target), (
         "the presented model of Hom_R(M, N) is computed from chosen finite presentations of M and N"
@@ -181,6 +179,11 @@ def _internal_hom_model_data(homset):
         )
     )
     return model, inclusion, relation_matrix, presentation
+
+
+def _internal_hom_model_data(homset):
+    r"""Return the endpoint-fixed selected presentation data of this Hom parent."""
+    return _internal_hom_model_data_from_endpoints(homset.domain(), homset.codomain())
 
 
 def _internal_hom_morphism(

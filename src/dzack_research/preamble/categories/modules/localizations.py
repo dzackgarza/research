@@ -118,13 +118,16 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return f"({self.numerator()})/({self.denominator()})"
 
     class ParentMethods:
-        _derived_construction_parameters = frozenset({"base_ring"})
+        _derived_construction_parameters = frozenset(
+            {"base_ring", "module_generating_set", "module_generator_function"}
+        )
 
         def __init__(
             self,
             numerator_module,
             localization_ring,
             localization_functor,
+            framing_source=None,
             **rest,
         ) -> None:
             r"""Construct ``S^{-1}M`` from ``M``, ``S^{-1}R`` and the localization functor.
@@ -137,14 +140,16 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             self._numerator_module = numerator_module
             self._localization_ring = localization_ring
             self._localization_functor = localization_functor
-            super().__init__(base_ring=localization_ring, **rest)
-            source_ring = localization_ring.localization_source()
-            match numerator_module:
-                case _ if numerator_module in FramedModules(source_ring):
-                    self._install_framing(
-                        numerator_module.module_generating_set(),
-                        lambda label: self.fraction(numerator_module.module_generator(label)),
-                    )
+            framing = {}
+            if framing_source is not None:
+                framing.update(
+                    module_generating_set=framing_source.module_generating_set(),
+                    module_generator_function=lambda label: self.fraction(
+                        numerator_module.module_generator(label)
+                    ),
+                    framing_source=framing_source,
+                )
+            super().__init__(base_ring=localization_ring, **framing, **rest)
 
         def _selected_module_coefficients(self, element):
             r"""Return the coefficients of ``m/s`` in the framing carried from ``M``.
@@ -410,14 +415,17 @@ def _localized_module(
     source_ring = localization_ring.localization_source()
     if numerator_module in FramedModules(source_ring):
         placement.append(FramedModules(localization_ring))
+        framing_source = localization_ring.free_module(
+            numerator_module.module_generating_set()
+        )
         if numerator_module in FinitelyGeneratedModules(source_ring):
             placement.append(FinitelyGeneratedModules(localization_ring))
         if numerator_module in ModulesWithChosenFinitePresentation(source_ring):
-            data.update(
-                _transported_presentation(numerator_module, localization_ring)
-            )
+            transported = _transported_presentation(numerator_module, localization_ring)
+            data.update(transported)
             if selected_presentation_data is not None:
                 data.update(selected_presentation_data)
+            framing_source = data["presentation"].codomain()
             placement.extend(
                 [
                     FinitelyPresentedModules(localization_ring),
@@ -425,6 +433,7 @@ def _localized_module(
                     _SelectedFinitePresentationModules(localization_ring),
                 ]
             )
+        data["framing_source"] = framing_source
 
     return _object_of(Category.join(placement), **data)
 

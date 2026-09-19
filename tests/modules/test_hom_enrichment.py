@@ -141,9 +141,9 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
     assert construction.source_module() is source
     assert construction.target_module() is target
     assert hom.__dict__.get("_preamble_internal_hom_model") is not None
-    framing = hom.__dict__.get("_preamble_framing_morphism")
-    assert framing is not None
+    framing = hom.framing_morphism()
     assert hom.framing_source() is hom.internal_hom_model().framing_source()
+    assert hom.presentation().codomain() is hom.framing_source()
     assert hom.framing_morphism() is framing
     assert framing.domain() is hom.framing_source()
     assert framing.codomain() is hom
@@ -166,9 +166,8 @@ def test_matrix_internal_hom_retains_its_free_framing_source() -> None:
     target = ZZ.free_module(3)
     hom = source.module_category().Mor(source, target)
 
-    framing = hom.__dict__.get("_preamble_framing_morphism")
+    framing = hom.framing_morphism()
     framing_source = hom.framing_source()
-    assert framing is not None
     assert framing_source.module_generating_set() is hom.module_generating_set()
     assert hom.framing_morphism() is framing
     assert framing.domain() is framing_source

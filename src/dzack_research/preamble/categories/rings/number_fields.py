@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
+    _fix_selected_module_framing,
 )
 from dzack_research.preamble.categories.rings.embeddings import NumberFieldHomset
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -667,8 +668,14 @@ def _owned_order_view(engine):
         integers = _own_ring(SageZZ)
         labels = _order_basis_labels(engine)
         source = integers.free_module(labels)
+        _fix_selected_module_framing(
+            order,
+            integers,
+            labels,
+            lambda label: _order_basis_element(order, labels, label),
+            source,
+        )
         refine(order, FramedModules(integers))
-        order._install_framing(labels, lambda label: _order_basis_element(order, labels, label), source)
     # The integers already have the exact regular rank-one frame. Other
     # orders now have their actual integral-basis epimorphism as well.
     return refine(order, OrdersWithChosenIntegralBasis())

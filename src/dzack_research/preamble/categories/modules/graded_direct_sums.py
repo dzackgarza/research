@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
+    _fix_selected_module_framing,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
@@ -234,6 +235,15 @@ class GradedDirectSumModule(Parent):
             FramedModules(self._base_ring),
             *tuple(extra_categories),
         ]
+        labels = self.module_generating_set()
+        source = self._base_ring.free_module(labels)
+        _fix_selected_module_framing(
+            self,
+            self._base_ring,
+            labels,
+            self.module_generator,
+            source,
+        )
         Parent.__init__(
             self,
             base=_engine_ring(self._base_ring),
@@ -518,15 +528,17 @@ class _FramedDirectSumOfModules(_DirectSumOfModules):
     """
 
     def __init__(self, summand_family, **rest) -> None:
-        super().__init__(summand_family=summand_family, **rest)
-        source = _direct_sum_framing_source(self.base_ring(), summand_family)
-        self._install_framing(
-            source.module_generating_set(),
-            lambda label: self.from_component(
+        ring = rest["base_ring"]
+        source = _direct_sum_framing_source(ring, summand_family)
+        super().__init__(
+            summand_family=summand_family,
+            module_generating_set=source.module_generating_set(),
+            module_generator_function=lambda label: self.from_component(
                 label.summand_index(),
                 self.graded_piece(label.summand_index()).module_generator(label.summand_element()),
             ),
-            source,
+            framing_source=source,
+            **rest,
         )
 
     def _element_constructor_(self, value):

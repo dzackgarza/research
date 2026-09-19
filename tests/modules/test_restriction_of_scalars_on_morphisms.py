@@ -93,8 +93,7 @@ def test_finite_scalar_restriction_coefficients_keep_distinct_product_labels_und
     restricted = Modules(extension).restriction_of_scalars(ring_map)(line)
     labels = tuple(restricted.module_generating_set())
 
-    framing = restricted.__dict__.get("_preamble_framing_morphism")
-    assert framing is not None
+    framing = restricted.framing_morphism()
     assert restricted.framing_source().module_generating_set() is restricted.module_generating_set()
     assert restricted.framing_morphism() is framing
     assert framing.domain() is restricted.framing_source()

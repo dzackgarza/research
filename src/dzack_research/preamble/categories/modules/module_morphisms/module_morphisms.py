@@ -1879,6 +1879,24 @@ class _EqualizerFactorModuleMorphism(ModuleMorphism):
 class FramingMorphism(ModuleMorphism):
     r"""The selected framing epimorphism from a free module."""
 
+    def __init__(self, parent, generator_morphism) -> None:
+        codomain = parent.codomain()
+        if parent.domain() is not codomain.framing_source():
+            raise ValueError("a framing morphism has the module's selected free source")
+        if generator_morphism is not codomain.module_generator_morphism():
+            raise ValueError("a framing morphism realizes the module's selected generator map")
+        super().__init__(parent, generator_morphism)
+
+    def lift(self, element):
+        r"""Lift through the selected framing using its constructor-owned coefficients."""
+        target = self.codomain()(element)
+        candidate = self.domain().linear_combination(
+            self.codomain().framing_coefficients(target)
+        )
+        if self(candidate) != target:
+            raise ValueError("the selected framing coefficients do not lift this element")
+        return candidate
+
     def is_surjective(self) -> bool:
         r"""True: the codomain's framing coefficients supply a preimage in the selected free source."""
         return True
@@ -2060,11 +2078,53 @@ def _initialize_module_hom_parent(
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
+        _fix_selected_module_presentation,
     )
     from dzack_research.preamble.categories.modules.pure.modules import (
         MatrixSpaces,
+        _fix_selected_module_framing,
         _matrix_unit,
     )
+
+    # Fix all chosen data before the mixed Sage Homset is initialized and then
+    # refined into its owned enrichment.  The generator-map callables below are
+    # representations of those fixed data and are evaluated only after the
+    # parent exists; no accessor can choose another framing or presentation.
+    match placement:
+        case _ if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
+            # ``Hom_R(F_R(S), F_R(T))`` is free on the matrix units ``T x S``.
+            labels = codomain.module_generating_set().product_with(domain.module_generating_set())
+            _fix_selected_module_framing(
+                parent,
+                ring,
+                labels,
+                lambda label: _matrix_unit(parent, label),
+                ring._fresh_free_module_on(labels),
+            )
+        case _ if placement.is_subcategory(_SelectedFinitePresentationModules(ring)):
+            # ``Hom_R(M, N)`` between presented modules is presented by the
+            # model its endpoints determine (see ``internal_hom``).
+            from dzack_research.preamble.categories.modules.internal_hom import (
+                _internal_hom_model_data_from_endpoints,
+            )
+
+            model, _inclusion, relation_matrix, presentation = _internal_hom_model_data_from_endpoints(
+                domain,
+                codomain,
+            )
+            _fix_selected_module_framing(
+                parent,
+                ring,
+                model.module_generating_set(),
+                lambda label: parent._morphism_from_internal_model(model.module_generator(label)),
+                model.framing_source(),
+            )
+            _fix_selected_module_presentation(
+                parent,
+                ring,
+                relation_matrix,
+                presentation,
+            )
 
     CategoricalHomset.__init__(
         parent,
@@ -2074,34 +2134,6 @@ def _initialize_module_hom_parent(
         category=placement,
         base=ring.ring_center(),
     )
-
-    # The Hom parent is refined into its placement rather than constructed
-    # through it, so the framing and presentation that placement states are
-    # established here, before the parent is returned, from the endpoints that
-    # determine them.
-    match placement:
-        case _ if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
-            # ``Hom_R(F_R(S), F_R(T))`` is free on the matrix units ``T x S``.
-            labels = codomain.module_generating_set().product_with(domain.module_generating_set())
-            parent._install_framing(
-                labels,
-                lambda label: _matrix_unit(parent, label),
-                ring._fresh_free_module_on(labels),
-            )
-        case _ if placement.is_subcategory(_SelectedFinitePresentationModules(ring)):
-            # ``Hom_R(M, N)`` between presented modules is presented by the
-            # model its endpoints determine (see ``internal_hom``).
-            from dzack_research.preamble.categories.modules.internal_hom import (
-                _internal_hom_model_data,
-            )
-
-            model, _inclusion, relation_matrix, presentation = _internal_hom_model_data(parent)
-            parent._install_framing(
-                model.module_generating_set(),
-                lambda label: parent._morphism_from_internal_model(model.module_generator(label)),
-                model.framing_source(),
-            )
-            parent._install_presentation(relation_matrix, presentation)
 
     if domain is codomain:
         from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
@@ -2407,9 +2439,10 @@ class SubFramingMorphism(ModuleEmbedding):
         return self.domain().linear_combination(self.codomain().framing_coefficients(element))
 
 
-def _framing_morphism(domain, codomain, images) -> FramingMorphism:
+def _framing_morphism(codomain) -> FramingMorphism:
+    domain = codomain.framing_source()
     homset = domain.module_category().Mor(domain, codomain)
-    framing = FramingMorphism(homset, images)
+    framing = FramingMorphism(homset, codomain.module_generator_morphism())
     return framing
 
 

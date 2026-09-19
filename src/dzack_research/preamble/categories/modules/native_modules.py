@@ -12,7 +12,11 @@ or second authoritative ring is involved.
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
-from dzack_research.preamble.categories.modules.pure.modules import Modules, FramedModules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+    Modules,
+    _fix_selected_module_framing,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.refine import refine
 
@@ -110,10 +114,14 @@ class _RingModulePresentation:
             source = self._basis.source()
             assert source.base_ring() is self.base_ring(), "the basis uses the native action's exact scalars"
             labels = source.module_generating_set()
-            refine(module, FramedModules(self.base_ring()))
-            FramedModules.ParentMethods._install_framing(
-                module, labels, self._basis.image, source.framing_source()
+            _fix_selected_module_framing(
+                module,
+                self.base_ring(),
+                labels,
+                self._basis.image,
+                source.framing_source(),
             )
+            refine(module, FramedModules(self.base_ring()))
             match source:
                 case _ if source in FramedFreeModules(self.base_ring()):
                     placement = FramedFreeModules(self.base_ring())
