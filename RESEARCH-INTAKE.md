@@ -112,6 +112,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Bilinear forms to polynomial schemes and 1-parameter quadric families | User intake 2026-09-19 | Passage from bilinear form b: M⊗_R M→R on free M≅R^n to polynomial b(x,x)∈R[x_0..x_{n-1}] (and b(x,y)); 1-parameter family V(b(x,x)-t) over AA^1(R); transport problem b(v,v)=t to finding integral points on fibers, utilizing specialized number theory and lattice algorithms | `categories/forms/polynomial.py` + `categories/schemes/families.py` + `categories/schemes/quadrics.py` + `categories/lattices/representations.py` | Proposed — see note below |
 | Category of Hodge structures (pure, mixed, polarized) and operations | User intake 2026-09-19 | Category of pure Hodge structures HS_k(R), mixed Hodge structures MHS(R) (Deligne), polarized HS_k^{pol}(R); standard operations: tensor product, direct sum, dual, internal Hom, exterior powers ⋀^n H, symmetric powers Sym^n H, Tate twist ZZ(m) / H(m), weight and Hodge filtrations, Hodge classes, intermediate Jacobians | `categories/hodge/hodge_structures.py` + `categories/hodge/mixed_hodge.py` + `categories/hodge/polarized.py` + `categories/hodge/tate_twist.py` | Proposed — see note below |
 | Projectivization of linear groups and subgroups (PGL, PO, PSL, PSp) | User intake 2026-09-19 | Projectivization functor P: G ↦ PG = G / (G ∩ R^×·id) for linear groups G ≤ GL(V) (e.g. GL_n → PGL_n, O(b) → PO(b) ≅ O(b)/{±id}, SL_n → PSL_n, Sp_{2g} → PSp_{2g}, and arithmetic subgroups Γ ≤ O(L)); quotient projection π: G ↠ PG; faithful action on projective space PP(V) and hyperbolic space HH^n | `categories/groups/projectivization.py` + `categories/groups/matrix_groups.py` + `categories/lattices/orthogonal_group.py` | Proposed — see note below |
+| Lambert expansions of generating functions | User intake 2026-09-19 | Lambert series L(q) = \sum a_n q^n/(1-q^n) and bidirectional conversion to/from OGF \sum b_N q^N via divisor convolution b_N = \sum_{d|N} a_d and Mobius inversion a_n = \sum_{d|n} \mu(n/d) b_d; Dirichlet series link D_b(s) = D_a(s)\zeta(s); q-expansions of Eisenstein series E_{2k}, Dedekind \eta, and Euler products | `categories/generating_functions/lambert.py` + `categories/rings/formal_power_series.py` + `categories/modular/eisenstein.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -2086,6 +2087,108 @@ Intake note from user 2026-09-19.
   * Faithful action on projective spaces: `PG.action_on(ProjectiveSpace(V))`.
 
 Intended owners: `categories/groups/projectivization.py` (`ProjectiveGroup`, `ProjectivizationFunctor`), `categories/groups/matrix_groups.py` (`PGL`, `PSL`, `PSp`), `categories/lattices/orthogonal_group.py` (`PO(L)`, `PSO(L)`), `categories/hyperbolic/isometries.py` ($\operatorname{PO}^+(1,n)$ action on $\mathbb{H}^n$).
+
+
+## Desired capability: Lambert expansions of generating functions — intake 2026-09-19
+
+* **Mathematical background:**
+  * **Lambert series definition:** Let $R$ be a commutative ring (e.g. $\mathbb{Z}$, $\mathbb{Q}$, or $\mathbb{C}$). A formal Lambert series with coefficients $a = (a_n)_{n \ge 1}$ is a formal power series expansion of the form:
+    $$
+    L_a(q) \coloneqq \sum_{n=1}^\infty a_n \frac{q^n}{1 - q^n} \in q R[[q]].
+    $$
+  * **Expansion to ordinary generating function (OGF):**
+    Expanding each geometric term $\frac{q^n}{1 - q^n} = \sum_{k=1}^\infty q^{nk}$ and collecting powers of $q$:
+    $$
+    L_a(q) = \sum_{n=1}^\infty a_n \sum_{k=1}^\infty q^{nk} = \sum_{N=1}^\infty b_N q^N,
+    $$
+    where the OGF coefficients $b_N$ are given by the Dirichlet convolution of $a$ with the constant sequence $\mathbf{1}$:
+    $$
+    b_N = (a * \mathbf{1})(N) = \sum_{d \mid N} a_d.
+    $$
+  * **Lambert inversion (OGF to Lambert expansion via Möbius inversion):**
+    Given an arbitrary formal power series with vanishing constant term $F(q) = \sum_{N=1}^\infty b_N q^N \in q R[[q]]$, there exists a unique sequence of coefficients $(a_n)_{n \ge 1}$ such that $F(q) = \sum_{n=1}^\infty a_n \frac{q^n}{1 - q^n}$.
+    By Möbius inversion on the Dirichlet convolution $b = a * \mathbf{1}$:
+    $$
+    a_n = (b * \mu)(n) = \sum_{d \mid n} \mu(n/d) b_d = \sum_{d \mid n} \mu(d) b_{n/d},
+    $$
+    where $\mu$ is the classical arithmetic Möbius function ($\mu(1)=1$, $\mu(n)=(-1)^k$ for squarefree $n$ with $k$ prime factors, and $0$ otherwise).
+  * **Relation to Dirichlet series and the Riemann zeta function:**
+    Let $D_a(s) \coloneqq \sum_{n=1}^\infty \frac{a_n}{n^s}$ and $D_b(s) \coloneqq \sum_{N=1}^\infty \frac{b_N}{N^s}$ be the formal Dirichlet series of $a$ and $b$. Then:
+    $$
+    D_b(s) = D_a(s) \cdot \zeta(s), \qquad D_a(s) = \frac{D_b(s)}{\zeta(s)},
+    $$
+    reflecting the convolution $b = a * \mathbf{1}$ and the identity $\zeta(s)^{-1} = \sum_{n=1}^\infty \frac{\mu(n)}{n^s}$.
+    Analytically, the Mellin transform of $L_a(e^{-t})$ recovers $\Gamma(s) D_a(s) \zeta(s) = \Gamma(s) D_b(s)$.
+
+* **Canonical arithmetic and modular specimens:**
+  1. **Divisor powers and Eisenstein series:**
+     For $a_n = n^k$, $b_N = \sigma_k(N) = \sum_{d \mid N} d^k$.
+     $$
+     \sum_{n=1}^\infty n^k \frac{q^n}{1 - q^n} = \sum_{N=1}^\infty \sigma_k(N) q^N.
+     $$
+     * $k = 0$: $\sum_{n=1}^\infty \frac{q^n}{1 - q^n} = \sum_{N=1}^\infty d(N) q^N$ (divisor counting function $d(N) = \tau(N)$).
+     * $k = 1$: $\sum_{n=1}^\infty n \frac{q^n}{1 - q^n} = \sum_{N=1}^\infty \sigma_1(N) q^N$.
+     * Eisenstein series $q$-expansions for modular forms:
+       $$
+       E_2(q) = 1 - 24 \sum_{n=1}^\infty \frac{n q^n}{1 - q^n} = 1 - 24 \sum_{N=1}^\infty \sigma_1(N) q^N,
+       $$
+       $$
+       E_4(q) = 1 + 240 \sum_{n=1}^\infty \frac{n^3 q^n}{1 - q^n} = 1 + 240 \sum_{N=1}^\infty \sigma_3(N) q^N,
+       $$
+       $$
+       E_6(q) = 1 - 504 \sum_{n=1}^\infty \frac{n^5 q^n}{1 - q^n} = 1 - 504 \sum_{N=1}^\infty \sigma_5(N) q^N.
+       $$
+  2. **Euler totient function:**
+     For $a_n = \phi(n)$, since $\sum_{d \mid N} \phi(d) = N$:
+     $$
+     \sum_{n=1}^\infty \phi(n) \frac{q^n}{1 - q^n} = \sum_{N=1}^\infty N q^N = \frac{q}{(1 - q)^2}.
+     $$
+  3. **Möbius function:**
+     For $a_n = \mu(n)$, since $\sum_{d \mid N} \mu(d) = \delta_{N, 1}$:
+     $$
+     \sum_{n=1}^\infty \mu(n) \frac{q^n}{1 - q^n} = q.
+     $$
+  4. **Liouville function and Jacobi theta functions:**
+     For $a_n = \lambda(n) = (-1)^{\Omega(n)}$, $\sum_{d \mid N} \lambda(d) = 1$ if $N$ is a square, $0$ otherwise:
+     $$
+     \sum_{n=1}^\infty \lambda(n) \frac{q^n}{1 - q^n} = \sum_{m=1}^\infty q^{m^2} = \frac{\theta_3(q) - 1}{2}.
+     $$
+  5. **Von Mangoldt function:**
+     For $a_n = \Lambda(n)$, $\sum_{d \mid N} \Lambda(d) = \log N$:
+     $$
+     \sum_{n=1}^\infty \Lambda(n) \frac{q^n}{1 - q^n} = \sum_{N=1}^\infty \log(N) q^N.
+     $$
+  6. **Euler products, partition functions, and logarithmic derivatives:**
+     For an infinite product $P(q) = \prod_{n=1}^\infty (1 - q^n)^{-c_n}$, the logarithm has a natural Lambert expansion:
+     $$
+     \log P(q) = \sum_{n=1}^\infty c_n \log \frac{1}{1 - q^n} = \sum_{n=1}^\infty c_n \sum_{k=1}^\infty \frac{q^{nk}}{k} = \sum_{m=1}^\infty \left(\sum_{d \mid m} \frac{c_d \cdot d}{m}\right) q^m.
+     $$
+     The Euler-operator / logarithmic derivative $q \frac{d}{dq} \log P(q)$ is directly a Lambert series:
+     $$
+     q \frac{d}{dq} \log P(q) = \sum_{n=1}^\infty n c_n \frac{q^n}{1 - q^n}.
+     $$
+     For the partition generating function $P(q) = \sum_{n=0}^\infty p(n) q^n = \prod_{n=1}^\infty (1 - q^n)^{-1}$ (with $c_n = 1$):
+     $$
+     \log P(q) = \sum_{m=1}^\infty \frac{1}{m} \frac{q^m}{1 - q^m}, \qquad q \frac{d}{dq} \log P(q) = \sum_{n=1}^\infty \frac{n q^n}{1 - q^n} = \sum_{N=1}^\infty \sigma_1(N) q^N.
+     $$
+     For Dedekind's eta function $\eta(\tau) = q^{1/24} \prod_{n=1}^\infty (1 - q^n)$:
+     $$
+     q \frac{d}{dq} \log \eta(\tau) = \frac{1}{24} - \sum_{n=1}^\infty \frac{n q^n}{1 - q^n} = \frac{E_2(q)}{24}.
+     $$
+  7. **Generalized Lambert series:**
+     Series of the shape $\sum_{n=1}^\infty a_n \frac{q^{\alpha n + \beta}}{1 - c q^n}$, appearing in Ramanujan's ${}_1\psi_1$ summation formula, basic hypergeometric series, Jacobi forms, and mock modular forms.
+
+* **Preamble implementation requirement:**
+  * Define `LambertSeries(R)` over commutative rings $R$:
+    * Representation: sequence of coefficients $(a_n)_{n \ge 1}$ (finite list/tuple with precision or lazy generator).
+    * `LambertSeries.to_ogf(precision=N) -> FormalPowerSeries`: computes the truncated OGF $\sum_{n=1}^N b_n q^n$ via divisor sum convolution $b_n = \sum_{d \mid n} a_d$.
+    * `FormalPowerSeries.to_lambert_series(precision=N) -> LambertSeries`: converts an OGF with $b_0 = 0$ to a Lambert series via Möbius inversion $a_n = \sum_{d \mid n} \mu(n/d) b_d$.
+    * `LambertSeries.to_dirichlet_series() -> DirichletSeries`: associates $D_a(s)$, with identity $D_b(s) = D_a(s) \zeta(s)$.
+    * Logarithmic derivative constructor: for infinite products $\prod (1 - q^n)^{-c_n}$, generate the corresponding Lambert series directly.
+    * Integration with modular forms: provide explicit Lambert series representations for $E_2, E_4, E_6$, Jacobi theta functions, and partition generating functions.
+
+Intended owners: `categories/generating_functions/lambert.py` (`LambertSeries`, `LambertExpansions`), `categories/rings/formal_power_series.py` (`to_lambert_series`, `from_lambert_series`), `categories/modular/eisenstein.py` (`EisensteinSeries.lambert_expansion()`).
+
 
 
 
