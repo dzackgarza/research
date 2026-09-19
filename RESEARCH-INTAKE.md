@@ -141,6 +141,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Hamiltonian flows, action functionals on path spaces, and gradient-flow handle decompositions for computing homotopy types | User intake 2026-09-19 | Symplectic dynamics and variational calculus framework linking Hamiltonian mechanics, action-functional critical point theory, and Morse-theoretic handle attachments: (1) Hamiltonian flows on symplectic manifolds $(M, \omega)$: Hamiltonian $H \colon M \times \mathbb{R} \to \mathbb{R}$, Hamilton's equations $\dot{q} = \partial H/\partial p,\; \dot{p} = -\partial H/\partial q$, Hamiltonian vector field $X_H$ via $\iota_{X_H}\omega = -dH$, flow $\phi_H^t \in \operatorname{Symp}(M, \omega)$, Liouville volume preservation, integrals of motion, and symplectic integrators; (2) Action functionals on path spaces: classical action $\mathcal{S}[\gamma] = \int_0^1 (p \dot{q} - H(q, p, t))\, dt$ on $\mathcal{P}(M) = C^\infty([0,1], T^*M)$, Euler-Lagrange critical points as Hamiltonian trajectories, symplectic action functional $\mathcal{A}_H(\gamma) = -\int \gamma^* \lambda + \int_0^1 H(\gamma(t), t)\, dt$ on contractible loop space $\widetilde{LM}$, Conley-Zehnder index $\mu_{CZ}(\gamma)$, and Floer's $L^2$-gradient flow of $\mathcal{A}_H$ yielding pseudo-holomorphic strips $u \colon \mathbb{R} \times S^1 \to M$ satisfying $\partial_s u + J(\partial_t u - X_H) = 0$; (3) Gradient-flow handle decompositions: Morse function $f$ on $M$ with gradient flow $-\nabla f$, sublevel sets $M^a = f^{-1}(-\infty, a]$, handle attachment theorem (crossing a critical point of index $\lambda$ attaches a $\lambda$-handle $D^\lambda \times D^{n-\lambda}$ to $M^{f(p)-\varepsilon}$), CW structure $M \simeq e^0 \cup e^{\lambda_1} \cup \dots \cup e^{\lambda_k}$ recovering homotopy type, Morse inequalities $c_k \ge b_k$ and strong inequality $\sum (-1)^{n-k} c_k \ge \sum (-1)^{n-k} b_k$, Smale's cancellation and rearrangement of handles, and h-cobordism theorem; (4) Floer homology as infinite-dimensional Morse theory: $HF_*(H, J) \cong H_*(M; \Lambda)$ (Arnold conjecture), Floer continuation maps, PSS isomorphisms, and spectral invariants | `categories/differential_geometry/hamiltonian_flow.py` + `categories/differential_geometry/action_functional.py` + `categories/differential_geometry/handle_decomposition.py` + `categories/differential_geometry/floer_homology.py` | Proposed — see note below |
 | Polarized modules $(M, E)$ with spectral decomposition $M = M_- \oplus M_+$ from self-adjoint Fredholm operators | User intake 2026-09-19 | Functional-analytic and $K$-theoretic framework for polarized Hilbert modules and their categorical structure: (1) Fredholm operators $E \colon \mathcal{H} \to \mathcal{H}$: bounded operators with finite-dimensional kernel and cokernel, Fredholm index $\operatorname{ind}(E) = \dim \ker E - \dim \operatorname{coker} E$, Atiyah-Jänich classifying map $\operatorname{Fred}(\mathcal{H}) \simeq \mathbb{Z} \times BU$ representing $K^0$, and Calkin algebra $\mathcal{Q}(\mathcal{H}) = \mathcal{B}(\mathcal{H})/\mathcal{K}(\mathcal{H})$; (2) Self-adjoint Fredholm operators $E = E^*$: real discrete spectrum $\sigma(E) \subset \mathbb{R}$ with eigenvalues accumulating only at $\pm \infty$, spectral theorem $E = \int \lambda\, dP_\lambda$, spectral projections $P_{\pm} = \chi_{\mathbb{R}_{\pm}}(E)$ yielding polarization $\mathcal{H} = \mathcal{H}_- \oplus \mathcal{H}_+$ where $\mathcal{H}_\pm = P_\pm \mathcal{H}$, and $\operatorname{Fred}^{sa}(\mathcal{H}) \simeq \Omega^1(\mathbb{Z} \times BU)$ classifying $K^1$; (3) Polarized modules $(M, E)$: module $M$ (Hilbert space, graded module, or object in an additive category) equipped with operator $E$ whose spectral decomposition $M = M_- \oplus M_+$ separates negative and positive spectral subspaces, polarization class $[P_+] \in \operatorname{Gr}(\mathcal{H})$ in the restricted Grassmannian, Sato Grassmannian $\operatorname{Gr}^{(0)}(\mathcal{H}) = \{W \subset \mathcal{H} \mid P_+ |_W$ Fredholm, $P_- |_W$ Hilbert-Schmidt$\}$ and its determinant line bundle; (4) Morphisms and index theory: polarization-preserving maps $\phi \colon (M_1, E_1) \to (M_2, E_2)$, relative index $\operatorname{ind}(P_{+,1}, \phi^* P_{+,2})$, Kato-Rellich perturbation stability, spectral flow $\operatorname{sf}(E_t) = \sum \operatorname{sgn}$ crossings through 0 along paths $\{E_t\}$ in $\operatorname{Fred}^{sa}$, and APS eta invariant $\eta(E) = \sum_{\lambda \neq 0} \operatorname{sgn}(\lambda) |\lambda|^{-s}|_{s=0}$; (5) Categorical structure: category $\mathbf{Pol}$ of polarized modules, direct sums, tensor products of polarizations, Clifford module polarizations, and connections to Kasparov $KK$-theory bimodules | `categories/functional_analysis/fredholm.py` + `categories/functional_analysis/polarized_module.py` + `categories/functional_analysis/spectral_flow.py` + `categories/k_theory/kk_theory.py` | Proposed — see note below |
 | Moduli spaces of connections on smooth manifolds, gauge theory, Yang-Mills functional, and instanton/flat connection moduli | User intake 2026-09-19 | Gauge-theoretic and differential-geometric framework for moduli spaces of connections: (1) Principal $G$-bundles $P \to M$ and connections: connection 1-form $A \in \Omega^1(P, \mathfrak{g})^G$, covariant derivative $d_A = d + [A, -]$, curvature $F_A = dA + A \wedge A \in \Omega^2(M, \operatorname{ad} P)$, flat connections $F_A = 0$, and Bianchi identity $d_A F_A = 0$; (2) Gauge group and orbit space: gauge group $\mathcal{G} = \operatorname{Aut}(P) \cong \Gamma(P \times_G G)$, gauge action $g \cdot A = g^{-1} A g + g^{-1} dg$, space of all connections $\mathcal{A}(P)$ (affine space modeled on $\Omega^1(M, \operatorname{ad} P)$), and orbit space $\mathcal{B} = \mathcal{A}/\mathcal{G}$; (3) Flat connection moduli: $\mathcal{M}_{\mathrm{flat}}(P) = \{A \mid F_A = 0\}/\mathcal{G} \cong \operatorname{Hom}(\pi_1(M), G)/G$ (character variety), Chern-Simons functional $CS(A) = \frac{1}{8\pi^2}\int_M \operatorname{tr}(A \wedge dA + \frac{2}{3} A \wedge A \wedge A)$ with $\mathcal{M}_{\mathrm{flat}}$ as critical set, deformation complex $\Omega^0 \xrightarrow{d_A} \Omega^1 \xrightarrow{d_A} \Omega^2$ and Zariski tangent $H^1(M, \operatorname{ad} P)$; (4) Yang-Mills functional and instantons: $\operatorname{YM}(A) = \int_M \|F_A\|^2 \operatorname{vol}_g$, Yang-Mills equation $d_A^* F_A = 0$, anti-self-dual (ASD) instantons $F_A^+ = 0$ on 4-manifolds, topological charge $k = \frac{1}{8\pi^2}\int \operatorname{tr}(F_A \wedge F_A) = c_2(P)$, Uhlenbeck compactification, Donaldson invariants, and ADHM construction; (5) Moduli space structures: Kuranishi local models, virtual dimension formulas, Atiyah-Singer index of deformation operator $D_A = d_A^* \oplus d_A^+$, orientation via determinant line bundles, and Hitchin moduli of Higgs bundles $(A, \Phi)$ with $\bar{\partial}_A \Phi = 0$, $F_A + [\Phi, \Phi^*] = 0$ | `categories/differential_geometry/connections.py` + `categories/differential_geometry/gauge_theory.py` + `categories/differential_geometry/moduli_connections.py` + `categories/differential_geometry/yang_mills.py` + `categories/differential_geometry/chern_simons.py` | Proposed — see note below |
+| Rational changes of variables, birational substitutions on algebraic varieties, and verification of birational equivalences between affine/projective models | User intake 2026-09-19 | Computational algebraic geometry engine for rational coordinate transformations and birational equivalence verification: (1) Rational substitution maps $\varphi \colon \mathbb{A}^n \dashrightarrow \mathbb{A}^m$ given by $x_i \mapsto p_i(y)/q_i(y)$ with $p_i, q_i \in k[y_1, \dots, y_m]$, domain of definition $U = \mathbb{A}^n \setminus V(\prod q_i)$, and indeterminacy locus; (2) Pullback of defining equations: given a hypersurface $V(F) \subset \mathbb{A}^n$ and a rational map $\varphi$, compute $\varphi^* F = F(p_1/q_1, \dots, p_n/q_n) \cdot \prod q_i^{d_i}$ (clearing denominators), factor out common factors, and verify $\varphi^* F \doteq G$ up to units in $k^*$; (3) Birational equivalence verification: given $V(F) \subset \mathbb{A}^n$ and $V(G) \subset \mathbb{A}^m$ with rational maps $\varphi \colon V(F) \dashrightarrow V(G)$ and $\psi \colon V(G) \dashrightarrow V(F)$, verify $\psi \circ \varphi = \operatorname{id}$ and $\varphi \circ \psi = \operatorname{id}$ on dense open subsets by symbolic rational function identity; (4) Projective birational maps $\varphi \colon \mathbb{P}^n \dashrightarrow \mathbb{P}^m$ given by homogeneous polynomials $[F_0 : \dots : F_m]$ of the same degree, Cremona transformations ($\mathbb{P}^2$ quadratic: $[X : Y : Z] \mapsto [1/X : 1/Y : 1/Z] = [YZ : XZ : XY]$, higher-dimensional analogues), and base locus analysis; (5) Algorithmic simplification: Gröbner basis ideal membership for verifying $\varphi^* F \in (G)$, resultant and elimination for composing rational maps, and automated search for simplifying substitutions (Tschirnhaus transformations, Weierstrass normal forms) | `categories/algebraic_geometry/birational_maps.py` + `categories/algebraic_geometry/rational_substitution.py` + `categories/algebraic_geometry/cremona.py` | Proposed — see note below |
 
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
@@ -6560,6 +6561,113 @@ Intended owners: `categories/functional_analysis/fredholm.py` (`FredholmOperator
     - `chern_simons_level(gauge_transform)`: degree $\in \mathbb{Z}$.
 
 Intended owners: `categories/differential_geometry/connections.py` (`PrincipalBundle`, `Connection`, `curvature_form`, `covariant_derivative`, `is_flat_connection`), `categories/differential_geometry/gauge_theory.py` (`GaugeGroup`, `gauge_action`, `connection_space`, `orbit_space`), `categories/differential_geometry/moduli_connections.py` (`FlatConnectionModuli`, `character_variety`, `deformation_complex`, `HitchinModuliSpace`), `categories/differential_geometry/yang_mills.py` (`YangMillsFunctional`, `yang_mills_equation`, `asd_condition`, `InstantonModuliSpace`, `topological_charge`), `categories/differential_geometry/chern_simons.py` (`ChernSimonsFunctional`, `chern_simons_variation`, `chern_simons_level`).
+
+
+## Desired capability: Rational changes of variables, birational substitutions, and verification of birational equivalences — intake 2026-09-19
+
+* **Motivating example:**
+  The surface $S$ has affine equation:
+  $$
+  1 - (1 - XY)Z - tXYZ(1 - X)(1 - Y)(1 - Z) = 0.
+  $$
+  Under the birational transformation of $\mathbb{P}^3$ given by:
+  $$
+  X = \frac{1}{1+x}, \quad Z = \frac{1}{1+z}, \quad Y = \frac{y+z}{x+z},
+  $$
+  one obtains the model with affine equation:
+  $$
+  4txy = (x+1)(y+1)(z - (x-y)^2).
+  $$
+  The capability must mechanize this type of calculation: substitute rational expressions for variables into a defining polynomial, clear denominators, simplify, and verify that the result matches a claimed target equation up to a nonzero scalar.
+
+* **Mathematical background & foundational structures:**
+  * **Rational Maps Between Affine/Projective Varieties:**
+    * A **rational map** $\varphi \colon V(F) \dashrightarrow V(G)$ between affine varieties $V(F) \subset \mathbb{A}^n_k$ and $V(G) \subset \mathbb{A}^m_k$ is a tuple of rational functions:
+      $$
+      \varphi = \left( \frac{p_1(\mathbf{y})}{q_1(\mathbf{y})}, \dots, \frac{p_n(\mathbf{y})}{q_n(\mathbf{y})} \right), \quad p_i, q_i \in k[\mathbf{y}], \; q_i \neq 0,
+      $$
+      defined on the dense open subset $U = \mathbb{A}^m \setminus V(\prod q_i)$.
+    * The **indeterminacy locus** of $\varphi$ is the subvariety where all $q_i$ vanish simultaneously (for projective maps: the base locus where all defining forms vanish).
+    * A **birational map** is a rational map with a rational inverse: $\varphi \colon V(F) \dashrightarrow V(G)$ birational means there exists $\psi \colon V(G) \dashrightarrow V(F)$ with $\psi \circ \varphi = \operatorname{id}_{V(F)}$ and $\varphi \circ \psi = \operatorname{id}_{V(G)}$ on dense open subsets.
+    * Two varieties are **birationally equivalent** ($V(F) \sim_{\mathrm{bir}} V(G)$) iff their function fields are isomorphic: $k(V(F)) \cong k(V(G))$.
+
+  * **Pullback of Defining Equations (the Core Operation):**
+    * Given $F(X_1, \dots, X_n) \in k[X_1, \dots, X_n]$ and a substitution $X_i = p_i(\mathbf{y}) / q_i(\mathbf{y})$, the pullback is:
+      $$
+      \varphi^* F \;=\; F\!\left( \frac{p_1}{q_1}, \dots, \frac{p_n}{q_n} \right).
+      $$
+    * **Clearing denominators:** Multiply through by $\operatorname{lcm}(q_1^{d_1}, \dots, q_n^{d_n})$ where $d_i = \deg_{X_i}(F)$ to obtain a polynomial $\widetilde{F}(\mathbf{y}) \in k[\mathbf{y}]$.
+    * **Simplification:** Factor $\widetilde{F} = C \cdot G(\mathbf{y}) \cdot R(\mathbf{y})$ where $C \in k^*$, $G$ is the target polynomial, and $R$ collects "parasitic" factors (from the denominators or from loci outside the domain). The verification amounts to showing $\widetilde{F} \equiv C \cdot G$ modulo factors supported on the indeterminacy/excluded locus.
+    * **For parametric families** (the motivating example has parameter $t$): the substitution and simplification operate in $k(t)[X_1, \dots, X_n]$ or $k[t, X_1, \dots, X_n]$, treating $t$ as either a parameter or an extra variable.
+
+  * **Projective Rational Maps and Cremona Transformations:**
+    * A rational map $\varphi \colon \mathbb{P}^n \dashrightarrow \mathbb{P}^m$ is given by homogeneous polynomials of the same degree: $\varphi = [F_0 : F_1 : \dots : F_m]$.
+    * **Standard Cremona involution** on $\mathbb{P}^2$: $\sigma \colon [X : Y : Z] \mapsto [YZ : XZ : XY]$, with base locus $\{[1:0:0], [0:1:0], [0:0:1]\}$ and inverse $\sigma^{-1} = \sigma$.
+    * **Higher-dimensional analogues:** monomial Cremona maps, de Jonquières maps, and their compositions.
+    * **Base locus analysis:** the subscheme $\operatorname{Bs}(\varphi) = V(F_0, \dots, F_m)$ determines where the map is undefined. Resolution of indeterminacies by blowups.
+
+  * **Algorithmic Methods for Verification:**
+    * **Direct substitution and polynomial arithmetic:** For small substitutions (few variables, moderate degree), symbolic expansion and collection of terms suffices. This is the primary use case.
+    * **Ideal membership via Gröbner bases:** To verify $\varphi^* F \in (G)$ in $k[\mathbf{y}]$ (or modulo parasitic factors), compute a Gröbner basis of $(G)$ and reduce $\widetilde{F}$.
+    * **Resultants and elimination:** To compose rational maps $\psi \circ \varphi$, eliminate intermediate variables via resultants or Gröbner elimination orders.
+    * **Functional identity:** To verify $\psi \circ \varphi = \operatorname{id}$, substitute $\varphi$ into $\psi$ (or vice versa), clear denominators, and check that each coordinate reduces to the identity rational function.
+    * **Normal form transformations:** Tschirnhaus transformations (eliminating intermediate-degree terms), Weierstrass normal form for elliptic curves ($y^2 = x^3 + ax + b$), and standard forms for K3 surfaces, del Pezzo surfaces, etc.
+    * **SageMath / SymPy / Macaulay2 upstream:** These CAS systems provide polynomial rings, substitution, Gröbner bases, ideal arithmetic, and rational function fields that the implementation should delegate to.
+
+  * **Typical Workflow (to Mechanize):**
+    1. **Input:** Source equation $F(\mathbf{X}) = 0$, target equation $G(\mathbf{y}) = 0$, substitution rules $X_i = r_i(\mathbf{y})$ (rational expressions).
+    2. **Substitute:** Compute $F(r_1(\mathbf{y}), \dots, r_n(\mathbf{y}))$ as a rational function in $\mathbf{y}$.
+    3. **Clear denominators:** Multiply by the common denominator to obtain $\widetilde{F}(\mathbf{y}) \in k[\mathbf{y}]$ (or $k[t, \mathbf{y}]$ for parametric families).
+    4. **Factor / simplify:** Factor $\widetilde{F}$ and identify which factors equal (or are associates of) $G$.
+    5. **Report:** State the scalar $C$ and parasitic factors $R$ such that $\widetilde{F} = C \cdot G \cdot R$, or report failure if the claimed birational equivalence does not hold.
+    6. **(Optional) Verify inverse:** If an inverse substitution $\psi$ is given, check $\psi \circ \varphi = \operatorname{id}$ by repeating steps 2–5 in reverse.
+
+* **Operational & algorithmic representation:**
+  1. **Rational Substitution Engine:**
+     - `RationalSubstitution(source_vars, expressions)` storing $X_i \mapsto p_i(\mathbf{y})/q_i(\mathbf{y})$.
+     - `apply(polynomial)` computing $F(r_1, \dots, r_n)$ as a rational function.
+     - `clear_denominators(rational_expr)` returning the numerator polynomial after multiplying by $\operatorname{lcm}$ of denominators.
+     - `factor_result(cleared_polynomial)` factoring $\widetilde{F}$ over $k$ (or $k(t)$).
+  2. **Birational Equivalence Verifier:**
+     - `BirationalEquivalence(source_eq, target_eq, forward_sub, inverse_sub=None)`.
+     - `verify_forward()`: checks $\widetilde{F} = C \cdot G \cdot R$ by substitution, clearing, and factoring.
+     - `verify_inverse()`: checks $\psi \circ \varphi = \operatorname{id}$ coordinate-by-coordinate.
+     - `verify_birational()`: runs both forward and inverse checks.
+     - `parasitic_factors()`: returns the extraneous factors $R$ from the indeterminacy locus.
+  3. **Projective Map Engine:**
+     - `ProjectiveRationalMap(source_ring, target_ring, homogeneous_forms)` storing $[F_0 : \dots : F_m]$.
+     - `base_locus()` computing $V(F_0, \dots, F_m)$.
+     - `compose(other_map)` composing two projective rational maps.
+     - `is_cremona()` checking birationality $\mathbb{P}^n \dashrightarrow \mathbb{P}^n$.
+  4. **Normal Form Engine:**
+     - `weierstrass_normal_form(curve_equation)` transforming a genus-1 curve to $y^2 = x^3 + ax + b$.
+     - `tschirnhaus_transform(polynomial, degree_to_eliminate)` eliminating a specified monomial degree.
+     - `simplify_surface(surface_eq, parameter_ring)` searching for simplifying birational models.
+
+* **Preamble implementation requirements:**
+  * `categories/algebraic_geometry/rational_substitution.py`:
+    - `RationalSubstitution(source_vars, target_vars, expressions)`: stores and validates $X_i \mapsto p_i/q_i$.
+    - `apply_to_polynomial(F)`: computes $F(r_1, \dots, r_n)$.
+    - `clear_denominators(rational_expr)`: returns numerator after clearing.
+    - `factor_cleared(cleared_poly)`: factors the result.
+    - `verify_equation_transform(source_eq, target_eq)`: checks $\widetilde{F} \doteq C \cdot G$ up to parasitic factors.
+  * `categories/algebraic_geometry/birational_maps.py`:
+    - `BirationalMap(source_variety, target_variety, forward_sub, inverse_sub)`: represents a birational map with both directions.
+    - `verify_forward()`: substitution verification in the forward direction.
+    - `verify_inverse()`: substitution verification in the reverse direction.
+    - `verify_birational()`: full birational equivalence check ($\psi \circ \varphi = \operatorname{id}$ and $\varphi \circ \psi = \operatorname{id}$).
+    - `indeterminacy_locus()`: computes the base locus / indeterminacy set.
+    - `domain_of_definition()`: complement of the indeterminacy locus.
+  * `categories/algebraic_geometry/cremona.py`:
+    - `CremonaMap(projective_space, homogeneous_forms)`: a birational self-map of $\mathbb{P}^n$.
+    - `standard_cremona(n)`: the standard Cremona involution $[X_0 : \dots : X_n] \mapsto [1/X_0 : \dots : 1/X_n]$.
+    - `compose(other)`: composition of Cremona maps.
+    - `inverse()`: computes the inverse map.
+    - `base_locus()`: the scheme $V(F_0, \dots, F_n)$.
+    - `degree()`: algebraic degree of the map.
+
+Intended owners: `categories/algebraic_geometry/rational_substitution.py` (`RationalSubstitution`, `apply_to_polynomial`, `clear_denominators`, `verify_equation_transform`), `categories/algebraic_geometry/birational_maps.py` (`BirationalMap`, `verify_forward`, `verify_inverse`, `verify_birational`, `indeterminacy_locus`), `categories/algebraic_geometry/cremona.py` (`CremonaMap`, `standard_cremona`, `compose`, `inverse`, `base_locus`).
+
 
 
 
