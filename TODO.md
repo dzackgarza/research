@@ -224,12 +224,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Diagrams, rings and geometric consumers
 
-- [ ] **`diagram-specializations`**. **Needs:** none.
-  **Owner and delta:** the common diagram/cone/limit owner and directed/inverse-system specializations under `OWN-09` and `OWN-14`: inspect every existing specialization's retained general object and repair duplicated authority.
-  **Invariants:** represented indexing categories, functors, restrictions and induced maps live at the common owner. Category-specific realization retains its universal cone/cocone and uses the construction theorem under its existence hypotheses. General directed indices are not silently replaced by N; finite restrictions are different objects from the full system.
-  **Closure specimens:** a branching finite diagram whose equalizer imposes a real compatibility condition, and an inverse system with nonidentity transition maps, preserve their indexing maps and universal composites. A disconnected diagram cannot be computed as a sequence. Ordinary limits do not stand in for homotopy limits.
-
-- [ ] **`localization-completion-threading`**. **Needs:** `diagram-specializations`.
+- [ ] **`localization-completion-threading`**. **Needs:** none.
   **Owner and delta:** ring/ideal localization and adic completion, module localization and existing formal consumers; inspect the live completed constructions and repair only remaining owner/representation mismatches.
   **Invariants:** localization retains the selected multiplicative system and universal map. Completion retains the full ideal-power inverse system, universal cone and maintained series realization where supported. A quotient modulo I^n is a stage, not the completion; a precision request is not its defining ideal. Scalar-change and restriction maps have their actual hypotheses.
   **Closure specimens:** localize Z at powers of 2 and factor a map inverting 2; a target where 2 is not invertible cannot supply that factorization. For a polynomial ring and its variable ideal, reduction from the completion to two different finite stages commutes with transition maps; the completion is not identified with either quotient.

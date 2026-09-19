@@ -116,17 +116,17 @@ class _FormalSpectrumEngine:
         r"""Return the finite stage ``Spec(A/I^exponent)`` from the owned directed system."""
         exponent = int(exponent)
         assert exponent > 0, "an infinitesimal thickening exponent is positive"
-        return self.functor()(self.functor().base_index_category()(NN(exponent - 1)))
+        return self.stage(self.base_index_category()(NN(exponent - 1)))
 
     def transition_ring_map(self, higher_exponent, lower_exponent):
         return self.functor().transition_ring_map(higher_exponent, lower_exponent)
 
     def formal_restriction(self, higher_exponent, lower_exponent):
         r"""Return ``Spec(A/I^lower) -> Spec(A/I^higher)`` from the directed-system arrow."""
-        index = self.functor().base_index_category()
+        index = self.base_index_category()
         lower = index(NN(int(lower_exponent) - 1))
         higher = index(NN(int(higher_exponent) - 1))
-        return self.functor()(index.Mor(lower, higher).unique())
+        return self.transition(index.Mor(lower, higher).unique())
 
     def completion_projection(self, precision, exponent):
         r"""Return the actual map ``A^ -> A/I^exponent`` from one realization."""

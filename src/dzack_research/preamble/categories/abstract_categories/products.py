@@ -55,8 +55,46 @@ class _DiagramCategory(_FunctorCategory):
     def target_category(self) -> Category:
         return self.codomain_category()
 
+    def base_index_category(self) -> Category:
+        r"""Return the index before any variance specialization; covariant diagrams use ``J`` itself."""
+        return self.index_category()
+
     def super_categories(self):
         return [Cat().Mor(self.index_category(), self.target_category())]
+
+    class ParentMethods:
+        r"""Operations of a represented diagram, inherited by every specialization."""
+
+        def index_category(self):
+            return self.category().index_category()
+
+        def target_category(self):
+            return self.category().target_category()
+
+        def base_index_category(self):
+            return self.category().base_index_category()
+
+        def stage(self, index):
+            r"""Return the diagram value at one represented index object."""
+            return self.functor()(index)
+
+        def transition(self, morphism):
+            r"""Return the diagram image of one represented indexing arrow."""
+            return self.functor()(morphism)
+
+        def Cones(self):
+            r"""Return the common cone category over this diagram's defining functor."""
+            return self.functor().Cones()
+
+        def Cocones(self):
+            r"""Return the common cocone category under this diagram's defining functor."""
+            return self.functor().Cocones()
+
+        def restrict(self, indexing_functor):
+            r"""Precompose by ``indexing_functor`` and retain that map in the general diagram owner."""
+            restricted = self.functor().restrict(indexing_functor)
+            category = Cat().Mor(indexing_functor.domain(), self.target_category())
+            return category.object(restricted)
 
 
 class DirectedSystem(_DiagramCategory):
@@ -73,6 +111,7 @@ class InverseSystem(_DiagramCategory):
     def base_index_category(self) -> Category:
         r"""Return ``J`` when this inverse system category is ``[J^op,C]``."""
         return self._base_index_category
+
 
 
 class PosetMorphism(Morphism):
@@ -1206,7 +1245,12 @@ class _LimitsOfCategory(OwnedCategoryBase):
 
     @cached_method(key=lambda self, diagram: id(diagram))
     def construction(self, diagram):
-        r"""Return the selected limit, using products and an equalizer on finite represented shapes."""
+        r"""Return the ordinary categorical limit on a finite represented shape.
+
+        This is a strict 1-categorical limit construction by products and an
+        equalizer.  It neither represents nor substitutes for a homotopy limit;
+        a homotopical construction requires its own category and coherence.
+        """
         object_set, objects, arrows = self._finite_shape_data(diagram)
         extremal = self._extremal_shape_object(objects, arrows, terminal=False)
         if extremal is not None:

@@ -595,6 +595,88 @@ def test_colimit_functor_maps_nonidentity_stagewise_transformation_on_representa
         assert induced(representative) == expected
 
 
+def test_branching_finite_diagram_limit_imposes_compatibility_not_sequence_order() -> None:
+    points = finite_ordered_set(("left", "right", "target"))
+    shape = PosetCategory(
+        points,
+        le=lambda source, target: (
+            source == target
+            or target == "target" and source in ("left", "right")
+        ),
+    )
+    line = ZZ.free_module(finite_ordered_set(("e",)))
+    e = line.module_generator("e")
+    twice = line.module_category().Mor(line, line)({"e": 2 * e})
+    thrice = line.module_category().Mor(line, line)({"e": 3 * e})
+    identity = line.module_category().Mor(line, line).identity()
+
+    class BranchingDiagram(Functor):
+        def __init__(self):
+            super().__init__(shape, line.category())
+
+        def _apply_object(self, _obj):
+            return line
+
+        def _apply_morphism(self, morphism):
+            source = morphism.domain().value()
+            target = morphism.codomain().value()
+            match source, target:
+                case left, right if left == right:
+                    return identity
+                case "left", "target":
+                    return twice
+                case "right", "target":
+                    return thrice
+                case _:
+                    raise ValueError("unexpected arrow in the branching index category")
+
+    diagram = BranchingDiagram()
+    construction = line.category().Limits(shape).construction(diagram)
+    assert shape.Mor(shape("left"), shape("right")).cardinality() == cardinal(0)
+    assert shape.Mor(shape("right"), shape("left")).cardinality() == cardinal(0)
+    assert construction.object().module_rank() == 1
+
+    probe = ZZ.free_module(finite_ordered_set(("t",)))
+    t = probe.module_generator("t")
+    to_left = probe.module_category().Mor(probe, line)({"t": 3 * e})
+    to_right = probe.module_category().Mor(probe, line)({"t": 2 * e})
+    to_target = probe.module_category().Mor(probe, line)({"t": 6 * e})
+    cone = diagram.Cones().cone(
+        probe,
+        lambda index: {
+            "left": to_left,
+            "right": to_right,
+            "target": to_target,
+        }[index.value()],
+    )
+    factor = construction.factor(cone).apex_map()
+    assert construction.structure_morphism(shape("left")) * factor == to_left
+    assert construction.structure_morphism(shape("right")) * factor == to_right
+    assert twice * to_left == thrice * to_right == to_target
+
+
+def test_disconnected_finite_diagram_limit_is_product_not_a_sequence() -> None:
+    labels = finite_ordered_set(("left", "right"))
+    shape = DiscreteCategory(labels)
+    line = ZZ.free_module(finite_ordered_set(("e",)))
+
+    class DisconnectedDiagram(Functor):
+        def __init__(self):
+            super().__init__(shape, line.category())
+
+        def _apply_object(self, _obj):
+            return line
+
+        def _apply_morphism(self, morphism):
+            return line.module_category().Mor(line, line).identity()
+
+    diagram = DisconnectedDiagram()
+    construction = line.category().Limits(shape).construction(diagram)
+    assert shape.Mor(shape("left"), shape("right")).cardinality() == cardinal(0)
+    assert shape.Mor(shape("right"), shape("left")).cardinality() == cardinal(0)
+    assert construction.object().module_rank() == 2
+
+
 def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_rectangles() -> None:
     grid = Sets().product((NN, NN))
     index = PosetCategory(
@@ -620,9 +702,12 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
             )
             return line.module_category().Mor(line, line)({"e": (2**exponent) * e})
 
-    system = GridSystem()
+    diagram = GridSystem()
     systems = DirectedSystem(index, line.category())
-    assert systems(system) in systems
+    system = systems.object(diagram)
+    assert system in systems
+    assert system.functor() is diagram
+    assert system.base_index_category() is index
     northeast = index(grid((0, 1)))
     southeast = index(grid((1, 0)))
     assert index.Mor(northeast, southeast).cardinality() == cardinal(0)
@@ -645,13 +730,17 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
                 self(morphism.domain()), self(morphism.codomain())
             ).unique()
 
-    restricted = system.restrict(RectangleInclusion())
-    construction = line.category().Limits(rectangle).construction(restricted)
-    assert construction.diagram() is restricted
+    indexing = RectangleInclusion()
+    restricted = system.restrict(indexing)
+    restricted_diagram = restricted.functor()
+    assert restricted_diagram.original_diagram() is diagram
+    assert restricted_diagram.indexing_functor() is indexing
+    construction = line.category().Limits(rectangle).construction(restricted_diagram)
+    assert construction.diagram() is restricted_diagram
     assert construction.structure_morphism(rectangle(grid((1, 1)))).codomain() is line
 
     with pytest.raises(NotImplementedError, match="finite represented shape"):
-        line.category().Limits(index).construction(system)
+        line.category().Limits(index).construction(diagram)
 
 
 def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limit() -> None:
@@ -674,14 +763,16 @@ def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limi
             target = int(underlying.codomain().value())
             return line.module_category().Mor(line, line)({"e": (2 ** (target - source)) * e})
 
-    tower = DoublingTower()
+    diagram = DoublingTower()
+    tower = inverse_systems.object(diagram)
     base_arrow = base_index.Mor(base_index(0), base_index(2)).unique()
     tower_arrow = opposite.Mor(opposite(base_index(2)), opposite(base_index(0)))(
         base_arrow
     )
-    assert tower(tower_arrow)(e) == 4 * e
+    assert tower.base_index_category() is base_index
+    assert tower.transition(tower_arrow)(e) == 4 * e
     with pytest.raises(NotImplementedError):
-        line.category().Limits(opposite).construction(tower)
+        line.category().Limits(opposite).construction(diagram)
 
 
 def test_direct_sequence_coprojection_can_fail_to_be_injective() -> None:

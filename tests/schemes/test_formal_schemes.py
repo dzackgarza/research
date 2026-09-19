@@ -26,6 +26,9 @@ def test_formal_spectrum_is_distinct_from_completion_and_its_finite_stages() -> 
     lower = system.base_index_category()(NN(1))
     higher = system.base_index_category()(NN(2))
     restriction = system(system.base_index_category().Mor(lower, higher).unique())
+    assert formal.base_index_category() is system.base_index_category()
+    assert formal.stage(lower) is formal.thickening(2)
+    assert formal.transition(system.base_index_category().Mor(lower, higher).unique()) is restriction
     assert restriction.domain() is formal.thickening(2)
     assert restriction.codomain() is formal.thickening(3)
 

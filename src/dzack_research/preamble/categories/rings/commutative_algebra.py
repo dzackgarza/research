@@ -1781,7 +1781,8 @@ class AdicCompletions(Category):
         @cached_method
         def adic_inverse_system(self):
             r"""Return the represented inverse system ``n |-> A/I^(n+1)``."""
-            return _AdicQuotientInverseSystem(self)
+            functor = _AdicQuotientInverseSystem(self)
+            return functor.system_category().object(functor)
 
         @cached_method
         def adic_truncation(self, exponent):
@@ -1933,9 +1934,10 @@ class AdicCompletions(Category):
         def adic_limit_cone(self):
             r"""Return the canonical cone ``A_hat -> (A/I^n)_n``."""
             system = self.adic_inverse_system()
-            return (system).Cones().cone(
+            diagram = system.functor()
+            return system.Cones().cone(
                 self,
-                lambda index: self.adic_projection(system.exponent(index)),
+                lambda index: self.adic_projection(diagram.exponent(index)),
             )
 
         @cached_method
@@ -1949,6 +1951,7 @@ class AdicCompletions(Category):
             this particular limit.
             """
             system = self.adic_inverse_system()
+            diagram = system.functor()
             cone = self.adic_limit_cone()
 
             def factorizer(_cone):
@@ -1957,7 +1960,7 @@ class AdicCompletions(Category):
                     "requires a maintained compatible-series construction"
                 )
 
-            return SelectedLimitConstruction(system, cone, factorizer)
+            return SelectedLimitConstruction(diagram, cone, factorizer)
 
 
 class _AdicQuotientInverseSystem(Functor):
