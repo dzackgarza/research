@@ -135,6 +135,9 @@ Where to look first for existing algorithms before writing new code. Check these
 | Bernoulli and Bell numbers, polylogarithms, Bloch-Wigner dilogarithm, multiple zeta values, p-adic integration, Dedekind zeta residues, and BSD invariants | Literature survey + user intake 2026-09-19 | Comprehensive analytic, arithmetic, and motivic invariants framework: (1) Bernoulli and Bell numbers: generating functions, Faulhaber power sums, von Staudt-Clausen denominators, Kummer congruences, Kubota-Leopoldt $p$-adic $L$-values, Bell/Touchard polynomials, and Stirling numbers of the second kind; (2) Polylogarithms and Bloch-Wigner dilogarithm: $\operatorname{Li}_s(z)$, single-valued Bloch-Wigner $D(z) = \operatorname{Im}(\operatorname{Li}_2(z)) + \arg(1-z)\log|z|$, 5-term functional equations, hyperbolic 3-manifold volumes, and the Bloch group $B(F)$; (3) Multiple zeta values (MZVs) and multiple polylogarithms: iterated Kontsevich integrals, weight/depth, stuffle and shuffle products, double shuffle relations, and motivic MZVs; (4) $p$-adic integration and analysis: Volkenborn integration on $\mathbb{Z}_p$, Mahler polynomial expansions, Coleman integration of differentials on curves, Coleman-Chabauty bounds, and Fontaine-Mazur $\mathcal{L}$-invariants; (5) Dedekind zeta functions $\zeta_K(s)$: functional equations, analytic class number formula at $s=1$ ($\lim (s-1)\zeta_K = \frac{2^{r_1}(2\pi)^{r_2} h R}{w \sqrt{|d|}}$), leading terms at $s=0$, and Borel higher regulators; (6) BSD conjecture and equality invariants: Birch and Swinnerton-Dyer leading term $\lim L(E,s)/(s-1)^r = \frac{\Omega_E R_E |\Sha| \prod c_v}{|E_{\mathrm{tors}}|^2}$, arithmetic volume / real periods $\Omega_E$, Néron-Tate regulator $R_E$, Tate-Shafarevich group $\Sha(E/K)$, Tamagawa indices $c_v$ via Tate's algorithm, and Bloch-Kato Tamagawa number conjecture | `categories/number_theory/bernoulli.py` + `categories/analysis/polylogarithms.py` + `categories/analysis/multiple_zeta.py` + `categories/number_theory/p_adic_analysis.py` + `categories/number_theory/dedekind_zeta.py` + `categories/elliptic_curves/bsd_conjecture.py` | Proposed — see note below |
 | Lie coalgebras, Chevalley-Eilenberg complexes, and spectral K-theories (algebraic K, Grothendieck-Witt, and Milnor-Witt as spectra) | User intake 2026-09-19 | Complete framework for Lie coalgebras, Chevalley-Eilenberg complexes, and spectrum-level $K$-theories: (1) Lie coalgebras $(\mathfrak{c}, \delta)$: co-Jacobi identity, coadjoint representations, co-Lie operad, and Koszul duality with commutative DGAs; (2) Chevalley-Eilenberg complexes: cochain complex $C_{\mathrm{CE}}^*(\mathfrak{g}, M) = \operatorname{Hom}_k(\bigwedge^* \mathfrak{g}, M)$ as a CDGA when $M=k$, Lie algebra homology complexes $C_*^{\mathrm{CE}}(\mathfrak{g}, M)$, and coalgebroid CE complexes; (3) Algebraic $K$-theory as a spectrum: connective and non-connective $\mathbf{K}(R)$ via Waldhausen $S_\bullet$-construction, Karoubi filtration, and motivic spectrum $\mathbf{KGL} \in \mathbf{SH}(S)$ representing algebraic $K$-theory; (4) Grothendieck-Witt (Hermitian $K$-theory) spectrum $\mathbf{GW}(R) \simeq \mathbf{KQ}(R)$: quadratic forms, Witt spectra $\mathbf{W}(R)$, and 12-term Karoubi periodicity sequence relating $\mathbf{GW}$, $\mathbf{K}$, and $L$-theory; (5) Milnor-Witt $K$-theory spectrum $\mathbf{K}^{\mathrm{MW}}$: Morel-Hopkins graded generators $[u]$ and $\eta$, Steinberg $[u][1-u]=0$, hyperbolic plane $h = 2 + \eta[-1]$, specialization to $K^{\mathrm{M}}$ mod $\eta$ and $W$ inverted $\eta$, and motivic spectrum representing Chow-Witt groups and Euler classes | `categories/algebras/lie_coalgebra.py` + `categories/homology/chevalley_eilenberg.py` + `categories/k_theory/algebraic_k_spectrum.py` + `categories/k_theory/grothendieck_witt_spectrum.py` + `categories/k_theory/milnor_witt_spectrum.py` | Proposed — see note below |
 | Logarithmic differentials $\Omega_{R/S}(\log D)$, Stasheff associahedra, and Coxiter invariant integration | User intake 2026-09-19 | Comprehensive framework for logarithmic differential calculus, Stasheff polytopes, and Coxeter group invariants: (1) Workable logarithmic differential forms $\Omega_{R/S}^1(\log D)$ and de Rham complexes $\Omega^\bullet(\log D)$: Saito's logarithmic derivations $\operatorname{Der}(-\log D)$, free divisors (Saito's criterion), Poincaré residue sequences $0 \to \Omega^1 \to \Omega^1(\log D) \xrightarrow{\operatorname{Res}} \mathcal{O}_D \to 0$, Deligne's weight filtration $W_k$, and logarithmic connections; (2) Stasheff associahedra $K_n$: dimension $n-2$, Catalan $C_{n-1}$ vertices (binary planar trees / parenthesizations / triangulations), face poset of tree contractions, Loday coordinates in $\mathbb{R}^{n-1}$, and $A_\infty$-operad composition/boundary relations; (3) Coxiter group invariants and integration: complete classification (spherical, affine, compact hyperbolic / Lanner, finite-covolume / quasi-Lanner, Lorentzian), rational growth series $W(t) = \sum t^{\ell(w)}$ and growth rates, Euler characteristic $\chi(W)$, Poincaré polynomials, degrees/exponents, parabolic lattices, Coxeter polyhedral hyperbolic volumes via Schläfli formulas, and full bridge to existing `categories/coxeter_diagrams.py` | `categories/differential_forms/logarithmic.py` + `categories/polytopes/associahedron.py` + `categories/operads/associahedra.py` + `categories/coxeter/coxiter_invariants.py` + `categories/coxeter/hyperbolic_volumes.py` | Proposed — see note below |
+| Morse theory, gradient flows, trajectory moduli spaces, flow categories $\mathcal{C}_f$, and free loop spaces $LM$ | User intake 2026-09-19 | Comprehensive differential and infinite-dimensional topological framework for Morse theory and loop spaces: (1) Morse functions $f \colon M \to \mathbb{R}$: non-degenerate critical points $\operatorname{Crit}(f)$, Hessian $H_f(p)$, Morse lemma charts, Morse index $\lambda(p)$, and nullity; (2) Negative gradient flow $\dot{\gamma} = -\nabla f$: unstable/stable manifolds $W^u(p), W^s(p)$, Morse-Smale transversality condition $W^u(p) \pitchfork W^s(q)$; (3) Moduli spaces of flow lines $\mathcal{M}(p, q) = (W^u(p) \cap W^s(q))/\mathbb{R}$ of dimension $\lambda(p) - \lambda(q) - 1$, orientation signs, and intersection numbers $n(p, q)$; (4) Compactification and broken trajectories: compactified moduli space $\overline{\mathcal{M}}(p, q)$ as manifolds with corners, boundary strata $\partial \overline{\mathcal{M}}(p, q) = \bigcup_r \overline{\mathcal{M}}(p, r) \times \overline{\mathcal{M}}(r, q)$; (5) The Cohen-Jones-Segal flow category $\mathcal{C}_f$: objects $\operatorname{Crit}(f)$, morphism spaces $\overline{\mathcal{M}}(p, q)$, composition law via flow line concatenation/gluing, topological/$\infty$-enrichment, and Morse-Witten complex $C_*^{\mathrm{Morse}}(f, g) \cong H_*(M)$; (6) Free loop spaces $LM = \operatorname{Map}(S^1, M)$: circle rotation action, energy functional $E(\gamma) = \frac{1}{2} \int |\dot{\gamma}|^2$, critical points as closed geodesics, Morse-Bott index, and Chas-Sullivan string topology (loop product and Batalin-Vilkovisky operator $\Delta$) | `categories/differential_geometry/morse_theory.py` + `categories/differential_geometry/gradient_flow.py` + `categories/differential_geometry/flow_category.py` + `categories/topology/free_loop_space.py` + `categories/topology/string_topology.py` | Proposed — see note below |
+| Universal classifying fibrations $E\mathcal{C} \to B\mathcal{C}$ for small and finitely presented categories | User intake 2026-09-19 | Universal bundle and classifying fibration theory for categories representable by finitely much explicit data: (1) Nerve simplicial set $N(\mathcal{C})_\bullet$ for small categories $\mathcal{C}$ (quiver presentations $F(Q)/R$, finite posets, finite groupoids) and geometric realization $B\mathcal{C} = |N(\mathcal{C})|$; (2) Universal bundle category $E\mathcal{C}$: comma category $\mathcal{C} \downarrow \mathcal{C}$ / category of elements $\int_{\mathcal{C}} \operatorname{Hom}(-, c)$ / slice over-categories, simplicial nerve $N(E\mathcal{C})_\bullet$, and canonical contractibility certificate ($|E\mathcal{C}| \simeq *$); (3) Classifying fibration projection $p \colon E\mathcal{C} \to \mathcal{C}$ and $|N(p)| \colon |E\mathcal{C}| \to B\mathcal{C}$ as a universal Grothendieck opfibration / Serre fibration; (4) Contractible fibers: fiber over object $c$ identified with under-category $c \downarrow \mathcal{C}$ (initial object $\operatorname{id}_c$); (5) Group delooping specialization: $\mathcal{C} = \mathbf{B}G$, translation groupoid $EG = G // G$, simplicial set $EG_n = G^{n+1}$ with free $G$-action, universal principal $G$-bundle $EG \to BG$; (6) Automated finite simplicial engine: simplicial sets, face/degeneracy matrices, Kan condition tests, and explicit simplicial contracting homotopies | `categories/classifying_spaces/nerve.py` + `categories/classifying_spaces/classifying_fibration.py` + `categories/classifying_spaces/universal_bundle.py` + `categories/finitely_presented/category_of_elements.py` | Proposed — see note below |
+| Riemannian, symplectic, Kähler, and hyperkähler manifolds, holonomy classifications, and reductions of structure groups | User intake 2026-09-19 | Comprehensive differential and complex geometry framework for geometric structures, holonomy, and structure group reductions: (1) Frame bundle $\operatorname{Fr}(M)$ and $G$-structures: reduction from $GL(n, \mathbb{R})$ to Lie subgroup $G$ via sections of $\operatorname{Fr}(M)/G$, obstruction theory ($w_1$ for orientation, $w_2$ for spin, $c_1$ for almost complex / Calabi-Yau); (2) Riemannian manifolds $(M, g)$: $O(n)$-reduction (always exists), Levi-Civita connection $\nabla$, curvature tensors (Riemann $R$, Ricci, scalar, sectional), holonomy $\operatorname{Hol}(g) \subseteq O(n)$; (3) Symplectic manifolds $(M, \omega)$: $Sp(2m, \mathbb{R})$-reduction, non-degeneracy $\omega^m \neq 0$, integrability $d\omega = 0$, Darboux charts, Hamiltonian vector fields, and Poisson brackets; (4) Almost complex and complex manifolds $(M, J)$: $GL(m, \mathbb{C})$-reduction, $J^2 = -\operatorname{id}$, Nijenhuis tensor $N_J$, Newlander-Nirenberg integrability; (5) Kähler manifolds $(M, g, J, \omega)$: compatible triple, $U(m)$-reduction, $\nabla J = 0$, Hodge decomposition $H^k = \bigoplus H^{p, q}$, Kähler identities, Hard Lefschetz, and Hodge-Riemann relations; (6) Hyperkähler manifolds $(M, g, I, J, K)$: quaternionic relations $I^2 = J^2 = K^2 = IJK = -1$, parallel structures $\nabla I = \nabla J = \nabla K = 0$, $Sp(k)$-holonomy, holomorphic symplectic form $\Omega = \omega_J + i \omega_K$, Ricci-flatness, and twistor space $Z = M \times S^2$; (7) Berger holonomy classification: classification of Riemannian holonomy groups ($SO, U, SU, Sp, Sp(k)Sp(1), G_2, \operatorname{Spin}(7)$) | `categories/differential_geometry/riemannian.py` + `categories/differential_geometry/symplectic.py` + `categories/differential_geometry/almost_complex.py` + `categories/differential_geometry/kahler.py` + `categories/differential_geometry/hyperkahler.py` + `categories/differential_geometry/structure_group.py` + `categories/differential_geometry/holonomy.py` | Proposed — see note below |
 
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
@@ -5602,6 +5605,510 @@ Intended owners: `categories/algebras/lie_coalgebra.py` (`LieCoalgebra`, `verify
     - `gram_matrix_signature(coxeter_diagram)`: computes signature $(p, q, r)$ of Gram matrix.
 
 Intended owners: `categories/differential_forms/logarithmic.py` (`LogarithmicDifferentialModule`, `LogarithmicDerivationModule`, `saito_free_divisor_criterion`, `PoincareResidue`), `categories/polytopes/associahedron.py` (`StasheffAssociahedron`, `binary_tree_vertices`, `loday_coordinates`, `associahedron_face_poset`), `categories/operads/associahedra.py` (`AInfinityOperad`, `operadic_composition`, `ainfinity_relation`), `categories/coxeter/coxiter_invariants.py` (`CoxiterClassification`, `growth_series_rational`, `growth_rate`, `coxeter_euler_characteristic`, `poincare_polynomial`), `categories/coxeter/hyperbolic_volumes.py` (`hyperbolic_coxeter_simplex_volume`, `gram_matrix_signature`).
+
+
+## Desired capability: Morse functions, gradient flows, trajectory moduli spaces, flow categories $\mathcal{C}_f$, and free loop spaces $LM$ — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Morse Functions and Critical Point Data:**
+    * Let $M$ be a smooth Riemannian manifold of dimension $n$ (compact or satisfying the Palais-Smale condition).
+    * Smooth scalar function $f \in C^\infty(M, \mathbb{R})$.
+    * **Critical Points:** $\operatorname{Crit}(f) \coloneqq \{p \in M \mid df(p) = 0\}$.
+    * **Hessian Bilinear Form:** For each critical point $p \in \operatorname{Crit}(f)$, the Hessian $H_f(p) \colon T_p M \times T_p M \to \mathbb{R}$ is the symmetric bilinear form defined invariantly by $H_f(p)(X, Y) = X(\widetilde{Y} f)(p)$ for any local extensions $\widetilde{Y}$, represented in local coordinates by:
+      $$
+      H_f(p) \;=\; \left( \frac{\partial^2 f}{\partial x_i \partial x_j}(p) \right)_{1 \le i, j \le n}.
+      $$
+    * **Non-degeneracy and Morse Functions:** $p$ is non-degenerate if $\det(H_f(p)) \neq 0$ (nullity $\operatorname{nul}(p) = 0$). The function $f$ is a **Morse function** if every critical point $p \in \operatorname{Crit}(f)$ is non-degenerate.
+    * **Morse Lemma:** Near any non-degenerate critical point $p$ of index $\lambda$, there exist smooth local coordinates $(x_1, \dots, x_n)$ centered at $p$ such that:
+      $$
+      f(x) \;=\; f(p) - \sum_{i=1}^\lambda x_i^2 + \sum_{i=\lambda+1}^n x_i^2.
+      $$
+    * **Morse Index:** $\lambda(p) = \operatorname{ind}(p) \coloneqq \dim(T_p^- M)$, the maximal dimension of a subspace of $T_p M$ on which $H_f(p)$ is strictly negative-definite (the number of negative eigenvalues of $H_f(p)$).
+
+  * **Gradient Flows, Invariant Manifolds, and Transversality:**
+    * Riemannian metric $g$ on $M$; gradient vector field $\nabla f = \operatorname{grad}_g(f)$ defined by $g(\nabla f, v) = df(v)$ for all $v \in TM$.
+    * **Negative Gradient Flow Equation:**
+      $$
+      \frac{d \gamma}{dt}(t) \;=\; -\nabla f(\gamma(t)), \quad \gamma(0) = x,
+      $$
+      generating a smooth 1-parameter family of flow diffeomorphisms $\phi_t \colon M \to M$ ($t \in \mathbb{R}$).
+    * Along flow trajectories, $f$ is strictly decreasing: $\frac{d}{dt} f(\phi_t(x)) = -\|\nabla f(\phi_t(x))\|_g^2 \le 0$, with equality if and only if $\phi_t(x) \in \operatorname{Crit}(f)$.
+    * **Unstable (Descending) Manifold:**
+      $$
+      W^u(p; -\nabla f) \;\coloneqq\; \big\{ x \in M \;\big|\; \lim_{t \to -\infty} \phi_t(x) = p \big\} \;\cong\; \mathbb{R}^{\lambda(p)}.
+      $$
+    * **Stable (Ascending) Manifold:**
+      $$
+      W^s(p; -\nabla f) \;\coloneqq\; \big\{ x \in M \;\big|\; \lim_{t \to +\infty} \phi_t(x) = p \big\} \;\cong\; \mathbb{R}^{n - \lambda(p)}.
+      $$
+    * **Morse-Smale Transversality Condition:** The pair $(f, g)$ is **Morse-Smale** if for every pair of critical points $p, q \in \operatorname{Crit}(f)$, the unstable and stable submanifolds intersect transversally:
+      $$
+      W^u(p) \;\pitchfork\; W^s(q).
+      $$
+      (Morse-Smale metrics form an open dense subset of all Riemannian metrics on $M$).
+
+  * **Moduli Spaces of Flow Lines and Trajectory Compactification:**
+    * **Trajectory Space:** $\mathcal{T}(p, q) \coloneqq W^u(p) \cap W^s(q)$, representing gradient flow lines originating at $p$ and terminating at $q$.
+    * **Unparameterized Moduli Space of Flow Lines:** Time translation acts freely on $\mathcal{T}(p, q)$ by $\tau \cdot \gamma(t) = \gamma(t + \tau)$. The quotient space is:
+      $$
+      \mathcal{M}(p, q) \;\coloneqq\; \frac{W^u(p) \cap W^s(q)}{\mathbb{R}}.
+      $$
+    * **Dimension Formula:** By transversality, $\mathcal{M}(p, q)$ is a smooth manifold of dimension:
+      $$
+      \dim \mathcal{M}(p, q) \;=\; \dim W^u(p) + \dim W^s(q) - n - 1 \;=\; \lambda(p) - \lambda(q) - 1.
+      $$
+    * **Isolated Trajectories ($\lambda(p) - \lambda(q) = 1$):** $\dim \mathcal{M}(p, q) = 0$. By compactness, $\mathcal{M}(p, q)$ is a finite set of points. With chosen orientations on the unstable manifolds $W^u(p)$, each trajectory $\gamma \in \mathcal{M}(p, q)$ carries a sign $\operatorname{sgn}(\gamma) \in \{\pm 1\}$.
+      The signed intersection number is:
+      $$
+      n(p, q) \;\coloneqq\; \sum_{[\gamma] \in \mathcal{M}(p, q)} \operatorname{sgn}(\gamma) \;\in\; \mathbb{Z}.
+      $$
+    * **Broken Trajectories and Gromov-Floer Compactness:** Sequences of flow lines in $\mathcal{M}(p, q)$ can break at intermediate critical points $r_1, \dots, r_k$.
+    * **Compactified Moduli Space $\overline{\mathcal{M}}(p, q)$:** Defined by adjoining broken trajectories:
+      $$
+      \overline{\mathcal{M}}(p, q) \;\coloneqq\; \mathcal{M}(p, q) \;\cup\; \bigcup_{k \ge 1} \bigcup_{\substack{r_1, \dots, r_k \in \operatorname{Crit}(f) \\ \lambda(p) > \lambda(r_1) > \dots > \lambda(r_k) > \lambda(q)}} \mathcal{M}(p, r_1) \times \mathcal{M}(r_1, r_2) \times \dots \times \mathcal{M}(r_k, q).
+      $$
+    * **Manifold with Corners Structure:** $\overline{\mathcal{M}}(p, q)$ is a compact topological manifold with corners of dimension $\lambda(p) - \lambda(q) - 1$. Its codimension 1 boundary is given by:
+      $$
+      \partial \overline{\mathcal{M}}(p, q) \;=\; \bigcup_{\substack{r \in \operatorname{Crit}(f) \\ \lambda(q) < \lambda(r) < \lambda(p)}} \overline{\mathcal{M}}(p, r) \times \overline{\mathcal{M}}(r, q).
+      $$
+
+  * **The Flow Category $\mathcal{C}_f$ (Cohen-Jones-Segal):**
+    * Associated to any Morse-Smale pair $(f, g)$, the **flow category** $\mathcal{C}_f$ is an enriched topological category (or $(\infty, 1)$-category):
+      1. **Objects:** The finite set of critical points: $\operatorname{Ob}(\mathcal{C}_f) = \operatorname{Crit}(f)$.
+      2. **Morphism Spaces:** For $p \neq q$, $\operatorname{Mor}_{\mathcal{C}_f}(p, q) \coloneqq \overline{\mathcal{M}}(p, q)$, topologized as compact manifolds with corners. For $p = q$, $\operatorname{Mor}_{\mathcal{C}_f}(p, p) \coloneqq \{\operatorname{id}_p\}$.
+      3. **Composition Law:** Given by concatenation and gluing of flow curves:
+         $$
+         \circ \colon \overline{\mathcal{M}}(q, r) \times \overline{\mathcal{M}}(p, q) \longrightarrow \partial \overline{\mathcal{M}}(p, r) \;\subset\; \overline{\mathcal{M}}(p, r),
+         $$
+         satisfying strict associativity on broken trajectories.
+    * **Topological and Homotopy Reconstruction:**
+      - The geometric realization of the nerve $|N(\mathcal{C}_f)|$ is homotopy equivalent to the underlying manifold: $|N(\mathcal{C}_f)| \simeq M$.
+      - Framed flow categories encode stable homotopy types: taking the framed bordism class of $\mathcal{C}_f$ reconstructs the suspension spectrum $\Sigma^\infty M_+$.
+    * **Morse-Witten Chain Complex:**
+      - Graded abelian group: $C_k^{\mathrm{Morse}}(f, g) \coloneqq \bigoplus_{p \in \operatorname{Crit}(f), \lambda(p) = k} \mathbb{Z} \cdot p$.
+      - Differential: $\partial_k \colon C_k^{\mathrm{Morse}} \to C_{k-1}^{\mathrm{Morse}}$ defined by:
+        $$
+        \partial_k(p) \;=\; \sum_{q \in \operatorname{Crit}(f), \lambda(q) = k - 1} n(p, q) \cdot q.
+        $$
+      - Boundary identity: $\partial_{k-1} \circ \partial_k = 0$, verified because the signed boundary count $\sum_r n(p, r) n(r, q) = 0$ corresponds to the endpoints of the compact 1-dimensional manifold $\overline{\mathcal{M}}(p, q)$ for $\lambda(p) - \lambda(q) = 2$.
+      - Morse Homology Theorem: $H_k(C_\bullet^{\mathrm{Morse}}(f, g)) \cong H_k(M; \mathbb{Z})$.
+
+  * **Free Loop Spaces on Manifolds ($LM$):**
+    * **Free Loop Space:** $LM \coloneqq C^\infty(S^1, M) \simeq \operatorname{Map}(S^1, M)$, endowed with the compact-open $C^\infty$-topology, or completed as a Hilbert manifold $W^{1, 2}(S^1, M)$.
+    * **Circle Action:** Rotational $S^1$-action $\theta \cdot \gamma(t) \coloneqq \gamma(t + \theta)$, generating the fundamental infinitesimal rotation vector field $X_{\mathrm{rot}}(\gamma) = \dot{\gamma} \in T_\gamma LM$.
+    * **Energy Functional:** $E \colon LM \to \mathbb{R}$ given by:
+      $$
+      E(\gamma) \;\coloneqq\; \frac{1}{2} \int_0^1 g(\dot{\gamma}(t), \dot{\gamma}(t)) \, dt.
+      $$
+    * **Closed Geodesics:** Critical points of $E$ are precisely closed geodesics on $(M, g)$:
+      $$
+      dE(\gamma)(V) = 0 \;\iff\; \nabla_{\dot{\gamma}} \dot{\gamma} = 0.
+      $$
+    * **Morse-Bott Index of Geodesics:** The energy functional $E$ on $LM$ is Morse-Bott (critical sets are unions of smooth submanifolds corresponding to $S^1$-orbits of closed geodesics and iterate families $\gamma^m$).
+      The Hessian $d^2 E(\gamma)$ is the Jacobi differential operator:
+      $$
+      d^2 E(\gamma)(V, W) \;=\; \int_0^1 \left( g(\nabla_{\dot{\gamma}} V, \nabla_{\dot{\gamma}} W) - g(R(V, \dot{\gamma})\dot{\gamma}, W) \right) dt.
+      $$
+      Morse index $\lambda(\gamma)$ equals the number of negative eigenvalues (counted with multiplicity) of the Jacobi operator with periodic boundary conditions.
+    * **Chas-Sullivan String Topology:**
+      - Evaluation map at basepoint: $\operatorname{ev}_0 \colon LM \to M, \gamma \mapsto \gamma(0)$.
+      - Loop Product: For an oriented compact manifold $M$ of dimension $d$, the Chas-Sullivan loop product is an operation on homology:
+        $$
+        \bullet \colon H_i(LM) \otimes H_j(LM) \longrightarrow H_{i + j - d}(LM),
+        $$
+        constructed by intersecting cycles along the diagonal $\Delta \subset M \times M$ via the pullback of $\operatorname{ev}_0 \times \operatorname{ev}_0$ and composing / concatenating loops at the intersection point.
+      - Batalin-Vilkovisky (BV) Operator: The $S^1$-action defines a map $S^1 \times LM \to LM$, inducing:
+        $$
+        \Delta \colon H_k(LM) \longrightarrow H_{k+1}(LM), \quad \Delta(\alpha) = [S^1] \times \alpha.
+        $$
+      - $H_*(LM)[d]$ forms a Batalin-Vilkovisky algebra with product $\bullet$, degree 1 operator $\Delta$ satisfying $\Delta^2 = 0$, and BV bracket $\{a, b\} = (-1)^{|a|} (\Delta(a \bullet b) - (\Delta a) \bullet b - (-1)^{|a|} a \bullet (\Delta b))$.
+
+* **Operational & algorithmic representation:**
+  1. **Morse Function & Critical Point Solver:**
+     - `MorseFunction(M, f)` storing symbolic/numerical expression $f$, gradient $\nabla f$, and Hessian matrix $H_f$.
+     - `critical_points()` locating roots of $df(x) = 0$ via algebraic Gröbner basis / interval Newton solvers.
+     - `morse_index(p)` computing positive, negative, and zero eigenvalues of $H_f(p)$, returning index $\lambda(p)$ and nullity $\operatorname{nul}(p)$.
+     - `morse_lemma_chart(p)` constructing local quadratic coordinates.
+  2. **Gradient Flow & Transversality Checker:**
+     - `GradientFlow(f, g)` integrating $\dot{\gamma} = -\nabla f$ forward and backward in time.
+     - `unstable_manifold(p, eps)` and `stable_manifold(p, eps)` computing local and global immersions $W^u(p), W^s(p)$.
+     - `verify_morse_smale(p, q)` verifying transversality $W^u(p) \pitchfork W^s(q)$ at intersection loci.
+  3. **Trajectory Moduli Spaces & Boundary Gluing:**
+     - `ModuliSpaceFlowLines(p, q)` representing unparameterized flow lines $\mathcal{M}(p, q)$, evaluating dimension $\lambda(p) - \lambda(q) - 1$.
+     - `trajectory_intersection_number(p, q)` computing signed count $n(p, q)$ for $\lambda(p) - \lambda(q) = 1$.
+     - `CompactifiedFlowModuliSpace(p, q)` tracking broken trajectories $\mathcal{M}(p, r) \times \mathcal{M}(r, q)$ and codimension 1 boundary strata $\partial \overline{\mathcal{M}}(p, q)$.
+     - `glue_flow_curves(gamma1, gamma2)` evaluating the gluing map $\circ \colon \overline{\mathcal{M}}(q, r) \times \overline{\mathcal{M}}(p, q) \to \overline{\mathcal{M}}(p, r)$.
+  4. **The Flow Category $\mathcal{C}_f$ & Morse Complex:**
+     - `FlowCategory(f, g)` constructing the enriched category with objects $\operatorname{Crit}(f)$ and morphism spaces $\overline{\mathcal{M}}(p, q)$.
+     - `flow_category_nerve()` constructing the simplicial nerve of $\mathcal{C}_f$ and computing cellular homology.
+     - `MorseComplex(f, g)` constructing chain groups $C_k = \bigoplus \mathbb{Z} \cdot p_i$, boundary matrices $\partial_k = [n(p_i, q_j)]$, verifying $\partial^2 = 0$, and computing Morse homology $H_*^{\mathrm{Morse}}(M)$.
+  5. **Free Loop Space & String Topology Engine:**
+     - `FreeLoopSpace(M, g)` representing $LM = \operatorname{Map}(S^1, M)$ with energy functional $E(\gamma)$.
+     - `closed_geodesics(max_length)` locating periodic orbits $\nabla_{\dot{\gamma}} \dot{\gamma} = 0$.
+     - `geodesic_morse_bott_index(gamma)` computing Jacobi fields and Morse index $\lambda(\gamma)$.
+     - `ChasSullivanLoopProduct(cycle_a, cycle_b)` evaluating the loop product $\bullet$ via transverse intersection and loop concatenation.
+     - `BatalinVilkoviskyDelta(cycle)` computing the circle rotation operator $\Delta \colon H_k(LM) \to H_{k+1}(LM)$.
+
+* **Preamble implementation requirements:**
+  * `categories/differential_geometry/morse_theory.py`:
+    - `MorseFunction(manifold, func)`: class for Morse scalar fields.
+    - `CriticalPoint(point, value, index, nullity, hessian)`: dataclass for critical points.
+    - `find_critical_points(morse_func)`: locates all critical points in $\operatorname{Crit}(f)$.
+    - `morse_index(morse_func, point)`: computes Morse index $\lambda(p)$.
+    - `morse_inequalities(morse_func)`: verifies weak and strong Morse inequalities against Betti numbers.
+  * `categories/differential_geometry/gradient_flow.py`:
+    - `GradientFlow(morse_func, metric)`: flow integrator for $\dot{\gamma} = -\nabla f$.
+    - `UnstableManifold(point, dimension)`: unstable manifold $W^u(p)$.
+    - `StableManifold(point, codimension)`: stable manifold $W^s(p)$.
+    - `check_morse_smale(gradient_flow)`: checks transversality $W^u(p) \pitchfork W^s(q)$.
+  * `categories/differential_geometry/flow_category.py`:
+    - `ModuliSpaceFlowLines(p, q)`: moduli space $\mathcal{M}(p, q)$.
+    - `CompactifiedFlowModuliSpace(p, q)`: manifold with corners $\overline{\mathcal{M}}(p, q)$.
+    - `trajectory_intersection_number(p, q)`: integer $n(p, q) \in \mathbb{Z}$.
+    - `glue_flow_curves(traj_pq, traj_qr)`: composition law $\circ$ in the flow category.
+    - `FlowCategory(morse_func, metric)`: Cohen-Jones-Segal enriched flow category $\mathcal{C}_f$.
+    - `MorseComplex(morse_func, metric)`: chain complex $(C_\bullet^{\mathrm{Morse}}, \partial)$.
+  * `categories/topology/free_loop_space.py`:
+    - `FreeLoopSpace(manifold, metric)`: free loop space $LM$.
+    - `loop_energy_functional(gamma)`: energy $E(\gamma) = \frac{1}{2} \int |\dot{\gamma}|^2$.
+    - `find_closed_geodesics(loop_space, bound)`: critical points of $E$.
+    - `geodesic_morse_bott_index(geodesic)`: Morse-Bott index of closed geodesics via Jacobi fields.
+  * `categories/topology/string_topology.py`:
+    - `ChasSullivanLoopProduct(alpha, beta)`: intersection and loop concatenation $\bullet$.
+    - `BVOperator(alpha)`: Batalin-Vilkovisky operator $\Delta \colon H_k(LM) \to H_{k+1}(LM)$.
+    - `string_bracket(alpha, beta)`: Lie bracket on loop homology $\{a, b\}$.
+
+Intended owners: `categories/differential_geometry/morse_theory.py` (`MorseFunction`, `CriticalPoint`, `find_critical_points`, `morse_index`), `categories/differential_geometry/gradient_flow.py` (`GradientFlow`, `UnstableManifold`, `StableManifold`, `check_morse_smale`), `categories/differential_geometry/flow_category.py` (`ModuliSpaceFlowLines`, `CompactifiedFlowModuliSpace`, `trajectory_intersection_number`, `glue_flow_curves`, `FlowCategory`, `MorseComplex`), `categories/topology/free_loop_space.py` (`FreeLoopSpace`, `loop_energy_functional`, `find_closed_geodesics`, `geodesic_morse_bott_index`), `categories/topology/string_topology.py` (`ChasSullivanLoopProduct`, `BVOperator`, `string_bracket`).
+
+
+## Desired capability: Universal classifying fibrations $E\mathcal{C} \to B\mathcal{C}$ for small and finitely presented categories — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Nerves and Classifying Spaces of Small Categories:**
+    * Let $\mathcal{C}$ be a small category, presented by finite explicit data (e.g. finite quiver $Q = (V, E)$ with relations $R$, a finite poset $(P, \le)$, or a finite groupoid / group delooping $\mathbf{B}G$).
+    * **Simplicial Nerve $N(\mathcal{C})_\bullet$:** The simplicial set $N(\mathcal{C})$ where an $n$-simplex is a sequence of $n$ composable arrows:
+      $$
+      N(\mathcal{C})_n \;\coloneqq\; \big\{ c_0 \xrightarrow{f_1} c_1 \xrightarrow{f_2} \dots \xrightarrow{f_n} c_n \;\big|\; c_i \in \operatorname{Ob}(\mathcal{C}), f_i \in \operatorname{Mor}(\mathcal{C}) \big\} \;\cong\; \operatorname{Fun}([n], \mathcal{C}),
+      $$
+      where $[n]$ is the ordinal poset category $\{0 < 1 < \dots < n\}$.
+    * **Face and Degeneracy Operators:**
+      - Face maps $d_i \colon N(\mathcal{C})_n \to N(\mathcal{C})_{n-1}$:
+        $$
+        d_i(f_1, \dots, f_n) \;=\; \begin{cases} (f_2, \dots, f_n) & i = 0, \\ (f_1, \dots, f_{i+1} \circ f_i, \dots, f_n) & 1 \le i \le n-1, \\ (f_1, \dots, f_{n-1}) & i = n. \end{cases}
+        $$
+      - Degeneracy maps $s_i \colon N(\mathcal{C})_n \to N(\mathcal{C})_{n+1}$:
+        $$
+        s_i(f_1, \dots, f_n) \;=\; (f_1, \dots, f_i, \operatorname{id}_{c_i}, f_{i+1}, \dots, f_n).
+        $$
+    * **Classifying Space $B\mathcal{C}$:** The topological geometric realization of the nerve:
+      $$
+      B\mathcal{C} \;\coloneqq\; |N(\mathcal{C})| \;=\; \left( \coprod_{n \ge 0} N(\mathcal{C})_n \times \Delta^n \right) \Big/ \sim,
+      $$
+      where $\Delta^n = \{(t_0, \dots, t_n) \in \mathbb{R}^{n+1} \mid \sum t_i = 1, t_i \ge 0\}$ is the standard topological $n$-simplex.
+
+  * **The Universal Total Category $E\mathcal{C}$ and Contractibility:**
+    * **The Comma / Arrow Category Construction:**
+      The universal total category $E\mathcal{C}$ is defined as the slice / comma category of objects and morphisms under/over $\mathcal{C}$, or the Grothendieck construction on representables:
+      $$
+      E\mathcal{C} \;\coloneqq\; \mathcal{C} \downarrow \operatorname{id}_{\mathcal{C}} \;\cong\; \operatorname{Arr}(\mathcal{C}).
+      $$
+      - **Objects of $E\mathcal{C}$:** Morphisms in $\mathcal{C}$, written as arrows $(x \colon c \to c')$. Equivalently, pairs $(c, \alpha)$ where $c \in \operatorname{Ob}(\mathcal{C})$ and $\alpha \in \operatorname{Hom}(c_0, c)$ for a marked base object $c_0$, or the category of elements $\int_{\mathcal{C}} \operatorname{Hom}(-, c')$.
+      - **Morphisms of $E\mathcal{C}$:** A morphism from $(x \colon c \to c')$ to $(y \colon d \to c')$ is a morphism $u \colon c \to d$ in $\mathcal{C}$ such that the triangle commutes: $y \circ u = x$.
+    * **Simplicial Description of $N(E\mathcal{C})_\bullet$:**
+      An $n$-simplex of $E\mathcal{C}$ is a chain of $n$ composable arrows $c_0 \xrightarrow{f_1} c_1 \to \dots \to c_n$ together with a marked morphism $\alpha \colon c_n \to x$:
+      $$
+      N(E\mathcal{C})_n \;=\; \coprod_{c_0, \dots, c_n \in \operatorname{Ob}(\mathcal{C})} \operatorname{Hom}_{\mathcal{C}}(c_0, c_1) \times \dots \times \operatorname{Hom}_{\mathcal{C}}(c_{n-1}, c_n) \times \operatorname{Hom}_{\mathcal{C}}(c_n, -).
+      $$
+    * **Contractibility of $E\mathcal{C}$:**
+      - For each object $c \in \operatorname{Ob}(\mathcal{C})$, the comma category $\mathcal{C} \downarrow c$ possesses a terminal object $(\operatorname{id}_c \colon c \to c)$.
+      - A category with a terminal (or initial) object has a contractible nerve: the terminal object provides an explicit simplicial cone contracting homotopy $h \colon N(\mathcal{C} \downarrow c) \times \Delta^1 \to N(\mathcal{C} \downarrow c)$.
+      - Therefore, $|N(\mathcal{C} \downarrow c)| \simeq *$ is contractible.
+      - By Quillen's Theorem A, the universal total space $|N(E\mathcal{C})| \simeq *$ is weakly contractible.
+
+  * **The Classifying Fibration $p \colon E\mathcal{C} \to B\mathcal{C}$:**
+    * **Projection Functor:** The forgetful functor $p \colon E\mathcal{C} \to \mathcal{C}$ sends $(x \colon c \to c')$ to the source object $c$ (or target $c'$), and a morphism $u$ to $u$.
+    * **Simplicial Map:** Induces a map of simplicial sets $N(p) \colon N(E\mathcal{C}) \to N(\mathcal{C})$.
+    * **Topological Realization:** $|N(p)| \colon |N(E\mathcal{C})| \to |N(\mathcal{C})| = B\mathcal{C}$.
+    * **Grothendieck Fibration and Serre Fibration Properties:**
+      - The functor $p \colon E\mathcal{C} \to \mathcal{C}$ is a Grothendieck opfibration (or fibration).
+      - Its geometric realization $|N(p)| \colon E\mathcal{C} \to B\mathcal{C}$ is a Serre fibration (quasifibration).
+    * **Fibers of the Fibration:**
+      - The fiber of $p$ over an object $c \in \operatorname{Ob}(\mathcal{C})$ is the under-category $c \downarrow \mathcal{C}$ (or over-category $\mathcal{C} \downarrow c$).
+      - Because $c \downarrow \mathcal{C}$ has an initial object $(\operatorname{id}_c \colon c \to c)$, its nerve is contractible:
+        $$
+        \operatorname{Fib}_c(|N(p)|) \;\simeq\; |N(c \downarrow \mathcal{C})| \;\simeq\; *.
+        $$
+    * **Classification of Diagrams (Universal Property):**
+      - The fibration $E\mathcal{C} \to B\mathcal{C}$ universalizes discrete fibrations: for any diagram $F \colon \mathcal{C} \to \mathbf{Set}$, the category of elements $\int_{\mathcal{C}} F$ is obtained as the pullback of the universal fibration along the classifying map $B\mathcal{C} \to B\mathbf{Set}$.
+
+  * **Specialization to Group Deloopings ($EG \to BG$):**
+    * For a discrete group $G$, consider the delooping category $\mathcal{C} = \mathbf{B}G$ (a single object $\bullet$, with $\operatorname{End}(\bullet) = G$).
+    * **Classifying Space:** $B\mathbf{B}G = BG = K(G, 1)$, the Eilenberg-MacLane space.
+    * **Universal Space:** $E\mathbf{B}G = EG$, the translation groupoid $G // G$ whose objects are elements of $G$ and with a unique morphism $g \to h$ given by $h g^{-1} \in G$.
+    * **Simplicial Model:** $EG_n = G^{n+1}$, with face maps dropping coordinates and degeneracies duplicating coordinates.
+    * **Free Action:** $G$ acts freely on $EG_n$ on the right by $(g_0, \dots, g_n) \cdot g = (g_0 g, \dots, g_n g)$.
+    * **Universal Principal Bundle:** The projection $EG \to BG$ is a principal $G$-bundle with total space $EG$ contractible and fiber $G$.
+
+  * **Categories Representable by Finitely Much Explicit Data:**
+    * **Quivers with Relations:** $Q = (V, E)$, path category $F(Q)$, quotient category $\mathcal{C} = F(Q)/R$ with finite objects $V$ and finite generator relations.
+    * **Finite Posets:** Poset $(P, \le)$, where $BP$ is the order complex of chains, and $EP$ is the poset of flags.
+    * **Explicit Simplicial Verification:**
+      - Computation of all $k$-simplices up to degree $N$.
+      - Explicit combinatorial matrix representations of boundary operators $d_k \colon \mathbb{Z}[N(\mathcal{C})_k] \to \mathbb{Z}[N(\mathcal{C})_{k-1}]$.
+      - Kan condition verifier: horn-filler existence for simplicial sets $N(\mathcal{C})$.
+      - Explicit construction of contracting simplicial homotopies $h \colon N(E\mathcal{C}) \times \Delta^1 \to N(E\mathcal{C})$.
+
+* **Operational & algorithmic representation:**
+  1. **Simplicial Nerve Engine:**
+     - `CategoryNerve(category)` constructing the simplicial set $N(\mathcal{C})$, enumerating chains $c_0 \xrightarrow{f_1} \dots \xrightarrow{f_n} c_n$.
+     - `face_map(simplex, i)` evaluating $d_i$ by composition or boundary dropping.
+     - `degeneracy_map(simplex, i)` evaluating $s_i$ by inserting identity morphisms.
+     - `boundary_matrix(n)` constructing integer cellular boundary matrices $d_n$.
+  2. **Classifying Space Geometric Realization:**
+     - `ClassifyingSpace(category)` building $B\mathcal{C} = |N(\mathcal{C})|$ as a CW complex.
+     - `homology_groups(max_deg)` computing $H_n(B\mathcal{C}; \mathbb{Z})$ via simplicial homology.
+  3. **Universal Category $E\mathcal{C}$ & Fibration:**
+     - `UniversalCategory(category)` constructing $E\mathcal{C}$ as the arrow category $\mathcal{C} \downarrow \mathcal{C}$ or category of elements $\int \operatorname{Hom}$.
+     - `ClassifyingFibration(category)` constructing the projection $p \colon N(E\mathcal{C}) \to N(\mathcal{C})$.
+     - `FiberAtObject(c)` extracting the subcomplex $p^{-1}(c) \cong N(c \downarrow \mathcal{C})$.
+     - `ContractibilityCertificate(universal_cat)` constructing the simplicial contracting homotopy to the terminal object, verifying $|E\mathcal{C}| \simeq *$.
+  4. **Delooping Groupoid & Universal Principal Bundle:**
+     - `GroupDelooping(group)` constructing $\mathbf{B}G$.
+     - `UniversalPrincipalBundle(group)` constructing $EG \to BG$ with explicit free group action on $EG_n = G^{n+1}$.
+
+* **Preamble implementation requirements:**
+  * `categories/classifying_spaces/nerve.py`:
+    - `CategoryNerve(category, max_dimension)`: simplicial set $N(\mathcal{C})$.
+    - `nerve_simplex_enumeration(category, n)`: generates all $n$-simplices.
+    - `nerve_face(category, simplex, i)`: computes face $d_i$.
+    - `nerve_degeneracy(category, simplex, i)`: computes degeneracy $s_i$.
+    - `nerve_boundary_matrix(category, n)`: boundary matrix $[\partial_n]$.
+  * `categories/classifying_spaces/classifying_fibration.py`:
+    - `UniversalCategory(category)`: comma category $E\mathcal{C} = \mathcal{C} \downarrow \mathcal{C}$.
+    - `ClassifyingFibration(category)`: simplicial projection $p \colon N(E\mathcal{C}) \to N(\mathcal{C})$.
+    - `fiber_subcomplex(category, object)`: fiber over $c \in \operatorname{Ob}(\mathcal{C})$.
+    - `verify_contractibility(universal_category)`: contracting simplicial homotopy $h \colon N(E\mathcal{C}) \times \Delta^1 \to N(E\mathcal{C})$.
+    - `is_grothendieck_fibration(category_functor)`: verifies Cartesian lifting property.
+  * `categories/classifying_spaces/universal_bundle.py`:
+    - `UniversalBundleG(group)`: principal $G$-bundle $EG \to BG$.
+    - `eg_simplex(elements)`: $n$-simplex in $G^{n+1}$.
+    - `group_action_on_eg(simplex, g)`: right action $(g_0 g, \dots, g_n g)$.
+    - `milnor_classifying_space(group)`: topological model of $BG$.
+  * `categories/finitely_presented/category_of_elements.py`:
+    - `CategoryOfElements(functor)`: category $\int_{\mathcal{C}} F$.
+    - `discrete_fibration_projection(category_of_elements)`: functor $\int F \to \mathcal{C}$.
+
+Intended owners: `categories/classifying_spaces/nerve.py` (`CategoryNerve`, `nerve_simplex_enumeration`, `nerve_face`, `nerve_degeneracy`), `categories/classifying_spaces/classifying_fibration.py` (`UniversalCategory`, `ClassifyingFibration`, `fiber_subcomplex`, `verify_contractibility`), `categories/classifying_spaces/universal_bundle.py` (`UniversalBundleG`, `eg_simplex`, `group_action_on_eg`), `categories/finitely_presented/category_of_elements.py` (`CategoryOfElements`, `discrete_fibration_projection`).
+
+
+## Desired capability: Riemannian, symplectic, Kähler, and hyperkähler manifolds, holonomy classifications, and reductions of structure groups — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Frame Bundles and $G$-Structures on Smooth Manifolds:**
+    * Let $M$ be a smooth manifold of dimension $n$, with tangent bundle $TM$.
+    * **Frame Bundle $\operatorname{Fr}(M)$:** The principal $GL(n, \mathbb{R})$-bundle of all ordered linear bases of the tangent spaces:
+      $$
+      \operatorname{Fr}(M)_x \;\coloneqq\; \operatorname{Iso}_{\mathbb{R}}(\mathbb{R}^n, T_x M).
+      $$
+    * **$G$-Structure and Reduction of Structure Group:** Let $G \le GL(n, \mathbb{R})$ be a Lie subgroup. A **$G$-structure** on $M$ is a principal $G$-subbundle $P \subset \operatorname{Fr}(M)$.
+    * **Reduction Condition:** A reduction of the structure group from $GL(n, \mathbb{R})$ to $G$ is equivalent to a smooth global section $\sigma \colon M \to \operatorname{Fr}(M)/G$ of the associated bundle with fiber $GL(n, \mathbb{R})/G$.
+    * **Obstruction Theory and Characteristic Classes:**
+      - **Orientation ($G = GL^+(n, \mathbb{R})$ or $SO(n)$):** Fiber $GL/GL^+ \cong \mathbb{Z}/2$. Reduction exists if and only if the first Stiefel-Whitney class vanishes:
+        $$
+        w_1(TM) \;=\; 0 \;\in\; H^1(M; \mathbb{Z}/2).
+        $$
+      - **Spin Structure ($G = \operatorname{Spin}(n)$):** For an oriented manifold, reduction of $SO(n)$ to its double cover $\operatorname{Spin}(n)$ exists if and only if the second Stiefel-Whitney class vanishes:
+        $$
+        w_2(TM) \;=\; 0 \;\in\; H^2(M; \mathbb{Z}/2).
+        $$
+      - **Almost Complex Structure ($G = GL(m, \mathbb{C}) \le GL(2m, \mathbb{R})$):** Obstruction classes include the third integral Stiefel-Whitney class $W_3(TM) = \beta(w_2) = 0 \in H^3(M; \mathbb{Z})$, and topological relations linking Pontryagin and Chern classes.
+
+  * **Riemannian Manifolds ($(M, g)$, $G = O(n)$):**
+    * **Structure Group Reduction:** The homogeneous space $GL(n, \mathbb{R})/O(n) \cong \operatorname{Sym}^+(n, \mathbb{R})$ (space of positive-definite symmetric matrices) is contractible. Therefore:
+      *Every smooth manifold admits a Riemannian metric $g$, and hence a reduction to $O(n)$ (or $SO(n)$ if oriented).*
+    * **Levi-Civita Connection $\nabla$:** Unique affine connection on $TM$ satisfying:
+      1. Metric compatibility: $\nabla g = 0$, i.e., $X(g(Y, Z)) = g(\nabla_X Y, Z) + g(Y, \nabla_X Z)$.
+      2. Torsion-free: $T(X, Y) \coloneqq \nabla_X Y - \nabla_Y X - [X, Y] = 0$.
+    * **Curvature Tensors:**
+      - **Riemann Curvature Tensor:** $R(X, Y)Z \coloneqq \nabla_X \nabla_Y Z - \nabla_Y \nabla_X Z - \nabla_{[X, Y]} Z$.
+      - **Ricci Tensor:** $\operatorname{Ric}(X, Y) \coloneqq \operatorname{tr}(Z \mapsto R(Z, X)Y)$, in coordinates $R_{ij} = R^k_{\ ikj}$.
+      - **Scalar Curvature:** $\operatorname{Scal} \coloneqq g^{ij} R_{ij}$.
+      - **Sectional Curvature:** $K(X, Y) \coloneqq \frac{g(R(X, Y)Y, X)}{g(X, X)g(Y, Y) - g(X, Y)^2}$.
+    * **Holonomy Group:** $\operatorname{Hol}(g) \subseteq O(n)$ (or $SO(n)$), generated by parallel transport around closed loops based at $p$.
+
+  * **Symplectic Manifolds ($(M, \omega)$, $G = Sp(2m, \mathbb{R})$):**
+    * Non-degenerate differential 2-form $\omega \in \Omega^2(M)$ on a $2m$-dimensional manifold:
+      $$
+      \omega^m \;\neq\; 0 \quad \text{everywhere on } M.
+      $$
+    * Structure group reduces to the real symplectic group $Sp(2m, \mathbb{R})$.
+    * **Integrability (Closedness):** $d\omega = 0$.
+    * **Darboux's Theorem:** In contrast to Riemannian geometry, there are no local curvature invariants: every symplectic manifold is locally isomorphic to $(\mathbb{R}^{2m}, \sum_{i=1}^m dp_i \wedge dq_i)$.
+    * **Hamiltonian Vector Fields and Poisson Bracket:** For $f \in C^\infty(M)$, Hamiltonian vector field $X_f$ defined by $\iota_{X_f} \omega = -df$. Poisson bracket:
+      $$
+      \{f, h\} \;\coloneqq\; \omega(X_f, X_h) \;=\; X_f(h).
+      $$
+
+  * **Almost Complex and Complex Manifolds ($(M, J)$, $G = GL(m, \mathbb{C})$):**
+    * Smooth endomorphism field $J \in \Gamma(\operatorname{End}(TM))$ satisfying:
+      $$
+      J^2 \;=\; -\operatorname{id}_{TM}.
+      $$
+    * Reduction of structure group from $GL(2m, \mathbb{R})$ to $GL(m, \mathbb{C})$.
+    * **Nijenhuis Tensor and Integrability:**
+      $$
+      N_J(X, Y) \;\coloneqq\; [JX, JY] - J[JX, Y] - J[X, JY] - [X, Y].
+      $$
+    * **Newlander-Nirenberg Theorem:** An almost complex structure $J$ is integrable (i.e. $M$ is a complex manifold admitting a holomorphic atlas with transition functions in $\mathbb{C}^m$) if and only if $N_J \equiv 0$.
+
+  * **Almost Hermitian and Kähler Manifolds ($(M, g, J, \omega)$, $G = U(m)$):**
+    * **Compatible Triple:** Riemannian metric $g$, almost complex structure $J$, and 2-form $\omega$ satisfying:
+      $$
+      g(JX, JY) \;=\; g(X, Y), \quad \omega(X, Y) \;\coloneqq\; g(JX, Y), \quad g(X, Y) \;=\; \omega(X, JY).
+      $$
+    * **Structure Group Reduction:** The intersection of structure groups is the unitary group:
+      $$
+      O(2m) \;\cap\; Sp(2m, \mathbb{R}) \;\cap\; GL(m, \mathbb{C}) \;=\; U(m).
+      $$
+    * **Kähler Manifolds:** An almost Hermitian manifold $(M, g, J, \omega)$ is a **Kähler manifold** if any of the following equivalent conditions hold:
+      1. Symplectic + Complex: $d\omega = 0$ and $N_J = 0$.
+      2. Parallel complex structure: $\nabla J = 0$ (where $\nabla$ is the Levi-Civita connection of $g$).
+      3. Parallel symplectic form: $\nabla \omega = 0$.
+      4. Holonomy reduction: The Riemannian holonomy satisfies $\operatorname{Hol}(g) \subseteq U(m)$.
+    * **Cohomological & Hodge Theoretic Structures:**
+      - **Hodge Decomposition:** $H^k(M, \mathbb{C}) = \bigoplus_{p+q=k} H^{p, q}(M)$ with $H^{q, p} = \overline{H^{p, q}}$.
+      - **Kähler Form as Cohomology Class:** $[\omega] \in H^2(M; \mathbb{R}) \cap H^{1, 1}(M)$.
+      - **Lefschetz Operators:** $L(\alpha) = \alpha \wedge \omega$, dual operator $\Lambda = L^* = \star^{-1} L \star$.
+      - **Kähler Identities:**
+        $$
+        [L, \Lambda] = (k - m)\operatorname{id}, \quad [\Lambda, \partial] = i \bar{\partial}^*, \quad [\Lambda, \bar{\partial}] = -i \partial^*, \quad \Delta_d = 2 \Delta_\partial = 2 \Delta_{\bar{\partial}}.
+        $$
+      - **Hard Lefschetz Theorem:** $L^{m-k} \colon H^k(M, \mathbb{R}) \xrightarrow{\sim} H^{2m-k}(M, \mathbb{R})$ is an isomorphism.
+      - **Hodge-Riemann Bilinear Relations:** The Lefschetz pairing $Q(\alpha, \beta) = (-1)^{\frac{k(k-1)}{2}} \int_M \alpha \wedge \beta \wedge \omega^{m-k}$ is positive-definite on primitive forms $P^{p, q}$.
+
+  * **Special Holonomy and Calabi-Yau Manifolds ($G = SU(m)$):**
+    * Holonomy reduction to the special unitary group: $\operatorname{Hol}(g) \subseteq SU(m) \subset U(m)$.
+    * Characterized by:
+      1. Kähler manifold $(M, g, J, \omega)$.
+      2. Ricci-flat metric: $\operatorname{Ric}(g) = 0$ (or equivalently, first Chern class $c_1(M) = 0 \in H^2(M; \mathbb{R})$ by Yau's theorem solving Calabi's conjecture).
+      3. Existence of a parallel, non-vanishing holomorphic volume form $\Omega \in \Omega^{m, 0}(M)$ ($\nabla \Omega = 0$).
+
+  * **Hyperkähler Manifolds ($(M, g, I, J, K)$, $G = Sp(k)$):**
+    * Let $M$ be a Riemannian manifold of dimension $4k$.
+    * **Quaternionic Complex Structures:** Three almost complex structures $I, J, K \in \Gamma(\operatorname{End}(TM))$ satisfying the quaternion algebra identities:
+      $$
+      I^2 \;=\; J^2 \;=\; K^2 \;=\; IJK \;=\; -\operatorname{id}_{TM}, \quad IJ = -JI = K, \quad JK = -KJ = I, \quad KI = -IK = J.
+      $$
+    * **Triple of Kähler Forms:** The metric $g$ is Hermitian with respect to all three structures, giving three differential 2-forms:
+      $$
+      \omega_I(X, Y) = g(IX, Y), \quad \omega_J(X, Y) = g(JX, Y), \quad \omega_K(X, Y) = g(KX, Y).
+      $$
+    * **Hyperkähler Condition:** All three complex structures are parallel with respect to the Levi-Civita connection of $g$:
+      $$
+      \nabla I \;=\; \nabla J \;=\; \nabla K \;=\; 0.
+      $$
+    * **Holonomy Reduction to Compact Symplectic Group:**
+      The holonomy group satisfies:
+      $$
+      \operatorname{Hol}(g) \;\subseteq\; Sp(k) \;\coloneqq\; Sp(2k, \mathbb{C}) \;\cap\; U(2k).
+      $$
+    * **Holomorphic Symplectic Structure:**
+      With respect to the complex structure $I$, the complex 2-form:
+      $$
+      \Omega_{\mathbb{C}} \;\coloneqq\; \omega_J + i \omega_K \;\in\; \Omega^{2, 0}(M, I)
+      $$
+      is closed ($d\Omega_{\mathbb{C}} = 0$) and non-degenerate, making $(M, I, \Omega_{\mathbb{C}})$ a complex holomorphic symplectic manifold.
+    * **Properties:**
+      - Hyperkähler manifolds are automatically Ricci-flat and Calabi-Yau ($Sp(k) \subset SU(2k)$).
+      - Twistor space $Z = M \times S^2$: endowed with a natural complex structure $\mathcal{J}_{(x, (a, b, c))} = a I + b J + c K$ (for $a^2 + b^2 + c^2 = 1$).
+
+  * **Berger's Holonomy Classification:**
+    * For simply-connected, irreducible, non-symmetric Riemannian manifolds $(M^n, g)$, the Berger list classifies the possible restricted holonomy groups $\operatorname{Hol}^0(g)$:
+      1. $SO(n)$: Generic oriented Riemannian manifold.
+      2. $U(m)$ ($n = 2m$): Kähler manifold.
+      3. $SU(m)$ ($n = 2m$): Calabi-Yau manifold (Ricci-flat Kähler).
+      4. $Sp(k)$ ($n = 4k$): Hyperkähler manifold (Ricci-flat, holomorphic symplectic).
+      5. $Sp(k) \cdot Sp(1)$ ($n = 4k$): Quaternionic-Kähler manifold (Einstein, non-Ricci-flat).
+      6. $G_2$ ($n = 7$): Exceptional holonomy, Ricci-flat, parallel 3-form $\Phi$.
+      7. $\operatorname{Spin}(7)$ ($n = 8$): Exceptional holonomy, Ricci-flat, parallel 4-form $\Psi$.
+
+* **Operational & algorithmic representation:**
+  1. **$G$-Structure & Reduction Engine:**
+     - `FrameBundle(M)` representing $\operatorname{Fr}(M)$ and linear frames $e_1, \dots, e_n$.
+     - `StructureGroupReduction(bundle, target_subgroup)` evaluating sections of $\operatorname{Fr}(M)/G$.
+     - `stiefel_whitney_classes(M)` computing $w_1, w_2$ to check orientation and spin reductions.
+     - `chern_classes(M)` computing $c_1, c_2, \dots$ for complex / almost complex bundles.
+  2. **Riemannian Geometry Engine:**
+     - `RiemannianManifold(coords, metric_tensor)` storing $g_{ij}(x)$.
+     - `christoffel_symbols()` computing Levi-Civita connection $\Gamma_{ij}^k = \frac{1}{2} g^{kl}(\partial_i g_{jl} + \partial_j g_{il} - \partial_l g_{ij})$.
+     - `riemann_tensor()` evaluating $R^l_{\ ijk}$.
+     - `ricci_tensor()` and `scalar_curvature()` computing $R_{ij}$ and $S$.
+     - `sectional_curvature(u, v)` evaluating $K(u, v)$.
+  3. **Symplectic Geometry Engine:**
+     - `SymplecticManifold(coords, omega_form)` storing $\omega_{ij}(x)$.
+     - `verify_symplectic()` checking $\det(\omega) \neq 0$ and $d\omega = 0$.
+     - `hamiltonian_vector_field(f)` solving $\iota_{X_f} \omega = -df$.
+     - `poisson_bracket(f, h)` evaluating $\omega(X_f, X_h)$.
+     - `darboux_coordinates(p)` computing local canonical chart $(p_i, q_i)$.
+  4. **Complex & Kähler Manifold Engine:**
+     - `AlmostComplexStructure(coords, J_matrix)` checking $J^2 = -\operatorname{id}$.
+     - `nijenhuis_tensor()` evaluating $N_J(X, Y)$ and testing integrability $N_J \equiv 0$.
+     - `KahlerManifold(coords, g, J, omega)` verifying compatibility $g(JX, Y) = \omega(X, Y)$ and $\nabla J = 0$.
+     - `hodge_diamond()` computing Hodge numbers $h^{p, q}$.
+     - `lefschetz_operator(alpha)` evaluating $L(\alpha) = \alpha \wedge \omega$ and dual $\Lambda$.
+     - `verify_hard_lefschetz()` testing isomorphism $L^{m-k} \colon H^k \to H^{2m-k}$.
+  5. **Hyperkähler & Holonomy Engine:**
+     - `HyperkahlerManifold(coords, g, I, J, K)` storing metric and quaternionic triple.
+     - `verify_quaternion_algebra()` checking $I^2 = J^2 = K^2 = IJK = -\operatorname{id}$.
+     - `verify_hyperkahler()` testing $\nabla I = \nabla J = \nabla K = 0$.
+     - `holomorphic_symplectic_form()` constructing $\Omega_{\mathbb{C}} = \omega_J + i \omega_K$.
+     - `twistor_sphere_point(a, b, c)` constructing complex structure $a I + b J + c K$.
+     - `HolonomyClassifier(manifold, metric)` inspecting curvature and parallel tensors to identify Berger holonomy group in $\{SO(n), U(m), SU(m), Sp(k), Sp(k)Sp(1), G_2, \operatorname{Spin}(7)\}$.
+
+* **Preamble implementation requirements:**
+  * `categories/differential_geometry/riemannian.py`:
+    - `RiemannianManifold(coordinates, metric)`: class for Riemannian manifolds.
+    - `christoffel_symbols(metric)`: connection coefficients $\Gamma_{ij}^k$.
+    - `riemann_curvature(metric)`: tensor $R^l_{\ ijk}$.
+    - `ricci_curvature(metric)`: tensor $R_{ij}$.
+    - `scalar_curvature(metric)`: scalar $S$.
+    - `sectional_curvature(metric, u, v)`: sectional curvature $K(u, v)$.
+    - `is_ricci_flat(metric)`: checks $R_{ij} = 0$.
+    - `is_einstein(metric)`: checks $R_{ij} = \lambda g_{ij}$.
+  * `categories/differential_geometry/symplectic.py`:
+    - `SymplecticManifold(coordinates, omega)`: class for symplectic manifolds.
+    - `is_symplectic_form(omega)`: checks non-degeneracy and $d\omega = 0$.
+    - `hamiltonian_vector_field(symplectic_manifold, hamiltonian)`: field $X_f$.
+    - `poisson_bracket(symplectic_manifold, f, g)`: bracket $\{f, g\}$.
+    - `darboux_transform(symplectic_manifold, point)`: local Darboux chart.
+  * `categories/differential_geometry/almost_complex.py`:
+    - `AlmostComplexStructure(coordinates, J)`: class for almost complex structures.
+    - `nijenhuis_tensor(almost_complex)`: evaluates $N_J$.
+    - `is_integrable(almost_complex)`: checks $N_J \equiv 0$.
+  * `categories/differential_geometry/kahler.py`:
+    - `KahlerManifold(coordinates, metric, J, omega)`: class for Kähler manifolds.
+    - `is_kahler(metric, J, omega)`: verifies compatibility and $\nabla J = 0$.
+    - `lefschetz_operator(omega, form)`: operator $L(\alpha) = \alpha \wedge \omega$.
+    - `dual_lefschetz_operator(omega, metric, form)`: operator $\Lambda$.
+    - `hodge_decomposition(kahler_manifold)`: computes $H^{p, q}$.
+    - `verify_hodge_riemann_relations(kahler_manifold)`: checks positive-definiteness on primitive forms.
+  * `categories/differential_geometry/hyperkahler.py`:
+    - `HyperkahlerManifold(coordinates, metric, I, J, K)`: class for hyperkähler manifolds.
+    - `verify_hyperkahler_structure(metric, I, J, K)`: checks quaternionic relations and $\nabla I = \nabla J = \nabla K = 0$.
+    - `holomorphic_symplectic_form(hyperkahler_manifold)`: returns $\Omega = \omega_J + i \omega_K$.
+    - `twistor_complex_structure(hyperkahler_manifold, a, b, c)`: returns $a I + b J + c K$.
+  * `categories/differential_geometry/structure_group.py`:
+    - `FrameBundle(manifold)`: frame bundle $\operatorname{Fr}(M)$.
+    - `StructureGroupReduction(frame_bundle, subgroup)`: reduction data.
+    - `stiefel_whitney_reduction_obstruction(manifold, target_group)`: returns $w_1$ or $w_2$.
+    - `chern_class_reduction_obstruction(manifold, target_group)`: returns $c_1$.
+  * `categories/differential_geometry/holonomy.py`:
+    - `HolonomyClassifier(riemannian_manifold)`: classifies holonomy in Berger list.
+    - `berger_holonomy_list()`: table of irreducible Berger holonomy groups.
+    - `parallel_forms(riemannian_manifold)`: detects parallel forms ($\omega, \Omega, \Phi, \Psi$).
+
+Intended owners: `categories/differential_geometry/riemannian.py` (`RiemannianManifold`, `christoffel_symbols`, `riemann_curvature`, `ricci_curvature`), `categories/differential_geometry/symplectic.py` (`SymplecticManifold`, `is_symplectic_form`, `hamiltonian_vector_field`, `poisson_bracket`), `categories/differential_geometry/almost_complex.py` (`AlmostComplexStructure`, `nijenhuis_tensor`, `is_integrable`), `categories/differential_geometry/kahler.py` (`KahlerManifold`, `is_kahler`, `lefschetz_operator`, `dual_lefschetz_operator`), `categories/differential_geometry/hyperkahler.py` (`HyperkahlerManifold`, `verify_hyperkahler_structure`, `holomorphic_symplectic_form`, `twistor_complex_structure`), `categories/differential_geometry/structure_group.py` (`FrameBundle`, `StructureGroupReduction`, `stiefel_whitney_reduction_obstruction`), `categories/differential_geometry/holonomy.py` (`HolonomyClassifier`, `berger_holonomy_list`, `parallel_forms`).
+
 
 
 
