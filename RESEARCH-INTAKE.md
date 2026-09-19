@@ -123,6 +123,8 @@ Where to look first for existing algorithms before writing new code. Check these
 | Operationalized convergence criteria, Dirichlet irrationality, symbolic integration by parts, and L-function zeta regularization | User intake 2026-09-19 | Operationalized convergence and analytic toolkit: (1) Dirichlet's irrationality criterion (Diophantine approximation $|\alpha - p/q| < 1/(qN) \le 1/q^2$, continued fractions, Apéry-type certificates, irrationality measures $\mu(\alpha)$); (2) Dirichlet's convergence test for series $\sum a_n b_n$ (bounded partial sums + monotonic $b_n \to 0$ via Abel summation by parts, alternating/Fourier/Dirichlet series); (3) Cauchy condensation test $\sum a_n \leftrightarrow \sum 2^k a_{2^k}$ (automated logarithmic/geometric convergence decider); (4) Symbolic integration by parts (recursive, tabular, reduction formulas, LIATE heuristic, cyclic integral solver in differential algebra); (5) Zeta and L-function regularization (spectral zeta functions $\zeta_A(s) = \operatorname{Tr}(A^{-s})$, functional determinants $\operatorname{det}_\zeta(A) = \exp(-\zeta_A'(0))$, Ramanujan/Euler-Maclaurin summation, completed L-functions $\Lambda(s, \pi)$, and values at integers) | `categories/analysis/convergence_tests.py` + `categories/number_theory/diophantine_approximation.py` + `categories/calculus/symbolic_integration.py` + `categories/zeta/regularization.py` + `categories/l_functions/analytic_continuation.py` | Proposed — see note below |
 | Gerstenhaber algebra structure on Hochschild cohomology $HH^*(A, A)$ (operadic $e_2$ algebra, brace algebra, Schouten bracket) | User intake 2026-09-19 | Full Gerstenhaber algebra structure $(\smile, [-,-])$ on Hochschild cohomology $HH^*(A, A)$: graded commutative cup product $HH^p \otimes HH^q \to HH^{p+q}$, graded Lie bracket $[-,-] \colon HH^p \otimes HH^q \to HH^{p+q-1}$ (degree -1, degree 0 on $HH^*[1]$), Poisson/derivation compatibility $[a, b \smile c] = [a, b] \smile c + (-1)^{(|a|-1)|b|} b \smile [a, c]$; cochain realization via Gerstenhaber circle product $f \circ g = \sum (-1)^{(i-1)(q-1)} f \circ_i g$, graded pre-Lie algebra $C^*(A, A)[1]$, DGLA differential $d = [m, -]$; brace algebra $B_\infty$ operations $f\{g_1, \dots, g_k\}$; Deligne's conjecture ($E_2$ / little 2-disks operad action on $C^*(A, A)$); HKR isomorphism matching $[-,-]$ with Schouten-Nijenhuis bracket on polyvector fields $\bigwedge^* T_X$; deformation theory (Maurer-Cartan equation $d\alpha + \frac{1}{2}[\alpha, \alpha] = 0$, obstructions in $HH^3$); Batalin-Vilkovisky (BV) structure $\Delta$ on Calabi-Yau / Frobenius algebras | `categories/homology/gerstenhaber.py` + `categories/homology/hochschild.py` + `categories/operads/little_disks.py` + `categories/algebras/brace_algebras.py` + `categories/deformation/deformation_quantization.py` | Proposed — see note below |
 | Continuous actions of topological groups on topological spaces (G-Top, orbit spaces, proper actions, slice theorem, and equivariant topology) | User intake 2026-09-19 | Comprehensive topological group action framework: topological group $G \in \mathbf{TopGrp}$ and continuous left/right actions $\alpha \colon G \times X \to X$ in $\mathbf{Top}$; orbits $G \cdot x$, stabilizers $G_x \le G$ (closed subgroups), canonical homeomorphism $G/G_x \cong G \cdot x$; quotient orbit space $X/G$ with open projection $\pi \colon X \twoheadrightarrow X/G$, separation criteria ($T_1 \iff$ closed orbits, $T_2 \iff$ closed orbit relation); action predicates: transitive ($X \cong G/H$), free, faithful, proper ($(g,x) \mapsto (gx, x)$ proper, compact stabilizers, Hausdorff quotient), properly discontinuous, cocompact; Palais-Koszul slice theorem $G \times_H S \cong U$; equivariant category $G\mathbf{-Top}$ ($G$-maps, invariant subspaces, fixed points $X^G$, induction $\operatorname{Ind}_H^G = G \times_H -$, coinduction $\operatorname{CoInd}_H^G$); Borel homotopy quotient $X_{hG} = EG \times_G X$, equivariant cohomology $H_G^*(X) = H^*(X_{hG})$; principal $G$-bundles and associated bundles $P \times_G F$ | `categories/topology/topological_groups.py` + `categories/topology/group_actions.py` + `categories/topology/equivariant.py` + `categories/topology/principal_bundles.py` | Proposed — see note below |
+| Associated real/complex torus $T(L) = L_\mathbb{R}/L$ and abelian varieties from $\mathbb{Z}$-lattices | User intake 2026-09-19 | Construction of the associated torus $T(L) = L_\mathbb{R}/L \cong (S^1)^n$ for any $\mathbb{Z}$-lattice $L$: compact abelian Lie group, $\pi_1 \cong L$, $H_1 \cong L$, $H^1 \cong L^\vee$, dual torus $T(L)^\vee = L_\mathbb{R}^\vee/L^\vee$; complex structures $J$ ($J^2 = -\operatorname{id}$ on $L_\mathbb{R}$ for $\operatorname{rank}(L) = 2g$) yielding complex tori $V/\Lambda$; Riemann bilinear relations for polarizations $E \in \bigwedge^2 L^\vee$: $E(Ju, Jv) = E(u, v)$ and $E(u, Ju) > 0$ (Hodge type (1,1) + positive-definiteness); criterion for $T(L)$ to be an abelian variety (existence of Riemann form $E$); elementary divisors $(d_1, \dots, d_g)$, principal polarizations ($d_i = 1$) and period matrices $Z \in \mathbb{H}_g$ in Siegel upper half-space; Appell-Humbert theorem and theta functions $\theta(z)$; Euclidean lattices with symmetric form $b$ as flat Riemannian tori, Laplace spectrum from $L^\vee$, and Milnor isospectral pairs; Jacobian $\operatorname{Jac}(C) = H_1(C, \mathbb{R})/H_1(C, \mathbb{Z})$ and Albanese $\operatorname{Alb}(X)$ varieties | `categories/lattices/torus.py` + `categories/complex_geometry/complex_tori.py` + `categories/abelian_varieties/abelian_variety.py` + `categories/modular/siegel_half_space.py` + `categories/riemannian/flat_tori.py` | Proposed — see note below |
+
 
 
 
@@ -3407,6 +3409,98 @@ Intended owners: `categories/homology/gerstenhaber.py` (`GerstenhaberBracket`, `
     - `associated_bundle(F)`: constructs $P \times_G F \to B$.
 
 Intended owners: `categories/topology/topological_groups.py` (`TopologicalGroup`, `QuotientGroup`), `categories/topology/group_actions.py` (`TopologicalGroupAction`, `OrbitSpace`, `Stabilizer`, `Slice`), `categories/topology/equivariant.py` (`GSpace`, `EquivariantMap`, `BorelConstruction`, `EquivariantCohomology`), `categories/topology/principal_bundles.py` (`PrincipalBundle`, `AssociatedBundle`).
+
+## Desired capability: Associated torus $T(L) = L_\mathbb{R}/L$ and abelian varieties from $\mathbb{Z}$-lattices — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **The real torus $T(L) = L_\mathbb{R}/L$ of a $\mathbb{Z}$-lattice:**
+    * Let $L$ be a free $\mathbb{Z}$-module of finite rank $n$ (a $\mathbb{Z}$-lattice).
+    * Ambient real vector space: $L_\mathbb{R} \coloneqq L \otimes_\mathbb{Z} \mathbb{R} \cong \mathbb{R}^n$.
+    * $L \subset L_\mathbb{R}$ is a discrete, cocompact subgroup.
+    * The associated **real torus** is the quotient Lie group:
+      $$
+      T(L) \;\coloneqq\; L_\mathbb{R} / L \;\cong\; (\mathbb{R}/\mathbb{Z})^n \;\cong\; (S^1)^n.
+      $$
+      $T(L)$ is a compact, connected abelian Lie group of real dimension $n$.
+    * **Topological invariants:**
+      - Fundamental group: $\pi_1(T(L), 0) \cong L$.
+      - Homology: $H_1(T(L), \mathbb{Z}) \cong L$, and $H_k(T(L), \mathbb{Z}) \cong \bigwedge^k L$.
+      - Cohomology ring: $H^*(T(L), \mathbb{Z}) \cong \bigwedge^* L^\vee$, where $L^\vee \coloneqq \operatorname{Hom}_\mathbb{Z}(L, \mathbb{Z})$ is the dual lattice.
+    * **Dual torus (character group):**
+      $$
+      T(L)^\vee \;\coloneqq\; L_\mathbb{R}^\vee / L^\vee \;\cong\; \operatorname{Hom}_{\mathbf{Grp}}(T(L), S^1) \;\cong\; \operatorname{Pic}^0_{\mathrm{top}}(T(L)).
+      $$
+
+  * **Complex structures and complex tori ($n = 2g$):**
+    * When $\operatorname{rank}(L) = n = 2g$ is even, a complex structure on the real torus $T(L)$ is specified by an $\mathbb{R}$-linear map $J \colon L_\mathbb{R} \to L_\mathbb{R}$ satisfying $J^2 = -\operatorname{id}_{L_\mathbb{R}}$.
+    * Induces a direct sum decomposition of the complexification:
+      $$
+      L_\mathbb{C} \;\coloneqq\; L_\mathbb{R} \otimes_\mathbb{R} \mathbb{C} \;=\; V \oplus \bar{V},
+      $$
+      where $V = L_\mathbb{R}^{(1,0)} = \{ v - i J v \mid v \in L_\mathbb{R} \} \cong \mathbb{C}^g$ is the $+i$-eigenspace of $J$.
+    * Projection $\pi \colon L_\mathbb{R} \xrightarrow{\sim} V$ embeds $L$ as a full lattice $\Lambda \coloneqq \pi(L) \subset V \cong \mathbb{C}^g$.
+    * The quotient $X = (L_\mathbb{R}, J) / L \cong V / \Lambda$ is a **complex torus** of complex dimension $g$, equipped with a canonical holomorphic Lie group structure.
+    * Tangent and cotangent spaces: $T_0 X \cong V$, $T_0^* X \cong V^* \cong H^0(X, \Omega_X^1)$.
+
+  * **Criterion for $T(L)$ to be an abelian variety (Riemann bilinear relations):**
+    * A complex torus $X = V/\Lambda$ is an **abelian variety** (algebraic complex torus embeddable in projective space) if and only if it admits a **Riemann form** (a polarization).
+    * **Riemann form (polarization):** An alternating $\mathbb{Z}$-bilinear form $E \colon L \times L \to \mathbb{Z}$ ($E \in \bigwedge^2 L^\vee \cong H^2(X, \mathbb{Z})$) satisfying the two **Riemann Bilinear Relations**:
+      1. **Hodge type $(1, 1)$:** $E(J u, J v) = E(u, v)$ for all $u, v \in L_\mathbb{R}$ (so $c_1(\mathcal{L}) = E \in H^{1,1}(X) \cap H^2(X, \mathbb{Z}) \cong \operatorname{NS}(X)$).
+      2. **Positive-definiteness:** $g_E(u, v) \coloneqq E(u, J v)$ is positive-definite, i.e. $E(u, J u) > 0$ for all $u \neq 0$ (so $H(u, v) = E(J u, v) + i E(u, v)$ is positive-definite Hermitian on $V$).
+    * **Polarization type:** By Frobenius normal form for skew-symmetric integer matrices, there exists a symplectic basis of $L$ with matrix $[E] = \begin{pmatrix} 0 & D \\ -D & 0 \end{pmatrix}$, $D = \operatorname{diag}(d_1, \dots, d_g)$ with $d_1 \mid \dots \mid d_g \in \mathbb{Z}_{>0}$.
+    * **Principal polarization:** $d_1 = \dots = d_g = 1$, inducing an isomorphism $\lambda_E \colon X \xrightarrow{\sim} \check{X} \coloneqq \operatorname{Pic}^0(X)$.
+
+  * **Period matrices and the Siegel upper half-space $\mathbb{H}_g$:**
+    * In an adapted symplectic basis, the period matrix of $\Lambda$ in $V$ takes normalized form $\Pi = (Z \;\; I_g)$ with $Z \in \operatorname{Mat}_{g \times g}(\mathbb{C})$.
+    * Riemann bilinear relations: $Z^{\mathrm{T}} = Z$ and $\operatorname{Im}(Z) > 0$. Thus $Z \in \mathbb{H}_g$.
+    * Moduli space of principally polarized abelian varieties (PPAVs): $\mathcal{A}_g \cong \operatorname{Sp}_{2g}(\mathbb{Z}) \backslash \mathbb{H}_g$.
+
+  * **Appell-Humbert theorem and line bundles:**
+    * Line bundles $\mathcal{L}(H, \chi)$ on $X$ are classified by Hermitian forms $H$ on $V$ with $\operatorname{Im} H(\Lambda, \Lambda) \subset \mathbb{Z}$ and semi-characters $\chi \colon \Lambda \to U(1)$.
+    * Exact sequence: $0 \to \operatorname{Pic}^0(X) \to \operatorname{Pic}(X) \to \operatorname{NS}(X) \to 0$.
+    * Riemann-Roch: $h^0(X, \mathcal{L}) = d_1 \cdots d_g = \sqrt{\det E}$. Global sections are Riemann theta functions with characteristics.
+
+  * **Euclidean lattices and flat Riemannian tori:**
+    * A positive-definite symmetric form $b \colon L \times L \to \mathbb{Z}$ (or $\mathbb{R}$) induces a flat Riemannian metric $g_b$ on $T(L)$.
+    * Volume: $\operatorname{Vol}(T(L)) = \sqrt{\det B}$.
+    * Laplace spectrum: $\operatorname{Spec}(\Delta) = \{ 4\pi^2 b^*(v, v) \mid v \in L^\vee \}$, where $b^*$ is the dual metric on $L^\vee$.
+    * Spectral theta series: $\Theta_{T(L)}(t) = \operatorname{Tr}(e^{-t \Delta}) = \sum_{v \in L^\vee} e^{-4\pi^2 t b^*(v, v)}$.
+    * Milnor isospectral non-isometric tori: the even unimodular lattices $E_8 \oplus E_8$ and $D_{16}^+$ in dimension 16 have identical theta series $\Theta_L(t)$ but non-isomorphic lattices, producing isospectral non-isometric flat tori.
+
+  * **Jacobian and Albanese varieties:**
+    * For a compact Riemann surface $C$ of genus $g$: $L = H_1(C, \mathbb{Z})$ with intersection pairing $E = (\cdot, \cdot)$ unimodular symplectic. The Jacobian $\operatorname{Jac}(C) = H^0(C, \Omega^1_C)^\vee / H_1(C, \mathbb{Z})$ is a canonically principally polarized abelian variety.
+    * For a smooth projective variety $X$: the Albanese variety $\operatorname{Alb}(X) = H^0(X, \Omega_X^1)^\vee / H_1(X, \mathbb{Z})/\operatorname{tors}$ is an abelian variety equipped with the universal morphism $X \to \operatorname{Alb}(X)$.
+
+* **Preamble implementation requirements:**
+  * `categories/lattices/torus.py`:
+    - `LatticeTorus(L)`: constructs real torus $T(L) = L_\mathbb{R}/L$.
+    - `dimension()`: returns $\operatorname{rank}(L)$.
+    - `fundamental_group()`: returns $L$.
+    - `homology(k)`: returns exterior power $\bigwedge^k L$.
+    - `cohomology(k)`: returns $\bigwedge^k L^\vee$.
+    - `dual_torus()`: returns $T(L)^\vee = L_\mathbb{R}^\vee / L^\vee$.
+  * `categories/complex_geometry/complex_tori.py`:
+    - `ComplexTorus(L, J)`: complex structure $J \in \operatorname{End}(L_\mathbb{R})$ with $J^2 = -\operatorname{id}$.
+    - `period_matrix()`: period matrix $\Pi \in \operatorname{Mat}_{g \times 2g}(\mathbb{C})$.
+    - `is_algebraic()`: checks whether a polarizing Riemann form exists.
+  * `categories/abelian_varieties/abelian_variety.py`:
+    - `AbelianVariety(L, J, E)`: abelian variety certified by polarization $E \in \bigwedge^2 L^\vee$.
+    - `polarization_type()`: elementary divisors $(d_1, \dots, d_g)$.
+    - `is_principally_polarized()`: checks $d_1 = \dots = d_g = 1$.
+    - `siegel_period_matrix()`: normalized period matrix $Z \in \mathbb{H}_g$.
+    - `dual_abelian_variety()`: constructs $\check{X} = \operatorname{Pic}^0(X)$.
+  * `categories/riemannian/flat_tori.py`:
+    - `FlatRiemannianTorus(L, b)`: flat metric from positive-definite symmetric form $b$.
+    - `volume()`: $\sqrt{\det B}$.
+    - `laplace_spectrum(cutoff=None)`: eigenvalues with multiplicities from $L^\vee$.
+    - `spectral_theta_series()`: $\operatorname{Tr}(e^{-t \Delta})$.
+    - `is_isospectral_to(other)`: tests isospectrality via lattice theta series equality.
+  * `categories/abelian_varieties/jacobians.py`:
+    - `JacobianVariety(curve)`: Torelli map from algebraic curves to PPAVs.
+    - `AlbaneseVariety(variety)`: universal morphism to Albanese variety.
+
+Intended owners: `categories/lattices/torus.py` (`LatticeTorus`, `DualTorus`), `categories/complex_geometry/complex_tori.py` (`ComplexTorus`, `PeriodMatrix`), `categories/abelian_varieties/abelian_variety.py` (`AbelianVariety`, `RiemannForm`, `Polarization`), `categories/riemannian/flat_tori.py` (`FlatRiemannianTorus`, `LaplaceSpectrum`), `categories/abelian_varieties/jacobians.py` (`JacobianVariety`, `AlbaneseVariety`).
+
 
 
 
