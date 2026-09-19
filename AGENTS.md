@@ -67,7 +67,7 @@ Use [COMPLEXITY.md](COMPLEXITY.md) to score work and select a model and reasonin
 The [TODO workstream table](TODO.md#workstreams) records the DAG task scores and their reasons.
 Apply the guide to the responsibility actually assigned, including any shared contract design or orchestration it requires.
 
-Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. If the generated megadoc may be stale relative to the live source tree, regenerate it with `just preamble-megadoc` and then read the generated `docs/preamble-megadoc.md`.
+Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. When execution is authorized, regenerate a stale megadoc with `just preamble-megadoc` and read the result. While `DEV-58` suspends execution, read the existing megadoc as an index, inspect live source for the affected owners, and retain regeneration under terminal T. The prerequisite never overrides the execution phase.
 
 `just preamble-megadoc` surveys a live session, so it also writes `docs/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `docs/preamble-graph.dot` with the rendered `docs/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
 
@@ -141,7 +141,7 @@ Link an existing complaint for the same foundation rather than duplicating it
 under each leaf. Link remediation to its TODO item; recording it does not repair
 it or authorize unrelated implementation. Keep only unresolved complaints, remove
 delivered ones with evidence in the commit, and preserve remaining proof work
-under terminal T. Use the TODO's coordination mutex for complaint edits too.
+under terminal T. Apply `DEV-61` to TODO and complaint edits; the current single-worker workflow has no claim ledger or coordination mutex.
 The detailed capture and maintenance contract lives in `DEV-59`.
 
 ## Construction and engine boundaries (always-on)
@@ -341,10 +341,10 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
   resurrect a past checkbox or append a retrospective audit. Incorporate a
   related new obligation into the existing unfinished item rather than creating
   duplicate authoritative lists.
-- **Before committing a queue update:** use its existing coordination mutex,
-  reread the live file, and apply only the intended delta. Preserve concurrent
-  edits and other workers' active reservations. Remove your reservation on
-  release; an old timestamp alone never authorizes removing someone else's.
+- **Before committing a queue update:** follow `DEV-61`, reread the live file,
+  and apply only the intended delta. The current single-worker workflow has no
+  reservation layer. Preserve foreign edits and any pre-existing reservation
+  until its ownership is resolved; age alone never authorizes removing it.
   Check unique node IDs, resolved dependencies, acyclicity, required-work reachability
   into the terminal chain, and separation of optional work. Keep dependencies
   only in the items' `Needs` lists. Remove a delivered node's edge references
@@ -1521,32 +1521,25 @@ $\mathbb{Z}^2$, many $G$-actions on $\mathbb{Z}^n$ — so the forgetful functor 
 injective and the enriched thing **is its own object**; collapsing many structures onto one
 parent would collapse distinct mathematics.
 
-That distinctness is what the construction chain already delivers, and it needs no
-apparatus. A lattice is built *through* the module level, so it **is** a module — one
-object, all the way down to its underlying set — and two lattices on $\mathbb{Z}^2$ are two
-objects because each ran its own construction. (The old measurement `U.forget_form() is
-A₂.forget_form()` described the superseded design in which a lattice *held* a separate free
-module keyed on $(R,S)$. With construction threading there is no held module to share.)
+The construction chain makes the structured object an object of its weaker
+categories. A lattice inherits module operations through that chain; it does not
+implement another module and forward every operation to it. Distinct choices of
+form or action on the same input remain distinct structured objects.
 
-**There is no `forget_*` method, at any level.** Not as a method, not as an abstract
-declaration, not as a delegation target. A lattice already is a module, so there is nothing
-to forget to, and the lower category's methods answer on the object directly because the
-object is in that category. The forgetful passage $\mathbf{Lat}\to\mathbf{Mod}_R$ is a
-**functor obtained from its owning category**, with the adjunction where one is
-specified, never a `forget_*` object method or a second global operation.
-So there is no forwarding to write, to generate, or to delete.
-*The tell:* any method whose body is `return self.forget_<something>().<the same name>()`;
-any stored `_module`, `_underlying` or `_module_morphism` holding the level below.
+A received module is retained as defining data. `M.equip_bilinear_form(R, b)`,
+`Modules(R[G])(M, rho)` and `Algebras(R)(M, m)` use the one constructor of their
+category; the specified accessor returns that exact `M`. Keeping this datum is
+required, not evidence of a wrapper. A second implementation of the weaker
+operations, or an `equip_*`/`forget_*` identification pair connecting it back to
+`M`, is the prohibited duplication. Elements pass through the owner-established
+coercion. The category owns its forgetful functor; no object-level `forget_*`
+forwarding API is introduced.
 
-**A structured object built from a received object retains it as data, and nothing
-else.** `M.equip_bilinear_form(R, b)`, `Modules(R[G])(M, rho)` and `Algebras(R)(M, m)`
-build the structured object on the data of $M$ and answer `unformed_module()` with $M$,
-the accessor the specification writes. That accessor returns the constructor's retained
-datum; it is not the forgetful functor, which is the identity on the object. There is no
-identification map between the two to name: elements pass by coercion. `CON-16` owns the
-constructor side (one entry per category, every convenience computes the datum and routes
-in). *The tell:* `equip_*`/`forget_*` morphisms; `*_source_module`; a `from_*`/`to_*`
-pair; a `WithChosenX` category where `X` is the category's own defining datum.
+`CON-16` and `OWN-15`--`OWN-17` own this distinction. Actual mathematical maps
+remain mandatory: inclusions, projections, selected framings, scalar-change
+units/counits and genuine chosen isomorphisms are not wrapper identifications.
+A free algebra's generating module and its full underlying module are different
+mathematical data and must not be merged merely to remove a source accessor.
 
 **All of this holds uniformly across objects, elements and arrows.** The public owned
 protocol is `ObjectType`, `ElementType`, `HomCatType`, `EndCatType`, `AutCatType`, with
