@@ -138,6 +138,9 @@ Where to look first for existing algorithms before writing new code. Check these
 | Morse theory, gradient flows, trajectory moduli spaces, flow categories $\mathcal{C}_f$, and free loop spaces $LM$ | User intake 2026-09-19 | Comprehensive differential and infinite-dimensional topological framework for Morse theory and loop spaces: (1) Morse functions $f \colon M \to \mathbb{R}$: non-degenerate critical points $\operatorname{Crit}(f)$, Hessian $H_f(p)$, Morse lemma charts, Morse index $\lambda(p)$, and nullity; (2) Negative gradient flow $\dot{\gamma} = -\nabla f$: unstable/stable manifolds $W^u(p), W^s(p)$, Morse-Smale transversality condition $W^u(p) \pitchfork W^s(q)$; (3) Moduli spaces of flow lines $\mathcal{M}(p, q) = (W^u(p) \cap W^s(q))/\mathbb{R}$ of dimension $\lambda(p) - \lambda(q) - 1$, orientation signs, and intersection numbers $n(p, q)$; (4) Compactification and broken trajectories: compactified moduli space $\overline{\mathcal{M}}(p, q)$ as manifolds with corners, boundary strata $\partial \overline{\mathcal{M}}(p, q) = \bigcup_r \overline{\mathcal{M}}(p, r) \times \overline{\mathcal{M}}(r, q)$; (5) The Cohen-Jones-Segal flow category $\mathcal{C}_f$: objects $\operatorname{Crit}(f)$, morphism spaces $\overline{\mathcal{M}}(p, q)$, composition law via flow line concatenation/gluing, topological/$\infty$-enrichment, and Morse-Witten complex $C_*^{\mathrm{Morse}}(f, g) \cong H_*(M)$; (6) Free loop spaces $LM = \operatorname{Map}(S^1, M)$: circle rotation action, energy functional $E(\gamma) = \frac{1}{2} \int |\dot{\gamma}|^2$, critical points as closed geodesics, Morse-Bott index, and Chas-Sullivan string topology (loop product and Batalin-Vilkovisky operator $\Delta$) | `categories/differential_geometry/morse_theory.py` + `categories/differential_geometry/gradient_flow.py` + `categories/differential_geometry/flow_category.py` + `categories/topology/free_loop_space.py` + `categories/topology/string_topology.py` | Proposed — see note below |
 | Universal classifying fibrations $E\mathcal{C} \to B\mathcal{C}$ for small and finitely presented categories | User intake 2026-09-19 | Universal bundle and classifying fibration theory for categories representable by finitely much explicit data: (1) Nerve simplicial set $N(\mathcal{C})_\bullet$ for small categories $\mathcal{C}$ (quiver presentations $F(Q)/R$, finite posets, finite groupoids) and geometric realization $B\mathcal{C} = |N(\mathcal{C})|$; (2) Universal bundle category $E\mathcal{C}$: comma category $\mathcal{C} \downarrow \mathcal{C}$ / category of elements $\int_{\mathcal{C}} \operatorname{Hom}(-, c)$ / slice over-categories, simplicial nerve $N(E\mathcal{C})_\bullet$, and canonical contractibility certificate ($|E\mathcal{C}| \simeq *$); (3) Classifying fibration projection $p \colon E\mathcal{C} \to \mathcal{C}$ and $|N(p)| \colon |E\mathcal{C}| \to B\mathcal{C}$ as a universal Grothendieck opfibration / Serre fibration; (4) Contractible fibers: fiber over object $c$ identified with under-category $c \downarrow \mathcal{C}$ (initial object $\operatorname{id}_c$); (5) Group delooping specialization: $\mathcal{C} = \mathbf{B}G$, translation groupoid $EG = G // G$, simplicial set $EG_n = G^{n+1}$ with free $G$-action, universal principal $G$-bundle $EG \to BG$; (6) Automated finite simplicial engine: simplicial sets, face/degeneracy matrices, Kan condition tests, and explicit simplicial contracting homotopies | `categories/classifying_spaces/nerve.py` + `categories/classifying_spaces/classifying_fibration.py` + `categories/classifying_spaces/universal_bundle.py` + `categories/finitely_presented/category_of_elements.py` | Proposed — see note below |
 | Riemannian, symplectic, Kähler, and hyperkähler manifolds, holonomy classifications, and reductions of structure groups | User intake 2026-09-19 | Comprehensive differential and complex geometry framework for geometric structures, holonomy, and structure group reductions: (1) Frame bundle $\operatorname{Fr}(M)$ and $G$-structures: reduction from $GL(n, \mathbb{R})$ to Lie subgroup $G$ via sections of $\operatorname{Fr}(M)/G$, obstruction theory ($w_1$ for orientation, $w_2$ for spin, $c_1$ for almost complex / Calabi-Yau); (2) Riemannian manifolds $(M, g)$: $O(n)$-reduction (always exists), Levi-Civita connection $\nabla$, curvature tensors (Riemann $R$, Ricci, scalar, sectional), holonomy $\operatorname{Hol}(g) \subseteq O(n)$; (3) Symplectic manifolds $(M, \omega)$: $Sp(2m, \mathbb{R})$-reduction, non-degeneracy $\omega^m \neq 0$, integrability $d\omega = 0$, Darboux charts, Hamiltonian vector fields, and Poisson brackets; (4) Almost complex and complex manifolds $(M, J)$: $GL(m, \mathbb{C})$-reduction, $J^2 = -\operatorname{id}$, Nijenhuis tensor $N_J$, Newlander-Nirenberg integrability; (5) Kähler manifolds $(M, g, J, \omega)$: compatible triple, $U(m)$-reduction, $\nabla J = 0$, Hodge decomposition $H^k = \bigoplus H^{p, q}$, Kähler identities, Hard Lefschetz, and Hodge-Riemann relations; (6) Hyperkähler manifolds $(M, g, I, J, K)$: quaternionic relations $I^2 = J^2 = K^2 = IJK = -1$, parallel structures $\nabla I = \nabla J = \nabla K = 0$, $Sp(k)$-holonomy, holomorphic symplectic form $\Omega = \omega_J + i \omega_K$, Ricci-flatness, and twistor space $Z = M \times S^2$; (7) Berger holonomy classification: classification of Riemannian holonomy groups ($SO, U, SU, Sp, Sp(k)Sp(1), G_2, \operatorname{Spin}(7)$) | `categories/differential_geometry/riemannian.py` + `categories/differential_geometry/symplectic.py` + `categories/differential_geometry/almost_complex.py` + `categories/differential_geometry/kahler.py` + `categories/differential_geometry/hyperkahler.py` + `categories/differential_geometry/structure_group.py` + `categories/differential_geometry/holonomy.py` | Proposed — see note below |
+| Hamiltonian flows, action functionals on path spaces, and gradient-flow handle decompositions for computing homotopy types | User intake 2026-09-19 | Symplectic dynamics and variational calculus framework linking Hamiltonian mechanics, action-functional critical point theory, and Morse-theoretic handle attachments: (1) Hamiltonian flows on symplectic manifolds $(M, \omega)$: Hamiltonian $H \colon M \times \mathbb{R} \to \mathbb{R}$, Hamilton's equations $\dot{q} = \partial H/\partial p,\; \dot{p} = -\partial H/\partial q$, Hamiltonian vector field $X_H$ via $\iota_{X_H}\omega = -dH$, flow $\phi_H^t \in \operatorname{Symp}(M, \omega)$, Liouville volume preservation, integrals of motion, and symplectic integrators; (2) Action functionals on path spaces: classical action $\mathcal{S}[\gamma] = \int_0^1 (p \dot{q} - H(q, p, t))\, dt$ on $\mathcal{P}(M) = C^\infty([0,1], T^*M)$, Euler-Lagrange critical points as Hamiltonian trajectories, symplectic action functional $\mathcal{A}_H(\gamma) = -\int \gamma^* \lambda + \int_0^1 H(\gamma(t), t)\, dt$ on contractible loop space $\widetilde{LM}$, Conley-Zehnder index $\mu_{CZ}(\gamma)$, and Floer's $L^2$-gradient flow of $\mathcal{A}_H$ yielding pseudo-holomorphic strips $u \colon \mathbb{R} \times S^1 \to M$ satisfying $\partial_s u + J(\partial_t u - X_H) = 0$; (3) Gradient-flow handle decompositions: Morse function $f$ on $M$ with gradient flow $-\nabla f$, sublevel sets $M^a = f^{-1}(-\infty, a]$, handle attachment theorem (crossing a critical point of index $\lambda$ attaches a $\lambda$-handle $D^\lambda \times D^{n-\lambda}$ to $M^{f(p)-\varepsilon}$), CW structure $M \simeq e^0 \cup e^{\lambda_1} \cup \dots \cup e^{\lambda_k}$ recovering homotopy type, Morse inequalities $c_k \ge b_k$ and strong inequality $\sum (-1)^{n-k} c_k \ge \sum (-1)^{n-k} b_k$, Smale's cancellation and rearrangement of handles, and h-cobordism theorem; (4) Floer homology as infinite-dimensional Morse theory: $HF_*(H, J) \cong H_*(M; \Lambda)$ (Arnold conjecture), Floer continuation maps, PSS isomorphisms, and spectral invariants | `categories/differential_geometry/hamiltonian_flow.py` + `categories/differential_geometry/action_functional.py` + `categories/differential_geometry/handle_decomposition.py` + `categories/differential_geometry/floer_homology.py` | Proposed — see note below |
+| Polarized modules $(M, E)$ with spectral decomposition $M = M_- \oplus M_+$ from self-adjoint Fredholm operators | User intake 2026-09-19 | Functional-analytic and $K$-theoretic framework for polarized Hilbert modules and their categorical structure: (1) Fredholm operators $E \colon \mathcal{H} \to \mathcal{H}$: bounded operators with finite-dimensional kernel and cokernel, Fredholm index $\operatorname{ind}(E) = \dim \ker E - \dim \operatorname{coker} E$, Atiyah-Jänich classifying map $\operatorname{Fred}(\mathcal{H}) \simeq \mathbb{Z} \times BU$ representing $K^0$, and Calkin algebra $\mathcal{Q}(\mathcal{H}) = \mathcal{B}(\mathcal{H})/\mathcal{K}(\mathcal{H})$; (2) Self-adjoint Fredholm operators $E = E^*$: real discrete spectrum $\sigma(E) \subset \mathbb{R}$ with eigenvalues accumulating only at $\pm \infty$, spectral theorem $E = \int \lambda\, dP_\lambda$, spectral projections $P_{\pm} = \chi_{\mathbb{R}_{\pm}}(E)$ yielding polarization $\mathcal{H} = \mathcal{H}_- \oplus \mathcal{H}_+$ where $\mathcal{H}_\pm = P_\pm \mathcal{H}$, and $\operatorname{Fred}^{sa}(\mathcal{H}) \simeq \Omega^1(\mathbb{Z} \times BU)$ classifying $K^1$; (3) Polarized modules $(M, E)$: module $M$ (Hilbert space, graded module, or object in an additive category) equipped with operator $E$ whose spectral decomposition $M = M_- \oplus M_+$ separates negative and positive spectral subspaces, polarization class $[P_+] \in \operatorname{Gr}(\mathcal{H})$ in the restricted Grassmannian, Sato Grassmannian $\operatorname{Gr}^{(0)}(\mathcal{H}) = \{W \subset \mathcal{H} \mid P_+ |_W$ Fredholm, $P_- |_W$ Hilbert-Schmidt$\}$ and its determinant line bundle; (4) Morphisms and index theory: polarization-preserving maps $\phi \colon (M_1, E_1) \to (M_2, E_2)$, relative index $\operatorname{ind}(P_{+,1}, \phi^* P_{+,2})$, Kato-Rellich perturbation stability, spectral flow $\operatorname{sf}(E_t) = \sum \operatorname{sgn}$ crossings through 0 along paths $\{E_t\}$ in $\operatorname{Fred}^{sa}$, and APS eta invariant $\eta(E) = \sum_{\lambda \neq 0} \operatorname{sgn}(\lambda) |\lambda|^{-s}|_{s=0}$; (5) Categorical structure: category $\mathbf{Pol}$ of polarized modules, direct sums, tensor products of polarizations, Clifford module polarizations, and connections to Kasparov $KK$-theory bimodules | `categories/functional_analysis/fredholm.py` + `categories/functional_analysis/polarized_module.py` + `categories/functional_analysis/spectral_flow.py` + `categories/k_theory/kk_theory.py` | Proposed — see note below |
+| Moduli spaces of connections on smooth manifolds, gauge theory, Yang-Mills functional, and instanton/flat connection moduli | User intake 2026-09-19 | Gauge-theoretic and differential-geometric framework for moduli spaces of connections: (1) Principal $G$-bundles $P \to M$ and connections: connection 1-form $A \in \Omega^1(P, \mathfrak{g})^G$, covariant derivative $d_A = d + [A, -]$, curvature $F_A = dA + A \wedge A \in \Omega^2(M, \operatorname{ad} P)$, flat connections $F_A = 0$, and Bianchi identity $d_A F_A = 0$; (2) Gauge group and orbit space: gauge group $\mathcal{G} = \operatorname{Aut}(P) \cong \Gamma(P \times_G G)$, gauge action $g \cdot A = g^{-1} A g + g^{-1} dg$, space of all connections $\mathcal{A}(P)$ (affine space modeled on $\Omega^1(M, \operatorname{ad} P)$), and orbit space $\mathcal{B} = \mathcal{A}/\mathcal{G}$; (3) Flat connection moduli: $\mathcal{M}_{\mathrm{flat}}(P) = \{A \mid F_A = 0\}/\mathcal{G} \cong \operatorname{Hom}(\pi_1(M), G)/G$ (character variety), Chern-Simons functional $CS(A) = \frac{1}{8\pi^2}\int_M \operatorname{tr}(A \wedge dA + \frac{2}{3} A \wedge A \wedge A)$ with $\mathcal{M}_{\mathrm{flat}}$ as critical set, deformation complex $\Omega^0 \xrightarrow{d_A} \Omega^1 \xrightarrow{d_A} \Omega^2$ and Zariski tangent $H^1(M, \operatorname{ad} P)$; (4) Yang-Mills functional and instantons: $\operatorname{YM}(A) = \int_M \|F_A\|^2 \operatorname{vol}_g$, Yang-Mills equation $d_A^* F_A = 0$, anti-self-dual (ASD) instantons $F_A^+ = 0$ on 4-manifolds, topological charge $k = \frac{1}{8\pi^2}\int \operatorname{tr}(F_A \wedge F_A) = c_2(P)$, Uhlenbeck compactification, Donaldson invariants, and ADHM construction; (5) Moduli space structures: Kuranishi local models, virtual dimension formulas, Atiyah-Singer index of deformation operator $D_A = d_A^* \oplus d_A^+$, orientation via determinant line bundles, and Hitchin moduli of Higgs bundles $(A, \Phi)$ with $\bar{\partial}_A \Phi = 0$, $F_A + [\Phi, \Phi^*] = 0$ | `categories/differential_geometry/connections.py` + `categories/differential_geometry/gauge_theory.py` + `categories/differential_geometry/moduli_connections.py` + `categories/differential_geometry/yang_mills.py` + `categories/differential_geometry/chern_simons.py` | Proposed — see note below |
 
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
@@ -6108,6 +6111,456 @@ Intended owners: `categories/classifying_spaces/nerve.py` (`CategoryNerve`, `ner
     - `parallel_forms(riemannian_manifold)`: detects parallel forms ($\omega, \Omega, \Phi, \Psi$).
 
 Intended owners: `categories/differential_geometry/riemannian.py` (`RiemannianManifold`, `christoffel_symbols`, `riemann_curvature`, `ricci_curvature`), `categories/differential_geometry/symplectic.py` (`SymplecticManifold`, `is_symplectic_form`, `hamiltonian_vector_field`, `poisson_bracket`), `categories/differential_geometry/almost_complex.py` (`AlmostComplexStructure`, `nijenhuis_tensor`, `is_integrable`), `categories/differential_geometry/kahler.py` (`KahlerManifold`, `is_kahler`, `lefschetz_operator`, `dual_lefschetz_operator`), `categories/differential_geometry/hyperkahler.py` (`HyperkahlerManifold`, `verify_hyperkahler_structure`, `holomorphic_symplectic_form`, `twistor_complex_structure`), `categories/differential_geometry/structure_group.py` (`FrameBundle`, `StructureGroupReduction`, `stiefel_whitney_reduction_obstruction`), `categories/differential_geometry/holonomy.py` (`HolonomyClassifier`, `berger_holonomy_list`, `parallel_forms`).
+
+
+## Desired capability: Hamiltonian flows, action functionals on path spaces, and gradient-flow handle decompositions — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Hamiltonian Flows on Symplectic Manifolds:**
+    * Let $(M^{2m}, \omega)$ be a symplectic manifold and $H \colon M \times \mathbb{R} \to \mathbb{R}$ a smooth (possibly time-dependent) Hamiltonian function.
+    * **Hamiltonian Vector Field:** The unique vector field $X_H$ satisfying the contraction equation:
+      $$
+      \iota_{X_H} \omega \;=\; -dH.
+      $$
+      In Darboux coordinates $(q_1, \dots, q_m, p_1, \dots, p_m)$ with $\omega = \sum dp_i \wedge dq_i$:
+      $$
+      X_H \;=\; \sum_{i=1}^m \left( \frac{\partial H}{\partial p_i} \frac{\partial}{\partial q_i} - \frac{\partial H}{\partial q_i} \frac{\partial}{\partial p_i} \right).
+      $$
+    * **Hamilton's Equations:** The integral curves $\gamma(t) = (q(t), p(t))$ of $X_H$ satisfy:
+      $$
+      \dot{q}_i \;=\; \frac{\partial H}{\partial p_i}, \qquad \dot{p}_i \;=\; -\frac{\partial H}{\partial q_i}.
+      $$
+    * **Hamiltonian Flow $\phi_H^t$:** The time-$t$ map $\phi_H^t \colon M \to M$ is a symplectomorphism ($(\phi_H^t)^* \omega = \omega$). The flow preserves the Liouville volume form $\omega^m / m!$.
+    * **Conservation Laws:** For autonomous $H$ (time-independent), $H$ is conserved along trajectories: $\frac{d}{dt} H(\phi_H^t(x)) = 0$. More generally, $\{F, H\} = 0$ implies $F$ is an integral of motion. The Poisson bracket satisfies:
+      $$
+      \{F, G\} \;=\; \omega(X_F, X_G) \;=\; \sum_i \left( \frac{\partial F}{\partial q_i} \frac{\partial G}{\partial p_i} - \frac{\partial F}{\partial p_i} \frac{\partial G}{\partial q_i} \right).
+      $$
+    * **Complete Integrability (Liouville-Arnold):** An autonomous Hamiltonian system on $(M^{2m}, \omega)$ with $m$ independent Poisson-commuting integrals $F_1 = H, F_2, \dots, F_m$ ($\{F_i, F_j\} = 0$) is completely integrable. The connected components of the regular level sets $\{F_1 = c_1, \dots, F_m = c_m\}$ are diffeomorphic to tori $T^m$, and the flow is linear in action-angle coordinates $(\theta, I)$.
+
+  * **Action Functionals on Path Spaces:**
+    * **Classical Action Functional:** On the path space $\mathcal{P}(M) = C^\infty([0, 1], T^* M)$ of curves in the cotangent bundle $T^* M$ (or phase space):
+      $$
+      \mathcal{S}[\gamma] \;=\; \int_0^1 \big( p(t) \cdot \dot{q}(t) - H(q(t), p(t), t) \big) \, dt,
+      $$
+      where $\gamma(t) = (q(t), p(t))$. Critical points of $\mathcal{S}$ (with respect to fixed-endpoint variations) are solutions of Hamilton's equations.
+    * **Lagrangian Action:** On $\mathcal{P}(M) = C^\infty([0, 1], M)$ with Lagrangian $L \colon TM \to \mathbb{R}$:
+      $$
+      \mathcal{S}_L[\gamma] \;=\; \int_0^1 L(\gamma(t), \dot{\gamma}(t)) \, dt.
+      $$
+      Critical points satisfy the Euler-Lagrange equations $\frac{d}{dt} \frac{\partial L}{\partial \dot{q}} = \frac{\partial L}{\partial q}$. Legendre transform $p = \partial L / \partial \dot{q}$ relates Lagrangian and Hamiltonian pictures.
+    * **Symplectic Action Functional on Contractible Loop Space:**
+      On the universal cover $\widetilde{LM}$ of the contractible loop space of $(M, \omega)$, for a representative $(\gamma, \bar{\gamma})$ where $\bar{\gamma} \colon D^2 \to M$ is a capping disk ($\bar{\gamma}|_{S^1} = \gamma$):
+      $$
+      \mathcal{A}_H(\gamma, \bar{\gamma}) \;=\; -\int_{D^2} \bar{\gamma}^* \omega + \int_0^1 H(\gamma(t), t) \, dt.
+      $$
+    * **Critical Points of $\mathcal{A}_H$:** The critical points of $\mathcal{A}_H$ are 1-periodic orbits of $X_H$: $\dot{\gamma}(t) = X_H(\gamma(t), t)$.
+    * **Conley-Zehnder Index:** For each non-degenerate 1-periodic orbit $\gamma$ of $X_H$, the Conley-Zehnder index $\mu_{CZ}(\gamma) \in \mathbb{Z}$ is a Maslov-type integer measuring the winding of the linearized flow $d\phi_H^t |_{\gamma(0)}$ relative to a symplectic trivialization of $\gamma^* TM$.
+
+  * **Floer's Gradient Flow of the Action Functional:**
+    * The $L^2$-gradient of $\mathcal{A}_H$ with respect to the metric $\langle V, W \rangle = \int_0^1 \omega(V, JW) \, dt$ (for compatible almost complex structure $J$) yields the **Floer equation** for maps $u \colon \mathbb{R} \times S^1 \to M$:
+      $$
+      \frac{\partial u}{\partial s} + J(u) \left( \frac{\partial u}{\partial t} - X_H(u, t) \right) \;=\; 0.
+      $$
+    * Solutions $u(s, t)$ are pseudo-holomorphic strips (or cylinders) with:
+      - $\lim_{s \to -\infty} u(s, \cdot) = \gamma_-$ and $\lim_{s \to +\infty} u(s, \cdot) = \gamma_+$ (asymptotic convergence to 1-periodic orbits).
+      - Finite energy $E(u) = \int_{\mathbb{R} \times S^1} \|\partial_s u\|^2 \, ds \, dt < \infty$.
+    * **Floer Moduli Spaces:** $\mathcal{M}(\gamma_-, \gamma_+; H, J)$ is the space of finite-energy solutions modulo $\mathbb{R}$-translation in $s$. Its virtual dimension is $\mu_{CZ}(\gamma_-) - \mu_{CZ}(\gamma_+) - 1$.
+    * **Floer Chain Complex:** $CF_k(H) = \bigoplus_{\mu_{CZ}(\gamma) = k} \Lambda \cdot \gamma$ over a Novikov ring $\Lambda$. Differential $\partial$ counts rigid ($\dim = 0$) Floer trajectories with signs: $\partial \gamma_- = \sum_{\gamma_+} \#\mathcal{M}(\gamma_-, \gamma_+) \cdot \gamma_+$.
+    * **Floer Homology:** $HF_*(H, J; M) \cong H_*(M; \Lambda)$ is independent of $(H, J)$ via continuation maps, proving the Arnold conjecture: $\#\{\text{1-periodic orbits of } X_H\} \ge \sum_k \dim H_k(M; \Lambda)$.
+    * **PSS Isomorphism:** Natural ring isomorphism $\Phi_{\mathrm{PSS}} \colon QH_*(M) \xrightarrow{\sim} HF_*(H, J)$ between quantum cohomology and Floer homology.
+
+  * **Gradient-Flow Handle Decompositions and Homotopy Types:**
+    * **Sublevel Sets and Topology Change:** For a Morse function $f \colon M \to \mathbb{R}$ with gradient flow $-\nabla_g f$, the sublevel sets $M^a \coloneqq f^{-1}((-\infty, a])$ undergo topological changes only when $a$ crosses a critical value $f(p)$.
+    * **Handle Attachment Theorem (Milnor):** If $p$ is the unique critical point with $f(p) = c$ and Morse index $\lambda(p) = \lambda$, then for sufficiently small $\varepsilon > 0$:
+      $$
+      M^{c + \varepsilon} \;\simeq\; M^{c - \varepsilon} \cup_\varphi (D^\lambda \times D^{n - \lambda}),
+      $$
+      where $D^\lambda \times D^{n-\lambda}$ is a $\lambda$-handle attached along $\varphi \colon S^{\lambda - 1} \times D^{n - \lambda} \hookrightarrow \partial M^{c - \varepsilon}$. The attaching sphere $S^{\lambda - 1}$ lies in $W^u(p) \cap \partial M^{c - \varepsilon}$.
+    * **CW Structure from Morse Data:** The gradient flow gives a CW decomposition of $M$ with one cell $e^{\lambda_i}$ of dimension $\lambda_i$ for each critical point $p_i$ of index $\lambda_i$:
+      $$
+      M \;\simeq\; e^0 \cup_{\varphi_1} e^{\lambda_1} \cup_{\varphi_2} e^{\lambda_2} \cup \dots \cup_{\varphi_k} e^{\lambda_k},
+      $$
+      recovering the homotopy type of $M$.
+    * **Smale's Handle Rearrangement and Cancellation:**
+      - Handles can be rearranged so that index-$\lambda$ handles are attached before index-$(\lambda + 1)$ handles.
+      - A pair of critical points $p$ (index $\lambda$) and $q$ (index $\lambda + 1$) cancel (Whitney trick) if $\#\mathcal{M}(q, p) = \pm 1$: both handles can be removed without changing the diffeomorphism type.
+    * **h-Cobordism Theorem (Smale, $n \ge 6$):** If $(W; M_0, M_1)$ is a simply-connected h-cobordism of dimension $n \ge 6$ ($M_0 \hookrightarrow W$ and $M_1 \hookrightarrow W$ are homotopy equivalences), then $W \cong M_0 \times [0, 1]$ (diffeomorphism). The proof proceeds by cancelling all handle pairs of a self-indexing Morse function on $W$.
+    * **Morse Inequalities from Handle Data:**
+      - Weak: $c_k \ge b_k$ (number of index-$k$ critical points $\ge$ $k$-th Betti number).
+      - Strong (alternating): $\sum_{i=0}^k (-1)^{k-i} c_i \ge \sum_{i=0}^k (-1)^{k-i} b_i$ for each $k$.
+      - Lacunary: If $c_k \neq 0$ implies $c_{k \pm 1} = 0$ (all critical values have gaps), then $c_k = b_k$ (perfect Morse function).
+    * **Spectral Invariants:** For $\alpha \in QH_*(M) \setminus \{0\}$, the spectral invariant $c(\alpha, H) = \inf\{a \mid \alpha \in \operatorname{im}(HF_*^{(-\infty, a]} \to HF_*)\}$ yields symplectic capacity bounds and Hofer geometry.
+
+* **Operational & algorithmic representation:**
+  1. **Hamiltonian Flow Integrator:**
+     - `HamiltonianSystem(symplectic_manifold, hamiltonian)` storing $(M, \omega, H)$.
+     - `hamiltonian_vector_field()` computing $X_H$ from $\iota_{X_H} \omega = -dH$.
+     - `integrate_flow(initial_condition, time_span)` solving Hamilton's equations numerically or symbolically.
+     - `poisson_bracket(F, G)` evaluating $\{F, G\}$.
+     - `check_integrability(integrals)` verifying Poisson-commutativity of putative integrals.
+     - `action_angle_coordinates(level_set)` constructing torus coordinates on Liouville-Arnold tori.
+  2. **Action Functional Engine:**
+     - `ClassicalAction(lagrangian_or_hamiltonian, path)` evaluating $\mathcal{S}[\gamma]$ or $\mathcal{S}_L[\gamma]$.
+     - `euler_lagrange_equations(lagrangian)` deriving the Euler-Lagrange PDE.
+     - `SymplecticActionFunctional(H, capping_disk)` evaluating $\mathcal{A}_H(\gamma, \bar{\gamma})$.
+     - `conley_zehnder_index(periodic_orbit, trivialization)` computing $\mu_{CZ}(\gamma)$.
+  3. **Handle Decomposition Engine:**
+     - `HandleDecomposition(morse_func, metric)` constructing the sequence of handle attachments $M^{c-\varepsilon} \cup D^\lambda \times D^{n-\lambda}$.
+     - `sublevel_set_topology(a)` computing homotopy type / homology of $M^a$.
+     - `cw_structure(morse_func)` extracting the CW decomposition with cells $e^{\lambda_i}$.
+     - `handle_cancellation_pairs()` identifying pairs $(p, q)$ with $\#\mathcal{M}(q, p) = \pm 1$.
+     - `morse_inequalities(morse_func)` computing and verifying weak, strong, and lacunary inequalities.
+  4. **Floer Homology Engine:**
+     - `FloerComplex(H, J)` constructing $(CF_*(H), \partial)$ with generators from 1-periodic orbits.
+     - `floer_equation_solver(gamma_minus, gamma_plus)` solving the Floer PDE for pseudo-holomorphic strips.
+     - `floer_homology(H, J)` computing $HF_*(H, J)$.
+     - `continuation_map(H_0, H_1)` constructing Floer continuation isomorphisms.
+     - `pss_isomorphism(quantum_cohomology)` computing $QH_*(M) \xrightarrow{\sim} HF_*(H, J)$.
+     - `spectral_invariant(alpha, H)` computing $c(\alpha, H)$.
+
+* **Preamble implementation requirements:**
+  * `categories/differential_geometry/hamiltonian_flow.py`:
+    - `HamiltonianSystem(symplectic_manifold, hamiltonian)`: class for Hamiltonian systems $(M, \omega, H)$.
+    - `hamiltonian_vector_field(H, omega)`: computes $X_H$.
+    - `hamiltons_equations(H, coordinates)`: derives the ODE system $\dot{q} = \partial H / \partial p$, $\dot{p} = -\partial H / \partial q$.
+    - `integrate_hamiltonian_flow(system, x0, t_span)`: symplectic integration of $\phi_H^t$.
+    - `check_liouville_integrability(system, integrals)`: verifies Poisson-commutativity.
+    - `action_angle_coordinates(integrable_system, level_set)`: torus coordinates.
+  * `categories/differential_geometry/action_functional.py`:
+    - `ClassicalAction(hamiltonian, path)`: evaluates $\mathcal{S}[\gamma]$.
+    - `LagrangianAction(lagrangian, path)`: evaluates $\mathcal{S}_L[\gamma]$.
+    - `EulerLagrangeEquations(lagrangian)`: derives the variational equations.
+    - `SymplecticActionFunctional(H, loop, capping)`: evaluates $\mathcal{A}_H(\gamma, \bar{\gamma})$.
+    - `ConleyZehnderIndex(periodic_orbit, trivialization)`: computes $\mu_{CZ}(\gamma) \in \mathbb{Z}$.
+  * `categories/differential_geometry/handle_decomposition.py`:
+    - `HandleDecomposition(morse_func, metric)`: sequence of handle attachments.
+    - `handle_attachment(sublevel, critical_point)`: handle $D^\lambda \times D^{n-\lambda}$.
+    - `cw_decomposition(morse_func)`: CW structure $M \simeq \bigcup e^{\lambda_i}$.
+    - `handle_cancellation_pairs(morse_func, metric)`: identifies cancelling pairs.
+    - `morse_inequalities(morse_func)`: weak and strong Morse inequalities.
+    - `sublevel_homology(morse_func, level)`: homology of $M^a$.
+  * `categories/differential_geometry/floer_homology.py`:
+    - `FloerComplex(H, J)`: chain complex $(CF_*(H), \partial)$.
+    - `floer_differential(orbit_minus, orbit_plus)`: counts rigid Floer strips.
+    - `floer_homology(H, J)`: computes $HF_*(H, J)$.
+    - `continuation_map(H_0, H_1, J)`: Floer continuation isomorphism.
+    - `pss_isomorphism(quantum_cohomology, H, J)`: PSS map $QH_* \to HF_*$.
+    - `spectral_invariant(class_alpha, H)`: spectral invariant $c(\alpha, H)$.
+
+Intended owners: `categories/differential_geometry/hamiltonian_flow.py` (`HamiltonianSystem`, `hamiltonian_vector_field`, `hamiltons_equations`, `integrate_hamiltonian_flow`), `categories/differential_geometry/action_functional.py` (`ClassicalAction`, `LagrangianAction`, `SymplecticActionFunctional`, `ConleyZehnderIndex`), `categories/differential_geometry/handle_decomposition.py` (`HandleDecomposition`, `handle_attachment`, `cw_decomposition`, `handle_cancellation_pairs`), `categories/differential_geometry/floer_homology.py` (`FloerComplex`, `floer_homology`, `continuation_map`, `pss_isomorphism`, `spectral_invariant`).
+
+
+## Desired capability: Polarized modules $(M, E)$ with spectral decomposition $M = M_- \oplus M_+$ from self-adjoint Fredholm operators — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Fredholm Operators and Their Index:**
+    * Let $\mathcal{H}$ be a separable infinite-dimensional Hilbert space over $\mathbb{C}$ (or $\mathbb{R}$).
+    * **Fredholm Operator:** A bounded linear operator $T \colon \mathcal{H}_1 \to \mathcal{H}_2$ is **Fredholm** if $\ker T$ and $\operatorname{coker} T = \mathcal{H}_2 / \operatorname{im} T$ are both finite-dimensional and $\operatorname{im} T$ is closed. Equivalently, $T$ is invertible modulo compact operators: $\pi(T) \in \mathcal{Q}(\mathcal{H})^\times$, where $\mathcal{Q}(\mathcal{H}) = \mathcal{B}(\mathcal{H}) / \mathcal{K}(\mathcal{H})$ is the Calkin algebra.
+    * **Fredholm Index:**
+      $$
+      \operatorname{ind}(T) \;\coloneqq\; \dim \ker T - \dim \operatorname{coker} T \;\in\; \mathbb{Z}.
+      $$
+    * **Stability:** The index is invariant under compact perturbations: $\operatorname{ind}(T + K) = \operatorname{ind}(T)$ for all $K \in \mathcal{K}(\mathcal{H})$. It is locally constant on $\operatorname{Fred}(\mathcal{H})$ in the operator norm topology.
+    * **Atiyah-Jänich Classifying Space:** The space of Fredholm operators $\operatorname{Fred}(\mathcal{H})$ is a classifying space for topological $K$-theory:
+      $$
+      \operatorname{Fred}(\mathcal{H}) \;\simeq\; \mathbb{Z} \times BU, \qquad [X, \operatorname{Fred}(\mathcal{H})] \;\cong\; K^0(X).
+      $$
+
+  * **Self-Adjoint Fredholm Operators and Spectral Decomposition:**
+    * **Self-Adjoint Fredholm Operators:** $E \colon \mathcal{H} \to \mathcal{H}$ with $E = E^*$ and $E$ Fredholm. The space $\operatorname{Fred}^{sa}(\mathcal{H})$ consists of self-adjoint operators with $0$ either not in the spectrum or an isolated eigenvalue of finite multiplicity.
+    * **Spectral Theorem:** For $E = E^* \in \operatorname{Fred}^{sa}(\mathcal{H})$, the spectrum $\sigma(E) \subset \mathbb{R}$ is discrete (eigenvalues of finite multiplicity accumulating only at $\pm \infty$, or possibly at $0$ if $E$ is not invertible). The spectral decomposition gives:
+      $$
+      E \;=\; \int_{\mathbb{R}} \lambda \, dP_\lambda,
+      $$
+      where $\{P_\lambda\}$ is the spectral resolution / projection-valued measure.
+    * **Spectral Projections and Polarization:** Define:
+      $$
+      P_+ \;\coloneqq\; \chi_{(0, \infty)}(E), \qquad P_- \;\coloneqq\; \chi_{(-\infty, 0)}(E), \qquad P_0 \;\coloneqq\; \chi_{\{0\}}(E).
+      $$
+      The Hilbert space decomposes as:
+      $$
+      \mathcal{H} \;=\; \mathcal{H}_- \oplus \mathcal{H}_0 \oplus \mathcal{H}_+ \;=\; P_- \mathcal{H} \oplus P_0 \mathcal{H} \oplus P_+ \mathcal{H},
+      $$
+      where $\dim \mathcal{H}_0 = \dim \ker E < \infty$. The **polarization** is the decomposition $\mathcal{H} = \mathcal{H}_- \oplus \mathcal{H}_+$ (absorbing $\mathcal{H}_0$ into one side by convention).
+    * **Classifying Space for $K^1$:** The space of self-adjoint Fredholm operators classifies $K^1$:
+      $$
+      \operatorname{Fred}^{sa}(\mathcal{H}) \;\simeq\; \Omega(\mathbb{Z} \times BU) \;\simeq\; U, \qquad [X, \operatorname{Fred}^{sa}(\mathcal{H})] \;\cong\; K^1(X).
+      $$
+      More precisely, the three components of $\operatorname{Fred}^{sa}$ (essential spectrum bounded above / unbounded both ways / bounded below) give the relevant classifying spaces.
+
+  * **Polarized Modules — General Framework:**
+    * **Definition:** A **polarized module** is a pair $(M, E)$ where:
+      - $M$ is a module object: a Hilbert space, a $\mathbb{Z}/2$-graded module, an object of an additive/exact category, or more generally a module over a $C^*$-algebra or von Neumann algebra.
+      - $E$ is an operator on $M$ generalizing a self-adjoint Fredholm operator (e.g. $E = E^*$, or a grading operator $\varepsilon = \varepsilon^*$, $\varepsilon^2 = 1$, or an unbounded self-adjoint operator with compact resolvent).
+      - The spectral data of $E$ yields a decomposition:
+        $$
+        M \;=\; M_- \oplus M_+,
+        $$
+        where $M_\pm$ corresponds to the negative/positive part of the spectrum of $E$.
+    * **Restricted Grassmannian:** The polarization $\mathcal{H} = \mathcal{H}_- \oplus \mathcal{H}_+$ defines a point in the restricted Grassmannian:
+      $$
+      \operatorname{Gr}_{\mathrm{res}}(\mathcal{H}) \;\coloneqq\; \big\{ W \subset \mathcal{H} \;\big|\; P_+ |_W \text{ is Fredholm}, \; P_- |_W \text{ is Hilbert-Schmidt} \big\}.
+      $$
+    * **Sato Grassmannian (Infinite-Dimensional):** The connected component $\operatorname{Gr}^{(0)}(\mathcal{H}) = \{W \in \operatorname{Gr}_{\mathrm{res}} \mid \operatorname{ind}(P_+|_W) = 0\}$, central in the theory of integrable systems (KP hierarchy), with a canonical determinant line bundle $\operatorname{Det} \to \operatorname{Gr}_{\mathrm{res}}$.
+    * **Examples of Polarized Modules:**
+      - Dirac operators $D$ on spin manifolds: $E = D$, $M = L^2(M, S)$ (square-integrable spinors), $M_\pm$ from positive/negative eigenspaces, Atiyah-Singer index $\operatorname{ind}(D^+) = \int_M \hat{A}(TM) \operatorname{ch}(V)$.
+      - Signature operator: $E = d + d^*$ with grading from Hodge $*$-operator, $M_\pm$ from harmonic forms of positive/negative signature.
+      - Toeplitz operators on Hardy space: $\mathcal{H}_+ = H^2(S^1)$, $\mathcal{H}_- = L^2(S^1) \ominus H^2(S^1)$, Toeplitz operator $T_f = P_+ M_f P_+$, $\operatorname{ind}(T_f) = -\operatorname{wind}(f)$.
+      - Boundary value problems: Calderón projector $P_+$ of an elliptic operator on a manifold with boundary, APS boundary conditions $P_+ \psi|_{\partial M} = 0$.
+
+  * **Morphisms, Index Theory, and Spectral Flow:**
+    * **Morphisms of Polarized Modules:** A morphism $\phi \colon (M_1, E_1) \to (M_2, E_2)$ is a bounded linear map $\phi \colon M_1 \to M_2$ that is compatible with the polarizations: $P_{+,2} \phi P_{+,1} - P_{+,2} \phi$ is compact (or Hilbert-Schmidt), ensuring the induced map on Grassmannians is well-defined.
+    * **Relative Index:** For two polarizations $P, Q$ of the same $\mathcal{H}$ (or two Lagrangian subspaces):
+      $$
+      \operatorname{ind}(P, Q) \;\coloneqq\; \operatorname{ind}(P Q \colon Q \mathcal{H} \to P \mathcal{H}) \;\in\; \mathbb{Z}.
+      $$
+    * **Kato-Rellich Perturbation Theory:** For a continuous family $E_t = E_0 + t V$ with $V$ relatively bounded, the spectral projections $P_{\pm}(t)$ vary continuously and the decomposition $M = M_-(t) \oplus M_+(t)$ is stable up to finite-dimensional corrections.
+    * **Spectral Flow:** For a continuous path $\{E_t\}_{t \in [0, 1]}$ in $\operatorname{Fred}^{sa}(\mathcal{H})$:
+      $$
+      \operatorname{sf}(\{E_t\}) \;\coloneqq\; \sum_{t_i \in (0,1]} \operatorname{sgn}(\text{eigenvalue crossing through } 0 \text{ at } t_i) \;\in\; \mathbb{Z}.
+      $$
+      The spectral flow counts the net number of eigenvalues crossing from negative to positive (minus those crossing positive to negative).
+    * **Relation to Index and $\eta$-Invariant:**
+      - $\operatorname{sf}(\{E_t\}_{t \in [0,1]}) = \operatorname{ind}(P_+(E_0), P_+(E_1))$.
+      - For paths connecting $E_0$ and $E_1$ with $\ker E_0 = \ker E_1 = 0$: $\operatorname{sf} = \frac{1}{2}(\eta(E_1) - \eta(E_0)) \mod \mathbb{Z}$, where the **Atiyah-Patodi-Singer (APS) eta invariant** is:
+        $$
+        \eta(E) \;\coloneqq\; \sum_{\lambda \in \sigma(E) \setminus \{0\}} \operatorname{sgn}(\lambda) \, |\lambda|^{-s} \bigg|_{s = 0} \quad \text{(analytic continuation)}.
+        $$
+
+  * **Categorical Structure of Polarized Modules:**
+    * **Category $\mathbf{Pol}$:** Objects are polarized modules $(M, E)$. Morphisms are polarization-compatible maps. Direct sums $(M_1 \oplus M_2, E_1 \oplus E_2)$ and tensor products (with graded tensor product of polarizations).
+    * **Clifford Module Polarizations:** For a Clifford algebra $\operatorname{Cl}(V, q)$, a Clifford module $M$ with Clifford action $c \colon \operatorname{Cl}(V) \to \operatorname{End}(M)$ and a compatible operator $E$ anti-commuting with the Clifford action ($E c(v) + c(v) E = 0$) yields a $\operatorname{Cl}$-linear polarized module.
+    * **Connection to Kasparov $KK$-Theory:** A polarized module $(M, E)$ over $C^*$-algebras $A, B$ (with $M$ a countably generated Hilbert $B$-module, $A$ acting by adjointable operators, $E$ self-adjoint modulo compacts, $[E, a] \in \mathcal{K}(M)$ for $a \in A$, $a(E^2 - 1) \in \mathcal{K}(M)$) defines a Kasparov bimodule $(A, M, E) \in KK(A, B)$.
+
+* **Operational & algorithmic representation:**
+  1. **Fredholm Operator Engine:**
+     - `FredholmOperator(hilbert_space, operator_matrix)` storing $T$ with Fredholm verification.
+     - `fredholm_index(T)` computing $\operatorname{ind}(T) = \dim \ker T - \dim \operatorname{coker} T$.
+     - `kernel_basis(T)` and `cokernel_basis(T)` computing explicit bases.
+     - `essential_spectrum(T)` identifying $\sigma_{\mathrm{ess}}(T)$ via Calkin algebra image.
+  2. **Self-Adjoint Fredholm & Spectral Decomposition:**
+     - `SelfAdjointFredholm(hilbert_space, operator)` storing $E = E^*$ with spectral data.
+     - `spectral_decomposition(E)` computing eigenvalues $\{\lambda_i\}$ and eigenprojections $\{P_{\lambda_i}\}$.
+     - `polarization(E)` constructing $P_+, P_-, P_0$ and the decomposition $\mathcal{H} = \mathcal{H}_- \oplus \mathcal{H}_0 \oplus \mathcal{H}_+$.
+  3. **Polarized Module Engine:**
+     - `PolarizedModule(module, operator)` storing $(M, E)$ with spectral decomposition $M = M_- \oplus M_+$.
+     - `polarization_class(polarized_module)` extracting the point in $\operatorname{Gr}_{\mathrm{res}}(\mathcal{H})$.
+     - `relative_index(P1, P2)` computing $\operatorname{ind}(P_1 P_2 \colon P_2 \mathcal{H} \to P_1 \mathcal{H})$.
+     - `is_polarization_compatible(morphism, source, target)` verifying compactness of off-diagonal blocks.
+  4. **Spectral Flow & Eta Invariant Engine:**
+     - `spectral_flow(path_of_operators)` computing $\operatorname{sf}(\{E_t\})$ by tracking eigenvalue crossings through $0$.
+     - `eta_invariant(E, s_cutoff)` computing the APS eta invariant via zeta-function regularization.
+     - `kato_rellich_stability(E_0, perturbation_V, bound)` verifying stability of spectral decomposition under perturbation.
+  5. **KK-Theory Bimodule Interface:**
+     - `KasparovBimodule(A, B, module, operator)` constructing a Kasparov $(A, B)$-bimodule.
+     - `kasparov_product(bimodule_1, bimodule_2)` evaluating the Kasparov product.
+
+* **Preamble implementation requirements:**
+  * `categories/functional_analysis/fredholm.py`:
+    - `FredholmOperator(operator)`: class for Fredholm operators on Hilbert spaces.
+    - `fredholm_index(operator)`: computes $\operatorname{ind}(T) \in \mathbb{Z}$.
+    - `is_fredholm(operator)`: checks finite-dimensional kernel/cokernel and closed range.
+    - `calkin_algebra_image(operator)`: projects to $\mathcal{Q}(\mathcal{H})$.
+  * `categories/functional_analysis/polarized_module.py`:
+    - `PolarizedModule(module, operator)`: class for pairs $(M, E)$.
+    - `spectral_polarization(E)`: constructs $P_+, P_-$ and $M = M_- \oplus M_+$.
+    - `restricted_grassmannian_point(polarization)`: point in $\operatorname{Gr}_{\mathrm{res}}$.
+    - `relative_index(P_plus_1, P_plus_2)`: relative Fredholm index.
+    - `direct_sum_polarization(pol_1, pol_2)`: $(M_1 \oplus M_2, E_1 \oplus E_2)$.
+    - `clifford_polarization(clifford_module, operator)`: Clifford-linear polarized module.
+  * `categories/functional_analysis/spectral_flow.py`:
+    - `spectral_flow(operator_path)`: computes $\operatorname{sf}(\{E_t\}) \in \mathbb{Z}$.
+    - `eta_invariant(self_adjoint_operator)`: APS $\eta(E)$ via analytic continuation.
+    - `eigenvalue_crossings(operator_path, eigenvalue)`: tracks crossings through specified value.
+  * `categories/k_theory/kk_theory.py`:
+    - `KasparovBimodule(A, B, module, operator)`: $(A, M_B, E) \in KK(A, B)$.
+    - `kasparov_product(bimodule_AB, bimodule_BC)`: product in $KK(A, C)$.
+    - `kk_class(bimodule)`: equivalence class in $KK(A, B)$.
+
+Intended owners: `categories/functional_analysis/fredholm.py` (`FredholmOperator`, `fredholm_index`, `is_fredholm`), `categories/functional_analysis/polarized_module.py` (`PolarizedModule`, `spectral_polarization`, `restricted_grassmannian_point`, `relative_index`, `clifford_polarization`), `categories/functional_analysis/spectral_flow.py` (`spectral_flow`, `eta_invariant`, `eigenvalue_crossings`), `categories/k_theory/kk_theory.py` (`KasparovBimodule`, `kasparov_product`, `kk_class`).
+
+
+## Desired capability: Moduli spaces of connections on smooth manifolds, gauge theory, Yang-Mills functional, and instanton/flat connection moduli — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Principal Bundles and Connections:**
+    * Let $G$ be a compact Lie group with Lie algebra $\mathfrak{g}$, and let $\pi \colon P \to M$ be a smooth principal $G$-bundle over a smooth $n$-manifold $M$.
+    * **Connection 1-Form:** A connection on $P$ is a $\mathfrak{g}$-valued 1-form $A \in \Omega^1(P, \mathfrak{g})$ satisfying:
+      1. $R_g^* A = \operatorname{Ad}(g^{-1}) A$ ($G$-equivariance).
+      2. $A(\xi_P) = \xi$ for all $\xi \in \mathfrak{g}$ (reproducing fundamental vector fields).
+    * **Local Connection Form:** In a local trivialization over $U \subset M$, a connection is represented by a $\mathfrak{g}$-valued 1-form $A_U \in \Omega^1(U, \mathfrak{g})$. On overlaps $U \cap V$ with transition function $g_{UV} \colon U \cap V \to G$:
+      $$
+      A_V \;=\; g_{UV}^{-1} A_U g_{UV} + g_{UV}^{-1} dg_{UV}.
+      $$
+    * **Covariant Derivative:** For a vector bundle $E = P \times_G V$ associated to a representation $\rho \colon G \to GL(V)$:
+      $$
+      d_A \colon \Omega^k(M, E) \to \Omega^{k+1}(M, E), \qquad d_A \sigma \;=\; d\sigma + A \wedge \sigma.
+      $$
+    * **Curvature 2-Form:** The curvature of the connection $A$ is:
+      $$
+      F_A \;=\; dA + A \wedge A \;\in\; \Omega^2(M, \operatorname{ad} P),
+      $$
+      where $\operatorname{ad} P = P \times_G \mathfrak{g}$ is the adjoint bundle. Satisfies the **Bianchi identity** $d_A F_A = 0$.
+    * **Flat Connections:** A connection is **flat** if $F_A = 0$. Equivalently, $d_A^2 = 0$, meaning $d_A$ defines a cochain complex (a local system on $M$).
+
+  * **The Gauge Group and Its Action:**
+    * **Gauge Group:** $\mathcal{G}(P) \coloneqq \operatorname{Aut}(P) \cong \Gamma(M, P \times_G G)$, the group of $G$-equivariant bundle automorphisms covering the identity on $M$. In local coordinates, an element $g \in \mathcal{G}$ is a smooth map $g \colon U \to G$.
+    * **Gauge Action on Connections:**
+      $$
+      g \cdot A \;=\; g^{-1} A g + g^{-1} dg \;=\; \operatorname{Ad}(g^{-1}) A + g^* \theta_G,
+      $$
+      where $\theta_G$ is the Maurer-Cartan form of $G$.
+    * **Curvature Transformation:** $F_{g \cdot A} = g^{-1} F_A g = \operatorname{Ad}(g^{-1}) F_A$. In particular, flatness is gauge-invariant.
+    * **Space of Connections:** $\mathcal{A}(P)$ is an affine space modeled on $\Omega^1(M, \operatorname{ad} P)$:
+      $$
+      \mathcal{A}(P) \;=\; A_0 + \Omega^1(M, \operatorname{ad} P)
+      $$
+      for any reference connection $A_0$. In particular, $\mathcal{A}$ is contractible.
+    * **Orbit Space:** $\mathcal{B}(P) \coloneqq \mathcal{A}(P) / \mathcal{G}(P)$. Points of $\mathcal{B}$ are gauge equivalence classes of connections.
+
+  * **Moduli Space of Flat Connections and Character Varieties:**
+    * **Flat Connection Moduli:**
+      $$
+      \mathcal{M}_{\mathrm{flat}}(P) \;\coloneqq\; \{ A \in \mathcal{A}(P) \mid F_A = 0 \} / \mathcal{G}(P).
+      $$
+    * **Holonomy Representation:** A flat connection $A$ defines a holonomy representation $\rho_A \colon \pi_1(M, x_0) \to G$, and gauge equivalence corresponds to conjugation. This gives the identification:
+      $$
+      \mathcal{M}_{\mathrm{flat}}(P) \;\cong\; \operatorname{Hom}(\pi_1(M), G) / G \;\eqqcolon\; \mathcal{X}(M, G),
+      $$
+      the **character variety** (or representation variety modulo conjugation).
+    * **Deformation Complex:** The tangent space to $\mathcal{M}_{\mathrm{flat}}$ at $[A]$ is controlled by the elliptic complex:
+      $$
+      \Omega^0(M, \operatorname{ad} P) \xrightarrow{d_A} \Omega^1(M, \operatorname{ad} P) \xrightarrow{d_A} \Omega^2(M, \operatorname{ad} P).
+      $$
+      - $H^0_A = \ker(d_A \colon \Omega^0 \to \Omega^1) \cong$ infinitesimal stabilizer of $A$ in $\mathcal{G}$.
+      - $H^1_A = \ker d_A / \operatorname{im} d_A \cong T_{[A]} \mathcal{M}_{\mathrm{flat}}$ (Zariski tangent space).
+      - $H^2_A = \Omega^2 / \operatorname{im} d_A \cong$ obstructions to deformations.
+      - A flat connection $[A]$ is a smooth point of $\mathcal{M}_{\mathrm{flat}}$ if $H^0_A = 0$ (irreducible) and $H^2_A = 0$ (unobstructed).
+    * **Chern-Simons Functional:** For $G$-connections on a 3-manifold $M^3$:
+      $$
+      CS(A) \;\coloneqq\; \frac{1}{8\pi^2} \int_M \operatorname{tr}\left( A \wedge dA + \frac{2}{3} A \wedge A \wedge A \right).
+      $$
+      - $CS$ is gauge-invariant modulo $\mathbb{Z}$: $CS(g \cdot A) - CS(A) = \deg(g) \in \mathbb{Z}$.
+      - Critical points of $CS$: $\delta CS(A) = \frac{1}{4\pi^2} \int_M \operatorname{tr}(\delta A \wedge F_A) = 0 \iff F_A = 0$.
+      - Gradient flow of $CS$ on a 4-manifold $W$ with $\partial W = M$: the ASD instanton equation $F_A^+ = 0$.
+
+  * **Yang-Mills Functional and Instantons:**
+    * **Yang-Mills Functional:** On a compact oriented Riemannian $n$-manifold $(M, g)$:
+      $$
+      \operatorname{YM}(A) \;\coloneqq\; \int_M \|F_A\|^2 \operatorname{vol}_g \;=\; \int_M \operatorname{tr}(F_A \wedge *F_A),
+      $$
+      where $*$ is the Hodge star operator of $(M, g)$.
+    * **Yang-Mills Equation:** Critical points of $\operatorname{YM}$ satisfy:
+      $$
+      d_A^* F_A \;\coloneqq\; * d_A * F_A \;=\; 0,
+      $$
+      the Yang-Mills equation (together with the Bianchi identity $d_A F_A = 0$).
+    * **Anti-Self-Dual (ASD) Instantons on 4-Manifolds:** On an oriented Riemannian 4-manifold, the Hodge star $* \colon \Omega^2 \to \Omega^2$ satisfies $*^2 = 1$, decomposing 2-forms:
+      $$
+      \Omega^2 \;=\; \Omega^2_+ \oplus \Omega^2_-, \qquad F_A \;=\; F_A^+ + F_A^-.
+      $$
+      An **ASD instanton** satisfies $F_A^+ = 0$ (equivalently $*F_A = -F_A$). ASD instantons are absolute minima of $\operatorname{YM}$ within their topological class.
+    * **Topological Charge (Second Chern Number):**
+      $$
+      k \;\coloneqq\; c_2(P) \;=\; \frac{1}{8\pi^2} \int_M \operatorname{tr}(F_A \wedge F_A) \;=\; \frac{1}{8\pi^2} \left( \|F_A^+\|^2 - \|F_A^-\|^2 \right).
+      $$
+      For ASD instantons: $\operatorname{YM}(A) = 8\pi^2 |k|$.
+    * **ADHM Construction (Atiyah-Drinfeld-Hitchin-Manin):** For $G = SU(2)$ or $SU(N)$ on $S^4 \cong \mathbb{R}^4 \cup \{\infty\}$: explicit algebraic construction of all ASD instantons with charge $k$ from linear algebra data (ADHM matrices satisfying quadratic equations).
+
+  * **Moduli Space Structure and Invariants:**
+    * **ASD Instanton Moduli Space:** $\mathcal{M}_k(M, g) \coloneqq \{A \in \mathcal{A}(P) \mid F_A^+ = 0\} / \mathcal{G}(P)$ for $c_2(P) = k$.
+    * **Deformation Operator:** The linearization of $F_A^+ = 0$ modulo gauge:
+      $$
+      D_A \;\coloneqq\; d_A^* \oplus d_A^+ \colon \Omega^1(M, \operatorname{ad} P) \to \Omega^0(M, \operatorname{ad} P) \oplus \Omega^2_+(M, \operatorname{ad} P).
+      $$
+      This is an elliptic operator.
+    * **Virtual Dimension (Atiyah-Singer Index):** For $G = SU(2)$ on a compact simply-connected 4-manifold $M$:
+      $$
+      \dim_{\mathrm{virt}} \mathcal{M}_k \;=\; \operatorname{ind}(D_A) \;=\; 8k - 3(1 + b_2^+(M)),
+      $$
+      where $b_2^+ = \dim H^2_+(M; \mathbb{R})$.
+    * **Uhlenbeck Compactification:** The moduli space $\mathcal{M}_k$ is non-compact; sequences of instantons can "bubble off" at points. The Uhlenbeck compactification is:
+      $$
+      \overline{\mathcal{M}}_k \;=\; \mathcal{M}_k \;\cup\; \bigcup_{j=1}^k \mathcal{M}_{k-j} \times \operatorname{Sym}^j(M).
+      $$
+    * **Donaldson Invariants:** Polynomial invariants $D_M \colon H_2(M; \mathbb{Z})^{\otimes d} \to \mathbb{Z}$ defined by evaluating cohomology classes $\mu(\Sigma) \in H^2(\mathcal{M}_k)$ (Donaldson $\mu$-map) against the fundamental class $[\overline{\mathcal{M}}_k]$. Distinguished smooth structures on 4-manifolds.
+    * **Orientation:** $\mathcal{M}_k$ is orientable; orientation determined by a trivialization of the determinant line bundle $\det(D_A) \to \mathcal{B}^*(P)$.
+
+  * **Hitchin Moduli and Higgs Bundles:**
+    * On a compact Riemann surface $\Sigma$ with structure group $G^\mathbb{C}$, a **Higgs bundle** is a pair $(E, \Phi)$ where $E \to \Sigma$ is a holomorphic $G^\mathbb{C}$-bundle and $\Phi \in H^0(\Sigma, \operatorname{End}(E) \otimes K_\Sigma)$ is a holomorphic section (the Higgs field).
+    * **Hitchin Equations:** For a Hermitian metric $h$ on $E$, the Hitchin equations are:
+      $$
+      F_A + [\Phi, \Phi^*] \;=\; 0, \qquad \bar{\partial}_A \Phi \;=\; 0,
+      $$
+      where $A$ is the Chern connection of $(E, h)$.
+    * **Hitchin Moduli Space:** $\mathcal{M}_H(\Sigma, G) = \{(A, \Phi) \mid \text{Hitchin eqs}\} / \mathcal{G}$ is a hyperkähler manifold of dimension $2 \dim_\mathbb{C} G^\mathbb{C} (g_\Sigma - 1)$.
+    * **Non-Abelian Hodge Correspondence (Corlette-Simpson):** $\mathcal{M}_H \cong \mathcal{X}(\Sigma, G^\mathbb{C})$ (diffeomorphism but not biholomorphism), identifying Higgs bundles with flat $G^\mathbb{C}$-connections / representations.
+
+* **Operational & algorithmic representation:**
+  1. **Connection & Curvature Engine:**
+     - `PrincipalBundle(manifold, group, transition_functions)` storing $P \to M$ with structure group $G$.
+     - `Connection(bundle, local_forms)` storing connection 1-forms $A_U \in \Omega^1(U, \mathfrak{g})$ with transition law.
+     - `curvature(connection)` computing $F_A = dA + A \wedge A$.
+     - `covariant_derivative(connection, section)` evaluating $d_A \sigma$.
+     - `bianchi_identity_check(connection)` verifying $d_A F_A = 0$.
+     - `is_flat(connection)` testing $F_A = 0$.
+  2. **Gauge Group & Orbit Space:**
+     - `GaugeGroup(bundle)` representing $\mathcal{G}(P) = \Gamma(P \times_G G)$.
+     - `gauge_transform(connection, gauge_element)` computing $g \cdot A = g^{-1} A g + g^{-1} dg$.
+     - `gauge_orbit(connection, gauge_group)` computing the orbit $\mathcal{G} \cdot A$.
+  3. **Flat Connection Moduli & Character Varieties:**
+     - `FlatConnectionModuli(bundle)` constructing $\mathcal{M}_{\mathrm{flat}} = \{F_A = 0\}/\mathcal{G}$.
+     - `holonomy_representation(flat_connection, basepoint)` computing $\rho_A \colon \pi_1(M) \to G$.
+     - `character_variety(manifold, group)` constructing $\operatorname{Hom}(\pi_1(M), G)/G$.
+     - `deformation_cohomology(flat_connection)` computing $H^0_A, H^1_A, H^2_A$.
+     - `chern_simons_functional(connection_3manifold)` evaluating $CS(A)$.
+  4. **Yang-Mills & Instanton Engine:**
+     - `YangMillsFunctional(connection, metric)` evaluating $\operatorname{YM}(A)$.
+     - `yang_mills_equation(connection, metric)` checking $d_A^* F_A = 0$.
+     - `asd_instanton_check(connection, metric_4manifold)` testing $F_A^+ = 0$.
+     - `topological_charge(connection)` computing $c_2(P) = \frac{1}{8\pi^2}\int \operatorname{tr}(F_A \wedge F_A)$.
+     - `InstantonModuliSpace(bundle, metric, charge)` constructing $\mathcal{M}_k$.
+     - `virtual_dimension(bundle, manifold)` computing $8k - 3(1 + b_2^+)$.
+     - `uhlenbeck_compactification(moduli_space)` constructing $\overline{\mathcal{M}}_k$.
+  5. **Hitchin Moduli & Higgs Bundle Engine:**
+     - `HiggsBundle(surface, holomorphic_bundle, higgs_field)` storing $(E, \Phi)$.
+     - `hitchin_equations(higgs_bundle, hermitian_metric)` checking $F_A + [\Phi, \Phi^*] = 0$, $\bar{\partial}_A \Phi = 0$.
+     - `HitchinModuliSpace(surface, group)` constructing $\mathcal{M}_H(\Sigma, G)$.
+
+* **Preamble implementation requirements:**
+  * `categories/differential_geometry/connections.py`:
+    - `PrincipalBundle(manifold, group, transition_functions)`: principal $G$-bundle $P$.
+    - `Connection(bundle, local_1forms)`: connection $A$ on $P$.
+    - `curvature_form(connection)`: $F_A = dA + A \wedge A$.
+    - `covariant_derivative(connection, section)`: $d_A \sigma$.
+    - `is_flat_connection(connection)`: checks $F_A = 0$.
+    - `holonomy(connection, loop)`: parallel transport around a loop.
+  * `categories/differential_geometry/gauge_theory.py`:
+    - `GaugeGroup(bundle)`: group $\mathcal{G}(P)$.
+    - `gauge_action(gauge_element, connection)`: $g \cdot A$.
+    - `connection_space(bundle)`: affine space $\mathcal{A}(P)$.
+    - `orbit_space(bundle)`: quotient $\mathcal{B} = \mathcal{A}/\mathcal{G}$.
+  * `categories/differential_geometry/moduli_connections.py`:
+    - `FlatConnectionModuli(bundle)`: moduli $\mathcal{M}_{\mathrm{flat}}$.
+    - `character_variety(manifold, group)`: $\operatorname{Hom}(\pi_1(M), G)/G$.
+    - `deformation_complex(flat_connection)`: elliptic complex $\Omega^0 \to \Omega^1 \to \Omega^2$.
+    - `deformation_cohomology(flat_connection)`: $H^0, H^1, H^2$.
+    - `HitchinModuliSpace(surface, group)`: Higgs bundle moduli $\mathcal{M}_H$.
+  * `categories/differential_geometry/yang_mills.py`:
+    - `YangMillsFunctional(connection, metric)`: evaluates $\operatorname{YM}(A)$.
+    - `yang_mills_equation(connection, metric)`: checks $d_A^* F_A = 0$.
+    - `asd_condition(connection, metric)`: checks $F_A^+ = 0$.
+    - `InstantonModuliSpace(bundle, metric, charge)`: $\mathcal{M}_k$.
+    - `virtual_dimension(bundle, manifold)`: index formula.
+    - `topological_charge(connection)`: $c_2(P)$.
+    - `uhlenbeck_compactification(moduli)`: $\overline{\mathcal{M}}_k$.
+  * `categories/differential_geometry/chern_simons.py`:
+    - `ChernSimonsFunctional(connection, 3manifold)`: evaluates $CS(A)$.
+    - `chern_simons_variation(connection, variation)`: $\delta CS$.
+    - `chern_simons_level(gauge_transform)`: degree $\in \mathbb{Z}$.
+
+Intended owners: `categories/differential_geometry/connections.py` (`PrincipalBundle`, `Connection`, `curvature_form`, `covariant_derivative`, `is_flat_connection`), `categories/differential_geometry/gauge_theory.py` (`GaugeGroup`, `gauge_action`, `connection_space`, `orbit_space`), `categories/differential_geometry/moduli_connections.py` (`FlatConnectionModuli`, `character_variety`, `deformation_complex`, `HitchinModuliSpace`), `categories/differential_geometry/yang_mills.py` (`YangMillsFunctional`, `yang_mills_equation`, `asd_condition`, `InstantonModuliSpace`, `topological_charge`), `categories/differential_geometry/chern_simons.py` (`ChernSimonsFunctional`, `chern_simons_variation`, `chern_simons_level`).
+
 
 
 
