@@ -127,6 +127,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Cartier and Pontryagin dualities (LCA groups, finite commutative group schemes, Hopf algebras, and Weil pairings) | User intake 2026-09-19 | Categorical duality theories for abelian topological groups and commutative group schemes: (1) Pontryagin duality on locally compact abelian groups $\mathbf{LCA}$: character group $\widehat{G} = \operatorname{Hom}_{\mathbf{LCA}}(G, \mathbb{T})$, biduality isomorphism $G \xrightarrow{\sim} \widehat{\widehat{G}}$, compact-discrete duality, torsion-profinite duality, connected-torsion-free duality, annihilators $H^\perp \cong \widehat{G/H}$, dual exact sequences, Haar measure, Fourier transform, and Plancherel theorem; (2) Cartier duality on finite locally free commutative group schemes over $S$ (and finite-dimensional commutative cocommutative Hopf algebras $A$ via dual Hopf algebra $A^*$): $D(G) = \underline{\operatorname{Hom}}(G, \mathbb{G}_m)$, canonical biduality $G \xrightarrow{\sim} D(D(G))$, dual pairs $(\mathbb{Z}/n)_k \leftrightarrow \mu_{n,k}$ and self-dual $\alpha_p$, four Oort-Tate classes (étale-étale, étale-local, local-étale, local-local), Frobenius-Verschiebung exchange $D(F) = V_{D(G)}$; (3) Dieudonné module duality $\mathbb{M}(D(G))$; (4) Abelian varieties: Cartier duality $D(A[n]) \cong A^\vee[n]$ yielding the Weil pairing $e_n \colon A[n] \times A^\vee[n] \to \mu_n$; (5) Barsotti-Tate ($p$-divisible) groups and Serre-Tate duality | `categories/topology/pontryagin.py` + `categories/schemes/group_schemes/cartier_duality.py` + `categories/algebras/hopf_algebras.py` + `categories/abelian_varieties/weil_pairing.py` + `categories/schemes/group_schemes/p_divisible.py` | Proposed — see note below |
 | Operationalized Grothendieck spectral sequences (generic functor composition, automated differentials, 5-term solver, and concrete specializations: Leray, Serre, LHS, local-to-global Ext/Tor, Frölicher) | Literature survey + user intake 2026-09-19 | Comprehensive computational framework for Grothendieck spectral sequences: (1) Abstract Grothendieck spectral sequence $E_2^{p, q} = (R^p F)(R^q G(A)) \implies R^{p+q}(F \circ G)(A)$ for composable functors $\mathcal{A} \xrightarrow{G} \mathcal{B} \xrightarrow{F} \mathcal{C}$ with $G(\operatorname{Inj})$ $F$-acyclic, homological dual $E^2_{p, q} = (L_p F)(L_q G(A)) \implies L_{p+q}(F \circ G)(A), Cartan-Eilenberg double complex resolutions; (2) Algorithmic engine: bigraded page structures $E_r^{p, q}$, differential complexes $d_r$, page transitions $E_{r+1} = H(E_r, d_r)$, automated quadrant/sparsity vanishing, 5-term exact sequence solver ($0 \to E_2^{1, 0} \to H^1 \to E_2^{0, 1} \xrightarrow{d_2} E_2^{2, 0} \to \dots$), multiplicative Leibniz propagation $d_r(xy) = d_r(x)y + (-1)^{|x|} x d_r(y)$, transgression tracking, abutment filtration reconstruction, and extension problem solving; (3) Concrete computable specializations: Leray SS ($H^p(Y, R^q f_* \mathcal{F}) \implies H^{p+q}(X, \mathcal{F})$), Serre fibration SS ($H^p(B; \mathcal{H}^q(F)) \implies H^{p+q}(E)$), Lyndon-Hochschild-Serre (LHS) for group cohomology ($H^p(G/N, H^q(N, M)) \implies H^{p+q}(G, M)$), Lie algebra Hochschild-Serre, local-to-global Ext ($H^p(X, \mathcal{E}xt^q(\mathcal{F}, \mathcal{G})) \implies \operatorname{Ext}^{p+q}(\mathcal{F}, \mathcal{G})$), local-to-global Tor, change of rings (Cartan-Eilenberg Ext/Tor), Frölicher/Hodge-to-de Rham ($H^q(X, \Omega_X^p) \implies H_{\mathrm{dR}}^{p+q}$), and local cohomology SS | `categories/homology/spectral_sequences/grothendieck.py` + `categories/homology/spectral_sequences/spectral_sequence.py` + `categories/homology/spectral_sequences/leray.py` + `categories/homology/spectral_sequences/lyndon_hochschild_serre.py` + `categories/homology/spectral_sequences/local_ext.py` + `categories/homology/spectral_sequences/froelicher.py` | Proposed — see note below |
 | Operationalized Riemann-Hurwitz formula, ramification theory, different and discriminant ideals (curves, varieties, Dedekind domains, and number fields) | Literature survey + user intake 2026-09-19 | Unified operational ramification theory and Hurwitz formulas across algebraic geometry and algebraic number theory: (1) Ramification invariants: ramification index $e_i = e(\mathfrak{P}_i/\mathfrak{p})$, inertia degree $f_i = f(\mathfrak{P}_i/\mathfrak{p})$, fundamental identity $\sum e_i f_i = n$, tame ($p \nmid e$) vs wild ($p \mid e$) ramification; (2) Different ideal $\mathfrak{D}_{B/A}$ and discriminant $\mathfrak{d}_{B/A} = N(\mathfrak{D}_{B/A})$, Dedekind's different theorem ($\mathfrak{P} \mid \mathfrak{D} \iff e > 1$), lower and upper bounds $e - 1 \le d \le e - 1 + v_\mathfrak{P}(e)$, equality $d = e - 1$ for tame; (3) Galois ramification filtration: decomposition group $D_\mathfrak{P}$, inertia group $I_\mathfrak{P} = G_0$, lower ramification groups $G_i$, Hilbert's different formula $d = \sum_{i=0}^\infty (|G_i| - 1) = (e - 1) + \text{wild excess}$; (4) Riemann-Hurwitz formula for curves: canonical divisor $K_X \sim f^* K_Y + R$ where $R = \sum d_P P$, genus formula $2 g_X - 2 = n(2 g_Y - 2) + \deg(R)$, topological Euler characteristic $\chi(X) = n \chi(Y) - \deg(R)$; (5) Normal varieties: purity of the branch locus (Zariski-Nagata) in codimension 1, ramification divisor $R = \sum d_D D$, canonical class formula $K_X \sim f^* K_Y + R$; (6) Automated solver: genus solver, prime factorization $\mathfrak{p} \mathcal{O}_L = \prod \mathfrak{P}_i^{e_i}$, different/discriminant computer, and branch locus verifier | `categories/algebraic_geometry/hurwitz.py` + `categories/number_theory/ramification.py` + `categories/schemes/ramification_divisor.py` + `categories/galois/ramification_groups.py` | Proposed — see note below |
+| DG-modules over DG-algebras, graded module foundations, derived categories $\mathcal{D}(A)$, and semi-free resolutions | User intake 2026-09-19 | Complete categorical and homological hierarchy for differential graded (DG) modules over DG-algebras: (1) Graded foundations: $\mathbb{Z}$-graded modules $\mathbf{GrMod}_k$, Koszul braiding $\tau(x \otimes y) = (-1)^{|x||y|} y \otimes x$, graded associative/commutative algebras, graded module categories; (2) Differential graded objects: cochain complexes $(\mathbf{Ch}_k, \otimes, \underline{\operatorname{Hom}})$, Koszul sign convention $d(x \otimes y) = d(x) \otimes y + (-1)^{|x|} x \otimes d(y)$, $[d, f] = d \circ f - (-1)^{|f|} f \circ d$; (3) DG-algebras $(A, d_A)$ with Leibniz rule $d(a b) = d(a) b + (-1)^{|a|} a d(b)$ and CDGAs; (4) DG-modules $(M, d_M)$ over $A$ with module Leibniz rule $d_M(a m) = d_A(a) m + (-1)^{|a|} a d_M(m)$, DG-bimodules, cohomology modules $H^*(M) \in H^*(A)\mathbf{-Mod}$; (5) The DG-category $\underline{\mathbf{DGMod}}_A$: Hom complexes $\underline{\operatorname{Hom}}_A(M, N)$, shifts $M[k]$, mapping cones $\operatorname{Cone}(f)$; (6) Homological & model structures: quasi-isomorphisms, derived category $\mathcal{D}(A)$, projective model structure, semi-free (cell) resolutions $\mathbf{p} M \xrightarrow{\sim} M$, semi-injective resolutions, compact/perfect DG-modules $\operatorname{Perf}(A)$; (7) Derived operations: derived tensor product $M \otimes_A^{\mathbf{L}} N$, derived Hom $\mathbf{R}\operatorname{Hom}_A(M, N)$, Tor and Ext groups, two-sided bar resolution $B(A, A, M)$; (8) Computational engine: polynomial/exterior DGAs (Koszul complexes), matrix factorizations, de Rham flat modules, and semi-free resolution generators | `categories/algebras/dg_algebras.py` + `categories/modules/dg_modules.py` + `categories/derived/dg_derived_category.py` + `categories/modules/graded_modules.py` + `categories/homology/bar_cobar.py` | Proposed — see note below |
 
 
 
@@ -4031,6 +4032,170 @@ Intended owners: `categories/homology/spectral_sequences/grothendieck.py` (`Grot
     - `CyclicCover(Y, D, n)`: constructs cyclic cover $X \to Y$ branched along divisor $D$.
 
 Intended owners: `categories/algebraic_geometry/hurwitz.py` (`HurwitzFormula`, `HurwitzInverseSolver`, `CurveCover`), `categories/number_theory/ramification.py` (`PrimeRamification`, `DedekindCover`, `DifferentIdeal`, `DiscriminantIdeal`), `categories/galois/ramification_groups.py` (`DecompositionGroup`, `InertiaGroup`, `LowerRamificationFiltration`, `HilbertDifferentFormula`), `categories/schemes/ramification_divisor.py` (`RamificationDivisor`, `CanonicalClassCover`, `CyclicCover`).
+
+## Desired capability: Differential graded modules over DG-algebras and graded foundations — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Graded module and algebra foundations (underlying base categories):**
+    * Let $k$ be a commutative base ring.
+    * **Graded modules:** Category $\mathbf{GrMod}_k$ of $\mathbb{Z}$-graded $k$-modules $M = \bigoplus_{n \in \mathbb{Z}} M^n$.
+    * **Symmetric monoidal structure $(\mathbf{GrMod}_k, \otimes, k)$:**
+      - Graded tensor product: $(M \otimes N)^n = \bigoplus_{p+q=n} M^p \otimes_k N^q$.
+      - Koszul sign / braiding isomorphism:
+        $$
+        \tau_{M, N} \colon M \otimes N \xrightarrow{\sim} N \otimes M, \quad \tau(x \otimes y) \;=\; (-1)^{|x||y|} y \otimes x.
+        $$
+      - Internal Hom: $\underline{\operatorname{Hom}}^n(M, N) = \prod_p \operatorname{Hom}_k(M^p, N^{p+n})$.
+    * **Graded algebras:** Monoids in $\mathbf{GrMod}_k$.
+      - Associative $k$-algebra $A = \bigoplus_{n \in \mathbb{Z}} A^n$ with $A^p \cdot A^q \subseteq A^{p+q}$ and unit $1 \in A^0$.
+      - Graded commutativity: $a \cdot b = (-1)^{|a||b|} b \cdot a$, with $x^2 = 0$ for odd $|x|$ if $2 \neq 0$.
+    * **Graded modules over graded algebras:**
+      - Left graded module $M = \bigoplus M^n$ with $A^p \cdot M^q \subseteq M^{p+q}$, $(ab)m = a(bm)$, $1m = m$.
+      - Homogeneous morphisms of degree $d$: $f(a \cdot m) = (-1)^{d |a|} a \cdot f(m)$.
+
+  * **Differential graded objects (Cochain complexes of $k$-modules):**
+    * Category of cochain complexes $\mathbf{Ch}_k$: graded modules with $k$-linear differential $d \colon M^n \to M^{n+1}$ satisfying $d^2 = 0$.
+    * Tensor product of complexes: differential on $M \otimes N$:
+      $$
+      d_{M \otimes N}(x \otimes y) \;=\; d_M(x) \otimes y \;+\; (-1)^{|x|} x \otimes d_N(y).
+      $$
+    * Internal Hom complex: differential on $\underline{\operatorname{Hom}}(M, N)$:
+      $$
+      d(f)(x) \;=\; d_N(f(x)) \;-\; (-1)^{|f|} f(d_M(x)) \;=\; [d, f].
+      $$
+      Cycles $Z^0(\underline{\operatorname{Hom}}(M, N))$ are chain maps; boundaries $B^0$ are null-homotopic maps; cohomology $H^0(\underline{\operatorname{Hom}}(M, N)) = [M, N]$ is the homotopy category of complexes.
+
+  * **Differential Graded Algebras (DGAs):**
+    * A DG-algebra $(A, d_A)$ is a monoid in the symmetric monoidal category $(\mathbf{Ch}_k, \otimes)$:
+      - Graded associative $k$-algebra $A = \bigoplus_{n \in \mathbb{Z}} A^n$ with unit $1 \in A^0$.
+      - Differential $d_A \colon A^n \to A^{n+1}$ with $d_A^2 = 0$ and $d_A(1) = 0$.
+      - **Graded Leibniz rule:** For all $a, b \in A$:
+        $$
+        d_A(a \cdot b) \;=\; d_A(a) \cdot b \;+\; (-1)^{|a|} a \cdot d_A(b).
+        $$
+    * **Commutative DGAs (CDGAs):** DGAs that are graded commutative: $a \cdot b = (-1)^{|a||b|} b \cdot a$.
+      Examples: algebraic de Rham complex $\Omega_X^\bullet$; Koszul complexes $k[x_1, \dots, x_n] \otimes \bigwedge(\theta_1, \dots, \theta_n)$ with $d(\theta_i) = f_i$; Sullivan minimal models in rational homotopy theory.
+    * Cohomology $H^*(A) = \bigoplus_n H^n(A)$ is a graded associative $k$-algebra (graded commutative if $A$ is CDGA).
+
+  * **Differential Graded Modules (DG-Modules):**
+    * Let $(A, d_A)$ be a DG-algebra.
+    * A **left DG-module** over $A$ is a pair $(M, d_M)$ where:
+      - $M = \bigoplus_{n \in \mathbb{Z}} M^n$ is a graded left $A$-module.
+      - $d_M \colon M^n \to M^{n+1}$ is a $k$-linear differential ($d_M^2 = 0$).
+      - **Module Leibniz rule:** For all $a \in A$ and $m \in M$:
+        $$
+        d_M(a \cdot m) \;=\; d_A(a) \cdot m \;+\; (-1)^{|a|} a \cdot d_M(m).
+        $$
+    * **Right DG-modules and DG-bimodules:**
+      - Right dg-module: $d_M(m \cdot a) = d_M(m) \cdot a + (-1)^{|m|} m \cdot d_A(a)$.
+      - $(A, B)$-dg-bimodule: left $A$-dg-module and right $B$-dg-module satisfying $(a \cdot m) \cdot b = a \cdot (m \cdot b)$.
+    * **Cohomology module:** $H^*(M) = \bigoplus_n H^n(M)$ is naturally a graded $H^*(A)$-module via $[a] \cdot [m] \coloneqq [a \cdot m]$.
+
+  * **The Category and DG-Category of DG-Modules:**
+    * **The abelian category $\mathbf{DGMod}_A$:**
+      - Morphisms are chain maps $f \colon M \to N$ of degree 0 commuting strictly with $A$-action: $f(a \cdot m) = a \cdot f(m)$ and $f \circ d_M = d_N \circ f$.
+      - $\mathbf{DGMod}_A$ is an abelian Grothendieck category with all limits and colimits.
+    * **The DG-category $\underline{\mathbf{DGMod}}_A$:**
+      - Internal Hom complex $\underline{\operatorname{Hom}}_A(M, N)^\bullet$:
+        $\underline{\operatorname{Hom}}_A^n(M, N)$ is the $k$-module of graded $A$-module maps of degree $n$ (satisfying $f(a \cdot m) = (-1)^{n |a|} a \cdot f(m)$).
+        Differential:
+        $$
+        d(f)(m) \;=\; d_N(f(m)) \;-\; (-1)^{|f|} f(d_M(m)).
+        $$
+      - 0-cycles: $Z^0(\underline{\operatorname{Hom}}_A(M, N)) = \operatorname{Hom}_{\mathbf{DGMod}_A}(M, N)$.
+      - 0-boundaries: null-homotopic morphisms.
+      - Homotopy category: $H^0(\underline{\operatorname{Hom}}_A(M, N)) = \operatorname{Hom}_{K(A)}(M, N)$.
+    * **Suspensions (Shifts) and Mapping Cones:**
+      - Shift $M[k]$: $(M[k])^n = M^{n+k}$, $d_{M[k]} = (-1)^k d_M$, $a \cdot m[k] = (-1)^{k |a|} (a \cdot m)[k]$.
+      - Mapping cone $\operatorname{Cone}(f)$ for $f \colon M \to N$: $M[1] \oplus N$ with differential $\begin{pmatrix} -d_M & 0 \\ f & d_N \end{pmatrix}$.
+
+  * **Derived Category $\mathcal{D}(A)$ and Model Category Structures:**
+    * **Quasi-isomorphisms:** Morphisms $f \colon M \to N$ inducing isomorphisms on all cohomology groups $H^n(f) \colon H^n(M) \xrightarrow{\sim} H^n(N)$.
+    * **Derived category $\mathcal{D}(A)$:**
+      $$
+      \mathcal{D}(A) \;\coloneqq\; \mathbf{DGMod}_A[\text{q.i.}^{-1}] \;\cong\; K(A) / \mathbf{Ac}(A),
+      $$
+      where $\mathbf{Ac}(A)$ is the thick subcategory of acyclic dg-modules ($H^*(M) = 0$).
+      $\mathcal{D}(A)$ is a triangulated category with translation $[1]$ and triangles from mapping cones.
+    * **Projective model structure on $\mathbf{DGMod}_A$:**
+      - Weak equivalences: quasi-isomorphisms.
+      - Fibrations: degreewise epimorphisms.
+      - Cofibrations: retracts of semi-free (cell) dg-modules.
+    * **Semi-free (cell / K-projective) DG-modules:**
+      - A dg-module $P$ is **semi-free** if it has an exhaustive filtration $0 = P_{-1} \subseteq P_0 \subseteq P_1 \subseteq \dots$ such that $P_k / P_{k-1}$ is a free graded $A$-module generated by a set $S_k$ with $d_P(S_k) \subseteq P_{k-1}$.
+      - Every semi-free dg-module is cofibrant: for any quasi-isomorphism $M \xrightarrow{\sim} N$, $\operatorname{Hom}_{K(A)}(P, M) \xrightarrow{\sim} \operatorname{Hom}_{K(A)}(P, N)$.
+      - Every dg-module $M$ admits a semi-free resolution $\mathbf{p} M \xrightarrow{\sim} M$.
+    * **Semi-injective (K-injective) DG-modules:**
+      - Dually, $I$ is semi-injective if $\operatorname{Hom}_{K(A)}(N, I) = 0$ for all acyclic $N$.
+      - Every dg-module admits a semi-injective resolution $M \xrightarrow{\sim} \mathbf{i} M$.
+    * **Compact and Perfect DG-modules:**
+      - $M \in \mathcal{D}(A)$ is compact (small) if $\operatorname{Hom}_{\mathcal{D}(A)}(M, -)$ commutes with arbitrary direct sums.
+      - Compact objects form the triangulated subcategory $\operatorname{Perf}(A) \subset \mathcal{D}(A)$ of **perfect dg-modules** (direct summands of finite semi-free dg-modules).
+
+  * **Derived Tensor Products, Derived Hom, Tor, and Ext:**
+    * **Derived tensor product:**
+      For right dg-module $M$ and left dg-module $N$:
+      $$
+      M \otimes_A^{\mathbf{L}} N \;\coloneqq\; (\mathbf{p} M) \otimes_A N \;\cong\; M \otimes_A (\mathbf{p} N).
+      $$
+      Derived Tor: $\operatorname{Tor}_i^A(M, N) \coloneqq H^{-i}(M \otimes_A^{\mathbf{L}} N)$.
+    * **Derived Hom:**
+      $$
+      \mathbf{R}\operatorname{Hom}_A(M, N) \;\coloneqq\; \underline{\operatorname{Hom}}_A(\mathbf{p} M, N) \;\cong\; \underline{\operatorname{Hom}}_A(M, \mathbf{i} N).
+      $$
+      Ext groups: $\operatorname{Ext}_A^i(M, N) \coloneqq H^i(\mathbf{R}\operatorname{Hom}_A(M, N))$.
+    * **Bar resolution of a DG-module:**
+      The two-sided bar complex $B(A, A, M)$ provides a canonical, functorial semi-free resolution of $M$ over $A$.
+
+* **Operationalization and effective computation engine:**
+  * **Layered representation architecture:**
+    1. `GradedModule`: $\mathbb{Z}$-graded vector spaces/modules with degree extraction, graded direct sum, shift $[k]$, and graded tensor product with Koszul signs.
+    2. `GradedAlgebra`: graded associative algebra with multiplication table and commutativity checking.
+    3. `DGAlgebra`: differential graded algebra $(A, d_A)$ with automated Leibniz verification $d(ab) = d(a)b + (-1)^{|a|} a d(b)$ and differential matrix generators.
+    4. `DGModule`: differential graded module $(M, d_M)$ over a DGA with automated module Leibniz verification $d(am) = d(a)m + (-1)^{|a|} a d(m)$.
+    5. `DGHomComplex`: internal Hom complex $\underline{\operatorname{Hom}}_A(M, N)$ with differential $[d, f]$.
+  * **Computational capabilities:**
+    1. **Semi-Free Resolution Generator:**
+       - For finitely presented / bounded dg-modules over a DGA, iteratively builds cell filtration $P_0 \subseteq P_1 \subseteq \dots$ to kill cohomology kernels and cokernels, generating minimal semi-free resolutions $\mathbf{p} M \xrightarrow{\sim} M$.
+    2. **Derived Hom and Ext Evaluation:**
+       - Evaluates $\mathbf{R}\operatorname{Hom}_A(M, N) = \underline{\operatorname{Hom}}_A(\mathbf{p} M, N)$.
+       - Computes $\operatorname{Ext}_A^i(M, N)$ as cohomology of the Hom complex via exact linear algebra.
+    3. **Derived Tensor and Tor Evaluation:**
+       - Computes $M \otimes_A^{\mathbf{L}} N = (\mathbf{p} M) \otimes_A N$.
+       - Computes $\operatorname{Tor}_i^A(M, N) = H^{-i}(M \otimes_A^{\mathbf{L}} N)$.
+    4. **Cone and Triangle Solver:**
+       - Constructs mapping cones $\operatorname{Cone}(f)$ and long exact cohomology sequences $\dots \to H^n(M) \to H^n(N) \to H^n(\operatorname{Cone}(f)) \to H^{n+1}(M) \to \dots$.
+    5. **Standard DG-Algebras & Modules Catalogue:**
+       - Koszul complexes: $k[x_1, \dots, x_n]$ with exterior variables $\theta_i$ and $d(\theta_i) = f_i(x)$.
+       - Matrix factorizations: $\mathbb{Z}/2$-graded dg-modules $(M_0 \oplus M_1, d)$ with $d^2 = W \cdot \operatorname{id}$.
+       - De Rham flat modules: flat bundles $(E, \nabla)$ as dg-modules over de Rham CDGA $(\Omega^*(X), d)$.
+       - Endomorphism DGAs: $\operatorname{End}_A(M) = \underline{\operatorname{Hom}}_A(M, M)$.
+
+* **Preamble implementation requirements:**
+  * `categories/modules/graded_modules.py`:
+    - `GradedModule(grades_dict)`: $\mathbb{Z}$-graded $k$-module.
+    - `graded_tensor_product(M, N)`: tensor product with Koszul symmetry $\tau(x \otimes y) = (-1)^{|x||y|} y \otimes x$.
+    - `graded_shift(M, k)`: suspension $M[k]$.
+  * `categories/algebras/dg_algebras.py`:
+    - `DGAlgebra(graded_alg, differential_dict)`: differential graded algebra with Leibniz rule certification.
+    - `CDGAlgebra(dg_alg)`: commutative differential graded algebra.
+    - `KoszulDGA(polynomial_ring, relations)`: Koszul complex DGA.
+  * `categories/modules/dg_modules.py`:
+    - `DGModule(dga, graded_mod, action_dict, differential_dict)`: left/right DG-module over a DGA with module Leibniz certification.
+    - `DGBimodule(left_dga, right_dga, mod, l_action, r_action, diff)`: DG-bimodule.
+    - `mapping_cone(f)`: mapping cone of a dg-module morphism.
+    - `dg_cohomology(M)`: computes $H^*(M)$ as a graded $H^*(A)$-module.
+  * `categories/derived/dg_derived_category.py`:
+    - `DGDerivedCategory(dga)`: triangulated derived category $\mathcal{D}(A)$.
+    - `semi_free_resolution(M, max_stage=5)`: automated semi-free cofibrant resolution $\mathbf{p} M \xrightarrow{\sim} M$.
+    - `derived_hom(M, N)`: computes $\mathbf{R}\operatorname{Hom}_A(M, N)$ and $\operatorname{Ext}_A^i(M, N)$.
+    - `derived_tensor_product(M, N)`: computes $M \otimes_A^{\mathbf{L}} N$ and $\operatorname{Tor}_i^A(M, N)$.
+    - `is_perfect(M)`: tests whether $M \in \operatorname{Perf}(A)$.
+  * `categories/homology/bar_cobar.py`:
+    - `BarResolution(A, M)`: canonical two-sided bar resolution $B(A, A, M)$.
+
+Intended owners: `categories/modules/graded_modules.py` (`GradedModule`, `GradedTensor`), `categories/algebras/dg_algebras.py` (`DGAlgebra`, `CDGAlgebra`, `KoszulDGA`), `categories/modules/dg_modules.py` (`DGModule`, `DGBimodule`, `MappingCone`), `categories/derived/dg_derived_category.py` (`DGDerivedCategory`, `SemiFreeResolution`, `DerivedHom`, `DerivedTensor`), `categories/homology/bar_cobar.py` (`BarResolution`).
+
 
 
 
