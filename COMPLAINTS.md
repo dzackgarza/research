@@ -54,16 +54,14 @@ compute that datum and use the same entry (`CON-16`). The scalar action of M
 supplies \(\rho\); it is not a second constructor.
 
 **Remaining source-review scope.**
-The native finite-generator polynomial and free-algebra paths, their homogeneous
-pieces, framing and scalar-change consumers must all use the actual full module
-factor. The generating module of a free functor is distinct from its full
-underlying word/monomial module. `free_source_module` data must retain that
-meaning; renaming it to `unformed_module` would identify different objects.
-The earlier absence claim is not repeated here as a current defect: inspect
-the delivered native/free routes and close only their remaining delta.
+The complete algebra-subtree reconciliation must preserve the delivered free
+construction contract rather than reopening it: the generating module of a
+free functor is distinct from its full word/monomial underlying module, and the
+canonical `generating_module()` accessor names that functor input rather than
+`unformed_module()`.
 
 **Existing capability.**
-The common algebra entry takes the actual module and its tensor multiplication, including native ring, quotient, localization and endomorphism realizations. Multiplicative Hom admission is shared by the algebra refinements, and augmentation now adds its selected algebra morphism on the retained algebra datum rather than rebuilding an engine-backed algebra. The module owner supplies regular and chosen native frames, relationful word quotients, homogeneous sums and the unframed tensor classifier. Any remaining free-functor repair must compose those existing owners, not introduce another scalar-action or multiplication constructor.
+The common algebra entry takes the actual module and its tensor multiplication, including native ring, quotient, localization and endomorphism realizations. Multiplicative Hom admission is shared by the algebra refinements, and augmentation now adds its selected algebra morphism on the retained algebra datum rather than rebuilding an engine-backed algebra. Tensor, symmetric, exterior and divided-power constructions retain their exact generating module separately from their full graded module; native and sparse tensor/symmetric routes use the same algebra entry, and free-algebra scalar change now rebuilds from the scalar-changed generating module while transporting arbitrary word/monomial coefficients through the full module framing. The module owner supplies regular and chosen native frames, relationful word quotients, homogeneous sums and the unframed tensor classifier.
 
 **Affected consumers.**
 Every algebra constructor and every algebra Hom; the tensor- and symmetric-algebra adjunctions; Kaehler differentials and de Rham algebras of polynomial rings; group algebras and their regular representations.
@@ -71,7 +69,7 @@ Every algebra constructor and every algebra Hom; the tensor- and symmetric-algeb
 **Coverage boundary.**
 Read from source; no session was run.
 The named allocation paths and consumers were read from source; runtime behavior and the full terminal session remain unexecuted.
-The remaining source-review scope is scheduled as `free-algebra-module-factor` and `objects-through-categories-algebras` in [TODO.md](TODO.md).
+The remaining complete-subtree reconciliation is scheduled as `objects-through-categories-algebras` in [TODO.md](TODO.md).
 
 ### Sheaf theory on non-affine schemes stops at the chart
 

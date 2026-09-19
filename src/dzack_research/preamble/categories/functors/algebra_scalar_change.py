@@ -5,11 +5,12 @@ For a ring morphism ``f : R -> S`` the mathematical adjunction is
 ``S tensor_R - : Alg_R <-> Alg_S : Res_f``.
 
 Restriction is represented for every live algebra because it changes only the
-structure map.  Scalar extension is currently materialized on algebras with a
-chosen finite commutative polynomial presentation, exactly the class for which
-the algebra layer already knows how to transport relations.  The functors act
-on algebra morphisms, and the represented adjunction supplies the actual Hom
-bijection, unit, and counit on that executable subdomain.
+structure map.  Scalar extension is materialized on tensor/symmetric free
+constructions through scalar change of their exact generating module, and on
+chosen finite commutative polynomial presentations through their selected
+relations.  The functors act on algebra morphisms, and the represented
+adjunction supplies the actual Hom bijection, unit, and counit on that
+executable subdomain.
 """
 
 from sage.categories.homset import Hom as _SageHom
@@ -77,53 +78,36 @@ def _base_change_presented_element(algebra, element, target, ring_map):
     )
 
 
-def _base_change_symmetric_element(algebra, element, target, ring_map):
-    r"""Carry one element of a finitely framed symmetric algebra through scalar extension.
+def _base_change_free_algebra_element(algebra, element, target, ring_map):
+    r"""Carry one tensor/symmetric-algebra element through its full module factor.
 
-    Declared polynomial-engine adapter (``OWN-06``): native monomial keys have
-    the univariate and multivariate shapes supplied by the maintained algebra
-    engines, and their representation is decoded only here.
+    The free construction already owns a framing by all words/monomials.  A
+    coefficient change therefore acts on that actual underlying module; the
+    consumer does not decode a second native monomial representation or reduce
+    the algebra to its degree-one generating module.
     """
-
-    labels = algebra.algebra_generating_set()
-    assert labels.cardinality().is_finite(), (
-        "scalar extension of a symmetric-algebra morphism requires a finite algebra framing"
-    )
-    labels = tuple(labels)
-    backend = _engine_element(algebra, algebra(element))
+    source_labels = algebra.module_generating_set()
+    target_labels = target.module_generating_set()
     result = target.zero()
-    source_base = algebra.base_ring()
-    source_base_engine = _engine_ring(source_base)
-    for exponent, coefficient in backend.monomial_coefficients().items():
-        try:
-            powers = tuple(int(value) for value in exponent)
-        except TypeError:
-            if hasattr(exponent, "exponents"):
-                powers = tuple(int(value) for value in exponent.exponents()[0])
-            else:
-                powers = (int(exponent),)
-        if len(powers) != len(labels):
-            raise ArithmeticError(
-                "the symmetric-algebra engine returned a monomial with the wrong arity"
-            )
-        scalar = ring_map(
-            source_base._from_engine_element(source_base_engine(coefficient))
+    for label, coefficient in algebra.framing_coefficients(algebra(element)).items():
+        source_label = source_labels(label)
+        target_label = target_labels(source_label)
+        result += target.scalar_multiple(
+            ring_map(coefficient),
+            target.module_generator(target_label),
         )
-        term = target.scalar_multiple(scalar, target.one())
-        for label, power in zip(labels, powers, strict=True):
-            if power:
-                term *= target.algebra_generator(label) ** power
-        result += term
-    return target(result)
+    return result
 
 
 class _AlgebraScalarExtensionFunctor(Functor):
     r"""``S tensor_R - : Alg_R -> Alg_S`` along ``f : R -> S``.
 
     The functor is mathematical on all algebras.  The live object adapter is
-    deliberately narrower: it materializes chosen finite polynomial
-    presentations and refuses to advertise an unavailable general tensor
-    algebra backend as though it had been constructed.
+    deliberately narrower: it materializes tensor/symmetric free algebras from
+    the scalar-changed generating module, chosen finite commutative polynomial
+    presentations from their relations, and the selected number-field order
+    cases.  It does not advertise an unavailable general algebra tensor backend
+    as though it had been constructed.
     """
 
     def __init__(self, ring_map) -> None:
@@ -141,16 +125,28 @@ class _AlgebraScalarExtensionFunctor(Functor):
     def _apply_object(self, algebra):
         from dzack_research.preamble.categories.algebras.free_algebras import (
             SymmetricAlgebras,
+            TensorAlgebras,
         )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        if algebra in SymmetricAlgebras(self._source_ring):
-            from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-            source_module = algebra.generating_module()
-            extended_module = Modules(self._source_ring).scalar_extension(self.ring_map())(
-                source_module
-            )
-            return Modules(self._target_ring).symmetric_algebra()(extended_module)
+        match (
+            algebra in TensorAlgebras(self._source_ring),
+            algebra in SymmetricAlgebras(self._source_ring),
+        ):
+            case (True, False):
+                source_module = algebra.generating_module()
+                extended_module = Modules(self._source_ring).scalar_extension(
+                    self.ring_map()
+                )(source_module)
+                return Modules(self._target_ring).tensor_algebra()(extended_module)
+            case (False, True):
+                source_module = algebra.generating_module()
+                extended_module = Modules(self._source_ring).scalar_extension(
+                    self.ring_map()
+                )(source_module)
+                return Modules(self._target_ring).symmetric_algebra()(extended_module)
+            case _:
+                pass
 
         match algebra in AlgebrasWithChosenFinitePresentation(self._source_ring):
             case True:
@@ -172,6 +168,7 @@ class _AlgebraScalarExtensionFunctor(Functor):
         target = self(morphism.codomain())
         from dzack_research.preamble.categories.algebras.free_algebras import (
             SymmetricAlgebras,
+            TensorAlgebras,
         )
         match (
             morphism.domain() in OwnedOrders()
@@ -204,15 +201,21 @@ class _AlgebraScalarExtensionFunctor(Functor):
             case False:
                 pass
 
-        if morphism.codomain() in SymmetricAlgebras(self._source_ring):
-            return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
-                lambda label: _base_change_symmetric_element(
-                    morphism.codomain(),
-                    morphism(morphism.domain().algebra_generator(label)),
-                    target,
-                    self.ring_map(),
+        match (
+            morphism.codomain() in TensorAlgebras(self._source_ring),
+            morphism.codomain() in SymmetricAlgebras(self._source_ring),
+        ):
+            case (True, _) | (_, True):
+                return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
+                    lambda label: _base_change_free_algebra_element(
+                        morphism.codomain(),
+                        morphism(morphism.domain().algebra_generator(label)),
+                        target,
+                        self.ring_map(),
+                    )
                 )
-            )
+            case _:
+                pass
 
         return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
             lambda label: _base_change_presented_element(

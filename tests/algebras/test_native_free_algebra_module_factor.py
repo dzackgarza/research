@@ -163,3 +163,77 @@ def test_free_forgetful_counits_evaluate_the_full_polynomial_module():
         assert constant_generator != formal.one()
         assert counit(constant_generator) == algebra.one()
         assert counit(formal.one()) == algebra.one()
+
+
+def test_scalar_extension_rebuilds_tensor_and_symmetric_algebras_from_the_changed_generating_module():
+    ring_map = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
+    module = ZZ.free_module(("x", "y"))
+    module_extension = Modules(ZZ).scalar_extension(ring_map)
+    algebra_extension = (
+        Algebras(ZZ).Associative().Unital().base_change_adjunction(ring_map).left_adjoint()
+    )
+    changed_module = module_extension(module)
+
+    for algebra in (module.tensor_algebra(), module.symmetric_algebra()):
+        changed = algebra_extension(algebra)
+        x = changed.algebra_generator("x")
+        y = changed.algebra_generator("y")
+
+        assert changed.generating_module() is changed_module
+        assert changed.graded_piece(1) is changed_module
+        assert changed.unformed_module() is not changed_module
+        assert changed.unformed_module().base_ring() is QQ
+        assert changed.homogeneous_degree(x * y) == 2
+        assert changed.multiplication().domain().tensor_factor(0) is changed.unformed_module()
+        assert changed.multiplication().domain().tensor_factor(1) is changed.unformed_module()
+
+        match algebra:
+            case _ if algebra is module.tensor_algebra():
+                assert x * y != y * x
+            case _:
+                assert x * y == y * x
+
+
+def test_scalar_extension_of_free_algebra_morphism_uses_the_full_word_module():
+    ring_map = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
+    module = ZZ.free_module(("x", "y"))
+    algebra = module.tensor_algebra()
+    x = algebra.algebra_generator("x")
+    y = algebra.algebra_generator("y")
+    endomorphism = algebra.Mor(algebra)(
+        {"x": x * y + 2 * x, "y": y}
+    )
+    extension = (
+        Algebras(ZZ).Associative().Unital().base_change_adjunction(ring_map).left_adjoint()
+    )
+    changed = extension(algebra)
+    changed_map = extension(endomorphism)
+    changed_x = changed.algebra_generator("x")
+    changed_y = changed.algebra_generator("y")
+
+    assert changed_map.domain() is changed
+    assert changed_map.codomain() is changed
+    assert changed_map(changed_x) == changed_x * changed_y + 2 * changed_x
+    assert changed_map(changed_x * changed_y) == (
+        changed_x * changed_y + 2 * changed_x
+    ) * changed_y
+
+
+def test_sparse_free_algebra_scalar_extension_keeps_infinite_word_semantics():
+    ring_map = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
+    module = ZZ.free_module(NN)
+    algebra = module.tensor_algebra()
+    extension = (
+        Algebras(ZZ).Associative().Unital().base_change_adjunction(ring_map).left_adjoint()
+    )
+    changed = extension(algebra)
+    changed_module = Modules(ZZ).scalar_extension(ring_map)(module)
+    a = changed.algebra_generator(NN(2))
+    b = changed.algebra_generator(NN(5))
+
+    assert changed.generating_module() is changed_module
+    assert changed.graded_piece(1) is changed_module
+    assert changed.unformed_module() is not changed_module
+    assert not changed.module_generating_set().cardinality().is_finite()
+    assert a * b != b * a
+    assert changed.homogeneous_degree(a * b * a) == 3

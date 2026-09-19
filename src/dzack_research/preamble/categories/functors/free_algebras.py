@@ -58,13 +58,9 @@ class _ModuleAlgebraFunctor(Functor):
         target = self(target_module)
 
         def image(label):
-            coefficients = target_module.framing_coefficients(morphism(morphism.domain().module_generator(label)))
-            return sum(
-                (
-                    coefficient * target.algebra_generator(target_label)
-                    for target_label, coefficient in coefficients.items()
-                ),
-                target.zero(),
+            return target.from_component(
+                1,
+                morphism(morphism.domain().module_generator(label)),
             )
 
         homset = source.Mor(target)
