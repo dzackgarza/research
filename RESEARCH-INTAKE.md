@@ -19,6 +19,11 @@ Where to look first for existing algorithms before writing new code. Check these
 | Symbolic summation, recurrences, D-finite / holonomic, creative telescoping, OGF/EGF closure | https://caa.risc.jku.at/software — RISC Computer Algebra (ore_algebra, HolonomicFunctions, etc.) | Ore algebras, closure for D-finite, creative telescoping, recurrence solving, OGF/EGF translation, L-functions as D-finite objects; adapter candidates for generatingfunctionology and `Periods` |
 | Constructive algebraic topology — effective homology, loop spaces, fibrations, Whitehead/Postnikov towers, homotopy groups | https://www-fourier.univ-grenoble-alpes.fr/~sergerar/Kenzo/ — Kenzo program (EAT/Kenzo); file-list 36 modules: effective-homology, chain-complexes, simplicial-sets/groups, fibrations, loop-spaces, classifying-spaces, k-pi-n, serre, whitehead, etc. — demo shows H5(Ω^3 Moore(Z/2,4)), H5(ΩΩ(S^3∪_2 D^3)), π7(P∞R/P2R) | Effective homology (reductions/strong equivalences, basic/easy perturbation lemmas, twisted Eilenberg-Zilber), bar/cobar, Kan loop group / classifying space, fibrations as twisted cartesian products, Eilenberg-MacLane K(π,n), Serre spectral sequence, discrete vector fields for EZ/EML, Whitehead/Postnikov tower for π_n of simply connected simplicial sets; adapter candidate for homology of iterated loop spaces and higher homotopy |
 | Filtered complexes + Serre/Eilenberg-Moore sseqs — test fixtures + algorithms | https://www-fourier.univ-grenoble-alpes.fr/~sergerar/Papers/Ana-JSC.pdf — Ana Romero et al. JSC (effective homology + spectral sequences) — §3-7 code + didactic/advanced examples | Theorem 15 (filtered C with effective homology, homotopies order ≤t ⇒ E_r(C)≅E_r(HC) for r>t), class Filtered-Complex with flin, functions build-FltrChcm/change-chcm-to-FltrChcm/fltrd-basis/fltr-chcm-dffr-mtrx, sseq functions print-spct-sqn-cmpns/spct-sqn-basis-dvs/spct-sqn-dffr/spct-sqn-cnvg-level, fixtures: S^2×_τ K(Z,1) (τ(s2)=[1] Hopf S^3, τ(s2)=[2] P^3R) with effective S^2⊗_t S^1 and twpr-flin/tnpr-flin filtrations, S^2×_τ K(Z/2,1) (effective bypass), Postnikov tower X4 (X2=K(Z/2,2), k3∈H^4(X2;Z/2), X3=X2×_{k3}K(Z,3), k4∈H^5(X3;Z/2), X4=X3×_{k4}K(Z/2,4) with E_2^{0,4}=Z/2, E_2^{5,0}=Z/4, E_2^{6,0}=Z/2⊕Z/2, d5^{5,0}≠0) and loop-space EM sseq for ΩS^3 vs ΩS^3∪_2 D^3 (Fig.1 E_∞^{p,q} q-p≤8, Fig.2 same); use for specimen oracles and perturbation-order checks |
+| Algebraic surface geography, Enriques–Kodaira classification, Chern numbers (c_1^2, c_2), Hodge diamonds | https://superficie.info/ — le superficie algebriche (Belmans–Commelin) + https://github.com/superficie/superficie-algebriche | Numerical invariants and geography of minimal complex algebraic surfaces (c_1^2, c_2, Kodaira dimension κ, irregularity q, geometric genus p_g, Euler characteristic e, Betti and Hodge numbers); source of oracle calculations for surface invariants and specimen tests; reference architecture for interactive mathematical geography tools |
+| Fano 3-folds geography, Iskovskikh–Mori–Mukai classification, derived categories | https://fanography.info/ — Fanography (Belmans) + https://github.com/fanography/fanography | Classification and numerical invariants of 105 smooth Fano 3-fold families; Picard rank ρ=1..10, index r, degree (-K_X)^3, genus g, Betti/Hodge numbers, intermediate Jacobians, derived categories D^b(X) (Kuznetsov components, semi-orthogonal decompositions), Hilbert schemes of lines/conics, blowup/contraction diagrams; oracle source for 3-fold geometry |
+| Generalized Grassmannians G/P, homogeneous spaces, Schubert calculus, exceptional collections | https://www.grassmannian.info/ — grassmannian.info (Belmans) + https://github.com/pbelmans/grassmannian.info | Homogeneous varieties G/P for simple groups of types A..G; dimension, index, Picard number, Betti numbers (Schubert calculus, Bruhat order), cohomology rings H^*(G/P;ZZ), homogeneous vector bundles via Borel–Weil–Bott, full exceptional collections in D^b(G/P); oracle source for homogeneous spaces and Schubert calculus |
+| Scheme and morphism adjectives, automated property deduction, Stacks Project counterexamples | https://adjectivesproject.org/ — The Adjectives Project (Vogel–Holmes) + https://github.com/jessetvogel/adjectives-project-data | 19 scheme properties, 44 morphism properties, 95 implication theorems, 107 concrete examples/counterexamples; deductive inference engine for geometric properties; normative reference for preamble scheme/morphism predicate calculus and test oracles |
+| General topology counterexamples, separation/compactness/countability axioms, topological spaces | https://topology.pi-base.org/ — π-Base + https://github.com/pi-base/data | 246 topological properties, 224 canonical topological spaces, 931 deduction theorems, universal constructions (subspaces, products, coproducts, quotients); comprehensive counterexample and predicate suite for preamble topology |
 
 ## Leads
 
@@ -99,6 +104,11 @@ Where to look first for existing algorithms before writing new code. Check these
 | Canonical sheaves, Serre duality | User note 2026-09-16 | `ω_X = ∧^n Ω^1_{X/k}` canonical (`det T^*X`) for `X: Sm/k` `n`-dim, `ω_X : Pic(X)`, duality `Ext^i(F,ω_X) ≅ H^{n-i}(X,F)^∨` for coherent `F`, `H^i(X,F)^∨ ≅ Ext^{n-i}(F,ω_X)`, `RΓ(F)^∨ ≅ RHom(F,ω_X[n])` via `Rf^!` | `categories/sheaves/canonical.py` + `categories/duality/serre.py` + `categories/schemes/canonical.py` + `categories/sheaves/six_functors.py` | Proposed — see note below |
 | Siegel half-spaces | User note 2026-09-16 | `HH_g = {Z∈Mat_{g×g}(C) | Z^t=Z, Im Z>0}` Siegel upper half-space `Sp_{2g}(RR)/U(g)`, `dim_C = g(g+1)/2`, action `γ·Z=(AZ+B)(CZ+D)^{-1}` for `γ=(A B;C D)∈Sp_{2g}`, `Γ=Sp_{2g}(ZZ)` arithmetic, `A_g=Γ\HH_g` moduli of ppav, generalization of `HH=HH_1` | `categories/modular/siegel_half_space.py` + `categories/hermitian/siegel.py` + `categories/moduli/ppav.py` | Proposed — see note below |
 | Derivations of modules / augmented ZZ-algebras, Fox free differential calculus | User note 2026-09-16 | `d: A→M` `R`-derivation `d(ab)=a·d(b)+d(a)·b`, `Der_R(A,M)=Hom_A(Ω_{A/R},M)`, `Ω_{A/R}` Kähler, augment `ε: A→ZZ`, `I=ker ε`, Fox `∂/∂x_i: ZZ[F_n]→ZZ[F_n]` free derivatives with `∂(uv)=∂(u)+u·∂(v)`, `d: ZZ[F]→⊕ ZZ[F]·dx_i`, `Ω_{ZZ[F]/ZZ}` free | `categories/algebras/derivations.py` + `categories/algebras/augmented_algebras.py` + `categories/algebras/fox_calculus.py` + `categories/modules/derivations.py` | Proposed — see note below |
+| Surface geography oracles (superficie.info) + lattice geography / classification interactive tool | https://superficie.info/ + user intake 2026-09-19 | Oracle calculations for complex algebraic surface invariants (Chern numbers c_1^2, c_2, Kodaira dimension, Hodge numbers); TODO: produce similar interactive geography/classification tool for lattices (signatures (p,q), determinant, discriminant form, genus, root systems, Coxeter diagrams, K3/Enriques embeddings) | `categories/schemes/surfaces/` + `categories/lattices/` + `computations/` / `src/dzack_research/preamble/visualization/` | Proposed — see note below |
+| Fano 3-fold geography, classification, derived categories (Fanography) | https://fanography.info/ + https://github.com/fanography/fanography | Classification and invariants of 105 Fano 3-fold families (Picard rank ρ, index r, degree (-K)^3, genus, Betti/Hodge numbers, D^b(X) semi-orthogonal decompositions, Hilbert schemes of lines/conics) | `categories/schemes/fano/` + `categories/derived/` + `categories/schemes/surfaces/del_pezzo.py` | Proposed — see note below |
+| Generalized Grassmannians G/P, Schubert calculus, exceptional collections (Grassmannian.info) | https://www.grassmannian.info/ + https://github.com/pbelmans/grassmannian.info | Homogeneous varieties G/P for all Dynkin types, dimension, index, Picard number, Betti numbers (Schubert calculus, Bruhat order), cohomology rings H^*(G/P;ZZ), Borel–Weil–Bott, full exceptional collections in D^b(G/P) | `categories/schemes/grassmannian.py` + `categories/lie/homogeneous_spaces.py` + `categories/derived/exceptional_collections.py` | Proposed — see note below |
+| Scheme and morphism adjectives, automated property deduction (The Adjectives Project) | https://adjectivesproject.org/ + https://github.com/jessetvogel/adjectives-project-data | 19 scheme properties, 44 morphism properties, 95 implication theorems, 107 concrete examples/counterexamples; operationalized property calculus and oracle test suite for Schemes and Hom(Sch) | `categories/schemes/properties.py` + `categories/schemes/morphism_properties.py` + `categories/schemes/theorems.py` | Proposed — see note below |
+| General topology counterexamples, 246 properties, 931 theorems, universal constructions (pi-Base) | https://topology.pi-base.org/ + https://github.com/pi-base/data | 246 topological properties (separation, compactness, countability, connectedness, metrizability), 224 canonical spaces, 931 theorems, universal constructions (subspaces, products, coproducts, quotients); operationalized topological predicate suite | `categories/topology/spaces.py` + `categories/topology/properties.py` + `categories/topology/constructions.py` + `categories/topology/theorems.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -1588,4 +1598,301 @@ Operationalize sieves, Grothendieck topologies, pullbacks as intersections, and 
 * Topos `E : Topoi` as Grothendieck topos `E = Sh(C,J)` sheaves on site `(C,J)` with finite limits, colimits, exponentials, subobject classifier `Ω`, and `E` is `∞`-topos `E = Sh_∞(C,J)` when `S`-valued; `E = PSh(C)` presheaves and sheafification `a: PSh(C) → Sh(C,J)` left exact left adjoint to inclusion, with `E` as left exact localization of `PSh(C)`; `E` has `E = Sh(C,J) = PSh(C)[J^{-1}]`. Need `Topoi` as 2-category with `Sh(C,J)` as objects, geometric morphisms `f: E→F` as `f^*: F→E` left exact left adjoint. Also elementary topos axioms.
 
 Intended owners: `categories/sites/sieves.py` (`Sieve` `S⊂h_U`), `categories/sites/grothendieck_topology.py` (`J` with `J(U)` covering sieves), `categories/limits/pullbacks_as_intersections.py` (`pullback` as `∩` for `Op(X)`), `categories/topoi/topoi.py` (`Topos` `E=Sh(C,J)` with `a: PSh→Sh`), `categories/topoi/sheaves.py` (`Sh(C,J)`). Not a free `sieve_on(U)` returning list — `Sieve(C,U)` with `S⊂h_U` and `J.covering_sieves(U)`.
+
+## Desired capability: superficie.info as oracle source for surface invariants, and interactive geography/classification tool for lattices — intake 2026-09-19
+
+Intake item from https://superficie.info/ (Belmans–Commelin, repository: https://github.com/superficie/superficie-algebriche).
+
+* **Source of oracle calculations for algebraic surfaces:**
+  * `superficie.info` catalogs minimal complex algebraic smooth surfaces structured by the Enriques–Kodaira classification ($\kappa \in \{-\infty, 0, 1, 2\}$) and pairs of Chern numbers $(c_1^2, c_2)$.
+  * Numerical invariants provided: Kodaira dimension $\kappa$, Chern numbers $(c_1^2, c_2)$, topological Euler characteristic $e = c_2$, holomorphic Euler characteristic $\chi(\mathcal{O}_X) = \frac{1}{12}(c_1^2 + c_2)$, irregularity $q = h^{0,1}$, geometric genus $p_g = h^{0,2}$, Betti numbers $b_1, b_2, b_3, b_4$, and full Hodge diamond $h^{p,q}$.
+  * Preamble integration: serves as an oracle and specimen test-fixture database for preamble surface invariants and scheme constructions (`categories/schemes/surfaces/`, `Surfaces/C`), validating intersection numbers, canonical divisor properties $K_X^2 = c_1^2$, and Hodge numbers against literature citations.
+
+* **TODO: Produce a similar tool for lattices:**
+  * Design and implement a lattice geography / classification explorer analogous to `superficie.info` (and related sites `fanography.info`, `grassmannian.info`, `hyperkaehler.info`).
+  * Mathematical domain: integral lattices $(L, b)$ up to isometry, classified by signature $(p, q)$ (definite and indefinite/Lorentzian), rank $n = p + q$, determinant $\det(L)$, discriminant group $A_L = L^\vee / L$, discriminant quadratic/bilinear form $q_L: A_L \to \mathbb{Q}/2\mathbb{Z}$, parity (even/odd), genus of lattices (via Conway–Sloane / Nikulin $p$-adic invariants), root systems (roots of norm $\pm 2$, Dynkin diagrams), reflection groups / Coxeter–Vinberg polyhedra, and special geometric lattices (hyperbolic lattices, $E_8$, Leech $\Lambda_{24}$, K3 lattice $\mathrm{II}_{3,19}$, Enriques lattice $E_8(-1) \oplus U$, Coble lattices, and their primitive embeddings).
+  * Interactive tool architecture:
+    * 2D geography / parameter space grid (e.g. signature $(p, q)$, or $(n, \det(L))$, or $(\mathrm{rank}, \mathrm{length}(A_L))$).
+    * Filtering by mathematical properties: unimodular, even/odd, definite/indefinite, signature, reflective, projective/hyperbolic.
+    * Detail view per lattice/genus: Gram matrix representative, discriminant form, automorphism group $\mathrm{O}(L)$, root system components, embedding relations (e.g. primitive sublattices and orthogonal complements in $\mathrm{II}_{3,19}$ or $\mathrm{II}_{1,25}$).
+    * Exportable test specimens / oracle fixtures formatted for direct verification in `tests/lattices/` and preamble lattice modules.
+
+Intended owners: `categories/schemes/surfaces/` (surface invariants and oracle verification), `categories/lattices/` (`Lattices` category, discriminant forms, genus classification, invariants), and `computations/` or `src/dzack_research/` / web visualizer (interactive lattice geography explorer).
+
+## Desired capability: Fano 3-folds geography, classification, and derived categories (Fanography) — intake 2026-09-19
+
+Intake item from https://fanography.info/ (Pieter Belmans, repository: https://github.com/fanography/fanography).
+
+* **Source of oracle calculations for Fano 3-folds:**
+  * Exhaustive catalog of the 105 deformation families of smooth complex Fano 3-folds classified by Iskovskikh and Mori–Mukai.
+  * Stratification by Picard rank $\rho(X) \in \{1, \dots, 10\}$:
+    * $\rho = 1$: 17 families (e.g. index $r=4$: $\mathbb{P}^3$; index $r=3$: quadric $Q^3 \subset \mathbb{P}^4$; index $r=2$: del Pezzo 3-folds $V_1, \dots, V_5$; index $r=1$: prime Fano 3-folds $X_{2g-2}$ with genus $g \in \{2, \dots, 10, 12\}$).
+    * $\rho = 2$: 36 families.
+    * $\rho = 3$: 31 families.
+    * $\rho = 4$: 13 families.
+    * $\rho = 5$: 3 families.
+    * $\rho = 6$: 1 family (blowup of $\mathbb{P}^3$ at 6 points).
+    * $\rho = 7$: 1 family.
+    * $\rho = 8$: 1 family.
+    * $\rho = 9$: 1 family.
+    * $\rho = 10$: 1 family ($\mathbb{P}^1 \times S_1$ where $S_1$ is del Pezzo surface of degree 1).
+  * Numerical invariants provided per family:
+    * Picard rank $\rho = b_2$, Fano index $r = \max \{m \in \mathbb{Z}_{>0} \mid -K_X = m H \text{ for } H \in \mathrm{Pic}(X)\}$.
+    * Anticanonical degree $(-K_X)^3$, genus $g = \frac{1}{2}(-K_X)^3 + 1$.
+    * Betti numbers $b_2, b_3, b_4$ (with $b_1 = 0$, $b_5 = 0$, $b_2 = b_4 = \rho$, $b_3 = 2 h^{1,2}$).
+    * Hodge diamond: $h^{1,1} = \rho$, $h^{1,2} = \frac{1}{2} b_3$, and $h^{p,q} = 0$ for $p \neq q$ and $p + q \neq 3$.
+    * Topological Euler characteristic $e(X) = 2 + 2\rho - 2 h^{1,2}$.
+    * Dimension of automorphism group $\dim \mathrm{Aut}^0(X)$ and reductivity/Lie algebra structure.
+    * Intermediate Jacobian $J(X) = H^{1,2}(X)^\vee / H_3(X, \mathbb{Z})$: dimension $g(J) = h^{1,2}$, principally polarized abelian variety structure, Torelli theorem validity.
+  * Categorical and moduli data:
+    * Bounded derived category $\mathbf{D}^b(X)$: semi-orthogonal decompositions (SOD), exceptional collections, and residual Kuznetsov components $\mathcal{A}_X$ (e.g. cubic 3-fold Kuznetsov component, quartic double solid, Gushel–Mukai 3-folds).
+    * Moduli of curves on $X$: Hilbert scheme of lines $\mathrm{F}(X)$ (Fano surface of lines) and conics $\mathcal{C}(X)$, including smoothness, dimension, and Abel–Jacobi map to $J(X)$.
+    * Mori fiber space structures: conic bundles, del Pezzo fibrations, and extremal contractions.
+  * Preamble integration:
+    * Preamble must construct Fano varieties as objects in `Schemes/C` (`categories/schemes/fano/`).
+    * Compute numerical invariants $(\rho, r, (-K)^3, g, b_i, h^{p,q})$ directly from defining equations, complete intersections, or blowup data.
+    * Wire semi-orthogonal decompositions in $\mathbf{D}^b(X)$ to derived category foundations (`categories/derived/`).
+
+Intended owners: `categories/schemes/fano/` (`FanoThreefold`, `FanoClassification`), `categories/derived/` (`SemiOrthogonalDecomposition`, `KuznetsovComponent`), `categories/schemes/surfaces/del_pezzo.py` (del Pezzo surfaces and fibrations).
+
+## Desired capability: Generalized Grassmannians $G/P$, Schubert calculus, and homogeneous bundles (Grassmannian.info) — intake 2026-09-19
+
+Intake item from https://www.grassmannian.info/ (Pieter Belmans, repository: https://github.com/pbelmans/grassmannian.info).
+
+* **Source of oracle calculations for generalized Grassmannians:**
+  * Complete periodic table of generalized Grassmannians $G/P$ where $G$ is a simple complex Lie group of any Dynkin type ($A_n, B_n, C_n, D_n, E_6, E_7, E_8, F_4, G_2$) and $P$ is a maximal parabolic subgroup (corresponding to a marked node on the Dynkin diagram).
+  * Types covered:
+    * Type $A_n$: Classical Grassmannians $\mathrm{Gr}(k, n+1)$.
+    * Type $B_n$: Odd orthogonal Grassmannians $\mathrm{OGr}(k, 2n+1)$.
+    * Type $C_n$: Symplectic Grassmannians $\mathrm{SGr}(k, 2n)$ (including Lagrangian Grassmannian $\mathrm{LGr}(n, 2n)$).
+    * Type $D_n$: Even orthogonal Grassmannians $\mathrm{OGr}(k, 2n)$ (including orthogonal spinor varieties $\mathrm{OGr}_+(n, 2n)$).
+    * Exceptional types: Cayley plane $E_6/P_1 \cong E_6/P_6$ (dimension 16, Severi variety), Freudenthal variety $E_7/P_7$ (dimension 27), adjoint $E_8/P_8$, $F_4$-Grassmannians $F_4/P_1, F_4/P_4$, and $G_2$-Grassmannian $G_2/P_1$ (five-dimensional quadric section) and $G_2/P_2$ (adjoint $G_2$-variety).
+  * Invariants and structures provided:
+    * Dimension $\dim(G/P) = \dim(G) - \dim(P)$.
+    * Fano index $r(G/P)$ and Picard number $\rho = 1$ (for maximal parabolics).
+    * Schubert calculus: Weyl group $W = W(G)$, parabolic subgroup $W_P$, minimal length coset representatives $W^P \subset W$. Schubert cells $X_w = B w P / P$ indexed by $w \in W^P$ with $\dim X_w = \ell(w)$.
+    * Poincaré polynomial $P(t) = \sum_{w \in W^P} t^{2 \ell(w)}$, giving Betti numbers $b_{2k} = \# \{w \in W^P \mid \ell(w) = k\}$ and odd Betti numbers $b_{2k+1} = 0$.
+    * Cohomology ring $H^*(G/P, \mathbb{Z})$: Schubert classes $[X_w]$, Littlewood–Richardson coefficients and Schubert intersection products $\sigma_u \cdot \sigma_v = \sum c_{u,v}^w \sigma_w$.
+    * Homogeneous vector bundles: tautological subbundle $\mathcal{S}$ and quotient bundle $\mathcal{Q}$ on $\mathrm{Gr}(k, V)$, universal spinor bundles on orthogonal Grassmannians; irreducible $G$-equivariant vector bundles $\mathcal{E}_\lambda = G \times_P V_\lambda$ associated to dominant weights $\lambda$ of $P$.
+    * Borel–Weil–Bott theorem: constructive computation of cohomology groups $H^q(G/P, \mathcal{E}_\lambda)$ via the dot action $w \cdot \lambda = w(\lambda + \rho) - \rho$ of the Weyl group $W$.
+    * Derived categories $\mathbf{D}^b(G/P)$: full exceptional collections of homogeneous vector bundles (Kapranov collections on $\mathrm{Gr}(k,n)$, Kuznetsov–Polishchuk collections on quadrics and symplectic Grassmannians).
+    * Automorphism group $\mathrm{Aut}(G/P) \cong G_{ad}$ and tangent bundle $T(G/P) \cong G \times_P (\mathfrak{g}/\mathfrak{p})$.
+  * Preamble integration:
+    * Preamble must construct $G/P$ as owned homogeneous scheme objects in `Schemes/C` (`categories/schemes/grassmannian.py`, `categories/lie/homogeneous_spaces.py`).
+    * Operationalize Schubert cell enumeration, Bruhat order posets, Poincaré polynomials, and intersection rings from the Weyl group representation of $G$.
+    * Operationalize Borel–Weil–Bott functor: $\mathrm{Rep}(P) \to \mathrm{Coh}(G/P)$ and its pushforward to derived vector spaces $R\Gamma(G/P, -) \in \mathbf{D}^b(\mathrm{Vect})$.
+
+Intended owners: `categories/schemes/grassmannian.py` (`Grassmannian`, `GeneralizedGrassmannian`), `categories/lie/homogeneous_spaces.py` (`HomogeneousSpace` $G/P$, Borel–Weil–Bott), `categories/derived/exceptional_collections.py` (Kapranov and Kuznetsov exceptional collections).
+
+## Desired capability: Scheme and morphism adjectives, automated deduction, and counterexamples (The Adjectives Project) — intake 2026-09-19
+
+Intake item from https://adjectivesproject.org/ (Jesse Vogel and David Holmes, repositories: https://github.com/jessetvogel/adjectives-project and https://github.com/jessetvogel/adjectives-project-data).
+
+* **Extensive mining of scheme properties and morphism properties:**
+  * Complete repository of mathematical "adjectives" (predicates), implication theorems, and specimen counterexamples mined from the Stacks Project and EGA.
+  * **Scheme adjectives (19 properties):**
+    1. `affine`: admitting an isomorphism $X \cong \mathrm{Spec}(R)$ for a commutative ring $R$.
+    2. `cohen-macaulay`: local rings $\mathcal{O}_{X,x}$ satisfy $\mathrm{depth}(\mathcal{O}_{X,x}) = \dim(\mathcal{O}_{X,x})$ for all $x \in X$.
+    3. `connected`: underlying topological space is connected (no partition into disjoint nonempty opens).
+    4. `excellent`: locally Noetherian, universally catenary, and all formal completions have geometrically regular fibers.
+    5. `finite-dimensional`: Krull dimension $\dim(X) < \infty$.
+    6. `integral`: reduced and irreducible (equivalently, $\mathcal{O}_X(U)$ is an integral domain for all connected open $U$).
+    7. `irreducible`: underlying topological space is not the union of two proper closed subsets.
+    8. `jacobson`: the set of closed points is dense in every closed subscheme; all local rings have Jacobson property.
+    9. `locally-factorial`: every local ring $\mathcal{O}_{X,x}$ is a unique factorization domain (UFD).
+    10. `locally-noetherian`: admitting an open affine covering $X = \bigcup \mathrm{Spec}(A_i)$ with each $A_i$ a Noetherian ring.
+    11. `noetherian`: locally Noetherian and quasi-compact.
+    12. `normal`: every local ring $\mathcal{O}_{X,x}$ is an integrally closed integral domain.
+    13. `quasi-affine`: isomorphic to an open subscheme of an affine scheme.
+    14. `quasi-compact`: every open covering has a finite subcovering.
+    15. `quasi-separated`: the diagonal morphism $\Delta_{X}: X \to X \times_{\mathrm{Spec}\mathbb{Z}} X$ is quasi-compact.
+    16. `reduced`: every local ring $\mathcal{O}_{X,x}$ has zero nilradical ($\mathcal{N}(\mathcal{O}_{X,x}) = 0$).
+    17. `regular`: every local ring $\mathcal{O}_{X,x}$ is regular ($\dim_{\kappa(x)} \mathfrak{m}_x/\mathfrak{m}_x^2 = \dim \mathcal{O}_{X,x}$).
+    18. `semi-separated`: the intersection of any two affine open subschemes is affine.
+    19. `separated`: the diagonal morphism $\Delta_{X}: X \to X \times_{\mathrm{Spec}\mathbb{Z}} X$ is a closed immersion.
+
+  * **Morphism adjectives (44 properties):**
+    1. `affine`: preimage of every affine open is affine ($f_* \mathcal{O}_X$ is quasi-coherent $\mathcal{O}_Y$-algebra).
+    2. `bundle-projective`: isomorphic to $\mathbb{P}(\mathcal{E}) \to Y$ for a locally free sheaf $\mathcal{E}$ on $Y$.
+    3. `closed-immersion`: homeomorphism onto a closed subset with surjective sheaf map $\mathcal{O}_Y \twoheadrightarrow f_* \mathcal{O}_X$.
+    4. `closed`: image of every closed subset is closed.
+    5. `etale`: flat and unramified (formally étale and locally of finite presentation).
+    6. `faithfully-flat`: flat and surjective on points.
+    7. `finite-fibers`: every fiber $f^{-1}(y)$ is a finite discrete set.
+    8. `finite-locally-free`: finite and $f_* \mathcal{O}_X$ is a locally free $\mathcal{O}_Y$-module of finite rank.
+    9. `finite`: affine and $f_* \mathcal{O}_X$ is a finite $\mathcal{O}_Y$-module.
+    10. `flat`: local rings $\mathcal{O}_{X,x}$ are flat $\mathcal{O}_{Y,f(x)}$-modules for all $x \in X$.
+    11. `formally-etale`: Infinitesimal lifting criterion holds uniquely for square-zero ring extensions.
+    12. `formally-smooth`: Infinitesimal lifting criterion holds (existence of lifts) for square-zero extensions.
+    13. `formally-unramified`: Infinitesimal lifting criterion holds (at most one lift) for square-zero extensions.
+    14. `g-unramified`: unramified in the sense of Grothendieck (diagonal is an open immersion).
+    15. `h-projective`: homogeneous projective morphism (factors through a closed immersion into $\mathbb{P}^n_Y$).
+    16. `homeomorphism`: $f$ is a topological homeomorphism on underlying spaces.
+    17. `immersion`: composition of an open immersion and a closed immersion.
+    18. `injective`: injective on underlying sets of points.
+    19. `integral`: affine and every element of $f_* \mathcal{O}_X$ is integral over $\mathcal{O}_Y$.
+    20. `locally-of-finite-presentation`: locally $X \to Y$ is given by $B = A[x_1,\dots,x_n]/(f_1,\dots,f_m)$.
+    21. `locally-of-finite-type`: locally $X \to Y$ is given by $B = A[x_1,\dots,x_n]/I$.
+    22. `locally-projective`: admitting open cover of $Y$ over which $f$ is projective.
+    23. `monomorphism`: monic in the category of schemes ($\mathrm{Hom}(T, X) \hookrightarrow \mathrm{Hom}(T, Y)$ is injective).
+    24. `of-finite-presentation`: locally of finite presentation, quasi-compact, and quasi-separated.
+    25. `of-finite-type`: locally of finite type and quasi-compact.
+    26. `open-immersion`: isomorphism onto an open subscheme.
+    27. `open`: image of every open subset is open.
+    28. `projective`: factors as a closed immersion $X \hookrightarrow \mathbb{P}(\mathcal{E})$ followed by projection to $Y$.
+    29. `proper`: universally closed, separated, and of finite type.
+    30. `quasi-affine`: quasi-compact and factors as an open immersion into an affine $Y$-scheme.
+    31. `quasi-compact`: preimage of every quasi-compact open is quasi-compact.
+    32. `quasi-finite`: of finite type with finite fibers.
+    33. `quasi-separated`: diagonal $\Delta_{X/Y}: X \to X \times_Y X$ is quasi-compact.
+    34. `regular`: flat with all fibers geometrically regular.
+    35. `semi-separated`: diagonal $\Delta_{X/Y}$ is an affine morphism.
+    36. `separated`: diagonal $\Delta_{X/Y}$ is a closed immersion.
+    37. `smooth`: flat, locally of finite presentation, and all fibers geometrically smooth.
+    38. `surjective`: surjective on underlying sets of points ($f(X) = Y$).
+    39. `syntomic`: flat, locally of finite presentation, and all fibers local complete intersections.
+    40. `universally-closed`: for every base change $Y' \to Y$, $X \times_Y Y' \to Y'$ is closed.
+    41. `universally-homeomorphism`: universally bijective, universally closed, and universally open.
+    42. `universally-injective`: for every base change $Y' \to Y$, $X \times_Y Y' \to Y'$ is injective.
+    43. `universally-open`: for every base change $Y' \to Y$, $X \times_Y Y' \to Y'$ is open.
+    44. `unramified`: formally unramified and locally of finite type.
+
+  * **Theorems / Deduction Lattice (95 theorems):**
+    * Scheme deductions (15 theorems):
+      * `regular` $\implies$ `locally-factorial` $\implies$ `normal` $\implies$ `reduced`.
+      * `integral` $\iff$ `reduced` + `irreducible`.
+      * `noetherian` $\iff$ `locally-noetherian` + `quasi-compact`.
+      * `locally-noetherian` $\implies$ `cohen-macaulay` if local rings CM.
+      * `affine` $\implies$ `separated` $\implies$ `semi-separated` $\implies$ `quasi-separated`.
+      * `affine` $\implies$ `quasi-compact`.
+      * `excellent` $\implies$ `locally-noetherian`.
+      * `jacobson` preserved under finite type extensions over Jacobson bases.
+    * Morphism deductions (80 theorems):
+      * `closed-immersion` $\implies$ `proper` $\implies$ `separated`.
+      * `open-immersion` $\implies$ `etale` $\implies$ `smooth` $\implies$ `syntomic` $\implies$ `flat`.
+      * `etale` $\iff$ `smooth` + `unramified` $\iff$ `flat` + `unramified` (under finite presentation).
+      * `finite` $\iff$ `proper` + `quasi-finite` (Zariski's Main Theorem).
+      * `finite` $\implies$ `affine` $\implies$ `quasi-affine` $\implies$ `separated`.
+      * `projective` $\implies$ `proper` $\implies$ `universally-closed` + `separated` + `of-finite-type`.
+      * `monomorphism` + `proper` $\implies$ `closed-immersion`.
+      * Base change stability: flat, smooth, étale, proper, affine, closed immersion, open immersion are all stable under arbitrary pullback.
+      * Composition stability: all 44 adjectives (except relative/fiber conditions) are stable under morphism composition.
+      * Cancellation properties (2-out-of-3): if $g \circ f$ has property $P$ and $g$ is separated, $f$ inherits properties.
+  * **Specimen Database (107 examples):**
+    * 49 schemes (affine line with doubled origin [non-separated], $\mathrm{Spec}(\mathbb{Z})$, cusp $y^2=x^3$ [non-normal], node $y^2=x^2(x+1)$ [non-normal, reduced], non-reduced fat point $\mathrm{Spec}(k[x]/(x^2))$, infinite disjoint union $\coprod \mathrm{Spec}(k)$ [non-quasi-compact], etc.).
+    * 58 morphisms (Frobenius morphism [homeomorphism, not étale in char $p$], normalization map [finite, birational, not isomorphism], blowup of point [projective, birational, not finite], open immersion, diagonal morphism, etc.).
+  * **Preamble implementation requirement:**
+    * In `categories/schemes/` (`categories/schemes/properties.py`, `categories/schemes/morphism_properties.py`), properties must be first-class predicates: `X.is_affine()`, `X.is_proper()`, `f.is_flat()`, `f.is_smooth()`, `f.is_etale()`, `f.is_closed_immersion()`, etc.
+    * An automated property deduction engine must derive known properties from established ones using the 95 implication theorems without recomputing from raw rings.
+    * Every counterexample must exist as a constructible test fixture in `tests/schemes/` verifying that negative properties are correctly refuted and positive properties proven.
+
+Intended owners: `categories/schemes/properties.py` (`SchemeProperties`, deduction graph), `categories/schemes/morphism_properties.py` (`MorphismProperties`, base change and composition preservation), `categories/schemes/theorems.py` (95 implication theorems).
+
+## Desired capability: General topology counterexamples, properties, and universal constructions (pi-Base) — intake 2026-09-19
+
+Intake item from https://topology.pi-base.org/ (repositories: https://github.com/pi-base/data and https://github.com/pi-base/web).
+
+* **Comprehensive mining of general topology:**
+  * Complete operationalization of 246 topological properties, 224 canonical topological spaces, 931 deductive theorems, and universal topological constructions based on Steen & Seebach *Counterexamples in Topology*.
+  * **Topological Properties (246 properties categorized):**
+    * **Separation Axioms:**
+      * $T_0$ (Kolmogorov): distinct points have distinct closure.
+      * $T_1$ (Fréchet): points are closed.
+      * $T_2$ (Hausdorff): distinct points have disjoint open neighborhoods.
+      * $T_{2.5}$ (Urysohn / completely Hausdorff): distinct points separated by closed neighborhoods.
+      * Functionally Hausdorff: distinct points separated by continuous real-valued function.
+      * $T_3$ (Regular Hausdorff): $T_1$ and closed set and point separated by open neighborhoods.
+      * $T_{3.5}$ (Completely regular / Tychonoff): $T_1$ and closed set and point separated by continuous function to $[0,1]$.
+      * $T_4$ (Normal Hausdorff): $T_1$ and disjoint closed sets separated by open neighborhoods.
+      * $T_5$ (Completely normal Hausdorff): every subspace is $T_4$; separated subsets separated by opens.
+      * $T_6$ (Perfectly normal Hausdorff): normal and every closed set is a $G_\delta$ set.
+    * **Compactness Notions:**
+      * `compact`: every open cover has a finite subcover.
+      * `countably-compact`: every countable open cover has a finite subcover.
+      * `sequentially-compact`: every sequence has a convergent subsequence.
+      * `pseudocompact`: every continuous real function is bounded.
+      * `locally-compact`: every point has a compact neighborhood base.
+      * `paracompact`: every open cover has a locally finite open refinement.
+      * `metacompact`: every open cover has a point-finite open refinement.
+      * `orthocompact`: every open cover has an interior-preserving open refinement.
+      * `hemicompact`: admitting an exhaustion by compact subsets.
+      * `sigma-compact`: countable union of compact subspaces.
+      * `lindelof`: every open cover has a countable subcover.
+    * **Connectedness:**
+      * `connected`: no partition into two nonempty disjoint open sets.
+      * `path-connected`: every pair of points joined by continuous path $[0,1] \to X$.
+      * `locally-connected`: admitting a neighborhood base of connected sets.
+      * `locally-path-connected`: admitting a neighborhood base of path-connected sets.
+      * `hyperconnected`: no two disjoint nonempty open sets (every open set dense).
+      * `ultraconnected`: no two disjoint nonempty closed sets.
+      * `totally-disconnected`: connected components are singletons.
+      * `totally-separated`: points separated by clopen sets.
+      * `extremally-disconnected`: closure of every open set is open.
+    * **Countability and Separability:**
+      * `first-countable`: every point has a countable neighborhood base.
+      * `second-countable`: topology has a countable base of open sets.
+      * `separable`: admitting a countable dense subset.
+      * `ccc` (countable chain condition): every family of pairwise disjoint opens is countable.
+      * `resolvable`: partitionable into two dense subsets.
+      * `baire-space`: intersection of countably many dense open sets is dense.
+    * **Metrizability and Uniformity:**
+      * `metrizable`: topology induced by a metric.
+      * `completely-metrizable` (Polish): admitting a complete metric.
+      * `pseudometrizable`: induced by a pseudometric.
+      * `moore-space`: developable and regular.
+    * **Dimension Theory:**
+      * `zero-dimensional`: admitting a base of clopen sets.
+      * `strongly-zero-dimensional`: completely regular and $\dim(X) = 0$ in covering dimension.
+      * Small inductive dimension $\mathrm{ind}(X)$, large inductive dimension $\mathrm{Ind}(X)$, Lebesgue covering dimension $\dim(X)$.
+
+  * **Canonical Spaces (224 spaces):**
+    * Standard spaces: Discrete space $D$, Indiscrete space, Sierpiński space $S = \{0, 1\}$, Finite spaces, Euclidean space $\mathbb{R}^n$, Unit interval $I = [0,1]$, Circle $S^1$, Spheres $S^n$, Torus $T^n$.
+    * Counterexample spaces:
+      * Cantor set $2^\omega$, Baire space $\omega^\omega$, Hilbert cube $[0,1]^\omega$.
+      * Sorgenfrey line $\mathbb{R}_l$ (lower limit topology: paracompact, first countable, separable, Lindelöf, but $\mathbb{R}_l^2$ is not normal [Sorgenfrey plane]).
+      * Niemytzki plane (Moore plane: completely regular, separable, but not normal).
+      * Long line $L$ and Long ray (locally homeomorphic to $\mathbb{R}$, path-connected, sequentially compact, but not Lindelöf, not metrizable).
+      * Tychonoff plank $[0, \omega_1] \times [0, \omega] \setminus \{(\omega_1, \omega)\}$ (completely regular, not normal).
+      * Stone–Čech compactification $\beta\mathbb{N}$ (compact Hausdorff, extremally disconnected, not first countable, cardinality $2^{2^{\aleph_0}}$).
+      * Arens–Fort space (countable, Hausdorff, normal, but not first countable).
+      * Ordinal spaces $[0, \omega_1)$ (first countable, countably compact, locally compact, not compact, not Lindelöf) and $[0, \omega_1]$ (compactification).
+      * Warsaw circle (compact, connected, path components $\neq$ components, not locally connected).
+      * Hawaiian earring $\bigcup_{n=1}^\infty C_n$ (compact, path connected, not locally path connected, $\pi_1$ is uncountable).
+      * Topologist's sine curve (connected, not path connected).
+      * Comb space and Deleted comb space (connected, path connected, not contractible).
+      * Alexandroff double circle (compact, Hausdorff, first countable, separable, not second countable).
+      * Line with two origins (locally Euclidean, non-Hausdorff manifold).
+
+  * **Universal Constructions:**
+    * `Subspace(X, U)`: subspace topology on $S \subset X$.
+    * `Product(X_i)_{i \in I}`: arbitrary Cartesian product with product topology (Tychonoff topology).
+    * `Coproduct(X_i)_{i \in I}`: disjoint union topology.
+    * `Quotient(X, ~)`: quotient topology by equivalence relation.
+    * `OnePointCompactification(X)`: Alexandroff compactification $X^* = X \cup \{\infty\}$.
+    * `StoneCechCompactification(X)`: universal compactification $\beta X$ for Tychonoff $X$.
+    * `Cone(X) = (X \times [0,1]) / (X \times \{0\})`, `Suspension(X) = Cone(X) / (X \times \{1\})`.
+    * `WedgeSum(X, Y, x_0, y_0) = (X \sqcup Y) / (x_0 \sim y_0)`.
+    * `SmashProduct(X, Y, x_0, y_0) = (X \times Y) / (X \vee Y)`.
+
+  * **Theorems / Deduction Lattice (931 theorems):**
+    * Tychonoff Theorem: $\prod X_i$ compact $\iff$ each $X_i$ compact.
+    * Urysohn Metrization Theorem: $T_3$ + second countable $\implies$ metrizable.
+    * Nagata–Smirnov / Bing Metrization Theorems: regular + $\sigma$-locally finite base $\iff$ metrizable.
+    * Compact Hausdorff implies normal ($T_2$ + compact $\implies T_4$).
+    * Second countable implies Lindelöf, separable, and first countable.
+    * Metrizable implies paracompact, first countable, and $T_6$.
+    * Paracompact Hausdorff implies normal ($T_2$ + paracompact $\implies T_4$).
+    * Subspace preservation: $T_0, T_1, T_2, T_{2.5}, T_3, T_{3.5}$ are hereditary; compactness is closed-hereditary; second countability is hereditary.
+    * Product preservation: $T_0, T_1, T_2, T_{2.5}, T_3, T_{3.5}$, connectedness, compactness are productive; normality and Lindelöf are not productive (Sorgenfrey counterexample).
+
+  * **Preamble implementation requirement:**
+    * `categories/topology/` must provide:
+      * Constructible canonical spaces in `categories/topology/spaces.py`.
+      * Universal constructions (subspaces, products, coproducts, quotients, compactifications) in `categories/topology/constructions.py`.
+      * Evaluatable predicates for the 246 properties in `categories/topology/properties.py`.
+      * Deductive theorem inference engine in `categories/topology/theorems.py` resolving implications across all 931 theorems.
+
+Intended owners: `categories/topology/spaces.py` (`TopologicalSpace`, canonical space catalogue), `categories/topology/properties.py` (`TopologicalProperties`, 246 predicates), `categories/topology/constructions.py` (`Product`, `Coproduct`, `Quotient`, `Subspace`, `Alexandroff`, `StoneCech`), `categories/topology/theorems.py` (931 deduction rules).
+
+
 
