@@ -117,6 +117,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Converting linear recurrences to differential equations symbolically (Ore algebras, D-finite/holonomic systems) | User intake 2026-09-19 | Symbolic translation from linear recurrence relations \sum p_i(n) a_{n+i} = 0 (shift Ore algebra K[n]\langle S_n \rangle) to linear differential equations \sum q_j(t) F^{(j)}(t) = 0 and Euler form \mathcal{L}(\theta) F(t) = P(t) (Weyl/differential Ore algebra K[t]\langle \partial_t \rangle); handles initial conditions, OGF/EGF (Borel/Laplace transform); connects Apéry sequences to Calabi-Yau Picard-Fuchs operators | `categories/differential_equations/ore_algebra.py` + `categories/differential_equations/recurrence_to_diffeq.py` + `categories/algebras/ore_algebras.py` | Proposed — see note below |
 | Large poset navigation, 2D grid layouts, Coxeter subdiagrams, and G-poset quotients | User intake 2026-09-19 | 2D grid/ranked layout and interactive navigation for extremely large posets (10^3–10^6 nodes); subdiagram posets of Coxeter diagrams (< 25 nodes): elliptic, parabolic, Lanner, and their maximal elements; chain tracing to maximal/minimal elements; diagram quotients by symmetries G = Aut(Γ) or Aut(M); G-posets and bidirectional projection/unrolling P \leftrightarrow P/G | `categories/posets/large_poset.py` + `categories/coxeter/subdiagram_posets.py` + `categories/graphs/diagram_automorphisms.py` + `src/dzack_research/preamble/visualization/` | Proposed — see note below |
 | q-analogues (q-integers, q-factorials, Gaussian binomials, Jackson calculus, and basic hypergeometric series) | User intake 2026-09-19 | Comprehensive q-analogue infrastructure: q-numbers [n]_q, q-factorials [n]_q!, Gaussian binomial/multinomial coefficients \binom{n}{k}_q (subspace counts in Gr(k,n)(F_q), Bruhat inversions); Jackson q-derivative and integral; q-Pochhammer symbols (a;q)_n, (a;q)_\infty; basic hypergeometric series {}_r\phi_s; q-exponential/gamma; Poincaré polynomials of Coxeter groups and Hecke/quantum group algebra connections | `categories/combinatorics/q_analogues.py` + `categories/special_functions/q_hypergeometric.py` + `categories/quantum_groups/quantum_integers.py` + `categories/algebras/hecke_algebra.py` | Proposed — see note below |
+| Elliptic surfaces, fibrations, Weierstrass forms, Néron models, and Mordell-Weil lattices | User intake 2026-09-19 | Comprehensive elliptic surface architecture: fibrations \pi: S \to C, Jacobian fibrations with zero section O, fundamental line bundle L = (R^1 \pi_* O_S)^\vee, canonical bundle formula; Weierstrass models y^2 = 4x^3 - g_2 x - g_3, discriminant \Delta, j-invariant J(t), Miranda resolution; Néron models, Kodaira singular fiber classification (I_n, I_n^*, II, III, IV, II^*, III^*, IV^*) via Tate's algorithm; Mordell-Weil group MW(S/C) of sections, Shioda-Tate formula, Mordell-Weil lattice with height pairing \langle P, Q \rangle and local correction terms contr_v(P, Q) | `categories/schemes/elliptic_surfaces/elliptic_surface.py` + `categories/schemes/elliptic_surfaces/weierstrass_models.py` + `categories/schemes/elliptic_surfaces/kodaira.py` + `categories/schemes/elliptic_surfaces/mordell_weil.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -2546,6 +2547,111 @@ Intended owners: `categories/posets/large_poset.py` (`LargePoset`, `GPoset`, `Qu
     - Integration with `categories/quantum_groups/quantum_integers.py` for representation theory and quantum Casimir invariants.
 
 Intended owners: `categories/combinatorics/q_analogues.py` (`QBracket`, `QFactorial`, `QBinomial`, `QPochhammer`), `categories/special_functions/q_hypergeometric.py` (`JacksonDerivative`, `QHypergeometricSeries`), `categories/quantum_groups/quantum_integers.py` (`QuantumInteger`, `QuantumBinomial`), `categories/algebras/hecke_algebra.py` (`HeckeAlgebra`, `PoincarePolynomial`).
+
+
+## Desired capability: Elliptic surfaces, elliptic fibrations, Mordell-Weil groups, Weierstrass forms, and Néron models — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Elliptic fibrations and Jacobian surfaces:**
+    * An *elliptic fibration* is a smooth projective surface $S$ equipped with a surjective morphism $\pi \colon S \to C$ to a smooth complete curve $C$ such that the generic fiber $E_\eta \coloneqq \pi^{-1}(\eta)$ is a smooth curve of genus 1 over the function field $K = k(C)$.
+    * A *Jacobian elliptic surface* admits a section $O \colon C \to S$ (the zero section), identifying the generic fiber $E_\eta$ with an elliptic curve over $K$.
+    * **Fundamental line bundle:**
+      $\mathbb{L} \coloneqq (R^1 \pi_* \mathcal{O}_S)^\vee \cong \mathcal{O}_C(-O(C))|_{O(C)}^\vee$.
+    * **Kodaira canonical bundle formula:**
+      $$
+      K_S \;\cong\; \pi^*(K_C \otimes \mathbb{L}) \otimes \mathcal{O}_S\left(\sum_i (m_i - 1) F_i\right),
+      $$
+      where $F_i$ are multiple fibers of multiplicity $m_i$.
+      For a relatively minimal Jacobian surface over $C = \mathbb{P}^1$ without multiple fibers:
+      $\deg(\mathbb{L}) = \chi(\mathcal{O}_S) = \frac{c_1(S)^2 + c_2(S)}{12}$.
+      - $\chi(\mathcal{O}_S) = 1$: Rational elliptic surfaces ($c_2 = 12$, $K_S = -F$, e.g. Hesse pencil, pencil of cubics through 9 base points).
+      - $\chi(\mathcal{O}_S) = 2$: Elliptic K3 surfaces ($c_2 = 24$, $K_S = \mathcal{O}_S$).
+      - Enriques surfaces: $\chi = 1, 2K_S = 0$, elliptic fibrations over $\mathbb{P}^1$ having exactly two double fibers $2F_1, 2F_2$.
+
+  * **Weierstrass models and resolution:**
+    * Projective bundle $\mathbf{P} = \mathbb{P}(\mathcal{O}_C \oplus \mathbb{L}^{\otimes 2} \oplus \mathbb{L}^{\otimes 3})$ over $C$, with fiber coordinates $[z : x : y]$.
+    * In the affine chart $z=1$, the Weierstrass model $W \subset \mathbf{P}$ is defined by:
+      $$
+      y^2 + a_1 x y + a_3 y \;=\; x^3 + a_2 x^2 + a_4 x + a_6,
+      $$
+      or in short form (characteristic $\neq 2, 3$):
+      $$
+      y^2 \;=\; 4x^3 - g_2 x - g_3 \quad (\text{or } y^2 = x^3 + f x + g),
+      $$
+      where sections $g_2 \in H^0(C, \mathbb{L}^{\otimes 4})$, $g_3 \in H^0(C, \mathbb{L}^{\otimes 6})$.
+    * **Discriminant section:** $\Delta \coloneqq g_2^3 - 27 g_3^2 \in H^0(C, \mathbb{L}^{\otimes 12})$. The Euler characteristic satisfies $c_2(S) = \sum_{v} e(F_v) = \deg(\Delta) = 12 \chi(\mathcal{O}_S)$.
+    * **Functional $j$-invariant:** $J \coloneqq 1728 \frac{g_2^3}{\Delta} \colon C \to \mathbb{P}^1$.
+    * **Miranda resolution:** The Weierstrass model $W$ has rational double point (ADE / du Val) singularities at points where $\Delta$ vanishes to high order. A canonical resolution of singularities $S \to W$ recovers the minimal regular elliptic surface by blowing up along non-transverse components.
+
+  * **Néron models and Kodaira singular fiber classification:**
+    * The **Néron model** $\mathcal{E} \to C$ of $E_\eta$ is a smooth, separated group scheme representing the functor of sections: $\mathcal{E}(U) \cong E_\eta(K(U))$ for smooth $U \to C$.
+    * At each critical point $v \in C$ where $\Delta(v) = 0$, the special fiber $\mathcal{E}_v$ decomposes as:
+      $$
+      0 \longrightarrow \mathcal{E}_v^0 \longrightarrow \mathcal{E}_v \longrightarrow \Phi_v \longrightarrow 0,
+      $$
+      where $\mathcal{E}_v^0$ is connected and $\Phi_v \coloneqq \mathcal{E}_v / \mathcal{E}_v^0$ is the finite component group.
+    * **Kodaira fiber classification:**
+      - $I_0$: smooth elliptic curve ($\mathcal{E}_v^0 \cong E_v$, $\Phi_v = 0$).
+      - $I_n$ ($n \ge 1$): cycle of $n$ smooth rational curves, multiplicative reduction ($\mathcal{E}_v^0 \cong \mathbb{G}_m$), component group $\Phi_v \cong \mathbb{Z}/n\mathbb{Z}$.
+      - $I_n^*$ ($n \ge 0$): affine $\widetilde{D}_{n+4}$ dual graph, additive reduction ($\mathcal{E}_v^0 \cong \mathbb{G}_a$), component group $\Phi_v \cong (\mathbb{Z}/2\mathbb{Z})^2$ ($n$ even) or $\mathbb{Z}/4\mathbb{Z}$ ($n$ odd).
+      - $II$: cuspidal rational curve ($\widetilde{A}_0^*$), additive $\mathbb{G}_a$, $\Phi_v = 0$.
+      - $III$: two tangent rational curves ($\widetilde{A}_1$), additive $\mathbb{G}_a$, $\Phi_v \cong \mathbb{Z}/2\mathbb{Z}$.
+      - $IV$: three concurrent rational curves ($\widetilde{A}_2$), additive $\mathbb{G}_a$, $\Phi_v \cong \mathbb{Z}/3\mathbb{Z}$.
+      - $IV^*$: affine $\widetilde{E}_6$ dual graph, additive $\mathbb{G}_a$, $\Phi_v \cong \mathbb{Z}/3\mathbb{Z}$.
+      - $III^*$: affine $\widetilde{E}_7$ dual graph, additive $\mathbb{G}_a$, $\Phi_v \cong \mathbb{Z}/2\mathbb{Z}$.
+      - $II^*$: affine $\widetilde{E}_8$ dual graph, additive $\mathbb{G}_a$, $\Phi_v = 0$.
+    * **Tate's algorithm:**
+      Determines the Kodaira fiber type, component group $\Phi_v$, and minimal Weierstrass model from local valuations $\operatorname{ord}_v(a_i)$ and $\operatorname{ord}_v(\Delta)$.
+
+  * **Mordell-Weil groups and the Mordell-Weil lattice (Shioda-Tate):**
+    * The **Mordell-Weil group** is the group of sections $\operatorname{MW}(S/C) \cong E_\eta(K)$, finitely generated by the Mordell-Weil theorem:
+      $$
+      \operatorname{MW}(S/C) \;\cong\; \mathbb{Z}^r \oplus E_\eta(K)_{\mathrm{tors}}.
+      $$
+    * **Trivial lattice $T(S) \subset \operatorname{NS}(S)$:**
+      Sublattice spanned by the zero section $O$, a generic fiber $F$, and all non-identity fiber components $\Theta_{v, i}$ ($v \in \operatorname{Sing}$, $i = 1, \dots, m_v - 1$):
+      $$
+      T(S) \;\cong\; U \oplus \bigoplus_{v \in \operatorname{Sing}} T_v,
+      $$
+      where $U = \mathbb{Z}O \oplus \mathbb{Z}F$ has Gram matrix $\begin{pmatrix} -\chi & 1 \\ 1 & 0 \end{pmatrix}$, and $T_v$ is the negative-definite root lattice of type $A_{n-1}, D_{n+4}, E_6, E_7, E_8$.
+    * **Shioda-Tate formula:**
+      $$
+      \operatorname{NS}(S) \otimes \mathbb{Q} \;\cong\; T(S) \otimes \mathbb{Q} \oplus \left( \operatorname{MW}(S/C) \otimes \mathbb{Q} \right),
+      $$
+      yielding the Picard number $\rho(S) = 2 + \sum_{v \in \operatorname{Sing}} (m_v - 1) + \operatorname{rank}(\operatorname{MW}(S/C))$.
+    * **Shioda height pairing (Mordell-Weil lattice):**
+      For sections $P, Q \in \operatorname{MW}(S/C)$, orthogonal projection $P \mapsto P^\sharp \in T(S)_\mathbb{Q}^\perp$ equips $\operatorname{MW}(S/C) / \operatorname{MW}(S/C)_{\mathrm{tors}}$ with a positive-definite symmetric bilinear form:
+      $$
+      \langle P, Q \rangle \;\coloneqq\; - (P^\sharp \cdot Q^\sharp) \;=\; \chi(\mathcal{O}_S) + (P \cdot O) + (Q \cdot O) - (P \cdot Q) - \sum_{v \in \operatorname{Sing}} \operatorname{contr}_v(P, Q),
+      $$
+      where $\operatorname{contr}_v(P, Q) \in \mathbb{Q}_{\ge 0}$ is the local correction term computed from the inverse Cartan matrix of the root lattice $T_v$.
+    * **Narrow Mordell-Weil lattice $\operatorname{MW}(S/C)^0$:**
+      Sublattice of sections intersecting the identity component $\Theta_{v, 0}$ of every singular fiber. In this case, $\operatorname{contr}_v(P, Q) = 0$, so $\langle P, P \rangle = 2\chi + 2(P \cdot O)$ is an even positive integer.
+    * **Discriminant formula:**
+      $$
+      |\det \operatorname{NS}(S)| \;=\; \frac{|\det \operatorname{MW}(S/C)| \cdot \prod_{v \in \operatorname{Sing}} |\Phi_v|}{|E_\eta(K)_{\mathrm{tors}}|^2}.
+      $$
+
+* **Preamble implementation requirements:**
+  * **Elliptic surface category and fibrations:** `categories/schemes/elliptic_surfaces/elliptic_surface.py`
+    - `EllipticSurface(base_curve, total_space, projection)`: invariants $\chi(\mathcal{O}_S)$, $c_1^2$, $c_2$, canonical class $K_S$, fundamental line bundle $\mathbb{L}$.
+    - `JacobianEllipticSurface(fibration, zero_section)`: structure with designated identity section $O$.
+  * **Weierstrass models:** `categories/schemes/elliptic_surfaces/weierstrass_models.py`
+    - `WeierstrassModel(C, g2, g3)` / `GeneralWeierstrassModel(C, a1, a2, a3, a4, a6)`.
+    - Methods: `discriminant()`, `j_invariant()`, `is_minimal()`, `minimal_weierstrass_model()`, and Miranda blow-up resolution to smooth surface.
+  * **Kodaira classification and Tate's algorithm:** `categories/schemes/elliptic_surfaces/kodaira.py`
+    - `KodairaFiberType` enum: $I_0, I_n, I_n^*, II, III, IV, IV^*, III^*, II^*$.
+    - `tate_algorithm(W, v)`: computes fiber type, component group $\Phi_v$, and minimal model at point $v \in C$.
+  * **Néron models:** `categories/schemes/elliptic_surfaces/neron_model.py`
+    - `NeronModel(elliptic_surface)`: special fibers $\mathcal{E}_v$, identity component $\mathcal{E}_v^0$, component groups $\Phi_v$.
+  * **Mordell-Weil groups and lattices:** `categories/schemes/elliptic_surfaces/mordell_weil.py`
+    - `MordellWeilGroup(elliptic_surface)`: group of sections, torsion subgroup, rank.
+    - `trivial_lattice(elliptic_surface)`: root lattice $T(S)$.
+    - `mordell_weil_lattice(elliptic_surface)`: positive-definite lattice on $\operatorname{MW}(S/C)$ with height pairing $\langle P, Q \rangle$ and local correction terms $\operatorname{contr}_v(P, Q)$.
+    - `narrow_mordell_weil_lattice(elliptic_surface)`.
+
+Intended owners: `categories/schemes/elliptic_surfaces/elliptic_surface.py` (`EllipticSurface`, `JacobianEllipticSurface`), `categories/schemes/elliptic_surfaces/weierstrass_models.py` (`WeierstrassModel`, `MirandaResolution`), `categories/schemes/elliptic_surfaces/kodaira.py` (`KodairaFiberType`, `TateAlgorithm`), `categories/schemes/elliptic_surfaces/neron_model.py` (`NeronModel`, `ComponentGroup`), `categories/schemes/elliptic_surfaces/mordell_weil.py` (`MordellWeilGroup`, `MordellWeilLattice`, `HeightPairing`).
+
 
 
 
