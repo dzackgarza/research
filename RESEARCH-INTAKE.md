@@ -115,6 +115,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Lambert expansions of generating functions | User intake 2026-09-19 | Lambert series L(q) = \sum a_n q^n/(1-q^n) and bidirectional conversion to/from OGF \sum b_N q^N via divisor convolution b_N = \sum_{d|N} a_d and Mobius inversion a_n = \sum_{d|n} \mu(n/d) b_d; Dirichlet series link D_b(s) = D_a(s)\zeta(s); q-expansions of Eisenstein series E_{2k}, Dedekind \eta, and Euler products | `categories/generating_functions/lambert.py` + `categories/rings/formal_power_series.py` + `categories/modular/eisenstein.py` | Proposed — see note below |
 | Computing Picard-Fuchs operators of families (Gauss-Manin, Weierstrass, twists, and Fano/K3 mirrors) | https://arxiv.org/abs/2403.07349 + user intake 2026-09-19 | Computation of Picard-Fuchs differential operators for algebraic families \pi: X \to B; explicit Weierstrass reduction \nabla = d/dt - M(t) with \Delta, \delta (arXiv:2403.07349 p. 13 Eq. 2.17); Doran-Malmendier Hadamard twist construction L_{n+1} = L_twist \star L_n; recovery of 17 rank-1 Fano anticanonical K3 operators L_{3,N} (Table 1), modular elliptic pencils L_{2,n} (Table 4), quantum differential operators D_{4,N} = \theta \cdot L_{3,N} (Table 2), and P^3 instanton pullback (Eq. 6.1) | `categories/differential_equations/picard_fuchs.py` + `categories/schemes/elliptic_surfaces/weierstrass_picard_fuchs.py` + `categories/cohomology/gauss_manin.py` + `categories/schemes/k3/fano_mirrors.py` | Proposed — see note below |
 | Converting linear recurrences to differential equations symbolically (Ore algebras, D-finite/holonomic systems) | User intake 2026-09-19 | Symbolic translation from linear recurrence relations \sum p_i(n) a_{n+i} = 0 (shift Ore algebra K[n]\langle S_n \rangle) to linear differential equations \sum q_j(t) F^{(j)}(t) = 0 and Euler form \mathcal{L}(\theta) F(t) = P(t) (Weyl/differential Ore algebra K[t]\langle \partial_t \rangle); handles initial conditions, OGF/EGF (Borel/Laplace transform); connects Apéry sequences to Calabi-Yau Picard-Fuchs operators | `categories/differential_equations/ore_algebra.py` + `categories/differential_equations/recurrence_to_diffeq.py` + `categories/algebras/ore_algebras.py` | Proposed — see note below |
+| Large poset navigation, 2D grid layouts, Coxeter subdiagrams, and G-poset quotients | User intake 2026-09-19 | 2D grid/ranked layout and interactive navigation for extremely large posets (10^3–10^6 nodes); subdiagram posets of Coxeter diagrams (< 25 nodes): elliptic, parabolic, Lanner, and their maximal elements; chain tracing to maximal/minimal elements; diagram quotients by symmetries G = Aut(Γ) or Aut(M); G-posets and bidirectional projection/unrolling P \leftrightarrow P/G | `categories/posets/large_poset.py` + `categories/coxeter/subdiagram_posets.py` + `categories/graphs/diagram_automorphisms.py` + `src/dzack_research/preamble/visualization/` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -2373,6 +2374,68 @@ Intended owners: `categories/differential_equations/picard_fuchs.py` (`FuchsianO
     Wrap existing CAS implementations (e.g. SageMath `sage.rings.polynomial.ore_algebra` / `rectodiffeq` and `diffeqtorec`, SymPy `sympy.holonomic.recurrence_to_diffeq`, and Maple `gfun` reference algorithms) behind owned preamble interfaces adhering strictly to `OWN-01` through `OWN-14`.
 
 Intended owners: `categories/differential_equations/ore_algebra.py` (`OreAlgebra`, `OrePolynomial`), `categories/differential_equations/recurrence_to_diffeq.py` (`recurrence_to_diffeq`, `diffeq_to_recurrence`), `categories/algebras/weyl_algebra.py` (`WeylAlgebra`, `EulerAlgebra`).
+
+
+## Desired capability: Large poset navigation, 2D grid layouts, Coxeter subdiagrams, and G-poset quotients — intake 2026-09-19
+
+* **Functional & Mathematical Requirements:**
+  * **2D Grid and Planar Layout for Extremely Large Posets ($10^3$ to $10^6$ nodes):**
+    * Stratified / ranked grid coordinates $(x, y) \in \mathbb{R}^2$:
+      - Vertical coordinate $y = \rho(v)$ indexed by the rank function $\rho \colon P \to \mathbb{Z}_{\ge 0}$ (e.g. cardinality of vertex subset $|J|$, dimension, or rank of parabolic subgroup).
+      - Horizontal coordinate $x$ determined by barycentric, force-directed, or order-preserving band layout to minimize edge crossings and separate connected components.
+    * Virtualized viewport rendering (WebGL / HTML5 Canvas / SVG with level-of-detail aggregation) supporting smooth zooming, panning, and dense cluster collapse.
+    * Node decorations & visual styling:
+      - Shape, stroke, and fill parameterized by mathematical classification (e.g. elliptic / finite, parabolic / affine, compact hyperbolic / Lanner, non-compact hyperbolic).
+      - Distinct visual markers for maximal elements (maximal elliptic, maximal parabolic).
+      - Badges indicating subgroup rank, Coxeter determinant $\det(B_J)$, or orbit multiplicity.
+    * Information inspectors:
+      - Interactive tooltips on hover displaying concise summaries (vertex set $J$, Dynkin label, determinant).
+      - Click-to-pin inspector in a dedicated sidebar/drawer displaying detailed invariants: full induced subgraph diagram, Gram matrix, signature $(p, q, z)$, root basis, Weyl group order $|W_J|$, and automorphism group $\operatorname{Aut}(J)$.
+
+  * **Chain Tracing & Filtration Navigation:**
+    * Interactive element selection: clicking an element $x \in P$ enters chain-tracing mode.
+    * Upward filtration / principal filter $\uparrow x \coloneqq \{ y \in P \mid x \le y \}$:
+      - Highlights all saturated chains from $x$ up to all maximal elements containing $x$.
+    * Downward filtration / principal ideal $\downarrow x \coloneqq \{ y \in P \mid y \le x \}$:
+      - Highlights all saturated chains from $x$ down to minimal elements ($\emptyset$ or rank-1 singletons).
+    * Visual dimming of all poset nodes and covering edges not belonging to $\uparrow x \cup \downarrow x$.
+
+  * **Coxeter Subdiagram Posets for Small Diagrams ($n < 25$ vertices):**
+    * For an ambient Coxeter diagram $\Gamma = (V, E, m)$ with $|V| < 25$:
+      - Full subdiagram poset $\mathcal{P}(\Gamma) \cong 2^V$ ordered by inclusion $J \subseteq J'$.
+      - Induced sub-poset of **elliptic subdiagrams** $\mathcal{P}_{\mathrm{ell}}(\Gamma)$: subdiagrams whose Gram matrix $B_J$ is positive definite (finite reflection subgroups).
+      - Induced sub-poset of **parabolic subdiagrams** $\mathcal{P}_{\mathrm{par}}(\Gamma)$: subdiagrams whose connected components are positive semidefinite (affine / parabolic reflection subgroups).
+      - Identification of **maximal elliptic** subdiagrams and **maximal parabolic** subdiagrams (fundamental cusps and facets of Vinberg polytopes).
+      - **Lanner subdiagrams**: minimal non-elliptic connected subdiagrams with signature $(|J|-1, 1, 0)$ (compact hyperbolic simplices).
+
+  * **$G$-Posets and Symmetries of Coxeter Diagrams:**
+    * Group action $G \curvearrowright P$: an order-preserving automorphism action, where $g \cdot x \le g \cdot y$ whenever $x \le y$.
+    * Symmetry groups $G$:
+      - Full diagram automorphism group $G = \operatorname{Aut}(\Gamma)$ preserving vertex labels and edge weights.
+      - Automorphism group of a maximal element $G = \operatorname{Aut}(M)$ for $M \in \max(P)$.
+      - Diagram folding groups (e.g. $\mathbb{Z}/2$ or $\mathfrak{S}_3$ outer automorphisms inducing non-simply laced folded diagrams).
+    * **Quotient Poset $P/G$:**
+      - Nodes are $G$-orbits $[x] = G \cdot x = \{ g \cdot x \mid g \in G \}$.
+      - Induced partial order on orbits:
+        $$
+        [x] \le [y] \iff \exists g \in G \text{ such that } x \le g \cdot y.
+        $$
+      - Canonical orbit representative selection (e.g. lexicographically minimal vertex subset).
+    * **Bidirectional Navigation between $P$ and $P/G$:**
+      - **Projection ($P \twoheadrightarrow P/G$):** Collapse the full subdiagram poset $P$ into the much smaller quotient poset $P/G$, displaying orbit classes with node size proportional to orbit size $|G \cdot x| = [G : \operatorname{Stab}_G(x)]$.
+      - **Unrolling / Lifting ($P/G \hookrightarrow P$):** Clicking an orbit node $[x] \in P/G$ unrolls its complete fiber of isomorphic subdiagrams in $P$, displaying their mutual covering relations and cross-orbit arrows.
+
+* **Preamble implementation requirements:**
+  * **Mathematical core:**
+    - `LargePoset(elements, covering_relation)`: memory-efficient poset representation with fast transitive closure, interval queries, and bitset-accelerated filters/ideals.
+    - `CoxeterSubdiagramPoset(Gamma)`: specialized generator for subdiagram lattices of Coxeter diagrams, computing Gram matrices, determinants, and classification predicates (elliptic, parabolic, Lanner).
+    - `GPoset(poset, group, action)`: $G$-poset structure supporting orbit decomposition, stabilizer computation, and quotient poset construction $P/G$.
+  * **Visualization and interactive UI:**
+    - `PosetGrid2DLayout(poset)`: algorithm assigning 2D coordinates $(x, y)$ with layer ranking and horizontal crossing minimization.
+    - Interactive front-end module (HTML/SVG/Canvas export with embedded JS): tooltips, sidebar inspector, chain tracing toggle, and $P \leftrightarrow P/G$ orbit toggle.
+
+Intended owners: `categories/posets/large_poset.py` (`LargePoset`, `GPoset`, `QuotientPoset`), `categories/coxeter/subdiagram_posets.py` (`CoxeterSubdiagramPoset`, `EllipticPoset`, `ParabolicPoset`), `categories/graphs/diagram_automorphisms.py` (`DiagramAutomorphisms`, `DiagramQuotient`), `src/dzack_research/preamble/visualization/poset_navigator.py`.
+
 
 
 
