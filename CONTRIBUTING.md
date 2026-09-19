@@ -452,7 +452,7 @@ Reuse a universal construction through a structural functor only with the corres
 Adding a leaf should ordinarily require changes to that leaf and its immediate mathematical dependencies.
 A generic owner importing the new descendant indicates a missing construction interface.
 Read the [construction and inheritance proposal](references/preamble-architecture.md) for current examples and the proposed repair.
-The [architecture prerequisite](TODO.md#architecture-before-dependent-implementation) sets their implementation order.
+The [architecture prerequisite](TODO.md#constructor-and-admission-foundations) sets their implementation order.
 
 For review, follow one public constructor through its defining datum, one nonidentity structural-functor image, and one inherited operation.
 Include the resulting objects, morphism endpoints, and defining equations in the mathematical example.
@@ -6209,13 +6209,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
 - **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its unfinished constructions, input contracts, priorities, dependencies, acceptance criteria, and active file reservations.
-  Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; if the generated document may be stale, run `just preamble-megadoc` and then read the generated output.
+  Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; when `DEV-58` permits execution, regenerate a stale document with `just preamble-megadoc` and read it. While execution is suspended, read the existing reference as an index, inspect the affected live source, and retain regeneration under terminal T.
   Always reuse existing constructions when they are mathematically correct and principled.
   When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.
 
 - **Rationale**: Prevents duplicate definitions, competing APIs, already-recorded remediation from being reintroduced, and siloed mathematical implementations while ensuring global functorial coherence.
 
-- **Violation Example**: Implementing an ad-hoc direct sum or orthogonal quotient exclusively for lattices without checking the megadoc for the general construction; adding a new tuple-valued framing helper while `TODO.md` already records the owned-family remediation; recreating a known architecture problem already catalogued in [the organization findings](TODO.md#organization-findings).
+- **Violation Example**: Implementing an ad-hoc direct sum or orthogonal quotient exclusively for lattices without checking the megadoc for the general construction; adding a new tuple-valued framing helper while `TODO.md` already records the owned-family remediation; recreating a known architecture problem already catalogued in [the organization findings](TODO.md#common-categorical-authority-and-public-boundaries).
 
 - **Correct Example**: Read the generated construction inventory and active remediation queues first; reuse the existing tensor product, Hom, subobject, or functor when it already expresses the mathematics, and add a missing operation at the category where its definition belongs rather than at the first concrete consumer that needs it.
 
