@@ -60,7 +60,6 @@ class _GroupModuleScalarExtensionFunctor(Functor):
         transported = self._underlying_scalar_extension()(underlying)
         return source.Mor(target)._from_equivariant_images(
             transported,
-            verify_linearity=False,
         )
 
     def _repr_(self):
@@ -111,7 +110,6 @@ class _GroupModuleRestrictionOfScalarsFunctor(Functor):
         )
         return source.Mor(target)._from_equivariant_images(
             transported,
-            verify_linearity=False,
         )
 
     def _repr_(self):
@@ -145,7 +143,6 @@ class _GroupModuleBaseChangeAdjunction(Adjunction):
         unit = underlying.unit(source_module)
         return group_module.Mor(restricted)._from_equivariant_images(
             unit,
-            verify_linearity=False,
         )
 
     def counit(self, group_module):
@@ -156,7 +153,6 @@ class _GroupModuleBaseChangeAdjunction(Adjunction):
         counit = underlying.counit(target_module)
         return extended.Mor(group_module)._from_equivariant_images(
             counit,
-            verify_linearity=False,
         )
 
     def _repr_(self):

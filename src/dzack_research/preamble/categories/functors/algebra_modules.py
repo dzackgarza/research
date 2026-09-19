@@ -40,20 +40,15 @@ class UnderlyingAlgebraModuleMorphism(ModuleMorphism):
 
     def __init__(self, parent, algebra_morphism) -> None:
         self._algebra_morphism = algebra_morphism
-        domain = parent.domain()
-        if domain.is_framed_module():
-            super().__init__(
-                parent,
-                lambda label: self._underlying_image(domain.module_generator(label)),
-                verify_linearity=False,
-            )
-            return
         super().__init__(
             parent,
             self._underlying_image,
             elementwise=True,
-            verify_linearity=False,
         )
+
+    def _elementwise_linearity_derivation(self):
+        # R-linearity is part of the defining datum of an R-algebra morphism.
+        return True
 
     def _underlying_image(self, element):
         r"""Return the image of one element under the algebra morphism."""

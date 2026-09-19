@@ -1,6 +1,7 @@
 r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
 from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
@@ -274,6 +275,8 @@ class LatticeMorphism(ModuleMorphism):
 
     def __init__(self, parent, images, *, elementwise=False) -> None:
         ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
+        if self.linearity_decision() is not True:
+            raise ValueError("a lattice morphism requires an established underlying linear map")
         domain = self.domain()
         codomain = self.codomain()
         if domain.module_rank().is_finite() and codomain.module_rank().is_finite():
@@ -296,17 +299,38 @@ class LatticeMorphism(ModuleMorphism):
 class LatticeEmbedding(LatticeMorphism):
     r"""A form-preserving monomorphism of lattices."""
 
-    def __init__(self, parent, images, *, verify_injective=True) -> None:
-        LatticeMorphism.__init__(self, parent, images)
-        if (
-            verify_injective
-            and self.domain().module_rank().is_finite()
-            and self.codomain().module_rank().is_finite()
-            and not ModuleMorphism.is_injective(self)
-        ):
+    def _injectivity_derivation(self):
+        return None
+
+    def __init__(self, parent, images, *, elementwise=False) -> None:
+        LatticeMorphism.__init__(self, parent, images, elementwise=elementwise)
+        decision = self._injectivity_derivation()
+        if decision is None:
+            try:
+                decision = ModuleMorphism.is_injective(self)
+            except (AssertionError, AttributeError, TypeError, ValueError):
+                decision = Unknown
+        if decision is False:
             raise ValueError("a lattice embedding must be injective")
+        if decision is not True:
+            raise ValueError("injectivity is not established for this lattice embedding")
 
     def is_injective(self) -> bool:
+        return True
+
+
+class _TransportedLatticeEmbedding(LatticeEmbedding):
+    r"""A represented module embedding read in the corresponding lattice Mono."""
+
+    def __init__(self, parent, embedding) -> None:
+        self._underlying_module_embedding = embedding
+        source = parent.domain()
+        super().__init__(
+            parent,
+            lambda label: embedding(source.module_generator(label)),
+        )
+
+    def _injectivity_derivation(self):
         return True
 
     def factor_through(self, target_embedding):
@@ -815,12 +839,18 @@ class LatticeHomset(CategoricalHomset):
                 raise ValueError("the module morphism has the wrong lattice endpoints")
             if images.parent() is self:
                 return images
+            if images.linearity_decision() is not True:
+                raise ValueError("a lattice morphism requires an established underlying linear map")
+            return self.elementwise(lambda element: images(element))
+        if isinstance(images, Morphism):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+                raise ValueError("the morphism has the wrong lattice endpoints")
             return self.elementwise(lambda element: images(element))
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
 
-    def elementwise(self, function, *, verify_linearity=True):
+    def elementwise(self, function):
         if not callable(function):
             raise TypeError("an elementwise lattice map must be callable")
         source = self.domain()
@@ -862,12 +892,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
                 or images.codomain() is not self.codomain()
             ):
                 raise ValueError("the module embedding has the wrong lattice endpoints")
-            source = self.domain()
-            return self.element_class(
-                self,
-                lambda label: images(source.module_generator(label)),
-                verify_injective=False,
-            )
+            return _TransportedLatticeEmbedding(self, images)
         if isinstance(images, ModuleMorphism):
             if (
                 images.domain() is not self.domain()
@@ -876,16 +901,22 @@ class LatticeEmbeddingHomset(CategoricalHomset):
                 raise ValueError("the module morphism has the wrong lattice endpoints")
             if images.parent() is self:
                 return images
+            if images.linearity_decision() is not True:
+                raise ValueError("a lattice embedding requires an established underlying linear map")
             source = self.domain()
             return self.element_class(
                 self,
                 lambda label: images(source.module_generator(label)),
             )
+        if isinstance(images, Morphism):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+                raise ValueError("the morphism has the wrong lattice-embedding endpoints")
+            return self.elementwise(lambda element: images(element))
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
 
-    def elementwise(self, function, *, verify_linearity=True):
+    def elementwise(self, function):
         if not callable(function):
             raise TypeError("an elementwise lattice embedding must be callable")
         source = self.domain()

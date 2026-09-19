@@ -620,7 +620,6 @@ def _new_sparse_free_module(
     subobject_generator_images=None,
     subobject_lift=None,
     subobject_inclusion_factory=None,
-    subobject_verify_linearity=True,
     biproduct_factors=None,
     extra_categories=(),
     extra_construction_data=None,
@@ -640,7 +639,6 @@ def _new_sparse_free_module(
             subobject_generator_images=subobject_generator_images,
             subobject_lift=subobject_lift,
             subobject_inclusion_factory=subobject_inclusion_factory,
-            subobject_verify_linearity=subobject_verify_linearity,
         )
     if biproduct_factors is not None:
         categories.append(BiproductModules(ring))
@@ -927,7 +925,6 @@ def _fresh_free_module_on(
     _subobject_generator_images=None,
     _subobject_lift=None,
     _subobject_inclusion_factory=None,
-    _subobject_verify_linearity=True,
     _biproduct_factors=None,
     _extra_categories=(),
     _extra_construction_data=None,
@@ -950,7 +947,6 @@ def _fresh_free_module_on(
         subobject_generator_images=_subobject_generator_images,
         subobject_lift=_subobject_lift,
         subobject_inclusion_factory=_subobject_inclusion_factory,
-        subobject_verify_linearity=_subobject_verify_linearity,
         biproduct_factors=_biproduct_factors,
         extra_categories=_extra_categories,
         extra_construction_data=_extra_construction_data,

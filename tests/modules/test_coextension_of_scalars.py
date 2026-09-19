@@ -26,6 +26,7 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
     endomorphisms = Modules(QQ).End(plane)
     e0, e1 = plane.module_generator(0), plane.module_generator(1)
     quarter_turn = endomorphisms({0: e1, 1: -e0})
+    identity = endomorphisms.identity()
 
     labels = scalars.module_generating_set()
     one_label, i_label = labels[0], labels[1]
@@ -34,9 +35,12 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
         coefficients = scalars.framing_coefficients(scalar)
         constant = coefficients.get(one_label, QQ.zero())
         imaginary = coefficients.get(i_label, QQ.zero())
-        return endomorphisms.elementwise(
-            lambda vector: constant * vector + imaginary * quarter_turn(vector),
-            verify_linearity=False,
+        return endomorphisms.scalar_multiple(
+            constant,
+            identity,
+        ) + endomorphisms.scalar_multiple(
+            imaginary,
+            quarter_turn,
         )
 
     gaussian_plane = Modules(scalars)(plane, scalars.Mor(endomorphisms)(action))

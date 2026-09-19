@@ -17,7 +17,24 @@ from dzack_research.preamble.categories.algebras.lie_algebras import (
     CommutatorLieAlgebras,
 )
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+
+
+class _CommutatorUnderlyingModuleMorphism(ModuleMorphism):
+    r"""An algebra morphism transported to the corresponding commutator modules."""
+
+    def __init__(self, parent, underlying, source_algebra, target_lie) -> None:
+        self._underlying_algebra_morphism = underlying
+        self._source_algebra = source_algebra
+        super().__init__(
+            parent,
+            lambda element: target_lie(underlying(source_algebra(element))),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._underlying_algebra_morphism.linearity_decision()
 
 
 class CommutatorLieAlgebraFunctor(Functor):
@@ -50,9 +67,11 @@ class CommutatorLieAlgebraFunctor(Functor):
         target = self(morphism.codomain())
         domain = morphism.domain()
         underlying = Algebras(self.base_ring()).underlying_module()(morphism)
-        linear = source.module_category().Mor(source, target).elementwise(
-            lambda element: target(underlying(domain(element))),
-            verify_linearity=False,
+        linear = _CommutatorUnderlyingModuleMorphism(
+            source.module_category().Mor(source, target),
+            underlying,
+            domain,
+            target,
         )
         return Algebras(self.base_ring()).Lie().Mor(source, target)(linear)
 

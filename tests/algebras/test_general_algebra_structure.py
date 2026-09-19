@@ -281,17 +281,19 @@ def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equal
     classifier = algebra.multiplication_morphism()
     assert classifier(classifier.domain().pure_tensor(three, four)) == three * four
     linear = algebra.module_category().Mor(algebra, algebra).elementwise(
-        lambda x: x, verify_linearity=False,
+        lambda x: x,
     )
-    identity = Algebras(QQ).Mor(algebra, algebra)(linear)
+    assert linear.linearity_decision() is Unknown
+    with pytest.raises(ValueError, match="established underlying linear map"):
+        Algebras(QQ).Mor(algebra, algebra)(linear)
+    identity = Algebras(QQ).Mor(algebra, algebra).identity()
     assert identity(three) == three
     assert identity.is_multiplicative() is Unknown
     another_linear = algebra.module_category().Mor(algebra, algebra).elementwise(
-        lambda x: x, verify_linearity=False,
+        lambda x: x,
     )
-    another = Algebras(QQ).Mor(algebra, algebra)(another_linear)
-    assert (identity == another) is Unknown
-    assert (identity != another) is Unknown
+    assert (linear == another_linear) is Unknown
+    assert (linear != another_linear) is Unknown
 
 
 def test_unframed_unital_and_lie_entries_use_the_same_root_constructor() -> None:

@@ -79,6 +79,18 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
 
+
+class _StructuredAlgebraModuleTransportMorphism(ModuleMorphism):
+    r"""An existing module map read between algebra objects built on those modules."""
+
+    def __init__(self, parent, underlying_morphism, action) -> None:
+        self._underlying_morphism = underlying_morphism
+        super().__init__(parent, action, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return self._underlying_morphism.linearity_decision()
+
+
 if "Lie" not in all_axioms:
     all_axioms.add("Lie")
 
@@ -111,6 +123,8 @@ class MultiplicativeAlgebraMorphism(Morphism):
         domain = self.domain()
         codomain = self.codomain()
         linear = domain.module_category().Mor(domain, codomain)(underlying_morphism)
+        if linear.linearity_decision() is not True:
+            raise ValueError("an algebra morphism requires an established underlying linear map")
         source_multiplication = domain.multiplication_morphism()
         target_multiplication = codomain.multiplication_morphism()
         tensor_square = linear.tensor_product_map(
@@ -297,11 +311,18 @@ def _scalar_module(ring):
             return OwnedRings().Mor(ring, ring).identity().as_algebra()
 
 
+class _AlgebraUnitModuleMorphism(ModuleMorphism):
+    r"""The linear unit map ``R -> A`` determined by the module scalar action."""
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
 def _unit_morphism_from_element(module, unit, ring):
     r"""The linear map ``U_R(R) -> module`` determined by ``1 |-> unit``."""
     ring = _owned_ring(ring)
     scalar_module = _scalar_module(ring)
-    return ModuleMorphism(
+    return _AlgebraUnitModuleMorphism(
         scalar_module.module_category().Mor(scalar_module, module),
         lambda scalar: module.scalar_multiple(ring(scalar), unit),
         elementwise=True,
@@ -918,9 +939,10 @@ class Algebras(OwnedCategoryOverBaseRing):
                 case _ if center in Algebras(self.algebra_base_ring()):
                     submodule = center.unformed_module()
                     inclusion = submodule.inclusion()
-                    return center.module_category().Mor(center, self).elementwise(
+                    return _StructuredAlgebraModuleTransportMorphism(
+                        center.module_category().Mor(center, self),
+                        inclusion,
                         lambda element: inclusion(submodule(element)),
-                        verify_linearity=False,
                     )
                 case _:
                     return center.inclusion()
@@ -1022,9 +1044,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             """
             projection = self.unformed_module().cokernel_projection()
             ambient = projection.domain()
-            return ambient.module_category().Mor(ambient, self).elementwise(
+            return _StructuredAlgebraModuleTransportMorphism(
+                ambient.module_category().Mor(ambient, self),
+                projection,
                 lambda element: self(projection(element)),
-                verify_linearity=False,
             )
 
         def algebra_quotient_ideal(self):

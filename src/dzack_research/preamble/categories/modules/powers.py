@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FramedFreeModules,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleEmbedding,
     ModuleHomset,
     ModuleMorphism,
 )
@@ -79,6 +80,30 @@ class _PowerConstruction:
         return self._degree
 
 
+class _PowerModuleInclusion(ModuleEmbedding):
+    r"""The canonical inclusion of a homogeneous power piece into its graded algebra."""
+
+    def __init__(self, parent, source, algebra, degree) -> None:
+        self._power_source = source
+        self._power_algebra = algebra
+        self._power_degree = degree
+        super().__init__(
+            parent,
+            lambda element: algebra.from_graded_piece(degree, source(element)),
+            elementwise=True,
+            lift=source._lift_from_ambient_power_algebra,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+    def _injectivity_derivation(self):
+        return True
+
+    def _selected_lift_derivation(self):
+        return True
+
+
 class _PowerModuleParentMethods:
     def __init__(self, power_construction, **rest) -> None:
         self._power_construction = power_construction
@@ -120,10 +145,12 @@ class _PowerModuleParentMethods:
         r"""Return the canonical homogeneous-piece inclusion into its power algebra."""
         algebra = self.ambient_power_algebra()
         degree = self.power_degree()
-        inclusion = self.Mono(algebra)(lambda label: algebra.from_graded_piece(
-                degree,
-                self.module_generator(label),
-            ), verify_linearity=False, lift=self._lift_from_ambient_power_algebra)
+        inclusion = _PowerModuleInclusion(
+            self.Mono(algebra),
+            self,
+            algebra,
+            degree,
+        )
         self.register_conversion(
             SetMorphism(
                 Sets().Mor(algebra, self),

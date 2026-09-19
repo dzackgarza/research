@@ -345,10 +345,7 @@ class _ProjectiveLineBundleLinearization:
         inverse_action = self.scheme_action_of(group_element.inverse())
         pullback = sections.pullback_by_projective_automorphism(inverse_action)
         scalar = self.character_value(group_element)
-        return sections.Mor(sections).elementwise(
-            lambda section: sections.scalar_multiple(scalar, pullback(section)),
-            verify_linearity=False,
-        )
+        return sections.Mor(sections).scalar_multiple(scalar, pullback)
 
     @cached_method
     def section_group_module(self):
@@ -598,9 +595,10 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
         base = sections.base_ring()
         scalar_twist = self.character_value(group_element)
         if group_element == self.acting_group().one():
-            return sections.Mor(sections).elementwise(
-                lambda section: sections.scalar_multiple(scalar_twist, section),
-                verify_linearity=False,
+            endomorphisms = sections.Mor(sections)
+            return endomorphisms.scalar_multiple(
+                scalar_twist,
+                endomorphisms.identity(),
             )
         factor_labels = tuple(self.projective_product().factors().index_set())
         weights = self.coordinate_weights()

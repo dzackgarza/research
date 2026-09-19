@@ -243,7 +243,6 @@ class _TrivialActionFunctor(_RestrictionOfScalarsFunctor):
         target = self(morphism.codomain())
         return source.Mor(target)._from_equivariant_images(
             morphism,
-            verify_linearity=False,
         )
 
     def _repr_(self):

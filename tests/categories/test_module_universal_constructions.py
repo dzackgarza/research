@@ -269,7 +269,6 @@ def test_general_module_product_is_created_by_the_underlying_set_product() -> No
 
     undecided_leg = endomorphisms.elementwise(
         lambda element: line(element.underlying_element()),
-        verify_linearity=False,
     )
     undecided_cone = selected.diagram().Cones().cone(
         line,
@@ -323,7 +322,6 @@ def test_general_module_equalizer_is_created_by_the_underlying_set_equalizer() -
 
     undecided_zero = endomorphisms.elementwise(
         lambda _element: source.zero(),
-        verify_linearity=False,
     )
 
     def undecided_cone_leg(index):
@@ -341,7 +339,6 @@ def test_general_module_equalizer_is_created_by_the_underlying_set_equalizer() -
 
     nonlinear = endomorphisms.elementwise(
         lambda element: source(ZZ(element.underlying_element() ** 2)),
-        verify_linearity=False,
     )
     conditional_equalizer = Modules(ZZ).equalizer_construction(nonlinear, zero)
     conditional_shape = conditional_equalizer.diagram().domain()

@@ -13,11 +13,37 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.modules.pure.modules import Modules, VectorSpaces
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.logic import Predicate, ask
 from dzack_research.preamble.rings.real import RR
+
+
+class _LebesgueQuotientProjectionMorphism(ModuleMorphism):
+    r"""The canonical linear projection to almost-everywhere equivalence classes."""
+
+    def __init__(self, parent, quotient) -> None:
+        super().__init__(parent, quotient, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
+class _LebesgueDescendedIntegrationMorphism(ModuleMorphism):
+    r"""Integration descended through the null-function quotient."""
+
+    def __init__(self, parent, quotient, integration) -> None:
+        self._integration = integration
+        super().__init__(
+            parent,
+            lambda element: integration(quotient(element).representative()),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._integration.linearity_decision()
 
 
 def _symbolic_ae_equality(left, right):
@@ -182,14 +208,19 @@ class _LebesgueQuotient:
     @cached_method
     def quotient_projection(self):
         r"""The linear quotient map from integrable maps to their a.e. classes."""
-        return Modules(RR).Mor(self.map_space(), self).elementwise(self, verify_linearity=False)
+        return _LebesgueQuotientProjectionMorphism(
+            Modules(RR).Mor(self.map_space(), self),
+            self,
+        )
 
     @cached_method
     def integration_morphism(self):
         r"""The integral descends because integrable null functions have integral zero."""
         integration = self.map_space().integration_morphism()
-        return Modules(RR).Mor(self, RR).elementwise(
-            lambda element: integration(self(element).representative()), verify_linearity=False,
+        return _LebesgueDescendedIntegrationMorphism(
+            Modules(RR).Mor(self, RR),
+            self,
+            integration,
         )
 
     def _repr_(self):

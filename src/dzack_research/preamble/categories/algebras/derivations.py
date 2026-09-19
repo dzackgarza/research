@@ -323,6 +323,9 @@ class DerivationUnderlyingLinearMorphism(ModuleMorphism):
     def derivation(self):
         return self._derivation
 
+    def _elementwise_linearity_derivation(self):
+        return True
+
     def __rmul__(self, scalar):
         return self.parent().algebra_multiple(scalar, self)
 
@@ -406,11 +409,10 @@ class DerivationSpace(RestrictedHomCategoryParent):
         self.register_action(_DerivationAlgebraAction(algebra, self, False))
 
         def restricted_inclusion(restricted_module):
-            return restricted_module.Mono(self.arrow_set())(
+            return restricted_module.Mono(self.arrow_set())._subobject_inclusion(
                 lambda restricted_derivation: (
                     restricted_derivation.underlying_element().underlying_linear_morphism()
                 ),
-                verify_linearity=False,
             )
 
         self._restricted_module = _restricted_scalars_view(
@@ -685,8 +687,11 @@ class GradedDerivationUnderlyingLinearMorphism(ModuleMorphism):
             parent,
             function,
             elementwise=True,
-            verify_linearity=False,
         )
+
+    def _elementwise_linearity_derivation(self):
+        # A graded derivation is R-linear as part of its defining datum.
+        return True
 
     def derivation(self):
         return self._derivation
@@ -734,9 +739,8 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
     @cached_method
     def inclusion(self):
         r"""Return the canonical inclusion into the underlying graded linear Hom."""
-        return self.Mono(self.arrow_set())(
+        return self.Mono(self.arrow_set())._subobject_inclusion(
             lambda derivation: derivation.underlying_linear_morphism(),
-            verify_linearity=False,
         )
 
     def base_ring(self):

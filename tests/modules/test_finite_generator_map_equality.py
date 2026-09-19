@@ -26,11 +26,12 @@ def _framed_rationals_without_a_chosen_presentation():
 def test_linear_maps_and_tensor_classifiers_use_the_finite_frame():
     module = _framed_rationals_without_a_chosen_presentation()
     morphisms = Modules(QQ).Mor(module, module)
-    first = morphisms.elementwise(lambda x: x, verify_linearity=False)
-    second = morphisms.elementwise(lambda x: module(QQ(1)) + (x - module(QQ(1))), verify_linearity=False)
-    twice = morphisms.elementwise(lambda x: x + x, verify_linearity=False)
+    first = morphisms.elementwise(lambda x: x)
+    second = morphisms.elementwise(lambda x: module(QQ(1)) + (x - module(QQ(1))))
+    twice = morphisms.elementwise(lambda x: x + x)
     assert module._selected_presentation_rows() is None
-    assert first == second
+    assert first.linearity_decision() is Unknown
+    assert (first == second) is Unknown
     assert first != twice
     tensor = Modules(QQ).tensor_product((module, module))
     product = tensor.from_bilinear_map(module, lambda x, y: module(x.underlying_element() * y.underlying_element()))
@@ -38,10 +39,10 @@ def test_linear_maps_and_tensor_classifiers_use_the_finite_frame():
     assert product == same
     assert product != product + product
     algebra = Algebras(QQ)(module, product)
-    linear = Modules(QQ).Mor(algebra, algebra).elementwise(lambda x: x, verify_linearity=False)
+    linear = Modules(QQ).Mor(algebra, algebra).identity()
     identity = Algebras(QQ).Mor(algebra, algebra)(linear)
     assert identity.is_multiplicative() is True
-    doubled = Modules(QQ).Mor(algebra, algebra).elementwise(lambda x: x + x, verify_linearity=False)
+    doubled = Modules(QQ).Mor(algebra, algebra).scalar_multiple(QQ(2), linear)
     with pytest.raises(AssertionError, match="preserve the multiplication"):
         Algebras(QQ).Mor(algebra, algebra)(doubled)
 
@@ -51,7 +52,7 @@ def test_no_finite_generating_data_still_means_unknown_not_sampling():
         addition=lambda x, y: x + y, zero=QQ.zero(), negation=lambda x: -x,
         scalar_action=lambda r, x: r * x, verify=False)
     morphisms = Modules(QQ).Mor(module, module)
-    first = morphisms.elementwise(lambda x: x, verify_linearity=False)
-    second = morphisms.elementwise(lambda x: x, verify_linearity=False)
+    first = morphisms.elementwise(lambda x: x)
+    second = morphisms.elementwise(lambda x: x)
     assert (first == second) is Unknown
     assert (first != second) is Unknown

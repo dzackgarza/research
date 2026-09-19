@@ -374,7 +374,6 @@ def _localized_module(
     subobject_generator_images=None,
     subobject_lift=None,
     subobject_inclusion_factory=None,
-    subobject_verify_linearity=True,
     extra_categories=(),
     extra_construction_data=None,
     selected_presentation_data=None,
@@ -406,7 +405,6 @@ def _localized_module(
             subobject_generator_images=subobject_generator_images,
             subobject_lift=subobject_lift,
             subobject_inclusion_factory=subobject_inclusion_factory,
-            subobject_verify_linearity=subobject_verify_linearity,
         )
 
     source_ring = localization_ring.localization_source()

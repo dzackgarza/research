@@ -925,7 +925,6 @@ class FormModules(OwnedCategoryOverBaseRing):
         _subobject_generator_images=None,
         _subobject_lift=None,
         _subobject_inclusion_factory=None,
-        _subobject_verify_linearity=True,
     ):
         r"""Equip the module classified by ``form`` with that selected form."""
         module = form.module()
@@ -939,7 +938,6 @@ class FormModules(OwnedCategoryOverBaseRing):
             _subobject_generator_images=_subobject_generator_images,
             _subobject_lift=_subobject_lift,
             _subobject_inclusion_factory=_subobject_inclusion_factory,
-            _subobject_verify_linearity=_subobject_verify_linearity,
         )
 
     _HomCategory = FormedModuleHomCategoryConstruction
@@ -1352,7 +1350,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 _subobject_generator_images=None,
                 _subobject_lift=None,
                 _subobject_inclusion_factory=None,
-                _subobject_verify_linearity=True,
                 _extra_categories=(),
             ):
                 r"""Equip ``module`` with the bilinear form represented by ``gram``.
@@ -1375,7 +1372,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     _subobject_generator_images=_subobject_generator_images,
                     _subobject_lift=_subobject_lift,
                     _subobject_inclusion_factory=_subobject_inclusion_factory,
-                    _subobject_verify_linearity=_subobject_verify_linearity,
                 )
                 return formed
 
@@ -1718,7 +1714,6 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 _subobject_generator_images=None,
                 _subobject_lift=None,
                 _subobject_inclusion_factory=None,
-                _subobject_verify_linearity=True,
                 _extra_categories=(),
             ):
                 r"""Equip ``module`` with ``q(x)=x^T gram x`` valued in ``value_module``.
@@ -1744,7 +1739,6 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     _subobject_generator_images=_subobject_generator_images,
                     _subobject_lift=_subobject_lift,
                     _subobject_inclusion_factory=_subobject_inclusion_factory,
-                    _subobject_verify_linearity=_subobject_verify_linearity,
                 )
                 return formed
 
@@ -2154,7 +2148,6 @@ def _form_module(
     _subobject_generator_images=None,
     _subobject_lift=None,
     _subobject_inclusion_factory=None,
-    _subobject_verify_linearity=True,
 ):
     r"""Return the same represented module construction equipped with ``form``.
 
@@ -2198,7 +2191,6 @@ def _form_module(
         "_subobject_generator_images": _subobject_generator_images,
         "_subobject_lift": _subobject_lift,
         "_subobject_inclusion_factory": _subobject_inclusion_factory,
-        "_subobject_verify_linearity": _subobject_verify_linearity,
         "_extra_categories": tuple(categories),
         "_extra_construction_data": construction_data,
     }
@@ -2217,7 +2209,6 @@ def _form_module(
                 subobject_generator_images=_subobject_generator_images,
                 subobject_lift=_subobject_lift,
                 subobject_inclusion_factory=_subobject_inclusion_factory,
-                subobject_verify_linearity=_subobject_verify_linearity,
             )
         return ModulesWithChosenFinitePresentation(base_ring)(
             module.presentation(), category=Category.join(categories), **construction_data

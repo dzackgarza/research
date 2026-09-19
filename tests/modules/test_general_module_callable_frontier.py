@@ -25,10 +25,9 @@ def _unframed_integer_module():
 def test_extensionally_equal_callable_maps_do_not_acquire_a_false_equality_decision() -> None:
     module = _unframed_integer_module()
     homset = module.module_category().Mor(module, module)
-    first = homset.elementwise(lambda element: element, verify_linearity=False)
+    first = homset.elementwise(lambda element: element)
     second = homset.elementwise(
         lambda element: module(element.underlying_element()),
-        verify_linearity=False,
     )
 
     assert first.linearity_decision() is Unknown

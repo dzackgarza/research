@@ -23,7 +23,7 @@ def test_unframed_associative_product_and_its_commutator_use_the_actual_tensor()
     assert associative(module(QQ(2))) * associative(module(QQ(3))) == associative(module(QQ(6)))
     arrows = LieAlgebraHomset(lie, lie)
     assert arrows is Algebras(QQ).Lie().Mor(lie, lie)
-    linear = Modules(QQ).Mor(lie, lie).elementwise(lambda z: z, verify_linearity=False)
+    linear = Modules(QQ).Mor(lie, lie).identity()
     identity = LieAlgebraMorphism(arrows, linear)
     assert identity(x) == x
     assert identity.is_multiplicative() is Unknown

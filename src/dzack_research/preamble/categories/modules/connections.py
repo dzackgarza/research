@@ -406,6 +406,9 @@ class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
     def connection(self):
         return self._connection
 
+    def _elementwise_linearity_derivation(self):
+        return True
+
 
 class ConnectionSpace(RestrictedHomCategoryParent):
     Element = Connection
@@ -524,6 +527,8 @@ class ConnectionMorphism(Element):
     def __init__(self, parent, images, *, verify_horizontality=True) -> None:
         Element.__init__(self, parent)
         underlying = parent.arrow_set()(images)
+        if underlying.linearity_decision() is not True:
+            raise ValueError("a connection morphism requires an established underlying linear map")
         self._underlying_morphism = underlying
         if verify_horizontality:
             self._check_connection_square()
@@ -582,20 +587,15 @@ class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
 
     def __init__(self, parent, connection_morphism, underlying) -> None:
         self._connection_morphism = connection_morphism
-        source = parent.domain()
-        if source.is_framed_module():
-            super().__init__(
-                parent,
-                lambda label: underlying(source.module_generator(label)),
-                verify_linearity=False,
-            )
-        else:
-            super().__init__(
-                parent,
-                lambda element: underlying(element),
-                elementwise=True,
-                verify_linearity=False,
-            )
+        self._underlying_source_morphism = underlying
+        super().__init__(
+            parent,
+            lambda element: underlying(element),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._underlying_source_morphism.linearity_decision()
 
     def connection_morphism(self):
         return self._connection_morphism

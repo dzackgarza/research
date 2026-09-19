@@ -12,6 +12,7 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
@@ -22,6 +23,53 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
+
+
+class _ScalarExtensionModuleMorphism(ModuleMorphism):
+    r"""``S tensor_R f`` with the exact linearity premise carried by ``f``."""
+
+    def __init__(self, parent, source_morphism, generator_images, functor) -> None:
+        self._source_morphism = source_morphism
+        self._extension_functor = functor
+        super().__init__(
+            parent,
+            generator_images,
+            scalar_extension_of=source_morphism,
+            scalar_extension_functor=functor,
+        )
+        # Scalar extension is functorial on genuinely linear maps.  When the
+        # input is only conditional, the image carries exactly that condition;
+        # reconstructing it from generator images must not promote it to True.
+        self._linearity_decision = source_morphism.linearity_decision()
+
+
+class _RestrictionModuleMorphism(ModuleMorphism):
+    r"""Restriction of scalars of one module map, with its source premise."""
+
+    def __init__(self, parent, source_morphism, action) -> None:
+        self._source_morphism = source_morphism
+        super().__init__(parent, action, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return self._source_morphism.linearity_decision()
+
+
+class _CoextensionFunctorImageMorphism(ModuleMorphism):
+    r"""Postcomposition on ``Hom_R(S,-)`` induced by an admitted module map."""
+
+    def __init__(self, parent, source_morphism, action) -> None:
+        self._source_morphism = source_morphism
+        super().__init__(parent, action, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return self._source_morphism.linearity_decision()
+
+
+class _ScalarChangeStructureMorphism(ModuleMorphism):
+    r"""A scalar-change unit or counit map, linear by its defining formula."""
+
+    def _elementwise_linearity_derivation(self):
+        return True
 
 
 class _ScalarExtensionFunctor(Functor):
@@ -81,11 +129,11 @@ class _ScalarExtensionFunctor(Functor):
             )
 
         hom = source.module_category().Mor(source, target)
-        return hom.element_class(
+        return _ScalarExtensionModuleMorphism(
             hom,
+            morphism,
             image,
-            scalar_extension_of=morphism,
-            scalar_extension_functor=self,
+            self,
         )
 
     def _repr_(self):
@@ -135,7 +183,9 @@ class _RestrictionOfScalarsFunctor(Functor):
         # framing of the source is therefore not part of the statement.
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return source.module_category().Mor(source, target).elementwise(
+        return _RestrictionModuleMorphism(
+            source.module_category().Mor(source, target),
+            morphism,
             lambda element: self._restricted_element(
                 morphism.codomain(),
                 target,
@@ -143,7 +193,6 @@ class _RestrictionOfScalarsFunctor(Functor):
                     self._extension_element(morphism.domain(), source, element)
                 ),
             ),
-            verify_linearity=False,
         )
 
     def _repr_(self):
@@ -205,10 +254,15 @@ class _CoextensionOfScalarsFunctor(Functor):
     def _linear_map(self, domain, codomain, function):
         r"""The ``S``-linear map given elementwise by ``function``."""
         if self._coextends_to_group_modules():
-            return domain.Mor(codomain)._from_equivariant_images(
-                function, elementwise=True, verify_linearity=False
+            source_module = domain.unformed_module()
+            target_module = codomain.unformed_module()
+            underlying = _ScalarChangeStructureMorphism(
+                source_module.module_category().Mor(source_module, target_module),
+                lambda element: target_module(function(domain(element))),
+                elementwise=True,
             )
-        return domain.module_category().Mor(domain, codomain).elementwise(function, verify_linearity=False)
+            return domain.Mor(codomain)._from_equivariant_images(underlying)
+        return _ScalarChangeStructureMorphism(domain.module_category().Mor(domain, codomain), function, elementwise=True)
 
     def _apply_object(self, module):
         scalars = self.scalars_as_module()
@@ -238,11 +292,14 @@ class _CoextensionOfScalarsFunctor(Functor):
                 scalars, morphism.codomain()
             ),
         )
-        return self._linear_map(
-            source,
-            target,
+        if self._coextends_to_group_modules():
+            return source.Mor(target)._from_equivariant_images(postcomposition)
+        return _CoextensionFunctorImageMorphism(
+            source.module_category().Mor(source, target),
+            postcomposition,
             lambda element: self._coextended_element(
-                target, postcomposition(self._hom_element(source, element))
+                target,
+                postcomposition(self._hom_element(source, element)),
             ),
         )
 
@@ -324,11 +381,12 @@ class _RestrictionCoextensionAdjunction(Adjunction):
         coextended = self.right_adjoint()(module)
         restricted = self.left_adjoint()(coextended)
         one = self.right_adjoint().scalars_as_module().one()
-        return restricted.module_category().Mor(restricted, module).elementwise(
+        return _ScalarChangeStructureMorphism(
+            restricted.module_category().Mor(restricted, module),
             lambda element: self.right_adjoint()._hom_element(
                 coextended, self.left_adjoint()._extension_element(restricted, element)
             )(one),
-            verify_linearity=False,
+            elementwise=True,
         )
 
     def _repr_(self):

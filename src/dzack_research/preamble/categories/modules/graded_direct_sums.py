@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.modules.graded_modules import (
     _grading_identity,
     _require_grading_monoid,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
@@ -24,6 +25,70 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.owned_category import _object_of
+
+
+class _DirectSumInjectionMorphism(ModuleMorphism):
+    r"""The canonical inclusion of one summand into a finite-support direct sum."""
+
+    def __init__(self, parent, degree) -> None:
+        self._degree = degree
+        super().__init__(
+            parent,
+            lambda element: self.codomain().from_component(self._degree, element),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
+class _DirectSumProjectionMorphism(ModuleMorphism):
+    r"""The canonical projection from a finite-support direct sum."""
+
+    def __init__(self, parent, degree) -> None:
+        self._degree = degree
+        super().__init__(
+            parent,
+            lambda element: self.domain()(element).homogeneous_component(self._degree),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
+class _DirectSumFactorMorphism(ModuleMorphism):
+    r"""The coproduct factor induced by a family of admitted linear maps."""
+
+    def __init__(self, parent, maps) -> None:
+        self._component_maps = maps
+
+        def evaluate(element):
+            source = self.domain()
+            target = self.codomain()
+            return sum(
+                (
+                    maps[degree](component)
+                    for degree, component in source(element).homogeneous_components().items()
+                ),
+                target.zero(),
+            )
+
+        super().__init__(parent, evaluate, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        indices = self._component_maps.index_set()
+        if not indices.cardinality().is_finite():
+            return Unknown
+        decision = True
+        for degree in indices:
+            morphism = self._component_maps[degree]
+            current = getattr(morphism, "linearity_decision", lambda: Unknown)()
+            if current is False:
+                return False
+            if current is not True:
+                decision = Unknown
+        return decision
 
 
 class GradedDirectSumElement(ModuleElement):
@@ -394,32 +459,32 @@ class _DirectSumOfModules:
     @cached_method
     def injection(self, degree):
         degree = self.normalize_degree(degree)
-        return Modules(self.base_ring()).Mor(self.graded_piece(degree), self).elementwise(
-            lambda element: self.from_component(degree, element), verify_linearity=False,
+        return _DirectSumInjectionMorphism(
+            Modules(self.base_ring()).Mor(self.graded_piece(degree), self),
+            degree,
         )
 
     @cached_method
     def projection(self, degree):
         degree = self.normalize_degree(degree)
-        return Modules(self.base_ring()).Mor(self, self.graded_piece(degree)).elementwise(
-            lambda element: self(element).homogeneous_component(degree), verify_linearity=False,
+        return _DirectSumProjectionMorphism(
+            Modules(self.base_ring()).Mor(self, self.graded_piece(degree)),
+            degree,
         )
 
     def from_maps(self, codomain, maps):
         r"""The unique linear map whose restrictions to the summands are ``maps``."""
         assert maps.index_set() is self.degree_index_set(), "the maps use the summand index set"
 
-        def evaluate(element):
-            def image(degree, component):
-                morphism = maps[degree]
-                assert morphism.domain() is self.graded_piece(degree) and morphism.codomain() is codomain, (
-                    "a coproduct cocone has the stated summands and common codomain"
-                )
-                return morphism(component)
-
-            return sum((image(degree, component) for degree, component in self(element).homogeneous_components().items()), codomain.zero())
-
-        return Modules(self.base_ring()).Mor(self, codomain).elementwise(evaluate, verify_linearity=False)
+        for degree in maps.index_set() if maps.index_set().cardinality().is_finite() else ():
+            morphism = maps[degree]
+            assert morphism.domain() is self.graded_piece(degree) and morphism.codomain() is codomain, (
+                "a coproduct cocone has the stated summands and common codomain"
+            )
+        return _DirectSumFactorMorphism(
+            Modules(self.base_ring()).Mor(self, codomain),
+            maps,
+        )
 
     def _direct_sum_realization(self):
         r"""The private component engine retained when further structure is supplied."""

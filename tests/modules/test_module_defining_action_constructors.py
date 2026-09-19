@@ -58,7 +58,6 @@ def test_presented_and_direct_action_zmod6_have_an_explicit_intertwining_isomorp
         lambda element: presented.scalar_multiple(
             ZZ(element.underlying_element()), generator
         ),
-        verify_linearity=False,
     )
     comparison = Modules(ZZ).Core().Mor(presented, acted)(forward, inverse)
 

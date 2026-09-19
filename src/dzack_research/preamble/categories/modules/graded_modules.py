@@ -156,9 +156,28 @@ def _selected_homogeneous_degree(element):
 class GradedModuleMorphism(ModuleMorphism):
     r"""A degree-zero morphism of graded modules."""
 
-    def __init__(self, parent, images, *, elementwise=False, verify_linearity=True) -> None:
-        ModuleMorphism.__init__(self, parent, images, elementwise=elementwise, verify_linearity=verify_linearity)
+    def __init__(self, parent, images, *, elementwise=False) -> None:
+        self._underlying_linearity_premise = (
+            images if isinstance(images, ModuleMorphism) else None
+        )
+        if self._underlying_linearity_premise is None:
+            ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
+        else:
+            ModuleMorphism.__init__(
+                self,
+                parent,
+                lambda element: images(element),
+                elementwise=True,
+            )
+        if self.linearity_decision() is not True:
+            raise ValueError("a graded-module morphism requires an established underlying linear map")
         self._check_selected_degrees()
+
+    def _elementwise_linearity_derivation(self):
+        premise = self._underlying_linearity_premise
+        if premise is None:
+            return super()._elementwise_linearity_derivation()
+        return premise.linearity_decision()
 
     def _check_selected_degrees(self) -> None:
 
@@ -189,9 +208,23 @@ class GradedModuleMorphism(ModuleMorphism):
             return NotImplemented
         domain = other.domain()
         indices = domain.grading_index_set()
-        return GradedModules(domain.base_ring(), indices).Mor(
-            domain, self.codomain()
-        ).elementwise(lambda element: self(other(element)))
+        return _CompositeGradedModuleMorphism(
+            GradedModules(domain.base_ring(), indices).Mor(domain, self.codomain()),
+            self,
+            other,
+        )
+
+
+class _CompositeGradedModuleMorphism(GradedModuleMorphism):
+    r"""Composition of degree-zero graded maps, linear by composition."""
+
+    def __init__(self, parent, left, right) -> None:
+        self._left_factor = left
+        self._right_factor = right
+        super().__init__(parent, lambda element: left(right(element)), elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return True
 
 
 class GradedModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
@@ -202,6 +235,15 @@ class GradedModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         assert indices is codomain.grading_index_set(), "graded-module arrows use the same indexing set"
         assert indices is hom_family.base_category().grading_index_set(), "the graded-module arrow category uses those indices"
         _initialize_module_hom_parent(self, hom_family, domain, codomain)
+
+    def _element_constructor_(self, images):
+        if isinstance(images, ModuleMorphism):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+                raise ValueError("the module morphism has the wrong graded-module endpoints")
+            if isinstance(images, GradedModuleMorphism) and images.parent() is self:
+                return images
+            return self.element_class(self, images)
+        return super()._element_constructor_(images)
 
 
 

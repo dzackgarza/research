@@ -193,6 +193,19 @@ class ModuleMorphism(Morphism):
         morphisms override this at their declaration, so callers cannot select
         a derivation with a string or boolean flag.
         """
+        premise = getattr(self, "_direct_linearity_premise", None)
+        if premise is not None:
+            return premise.linearity_decision()
+        return None
+
+    def _selected_lift_derivation(self):
+        r"""Return whether a supplied lift is exact by construction, or ``None``.
+
+        A caller-supplied Python function is not evidence that ``None`` means
+        an element lies outside the image.  Constructor-owned subobject maps
+        override this hook when their selected lift is part of the subobject
+        datum itself.
+        """
         return None
 
     def __init__(
@@ -201,7 +214,6 @@ class ModuleMorphism(Morphism):
         images,
         *,
         elementwise=False,
-        verify_linearity=True,
         scalar_extension_of=None,
         scalar_extension_functor=None,
         lift=None,
@@ -215,9 +227,28 @@ class ModuleMorphism(Morphism):
         self._scalar_extension_of = scalar_extension_of
         self._scalar_extension_functor = scalar_extension_functor
         self._lift_function = lift
+        self._direct_linearity_premise = None
+        self._selected_lift_exactness = True if lift is None else Unknown
+        if lift is not None:
+            lift_derivation = self._selected_lift_derivation()
+            if lift_derivation is False:
+                raise ValueError("the selected lift is refuted by its construction data")
+            if lift_derivation is True:
+                self._selected_lift_exactness = True
         self._element_function = None
         self._linearity_decision = True
         domain = self.domain()
+        codomain = self.codomain()
+        if (
+            isinstance(images, Morphism)
+            and images.domain() is domain
+            and images.codomain() is codomain
+        ):
+            source_morphism = images
+            if isinstance(source_morphism, ModuleMorphism):
+                self._direct_linearity_premise = source_morphism
+            images = lambda element: source_morphism(element)
+            elementwise = True
         if elementwise or domain not in FramedModules(domain.base_ring()):
             if not callable(images):
                 raise TypeError("a morphism from an unframed module must be supplied as an exact element map")
@@ -226,12 +257,13 @@ class ModuleMorphism(Morphism):
             self._generator_morphism = None
             derivation = self._elementwise_linearity_derivation()
             match derivation:
-                case None if verify_linearity:
-                    self._linearity_decision = self._verify_elementwise_linearity_when_decidable()
                 case None:
-                    self._linearity_decision = Unknown
+                    self._linearity_decision = self._verify_elementwise_linearity_when_decidable()
+                case False:
+                    raise ValueError("the supplied elementwise map is not module-linear")
                 case _:
                     self._linearity_decision = derivation
+            self._refute_invalid_selected_lift_when_decidable()
             return
         labels = self.domain().module_generating_set()
         set_homset = Sets().Mor(labels, self.codomain())
@@ -323,6 +355,46 @@ class ModuleMorphism(Morphism):
         else:
             raise TypeError("a module morphism is specified on the domain framing")
         self._linearity_decision = self._check_selected_domain_relations()
+        self._refute_invalid_selected_lift_when_decidable()
+
+    def _refute_invalid_selected_lift_when_decidable(self) -> None:
+        r"""Reject witnessed section-equation failures of a selected lift.
+
+        This is a refutation pass, not a proof that an arbitrary lift callback
+        is exact.  On a represented finite codomain every returned candidate is
+        checked; otherwise zero is still a sound probe.  A callback that passes
+        these checks remains unresolved unless its constructor supplies a lift
+        derivation.
+        """
+        custom = self._lift_function
+        if custom is None:
+            return
+        codomain = self.codomain()
+        ring = codomain.base_ring()
+        targets = None
+        try:
+            finite_codomain = codomain.is_finite() is True
+        except (AttributeError, NotImplementedError):
+            finite_codomain = False
+        if finite_codomain:
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            if codomain in EnumeratedSets() or codomain in Modules(ring).FinitelyPresented().Torsion():
+                targets = tuple(codomain)
+        if targets is None:
+            probes = [codomain.zero()]
+            generators = _finite_generating_elements(codomain)
+            if generators is not None:
+                probes.extend(generators)
+            targets = tuple(probes)
+        for target in targets:
+            candidate = custom(target)
+            if candidate is None:
+                continue
+            candidate = self.domain()(candidate)
+            section_equation = self(candidate) == target
+            if section_equation is False:
+                raise ValueError("the selected lift does not satisfy the section equation")
 
     def linearity_decision(self):
         r"""Return ``True`` when linearity is established, otherwise ``Unknown``.
@@ -333,6 +405,13 @@ class ModuleMorphism(Morphism):
         unresolved hypothesis explicitly.
         """
         return self._linearity_decision
+
+    def _require_established_linearity(self, operation: str) -> None:
+        r"""Require the linearity premise consumed by a linear-algebra conclusion."""
+        if self.linearity_decision() is not True:
+            raise ValueError(
+                f"{operation} requires established module-linearity; this map retains an unresolved linearity hypothesis"
+            )
 
     def _verify_elementwise_linearity_when_decidable(self):
         r"""Check an elementwise callable exactly in represented decidable regimes.
@@ -366,6 +445,7 @@ class ModuleMorphism(Morphism):
         match domain:
             case _ if domain.is_finite() is not True:
                 self._check_elementwise_zero()
+                self._refute_elementwise_linearity_on_selected_generators()
                 _LOGGER.debug(
                     "Elementwise module morphism %s -> %s accepted without exhaustive linearity verification; the source is not represented as finite",
                     domain,
@@ -382,6 +462,38 @@ class ModuleMorphism(Morphism):
                     codomain,
                 )
                 return Unknown
+
+    def _refute_elementwise_linearity_on_selected_generators(self) -> None:
+        r"""Reject witnessed law failures without promoting finite probes to a proof.
+
+        A finite framing does not decide an arbitrary callable on an infinite
+        module.  It does, however, supply sound counterexamples when additivity
+        already fails on two selected generators, or scalar-linearity fails on
+        a represented ring generator and one selected module generator.  Passing
+        these probes leaves the decision ``Unknown``.
+        """
+        generators = _finite_generating_elements(self.domain())
+        if generators is None:
+            return
+        generators = tuple(generators)
+        function = self._element_function
+        for left in generators:
+            for right in generators:
+                additive = function(left + right) == function(left) + function(right)
+                if additive is False:
+                    raise ValueError("the supplied elementwise map is not additive")
+
+        scalars = _scalar_linearity_generating_scalars(self.domain().base_ring())
+        if scalars is None:
+            return
+        for scalar in scalars:
+            for generator in generators:
+                scalar_linear = (
+                    function(self.domain().scalar_multiple(scalar, generator))
+                    == self.codomain().scalar_multiple(scalar, function(generator))
+                )
+                if scalar_linear is False:
+                    raise ValueError("the supplied elementwise map is not scalar-linear")
 
     def _finite_source_elements_for_verification(self):
         r"""Enumerate a finitely generated module over a finite ring via its framing.
@@ -537,10 +649,7 @@ class ModuleMorphism(Morphism):
         left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
         if left is not None and right is not None:
             return parent._scalar_identity(left + right)
-        return parent.elementwise(
-            lambda element: self(element) + summand(element),
-            verify_linearity=False,
-        )
+        return _PointwiseSumModuleMorphism(parent, self, summand)
 
     def __neg__(self):
         parent = self.parent()
@@ -549,10 +658,7 @@ class ModuleMorphism(Morphism):
         scalar = _scalar_identity_coefficient(self)
         if scalar is not None:
             return parent._scalar_identity(-scalar)
-        return parent.elementwise(
-            lambda element: -self(element),
-            verify_linearity=False,
-        )
+        return _PointwiseNegationModuleMorphism(parent, self)
 
     def __sub__(self, other):
         r"""Return the pointwise difference in ``Hom_R(M, N)``."""
@@ -583,10 +689,18 @@ class ModuleMorphism(Morphism):
         if elements is None:
             return Unknown
         comparisons = tuple(self(element) == other(element) for element in elements)
-        match (any(answer is False for answer in comparisons), all(answer is True for answer in comparisons)):
-            case (True, _):
+        established_linear = (
+            self.linearity_decision() is True
+            and other.linearity_decision() is True
+        )
+        match (
+            any(answer is False for answer in comparisons),
+            all(answer is True for answer in comparisons),
+            established_linear,
+        ):
+            case (True, _, _):
                 equal = False
-            case (_, True):
+            case (_, True, True):
                 equal = True
             case _:
                 equal = Unknown
@@ -666,6 +780,7 @@ class ModuleMorphism(Morphism):
         boundary.
         """
 
+        self._require_established_linearity("a coordinate matrix")
         assert _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()), (
             "a coordinate matrix requires finitely generated framed free endpoints"
         )
@@ -797,6 +912,7 @@ class ModuleMorphism(Morphism):
         local ring descends to their numerators by clearing denominators.
         Otherwise a representation of an endpoint computes the kernel.
         """
+        self._require_established_linearity("kernel construction")
         from dzack_research.preamble.categories.modules.localizations import (
             LocalizedModules,
         )
@@ -898,6 +1014,7 @@ class ModuleMorphism(Morphism):
 
     def image(self):
         r"""Return ``im(self)`` as a subobject of the codomain."""
+        self._require_established_linearity("image construction")
         labels = self.domain().module_generating_set()
         assert labels.cardinality().is_finite(), (
             "the represented image-subobject backend requires a finite domain framing"
@@ -922,6 +1039,7 @@ class ModuleMorphism(Morphism):
         domain is searched.  An element outside the image is rejected with
         ``ValueError``.
         """
+        self._require_established_linearity("preimage computation")
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         domain = self.domain()
@@ -954,10 +1072,12 @@ class ModuleMorphism(Morphism):
 
     def is_injective(self) -> bool:
         r"""Return whether ``ker(self)=0`` when the kernel is computable."""
+        self._require_established_linearity("injectivity")
         return self.kernel().is_zero()
 
     def is_surjective(self) -> bool:
         r"""Return whether ``coker(self)=0`` when the cokernel is computable."""
+        self._require_established_linearity("surjectivity")
         return self.cokernel().is_zero()
 
     def residue_morphism(self):
@@ -1017,7 +1137,22 @@ class ModuleMorphism(Morphism):
         """
         custom = self._lift_function
         if custom is not None:
-            return custom(element)
+            candidate = custom(element)
+            if candidate is None:
+                if self._selected_lift_exactness is True:
+                    return None
+                raise ValueError(
+                    "the selected lift returned no candidate, but its exactness is unresolved"
+                )
+            candidate = self.domain()(candidate)
+            target = element if element.parent() is self.codomain() else self.codomain()(element)
+            section_equation = self(candidate) == target
+            if section_equation is False:
+                raise ValueError("the selected lift does not satisfy the section equation on this element")
+            if section_equation is not True:
+                raise ValueError("the selected lift section equation is undecidable on this element")
+            return candidate
+        self._require_established_linearity("represented preimage computation")
         ring = self.domain().base_ring()
         assert _has_finite_free_framing(self.domain()), f"a lift is solved for the coefficients of a framing, and {self.domain()} has none"
         if not _has_finite_free_framing(self.codomain()):
@@ -1048,8 +1183,12 @@ class ModuleMorphism(Morphism):
         return self._preimage_or_none(element) is not None
 
     def has_selected_lift(self) -> bool:
-        r"""Return whether construction supplied an exact lift through this map."""
+        r"""Return whether this map carries a selected lift callback."""
         return self._lift_function is not None
+
+    def selected_lift_exactness_decision(self):
+        r"""Return whether absence reported by the selected lift is construction-derived."""
+        return self._selected_lift_exactness
 
     def factor_through(self, target_embedding):
         r"""Return the unique factor through a represented module embedding.
@@ -1067,6 +1206,7 @@ class ModuleMorphism(Morphism):
 
     def factor_through_or_none(self, target_embedding):
         r"""Return the unique represented factor, or None when containment fails."""
+        self._require_established_linearity("factorization through a module subobject")
         assert target_embedding.codomain() is self.codomain(), (
             "module factorization through a subobject requires one common codomain"
         )
@@ -1103,6 +1243,7 @@ class ModuleMorphism(Morphism):
         lifting the images of the relation generators through ``q`` gives
         ``a : F_1 -> G_1`` and the commuting square ``q a = b p``.
         """
+        self._require_established_linearity("lifting to selected presentations")
         from dzack_research.preamble.categories.modules.pure.modules import (
             ModulesWithChosenFinitePresentation,
         )
@@ -1397,10 +1538,7 @@ class ModuleMorphism(Morphism):
                 # theorem as construction data instead of rebuilding the
                 # composite from all selected generator images and rechecking
                 # the source relations.
-                return homset.elementwise(
-                    lambda element: self(other(element)),
-                    verify_linearity=False,
-                )
+                return _CompositeModuleMorphism(homset, self, other)
 
     @cached_method
     def cokernel(self):
@@ -1409,6 +1547,7 @@ class ModuleMorphism(Morphism):
         Scalar extension is right exact, so the cokernel of a completed
         morphism is the completion of the cokernel of its preimage.
         """
+        self._require_established_linearity("cokernel construction")
         from dzack_research.preamble.categories.rings.commutative_algebra import (
             AdicCompletions,
         )
@@ -1448,6 +1587,7 @@ class ModuleMorphism(Morphism):
         exhibits the splitting rather than asserting that one exists.
         """
 
+        self._require_established_linearity("splitting an epimorphism")
         codomain = self.codomain()
         assert self.is_surjective(), "only an epimorphism has a section"
         assert _has_finite_free_framing(codomain), "independent generator lifts define a section in the selected finite basis"
@@ -1467,6 +1607,7 @@ class ModuleMorphism(Morphism):
         this monomorphism splits.
         """
 
+        self._require_established_linearity("splitting a monomorphism")
         assert self.is_injective(), "only a monomorphism has a retraction"
         quotient_map = self.cokernel_projection()
         splitting = quotient_map.section()
@@ -1486,6 +1627,7 @@ class ModuleMorphism(Morphism):
         the ordinary matrix operation and may extend coefficients to the
         backend inverse's scalar ring (for example ``ZZ`` to ``QQ``).
         """
+        self._require_established_linearity("module-morphism inversion")
         if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
             domain_labels = tuple(self.domain().module_generating_set())
             codomain_labels = tuple(self.codomain().module_generating_set())
@@ -1558,6 +1700,75 @@ def _combined_linearity_decision(morphisms):
         if current is not True:
             decision = Unknown
     return decision
+
+
+class _PointwiseSumModuleMorphism(ModuleMorphism):
+    r"""The sum of two admitted module maps, with exactly their law premises."""
+
+    def __init__(self, parent, left, right) -> None:
+        self._left_summand = left
+        self._right_summand = right
+        super().__init__(
+            parent,
+            lambda element: left(element) + right(element),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return _combined_linearity_decision((self._left_summand, self._right_summand))
+
+
+class _PointwiseNegationModuleMorphism(ModuleMorphism):
+    r"""The additive inverse of an admitted module map."""
+
+    def __init__(self, parent, morphism) -> None:
+        self._negated_morphism = morphism
+        super().__init__(parent, lambda element: -morphism(element), elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return self._negated_morphism.linearity_decision()
+
+
+class _PointwiseScalarMultipleModuleMorphism(ModuleMorphism):
+    r"""A scalar multiple of an admitted linear map, retaining its premise."""
+
+    def __init__(self, parent, scalar, morphism) -> None:
+        self._scalar = parent.base_ring()(scalar)
+        self._scaled_morphism = morphism
+        super().__init__(
+            parent,
+            lambda element: self.codomain().scalar_multiple(
+                self._scalar,
+                morphism(element),
+            ),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._scaled_morphism.linearity_decision()
+
+
+class _CompositeModuleMorphism(ModuleMorphism):
+    r"""Composition of two admitted module maps with their law premises."""
+
+    def __init__(self, parent, left, right) -> None:
+        self._left_factor = left
+        self._right_factor = right
+        super().__init__(parent, lambda element: left(right(element)), elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return _combined_linearity_decision((self._left_factor, self._right_factor))
+
+
+class _TransportedModuleMorphism(ModuleMorphism):
+    r"""The same module map viewed in another Hom parent with the same endpoints."""
+
+    def __init__(self, parent, morphism) -> None:
+        self._transported_morphism = morphism
+        super().__init__(parent, lambda element: morphism(element), elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return self._transported_morphism.linearity_decision()
 
 
 class _ScalarIdentityModuleMorphism(ModuleMorphism):
@@ -1674,10 +1885,88 @@ class FramingMorphism(ModuleMorphism):
 
 
 class ModuleEmbedding(ModuleMorphism):
-    r"""A module morphism declared to be a monomorphism."""
+    r"""An admitted injective module morphism."""
+
+    def _injectivity_derivation(self):
+        r"""Return a construction-derived injectivity decision, or ``None``."""
+        return None
+
+    def __init__(self, parent, images, **options) -> None:
+        ModuleMorphism.__init__(self, parent, images, **options)
+        if self.linearity_decision() is not True:
+            raise ValueError("linearity is not established for this proposed module embedding")
+        decision = self._injectivity_derivation()
+        if decision is None:
+            try:
+                decision = ModuleMorphism.is_injective(self)
+            except (AssertionError, AttributeError, TypeError, ValueError):
+                decision = Unknown
+        if decision is False:
+            raise ValueError("the supplied module morphism is not injective")
+        if decision is not True:
+            raise ValueError("injectivity is not established for this module morphism")
+        self._injectivity_decision = True
 
     def is_injective(self) -> bool:
+        return self._injectivity_decision
+
+
+class _SubobjectInclusionModuleMorphism(ModuleEmbedding):
+    r"""The inclusion carried by an already-constructed module subobject."""
+
+    def _elementwise_linearity_derivation(self):
         return True
+
+    def _injectivity_derivation(self):
+        return True
+
+
+def _module_subobject_inclusion(parent, images, *, lift=None):
+    r"""Admit the inclusion carried by an already-constructed module subobject."""
+    return _SubobjectInclusionModuleMorphism(parent, images, lift=lift)
+
+
+class _TransportedModuleEmbedding(ModuleEmbedding):
+    r"""An existing admitted embedding viewed in another Mono parent."""
+
+    def __init__(self, parent, embedding, *, lift=None) -> None:
+        self._transported_embedding = embedding
+        self._transported_lift_is_exact = (
+            lift is None
+            and embedding.has_selected_lift()
+            and embedding.selected_lift_exactness_decision() is True
+        )
+        super().__init__(
+            parent,
+            lambda element: embedding(element),
+            elementwise=True,
+            lift=(embedding._lift_function if lift is None else lift),
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._transported_embedding.linearity_decision()
+
+    def _injectivity_derivation(self):
+        return True
+
+    def _selected_lift_derivation(self):
+        return True if self._transported_lift_is_exact else None
+
+
+class _ModuleMorphismProposedAsEmbedding(ModuleEmbedding):
+    r"""A known linear map submitted to the Mono owner for injectivity admission."""
+
+    def __init__(self, parent, morphism, *, lift=None) -> None:
+        self._proposed_morphism = morphism
+        super().__init__(
+            parent,
+            lambda element: morphism(element),
+            elementwise=True,
+            lift=lift,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._proposed_morphism.linearity_decision()
 
 
 class ModuleEmbeddingHomset(CategoricalHomset):
@@ -1692,32 +1981,26 @@ class ModuleEmbeddingHomset(CategoricalHomset):
         )
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
-    def _element_constructor_(self, images, *, verify_linearity=True, lift=None):
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-
+    def _element_constructor_(self, images, *, lift=None):
         if isinstance(images, ModuleEmbedding):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError("the module embedding has the wrong endpoints")
             if images.parent() is self:
                 return images
-            source = self.domain()
-            embedding = images
-            if source in FramedModules(source.base_ring()):
-                images = lambda label: embedding(source.module_generator(label))
-            else:
-                return self.element_class(
-                    self,
-                    lambda element: embedding(element),
-                    elementwise=True,
-                    verify_linearity=False,
-                    lift=lift,
-                )
+            return _TransportedModuleEmbedding(self, images, lift=lift)
+        if isinstance(images, ModuleMorphism):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+                raise ValueError("the module morphism has the wrong embedding endpoints")
+            return _ModuleMorphismProposedAsEmbedding(self, images, lift=lift)
         return self.element_class(
             self,
             images,
-            verify_linearity=verify_linearity,
             lift=lift,
         )
+
+    def _subobject_inclusion(self, images, *, lift=None):
+        r"""Construct the inclusion carried by an owned module-subobject datum."""
+        return _module_subobject_inclusion(self, images, lift=lift)
 
     def base_ring(self):
         return self.domain().base_ring()
@@ -1857,8 +2140,10 @@ class _ModuleHomsetCommonMethods:
                 raise ValueError("the morphism has the wrong Hom source or target")
             if images.parent() is self:
                 return images
+            if images.linearity_decision() is not True:
+                return _TransportedModuleMorphism(self, images)
             if not self.domain().is_framed_module():
-                return self.elementwise(lambda element: images(element))
+                return _TransportedModuleMorphism(self, images)
             images = {label: images(self.domain().module_generator(label)) for label in self.domain().module_generating_set()}
         elif isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
@@ -1906,6 +2191,18 @@ class _ModuleHomsetCommonMethods:
     def _scalar_identity(self, scalar):
         return _ScalarIdentityModuleMorphism(self, scalar)
 
+    def _compose_endomorphisms(self, left, right):
+        r"""Compose endomorphisms while retaining both module-linearity premises."""
+        from dzack_research.preamble.categories.group.additive_homsets import (
+            _scalar_identity_coefficient,
+        )
+
+        left_scalar = _scalar_identity_coefficient(left)
+        right_scalar = _scalar_identity_coefficient(right)
+        if left_scalar is not None and right_scalar is not None:
+            return self._scalar_identity(left_scalar * right_scalar)
+        return _CompositeModuleMorphism(self, left, right)
+
     def _owned_scalar_multiple(self, scalar, morphism):
         r"""Realize the pointwise action defining this Hom's scalar enrichment."""
         if morphism.parent() is not self:
@@ -1916,15 +2213,9 @@ class _ModuleHomsetCommonMethods:
         coefficient = _scalar_identity_coefficient(morphism)
         if coefficient is not None:
             return self._scalar_identity(scalar * coefficient)
-        return self.elementwise(
-            lambda element: self.codomain().scalar_multiple(
-                scalar,
-                morphism(element),
-            ),
-            verify_linearity=False,
-        )
+        return _PointwiseScalarMultipleModuleMorphism(self, scalar, morphism)
 
-    def elementwise(self, function, *, verify_linearity=True):
+    def elementwise(self, function):
         r"""Construct a declared linear map from its action on arbitrary elements.
 
         Exact verification is performed when the represented source/scalar
@@ -1941,7 +2232,6 @@ class _ModuleHomsetCommonMethods:
             self,
             function,
             elementwise=True,
-            verify_linearity=verify_linearity,
         )
 
     def _product_projection(self, underlying_projection):
@@ -2100,6 +2390,9 @@ class SubFramingMorphism(ModuleEmbedding):
     infinite, as the degree-two piece of an algebra on countably many
     generators is, and then no matrix exists to solve against.
     """
+
+    def _injectivity_derivation(self):
+        return True
 
     def is_in_image(self, element) -> bool:
         r"""Return whether ``element`` is supported on the smaller framing."""

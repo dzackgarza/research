@@ -1263,7 +1263,20 @@ def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Parent:
 
 
 class SetInjection(OwnedSetMorphism):
-    r"""A set morphism supplied with the assertion that it is injective."""
+    r"""A set morphism whose injectivity is decided or construction-derived."""
+
+    def _injectivity_derivation(self):
+        return None
+
+    def __init__(self, parent, function) -> None:
+        OwnedSetMorphism.__init__(self, parent, function)
+        decision = self._injectivity_derivation()
+        if decision is None:
+            decision = parent.arrow_set()(function).is_injective()
+        if decision is False:
+            raise ValueError("the supplied set map is not injective")
+        if decision is not True:
+            raise ValueError("the supplied set map is not decided injective")
 
     def is_injective(self) -> bool:
         return True
@@ -1275,12 +1288,43 @@ class SetInjection(OwnedSetMorphism):
             return composite
         monomorphisms = Sets().Mono(other.domain(), self.codomain())
         if other in Sets().Mono(other.domain(), other.codomain()):
-            return monomorphisms(composite)
+            return _CompositeSetInjection(monomorphisms, self, other)
         return composite
 
 
+class _IdentitySetInjection(SetInjection):
+    def __init__(self, parent) -> None:
+        super().__init__(parent, lambda element: element)
+
+    def _injectivity_derivation(self):
+        return True
+
+
+class _CompositeSetInjection(SetInjection):
+    def __init__(self, parent, left, right) -> None:
+        self._left = left
+        self._right = right
+        super().__init__(parent, lambda element: left(right(element)))
+
+    def _injectivity_derivation(self):
+        return True
+
+
 class SetSurjection(OwnedSetMorphism):
-    r"""A set morphism supplied with the assertion that it is surjective."""
+    r"""A set morphism whose surjectivity is decided or construction-derived."""
+
+    def _surjectivity_derivation(self):
+        return None
+
+    def __init__(self, parent, function) -> None:
+        OwnedSetMorphism.__init__(self, parent, function)
+        decision = self._surjectivity_derivation()
+        if decision is None:
+            decision = parent.arrow_set()(function).is_surjective()
+        if decision is False:
+            raise ValueError("the supplied set map is not surjective")
+        if decision is not True:
+            raise ValueError("the supplied set map is not decided surjective")
 
     def is_surjective(self) -> bool:
         return True
@@ -1292,8 +1336,26 @@ class SetSurjection(OwnedSetMorphism):
             return composite
         epimorphisms = Sets().Epi(other.domain(), self.codomain())
         if other in Sets().Epi(other.domain(), other.codomain()):
-            return epimorphisms(composite)
+            return _CompositeSetSurjection(epimorphisms, self, other)
         return composite
+
+
+class _IdentitySetSurjection(SetSurjection):
+    def __init__(self, parent) -> None:
+        super().__init__(parent, lambda element: element)
+
+    def _surjectivity_derivation(self):
+        return True
+
+
+class _CompositeSetSurjection(SetSurjection):
+    def __init__(self, parent, left, right) -> None:
+        self._left = left
+        self._right = right
+        super().__init__(parent, lambda element: left(right(element)))
+
+    def _surjectivity_derivation(self):
+        return True
 
 
 class SetInjectionHomset(SetMorCategory):
@@ -1326,7 +1388,7 @@ class SetInjectionHomset(SetMorCategory):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only for equal set endpoints")
-        return SetInjection(self, lambda element: element)
+        return _IdentitySetInjection(self)
 
     def super_categories(self):
         r"""An injection ``X -> Y`` is a map ``X -> Y``: ``Mono_Set(X, Y)`` is a full subcategory of ``Mor_Set(X, Y)``.
@@ -1371,7 +1433,7 @@ class SetSurjectionHomset(SetMorCategory):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only for equal set endpoints")
-        return SetSurjection(self, lambda element: element)
+        return _IdentitySetSurjection(self)
 
     def super_categories(self):
         r"""A surjection ``X -> Y`` is a map ``X -> Y``: ``Epi_Set(X, Y)`` is a full subcategory of ``Mor_Set(X, Y)``.

@@ -10,10 +10,68 @@ from dzack_research.preamble.categories.modules.localizations import (
     LocalizedModules,
     _localized_module,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleEmbedding,
+    ModuleMorphism,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     ModuleSubobjects,
 )
+
+
+class _LocalizedModuleMorphism(ModuleMorphism):
+    r"""Localization of an admitted module map along one ring localization."""
+
+    def __init__(self, parent, source_morphism, functor, action, *, elementwise) -> None:
+        self._source_morphism = source_morphism
+        self._localization_functor = functor
+        super().__init__(
+            parent,
+            action,
+            elementwise=elementwise,
+            scalar_extension_of=source_morphism,
+            scalar_extension_functor=functor,
+        )
+        self._linearity_decision = source_morphism.linearity_decision()
+
+    def _elementwise_linearity_derivation(self):
+        return self._source_morphism.linearity_decision()
+
+
+class _LocalizedModuleEmbedding(ModuleEmbedding):
+    r"""Localization of a monomorphism; flatness preserves injectivity."""
+
+    def __init__(self, parent, source_embedding, functor, action, *, elementwise) -> None:
+        self._source_embedding = source_embedding
+        self._localization_functor = functor
+        super().__init__(
+            parent,
+            action,
+            elementwise=elementwise,
+            scalar_extension_of=source_embedding,
+            scalar_extension_functor=functor,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._source_embedding.linearity_decision()
+
+    def _injectivity_derivation(self):
+        return True
+
+
+class _LocalizationUnitMorphism(ModuleMorphism):
+    r"""The canonical linear map ``M -> Res(S^{-1}M)``."""
+
+    def __init__(self, parent, localized, restricted) -> None:
+        super().__init__(
+            parent,
+            lambda element: restricted.wrap(localized.fraction(element)),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return True
 
 
 class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
@@ -49,15 +107,14 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
             localized_ambient = self(source_inclusion.codomain())
             def inclusion(localized_subobject):
                 hom = localized_subobject.Mono(localized_ambient)
-                return hom.element_class(
+                return _LocalizedModuleEmbedding(
                     hom,
+                    source_inclusion,
+                    self,
                     lambda element: localized_ambient.fraction(
                         source_inclusion(element.numerator()), element.denominator(),
                     ),
                     elementwise=True,
-                    verify_linearity=False,
-                    scalar_extension_of=source_inclusion,
-                    scalar_extension_functor=self,
                 )
 
             subobject_data = {"subobject_inclusion_factory": inclusion}
@@ -113,15 +170,21 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
         match source_hom.is_subcategory(monomorphisms):
             case True:
                 hom = source.Mono(target)
+                return _LocalizedModuleEmbedding(
+                    hom,
+                    morphism,
+                    self,
+                    action,
+                    elementwise=elementwise,
+                )
             case False:
                 hom = source.module_category().Mor(source, target)
-        return hom.element_class(
+        return _LocalizedModuleMorphism(
             hom,
+            morphism,
+            self,
             action,
             elementwise=elementwise,
-            verify_linearity=False,
-            scalar_extension_of=morphism,
-            scalar_extension_functor=self,
         )
 
     def unit(self, module, *, localized=None):
@@ -130,9 +193,10 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
         image = self(module) if localized is None else localized
         restricted = image.restrict_scalars(self.ring_map())
         if image in LocalizedModules(image.base_ring()):
-            return module.module_category().Mor(module, restricted).elementwise(
-                lambda element: restricted.wrap(image.fraction(element)),
-                verify_linearity=False,
+            return _LocalizationUnitMorphism(
+                module.module_category().Mor(module, restricted),
+                image,
+                restricted,
             )
         return module.module_category().Mor(module, restricted)(
             lambda label: restricted.wrap(image.module_generator(label))

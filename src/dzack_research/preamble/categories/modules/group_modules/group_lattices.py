@@ -78,8 +78,8 @@ class GroupLatticeHomset(LatticeHomset):
         self._check_equivariance(morphism)
         return morphism
 
-    def elementwise(self, function, *, verify_linearity=True):
-        morphism = super().elementwise(function, verify_linearity=verify_linearity)
+    def elementwise(self, function):
+        morphism = super().elementwise(function)
         self._check_equivariance(morphism)
         return morphism
 

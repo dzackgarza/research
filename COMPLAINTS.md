@@ -41,35 +41,6 @@ The generated megadoc predates some source changes. Its placement diagnostics
 require regeneration at T before they can establish additional current findings.
 Execution ordering and closure live only in [TODO.md](TODO.md).
 
-### Module-morphism laws can be bypassed at admission
-
-**Missing invariant and dependency path.** A represented module map must satisfy
-its endpoint, scalar and additive laws through the module morphism owner.
-Product projections, equalizer factors and group scalar-change maps depend on
-that same admission boundary; their universal definitions justify their laws,
-but a caller-controlled flag is not such a justification (`OWN-22`).
-
-**Observed evidence.** At `1db91c0a0`, `ModuleMorphism.__init__` in
-`modules/module_morphisms/module_morphisms.py:189–219` skips the elementwise law
-check when `verify_linearity` is false. The public `elementwise` entry at
-1742–1760 forwards that flag. `functors/group_scalar_change.py` correctly uses
-the ordinary scalar-change functor on objects and arrows, but its extension and
-restriction morphism actions still call `_from_equivariant_images` with that
-flag disabled. This is a source-observed admission bypass, not an executed
-claim that those particular universal maps are nonlinear.
-
-**Existing capability and affected consumers.** Finite decidable verification,
-generator-image construction and the universal maps already exist. Their shared
-owner must retain theorem-derived and undecidable-hypothesis routes without
-allowing arbitrary callers to waive the contract. A nonzero constant function
-on a one-dimensional GF(3)-module separates the bypass from a valid linear map;
-zero and scalar multiplication are positive cases.
-
-**Coverage boundary.** The constructor, elementwise entry and scalar-change
-morphism actions were read. Runtime rejection and all other callers remain
-unverified. `morphism-admission` owns the complete caller migration in TODO;
-`group-module-data` owns compatibility of transported actions.
-
 ### Algebra routes must retain their complete module factor
 
 **Missing general mathematics.**

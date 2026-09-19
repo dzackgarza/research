@@ -298,18 +298,19 @@ def _module_from_scalar_action():
     plane = ZZ.free_module(Sets.Δ[1])
     endomorphisms = Modules(ZZ).End(plane)
     swap = endomorphisms({0: plane.module_generator(1), 1: plane.module_generator(0)})
+    identity = endomorphisms.identity()
 
     def action(scalar):
         coefficients = group_algebra.framing_coefficients(scalar)
-        return endomorphisms.elementwise(
-            lambda vector: sum(
-                (
-                    coefficient * (vector if label == group_algebra.group().one() else swap(vector))
-                    for label, coefficient in coefficients.items()
-                ),
-                plane.zero(),
+        return sum(
+            (
+                endomorphisms.scalar_multiple(
+                    coefficient,
+                    identity if label == group_algebra.group().one() else swap,
+                )
+                for label, coefficient in coefficients.items()
             ),
-            verify_linearity=False,
+            endomorphisms.zero(),
         )
 
     return Modules(group_algebra)(plane, group_algebra.Mor(endomorphisms)(action))

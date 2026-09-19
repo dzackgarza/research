@@ -450,7 +450,6 @@ def _lattice_object(
                 "_subobject_generator_images": subobject_construction.generator_images(),
                 "_subobject_lift": subobject_construction.selected_lift(),
                 "_subobject_inclusion_factory": subobject_construction.inclusion_factory(),
-                "_subobject_verify_linearity": subobject_construction.verify_linearity(),
             }
     return FormModules(ring)(
         _form_of_gram(module, gram),

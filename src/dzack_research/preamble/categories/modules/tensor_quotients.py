@@ -23,6 +23,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -143,6 +144,29 @@ class _TensorClasses:
         return "Classes in the multilinear tensor presentation"
 
 
+class _TensorQuotientClassifierMorphism(ModuleMorphism):
+    r"""The linear classifier induced by an admitted bilinear map."""
+
+    def __init__(self, parent, bilinear) -> None:
+        self._bilinear_map = bilinear
+        source = parent.domain()
+        target = parent.codomain()
+        super().__init__(
+            parent,
+            lambda value: source.underlying_set().evaluate(
+                source(value).underlying_element(),
+                target,
+                bilinear,
+            ),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        # The quotient relations are exactly additivity and scalar-linearity in
+        # each tensor slot; the admitted BilinearMap kills them by construction.
+        return True
+
+
 class _TensorQuotientModule:
     r"""Universal maps of the tensor quotient; arithmetic belongs to GeneralModules."""
 
@@ -161,11 +185,15 @@ class _TensorQuotientModule:
         extension on each defining relation is zero by its two linearities.
         Pure tensors generate the quotient, which proves uniqueness.
         """
-        self._two_factors()
+        left, right = self._two_factors()
         assert codomain in self.module_category(), "the classifier has an R-module codomain"
-        return self.module_category().Mor(self, codomain).elementwise(
-            lambda value: self.underlying_set().evaluate(self(value).underlying_element(), codomain, bilinear),
-            verify_linearity=False,
+        assert bilinear.left_factor() is left and bilinear.right_factor() is right, (
+            "the bilinear map has the tensor quotient's two factors"
+        )
+        assert bilinear.codomain() is codomain, "the bilinear map has the classifier codomain"
+        return _TensorQuotientClassifierMorphism(
+            self.module_category().Mor(self, codomain),
+            bilinear,
         )
 
     def from_bilinear(self, bilinear):

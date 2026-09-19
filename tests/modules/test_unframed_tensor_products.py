@@ -38,8 +38,10 @@ def test_unframed_tensor_has_its_universal_bilinear_classifier() -> None:
 def test_unframed_tensor_map_uses_the_supplied_factor_maps() -> None:
     module = _rationals_without_framing()
     tensor = Modules(QQ).tensor_product((module, module))
-    scale = module.module_category().Mor(module, module).elementwise(
-        lambda x: module.scalar_multiple(QQ(2), x), verify_linearity=False,
+    endomorphisms = module.module_category().Mor(module, module)
+    scale = endomorphisms.scalar_multiple(
+        QQ(2),
+        endomorphisms.identity(),
     )
     induced = scale.tensor_product_map(scale, source=tensor, target=tensor)
     classified = tensor.from_bilinear_map(module, lambda x, y: module(x.underlying_element() * y.underlying_element()))

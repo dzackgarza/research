@@ -7,6 +7,10 @@ from sage.categories.morphism import Morphism
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+    _combined_linearity_decision,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
@@ -20,6 +24,34 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     InvertibleSheavesWithChosenTrivialization,
     QuasiCoherentSheaves,
 )
+
+
+class _CompatibleSectionMorphism(ModuleMorphism):
+    r"""Map compatible sections chartwise through one represented sheaf morphism."""
+
+    def __init__(self, parent, sheaf_morphism, source_datum, target_datum) -> None:
+        self._sheaf_morphism = sheaf_morphism
+        self._source_datum = source_datum
+        self._target_datum = target_datum
+
+        def image(section):
+            return target_datum.compatible_section(
+                {
+                    index: sheaf_morphism.local_map(index)(
+                        source_datum.compatible_section_component(section, index)
+                    )
+                    for index in source_datum.chart_index_set()
+                }
+            )
+
+        super().__init__(parent, image, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        local_maps = tuple(
+            self._sheaf_morphism.local_map(index)
+            for index in self._source_datum.chart_index_set()
+        )
+        return _combined_linearity_decision(local_maps)
 
 
 def _rank_one_generator(module):
@@ -1510,20 +1542,15 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
         source_sections = source_datum.compatible_sections()
         target_sections = target_datum.compatible_sections()
 
-        def image(section):
-            return target_datum.compatible_section(
-                {
-                    index: self.local_map(index)(
-                        source_datum.compatible_section_component(section, index)
-                    )
-                    for index in source_datum.chart_index_set()
-                }
-            )
-
-        return source_sections.module_category().Mor(
-            source_sections,
-            target_sections,
-        ).elementwise(image, verify_linearity=False)
+        return _CompatibleSectionMorphism(
+            source_sections.module_category().Mor(
+                source_sections,
+                target_sections,
+            ),
+            self,
+            source_datum,
+            target_datum,
+        )
 
     def __eq__(self, other) -> bool:
         match other:

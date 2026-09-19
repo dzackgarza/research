@@ -32,11 +32,22 @@ from dzack_research.preamble.categories.abstract_categories.presheaves import (
 )
 from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+
+
+class _AffineSheafRestrictionMorphism(ModuleMorphism):
+    r"""A canonical linear restriction map of a represented affine module sheaf."""
+
+    def __init__(self, parent, action) -> None:
+        super().__init__(parent, action, elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return True
 
 
 if "Invertible" not in all_axioms:
@@ -436,8 +447,9 @@ class _AffineStructurePresheaf(Functor):
                 case _:
                     return target(pulled_back)
 
-        return source.module_category().Mor(source, target)(
-            image, verify_linearity=False
+        return _AffineSheafRestrictionMorphism(
+            source.module_category().Mor(source, target),
+            image,
         )
 
     def _repr_(self):
@@ -1116,9 +1128,9 @@ class _AffineModuleSheafEngine:
             )
             return restricted_target.wrap(target_value)
 
-        return source_sections.module_category().Mor(source_sections, restricted_target).elementwise(
+        return _AffineSheafRestrictionMorphism(
+            source_sections.module_category().Mor(source_sections, restricted_target),
             restrict,
-            verify_linearity=False,
         )
 
     def sheaf_category(self):

@@ -207,11 +207,6 @@ Preserve the phase-T execution rules.
 
 Paths below are relative to `src/dzack_research/preamble/categories/` unless a different root is given. These nodes repair existing constructions. A requested source review is an unresolved obligation, not a claim that every named path is broken.
 
-- [ ] **`morphism-admission`**. **Needs:** none.
-  **Owner and delta:** extend the common admission contract to the complete module-morphism family, generic mono/epi admission and all remaining callers of `verify_linearity`. Review direct, elementwise, generator-image, lifted, universal and functor-image routes, including helpers and stronger morphism spaces; literal flag occurrences are only discovery leads.
-  **Invariants:** endpoints, scalar compatibility, additivity, source relations and selected lift data belong to the morphism owner. Every law has a decision, a derivation from the actual construction and its premises, or explicit unresolved hypotheses (`OWN-22`). A string, boolean, callback assertion or generic "assumed" wrapper is not a derivation. Consumers preserve unresolved premises instead of returning unconditional membership, mono/epi claims or universal factorizations from them. Known false data fail admission. General infinite and unframed mathematics remains admitted when its laws are established without enumeration.
-  **Closure specimens:** zero and scalar maps over GF(3) are admitted while a constant nonzero map fails each entry route. On Z, n -> n^2 passes a zero check but fails additivity; GF(4) Frobenius passes additivity but fails GF(4)-linearity. Sending the generator of Z/2 to 1 in Z violates a source relation. A claimed lift of Z -> Z/2 that sends the nonzero class to 0 fails its section equation. Infinite product projections retain their construction-derived laws. A genuinely undecided callable retains its explicit hypotheses through composition and scalar change and cannot supply a certified linearity premise merely by entering Mor. Inspect each law's producer and the operation consuming it; execution waits for T.
-
 - [ ] **`framing-presentation-data`**. **Needs:** none.
   **Owner and delta:** `modules/pure/modules.py`, `modules/framed/framed_free_modules.py`, `modules/framed/finitely_generated/finitely_presented_modules.py` and presented internal morphism spaces: converge `_install_framing` and `_install_presentation` with the canonical constructor.
   **Invariants:** a framing is a selected epi `Free_R(S) -> M`; a presentation retains the relation map and quotient map. Fix the actual source, images, endpoints and law hypotheses before exposure. Realization may be lazy under `OWN-23`; it must not choose the data later or demand an infinite tower of eagerly constructed enriched morphisms.
@@ -222,12 +217,12 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** a specified ring map R -> S controls scalar change; extension is S tensor_R M with its universal map, restriction retains the original action through that map. Units, counits, compositions and semilinearity have exact owned endpoints. Preserve the existing group-scalar functor's delegation when it satisfies this contract.
   **Closure specimens:** extension along Z -> Z/2 takes Z/2 to a nonzero module and takes multiplication by 2 on Z to the zero map; extension along Z -> Q takes Z/2 to zero. Identity and composed base maps agree through the specified comparisons. No identification by rank or implicit base-ring replacement is admitted.
 
-- [ ] **`module-universal-constructions`**. **Needs:** `morphism-admission`.
+- [ ] **`module-universal-constructions`**. **Needs:** none.
   **Owner and delta:** general module products, equalizers and their diagram specializations in `modules/pure/modules.py`; retain the existing set-based realizations while making admission and universal maps authoritative.
   **Invariants:** products carry projections and the unique factorizer; equalizers carry their inclusion and factorizer. All diagrams and cones are owned, with correct variance and base ring. No finite framing is a prerequisite for the general object and no second generic result is computed merely to exhibit threading.
   **Closure specimens:** compatible maps into a product factor with the required component composites; incompatible candidates fail admission. Equalize multiplication by 2 and zero on Z/4 and recover the nonzero order-two submodule with its inclusion. Include an unframed product so a free-module-only repair cannot pass.
 
-- [ ] **`tensor-universal-construction`**. **Needs:** `morphism-admission`.
+- [ ] **`tensor-universal-construction`**. **Needs:** none.
   **Owner and delta:** `modules/tensor_products.py`, `modules/tensor_quotients.py` and bilinear classifiers; review and repair the unframed tensor route consumed by algebra multiplication and sheaf sections.
   **Invariants:** the balanced universal map and classifier are one construction, with full source relations; a tensor is not a free module on a convenient generator list. Tensor-square multiplication enters the same module morphism owner.
   **Closure specimens:** Z/2 tensor_Z Z/4 is Z/2 with its bilinear map and factorization, not merely that cardinality; a proposed bilinear map violating a relation is rejected. Keep arbitrary represented generating sets and the distinction between algebraic tensor products and completed tensor products.
@@ -418,7 +413,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Public mathematical interaction
 
-- [ ] **`mor-spelling-convergence`**. **Needs:** `morphism-admission`.
+- [ ] **`mor-spelling-convergence`**. **Needs:** none.
   **Owner and delta:** all owned morphism-category definitions, exports, imports and consumers: the public spelling is `X.Mor(Y)`. Sage `Hom` remains only at a private adapter calling the actual Sage operation.
   **Invariants:** rename the entire owned definition/reference family coherently without compatibility aliases or fake upstream stubs. Endpoint categories and inherited operations are preserved. Protected expectation subtrees are never rewritten to make the new implementation pass.
   **Closure specimens:** direct session construction and composition in module, algebra and scheme morphism spaces use Mor and exercise nonidentity maps. Source review covers owned definitions and dynamic exports as well as call sites. A spelling-only search cannot certify that the resulting morphism belongs to the right category.

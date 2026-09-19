@@ -28,17 +28,29 @@ class AssociativeAlgebraMorphism(ModuleMorphism):
         images,
         *,
         elementwise=False,
-        verify_linearity=True,
         verify_multiplicativity=True,
     ) -> None:
+        domain = parent.domain()
+        codomain = parent.codomain()
+        linear_hom = domain.module_category().Mor(domain, codomain)
+        underlying = (
+            linear_hom.elementwise(images)
+            if elementwise
+            else linear_hom(images)
+        )
+        self._underlying_linearity_premise = underlying
         super().__init__(
             parent,
-            images,
-            elementwise=elementwise,
-            verify_linearity=verify_linearity,
+            lambda element: underlying(element),
+            elementwise=True,
         )
+        if self.linearity_decision() is not True:
+            raise ValueError("an algebra morphism requires an established underlying linear map")
         if verify_multiplicativity:
             self._verify_multiplicativity_on_the_domain_framing()
+
+    def _elementwise_linearity_derivation(self):
+        return self._underlying_linearity_premise.linearity_decision()
 
     def _verify_multiplicativity_on_the_domain_framing(self) -> None:
         r"""Decide \(f(xy)=f(x)f(y)\) on the domain's module framing.

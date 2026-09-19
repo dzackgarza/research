@@ -1823,7 +1823,6 @@ def _new_presented_module(
     subobject_generator_images=None,
     subobject_lift=None,
     subobject_inclusion_factory=None,
-    subobject_verify_linearity=True,
     biproduct_factors=None,
     extra_categories=(),
     extra_construction_data=None,
@@ -1851,7 +1850,6 @@ def _new_presented_module(
             subobject_generator_images=subobject_generator_images,
             subobject_lift=subobject_lift,
             subobject_inclusion_factory=subobject_inclusion_factory,
-            subobject_verify_linearity=subobject_verify_linearity,
         )
     if biproduct_factors is not None:
         categories.append(BiproductModules(base_ring))
@@ -2470,7 +2468,6 @@ def _presented_module_from_morphism(
     _subobject_generator_images=None,
     _subobject_lift=None,
     _subobject_inclusion_factory=None,
-    _subobject_verify_linearity=True,
     _biproduct_factors=None,
 ):
     r"""Return ``coker(presentation)`` in ``R-Mod`` with its selected module presentation."""
@@ -2620,7 +2617,6 @@ def _presented_module_from_morphism(
             subobject_generator_images=_subobject_generator_images,
             subobject_lift=_subobject_lift,
             subobject_inclusion_factory=_subobject_inclusion_factory,
-            subobject_verify_linearity=_subobject_verify_linearity,
             extra_categories=tuple(local_extra_categories),
             extra_construction_data=local_extra_data,
         )
@@ -2671,7 +2667,6 @@ def _presented_module_from_morphism(
             subobject_generator_images=_subobject_generator_images,
             subobject_lift=_subobject_lift,
             subobject_inclusion_factory=_subobject_inclusion_factory,
-            subobject_verify_linearity=_subobject_verify_linearity,
             biproduct_factors=_biproduct_factors,
             extra_categories=_extra_categories,
             extra_construction_data=_extra_construction_data,
@@ -2689,7 +2684,6 @@ def _presented_module_from_morphism(
             subobject_generator_images=_subobject_generator_images,
             subobject_lift=_subobject_lift,
             subobject_inclusion_factory=_subobject_inclusion_factory,
-            subobject_verify_linearity=_subobject_verify_linearity,
             biproduct_factors=_biproduct_factors,
             extra_categories=_extra_categories,
             extra_construction_data=_extra_construction_data,
@@ -2710,7 +2704,6 @@ def _presented_module_from_morphism(
             subobject_generator_images=_subobject_generator_images,
             subobject_lift=_subobject_lift,
             subobject_inclusion_factory=_subobject_inclusion_factory,
-            subobject_verify_linearity=_subobject_verify_linearity,
             biproduct_factors=_biproduct_factors,
             extra_categories=_extra_categories,
             extra_construction_data=_extra_construction_data,

@@ -51,6 +51,7 @@ from dzack_research.preamble.categories.modules.group_modules.isotypic import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     _ModuleHomsetCommonMethods,
+    _combined_linearity_decision,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
@@ -415,9 +416,8 @@ class ModulesOverGroupAlgebra(Modules):
                 )
             source_action = self._preamble_source_action
             return Sets().Mor(self.group(), endomorphisms)(
-                lambda group_element: endomorphisms.elementwise(
-                    lambda vector: _apply_action(source_action, group_element, vector),
-                    verify_linearity=False,
+                lambda group_element: _RetainedGroupActionMorphism(
+                    endomorphisms, source_action, group_element
                 )
             )
 
@@ -666,9 +666,14 @@ class ModulesOverGroupAlgebra(Modules):
                 return inclusion.lift(self.action_of(group_element)(inclusion(vector)))
 
             acted = Modules(submodule.base_ring()[self.group()])(submodule, restricted_action)
-            return acted.Mor(self)(
+            def lift_from_ambient(element):
+                preimage = inclusion._preimage_or_none(coefficient_module(element))
+                return None if preimage is None else acted(preimage)
+
+            return _RestrictedActionInclusionMorphism(
+                acted.Mor(self),
                 lambda label: self(inclusion(submodule.module_generator(label))),
-                lift=lambda element: acted(inclusion.lift(coefficient_module(element))),
+                lift=lift_from_ambient,
             )
 
         def restrict_endomorphism_to(self, endomorphism, inclusion):
@@ -828,13 +833,64 @@ def _apply_action(action, group_element, vector):
         return action(group_element)(vector)
     return action(group_element, vector)
 
+class _RetainedGroupActionMorphism(ModuleMorphism):
+    def __init__(self, parent, action, group_element) -> None:
+        self._retained_action = action
+        self._group_element = group_element
+        super().__init__(parent, lambda vector: _apply_action(action, group_element, vector), elementwise=True)
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
+
+class _CoefficientViewModuleMorphism(ModuleMorphism):
+    r"""An acted-module map read on the retained coefficient modules."""
+
+    def __init__(self, parent, source_morphism, acted_source, acted_target) -> None:
+        self._source_morphism = source_morphism
+        self._acted_source = acted_source
+        self._acted_target = acted_target
+        target = parent.codomain()
+        super().__init__(
+            parent,
+            lambda element: target(source_morphism(acted_source(element))),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._source_morphism.linearity_decision()
+
+
+class _RestrictedEquivariantCoefficientMorphism(ModuleMorphism):
+    r"""The coefficient map induced by restricting an equivariant endomorphism to a stable subobject."""
+
+    def __init__(self, parent, ambient_map, inclusion) -> None:
+        self._ambient_map = ambient_map
+        self._inclusion = inclusion
+        target = parent.codomain()
+        super().__init__(
+            parent,
+            lambda element: target(
+                inclusion.lift(ambient_map(inclusion(element)))
+            ),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return _combined_linearity_decision(
+            (
+                self._ambient_map.underlying_module_morphism(),
+                self._inclusion.underlying_module_morphism(),
+            )
+        )
+
 
 def _coefficient_morphism_from_images(
     parent,
     images,
     *,
     elementwise=False,
-    verify_linearity=True,
 ):
     r"""Read equivariant-map data as a map of the retained coefficient modules."""
     source = parent.domain().unformed_module()
@@ -850,10 +906,21 @@ def _coefficient_morphism_from_images(
         if images.domain() is source and images.codomain() is target:
             return homset(images)
         if images.domain() is parent.domain() and images.codomain() is parent.codomain():
-            return homset.elementwise(
-                lambda element: target(images(parent.domain()(element))),
-                verify_linearity=False,
+            return _CoefficientViewModuleMorphism(
+                homset,
+                images,
+                parent.domain(),
+                parent.codomain(),
             )
+
+    if isinstance(images, Map):
+        if images.domain() is source and images.codomain() is target:
+            return homset.elementwise(lambda element: target(images(element)))
+        if images.domain() is parent.domain() and images.codomain() is parent.codomain():
+            return homset.elementwise(
+                lambda element: target(images(parent.domain()(element)))
+            )
+        raise ValueError("the morphism has the wrong equivariant-map endpoints")
 
     # An image stated in the acted codomain or in its retained module reads
     # in the retained module by coercion.
@@ -862,7 +929,6 @@ def _coefficient_morphism_from_images(
             raise TypeError("an elementwise equivariant map must be callable")
         return homset.elementwise(
             lambda element: target(images(parent.domain()(element))),
-            verify_linearity=verify_linearity,
         )
 
     if isinstance(images, dict):
@@ -883,7 +949,6 @@ class GroupModuleMorphism(ModuleMorphism):
         images,
         *,
         elementwise=False,
-        verify_linearity=True,
         verify_equivariance=True,
         lift=None,
     ) -> None:
@@ -891,8 +956,9 @@ class GroupModuleMorphism(ModuleMorphism):
             parent,
             images,
             elementwise=elementwise,
-            verify_linearity=verify_linearity,
         )
+        if underlying.linearity_decision() is not True:
+            raise ValueError("an equivariant morphism requires an established coefficient-linear map")
         self._preamble_underlying_module_morphism = underlying
         super().__init__(
             parent,
@@ -900,11 +966,13 @@ class GroupModuleMorphism(ModuleMorphism):
                 underlying(parent.domain().unformed_module()(element))
             ),
             elementwise=True,
-            verify_linearity=False,
             lift=lift,
         )
         if verify_equivariance and parent.is_equivariant(self) is not True:
             raise ValueError("the stated module map is not G-equivariant")
+
+    def _elementwise_linearity_derivation(self):
+        return self._preamble_underlying_module_morphism.linearity_decision()
 
     def underlying_module_morphism(self):
         r"""The same map in ``Hom_R(Res M, Res N)``."""
@@ -931,10 +999,9 @@ class GroupModuleMorphism(ModuleMorphism):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
+        underlying = self.underlying_module_morphism() * other.underlying_module_morphism()
         return other.domain().Mor(self.codomain())._from_equivariant_images(
-            lambda element: self(other(element)),
-            elementwise=True,
-            verify_linearity=False,
+            underlying,
         )
 
     def natural_transformation(self):
@@ -962,10 +1029,16 @@ class GroupModuleMorphism(ModuleMorphism):
         if piece not in Modules(ambient.group_algebra()):
             raise TypeError("the restricted subobject must carry the same group-module structure")
 
+        underlying = _RestrictedEquivariantCoefficientMorphism(
+            piece.unformed_module().module_category().Mor(
+                piece.unformed_module(),
+                piece.unformed_module(),
+            ),
+            self,
+            inclusion,
+        )
         return piece.Mor(piece)._from_equivariant_images(
-            lambda element: inclusion.lift(self(inclusion(element))),
-            elementwise=True,
-            verify_linearity=False,
+            underlying,
         )
 
     def inverse(self):
@@ -973,7 +1046,6 @@ class GroupModuleMorphism(ModuleMorphism):
         ordinary_inverse = self.underlying_module_morphism().inverse()
         return self.codomain().Mor(self.domain())._from_equivariant_images(
             ordinary_inverse,
-            verify_linearity=False,
         )
 
     def as_automorphism(self):
@@ -994,6 +1066,13 @@ class GroupModuleMorphism(ModuleMorphism):
                 verify=False,
             )
         )
+
+
+class _RestrictedActionInclusionMorphism(GroupModuleMorphism):
+    r"""The equivariant inclusion induced from an admitted stable module subobject."""
+
+    def _selected_lift_derivation(self):
+        return True
 
 
 class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
@@ -1033,7 +1112,6 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
             self,
             arrow,
             elementwise=False,
-            verify_linearity=False,
         )
         return all(
             underlying * self.domain().action_of(generator)
@@ -1051,7 +1129,6 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         images,
         *,
         elementwise=False,
-        verify_linearity=True,
     ):
         r"""Construct a map whose equivariance follows from its construction.
 
@@ -1063,18 +1140,14 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
             self,
             images,
             elementwise=elementwise,
-            verify_linearity=verify_linearity,
             verify_equivariance=False,
         )
 
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism Hom-set")
-        return self._from_equivariant_images(
-            lambda element: element,
-            elementwise=True,
-            verify_linearity=False,
-        )
+        underlying = self.underlying_homset().identity()
+        return self._from_equivariant_images(underlying)
 
     def _repr_(self):
         return f"Mor_{self.domain().group()}({self.domain()}, {self.codomain()})"
@@ -1305,7 +1378,6 @@ class _LinearizationFunctor(Functor):
         component = _underlying_equivariant_arrow(arrow, self._group, self._coefficient_modules)
         return self.codomain().Mor(source, target)._from_equivariant_images(
             component,
-            verify_linearity=False,
         )
 
     def _repr_(self):
@@ -1339,7 +1411,6 @@ class _LinearizationEquivalence(Adjunction):
         identity = underlying.module_category().Mor(underlying, underlying).identity()
         return self.right_adjoint().domain().Mor(relinearized, module)._from_equivariant_images(
             identity,
-            verify_linearity=False,
         )
 
     def _repr_(self):

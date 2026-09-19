@@ -150,9 +150,8 @@ def _compose_with_free_construction(left, right):
     if _uses_free_construction_homset(source):
         return source.Mor(target)(lambda label: left(right(source.algebra_generator(label))))
 
-    linear = Modules(source.base_ring()).Mor(source, target).elementwise(
-        lambda element: left(right(element)), verify_linearity=False,
-    )
+    underlying = Algebras(source.base_ring()).underlying_module()
+    linear = underlying(left) * underlying(right)
     return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(linear)
 
 

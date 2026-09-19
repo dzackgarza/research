@@ -638,9 +638,9 @@ def _word_degree_module(module, degree):
         _engine=(GeneralModules(ring), _WordDegreeModule, None),
         base_ring=ring, word_module=module, word_degree=degree,
         subobject_ambient=module,
-        subobject_inclusion_factory=lambda piece: Modules(ring).Mono(piece, module)(
+        subobject_inclusion_factory=lambda piece: Modules(ring).Mono(piece, module)._subobject_inclusion(
             lambda label: module.module_generator(module.basis_label(degree, label)),
-            verify_linearity=False, lift=lambda element: piece(module(element).underlying_element()),
+            lift=lambda element: piece(module(element).underlying_element()),
         ),
     )
 

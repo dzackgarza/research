@@ -2128,16 +2128,7 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
             return self.codomain()
 
         def scalar_multiple(self, scalar, morphism):
-            if morphism.parent() is not self:
-                morphism = self(morphism)
-            scalar = self.base_ring()(scalar)
-            return self.elementwise(
-                lambda element: self.codomain().scalar_multiple(
-                    scalar,
-                    morphism(element),
-                ),
-                verify_linearity=False,
-            )
+            return self._owned_scalar_multiple(scalar, morphism)
 
         def as_morphism(self, element):
             return self(element)
@@ -2255,7 +2246,6 @@ class ModuleSubobjectConstruction:
         generator_images=None,
         lift=None,
         inclusion_factory=None,
-        verify_linearity=True,
     ) -> None:
         if inclusion_factory is None and (ambient is None or generator_images is None):
             raise ValueError("a module subobject requires constructor-owned inclusion data")
@@ -2263,7 +2253,6 @@ class ModuleSubobjectConstruction:
         self._generator_images = generator_images
         self._lift = lift
         self._inclusion_factory = inclusion_factory
-        self._verify_linearity = bool(verify_linearity)
 
     def ambient_module(self):
         return self._ambient
@@ -2277,17 +2266,13 @@ class ModuleSubobjectConstruction:
     def inclusion_factory(self):
         return self._inclusion_factory
 
-    def verify_linearity(self) -> bool:
-        return self._verify_linearity
-
     def inclusion(self, subobject):
         factory = self.inclusion_factory()
         if factory is not None:
             return factory(subobject)
         lift = self.selected_lift()
-        return subobject.Mono(self.ambient_module())(
+        return subobject.Mono(self.ambient_module())._subobject_inclusion(
             self.generator_images(),
-            verify_linearity=self.verify_linearity(),
             lift=(None if lift is None else lambda element: lift(subobject, element)),
         )
 
@@ -2313,7 +2298,6 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             subobject_generator_images=None,
             subobject_lift=None,
             subobject_inclusion_factory=None,
-            subobject_verify_linearity=True,
             **rest,
         ) -> None:
             self._module_subobject_construction = ModuleSubobjectConstruction(
@@ -2321,7 +2305,6 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
                 generator_images=subobject_generator_images,
                 lift=subobject_lift,
                 inclusion_factory=subobject_inclusion_factory,
-                verify_linearity=subobject_verify_linearity,
             )
             super().__init__(**rest)
 
@@ -3003,7 +2986,6 @@ class FramedModules(OwnedCategoryOverBaseRing):
             return SubFramingMorphism(
                 self.Mono(codomain),
                 codomain.module_generator,
-                verify_linearity=False,
             )
 
         @cached_method
@@ -3316,7 +3298,6 @@ def _restricted_scalars_view(
     _subobject_generator_images=None,
     _subobject_lift=None,
     _subobject_inclusion_factory=None,
-    _subobject_verify_linearity=True,
 ):
     r"""Return ``Res_f(M)`` along ``f: R -> S``, placed by what ``M`` and ``S`` already are.
 
@@ -3365,7 +3346,6 @@ def _restricted_scalars_view(
             subobject_generator_images=_subobject_generator_images,
             subobject_lift=_subobject_lift,
             subobject_inclusion_factory=_subobject_inclusion_factory,
-            subobject_verify_linearity=_subobject_verify_linearity,
         )
 
     from dzack_research.preamble.owned_category import _object_of
