@@ -1443,6 +1443,25 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
             return _structure_sheaf(self)
 
         @cached_method
+        def cartier_divisor_sheaf(self):
+            r"""Return the quotient sheaf ``K_X^*/O_X^*``.
+
+            Here ``K_X`` is the sheaf of total quotient rings.  Cartier
+            divisors are the global sections of this quotient sheaf (Stacks
+            Project, Tag 02AQ).
+            """
+            from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
+                _cartier_divisor_quotient_sheaf,
+            )
+
+            return _cartier_divisor_quotient_sheaf(self)
+
+        @cached_method
+        def cartier_divisor_group(self):
+            r"""Return ``CDiv(X)=Gamma(X,K_X^*/O_X^*)``."""
+            return self.cartier_divisor_sheaf().global_sections()
+
+        @cached_method
         def underlying_space(self):
             return SchemeUnderlyingSpace(self)
 

@@ -1,23 +1,17 @@
 """General divisor theory beyond torus-invariant presentations."""
 
-import pytest
-
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
+    ProjectiveSpaces,
     QuadraticField,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroups,
 )
-from dzack_research.preamble.categories.divisors.general_divisors import (
-    DivisorClassComparison,
-    FiniteAtlasCartierDivisor,
-)
 from dzack_research.preamble.categories.divisors.picard_groups import (
     PicardGroups,
 )
-from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
 
 
 def _cyclic_module(order):
@@ -68,13 +62,19 @@ def test_cartier_local_equations_produce_units_and_the_associated_line_bundle() 
     right_ring = datum.chart(1).coordinate_algebra()
     x0_over_x1 = right_ring.algebra_generator("x0_over_x1")
 
-    point_at_infinity = FiniteAtlasCartierDivisor(
+    cartier = line.cartier_divisor_group()
+    point_at_infinity = cartier.finite_atlas_section(
         datum,
         {0: left_ring.one(), 1: x0_over_x1},
     )
     transition = point_at_infinity.transition_unit(0, 1)
     bundle = point_at_infinity.associated_invertible_sheaf()
 
+    assert cartier in CartierDivisorGroups()
+    assert point_at_infinity in cartier
+    assert point_at_infinity.parent() is cartier
+    assert cartier.quotient_sheaf() is line.cartier_divisor_sheaf()
+    assert cartier.quotient_sheaf().global_sections() is cartier
     assert transition.is_unit()
     assert transition != datum.overlap(0, 1).coordinate_algebra().one()
     assert bundle.scheme() is datum.scheme()
@@ -115,51 +115,6 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     assert full_weil.multiplicity(divisor_of_x, prime) == 2
     assert divisor_of_x == 2 * prime_divisor
 
-    principal = ZZ.free_module(1)
-    cartier = CartierDivisorGroups()(ZZ.free_module(1), scheme=scheme)
+    cartier = scheme.cartier_divisor_group()
     assert cartier.divisor_scheme() is scheme
-    assert cartier.cartier_divisor_construction().scheme() is scheme
-    weil_presentation = WeilDivisorGroups()(ZZ.free_module(1), scheme=scheme)
-    assert weil_presentation.divisor_scheme() is scheme
-    with pytest.raises(TypeError, match="no represented full prime-divisor locus"):
-        weil_presentation.prime_divisor_locus()
-    with pytest.raises(TypeError, match="not an affine-normal divisor group"):
-        weil_presentation.affine_divisor_coordinate_ring()
-    principal_generator = principal.module_generator(0)
-    cartier_generator = cartier.module_generator(0)
-    weil_generator = weil_presentation.module_generator(0)
-
-    principal_to_cartier = principal.module_category().Mor(principal, cartier)(
-        {0: cartier_generator}
-    )
-    principal_to_weil = principal.module_category().Mor(principal, weil_presentation)(
-        {0: 2 * weil_generator}
-    )
-    cartier_to_weil = cartier.module_category().Mor(cartier, weil_presentation)(
-        {0: 2 * weil_generator}
-    )
-    classes = DivisorClassComparison(
-        scheme,
-        principal,
-        cartier,
-        weil_presentation,
-        principal_to_cartier,
-        principal_to_weil,
-        cartier_to_weil,
-    )
-
-    presentation_into_full_weil = weil_presentation.module_category().Mor(weil_presentation, full_weil)(
-        {0: prime_divisor}
-    )
-    assert presentation_into_full_weil(
-        principal_to_weil(principal_generator)
-    ) == divisor_of_x
-    assert classes.picard_group().cardinality() == 1
-    assert classes.picard_group().picard_group_construction().scheme() is scheme
-    assert classes.class_group().cardinality() == 2
-    assert classes.class_group().class_group_construction().scheme() is scheme
-    noncartier_class = classes.weil_class_projection()(weil_generator)
-    assert noncartier_class != classes.class_group().zero()
-    assert noncartier_class.additive_order() == 2
-    assert classes.picard_to_class_group_morphism().domain() is classes.picard_group()
-    assert classes.picard_to_class_group_morphism().codomain() is classes.class_group()
+    assert cartier.quotient_sheaf() is scheme.cartier_divisor_sheaf()

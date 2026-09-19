@@ -177,6 +177,7 @@ def test_the_smooth_toric_divisor_comparison_square_is_explicit() -> None:
     plane = _projective_plane()
     weil = plane.weil_divisor_group()
     cartier = plane.cartier_divisor_group()
+    invariant_cartier = plane.torus_invariant_cartier_divisor_group()
     classes = plane.class_group()
     picard = plane.picard_group()
 
@@ -185,16 +186,17 @@ def test_the_smooth_toric_divisor_comparison_square_is_explicit() -> None:
     assert classes in ClassGroups()
     assert picard in PicardGroups()
     assert cartier is not weil
+    assert invariant_cartier is weil
     assert picard is not classes
 
-    cartier_to_weil = plane.cartier_to_weil_morphism()
-    to_picard = plane.cartier_class_projection()
+    cartier_to_weil = plane.torus_invariant_cartier_to_weil_morphism()
+    to_picard = plane.torus_invariant_cartier_class_projection()
     to_class = plane.class_group_projection()
     picard_to_class = plane.picard_to_class_group_morphism().forward()
 
-    assert cartier_to_weil.domain() is cartier
+    assert cartier_to_weil.domain() is invariant_cartier
     assert cartier_to_weil.codomain() is weil
-    assert to_picard.domain() is cartier
+    assert to_picard.domain() is invariant_cartier
     assert to_picard.codomain() is picard
     assert picard_to_class.domain() is picard
     assert picard_to_class.codomain() is classes
@@ -334,7 +336,7 @@ def test_hirzebruch_zero_picard_pairing_is_the_hyperbolic_plane() -> None:
         for ray in surface.fan().cones(1)
     )
     pairing = surface.picard_intersection_pairing()
-    projection = surface.cartier_class_projection()
+    projection = surface.torus_invariant_cartier_class_projection()
     classes = tuple(projection(divisor) for divisor in divisors)
 
     isotropic_pair = None

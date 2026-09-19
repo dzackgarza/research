@@ -5,9 +5,6 @@ from dzack_research.preamble.all import (
     ZZ,
     AffineCodimensionOneChowComparison,
 )
-from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
-    CartierDivisorGroups,
-)
 from dzack_research.preamble.categories.divisors.general_divisors import (
     DivisorClassComparison,
 )
@@ -25,7 +22,7 @@ def _affine_plane_divisor_presentation():
     prime_divisor = full_weil.prime_divisor(prime)
 
     principal = ZZ.free_module(1)
-    cartier = CartierDivisorGroups()(ZZ.free_module(1), scheme=scheme)
+    cartier = ZZ.free_module(1)
     finite_weil = WeilDivisorGroups()(ZZ.free_module(1), scheme=scheme)
     principal_generator = principal.module_generator(0)
     cartier_generator = cartier.module_generator(0)

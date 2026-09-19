@@ -119,7 +119,6 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     CompleteLinearSystems,
     CoxRings,
     DivisorGroups,
-    FiniteAtlasCartierDivisor,
     FiniteAtlasInvertibleSheaf,
     FormalDivisorGroups,
     HomogeneousPolynomialSectionSpaces,

@@ -43,9 +43,6 @@ from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
     AffineSemigroupAlgebras,
 )
-from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
-    CartierDivisorGroups,
-)
 from dzack_research.preamble.categories.divisors.chow_groups import (
     ChowGroups,
     TorusInvariantCycleGroups,
@@ -614,33 +611,27 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         weil_divisor_group = torus_invariant_divisor_group
 
         @cached_method
-        def cartier_divisor_group(self):
-            r"""Return the represented Cartier divisor group in the smooth toric regime.
+        def torus_invariant_cartier_divisor_group(self):
+            r"""Return ``CDiv_T(X)=Div_T(X)`` for a smooth fan.
 
-            On a smooth fan every torus-invariant Weil divisor is Cartier
-            (CLS Prop. 4.2.6), hence the selected toric Cartier group has the
-            same free presentation as ``Div_T(X)`` but remains a distinct
-            divisor-role object.  For singular fans the proper Cartier
-            subgroup is not yet represented as one common kernel, so individual
-            divisors continue to use ``is_cartier``.
+            This is the torus-invariant subgroup used by the toric divisor
+            presentation, not the full ``CDiv(X)=Gamma(X,K_X^*/O_X^*)``
+            returned by :meth:`cartier_divisor_group`.
             """
             assert self.fan().is_smooth(), (
-                "the represented Cartier divisor group is currently constructed "
-                "for a smooth fan, where every invariant Weil divisor is Cartier"
+                "the represented torus-invariant Cartier group is identified with Div_T(X) only for a smooth fan"
             )
-            return CartierDivisorGroups()(self.weil_divisor_group())
+            return self.weil_divisor_group()
 
         @cached_method
-        def cartier_to_weil_morphism(self):
-            r"""The inclusion ``CDiv_T(X) -> Div_T(X)`` on a smooth toric variety."""
-            cartier = self.cartier_divisor_group()
+        def torus_invariant_cartier_to_weil_morphism(self):
+            r"""The inclusion ``CDiv_T(X) -> Div_T(X)`` for a smooth fan."""
+            cartier = self.torus_invariant_cartier_divisor_group()
             weil = self.weil_divisor_group()
-            return cartier.module_category().Mor(cartier, weil)(
-                {
-                    label: weil.module_generator(label)
-                    for label in cartier.module_generating_set()
-                }
+            assert cartier is weil, (
+                "on the represented smooth toric regime CDiv_T(X) and Div_T(X) are one subgroup"
             )
+            return weil.module_category().Mor(weil, weil).identity()
 
         def torus_invariant_prime_divisor(self, ray):
             r"""The prime divisor ``D_rho`` of one ray of the fan."""
@@ -956,18 +947,6 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return PicardGroups()(self.character_divisor_morphism().cokernel())
 
         @cached_method
-        def cartier_class_projection(self):
-            r"""The quotient ``CDiv_T(X) ->> Pic(X)`` in the smooth toric regime."""
-            cartier = self.cartier_divisor_group()
-            picard = self.picard_group()
-            return cartier.module_category().Mor(cartier, picard)(
-                {
-                    label: picard.module_generator(label)
-                    for label in cartier.module_generating_set()
-                }
-            )
-
-        @cached_method
         def picard_to_class_group_morphism(self):
             r"""The natural comparison ``Pic(X) -> Cl(X)`` for a smooth toric variety.
 
@@ -991,6 +970,14 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 }
             )
             return picard.module_category().Core().Mor(picard, classes)(forward, inverse)
+
+        @cached_method
+        def torus_invariant_cartier_class_projection(self):
+            r"""The quotient ``CDiv_T(X) -> Pic(X)`` for a smooth toric variety."""
+            return (
+                self.picard_to_class_group_morphism().inverse()
+                * self.class_group_projection()
+            )
 
         def divisor_polytope(self, divisor):
             r"""``P_D = {m in M_R : <m,u_rho> >= -a_rho for all rho}`` (CLS (4.3.2)).

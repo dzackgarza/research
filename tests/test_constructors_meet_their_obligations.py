@@ -241,7 +241,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # handed into its own divisor category.
         "divisor group": lambda: DivisorGroups()(ZZ.free_module(Sets.Δ[3])),
         "weil divisor group": lambda: WeilDivisorGroups()(ZZ.free_module(Sets.Δ[4])),
-        "cartier divisor group": lambda: CartierDivisorGroups()(ZZ.free_module(Sets.Δ[5])),
+        "cartier divisor group": lambda: CartierDivisorGroups().an_object(),
         "picard group": lambda: PicardGroups()(ZZ.free_module(Sets.Δ[6])),
         "class group": lambda: ClassGroups()(ZZ.free_module(Sets.Δ[7])),
         # ---- schemes ----

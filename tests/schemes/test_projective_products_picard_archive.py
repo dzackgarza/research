@@ -42,7 +42,7 @@ def test_picard_pairing_of_P1_times_P1_is_the_hyperbolic_plane() -> None:
     picard = surface.picard_group()
     pairing = surface.picard_intersection_pairing()
     classes = tuple(
-        surface.cartier_class_projection()(
+        surface.torus_invariant_cartier_class_projection()(
             surface.torus_invariant_prime_divisor(ray)
         )
         for ray in surface.fan().cones(1)
