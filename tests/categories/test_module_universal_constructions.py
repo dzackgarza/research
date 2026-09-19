@@ -202,6 +202,12 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     assert product.structure_morphism(product_shape(0)) * into_product == to_left
     assert product.structure_morphism(product_shape(1)) * into_product == to_right
 
+    with pytest.raises(ValueError):
+        (product.diagram()).Cones().cone(
+            probe,
+            lambda _index: to_left,
+        )
+
     coproduct = Modules(ZZ).coproduct_construction((left, right))
     assert Modules(ZZ).coproduct((left, right)) is coproduct.object()
     coproduct_shape = coproduct.diagram().domain()
@@ -277,6 +283,30 @@ def test_general_module_product_is_created_by_the_underlying_set_product() -> No
     assert selected.factor(undecided_cone).apex_map().linearity_decision() is Unknown
 
 
+def test_general_module_product_admits_an_infinite_factor_family_lazily() -> None:
+    line = _general_integer_module()
+    not_a_module = finite_ordered_set(("x",))
+
+    def factor_at(index):
+        match int(index):
+            case 1000:
+                return not_a_module
+            case _:
+                return line
+
+    factors = indexed_family(
+        NN,
+        factor_at,
+        name="Almost-module factors",
+    )
+    selected = Modules(ZZ).product_construction(factors)
+    shape = selected.diagram().domain()
+
+    assert selected.diagram()(shape(NN(0))) is line
+    with pytest.raises(TypeError, match="modules over one ring"):
+        selected.diagram()(shape(NN(1000)))
+
+
 def test_general_module_equalizer_is_created_by_the_underlying_set_equalizer() -> None:
     source = _general_integer_module()
     target = source
@@ -348,6 +378,37 @@ def test_general_module_equalizer_is_created_by_the_underlying_set_equalizer() -
         ).linearity_decision()
         is Unknown
     )
+
+
+def test_module_equalizer_rejects_parallel_set_maps_that_are_not_module_arrows() -> None:
+    source = _general_integer_module()
+    set_identity = Sets().Mor(source, source)(lambda element: element)
+
+    with pytest.raises(ValueError, match="admitted R-linear maps"):
+        Modules(ZZ).equalizer_construction(set_identity, set_identity)
+
+
+def test_twice_and_zero_on_Zmod4_have_the_order_two_equalizer_submodule() -> None:
+    cover = ZZ.free_module(finite_ordered_set(("e",)))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
+    cyclic_four = relations.module_category().Mor(relations, cover)(
+        {"r": 4 * cover.module_generator("e")}
+    ).cokernel()
+    generator = cyclic_four.module_generator("e")
+    endomorphisms = cyclic_four.module_category().Mor(cyclic_four, cyclic_four)
+    twice = endomorphisms({"e": 2 * generator})
+    zero = endomorphisms.zero()
+
+    selected = Modules(ZZ).equalizer_construction(twice, zero)
+    equalizer = selected.object()
+    shape = selected.diagram().domain()
+    inclusion = selected.structure_morphism(shape.source())
+    order_two = Modules(ZZ).equalizer_element(selected, 2 * generator)
+
+    assert order_two != equalizer.zero()
+    assert inclusion(order_two) == 2 * generator
+    assert equalizer.scalar_multiple(ZZ(2), order_two) == equalizer.zero()
+    assert twice * inclusion == zero * inclusion
 
 
 def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> None:

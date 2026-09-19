@@ -187,7 +187,7 @@ An edge names the output described by its prerequisite's acceptance contract.
 When only an independently deliverable part is needed, split that concrete output into its own node, transfer its obligations intact, and redirect only the affected edges.
 Do not force a consumer to await an entire broad workstream.
 Do not remove an edge because its prerequisite is inconvenient, deferred, or merely represented by a class.
-The module universal-construction node delivers actual products and equalizers; diagram specialization and completion consume those constructions with their own defining maps.
+General module products and equalizers are shared inputs; diagram specialization and completion consume those constructions with their own defining maps.
 The general construction does not wait for completion's implementation.
 
 Before committing a queue change, check that every checkbox has exactly one ID and one Needs list, IDs are unique, all references resolve, and there is no self-edge or cycle. Required pre-T implementation nodes must feed `architecture-remediation` and the terminal chain that verifies them. Once T begins, newly exposed repairs feed the still-open terminal or post-T node that found them, whose acceptance includes re-execution of affected proof. Do not resurrect closed phase nodes or restart the source-phase execution suspension.
@@ -211,11 +211,6 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Owner and delta:** the scalar restriction/extension adjunction in `functors/scalar_change.py` and its module consumers; source review must establish object and morphism actions through one authority.
   **Invariants:** a specified ring map R -> S controls scalar change; extension is S tensor_R M with its universal map, restriction retains the original action through that map. Units, counits, compositions and semilinearity have exact owned endpoints. Preserve the existing group-scalar functor's delegation when it satisfies this contract.
   **Closure specimens:** extension along Z -> Z/2 takes Z/2 to a nonzero module and takes multiplication by 2 on Z to the zero map; extension along Z -> Q takes Z/2 to zero. Identity and composed base maps agree through the specified comparisons. No identification by rank or implicit base-ring replacement is admitted.
-
-- [ ] **`module-universal-constructions`**. **Needs:** none.
-  **Owner and delta:** general module products, equalizers and their diagram specializations in `modules/pure/modules.py`; retain the existing set-based realizations while making admission and universal maps authoritative.
-  **Invariants:** products carry projections and the unique factorizer; equalizers carry their inclusion and factorizer. All diagrams and cones are owned, with correct variance and base ring. No finite framing is a prerequisite for the general object and no second generic result is computed merely to exhibit threading.
-  **Closure specimens:** compatible maps into a product factor with the required component composites; incompatible candidates fail admission. Equalize multiplication by 2 and zero on Z/4 and recover the nonzero order-two submodule with its inclusion. Include an unframed product so a free-module-only repair cannot pass.
 
 - [ ] **`tensor-universal-construction`**. **Needs:** none.
   **Owner and delta:** `modules/tensor_products.py`, `modules/tensor_quotients.py` and bilinear classifiers; review and repair the unframed tensor route consumed by algebra multiplication and sheaf sections.
@@ -249,7 +244,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Diagrams, rings and geometric consumers
 
-- [ ] **`diagram-specializations`**. **Needs:** `module-universal-constructions`, `functor-adjunction-coherence`.
+- [ ] **`diagram-specializations`**. **Needs:** `functor-adjunction-coherence`.
   **Owner and delta:** the common diagram/cone/limit owner and directed/inverse-system specializations under `OWN-09` and `OWN-14`: inspect every existing specialization's retained general object and repair duplicated authority.
   **Invariants:** represented indexing categories, functors, restrictions and induced maps live at the common owner. Category-specific realization retains its universal cone/cocone and uses the construction theorem under its existence hypotheses. General directed indices are not silently replaced by N; finite restrictions are different objects from the full system.
   **Closure specimens:** a branching finite diagram whose equalizer imposes a real compatibility condition, and an inverse system with nonidentity transition maps, preserve their indexing maps and universal composites. A disconnected diagram cannot be computed as a sequence. Ordinary limits do not stand in for homotopy limits.
@@ -265,7 +260,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** each realization is retained and placed through the existing mathematical category entry; the runtime root alone realizes generic Parent/Element initialization. Constructor data replace side-channel authority, not merely attribute spellings. No category is invented for an engine's implementation class; new mathematical categories require the definition and `CAT-22` search.
   **Closure specimens:** an ideal with nontrivial containment, a number-field element and the localization/completion specimens exercise inherited operations and owned coefficients through their actual parents. Review every class, initialization, side assignment, probe and exception site in the named scope; all comply with their declaration-side boundary. Survey counts locate work but cannot close it.
 
-- [ ] **`objects-through-categories-modules`**. **Needs:** `group-module-data`, `graded-complex-connection-data`, `module-universal-constructions`.
+- [ ] **`objects-through-categories-modules`**. **Needs:** `group-module-data`, `graded-complex-connection-data`.
   **Owner and delta:** the complete modules subtree and its morphism categories: finish the remaining placement/constructor residue after the named shared data repairs.
   **Coverage boundary:** enumerate ordinary and stronger module/morphism constructors, overrides and raising routes, including ones absent from the original flag search. Reconcile independently remaining routes with the earlier producer deliveries; preserve those contracts instead of reopening all modules for another redesign.
   **Invariants:** general, restricted-scalar, sparse free, quotient, framed, presented, formed, graded and group modules establish their immediate structures before exposure. Stronger morphism spaces inherit the actual weaker operations and preserve stronger equations. Concrete engine realizations remain behind their existing mathematical categories.
@@ -282,7 +277,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** an arrow consists of its base ring map and compatible additive map; identity and composition preserve that square. Fixed-base Modules(R) is the appropriate fibre, not a replacement base_ring method on an object falsely placed in another fibre. Cartesian/cocartesian transport is supplied by restriction/extension under its hypotheses.
   **Closure specimens:** compose semilinear maps across two nonidentity coefficient maps; an additive map incompatible with the claimed scalar map is rejected. Localizations on distinct affine chart rings retain those rings and their transition maps when used by descent.
 
-- [ ] **`sheaf-descent-threading`**. **Needs:** `varying-ring-modules`, `module-universal-constructions`, `algebra-defining-data`.
+- [ ] **`sheaf-descent-threading`**. **Needs:** `varying-ring-modules`, `algebra-defining-data`.
   **Owner and delta:** `schemes/gluing.py`, `schemes/sheaf_functors.py`, the scheme structure sheaf and QCoh owners: close the remaining complaint's general descent/transport requirements while preserving the existing finite-atlas and affine constructions.
   **Invariants:** coverage and descent datum determine the sheaf; sections are the owned compatible-section limit with its universal maps. Algebra sections use that module and its bilinear multiplication. Pullback is inverse image followed by scalar change; refinement comparisons and sheaf morphisms retain their actual endpoints. Finite-atlas computability does not redefine arbitrary sheaves as chart tables.
   **Closure specimens:** a line bundle on a two-chart projective line with a nonidentity transition, its restriction to overlaps, and a refinement of the cover give compatible owned sections and comparison maps. An incompatible section pair fails the equalizer condition. Check affine equivalence unit/counit on sheaf endpoints and multiplication after restriction.
@@ -307,7 +302,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Forms, actions and arithmetic realizations
 
-- [ ] **`involution-primitive-extension`**. **Needs:** `formed-module-data`, `module-universal-constructions`.
+- [ ] **`involution-primitive-extension`**. **Needs:** `formed-module-data`.
   **Owner and delta:** `lattice_morphisms.py::primitive_extension`, the retained construction in `lattice_centralizers.py`, and its Enriques marked-cohomology consumer: repair the owned invariant/orthogonal-complement extension and its maps, preserving the existing arithmetic realization.
   **Invariants:** for an integral nondegenerate lattice L with an involutive isometry g, retain S=ker(g-id), T=S-perp, their actual inclusions and forms, S direct-sum T -> L, and the finite discriminant gluing that reconstructs this extension. The orthogonal complement is not the module coinvariant quotient. Discriminant anti-isometries retain their domain subgroups and applicable integral/even hypotheses; no full-discriminant isomorphism is inferred without the necessary hypotheses. The geometric consumer retains the selected marking and the surface theorem's hypotheses; matching a signature does not construct cohomology or its pullback.
   **Closure specimens and consumer:** on the hyperbolic plane with g swapping its two isotropic basis vectors, S and T have Gram entries 2 and -2 and their sum has index 2 in L; the gluing reconstructs L with its inclusions. The Enriques consumer recovers the invariant inclusion, free H^2 pullback scaling the form by 2, zero pullback on the canonical Z/2 class, and the same discriminant gluing. These maps are the delivered output; computing every centralizer or orbit is a separate obligation.

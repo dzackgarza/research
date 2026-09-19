@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
+    ConeMorphism,
     SelectedColimitConstruction,
     SelectedLimitConstruction,
     _discrete_diagram,
@@ -617,14 +618,11 @@ class Modules(OwnedCategoryOverBaseRing):
             operations are componentwise.  Both routes retain this same
             discrete diagram and universal cone.
             """
-            family = _factor_family(factors, name="Product factors")
-            match family.cardinality().is_finite():
-                case True:
-                    assert all(factor in self for factor in family), (
-                        "a module product requires modules over one ring"
-                    )
-                case False:
-                    pass
+            family = _admitted_module_factor_family(
+                self,
+                factors,
+                name="Product factors",
+            )
             match _finite_biproduct_realizes_product(family):
                 case True:
                     product = self.biproduct(family)
@@ -654,9 +652,14 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
                 match product:
                     case _ if product in BiproductModules(self.base_ring()):
-                        return product.from_product_cone(legs)
+                        apex_map = product.from_product_cone(legs)
                     case _:
-                        return _module_product_factor(product, family, cone.apex(), legs)
+                        apex_map = _module_product_factor(product, family, cone.apex(), legs)
+                return ConeMorphism(
+                    diagram.Cones().Mor(cone, universal_cone),
+                    apex_map,
+                    verify=False,
+                )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
@@ -705,6 +708,16 @@ class Modules(OwnedCategoryOverBaseRing):
                 or left_morphism.codomain() is not right_morphism.codomain()
             ):
                 raise ValueError("module equalizer arrows must be parallel R-linear maps")
+            ambient_modules = Modules(left_morphism.domain().base_ring())
+            ambient_hom = ambient_modules.Mor(
+                left_morphism.domain(),
+                left_morphism.codomain(),
+            )
+            match left_morphism in ambient_hom, right_morphism in ambient_hom:
+                case True, True:
+                    pass
+                case _:
+                    raise ValueError("module equalizer arrows must be admitted R-linear maps")
             match (
                 _represented_finite_presentation(left_morphism.domain()),
                 _represented_finite_presentation(left_morphism.codomain()),
@@ -720,7 +733,6 @@ class Modules(OwnedCategoryOverBaseRing):
                         left_morphism,
                         right_morphism,
                     )
-            ambient_modules = Modules(left_morphism.domain().base_ring())
             diagram = _parallel_pair_diagram(
                 left_morphism, right_morphism, ambient_modules
             )
@@ -3622,6 +3634,39 @@ def _finite_biproduct_realizes_product(factors) -> bool:
                     return all(_represented_framed_free(factor) for factor in values) or all(
                         _represented_finite_presentation(factor) for factor in values
                     )
+
+
+def _admitted_module_factor_family(modules, factors, *, name):
+    r"""Return the represented family with module membership checked on access.
+
+    A finite family is admitted immediately.  An infinite represented family
+    cannot be exhaustively traversed merely to establish its codomain; each
+    requested value is therefore checked lazily against the exact module
+    category, so a bad factor cannot enter the product diagram or its
+    componentwise realization.
+    """
+    family = _factor_family(factors, name=name)
+
+    def admitted(index):
+        factor = family.value(index)
+        match factor in modules:
+            case True:
+                return factor
+            case False:
+                raise TypeError("a module product requires modules over one ring")
+
+    selected = indexed_family(
+        family.index_set(),
+        admitted,
+        name=name,
+    )
+    match selected.cardinality().is_finite():
+        case True:
+            for index in selected.index_set():
+                selected.value(index)
+        case False:
+            pass
+    return selected
 
 
 def _module_product_cache_key(base_ring, factors):

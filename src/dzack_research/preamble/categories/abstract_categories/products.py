@@ -619,8 +619,16 @@ class SelectedLimitConstruction(SageObject):
     def factor(self, cone):
         if cone.diagram() is not self.diagram():
             raise ValueError("the cone to factor must lie over this construction's diagram")
-        apex_map = self._factorizer(cone)
-        return _ConeCategory(self.diagram()).Mor(cone, self.cone())(apex_map)
+        factor = self._factorizer(cone)
+        match factor:
+            case ConeMorphism():
+                match factor.domain() is cone, factor.codomain() is self.cone():
+                    case True, True:
+                        return factor
+                    case _:
+                        raise ValueError("the selected factorizer returned a cone morphism with the wrong endpoints")
+            case _:
+                return _ConeCategory(self.diagram()).Mor(cone, self.cone())(factor)
 
     def induced_map(self, transformation, target_construction):
         r"""Return the map on selected limits induced by ``D -> E``."""
