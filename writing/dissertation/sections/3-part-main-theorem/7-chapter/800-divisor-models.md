@@ -76,7 +76,7 @@ More precisely:
 :::
 
 :::{.proof}
-See detailed analyses in \cite[Prop. 4.5]{AEGS25}, which classify Enriques degenerations by their dual complex and describe the induced slc structure and divisor support in every case.
+See detailed analyses in [@AEGS25, Prop. 4.5], which classify Enriques degenerations by their dual complex and describe the induced slc structure and divisor support in every case.
 :::
 
 :::{.corollary title="{Computability of the KSBA Stable Limit}" #cor:ksba-stable-limit}

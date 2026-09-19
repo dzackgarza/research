@@ -1,4 +1,4 @@
-### Enumeration of Baily–Borel 0-cusps via Diagram Folding
+### Enumeration of Baily–Borel 0-cusps via Diagram Folding {#sec:fent-zero-cusps}
 
 
 
@@ -32,7 +32,7 @@ $\eta_5$ ($\div(\eta_5) = 2$) & $\tilde\eta_1 \da (18,2,0)_1$ & 8 commuting refl
 
 ### Cusps by Folding
 
-Following \cite[Lemmas 3.10, 3.19]{AEGS25}, the five 0-cusps of the Baily–Borel compactification $\bbcpt{\fent}$ correspond to five different involutions on the K3 lattice $\tdp$.
+Following [@AEGS25, Lemmas 3.10, 3.19], the five 0-cusps of the Baily–Borel compactification $\bbcpt{\fent}$ correspond to five different involutions on the K3 lattice $\tdp$.
 Let $T$ be an even indefinite lattice and let $\eta \in T$ be a primitive isotropic vector. Define the boundary lattice $\bdlattice{T}{\eta} \da  \eta^{\perp T} / \gen{\eta}$, which we will often simply write as $\bar T \da \eta^{\perp}/\eta$ when working with a fixed vector $\eta$.
 Write $\Phi(\bar T)$ for the root system of $\bdlattice{T}{\eta}$.
 Let $\Gamma\leq \Orth(T)$ be a fixed arithmetic subgroup acting on $T$.
@@ -85,7 +85,7 @@ $$\label{involution-lattice-block-forms}
 \end{pmatrix}
 }
 ,$$
-or as in \Cref{three-lattice-involutions},
+or as in @eq:three-lattice-involutions,
 \begin{align*}
 \Idp: (u_1,\ u_2,\ u_3,\ \alpha_1,\ \alpha_2) &\to (-u_1,\ u_3,\ u_2,\ -\alpha_1,\ -\alpha_2)
 \\
@@ -93,7 +93,7 @@ or as in \Cref{three-lattice-involutions},
 \\
 \Inik:(u_1,\ u_2,\ u_3,\ \alpha_1,\ \alpha_2) &\to (u_1,\ u_2,\ u_3,\ -\alpha_2,\ -\alpha_1)
 \end{align*}
-By \cite[Lem. 3.4]{AEGS25}, the coinvariant sublattice $\tdp^{\Ien = -1}\iso \ten$, and so to simplify matters we write $I \da - \Ien = \Inik$ and thus $\tdp^{I} \da \tdp^{I=1} = \ten$.
+By [@AEGS25, Lem. 3.4], the coinvariant sublattice $\tdp^{\Ien = -1}\iso \ten$, and so to simplify matters we write $I \da - \Ien = \Inik$ and thus $\tdp^{I} \da \tdp^{I=1} = \ten$.
 Fixing a primitive isotropic vector $\eta \in \ten$, we write $\bdlattice{\ten}{\eta} \da \eta^{\perp \ten}/\gens{\eta}_{\ten}$ and $\bdlattice{\tdp}{\eta} \da \eta^{\perp \tdp}/\gens{\eta}_{\tdp}$, and so on.
 Under the primitive embedding $\ten\injects \tdp$, we can construct two distinct boundary lattices associated to $\eta$,
 
@@ -134,7 +134,7 @@ g\in \Orth(\lkt) \st g\circ \Ien = \Ien\circ g, \, g(h) = h
 }},\,\,\, \Gamma_{\dP} \da \Orth(\tdp)
 ,$$
 where we form $\Gamma_{\En, 2}$ by taking the intersection of the commutator of $\Ien$ in $\Orth(\lkt)$, intersecting it with the stabilizer of the polarization, and taking the image in $\Orth(\ten)$.
-This is the correct monodromy group for $\fent$; the full details can be found e.g. in \cite{Ste91}.
+This is the correct monodromy group for $\fent$; the full details can be found e.g. in [@Ste91].
 For any lattice $T$ of signature $(2, n)$, we define its period domain as
 $$
 \halfpd{T} \da\ts{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }^\circ
@@ -225,9 +225,9 @@ $$
 
 
 In this section, we record the cusp diagrams of the main moduli spaces of interest: $\fttz$ and $\fent$. 
-The cusp diagram for $\fttz$ is shown below, which can be found in \cite{AE22} or reconstructed using the mirror move algorithm.
+The cusp diagram for $\fttz$ is shown below, which can be found in @AE22 or reconstructed using the mirror move algorithm.
 The boundary lattices for $\fttz$ at its two 0-cusps are $(18,0,0)_1$ and $(18,2,0)_1$.
-The cusps, their Coxeter diagrams, and the KSBA compactification $\ksbacpt{\fttz}$ were analyzed in detail in \cite[\S 10]{AE22}.
+The cusps, their Coxeter diagrams, and the KSBA compactification $\ksbacpt{\fttz}$ were analyzed in detail in [@AE22, §10].
 Consider the Enriques transcendental lattice
 
 \begin{align*}
@@ -236,12 +236,11 @@ Consider the Enriques transcendental lattice
 .\end{align*}
 
 The classification of $\gent$-orbits of primitive isotropic vectors in $\ten$ provides an enumeration of the 0-cusps in the Baily–Borel compactification of $\fent$.
-We know by \cite{Ste91} what the five 0-cusps $\eta_1,\cdots, \eta_5$ of $\bbcpt{\fent}$ are, as well as their stable reflection groups, Coxeter diagrams, and the associated 1-cusps. We collect below some of the lattice-theoretic calculations that will be relevant to showing that folding methods can be used to recover this data.
-The following shows the cusp diagram for $\fent$, where we note that the mirror move algorithm does *not* apply, since it only determines cusps when $\Gamma$ is the full stable orthogonal group. We can instead appeal to \cite{Ste91}, who computed these cusps and their incidences in their entirety.
+We know by @Ste91 what the five 0-cusps $\eta_1,\cdots, \eta_5$ of $\bbcpt{\fent}$ are, as well as their stable reflection groups, Coxeter diagrams, and the associated 1-cusps. We collect below some of the lattice-theoretic calculations that will be relevant to showing that folding methods can be used to recover this data.
+The following shows the cusp diagram for $\fent$, where we note that the mirror move algorithm does *not* apply, since it only determines cusps when $\Gamma$ is the full stable orthogonal group. We can instead appeal to @Ste91, who computed these cusps and their incidences in their entirety.
 In the diagram below, we recapitulate these incidences, adding new information: recalling if $D$ is a $G$-space and $H\leq G$ is a subgroup, the chain of subgroups $1\injects H\injects G$ induces a chain of surjective morphisms $D\surjects \dmodgamma{D}{H}\surjects \dmodgamma{D}{G}$.
 Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consider the images of the cusps of $\fent$ in $\fen$ as well as their images in $\fttz$.
 
-\begin{center}
 \resizebox{\linewidth}{!}{
 \begin{tikzpicture}[
     square/.style={rectangle, draw, minimum width=2.5cm, minimum height=0.8cm},
@@ -249,13 +248,6 @@ Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consi
     circ/.style={circle, draw, minimum size=0.8cm},
     highlighted_circ/.style={circle, draw, minimum size=0.8cm, fill=blue!15}
 ]
-
-% Define column positions - centered and properly spaced
-\def\colZero{0}
-\def\colOne{2.5}
-\def\colTwo{5.5}
-\def\colThree{8.5}
-\def\colFour{11.5}
 
 % === NEW VERTICAL STRUCTURE ===
 % Column 0: Vertical arrangement aligned with colored circle
@@ -320,7 +312,6 @@ Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consi
 \draw[->] (eta5top.east) -- (R7top.west);
 
 % === LOWER DIAGRAM (shifted down) ===
-\def\lowerShift{-5}
 
 % Column 1: Left circle
 \node[circ] (eta1bot) at (\colOne,\lowerShift) {$\eta_1$};
@@ -376,13 +367,12 @@ Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consi
 \end{tikzpicture}
 }
 \captionof{figure}{Mappings of boundary cusps under $\fen \from \fent \to \fttz$.}
-\end{center}
 
-We briefly describe the methods that go into finding these cusps, due to \cite{Ste91}.
+We briefly describe the methods that go into finding these cusps, due to @Ste91.
 The following result generalizes the Eichler transvection method:
 
 :::{.theorem 
-  title="{Orbit Classification in $T = U \oplus \bdlattice{T}{\eta}$ (\cite[Cor.~3.3]{Ste91}) }" 
+  title="Orbit Classification in $T = U \oplus \bdlattice{T}{\eta}$ [@Ste91, Cor. 3.3]" 
   #thm:orbit-classification-sterk
   }
 
@@ -431,13 +421,13 @@ forcing $\lambda=0$ and $\eta_1 = \eta_2$.
 We then find that all divisibility one vectors are in the same orbit:
 
 :::{.proposition
-  title="{ \cite[Lem. 4.2.1]{Ste91} }"
+  title="[@Ste91, Lem. 4.2.1]"
 }
 If $\div_{\ten}(v)=1$, then $v \sim_{\gent } v_{1} \da e \in U$.
 :::
 
 :::{.proof}
-We apply \Cref{thm:orbit-classification-sterk}: since
+We apply @thm:orbit-classification-sterk: since
 
 - $v^{2}=e^{2}=0$,
 - $\div_{\ten}(v)=\div_{\ten}(e)=1$, and
@@ -447,7 +437,7 @@ we have $v \sim_{\Orth^{*}\left(\ten\right)} e$ and thus $v \sim_{\gent} e$.
 :::
 
 The divisibility 2 vectors require a slightly finer analysis, but this quickly reduces to studying the large (but finite) discriminant group $A_{\ten}$:
-\cite[\S. 4.2.2]{Ste91} first uses the fact that there is a decomposition
+[@Ste91, §4.2.2] first uses the fact that there is a decomposition
 $$A_{\ten} = A\oplus B \da {1\over 2}U/U \oplus {1\over 2}E_8/E_8$$
 and if $\div_{\ten}(\eta) = k \geq 2$ then $\eta/k \in \ten\dual$ induces a nontrivial class in $A_{\ten}$.
 Any such class can be written as $g = a + b$ with $a\in A, b\in B$ and $q(g) = q_A(a) + q_B(b)$.
@@ -484,10 +474,10 @@ Sterk then shows that under the full isometry group $\Orth(\ten)$, the four divi
 
 #### Folded Coxeter Diagrams
 
-We now describe—in precise terms following \cite{AEGS25} -- how the Coxeter diagrams for the 0-cusps of $\fent$ are obtained by folding the Coxeter diagrams for the 0-cusps of the related quartic hyperelliptic K3 moduli $\fttz$ under the involution $I = -\Ien$.
+We now describe—in precise terms following @AEGS25 -- how the Coxeter diagrams for the 0-cusps of $\fent$ are obtained by folding the Coxeter diagrams for the 0-cusps of the related quartic hyperelliptic K3 moduli $\fttz$ under the involution $I = -\Ien$.
 Recall there are two $\Orth(\tdp)$-orbits of primitive isotropic vectors in $\tdp$, associated to the boundary lattices $(18,2,0)_1 = U(2)\oplus E_8^2$ and $(18,0,0)_1 = U\oplus E_8^2$. Each determines a *Coxeter diagram* encoding the walls of the fundamental chamber for the stable reflection group. The five 0-cusps of $\fent$ correspond to five distinct orbits of primitive isotropic vectors in $\ten$ (Sterk), and each is *realized as a folded image* of one of the K3 diagrams under the involution.
 
-The fundamental fact is that the set of simple roots defining the faces of the Coxeter chamber are determined by \Cref{lem-which-roots-descend}
+The fundamental fact is that the set of simple roots defining the faces of the Coxeter chamber are determined by @lem:which-roots-descend
 The *folded chamber* for the reflection group in $\ten$ is the intersection
 $$
 \thecone{C}^I = \thecone{C} \cap 
@@ -510,11 +500,8 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
 4. A top-to-bottom reflection about the center, and
 5. A composition of commuting reflections in 8 simple roots.
 
-\begin{center}
 \resizebox{1.0\textwidth}{!}{%
 \begin{tikzpicture}
-
-  \input{tikz/dissertation/cusp_macros.tikz}
 
 % Draw first row
 \cuspone{0}{0}
@@ -589,4 +576,3 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
 \end{tikzpicture}%
 }
 \captionof{figure}{The five 0-cusps $\eta_i$ in $\fent$, along with the five "covering" relations: each corresponds to one of the two 0-cusps of $\fttz$, along with an involution specific to each $\eta_i$.}
-\end{center}

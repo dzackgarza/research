@@ -10,7 +10,7 @@ We now describe the construction in more detail.
 
 #### Admissible Fans
 
-Let $T$ be an even indefinite lattice of signature $(2,n)$ and let $\Gamma \leq \Orth(T)$ be an arithmetic subgroup. Fix a primitive isotropic sublattice $I \subset T$ of rank $k$ and set the boundary lattice $\bar T_I \da I^{\perp T} / I$, which is an even lattice with $\signature(I) =  (2-k, n-k)$ and thus $\rank(I) = \rank(T) - 2k$.
+Let $T$ be an even indefinite lattice of signature $(2,n)$ and let $\Gamma \leq \Orth(T)$ be an arithmetic subgroup. Fix a primitive isotropic sublattice $I \subset T$ of rank $k$ and set the boundary lattice $\bar T_I \da I^{\perp T} / I$, which is an even lattice with $\signature(\bar T_I) =  (2-k, n-k)$ and thus $\rank(\bar T_I) = \rank(T) - 2k$.
 Denote by $\thecone{C}_I \subset \bdlattice{T}{I, \RR}$ the positive cone, with $\thecone{C}_{I, \QQ}\subset \bdlattice{T}{I, \RR}$ its rational closure.
 A **rational polyhedral fan** $\Sigma_I$ in $\bdlattice{T}{I, \RR}$ is a collection of strongly convex, rational polyhedral cones $\sigma \subset V$ with the following properties:
 
@@ -75,8 +75,8 @@ A form $Q$ is **perfect** if it is determined by $M(Q)$ up to scaling. The **fir
 Each form $Q \in C_g$ induces a Delaunay decomposition: a tiling of $\RR^g$ into convex polytopes determined by minima of $Q$, and two forms are Delaunay-equivalent if their tilings are $\GL_g(\ZZ)$-equivalent. The **second Voronoi fan** $\Sigma^{\Vor}$ consists of cones dual to faces of the secondary polytope parameterizing all possible Delaunay decompositions, which determines a dual compactification $\cpt{\Ag}^{\,\Vor}$
 Each boundary stratum in $\cpt{\Ag}^{\Vor}$ corresponds to a stable *semiabelic pair* $(G,\Theta)$, where $G$ is a semiabelian scheme, i.e. an extension $0 \to \GG_m^r \to G \to A' \to 0$, where $\Theta$ is a stable limit of a theta divisor. The face poset of $\Sigma^{\Vor}$ encodes the combinatorics of $\Theta$, and there is an identification
 $\cpt{\Ag}^{\Vor} \cong \ksbacpt{\Ag}$
-where $\ksbacpt{\Ag}$ is the KSBA compactification by stable semiabelic pairs due to \cite{Ale02}.
-This mirrors $\cpt{\Mg}$, where dual graphs index boundary points of the Deligne-Mumford compactification by stable curves \cite{DM69}; here, cones in $\Sigma^{\Vor}$ play an analogous role.
+where $\ksbacpt{\Ag}$ is the KSBA compactification by stable semiabelic pairs due to @Ale02.
+This mirrors $\cpt{\Mg}$, where dual graphs index boundary points of the Deligne-Mumford compactification by stable curves [@DM69]; here, cones in $\Sigma^{\Vor}$ play an analogous role.
 For each $\sigma \in \Sigma$, neighborhoods of $D_\sigma$ are modeled analytically on toric varieties $U_\sigma/\Gamma_\sigma$, where face inclusions determine the gluing data.
 
 
@@ -87,4 +87,4 @@ The theory of toroidal compactifications guarantees that local models around bou
 However, in many cases, the requirement that $\Sigma_I$ is globally polyhedral and locally finite at every cusp is too restrictive, making $\bbcpt{\FG}$ too coarse and singular for many applications.
 To address this, semitoroidal compactifications allow, at each cusp, the use of a semifan: a collection of convex rational cones which need not be polyhedral or locally finite, which may thus contain infinitely generated cones or infinitely many cones accumulating at the boundary. The combinatorial data $\semifans{F} = {\semifan{F}_I}$ indexed by cusps $I$ is still required to be $\Gamma$-admissible, i.e. invariant with only finitely many orbits under the stabilizer, and satisfy similar compatibility conditions.
 While the local boundary models in semitoroidal compactifications $\semitorcpt{\FG}$ are no longer strictly toric varieties, the resulting compactification still admits a proper, $\Gamma$-equivariant morphism $\semitorcpt{\FG} \to \bbcpt{\FG}$ and contains $\FG$ as a dense open subset.
-In the next section, we review the formal definitions of semifans and the construction of semitoroidal compactifications, following \cite{Loo85} and related work.
+In the next section, we review the formal definitions of semifans and the construction of semitoroidal compactifications, following @Loo85 and related work.

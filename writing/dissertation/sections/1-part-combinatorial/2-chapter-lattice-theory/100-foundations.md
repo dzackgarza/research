@@ -75,7 +75,7 @@ Moreover, if $S$ is unimodular, then so is $T$.
 :::
 
 :::{.proof}
-This follows from \cite[Lem. 1.3.1]{PS24}: we can write $\disc(S) = [S\oplus T: L]\cdot c_S$ for some $c_S\in \ZZ$. 
+This follows from [@PS24, Lem. 1.3.1]: we can write $\disc(S) = [S\oplus T: L]\cdot c_S$ for some $c_S\in \ZZ$. 
 By unimodularity, $\disc(S) = \pm 1$ forces $c_S = \pm 1$ and $[S\oplus T: L] = 1$, yielding the first claim.
 For the second, we note that $\disc(S\oplus T) = \disc(S) \cdot \disc(T)$ by standard properties of determinants, forcing $\disc(T) = \pm 1$.
 :::
@@ -226,7 +226,7 @@ For a nondegenerate lattice $(L,\beta)$, the **discriminant group** is the finit
 The order of the discriminant group equals the absolute value of the discriminant, i.e. $|A_L| = |\disc(L)| = [L\dual\colon L]$, so $L$ is unimodular if and only if $A_L$ is trivial.
 :::
 
-:::{.definition title="{Discriminant Forms, \cite[Def. 1.6.5]{PS24} }" #def:discriminant-forms}
+:::{.definition title="Discriminant Forms, [@PS24, Def. 1.6.5]" #def:discriminant-forms}
 For a nondegenerate *even* lattice $(L,\beta)$, the **discriminant bilinear form** is $\beta_{A_L}: A_L \times A_L \to \QQ/\ZZ$, given by $\beta_{A_L}(\bar{x}, \bar{y}) = \beta(x,y) \bmod \ZZ$ for any lifts $x,y \in L\dual$ and $\beta$ the induced form on $L\dual$.
 It admits an associated quadratic form $q_{A_L}(\bar x) = \beta(x,x)\pmod{\ZZ} \in \QQ/\ZZ$ for any lift $x$.
 We note that there are two conventions in the literature, where one sometimes defines $q_{A_L}(\bar x) \da \beta(x,x)\pmod{2\ZZ}\in \QQ/2\ZZ$; these agree by the isomorphism $\QQ/\ZZ \iso \QQ/2\ZZ$ induced by multiplication by $2$.

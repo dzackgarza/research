@@ -3,7 +3,7 @@
 
 Throughout this section, let $T$ be an even lattice of signature $(2, n)$, $\bdlattice{T}{\eta} \da  \bdlattice{T}{\eta} = \eta^{\perp T} / \langle \eta \rangle$ be the boundary lattice of signature $(1, n-1)$ at a $0$-cusp $\eta \in T$, and let $\Gamma\leq \Orth(T)$ be a neat arithmetic subgroup, and let $\eta \in T$ denote a primitive isotropic line in $T$ and $I\subseteq T$ a primitive isotropic plane, corresponding to a 0-cusp of $\bbcpt{\FG}$ and a 1-cusp respectively.
 Let $W \da  W(\Gamma_\eta)$ denote the stable reflection group acting on $\bdlattice{T}{\eta}$. Let $\thecone{C} = \thecone{C}(\Gamma_\eta)$ be a fixed fundamental chamber for $W$ defined by the inequalities $(v, \alpha) \ge 0$ for all $\alpha \in \Phi(\Gamma\eta)$. Let $G(\Gamma_\eta)$ be the associated Coxeter diagram and $\Phi(\Gamma_\eta)$ be the set of simple roots for $W(\Gamma_\eta)$.
-**Semitoroidal compactifications** (\cite{Loo85, Loo03}) $\semitorcpt{\FG}$ generalize the construction of toroidal compactifications $\torcpt{\FG}$ by replacing each polyhedral fan $\Sigma_I$ with a $\Gamma$-admissible **semifan**. The local models are toroidal embeddings attached to semifans, compatibly glued over all cusps.
+**Semitoroidal compactifications** ([@Loo85; @Loo03]) $\semitorcpt{\FG}$ generalize the construction of toroidal compactifications $\torcpt{\FG}$ by replacing each polyhedral fan $\Sigma_I$ with a $\Gamma$-admissible **semifan**. The local models are toroidal embeddings attached to semifans, compatibly glued over all cusps.
 This section formalizes semifans and semitoroidal compactifications, describes admissibility and compatibility, and relates semitoroidal, toroidal, and Baily–Borel compactifications via a tower of birational morphisms:
 $$
 \bbcpt{\FG} \longleftarrow \semitorcpt{\FG} \longleftarrow \torcpt{\FG}
@@ -52,7 +52,7 @@ Generalized Coxeter semifans, defined below, provide intermediate examples of st
 
 #### Construction
 
-:::{.theorem title="{ Existence of semitoroidal compactifications \cite{Loo03} }"}
+:::{.theorem title="Existence of semitoroidal compactifications [@Loo03]"}
 Let $T$ be an even lattice of signature $(2, n)$, $\Gamma \leq \OStab(T)$ a neat arithmetic group, and $\FG$ the associated locally symmetric modular variety. Let $\semifans{F}$ be a compatible system of $\Gamma$-admissible semifans ranging over Baily-Borel cusps $I$ of $\bd\bbcpt{\FG}$, as defined above.
 Then there exists a normal compactification $\semitorcpt{\FG}$ containing $\FG$ as an open dense subset, called the **semitoroidal compactification** associated to $\semifans{F}$, with the following properties:
 
@@ -61,7 +61,7 @@ Then there exists a normal compactification $\semitorcpt{\FG}$ containing $\FG$ 
 2. If $\sigma \subset \mcf_\eta$ is a cone with $\eta$ an isotropic line corresponding to a Type $\III$ cusp, let $L_{\eta, \sigma} = \eta^{\perp T}/\gens{\eta, \sigma}$.
 Then the corresponding stratum is a finite quotient of $L_{\eta, \sigma, \CCstar}$.
 
-3. If $\sigma \subset \mcf_I$ with $I$ an isotropic plane corresponding to a a Type $\II$ cusp, there is a subspace $H_I$  depending on $\sigma$ and an algebraic group $\mce$ defined in \cite{Loo03}. Let $L_{I, \sigma} \da I^{\perp}/\gens{I, H_I}$, then the corresponding stratum is a finite quotient of $L_{I, \sigma, \mce}$.
+3. If $\sigma \subset \mcf_I$ with $I$ an isotropic plane corresponding to a a Type $\II$ cusp, there is a subspace $H_I$  depending on $\sigma$ and an algebraic group $\mce$ defined in @Loo03. Let $L_{I, \sigma} \da I^{\perp}/\gens{I, H_I}$, then the corresponding stratum is a finite quotient of $L_{I, \sigma, \mce}$.
 
 4. For any compatible system of semifans $\semifans{G}$ refining $\semifans{F}$, there is a natural morphism $\semifancpt{\FG}{\semifans{G}} \to \semifancpt{\FG}{\semifans{F}}$ which maps strata to strata according to inclusion of cones: for $\tau \subset \sigma$, the stratum indexed by $(I,\tau)$ maps to the stratum indexed by $(I,\sigma)$.
 
@@ -77,7 +77,7 @@ The boundary of $\semitorcpt{\FG}$ is stratified by the cones and faces of all s
 This local-to-global structure enables interpolation between the $\bbcpt{\FG}$ and the maximal $\torcpt{\FG}$ by allowing the semifans to vary from trivial to polyhedral and locally finite.
 :::
 
-:::{.theorem title="{Birational tower characterization \cite[Theorem 5.14]{AE23}}"}
+:::{.theorem title="Birational tower characterization [@AE23, Theorem 5.14]"}
 Let $\FG$ be a Type $\IV$ arithmetic quotient, and let $\cpt{\FG}$ be any normal compactification of $\FG$. The following are equivalent:
 
 1. There exist proper morphisms of normal compactifications
@@ -90,8 +90,8 @@ Let $\FG$ be a Type $\IV$ arithmetic quotient, and let $\cpt{\FG}$ be any normal
 
 :::
 
-:::{.theorem title="{Recognition theorem for KSBA compactifications \cite[Theorem 9.1]{AE23}}"}
-Let $R$ be a recognizable divisor in the moduli space of $S$-polarized K3 surfaces (in the sense of \cite{AE23}) corresponding to the moduli space $F_{\Gamma}$, where $\Gamma$ is the appropriate arithmetic subgroup of $\Orth(T)$ and $T\da S^{\perp \lkt}$. Then there exists a unique semifan $\mcf_R$ such that the normalization morphism $\semifancpt{\FG}{\mcf_R} \to \ksbacpt{\FG}^R$ identifies $\semifancpt{F_M}{\mcf_R}$ as the normalization of the KSBA compactification $\ksbacpt{\FG}^R$ associated to $R$.
+:::{.theorem title="Recognition theorem for KSBA compactifications [@AE23, Theorem 9.1]"}
+Let $R$ be a recognizable divisor in the moduli space of $S$-polarized K3 surfaces (in the sense of [@AE23]) corresponding to the moduli space $F_{\Gamma}$, where $\Gamma$ is the appropriate arithmetic subgroup of $\Orth(T)$ and $T\da S^{\perp \lkt}$. Then there exists a unique semifan $\mcf_R$ such that the normalization morphism $\semifancpt{\FG}{\mcf_R} \to \ksbacpt{\FG}^R$ identifies $\semifancpt{F_M}{\mcf_R}$ as the normalization of the KSBA compactification $\ksbacpt{\FG}^R$ associated to $R$.
 The cones of $\mcf_R$ are precisely the maximal subsets in which the combinatorial type of slc stable pairs is constant as a function of the *monodromy invariant* $\lambda$.
 :::
 
@@ -103,7 +103,7 @@ A fundamental example of a recognizable divisor is the **rational curves divisor
 R_{\rcop} \da  \sum_{i=1}^{n_d} R_i \in |n_d L|
 .\end{align*}
 
-where $R_i$ runs over all irreducible rational curves in the linear system $|L|$ of the polarization and $n_d$ is given by the Yau–Zaslow formula (\cite[Thm.~10.2]{AE23}). In \cite{AE23}, $R_{\rcop}$ is shown to be recognizable for all $d$, so there exists a canonical semifan $\mcf^{\rcop}$ with
+where $R_i$ runs over all irreducible rational curves in the linear system $|L|$ of the polarization and $n_d$ is given by the Yau–Zaslow formula ([@AE23, Thm. 10.2]). In @AE23, $R_{\rcop}$ is shown to be recognizable for all $d$, so there exists a canonical semifan $\mcf^{\rcop}$ with
 
 \begin{align*}
 \semitorcpt{F_{2d}} \cong \ksbacpt{F_{2d}}
@@ -112,7 +112,7 @@ where $R_i$ runs over all irreducible rational curves in the linear system $|L|$
 
 In degree $2$, $\mcf_{\rcop}$ is a semifan but not a fan, and coarsens the Coxeter fan. For elliptic K3 surfaces with divisor $s + \sum_{i=1}^{24} f_i$, the semifan is in fact a fan, which further refines the maximal cone of the Coxeter fan.
 It is currently a widely open problem to describe the semifan $\mcf_R$ for a recognizable divisor in full generality, and is still open in the case of $R = R^{\rcop}$ -- these are currently only characterized only as the coarsest subdivision such that the combinatorial type of stable pairs is constant on its cones.
-Our work in \cite{AEGS25} relies on the fact that recognizability was proved for ramification loci of non-symplectic automorphisms in \cite{AE22}, and explicit constructions of the corresponding semifans are provided.
+Our work in @AEGS25 relies on the fact that recognizability was proved for ramification loci of non-symplectic automorphisms in @AE22, and explicit constructions of the corresponding semifans are provided.
 :::
 
 #### Generalized Coxeter Semifans and Relevant Roots
@@ -127,7 +127,7 @@ A partition $\Phi = \Phi^{\relevant} \sqcup \Phi^{\irrelevant}$ into **relevant*
 
 :::
 
-:::{.definition title="Generalized Coxeter Semifan {\cite[Def.~4.16]{AET23}}"}
+:::{.definition title="Generalized Coxeter Semifan [@AET23, Def. 4.16]"}
 Fix a partition $\Phi = \Phi^{\irrelevant} \sqcup \Phi^{\relevant}$.
 Let $W^{\irrelevant} = \langle w_\alpha \st \alpha \in \Phi^{\irrelevant} \rangle \subset W$ denote the reflection subgroup generated by reflections in the irrelevant roots. The corresponding generalized chamber is
 $$
@@ -171,7 +171,7 @@ An element $(D_\eta) \in \theposet{P}_\Gamma$ specifies, for each $0$-cusp, a su
 :::{.proposition #prop:coxsemiposetmap title="{Coxeter semifan system and main identification}"}
 There is a canonical poset morphism
 $\Psi\colon \theposet{P}_\Gamma \longrightarrow \theposet{S}_\Gamma$
-which sends a tuple $(D_\eta)$ of subdiagrams, one for each $0$-cusp $\eta$, to the induced semitoroidal compactification, constructed by gluing together maximal cones of generalized Coxeter semifans (as in \Cref{def:coxetersemiposet}) along all omitted walls, corresponding to the nodes omitted in $D_\eta$.
+which sends a tuple $(D_\eta)$ of subdiagrams, one for each $0$-cusp $\eta$, to the induced semitoroidal compactification, constructed by gluing together maximal cones of generalized Coxeter semifans (as in @def:coxetersemiposet) along all omitted walls, corresponding to the nodes omitted in $D_\eta$.
 The maximal element of $\theposet{P}_\Gamma$, where no nodes are omitted, corresponds to the Coxeter fan and thus the toroidal compactification.
 The minimal element, where all nodes are omitted at each cusp, corresponds to the Baily–Borel fan $\BBfan$ and thus $\bbcpt{\FG}$.
 Morphisms in $\theposet{P}_\Gamma$ corresponding to deleting more nodes correspond to coarsenings of the semifans and thus to proper birational morphisms between the corresponding semitoroidal compactifications.

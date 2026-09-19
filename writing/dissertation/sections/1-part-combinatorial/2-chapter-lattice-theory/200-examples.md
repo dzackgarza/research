@@ -1,6 +1,6 @@
 ### Fundamental Examples
 
-#### The Hyperbolic Plane $U$
+#### The Hyperbolic Plane $U$ {#sec:hyperbolic-plane}
 
 The **hyperbolic plane** $U$ is the unique even, unimodular lattice of signature $(1,1)$, with a standard basis  given by vectors $\{e, f\}$ satisfying
 
@@ -51,9 +51,9 @@ j_b = \begin{pmatrix} 0 & b \\ b^{-1} & 0 \end{pmatrix}
 Finally, we note that the lattices $U$ and $\I_{1,1} \da \gens{1, -1}$ are not isometric over $\ZZ$, since $U$ is even and $\I_{1,1}$ is odd. However, both have signature $(1,1)$ and discriminant $-1$, so they become isometric over $\QQ$ and $\RR$.
 It is true, however, that $U$ and $\II_{1, 1}$ are isometric, where the latter is the unique *even* unimodular lattice discussed later in this section.
 
-#### Root Lattices
+#### Root Lattices {#sec:root-lattices}
 
-We present here the classical definitions of the *positive-definite* root lattices of $A,D,E$ types, noting that in applications in later chapters, we will typically choose the negative-definite variations of these lattices, as is the typical convention in algebraic geometry. We maintain the positive-definite convention until \Cref{lattice-folding}, where we give more precise constructions and critically use the positive-definite convention to carry out folding calculations in Euclidean spaces using standard linear algebra. After this, we will switch to the negative-definite convention that is typically more convenient for applications in algebraic geometry. We refer to Appendix~\ref{section-root-lattice-conventions} for explicit computations, diagrams, and labeling conventions.
+We present here the classical definitions of the *positive-definite* root lattices of $A,D,E$ types, noting that in applications in later chapters, we will typically choose the negative-definite variations of these lattices, as is the typical convention in algebraic geometry. We maintain the positive-definite convention until @sec:lattice-folding, where we give more precise constructions and critically use the positive-definite convention to carry out folding calculations in Euclidean spaces using standard linear algebra. After this, we will switch to the negative-definite convention that is typically more convenient for applications in algebraic geometry. We refer to Appendix~@sec:root-lattice-conventions for explicit computations, diagrams, and labeling conventions.
 
 We summarize below all of the relevant information for the simply-laced $\ADE$ types, as well as the exceptional types $E_6, E_7, E_8, F_4$, and $G_2$.
 In all cases, the lattices $L$ can be realized by a primitive embedding $L\injects \QQ^n$ for some $n$, where we identify $\ZZ^n \subseteq \QQ^n$ with the abstract diagonal lattice $\gens{1,1,\cdots, 1}$. In these Euclidean embeddings, one can explicitly compute the Gram matrices $G_L$, the duals $L\dual$ and discriminant groups $A_L$, and invariants such as $\disc(L)$ using standard linear algebra. 
@@ -181,9 +181,9 @@ Finally, the lattice $E_8(2)$ frequently appears in moduli-theoretic application
 $$
 E_8(2)\dual \iso {1\over 2}E_8 \implies A_{E_8(2)} \cong E_8/2E_8 \cong {1\over 2}E_8/E_8 \cong \ZZ_2^8
 ,$$
-and similarly $U(2)\dual \iso {1\over 2}U$, facts which were used in \cite{Ste91} to compute $\bd \bbcpt{\fent}$.
+and similarly $U(2)\dual \iso {1\over 2}U$, facts which were used in @Ste91 to compute $\bd \bbcpt{\fent}$.
 
-#### Unimodular lattices
+#### Unimodular lattices {#sec:unimodular-lattices}
 
 ##### Type $\I$
 
@@ -225,7 +225,7 @@ $$
 where $E_{8}$ is the negative-definite $E_{8}$ lattice defined above and $U$ is the hyperbolic lattice.
 This is an integral, even, unimodular lattice of rank $p+q$ and signature $(p, q)$ with discriminant $(-1)^p$.
 We note that $G_{\beta}^{-1}$ is generally nontrivial due to the $E_{8}$ factors, making the dual basis somewhat difficult to work with by hand.
-The following can be found in \cite{Mil58, Ser73}: if $L$ is an even indefinite unimodular lattice with $\signature(L) = (p, q)$, then necessarily $\tau \equiv 0\pmod{8\ZZ}$ and $L\iso \II_{p, q}$.
+The following can be found in [@Mil58; @Ser73]: if $L$ is an even indefinite unimodular lattice with $\signature(L) = (p, q)$, then necessarily $\tau \equiv 0\pmod{8\ZZ}$ and $L\iso \II_{p, q}$.
 
 We conclude with the major classification theorems:
 
@@ -280,7 +280,7 @@ $$
 For $k=1$, we write $V \da V_1$. This is an even, nondegenerate lattice of 2-adic rank $2$ and signature $(2, 0)$ that we write as $V$.
 Similarly, we define
 $$
-U_{k}\da \left(\ZZ_{2}^{2},\left[\begin{array}{cc}
+U_{k}\da \left(\ZZ_{\hat 2}^{2},\left[\begin{array}{cc}
 0 & 2^{k} \\
 2^{k} & 0
 \end{array}\right]\right)

@@ -7,7 +7,7 @@
 Two lattices $L_1, L_2$ belong to the same **genus** if $L_{1, \ZZpadic} \cong L_{2, \ZZpadic}$ for all primes $p$, where $\ZZpadic$ denotes the $p$-adic integers, and $L_{1, \RR} \cong L_{2, \RR}$.
 Lattices in the same genus have the same rank, signature, and determinant, but may not be isometric over $\ZZ$. 
 We define the **class group** $\cl(L)$ to be the set of isometry classes within a genus, and the **class number** as the size of $\cl(L)$.
-We note that for indefinite even lattices $L$, one typically expects the class number of $L$ to be one. For definite lattices, the situation is reversed, and having class number one is somewhat rare. By \cite[§3.4]{Sca87}, if $\rank(L)>16+\ell(L)$, then $\cl(L) \geq 2$.
+We note that for indefinite even lattices $L$, one typically expects the class number of $L$ to be one. For definite lattices, the situation is reversed, and having class number one is somewhat rare. By [@Sca87, §3.4], if $\rank(L)>16+\ell(L)$, then $\cl(L) \geq 2$.
 :::
 
 #### p-Elementary Lattices
@@ -59,12 +59,12 @@ Let $L$ be an even, indefinite, 2-elementary lattice with $\rank(L) \geq 4$. The
 3. the coparity $\delta \in \{0,1\}$ as defined above.
 
 We denote by $(r, a, \delta)_{n_+}$ the 2-elementary lattice with these invariants and signature $(n_+, n_-)$.
-For each **admissible** triple (see \cite{Nik80}) $(r, a, \delta)$ satisfying $r \geq 4$, there exists a unique isometry class of even, indefinite, 2-elementary lattice with these invariants.
+For each **admissible** triple (see [@Nik80]) $(r, a, \delta)$ satisfying $r \geq 4$, there exists a unique isometry class of even, indefinite, 2-elementary lattice with these invariants.
 Equivalently, any two such lattices are isometric if and only if they have the same signature and isometric discriminant quadratic forms.
 
 #### Decomposability of 2-elementary lattices
 
-By \cite[\S 2.6]{AE22} and \cite[Prop. 1.8.1]{Nik79a}, if $L$ is an even 2-elementary lattice, then $A_{L}$ can be written as a finite direct sum of discriminant forms $p, q, u$, and $v$ above, subject to the relations
+By [@AE22, §2.6] and [@Nik79a, Prop. 1.8.1], if $L$ is an even 2-elementary lattice, then $A_{L}$ can be written as a finite direct sum of discriminant forms $p, q, u$, and $v$ above, subject to the relations
 
 \begin{align*}
 u^{ 2} & =v^{ 2} \\
@@ -106,4 +106,4 @@ For 2-elementary lattices, one always has $\div_{L}(v) \in\{1,2\}$. We set $v^{*
 
 - **even characteristic** if $\div_{L}(v)=2$ and $v^{*}$ is characteristic.
 
-Such vectors play a role in the mirror move algorithm of \todo{Cite}, which can be used to determine 0-cusps and 1-cusps of K3 compactifications.
+Such vectors play a role in the mirror move algorithm of @AE22, which can be used to determine 0-cusps and 1-cusps of K3 compactifications.

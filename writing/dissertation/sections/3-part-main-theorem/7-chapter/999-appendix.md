@@ -1,6 +1,6 @@
 ## Root Systems
 
-#### Examples of Specific Root Systems {#root-systems}
+#### Examples of Specific Root Systems {#sec:root-lattice-conventions}
 
 ##### $A_4$
 
@@ -115,8 +115,11 @@ G_{D_4(-1)} =
 0 & 1 & 0 & -2
 \end{pmatrix}
 $$
-We take $D_n$ to mean $D_n(-1)$, and identify
-th
+We take $D_n$ to mean $D_n(-1)$, and identify the Coxeter diagram as:
+ 
+\begin{align*}
+D_4:\quad \dynkin[mark=o,scale=3]{D}{4}
+.\end{align*}
 
 ##### $E_6$
 

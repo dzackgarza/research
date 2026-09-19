@@ -103,14 +103,14 @@ To establish this result, we compare the semitoroidal structures on source and t
     title="{Semifan Comparison}"
     #lem:semifan-comparison
 }
-Let $\semitorcpt{\fent}$ denote the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in \cite[§5.2]{AEGS25}. There exist semifans $\semifan{G} = \{ \semifan{G}_k \}_{k=1}^5$ such that:
+Let $\semitorcpt{\fent}$ denote the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in [@AEGS25, §5.2]. There exist semifans $\semifan{G} = \{ \semifan{G}_k \}_{k=1}^5$ such that:
 1. $\ksbacpt{\fent} = \semitorcpt{\fent}$.
 2. Each $\semifan{G}_k$ is a coarsening of $\semifan{F}_k$.
 3. The morphism $\phi$ is finite if and only if $\semifan{G}_k = \semifan{F}_k$ for all $k$.
 :::
 
 :::{.proof}
-By \cite[Theorem 7.18]{AE23}, the normalization of any KSBA compactification with recognizable boundary divisor admits a semitoroidal structure, uniquely determined by a tuple of semifans $\semifan{G} = \{ \semifan{G}_k \}$. Coarsening $\semifan{G}_k \subseteq \semifan{F}_k$ means that cones in $\semifan{F}_k$ may be identified in $\semifan{G}_k$, which would indicate identifications of strata—and thus non-finiteness—over those boundary components. Thus, $\phi$ is finite if and only if no such coarsening occurs (i.e., the semifans agree).
+By [@AE23, Theorem 7.18], the normalization of any KSBA compactification with recognizable boundary divisor admits a semitoroidal structure, uniquely determined by a tuple of semifans $\semifan{G} = \{ \semifan{G}_k \}$. Coarsening $\semifan{G}_k \subseteq \semifan{F}_k$ means that cones in $\semifan{F}_k$ may be identified in $\semifan{G}_k$, which would indicate identifications of strata—and thus non-finiteness—over those boundary components. Thus, $\phi$ is finite if and only if no such coarsening occurs (i.e., the semifans agree).
 :::
 
 :::{.definition
@@ -133,7 +133,7 @@ Let $(X_0, \epsilon R_0)$ be a degeneration of K3 pairs with a fixed-point-free 
 :::{.proof}
 The first two claims follow from the behavior of the quotient map: irreducible components and double curves of $X_0$ are grouped into orbits by $\ien$ and descend to components and double curves of $Z_0$ respectively. 
 
-\cite[Prop. 4.8]{AEGS25} shows that if $(\mcz, \mcr_\mcz) \to (C, 0)$ is a half-divisor model for $\fent$, then we have the following possibilities:
+[@AEGS25, Prop. 4.8] shows that if $(\mcz, \mcr_\mcz) \to (C, 0)$ is a half-divisor model for $\fent$, then we have the following possibilities:
 
 - Type $\III$:
   - Cusp 1:
@@ -146,7 +146,7 @@ The first two claims follow from the behavior of the quotient map: irreducible c
     - For the cusps mapping to $\fen$, $\ienzero$ acts by $x\mapsto -x$ on $\DD^1$ and fixed-point-freely on $\mcx_0$,
     - For the remaining cusps, assuming $\mcx_0$ contains a double curve $E$ preserved by $\ienzero$, it acts by nontrivial 2-torsion. It preserves each component of $\mcx_0$, and on double curves $D_{ij}$, the action is an elliptic involution with 4 fixed points.
 
-Moreover, by \cite[Cor. 4.9]{AEGS25}, the KSBA stable limit of $(\mcz^*, \eps \mcr^*_{\mcz^*}) \to C^*$ can be computed from the half-divisor model $(\mcz, \mcr_\mcz)\to (C, 0)$ as the relative proj of the section ring for $\mcr_\mcz$.
+Moreover, by [@AEGS25, Cor. 4.9], the KSBA stable limit of $(\mcz^*, \eps \mcr^*_{\mcz^*}) \to C^*$ can be computed from the half-divisor model $(\mcz, \mcr_\mcz)\to (C, 0)$ as the relative proj of the section ring for $\mcr_\mcz$.
 
 Thus the dual complex and monodromy invariants classify the degeneration up to equivalence. Since the semifan construction (cone decomposition) is preserved under folding by $\ien$, maximality is inherited between the K3 and Enriques degenerations.
 :::
@@ -188,7 +188,7 @@ constructed in previous sections: namely, that $\phi$ is finite. This assertion 
 #### Semifan Comparison and Finiteness: Addressing the Critical Gap
 
 :::{.lemma title="{Semifan Comparison}" #lem:semifan-comparison}
-Let $\semitorcpt{\fent}$ be the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in \cite{AEGS25}. There exist semifans $\semifan{G} = \{\semifan{G}_k\}_{k=1}^5$ associated with the normalization of the KSBA compactification $\ksbacpt{\fent}$ such that:
+Let $\semitorcpt{\fent}$ be the semitoroidal compactification defined using the five semifans $\semifan{F} = \{\semifan{F}_k\}_{k=1}^5$ as in @AEGS25. There exist semifans $\semifan{G} = \{\semifan{G}_k\}_{k=1}^5$ associated with the normalization of the KSBA compactification $\ksbacpt{\fent}$ such that:
 
 1. $\ksbacpt{\fent} = \semitorcpt{\fent}$ if and only if $\semifan{G}_k = \semifan{F}_k$ for all $k$.
 
@@ -220,13 +220,13 @@ Let $(X_0, \epsilon R_0)$ be a degeneration of K3 pairs with a fixed-point-free 
 :::
 
 :::{.proof}
-This is established by \cite{AEGS25} via an explicit analysis of half-divisor models and their quotients. The scenarios at each cusp of the compactification -- Type $\mathrm{III}$ cusps (with dual complex $\RP^2$ or $\DD^2$) and Type $\mathrm{II}$ (dual complex $\DD^1$) -- are treated explicitly:
+This is established by @AEGS25 via an explicit analysis of half-divisor models and their quotients. The scenarios at each cusp of the compactification -- Type $\mathrm{III}$ cusps (with dual complex $\RP^2$ or $\DD^2$) and Type $\mathrm{II}$ (dual complex $\DD^1$) -- are treated explicitly:
 
 - At cusp $1$ (Type $\mathrm{III}$), all components of $\mcx_0$ map to unique components of $V_i$.
 - At cusps $2,3,4,5$ (Type $\mathrm{III}$), the involution may act with isolated fixed points on components or double curves.
 - In Type $\mathrm{II}$ degenerations, $\ienzero$ may act by reflection, or as a fixed-point-free involution, or as an elliptic involution with explicit fixed locus on certain double curves.
 
-By \cite{AEGS25}, the boundary degenerations (up to isomorphism of stable pairs) are fully classified by the monodromy and dual complex, which is entirely encoded in the semifan. The folding operations and passage to quotients by $\ien$ preserves this relation.
+By @AEGS25, the boundary degenerations (up to isomorphism of stable pairs) are fully classified by the monodromy and dual complex, which is entirely encoded in the semifan. The folding operations and passage to quotients by $\ien$ preserves this relation.
 :::
 
 #### The Core Finiteness-Injectivity Argument

@@ -22,8 +22,8 @@ Then $f$ is an isomorphism.
 }
 The morphism $\phi: \normalize{B} \to \cpt{\fent}$ constructed above satisfies all hypotheses of Zariski's Main Theorem:
 
-1. Birationality: By Proposition 5.6, $\phi$ restricts to an isomorphism over the dense open subset $\fent$.
-2. Finiteness: By Corollary 7.6.6, $\phi$ is finite.
+1. Birationality: By @prop:properties-classifying, $\phi$ restricts to an isomorphism over the dense open subset $\fent$.
+2. Finiteness: By @cor:finiteness-classifying-map, $\phi$ is finite.
 3. Normality: $\normalize{B}$ is normal by definition as normalization; $\ksbacpt{\fent}$ is normal as the normalization of the proper algebraic stack $\cpt{\fent}$.
 4. Properness: $\cpt{\fent}$ is proper by the general theory of KSBA compactification for surfaces with numerically trivial canonical class (see Kollár[\text{Theorem 1.2}]).
 :::

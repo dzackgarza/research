@@ -1,6 +1,6 @@
-## Enriques Surfaces and Their K3 Covers {#chapter-3}
+## Enriques Surfaces and Their K3 Covers {#sec:chapter-3}
 
-Building on the foundational lattice theory established in \Cref{chapter-1} and \Cref{chapter-2}, we focus on the concrete geometric constructions, orbit classifications, and boundary correspondences that distinguish Enriques surface moduli theory from general K3 theory.
+Building on the foundational lattice theory established in @sec:chapter-1 and @sec:chapter-2, we focus on the concrete geometric constructions, orbit classifications, and boundary correspondences that distinguish Enriques surface moduli theory from general K3 theory.
 Every degree 2 numerically polarized Enriques surface can be realized via a canonical toric construction, which we describe in this chapter.
 
 ### Notational Conventions

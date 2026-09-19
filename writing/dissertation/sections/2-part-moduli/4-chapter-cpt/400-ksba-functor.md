@@ -3,11 +3,11 @@
 #### Introduction
 
 For higher-dimensional varieties, GIT, toroidal, and semitoroidal compactifcations are often inadequate, producing boundary points that lack modular interpretations and possibly corresponding to degenerations with excessively severe singularities. For instance, GIT compactification $F_2$ result in boundary strata containing highly singular, non-separated, or even non-reduced curves.
-Such limiting surfaces may not be uniquely determined by one-parameter degenerations, violating the valuative criterion for properness and separatedness. Moreover, GIT boundaries often allow non-slc singularities, which are more severe than those typically permitted by the MMP (see e.g., \cite{Sha81}, \cite{Loo86}).
-In contrast, for curves of genus $g \geq 2$, Deligne and Mumford compactify $\Mg$ using **stable curves**: a (connected, reduced, projective) curve $C$ over an algebraically closed field is **stable** if all singularities of $C$ are nodes and every rational component of $C$ meets the rest of $C$ (including the marked points) in at least $3$ points. The moduli functor $\Mg^{\operatorname{DM}}$ assigning to each connected base $S$ the groupoid of flat, proper families $\mcc \to S$ whose fibers are stable curves, is represented by a proper Deligne–Mumford stack. The boundary $\bd\Mg$ parameterizes connected, nodal curves with finite automorphism groups, and every family $C^\circ$ over $S^\circ = S \setminus \ts{0}$ admits, after a ramified base change, a unique stable limit by semistable reduction and relative abundance of $\omega_{C/S}$ (see \cite{DM69}, \cite{KM98}).
+Such limiting surfaces may not be uniquely determined by one-parameter degenerations, violating the valuative criterion for properness and separatedness. Moreover, GIT boundaries often allow non-slc singularities, which are more severe than those typically permitted by the MMP (see e.g., [@Sha81], [@Loo86]).
+In contrast, for curves of genus $g \geq 2$, Deligne and Mumford compactify $\Mg$ using **stable curves**: a (connected, reduced, projective) curve $C$ over an algebraically closed field is **stable** if all singularities of $C$ are nodes and every rational component of $C$ meets the rest of $C$ (including the marked points) in at least $3$ points. The moduli functor $\Mg^{\operatorname{DM}}$ assigning to each connected base $S$ the groupoid of flat, proper families $\mcc \to S$ whose fibers are stable curves, is represented by a proper Deligne–Mumford stack. The boundary $\bd\Mg$ parameterizes connected, nodal curves with finite automorphism groups, and every family $C^\circ$ over $S^\circ = S \setminus \ts{0}$ admits, after a ramified base change, a unique stable limit by semistable reduction and relative abundance of $\omega_{C/S}$ (see [@DM69], [@KM98]).
 The **boundary strata** of $\bd\Mg$ are indexed by **dual graphs** recording the incidence data of components and their intersections -- each stable degeneration's combinatorial "type" corresponds to the dual graph of its $\mcx_0$, and each such graph describes a distinct boundary stratum.
 
-To generalize this to higher dimension, one introduces **stable pairs** $(X, B)$, following \cite{KS88}, \cite{Ale96}.
+To generalize this to higher dimension, one introduces **stable pairs** $(X, B)$, following @KS88, @Ale96.
 Such a pair is **KSBA stable** if:
 
 - $X$ is a projective, reduced, equidimensional, *demi-normal* variety of dimension $d \geq 2$,
@@ -29,9 +29,9 @@ Thus, boundary components can include non-smoothable varieties, yielding compact
 Fixing discrete invariants -- the dimension $d$, a Hilbert polynomial $h$, boundary coefficients $\{b_i\}$, and the **volume** $(K_X + B)^d$ --, the **KSBA moduli functor**
 $\cpt{\mcm}_{d, \vec{b}, v}:
 \Sch^{\opop} \to \Set$
-assigns to $S$ the set of isomorphism classes of flat families $(\mcx, \mcb) \to S$ of KSBA stable pairs with these invariants. This functor is represented by a proper, separated Deligne–Mumford stack $\mcm$, whose coarse moduli space $M$ is a projective scheme \cite[Thm.~1.1]{KS88}. The closure of the locus of smooth pairs in $\mcm$ provides a geometrically meaningful compactification by stable pairs.
+assigns to $S$ the set of isomorphism classes of flat families $(\mcx, \mcb) \to S$ of KSBA stable pairs with these invariants. This functor is represented by a proper, separated Deligne–Mumford stack $\mcm$, whose coarse moduli space $M$ is a projective scheme [@KS88, Thm. 1.1]. The closure of the locus of smooth pairs in $\mcm$ provides a geometrically meaningful compactification by stable pairs.
 
-For K3 or Enriques surfaces, $K_X \equiv 0$ is numerically trivial, so to ensure ampleness one considers **pairs** $(X, \eps R)$ for $0 < \eps \ll 1$, $R$ ample divisor, and studies the stable pair locus for these data. The divisor $R$ is typically chosen to be the ramification divisor of an automorphism, and the compactification is independent of $\eps$ for $\eps$ sufficiently small (\cite[§5]{KS88}, \cite[§6]{Ale96a}, \cite[Lemma VI.1.1]{Kol23}, \cite{AET23}).
+For K3 or Enriques surfaces, $K_X \equiv 0$ is numerically trivial, so to ensure ampleness one considers **pairs** $(X, \eps R)$ for $0 < \eps \ll 1$, $R$ ample divisor, and studies the stable pair locus for these data. The divisor $R$ is typically chosen to be the ramification divisor of an automorphism, and the compactification is independent of $\eps$ for $\eps$ sufficiently small ([@KS88, §5], [@Ale96a, §6], [@Kol23, Lemma VI.1.1], [@AET23]).
 For $K3$ surfaces with polarization of degree $2d$, a **divisor model** refers to the representation of a $K3$ surface $X$ together with an ample Cartier divisor $L$ of degree $2d$ -- concretely, for $d = 1$, this is a double cover of $\PP^2$ branched along a sextic.
 The stability condition requires $(X, L)$ to be log canonical with $K_X + L$ ample.
 The KSBA compactification $\ksbacpt{F}_{2d}$ for such pairs compactifies the moduli space of smooth pairs $(X, L)$ by adding K3 surface pairs with at worst ADE/slc singularities.
@@ -293,7 +293,7 @@ Let $\mathcal{X} \to C$ be a flat family of K3 surfaces over a smooth curve, equ
 with $\mcz = \mathcal{X} / \langle \tau \rangle$, yields a family of Enriques surfaces together with a divisor $\mcr_{\mcz}$ defined as the scheme-theoretic image of $\mcr$.
 In general, $\mcr_{\mcz}$ is a Weil divisor on $\mcz$ that is not Cartier, but its double $2\mcr_{\mcz}$ is always Cartier. This reflects a fundamental feature of Enriques surfaces: the divisor defining the marking or polarization typically does not descend to a Cartier divisor through a degree two étale cover with empty branch locus. Instead, the presence of the involution ensures there is global 2-torsion in the divisor class group, leading to the condition $2\mcr_{\mcz}\in \operatorname{CaDiv}(\mcz) \quad \text{but} \quad \mcr_{\mcz}\notin \operatorname{CaDiv}(\mcz).$
 This half-divisibility characterizes polarized Enriques surfaces and persists in their degenerations.
-When the $\mcx_0$ degenerates ($(\mathcal{X}_0, \mcr_0)$), it may become reducible, and the involution specializes to $\tau_0$ on $\mathcal{X}_0$. The quotient $\mcz_0 = \mathcal{X}_0 / \langle \tau_0 \rangle$ is then a demi-normal surface, and the induced divisor $\mcr_{\mcz_0}$ remains a Weil divisor with $2\mcr_{\mcz_0}$ Cartier. In the context of the KSBA compactification, every boundary stratum corresponding to a stable limit of Enriques surfaces is thus naturally modeled by half-divisor pairs $(\mcz_0, \frac{1}{2} \mcr_{\mcz_0})$, with log-canonical polarization $K_{\mcz_0} + \frac{1}{2} \mcr_{\mcz_0}$ ample, and with semi-log-canonical singularities that may arise both from the quotient construction and from singularities already present in the K3 $\mcx_0$. As discussed in \cite{AEGS25}, the structure of degenerations of Enriques surfaces are thus governed by half-divisor models in this way.
+When the $\mcx_0$ degenerates ($(\mathcal{X}_0, \mcr_0)$), it may become reducible, and the involution specializes to $\tau_0$ on $\mathcal{X}_0$. The quotient $\mcz_0 = \mathcal{X}_0 / \langle \tau_0 \rangle$ is then a demi-normal surface, and the induced divisor $\mcr_{\mcz_0}$ remains a Weil divisor with $2\mcr_{\mcz_0}$ Cartier. In the context of the KSBA compactification, every boundary stratum corresponding to a stable limit of Enriques surfaces is thus naturally modeled by half-divisor pairs $(\mcz_0, \frac{1}{2} \mcr_{\mcz_0})$, with log-canonical polarization $K_{\mcz_0} + \frac{1}{2} \mcr_{\mcz_0}$ ample, and with semi-log-canonical singularities that may arise both from the quotient construction and from singularities already present in the K3 $\mcx_0$. As discussed in @AEGS25, the structure of degenerations of Enriques surfaces are thus governed by half-divisor models in this way.
 
 #### The KSBA Moduli Stack
 
@@ -425,7 +425,7 @@ Arcs in $\bbcpt{\FG}$ approaching a 0-cusp $\eta$ are asymptotic to translates o
 We finally arrive at the key results that make our combinatorial analysis of $\fent$ possible:
 
 :::{.theorem
-   title="{Dependence of boundary strata on monodromy invariants \cite[Cor.\ 8.13]{AE23}}"
+   title="Dependence of boundary strata on monodromy invariants [@AE23, Cor. 8.13]"
    #boundary-monodromy-dependence}
 Suppose $R$ is a recognizable divisor for $F_S$. Let $(\cpt{X}^*, \eps \cpt{R}^*) \to C^*$ be a family of stable pairs over a punctured curve with monodromy invariant $\lambda$. Then the slc combinatorial type of the unique KSBA stable limit $(\cpt{X}_0, \eps \cpt{R}_0)$ depends only on the projective class $[\lambda]$.
 Thus there is a well-defined **stratum function**
@@ -436,7 +436,7 @@ which assigns to each projective monodromy class the corresponding slc boundary 
 :::
 
 :::{.proposition
-   title="{Normalization and Semitoroidal Strata \cite[Thm. 9.1, Cor. 9.2, Thm. 9.3]{AE23}} "
+   title="Normalization and Semitoroidal Strata [@AE23, Thm. 9.1, Cor. 9.2, Thm. 9.3]"
    #normalization-semitoroidal}
 
 Let $F_S$ denote the moduli space of $S$-polarized K3 surfaces, and suppose $R$ is a recognizable divisor for $F_S$.

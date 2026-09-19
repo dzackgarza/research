@@ -11,7 +11,7 @@ Let $V$ be a smooth projective rational surface, and let $D = \sum_j D_j$ be a r
 K_V + D \sim_{\QQ} 0.
 .\end{align*}
 
-Such pairs are also called **log Calabi-Yau surfaces**. If $V$ is a toric surface and $D = \partial V$ is its toric boundary divisor, $(V, D)$ is called a **toric anticanonical pair**. Common examples include pairs where $D$ is a smooth elliptic curve, a cycle of $n \ge 2$ smooth rational curves, or an irreducible rational nodal curve. For a classification of exceptional cases, see \cite[Lem.~4.2]{GHK15}.
+Such pairs are also called **log Calabi-Yau surfaces**. If $V$ is a toric surface and $D = \partial V$ is its toric boundary divisor, $(V, D)$ is called a **toric anticanonical pair**. Common examples include pairs where $D$ is a smooth elliptic curve, a cycle of $n \ge 2$ smooth rational curves, or an irreducible rational nodal curve. For a classification of exceptional cases, see [@GHK15, Lem. 4.2].
 The following is a numerical invariant that measures the deviation of an anticanonical pair from being toric.
 :::
 
@@ -44,7 +44,7 @@ Let $(V, D)$ be an anticanonical pair.
 - An **interior blowup** is the blowup of $V$ at a smooth point of a component of $D$. If $D''$ is the union of the proper transform of $D$ and the exceptional divisor, then $(V'', D'')$ is an anticanonical pair whose charge increases by one: $Q(V'', D'') = Q(V, D) + 1$.
 :::
 
-Any rational anticanonical pair can be obtained from a toric pair (which has charge 0) by a sequence of corner blowups followed by a sequence of interior blowups \cite{GHK15}.
+Any rational anticanonical pair can be obtained from a toric pair (which has charge 0) by a sequence of corner blowups followed by a sequence of interior blowups [@GHK15].
 In the context of K3 surface degenerations, these local invariants are subject to a global conservation law discovered by Friedman and Morrison.
 
 :::{.theorem title="Friedman–Morrison Charge Theorem for Type $\III$ Degenerations" #thm:friedman-morrison-charge}
@@ -54,7 +54,7 @@ Let $\mcx \to \Delta$ be a Type $\III$ Kulikov degeneration of K3 surfaces, with
 \sum_{i=1}^n Q(V_i, D_i) = 24.
 .\end{align*}
 
-This imposes the constraint that at most 24 of the components $V_i$ can be non-toric, as toric pairs contribute zero to the sum. This result provides a rigidity condition on the combinatorics of K3 degenerations \cite[Thm.~2.2]{FM83}, \cite{Fri15}.
+This imposes the constraint that at most 24 of the components $V_i$ can be non-toric, as toric pairs contribute zero to the sum. This result provides a rigidity condition on the combinatorics of K3 degenerations [@FM83, Thm. 2.2], [@Fri15].
 :::
 
 :::{.remark}

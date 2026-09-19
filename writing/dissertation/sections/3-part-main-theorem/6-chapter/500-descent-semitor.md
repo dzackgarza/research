@@ -34,7 +34,7 @@ Let $B \subset \mcm$ be a Noether–Lefschetz locus with compactification $\cpt{
 It follows that normalization of $\cpt{B}$ corresponds to resolving the branching and non-normal crossing behavior caused by failure of injectivity of the period map, singularities in the intersection of boundary divisors, and ramification induced by the global monodromy representation.
 :::
 
-Let $\mathsf{P}: \fent \to \fttz$ denote the period map between the moduli stack of lattice-polarized K3 (or Enriques) surfaces and its image in the period domain, extended to suitable toroidal or semi-toric compactifications $\cpt{\fent} \to \cpt{\fttz}$ as established in \cite{AEGS25}. Both source and target are Deligne–Mumford stacks, locally of finite type over $\CC$.
+Let $\mathsf{P}: \fent \to \fttz$ denote the period map between the moduli stack of lattice-polarized K3 (or Enriques) surfaces and its image in the period domain, extended to suitable toroidal or semi-toric compactifications $\cpt{\fent} \to \cpt{\fttz}$ as established in @AEGS25. Both source and target are Deligne–Mumford stacks, locally of finite type over $\CC$.
 
 :::{.proposition}
 The non-normality of the scheme-theoretic image of $\cpt{\fent} \to \cpt{\fttz}$ (and in particular for the closures of Noether–Lefschetz loci) along the boundary $\Delta = \cpt{\fttz} \setminus \fttz$ is a consequence of failures of separatedness and unramifiedness of the period map at points of $\Delta$, due to three mechanisms: (1) failure of injectivity of the period map at the boundary, (2) non-transversality of the intersection of irreducible components of $\Delta$, and (3) identifications arising from monodromy action.
@@ -53,7 +53,7 @@ The non-normality of the scheme-theoretic image of $\cpt{\fent} \to \cpt{\fttz}$
    
    The global monodromy group $\Gamma \leq \mathrm{O}(L)$ acts on the boundary components and may have nontrivial stabilizer orbits in the boundary. This manifests locally as a finite group action (coming from automorphisms in the degenerating family or stacky structure in the moduli) on the germ $U$ of $\cpt{\fttz}$: the scheme-theoretic image is modeled by the quotient $U/G$, where $G$ is a subgroup of $\Gamma$. The resulting singularities are quotient singularities, and the local ring of invariants is not integrally closed unless the action is free. Thus, normalization corresponds to passing to the cover $U$ before forming the quotient, and non-normality reflects the presence of ramification or fixed points for the group action.
 
-Each of these three mechanisms can be realized concretely in families of degenerating lattice-polarized K3 or Enriques surfaces (see \cite[\S 6]{AEGS25}, for explicit models). In each case, non-normality of the scheme-theoretic image of the period map along the boundary is a direct consequence of the existence of multiple branches, nontransverse intersections, or stacky (ramified) structure resulting from monodromy. The normalization resolves the non-normal behavior, yielding a finite (possibly ramified) cover of the image.
+Each of these three mechanisms can be realized concretely in families of degenerating lattice-polarized K3 or Enriques surfaces (see [@AEGS25, §6], for explicit models). In each case, non-normality of the scheme-theoretic image of the period map along the boundary is a direct consequence of the existence of multiple branches, nontransverse intersections, or stacky (ramified) structure resulting from monodromy. The normalization resolves the non-normal behavior, yielding a finite (possibly ramified) cover of the image.
 :::
 
 
@@ -98,7 +98,7 @@ The restriction of the period domain reflects the imposition of involution-invar
     #const:folded-semifans
 }
 The classifying morphism $\phi: \normalize{B} \to \cpt{\fent}$ transports the combinatorial structure of $\semifan{F}_B$ to the boundary stratification on $\cpt{\fent}$.
-According to the explicit construction in \cite[\S 2.2]{AEGS25}, the semitoroidal compactification $\ksbacpt{\fent}$ is isomorphic to $\cpt{\fent}^{\semifan{F}}$, where $\mathcal{F} = \{\semifan{F}_k\}_{k=1}^5$ is the collection of semifans assigned to the five $0$-cusps (maximal boundary components) of $\cpt{\fent}$.
+According to the explicit construction in [@AEGS25, §2.2], the semitoroidal compactification $\ksbacpt{\fent}$ is isomorphic to $\cpt{\fent}^{\semifan{F}}$, where $\mathcal{F} = \{\semifan{F}_k\}_{k=1}^5$ is the collection of semifans assigned to the five $0$-cusps (maximal boundary components) of $\cpt{\fent}$.
 Each semifan $\semifan{F}_k$ associated to the five 0-cusps of the moduli space $\mathcal{F}_{\mathrm{En},2}$ is defined by intersecting the ambient ramification semifan $\semifan{F}_{\mathrm{ram}}$ for the K3 covering with the period subdomain corresponding to the cusp, followed by folding under the involution. This folding identifies cones related by involution-invariant lattice automorphisms.
 For each $k$, the combinatorial structure is given by the following:
 
@@ -120,5 +120,5 @@ The classifying morphism $\phi : \normalize{B} \to \cpt{\fent}$ has the followin
 :::
 
 :::{.proof}
-Birationality and identification on the open locus is a consequence of the moduli interpretation and the universal property of normalization. Properness follows from the properness of the moduli stacks and the modular representability. Compatibility with the combinatorial stratification is a consequence of the construction of the semifans and their folding, and is treated in full detail in \cite{AEGS25}.
+Birationality and identification on the open locus is a consequence of the moduli interpretation and the universal property of normalization. Properness follows from the properness of the moduli stacks and the modular representability. Compatibility with the combinatorial stratification is a consequence of the construction of the semifans and their folding, and is treated in full detail in @AEGS25.
 :::

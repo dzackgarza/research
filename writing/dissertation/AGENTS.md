@@ -8,7 +8,7 @@ Surfaces* (D. Zack Garza, University of Georgia, 2025), and its build.
 - `sections/` — one directory per part, one per chapter, numbered files per
   section. `#` is a part, `##` a chapter, `###` a section. Theorem-like
   environments are fenced divs (`:::{.theorem title="..."}`); cross-references
-  use `\Cref`; citations use `\cite{key}` with Better BibTeX keys. The full
+  use typed Pandoc-crossref IDs and `@...` references; citations use Pandoc citation syntax (`@key` or `[@key]`) with Better BibTeX keys. The full
   conventions are `~/.pandoc/AUTHORING_STYLE.md`.
 - `figures` — symlink to `~/.pandoc/figures`, the single owner of every figure and
   its editable source.

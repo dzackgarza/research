@@ -29,7 +29,7 @@ A **Kulikov model** of a family of projective surfaces is a degeneration $\mcx \
 2. The central fiber $\mcx_0$ is a reduced snc divisor;
 3. The relative dualizing sheaf is trivial: $\omega_{\mcx/C} \cong \OO_{\mcx}$.
 
-This Calabi–Yau condition ensures that $\mcx$ is a Calabi–Yau threefold over $C$ and provides precise control over the limiting MHS (see \cite{Kul77, PP81}). The condition ensures that the limits of periods and Hodge structures are controlled, and $\mcx_0$ is as geometrically simple as feasible under semistable reduction.
+This Calabi–Yau condition ensures that $\mcx$ is a Calabi–Yau threefold over $C$ and provides precise control over the limiting MHS (see [@Kul77; @PP81]). The condition ensures that the limits of periods and Hodge structures are controlled, and $\mcx_0$ is as geometrically simple as feasible under semistable reduction.
 
 The variation of Hodge structure on the local system $R^2 \pi_* \ul{\ZZ}$ equips the family with a locally constant sheaf whose fibers are $H^2(\mcx_t; \ZZ)$ for $t \neq 0$. The monodromy transformation about $t = 0$ is given by the Picard-Lefschetz operator
 $T \colon H^2(\mcx_t; \ZZ) \to H^2(\mcx_t; \ZZ).$
@@ -60,7 +60,7 @@ After passing to a finite ramified cover of $\Delta$, one reduces to the case wh
   $$
   where $p_a(D_{ij})$ is the arithmetic genus of $D_{ij}$.
 
-The dual complex of $\mcx_0$ is a triangulation of the 2-sphere $\IAS^2$ \cite{FS86, Fri83}.
+The dual complex of $\mcx_0$ is a triangulation of the 2-sphere $\IAS^2$ [@FS86; @Fri83].
 These types are naturally stratified by the rank of isotropic subspaces in the boundary lattice $\bdlattice{T}{I}$ and correspond to geometric monodromy vectors in the rational closure of $\thecone{C}_I$ in $\bdlattice{T}{I, \RR}$:
 
 - Type $\I$ degenerations correspond to interior points of $\thecone{C}_I$;
@@ -79,7 +79,7 @@ The image of a simple closed loop $\gamma$ generating $\pi_1(\Delta^*, t)$ is th
 $$
 T_\gamma \colon H^2(\mcx_t; \ZZ) \to H^2(\mcx_t; \ZZ)
 ,$$
-represented by the **monodromy matrix** $T \in \GL_n(\ZZ)$ where $n = \Pic\ H^2(\mcx_t; \ZZ)$ \cite{Kul77}, \cite{FS86}.
+represented by the **monodromy matrix** $T \in \GL_n(\ZZ)$ where $n = \Pic\ H^2(\mcx_t; \ZZ)$ [@Kul77], [@FS86].
 :::
 
 :::{.theorem title="Quasi-Unipotency and Log Monodromy" #thm:quasi-unipotent-monodromy}
@@ -87,14 +87,14 @@ If $\mcx_0$ is a simple normal crossings (semistable) degeneration, the monodrom
 $$
 N = \log(T) = (T-\id) - {1\over 2}(T-\id)^2 + \frac{1}{3}(T-\id)^3 - \cdots + \frac{(-1)^{n+1}}{n}(T-\id)^n
 ,$$
-where $n$ is the index of nilpotency \cite{Kul77}, \cite{PP81}.
+where $n$ is the index of nilpotency [@Kul77], [@PP81].
 :::
 
 :::{.definition title="Monodromy Around Singularities" #def:monodromy-singularities}
 Let $B$ be an integral affine manifold with singularities. The **monodromy** of $B$ around a singularity $p$ is the element of $\operatorname{Aff}(\ZZ^n)$ defined by parallel transport around a loop encircling $p$.
 For an $I_1$ singularity in dimension $2$, the monodromy matrix is
 $T = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}.$
-This affine monodromy encodes the classical Picard–Lefschetz transformation for such degenerations \cite{KS06}, \cite{Sym03}.
+This affine monodromy encodes the classical Picard–Lefschetz transformation for such degenerations [@KS06], [@Sym03].
 :::
 
 :::{.remark 
@@ -105,7 +105,7 @@ For a Type $\III$ Kulikov degeneration with $\mcx_0$ $\mcx_0$, the **monodromy i
 
 2. The *barycentric coordinates* $\lambda = (\ell_i)$,which  determine $B(\lambda)$, an explicit $\IAS^2$. 
 
-For more details, see \cite{AEGS25, GHK15, Eng18}.
+For more details, see [@AEGS25; @GHK15; @Eng18].
 :::
 
 :::{.definition title="Weight Filtration on Cohomology" #def:weight-filtration-cohomology}
@@ -117,7 +117,7 @@ yielding a canonical increasing filtration
 $$
 0 = W_{-1} \subset W_0 \subset W_1 \subset W_2 \subset W_3 \subset W_4 = H^2(\mcx_t; \CC)
 .$$
-The **graded pieces** are $\Gr_k^W H^2 \da  W_k / W_{k-1}$, and carry the limiting mixed Hodge structure by \cite{Del71}.
+The **graded pieces** are $\Gr_k^W H^2 \da  W_k / W_{k-1}$, and carry the limiting mixed Hodge structure by @Del71.
 :::
 
 In the case of K3 surfaces, we can explicitly recover the filtration in terms of the order of nilpotency:
@@ -135,7 +135,7 @@ The geometric interpretations are as follows:
 - $\Gr_2^W$ corresponds to the part of the cohomology preserved in the degeneration;
 - $\Gr_4^W$ arises from new cycles present in Type $\III$ degenerations.
 
-This filtration packages the mixed Hodge structure obtained from the Clemens–Schmid exact sequence and classifies degenerations according to their limit behavior by \cite{Kul77}.
+This filtration packages the mixed Hodge structure obtained from the Clemens–Schmid exact sequence and classifies degenerations according to their limit behavior by @Kul77.
 :::
 
 Degenerations with unipotent monodromy give rise to *monodromy invariants*, which we now describe.

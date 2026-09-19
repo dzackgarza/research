@@ -48,7 +48,7 @@ Let $b \in B$ be a geometric point and $\mcx_b$, $\mcz_b$ the corresponding fibe
 :::
 
 :::{.proof}
-In the smooth case, this is the standard construction of Enriques surfaces as fixed-point-free quotients of K3 surfaces by involution. In the presence of singularities, since $\ien$ is biregular and fixes only loci of codimension at least $2$, the quotient remains slc by \cite{KM98}. The canonical bundle calculation follows from the adjunction formula and the behavior of $\ien$ on $K_{\mcx_b} \sim 0$; the pushforward identifies $K_{\mcx_b}$ with $\rho^* K_{\mcz_b}$ so that $2K_{\mcz_b} \sim 0$.
+In the smooth case, this is the standard construction of Enriques surfaces as fixed-point-free quotients of K3 surfaces by involution. In the presence of singularities, since $\ien$ is biregular and fixes only loci of codimension at least $2$, the quotient remains slc by @KM98. The canonical bundle calculation follows from the adjunction formula and the behavior of $\ien$ on $K_{\mcx_b} \sim 0$; the pushforward identifies $K_{\mcx_b}$ with $\rho^* K_{\mcz_b}$ so that $2K_{\mcz_b} \sim 0$.
 :::
 
 :::{.proposition

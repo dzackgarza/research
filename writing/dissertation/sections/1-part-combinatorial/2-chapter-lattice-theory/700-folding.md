@@ -1,8 +1,8 @@
-### Lattice Folding
+### Lattice Folding {#sec:lattice-folding}
 
 #### Examples and Conventions around Dynkin Diagrams
 
-We quickly recall constructions of root systems of small rank, which easily generalize to larger rank but allow for explicit calculations. For each such lattice $L$, we recall the classical embeddings $L\injects \EE_L$ into Euclidean spaces, describe the simple roots $\Phi(L) = \{\alpha_i\}$ in coordinates in $\EE_L$ and the Gram matrix $G_L$ for $\Phi(L)$ in terms of the $\alpha_i$ by carrying out computations using Euclidean coordinates within $\EE_L$. For this section, we explicitly write root lattices in the **positive-definite** convention, since we are working with roots in $\EE_L$ directly. For the remainder of this work, we implicitly take the negative-definite variants; although this can create confusion, but makes the computations easily verifiable using linear algebra and the standard positive-definite Euclidean pairing on $\ZZ^n$. Thus throughout this section,if $R$ is a root-lattice, it is assumed to be positive-definite, with negative-definite twist $R(-1)$. For explicit conventions, we refer to Appendix~\ref{section-root-lattice-conventions}.
+We quickly recall constructions of root systems of small rank, which easily generalize to larger rank but allow for explicit calculations. For each such lattice $L$, we recall the classical embeddings $L\injects \EE_L$ into Euclidean spaces, describe the simple roots $\Phi(L) = \{\alpha_i\}$ in coordinates in $\EE_L$ and the Gram matrix $G_L$ for $\Phi(L)$ in terms of the $\alpha_i$ by carrying out computations using Euclidean coordinates within $\EE_L$. For this section, we explicitly write root lattices in the **positive-definite** convention, since we are working with roots in $\EE_L$ directly. For the remainder of this work, we implicitly take the negative-definite variants; although this can create confusion, but makes the computations easily verifiable using linear algebra and the standard positive-definite Euclidean pairing on $\ZZ^n$. Thus throughout this section,if $R$ is a root-lattice, it is assumed to be positive-definite, with negative-definite twist $R(-1)$. For explicit conventions, we refer to Appendix~@sec:root-lattice-conventions.
 
 #### Invariant and Coinvariant Sublattices
 
@@ -43,10 +43,6 @@ Classical examples in the context of semisimple Lie algebras include:
 
 In the study of $\fent$, the folding procedure must be carried out more carefully at the level of lattices, explicitly tracking the explicit twists that folding introduces, along with other parity-related data necessary for distinguishing irreducible components of the associated KSBA stable models, which we describe in the section on ADE surfaces.
 In order to make this theory concrete, we now show how to explicitly carry out the types of folding calculations that occur for $\fent$, as well as for some of the exceptional types that do not occur in this specific case, noting the slightly new features that arise (like tracking twists) arise, causing some slight differences in conventions from the presentations of folding given in classical literature.
-
-\newcommand{\dynkinscale}{4.0}
-\newcommand{\labeldistance}{8pt}
-\begin{center}
 \begin{tikzpicture}
   % Grid 1 - Top Left Quadrant
   \begin{scope}[shift={(0,10)}]
@@ -115,7 +111,6 @@ In order to make this theory concrete, we now show how to explicitly carry out t
   \end{scope}
 
 \end{tikzpicture}
-\end{center}
 
 ##### Case 1: $A_5 \to C_3(2)$ (Horizontal Reflection, $G = S_2$)
 
@@ -203,7 +198,6 @@ $$
 which is the Gram matrix for $C_3$ up to uniform scaling, so $\Phi(A_5^G) \cong \Phi(C_3)$.
 One can see the equivalence of these root systems by noting that the Coxeter diagrams are isomorphic as weighted graphs with weighted nodes:
 
-\begin{center}
 \begin{tikzpicture}
 
 % Left half: A5^G
@@ -257,7 +251,6 @@ One can see the equivalence of these root systems by noting that the Coxeter dia
 \end{scope}
 
 \end{tikzpicture}
-\end{center}
 
 ##### Case 2: $D_4 \to C_3$ (Vertical Reflection, $G=S_2$)
 
@@ -335,7 +328,6 @@ G_{C_3} =
 which is precisely the Gram matrix for $C_3$, so $\Phi(D_4^G) \cong \Phi(C_3)$.
 One can again see the equivalence by noting the isomorphism of Coxeter diagrams:
 
-\begin{center}
 \begin{tikzpicture}
 
 % First diagram: D4^G
@@ -369,7 +361,6 @@ One can again see the equivalence by noting the isomorphism of Coxeter diagrams:
 \end{scope}
 
 \end{tikzpicture}
-\end{center}
 
 
 ##### Case 3: $D_4 \to G_2$ (Rotation by $2\pi/3$, $G = \ZZ/3\ZZ$)
@@ -529,7 +520,7 @@ A technical result governing the folding is:
 
 :::{.lemma
   title="Root folding criterion"
-  #lem-which-roots-descend
+  #lem:which-roots-descend
 }
 Let $\Phi(\tdp)$ be the root system of $\tdp$ and $I$ be the induced involution.
 The folded roots $\beta_{[v]} \in\Phi( \tdp^{\gens{I}} )$ arise in exactly one of the following ways:

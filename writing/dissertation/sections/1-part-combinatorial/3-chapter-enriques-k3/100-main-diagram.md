@@ -79,7 +79,6 @@ $$
 corresponding to $\tau$-invariant monomials.
 Thus $Q$ and $W$ share the same polytope, but for the two distinct lattices $M_Y \da \ZZ^2$ and $M_W \da \ZZ^2_{\ev}$. We note that $Q_Z$ has 16 boundary lattice points and 9 interior points, yielding 25 total sections of $\OO_Y(4,4)$, while $Q_W$ has 8 boundary points and 5 interior points, yielding 13 $\tau$-invariant sections:
 
-\begin{center}
 \begin{tikzpicture}[scale=1.2]
     % Define colors using a harmonious palette inspired by Material Design
     % Base: Cool grays for structure
@@ -158,11 +157,10 @@ Thus $Q$ and $W$ share the same polytope, but for the two distinct lattices $M_Y
     \node[polytopeedge, font=\bfseries] at (1.5,4.4) {$Q_Y, Q_W$};
     
 \end{tikzpicture}
-\end{center}
 
 ##### The K3 Double Cover
 
-We briefly recall the standard construction of a double cover of smooth projective surface $Y$ branched over a reduced divisor $B$ as a method of producing (families of) Calabi-Yau varieties (see e.g.\cite{Par91}).
+We briefly recall the standard construction of a double cover of smooth projective surface $Y$ branched over a reduced divisor $B$ as a method of producing (families of) Calabi-Yau varieties (see e.g. [@Par91]).
 Select a line bundle $L$ such that $L^{\tensor 2} \cong \OO_Y(B)$ -- for example, if $B \in |-2K_Y|$, one can take $L = -K_Y$.
 We can write $B$ as the zero divisor of zeros of a section $f \in H^0(Y, L^{\tensor 2})$, and
 define a coherent $\OO_Y$-algebra $\mca = \OO_Y \oplus L^{-1},$ where the algebra structure is locally determined by
@@ -268,7 +266,7 @@ R = \psi^* R_Z = {1\over 2} \pi^*(B), \qquad R_Z = \frac12 \psi_* R
 Since $B$ is ample, $R$ is ample as the pullback of an ample divisor under a finite surjective morphism. Since $\psi$ is a finite quotient by a group acting freely in codimension 1, the pushfoward $R_Z$ of $R$ is ample as well.
 The associated line bundle on $Z$ satisfies $\mcm \da \OO_Z(R_Z) = \mcl_Z^{\tensor 2}$ for a suitable element $\mcl_Z \in \Pic(Z)$, and thus $[\mcl_Z] \in \Pic(Z)/C_2$ is a well-defined numerical polarization on the Enriques surface $Z$.
 We can check that its degree is 2, and the degree of $\mcm$ is 8.
-Conversely, if $\mcm$ is any polarization on an Enriques surface $Z$ with at worst ADE singularities which is 2-divisble, so $\mcm = \mcl_Z^{\tensor 2}$ for some $\mcl_Z\in \Pic(Z)$, then $\abs{\mcm}$ is big and nef and thus by \cite{Cos83, CD89, CDL25} defines a 2-to-1 branched cover $\rho:Z\to W$ where $W$ is a quartic del Pezzo with $4A_1$ or $A_3 + 2A_1$ singularities with ample ramification divisor $R_Z$.
+Conversely, if $\mcm$ is any polarization on an Enriques surface $Z$ with at worst ADE singularities which is 2-divisble, so $\mcm = \mcl_Z^{\tensor 2}$ for some $\mcl_Z\in \Pic(Z)$, then $\abs{\mcm}$ is big and nef and thus by [@Cos83; @CD89; @CDL25] defines a 2-to-1 branched cover $\rho:Z\to W$ where $W$ is a quartic del Pezzo with $4A_1$ or $A_3 + 2A_1$ singularities with ample ramification divisor $R_Z$.
 In this situation, $(Z, \eps R_Z)$ is a log canonical pair for small enough $\eps$, and thus there is a well-defined KSBA moduli space of such pairs which we will refer to as $\fent$.
 We summarize the overall situation in the following diagram:
 
@@ -333,11 +331,11 @@ Here,
 
 - $\psi': X \to Z'\da  X/\inik$ is the quotient by the Nikulin involution $\inik$, where $Z'$ is a singular K3 surface with (at least) $8A_1$ singularities.
 
-This diagram has been well-studied in the literature, see e.g. \cite{Cos83, CD89, Hor78a, Enr07}.
+This diagram has been well-studied in the literature, see e.g. [@Cos83; @CD89; @Hor78a; @Enr07].
 The GIT quotient
 $$
 \gitcpt{ \mcm_{\En, 2} } \da \PP^{12} \gitquot D_4 \ltimes (\CCstar)^2,
 $$
-was studied in \cite{Sha81a}, where it is determined exactly which forms of $f$ result in stable and unstable quartic K3 surfaces
-\cite{Hor78} analyzed the period map and its extension.
+was studied in @Sha81, where it is determined exactly which forms of $f$ result in stable and unstable quartic K3 surfaces
+@Hor78 analyzed the period map and its extension.
 In particular, if $f(x, y)$ vanishes at a torus-fixed point, the K3 cover $X$ acquires a node and the quotient by the Enriques involution is a **Coble surface**: a smooth rational projective surface with empty anti-canonical linear system $|-K| = \varnothing$ but non-empty anti-bicanonical system $|-2K| \neq \varnothing$.

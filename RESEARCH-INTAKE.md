@@ -132,7 +132,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Operationalized algebraic topology calculational theorems (Mayer-Vietoris, Universal Coefficient Theorems, Künneth formulas, cellular homology, excision, Poincaré duality, van Kampen, and Hurewicz) | User intake 2026-09-19 | Comprehensive computational framework implementing Hatcher-style topological theorems as exact solvers: (1) Mayer-Vietoris sequence solver for homology and cohomology: $H_n(A \cap B) \to H_n(A) \oplus H_n(B) \to H_n(X) \to H_{n-1}(A \cap B)$, reduced/relative variants, connecting homomorphisms $\partial, \delta$; (2) Universal Coefficient Theorems (UCT): automated evaluation of $H_n(X; G) \cong (H_n(X) \otimes G) \oplus \operatorname{Tor}_1(H_{n-1}(X), G)$ and $H^n(X; G) \cong \operatorname{Hom}(H_n(X), G) \oplus \operatorname{Ext}^1(H_{n-1}(X), G)$ across arbitrary coefficients ($\mathbb{Q}, \mathbb{F}_p, \mathbb{Z}/m$); (3) Künneth formula solver for products $X \times Y$ with $\otimes$ and $\operatorname{Tor}_1$ terms; (4) Cellular homology engine: attaching maps, cellular boundary matrices $d_n = [\deg(\Delta_{\alpha, \beta})]$, and Euler characteristic $\chi(X) = \sum (-1)^n c_n$; (5) Long exact sequences of pairs $(X, A)$, excision, suspension isomorphisms $\widetilde{H}_{n+1}(\Sigma X) \cong \widetilde{H}_n(X)$, and wedge sums; (6) Cohomology rings: cup and cap products, Poincaré duality isomorphisms $H^k(M) \cong H_{n-k}(M)$, and intersection pairings; (7) Homotopy theory solvers: Seifert-van Kampen amalgamated free product solver $\pi_1(A) *_{\pi_1(A \cap B)} \pi_1(B)$, Hurewicz abelianization $\pi_1^{\mathrm{ab}} \cong H_1$ and higher Hurewicz isomorphisms $\pi_n(X) \cong H_n(X)$ | `categories/topology/computational_topology.py` + `categories/topology/mayer_vietoris.py` + `categories/topology/uct.py` + `categories/topology/kunneth.py` + `categories/topology/cellular.py` + `categories/topology/poincare_duality.py` + `categories/topology/van_kampen.py` | Proposed — see note below |
 | Concrete combinatorial models for small categories, walking diagrams, deloopings BG, and finitely presented 2-categories | User intake 2026-09-19 | Concrete combinatorial and computational models for finite/small categories and 2-categories: (1) Quiver presentations $F(Q)/R$: directed multigraphs $Q=(V, E, s, t)$, path categories $F(Q)$, 2-sided path relations $R$, rewriting systems, normal forms, and Cayley multiplication tables; (2) Simplex categories $\Delta^n = [n]$ (chains $0 \to 1 \to \dots \to n$), simplex category $\mathbf{\Delta}$ with coface $d^i$ and codegeneracy $s^i$ operators, and nerves $N(\mathcal{C})$; (3) Universal classifying "walking" diagrams: walking object $\mathbf{1} = [0]$, walking arrow $\mathbf{2} = [1]$, walking parallel pair $\{0 \rightrightarrows 1\}$, walking span and cospan, walking commutative square, walking isomorphism $\mathbb{I}$, walking retraction, and walking idempotent $\bullet \circlearrowleft e$; (4) Delooping groupoids $BG$ for groups/monoids $G$, action/translation groupoids $X // G$, pair groupoids $\operatorname{Pair}(S)$, and fundamental groupoids $\Pi_1$; (5) Finitely presented 2-categories: 2-quivers/computads (0-cells, 1-cells, 2-cells), horizontal $\circ_0$ and vertical $\circ_1$ compositions, interchange law, walking natural transformation, walking adjunction $\mathbf{Adj}$ with zigzag identities, walking monad $\mathbf{Mnd}$ with pentagon/triangle identities, and walking comonad | `categories/finitely_presented/quiver.py` + `categories/finitely_presented/category_presentation.py` + `categories/finitely_presented/walking.py` + `categories/finitely_presented/simplex_category.py` + `categories/groups/delooping.py` + `categories/finitely_presented/two_category.py` + `categories/finitely_presented/walking_two_category.py` | Proposed — see note below |
 | Cyclotomic spectra, topological cyclic homology ($TC$), Tate constructions, and motivic prismatic filtrations | Literature survey + user intake 2026-09-19 | Comprehensive stable homotopy and cyclotomic spectra framework for topological cyclic homology ($TC$): (1) Modern Nikolaus-Scholze cyclotomic spectra: $S^1$-equivariant spectra $\mathbf{Sp}^{BS^1}$, Tate construction $X^{tC_p} = \operatorname{cofib}(X_{hC_p} \xrightarrow{N} X^{hC_p})$ with residual $S^1/C_p \cong S^1$-action, and $S^1$-equivariant cyclotomic Frobenius $\phi_p \colon X \to X^{tC_p}$; (2) Core topological invariants: Topological Hochschild Homology $THH(R)$ as an $E_\infty$-cyclotomic spectrum (cyclic bar construction, cyclotomic diagonal $\Delta_p$); Topological Negative Cyclic Homology $TC^-(X; p) \coloneqq X^{hS^1}$; Topological Periodic Homology $TP(X; p) \coloneqq X^{tS^1}$; and Topological Cyclic Homology $TC(X; p) \coloneqq \operatorname{fib}(X^{hS^1} \xrightarrow{\phi_p^{hS^1} - \operatorname{can}} (X^{tC_p})^{hS^1})$; (3) Spectral sequences: Homotopy Fixed Point Spectral Sequence (HFPSS) $E_2 = H^*(BS^1; \pi_*(X)) \implies \pi_*(X^{hS^1})$, Tate Spectral Sequence (TSS) $\widehat{E}_2 = \widehat{H}^*(S^1; \pi_*(X)) \implies \pi_*(X^{tS^1})$ ($u$-periodicity), and Bökstedt spectral sequence for $THH$; (4) Concrete calculational engines: exact evaluations for perfect fields $k = \mathbb{F}_p$ ($THH_*(\mathbb{F}_p) = \mathbb{F}_p[\sigma]$, $TC(\mathbb{F}_p) \cong \mathbb{Z}_p \oplus \Sigma^{-1} \mathbb{Z}_p$), truncated polynomials $k[x]/(x^m)$, $p$-adic integers $\mathbb{Z}_p$ (recovering Lichtenbaum-Quillen), and sphere spectrum $\mathbb{S}$; (5) Bhatt-Morrow-Scholze (BMS) motivic filtration: decreasing filtration on $THH, TC^-, TP, TC$ recovering prismatic cohomology $\Delta_R$ on $\operatorname{gr}^i TP$ and syntomic cohomology $\mathbb{Z}_p(i)$ on $\operatorname{gr}^i TC$ | `categories/spectra/spectrum.py` + `categories/spectra/equivariant.py` + `categories/spectra/cyclotomic.py` + `categories/spectra/tate_spectral_sequence.py` + `categories/spectra/tc_calculators.py` + `categories/spectra/bms_motivic.py` | Proposed — see note below |
-
+| Bernoulli and Bell numbers, polylogarithms, Bloch-Wigner dilogarithm, multiple zeta values, p-adic integration, Dedekind zeta residues, and BSD invariants | Literature survey + user intake 2026-09-19 | Comprehensive analytic, arithmetic, and motivic invariants framework: (1) Bernoulli and Bell numbers: generating functions, Faulhaber power sums, von Staudt-Clausen denominators, Kummer congruences, Kubota-Leopoldt $p$-adic $L$-values, Bell/Touchard polynomials, and Stirling numbers of the second kind; (2) Polylogarithms and Bloch-Wigner dilogarithm: $\operatorname{Li}_s(z)$, single-valued Bloch-Wigner $D(z) = \operatorname{Im}(\operatorname{Li}_2(z)) + \arg(1-z)\log|z|$, 5-term functional equations, hyperbolic 3-manifold volumes, and the Bloch group $B(F)$; (3) Multiple zeta values (MZVs) and multiple polylogarithms: iterated Kontsevich integrals, weight/depth, stuffle and shuffle products, double shuffle relations, and motivic MZVs; (4) $p$-adic integration and analysis: Volkenborn integration on $\mathbb{Z}_p$, Mahler polynomial expansions, Coleman integration of differentials on curves, Coleman-Chabauty bounds, and Fontaine-Mazur $\mathcal{L}$-invariants; (5) Dedekind zeta functions $\zeta_K(s)$: functional equations, analytic class number formula at $s=1$ ($\lim (s-1)\zeta_K = \frac{2^{r_1}(2\pi)^{r_2} h R}{w \sqrt{|d|}}$), leading terms at $s=0$, and Borel higher regulators; (6) BSD conjecture and equality invariants: Birch and Swinnerton-Dyer leading term $\lim L(E,s)/(s-1)^r = \frac{\Omega_E R_E |\Sha| \prod c_v}{|E_{\mathrm{tors}}|^2}$, arithmetic volume / real periods $\Omega_E$, Néron-Tate regulator $R_E$, Tate-Shafarevich group $\Sha(E/K)$, Tamagawa indices $c_v$ via Tate's algorithm, and Bloch-Kato Tamagawa number conjecture | `categories/number_theory/bernoulli.py` + `categories/analysis/polylogarithms.py` + `categories/analysis/multiple_zeta.py` + `categories/number_theory/p_adic_analysis.py` + `categories/number_theory/dedekind_zeta.py` + `categories/elliptic_curves/bsd_conjecture.py` | Proposed — see note below |
 
 
 
@@ -4984,6 +4984,299 @@ Intended owners: `categories/finitely_presented/quiver.py` (`FiniteQuiver`, `Pat
     - `syntomic_specialization(R, p, weight)`: computes $\operatorname{gr}^i TC(R) \cong \mathbb{Z}_p(i)(R)[2i]$.
 
 Intended owners: `categories/spectra/spectrum.py` (`Spectrum`, `SphereSpectrum`, `EilenbergMacLaneSpectrum`), `categories/spectra/equivariant.py` (`CircleSpectrum`, `HomotopyFixedPoints`, `HomotopyOrbits`, `TateSpectrum`), `categories/spectra/cyclotomic.py` (`CyclotomicSpectrum`, `CyclotomicFrobenius`, `TopologicalHochschildHomology`, `TopologicalNegativeCyclicHomology`, `TopologicalPeriodicHomology`, `TopologicalCyclicHomology`), `categories/spectra/tate_spectral_sequence.py` (`TateSpectralSequence`, `HomotopyFixedPointSpectralSequence`, `BokstedtSpectralSequence`), `categories/spectra/tc_calculators.py` (`calculate_tc_finite_field`, `calculate_tc_p_adic_integers`, `calculate_tc_dual_numbers`, `calculate_tc_sphere`), `categories/spectra/bms_motivic.py` (`BMSMotivicFiltration`, `prismatic_specialization`, `syntomic_specialization`).
+
+
+## Desired capability: Special values, polylogarithms, p-adic integration, Dedekind zeta residues, and BSD equality invariants — intake 2026-09-19
+
+* **Mathematical background & foundational structures:**
+  * **Bernoulli numbers, Bell numbers, and generating functions:**
+    * **Bernoulli numbers and polynomials:**
+      - Exponential generating function for Bernoulli polynomials:
+        $$
+        \frac{t e^{x t}}{e^t - 1} \;=\; \sum_{n=0}^\infty B_n(x) \frac{t^n}{n!}.
+        $$
+      - Bernoulli numbers: $B_n \coloneqq B_n(0)$, with $B_0 = 1, B_1 = -1/2, B_2 = 1/6, B_4 = -1/30, B_6 = 1/42, B_8 = -1/30$, and $B_{2k+1} = 0$ for $k \ge 1$.
+      - Polynomial properties: $B_n'(x) = n B_{n-1}(x)$, difference equation $B_n(x+1) - B_n(x) = n x^{n-1}$, and symmetry $B_n(1-x) = (-1)^n B_n(x)$.
+      - Faulhaber's formula for sums of powers:
+        $$
+        \sum_{k=1}^N k^p \;=\; \frac{1}{p+1} \big( B_{p+1}(N+1) - B_{p+1}(0) \big).
+        $$
+      - Euler-Maclaurin summation formula relating discrete sums $\sum_{k=a}^b f(k)$ to the integral $\int_a^b f(x) dx$ with asymptotic expansion in $B_{2k} f^{(2k-1)}$.
+      - Von Staudt-Clausen theorem on fractional parts:
+        $$
+        B_{2k} \;+\; \sum_{(p-1) \mid 2k} \frac{1}{p} \;\in\; \mathbb{Z}.
+        $$
+      - Kummer congruences: If $p-1 \nmid 2k$ and $2k \equiv 2m \pmod{p^{a-1}(p-1)}$, then:
+        $$
+        (1 - p^{2k-1}) \frac{B_{2k}}{2k} \;\equiv\; (1 - p^{2m-1}) \frac{B_{2m}}{2m} \pmod{p^a}.
+        $$
+      - Connection to special values of the Riemann zeta function:
+        $$
+        \zeta(2k) \;=\; (-1)^{k-1} \frac{(2\pi)^{2k} B_{2k}}{2 (2k)!}, \qquad \zeta(1-k) \;=\; -\frac{B_k}{k} \quad (k \ge 1).
+        $$
+      - Interpolation by Kubota-Leopoldt $p$-adic $L$-functions: $L_p(1-k, \omega^k) = -(1 - p^{k-1}) \frac{B_k}{k}$.
+    * **Bell numbers and Stirling numbers:**
+      - Bell number $B_n$ counts partitions of an $n$-element set ($B_0 = 1, B_1 = 1, B_2 = 2, B_3 = 5, B_4 = 15, B_5 = 52, B_6 = 203$).
+      - Exponential generating function: $\sum_{n=0}^\infty B_n \frac{t^n}{n!} = \exp(e^t - 1)$.
+      - Recurrence relation: $B_{n+1} = \sum_{k=0}^n \binom{n}{k} B_k$.
+      - Dobiński's formula:
+        $$
+        B_n \;=\; \frac{1}{e} \sum_{k=0}^\infty \frac{k^n}{k!}.
+        $$
+      - Stirling numbers of the second kind $\left\{ \begin{matrix} n \\ k \end{matrix} \right\}$ counting partitions into exactly $k$ non-empty blocks:
+        $$
+        B_n \;=\; \sum_{k=0}^n \left\{ \begin{matrix} n \\ k \end{matrix} \right\}, \qquad \left\{ \begin{matrix} n \\ k \end{matrix} \right\} \;=\; \frac{1}{k!} \sum_{j=0}^k (-1)^{k-j} \binom{k}{j} j^n.
+        $$
+      - Bell polynomials (Touchard polynomials): $B_n(x) \coloneqq \sum_{k=0}^n \left\{ \begin{matrix} n \\ k \end{matrix} \right\} x^k$ with EGF $\exp(x(e^t - 1))$.
+
+  * **Polylogarithms, Dilogarithm, and the Bloch-Wigner Function:**
+    * **Classical Polylogarithms:**
+      - Series definition for $|z| < 1$: $\operatorname{Li}_s(z) \coloneqq \sum_{n=1}^\infty \frac{z^n}{n^s}$, analytic continuation to $\mathbb{C} \setminus [1, \infty)$.
+      - Differential-integral ladder:
+        $$
+        \frac{d}{dz} \operatorname{Li}_s(z) \;=\; \frac{1}{z} \operatorname{Li}_{s-1}(z), \qquad \operatorname{Li}_s(z) \;=\; \int_0^z \operatorname{Li}_{s-1}(t) \frac{dt}{t},
+        $$
+        starting from $\operatorname{Li}_0(z) = \frac{z}{1-z}$ and $\operatorname{Li}_1(z) = -\log(1-z)$.
+    * **Dilogarithm ($\operatorname{Li}_2$) and Functional Equations:**
+      - Definition: $\operatorname{Li}_2(z) = -\int_0^z \frac{\log(1-t)}{t} dt$.
+      - Euler inversion formula: $\operatorname{Li}_2(z) + \operatorname{Li}_2(1/z) = -\frac{\pi^2}{6} - \frac{1}{2} \log^2(-z)$.
+      - Landen identity: $\operatorname{Li}_2(z) + \operatorname{Li}_2(1-z) = \frac{\pi^2}{6} - \log(z) \log(1-z)$.
+      - Rogers dilogarithm: $L(x) \coloneqq \operatorname{Li}_2(x) + \frac{1}{2} \log(x)\log(1-x)$, satisfying Abel's 5-term functional equation.
+    * **The Bloch-Wigner Dilogarithm $D(z)$:**
+      - Definition:
+        $$
+        D(z) \;\coloneqq\; \operatorname{Im}(\operatorname{Li}_2(z)) \;+\; \arg(1-z) \log |z| \quad (z \in \mathbb{C} \setminus \{0, 1\}),
+        $$
+        extended continuously to $\mathbb{P}^1(\mathbb{C})$ by $D(0) = D(1) = D(\infty) = 0$.
+      - Symmetries under the projective cross-ratio group $S_3$:
+        $$
+        D(z) \;=\; -D(1/z) \;=\; -D(1-z) \;=\; D\left(1 - \frac{1}{z}\right) \;=\; -D\left(\frac{z}{z-1}\right) \;=\; -D(\bar{z}).
+        $$
+      - Five-term relation in hyperbolic geometry: For any 5 distinct points $z_0, \dots, z_4 \in \mathbb{P}^1(\mathbb{C})$:
+        $$
+        \sum_{i=0}^4 (-1)^i D([z_0, \dots, \widehat{z_i}, \dots, z_4]) \;=\; 0
+        $$
+        where $[a, b, c, d] = \frac{(a-c)(b-d)}{(a-d)(b-c)}$ is the cross-ratio.
+      - Hyperbolic 3-manifold volumes: $D(z)$ computes the exact oriented hyperbolic volume of the ideal geodesic tetrahedron $\Delta(z)$ in hyperbolic 3-space $\mathbb{H}^3$ with ideal vertices at $0, 1, \infty, z$: $\operatorname{Vol}(\Delta(z)) = |D(z)|$.
+      - **The Bloch Group $B(F)$:**
+        For a field $F$, $B(F)$ is the kernel of the scissors congruence boundary map:
+        $$
+        0 \longrightarrow B(F) \longrightarrow \mathbb{Z}[F \setminus \{0, 1\}] / \langle [x] - [y] + [y/x] - [(1-x)/(1-y)] + [(1-x^{-1})/(1-y^{-1})] \rangle \xrightarrow{\delta} F^\times \wedge_\mathbb{Z} F^\times
+        $$
+        where $\delta([z]) = z \wedge (1-z)$.
+        Suslin's theorem: $B(F) \otimes \mathbb{Q} \cong K_3^{\mathrm{ind}}(F) \otimes \mathbb{Q}$.
+        Borel's regulator theorem: The Borel regulator map $r_2 \colon K_3(\mathcal{O}_K) \to \mathbb{R}^{r_2}$ evaluates on Bloch group elements via the Bloch-Wigner function, computing $\zeta_K(2)$.
+
+  * **Multiple Zeta Values (MZVs) and Multiple Polylogarithms:**
+    * **Definition:** For positive integers $s_1, \dots, s_k$ with $s_1 > 1$:
+      $$
+      \zeta(s_1, \dots, s_k) \;\coloneqq\; \sum_{n_1 > n_2 > \dots > n_k > 0} \frac{1}{n_1^{s_1} n_2^{s_2} \dots n_k^{s_k}}
+      $$
+      with weight $w = \sum_{i=1}^k s_i$ and depth $k$.
+    * **Iterated Integral Representation (Kontsevich):**
+      $$
+      \zeta(s_1, \dots, s_k) \;=\; (-1)^k \int_{0 < t_1 < \dots < t_w < 1} \omega_{\epsilon_1} \wedge \dots \wedge \omega_{\epsilon_w}
+      $$
+      where $\omega_0 = \frac{dt}{t}$ and $\omega_1 = \frac{dt}{1-t}$, with $\epsilon_j \in \{0, 1\}$ having 1s exactly at indices corresponding to the arguments $s_i$.
+    * **Algebraic Products and Double Shuffle Relations:**
+      - Stuffle / Harmonic product (from series multiplication):
+        $$
+        \zeta(a) \zeta(b) \;=\; \zeta(a, b) \;+\; \zeta(b, a) \;+\; \zeta(a+b).
+        $$
+      - Shuffle product (from iterated integral product via Chen integration):
+        $$
+        \zeta(a) \zeta(b) \;=\; \sum_{\sigma \in \operatorname{Sh}(a, b)} \zeta(\dots).
+        $$
+      - Regularization and double shuffle relations: Comparison between stuffle and shuffle products yields complete linear relations among MZVs (e.g. $\zeta(2, 1) = \zeta(3)$).
+    * **Multiple Polylogarithms:**
+      $$
+      \operatorname{Li}_{s_1, \dots, s_k}(z_1, \dots, z_k) \;\coloneqq\; \sum_{n_1 > \dots > n_k > 0} \frac{z_1^{n_1} \dots z_k^{n_k}}{n_1^{s_1} \dots n_k^{s_k}}.
+      $$
+      Motivic multiple zeta values $\zeta^{\mathfrak{m}}(s_1, \dots, s_k)$ in the category of mixed Tate motives over $\mathbb{Z}$, and the Goncharov-Brown motivic Galois coaction $\Delta$.
+
+  * **$p$-adic Integration and Analysis:**
+    * **Volkenborn Integration on $\mathbb{Z}_p$:**
+      - For a locally analytic function $f \colon \mathbb{Z}_p \to \mathbb{C}_p$:
+        $$
+        \int_{\mathbb{Z}_p} f(x) d\mu(x) \;\coloneqq\; \lim_{N \to \infty} \frac{1}{p^N} \sum_{x=0}^{p^N - 1} f(x).
+        $$
+      - Generating moments produce Bernoulli numbers:
+        $$
+        \int_{\mathbb{Z}_p} x^n d\mu(x) \;=\; B_n.
+        $$
+      - Mahler series expansion: Every continuous function $f \in C(\mathbb{Z}_p, \mathbb{Q}_p)$ has unique expansion $f(x) = \sum_{n=0}^\infty a_n \binom{x}{n}$ with $a_n \to 0$, and:
+        $$
+        \int_{\mathbb{Z}_p} \binom{x}{n} d\mu(x) \;=\; \frac{(-1)^n}{n+1}.
+        $$
+    * **Coleman Integration on Curves and Varieties:**
+      - Rigid analytic $p$-adic integration of locally analytic differential forms $\omega \in \Omega^1(X)$:
+        1. Linearity: $\int_P^Q (a \omega_1 + b \omega_2) = a \int_P^Q \omega_1 + b \int_P^Q \omega_2$.
+        2. Additivity: $\int_P^R \omega = \int_P^Q \omega + \int_Q^R \omega$.
+        3. Fundamental theorem of calculus: $d \int_P^x \omega = \omega(x)$.
+        4. Frobenius equivariance: If $\phi \colon X \to X$ is a Frobenius lift, $\int_{\phi(P)}^{\phi(Q)} \omega = \int_P^Q \phi^*(\omega)$.
+      - Coleman-Chabauty method: When the algebraic rank of the Jacobian $J(C)$ is strictly less than the genus $g$, Coleman integration of differentials vanishing on $J(\mathbb{Q})$ yields effective bounds on rational points $C(\mathbb{Q})$.
+      - $p$-adic regulators and $p$-adic polylogarithms via iterated Coleman integrals.
+    * **Fontaine-Mazur $\mathcal{L}$-Invariants and Exceptional Zeros:**
+      - For an elliptic curve $E/\mathbb{Q}$ with split multiplicative reduction at $p$, the $p$-adic $L$-function has an exceptional zero: $L_p(E, 1) = 0$.
+      - Mazur-Tate-Teitelbaum formula:
+        $$
+        L_p'(E, 1) \;=\; \mathcal{L}_p(E) \cdot \frac{L(E, 1)}{\Omega_E}
+        $$
+        where $\mathcal{L}_p(E) = \frac{\log_p(q_E)}{v_p(q_E)}$ is the Fontaine-Mazur $\mathcal{L}$-invariant computed from the Tate parameter $q_E \in p \mathbb{Z}_p$.
+
+  * **Dedekind Zeta Functions and Residue Computations:**
+    * **Dedekind Zeta Function $\zeta_K(s)$:**
+      - For a number field $K$ with ring of integers $\mathcal{O}_K$:
+        $$
+        \zeta_K(s) \;\coloneqq\; \sum_{\mathfrak{a} \subset \mathcal{O}_K} N(\mathfrak{a})^{-s} \;=\; \prod_{\mathfrak{p}} \left( 1 - N(\mathfrak{p})^{-s} \right)^{-1} \quad (\operatorname{Re}(s) > 1).
+        $$
+      - Completed zeta function:
+        $$
+        \xi_K(s) \;\coloneqq\; |d_K|^{s/2} \left( \pi^{-s/2} \Gamma\left(\frac{s}{2}\right) \right)^{r_1} \left( (2\pi)^{-s} \Gamma(s) \right)^{r_2} \zeta_K(s).
+        $$
+      - Functional equation: $\xi_K(s) = \xi_K(1-s)$.
+    * **Analytic Class Number Formula (Residue at $s = 1$):**
+      $$
+      \lim_{s \to 1} (s - 1) \zeta_K(s) \;=\; \frac{2^{r_1} (2\pi)^{r_2} h_K R_K}{w_K \sqrt{|d_K|}}
+      $$
+      where:
+      - $r_1$ is the number of real embeddings, $r_2$ is the number of pairs of complex conjugate embeddings ($[K : \mathbb{Q}] = r_1 + 2 r_2$).
+      - $h_K = |\operatorname{Cl}(K)|$ is the ideal class number.
+      - $R_K$ is the Dirichlet regulator: $\det(\log |\sigma_i(u_j)|)_{1 \le i, j \le r_1+r_2-1}$ on a basis of fundamental units.
+      - $w_K = |\mu(K)|$ is the number of roots of unity in $K$.
+      - $d_K$ is the absolute discriminant of $K$.
+    * **Special Values and Residues at Other Points:**
+      - Order of vanishing at $s = 0$: $\operatorname{ord}_{s=0} \zeta_K(s) = r_1 + r_2 - 1$.
+      - Leading Taylor coefficient at $s = 0$:
+        $$
+        \zeta_K^*(0) \;=\; -\frac{h_K R_K}{w_K}.
+        $$
+      - Higher integers $s = 1 - m$ ($m \ge 2$): $\operatorname{ord}_{s=1-m} \zeta_K(s) = d_m$ with $d_m = r_2$ for $m$ even and $d_m = r_1 + r_2$ for $m$ odd.
+      - Leading coefficient $\zeta_K^*(1-m)$ is given by the higher Borel regulator $R_{K, m}$ on algebraic $K$-theory $K_{2m-1}(\mathcal{O}_K)$.
+
+  * **The Birch and Swinnerton-Dyer (BSD) Conjecture and Equality Terms:**
+    * **The $L$-Function of an Elliptic Curve $E/K$:**
+      - $L(E, s) = \prod_{v \nmid \Delta} (1 - a_v q_v^{-s} + q_v^{1-2s})^{-1} \prod_{v \mid \Delta} (1 - a_v q_v^{-s})^{-1}$.
+      - Analytic continuation and functional equation for $\Lambda(E, s) = N_{E/K}^{s/2} (2\pi)^{-[K:\mathbb{Q}]s} \Gamma(s)^{[K:\mathbb{Q}]} L(E, s)$ with root number $\epsilon_E = \pm 1$.
+    * **The Full BSD Equality Formula:**
+      $$
+      \lim_{s \to 1} \frac{L(E, s)}{(s - 1)^r} \;=\; \frac{\Omega_E \cdot R_E \cdot |\Sha(E/K)| \cdot \prod_{v} c_v}{|E(K)_{\mathrm{tors}}|^2}
+      $$
+      where $r = \operatorname{rank}(E(K))$.
+    * **Breakdown of Each Constituent Term:**
+      1. **Arithmetic Volume / Real Periods $\Omega_E$:**
+         - For each archimedean place $v \mid \infty$: $\Omega_{E, v} \coloneqq \int_{E(K_v)} |\omega|$, where $\omega = \frac{dx}{2y + a_1 x + a_3}$ is the invariant Néron differential.
+         - Over $\mathbb{Q}$: $\Omega_E = c_\infty \int_{E(\mathbb{R})^0} \omega = c_\infty \omega_1$, where $c_\infty = 1$ if $\Delta < 0$ (one real connected component) and $c_\infty = 2$ if $\Delta > 0$ (two real connected components).
+      2. **Néron-Tate Elliptic Regulator $R_E$:**
+         - Canonical Néron-Tate height pairing $\langle P, Q \rangle_{\mathrm{NT}} \coloneqq \frac{1}{2}(\hat{h}(P+Q) - \hat{h}(P) - \hat{h}(Q))$.
+         - For a $\mathbb{Z}$-basis $P_1, \dots, P_r$ of $E(K) / E(K)_{\mathrm{tors}}$:
+           $$
+           R_E \;\coloneqq\; \det\left( \langle P_i, P_j \rangle_{\mathrm{NT}} \right)_{1 \le i, j \le r}.
+           $$
+           By positive-definiteness of the Néron-Tate height, $R_E > 0$. If $r = 0$, $R_E \coloneqq 1$.
+      3. **Tate-Shafarevich Group $\Sha(E/K)$:**
+         - Definition:
+           $$
+           \Sha(E/K) \;\coloneqq\; \ker\left( H^1(K, E) \longrightarrow \prod_v H^1(K_v, E) \right).
+           $$
+         - Measures the obstruction to the Hasse local-to-global principle for genus 1 curves with points in all local fields $K_v$.
+         - Cassels-Tate pairing: alternating non-degenerate pairing $\Sha(E/K) \times \Sha(E/K) \to \mathbb{Q}/\mathbb{Z}$, ensuring that when finite, $|\Sha(E/K)|$ is a perfect square (over $\mathbb{Q}$).
+         - $n$-descent: Exact sequence $0 \to E(K)/n E(K) \to \operatorname{Sel}_n(E/K) \to \Sha(E/K)[n] \to 0$.
+      4. **Local Tamagawa Numbers $c_v$:**
+         - For non-archimedean place $v$: index of points of non-singular reduction in the local group:
+           $$
+           c_v \;\coloneqq\; [E(K_v) : E_0(K_v)].
+           $$
+         - Evaluated via Tate's algorithm from Kodaira types:
+           - Good reduction ($I_0$): $c_v = 1$.
+           - Multiplicative split ($I_n$): $c_v = n$.
+           - Multiplicative non-split ($I_n$): $c_v = 1$ ($n$ odd) or $2$ ($n$ even).
+           - Additive types: $II \implies 1$, $III \implies 2$, $IV \implies 1$ or $3$, $I_0^* \implies 1, 2,$ or $4$, $I_n^* \implies 2$ or $4$, $IV^* \implies 1$ or $3$, $III^* \implies 2$, $II^* \implies 1$.
+      5. **Global Torsion Subgroup Order $|E(K)_{\mathrm{tors}}|$:**
+         - Finite group of points of finite order in $E(K)$.
+         - Mazur's torsion theorem over $\mathbb{Q}$: $E(\mathbb{Q})_{\mathrm{tors}}$ is isomorphic to $\mathbb{Z}/N$ ($1 \le N \le 10, N = 12$) or $\mathbb{Z}/2 \oplus \mathbb{Z}/2N$ ($1 \le N \le 4$).
+    * **The Bloch-Kato Tamagawa Number Conjecture:**
+      Generalizes both the class number formula and BSD to an arbitrary motive $M$:
+      $$
+      L^*(M, 0) \;=\; \frac{\# \Sha(M) \cdot \operatorname{vol}_{BK}(M)}{\# H^0(K, M^\vee(1)) \cdot \# H^0(K, M)}.
+      $$
+
+* **Operational & algorithmic representation:**
+  1. **Bernoulli and Combinatorial Number Engine:**
+     - Exact arbitrary-precision rational evaluation of $B_n, B_n(x)$ via Faulhaber and recurrence.
+     - Verification of von Staudt-Clausen and Kummer congruences.
+     - Exact calculation of Bell numbers $B_n$, Stirling numbers $\left\{ \begin{matrix} n \\ k \end{matrix} \right\}$, and Touchard polynomials.
+  2. **Polylogarithmic and Bloch-Wigner Engine:**
+     - Numerical and symbolic evaluation of $\operatorname{Li}_s(z)$ and dilogarithm $\operatorname{Li}_2(z)$.
+     - High-precision single-valued Bloch-Wigner $D(z) = \operatorname{Im}(\operatorname{Li}_2(z)) + \arg(1-z)\log|z|$.
+     - Automated verification of the 5-term functional equation and hyperbolic tetrahedron volume computation.
+     - Boundary map solver for the Bloch group $\delta \colon \mathbb{Z}[F \setminus \{0, 1\}] \to F^\times \wedge F^\times$.
+  3. **Multiple Zeta Values Engine:**
+     - Symbolic representation of MZV index tuples $(s_1, \dots, s_k)$.
+     - Evaluator for stuffle (harmonic) products and shuffle products.
+     - Double shuffle relation linear solver reducing MZVs to minimal bases in each weight.
+  4. **$p$-adic Integration Engine:**
+     - Volkenborn numerical integration for polynomials and Mahler series.
+     - Coleman integration on elliptic curves and hyperelliptic curves over $\mathbb{Q}_p$ via Frobenius linear system inversion.
+     - Computation of Fontaine-Mazur $\mathcal{L}$-invariants $\mathcal{L}_p(E) = \frac{\log_p(q_E)}{v_p(q_E)}$.
+  5. **Dedekind Zeta Residue Engine:**
+     - Automated extraction of number field invariants: $r_1, r_2, d_K, w_K$.
+     - Dirichlet regulator calculator $R_K$ from fundamental unit logs.
+     - Computation of the analytic residue $\operatorname{Res}_{s=1} \zeta_K(s)$ and leading coefficient at $s = 0$.
+  6. **BSD Equality Solver and Verifier:**
+     - Computation of real periods $\Omega_E$ via arithmetic-geometric mean (AGM) elliptic integrals.
+     - Gram determinant computation of the Néron-Tate regulator $R_E$.
+     - Tate's algorithm for Kodaira types and Tamagawa numbers $c_v$.
+     - Division polynomial solver for $E(K)_{\mathrm{tors}}$.
+     - Exact verification of the BSD formula relating the numerical derivative $L^{(r)}(E, 1)/r!$ to the arithmetic quotient.
+
+* **Preamble implementation requirements:**
+  * `categories/number_theory/bernoulli.py`:
+    - `bernoulli_number(n)`: computes $B_n \in \mathbb{Q}$.
+    - `bernoulli_polynomial(n, x)`: computes polynomial $B_n(x)$.
+    - `faulhaber_sum(p, N)`: evaluates $\sum_{k=1}^N k^p$.
+    - `von_staudt_clausen(n)`: verifies denominator formula $\sum_{(p-1)|2k} 1/p$.
+    - `kummer_congruence(k, m, p, a)`: tests Kummer congruences.
+    - `bell_number(n)`: computes Bell number $B_n$.
+    - `bell_polynomial(n, x)`: computes Touchard polynomial $B_n(x)$.
+    - `stirling_second(n, k)`: computes Stirling number $\left\{ \begin{matrix} n \\ k \end{matrix} \right\}$.
+  * `categories/analysis/polylogarithms.py`:
+    - `polylog(s, z)`: evaluates $\operatorname{Li}_s(z)$.
+    - `dilogarithm(z)`: evaluates $\operatorname{Li}_2(z)$.
+    - `bloch_wigner(z)`: evaluates single-valued $D(z)$.
+    - `five_term_relation(z0, z1, z2, z3, z4)`: verifies 5-term identity.
+    - `hyperbolic_tetrahedron_volume(z)`: computes volume $|D(z)|$.
+    - `bloch_group_boundary(z)`: evaluates $\delta([z]) = z \wedge (1-z)$.
+  * `categories/analysis/multiple_zeta.py`:
+    - `multiple_zeta_value(indices)`: computes $\zeta(s_1, \dots, s_k)$.
+    - `stuffle_product(tuple1, tuple2)`: computes stuffle product of MZVs.
+    - `shuffle_product(tuple1, tuple2)`: computes shuffle product of MZVs.
+    - `double_shuffle_solver(weight)`: solves double shuffle relations in fixed weight.
+  * `categories/number_theory/p_adic_analysis.py`:
+    - `volkenborn_integral(f, p, precision)`: computes $\int_{\mathbb{Z}_p} f d\mu$.
+    - `mahler_expansion(f, p, num_terms)`: computes Mahler coefficients $a_n$.
+    - `coleman_integral(omega, P, Q, curve, p)`: computes $p$-adic integral $\int_P^Q \omega$.
+    - `coleman_chabauty_bound(curve, p)`: computes Chabauty bound on $C(\mathbb{Q})$.
+    - `fontaine_mazur_l_invariant(E, p)`: computes $\mathcal{L}_p(E) = \log_p(q_E)/v_p(q_E)$.
+  * `categories/number_theory/dedekind_zeta.py`:
+    - `DedekindZeta(number_field)`: Dedekind zeta function representation.
+    - `analytic_class_number_formula(number_field)`: evaluates RHS of class number formula.
+    - `dirichlet_regulator(number_field)`: computes regulator $R_K$.
+    - `zeta_residue_at_one(number_field)`: computes $\operatorname{Res}_{s=1} \zeta_K(s)$.
+    - `zeta_leading_term_at_zero(number_field)`: computes $\zeta_K^*(0) = -h_K R_K / w_K$.
+    - `borel_higher_regulator(number_field, m)`: computes higher regulator $R_{K, m}$.
+  * `categories/elliptic_curves/bsd_conjecture.py`:
+    - `BSDConjecture(E)`: full BSD invariant package for elliptic curve $E$.
+    - `real_period(E)`: computes arithmetic volume $\Omega_E = c_\infty \int \omega$.
+    - `neron_tate_regulator(E, basis_points)`: computes Gram determinant $R_E$.
+    - `tamagawa_numbers(E)`: computes local indices $c_v$ via Tate's algorithm.
+    - `torsion_subgroup_order(E)`: computes $|E(K)_{\mathrm{tors}}|$.
+    - `analytic_sha_order(E)`: computes predicted $|\Sha(E/K)|$ from $L^{(r)}(E, 1)/r!$.
+    - `verify_bsd_equality(E, precision)`: checks equality between analytic leading term and algebraic BSD quotient.
+    - `bloch_kato_tamagawa(motive)`: evaluates Bloch-Kato conjecture for general motives.
+
+Intended owners: `categories/number_theory/bernoulli.py` (`bernoulli_number`, `bernoulli_polynomial`, `faulhaber_sum`, `bell_number`, `stirling_second`), `categories/analysis/polylogarithms.py` (`polylog`, `dilogarithm`, `bloch_wigner`, `five_term_relation`, `bloch_group_boundary`), `categories/analysis/multiple_zeta.py` (`multiple_zeta_value`, `stuffle_product`, `shuffle_product`, `double_shuffle_solver`), `categories/number_theory/p_adic_analysis.py` (`volkenborn_integral`, `mahler_expansion`, `coleman_integral`, `fontaine_mazur_l_invariant`), `categories/number_theory/dedekind_zeta.py` (`DedekindZeta`, `analytic_class_number_formula`, `dirichlet_regulator`, `zeta_residue_at_one`), `categories/elliptic_curves/bsd_conjecture.py` (`BSDConjecture`, `real_period`, `neron_tate_regulator`, `tamagawa_numbers`, `analytic_sha_order`, `verify_bsd_equality`, `bloch_kato_tamagawa`).
+
 
 
 

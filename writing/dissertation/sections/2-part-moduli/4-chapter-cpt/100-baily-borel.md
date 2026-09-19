@@ -136,7 +136,7 @@ Since $F$ is rational, $N_\Gamma(F)$ is a discrete arithmetic subgroup of the Li
 
 #### Projectivity via Automorphic Forms
 
-A foundational result of \cite{BB66} is that $\bbcpt{\FG}$ can alternatively be constructed from the space of automorphic forms for $\Gamma$ and a canonical automorphic line bundle, showing it is a normal projective variety.
+A foundational result of @BB66 is that $\bbcpt{\FG}$ can alternatively be constructed from the space of automorphic forms for $\Gamma$ and a canonical automorphic line bundle, showing it is a normal projective variety.
 Letting $D = G(\RR)/K$ be a Hermitian symmetric domain associated to a symmetric pair $(G, K)$, and $\Gamma \subset G(\QQ)$  be an arithmetic subgroup acting properly discontinuously on $D$ as above, there is a distinguished $G(\RR)$-equivariant ample line bundle $\mcl = \mcl_\chi$ on $D$ defined by a particular character $\chi: K\to \CCstar$. In cases of interest, such as the Siegel and Type $\IV$ cases $D = \Sp_g(\RR)/\U_g$ or $D = \Orth_{2,n}(\RR)/(\Orth_2(\RR)\times\Orth_n(\RR))$, the bundle $\mcl$ is the determinant of the Hodge bundle or the inverse tautological bundle, respectively, where for a smooth, proper family of $n$-dimensional varieties $\pi: X \to S$, the **Hodge bundle** is the vector bundle $\EE \da  \pi_*\Omega^n_{X/S}$ whose fiber over $s \in S$ is $H^0(\Omega^n_{X_s})$, the space of global holomorphic $n$-forms on the fiber $X_s$. For $\Mg$, this reduces to the pushforward $\pi_* \omega_{\mcc/\Mg}$ of the relative dualizing sheaf of the universal curve $\pi: \mcc \to \Mg$, and for $\Ag$ one often passes to its determinant, the **Hodge line bundle**.
 
 For arithmetic groups $\Gamma$ as above, an **automorphic form of weight $k$ for $\Gamma$** (with *factor of automorphy* $j$) is a holomorphic section $f \in H^0( \mcl^{\tensor k})$ of the $k$th tensor power of $\mcl$ such that the $\gamma^* f = f$ for all $\gamma \in \Gamma$.
@@ -150,7 +150,7 @@ A_k(\Gamma) \da  H^0(D, \mcl^{\tensor k})^\Gamma,
 \qquad
 R_\Gamma \da \bigoplus_{k \geq 0} A_k(\Gamma)
 .$$
-\cite{BB66} shows that that $R_\Gamma$ is a finitely generated $\CC$-algebra, and there is an identification $\bbcpt{\FG} \cong \Proj(R_\Gamma)$.
+@BB66 shows that that $R_\Gamma$ is a finitely generated $\CC$-algebra, and there is an identification $\bbcpt{\FG} \cong \Proj(R_\Gamma)$.
 Moreover, $\mcl$ descends to an ample line bundle on $\bbcpt{\FG}$ and the sections of $\mcl^{\tensor k}$ satisfy the analytic growth conditions at cusps of $\FG$ in analogy to classical modular forms for $\SL_{2}(\ZZ)$.
 This construction is canonical and functorial: any $(\Gamma_1, \Gamma_2)$-equivariant morphism $F_{\Gamma_1} \to F_{\Gamma_2}$ compatible with $\mcl_1$ and $\mcl_2$ extends uniquely to a morphism between their Baily–Borel compactifications. However, this typically introduces singularities on $\bd\bbcpt{\FG}$, motivating further refinements, e.g., semitoroidal or KSBA compactifications.
 

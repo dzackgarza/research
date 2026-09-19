@@ -1,7 +1,7 @@
-### The Five Cusps
+### The Five Cusps {#sec:five-cusps}
 
-This section provides an explicit, case-by-case analysis of the five 0-cusps of $\fent$, describing the structure of the corresponding semifans, dual complexes, integral-affine data, and involution symmetries arising in the boundary of the KSBA compactification, as described in \cite{AEGS25}.
-The semifans $\semifan{F}_k$ are defined by intersecting the ambient ramification semifan $\semifan{F}_{\ram}(\tdp)$ with the Enriques lattice subspace $\ten$, for each lattice polarization $\tdp$ occurring at a cusp. By \cref{thm:five-semifans}, the resulting collection $\semifans{F} = \{\semifan{F}_k\}_{k=1}^{5}$ consists of generalized Coxeter semifans governing the semitoroidal structure at each cusp.
+This section provides an explicit, case-by-case analysis of the five 0-cusps of $\fent$, describing the structure of the corresponding semifans, dual complexes, integral-affine data, and involution symmetries arising in the boundary of the KSBA compactification, as described in @AEGS25.
+The semifans $\semifan{F}_k$ are defined by intersecting the ambient ramification semifan $\semifan{F}_{\ram}(\tdp)$ with the Enriques lattice subspace $\ten$, for each lattice polarization $\tdp$ occurring at a cusp. By @sec:five-cusps, the resulting collection $\semifans{F} = \{\semifan{F}_k\}_{k=1}^{5}$ consists of generalized Coxeter semifans governing the semitoroidal structure at each cusp.
 Each semifan encodes the stratified boundary behavior of the compactification via its rays (corresponding to degenerations of Types $\II$ and $\III$) and the folding symmetries inherited from involutions on the integral-affine structures.
 Let $(\mcz, \mcr_{\mcz}) \to (C,0)$ be a half-divisor model for $F_{\En,2}$ as in Proposition 4.5. The following facts hold for each such degeneration:
 
@@ -28,10 +28,7 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 
 #### Cusp 1
 
-\input{tikz/dissertation/cusp_macros.tikz}
-
 \def\cusponelabels{1}
-\begin{center}
 \resizebox{1.1\textwidth}{!}{%
 \begin{tikzpicture}
   \cuspone{0}{0}
@@ -53,7 +50,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n9) -- (n10);
 \end{tikzpicture}
   }
-\end{center}
 
 - **Boundary Type:** Maps to cusp $(10,10,0)_1$ of $\fen$, and $\Gamma(\mcz_0) = \RP^2$.
 
@@ -70,7 +66,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 2
 
 \def\cusptwolabels{1}
-\begin{center}
 \resizebox{0.9\textwidth}{!}{%
 \begin{tikzpicture}
   \cusptwo{0}{0}
@@ -79,7 +74,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n7) -- (n6) -- (n9) -- (n6) -- (n0);
 \end{tikzpicture}
   }
-\end{center}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$ of $\fen$; $\Gamma(\mcz_0) = \DD^2$.
 
@@ -96,7 +90,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 3
 
 \def\cuspthreelabels{1}
-\begin{center}
 \resizebox{1.1\textwidth}{!}{%
 \begin{tikzpicture}
   \cuspthree{0}{0}
@@ -114,7 +107,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n11) -- (n1);
 \end{tikzpicture}
   }
-\end{center}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 
@@ -131,7 +123,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 4
 
 \def\cuspfourlabels{1}
-\begin{center}
 \resizebox{0.9\textwidth}{!}{%
 \begin{tikzpicture}
   \cuspfour{0}{0}
@@ -153,7 +144,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n6) -- (n10);
 \end{tikzpicture}
 }
-\end{center}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 
@@ -170,7 +160,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 5
 
 \def\cuspfivelabels{1}
-\begin{center}
 \resizebox{1.1\textwidth}{!}{%
 \begin{tikzpicture}
   \cuspfive{0}{0}
@@ -206,7 +195,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n10) -- (n13);
 \end{tikzpicture}
   }
-\end{center}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 
@@ -237,7 +225,7 @@ We conclude with the following summary:
 
 #### # Cusp 1
 
-- Coxeter diagram \Cref{fig:fen2-coxeter-1}
+- Coxeter diagram @fig:fen2-coxeter-1
 - Relation to $\fen$: maps to cusp $(10,10, 0)_1$ in $\fen$
     - $\implies \Gamma(\mcz_0) = \RP^2$.
 - $\bar{\tdp} = (18, 2, 0)_1 = U(2) \oplus E_8^2$
@@ -247,8 +235,8 @@ We conclude with the following summary:
     - The irrelevant subgroup is infinite.
     - $\mcf_1$ is a semifan, the compactification is semitoroidal.
 - Diagram data
-    - 2 type $\II$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-parabolic-1}
-    - 0 type $\III$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-ell-1}
+    - 2 type $\II$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-parabolic-1
+    - 0 type $\III$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-ell-1
     - 2 total rays.
 - IAS data
   - $\lambda \in \thecone{C}^J \iff$
@@ -264,7 +252,7 @@ We conclude with the following summary:
 
 #### # Cusp 2
 
-- Coxeter diagram \Cref{fig:fen2-coxeter-2}
+- Coxeter diagram @fig:fen2-coxeter-2
 - Relation to $\fen$: maps to cusp $(10,8, 0)_1$ in $\fen$
     - $\implies \Gamma(\mcz_0) = \DD^2$ (closed 2-disk).
 - $\bar{\tdp}= (18, 0, 0)_1 = U \oplus E_8^2$
@@ -274,8 +262,8 @@ We conclude with the following summary:
     - The irrelevant subgroup is $S_2$.
     - $\mcf_2$ is a fan, the compactification is strictly toroidal.
 - Diagram data
-    - 2 type $\II$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-parabolic-2}
-    - 7 type $\III$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-ell-2}
+    - 2 type $\II$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-parabolic-2
+    - 7 type $\III$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-ell-2
     - 9 total rays.
 - IAS data
     - $\lambda \in \thecone{C}^J \iff$
@@ -287,7 +275,7 @@ We conclude with the following summary:
 
 #### # Cusp 3
 
-- Coxeter diagram \Cref{fig:fen2-coxeter-3}
+- Coxeter diagram @fig:fen2-coxeter-3
 - Relation to $\fen$: maps to cusp $(10,8, 0)_1$ in $\fen$
     - $\implies \Gamma(\mcz_0) = \DD^2$.
 - $\bar{\tdp} = (18, 2, 0)_1 = U(2) \oplus E_8^2$
@@ -297,8 +285,8 @@ We conclude with the following summary:
     - The irrelevant subgroup is infinite.
     - $\mcf_3$ is a semifan, the compactification is semitoroidal.
 - Diagram data
-    - 2 type $\II$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-parabolic-3}
-    - 7 type $\III$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-ell-3}
+    - 2 type $\II$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-parabolic-3
+    - 7 type $\III$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-ell-3
     - 9 total rays.
 - IAS data
 - $\lambda \in \thecone{C}^J \iff$
@@ -316,7 +304,7 @@ We conclude with the following summary:
 
 #### # Cusp 4
 
-- Coxeter diagram \Cref{fig:fen2-coxeter-4}
+- Coxeter diagram @fig:fen2-coxeter-4
 - Relation to $\fen$: maps to cusp $(10,8, 0)_1$ in $\fen$
     - $\implies \Gamma(\mcz_0) = \DD^2$.
 - $\bar{\tdp} = (18, 2, 0)_1 = U(2) \oplus E_8^2$
@@ -326,8 +314,8 @@ We conclude with the following summary:
     - The irrelevant subgroup is $S_2^2$.
     - $\mcf_4$ is a fan, the compactification is strictly toroidal.
 - Diagram data
-    - 4 type $\II$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-parabolic-4}
-    - 7 type $\III$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-ell-4}
+    - 4 type $\II$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-parabolic-4
+    - 7 type $\III$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-ell-4
     - 11 total rays.
 - IAS data
 - $\lambda \in \thecone{C}^J \iff$
@@ -341,7 +329,7 @@ We conclude with the following summary:
 
 #### # Cusp 5
 
-- Coxeter diagram \Cref{fig:fen2-coxeter-5}
+- Coxeter diagram @fig:fen2-coxeter-5
 - Relation to $\fen$: maps to cusp $(10,8, 0)_1$ in $\fen$
     - $\implies \Gamma(\mcz_0) = \DD^2$.
 - $\bar{\tdp} = (18, 2, 0)_1 = U(2) \oplus E_8^2$
@@ -351,8 +339,8 @@ We conclude with the following summary:
     - The irrelevant subgroup is infinite.
     - $\mcf_5$ is a semifan, the compactification is semitoroidal.
 - Diagram data
-    - 3 type $\II$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-parabolic-5}
-    - 0 type $\III$ rays, corresponding to elliptic subdiagrams in \Cref{fig:fen2-coxeter-ell-5}
+    - 3 type $\II$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-parabolic-5
+    - 0 type $\III$ rays, corresponding to elliptic subdiagrams in @fig:fen2-coxeter-ell-5
     - 3 total rays.
 - IAS data
 - $\lambda \in \thecone{C}^J \iff$

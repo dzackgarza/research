@@ -64,4 +64,4 @@ None of them blocks the build, which compiles with no LaTeX errors.
   Two of them changed meaning: Zotero has `Sha81` for Shah's degree 4 K3 paper and `Sha81a` for his Enriques paper, which is the opposite of the old local bibliography, and the text was swapped to match Zotero.
   Worth spot-checking the two citation sites.
 
-- `\cite{Alexeev}` appears twice inside HTML comments in `sections/2-part-moduli/4-chapter-cpt/000-ksba.md`. It resolves to nothing, but the comments are invisible to the build, so nothing is broken.
+- `[@Alexeev]` appears twice inside HTML comments in `sections/2-part-moduli/4-chapter-cpt/000-ksba.md`. It resolves to nothing, but the comments are invisible to the build, so nothing is broken.

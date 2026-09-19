@@ -1,6 +1,6 @@
-## Integral Affine Geometry and Comparing Compactifications {#chapter-5}
+## Integral Affine Geometry and Comparing Compactifications {#sec:chapter-5}
 
-Sources for this chapter include \cite{FS86, Kul77, PP81, Sca87, MM83, Fri84, FM83} Let $T$ be an even lattice of signature $(2, n)$, and let $\Gamma \subset \Orth(T)$ be an arithmetic subgroup.
+Sources for this chapter include [@FS86; @Kul77; @PP81; @Sca87; @MM83; @Fri84; @FM83] Let $T$ be an even lattice of signature $(2, n)$, and let $\Gamma \subset \Orth(T)$ be an arithmetic subgroup.
 The period domain $\halfpd{T}$ parametrizes weight-two Hodge structures on $T$, and the modular varieties $\FG = \dmodgamma{ \halfpd{T} }{ \Gamma }$ serve as coarse moduli spaces for (marked) polarized K3 surfaces.
 Given a one-parameter degeneration of K3 or Enriques surfaces, a **Kulikov model** arises after a ramified base change, and the possible types for $\mcx_0$ are:
 
@@ -20,13 +20,13 @@ Given a one-parameter degeneration of K3 or Enriques surfaces, a **Kulikov model
 The dual intersection complex $\Delta$ of a Type $\III$ model is a triangulation of $S^2$ admitting the structure of a 2-dimensional **integral affine sphere with singularities** ($\IAS^2$) which correspond to a distinguished subset of vertices in $\Delta$, after passing to a suitably complete triangulation.
 Away from this singular locus, the charts are locally modeled on open subsets of $\RR^2$ with transition functions in the orientation-preserving affine linear group $\SL_2(\ZZ) \ltimes \RR^2$.
 The possible singularities are modeled on the local structure of the quotient of $\RR^2$ by the shearing matrices $\begin{pmatrix} 1 & n \\ 0 & 1 \end{pmatrix}$ for some integer $n \geq 0$; these are called $I_n$ singularities, where $\I_1$ are generic and $I_0$ is the trivial (toric) case.
-More general singularities arise as products of such shears, corresponding to collisions of the corresponding $\I_n$ singularities, see \cite{AE22, Sym03}
+More general singularities arise as products of such shears, corresponding to collisions of the corresponding $\I_n$ singularities, see [@AE22; @Sym03]
 
 By taking the star to obtain a fan, each vertex $v$ in $\Delta$ yields an **anticanonical pair** $(V, D)$, where $V$ is a rational surface and $D = \sum_{j} D_j \in |-K_V|$ is a cycle of rational curves in the anticanonical linear system.
 The dual polytope of this fan encodes a *semitoric* variety: varieties which arise from toric varieties via sequences of blowups and blowdowns.
 The data of these blowups is encoded in the following way: the **charge** at a vertex $v$, for the anticanonical pair $(V, D)$, is defined by $Q(V, D) \da  {1\over 2}\sum_j D_j^2 + 3$, where $D = \sum_j D_j$ is the (possibly reducible) anticanonical cycle, and $D_j^2$ is the self-intersection of component $D_j$ in $V$.
 The charge  is precisely designed to measures the defect from being toric: $Q(V, D) = 0$ precisely when $(V, D)$ is toric.
-More fundamentally, \cite[Prop. 2.11]{FS86} asserts that $\sum_{v \in \Delta} Q(V_v, D_v) = 24$ for any Type $\III$ Kulikov model of a K3 surface, see \cite{FM83, FS86}.
+More fundamentally, [@FS86, Prop. 2.11] asserts that $\sum_{v \in \Delta} Q(V_v, D_v) = 24$ for any Type $\III$ Kulikov model of a K3 surface, see [@FM83; @FS86].
 
 **Symington surgeries** are local modifications of $\IAS^2$ structures that manipulate the placement and type of singularities, and there are two main types: performing a *toric blowup* corresponds to the standard blowup in toric geometry attained by inserting rays into a fan or deleting triangles from its dual polytope.
 It increases the number of vertices in $\Delta$, but preserves the total charge.
@@ -41,7 +41,7 @@ Whenever the data $(B(\lambda), Q )$ arise from such construction, there exists 
 
 Any such $\IAS^2$ satisfying a $d$-semistability condition $\mathsf{Ext}^1_{\OO_{\mcx_0 }}(\Omega_{\mcx_0}, \OO_{\mcx_0} ) \cong \OO_{\mcx_0^{\sing } }$ admits a smoothing $\mcx \to \Delta$ to a (possibly singular) K3 surface.
 The $d$-semistability condition is necessary and sufficient for (local) smoothability; for global smoothings to K3 surfaces, the central fiber must also satisfy the additional conditions of being a Kulikov model.
-\cite{GHK15}, for example, relate this to the existence of Lagrangian torus fibrations on the nearby fibers, mirroring the affine geometry of $B(\lambda)$.
+@GHK15, for example, relate this to the existence of Lagrangian torus fibrations on the nearby fibers, mirroring the affine geometry of $B(\lambda)$.
 
 Every Type $\III$ Kulikov degeneration carries a *projective monodromy invariant* $[\lambda]$ in (projectivized) boundary lattice $\PP( \bdlattice{T}{\eta}) =\PP( \eta^{\perp}/\eta)$.
 This invariant records the monodromy around $\mcx_0$ and, crucially, determines the gluing data for reconstructing the degeneration from the $\IAS^2$ and its singularities.
@@ -50,9 +50,9 @@ The local system $H^2$ carries a monodromy operator$T$, computed via a primitive
 $$
 T(x) = x + (x, \delta) \lambda - (\lambda, x) \delta, \qquad x\in H^2(\mcx_t; \ZZ)
 $$
-where $\lambda^2$ counts the number of triple points (see \cite{PP81, Sca87}).
+where $\lambda^2$ counts the number of triple points (see [@PP81; @Sca87]).
 
-Recall that a divisor $R$ is **recognizable** \cite{AE23a, AEH24} for $\FG$ if, for any K3 surface $X = \mcx_0$ and any smooth $\mcx$ to a Kulikov model, the flat limit $R_0$ on $\mcx_0$ is uniquely determined up  to automorphism.
+Recall that a divisor $R$ is **recognizable** [@AE23a; @AEH24] for $\FG$ if, for any K3 surface $X = \mcx_0$ and any smooth $\mcx$ to a Kulikov model, the flat limit $R_0$ on $\mcx_0$ is uniquely determined up  to automorphism.
 Given a recognizable divisor $R$, the KSBA compactification $\cpt{F}_\Gamma^R$ can be formed, as well as a the corresponding normalizing semitoroidal compactification $\semifancpt{\FG}{\semifan{F}_R}$.
 By way of the strata functions $\SS(\lambda)$ from \Cref{chapter-4} for decorated intersection complexes $B(\lambda)$ constructed from monodromy invariants $\lambda$, boundary strata on both sides correspond to possible $\IAS^2$ with singularities.
 
@@ -91,4 +91,4 @@ This mandates working with "half-divisor" models (\Cref{def:half-divisor-model})
 We impose the condition that the periods and dual complex of $(X_0, R_0)$ are involution invariant – then the Torelli theorem for anticanonical pairs shows that $(V_i, D_i, R_i)$ admits an involution $\iota_{\En, i}$ and the quotient $(V_i, D_i, R_i)/\iota_{\En,i}$ is a log Calabi–Yau pair.
 We note that $\ien$ is only a birational involution in general, and so we obtain half-divisor models for generic degenerations with a given monodromy invariant $\lambda$.
 
-<!--  \cite{Ale02}, \cite{MZ08}, \cite{AMRT10} -->
+<!--  [@Ale02], [@MZ08], [@AMRT10] -->

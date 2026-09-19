@@ -15,25 +15,25 @@ v &\mapsto (v, v)
     title="Scattone's Method: Enumerating Boundary Components via Niemeier Lattices"
     #rem:scattone-method-niemeier
 }
-To motivate the detailed study of primitive embeddings, we note that the method of \cite{Sca87} provides a concrete arithmetic approach to enumerating $0$-cusps in the Baily–Borel compactification $\bbcpt{F_{2d}}$ of the moduli space of degree-$2d$ polarized K3 surfaces.
+To motivate the detailed study of primitive embeddings, we note that the method of @Sca87 provides a concrete arithmetic approach to enumerating $0$-cusps in the Baily–Borel compactification $\bbcpt{F_{2d}}$ of the moduli space of degree-$2d$ polarized K3 surfaces.
 
-By the classification of boundary components for arithmetic quotients of Hermitian symmetric domains (\cite{BB66}), $0$-cusps correspond to $\Gamma_{2d}$-orbits of primitive isotropic lines $I \subset L_{2d}$, where
+By the classification of boundary components for arithmetic quotients of Hermitian symmetric domains [@BB66], $0$-cusps correspond to $\Gamma_{2d}$-orbits of primitive isotropic lines $I \subset L_{2d}$, where
 $$
 \lkttd \da  \langle -2d \rangle \oplus U^{ 2} \oplus E_8^{ 2}
 $$
 is the rank-$21$ lattice of signature $(2,19)$ associated to degree-$2d$ polarized K3 surfaces.
 
 Each such cusp corresponds to a degeneration of K3 surfaces with associated lattice $I^\perp / I$, an even lattice of signature $(1,18)$, which encodes the limiting Hodge structure for degenerations to that cusp.
-\cite{Sca87} classified boundary components by studying primitive embeddings $U\injects L$ where $L$ is one of the $24$ **Niemeier lattices** -- the even, negative-definite, unimodular lattices of rank $24$.
+@Sca87 classified boundary components by studying primitive embeddings $U\injects L$ where $L$ is one of the $24$ **Niemeier lattices** -- the even, negative-definite, unimodular lattices of rank $24$.
 For each such embedding $U \injects L$, the orthogonal complement $T \da  U^{\perp_L}$ is an even, negative-definite, unimodular lattice of rank $22$. These are the possible isometry classes of lattices of the form $I^{\perp}/I$ at $0$-cusps of $\bbcpt{F_{2d}}$.
-The enumeration of $0$-cusps is thus reduced to counting the orbits of primitive embeddings $U \injects L$ for each Niemeier lattice $L$ up to $\Orth(L)$, where \cite{Sca87} establishes that each such orbit corresponds to a *distinct* $0$-cusp, allowing for an explicit enumeration and thus an understanding of the entire cusp diagram for $F_{2d}$ for a wide range of values of $d$.
+The enumeration of $0$-cusps is thus reduced to counting the orbits of primitive embeddings $U \injects L$ for each Niemeier lattice $L$ up to $\Orth(L)$, where @Sca87 establishes that each such orbit corresponds to a *distinct* $0$-cusp, allowing for an explicit enumeration and thus an understanding of the entire cusp diagram for $F_{2d}$ for a wide range of values of $d$.
 From this, we find that the class number $\cl(T)$ directly influences the number of 0-cusps, and representatives of isometry classes can be used to provide an explicit indexing set.
 :::
 
 #### Existence and Uniqueness
 
 :::{.theorem
-    title="{Nikulin's Analog of Witt's Theorem \cite[Thm.~1.14.4]{Nik79}}"
+    title="Nikulin's Analog of Witt's Theorem [@Nik79, Thm. 1.14.4]"
     #thm:nik79-1-14-4
 }
 Let $S$ be an even lattice and $L$ an even unimodular lattice. Then
@@ -57,7 +57,7 @@ Let $S$ be an even lattice and $L$ an even unimodular lattice. Then
   .$$
 :::
 
-We note that this is not how \cite{Nik79} originally states the theorem, but rather extracts the case that is more commonly used in applications for clarity.
+We note that this is not how @Nik79 originally states the theorem, but rather extracts the case that is more commonly used in applications for clarity.
 The generic case is both necessary and sufficient for the existence and uniqueness of a primitive embedding, 
 The weak case, which uses the global invariant $\ell(A_S)$ is easier to check in practice, but only gives a sufficient condition and is thus strictly weaker than the generic case. This is because if $A$ is any finite abelian group, one can consider the primary decomposition $A = \bigoplus_p A_p$, 
 and there is an inequality
@@ -92,7 +92,7 @@ If $S$ and $L$ are even lattices and $L$ is unimodular, then $\Emb(S, L)$ is a f
 :::
 
 :::{.proof}
-By \cite[Prop. 1.6.1]{Nik79a}, such a primitive embedding $\iota: S \injects L$ is determined by an isometry $\gamma: A_{S} \iso A_{T}(-1)$, two such primitive embeddings are equivalent if and only if $\gamma_{1}$ is conjugate to $\gamma_{2}$ under $\Orth\left(A_{T}\right)$, and $\iota_{1}\left(S_{1}\right) \iso \iota_{2}\left(S_{2}\right)$ are equivalent primitive sublattices if $\exists(\phi, \psi) \in \Orth(S) \oplus \Orth(T)$ such that $\left.\gamma_{1} \circ \phi\right|_{A_{S}}=\left.\psi\right|_{A_{T}} \circ \gamma_{2}$.
+By [@Nik79a, Prop. 1.6.1], such a primitive embedding $\iota: S \injects L$ is determined by an isometry $\gamma: A_{S} \iso A_{T}(-1)$, two such primitive embeddings are equivalent if and only if $\gamma_{1}$ is conjugate to $\gamma_{2}$ under $\Orth\left(A_{T}\right)$, and $\iota_{1}\left(S_{1}\right) \iso \iota_{2}\left(S_{2}\right)$ are equivalent primitive sublattices if $\exists(\phi, \psi) \in \Orth(S) \oplus \Orth(T)$ such that $\left.\gamma_{1} \circ \phi\right|_{A_{S}}=\left.\psi\right|_{A_{T}} \circ \gamma_{2}$.
 Since $A_{S}, A_{T}$ are finite abelian groups, $\Isom\left(A_{S}, A_{T}\right)$ is a finite set, as is $\Orth\left(A_{T}\right)$. Moreover, noting that if $S_{1} \iso S_{2}$ then $A_{S_{1}} \iso A_{S_{2}}$ and thus $\Emb\left(S_{1}, L\right) \cong \Emb\left(S_{2}, L\right)$, so $\Emb(S, L)$ only depends on the isometry class of $S$. Since gen $(S)$ is a finite set, there are only finitely many isometry classes of $S$, so the class group $\cl(S)$ is finite and thus $\Emb(S, L)$ a finite set.
 :::
 
@@ -105,7 +105,7 @@ The following results collect the relevant facts for this aspect of the theory:
 
 
 :::{.theorem
-    title="{Primitive Embedding Theorem \cite[Prop.~15.1.1]{PS24}}"
+    title="Primitive Embedding Theorem [@PS24, Prop. 15.1.1]"
     #thm:primitive-embedding-corrected
 }
 Let $S$ be a primitive non-degenerate sublattice of a unimodular lattice $L$, and let $T = S^{\perp L}$ be its orthogonal complement. Then:
@@ -166,7 +166,7 @@ Finally, a pair of isometries of $S$ and $T$ lifts to an isometry of $L$ if and 
 Thus given $S\injects L$ as above with $T\da S^{\perp L}$, even if $S$ does not split $L$, we still have a way to construct isometries on $L$: one first constructs isometries $f_S\in \Orth(S)$ and $f_T \in \Orth(T)$ such that the restricted action of $f_S$ to $A_S$ and that of $f_T$ to $A_T$ agree, using the anti-isometry $A_S\iso A_T(-1)$, then produces a lift of $f_S \oplus f_T$ to an element of $f\in \Orth(L)$ that restricts to both $f_S$ and $f_T$. In particular, $f$ stabilizes both $S$ and $T$, and thus defines isometries in the stabilizers $\Stab_{\Orth(L)}(S)$ and $\Stab_{\Orth(L)}(T)$.
 :::
 
-#### Applications to $\fent$ {#lemma-fent-to-fttz-closed-immersion}
+#### Applications to $\fent$ {#sec:applications-fent}
 
 To see some of this theory applied to the moduli problem at hand, we take a small detour to prove that $\fent$ is the normalization of a closed subvariety of $\fttz$ -- an essential ingredient in the main theorem.
 The strategy is as follows:
@@ -177,7 +177,7 @@ The strategy is as follows:
 
 3. Restrict $\Psi$ to its scheme-theoretic image, i.e. the smallest closed subscheme of $\fttz$ through which $\Psi$ factors, to obtain $\Psi: \fent \to X$
 
-4. Since $F_{\En, 2}$ is known to be normal by the general theory of \cite{BB66}, we then appeal to Zariski's main theorem: since $X$ is a closed subscheme of a normal variety, if $\Psi$ is finite and birational, it satisfies the universal property of normalization.
+4. Since $F_{\En, 2}$ is known to be normal by the general theory of @BB66, we then appeal to Zariski's main theorem: since $X$ is a closed subscheme of a normal variety, if $\Psi$ is finite and birational, it satisfies the universal property of normalization.
 
 We first claim there is a holomorphic, algebraic morphism of period domains
 \begin{align*}
@@ -211,7 +211,7 @@ We observe several useful facts:
 
 - $A(n) \injects B(n)$ is unique if $A\injects B$ is unique
 
-The following is proved as \cite[Lem. 2.4]{AEGS25}:
+The following is proved as [@AEGS25, Lem. 2.4]:
 
 :::{.proposition}
 The following sequence of primitive embeddings is unique up to isometry:
@@ -242,7 +242,7 @@ Since $S_i, T_i$ are unimodular, $\phi_S$ and $\phi_T$ trivially act identically
 So $j_1$ is equivalent to $j_2$ as an embedding.
 
 We now claim that the second embedding $U(2)\oplus E_8(2)\injects \lkt = U^2 \oplus E_8^3$ is unique.
-This follows from Nikulin's version of Witt's \Cref{thm:nik79-1-14-4}:
+This follows from Nikulin's version of Witt's @thm:nik79-1-14-4:
 
 1. $\signature(\lkt) = (3, 19) > \signature(U(2) \oplus E_8(2)) = (1, 9)$,
 2. $\rank(\lkt) - \rank(U(2) \oplus E_8(2)) = 22-10 \geq 2 + \ell(A_S) = 2 + 10$.
@@ -266,20 +266,21 @@ $$
 A_S = A_{U(2)} \oplus A_{E_8(@)} = C_2^2 \oplus C_2^{8} \cong C_2^{10} \cong A_T
 ,$$
 and that $S$ and $T$ are both even indefinite 2-elementary lattices.
-By \cite[Thm. 3.6.3]{Nik79}, the restrictions $\Orth(S)\to\Orth(A_S)$ and $\Orth(T) \to\Orth(A_T)$ are surjective, and thus of $f\in \Orth(S)$, using the fact that $A_S\cong A_T$, the restricted isometry $f_{A_S}$ induces an isometry $f_{A_T}$ on $A_T$, which can be be lifted to an isometry $f_T$ on $T$.
+By [@Nik79, Thm. 3.6.3], the restrictions $\Orth(S)\to\Orth(A_S)$ and $\Orth(T) \to\Orth(A_T)$ are surjective, and thus of $f\in \Orth(S)$, using the fact that $A_S\cong A_T$, the restricted isometry $f_{A_S}$ induces an isometry $f_{A_T}$ on $A_T$, which can be be lifted to an isometry $f_T$ on $T$.
 By construction, $f_{T}$ and $f_{S}$ act identically on $A_S$ and $A_T$, and so lift to an isometry $f\in \Orth(L)$ preserving both $S$ and $T$.
 :::
 
 
 
 :::{.lemma 
-  title="{\cite[Lemma 2.8]{AEGS25}}"
+  title="[@AEGS25, Lemma 2.8]"
+  #lem:fent-to-fttz-closed-immersion
 }
 There exists a closed subscheme $X \subset \fttz$ such that $\fent$ is canonically isomorphic to the normalization of $X$.
 :::
 
 :::{.proof}
-The result follows by restricting the period morphism $\Psi$ to its scheme-theoretic image $X$ and replacing it by $\Psi: \fent \to X$. The morphism $\Psi$ is finite and birational. Birationality is established by the fact that $\Psi$ is an open immersion over the locus of smooth, generic Enriques surfaces, and thus is birational onto its image. Finiteness holds since $\Psi$ is proper and quasi-finite. Both $\fent$ and $\fttz$ are normal since they are complex analytic manifolds, following \cite{BB66}. The closed subscheme $X$ inherits normality as a subscheme of a normal variety. 
+The result follows by restricting the period morphism $\Psi$ to its scheme-theoretic image $X$ and replacing it by $\Psi: \fent \to X$. The morphism $\Psi$ is finite and birational. Birationality is established by the fact that $\Psi$ is an open immersion over the locus of smooth, generic Enriques surfaces, and thus is birational onto its image. Finiteness holds since $\Psi$ is proper and quasi-finite. Both $\fent$ and $\fttz$ are normal since they are complex analytic manifolds, following @BB66. The closed subscheme $X$ inherits normality as a subscheme of a normal variety. 
 
 By Zariski's Main Theorem, a finite birational morphism from a normal variety to an integral variety identifies the source with the normalization of the target. Therefore, $\Psi\colon \fent \to X$ exhibits $\fent$ as the normalization of $X$.
 :::
