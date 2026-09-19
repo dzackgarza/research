@@ -90,3 +90,18 @@ The simply transitive $\operatorname{Aut}_R(R^{(I)})$-action above is the action
 Dropping the requirement that $e$ be an isomorphism and asking only that it be surjective gives the generating frames of @def-generating-frame, for which the same argument runs and reaches the same conclusion by @prp-generating-frame-is-structure.
 A basis is the case of a generating frame whose structure map is an isomorphism.
 :::
+
+::: {#def-free-module-orientation}
+## Orientation of a free module
+
+Let $R$ be a commutative ring and let $M$ be a free $R$-module of finite rank $n$.
+The top exterior power $\det(M)\coloneqq\bigwedge^n M$ is a free $R$-module of rank $1$.
+An *orientation* of $M$ is an isomorphism of $R$-modules
+$$
+\omega\colon R\xrightarrow{\ \sim\ }\det(M).
+$$
+Fix a subgroup of units $U\le R^\times$.
+An *orientation modulo $U$* is an orbit of such isomorphisms under the action of $U$ by scalar multiplication.
+Two ordered bases $(e_1,\dots,e_n)$ and $(f_1,\dots,f_n)$ of $M$ determine the same orientation modulo $U$ if and only if the change-of-basis matrix $A\in\operatorname{GL}_n(R)$, defined by $f_j=\sum_{i=1}^n A_{ij}e_i$, satisfies $\det(A)\in U$.
+:::
+
