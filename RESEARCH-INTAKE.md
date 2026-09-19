@@ -116,6 +116,7 @@ Where to look first for existing algorithms before writing new code. Check these
 | Computing Picard-Fuchs operators of families (Gauss-Manin, Weierstrass, twists, and Fano/K3 mirrors) | https://arxiv.org/abs/2403.07349 + user intake 2026-09-19 | Computation of Picard-Fuchs differential operators for algebraic families \pi: X \to B; explicit Weierstrass reduction \nabla = d/dt - M(t) with \Delta, \delta (arXiv:2403.07349 p. 13 Eq. 2.17); Doran-Malmendier Hadamard twist construction L_{n+1} = L_twist \star L_n; recovery of 17 rank-1 Fano anticanonical K3 operators L_{3,N} (Table 1), modular elliptic pencils L_{2,n} (Table 4), quantum differential operators D_{4,N} = \theta \cdot L_{3,N} (Table 2), and P^3 instanton pullback (Eq. 6.1) | `categories/differential_equations/picard_fuchs.py` + `categories/schemes/elliptic_surfaces/weierstrass_picard_fuchs.py` + `categories/cohomology/gauss_manin.py` + `categories/schemes/k3/fano_mirrors.py` | Proposed — see note below |
 | Converting linear recurrences to differential equations symbolically (Ore algebras, D-finite/holonomic systems) | User intake 2026-09-19 | Symbolic translation from linear recurrence relations \sum p_i(n) a_{n+i} = 0 (shift Ore algebra K[n]\langle S_n \rangle) to linear differential equations \sum q_j(t) F^{(j)}(t) = 0 and Euler form \mathcal{L}(\theta) F(t) = P(t) (Weyl/differential Ore algebra K[t]\langle \partial_t \rangle); handles initial conditions, OGF/EGF (Borel/Laplace transform); connects Apéry sequences to Calabi-Yau Picard-Fuchs operators | `categories/differential_equations/ore_algebra.py` + `categories/differential_equations/recurrence_to_diffeq.py` + `categories/algebras/ore_algebras.py` | Proposed — see note below |
 | Large poset navigation, 2D grid layouts, Coxeter subdiagrams, and G-poset quotients | User intake 2026-09-19 | 2D grid/ranked layout and interactive navigation for extremely large posets (10^3–10^6 nodes); subdiagram posets of Coxeter diagrams (< 25 nodes): elliptic, parabolic, Lanner, and their maximal elements; chain tracing to maximal/minimal elements; diagram quotients by symmetries G = Aut(Γ) or Aut(M); G-posets and bidirectional projection/unrolling P \leftrightarrow P/G | `categories/posets/large_poset.py` + `categories/coxeter/subdiagram_posets.py` + `categories/graphs/diagram_automorphisms.py` + `src/dzack_research/preamble/visualization/` | Proposed — see note below |
+| q-analogues (q-integers, q-factorials, Gaussian binomials, Jackson calculus, and basic hypergeometric series) | User intake 2026-09-19 | Comprehensive q-analogue infrastructure: q-numbers [n]_q, q-factorials [n]_q!, Gaussian binomial/multinomial coefficients \binom{n}{k}_q (subspace counts in Gr(k,n)(F_q), Bruhat inversions); Jackson q-derivative and integral; q-Pochhammer symbols (a;q)_n, (a;q)_\infty; basic hypergeometric series {}_r\phi_s; q-exponential/gamma; Poincaré polynomials of Coxeter groups and Hecke/quantum group algebra connections | `categories/combinatorics/q_analogues.py` + `categories/special_functions/q_hypergeometric.py` + `categories/quantum_groups/quantum_integers.py` + `categories/algebras/hecke_algebra.py` | Proposed — see note below |
 
 ## Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15
 
@@ -2435,6 +2436,117 @@ Intended owners: `categories/differential_equations/ore_algebra.py` (`OreAlgebra
     - Interactive front-end module (HTML/SVG/Canvas export with embedded JS): tooltips, sidebar inspector, chain tracing toggle, and $P \leftrightarrow P/G$ orbit toggle.
 
 Intended owners: `categories/posets/large_poset.py` (`LargePoset`, `GPoset`, `QuotientPoset`), `categories/coxeter/subdiagram_posets.py` (`CoxeterSubdiagramPoset`, `EllipticPoset`, `ParabolicPoset`), `categories/graphs/diagram_automorphisms.py` (`DiagramAutomorphisms`, `DiagramQuotient`), `src/dzack_research/preamble/visualization/poset_navigator.py`.
+
+
+## Desired capability: q-analogues — intake 2026-09-19
+
+* **Mathematical background & foundational operations:**
+  * **$q$-numbers ($q$-brackets) and quantum integers:**
+    For an indeterminate $q$ (or specialized value in a ring $R$):
+    - Classical $q$-bracket:
+      $$
+      [n]_q \;\coloneqq\; \frac{1 - q^n}{1 - q} \;=\; 1 + q + q^2 + \dots + q^{n-1} \;=\; \sum_{k=0}^{n-1} q^k \;\in\; \mathbb{Z}[q], \qquad \lim_{q \to 1} [n]_q = n.
+      $$
+    - Symmetric quantum integer (Lie theory / quantum groups):
+      $$
+      [n]_q^{\mathrm{sym}} \;\coloneqq\; \frac{q^n - q^{-n}}{q - q^{-1}} \;=\; q^{n-1} + q^{n-3} + \dots + q^{-(n-1)} \;\in\; \mathbb{Z}[q, q^{-1}].
+      $$
+
+  * **$q$-factorials:**
+    $$
+    [n]_q! \;\coloneqq\; \prod_{k=1}^n [k]_q \;=\; [1]_q [2]_q \cdots [n]_q, \qquad [0]_q! \;\coloneqq\; 1.
+    $$
+
+  * **Gaussian binomial coefficients ($q$-binomials):**
+    For integers $0 \le k \le n$:
+    $$
+    \binom{n}{k}_q \;\coloneqq\; \frac{[n]_q!}{[k]_q! [n-k]_q!} \;=\; \frac{\prod_{i=0}^{k-1} (1 - q^{n-i})}{\prod_{i=1}^k (1 - q^i)} \;\in\; \mathbb{Z}[q].
+    $$
+    * **Geometric interpretation:**
+      Counts the number of $k$-dimensional linear subspaces in an $n$-dimensional vector space over the finite field $\mathbb{F}_q$:
+      $$
+      \binom{n}{k}_q \;=\; \left| \operatorname{Gr}(k, n)(\mathbb{F}_q) \right| \;=\; \frac{(q^n - 1)(q^n - q)\cdots(q^n - q^{k-1})}{(q^k - 1)(q^k - q)\cdots(q^k - q^{k-1})}.
+      $$
+    * **Combinatorial generating function:**
+      Generating function for integer partitions fitting inside a $k \times (n-k)$ rectangle:
+      $$
+      \binom{n}{k}_q \;=\; \sum_{\lambda \subseteq k \times (n-k)} q^{|\lambda|}.
+      $$
+      Also computes the Poincaré polynomial of the Grassmannian Bruhat quotient $\mathfrak{S}_n / (\mathfrak{S}_k \times \mathfrak{S}_{n-k})$ by Coxeter length $\ell(w)$ (number of inversions).
+    * **Recurrence relations ($q$-Pascal identities):**
+      $$
+      \binom{n}{k}_q \;=\; \binom{n-1}{k-1}_q + q^k \binom{n-1}{k}_q \;=\; q^{n-k} \binom{n-1}{k-1}_q + \binom{n-1}{k}_q.
+      $$
+    * **$q$-binomial theorem:**
+      $$
+      \prod_{i=0}^{n-1} (1 + q^i x) \;=\; \sum_{k=0}^n q^{\binom{k}{2}} \binom{n}{k}_q x^k, \qquad \frac{1}{(x; q)_n} \;=\; \sum_{k=0}^\infty \binom{n+k-1}{k}_q x^k.
+      $$
+
+  * **$q$-multinomial coefficients:**
+    For a composition $n = k_1 + \dots + k_m$:
+    $$
+    \binom{n}{k_1, \dots, k_m}_q \;\coloneqq\; \frac{[n]_q!}{[k_1]_q! \cdots [k_m]_q!}.
+    $$
+    Counts partial flag varieties of type $(k_1, \dots, k_m)$ in $\mathbb{F}_q^n$.
+
+  * **$q$-Pochhammer symbol:**
+    $$
+    (a; q)_n \;\coloneqq\; \prod_{k=0}^{n-1} (1 - a q^k), \qquad (a; q)_\infty \;\coloneqq\; \prod_{k=0}^\infty (1 - a q^k).
+    $$
+
+  * **Jackson $q$-calculus:**
+    * **Jackson $q$-derivative:**
+      $$
+      D_q f(x) \;\coloneqq\; \frac{f(x) - f(qx)}{(1 - q)x}, \qquad D_q(x^n) = [n]_q x^{n-1}, \qquad \lim_{q \to 1} D_q f(x) = f'(x).
+      $$
+      Product rule: $D_q(f(x)g(x)) = f(qx) D_q g(x) + g(x) D_q f(x)$.
+    * **Jackson $q$-integral:**
+      $$
+      \int_0^a f(x) \, d_q x \;\coloneqq\; (1 - q) a \sum_{n=0}^\infty q^n f(a q^n).
+      $$
+
+  * **$q$-exponential, $q$-gamma, and $q$-beta functions:**
+    - Little $q$-exponential: $e_q(z) \coloneqq \sum_{n=0}^\infty \frac{z^n}{[n]_q!} = \frac{1}{((1-q)z; q)_\infty}$.
+    - Big $q$-exponential: $E_q(z) \coloneqq \sum_{n=0}^\infty q^{\binom{n}{2}} \frac{z^n}{[n]_q!} = (-(1-q)z; q)_\infty$, with $e_q(z) E_q(-z) = 1$.
+    - $q$-Gamma function: $\Gamma_q(x) \coloneqq \frac{(q; q)_\infty}{(q^x; q)_\infty} (1 - q)^{1-x}$, satisfying $\Gamma_q(x+1) = [x]_q \Gamma_q(x)$.
+
+  * **Basic hypergeometric series ($q$-hypergeometric functions):**
+    Generalized basic hypergeometric series:
+    $$
+    {}_r\phi_s\left(\begin{matrix} a_1, \dots, a_r \\ b_1, \dots, b_s \end{matrix}; q, z\right) \;\coloneqq\; \sum_{n=0}^\infty \frac{(a_1; q)_n \cdots (a_r; q)_n}{(b_1; q)_n \cdots (b_s; q)_n} \frac{z^n}{(q; q)_n} \left((-1)^n q^{\binom{n}{2}}\right)^{1 + s - r}.
+    $$
+    Covers Heine's transformations, Ramanujan's ${}_1\psi_1$ summation formula, and the Rogers–Ramanujan identities:
+    $$
+    \sum_{n=0}^\infty \frac{q^{n^2}}{(q; q)_n} \;=\; \frac{1}{(q; q^5)_\infty (q^4; q^5)_\infty}, \qquad \sum_{n=0}^\infty \frac{q^{n^2+n}}{(q; q)_n} \;=\; \frac{1}{(q^2; q^5)_\infty (q^3; q^5)_\infty}.
+    $$
+
+  * **Poincaré polynomials of Coxeter groups and Hecke algebras:**
+    - For a finite Coxeter group $W$ with simple reflections $S$ and exponent degrees $d_1, \dots, d_n$:
+      $$
+      W(q) \;\coloneqq\; \sum_{w \in W} q^{\ell(w)} \;=\; \prod_{i=1}^n [d_i]_q.
+      $$
+    - For the symmetric group $\mathfrak{S}_n$: $\mathfrak{S}_n(q) = [n]_q!$.
+    - Iwahori–Hecke algebra $\mathcal{H}_q(W)$ over $\mathbb{Z}[q^{1/2}, q^{-1/2}]$ with generators $T_s$ satisfying quadratic relations $(T_s - q)(T_s + 1) = 0$ and braid relations.
+    - Quantum groups $U_q(\mathfrak{g})$: quantum Serre relations and quantum Casimir operators defined via Gaussian binomials and $[n]_q!$.
+
+* **Preamble implementation requirements:**
+  * **Core combinatorics module:** `categories/combinatorics/q_analogues.py`
+    - `q_bracket(n, q=None, sym=False)`: computes $[n]_q$ as an integer, polynomial in $\mathbb{Z}[q]$, or Laurent polynomial $\mathbb{Z}[q, q^{-1}]$.
+    - `q_factorial(n, q=None)`: computes $[n]_q!$.
+    - `q_binomial(n, k, q=None)`: computes $\binom{n}{k}_q$, with fast computation via $q$-Pascal recurrence or product formula.
+    - `q_multinomial(n, parts, q=None)`: computes Gaussian multinomial coefficients.
+    - `q_pochhammer(a, q, n=None)`: computes finite product $(a; q)_n$ or lazy power series for $(a; q)_\infty$.
+  * **Jackson calculus and special functions:** `categories/special_functions/q_hypergeometric.py`
+    - `q_derivative(f, var='x', q='q')`: applies Jackson derivative operator $D_q$ to symbolic expressions and polynomials.
+    - `q_integral(f, var='x', a=1, q='q', terms=50)`: evaluates Jackson $q$-integral.
+    - `q_hypergeometric(num, den, q, z, prec)`: evaluates ${}_r\phi_s$ basic hypergeometric series to precision.
+    - `q_exponential(z, q, kind='little', prec=20)`: computes $e_q(z)$ or $E_q(z)$.
+  * **Algebraic integration:**
+    - Integration with `categories/algebras/hecke_algebra.py` for Poincaré polynomials and Kazhdan–Lusztig polynomials.
+    - Integration with `categories/quantum_groups/quantum_integers.py` for representation theory and quantum Casimir invariants.
+
+Intended owners: `categories/combinatorics/q_analogues.py` (`QBracket`, `QFactorial`, `QBinomial`, `QPochhammer`), `categories/special_functions/q_hypergeometric.py` (`JacksonDerivative`, `QHypergeometricSeries`), `categories/quantum_groups/quantum_integers.py` (`QuantumInteger`, `QuantumBinomial`), `categories/algebras/hecke_algebra.py` (`HeckeAlgebra`, `PoincarePolynomial`).
+
 
 
 
