@@ -123,8 +123,6 @@ class MultiplicativeAlgebraMorphism(Morphism):
         domain = self.domain()
         codomain = self.codomain()
         linear = domain.module_category().Mor(domain, codomain)(underlying_morphism)
-        if linear.linearity_decision() is not True:
-            raise ValueError("an algebra morphism requires an established underlying linear map")
         source_multiplication = domain.multiplication_morphism()
         target_multiplication = codomain.multiplication_morphism()
         tensor_square = linear.tensor_product_map(
@@ -136,6 +134,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
         assert preserved is not False, "the stated linear map does not preserve the multiplication"
         self._underlying_morphism = linear
         self._tensor_square_morphism = tensor_square
+        self._underlying_linearity = linear.linearity_decision()
         self._preserves_multiplication = preserved
 
     def underlying_morphism(self):
@@ -145,6 +144,10 @@ class MultiplicativeAlgebraMorphism(Morphism):
     def tensor_square_morphism(self):
         r"""\(f\otimes f\colon A\otimes_R A\to B\otimes_R B\)."""
         return self._tensor_square_morphism
+
+    def linearity_decision(self):
+        r"""Return the retained linearity decision of the underlying module map."""
+        return self._underlying_linearity
 
     def is_multiplicative(self):
         r"""``True`` when \(f\,m_A = m_B\,(f\otimes f)\) was decided, ``Unknown`` when it is the stated hypothesis."""

@@ -12,6 +12,7 @@ from dzack_research.preamble.all import (
     Algebras,
     BilinearMap,
     Functor,
+    GF,
     Modules,
     QQ,
 )
@@ -195,6 +196,25 @@ def test_general_algebra_node_does_not_impose_associativity_or_unit() -> None:
     assert algebra not in Algebras(QQ).Associative().Unital()
 
 
+def test_lie_admission_in_characteristic_two_checks_alternation() -> None:
+    field = GF(2)
+    module = field.free_module(finite_ordered_set(("x",)))
+    x = module.module_generator("x")
+    diagonal = BilinearMap(
+        module,
+        module,
+        module,
+        {("x", "x"): x},
+    )
+
+    # In characteristic two, the skew equation on this diagonal value is
+    # vacuous: b(x,x) + b(x,x) = 0.  A Lie bracket still requires the stronger
+    # alternating law b(x,x)=0.
+    assert diagonal(x, x) + diagonal(x, x) == module.zero()
+    with pytest.raises(AssertionError, match="alternation"):
+        Algebras(field).Lie()(module, diagonal)
+
+
 def test_algebra_axioms_refine_the_algebra_node_inside_modules() -> None:
     algebras = Algebras(QQ)
 
@@ -275,8 +295,10 @@ def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equal
         lambda x: x,
     )
     assert linear.linearity_decision() is Unknown
-    with pytest.raises(ValueError, match="established underlying linear map"):
-        Algebras(QQ).Mor(algebra, algebra)(linear)
+    conditional = Algebras(QQ).Mor(algebra, algebra)(linear)
+    assert conditional.underlying_morphism() is linear
+    assert conditional.linearity_decision() is Unknown
+    assert conditional.is_multiplicative() is Unknown
     identity = Algebras(QQ).Mor(algebra, algebra).identity()
     assert identity(three) == three
     assert identity.is_multiplicative() is Unknown
@@ -285,6 +307,16 @@ def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equal
     )
     assert (linear == another_linear) is Unknown
     assert (linear != another_linear) is Unknown
+
+
+def test_zero_field_endomorphism_is_multiplicative_but_not_unital() -> None:
+    zero = QQ.module_category().Mor(QQ, QQ).zero()
+    multiplicative = Algebras(QQ).Mor(QQ, QQ)(zero)
+
+    assert multiplicative.linearity_decision() is True
+    assert multiplicative.is_multiplicative() is True
+    with pytest.raises(AssertionError, match="preserve the unit"):
+        Algebras(QQ).Unital().Mor(QQ, QQ)(zero)
 
 
 def test_unframed_unital_and_lie_entries_use_the_same_root_constructor() -> None:

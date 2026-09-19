@@ -6,7 +6,7 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
-    _OwnedAlgebraParent,
+    _algebra_on_module,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
@@ -18,9 +18,27 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    _engine_ring,
     _owned_ring,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+)
+
+
+class _SelectedAugmentationModuleMorphism(ModuleMorphism):
+    r"""The selected augmentation transported to the structured algebra endpoint."""
+
+    def __init__(self, parent, augmentation, source_algebra) -> None:
+        self._selected_augmentation = augmentation
+        self._source_algebra = source_algebra
+        super().__init__(
+            parent,
+            lambda element: augmentation(source_algebra(element)),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._selected_augmentation.linearity_decision()
 
 
 class AugmentedAlgebras(OwnedCategoryOverBaseRing):
@@ -41,8 +59,8 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
         r"""``R[x]`` augmented by evaluation at zero.
 
         The augmentation is the algebra morphism \(R[x]\to R\) sending the
-        generator to \(0\); the augmented algebra is its domain, interned on
-        that choice.
+        generator to \(0\); the structured object retains that exact algebra
+        and selected morphism as its data.
         """
 
         ring = self.base_ring()
@@ -61,14 +79,29 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
         return _augmented_algebra(augmentation)
 
     class ParentMethods:
+        def __init__(self, selected_augmentation=None, **rest) -> None:
+            assert selected_augmentation is not None, (
+                "an augmented algebra retains its selected augmentation morphism"
+            )
+            self._preamble_selected_augmentation = selected_augmentation
+            super().__init__(**rest)
+
         def is_augmented(self) -> bool:
             return True
 
         @cached_method
         def augmentation(self):
-            return Algebras(self.base_ring()).Associative().Unital().Mor(self, self._preamble_augmentation_codomain)(
-                dict(self._preamble_augmentation_images)
+            selected = self._preamble_selected_augmentation
+            source = self.unformed_module()
+            target = selected.codomain()
+            linear = _SelectedAugmentationModuleMorphism(
+                self.module_category().Mor(self, target),
+                selected,
+                source,
             )
+            return Algebras(self.base_ring()).Associative().Unital().Mor(
+                self, target
+            )(linear)
 
 
 class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
@@ -89,8 +122,8 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
         r"""``R[x]`` augmented by evaluation at zero.
 
         The augmentation is the algebra morphism \(R[x]\to R\) sending the
-        generator to \(0\); the augmented algebra is its domain, interned on
-        that choice.
+        generator to \(0\); the structured object retains that exact algebra
+        and selected morphism as its data.
         """
 
         ring = self.base_ring()
@@ -142,37 +175,25 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
                     return unit.algebra_structure_morphism() * to_unit
 
 
-class _AlgebraWithChosenAugmentation(_OwnedAlgebraParent):
-    r"""An algebra interned on a chosen family of generator images."""
-
-    def __init__(
-        self,
-        engine,
-        base_ring,
-        labels,
-        augmentation_images,
-        augmentation_codomain,
-        *,
-        categories=(),
-    ) -> None:
-        self._preamble_augmentation_images = augmentation_images
-        self._preamble_augmentation_codomain = augmentation_codomain
-        _OwnedAlgebraParent.__init__(
-            self,
-            engine,
-            base_ring,
-            labels,
-            categories=(AugmentedAlgebras(base_ring), *tuple(categories)),
-        )
-
-
 def _augmentation_codomain_is_allowed(domain, base, codomain) -> bool:
-    return _engine_ring(codomain) is _engine_ring(base)
+    _ = domain
+    return codomain is base
 
 
 def _graded_algebra_placement(domain, base):
 
     placement = []
+    algebras = Algebras(base)
+    match domain in algebras.Commutative():
+        case True:
+            placement.append(algebras.Commutative())
+        case False:
+            pass
+    match domain in FramedAlgebras(base):
+        case True:
+            placement.append(FramedAlgebras(base))
+        case False:
+            pass
     try:
         monoid = domain.grading_monoid()
         placement.append(GradedAlgebras(base, monoid))
@@ -200,31 +221,31 @@ def _augmented_algebra(augmentation):
     \(A\) is an \(A_u\)-algebra; an augmentation of that algebra is a map
     \(A\to A_u\).
     """
-    if not isinstance(augmentation, Map):
-        raise TypeError("an augmentation is an algebra morphism to the base ring")
+    match isinstance(augmentation, Map):
+        case True:
+            pass
+        case False:
+            raise TypeError("an augmentation is an algebra morphism to the base ring")
     domain = augmentation.domain()
     base = _owned_ring(domain.base_ring())
-    if domain not in Algebras(base).Associative().Unital():
-        raise TypeError(f"{domain} is not an algebra over {base}")
+    algebras = Algebras(base).Associative().Unital()
+    match domain in algebras:
+        case True:
+            pass
+        case False:
+            raise TypeError(f"{domain} is not an algebra over {base}")
     aug_codomain = _owned_ring(augmentation.codomain())
-    if not _augmentation_codomain_is_allowed(domain, base, aug_codomain):
-        raise TypeError(
-            f"an augmentation of {domain} is a morphism to {base}"
-        )
-    if domain not in FramedAlgebras(base):
-        raise TypeError(
-            "an augmentation is specified by the images of a represented algebra generating set"
-        )
-    labels = tuple(domain.algebra_generating_set())
-    images = tuple(
-        (label, augmentation(domain.algebra_generator(label))) for label in labels
-    )
+    match _augmentation_codomain_is_allowed(domain, base, aug_codomain):
+        case True:
+            pass
+        case False:
+            raise TypeError(f"an augmentation of {domain} is a morphism to {base}")
+    selected = algebras.Mor(domain, aug_codomain)(augmentation)
     placement = _graded_algebra_placement(domain, base)
-    return _AlgebraWithChosenAugmentation(
-        _engine_ring(domain),
-        base,
-        labels,
-        images,
-        aug_codomain,
-        categories=tuple(placement),
+    return _algebra_on_module(
+        domain,
+        domain.multiplication_morphism(),
+        placement=(AugmentedAlgebras(base), *tuple(placement)),
+        unit=domain.one(),
+        construction_data={"selected_augmentation": selected},
     )

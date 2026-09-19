@@ -63,7 +63,7 @@ The earlier absence claim is not repeated here as a current defect: inspect
 the delivered native/free routes and close only their remaining delta.
 
 **Existing capability.**
-The common algebra entry takes the actual module and its tensor multiplication, including native ring, quotient, localization and endomorphism realizations. The module owner supplies regular and chosen native frames, relationful word quotients, homogeneous sums and the unframed tensor classifier. Any remaining free-functor repair must compose those existing owners, not introduce another scalar-action or multiplication constructor.
+The common algebra entry takes the actual module and its tensor multiplication, including native ring, quotient, localization and endomorphism realizations. Multiplicative Hom admission is shared by the algebra refinements, and augmentation now adds its selected algebra morphism on the retained algebra datum rather than rebuilding an engine-backed algebra. The module owner supplies regular and chosen native frames, relationful word quotients, homogeneous sums and the unframed tensor classifier. Any remaining free-functor repair must compose those existing owners, not introduce another scalar-action or multiplication constructor.
 
 **Affected consumers.**
 Every algebra constructor and every algebra Hom; the tensor- and symmetric-algebra adjunctions; Kaehler differentials and de Rham algebras of polynomial rings; group algebras and their regular representations.
@@ -71,7 +71,7 @@ Every algebra constructor and every algebra Hom; the tensor- and symmetric-algeb
 **Coverage boundary.**
 Read from source; no session was run.
 The named allocation paths and consumers were read from source; runtime behavior and the full terminal session remain unexecuted.
-Scheduled as `algebra-defining-data`, `free-algebra-module-factor` and `objects-through-categories-algebras` in [TODO.md](TODO.md).
+The remaining source-review scope is scheduled as `free-algebra-module-factor` and `objects-through-categories-algebras` in [TODO.md](TODO.md).
 
 ### Sheaf theory on non-affine schemes stops at the chart
 
