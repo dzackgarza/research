@@ -391,6 +391,7 @@ from dzack_research.preamble.categories.schemes import (
     RationalPolyhedralFans,
     RegularPolytopes,
     RelativeCyclicCoverLift,
+    RelativeProjectivizations,
     ResolutionIntegralCohomologyGroups,
     RingedSpaces,
     SchemeMonomorphisms,

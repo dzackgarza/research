@@ -71,6 +71,26 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
                 self.linear_system_divisor()
             )
 
+        @cached_method
+        def quotient_projectivization(self):
+            r"""Return the quotient-convention realization ``P_quot(H^0(D)^*)``.
+
+            The complete linear system parametrizes lines in ``H^0(D)``.  A
+            line in a finite free module ``V`` is equivalently a rank-one
+            quotient of ``V^*``; this method records that variance explicitly
+            rather than applying quotient projectivization directly to ``V``.
+            """
+            sections = self.section_space()
+            dual = sections.dual_module()
+            base_scheme = Schemes(self.scheme_base_ring()).base_scheme()
+            return base_scheme.associated_module_sheaf(dual).projectivization()
+
+        @cached_method
+        def quotient_projectivization_comparison(self):
+            r"""Return the chartwise isomorphism ``P_quot(H^0(D)^*) ~= |D|``."""
+            projectivization = self.quotient_projectivization().arrow().domain()
+            return projectivization.projective_space_comparison(self)
+
 
 class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
     r"""Degree-\(d\) homogeneous polynomial section spaces \(H^0(\mathbb{P}^n, \mathcal{O}(d))\).

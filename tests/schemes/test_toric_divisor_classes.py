@@ -242,6 +242,25 @@ def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> N
     assert system.projective_dimension() == 2
 
 
+def test_complete_linear_system_records_the_quotient_projectivization_of_the_dual() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    system = plane.complete_linear_system(line)
+    sections = system.section_space()
+    dual = sections.dual_module()
+    quotient_family = system.quotient_projectivization()
+    quotient_total = quotient_family.arrow().domain()
+    comparison = system.quotient_projectivization_comparison()
+
+    assert quotient_total.projectivization_module() is dual
+    assert quotient_total.projectivization_source_sheaf().module() is dual
+    assert dual is not sections
+    assert comparison.forward().domain() is quotient_total
+    assert comparison.forward().codomain() is system
+    assert comparison.inverse().domain() is system
+    assert comparison.inverse().codomain() is quotient_total
+
+
 def test_hyperplane_linear_system_defines_the_projective_plane_identity_coordinates() -> None:
     plane = _projective_plane()
     line = plane.hyperplane_divisor()

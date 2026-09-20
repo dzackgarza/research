@@ -33,6 +33,8 @@ from dzack_research.preamble.categories.schemes.monodromy import (
 
 from dzack_research.preamble.categories.schemes.quotients import AffineInvariantQuotientBaseChangeComparison
 
+from dzack_research.preamble.categories.schemes.relative_proj import RelativeProjectivizations
+
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     AffineGSchemes,
@@ -131,6 +133,7 @@ __all__ = [
     'AnalyticDiscFamily',
     'CyclicCoverBaseChangeComparison',
     'RelativeCyclicCoverLift',
+    'RelativeProjectivizations',
     'HorikawaK3Family',
     'LegendreMonodromyFamily',
     'PointedAnalyticFundamentalGroup',

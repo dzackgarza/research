@@ -39,28 +39,6 @@ The generated megadoc predates some source changes. Its placement diagnostics
 require regeneration at T before they can establish additional current findings.
 Execution ordering and closure live only in [TODO.md](TODO.md).
 
-### General projectivization of a quasi-coherent sheaf is missing
-
-**Missing general mathematics.**
-For a scheme \(X\) and a quasi-coherent \(\mathcal O_X\)-module \(F\), the tree still lacks the general quotient projectivization
-\(\mathbf P_{\mathrm{quot}}(F)=\operatorname{Proj}_X(\operatorname{Sym} F)\), its structure map, and the universal invertible quotient of the pulled-back \(F\).  This must be distinct from the existing projective-space and linear-system entries and must retain non-locally-free represented sheaves and the base-change comparison.
-
-**Dependency path.**
-Quasi-coherent sheaves on \(X\) → symmetric algebra sheaf → relative Proj → universal invertible quotient → projective-bundle and linear-system consumers.
-
-**Observed evidence.**
-Current source already supplies the sheaf/descent foundation this construction needs: `Sheaves.object` is determined by a coverage and `DescentData`; finite-atlas module sheaves are placed through that owner and `QuasiCoherentSheaves(X)` rather than defined as chart tables; compatible sections are the selected `Modules(O(X))` Čech equalizer with universal maps; algebra sections build multiplication on that module; and finite-atlas pullback is inverse image followed by scalar extension.  The affine quasi-coherent adjunction retains sheaf endpoints, and nontrivial line-bundle refinement comparisons are represented.  No corresponding general `P_quot(F)` construction is present.
-
-**Existing partial capability.**
-`QuasiCoherentSheaves(X)` with affine and finite-atlas realizations; the varying-ring module category and scalar-change adjunctions; represented symmetric algebras of modules; projective spaces and standard line bundles; relative spectra and existing finite-atlas gluing/refinement machinery.
-
-**Affected consumers.**
-Projective bundles, linear systems, and relative-geometry consumers that should use the universal quotient construction rather than a rank-based projective-space factory.
-
-**Coverage boundary.**
-Read from source; no session was run.
-The remaining repair is scheduled as `projectivization` in TODO; terminal execution remains deferred by `DEV-58`.
-
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.

@@ -12,10 +12,12 @@ one associated sheaf for every cached module image. The topological inverse
 image ``f^{-1}`` remains distinct; finite-atlas inverse images are represented
 in ``categories.schemes.gluing`` before scalar extension to module pullback.
 For a represented closed immersion into projective space this module also
-realizes the object ``i^*O_P(d)``.  The quasi-coherent Hom represents arrows
-between such pullback objects by pulling back their ambient line-bundle maps;
-this bounded realization does not claim a pullback functor on arbitrary
-non-affine quasi-coherent sheaves.
+realizes the object ``i^*O_P(d)``.  For another non-affine morphism it retains
+the exact quasi-coherent pullback object ``f^*F`` with its source sheaf and
+pullback morphism even when no chartwise computation is selected.  The
+quasi-coherent Hom represents arrows only in the regimes whose morphism action
+is supplied; the exact object does not manufacture a computational pullback
+functor.
 """
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
@@ -26,6 +28,44 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheaves,
 )
+
+
+class _ExactQuasiCoherentPullbackSheafEngine:
+    r"""The exact object ``f^*F`` when no chartwise realization is selected."""
+
+    def __init__(self, scheme_morphism, source_sheaf, **rest) -> None:
+        self._scheme_morphism = scheme_morphism
+        self._source_sheaf = source_sheaf
+        super().__init__(**rest)
+
+    def scheme(self):
+        return self._scheme_morphism.domain()
+
+    ringed_space = scheme
+
+    def pullback_morphism(self):
+        return self._scheme_morphism
+
+    def source_sheaf(self):
+        return self._source_sheaf
+
+
+def _exact_quasi_coherent_pullback(scheme_morphism, sheaf):
+    r"""Return the exact quasi-coherent pullback object ``f^*F``.
+
+    This is the object-level universal construction used when a represented
+    affine or finite-atlas computation is unavailable.  It does not claim a
+    represented action on arbitrary non-affine sheaf morphisms.
+    """
+    if sheaf not in QuasiCoherentSheaves(scheme_morphism.codomain()):
+        raise TypeError("quasi-coherent pullback starts from a sheaf on the morphism codomain")
+    return QuasiCoherentSheaves(scheme_morphism.domain()).object(
+        construction_data={
+            "scheme_morphism": scheme_morphism,
+            "source_sheaf": sheaf,
+        },
+        _engine=_ExactQuasiCoherentPullbackSheafEngine,
+    )
 
 
 class _AffineQuasiCoherentFunctor(Functor):

@@ -1162,6 +1162,14 @@ class AffineQuasiCoherentSheafMorphism(Morphism):
     def cokernel(self):
         return self.underlying_module_morphism().cokernel()
 
+    def projectivization_map(self):
+        r"""Return the induced map ``P(codomain) ---> P(domain)`` on its surjectivity locus."""
+        from dzack_research.preamble.categories.schemes.relative_proj import (
+            _projectivization_map,
+        )
+
+        return _projectivization_map(self)
+
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, AffineQuasiCoherentSheafMorphism)
@@ -1220,6 +1228,25 @@ class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class_for(self, domain, codomain):
         category = self.base_category()
         scheme = category.scheme()
+
+        from dzack_research.preamble.categories.schemes.relative_proj import (
+            RelativeProjectivizationQuasiCoherentHomset,
+            RelativeProjectivizations,
+        )
+
+        match scheme in RelativeProjectivizations(scheme.scheme_base_ring()):
+            case True:
+                from dzack_research.preamble.categories.schemes.gluing import (
+                    _finite_atlas_of_sheaf_placement,
+                )
+
+                try:
+                    _finite_atlas_of_sheaf_placement(domain)
+                    _finite_atlas_of_sheaf_placement(codomain)
+                except TypeError:
+                    return RelativeProjectivizationQuasiCoherentHomset
+            case False:
+                pass
 
         trivialized = category.Invertible().WithChosenTrivialization()
         match (domain in trivialized, codomain in trivialized):

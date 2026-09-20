@@ -1527,6 +1527,14 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
     def local_map(self, index):
         return self.descent_morphism().local_map(index)
 
+    def projectivization_map(self):
+        r"""Return the induced projectivization map on its quotient-surjectivity locus."""
+        from dzack_research.preamble.categories.schemes.relative_proj import (
+            _projectivization_map,
+        )
+
+        return _projectivization_map(self)
+
     @cached_method
     def global_sections_map(self):
         r"""Return the induced map on the compatible-section modules of the trivializations."""
@@ -1638,6 +1646,14 @@ class _PullbackLineBundleQuasiCoherentMorphism(Morphism):
 
     def ambient_morphism(self):
         return self._ambient_morphism
+
+    def projectivization_map(self):
+        r"""Return the induced projectivization map on its quotient-surjectivity locus."""
+        from dzack_research.preamble.categories.schemes.relative_proj import (
+            _projectivization_map,
+        )
+
+        return _projectivization_map(self)
 
     def __eq__(self, other) -> bool:
         match other:

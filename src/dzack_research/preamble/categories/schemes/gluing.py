@@ -495,6 +495,145 @@ class _GluedSchemeMorphism(SchemeMorphism):
         return f"Scheme morphism from glued charts: {self.domain()} -> {self.codomain()}"
 
 
+class _FiniteAtlasSchemeMorphism(SchemeMorphism):
+    r"""A morphism glued from compatible maps on a selected finite affine atlas.
+
+    Unlike :class:`_GluedSchemeMorphism`, the domain need not itself use the
+    gluing realization privately.  This is the descent statement for maps out
+    of any represented scheme carrying a finite affine atlas, such as a
+    projective or multiprojective scheme with its standard atlas.
+    """
+
+    def __init__(self, parent, atlas, local_maps) -> None:
+        super().__init__(None, homset=parent)
+        match atlas.scheme() is self.domain():
+            case True:
+                pass
+            case False:
+                raise ValueError("a finite-atlas morphism uses an atlas of its domain")
+        self._atlas = atlas
+        raw = _family_on_finite_ordered_set(
+            atlas.chart_index_set(),
+            local_maps,
+            name="Raw local maps of a finite-atlas scheme morphism",
+            noun="a finite-atlas scheme morphism",
+        )
+        schemes = self.parent().homset_category()
+        self._local_maps = finite_indexed_family(
+            atlas.chart_index_set(),
+            lambda index: schemes.Mor(atlas.chart(index), self.codomain())(
+                raw[index]
+            ),
+            name="Local maps of a finite-atlas scheme morphism",
+        )
+        self._verify_overlap_compatibility()
+
+    def atlas(self):
+        return self._atlas
+
+    def local_maps(self):
+        return self._local_maps
+
+    def local_map(self, index):
+        return self.local_maps()[self.atlas().normalize_chart_index(index)]
+
+    def _verify_overlap_compatibility(self) -> None:
+        atlas = self.atlas()
+        for left_index, right_index in atlas.transition_index_set():
+            left_overlap = atlas.overlap(left_index, right_index)
+            right_overlap = atlas.overlap(right_index, left_index)
+            transition = atlas.transition_between(left_index, right_index).forward()
+            left = self.local_map(left_index) * left_overlap.inclusion()
+            right = self.local_map(right_index) * right_overlap.inclusion() * transition
+            match left == right:
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        "the finite-atlas local scheme maps do not agree on an overlap"
+                    )
+
+    def _postcompose_with(self, after):
+        match after.domain() is self.codomain():
+            case True:
+                pass
+            case False:
+                return NotImplemented
+        return _FiniteAtlasSchemeMorphism(
+            _scheme_composition_hom(after, self),
+            self.atlas(),
+            self.local_maps().map(lambda local_map: after * local_map),
+        )
+
+    def __mul__(self, other):
+        match other:
+            case SchemeMorphism():
+                pass
+            case _:
+                return NotImplemented
+        match (
+            other.codomain() is self.domain(),
+            self._is_the_identity(),
+            other._is_the_identity(),
+        ):
+            case (False, _, _):
+                return NotImplemented
+            case (True, True, _):
+                return other
+            case (True, False, True):
+                return self
+            case _:
+                pass
+        return other._postcompose_with(self)
+
+    def __eq__(self, other) -> bool:
+        match other:
+            case _ if self is other:
+                return True
+            case SchemeMorphism() if (
+                other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+            ):
+                pass
+            case _:
+                return False
+        match other:
+            case _FiniteAtlasSchemeMorphism() if other.atlas() is self.atlas():
+                return all(
+                    self.local_map(index) == other.local_map(index)
+                    for index in self.atlas().chart_indices()
+                )
+            case _ if other._is_the_identity():
+                return all(
+                    self.local_map(index) == self.atlas().chart_embedding(index)
+                    for index in self.atlas().chart_indices()
+                )
+            case _:
+                pass
+        try:
+            return all(
+                self.local_map(index)
+                == other * self.atlas().chart_embedding(index)
+                for index in self.atlas().chart_indices()
+            )
+        except (AttributeError, TypeError, ValueError):
+            return False
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    __hash__ = None
+
+
+def _finite_atlas_scheme_morphism(domain, codomain, atlas, local_maps):
+    r"""Construct a scheme morphism by descent from compatible atlas maps."""
+    return _FiniteAtlasSchemeMorphism(
+        Schemes(domain.scheme_base_ring()).Mor(domain, codomain),
+        atlas,
+        local_maps,
+    )
+
+
 class _GluedSchemeMorCategory(SchemeMorCategory):
     r"""Maps out of a glued scheme, represented by compatible local maps on its charts.
 
@@ -3159,6 +3298,14 @@ class FiniteAtlasModuleSheafMorphism(FiniteAtlasModuleGluingMorphism):
 
     def target_datum(self):
         return self.codomain().gluing_datum()
+
+    def projectivization_map(self):
+        r"""Return the induced map of projectivizations on the quotient-surjectivity locus."""
+        from dzack_research.preamble.categories.schemes.relative_proj import (
+            _projectivization_map,
+        )
+
+        return _projectivization_map(self)
 
 
 class FiniteAtlasModuleSheafHomset(CategoricalHomset):
@@ -5830,6 +5977,139 @@ def _chartwise_closed_subscheme(
         (ClosedEmbeddings(datum.scheme()), ClosedSubschemes(datum.base_ring())),
         _engine=_engine,
         construction_data=construction_data,
+    )
+
+
+def _glued_chartwise_distinguished_open(
+    datum,
+    fine_indices,
+    coarse_indices,
+    local_opens,
+    *,
+    name="Chartwise distinguished open",
+):
+    r"""Glue distinguished opens of the charts of one finite affine atlas.
+
+    Several fine charts may lie over one coarse chart.  For a fine chart
+    ``V_a = D(f_a) <= U_i`` and ``V_b = D(f_b) <= U_j``, their overlap inside
+    ``V_a`` is the locus where the coarse overlap ``U_ij`` and the pullback of
+    ``f_b`` through the coarse transition are both invertible.  Since the
+    coarse overlaps are distinguished, clearing the localization denominator
+    gives one distinguished open of ``V_a``.  The coarse transition then
+    restricts to an isomorphism between the two fine presentations.
+
+    The glued scheme is placed in ``OpenImmersions(X)`` and its inclusion is
+    the morphism obtained by gluing ``V_a -> U_i -> X``.  Thus callers retain
+    an actual open subobject rather than only a chartwise predicate.
+    """
+    fine_indices = finite_ordered_set(tuple(fine_indices))
+    coarse_index = _family_on_finite_ordered_set(
+        fine_indices,
+        coarse_indices,
+        name="Fine-to-coarse labels of a chartwise open",
+        noun="chartwise-open coarse-index data",
+    )
+    opens = _family_on_finite_ordered_set(
+        fine_indices,
+        local_opens,
+        name=f"Affine pieces of {name}",
+        noun="a chartwise distinguished open",
+    )
+    for fine_index in fine_indices:
+        coarse = datum.normalize_chart_index(coarse_index[fine_index])
+        selected = opens[fine_index]
+        match (
+            selected.inclusion().codomain() is datum.chart(coarse),
+            selected.is_distinguished_open() is True,
+        ):
+            case (True, True):
+                pass
+            case (False, _):
+                raise ValueError(
+                    "each chartwise open lies in its selected coarse affine chart"
+                )
+            case (_, False):
+                raise TypeError(
+                    "chartwise open gluing currently requires distinguished affine opens"
+                )
+
+    def normalized_coarse(fine_index):
+        return datum.normalize_chart_index(coarse_index[fine_index])
+
+    def fine_overlap(source_index, target_index):
+        source_open = opens[source_index]
+        target_open = opens[target_index]
+        source_coarse = normalized_coarse(source_index)
+        target_coarse = normalized_coarse(target_index)
+        source_restriction = source_open.inclusion().coordinate_algebra_morphism()
+        match source_coarse == target_coarse:
+            case True:
+                target_element = target_open.distinguished_open_element()
+                return source_open.distinguished_open(
+                    source_restriction(target_element)
+                )
+            case False:
+                coarse_overlap = datum.overlap(source_coarse, target_coarse)
+                target_overlap = datum.overlap(target_coarse, source_coarse)
+                coarse_element = coarse_overlap.distinguished_open_element()
+                target_element = target_open.distinguished_open_element()
+                target_on_overlap = target_overlap.inclusion().coordinate_algebra_morphism()(
+                    target_element
+                )
+                pulled_target = datum.transition_between(
+                    source_coarse, target_coarse
+                ).forward().coordinate_algebra_morphism()(target_on_overlap)
+                numerator, _denominator = coarse_overlap.coordinate_algebra().localization_fraction_data(
+                    pulled_target
+                )
+                return source_open.distinguished_open(
+                    source_restriction(coarse_element * numerator)
+                )
+
+    def fine_transition(source_index, target_index):
+        source = fine_overlap(source_index, target_index)
+        target = fine_overlap(target_index, source_index)
+        source_open = opens[source_index]
+        target_open = opens[target_index]
+        source_coarse = normalized_coarse(source_index)
+        target_coarse = normalized_coarse(target_index)
+        into_source_chart = source_open.inclusion() * source.inclusion()
+        match source_coarse == target_coarse:
+            case True:
+                into_target_open = target_open.corestriction(into_source_chart)
+            case False:
+                coarse_overlap = datum.overlap(source_coarse, target_coarse)
+                into_coarse_overlap = coarse_overlap.corestriction(into_source_chart)
+                across = datum.transition_between(
+                    source_coarse, target_coarse
+                ).forward() * into_coarse_overlap
+                into_target_chart = (
+                    datum.overlap(target_coarse, source_coarse).inclusion() * across
+                )
+                into_target_open = target_open.corestriction(into_target_chart)
+        return target.corestriction(into_target_open)
+
+    schemes = Schemes(datum.base_ring())
+    transitions = {}
+    fine_labels = tuple(fine_indices)
+    for position, source_index in enumerate(fine_labels):
+        for target_index in fine_labels[position + 1 :]:
+            forward = fine_transition(source_index, target_index)
+            inverse = fine_transition(target_index, source_index)
+            transitions[source_index, target_index] = schemes.Core().Mor(
+                forward.domain(), forward.codomain()
+            )(forward, inverse)
+    return schemes.glue_affine_atlas(
+        opens,
+        transitions,
+        placements=(OpenImmersions(datum.scheme()),),
+        inclusion_codomain=datum.scheme(),
+        inclusion_datum=finite_indexed_family(
+            fine_indices,
+            lambda index: datum.chart_embedding(normalized_coarse(index))
+            * opens[index].inclusion(),
+            name="Local inclusions of a glued chartwise open",
+        ),
     )
 
 

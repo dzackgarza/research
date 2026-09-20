@@ -7,7 +7,10 @@ For a ring morphism ``g: R -> R'`` the base-change functor is
 On an affine scheme ``Spec A`` it is ``Spec(A tensor_R R')``, computed by
 scalar extension of the coordinate algebra, and the result is constructed as
 the fibre product of the cospan ``Spec A -> Spec R <- Spec R'`` with its two
-projections and the universal factorization.
+projections and the universal factorization.  A scheme presented by a finite
+affine gluing is base-changed by this same affine construction on every chart;
+the overlap maps are induced by the pullback universal properties and the
+changed charts are glued with the resulting fibre-product projections.
 
 The projections are morphisms of locally ringed spaces. Their pullbacks
 retain the given scalar map; constructing them changes neither the original
@@ -67,7 +70,10 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _scheme_product,
     _structure_morphism_rule,
 )
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+    indexed_family,
+)
 from dzack_research.preamble.categories.schemes.ringed_spaces import LocallyRingedSpaces
 
 
@@ -162,6 +168,8 @@ class _SchemeBaseChangeFunctor(Functor):
     def _apply_object(self, scheme):
         source, target = self._source_ring, self._target_ring
         match scheme:
+            case _ if scheme._is_glued_from_affine_atlas():
+                changed = self._glued_object(scheme)
             case _ if scheme in ProjectiveSpaces(source):
                 changed = scheme.scheme_category().fiber_product(scheme.structure_morphism(), self.base_morphism())
             case _ if scheme in ProductProjectiveSpaces(source):
@@ -173,8 +181,186 @@ class _SchemeBaseChangeFunctor(Functor):
             case _:
                 assert False, (
                     f"base change of {scheme} is represented for affine schemes, projective spaces, "
-                    "and finite products of projective spaces"
+                    "finite products of projective spaces, and schemes presented by finite affine gluings"
                 )
+        return changed
+
+    def _glued_overlap(self, datum, changed_charts, source_index, target_index):
+        r"""Base change the represented distinguished overlap inside one changed chart."""
+        source_overlap = datum.overlap(source_index, target_index)
+        changed_chart = changed_charts[source_index]
+        projection_pullback = changed_chart.left_projection().coordinate_algebra_morphism()
+        return changed_chart.distinguished_open(
+            projection_pullback(source_overlap.distinguished_open_element())
+        )
+
+    def _glued_transition(
+        self,
+        datum,
+        changed_charts,
+        changed_overlaps,
+        source_index,
+        target_index,
+    ):
+        r"""Base change one affine-atlas transition by the pullback universal property."""
+        source_open = changed_overlaps[source_index, target_index]
+        target_open = changed_overlaps[target_index, source_index]
+        old_source_open = datum.overlap(source_index, target_index)
+        old_target_open = datum.overlap(target_index, source_index)
+        old_transition = datum.transition_between(source_index, target_index)
+
+        def direction(
+            changed_source_open,
+            changed_target_open,
+            changed_source_chart,
+            changed_target_chart,
+            old_source_overlap,
+            old_target_overlap,
+            old_map,
+        ):
+            to_old_source_chart = (
+                changed_source_chart.left_projection()
+                * changed_source_open.inclusion()
+            )
+            to_old_source_overlap = old_source_overlap.corestriction(
+                to_old_source_chart
+            )
+            to_old_target_chart = (
+                old_target_overlap.inclusion()
+                * old_map
+                * to_old_source_overlap
+            )
+            to_changed_target_chart = changed_target_chart.from_pullback_cone(
+                to_old_target_chart,
+                changed_source_open.structure_morphism(),
+            )
+            return changed_target_open.corestriction(to_changed_target_chart)
+
+        forward = direction(
+            source_open,
+            target_open,
+            changed_charts[source_index],
+            changed_charts[target_index],
+            old_source_open,
+            old_target_open,
+            old_transition.forward(),
+        )
+        inverse = direction(
+            target_open,
+            source_open,
+            changed_charts[target_index],
+            changed_charts[source_index],
+            old_target_open,
+            old_source_open,
+            old_transition.inverse(),
+        )
+        return Schemes(self._target_ring).Core().Mor(
+            source_open,
+            target_open,
+        )(forward, inverse)
+
+    def _glued_factorization(self, changed, to_source, to_base):
+        r"""Factor a represented cone through the scalar pullback of a glued scheme."""
+        from dzack_research.preamble.categories.schemes.gluing import (
+            _GluedSchemeChartEmbedding,
+            _GluedSchemeChartMap,
+        )
+
+        source = to_source.domain()
+        source_datum = changed.fiber_product_cospan()[0].domain().gluing_datum()
+        changed_datum = changed.gluing_datum()
+
+        match source._is_glued_from_affine_atlas():
+            case True:
+                domain_datum = source.gluing_datum()
+                return LocallyRingedSpaces().Mor(source, changed)(
+                    finite_indexed_family(
+                        domain_datum.chart_index_set(),
+                        lambda index: self._glued_factorization(
+                            changed,
+                            to_source * domain_datum.chart_embedding(index),
+                            to_base * domain_datum.chart_embedding(index),
+                        ),
+                        name="Local factorizations into a glued scalar base change",
+                    )
+                )
+            case False:
+                pass
+
+        match to_source:
+            case _GluedSchemeChartMap() if to_source.gluing_datum() is source_datum:
+                chart_index = to_source.chart_index()
+                chart_map = to_source.chart_map()
+            case _GluedSchemeChartEmbedding() if to_source.gluing_datum() is source_datum:
+                chart_index = to_source.chart_index()
+                chart_map = to_source.domain().categorical_identity_morphism()
+            case _:
+                raise AssertionError(
+                    "a represented map into this glued scalar base change must factor through a selected source chart"
+                )
+        changed_chart = changed_datum.chart(chart_index)
+        into_changed_chart = changed_chart.from_pullback_cone(
+            chart_map,
+            to_base,
+        )
+        return changed_datum.chart_embedding(chart_index) * into_changed_chart
+
+    def _glued_object(self, scheme):
+        r"""Scalar base change of a scheme presented by one finite affine gluing datum."""
+        datum = scheme.gluing_datum()
+        indices = datum.chart_index_set()
+        changed_charts = finite_indexed_family(
+            indices,
+            lambda index: self(datum.chart(index)),
+            name="Affine charts of a scalar base-changed gluing",
+        )
+        changed_overlaps = {
+            (source_index, target_index): self._glued_overlap(
+                datum,
+                changed_charts,
+                source_index,
+                target_index,
+            )
+            for source_index in indices
+            for target_index in indices
+            if source_index != target_index
+        }
+        transitions = {
+            (source_index, target_index): self._glued_transition(
+                datum,
+                changed_charts,
+                changed_overlaps,
+                source_index,
+                target_index,
+            )
+            for source_index, target_index in datum.transition_index_set()
+        }
+        left_projection_data = finite_indexed_family(
+            indices,
+            lambda index: (
+                datum.chart_embedding(index) * changed_charts[index].left_projection()
+            ),
+            name="Local projections from a scalar base-changed gluing",
+        )
+        right_projection_data = finite_indexed_family(
+            indices,
+            lambda index: changed_charts[index].right_projection(),
+            name="Local scalar projections from a scalar base-changed gluing",
+        )
+
+        def factor(to_source, to_base):
+            return self._glued_factorization(changed, to_source, to_base)
+
+        changed = Schemes(self._target_ring).glue_affine_atlas(
+            changed_charts,
+            transitions,
+            placements=(FiberProductSchemes(self._target_ring),),
+            fiber_product_construction=SchemeFiberProductConstruction(
+                self._cospan(scheme),
+                (left_projection_data, right_projection_data),
+                scheme_factorization=factor,
+            ),
+        )
         return changed
 
     def _affine_object(self, scheme, *, cospan=None, scheme_on_left=True):

@@ -550,7 +550,8 @@ class SchemeMorphism(Morphism):
         realization merely to forget the relative-base condition.
         """
         return SchemeMorphism(
-            self.native_morphism(), homset=homset,
+            self._native_morphism, homset=homset,
+            pullback=self._coordinate_pullback,
             cone_construction=self.cone_construction(),
             point_coordinates=self._represented_point_coordinates(),
         )
@@ -830,8 +831,9 @@ class SchemeMorphism(Morphism):
         (Stacks, Tag 01I8), through the affine pullback functor.  For a
         represented closed immersion ``i : Z -> P`` into projective space, the
         standard twists ``O_P(d)`` have their object pullback represented
-        directly.  The latter is not advertised as a functor until the common
-        non-affine quasi-coherent Hom supplies its arrow action.
+        directly.  In every other represented non-affine case the exact object
+        ``f^*F`` retains ``f`` and ``F`` without claiming a chartwise
+        computation or a morphism action.
         """
         base = self.domain().scheme_base_ring()
         match (
@@ -845,7 +847,19 @@ class SchemeMorphism(Morphism):
 
                 return _projective_closed_immersion_module_pullback(self, sheaf)
             case _:
+                pass
+        match (
+            self.domain() in Schemes(self.domain().scheme_base_ring()).Affine(),
+            self.codomain() in Schemes(self.codomain().scheme_base_ring()).Affine(),
+        ):
+            case (True, True):
                 return self.module_pullback_functor().on_object(sheaf)
+            case _:
+                from dzack_research.preamble.categories.schemes.sheaf_functors import (
+                    _exact_quasi_coherent_pullback,
+                )
+
+                return _exact_quasi_coherent_pullback(self, sheaf)
 
     def inverse_image_sheaf(self, sheaf):
         r"""``f^{-1} F``, the topological inverse image of a sheaf."""
@@ -1478,6 +1492,8 @@ class SchemeMorCategory(CategoricalHomset):
             case _ if scheme in Schemes(scheme.scheme_base_ring()).Affine():
                 algebra = scheme.coordinate_algebra()
                 return _RepresentedAffineSchemeMorphism(self, algebra.Mor(algebra).identity())
+            case _ if scheme._scheme_engine_realization is None:
+                return SchemeMorphism(None, homset=self)
             case _:
                 return SchemeMorphism(_engine_scheme(scheme).identity_morphism(), homset=self)
 
@@ -1969,6 +1985,27 @@ class Schemes(OwnedCategoryOverBaseRing):
                 self.gluing_datum(),
             )
 
+        def selected_finite_affine_atlas(self):
+            r"""Return this scheme's construction-selected finite affine atlas.
+
+            Glued schemes retain the atlas used to construct them.  Projective
+            and multiprojective spaces retain their standard affine atlases.
+            Other represented schemes do not acquire an atlas merely because a
+            finite affine cover may exist abstractly.
+            """
+            base = self.scheme_base_ring()
+            match self:
+                case _ if self._is_glued_from_affine_atlas():
+                    return self.finite_affine_atlas()
+                case _ if self in ProjectiveSpaces(base):
+                    return self.standard_affine_atlas()
+                case _ if self in ProductProjectiveSpaces(base):
+                    return self.standard_affine_atlas()
+                case _:
+                    raise TypeError(
+                        "this represented scheme has no construction-selected finite affine atlas"
+                    )
+
         def is_covered_by_open_immersions(self, embeddings) -> bool:
             r"""Decide joint coverage for the represented open-cover regimes owned here.
 
@@ -2091,6 +2128,24 @@ class Schemes(OwnedCategoryOverBaseRing):
         def Mor(self, codomain, category=None):
             return _scheme_mor_category(self, codomain, category=category)
 
+        def morphism_from_finite_atlas(self, codomain, local_maps, *, atlas=None):
+            r"""Glue a morphism from compatible maps on one selected finite affine atlas."""
+            match atlas:
+                case None:
+                    atlas = self.selected_finite_affine_atlas()
+                case _:
+                    pass
+            from dzack_research.preamble.categories.schemes.gluing import (
+                _finite_atlas_scheme_morphism,
+            )
+
+            return _finite_atlas_scheme_morphism(
+                self,
+                codomain,
+                atlas,
+                local_maps,
+            )
+
         def scheme_base_ring(self):
             return self._scheme_base_ring
 
@@ -2120,6 +2175,11 @@ class Schemes(OwnedCategoryOverBaseRing):
                     algebra = self.coordinate_algebra()
                     pullback = _restriction_to_base(algebra, base)
                     return _RepresentedAffineSchemeMorphism(_scheme_mor_category(self, base_scheme), pullback)
+                case _ if self._scheme_engine_realization is None:
+                    return SchemeMorphism(
+                        None,
+                        homset=_scheme_mor_category(self, base_scheme),
+                    )
                 case _:
                     return _scheme_mor_category(self, base_scheme)(_engine_scheme(self).base_morphism())
 
