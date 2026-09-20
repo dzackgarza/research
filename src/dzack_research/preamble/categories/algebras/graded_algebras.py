@@ -3,6 +3,7 @@
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
@@ -104,46 +105,59 @@ def _homogeneous_degree(element):
 class GradedAlgebraMorphism(Morphism):
     r"""An algebra morphism preserving the selected grading."""
 
-    def __init__(self, parent, images, *, check_degrees=True) -> None:
+    def __init__(self, parent, images) -> None:
         Morphism.__init__(self, parent)
 
         self._underlying = Algebras(self.domain().base_ring()).Associative().Unital().Mor(self.domain(), self.codomain())(images)
-        if check_degrees:
-            self._check_degrees()
+        derived = self._degree_preservation_derivation()
+        self._degree_preservation_decision = (
+            self._decide_degree_preservation() if derived is None else derived
+        )
+        assert self._degree_preservation_decision is not False, (
+            "a graded algebra morphism must preserve degree"
+        )
 
     def underlying_algebra_morphism(self):
         return self._underlying
 
-    def _check_degrees(self) -> None:
+    def degree_preservation_decision(self):
+        r"""Return ``True`` when degree preservation is established, else its ``Unknown`` hypothesis."""
+        return self._degree_preservation_decision
+
+    def _degree_preservation_derivation(self):
+        r"""Return a construction-derived decision, or ``None`` to inspect represented data."""
+        return None
+
+    def _decide_degree_preservation(self):
+        r"""Decide degree preservation on finite selected generators, else retain ``Unknown``."""
         domain = self.domain()
         codomain = self.codomain()
         try:
             labels = domain.algebra_generating_set()
-        except AttributeError as error:
-            raise NotImplementedError(
-                "a represented graded morphism currently requires a selected algebra framing"
-            ) from error
+        except AttributeError:
+            return Unknown
         try:
             finite = labels.cardinality().is_finite()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             finite = False
         if not finite:
-            raise NotImplementedError(
-                "an arbitrary graded generator map on an infinite framing cannot be "
-                "verified by exhaustive evaluation"
-            )
+            return Unknown
         for label in labels:
             generator = domain.algebra_generator(label)
             source_degree = _homogeneous_degree(generator)
             image = self._underlying(generator)
-            if image == codomain.zero():
+            zero_decision = image == codomain.zero()
+            if zero_decision is True:
                 continue
+            if zero_decision is Unknown:
+                return Unknown
             target_degree = _homogeneous_degree(image)
-            if target_degree != source_degree:
-                raise ValueError(
-                    f"a graded algebra morphism must preserve degree: generator {label!r} "
-                    f"has degree {source_degree}, but its image has degree {target_degree}"
-                )
+            degree_equal = target_degree == source_degree
+            if degree_equal is False:
+                return False
+            if degree_equal is not True:
+                return Unknown
+        return True
 
     def _call_(self, element):
         return self._underlying(element)
@@ -161,11 +175,17 @@ class GradedAlgebraMorphism(Morphism):
             source.base_ring(),
             _require_grading_monoid(source.grading_monoid()),
         ).Mor(source, self.codomain())
-        return homset._from_degree_preserving_generator_map(
-            lambda label: self(
-                other(other.domain().algebra_generator(label))
-            )
+        return homset._from_degree_preserving_underlying_morphism(
+            self.underlying_algebra_morphism()
+            * other.underlying_algebra_morphism()
         )
+
+
+class _ConstructedDegreePreservingGradedAlgebraMorphism(GradedAlgebraMorphism):
+    r"""A graded map whose construction supplies degree preservation."""
+
+    def _degree_preservation_derivation(self):
+        return True
 
 
 class GradedAlgebraHomset(CategoricalHomset):
@@ -193,15 +213,20 @@ class GradedAlgebraHomset(CategoricalHomset):
         return self.element_class(self, images)
 
     def _from_degree_preserving_generator_map(self, images):
-        r"""Construct a graded map whose degree preservation is structural."""
-        return self.element_class(self, images, check_degrees=False)
+        r"""Construct a graded map whose generator construction preserves degree."""
+        return _ConstructedDegreePreservingGradedAlgebraMorphism(self, images)
+
+    def _from_degree_preserving_underlying_morphism(self, morphism):
+        r"""Lift an actual weaker algebra morphism whose construction preserves degree."""
+        return _ConstructedDegreePreservingGradedAlgebraMorphism(self, morphism)
 
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to a graded algebra endomorphism homset")
-        return self._from_degree_preserving_generator_map(
-            lambda label: self.domain().algebra_generator(label)
+        ordinary = Algebras(self.domain().base_ring()).Associative().Unital().Mor(
+            self.domain(), self.codomain()
         )
+        return self._from_degree_preserving_underlying_morphism(ordinary.identity())
 
 
 class GradedAlgebraHomCategoryConstruction(HomCategoryConstruction):
