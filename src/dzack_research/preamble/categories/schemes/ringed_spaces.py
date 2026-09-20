@@ -1300,6 +1300,22 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
 
     _HomCategory = QuasiCoherentSheafHomCategoryConstruction
 
+    class ParentMethods:
+        @cached_method
+        def projectivization(self):
+            r"""Return ``P_quot(F) = Proj_X(Sym(F))`` with its universal quotient."""
+            from dzack_research.preamble.categories.schemes.relative_proj import (
+                _projectivization,
+            )
+
+            return _projectivization(self)
+
+        def projectivization_base_change(self, ring_map):
+            r"""Return the represented base-change comparison for ``P_quot(self)``."""
+            return self.projectivization().arrow().domain().projectivization_base_change(
+                ring_map
+            )
+
     def object(self, *, categories=(), construction_data=None, _engine):
         r"""Construct one represented quasi-coherent sheaf through this owner.
 
