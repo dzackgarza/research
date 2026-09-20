@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.sets.set_categories import Set
 def test_unframed_direct_sum_retains_its_pieces_and_constructor_under_an_algebra() -> None:
     piece = GeneralModules(QQ).from_operations(
         Set(QQ), addition=lambda x, y: x + y, zero=QQ.zero(),
-        negation=lambda x: -x, scalar_action=lambda r, x: r * x, verify=False,
+        negation=lambda x: -x, scalar_action=lambda r, x: r * x,
     )
     pieces = indexed_family(ZZ, lambda degree: piece)
     module = GradedModules(QQ, ZZ)(pieces)
@@ -34,7 +34,7 @@ def test_direct_sum_does_not_turn_unknown_component_equality_into_inequality() -
 
     piece = GeneralModules(QQ).from_operations(
         Set(QQ), addition=lambda x, y: x + y, zero=QQ.zero(),
-        negation=lambda x: -x, scalar_action=lambda r, x: r * x, verify=False,
+        negation=lambda x: -x, scalar_action=lambda r, x: r * x,
     )
     tensor = Modules(QQ).tensor_product((piece, piece))
     graded = GradedModules(QQ, ZZ)(indexed_family(ZZ, lambda degree: tensor))

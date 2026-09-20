@@ -72,7 +72,6 @@ def test_unframed_algebra_retains_its_selected_augmentation_without_generator_co
         zero=QQ.zero(),
         negation=lambda value: QQ(-value),
         scalar_action=lambda scalar, value: QQ(scalar * value),
-        verify=False,
     )
     tensor = Modules(QQ).tensor_product((module, module))
     multiplication = tensor.from_bilinear_map(

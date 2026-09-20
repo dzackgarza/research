@@ -34,7 +34,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.owned_category import _object_of
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_vector,
     tensor,
@@ -222,7 +221,10 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         def is_principal(self) -> bool:
             if _engine_ring(self.base_ring()) is SageZZ:
                 return True
-            return _principal_generator_from_integer_module(self) is not None
+            return _principal_generator_from_order_values(
+                self.base_ring(),
+                self._module_generator_values,
+            ) is not None
 
         def is_projective(self) -> bool:
             ring = _engine_ring(self.base_ring())
@@ -238,7 +240,10 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
                     _zz_fractional_generator(self._module_generator_values)
                 )
             return self.fraction_field()._from_engine_element(
-                _principal_generator_from_integer_module(self)
+                _principal_generator_from_order_values(
+                    self.base_ring(),
+                    self._module_generator_values,
+                )
             )
 
         def inverse(self):
@@ -506,34 +511,28 @@ def _order_coordinate_vector(base_ring, value):
     )
 
 
-def _integer_to_order_map(order):
-    r"""Return the structural ring morphism ``ZZ -> order``."""
-    structure_map = order.algebra_structure_morphism()
-    assert _engine_ring(structure_map.domain()) is SageZZ
-    assert structure_map.codomain() is order
-    return structure_map
-
-
-def _underlying_integer_module(ideal):
-    r"""Return ``Res_ZZ^O(I)`` for an ``O``-fractional ideal ``I``."""
-    order = ideal.base_ring()
-    assert order in OwnedOrders()
-    return ideal.restrict_scalars(_integer_to_order_map(order))
-
-
 def _integer_coordinate_submodule(ideal):
     r"""Materialize ``Res_ZZ^O(I)`` inside ``K``'s rational coordinate space."""
+    return _integer_coordinate_submodule_from_values(
+        ideal.base_ring(),
+        ideal._module_generator_values,
+    )
+
+
+def _integer_coordinate_submodule_from_values(base_ring, module_generator_values):
+    r"""Materialize the underlying integer lattice from selected ``O``-generators."""
     from sage.modules.free_module import span
 
-    ring = ideal.base_ring()
+    ring = _owned_ring(base_ring)
     order = _engine_ring(ring)
-    underlying = _underlying_integer_module(ideal)
+    field = _engine_ring(ring.fraction_field())
     rows = [
         _order_coordinate_vector(
             ring,
-            generator.underlying_element()._inclusion_value(),
+            field(order_basis) * _fraction_field_backend_value(ring, value),
         )
-        for generator in underlying.module_generators()
+        for value in module_generator_values
+        for order_basis in order.basis()
     ]
     if not rows:
         rationals = _own_ring(SageQQ)
@@ -549,10 +548,16 @@ def _order_integer_submodule_values(base_ring, integer_submodule):
     )
 
 
-def _fractional_ideal_object(ring, fraction_field, values):
+def _fractional_ideal_object(ring, fraction_field, values, *, projective=False):
     r"""Return the fractional ideal spanned by ``values`` in ``fraction_field``."""
+    categories = [FractionalIdeals(ring), Modules(ring).FinitelyGenerated()]
+    match projective:
+        case True:
+            categories.append(Modules(ring).Projective())
+        case False:
+            pass
     return _object_of(
-        Cat().meet([FractionalIdeals(ring), Modules(ring).FinitelyGenerated()]),
+        Cat().meet(categories),
         base_ring=ring,
         fraction_field=fraction_field,
         module_generator_values=values,
@@ -567,20 +572,26 @@ def _fractional_ideal_from_order_values(base_ring, module_generator_values):
         for value in module_generator_values
     )
 
-    ideal = _fractional_ideal_object(ring, ring.fraction_field(), values)
-    if bool(order.is_maximal()) or ideal.is_principal():
-        refine(ideal, Modules(ring).Projective())
-    return ideal
+    projective = bool(order.is_maximal()) or (
+        _principal_generator_from_order_values(ring, values) is not None
+    )
+    return _fractional_ideal_object(
+        ring,
+        ring.fraction_field(),
+        values,
+        projective=projective,
+    )
 
 
-def _principal_generator_from_integer_module(ideal):
-    r"""Return a generator of an order fractional ideal, or ``None`` if nonprincipal."""
+def _principal_generator_from_order_values(base_ring, module_generator_values):
+    r"""Return a generator of an order fractional ideal from its selected generators."""
 
-    ring = ideal.base_ring()
+    ring = _owned_ring(base_ring)
     order = _engine_ring(ring)
-    field = _engine_ring(ideal.fraction_field())
+    field = _engine_ring(ring.fraction_field())
     basis_values = _order_integer_submodule_values(
-        ring, _integer_coordinate_submodule(ideal)
+        ring,
+        _integer_coordinate_submodule_from_values(ring, module_generator_values),
     )
     if not basis_values:
         return field.zero()
@@ -657,9 +668,12 @@ def _fractional_ideal_from_backend(base_ring, backend):
     assert _engine_ring(ring) is SageZZ
     principal = SageQQ(backend)
     values = () if principal == 0 else (principal,)
-    ideal = _fractional_ideal_object(ring, _own_ring(SageQQ), values)
-    refine(ideal, Modules(ring).Projective())
-    return ideal
+    return _fractional_ideal_object(
+        ring,
+        _own_ring(SageQQ),
+        values,
+        projective=True,
+    )
 
 
 @cached_function

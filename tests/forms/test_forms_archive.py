@@ -55,7 +55,7 @@ def test_unframed_forms_have_the_pointwise_module_operations() -> None:
 
     module = GeneralModules(QQ).from_operations(
         QQ, addition=operator.add, zero=QQ.zero(), negation=operator.neg,
-        scalar_action=operator.mul, verify=False,
+        scalar_action=operator.mul,
     )
     x, y = module(QQ(2)), module(QQ(3))
     bilinear = module.bilinear_forms(QQ)

@@ -2514,6 +2514,7 @@ def _presented_module_from_morphism(
     _subobject_lift=None,
     _subobject_inclusion_factory=None,
     _biproduct_factors=None,
+    _require_torsion=False,
 ):
     r"""Return ``coker(presentation)`` in ``R-Mod`` with its selected module presentation."""
     # The cokernel here is taken in the module category.  A stricter structured
@@ -2563,6 +2564,46 @@ def _presented_module_from_morphism(
         width,
     ).from_rows(chain(existing_rows, added_rows))
     relations = relations_matrix
+
+    torsion_decision = Unknown
+    match base_ring in PrincipalIdealDomains():
+        case True:
+            try:
+                fraction_field_map = base_ring.fraction_field_map()
+                field = fraction_field_map.codomain()
+                generic_relations = field.matrix_space(
+                    relations_matrix.nrows(),
+                    relations_matrix.ncols(),
+                ).from_rows(
+                    tuple(
+                        tuple(fraction_field_map(coefficient) for coefficient in row)
+                        for row in _matrix_coordinate_rows(relations_matrix)
+                    )
+                )
+                torsion_decision = int(_engine_matrix(generic_relations).rank()) == width
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                torsion_decision = Unknown
+        case False:
+            pass
+    match (_require_torsion, torsion_decision):
+        case (True, True):
+            pass
+        case (True, False):
+            raise ValueError("the supplied finite presentation has a nonzero free summand")
+        case (True, _):
+            raise AssertionError(
+                "torsion admission from a finite PID presentation requires an exact rank decision"
+            )
+        case _:
+            pass
+    match torsion_decision is True:
+        case True:
+            _extra_categories = (
+                *_extra_categories,
+                Modules(base_ring).FinitelyPresented().Torsion(),
+            )
+        case False:
+            pass
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         FramedFreeModules,
     )
@@ -2753,13 +2794,6 @@ def _presented_module_from_morphism(
             extra_categories=_extra_categories,
             extra_construction_data=_extra_construction_data,
         )
-
-    if base_ring in PrincipalIdealDomains():
-        represented_torsion = quotient.is_torsion()
-        if represented_torsion is True:
-            from dzack_research.preamble.refine import refine
-
-            quotient = refine(quotient, Modules(base_ring).FinitelyPresented().Torsion())
 
     return quotient
 

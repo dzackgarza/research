@@ -12,7 +12,6 @@ def _rationals_without_framing():
     return GeneralModules(QQ).from_operations(
         Set(QQ), addition=lambda x, y: x + y, zero=QQ.zero(),
         negation=lambda x: -x, scalar_action=lambda r, x: r * x,
-        verify=False,
     )
 
 

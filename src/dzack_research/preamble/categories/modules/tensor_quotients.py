@@ -238,6 +238,5 @@ def _tensor_quotient(factors, *, extra_categories=(), extra_construction_data=No
         zero=classes.zero(),
         negation=lambda value: classes.scale(-ring.one(), value),
         scalar_action=classes.scale,
-        verify=False,
         **(extra_construction_data or {}),
     )

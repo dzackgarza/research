@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.modules.general_modules import GeneralMo
 def test_unframed_associative_product_and_its_commutator_use_the_actual_tensor():
     module = GeneralModules(QQ).from_operations(QQ,
         addition=lambda x, y: x + y, zero=QQ.zero(), negation=lambda x: -x,
-        scalar_action=lambda r, x: r * x, verify=False)
+        scalar_action=lambda r, x: r * x)
     tensor = Modules(QQ).tensor_product((module, module))
     product = tensor.from_bilinear_map(module, lambda x, y: module(x.underlying_element() * y.underlying_element()))
     associative = Algebras(QQ).Associative()(module, product)

@@ -2,7 +2,10 @@ r"""Fractional ideals use the owned categorical meet for their placement."""
 
 from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.modules.fractional_ideals import FractionalIdeals
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedModules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedModules,
+    Modules,
+)
 from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeals
 
 
@@ -16,6 +19,7 @@ def test_integral_and_fractional_ideals_share_owned_module_placement_without_con
     assert integral in FinitelyGeneratedModules(ZZ)
     assert fractional in FractionalIdeals(ZZ)
     assert fractional in FinitelyGeneratedModules(ZZ)
+    assert fractional in Modules(ZZ).Projective()
     assert fractional not in CommutativeIdeals(ZZ)
     assert integral.ring() is ZZ
     assert fractional.ring() is ZZ

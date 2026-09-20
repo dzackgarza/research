@@ -751,6 +751,18 @@ class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
     def __init__(self, parent: ConeHomset, apex_map: Morphism, *, verify: bool = True) -> None:
+        self._initialize_apex_map(parent, apex_map)
+        match verify:
+            case True:
+                match _commutes_with_diagram(self.domain(), self.codomain(), apex_map):
+                    case True:
+                        pass
+                    case False:
+                        raise ValueError("the apex map does not commute with the cone legs")
+            case False:
+                pass
+
+    def _initialize_apex_map(self, parent: ConeHomset, apex_map: Morphism) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cone map has the wrong domain apex")
@@ -760,8 +772,6 @@ class ConeMorphism(Morphism):
             parent.cone_category().target_category(), self.domain().apex(), self.codomain().apex()
         ):
             raise ValueError("the apex map is not a morphism of the diagram's target category")
-        if verify and not _commutes_with_diagram(self.domain(), self.codomain(), apex_map):
-            raise ValueError("the apex map does not commute with the cone legs")
         self._apex_map = apex_map
 
     def apex_map(self) -> Morphism:
@@ -789,6 +799,13 @@ class ConeMorphism(Morphism):
         return ConeMorphism(
             parent, self.apex_map() * other.apex_map(), verify=False
         )
+
+
+class _ConstructedConeMorphism(ConeMorphism):
+    r"""A cone morphism whose commuting triangles follow from its construction."""
+
+    def __init__(self, parent: ConeHomset, apex_map: Morphism) -> None:
+        self._initialize_apex_map(parent, apex_map)
 
 
 class CoconeMorphism(Morphism):
@@ -862,6 +879,10 @@ class ConeHomset(CategoricalHomset):
                     raise ValueError("the cone morphism has the wrong endpoints")
                 apex_map = apex_map.apex_map()
         return ConeMorphism(self, apex_map)
+
+    def _from_commuting_apex_map(self, apex_map):
+        r"""Construct from an apex map whose cone equations are structural."""
+        return _ConstructedConeMorphism(self, apex_map)
 
     def identity(self) -> ConeMorphism:
         if self.domain() is not self.codomain():

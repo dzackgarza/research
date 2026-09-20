@@ -113,7 +113,6 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         zero,
         negation,
         scalar_action,
-        verify=True,
     ):
         r"""Return the module on ``underlying_set`` with the stated operations."""
         return _object_of(
@@ -124,7 +123,6 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             zero=zero,
             negation=negation,
             scalar_action=scalar_action,
-            verify=verify,
         )
 
     def super_categories(self):
@@ -141,7 +139,6 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             zero=None,
             negation=None,
             scalar_action=None,
-            verify=True,
             **rest,
         ) -> None:
             ring = _owned_ring(base_ring)
@@ -172,9 +169,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             self._rho = rho
             self._elementwise_scalar_action = scalar_action
             super().__init__(base_ring=ring, **rest)
-
-            if verify:
-                self._verify_module_laws_when_decidable()
+            self._verify_module_laws_when_decidable()
 
         def underlying_set(self):
             r"""Return the set this module is built on."""

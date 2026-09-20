@@ -468,7 +468,7 @@ class _WordModule:
         cover = word_presentation.cover()
         super().__init__(
             underlying_set=classes, addition=classes.add, zero=classes.zero(),
-            negation=classes.negate, scalar_action=classes.scale, verify=False,
+            negation=classes.negate, scalar_action=classes.scale,
             module_generating_set=cover.module_generating_set(),
             module_generator_function=lambda label: self(classes(cover.module_generator(label))),
             framing_source=cover,
@@ -604,7 +604,7 @@ class _WordDegreeModule:
         cover = word_module.base_ring().free_module(word_module.degree_basis(word_degree))
         super().__init__(
             underlying_set=subset, addition=classes.add, zero=classes.zero(),
-            negation=classes.negate, scalar_action=classes.scale, verify=False,
+            negation=classes.negate, scalar_action=classes.scale,
             module_generating_set=cover.module_generating_set(),
             module_generator_function=lambda label: self(
                 word_module.module_generator(

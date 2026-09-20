@@ -24,7 +24,6 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
-    _refine_finitely_presented_torsion_module,
     _torsion_module_presented_by_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -324,12 +323,15 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
             subobject = ModulesWithChosenFinitePresentation(self.base_ring())(
                 cyclic.presentation(),
-                category=ModuleSubobjects(self.base_ring()),
+                category=Category.join((
+                    ModuleSubobjects(self.base_ring()),
+                    Modules(self.base_ring()).FinitelyPresented().Torsion(),
+                )),
                 subobject_ambient=self,
                 subobject_generator_images=lambda _label: image,
                 subobject_lift=lift_from_ambient,
             )
-            return _refine_finitely_presented_torsion_module(subobject)
+            return subobject
 
 
 

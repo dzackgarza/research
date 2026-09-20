@@ -39,10 +39,10 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _two_factors_of,
 )
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
 )
-from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
@@ -2609,14 +2609,14 @@ def _algebra_structure_view(ring, structure_map):
         central_scalar = center(structure_map(base(scalar)))
         return selected_ring(central_scalar) * selected_ring(element)
 
-    module = GeneralModules(base).from_operations(
-        selected_ring,
-        addition=lambda left, right: left + right,
-        zero=selected_ring.zero(),
-        negation=lambda element: -element,
-        scalar_action=scalar_action,
-        verify=False,
+    additive_group = selected_ring.underlying_additive_group()
+    additive_endomorphisms = AdditiveGroups().AdditiveCommutative().End(additive_group)
+    rho = base.Mor(additive_endomorphisms, category=OwnedRings())(
+        lambda scalar: additive_endomorphisms.elementwise(
+            lambda element: scalar_action(scalar, element)
+        )
     )
+    module = Modules(base)(rho)
     tensor = Modules(base).tensor_product((module, module))
     multiplication = tensor.from_bilinear_map(
         module, lambda left, right: module(left.underlying_element() * right.underlying_element()),

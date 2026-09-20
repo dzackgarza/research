@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the mixed tensor algebra."""
 
-from dzack_research.preamble.all import QQ, Algebras
+from dzack_research.preamble.all import QQ, Algebras, GradedModules
 from dzack_research.preamble.tensors import tensor
 
 
@@ -11,6 +11,8 @@ def test_mixed_tensor_algebra_retains_distinct_vector_and_covector_bidegrees() -
     covector = tensor.covector(QQ, [3, 4])
 
     assert algebra in Algebras(QQ).Associative().Unital()
+    assert algebra.unformed_module() in GradedModules(QQ, algebra.grading_monoid())
+    assert algebra.unformed_module().graded_piece((1, 0)) is algebra.graded_piece((1, 0))
     vector_term = algebra.include(vector)
     covector_term = algebra.include(covector)
     mixed = vector_term + covector_term

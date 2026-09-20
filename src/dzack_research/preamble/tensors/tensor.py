@@ -36,9 +36,11 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
-    GradedDirectSumModule,
+    _FramedDirectSumOfModules,
+    _direct_sum_of_modules,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
     MatrixSpaces,
     Modules,
 )
@@ -1567,11 +1569,6 @@ class MixedTensorAlgebraElement(GradedDirectSumElement):
         r"""Return the finite set of bidegrees with nonzero component."""
         return finite_ordered_set(tuple(self._components))
 
-    def _mul_(self, other):
-        if other.parent() is not self.parent():
-            return NotImplemented
-        return self.parent().multiply(self, other)
-
     def _repr_(self):
         if not self._components:
             return "0"
@@ -1581,49 +1578,15 @@ class MixedTensorAlgebraElement(GradedDirectSumElement):
         )
 
 
-class MixedTensorAlgebraParent(GradedDirectSumModule):
-    r"""The bigraded algebra ``T(M) tensor T(M^*)`` of a finite framed module.
+class _MixedTensorDirectSum(_FramedDirectSumOfModules):
+    r"""The canonical direct sum underlying one mixed tensor algebra."""
 
-    The current tensor owner realizes each homogeneous piece in the selected
-    frame of ``M``.  This parent adds only the finite-support direct sum across
-    bidegrees; homogeneous tensor arithmetic remains owned by
-    :func:`TensorModule` and :meth:`Tensor.tensor_product`.
-    """
-
-    Element = MixedTensorAlgebraElement
-
-    def __init__(self, module) -> None:
-        from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-
-        rank = module.module_rank()
-        assert rank.is_finite(), (
-            "the coordinate mixed tensor algebra is represented for a module of finite rank"
-        )
-        self._module = module
-        self._base_ring = _own_ring(module.base_ring())
-        self._rank = int(rank)
-        bigrades = NN**2
-        GradedDirectSumModule.__init__(
-            self,
-            self._base_ring,
-            lambda valence: TensorModule(
-                self._base_ring,
-                (self._rank,) * int(valence[0]),
-                (self._rank,) * int(valence[1]),
-            ),
-            name=f"Mixed tensor algebra T({module}) tensor T({module}^*)",
-            degree_index_set=bigrades,
-            grading_monoid=bigrades,
-            extra_categories=(GradedAlgebras(self._base_ring, bigrades),),
-        )
-        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
-
-        _algebra_from_native_ring(self, lambda left, right: MixedTensorAlgebraParent.multiply(self, left, right),
-            MixedTensorAlgebraParent.one(self),
-            lambda scalar, element: GradedDirectSumModule.scalar_multiple(self, scalar, element))
+    def __init__(self, mixed_tensor_module, **rest) -> None:
+        self._mixed_tensor_module = mixed_tensor_module
+        super().__init__(**rest)
 
     def module(self):
-        return self._module
+        return self._mixed_tensor_module
 
     def dual_module(self):
         r"""Return the linear dual ``M^*`` used by the covariant factor."""
@@ -1636,9 +1599,6 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
     def covector_tensor_algebra(self):
         r"""Return ``T(M^*)``, the covariant tensor-algebra factor."""
         return self.dual_module().tensor_algebra()
-
-    def algebra_base_ring(self):
-        return self._base_ring
 
     def homogeneous_piece(self, valence):
         r"""Return the tensor module of bidegree ``valence``."""
@@ -1666,8 +1626,6 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
         match value:
             case _ if element_parent(value) is self:
                 return value
-            case _ if element_parent(value) in Modules(ring) and element_parent(value).unformed_module() is self:
-                return element_parent(value)._element_of_unformed_module(value)
             case _ if _is_coordinate_tensor(value, ring):
                 return self.include(value)
             case _ if value in ring:
@@ -1675,27 +1633,83 @@ class MixedTensorAlgebraParent(GradedDirectSumModule):
                 return self.from_component((0, 0), scalar_tensor)
             case dict():
                 return self.from_components(value)
+            case _ if element_parent(value) in Modules(ring):
+                return super()._element_constructor_(value)
             case _:
                 raise TypeError(f"{value!r} does not define an element of {self}")
 
-    def zero(self):
-        return GradedDirectSumModule.zero(self)
+    def _module_with_structure(self, categories, construction_data):
+        return super()._module_with_structure(
+            categories,
+            {"mixed_tensor_module": self.module(), **construction_data},
+        )
 
-    def one(self):
-        return self(self.base_ring().one())
-
-    def multiply(self, left, right):
-        left = self(left)
-        right = self(right)
-        result = self.zero()
-        for left_component in left.homogeneous_components().values():
-            for right_component in right.homogeneous_components().values():
-                product = left_component.tensor_product(right_component)
-                result += self.include(product)
-        return result
+    def _direct_sum_realization(self):
+        return _MixedTensorDirectSum, MixedTensorAlgebraElement
 
     def _repr_(self) -> str:
         return f"Mixed tensor algebra T({self.module()}) tensor T({self.module()}^*)"
+
+
+def _mixed_tensor_algebra(module):
+    r"""Return ``T(M) tensor T(M^*)`` through the graded-module and algebra owners."""
+    from dzack_research.preamble.categories.algebras.algebras import _algebra_on_module
+    from dzack_research.preamble.categories.algebras.graded_algebras import (
+        GradedAlgebras,
+        _graded_multiplication_from_components,
+    )
+
+    rank = module.module_rank()
+    assert rank.is_finite(), (
+        "the coordinate mixed tensor algebra is represented for a module of finite rank"
+    )
+    ring = _own_ring(module.base_ring())
+    size = int(rank)
+    bigrades = NN**2
+    pieces = indexed_family(
+        bigrades,
+        lambda valence: TensorModule(
+            ring,
+            (size,) * int(valence[0]),
+            (size,) * int(valence[1]),
+        ),
+        name="Mixed tensor homogeneous pieces",
+    )
+    graded = _direct_sum_of_modules(
+        ring,
+        bigrades,
+        pieces,
+        extra_categories=(FramedModules(ring),),
+        construction_data={"mixed_tensor_module": module},
+        _realization=(_MixedTensorDirectSum, MixedTensorAlgebraElement),
+    )
+
+    def component_product(left_degree, left, right_degree, right):
+        target = graded.graded_piece(
+            graded.combine_degrees(left_degree, right_degree)
+        )
+        product = left.tensor_product(right)
+        match product.parent() is target:
+            case True:
+                pass
+            case False:
+                raise ValueError(
+                    "mixed tensor multiplication changed the selected homogeneous tensor parent"
+                )
+        return product
+
+    multiplication = _graded_multiplication_from_components(
+        graded,
+        component_product,
+    )
+    degree_zero = graded.graded_piece((0, 0))
+    unit = graded.from_component((0, 0), degree_zero((ring.one(),)))
+    return _algebra_on_module(
+        graded,
+        multiplication,
+        placement=(GradedAlgebras(ring, bigrades),),
+        unit=unit,
+    )
 
 
 def _is_rank(value) -> bool:

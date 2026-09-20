@@ -16,7 +16,7 @@ def _framed_rationals_without_a_chosen_presentation():
         Cat().meet((GeneralModules(QQ), FramedModules(QQ))),
         base_ring=QQ, underlying_set=QQ,
         addition=lambda x, y: x + y, zero=QQ.zero(), negation=lambda x: -x,
-        scalar_action=lambda r, x: r * x, verify=False,
+        scalar_action=lambda r, x: r * x,
         module_generating_set=free.module_generating_set(),
         module_generator_function=lambda _: module(QQ.one()), framing_source=free,
     )
@@ -50,7 +50,7 @@ def test_linear_maps_and_tensor_classifiers_use_the_finite_frame():
 def test_no_finite_generating_data_still_means_unknown_not_sampling():
     module = GeneralModules(QQ).from_operations(QQ,
         addition=lambda x, y: x + y, zero=QQ.zero(), negation=lambda x: -x,
-        scalar_action=lambda r, x: r * x, verify=False)
+        scalar_action=lambda r, x: r * x)
     morphisms = Modules(QQ).Mor(module, module)
     first = morphisms.elementwise(lambda x: x)
     second = morphisms.elementwise(lambda x: x)

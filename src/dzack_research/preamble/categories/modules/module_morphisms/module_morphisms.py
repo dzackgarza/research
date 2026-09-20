@@ -1663,16 +1663,14 @@ class ModuleMorphism(Morphism):
         endomorphism together with the inverse it constructs, which is what
         that group's elements are.
         """
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            CategoricalIsomorphism,
-        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         module = self.domain()
         assert self.codomain() is module, "an automorphism is an endomorphism"
-        # The inverse was constructed as one, so the pair is mutually inverse by
-        # construction and is not re-derived here.
-        return Modules(module.base_ring()).Aut(module)(CategoricalIsomorphism(self.parent(), self, self.inverse(), verify=False))
+        return Modules(module.base_ring()).Aut(module)._from_known_inverse_pair(
+            self,
+            self.inverse(),
+        )
 
 
 def _combined_linearity_decision(morphisms):
@@ -2602,6 +2600,25 @@ class ModuleAutomorphism(CategoricalIsomorphism):
                 return self.forward() * other
 
 
+class _ConstructedModuleAutomorphism(ModuleAutomorphism):
+    r"""An automorphism whose inverse equations follow from its construction."""
+
+    def __init__(self, parent, forward, inverse) -> None:
+        Morphism.__init__(self, parent)
+        match (forward.domain() is self.domain(), forward.codomain() is self.codomain()):
+            case (True, True):
+                pass
+            case _:
+                raise ValueError("the forward module map has the wrong endpoints")
+        match (inverse.domain() is self.codomain(), inverse.codomain() is self.domain()):
+            case (True, True):
+                pass
+            case _:
+                raise ValueError("the inverse module map has the wrong endpoints")
+        self._forward = forward
+        self._inverse = inverse
+
+
 class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
     r"""The groups ``Aut_R(M)`` of invertible module endomorphisms."""
 
@@ -2648,7 +2665,7 @@ class ModuleAutomorphismGroup(CategoricalHomset):
         homset = module.module_category().Mor(module, module)
         forward = homset(forward)
         inverse = homset(inverse)
-        return self.element_class(self, forward, inverse, verify=False)
+        return _ConstructedModuleAutomorphism(self, forward, inverse)
 
     def __call__(self, datum):
         r"""Construct an automorphism-group element rather than preserving a bare Iso arrow."""
@@ -2660,7 +2677,13 @@ class ModuleAutomorphismGroup(CategoricalHomset):
                 return datum
             datum = datum.as_morphism()
         if isinstance(datum, CategoricalIsomorphism):
-            return self._from_known_inverse_pair(datum.forward(), datum.inverse())
+            module = self.domain()
+            homset = module.module_category().Mor(module, module)
+            return self.element_class(
+                self,
+                homset(datum.forward()),
+                homset(datum.inverse()),
+            )
         module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
         return self._from_known_inverse_pair(forward, forward.inverse())

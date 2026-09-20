@@ -7,6 +7,8 @@ kernel of the action morphism, and a second ring can act on the same abelian
 group by naming a second morphism into the same endomorphisms.
 """
 
+import pytest
+
 from dzack_research.preamble.all import (
     GF,
     GeneralModules,
@@ -35,6 +37,19 @@ def test_a_general_module_is_placed_by_the_module_graph() -> None:
     assert module in GeneralModules(ZZ)
     assert module in Modules(ZZ)
     assert module.base_ring() is ZZ
+
+
+def test_a_decidably_invalid_elementwise_action_is_rejected() -> None:
+    field = GF(2)
+
+    with pytest.raises(AssertionError, match="1 does not act as the identity"):
+        GeneralModules(field).from_operations(
+            Set([0, 1]),
+            addition=lambda left, right: (left + right) % 2,
+            zero=0,
+            negation=lambda value: value,
+            scalar_action=lambda _scalar, _value: 0,
+        )
 
 
 def test_the_count_of_a_general_module_is_its_underlying_sets() -> None:

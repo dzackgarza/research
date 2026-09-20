@@ -29,7 +29,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
-    ConeMorphism,
     SelectedColimitConstruction,
     SelectedLimitConstruction,
     _discrete_diagram,
@@ -658,10 +657,8 @@ class Modules(OwnedCategoryOverBaseRing):
                         apex_map = product.from_product_cone(legs)
                     case _:
                         apex_map = _module_product_factor(product, family, cone.apex(), legs)
-                return ConeMorphism(
-                    diagram.Cones().Mor(cone, universal_cone),
+                return diagram.Cones().Mor(cone, universal_cone)._from_commuting_apex_map(
                     apex_map,
-                    verify=False,
                 )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
@@ -1098,9 +1095,9 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def mixed_tensor_algebra(self):
             r"""Return ``T(self) tensor T(self^*)`` with finite bidegree support."""
-            from dzack_research.preamble.tensors.tensor import MixedTensorAlgebraParent
+            from dzack_research.preamble.tensors.tensor import _mixed_tensor_algebra
 
-            return MixedTensorAlgebraParent(self)
+            return _mixed_tensor_algebra(self)
 
         def symmetric_algebra(self):
             r"""Return the symmetric algebra ``Sym_R(self)``."""
@@ -1539,7 +1536,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     return _object_of(
                         Category.join((GeneralModules(self.base_ring()), *categories)),
                         base_ring=self.base_ring(), rho=self.scalar_action(),
-                        verify=False, **construction_data,
+                        **construction_data,
                     )
 
         def _built_on_the_same_data(self, source) -> bool:
@@ -1880,10 +1877,27 @@ class Modules(OwnedCategoryOverBaseRing):
                 return Lattices(self.base_ring())("U").discriminant_group()
 
             def _call_(self, presentation):
-                module = presentation.cokernel()
-                if module.base_ring() is not self.base_ring():
-                    raise ValueError("a torsion presentation belongs to its coefficient ring")
-                return _refine_finitely_presented_torsion_module(module)
+                match self.base_ring() in PrincipalIdealDomains():
+                    case True:
+                        pass
+                    case False:
+                        raise TypeError(
+                            "the selected finitely presented torsion constructor is represented over a PID"
+                        )
+                match presentation.codomain().base_ring() is self.base_ring():
+                    case True:
+                        pass
+                    case False:
+                        raise ValueError("a torsion presentation belongs to its coefficient ring")
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                    _presented_module_from_morphism,
+                )
+
+                return _presented_module_from_morphism(
+                    presentation,
+                    _extra_categories=(self,),
+                    _require_torsion=True,
+                )
 
             class ParentMethods:
                 def is_torsion(self) -> bool:
@@ -4632,16 +4646,3 @@ def _torsion_module_presented_by_matrix(
     return Modules(ring).FinitelyPresented().Torsion()(
         source.module_category().Mor(source, target)(images)
     )
-
-
-def _refine_finitely_presented_torsion_module(module):
-    r"""Attach the torsion intersection after verifying the represented property."""
-
-    ring = module.base_ring()
-    if module not in Modules(ring).FinitelyPresented():
-        raise TypeError("torsion refinement requires a finitely presented module")
-    if not module.is_torsion():
-        raise ValueError(
-            "the supplied finite presentation does not present a torsion module"
-        )
-    return refine(module, Modules(ring).FinitelyPresented().Torsion())

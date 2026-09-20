@@ -76,7 +76,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
     VectorSpaces,
-    _refine_finitely_presented_torsion_module,
     _torsion_module_presented_by_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -1358,7 +1357,9 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 every chosen relation must pair to zero with every chosen generator.
                 """
                 if module not in Modules(self.base_ring()).FinitelyPresented().Torsion():
-                    module = _refine_finitely_presented_torsion_module(module)
+                    raise ValueError(
+                        "a torsion form is stated on a finitely presented module constructed in the torsion category"
+                    )
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)
@@ -1723,7 +1724,9 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 exactly the conditions for the quadratic map to descend to the quotient.
                 """
                 if module not in Modules(self.base_ring()).FinitelyPresented().Torsion():
-                    module = _refine_finitely_presented_torsion_module(module)
+                    raise ValueError(
+                        "a torsion quadratic form is stated on a finitely presented module constructed in the torsion category"
+                    )
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)

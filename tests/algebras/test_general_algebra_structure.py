@@ -278,7 +278,6 @@ def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equal
     module = GeneralModules(QQ).from_operations(
         Set(QQ), addition=lambda x, y: x + y, zero=QQ.zero(),
         negation=lambda x: -x, scalar_action=lambda r, x: r * x,
-        verify=False,
     )
     bilinear = module.bilinear_forms(module)(
         lambda x, y: module(x.underlying_element() * y.underlying_element())
@@ -326,7 +325,6 @@ def test_unframed_unital_and_lie_entries_use_the_same_root_constructor() -> None
     module = GeneralModules(QQ).from_operations(
         Set(QQ), addition=lambda x, y: x + y, zero=QQ.zero(),
         negation=lambda x: -x, scalar_action=lambda r, x: r * x,
-        verify=False,
     )
     tensor = Modules(QQ).tensor_product((module, module))
     product = tensor.from_bilinear_map(

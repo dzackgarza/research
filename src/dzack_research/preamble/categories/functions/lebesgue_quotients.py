@@ -179,7 +179,7 @@ class _LebesgueQuotient:
         classes = _ae_class_set(map_space)
         super().__init__(
             underlying_set=classes, addition=classes.add, zero=classes.zero(),
-            negation=classes.negate, scalar_action=classes.scale, verify=False, **rest,
+            negation=classes.negate, scalar_action=classes.scale, **rest,
         )
 
     def map_space(self):
