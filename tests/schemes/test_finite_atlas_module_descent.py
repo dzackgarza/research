@@ -1,5 +1,8 @@
-from dzack_research.preamble.all import QQ, AffineSpaces
+import pytest
+
+from dzack_research.preamble.all import GF, QQ, AffineSpaces, Modules
 from dzack_research.preamble.categories.abstract_categories.presheaves import DescentDataOnCover
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingData,
     FiniteAtlasModuleTransition,
@@ -100,6 +103,59 @@ def _renaming_overlap_isomorphism(source, source_coordinate, target, target_coor
         source_ring.Mor(target_ring)(pull_to_target)
     )
     return Schemes(QQ).Core().Mor(source_overlap, target_overlap)(forward, reverse)
+
+
+def test_varying_ring_module_fibre_and_two_nonidentity_semilinear_maps_compose() -> None:
+    field = GF(5)
+    ring = field.polynomial_ring("x")
+    x = ring.algebra_generator("x")
+    first_scalar = ring.Mor(ring)({"x": -x})
+    second_scalar = ring.Mor(ring)({"x": x + ring.one()})
+    source = ring.free_module(finite_ordered_set(("source",)))
+    middle = ring.free_module(finite_ordered_set(("middle",)))
+    target = ring.free_module(finite_ordered_set(("target",)))
+    fibered = ModulesOverCommutativeRings()
+
+    assert fibered.fiber(ring) is Modules(ring)
+    assert fibered.cocartesian_transport(first_scalar).ring_map() is first_scalar
+    assert fibered.cartesian_transport(first_scalar).ring_map() is first_scalar
+
+    first = fibered.Mor(source, middle)(
+        first_scalar,
+        {"source": middle.module_generator("middle")},
+    )
+    second = fibered.Mor(middle, target)(
+        second_scalar,
+        {"middle": target.module_generator("target")},
+    )
+    composite = second * first
+    composite_scalar = second_scalar * first_scalar
+    generator = source.module_generator("source")
+
+    assert composite.scalar_map() == composite_scalar
+    assert first.additive_map()(generator) == middle.module_generator("middle")
+    assert first.linearization().domain() is first.extended_source()
+    assert first.linearization().codomain() is middle
+    assert composite(generator) == target.module_generator("target")
+    assert composite(source.scalar_multiple(x, generator)) == target.scalar_multiple(
+        composite_scalar(x),
+        composite(generator),
+    )
+
+
+def test_varying_ring_module_rejects_additive_map_incompatible_with_scalar_map() -> None:
+    field = GF(3)
+    ring = field.polynomial_ring("x")
+    x = ring.algebra_generator("x")
+    scalar_map = ring.Mor(ring)({"x": -x})
+    module = ring.free_module(finite_ordered_set(("e",)))
+    additive = AdditiveGroups().AdditiveCommutative().HomCategory().Of(
+        module,
+        module,
+    ).elementwise(lambda element: element)
+
+    with pytest.raises(ValueError, match="not scalar-linear"):
+        ModulesOverCommutativeRings().Mor(module, module)(scalar_map, additive)
 
 
 def test_semilinear_module_transition_keeps_distinct_overlap_rings() -> None:

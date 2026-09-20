@@ -536,7 +536,7 @@ class FiberedFormedModuleMorphism(Morphism):
             raise ValueError("the value map has the wrong target value module")
         self._module_morphism = module_morphism
         self._value_morphism = value_morphism
-        self._underlying_semilinear_morphism = parent.module_homset()(
+        self._underlying_semilinear_morphism = parent.module_homset()._from_linearization(
             self.ring_map(),
             module_morphism,
         )

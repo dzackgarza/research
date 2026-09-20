@@ -209,12 +209,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Diagrams, rings and geometric consumers
 
-- [ ] **`varying-ring-modules`**. **Needs:** none.
-  **Owner and delta:** the existing varying-ring module category and finite-atlas transition consumers in `schemes/gluing.py`: establish the fibred category over rings and its semilinear arrows.
-  **Invariants:** an arrow consists of its base ring map and compatible additive map; identity and composition preserve that square. Fixed-base Modules(R) is the appropriate fibre, not a replacement base_ring method on an object falsely placed in another fibre. Cartesian/cocartesian transport is supplied by restriction/extension under its hypotheses.
-  **Closure specimens:** compose semilinear maps across two nonidentity coefficient maps; an additive map incompatible with the claimed scalar map is rejected. Localizations on distinct affine chart rings retain those rings and their transition maps when used by descent.
-
-- [ ] **`sheaf-descent-threading`**. **Needs:** `varying-ring-modules`.
+- [ ] **`sheaf-descent-threading`**. **Needs:** none.
   **Owner and delta:** `schemes/gluing.py`, `schemes/sheaf_functors.py`, the scheme structure sheaf and QCoh owners: close the remaining complaint's general descent/transport requirements while preserving the existing finite-atlas and affine constructions.
   **Invariants:** coverage and descent datum determine the sheaf; sections are the owned compatible-section limit with its universal maps. Algebra sections use that module and its bilinear multiplication. Pullback is inverse image followed by scalar change; refinement comparisons and sheaf morphisms retain their actual endpoints. Finite-atlas computability does not redefine arbitrary sheaves as chart tables.
   **Closure specimens:** a line bundle on a two-chart projective line with a nonidentity transition, its restriction to overlaps, and a refinement of the cover give compatible owned sections and comparison maps. An incompatible section pair fails the equalizer condition. Check affine equivalence unit/counit on sheaf endpoints and multiplication after restriction.
