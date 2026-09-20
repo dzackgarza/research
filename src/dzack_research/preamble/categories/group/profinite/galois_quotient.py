@@ -7,7 +7,15 @@ from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.richcmp import richcmp
 
-from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    _fix_selected_framing,
+)
+from dzack_research.preamble.categories.group.groups import (
+    Groups,
+    OwnedGroups,
+    _group_framing_morphism,
+)
 from dzack_research.preamble.categories.rings.field_morphisms import (
     ExactFieldMorphism,
 )
@@ -368,7 +376,7 @@ class _FiniteFieldAutomorphismEngine:
 
         return _finite_frobenius_class(self, base_prime, prime_above)
 
-    def group_generators(self):
+    def _computed_group_generators(self):
         r"""A generating set: the Frobenius power of order ``[L:K]`` over a finite field, else the nonidentity elements."""
         identity = self.one()
         nonidentity = tuple(element for element in self if element != identity)
@@ -401,11 +409,25 @@ class _FiniteFieldAutomorphismEngine:
 @cached_function
 def FiniteExtensionAutomorphismGroup(extension):
     r"""Aut_K(L) for the exact extension diagram, using the finite-group entry."""
-    return _object_of(
-        OwnedGroups().Finite(),
+    group = _object_of(
+        Cat().meet((OwnedGroups().Finite(), OwnedGroups().Framed())),
         _engine=(OwnedGroups(), _FiniteFieldAutomorphismEngine, FiniteGaloisAutomorphism),
         extension=extension,
     )
+    generators = group._computed_group_generators()
+    source = Groups.Free(index_set=generators)
+    generator_morphism = Sets().Mor(generators, group)(lambda generator: generator)
+    _fix_selected_framing(
+        group,
+        OwnedGroups(),
+        source,
+        generators,
+        generator_morphism,
+        lambda: _group_framing_morphism(
+            group, source, generators, generator_morphism
+        ),
+    )
+    return group
 
 
 def FiniteGaloisQuotient(extension):

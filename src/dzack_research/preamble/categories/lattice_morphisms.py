@@ -15,11 +15,15 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    _fix_selected_framing,
+)
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 from dzack_research.preamble.categories.group.groups import (
-    GroupsWithChosenFinitePresentation,
+    Groups,
     OwnedFiniteGroups,
     OwnedGroups,
+    _group_framing_morphism,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
@@ -46,7 +50,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.engine_capabilities import engine_capabilities
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.refine import realize_owned_category, refine
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     tensor,
@@ -1204,7 +1208,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 and domain.is_definite()
             ):
                 categories.append(OwnedFiniteGroups())
-                categories.append(GroupsWithChosenFinitePresentation())
+                categories.append(OwnedGroups().Framed())
         LatticeEmbeddingHomset.__init__(
             self,
             hom_family,
@@ -1212,6 +1216,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             codomain,
             category=Cat().meet(tuple(categories)) if categories else None,
         )
+        if domain is codomain and self in OwnedGroups().Framed():
+            self._retain_group_framing(self._computed_group_generators())
 
     def _element_constructor_(self, images):
         if isinstance(images, LatticeIsometry):
@@ -1362,7 +1368,10 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             raise ValueError("the discriminant image is defined for an automorphism group")
         target = self.domain().discriminant_group().orthogonal_group()
         return target.subgroup_on(
-            tuple(generator.discriminant_morphism() for generator in self.group_generators())
+            tuple(
+                generator.discriminant_morphism()
+                for generator in self.framing().group_generators()
+            )
         )
 
     def discriminant_lift(self, automorphism):
@@ -1386,7 +1395,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
         witnesses = {identity_image: identity}
         steps = []
-        for generator in self.group_generators():
+        for generator in self.framing().group_generators():
             image = generator.discriminant_morphism()
             steps.append((image, generator))
             inverse = ~generator
@@ -1675,7 +1684,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         return self._from_backend_row_action(engine_element.matrix())
 
     @cached_method
-    def group_generators(self):
+    def _computed_group_generators(self):
         r"""Return exact generators of ``O(L)`` when the backend computes them."""
 
         lattice = self.domain()
@@ -1699,9 +1708,27 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             name=f"Orthogonal-group generators of {lattice}",
         )
 
-    def number_of_group_generators(self):
-        r"""Return the cardinality of the chosen generating set of ``O(L)``."""
-        return self.group_generators().cardinality()
+    def _retain_group_framing(self, generators) -> None:
+        r"""Retain one computed exact generating family as this group's framing."""
+        source = Groups.Free(index_set=generators)
+        generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
+        _fix_selected_framing(
+            self,
+            OwnedGroups(),
+            source,
+            generators,
+            generator_morphism,
+            lambda: _group_framing_morphism(
+                self, source, generators, generator_morphism
+            ),
+        )
+
+    def framing(self):
+        r"""Explicitly select and retain the represented generator framing of ``O(L)``."""
+        if self in OwnedGroups().Framed():
+            return self
+        self._retain_group_framing(self._computed_group_generators())
+        return refine(self, OwnedGroups().Framed())
 
     def structure_description(self):
         r"""Return GAP's descriptive structure label for a finite ``O(L)``.

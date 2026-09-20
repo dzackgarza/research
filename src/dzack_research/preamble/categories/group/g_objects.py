@@ -35,33 +35,46 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
+    OwnedFiniteGroups,
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def _verify_relators(action, group, endomorphisms) -> None:
-    r"""Check that the generator images satisfy the group's chosen relators.
+    r"""Check the represented action law without manufacturing presentation data.
 
     An action is a left action: ``rho(s_1 s_2) = rho(s_1) rho(s_2)``, the
     product of the matrices acting on an ordered basis.  A function on the
     generators extends to a group morphism exactly when every defining
-    relator, composed in that order, is the identity.  This decides that the
-    generator images define an action; the datum's values on the other group
-    elements are the caller's assertion and are not enumerated.
+    relator, composed in that order, is the identity.  When no presentation
+    has been selected but the group is finite, the same claim is decided
+    directly on all pairs.  Finite presentability alone never triggers a
+    presentation search.
     """
-    if group not in GroupsWithChosenFinitePresentation():
+    if group in GroupsWithChosenFinitePresentation():
+        # Private serialization: Tietze letters index the chosen generators in
+        # their recorded order, and a negative letter names an inverse.
+        generators = tuple(group.group_generators())
+        identity = endomorphisms.identity()
+        for relator in group.defining_relations():
+            composite = identity
+            for letter in relator.Tietze():
+                generator = generators[abs(int(letter)) - 1]
+                composite = composite * action(
+                    generator if int(letter) > 0 else ~generator
+                )
+            assert composite == identity, (
+                f"the generator images do not satisfy the relator {relator}, "
+                f"so they define no left action of {group}"
+            )
         return
-    # Private serialization: Tietze letters index the chosen generators in
-    # their recorded order, and a negative letter names an inverse.
-    generators = tuple(group.group_generators())
-    identity = endomorphisms.identity()
-    for relator in group.defining_relations():
-        composite = identity
-        for letter in relator.Tietze():
-            generator = generators[abs(int(letter)) - 1]
-            composite = composite * action(generator if int(letter) > 0 else ~generator)
-        assert composite == identity, f"the generator images do not satisfy the relator {relator}, so they define no left action of {group}"
+    if group in OwnedFiniteGroups():
+        for left in group:
+            for right in group:
+                assert action(left * right) == action(left) * action(right), (
+                    f"the stated maps do not define a left action of {group}"
+                )
 
 
 class EquivariantMorphism(Morphism):

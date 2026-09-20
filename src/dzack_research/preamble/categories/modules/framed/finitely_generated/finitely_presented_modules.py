@@ -245,6 +245,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 cokernel_morphism,
             )
             super().__init__(**rest)
+            if self.selected_framing_source(Modules(self.base_ring())) is not presentation.codomain():
+                raise ValueError(
+                    "the selected module presentation target must be the selected framing source"
+                )
 
         def _same_selected_presentation_as(self, other):
             r"""Return whether ``other`` is a module with the same selected presentation over this ring."""

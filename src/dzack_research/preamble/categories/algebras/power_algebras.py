@@ -45,23 +45,6 @@ class _PowerAlgebra:
     def _power_algebra_homset_class(self):
         return PowerAlgebraHomset
 
-    def algebra_generating_set(self):
-        match self.flavor():
-            case "alternating":
-                return self.generating_module().module_generating_set()
-            case "divided":
-                # Degree-one elements alone need not generate Gamma over Z.
-                # A module generating family is also an algebra generating family.
-                return self.module_generating_set()
-
-    def algebra_generator(self, label):
-        source = self.generating_module()
-        match label:
-            case _ if label in source.module_generating_set():
-                return self.from_component(1, source.module_generator(label))
-            case _:
-                return self.module_generator(self.algebra_generating_set()(label))
-
     def _element_constructor_(self, value):
         source = element_parent(value)
         match value:

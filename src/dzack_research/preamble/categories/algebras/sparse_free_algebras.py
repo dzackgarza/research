@@ -36,12 +36,6 @@ class _SparseFreeAlgebra(_WordModule):
     def _source_has_component_protocol(self):
         return _has_component_presentation(self.generating_module())
 
-    def algebra_generating_set(self):
-        return self.generating_module().module_generating_set()
-
-    def algebra_generator(self, label):
-        return self.from_component(1, self.generating_module().module_generator(label))
-
     def _algebra_homset_class(self):
         return SparseFreeAlgebraHomset
 

@@ -43,7 +43,7 @@ def test_every_live_orthogonal_generator_factors_through_stable_eichler_and_disc
     lattice = model.lattice()
     stable = model.stable_kernel()
 
-    for generator in lattice.O().group_generators():
+    for generator in lattice.O().framing().group_generators():
         factorization = model.factor_orthogonal_isometry(generator)
         assert isinstance(factorization, EichlerOrthogonalFactorizationDatum)
         assert factorization.isometry() == generator

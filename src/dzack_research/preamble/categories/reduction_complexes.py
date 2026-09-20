@@ -32,7 +32,7 @@ name rather than as an implementation in this file.
 What *is* owned, so that a caller does not reach here for it:
 
 - generators of ``O(L)`` for an indefinite lattice, through
-  ``L.O().group_generators()``, which already goes to polyhedral_common's
+  ``L.O().framing().group_generators()``, whose explicit framing crossing goes to polyhedral_common's
   automorphism group and so does not need the cell traversal;
 - the ``O(L)``-orbits of vectors of a given square, their stabilizers and
   their equivalence witnesses, through the exact indefinite backend;

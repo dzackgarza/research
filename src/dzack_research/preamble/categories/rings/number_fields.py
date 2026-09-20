@@ -393,7 +393,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             else:
                 primitive = engine.gen()
                 polynomial = engine.defining_polynomial()
-                labels = self.algebra_generating_set()
+                labels = finite_ordered_set(engine.variable_names())
                 degree = int(engine.degree())
 
             presentation = rationals.free_module(labels).symmetric_algebra()
@@ -519,17 +519,9 @@ class NumberFieldsWithChosenPrimitiveElement(OwnedCategory):
         return [OwnedNumberFields()]
 
     class ParentMethods:
-        def algebra_generating_set(self):
-            return finite_ordered_set(_engine_ring(self).variable_names())
-
         def primitive_element(self):
             r"""Return the selected primitive element ``alpha``."""
             return self._from_engine_element(_engine_ring(self).gen())
-
-        def algebra_generator(self, label):
-            if label not in self.algebra_generating_set():
-                raise ValueError(f"{label!r} is not the selected algebra-generator label")
-            return self.primitive_element()
 
         def defining_polynomial(self):
             r"""Return the owned defining polynomial of the selected primitive element."""

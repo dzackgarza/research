@@ -15,7 +15,8 @@ def test_definite_orthogonal_group_has_owned_finite_group_placement() -> None:
 
     assert orthogonal_group in OwnedGroups()
     assert orthogonal_group in OwnedFiniteGroups()
-    assert orthogonal_group in GroupsWithChosenFinitePresentation()
+    assert orthogonal_group not in GroupsWithChosenFinitePresentation()
+    assert orthogonal_group.presentation() in GroupsWithChosenFinitePresentation()
 
 
 def test_indefinite_orthogonal_group_is_owned_without_false_finiteness() -> None:

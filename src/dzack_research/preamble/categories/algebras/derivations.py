@@ -27,7 +27,13 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
+    _fix_selected_module_framing,
     _restricted_scalars_view,
+)
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    _fix_selected_module_presentation,
+    _presentation_from_relation_rows,
+    _presentation_matrix,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -404,6 +410,31 @@ class DerivationSpace(RestrictedHomCategoryParent):
             restricted_target,
             category=category,
         )
+        if classifiers in ModulesWithChosenFinitePresentation(algebra):
+            framing_labels = classifiers.module_generating_set()
+            relation_matrix = _presentation_matrix(classifiers)
+            classifier_presentation = classifiers.presentation()
+            presentation = _presentation_from_relation_rows(
+                algebra,
+                framing_labels,
+                classifier_presentation.domain().module_generating_set(),
+                relation_matrix,
+            )
+            _fix_selected_module_framing(
+                self,
+                algebra,
+                framing_labels,
+                lambda label: self._from_kahler_classifier(
+                    classifiers.module_generator(label)
+                ),
+                presentation.codomain(),
+            )
+            _fix_selected_module_presentation(
+                self,
+                algebra,
+                relation_matrix,
+                presentation,
+            )
         self.register_action(_DerivationAlgebraAction(algebra, self, True))
         self.register_action(_DerivationAlgebraAction(algebra, self, False))
 
@@ -458,22 +489,6 @@ class DerivationSpace(RestrictedHomCategoryParent):
     def _to_kahler_classifier(self, derivation):
         derivation = self(derivation)
         return self._kahler_classifier_module().domain().from_derivation(derivation)
-
-    def module_generating_set(self):
-        return self._kahler_classifier_module().module_generating_set()
-
-    def module_generator(self, label):
-        classifier = self._kahler_classifier_module()
-        return self._from_kahler_classifier(classifier.module_generator(label))
-
-    def presentation_matrix(self):
-        return self._kahler_classifier_module().presentation_matrix()
-
-    def presentation(self):
-        return self._kahler_classifier_module().presentation()
-
-    def _selected_presentation_rows(self):
-        return self._kahler_classifier_module()._selected_presentation_rows()
 
     def _selected_module_coefficients(self, derivation):
         classifiers = self._kahler_classifier_module()

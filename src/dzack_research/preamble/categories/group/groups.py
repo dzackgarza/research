@@ -66,6 +66,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
+    _fix_selected_framing,
 )
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
@@ -94,7 +95,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets, finite_ordinal_set
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.refine import realize_owned_category, refine
 
 # Finite generation reuses Sage's axiom for it, ``FinitelyGeneratedAsMagma``.
 # Finite presentation is qualified as Sage qualifies that one: an axiom name
@@ -552,6 +553,115 @@ def _presentation_of(group):
             assert False, f"{group} does not supply chosen finite-presentation data"
 
 
+class _SelectedGroupPresentation:
+    r"""The relation stage extending a group's already selected 1-framing."""
+
+    def __init__(self, free_group, relations) -> None:
+        self._free_group = free_group
+        self._relations = relations
+
+    def free_group(self):
+        return self._free_group
+
+    def relations(self):
+        return self._relations
+
+
+def _group_framing_morphism(group, source, labels, generator_morphism):
+    r"""Realize one selected set-of-generators map as the induced group morphism."""
+    assert source.free_basis() is labels, (
+        "the selected group framing source is free on its stated framing labels"
+    )
+    return source.Mor(group)(generator_morphism)
+
+
+def _fix_selected_group_framing(group, *, free_basis=None, presentation=None) -> None:
+    r"""Retain one chosen free-source epimorphism, and optionally its relators."""
+    if free_basis is not None:
+        source = group
+        labels = free_basis
+        generator_morphism = Sets().Mor(labels, group)(group.free_generator)
+        _fix_selected_framing(
+            group,
+            OwnedGroups(),
+            source,
+            labels,
+            generator_morphism,
+            lambda: _group_framing_morphism(
+                group, source, labels, generator_morphism
+            ),
+        )
+        return
+
+    if presentation is not None:
+        source, backend_relations = presentation
+        labels = source.free_basis()
+        generators = _engine_generators(group)
+        assert generators.cardinality() == labels.cardinality(), (
+            "the carried finite presentation has one image for each free generator"
+        )
+        ranking = labels.ranking_map()
+        generator_morphism = Sets().Mor(labels, group)(
+            lambda label: generators[int(ranking(label))]
+        )
+        _fix_selected_framing(
+            group,
+            OwnedGroups(),
+            source,
+            labels,
+            generator_morphism,
+            lambda: _group_framing_morphism(
+                group, source, labels, generator_morphism
+            ),
+        )
+        relations = finite_ordered_set(
+            tuple(source._from_engine(relation) for relation in backend_relations)
+        )
+        group._selected_group_presentation = _SelectedGroupPresentation(
+            source,
+            relations,
+        )
+        return
+
+    generators = _engine_generators(group)
+    source = Groups.Free(index_set=generators)
+    generator_morphism = Sets().Mor(generators, group)(lambda generator: group(generator))
+    _fix_selected_framing(
+        group,
+        OwnedGroups(),
+        source,
+        generators,
+        generator_morphism,
+        lambda: _group_framing_morphism(
+            group, source, generators, generator_morphism
+        ),
+    )
+
+
+def _fix_selected_group_presentation_on_existing_framing(group, presentation) -> None:
+    r"""Extend the group's already selected framing by one chosen relation family."""
+    if group.__dict__.get("_selected_group_presentation") is not None:
+        raise ValueError(f"{group} already has a selected presentation")
+    represented_source, backend_relations = presentation
+    source = group.selected_framing_source(OwnedGroups())
+    represented_labels = tuple(represented_source.free_basis())
+    selected_generators = tuple(source.group_generators())
+    if len(represented_labels) != len(selected_generators):
+        raise AssertionError(
+            "the represented finite-presentation algorithm did not preserve the selected group framing"
+        )
+    transport = represented_source.Mor(source)(
+        dict(zip(represented_labels, selected_generators, strict=True))
+    )
+    relations = finite_ordered_set(
+        tuple(
+            transport(represented_source._from_engine(relation))
+            for relation in backend_relations
+        )
+    )
+    group._selected_group_presentation = _SelectedGroupPresentation(source, relations)
+
+
 def _engine_quotient_by_relators(group, relators):
     r"""Return ``G / <<relators>>`` computed from the engine's presentation."""
     engine = _engine_group(group)
@@ -624,8 +734,6 @@ def _has_chosen_presentation(engine) -> bool:
     match engine:
         case FreeGroup_class() | FinitelyPresentedGroup() | CoxeterMatrixGroup():
             return True
-        case PermutationGroup_generic() | AbelianGroup_class() | FinitelyGeneratedMatrixGroup_gap() | NamedMatrixGroup_generic() | NamedMatrixGroup_gap():
-            return _engine_finiteness(engine) is True
         case _:
             return False
 
@@ -658,7 +766,7 @@ def _owned_group_category(engine) -> Category:
         (_is_abelian_witness(engine), OwnedGroups().Commutative()),
         (_is_finitely_generated_witness(engine), OwnedGroups().FinitelyGeneratedAsMagma()),
         (_is_finitely_presented_witness(engine), OwnedGroups().FinitelyPresentedAsGroup()),
-        (_has_chosen_generators(engine), GroupsWithChosenFiniteGeneratingSet()),
+        (_has_chosen_generators(engine), OwnedGroups().Framed()),
         (_has_chosen_presentation(engine), GroupsWithChosenFinitePresentation()),
         (_encodes_as_permutations(engine), PermutationGroups()),
     )
@@ -916,19 +1024,37 @@ def _own_group(group, refinements=(), description=None, free_basis=None):
         case _:
             placement = (_owned_group_category(group), *refinements)
             if free_basis is None:
-                return _object_of(
+                owned = _object_of(
                     Cat().meet(placement),
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
                 )
-            return _object_of(
-                Cat().meet((*placement, GroupsWithChosenFreeBasis())),
-                _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
-                engine=group,
-                description=description,
-                free_basis=free_basis,
-            )
+            else:
+                owned = _object_of(
+                    Cat().meet(
+                        (*placement, GroupsWithChosenFreeBasis(), OwnedGroups().Framed())
+                    ),
+                    _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
+                    engine=group,
+                    description=description,
+                    free_basis=free_basis,
+                )
+            if free_basis is not None:
+                _fix_selected_group_framing(owned, free_basis=free_basis)
+                if isinstance(group, FreeGroup_class):
+                    owned._selected_group_presentation = _SelectedGroupPresentation(
+                        owned,
+                        finite_ordered_set(()),
+                    )
+            elif _has_chosen_presentation(group):
+                _fix_selected_group_framing(
+                    owned,
+                    presentation=_presentation_of(owned),
+                )
+            elif _has_chosen_generators(group):
+                _fix_selected_group_framing(owned)
+            return owned
 
 
 def _transported_subgroup(group, engine_subgroup):
@@ -1604,6 +1730,10 @@ class GroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
     def _from_group_generator_images(self, images, check=True):
         domain = self.domain()
         codomain = self.codomain()
+        if domain not in OwnedGroups().Framed():
+            raise TypeError(
+                "a group morphism specified on generators requires a selected domain framing"
+            )
         generators = domain.group_generators()
         if not (all(generator in images for generator in generators) and all(key in generators for key in images)):
             raise ValueError("the assignment must name exactly the distinguished group generators")
@@ -1682,22 +1812,6 @@ class GroupAutomorphismGroups(OwnedCategory):
         def supergroup(self):
             return self._supergroup
 
-        @cached_method
-        def group_generators(self):
-            backend_generators = self._libgap_().GeneratorsOfGroup()
-            positions = Sets.Δ[len(backend_generators) - 1]
-            return FiniteOrderedSets().from_indexed(
-                positions,
-                lambda position: self(
-                    backend_generators[int(position)],
-                    check=False,
-                ),
-                name=f"Group generators of {self}",
-            )
-
-        def number_of_group_generators(self):
-            return ZZ(self.group_generators().cardinality())
-
         def cardinality(self):
             r"""``|Aut(G)|``: from GAP for finite ``G``, from the rank for a free ``G``.
 
@@ -1744,7 +1858,7 @@ class GroupAutomorphismGroup(GroupHomset):
         self._supergroup = self if supergroup is None else supergroup
         categories = [GroupAutomorphismGroups()]
         if group.is_finite() is True:
-            categories.append(OwnedFiniteGroups())
+            categories.extend((OwnedFiniteGroups(), OwnedGroups().Framed()))
         GroupHomset.__init__(
             self,
             hom_family,
@@ -1752,6 +1866,23 @@ class GroupAutomorphismGroup(GroupHomset):
             group,
             category=Cat().meet(tuple(categories)),
         )
+        if group.is_finite() is True:
+            backend_generators = tuple(self._libgap_().GeneratorsOfGroup())
+            generators = finite_ordered_set(
+                tuple(self(generator, check=False) for generator in backend_generators)
+            )
+            source = Groups.Free(index_set=generators)
+            generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
+            _fix_selected_framing(
+                self,
+                OwnedGroups(),
+                source,
+                generators,
+                generator_morphism,
+                lambda: _group_framing_morphism(
+                    self, source, generators, generator_morphism
+                ),
+            )
 
     def super_categories(self):
         packet = self.base_category().category_packet()
@@ -2351,19 +2482,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return True
             return Unknown
 
-        def number_of_group_generators(self):
-            r"""Return the size of the chosen generating family, or ``Unknown``.
-
-            A group need not come with a selected finite generating family.
-            The question is nevertheless total at the group owner: the
-            category-specific implementation on
-            :class:`GroupsWithChosenFiniteGeneratingSet` returns the exact
-            cardinality, while every other represented group answers
-            ``Unknown`` rather than forcing callers into attribute/exception
-            probing.
-            """
-            return Unknown
-
         def is_finitely_presented(self):
             return True if self in OwnedGroups().FinitelyPresentedAsGroup() else Unknown
 
@@ -2756,6 +2874,31 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             def is_finite(self):
                 return False
 
+    class Framed(CategoryWithAxiom):
+        r"""Groups carrying the global selected-framing datum in ``Grp``."""
+
+        class ParentMethods:
+            def group_generators(self):
+                return self.selected_framing_generators(OwnedGroups())
+
+            def number_of_group_generators(self):
+                return self.selected_framing_generator_count(OwnedGroups())
+
+            def conjugation_morphism(self):
+                r"""The morphism ``G -> Aut(G)`` stated on the selected framing generators."""
+                automorphisms = self.Aut()
+                model = _gap_model(self)
+                images = {
+                    generator: automorphisms(
+                        libgap.ConjugatorAutomorphism(
+                            model,
+                            _element_to_engine(self, generator),
+                        )
+                    )
+                    for generator in self.group_generators()
+                }
+                return self.Mor(automorphisms)(images)
+
     class FinitelyGeneratedAsMagma(CategoryWithAxiom):
         r"""Groups admitting some finite generating set."""
 
@@ -2790,6 +2933,30 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             def is_finitely_presented(self):
                 return True
 
+            def presentation(self):
+                r"""Select one finite presentation on this group and retain it once.
+
+                Finite presentability is only the existence property.  This is
+                the explicit property-to-data crossing: an object that already
+                carries selected presentation data is returned unchanged;
+                otherwise the represented presentation algorithm is invoked
+                once, its relations are transported to the already selected
+                group framing when one exists, and this same object is refined
+                into :class:`GroupsWithChosenFinitePresentation`.  No
+                ``presenting_free_group`` accessor performs this search.
+                """
+                if self in GroupsWithChosenFinitePresentation():
+                    return self
+                represented = _presentation_of(self)
+                if self in OwnedGroups().Framed():
+                    _fix_selected_group_presentation_on_existing_framing(
+                        self,
+                        represented,
+                    )
+                else:
+                    _fix_selected_group_framing(self, presentation=represented)
+                return refine(self, GroupsWithChosenFinitePresentation())
+
 
 
 class TopologicalGroups(OwnedCategory):
@@ -2803,40 +2970,9 @@ class TopologicalGroups(OwnedCategory):
             return True
 
 
-class GroupsWithChosenFiniteGeneratingSet(OwnedCategory):
-    r"""Finitely generated groups with a chosen finite generating set.
-
-    For an engine-realized group the chosen set is the engine's generators:
-    the images of the free basis of a presentation, one for each word
-    position and including a trivial one, and otherwise the nonidentity
-    generators the engine names.  A group realized otherwise supplies its own
-    ``group_generators``.
-    """
-
-    def an_object(self):
-        r"""The cyclic group of order two, with its chosen generator."""
-        return OwnedGroups().C(2)
-
-    def super_categories(self):
-        return [OwnedGroups().FinitelyGeneratedAsMagma()]
-
-    class ParentMethods:
-        @cached_method
-        def group_generators(self):
-            return _engine_generators(self)
-
-        def number_of_group_generators(self):
-            return ZZ(self.group_generators().cardinality())
-
-        def conjugation_morphism(self):
-            r"""The morphism ``G -> Aut(G)``, ``g |-> (x |-> g x g^-1)``, stated on the chosen generators."""
-            automorphisms = self.Aut()
-            model = _gap_model(self)
-            images = {
-                generator: automorphisms(libgap.ConjugatorAutomorphism(model, _element_to_engine(self, generator)))
-                for generator in self.group_generators()
-            }
-            return self.Mor(automorphisms)(images)
+def GroupsWithChosenFiniteGeneratingSet():
+    r"""The global ``Framed`` axiom specialized to owned groups."""
+    return OwnedGroups().Framed()
 
 
 class GroupsWithChosenFreeBasis(OwnedCategory):
@@ -2935,24 +3071,34 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
 
     def an_object(self):
         r"""The cyclic group of order two, with its chosen presentation."""
-        return OwnedGroups().C(2)
+        free = Groups.Free(1)
+        generator = next(iter(free.group_generators()))
+        return free.quotient_by_relators((generator * generator,))
 
     def super_categories(self):
         return [
             OwnedGroups().FinitelyPresentedAsGroup(),
-            GroupsWithChosenFiniteGeneratingSet(),
+            OwnedGroups().Framed(),
         ]
 
     class ParentMethods:
         def presenting_free_group(self):
-            free, _relations = _presentation_of(self)
-            return free
+            selected = self.__dict__.get("_selected_group_presentation")
+            assert selected is not None, (
+                f"{self} was constructed without chosen finite-presentation data"
+            )
+            assert selected.free_group() is self.selected_framing_source(OwnedGroups()), (
+                "the chosen presentation extends the object's selected framing"
+            )
+            return selected.free_group()
 
-        @cached_method
         def defining_relations(self):
             r"""The chosen relators, as elements of the presenting free group."""
-            free, relations = _presentation_of(self)
-            return finite_ordered_set(tuple(free._from_engine(relation) for relation in relations))
+            selected = self.__dict__.get("_selected_group_presentation")
+            assert selected is not None, (
+                f"{self} was constructed without chosen finite-presentation data"
+            )
+            return selected.relations()
 
         def quotient_by_relators(self, relators):
             r"""Return ``G / <<relators>>``, the quotient by the normal closure of ``relators``."""
@@ -3004,6 +3150,8 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
 
         def is_commutative(self):
             r"""``End(A)`` commutes when ``A`` is cyclic; a group on one generator is, and otherwise this is not decided here."""
+            if self._group not in OwnedGroups().Framed():
+                return Unknown
             generators = self._group.group_generators().cardinality()
             if generators.is_finite() and int(generators.finite_value()) <= 1:
                 return True

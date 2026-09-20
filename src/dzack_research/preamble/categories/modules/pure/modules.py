@@ -28,6 +28,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     MonoCategoryConstruction,
     _category_homset,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    _fix_selected_framing,
+)
 from dzack_research.preamble.categories.abstract_categories.products import (
     SelectedColimitConstruction,
     SelectedLimitConstruction,
@@ -1713,6 +1717,126 @@ class Modules(OwnedCategoryOverBaseRing):
 
         localization_at_prime = localize_at_prime
 
+    class Framed(CategoryWithAxiom):
+        r"""Modules carrying the global selected-framing datum in ``R-Mod``."""
+
+        @cached_method
+        def framing_category(self):
+            r"""Return the arrow category containing selected module framings."""
+            return Modules(self.base_ring()).ArrowCategory()
+
+        class ParentMethods:
+            def __init__(
+                self,
+                module_generating_set=None,
+                module_generator_function=None,
+                framing_source=None,
+                **rest,
+            ) -> None:
+                r"""Retain one selected epimorphism ``F_R(S) -> M``.
+
+                The global ``Framed`` owner retains the source, label set,
+                generator map and epimorphism.  This specialization supplies
+                only the module Hom realization of those data.
+                """
+                super().__init__(**rest)
+                if module_generating_set is None:
+                    if Modules(self.base_ring()) not in self.__dict__.get(
+                        "_selected_framings", {}
+                    ):
+                        raise ValueError(
+                            "a framed module requires selected framing data at construction"
+                        )
+                    return
+                _fix_selected_module_framing(
+                    self,
+                    self.base_ring(),
+                    module_generating_set,
+                    module_generator_function,
+                    framing_source,
+                )
+
+            def module_generating_set(self):
+                return self.selected_framing_generating_set(
+                    Modules(self.base_ring())
+                )
+
+            def module_generator_morphism(self):
+                return self.selected_framing_generator_morphism(
+                    Modules(self.base_ring())
+                )
+
+            def module_generator(self, label):
+                return self.selected_framing_generator(
+                    Modules(self.base_ring()), label
+                )
+
+            def module_generators(self):
+                return self.selected_framing_generators(Modules(self.base_ring()))
+
+            def number_of_module_generators(self):
+                return self.selected_framing_generator_count(
+                    Modules(self.base_ring())
+                )
+
+            def sub_framing_morphism(self, codomain):
+                r"""Return the inclusion induced by this framing inside another one."""
+                if codomain not in Modules(self.base_ring()).Framed():
+                    raise TypeError(
+                        "a sub-framing inclusion requires another framed module over the same ring"
+                    )
+                return SubFramingMorphism(
+                    self.Mono(codomain),
+                    codomain.module_generator,
+                )
+
+            def framing_source(self):
+                r"""Return the exact free module realizing this selected framing."""
+                return self.selected_framing_source(Modules(self.base_ring()))
+
+            @cached_method
+            def framing_morphism(self):
+                r"""Return the module epimorphism induced by the global generator datum."""
+                return self.selected_framing_morphism(Modules(self.base_ring()))
+
+            def framing_object(self):
+                r"""Return this selected module framing as an object of ``Arr(R-Mod)``."""
+                category = Modules(self.base_ring()).Framed().framing_category()
+                return category(self.framing_morphism())
+
+            def linear_combination(self, coefficients):
+                r"""Return ``sum_s c_s m_s`` in the selected module framing."""
+                return sum(
+                    (
+                        self.scalar_multiple(
+                            coefficient,
+                            self.module_generator(label),
+                        )
+                        for label, coefficient in coefficients.items()
+                    ),
+                    self.zero(),
+                )
+
+            def inject_variables(self, scope=None, verbose=True):
+                assert scope is not None, (
+                    "module generators are injected into a stated scope"
+                )
+                assert self.module_generating_set().cardinality().is_finite(), (
+                    "injecting module generators as variables requires a finite framing"
+                )
+                names = tuple(self.variable_names())
+                generators = tuple(self.module_generators())
+                if len(names) != len(generators):
+                    raise ValueError(
+                        "the variable names do not describe the module framing"
+                    )
+                if verbose:
+                    print(f"Defining {', '.join(names)}")
+                scope.update(zip(names, generators, strict=True))
+
+            def is_framed_module(self) -> bool:
+                return True
+
     class FinitelyGenerated(CategoryWithAxiom):
         r"""Modules admitting a finite generating set."""
 
@@ -1975,6 +2099,10 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
                 if not group.is_finite():
                     raise ValueError("a torsion-module crossing requires a finite group")
+                if group not in Objects().Framed():
+                    raise TypeError(
+                        "a torsion-module crossing requires a selected group framing"
+                    )
                 additive = group.category().is_subcategory(CommutativeAdditiveGroups())
                 if not additive:
                     commutative = group.category().is_subcategory(SageGroups().Commutative())
@@ -2882,205 +3010,36 @@ class FreeResolutionHomotopy:
         return source.module_category().Mor(source, target).zero()
 
 
-class _SelectedModuleFramingData:
-    r"""The fixed data whose lazy realization is one selected module framing.
-
-    The mathematical datum is the source free module together with the image of
-    each of its selected generators in the target module.  The Set-morphism and
-    enriched module morphism are representations of those already-fixed data;
-    they are realized only after the target parent itself has finished
-    construction.
-    """
-
-    def __init__(self, module, base_ring, labels, generator_function, source) -> None:
-        if not callable(generator_function):
-            raise TypeError("a selected framing supplies the image of every free generator")
-        if source.base_ring() is not base_ring:
-            raise ValueError("the selected framing source is a free module over this module's base ring")
-        if source.module_generating_set() != labels:
-            raise ValueError("the selected framing source does not have the requested generator set")
-        self._module = module
-        self._source = source
-        self._generator_function = generator_function
-        self._generator_morphism = None
-
-    def source(self):
-        return self._source
-
-    def generator_morphism(self):
-        selected = self._generator_morphism
-        if selected is None:
-            labels = self.source().module_generating_set()
-            selected = Sets().Mor(labels, self._module)(
-                lambda label: self._module(self._generator_function(label))
-            )
-            self._generator_morphism = selected
-        return selected
-
-
 def _fix_selected_module_framing(module, base_ring, labels, generator_function, source=None) -> None:
-    r"""Fix one framing datum before ``module`` is exposed as framed."""
-    if module.__dict__.get("_selected_module_framing") is not None:
-        raise ValueError(f"{module} already has a selected framing")
+    r"""Realize the global selected framing in the module Hom category."""
     if source is None:
         source = base_ring.free_module(labels)
-    module._selected_module_framing = _SelectedModuleFramingData(
+    if source.base_ring() is not base_ring:
+        raise ValueError(
+            "the selected framing source is a free module over this module's base ring"
+        )
+    if source is not module and source.module_generating_set() != labels:
+        raise ValueError(
+            "the selected framing source does not have the requested generator set"
+        )
+    if not callable(generator_function):
+        raise TypeError("a selected framing supplies the image of every free generator")
+    generator_morphism = Sets().Mor(labels, module)(
+        lambda label: module(generator_function(label))
+    )
+    _fix_selected_framing(
         module,
-        base_ring,
-        labels,
-        generator_function,
+        Modules(base_ring),
         source,
+        labels,
+        generator_morphism,
+        lambda: _framing_morphism(module),
     )
 
 
-class FramedModules(OwnedCategoryOverBaseRing):
-    r"""Modules carrying a selected epimorphism from a free module."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "framed modules"
-
-    def an_object(self):
-        r"""The free module of rank one, framed by its one generator."""
-        return self.base_ring().free_module(1)
-
-    def super_categories(self):
-        return [Modules(self.base_ring())]
-
-    @cached_method
-    def framing_category(self):
-        r"""Return the category whose objects are selected module framings.
-
-        A framing is the epimorphism ``F_R(S) -> M`` itself.  A morphism of
-        framed modules is therefore a commuting square between two such arrows;
-        the left edge is an arbitrary ``R``-linear map between the selected free
-        sources, not necessarily one induced by a function of label sets.
-        """
-        return Modules(self.base_ring()).ArrowCategory()
-
-    class ParentMethods:
-        # The selected framing epimorphism ``F_R(S) -> M``, this level's datum.
-        _selected_module_framing = None
-
-        def __init__(
-            self,
-            module_generating_set=None,
-            module_generator_function=None,
-            framing_source=None,
-            **rest,
-        ) -> None:
-            r"""Construct the framed module on its selected framing.
-
-            The datum is the epimorphism ``F_R(S) -> M`` from the free module
-            on ``module_generating_set``, sending the generator at ``s`` to
-            ``module_generator_function(s)``.  The source free module and the
-            epimorphism are retained here; accessors below project from that
-            one arrow and never reconstruct an isomorphic source from labels.
-            """
-            super().__init__(**rest)
-            if module_generating_set is None:
-                if self.__dict__.get("_selected_module_framing") is None:
-                    raise ValueError("a framed module requires selected framing data at construction")
-                return
-            _fix_selected_module_framing(
-                self,
-                self.base_ring(),
-                module_generating_set,
-                module_generator_function,
-                framing_source,
-            )
-
-        def module_generating_set(self):
-            return self.framing_source().module_generating_set()
-
-        def module_generator(self, label):
-            source = self.framing_source()
-            if label not in source.module_generating_set():
-                raise ValueError(f"{label!r} is not a module-generator label")
-            return self.module_generator_morphism()(source.module_generating_set()(label))
-
-        def number_of_module_generators(self):
-            return self.module_generating_set().cardinality()
-
-        @cached_method
-        def module_generators(self):
-            r"""Return the selected framing as the indexed family ``s ↦ m_s``."""
-
-            return indexed_family(
-                self.module_generating_set(),
-                self.module_generator,
-                name="Module generators",
-            )
-
-        def module_generator_morphism(self):
-            framing = self.__dict__.get("_selected_module_framing")
-            assert framing is not None, f"{self} was constructed without its framing data"
-            return framing.generator_morphism()
-
-        def framing_source(self):
-            r"""Return the actual free module selected as the source of this framing."""
-            framing = self.__dict__.get("_selected_module_framing")
-            assert framing is not None, f"{self} was constructed without its framing data"
-            return framing.source()
-
-        def sub_framing_morphism(self, codomain):
-            r"""Return the inclusion induced by this framing inside ``codomain``'s framing."""
-            if codomain not in FramedModules(self.base_ring()):
-                raise TypeError("a sub-framing inclusion requires another framed module over the same ring")
-            return SubFramingMorphism(
-                self.Mono(codomain),
-                codomain.module_generator,
-            )
-
-        @cached_method
-        def framing_morphism(self):
-            r"""Realize the selected epimorphism on its already constructed source.
-
-            The source and generator map are fixed at construction. Only the
-            host morphism wrapper is lazy: eagerly constructing its enriched
-            Mor would ask for that Mor module's framing, and repeat without
-            end. No underlying module or framing choice is reconstructed here.
-            """
-            return _framing_morphism(self)
-
-        @cached_method
-        def framing_object(self):
-            r"""Return this selected framing as an object of ``Arr(R-Mod)``."""
-            category = FramedModules(self.base_ring()).framing_category()
-            return category(self.framing_morphism())
-
-        def linear_combination(self, coefficients):
-            r"""Return ``sum_s c_s m_s`` for finitely supported coefficients ``s |-> c_s``.
-
-            The coefficients are a finitely supported function on the framing
-            labels, given as a mapping from labels to scalars.
-            """
-            return sum(
-                (
-                    self.scalar_multiple(
-                        coefficient,
-                        self.module_generator(label),
-                    )
-                    for label, coefficient in coefficients.items()
-                ),
-                self.zero(),
-            )
-
-        def inject_variables(self, scope=None, verbose=True):
-            assert scope is not None, "module generators are injected into a stated scope"
-            assert self.module_generating_set().cardinality().is_finite(), (
-                "injecting module generators as variables requires a finite framing"
-            )
-            names = tuple(self.variable_names())
-            generators = tuple(self.module_generators())
-            if len(names) != len(generators):
-                raise ValueError("the variable names do not describe the module framing")
-            if verbose:
-                print(f"Defining {', '.join(names)}")
-            scope.update(zip(names, generators, strict=True))
-
-        def is_framed_module(self) -> bool:
-            return True
+def FramedModules(base_ring):
+    r"""The global ``Framed`` axiom specialized to ``R``-modules."""
+    return Modules(base_ring).Framed()
 
 
 class RestrictedScalarsModules(OwnedCategoryOverBaseRing):

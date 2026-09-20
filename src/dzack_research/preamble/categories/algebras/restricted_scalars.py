@@ -137,6 +137,20 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
             restricted_algebra_labels,
         )
 
+        if presentation_data is not None:
+            (
+                presentation_ring,
+                selected_relations,
+                presentation_ideal,
+                lift_to_presentation,
+            ) = presentation_data
+            self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
+                presentation_ring,
+                selected_relations,
+                presentation_ideal,
+                lift_to_presentation,
+            )
+
         categories = [RestrictedScalarsAlgebras(base_ring)]
         if presentation_data is not None:
             categories.extend(
@@ -162,19 +176,6 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
 
         if presentation_data is None:
             return
-
-        (
-            presentation_ring,
-            selected_relations,
-            presentation_ideal,
-            lift_to_presentation,
-        ) = presentation_data
-        self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
-            presentation_ring,
-            selected_relations,
-            presentation_ideal,
-            lift_to_presentation,
-        )
 
         presentation_engine = _engine_ring(presentation_ring)
         algebra_engine = _engine_ring(algebra)

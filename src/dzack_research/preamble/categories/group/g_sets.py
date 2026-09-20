@@ -146,7 +146,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         def __init__(self, point_set, permutation_representation, **rest) -> None:
             assert point_set in FiniteSets(), "a represented G-set is on a finite point set"
             group = permutation_representation.domain()
-            assert group.is_finitely_generated() is True, (
+            assert group in OwnedGroups().Framed(), (
                 "the represented equivariant Hom-set requires a chosen finite group "
                 "generating set"
             )
@@ -421,7 +421,7 @@ class OrbitSets(OwnedCategory):
         def __init__(self, g_set, **rest) -> None:
             self._g_set = g_set
             group = g_set.acting_group()
-            assert group.is_finitely_generated() is True, (
+            assert group in OwnedGroups().Framed(), (
                 "constructing finite orbits requires a chosen finite group "
                 "generating set"
             )
@@ -577,7 +577,7 @@ def _finite_g_set_from_action(group, point_set, action):
         "the represented G-set constructor requires a finite point set"
     )
     group = _owned_group(group)
-    assert group.is_finitely_generated() is True, (
+    assert group in OwnedGroups().Framed(), (
         "constructing a represented action morphism requires a chosen finite group generating set"
     )
     # Private finite backend serialization: Sage's SymmetricGroup constructor
@@ -605,7 +605,7 @@ def _finite_g_set_from_action(group, point_set, action):
 def _fixed_point_set(g_set):
     r"""Return the finite fixed-point set ``X^G``."""
     group = g_set.acting_group()
-    assert group.is_finitely_generated() is True, (
+    assert group in OwnedGroups().Framed(), (
         "constructing fixed points requires a chosen finite group generating set"
     )
     return finite_ordered_set(g_set).filtered(g_set.is_invariant)

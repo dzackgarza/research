@@ -78,7 +78,9 @@ def test_trivial_quotient_has_empty_generating_set_but_two_presentation_letters(
 def test_chosen_presentations_are_exposed_on_native_group_objects() -> None:
     free = Groups.Free(1)
     c2 = free.quotient_by_relators([free.group_generators()[0] ** 2])
-    for group in (c2, Groups.C(2), Groups.S(2), Groups.Abelian([2])):
+    native = (Groups.C(2), Groups.S(2), Groups.Abelian([2]))
+    assert all(group not in GroupsWithChosenFinitePresentation() for group in native)
+    for group in (c2, *(candidate.presentation() for candidate in native)):
         assert group in OwnedFinitelyPresentedGroups()
         assert group in GroupsWithChosenFinitePresentation()
         relators = tuple(relation.Tietze() for relation in group.defining_relations())

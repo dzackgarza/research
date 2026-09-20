@@ -44,9 +44,9 @@ def test_four_realizations_of_c2_retain_the_one_generator_square_relation() -> N
     generator = tuple(free.group_generators())[0]
     realizations = (
         free.quotient_by_relators((generator * generator,)),
-        Groups.C(2),
-        Groups.S(2),
-        Groups.Abelian([2]),
+        Groups.C(2).presentation(),
+        Groups.S(2).presentation(),
+        Groups.Abelian([2]).presentation(),
     )
 
     for group in realizations:

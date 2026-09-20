@@ -178,18 +178,15 @@ class TransportGroupActionFunctor(Functor):
 def _is_augmentation_of_group_algebra(ring_map) -> bool:
     r"""Decide whether ``ring_map`` is the augmentation ``R[G] -> R``.
 
-    The domain must be a group algebra over the codomain, and the map must
-    send the chosen generators of ``G`` to ``1``; an algebra morphism out of
-    ``R[G]`` is determined by its values on those generators.
+    The augmentation is a canonical construction of the group algebra and is
+    cached by that owner.  Recognize that exact selected map rather than
+    manufacturing a chosen generating family of ``G`` merely to inspect it.
     """
     source = _owned_ring(ring_map.domain())
     target = _owned_ring(ring_map.codomain())
     if source not in GroupAlgebras(target):
         return False
-    return all(
-        ring_map(source.module_generator(generator)) == target.one()
-        for generator in source.group().group_generators()
-    )
+    return ring_map is source.augmentation()
 
 
 def _augmentation_data(ring_map):

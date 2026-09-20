@@ -20,11 +20,17 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     IsoCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    _fix_selected_framing,
+)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import (
+    Groups,
     OwnedFiniteGroups,
+    OwnedGroups,
     Subgroups,
+    _group_framing_morphism,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _matrix_coordinate_rows,
@@ -1022,7 +1028,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             else engine_group
         )
         self._supergroup = self if supergroup is None else supergroup
-        categories = [OwnedFiniteGroups()]
+        categories = [OwnedFiniteGroups(), OwnedGroups().Framed()]
         if supergroup is not None:
             self._preamble_supergroup = supergroup
             categories.append(Subgroups(supergroup))
@@ -1034,6 +1040,22 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             category=Category.join(tuple(categories)),
         )
         realize_owned_category(self)
+        engine_generators = tuple(self._engine_group_parent.gens())
+        generators = finite_ordered_set(
+            tuple(self._from_engine(generator) for generator in engine_generators)
+        )
+        source = Groups.Free(index_set=generators)
+        generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
+        _fix_selected_framing(
+            self,
+            OwnedGroups(),
+            source,
+            generators,
+            generator_morphism,
+            lambda: _group_framing_morphism(
+                self, source, generators, generator_morphism
+            ),
+        )
 
     def is_quadratic(self) -> bool:
         return self._quadratic
@@ -1211,21 +1233,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
 
     identity = one
     identity_automorphism = one
-
-    @cached_method
-    def group_generators(self):
-
-        engine_generators = self._engine_group_parent.gens()
-        positions = Sets.Δ[len(engine_generators) - 1]
-        return FiniteOrderedSets().from_indexed(
-            positions,
-            lambda position: self._from_engine(engine_generators[int(position)]),
-            name="Torsion-form automorphism generators",
-        )
-
-    def number_of_group_generators(self):
-
-        return _own_ring(SageZZ)(self.group_generators().cardinality())
 
     def order(self):
         return self.domain().base_ring()(int(self._engine_group_parent.order()))

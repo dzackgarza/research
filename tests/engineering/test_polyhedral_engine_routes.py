@@ -121,7 +121,7 @@ def test_the_owned_orthogonal_group_of_the_hyperbolic_plane() -> None:
         assert "make -C src_indefinite" in refusal.value.absent[1].provisioning
         return
 
-    generators = lattice.O().group_generators()
+    generators = lattice.O().framing().group_generators()
     assert generators.cardinality() >= 2
 
     images = [(generator(e), generator(f)) for generator in generators]

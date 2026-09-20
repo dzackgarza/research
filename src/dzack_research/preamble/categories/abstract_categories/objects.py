@@ -3,7 +3,9 @@
 from typing import Any
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
+from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
 # The marker every owned category base carries, axiom categories included.
@@ -13,7 +15,84 @@ from dzack_research.preamble.owned_category import (  # noqa: F401
     OwnedCategoryMixin,
     OwnedParent,
 )
-from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from dzack_research.preamble.owned_category_bases import (
+    Category as OwnedCategoryBase,
+    CategoryWithAxiom,
+)
+
+
+if "Framed" not in all_axioms:
+    all_axioms.add("Framed")
+
+
+class _SelectedFraming:
+    r"""One category-relative chosen epimorphism from a selected free source."""
+
+    def __init__(
+        self,
+        owner,
+        target,
+        source,
+        generating_set,
+        generator_morphism,
+        framing_morphism_factory,
+    ) -> None:
+        if generator_morphism.domain() is not generating_set:
+            raise ValueError("a framing generator morphism starts at its selected generating set")
+        if generator_morphism.codomain() is not target:
+            raise ValueError("a framing generator morphism lands in the framed object")
+        self._owner = owner
+        self._target = target
+        self._source = source
+        self._generating_set = generating_set
+        self._generator_morphism = generator_morphism
+        self._framing_morphism_factory = framing_morphism_factory
+        self._framing_morphism = None
+
+    def owner(self):
+        return self._owner
+
+    def source(self):
+        return self._source
+
+    def generating_set(self):
+        return self._generating_set
+
+    def generator_morphism(self):
+        return self._generator_morphism
+
+    def framing_morphism(self):
+        selected = self._framing_morphism
+        if selected is None:
+            selected = self._framing_morphism_factory()
+            if selected.domain() is not self.source() or selected.codomain() is not self._target:
+                raise ValueError("the selected framing epimorphism has the wrong endpoints")
+            self._framing_morphism = selected
+        return selected
+
+
+def _fix_selected_framing(
+    target,
+    owner,
+    source,
+    generating_set,
+    generator_morphism,
+    framing_morphism_factory,
+):
+    r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
+    selected_by_owner = target.__dict__.setdefault("_selected_framings", {})
+    if owner in selected_by_owner:
+        raise ValueError(f"{target} already has a selected framing in {owner}")
+    selected = _SelectedFraming(
+        owner,
+        target,
+        source,
+        generating_set,
+        generator_morphism,
+        framing_morphism_factory,
+    )
+    selected_by_owner[owner] = selected
+    return selected
 
 
 def _membership_by_definition(category: Category, candidate: Parent) -> bool:
@@ -202,6 +281,77 @@ class Objects(OwnedCategory):
             """
             return self._element_constructor_(*arguments, **options)
 
+    class Framed(CategoryWithAxiom):
+        r"""Objects carrying one chosen generating epimorphism from a free object.
+
+        This is the single data contract for selected 1-framings.  A framing is
+        relative to an ambient category: the same represented parent may carry
+        its module framing and a different algebra framing.  Both are instances
+        of this one contract, keyed by the category whose free functor supplies
+        the source; neither specialization owns a second framing data model.
+        """
+
+        def an_object(self):
+            r"""A rank-one free integer module with its canonical framing."""
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _own_ring,
+            )
+
+            return _own_ring(SageZZ).free_module(1)
+
+        class ParentMethods:
+            def selected_framing(self, owner):
+                r"""Return the constructor-owned 1-framing in ``owner``."""
+                selected = self.__dict__.get("_selected_framings", {}).get(owner)
+                assert selected is not None, (
+                    f"{self} was constructed without selected framing data in {owner}"
+                )
+                return selected
+
+            def selected_framing_source(self, owner):
+                r"""Return the exact selected free source in ``owner``."""
+                return self.selected_framing(owner).source()
+
+            def selected_framing_generating_set(self, owner):
+                r"""Return the set indexing the selected free source in ``owner``."""
+                return self.selected_framing(owner).generating_set()
+
+            def selected_framing_generator_morphism(self, owner):
+                r"""Return the selected map from framing labels into this object."""
+                return self.selected_framing(owner).generator_morphism()
+
+            def selected_framing_generator(self, owner, label):
+                r"""Return the image of one selected free generator."""
+                labels = self.selected_framing_generating_set(owner)
+                if label not in labels:
+                    raise ValueError(f"{label!r} is not a framing-generator label")
+                return self.selected_framing_generator_morphism(owner)(labels(label))
+
+            @cached_method
+            def selected_framing_generators(self, owner):
+                r"""Return the selected generator family ``s |-> x_s``."""
+                from dzack_research.preamble.categories.sets.indexed_families import (
+                    indexed_family,
+                )
+
+                return indexed_family(
+                    self.selected_framing_generating_set(owner),
+                    lambda label: self.selected_framing_generator(owner, label),
+                    name=f"Framing generators of {self}",
+                )
+
+            def selected_framing_generator_count(self, owner):
+                return self.selected_framing_generating_set(owner).cardinality()
+
+            def selected_framing_morphism(self, owner):
+                r"""Return the selected generating epimorphism in ``owner``."""
+                return self.selected_framing(owner).framing_morphism()
+
+            def is_framed(self) -> bool:
+                return True
+
     def super_categories(self):
         return []
 
@@ -214,4 +364,5 @@ __all__ = [
     "Objects",
     "OwnedCategory",
     "OwnedParameterizedCategory",
+    "_fix_selected_framing",
 ]

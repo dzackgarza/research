@@ -20,6 +20,7 @@ from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -56,6 +57,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModules,
+    FramedModules,
     LinearEndCategoryConstruction,
     LinearHomModules,
     Modules,
@@ -459,7 +461,7 @@ class ModulesOverGroupAlgebra(Modules):
         def is_invariant(self, element):
             r"""Decide ``g . element = element`` for every ``g``, on the chosen group generators."""
             group = self.group()
-            if group.is_finitely_generated() is not True:
+            if group not in OwnedGroups().Framed():
                 return Unknown
             return all(self.act(generator, element) == element for generator in group.group_generators())
 
@@ -481,7 +483,7 @@ class ModulesOverGroupAlgebra(Modules):
                 return bool(self.group().cardinality() == 1)
 
             group = self.group()
-            assert group.is_finitely_generated() is True, (
+            assert group in OwnedGroups().Framed(), (
                 "deciding triviality of this action requires a chosen finite group generating set"
             )
             module = self.unformed_module()
@@ -563,7 +565,7 @@ class ModulesOverGroupAlgebra(Modules):
             the universal-construction spelling.
             """
             group = self.group()
-            assert group.is_finitely_generated() is True, (
+            assert group in OwnedGroups().Framed(), (
                 "the represented action equalizer/coequalizer requires a chosen finite group generating set"
             )
             generators = group.group_generators()
@@ -1118,7 +1120,7 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
 
     def is_equivariant(self, arrow):
         group = self.domain().group()
-        if group.is_finitely_generated() is not True:
+        if group not in OwnedGroups().Framed():
             return Unknown
         underlying = _coefficient_morphism_from_images(
             self,
@@ -1175,45 +1177,15 @@ class _CoefficientModuleEngine:
     from the exact coefficient module on which that action was stated.
     """
 
-    # The selected R-framing belongs to the module the action was stated
-    # on.  These accessors expose that retained presentation without
-    # asserting that it is an R[G]-basis.
-
-    def module_generating_set(self):
-        r"""Return the retained coefficient-module framing labels.
-
-        This is the selected ``R``-framing transported with the group
-        action, not a claim that these labels form an ``R[G]``-basis.
-        """
-        if self._is_the_regular_module():
-            return super().module_generating_set()
-        return self.unformed_module().module_generating_set()
-
-    def module_generator(self, label):
-        r"""Transport one retained coefficient-module generator into this action."""
-        if self._is_the_regular_module():
-            return super().module_generator(label)
-        return self(self.unformed_module().module_generator(label))
-
-    @cached_method
-    def module_generators(self):
-        r"""Return the finite family obtained from the retained coefficient framing."""
-        return finite_indexed_family(
-            self.module_generating_set(),
-            self.module_generator,
-            name="Coefficient-module generators",
-        )
-
-    def linear_combination(self, coefficients):
-        if self._is_the_regular_module():
-            return super().linear_combination(coefficients)
-        return self(self.unformed_module().linear_combination(coefficients))
-
     def _selected_module_coefficients(self, element):
         if self._is_the_regular_module():
             return super()._selected_module_coefficients(element)
         module = self.unformed_module()
-        return module.framing_coefficients(module(element))
+        group_algebra = self.group_algebra()
+        return {
+            label: group_algebra(coefficient)
+            for label, coefficient in module.framing_coefficients(module(element)).items()
+        }
 
     def _selected_presentation_rows(self):
         if self._is_the_regular_module():
@@ -1325,7 +1297,7 @@ def _equip_action(module, group_or_action, action=None):
                     functor(classifying_arrows(group_element))
                 )
 
-    match group.is_finitely_generated():
+    match group in OwnedGroups().Framed():
         case True:
             identity = coefficient_endomorphisms.identity()
             match admitted_action_morphism(group.one()) == identity:
@@ -1402,11 +1374,15 @@ def _equip_action(module, group_or_action, action=None):
             linearized_scalar,
         )
     )
+    framing_source = group_algebra.free_module(labels)
     return _object_of(
-        GeneralModules(group_algebra),
+        Cat().meet((GeneralModules(group_algebra), FramedModules(group_algebra))),
         _engine=(Modules(group_algebra), _CoefficientModuleEngine, None),
         base_ring=group_algebra,
         rho=scalar_action,
+        module_generating_set=labels,
+        module_generator_function=module.module_generator,
+        framing_source=framing_source,
         unformed_module=module,
         source_action_functor=source_action_functor,
     )

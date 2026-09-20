@@ -202,40 +202,6 @@ class _SparseFreeModuleParent:
         assert label in labels, f"{label!r} is not a module-generator label"
         return self.element_class(self, {labels(label): self.base_ring().one()})
 
-    def module_generating_set(self):
-        r"""Return the set ``S`` this free module ``F_R(S)`` is constructed on."""
-        return self._module_generating_set
-
-    def module_generator(self, label):
-        r"""Return the sparse basis element selected by this identity framing."""
-        return self._basis_element(label)
-
-    @cached_method
-    def module_generators(self):
-        r"""Return the image of the sparse free-basis unit as an owned set."""
-        def index_of(generator):
-            match generator:
-                case _ if generator not in self:
-                    return None
-                case _ if self(generator).is_canonical_free_generator():
-                    return self(generator).underlying_set_element()
-                case _:
-                    return None
-
-        # The unit S -> U(R^(S)) is injective over a nonzero ring.  Over the
-        # zero ring it is constant, and no inverse may be asserted.
-        match self.base_ring().one() == self.base_ring().zero():
-            case True:
-                return Sets().image_set(
-                    self.module_generator_morphism(), self.module_generating_set()
-                )
-            case False:
-                return Sets().image_set(
-                    self.module_generator_morphism(),
-                    self.module_generating_set(),
-                    inverse=index_of,
-                )
-
     def __call__(self, value):
         r"""Construct a free-module element through the owned coordinate syntax."""
         return self._element_constructor_(value)

@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.g_objects import GObjects
+from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeHomset,
     LatticeMorphism,
@@ -60,7 +61,7 @@ class GroupLatticeHomset(LatticeHomset):
 
     def _check_equivariance(self, morphism) -> None:
         group = self.domain().group()
-        assert group.is_finitely_generated() is True, (
+        assert group in OwnedGroups().Framed(), (
             "verifying a group-lattice morphism requires a represented finite generating set of the acting group"
         )
         domain = self.domain()
@@ -234,7 +235,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                     lambda label: transported_image(group_element, label)
                 ),
             )
-            assert group.is_finitely_generated() is True
+            assert group in OwnedGroups().Framed()
             for group_generator in group.group_generators():
                 action(group_generator)
             return action
@@ -255,7 +256,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def is_invariant(self, vector) -> bool:
             group = self.group()
-            assert group.is_finitely_generated() is True
+            assert group in OwnedGroups().Framed()
             return all(self.act(group_generator, vector) == vector for group_generator in group.group_generators())
 
         def module_invariants(self):
@@ -270,7 +271,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             codomain is the unformed underlying module.
             """
             group = self.group()
-            assert group.is_finitely_generated() is True, (
+            assert group in OwnedGroups().Framed(), (
                 "constructing an invariant lattice requires a chosen finite group generating set"
             )
             generators = tuple(group.group_generators())
@@ -350,7 +351,7 @@ def _group_lattice(lattice, group, action):
         construction_data=tuple(construction_data),
         unformed_module=lattice,
     )
-    assert group.is_finitely_generated() is True
+    assert group in OwnedGroups().Framed()
     for group_generator in group.group_generators():
         result.action()(group_generator)
     return result

@@ -47,7 +47,8 @@ def test_the_natural_permutation_representation_is_a_left_action() -> None:
 
 
 def test_chosen_relators_multiply_to_the_identity_in_the_owned_order() -> None:
-    for group in (Groups.S(3), Groups.D(4), Groups.A(4)):
+    for native in (Groups.S(3), Groups.D(4), Groups.A(4)):
+        group = native.presentation()
         generators = tuple(group.group_generators())
         for relator in group.defining_relations():
             product = group.one()
