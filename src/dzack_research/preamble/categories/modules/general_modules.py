@@ -14,6 +14,7 @@ import logging
 import operator
 
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
@@ -169,7 +170,19 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             self._rho = rho
             self._elementwise_scalar_action = scalar_action
             super().__init__(base_ring=ring, **rest)
-            self._verify_module_laws_when_decidable()
+            self._module_laws_decision = self._verify_module_laws_when_decidable()
+
+        def module_laws_decision(self):
+            r"""Return the admission decision for the stated module laws.
+
+            ``True`` means the laws were either supplied by the defining ring
+            morphism ``rho : R -> End(A)`` or exhaustively decided on the
+            represented finite data.  ``Unknown`` means an elementwise
+            operation presentation retains the module laws as its defining
+            hypothesis because the represented data do not supply an exact
+            decision procedure.
+            """
+            return self._module_laws_decision
 
         def underlying_set(self):
             r"""Return the set this module is built on."""
@@ -299,28 +312,32 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             )
             return self.base_ring().ideal(*(annihilating or (self.base_ring().zero(),)))
 
-        def _verify_module_laws_when_decidable(self) -> None:
+        def _verify_module_laws_when_decidable(self):
             r"""Check the supplied structure exactly where the check is decidable.
 
-            The addition, zero, negation and action are supplied callables, so
-            the module laws are hypotheses on them rather than theorems.  A
-            finite underlying set decides the additive laws exactly, and a
-            finite scalar ring decides the module laws exactly.  Outside those
-            regimes the structure is declared and a DEBUG diagnostic records
-            that no exhaustive check was available.
+            A supplied ``rho : R -> End(A)`` is the defining module datum, so
+            its module laws follow from the ring-morphism and additive-group
+            laws already carried by that datum.  For raw operations, a finite
+            underlying set decides the additive laws exactly and an enumerable
+            finite scalar ring decides the remaining module laws exactly.
+            Outside those regimes the object explicitly retains ``Unknown`` as
+            the module-law hypothesis rather than silently promoting it to a
+            theorem.
             """
+            if self._rho is not None:
+                return True
             if self.underlying_set() not in FiniteSets():
                 _LOGGER.debug(
-                    "General module over %s accepted without exhaustive module-law verification",
+                    "General module over %s retains an Unknown module-law hypothesis",
                     self.base_ring(),
                 )
-                return
+                return Unknown
             if self.underlying_set() not in EnumeratedSets():
                 _LOGGER.debug(
-                    "Finite general module over %s accepted without exhaustive module-law verification; its underlying set has no selected enumeration",
+                    "Finite general module over %s retains an Unknown module-law hypothesis; its underlying set has no selected enumeration",
                     self.base_ring(),
                 )
-                return
+                return Unknown
             elements = tuple(self)
 
             zero = self.zero()
@@ -345,11 +362,11 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             if scalars is None:
                 _LOGGER.debug(
                     "Additive group laws for the finite set %s were exhaustively checked, but "
-                    "scalar-module laws over non-enumerated %s were not",
+                    "scalar-module laws over non-enumerated %s remain an Unknown hypothesis",
                     self.underlying_set(),
                     self.base_ring(),
                 )
-                return
+                return Unknown
 
             one = self.base_ring().one()
             zero_scalar = self.base_ring().zero()
@@ -376,6 +393,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                         ) == self.scalar_multiple(
                             scalar, self.scalar_multiple(second_scalar, element)
                         ), "scalar multiplication is not associative"
+            return True
 
         def _repr_(self):
             return f"Module over {self.base_ring()} on {self.underlying_set()}"
