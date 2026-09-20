@@ -207,11 +207,6 @@ Preserve the phase-T execution rules.
 
 Paths below are relative to `src/dzack_research/preamble/categories/` unless a different root is given. These nodes repair existing constructions. A requested source review is an unresolved obligation, not a claim that every named path is broken.
 
-- [ ] **`group-module-data`**. **Needs:** none.
-  **Owner and delta:** `modules/group_modules/` and `functors/group_scalar_change.py`: thread the R[G]-module datum, action and scalar change through the shared owners on objects and arrows.
-  **Invariants:** a group action is by linear automorphisms satisfying its relations; the linearized module and original selected module agree through their construction. Group scalar change consumes the ordinary scalar functor, rather than maintaining another extension algorithm. A group lattice also retains its form and action compatibility.
-  **Closure specimens:** trivial and sign C2-actions on Z are distinct and become equal in characteristic two under the specified scalar extension. An action generator failing the group relation is rejected; an underlying linear map that is not equivariant is rejected as a group-module morphism. Preserve transported forms under their stated hypotheses.
-
 - [ ] **`graded-complex-connection-data`**. **Needs:** none.
   **Owner and delta:** `modules/graded_direct_sums.py`, `cochain_complexes.py`, `connections.py` and their existing algebra/derived consumers: settle the remaining construction and membership reviews at these owners.
   **Invariants:** grading, differential and connection are actual owned data with fixed domains and codomains. Direct sums retain finite-support semantics for arbitrary grading sets; a complex has d squared zero; a connection states its base derivation and Leibniz law. No category label supplies a missing map.
@@ -225,7 +220,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** each realization is retained and placed through the existing mathematical category entry; the runtime root alone realizes generic Parent/Element initialization. Constructor data replace side-channel authority, not merely attribute spellings. No category is invented for an engine's implementation class; new mathematical categories require the definition and `CAT-22` search.
   **Closure specimens:** an ideal with nontrivial containment, a number-field element and the localization/completion specimens exercise inherited operations and owned coefficients through their actual parents. Review every class, initialization, side assignment, probe and exception site in the named scope; all comply with their declaration-side boundary. Survey counts locate work but cannot close it.
 
-- [ ] **`objects-through-categories-modules`**. **Needs:** `group-module-data`, `graded-complex-connection-data`.
+- [ ] **`objects-through-categories-modules`**. **Needs:** `graded-complex-connection-data`.
   **Owner and delta:** the complete modules subtree and its morphism categories: finish the remaining placement/constructor residue after the named shared data repairs.
   **Coverage boundary:** enumerate ordinary and stronger module/morphism constructors, overrides and raising routes, including ones absent from the original flag search. Reconcile independently remaining routes with the earlier producer deliveries; preserve those contracts instead of reopening all modules for another redesign.
   **Invariants:** general, restricted-scalar, sparse free, quotient, framed, presented, formed, graded and group modules establish their immediate structures before exposure. Stronger morphism spaces inherit the actual weaker operations and preserve stronger equations. Concrete engine realizations remain behind their existing mathematical categories.
@@ -277,7 +272,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** nondegeneracy is over the declared coefficient ring; unimodularity requires an isomorphism with the full algebraic dual. An infinite free module's finite-support dual is not its full dual. Infinite signatures, pairings or colimits cannot be decided from sampled finite stages; exact computations require the stated sufficient data.
   **Closure specimens:** multiplication by 2 as the Gram map on Z is injective but not unimodular; the diagonal form on a countable direct sum over a field maps into the full dual without surjecting onto all functionals. Contrast a genuinely supplied dual inverse. Preserve the mathematical objects when a requested invariant is undecidable (`DEV-52`).
 
-- [ ] **`lattice-action-results`**. **Needs:** `involution-primitive-extension`, `group-module-data`.
+- [ ] **`lattice-action-results`**. **Needs:** `involution-primitive-extension`.
   **Owner and delta:** isotropic loci, orbit decompositions, centralizers, reduction adjacency and their functors/arrows; use the shared action/G-set and existing private arithmetic engines.
   **Invariants:** a locus is its owned mathematical set, an orbit comes from the actual action, a centralizer comes with its subgroup inclusion, and adjacency belongs to its represented complex. Preserve transporter/representative/completeness distinctions and defining equations. Existing torsion-form delegation through the G-set owner is a dependency to preserve, not work to recreate.
   **Closure specimens:** a finite action with multiple orbits gives orbit maps and stabilizers satisfying orbit-stabilizer; an isometry centralizer retains commuting witnesses. A bounded indefinite-lattice search is not a complete orbit classification. Review remaining isotropic, centralizer and reduction host records and their consumers; do not replace missing algorithms by unconditional stubs.

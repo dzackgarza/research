@@ -5,7 +5,10 @@ from an ``R``-module carrying an extra category annotation.  They are committed
 unverified under the repository's terminal-T execution policy.
 """
 
+import pytest
+
 from dzack_research.preamble.all import (
+    GF,
     QQ,
     ZZ,
     AdditiveGroups,
@@ -14,6 +17,7 @@ from dzack_research.preamble.all import (
     Modules,
     Sets,
 )
+from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/group_modules/group_modules.sage",
     "live_owner": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
@@ -186,3 +190,80 @@ def test_nontrivial_sign_module_invariants_use_the_retained_action() -> None:
     assert module.is_invariant(module.zero())
     assert invariants.module_rank() == 0
     assert module.module_coinvariants().module_rank() == 0
+
+
+def test_group_module_retains_one_supplied_action_functor() -> None:
+    group = Groups.C(2)
+    line = QQ.free_module(("e",))
+    endomorphisms = Modules(QQ).Mor(line, line)
+    identity = endomorphisms.identity()
+    sign = endomorphisms({"e": -line.module_generator("e")})
+    generator = group.group_generators()[0]
+    action = GroupActionFunctor(
+        group,
+        Modules(QQ),
+        line,
+        lambda group_element: identity if group_element == group.one() else sign,
+    )
+
+    represented = Modules(QQ[group])(line, action)
+
+    assert represented.action_functor() is action
+    assert represented.action_of(generator) == sign
+
+
+def test_group_module_rejects_generator_images_that_fail_the_group_relation() -> None:
+    group = Groups.C(3)
+    line = ZZ.free_module(("e",))
+
+    def invalid_action(group_element, vector):
+        return vector if group_element == group.one() else -vector
+
+    with pytest.raises(AssertionError, match="relator"):
+        Modules(ZZ[group])(line, invalid_action)
+
+
+def test_nonequivariant_underlying_linear_map_is_not_a_group_module_morphism() -> None:
+    group = Groups.C(2)
+    line = ZZ.free_module(("e",))
+    trivial = Modules(ZZ[group])(line, lambda _group_element, vector: vector)
+    sign = Modules(ZZ[group])(
+        line,
+        lambda group_element, vector: (
+            vector if group_element == group.one() else -vector
+        ),
+    )
+
+    with pytest.raises(ValueError, match="not G-equivariant"):
+        trivial.Mor(sign)({"e": sign.module_generator("e")})
+
+
+def test_sign_and_trivial_actions_coincide_after_base_change_to_characteristic_two() -> None:
+    group = Groups.C(2)
+    generator = group.group_generators()[0]
+    line = ZZ.free_module(("e",))
+    trivial = Modules(ZZ[group])(line, lambda _group_element, vector: vector)
+    sign = Modules(ZZ[group])(
+        line,
+        lambda group_element, vector: (
+            vector if group_element == group.one() else -vector
+        ),
+    )
+    assert trivial.action_of(generator) != sign.action_of(generator)
+
+    field = GF(2)
+    ring_map = ZZ.Mor(field)(lambda integer: field(integer))
+    extension = Modules(ZZ[group]).coefficient_base_change_adjunction(
+        ring_map
+    ).left_adjoint()
+    changed_trivial = extension(trivial)
+    changed_sign = extension(sign)
+    changed_module = changed_trivial.unformed_module()
+    probe = changed_module.module_generator("e")
+
+    assert changed_sign.unformed_module() is changed_module
+    assert changed_trivial.action_of(generator) == changed_sign.action_of(generator)
+    assert changed_trivial.is_trivial_action()
+    assert changed_sign.is_trivial_action()
+    assert changed_trivial.action_of(generator)(probe) == probe
+    assert changed_sign.action_of(generator)(probe) == probe

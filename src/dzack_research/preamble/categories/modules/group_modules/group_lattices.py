@@ -143,7 +143,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         return _group_lattice(lattice, self.acting_group(), action)
 
     class ParentMethods:
-        _derived_construction_parameters = ("unformed_module", "source_action")
+        _derived_construction_parameters = ("unformed_module", "source_action_functor")
 
         def __init__(self, source_group_module, source_form, **rest) -> None:
             r"""Thread the same lattice through its form and its linearized action.
@@ -161,7 +161,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             super().__init__(
                 source_form=source_form,
                 unformed_module=module,
-                source_action=source_group_module.action(),
+                source_action_functor=source_group_module.action_functor(),
                 **rest,
             )
 
@@ -241,7 +241,8 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         @cached_method
         def group_module(self):
-            return Modules(self.group_algebra())(self, self.action())
+            r"""Return this lattice itself as its inherited ``R[G]``-module."""
+            return self
 
         def act(self, group_element, vector):
 
@@ -259,7 +260,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def module_invariants(self):
             r"""Return the native fixed submodule of the underlying group module."""
-            return self.group_module().module_invariants()
+            return super().module_invariants()
 
         def invariant_lattice(self):
             r"""Return ``L^G`` as a formed subobject of this lattice.
@@ -282,7 +283,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def module_coinvariants(self):
             r"""Return the underlying module quotient by ``(g-1)M``."""
-            return self.group_module().module_coinvariants()
+            return super().module_coinvariants()
 
         @cached_method
         def coinvariant_lattice(self):
@@ -308,12 +309,12 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             component = self.group_module().isotypic_component(character)
             module_inclusion = component.inclusion()
             component_module = module_inclusion.domain()
-            if module_inclusion.codomain() is not self:
+            if module_inclusion.codomain() is not self.unformed_module():
                 raise ArithmeticError(
-                    "the isotypic module component is not embedded in the group lattice"
+                    "the isotypic module component is not embedded in the retained lattice module"
                 )
             embedded_basis = tuple(
-                module_inclusion(component_module.module_generator(label))
+                self(module_inclusion(component_module.module_generator(label)))
                 for label in component_module.module_generating_set()
             )
             formed = self.subobject_on(embedded_basis)
@@ -327,7 +328,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             return Lattices(self.group_algebra())(formed, restricted_action)
 
         def character(self):
-            return self.group_module().character()
+            return super().character()
 
 
 def _group_lattice(lattice, group, action):
