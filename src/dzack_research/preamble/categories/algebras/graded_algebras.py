@@ -88,6 +88,12 @@ def _rank_one_unit_algebra(category):
         multiplication,
         placement=(category, Algebras(ring).Commutative()),
         unit=generator,
+        law_decisions={
+            "associativity": True,
+            "unit": True,
+            "commutativity": True,
+            "grading": True,
+        },
     )
 
 
@@ -339,6 +345,10 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
                 return _rank_one_unit_algebra(self)
 
     class ParentMethods:
+        def grading_compatibility_decision(self):
+            r"""Return the retained decision that multiplication respects the selected grading."""
+            return self._preamble_algebra_law_decisions.get("grading", Unknown)
+
         def restrict_scalars(self, ring_map):
             r"""Restrict scalars while retaining this algebra's grading."""
             from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
@@ -524,17 +534,25 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             f"{module} is not a module graded by {self.grading_monoid()}"
         )
         unit = _unit_from_multiplication(multiplication)
-        _assert_not_refuted(
-            _decide_on_module_generators(module, _associativity(multiplication), 3),
-            "associativity",
-            module,
+        associativity = _decide_on_module_generators(
+            module, _associativity(multiplication), 3
         )
-        _assert_not_refuted(
-            _decide_on_module_generators(module, _two_sided_unit(multiplication, unit), 1),
-            "the two unit equations",
-            module,
+        unit_laws = _decide_on_module_generators(
+            module, _two_sided_unit(multiplication, unit), 1
         )
-        return _algebra_on_module(module, multiplication, placement=(self,), unit=unit)
+        _assert_not_refuted(associativity, "associativity", module)
+        _assert_not_refuted(unit_laws, "the two unit equations", module)
+        return _algebra_on_module(
+            module,
+            multiplication,
+            placement=(self,),
+            unit=unit,
+            law_decisions={
+                "associativity": associativity,
+                "unit": unit_laws,
+                "grading": Unknown,
+            },
+        )
 
 
 __all__ = [

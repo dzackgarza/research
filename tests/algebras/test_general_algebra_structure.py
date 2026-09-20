@@ -268,6 +268,9 @@ def test_native_ring_root_data_and_self_structure_are_initialized():
     assert QQ.multiplication()(QQ(2), QQ(3)) == QQ(6)
     assert QQ.algebra_structure_morphism() is QQ.Mor(QQ).identity()
     assert QQ.Mor(QQ).identity().as_algebra() is QQ
+    assert QQ.associativity_decision() is True
+    assert QQ.unit_laws_decision() is True
+    assert QQ.commutativity_decision() is True
 
 
 def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equality() -> None:
@@ -319,6 +322,7 @@ def test_zero_field_endomorphism_is_multiplicative_but_not_unital() -> None:
 
 
 def test_unframed_unital_and_lie_entries_use_the_same_root_constructor() -> None:
+    from sage.misc.unknown import Unknown
     from dzack_research.preamble.categories.modules.general_modules import GeneralModules
     from dzack_research.preamble.categories.sets.set_categories import Set
 
@@ -343,3 +347,8 @@ def test_unframed_unital_and_lie_entries_use_the_same_root_constructor() -> None
     assert lie not in Algebras(QQ).Unital()
     assert commutative.multiplication() is product
     assert lie.multiplication() is bracket
+    assert commutative.associativity_decision() is Unknown
+    assert commutative.unit_laws_decision() is Unknown
+    assert commutative.commutativity_decision() is Unknown
+    assert lie.alternation_decision() is Unknown
+    assert lie.jacobi_decision() is Unknown

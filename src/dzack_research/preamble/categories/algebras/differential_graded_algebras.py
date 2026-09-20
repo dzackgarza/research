@@ -2,13 +2,22 @@ r"""Differential graded algebra categories and their morphisms."""
 
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    _algebra_on_module,
+    _root_algebra_law_decisions,
+)
 from dzack_research.preamble.categories.algebras.derivations import GradedDerivation
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_algebras import (
+    GradedAlgebraMorphism,
+    GradedAlgebras,
+)
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
@@ -79,6 +88,82 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         ring = self.base_ring()
         return DeRhamAlgebras(ring).an_object()
 
+    def _call_(self, algebra, differential):
+        r"""Equip one exact graded algebra with one selected differential.
+
+        The graded algebra is retained as defining data.  A caller-supplied
+        differential may leave its graded-Leibniz or square-zero law at the
+        declared ``Unknown`` frontier; construction-derived differentials use
+        :meth:`_from_constructed_differential` instead of turning generator
+        observations into proofs.
+        """
+        graded = GradedAlgebras(self.base_ring())
+        if algebra not in graded:
+            raise TypeError(
+                "a differential graded algebra is constructed on a graded algebra over the same base ring"
+            )
+        if isinstance(differential, Differential):
+            if differential.algebra() is not algebra:
+                raise ValueError("the selected differential belongs to another graded algebra")
+            function = differential
+            decisions = (
+                differential.graded_leibniz_decision(),
+                differential.square_zero_decision(),
+            )
+        elif callable(differential):
+            function = differential
+            decisions = (Unknown, Unknown)
+        else:
+            raise TypeError("a differential is a represented degree-one element map")
+        return self._from_differential_data(algebra, function, decisions)
+
+    def _from_constructed_differential(self, algebra, differential):
+        r"""Construct when the supplying owner proves Leibniz and square-zero."""
+        if not callable(differential):
+            raise TypeError("a constructed differential is represented by an element map")
+        return self._from_differential_data(algebra, differential, (True, True))
+
+    def _from_differential_data(self, algebra, differential, decisions):
+        graded = GradedAlgebras(self.base_ring())
+        if algebra not in graded:
+            raise TypeError(
+                "a differential graded algebra is constructed on a graded algebra over the same base ring"
+            )
+        leibniz, square_zero = decisions
+        if not (leibniz is True or leibniz is Unknown) or not (
+            square_zero is True or square_zero is Unknown
+        ):
+            raise ValueError("differential law decisions are True or Unknown")
+        placements = [self]
+        ring = self.base_ring()
+        supercommutative = algebra in graded.Supercommutative()
+        if (
+            not supercommutative
+            and algebra in graded.Commutative()
+            and (-ring.one() == ring.one()) is True
+        ):
+            # In characteristic two the Koszul sign is always +1, so ordinary
+            # graded commutativity implies the supercommutative sign rule.
+            supercommutative = True
+        if supercommutative:
+            placements.append(self.Supercommutative())
+        if algebra in graded.Supercommutative().Alternating():
+            placements.append(self.Supercommutative().Alternating())
+        law_decisions = _root_algebra_law_decisions(algebra)
+        law_decisions["grading"] = algebra.grading_compatibility_decision()
+        return _algebra_on_module(
+            algebra,
+            algebra.multiplication_morphism(),
+            placement=tuple(placements),
+            unit=algebra.one(),
+            construction_data={
+                "dga_underlying_algebra": algebra,
+                "dga_differential_function": differential,
+                "dga_differential_decisions": (leibniz, square_zero),
+            },
+            law_decisions=law_decisions,
+        )
+
     @classmethod
     def _repr_object_names(cls):
         return "differential graded algebras"
@@ -106,6 +191,33 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         return _cohomology_algebra_functor(self.base_ring())
 
     class ParentMethods:
+        def __init__(
+            self,
+            dga_underlying_algebra=None,
+            dga_differential_function=None,
+            dga_differential_decisions=None,
+            **rest,
+        ) -> None:
+            if dga_underlying_algebra is not None:
+                self._preamble_dga_underlying_algebra = dga_underlying_algebra
+            super().__init__(**rest)
+            if dga_differential_function is not None:
+                decisions = (
+                    (Unknown, Unknown)
+                    if dga_differential_decisions is None
+                    else tuple(dga_differential_decisions)
+                )
+                _fix_selected_differential(
+                    self,
+                    dga_differential_function,
+                    graded_leibniz=decisions[0],
+                    square_zero=decisions[1],
+                )
+
+        def underlying_graded_algebra(self):
+            r"""Return the exact graded algebra equipped with this differential."""
+            return self.__dict__.get("_preamble_dga_underlying_algebra", self)
+
         def cohomology_algebra(self):
             r"""Return the represented graded cohomology algebra ``H^*(self)``."""
             from dzack_research.preamble.categories.algebras.cohomology_algebras import (
@@ -197,60 +309,158 @@ class Differential(GradedDerivation):
             algebra.graded_derivations(algebra, shift=1),
             function,
         )
-        for label in algebra.algebra_generating_set():
-            generator = algebra.algebra_generator(label)
-            if self(self(generator)) != algebra.zero():
+        observed = self._square_zero_on_generators()
+        match observed:
+            case False:
                 raise ValueError("the proposed differential does not square to zero")
+            case _:
+                pass
+        derived = self._square_zero_derivation()
+        match derived:
+            case None:
+                self._square_zero_decision = Unknown
+            case decision if decision is True or decision is Unknown:
+                self._square_zero_decision = decision
+            case _:
+                raise ValueError("a differential square-zero premise is True or Unknown")
+
+    def _square_zero_derivation(self):
+        return None
+
+    def square_zero_decision(self):
+        return self._square_zero_decision
+
+    def _square_zero_on_generators(self):
+        algebra = self.algebra()
+        try:
+            labels = algebra.algebra_generating_set()
+            finite = labels.cardinality().is_finite()
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return Unknown
+        match finite:
+            case True:
+                pass
+            case False:
+                return Unknown
+        for label in labels:
+            generator = algebra.algebra_generator(label)
+            match self(self(generator)) == algebra.zero():
+                case True:
+                    pass
+                case False:
+                    return False
+                case _:
+                    return Unknown
+        return True
+
+
+class _RetainedDifferential(Differential):
+    r"""A differential carrying law decisions established by its constructor."""
+
+    def __init__(self, algebra, function, graded_leibniz, square_zero) -> None:
+        self._retained_graded_leibniz = graded_leibniz
+        self._retained_square_zero = square_zero
+        super().__init__(algebra, function)
+
+    def _graded_derivation_derivation(self):
+        return self._retained_graded_leibniz
+
+    def _square_zero_derivation(self):
+        return self._retained_square_zero
+
+
+def _fix_selected_differential(
+    algebra,
+    function,
+    *,
+    graded_leibniz=Unknown,
+    square_zero=Unknown,
+) -> None:
+    r"""Install one selected DGA differential after the algebra datum exists."""
+    if algebra.__dict__.get("_preamble_differential") is not None:
+        raise ValueError(f"{algebra} already has a selected differential")
+    if not (graded_leibniz is True or graded_leibniz is Unknown) or not (
+        square_zero is True or square_zero is Unknown
+    ):
+        raise ValueError("differential law decisions are True or Unknown")
+    algebra._preamble_differential = _RetainedDifferential(
+        algebra,
+        function,
+        graded_leibniz,
+        square_zero,
+    )
 
 
 class DGAMorphism(Morphism):
-    def __init__(self, parent, function) -> None:
-        Morphism.__init__(self, parent)
-        if not callable(function):
-            raise TypeError("a represented DGA morphism is specified by its map on elements")
-        self._function = function
-        self._check_structured_laws()
+    r"""A graded algebra morphism commuting with the selected differentials."""
 
-    def _check_structured_laws(self) -> None:
+    def __init__(
+        self,
+        parent,
+        morphism,
+        *,
+        differential_compatibility=None,
+    ) -> None:
+        Morphism.__init__(self, parent)
+        source = self.domain()
+        graded_hom = GradedAlgebras(
+            source.base_ring(), source.grading_monoid()
+        ).Mor(source, self.codomain())
+        if isinstance(morphism, GradedAlgebraMorphism) and morphism.parent() is graded_hom:
+            self._underlying = morphism
+        else:
+            self._underlying = graded_hom(morphism)
+        observed = self._decide_differential_compatibility()
+        if observed is False:
+            raise ValueError("a DGA morphism must commute with the differential")
+        if differential_compatibility is None:
+            self._differential_compatibility = observed
+        else:
+            if not (
+                differential_compatibility is True
+                or differential_compatibility is Unknown
+            ):
+                raise ValueError("differential compatibility is True or Unknown")
+            self._differential_compatibility = differential_compatibility
+
+    def underlying_graded_algebra_morphism(self):
+        return self._underlying
+
+    def underlying_algebra_morphism(self):
+        return self._underlying.underlying_algebra_morphism()
+
+    def degree_preservation_decision(self):
+        return self._underlying.degree_preservation_decision()
+
+    def differential_compatibility_decision(self):
+        return self._differential_compatibility
+
+    def _decide_differential_compatibility(self):
         source = self.domain()
         target = self.codomain()
-        if self(source.one()) != target.one():
-            raise ValueError("a DGA morphism must preserve the unit")
-        generators = tuple(
-            source.algebra_generator(label) for label in source.algebra_generating_set()
+        try:
+            labels = source.algebra_generating_set()
+            finite = labels.cardinality().is_finite()
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return Unknown
+        if not finite:
+            return Unknown
+        comparisons = tuple(
+            self._underlying(source.d(source.algebra_generator(label)))
+            == target.d(self._underlying(source.algebra_generator(label)))
+            for label in labels
         )
-        for generator in generators:
-            image = self(generator)
-            if generator != source.zero():
-                try:
-                    generator_degree = source.homogeneous_degree(generator)
-                except (ValueError, NotImplementedError) as error:
-                    raise ValueError(
-                        "a selected DGA generator must be homogeneous"
-                    ) from error
-                if image != target.zero():
-                    try:
-                        image_degree = target.homogeneous_degree(image)
-                    except (ValueError, NotImplementedError) as error:
-                        raise ValueError(
-                            "a DGA morphism must preserve homogeneous degree"
-                        ) from error
-                    if image_degree != generator_degree:
-                        raise ValueError(
-                            "a DGA morphism must preserve homogeneous degree"
-                        )
-            if self(source.d(generator)) != target.d(image):
-                raise ValueError("a DGA morphism must commute with the differential")
-        for left in generators:
-            for right in generators:
-                if self(left * right) != self(left) * self(right):
-                    raise ValueError("a DGA morphism must preserve multiplication")
+        if any(answer is False for answer in comparisons):
+            return False
+        linear = (
+            self.underlying_algebra_morphism().linearity_decision() is True
+            and source.differential().linearity_decision() is True
+            and target.differential().linearity_decision() is True
+        )
+        return True if linear and all(answer is True for answer in comparisons) else Unknown
 
     def _call_(self, element):
-        if element.parent() is not self.domain():
-            element = self.domain()(element)
-        image = self._function(element)
-        return image if image.parent() is self.codomain() else self.codomain()(image)
+        return self._underlying(element)
 
     def __call__(self, element):
         return self._call_(element)
@@ -279,8 +489,18 @@ class DGAMorphism(Morphism):
         if not isinstance(other, DGAMorphism) or other.codomain() is not self.domain():
             return NotImplemented
         source = other.domain()
-        return DifferentialGradedAlgebras(source.base_ring()).Mor(source, self.codomain())(
-            lambda element: self(other(element))
+        decision = (
+            True
+            if self.differential_compatibility_decision() is True
+            and other.differential_compatibility_decision() is True
+            else Unknown
+        )
+        return DifferentialGradedAlgebras(source.base_ring()).Mor(
+            source, self.codomain()
+        )._from_differential_preserving_underlying_morphism(
+            self.underlying_graded_algebra_morphism()
+            * other.underlying_graded_algebra_morphism(),
+            decision,
         )
 
 
@@ -297,13 +517,41 @@ class DGAHomset(CategoricalHomset):
             codomain,
         )
 
-    def _element_constructor_(self, function):
-        return self.element_class(self, function)
+    def _element_constructor_(self, morphism):
+        return self.element_class(self, morphism)
+
+    def _from_differential_preserving_generator_map(self, images):
+        r"""Construct from generator images when the construction proves all DGA laws."""
+        source = self.domain()
+        graded = GradedAlgebras(source.base_ring(), source.grading_monoid())
+        underlying = graded.Mor(source, self.codomain())._from_degree_preserving_generator_map(
+            images
+        )
+        return self.element_class(
+            self,
+            underlying,
+            differential_compatibility=True,
+        )
+
+    def _from_differential_preserving_underlying_morphism(self, morphism, decision=True):
+        r"""Lift an actual graded algebra morphism with a retained differential-law premise."""
+        return self.element_class(
+            self,
+            morphism,
+            differential_compatibility=decision,
+        )
 
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to a DGA endomorphism homset")
-        return self(lambda element: element)
+        source = self.domain()
+        underlying = GradedAlgebras(
+            source.base_ring(), source.grading_monoid()
+        ).Mor(source, source).identity()
+        return self._from_differential_preserving_underlying_morphism(
+            underlying,
+            True,
+        )
 
 
 class DGAHomCategoryConstruction(HomCategoryConstruction):

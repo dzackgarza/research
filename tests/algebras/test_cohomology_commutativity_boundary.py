@@ -1,11 +1,12 @@
 r"""Cohomology algebra retains only commutativity justified by its source DGA."""
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.all import GF, ZZ
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebras,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-    Differential,
     DifferentialGradedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -16,17 +17,19 @@ from dzack_research.preamble.categories.algebras.graded_commutative_algebras imp
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
-from dzack_research.preamble.refine import refine
 
 
 def _noncommutative_zero_differential_dga():
     module = ZZ.free_module(finite_ordered_set(("x", "y")))
     algebra = module.tensor_algebra()
-    algebra._preamble_differential = Differential(
+    dga = DifferentialGradedAlgebras(ZZ)(
         algebra,
         lambda _element: algebra.zero(),
     )
-    return refine(algebra, DifferentialGradedAlgebras(ZZ))
+    assert dga.underlying_graded_algebra() is algebra
+    assert dga.differential().graded_leibniz_decision() is Unknown
+    assert dga.differential().square_zero_decision() is Unknown
+    return dga
 
 
 def test_general_cohomology_algebra_category_is_not_declared_commutative() -> None:
@@ -73,9 +76,11 @@ def test_degree_zero_cohomology_of_nonnegative_unital_dga_retains_the_unit() -> 
 
 def test_characteristic_two_does_not_turn_graded_commutativity_into_odd_square_zero() -> None:
     field = GF(2)
-    dga = field.free_module(("x",)).symmetric_algebra()
-    dga._preamble_differential = Differential(dga, lambda _element: dga.zero())
-    refine(dga, DifferentialGradedAlgebras(field).Supercommutative())
+    algebra = field.free_module(("x",)).symmetric_algebra()
+    dga = DifferentialGradedAlgebras(field)(
+        algebra,
+        lambda _element: algebra.zero(),
+    )
     x = dga.algebra_generator("x")
 
     assert x.degree() == 1
@@ -99,6 +104,8 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
     y = dga.algebra_generator("y")
     swap_algebra = Algebras(dga.base_ring()).Associative().Unital().Mor(dga, dga)({"x": y, "y": x})
     swap = DifferentialGradedAlgebras(dga.base_ring()).Mor(dga, dga)(swap_algebra)
+    assert swap.degree_preservation_decision() is True
+    assert swap.differential_compatibility_decision() is Unknown
 
     cohomology = dga.cohomology_algebra()
     functor = DifferentialGradedAlgebras(ZZ).cohomology_algebra()

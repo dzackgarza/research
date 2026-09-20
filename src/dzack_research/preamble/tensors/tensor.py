@@ -1709,6 +1709,7 @@ def _mixed_tensor_algebra(module):
         multiplication,
         placement=(GradedAlgebras(ring, bigrades),),
         unit=unit,
+        law_decisions={"associativity": True, "unit": True, "grading": True},
     )
 
 

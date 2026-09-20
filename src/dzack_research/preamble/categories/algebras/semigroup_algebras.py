@@ -112,7 +112,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             *tuple(extra_construction_data),
         )
         return (presentation).quotient_by_relations(relations,
-            _extra_categories=tuple(extra_categories),
+            _extra_categories=(self, *tuple(extra_categories)),
             _extra_construction_data=construction_data,
         )
 

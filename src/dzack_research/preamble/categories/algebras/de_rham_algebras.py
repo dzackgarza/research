@@ -4,8 +4,8 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-    Differential,
     DifferentialGradedAlgebras,
+    _fix_selected_differential,
 )
 from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
     _restricted_graded_algebra,
@@ -41,7 +41,12 @@ class _DeRhamAlgebra:
             image = _de_rham_differential_on_extension(exterior, omega, universal, self.realize(element))
             return self.from_realization(image)
 
-        self._preamble_differential = Differential(self, differential)
+        _fix_selected_differential(
+            self,
+            differential,
+            graded_leibniz=True,
+            square_zero=True,
+        )
 
 
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):

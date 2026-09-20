@@ -99,6 +99,10 @@ def _commutator_lie_algebra(algebra):
         algebra,
         bracket,
         placement=(CommutatorLieAlgebras(ring),),
+        law_decisions={
+            "alternation": True,
+            "jacobi": algebra.associativity_decision(),
+        },
     )
 
 

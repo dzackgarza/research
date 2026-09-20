@@ -273,9 +273,17 @@ def _algebra_from_native_ring(algebra, product, unit, scalar_action, *, module_b
     presentation = _RingModulePresentation(algebra, ring, product, unit, scalar_action, basis=module_basis)
     module = Modules(ring)(presentation)
     category = Algebras(ring).Associative().Unital()
+    law_decisions = {"associativity": True, "unit": True}
     if algebra.is_commutative() is True:
         category = category.Commutative()
-    return _algebra_on_module(module, presentation.multiplication(), placement=(category,), unit=unit)
+        law_decisions["commutativity"] = True
+    return _algebra_on_module(
+        module,
+        presentation.multiplication(),
+        placement=(category,),
+        unit=unit,
+        law_decisions=law_decisions,
+    )
 
 
 class AlgebraHomCategoryConstruction(HomCategoryConstruction):
@@ -590,6 +598,31 @@ def _assert_not_refuted(held, statement, module):
     assert held is not False, f"{statement} fails for the stated multiplication on {module}"
 
 
+def _root_algebra_law_decisions(algebra):
+    r"""Return the retained premises supporting the root algebra axioms of ``algebra``."""
+    ring = algebra.algebra_base_ring()
+    algebras = Algebras(ring)
+    decisions = {}
+    for category, accessors in (
+        (algebras.Associative(), (("associativity", algebra.associativity_decision),)),
+        (algebras.Unital(), (("unit", algebra.unit_laws_decision),)),
+        (algebras.Commutative(), (("commutativity", algebra.commutativity_decision),)),
+        (
+            algebras.Lie(),
+            (
+                ("alternation", algebra.alternation_decision),
+                ("jacobi", algebra.jacobi_decision),
+            ),
+        ),
+    ):
+        match algebra in category:
+            case True:
+                decisions.update((law, accessor()) for law, accessor in accessors)
+            case False:
+                pass
+    return decisions
+
+
 
 # ---------------------------------------------------------------------------
 # The category of algebras.
@@ -707,14 +740,19 @@ class Algebras(OwnedCategoryOverBaseRing):
             return algebra(product(module(self), module(other)))
 
     class ParentMethods:
-        def __init__(self, unformed_module=None, multiplication=None, *, _engine_product=None,
-                     _engine_scalar_action=None, _native_unit_factory=None, **rest) -> None:
+        def __init__(self, unformed_module=None, multiplication=None, *, algebra_law_decisions=None,
+                     _engine_product=None, _engine_scalar_action=None, _native_unit_factory=None, **rest) -> None:
             r"""Construct the algebra from its exact module and tensor multiplication.
 
             Native cooperative realizations supply primitive ring operations;
             after the lower constructor finishes they compute the same module
             and tensor datum through the owners used by every ordinary entry.
             """
+            self._preamble_algebra_law_decisions = dict(
+                vars(self).get("_preamble_algebra_law_decisions", {})
+            )
+            if algebra_law_decisions is not None:
+                self._retain_algebra_law_decisions(algebra_law_decisions)
             match _engine_product:
                 case None:
                     assert unformed_module is not None and multiplication is not None, "an algebra supplies its module and tensor multiplication"
@@ -725,6 +763,41 @@ class Algebras(OwnedCategoryOverBaseRing):
                     assert callable(product) and callable(_engine_scalar_action) and callable(_native_unit_factory)
                     super().__init__(**rest)
                     _algebra_from_native_ring(self, product, _native_unit_factory(self), _engine_scalar_action)
+
+        def _retain_algebra_law_decisions(self, decisions):
+            r"""Retain the exact admission decision supporting each algebra axiom placement."""
+            retained = dict(vars(self).get("_preamble_algebra_law_decisions", {}))
+            for law, decision in dict(decisions).items():
+                assert decision is True or decision is Unknown, (
+                    f"the retained {law} decision must be True or Unknown"
+                )
+                previous = retained.get(law)
+                if previous is True:
+                    continue
+                if previous is Unknown and decision is Unknown:
+                    continue
+                retained[law] = decision
+            self._preamble_algebra_law_decisions = retained
+
+        def associativity_decision(self):
+            r"""Return the retained decision supporting associative placement, else ``Unknown``."""
+            return self._preamble_algebra_law_decisions.get("associativity", Unknown)
+
+        def unit_laws_decision(self):
+            r"""Return the retained decision supporting the selected two-sided unit, else ``Unknown``."""
+            return self._preamble_algebra_law_decisions.get("unit", Unknown)
+
+        def commutativity_decision(self):
+            r"""Return the retained decision supporting commutative placement, else ``Unknown``."""
+            return self._preamble_algebra_law_decisions.get("commutativity", Unknown)
+
+        def alternation_decision(self):
+            r"""Return the retained decision supporting alternation of a Lie bracket, else ``Unknown``."""
+            return self._preamble_algebra_law_decisions.get("alternation", Unknown)
+
+        def jacobi_decision(self):
+            r"""Return the retained decision supporting the Jacobi identity, else ``Unknown``."""
+            return self._preamble_algebra_law_decisions.get("jacobi", Unknown)
 
         def _retain_algebra_datum(self, module, multiplication):
             r"""Retain the root constructor's already validated (M,m) once.
@@ -1022,6 +1095,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 for axiom in (algebras.Associative(), algebras.Commutative(), algebras.Lie())
                 if self in axiom
             )
+            law_decisions = _root_algebra_law_decisions(self)
             match self:
                 case _ if self in algebras.Unital():
                     return _algebra_on_module(
@@ -1029,9 +1103,15 @@ class Algebras(OwnedCategoryOverBaseRing):
                         multiplication,
                         placement=(*descended, algebras.Unital()),
                         unit=projection(self.one()),
+                        law_decisions=law_decisions,
                     )
                 case _:
-                    return _algebra_on_module(quotient_module, multiplication, placement=descended)
+                    return _algebra_on_module(
+                        quotient_module,
+                        multiplication,
+                        placement=descended,
+                        law_decisions=law_decisions,
+                    )
 
         def quotient_by_generated_algebra_ideal(self, subobject):
             r"""The quotient by the algebra ideal generated by ``subobject``."""
@@ -1087,12 +1167,16 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _call_(self, module, multiplication):
             r"""The associative algebra on ``(M, m)``: ``(xy)z = x(yz)`` decided on module generators of ``M``."""
-            _assert_not_refuted(
-                _decide_on_module_generators(module, _associativity(multiplication), 3),
-                "associativity",
-                module,
+            associativity = _decide_on_module_generators(
+                module, _associativity(multiplication), 3
             )
-            return _algebra_on_module(module, multiplication, placement=(self,))
+            _assert_not_refuted(associativity, "associativity", module)
+            return _algebra_on_module(
+                module,
+                multiplication,
+                placement=(self,),
+                law_decisions={"associativity": associativity},
+            )
 
         class Unital(CategoryWithAxiom):
             r"""Associative unital algebras: the ring objects among algebras."""
@@ -1231,17 +1315,26 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             def _call_(self, module, multiplication, unit):
                 r"""The associative unital algebra on ``(M, m)`` with unit ``1 in M``, both identities decided on module generators."""
-                _assert_not_refuted(
-                    _decide_on_module_generators(module, _associativity(multiplication), 3),
-                    "associativity",
-                    module,
+                associativity = _decide_on_module_generators(
+                    module, _associativity(multiplication), 3
                 )
-                _assert_not_refuted(
-                    _decide_on_module_generators(module, _two_sided_unit(multiplication, module(unit)), 1),
-                    "the two unit equations",
+                unit_laws = _decide_on_module_generators(
                     module,
+                    _two_sided_unit(multiplication, module(unit)),
+                    1,
                 )
-                return _algebra_on_module(module, multiplication, placement=(self,), unit=module(unit))
+                _assert_not_refuted(associativity, "associativity", module)
+                _assert_not_refuted(unit_laws, "the two unit equations", module)
+                return _algebra_on_module(
+                    module,
+                    multiplication,
+                    placement=(self,),
+                    unit=module(unit),
+                    law_decisions={
+                        "associativity": associativity,
+                        "unit": unit_laws,
+                    },
+                )
 
             class Commutative(CategoryWithAxiom):
                 r"""Commutative associative unital ``R``-algebras."""
@@ -1260,13 +1353,33 @@ class Algebras(OwnedCategoryOverBaseRing):
 
                 def _call_(self, module, multiplication, unit):
                     r"""The commutative associative unital algebra on ``(M, m)`` with unit ``1 in M``, each identity decided on module generators."""
-                    for held, statement in (
-                        (_decide_on_module_generators(module, _associativity(multiplication), 3), "associativity"),
-                        (_decide_on_module_generators(module, _commutativity(multiplication), 2), "commutativity"),
-                        (_decide_on_module_generators(module, _two_sided_unit(multiplication, module(unit)), 1), "the two unit equations"),
+                    decisions = {
+                        "associativity": _decide_on_module_generators(
+                            module, _associativity(multiplication), 3
+                        ),
+                        "commutativity": _decide_on_module_generators(
+                            module, _commutativity(multiplication), 2
+                        ),
+                        "unit": _decide_on_module_generators(
+                            module,
+                            _two_sided_unit(multiplication, module(unit)),
+                            1,
+                        ),
+                    }
+                    for law, statement in (
+                        ("associativity", "associativity"),
+                        ("commutativity", "commutativity"),
+                        ("unit", "the two unit equations"),
                     ):
+                        held = decisions[law]
                         _assert_not_refuted(held, statement, module)
-                    return _algebra_on_module(module, multiplication, placement=(self,), unit=module(unit))
+                    return _algebra_on_module(
+                        module,
+                        multiplication,
+                        placement=(self,),
+                        unit=module(unit),
+                        law_decisions=decisions,
+                    )
 
     class Lie(CategoryWithAxiom):
         r"""Algebras whose bilinear multiplication is a Lie bracket: alternating and satisfying the Jacobi identity.
@@ -1289,17 +1402,20 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _call_(self, module, multiplication):
             r"""The Lie algebra on ``(M, m)``, ``m`` its bracket: alternation and the Jacobi identity decided on module generators."""
-            _assert_not_refuted(
-                _decide_on_module_generators(module, _alternation(multiplication), 2),
-                "alternation",
-                module,
+            alternation = _decide_on_module_generators(
+                module, _alternation(multiplication), 2
             )
-            _assert_not_refuted(
-                _decide_on_module_generators(module, _jacobi_identity(multiplication), 3),
-                "the Jacobi identity",
-                module,
+            jacobi = _decide_on_module_generators(
+                module, _jacobi_identity(multiplication), 3
             )
-            return _algebra_on_module(module, multiplication, placement=(self,))
+            _assert_not_refuted(alternation, "alternation", module)
+            _assert_not_refuted(jacobi, "the Jacobi identity", module)
+            return _algebra_on_module(
+                module,
+                multiplication,
+                placement=(self,),
+                law_decisions={"alternation": alternation, "jacobi": jacobi},
+            )
 
         class ParentMethods:
             def bracket(self, left, right):
@@ -1323,12 +1439,19 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _call_(self, module, multiplication, unit):
             r"""The unital algebra on ``(M, m)`` with unit ``1 in M``, the unit equations decided on module generators."""
-            _assert_not_refuted(
-                _decide_on_module_generators(module, _two_sided_unit(multiplication, module(unit)), 1),
-                "the two unit equations",
+            unit_laws = _decide_on_module_generators(
                 module,
+                _two_sided_unit(multiplication, module(unit)),
+                1,
             )
-            return _algebra_on_module(module, multiplication, placement=(self,), unit=module(unit))
+            _assert_not_refuted(unit_laws, "the two unit equations", module)
+            return _algebra_on_module(
+                module,
+                multiplication,
+                placement=(self,),
+                unit=module(unit),
+                law_decisions={"unit": unit_laws},
+            )
 
         class ParentMethods:
             def __init__(self, unit=None, *, _engine_unit=None, **rest) -> None:
@@ -1374,12 +1497,16 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _call_(self, module, multiplication):
             r"""The commutative algebra on ``(M, m)``: ``xy = yx`` decided on module generators of ``M``."""
-            _assert_not_refuted(
-                _decide_on_module_generators(module, _commutativity(multiplication), 2),
-                "commutativity",
-                module,
+            commutativity = _decide_on_module_generators(
+                module, _commutativity(multiplication), 2
             )
-            return _algebra_on_module(module, multiplication, placement=(self,))
+            _assert_not_refuted(commutativity, "commutativity", module)
+            return _algebra_on_module(
+                module,
+                multiplication,
+                placement=(self,),
+                law_decisions={"commutativity": commutativity},
+            )
 
         class ParentMethods:
             def is_commutative(self) -> bool:
@@ -1399,7 +1526,15 @@ FinitelyPresentedAlgebras = Algebras.Associative.Unital.FinitelyPresentedAsAlgeb
 # ---------------------------------------------------------------------------
 
 
-def _algebra_on_module(module, multiplication, *, placement, unit=None, construction_data=None):
+def _algebra_on_module(
+    module,
+    multiplication,
+    *,
+    placement,
+    unit=None,
+    construction_data=None,
+    law_decisions=None,
+):
     r"""Build the algebra on the data of ``M`` with multiplication ``m``: the realization of ``Algebras(R)(M, m)``.
 
     Declared owner: the ``Algebras(R)`` entry and its axiom entries, and the
@@ -1420,7 +1555,8 @@ def _algebra_on_module(module, multiplication, *, placement, unit=None, construc
     an identity an axiom entry decided, or the theorem of a construction,
     cited where it is called.  ``unit``, an element of ``M``, is required
     exactly when the placement is unital.  ``construction_data`` carries the
-    datum of a data category in ``placement``.
+    datum of a data category in ``placement``.  ``law_decisions`` carries the
+    exact ``True``/``Unknown`` premises supporting axiom placements.
     """
     ring = module.base_ring()
     tensor = multiplication.domain()
@@ -1433,12 +1569,33 @@ def _algebra_on_module(module, multiplication, *, placement, unit=None, construc
     assert multiplication.codomain() is module, f"the multiplication of an algebra on {module} lands in it"
     multiplication = module.module_category().Mor(tensor, module)(multiplication)
     categories = (Algebras(ring), *placement)
+    selected_category = Cat().meet(categories)
+    law_decisions = dict(law_decisions or {})
+    for decision in law_decisions.values():
+        assert decision is True or decision is Unknown, (
+            "an algebra law premise is retained only as True or Unknown"
+        )
+    for required_category, required_laws in (
+        (Algebras(ring).Associative(), ("associativity",)),
+        (Algebras(ring).Unital(), ("unit",)),
+        (Algebras(ring).Commutative(), ("commutativity",)),
+        (Algebras(ring).Lie(), ("alternation", "jacobi")),
+    ):
+        match selected_category.is_subcategory(required_category):
+            case True:
+                missing = tuple(law for law in required_laws if law not in law_decisions)
+                assert not missing, (
+                    f"{selected_category} requires retained algebra-law premises for {missing}"
+                )
+            case False:
+                pass
     data = {
         "unformed_module": module,
         "multiplication": multiplication,
+        "algebra_law_decisions": law_decisions,
         **(construction_data or {}),
     }
-    match Cat().meet(categories):
+    match selected_category:
         case category if category.is_subcategory(Algebras(ring).Unital()):
             assert unit is not None, "a unital algebra is stated with its unit"
             data["unit"] = module(unit)
@@ -1449,14 +1606,16 @@ def _algebra_on_module(module, multiplication, *, placement, unit=None, construc
         # This is the original ring product on its constructed module, not an
         # alternative multiplication admitted merely because M is a ring.
         Algebras.ParentMethods._retain_algebra_datum(module, module, multiplication)
+        Algebras.ParentMethods._retain_algebra_law_decisions(
+            module, law_decisions
+        )
         if unit is not None:
             Algebras.Unital.ParentMethods._retain_unit(module, module(unit))
-        placement = Cat().meet(categories)
-        match module in placement:
+        match module in selected_category:
             case True:
                 return module
             case False:
-                return refine(module, placement)
+                return refine(module, selected_category)
     return module._module_with_structure(categories, data)
 
 
@@ -1480,19 +1639,26 @@ def _center_algebra(algebra, submodule):
         ),
     )
     algebras = Algebras(ring)
+    law_decisions = {
+        "associativity": algebra.associativity_decision(),
+        "commutativity": True,
+    }
     match algebra:
         case _ if algebra in algebras.Unital():
+            law_decisions["unit"] = algebra.unit_laws_decision()
             return _algebra_on_module(
                 submodule,
                 multiplication,
                 placement=(algebras.Associative().Unital().Commutative(),),
                 unit=inclusion.lift(algebra.one()),
+                law_decisions=law_decisions,
             )
         case _:
             return _algebra_on_module(
                 submodule,
                 multiplication,
                 placement=(algebras.Associative(), algebras.Commutative()),
+                law_decisions=law_decisions,
             )
 
 
@@ -2414,6 +2580,22 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
+    def _from_constructed_element_map(self, evaluator):
+        r"""Construct an algebra map whose supplying construction proves the algebra laws.
+
+        This protected route is for canonical maps such as the factorial
+        comparison ``Gamma(M) -> Sym(M)``.  It retains the ordinary algebra-Hom
+        parent and an actual owned set map; arbitrary user element functions do
+        not enter through this route.
+        """
+        if not callable(evaluator):
+            raise TypeError("a constructed algebra map is represented by an element map")
+        represented = SetMorphism(
+            Sets().Mor(self.domain(), self.codomain()),
+            lambda element: self.codomain()(evaluator(self.domain()(element))),
+        )
+        return self.element_class(self, represented)
+
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -2460,6 +2642,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         *,
         categories=(),
         construction_data=(),
+        law_decisions=(),
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -2483,11 +2666,18 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         if labels is not None:
             placement.append(framing_owner.Framed())
         placement.extend(categories)
+        retained_laws = {"associativity": True, "unit": True}
+        if framing_owner is not associative:
+            retained_laws["commutativity"] = True
+        retained_laws.update(dict(law_decisions))
         _OwnedRingParent.__init__(
             self,
             engine,
             base=base,
             category=Cat().meet(tuple(placement)),
+        )
+        Algebras.ParentMethods._retain_algebra_law_decisions(
+            self, retained_laws
         )
         if labels is None:
             if generator_values is not None:
@@ -2572,6 +2762,7 @@ def _owned_algebra_view(
     labels=None,
     categories=(),
     construction_data=(),
+    law_decisions=(),
 ):
     base = _owned_ring(base_ring)
     return _OwnedAlgebraParent(
@@ -2580,6 +2771,7 @@ def _owned_algebra_view(
         labels,
         categories=tuple(categories),
         construction_data=tuple(construction_data),
+        law_decisions=tuple(law_decisions),
     )
 
 
@@ -2697,8 +2889,10 @@ def _algebra_structure_view(ring, structure_map):
         module, lambda left, right: module(left.underlying_element() * right.underlying_element()),
     )
     algebras = Algebras(base).Associative().Unital()
+    law_decisions = {"associativity": True, "unit": True}
     if selected_ring in OwnedRings().Commutative():
         algebras = algebras.Commutative()
+        law_decisions["commutativity"] = True
     category = Cat().meet((
         algebras, _owned_ring_category(_engine_ring(selected_ring), scalar_base=base),
     ))
@@ -2709,6 +2903,7 @@ def _algebra_structure_view(ring, structure_map):
             "_engine": (Algebras(base), _ScalarAlgebraEngine, None),
             "native_ring": selected_ring,
         },
+        law_decisions=law_decisions,
     )
 
 

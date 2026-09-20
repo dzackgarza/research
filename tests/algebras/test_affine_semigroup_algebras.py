@@ -17,6 +17,7 @@ def test_affine_semigroup_algebra_retains_its_selected_binomial_presentation() -
     z = algebra.algebra_generator("z")
 
     assert algebra in owner
+    assert algebra.category().is_subcategory(owner)
     assert z == x * y
     coordinates = algebra.affine_semigroup_generator_coordinates()
     assert tuple(tuple(int(entry) for entry in point) for point in coordinates) == (

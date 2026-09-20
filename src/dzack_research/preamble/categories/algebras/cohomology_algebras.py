@@ -21,9 +21,14 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+    DGAMorphism,
     DifferentialGradedAlgebras,
 )
-from dzack_research.preamble.categories.algebras.algebras import Algebras, _algebra_on_module
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    _algebra_on_module,
+    _root_algebra_law_decisions,
+)
 from dzack_research.preamble.categories.algebras.graded_algebras import (
     GradedAlgebras,
     _graded_multiplication_from_components,
@@ -130,6 +135,8 @@ class CohomologyAlgebraMorphism(Morphism):
 
     def __init__(self, parent, dga_morphism) -> None:
         Morphism.__init__(self, parent)
+        if not isinstance(dga_morphism, DGAMorphism):
+            raise TypeError("a cohomology-algebra morphism is induced by an actual DGA morphism")
         if dga_morphism.domain() is not self.domain().source_dga():
             raise ValueError("the DGA morphism has the wrong cohomology source")
         if dga_morphism.codomain() is not self.codomain().source_dga():
@@ -211,6 +218,8 @@ def _cohomology_algebra_from_dga(dga):
         return module.graded_piece(degree).class_of_cycle(product.homogeneous_component(degree))
 
     multiplication = _graded_multiplication_from_components(module, component_product)
+    law_decisions = _root_algebra_law_decisions(dga)
+    law_decisions["grading"] = dga.grading_compatibility_decision()
     placements = (CohomologyAlgebras(ring), *(
         target
         for source, target in (
@@ -222,6 +231,7 @@ def _cohomology_algebra_from_dga(dga):
     match dga.is_commutative():
         case True:
             placements = (*placements, Algebras(ring).Commutative())
+            law_decisions["commutativity"] = True
         case _:
             pass
     zero_degree = graded.grading_monoid().zero()
@@ -231,6 +241,7 @@ def _cohomology_algebra_from_dga(dga):
     return _algebra_on_module(
         module, multiplication, placement=placements, unit=unit,
         construction_data={"cohomology_construction": _CohomologyAlgebraConstruction(dga)},
+        law_decisions=law_decisions,
     )
 
 

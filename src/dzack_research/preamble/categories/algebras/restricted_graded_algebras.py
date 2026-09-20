@@ -6,7 +6,12 @@ from sage.categories.action import Action
 from sage.misc.cachefunc import cached_function
 from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories.algebras.algebras import Algebras, FramedAlgebras, _algebra_on_module
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    FramedAlgebras,
+    _algebra_on_module,
+    _root_algebra_law_decisions,
+)
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras, _graded_multiplication_from_components
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement, _DirectSumOfModules, _direct_sum_of_modules,
@@ -168,6 +173,8 @@ def _restricted_graded_algebra(algebra, ring_map, *, extra_categories=(), constr
         ) if algebra in source
     ))
     data = dict(construction_data or {})
+    law_decisions = _root_algebra_law_decisions(algebra)
+    law_decisions["grading"] = algebra.grading_compatibility_decision()
     if (extension in FramedAlgebras(ring) and algebra in FramedAlgebras(extension)
             and ring_map is extension.algebra_structure_morphism()):
         labels = Sets().coproduct(indexed_family(Sets.Δ[1], lambda i:
@@ -185,6 +192,7 @@ def _restricted_graded_algebra(algebra, ring_map, *, extra_categories=(), constr
     return _algebra_on_module(
         module, multiplication, placement=categories,
         unit=module.from_realization(algebra.one()), construction_data=data,
+        law_decisions=law_decisions,
     )
 
 

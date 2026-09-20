@@ -248,6 +248,12 @@ def graded_lebesgue_algebra():
     return _algebra_on_module(
         module, multiplication, placement=(category,),
         unit=module.from_component(NonNegativeReals.zero(), Lp(Infinity).one()),
+        law_decisions={
+            "associativity": True,
+            "unit": True,
+            "commutativity": True,
+            "grading": True,
+        },
     )
 
 

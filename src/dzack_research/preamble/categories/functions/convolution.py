@@ -153,5 +153,9 @@ def _convolution_algebra():
     """
     module = Lp(1).quotient_by_null_functions()
     multiplication = module.convolution_pairing(module)
-    return _algebra_on_module(module, multiplication,
-        placement=(Algebras(RR).Associative(), Algebras(RR).Commutative()))
+    return _algebra_on_module(
+        module,
+        multiplication,
+        placement=(Algebras(RR).Associative(), Algebras(RR).Commutative()),
+        law_decisions={"associativity": True, "commutativity": True},
+    )

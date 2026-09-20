@@ -300,10 +300,24 @@ def _sparse_free_algebra_of(source, flavor):
         categories = (*categories, FreeAlgebras(ring), GradedFreeAlgebras(ring))
     realization_owner = Cat().meet((GeneralModules(ring), FramedModules(ring), GradedModules(ring), Algebras(ring), *categories))
     unit_piece = module.graded_piece(0)
+    law_decisions = {"associativity": True, "unit": True, "grading": True}
+    match flavor:
+        case "symmetric":
+            law_decisions["commutativity"] = True
+        case "tensor":
+            pass
+    algebra_generating_family = indexed_family(
+        source.module_generating_set(),
+        lambda label: module.from_component(1, source.module_generator(label)),
+    )
     return _algebra_on_module(
         module, multiplication, placement=categories,
         unit=module.from_component(0, unit_piece.module_generator(0)),
-        construction_data={"_engine": (realization_owner, _SparseFreeAlgebra, _WordModuleElement)},
+        construction_data={
+            "_engine": (realization_owner, _SparseFreeAlgebra, _WordModuleElement),
+            "algebra_generating_family": algebra_generating_family,
+        },
+        law_decisions=law_decisions,
     )
 
 

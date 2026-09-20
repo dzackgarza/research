@@ -1,127 +1,27 @@
 r"""Canonical comparison morphisms among tensor, symmetric, exterior, and divided powers."""
 
 from sage.arith.misc import factorial
-from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import CategoricalHomset
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _engine_ring,
-)
 
 
-class ConstructionAlgebraMorphism(Morphism):
-    r"""An algebra morphism whose action is determined by a construction map."""
-
-    def __init__(self, parent, evaluator) -> None:
-        Morphism.__init__(self, parent)
-        self._evaluator = evaluator
-
-    def _call_(self, element):
-        return self._evaluator(element)
-
-    def __call__(self, element):
-        return self._call_(element)
-
-    def __mul__(self, other):
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        return _construction_algebra_homset(other.domain(), self.codomain())(
-            lambda element: self(other(element))
-        )
-
-
-class ConstructionAlgebraHomset(CategoricalHomset):
-    Element = ConstructionAlgebraMorphism
-
-    def __init__(self, domain, codomain) -> None:
-        if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("construction algebra maps require one common base ring")
-        CategoricalHomset.__init__(
-            self,
-            Algebras(domain.base_ring()).Associative().Unital().HomCategory(),
-            domain,
-            codomain,
-        )
-
-    def _element_constructor_(self, evaluator):
-        return self.element_class(self, evaluator)
-
-
-def _construction_algebra_homset(domain, codomain):
-    return ConstructionAlgebraHomset(domain, codomain)
-
-
-def _presentation_representative(algebra, element):
-    lift = getattr(algebra, "lift_to_presentation", None)
-    if lift is None:
-        return element
-    return lift(element)
-
-
-def _owned_backend_coefficient(target, coefficient):
-    ring = target.base_ring()
-    return ring._from_engine_element(_engine_ring(ring)(coefficient))
-
-
-def _evaluate_tensor_representative(source, target, element):
-    representative = _presentation_representative(source, element)
-    presentation = (
-        source.presentation_ring()
-        if hasattr(source, "presentation_ring")
-        else source
+def _constructed_algebra_morphism(domain, codomain, evaluator):
+    r"""Return a theorem-supplied map through the ordinary unital algebra Hom."""
+    if domain.base_ring() is not codomain.base_ring():
+        raise ValueError("construction algebra maps require one common base ring")
+    homset = Algebras(domain.base_ring()).Associative().Unital().Mor(
+        domain,
+        codomain,
     )
-    engine = _engine_ring(presentation)
-    backend = _engine_element(presentation, presentation(representative))
-    labels = source.algebra_generating_set()
+    return homset._from_constructed_element_map(evaluator)
 
-    def source_label(generator):
-        # Private finite backend serialization: Sage's free-monoid generator
-        # object has no public position.  Search only the backend generator
-        # array required to decode this finitely supported monomial.
-        position = next(
-            index
-            for index, candidate in enumerate(engine.monoid().gens())
-            if candidate == generator
-        )
-        return labels[position]
-
-    result = target.zero()
-    for monomial, coefficient in engine(backend).monomial_coefficients().items():
-        value = target.one()
-        for generator, exponent in monomial:
-            target_generator = target.algebra_generator(source_label(generator))
-            value *= target_generator ** int(exponent)
-        result += _owned_backend_coefficient(target, coefficient) * value
-    return result
-
-
-def _evaluate_symmetric_representative(source, target, element):
-    representative = _presentation_representative(source, element)
-    presentation = (
-        source.presentation_ring()
-        if hasattr(source, "presentation_ring")
-        else source
-    )
-    engine = _engine_ring(presentation)
-    backend = _engine_element(presentation, presentation(representative))
-    labels = source.algebra_generating_set()
-    result = target.zero()
-    for exponents, coefficient in engine(backend).dict().items():
-        value = target.one()
-        for position, exponent in enumerate(exponents):
-            if exponent:
-                value *= target.algebra_generator(labels[position]) ** int(exponent)
-        result += _owned_backend_coefficient(target, coefficient) * value
-    return result
 
 def _tensor_to_symmetric(module):
     r"""Return the quotient morphism ``T(M) -> Sym(M)``."""
     source = module.tensor_algebra()
     target = module.symmetric_algebra()
-    return _construction_algebra_homset(source, target)(
-        lambda element: _evaluate_tensor_representative(source, target, element)
+    return source.Mor(target)(
+        lambda label: target.algebra_generator(label)
     )
 
 
@@ -129,8 +29,11 @@ def _tensor_to_alternating(module):
     r"""Return the quotient morphism ``T(M) -> Lambda(M)``."""
     source = module.tensor_algebra()
     target = module.exterior_algebra()
-    return _construction_algebra_homset(source, target)(
-        lambda element: _evaluate_tensor_representative(source, target, element)
+    return source.Mor(target)(
+        lambda label: target.from_component(
+            1,
+            target.generating_module().module_generator(label),
+        )
     )
 
 
@@ -138,8 +41,11 @@ def _symmetric_to_divided(module):
     r"""Return ``Sym(M) -> Gamma(M)``, ``x^n |-> n! gamma_n(x)``."""
     source = module.symmetric_algebra()
     target = module.divided_power_algebra()
-    return _construction_algebra_homset(source, target)(
-        lambda element: _evaluate_symmetric_representative(source, target, element)
+    return source.Mor(target)(
+        lambda label: target.from_component(
+            1,
+            target.generating_module().module_generator(label),
+        )
     )
 
 
@@ -182,10 +88,8 @@ def _divided_to_symmetric(module):
                 result += scalar * monomial
         return result
 
-    return _construction_algebra_homset(source, target)(evaluate)
+    return _constructed_algebra_morphism(source, target, evaluate)
 
 
 __all__ = [
-    "ConstructionAlgebraHomset",
-    "ConstructionAlgebraMorphism",
 ]

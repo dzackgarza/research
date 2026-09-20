@@ -30,6 +30,12 @@ def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> 
     underlying = derivation.underlying_linear_morphism()
     assert underlying.derivation() is derivation
     assert derivations(underlying) is derivation
+    doubled = derivation + derivation
+    assert doubled(xbar) == derivation(xbar) + derivation(xbar)
+    assert derivation(xbar * ybar) == (
+        values.scalar_multiple(xbar, derivation(ybar))
+        + values.scalar_multiple(ybar, derivation(xbar))
+    )
 
     omega = algebra.kahler_differentials()
     classifier = omega.from_derivation(derivation)

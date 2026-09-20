@@ -100,6 +100,9 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
         assert cyclic.local_underlying_module(index) is local
         assert local in FinitelyGeneratedFreeModules(local.base_ring())
         assert local in AlgebrasWithChosenFinitePresentation(local.base_ring())
+        assert local.associativity_decision() is True
+        assert local.unit_laws_decision() is True
+        assert local.commutativity_decision() is True
         assert int(local.module_rank()) == 2
         multiplication = cyclic.local_multiplication(index)
         assert multiplication.codomain() is local

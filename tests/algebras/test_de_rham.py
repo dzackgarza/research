@@ -139,6 +139,8 @@ def test_de_rham_algebra_is_the_existing_exterior_algebra_with_differential_cons
     assert de_rham in StrictlyCommutativeDifferentialGradedAlgebras(QQ)
     assert de_rham.degree_zero_algebra() is algebra
     assert de_rham.extension_algebra() is de_rham.kahler_differentials().exterior_algebra()
+    assert de_rham.differential().graded_leibniz_decision() is True
+    assert de_rham.differential().square_zero_decision() is True
 
     X = de_rham.from_degree_zero(x)
     Y = de_rham.from_degree_zero(y)

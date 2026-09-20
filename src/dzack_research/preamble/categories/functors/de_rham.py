@@ -59,10 +59,13 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
                 result += term
         return result
 
-    return DifferentialGradedAlgebras(source_dga.base_ring()).Mor(
+    homset = DifferentialGradedAlgebras(source_dga.base_ring()).Mor(
         source_dga,
         target_dga,
-    )(image)
+    )
+    return homset._from_differential_preserving_generator_map(
+        lambda label: image(source_dga.algebra_generator(label))
+    )
 
 
 class _DeRhamFunctor(Functor):

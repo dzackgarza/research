@@ -47,8 +47,8 @@ def test_alternating_and_divided_power_functors_still_carry_nonidentity_maps() -
         carried = functor(linear)
         source_algebra = functor(source)
         target_algebra = functor(target)
-        x = source_algebra.algebra_generator("x")
-        y = target_algebra.algebra_generator("y")
+        x = source_algebra.degree_one_generator("x")
+        y = target_algebra.degree_one_generator("y")
 
         assert carried.domain() is source_algebra
         assert carried.codomain() is target_algebra

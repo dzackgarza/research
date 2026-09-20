@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
     _algebra_on_module,
+    _root_algebra_law_decisions,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
@@ -242,10 +243,22 @@ def _augmented_algebra(augmentation):
             raise TypeError(f"an augmentation of {domain} is a morphism to {base}")
     selected = algebras.Mor(domain, aug_codomain)(augmentation)
     placement = _graded_algebra_placement(domain, base)
+    law_decisions = _root_algebra_law_decisions(domain)
+    try:
+        law_decisions["grading"] = domain.grading_compatibility_decision()
+    except AttributeError:
+        pass
+    data = {"selected_augmentation": selected}
+    if domain in FramedAlgebras(base):
+        framing_owner = domain.algebra_framing_owner()
+        data["algebra_generating_family"] = domain.algebra_generators()
+        data["algebra_framing_source"] = domain.selected_framing_source(framing_owner)
+        data["algebra_framing_owner"] = framing_owner
     return _algebra_on_module(
         domain,
         domain.multiplication_morphism(),
         placement=(AugmentedAlgebras(base), *tuple(placement)),
         unit=domain.one(),
-        construction_data={"selected_augmentation": selected},
+        construction_data=data,
+        law_decisions=law_decisions,
     )

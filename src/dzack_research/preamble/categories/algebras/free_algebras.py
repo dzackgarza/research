@@ -175,6 +175,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             engine, base, generating_module.module_generating_set(),
             categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category, *categories),
             construction_data=construction_data,
+            law_decisions=(("grading", True),),
         )
 
 @cached_function(key=lambda engine, generating_module, flavor, categories=(), construction_data=(): (
@@ -419,11 +420,12 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         if generating_module is not None:
             self._generating_module = generating_module
 
+        extra_categories = tuple(extra_categories)
         placement = [
             FinitelyPresentedAlgebras(base),
             AlgebrasWithChosenFinitePresentation(base),
             Algebras(base).Associative().Unital(),
-            *tuple(extra_categories),
+            *extra_categories,
         ]
         match commutative_backend:
             case True:
@@ -465,6 +467,15 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
                 for position in range(presentation_engine.ngens())
             )
 
+        law_decisions = ()
+        match any(
+            category.is_subcategory(GradedAlgebras(base))
+            for category in extra_categories
+        ):
+            case True:
+                law_decisions = (("grading", True),)
+            case False:
+                pass
         _OwnedAlgebraParent.__init__(
             self,
             quotient_engine,
@@ -472,6 +483,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             labels,
             generator_values=selected_generator_values,
             categories=tuple(placement),
+            law_decisions=law_decisions,
         )
         presentation_morphism = Algebras(presentation_ring.base_ring()).Associative().Unital().Mor(presentation_ring, self)(
             lambda label: self.algebra_generator(label)

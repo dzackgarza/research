@@ -42,6 +42,11 @@ class _PowerAlgebra:
         """
         return self._generating_module
 
+    def degree_one_generator(self, label):
+        r"""Return the canonical degree-one image of a selected generator of ``M``."""
+        source = self.generating_module()
+        return self.from_component(1, source.module_generator(label))
+
     def _power_algebra_homset_class(self):
         return PowerAlgebraHomset
 
@@ -242,9 +247,27 @@ def _power_algebra_of(source, flavor):
     module = graded(indexed_family(graded.grading_monoid(), piece), placements=(FramedModules(ring),))
     multiplication = _graded_multiplication_from_components(module, product)
     unit = module.from_component(0, module.graded_piece(0).module_generator(0))
+    law_decisions = {"associativity": True, "unit": True, "grading": True}
+    match flavor:
+        case "divided":
+            law_decisions["commutativity"] = True
+            algebra_generating_family = indexed_family(
+                module.module_generating_set(),
+                module.module_generator,
+            )
+        case "alternating":
+            algebra_generating_family = indexed_family(
+                source.module_generating_set(),
+                lambda label: module.from_component(1, source.module_generator(label)),
+            )
     return _algebra_on_module(
         module, multiplication, placement=(category, FramedAlgebras(ring)), unit=unit,
-        construction_data={"generating_module": source, "power_flavor": flavor},
+        construction_data={
+            "generating_module": source,
+            "power_flavor": flavor,
+            "algebra_generating_family": algebra_generating_family,
+        },
+        law_decisions=law_decisions,
     )
 
 
@@ -267,7 +290,7 @@ def _alternating_extension(module_morphism):
     """
     from dzack_research.preamble.categories.algebras.algebras import Algebras
     from dzack_research.preamble.categories.algebras.comparison_maps import (
-        _construction_algebra_homset,
+        _constructed_algebra_morphism,
     )
 
     if not isinstance(module_morphism, ModuleMorphism):
@@ -317,7 +340,7 @@ def _alternating_extension(module_morphism):
                 result += coefficient * value
         return result
 
-    return _construction_algebra_homset(source, target)(evaluate)
+    return _constructed_algebra_morphism(source, target, evaluate)
 
 
 __all__ = [

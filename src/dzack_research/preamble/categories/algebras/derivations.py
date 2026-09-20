@@ -13,6 +13,7 @@ from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
+from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -592,10 +593,39 @@ class GradedDerivation(ModuleElement):
             raise TypeError("a graded derivation is specified by an element map")
         ModuleElement.__init__(self, parent)
         self._function = function
-        if not self.check_on_generators():
-            raise ValueError(
-                f"the proposed map is not a degree-{self.degree_shift()} graded derivation"
-            )
+        observed = self.check_on_generators()
+        match observed:
+            case False:
+                raise ValueError(
+                    f"the proposed map is not a degree-{self.degree_shift()} graded derivation"
+                )
+            case _:
+                pass
+        derived = self._graded_derivation_derivation()
+        match derived:
+            case None:
+                self._linearity_decision = Unknown
+                self._degree_preservation_decision = Unknown
+                self._graded_leibniz_decision = Unknown
+            case decision if decision is True or decision is Unknown:
+                self._linearity_decision = decision
+                self._degree_preservation_decision = decision
+                self._graded_leibniz_decision = decision
+            case _:
+                raise ValueError("a graded-derivation construction premise is True or Unknown")
+
+    def _graded_derivation_derivation(self):
+        r"""Return a construction-derived graded-derivation premise, or ``None`` for a stated map."""
+        return None
+
+    def linearity_decision(self):
+        return self._linearity_decision
+
+    def degree_preservation_decision(self):
+        return self._degree_preservation_decision
+
+    def graded_leibniz_decision(self):
+        return self._graded_leibniz_decision
 
     def __call__(self, element):
         return self.target()(self._function(self.algebra()(element)))
@@ -637,10 +667,17 @@ class GradedDerivation(ModuleElement):
     def __add__(self, other):
         if not isinstance(other, GradedDerivation) or other.parent() is not self.parent():
             return NotImplemented
-        return self.parent().elementwise(lambda element: self(element) + other(element))
+        return self.parent()._from_derived_elementwise(
+            lambda element: self(element) + other(element),
+            self,
+            other,
+        )
 
     def __neg__(self):
-        return self.parent().elementwise(lambda element: -self(element))
+        return self.parent()._from_derived_elementwise(
+            lambda element: -self(element),
+            self,
+        )
 
     def __sub__(self, other):
         return self + (-other)
@@ -653,42 +690,118 @@ class GradedDerivation(ModuleElement):
     def __rmul__(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
 
-    def check_on_generators(self) -> bool:
-        r"""Check degree and graded Leibniz on a selected finite algebra framing."""
+    def check_on_generators(self):
+        r"""Refute degree/Leibniz on finite selected generators when decidable.
+
+        Passing this finite observation does not prove that an arbitrary
+        element map is linear or satisfies Leibniz on all elements; those laws
+        remain ``Unknown`` unless the construction supplies their theorem.
+        """
         algebra = self.algebra()
         target = self.target()
-        labels = algebra.algebra_generating_set()
+        try:
+            labels = algebra.algebra_generating_set()
+            finite = labels.cardinality().is_finite()
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return Unknown
+        match finite:
+            case True:
+                pass
+            case False:
+                return Unknown
         for label in labels:
             generator = algebra.algebra_generator(label)
-            if generator == algebra.zero():
-                continue
+            match generator == algebra.zero():
+                case True:
+                    continue
+                case Unknown:
+                    return Unknown
+                case False:
+                    pass
             try:
                 generator_degree = algebra.homogeneous_degree(generator)
             except (ValueError, NotImplementedError):
-                return False
+                return Unknown
             image = self(generator)
-            if image != target.zero():
-                try:
-                    image_degree = target.homogeneous_degree(image)
-                except (ValueError, NotImplementedError):
+            match image == target.zero():
+                case True:
+                    continue
+                case Unknown:
+                    return Unknown
+                case False:
+                    pass
+            try:
+                image_degree = target.homogeneous_degree(image)
+            except (ValueError, NotImplementedError):
+                return Unknown
+            match image_degree == generator_degree + self.degree_shift():
+                case True:
+                    pass
+                case False:
                     return False
-                if image_degree != generator_degree + self.degree_shift():
-                    return False
+                case _:
+                    return Unknown
         for left_label in labels:
             left = algebra.algebra_generator(left_label)
-            if left == algebra.zero():
-                continue
+            match left == algebra.zero():
+                case True:
+                    continue
+                case Unknown:
+                    return Unknown
+                case False:
+                    pass
             try:
                 left_degree = algebra.homogeneous_degree(left)
             except (ValueError, NotImplementedError):
-                return False
+                return Unknown
             for right_label in labels:
                 right = algebra.algebra_generator(right_label)
                 signed_second = left * self(right)
                 if (self.degree_shift() * left_degree) % 2:
                     signed_second = -signed_second
-                if self(left * right) != self(left) * right + signed_second:
-                    return False
+                match self(left * right) == self(left) * right + signed_second:
+                    case True:
+                        pass
+                    case False:
+                        return False
+                    case _:
+                        return Unknown
+        return True
+
+
+def _combined_graded_derivation_decision(derivations):
+    r"""Transfer the graded-derivation theorem through an operation on actual derivations."""
+    decisions = tuple(
+        decision
+        for derivation in derivations
+        for decision in (
+            derivation.linearity_decision(),
+            derivation.degree_preservation_decision(),
+            derivation.graded_leibniz_decision(),
+        )
+    )
+    match all(decision is True for decision in decisions):
+        case True:
+            return True
+        case False:
+            return Unknown
+
+
+class _DerivedGradedDerivation(GradedDerivation):
+    r"""A graded derivation whose law premise is transferred from its operands."""
+
+    def __init__(self, parent, function, premise) -> None:
+        self._derived_graded_derivation_premise = premise
+        super().__init__(parent, function)
+
+    def _graded_derivation_derivation(self):
+        return self._derived_graded_derivation_premise
+
+
+class _ConstructedGradedDerivation(GradedDerivation):
+    r"""A graded derivation whose defining construction proves its laws."""
+
+    def _graded_derivation_derivation(self):
         return True
 
 
@@ -704,8 +817,7 @@ class GradedDerivationUnderlyingLinearMorphism(ModuleMorphism):
         )
 
     def _elementwise_linearity_derivation(self):
-        # A graded derivation is R-linear as part of its defining datum.
-        return True
+        return self.derivation().linearity_decision()
 
     def derivation(self):
         return self._derivation
@@ -789,24 +901,42 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
             derivation = function.derivation()
             if derivation.parent() is self:
                 return derivation
-            return GradedDerivation(self, lambda element: derivation(element))
+            return self._from_derived_elementwise(
+                lambda element: derivation(element),
+                derivation,
+            )
         return GradedDerivation(self, function)
 
     def zero(self):
-        return self.elementwise(lambda _element: self.target().zero())
+        return self._from_constructed_elementwise(
+            lambda _element: self.target().zero()
+        )
 
     def elementwise(self, function):
         if not callable(function):
             raise TypeError("a graded derivation is specified by an element map")
         return GradedDerivation(self, function)
 
+    def _from_constructed_elementwise(self, function):
+        r"""Construct from a formula whose owner proves linearity, degree and Leibniz."""
+        return _ConstructedGradedDerivation(self, function)
+
+    def _from_derived_elementwise(self, function, *derivations):
+        r"""Construct by a theorem-preserving operation on represented derivations."""
+        return _DerivedGradedDerivation(
+            self,
+            function,
+            _combined_graded_derivation_decision(derivations),
+        )
+
     def scalar_multiple(self, scalar, derivation):
         if derivation.parent() is not self:
             derivation = self(derivation)
         scalar = self.base_ring()(scalar)
         target = self.target()
-        return self.elementwise(
-            lambda element: target.scalar_multiple(scalar, derivation(element))
+        return self._from_derived_elementwise(
+            lambda element: target.scalar_multiple(scalar, derivation(element)),
+            derivation,
         )
 
     def _repr_(self):

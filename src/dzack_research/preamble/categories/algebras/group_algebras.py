@@ -183,12 +183,19 @@ def _group_algebra(base_ring, group):
         if ring in OwnedRings().Commutative() and group.is_abelian() is True
         else ()
     )
+    law_decisions = {"associativity": True, "unit": True}
+    match commutative:
+        case (_commutative_category,):
+            law_decisions["commutativity"] = True
+        case ():
+            pass
     return _algebra_on_module(
         module,
         multiplication,
         placement=(GroupAlgebras(ring), *commutative),
         unit=module.module_generator(group.one()),
         construction_data={"group": group},
+        law_decisions=law_decisions,
     )
 
 

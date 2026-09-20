@@ -63,7 +63,7 @@ def _graded_commutator(left, right):
     return algebra.graded_derivations(
         algebra,
         shift=left.degree_shift() + right.degree_shift(),
-    )(commutator)
+    )._from_derived_elementwise(commutator, left, right)
 
 
 def _exterior_word(label, degree):
@@ -134,7 +134,9 @@ def _interior_product(vector_field):
     def contraction(element):
         return de_rham.from_realization(contract_extension(de_rham.realize(element)))
 
-    return de_rham.graded_derivations(de_rham, shift=-1)(contraction)
+    return de_rham.graded_derivations(
+        de_rham, shift=-1
+    )._from_constructed_elementwise(contraction)
 
 
 def _lie_derivative(vector_field):

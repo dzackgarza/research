@@ -39,37 +39,6 @@ The generated megadoc predates some source changes. Its placement diagnostics
 require regeneration at T before they can establish additional current findings.
 Execution ordering and closure live only in [TODO.md](TODO.md).
 
-### Algebra routes must retain their complete module factor
-
-**Missing general mathematics.**
-An \(R\)-algebra is an additive group \(A\) with a biadditive multiplication together with a ring morphism \(\rho\colon R\to Z(A)\) into its centroid, the additive endomorphisms commuting with left and right multiplication (Mathlib `CentroidHom`); for unital associative \(A\) the centroid is the centre.
-Nothing else is assumed: unit, associativity and commutativity are axioms, and a Lie bracket is the multiplication of its algebra.
-\(\rho\) constructs the underlying \(R\)-module, \(r\cdot a=\rho(r)(a)\), so the forgetful functor \(\mathbf{Alg}_R\to\mathbf{Mod}_R\) is the identity on that object; from an \(R\)-module \(M\) with bilinear \(m\), \(\rho\) is the scalar action of \(M\), which lands in the centroid because \(m\) is bilinear.
-
-**Dependency path.**
-One canonical constructor consumes \(M,m\) over commutative R; group algebras,
-centres, quotients, commutator Lie algebras, engine-adopted rings and free functors
-compute that datum and use the same entry (`CON-16`). The scalar action of M
-supplies \(\rho\); it is not a second constructor.
-
-**Remaining source-review scope.**
-The complete algebra-subtree reconciliation must preserve the delivered free
-construction contract rather than reopening it: the generating module of a
-free functor is distinct from its full word/monomial underlying module, and the
-canonical `generating_module()` accessor names that functor input rather than
-`unformed_module()`.
-
-**Existing capability.**
-The common algebra entry takes the actual module and its tensor multiplication, including native ring, quotient, localization and endomorphism realizations. Multiplicative Hom admission is shared by the algebra refinements, and augmentation now adds its selected algebra morphism on the retained algebra datum rather than rebuilding an engine-backed algebra. Tensor, symmetric, exterior and divided-power constructions retain their exact generating module separately from their full graded module; native and sparse tensor/symmetric routes use the same algebra entry, and free-algebra scalar change now rebuilds from the scalar-changed generating module while transporting arbitrary word/monomial coefficients through the full module framing. The module owner supplies regular and chosen native frames, relationful word quotients, homogeneous sums and the unframed tensor classifier.
-
-**Affected consumers.**
-Every algebra constructor and every algebra Hom; the tensor- and symmetric-algebra adjunctions; Kaehler differentials and de Rham algebras of polynomial rings; group algebras and their regular representations.
-
-**Coverage boundary.**
-Read from source; no session was run.
-The named allocation paths and consumers were read from source; runtime behavior and the full terminal session remain unexecuted.
-The remaining complete-subtree reconciliation is scheduled as `objects-through-categories-algebras` in [TODO.md](TODO.md).
-
 ### Sheaf theory on non-affine schemes stops at the chart
 
 **Missing general mathematics.**
