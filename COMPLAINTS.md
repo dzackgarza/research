@@ -39,32 +39,27 @@ The generated megadoc predates some source changes. Its placement diagnostics
 require regeneration at T before they can establish additional current findings.
 Execution ordering and closure live only in [TODO.md](TODO.md).
 
-### Sheaf theory on non-affine schemes stops at the chart
+### General projectivization of a quasi-coherent sheaf is missing
 
 **Missing general mathematics.**
-For a ringed space \((X, \mathcal{O}_X)\) the tree has sheaves as functors on a site with descent (`Sheaves(coverage, D)`) and now has module sheaves with represented finite-atlas inverse image and pullback.  The remaining constructions sheaf theory on a non-affine scheme is built from are:
-the fibered category of modules over varying rings, whose arrows are semilinear maps;
-the general projectivization functor, as distinct from the projective-space entry now used by linear systems.
-Underneath, general module products and equalizers now exist at `Modules(R)`, and the module of compatible sections is their selected Čech equalizer with its universal cone retained. The unframed tensor quotient/classifier and the algebra of global sections now pass through the owned `Modules(R)` and `Algebras(R)` entries rather than alternate section parents.
+For a scheme \(X\) and a quasi-coherent \(\mathcal O_X\)-module \(F\), the tree still lacks the general quotient projectivization
+\(\mathbf P_{\mathrm{quot}}(F)=\operatorname{Proj}_X(\operatorname{Sym} F)\), its structure map, and the universal invertible quotient of the pulled-back \(F\).  This must be distinct from the existing projective-space and linear-system entries and must retain non-locally-free represented sheaves and the base-change comparison.
 
 **Dependency path.**
-Sheaves on \(\mathrm{Open}(X)\) with descent → sheaves of modules over \(\mathcal{O}_X\) → quasi-coherent and invertible sheaves and their morphisms → line bundles, Cartier divisors and linear systems.
-Gluing needs finite atlases, the glued-scheme entry, semilinear transitions and module limits.
+Quasi-coherent sheaves on \(X\) → symmetric algebra sheaf → relative Proj → universal invertible quotient → projective-bundle and linear-system consumers.
 
 **Observed evidence.**
-Read from source at `d83d43c2` (gluing) and `cf26db85` (divisors), after both subtrees were rebuilt through their categories as far as these foundations allow.
-The glued scheme and its Hom now use `Schemes(R)` through a private realization (`6faa74327`, `755c1250b`). Finite affine atlases are now objects of `FiniteAffineAtlases(X)`, a subcategory of the represented Zariski covering families in \(\mathbf{Sch}_R/X\); their refinements are covering-family morphisms, and module/algebra finite-atlas gluing data declare `DescentDataOnCover` on that coverage. Module-valued \(\Gamma(X,F)\) is the selected equalizer in `Modules(O(X))`, and algebra-valued \(\Gamma(X,A)\) is built on that module through its owned tensor square and the `Algebras(R)` entry; the former `GlobalSectionModules(R)` and `GlobalSectionAlgebras(R)` alternate owners are gone.
-`QuasiCoherentSheaves(X).Invertible()` states the scheme-theoretic locally-free-rank-one property, with a separate chosen-trivialization data category. `QuasiCoherentSheaves(X).Mor` now uses the represented affine module map on affine schemes and the existing compatible chart-map Hom on a finite affine atlas; its line-bundle realizations reuse those descent maps, and projective/multiprojective restriction comparisons are pullbacks of ambient line-bundle maps in the same QCoh Hom/Core. `AffineQuasiCoherentAdjunction` is the shared `Adjunction`, with sheaf-valued unit and counit. The linear systems use the shared projective-space entry with construction-time data (`39062eadb`, `31cfd1ea4`).
+Current source already supplies the sheaf/descent foundation this construction needs: `Sheaves.object` is determined by a coverage and `DescentData`; finite-atlas module sheaves are placed through that owner and `QuasiCoherentSheaves(X)` rather than defined as chart tables; compatible sections are the selected `Modules(O(X))` Čech equalizer with universal maps; algebra sections build multiplication on that module; and finite-atlas pullback is inverse image followed by scalar extension.  The affine quasi-coherent adjunction retains sheaf endpoints, and nontrivial line-bundle refinement comparisons are represented.  No corresponding general `P_quot(F)` construction is present.
 
 **Existing partial capability.**
-`Sheaves(coverage, D)` with `DescentEqualizer`, `DescentData` and the entry `Sheaves.object`; `ModuleGluingData(cover)` and `AlgebraGluingData(cover)`; `QuasiCoherentSheaves(X)` with the affine equivalence, invertible axiom and coverwise Hom; and the varying-ring module category used by finite-atlas transitions. Current main returns the distinguished-cover module/algebra sheaves through `Sheaves.object` (`6a16a08b0`, `62006ee37`), represents the affine structure presheaf on the affine slice (`dd72f722a`), retains exact Čech structure-sheaf descent presentations (`fa1593da9`), constructs `X.structure_sheaf()` through `Sheaves.object` with the universal descent comparison inverted at the module Hom owner (`79d2caa83`), represents finite-atlas inverse image and pullback as functors before scalar extension, constructs finite-atlas module-valued compatible sections through the `Modules(O(X))` limit owner, classifies the chartwise product of compatible algebra sections through the owned unframed tensor square, constructs represented line bundles through `QuasiCoherentSheaves(X).Invertible()` with chosen trivialization carried separately as data, and keeps affine/finite-atlas quasi-coherent morphisms as sheaf-endpoint arrows.
+`QuasiCoherentSheaves(X)` with affine and finite-atlas realizations; the varying-ring module category and scalar-change adjunctions; represented symmetric algebras of modules; projective spaces and standard line bundles; relative spectra and existing finite-atlas gluing/refinement machinery.
 
 **Affected consumers.**
-Glued schemes and their sheaves; line bundles on projective space and its subschemes; complete and imposed-multiplicity linear systems.
+Projective bundles, linear systems, and relative-geometry consumers that should use the universal quotient construction rather than a rank-based projective-space factory.
 
 **Coverage boundary.**
 Read from source; no session was run.
-Whether Sage or Singular supplies any of the remaining constructions for the specimens in question was not surveyed. The required source review and repair are scheduled as `varying-ring-modules`, `sheaf-descent-threading` and `projectivization` in TODO.
+The remaining repair is scheduled as `projectivization` in TODO; terminal execution remains deferred by `DEV-58`.
 
 ## Workflow Papercuts
 

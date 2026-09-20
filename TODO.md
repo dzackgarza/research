@@ -209,12 +209,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Diagrams, rings and geometric consumers
 
-- [ ] **`sheaf-descent-threading`**. **Needs:** none.
-  **Owner and delta:** `schemes/gluing.py`, `schemes/sheaf_functors.py`, the scheme structure sheaf and QCoh owners: close the remaining complaint's general descent/transport requirements while preserving the existing finite-atlas and affine constructions.
-  **Invariants:** coverage and descent datum determine the sheaf; sections are the owned compatible-section limit with its universal maps. Algebra sections use that module and its bilinear multiplication. Pullback is inverse image followed by scalar change; refinement comparisons and sheaf morphisms retain their actual endpoints. Finite-atlas computability does not redefine arbitrary sheaves as chart tables.
-  **Closure specimens:** a line bundle on a two-chart projective line with a nonidentity transition, its restriction to overlaps, and a refinement of the cover give compatible owned sections and comparison maps. An incompatible section pair fails the equalizer condition. Check affine equivalence unit/counit on sheaf endpoints and multiplication after restriction.
-
-- [ ] **`projectivization`**. **Needs:** `sheaf-descent-threading`.
+- [ ] **`projectivization`**. **Needs:** none.
   **Owner and delta:** the existing projective-space, QCoh and relative-geometry owners: deliver the general projectivization requirement remaining in COMPLAINTS, using the supplied sheaf and gluing machinery.
   **Domain and universal datum:** for a scheme X and a quasi-coherent O_X-module F, construct P_quot(F)=Proj_X(Sym(F)) with its structure map and universal invertible quotient of the pulled-back F, representing invertible quotients over X ([Stacks, 01OA](https://stacks.math.columbia.edu/tag/01OA)). Neither finite rank nor local freeness is a defining hypothesis. The symmetric algebra's grading and relations are supplied by its shared owner; retain arbitrary represented F even where a particular chart computation is unavailable. Construct the base-change comparison with its universal quotient.
   **Consumer convention:** preserve the existing linear-system convention of lines in sections in `divisors/linear_systems.py`. For finite locally free E, lines are P_quot(E dual), with the actual comparison; arbitrary non-locally-free F must not be silently dualized. General sheaf projectivization and the lines consumer have explicitly distinct variance. Projective space is the appropriate specialization.
