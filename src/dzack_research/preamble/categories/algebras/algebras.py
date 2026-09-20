@@ -1353,7 +1353,12 @@ def _algebra_on_module(module, multiplication, *, placement, unit=None, construc
         Algebras.ParentMethods._retain_algebra_datum(module, module, multiplication)
         if unit is not None:
             Algebras.Unital.ParentMethods._retain_unit(module, module(unit))
-        return refine(module, Cat().meet(categories))
+        placement = Cat().meet(categories)
+        match module in placement:
+            case True:
+                return module
+            case False:
+                return refine(module, placement)
     return module._module_with_structure(categories, data)
 
 
@@ -2695,7 +2700,11 @@ def _own_algebra(structure_map):
         placement = Algebras(base).Associative().Unital()
         if base in OwnedRings().Commutative():
             placement = placement.Commutative()
-        return refine(base, placement)
+        match base in placement:
+            case True:
+                return base
+            case False:
+                return refine(base, placement)
     return _algebra_structure_view(structure_map.codomain(), structure_map)
 
 

@@ -197,11 +197,13 @@ def test_number_field_orders_keep_the_integer_base_in_both_access_orders() -> No
     assert category_first in finite_integer_algebras
     assert category_first in finite_integer_modules
     assert category_first.base_ring() is ZZ
+    assert category_first.as_algebra_over(ZZ) is category_first
     assert category_first.module_rank() == 2
 
     field = QuadraticField(2, "b_bootstrap")
     base_first = field.order_generated_by(field.primitive_element())
     assert base_first.base_ring() is ZZ
+    assert base_first.as_algebra_over(ZZ) is base_first
     assert base_first.module_rank() == 2
     assert base_first in finite_integer_algebras
     assert base_first in finite_integer_modules

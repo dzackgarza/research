@@ -2,6 +2,10 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring,
+    _own_ring,
+)
 
 
 def _session():
@@ -116,6 +120,8 @@ def test_noncommutative_center_is_a_predicate_subring() -> None:
 
     assert center in session["OwnedRings"]()
     assert center in session["CommutativeRings"]()
+    assert center.algebra_base_ring() is center
+    assert center.regular_module() is center
     assert center.ambient_ring() is matrices
     assert center.inclusion().domain() is center
     assert center.inclusion().codomain() is matrices
@@ -137,6 +143,30 @@ def test_owned_ring_constructors_return_owned_rings() -> None:
     assert session["QuadraticField"](2, "a") in OwnedFields()
     assert session["QuadraticField"](ZZ(2), "a") in OwnedFields()
     assert session["QuadraticField"](SageZZ(2), "a") in OwnedFields()
+
+
+def test_finite_ring_engine_adoption_keeps_initial_semantic_placement() -> None:
+    session = _session()
+    GF = session["GF"]
+    Zmod = session["Zmod"]
+    PrimeFields = session["PrimeFields"]
+    LocalRings = session["LocalRings"]
+    ArtinianRings = session["ArtinianRings"]
+
+    prime = GF(5)
+    extension = GF(4)
+    local = Zmod(8)
+
+    assert _own_ring(_engine_ring(prime)) is prime
+    assert _own_ring(_engine_ring(extension)) is extension
+    assert _own_ring(_engine_ring(local)) is local
+    assert prime in PrimeFields()
+    assert extension not in PrimeFields()
+    assert local in LocalRings()
+    assert local in ArtinianRings()
+    assert local.residue_field() is GF(2)
+    assert local.residue_map().domain() is local
+    assert local.residue_map().codomain() is GF(2)
 
 
 def test_explicit_algebraic_extensions_are_number_fields_or_orders() -> None:

@@ -40,6 +40,7 @@ from sage.misc.latex import latex
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.repr import repr_lincomb
 from sage.rings.abc import Order as SageNumberFieldOrder
+from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
@@ -1324,6 +1325,8 @@ class LocalizationRings(OwnedCategory):
 
 
 class _PredicateSubringParent(Parent):
+    _preamble_owned_ring_parent = True
+
     @lazy_attribute
     def Element(self):
         return _PredicateSubringElement
@@ -1340,7 +1343,23 @@ class _PredicateSubringParent(Parent):
         self._one = ambient_ring.one()
         self._zero = ambient_ring.zero()
         base = self if self._preamble_is_commutative else _own_ring(SageZZ)
-        Parent.__init__(self, base=base, category=category)
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+        algebra = Algebras(base).Associative().Unital()
+        placements = [category]
+        match self._preamble_is_commutative:
+            case True:
+                from dzack_research.preamble.categories.modules.pure.modules import (
+                    FinitelyGeneratedFreeModules,
+                )
+
+                placements.extend((
+                    algebra.Commutative(),
+                    FinitelyGeneratedFreeModules(self),
+                ))
+            case False:
+                placements.append(algebra)
+        Parent.__init__(self, base=base, category=Category.join(tuple(placements)))
         realize_owned_category(self)
         # A predicate-subring datum asserts closure and the ring constants.
         # Refute a decided false constant, but do not treat an undecided
@@ -1828,13 +1847,26 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return _engine_krull_dimension(self)
 
             def as_algebra_over(self, base_ring):
-                from dzack_research.preamble.categories.algebras.algebras import _refine_algebra
-
                 base = _own_ring(base_ring)
+                from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+                selected = Algebras(base).Associative().Unital().Commutative()
+                match (self.base_ring() is base, self in selected):
+                    case (True, True):
+                        return self
+                    case _:
+                        pass
                 engine = _engine_ring(self)
                 if not engine.has_coerce_map_from(_engine_ring(base)):
                     raise ValueError(f"{self} has no represented canonical algebra structure over {base}")
-                return _refine_algebra(self, base)
+                match base is self:
+                    case True:
+                        structure_map = self.Mor(self).identity()
+                    case False:
+                        structure_map = base.Mor(self)(
+                            engine.coerce_map_from(_engine_ring(base))
+                        )
+                return structure_map.as_algebra()
 
             def affine_spectrum(self, base_ring=None):
                 r"""Return the affine scheme represented by this commutative ring or algebra."""
@@ -1969,29 +2001,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
     class ParentMethods:
-        def __init_extra__(self) -> None:
-            r"""Place the ring over the scalar base selected by its construction.
-
-            Another scalar map defines another algebra structure, obtained by
-            ``as_algebra`` on that map, not another placement of this object
-            (``CAT-16``, ``CON-16``).  In particular the regular self-algebra
-            and restriction to the integers do not overwrite a relative base.
-            """
-            from dzack_research.preamble.categories.algebras.algebras import Algebras
-
-            commutative = self.is_commutative() is True
-            match self.base():
-                case None:
-                    base = self if commutative else _own_ring(SageZZ)
-                case selected:
-                    base = _own_ring(selected)
-            placement = Algebras(base).Associative().Unital()
-            match commutative:
-                case True:
-                    refine(self, (OwnedRings().Commutative(), placement.Commutative()))
-                case False:
-                    refine(self, placement)
-
         def _fresh_free_module_on(self, labels, **options):
             r"""Return the free module on ``labels`` over this ring's own scalars.
 
@@ -2115,10 +2124,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Use standard polynomial/algebraic adjunction syntax on an owned ring."""
             from dzack_research.preamble.categories.algebras.group_algebras import _group_algebra
             from dzack_research.preamble.categories.group.groups import OwnedGroups
-            from dzack_research.preamble.categories.rings.number_fields import (
-                _refine_number_field_view,
-                _refine_order_view,
-            )
 
             match names:
                 case str():
@@ -2136,11 +2141,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             if result not in OwnedRings():
                 return result
-            engine = _engine_ring(result)
-            if isinstance(engine, SageNumberFieldOrder):
-                return _refine_order_view(result)
-            if engine in SageNumberFields():
-                return _refine_number_field_view(result)
             return result
 
         def predicate_subring(self, predicate, description, category=None):
@@ -2537,8 +2537,11 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         # ``Algebras(R).Associative().Unital().Commutative()`` must therefore accept that constructing
         # parent directly rather than asking category membership of an object
         # whose category is precisely what is being built.
-        if not isinstance(base_ring, _OwnedRingParent):
-            base_ring = _owned_ring(base_ring)
+        match getattr(base_ring, "_preamble_owned_ring_parent", False):
+            case True:
+                pass
+            case False:
+                base_ring = _owned_ring(base_ring)
         return OwnedParameterizedCategory.__classcall__(
             cls,
             base_ring,
@@ -2547,8 +2550,8 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         )
 
     def __init__(self, base_ring) -> None:
-        match base_ring:
-            case _OwnedRingParent():
+        match getattr(base_ring, "_preamble_owned_ring_parent", False):
+            case True:
                 # The host type is itself the owned-ring construction.  During
                 # its bootstrap the category being built is precisely what
                 # will establish ``base_ring in OwnedRings()``; asking that
@@ -2557,7 +2560,7 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
                 # without re-asking the theorem under construction.
                 self._owned_parameter = base_ring
                 OwnedCategory.__init__(self)
-            case _:
+            case False:
                 OwnedParameterizedCategory.__init__(self, base_ring)
 
     def base_ring(self):
@@ -3243,7 +3246,11 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             else:
                 base = _own_ring(base)
                 category_base = base
-            placement = _owned_ring_category(engine, scalar_base=category_base)
+            placement = _owned_ring_category(
+                engine,
+                scalar_base=category_base,
+                owned_ring=self,
+            )
             if category is not None:
                 placement = Category.join((placement, category))
             Parent.__init__(self, base=base, category=placement)
@@ -3254,6 +3261,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             # constructed so those owners reuse this exact scalar object.
             if canonical_native and not integer_bootstrap:
                 _owned_engine_ring.set_cache(self, engine)
+
+            _install_engine_selected_ring_data(self, engine)
 
             from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
@@ -3449,7 +3458,30 @@ def _engine_scalar_ring(engine: Ring):
     return _own_ring(base)
 
 
-def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
+def _integer_mod_local_prime(engine):
+    r"""Return the unique residue characteristic of ``ZZ/nZZ`` when it is local."""
+    match engine:
+        case IntegerModRing_generic():
+            modulus = SageZZ(engine.characteristic())
+            factors = tuple(modulus.factor())
+            match factors:
+                case ((prime, _exponent),):
+                    return SageZZ(prime)
+                case _:
+                    return None
+        case _:
+            return None
+
+
+def _engine_field_decision(engine):
+    r"""Return the engine's exact field decision when represented."""
+    try:
+        return engine.is_field()
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
+        return engine in SageFields()
+
+
+def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
     r"""Return the strongest owned ring category witnessed by ``engine``.
 
     ``scalar_base`` is the owned base already selected by the constructor.
@@ -3459,20 +3491,68 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
     """
     category = engine.category()
     extra = []
-    if scalar_base is not None:
-        scalars = scalar_base
-        # The engine presents this ring as an algebra over a base -- a number
-        # field over QQ, a p-adic ring over ZZ -- and that is the structure
-        # ``base_ring()`` reports, so it is the placement recorded here.
-        from dzack_research.preamble.categories.algebras.algebras import Algebras
+    commutative = engine.is_commutative() is True
+    match owned_ring:
+        case None:
+            algebra_base = scalar_base
+        case _:
+            match scalar_base:
+                case None:
+                    algebra_base = owned_ring
+                case _:
+                    algebra_base = scalar_base
+    match algebra_base:
+        case None:
+            pass
+        case _:
+            # The selected scalar object is part of the ring constructor.
+            # Record its ordinary algebra/module structure in the initial
+            # placement; the native algebra owner below supplies the
+            # multiplication and unit data.
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-        extra.append(Algebras(scalars).Associative().Unital())
+            algebra = Algebras(algebra_base).Associative().Unital()
+            match commutative:
+                case True:
+                    extra.append(algebra.Commutative())
+                case False:
+                    extra.append(algebra)
+    match commutative:
+        case True:
+            extra.append(OwnedRings().Commutative())
+        case False:
+            pass
+    match (scalar_base is None, owned_ring is not None):
+        case (True, True):
+            # Every ring is the rank-one free module over itself.  Fix that
+            # placement before Parent construction; the native module owner
+            # fixes the selected unit framing before this constructor returns.
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                FinitelyGeneratedFreeModules,
+            )
+
+            extra.append(FinitelyGeneratedFreeModules(owned_ring))
+        case _:
+            pass
     if engine in SageIntegralDomains():
         extra.append(OwnedRings().Commutative().NoZeroDivisors())
     if engine is SageZZ or engine is SageQQ:
         extra.append(OwnedOrderedRings())
-    if engine is SageQQ:
-        extra.append(PrimeFields())
+    field_decision = _engine_field_decision(engine)
+    match field_decision:
+        case True:
+            finite_prime = False
+            try:
+                finite_prime = bool(engine.is_finite()) and SageZZ(engine.cardinality()) == SageZZ(engine.characteristic())
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
+            match engine is SageQQ or finite_prime:
+                case True:
+                    extra.append(PrimeFields())
+                case False:
+                    pass
+        case _:
+            pass
     if category.is_subcategory(SagePrincipalIdealDomains()):
         extra.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
     elif (
@@ -3491,19 +3571,105 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
         noetherian = engine is SageZZ
     if noetherian is True or engine is SageZZ:
         extra.append(OwnedRings().Noetherian())
-    if engine in SageFields():
-        placement = OwnedRings().Division().Commutative()
-    elif category.is_subcategory(SageDivisionRings()):
-        placement = OwnedRings().Division()
-    else:
-        placement = OwnedRings()
-    joined = Category.join((placement, _owned_ring_size(engine), *extra))
+    match field_decision:
+        case True:
+            placement = OwnedRings().Division().Commutative()
+        case _:
+            match category.is_subcategory(SageDivisionRings()):
+                case True:
+                    placement = OwnedRings().Division()
+                case False:
+                    placement = OwnedRings()
+    size = _owned_ring_size(engine)
+    match size.is_subcategory(FiniteSets()):
+        case True:
+            extra.append(OwnedRings().Artinian())
+        case False:
+            pass
+    local_prime = _integer_mod_local_prime(engine)
+    match (local_prime is not None, field_decision is not True):
+        case (True, True):
+            extra.append(OwnedRings().Commutative().Local())
+        case _:
+            pass
+    match engine in SageNumberFields():
+        case True:
+            from dzack_research.preamble.categories.rings.number_fields import (
+                NumberFieldsWithChosenPrimitiveElement,
+                OwnedNumberFields,
+            )
+
+            extra.append(OwnedNumberFields())
+            match engine is SageQQ:
+                case True:
+                    pass
+                case False:
+                    extra.append(NumberFieldsWithChosenPrimitiveElement())
+        case False:
+            pass
+    match engine is SageZZ or isinstance(engine, SageNumberFieldOrder):
+        case True:
+            from dzack_research.preamble.categories.rings.number_fields import (
+                OrdersWithChosenIntegralBasis,
+            )
+
+            extra.append(OrdersWithChosenIntegralBasis())
+        case False:
+            pass
+    joined = Category.join((placement, size, *extra))
     if engine is SageZZ or (
         isinstance(engine, SageNumberFieldOrder)
         and (scalar_base is None or _engine_ring(scalar_base) is SageZZ)
     ):
         return Category.join((joined, OwnedOrders()))
     return joined
+
+
+def _install_engine_selected_ring_data(ring, engine) -> None:
+    r"""Fix constructor data required by exact initial ring placement."""
+    match engine:
+        case IntegerModRing_generic() if _engine_field_decision(engine) is not True:
+            prime = _integer_mod_local_prime(engine)
+            match prime:
+                case None:
+                    pass
+                case _:
+                    from dzack_research.preamble.categories.rings.commutative_algebra import (
+                        GeneratedIdealView,
+                    )
+
+                    residue = GF(prime)
+                    maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
+                    residue_map = ring.Mor(residue)(
+                        lambda element: residue(
+                            SageZZ(_engine_element(ring, element).lift())
+                        )
+                    )
+                    _install_local_ring_construction(
+                        ring,
+                        maximal_ideal,
+                        residue,
+                        residue_map,
+                    )
+        case SageNumberFieldOrder() if engine is not SageZZ:
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                _fix_selected_module_framing,
+            )
+
+            integers = _own_ring(SageZZ)
+            labels = finite_ordered_set(range(int(engine.rank())))
+            source = integers.free_module(labels)
+            _fix_selected_module_framing(
+                ring,
+                integers,
+                labels,
+                lambda label: ring._from_engine_element(
+                    engine.basis()[labels.ranking_map()(label)]
+                ),
+                source,
+            )
+        case _:
+            pass
 
 
 def _owned_ring_size(engine):
@@ -3572,10 +3738,11 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
 def _own_ring(ring):
     r"""Private backend adapter: build the preamble ring represented by ``ring``.
 
-    One engine has one owned view.  Later chosen number-field or integral-basis
-    data refine this same object in place; semantic ring/order/algebra placement
-    belongs to its construction.  Thus ``ZZ.base_ring() is ZZ`` and every
-    morphism ``R[G] -> R`` finds one common base ring.
+    One engine has one owned view.  Number-field, order and ordinary algebra
+    placement are fixed by that constructor before the parent is exposed;
+    selected residue and integral-basis data are installed in the same
+    construction.  Thus ``ZZ.base_ring() is ZZ`` and every morphism
+    ``R[G] -> R`` finds one common base ring.
     """
     if ring in OwnedRings():
         return ring
@@ -3701,8 +3868,6 @@ def GF(*args, **kwargs):
     field = _own_ring(engine)
     field._preamble_ring_display = f"GF({engine.order()})"
     field._preamble_ring_display_kind = "finite_field"
-    if engine.degree() == 1:
-        refine(field, PrimeFields())
     return field
 
 
@@ -3723,27 +3888,6 @@ def Zmod(*args, **kwargs):
     ring._preamble_ring_display = f"ZZ/{modulus}ZZ"
     ring._preamble_ring_display_kind = "modular"
 
-    factors = tuple(modulus.factor())
-    if bool(engine.is_field()):
-        refine(ring, OwnedRings().Division().Commutative())
-        return ring
-
-    refine(ring, OwnedRings().Artinian())
-    if len(factors) == 1:
-        from dzack_research.preamble.categories.rings.commutative_algebra import (
-            GeneratedIdealView,
-        )
-
-        prime, _exponent = factors[0]
-        residue = GF(prime)
-        maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
-        residue_map = ring.Mor(residue)(
-            lambda element: residue(
-                SageZZ(_engine_element(ring, element).lift())
-            ),
-        )
-        _install_local_ring_construction(ring, maximal_ideal, residue, residue_map)
-        refine(ring, OwnedRings().Commutative().Local())
     return ring
 
 

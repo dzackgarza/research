@@ -9,13 +9,12 @@ from sage.all import (
 from sage.all import (
     QuadraticField as _SageQuadraticField,
 )
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories._lattice import signature_pair
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoryPacketMethods,
     HomCategoryConstruction,
@@ -24,8 +23,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
-    Modules,
-    _fix_selected_module_framing,
 )
 from dzack_research.preamble.categories.rings.embeddings import NumberFieldHomset
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -43,12 +40,8 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.refine import refine
-
-
 def _own_number_field(engine):
-
-    return _refine_number_field_view(_own_ring(engine))
+    return _owned_engine_ring(engine)
 
 
 def CyclotomicField(order, *args, **kwargs):
@@ -184,9 +177,11 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             r"""Return the maximal order ``O_K`` as an owned ring."""
 
             engine = _engine_ring(self)
-            if engine is SageQQ:
-                return _refine_order_view(_own_ring(SageZZ))
-            return _refine_order_view(_own_ring(engine.ring_of_integers()))
+            match engine is SageQQ:
+                case True:
+                    return _owned_engine_ring(SageZZ)
+                case False:
+                    return _owned_engine_ring(engine.ring_of_integers())
 
         maximal_order = ring_of_integers
 
@@ -204,7 +199,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 if len(backend_generators) == 1
                 else list(backend_generators)
             )
-            return _refine_order_view(_own_ring(engine.order(datum)))
+            return _owned_engine_ring(engine.order(datum))
 
         def ramified_primes(self):
             r"""Return the rational primes ramified in ``K``."""
@@ -619,77 +614,6 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
         def module_rank(self):
             engine = _engine_ring(self)
             return cardinal(1 if engine is SageZZ else engine.rank())
-
-
-def _refine_order_view(order):
-    r"""Return the constructor-owned order view with its selected integral basis."""
-    return _owned_order_view(_engine_ring(order))
-
-
-def _refine_number_field_view(field):
-    r"""Return the constructor-owned number-field view of an engine field."""
-    if field not in OwnedRings():
-        raise TypeError("number-field construction expects an owned ring view")
-    return _owned_number_field_view(_engine_ring(field))
-
-
-def _order_basis_labels(engine):
-    r"""Return the selected integral-basis labels of one order engine."""
-    if engine is SageZZ:
-        return finite_ordered_set((0,))
-    return finite_ordered_set(range(int(engine.rank())))
-
-
-def _order_basis_element(order, labels, label):
-    r"""Return one selected integral-basis element through the owned order view."""
-    if label not in labels:
-        raise ValueError(f"{label!r} is not an integral-basis label")
-    engine = _engine_ring(order)
-    if engine is SageZZ:
-        return order._from_engine_element(SageZZ.one())
-    return order._from_engine_element(engine.basis()[labels.ranking_map()(label)])
-
-
-@cached_function
-def _owned_order_view(engine):
-    r"""The selected-integral-basis view of one engine order.
-
-    One engine has one owned ring, so the view refines that ring in place
-    rather than constructing a second parent on the same engine.  The selected
-    integral basis is installed once as the generic framing epimorphism
-    ``F_Z(S) -> O``; public module generators are projections of that arrow.
-    """
-    if not (engine is SageZZ or isinstance(engine, SageNumberFieldOrder)):
-        raise TypeError("the selected integral-basis view requires a number-field order")
-    order = _owned_engine_ring(engine)
-    if engine is not SageZZ:
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-
-        integers = _own_ring(SageZZ)
-        labels = _order_basis_labels(engine)
-        source = integers.free_module(labels)
-        _fix_selected_module_framing(
-            order,
-            integers,
-            labels,
-            lambda label: _order_basis_element(order, labels, label),
-            source,
-        )
-        refine(order, FramedModules(integers))
-    # The integers already have the exact regular rank-one frame. Other
-    # orders now have their actual integral-basis epimorphism as well.
-    return refine(order, OrdersWithChosenIntegralBasis())
-
-
-@cached_function
-def _owned_number_field_view(engine):
-    r"""The strongest number-field view determined by ``engine``, refined in place."""
-    rationals = _own_ring(SageQQ)
-    categories = [OwnedNumberFields(), Modules(rationals)]
-    if engine is not SageQQ:
-        categories.append(NumberFieldsWithChosenPrimitiveElement())
-    return refine(_owned_engine_ring(engine), Cat().meet(tuple(categories)))
-
 
 
 __all__ = [

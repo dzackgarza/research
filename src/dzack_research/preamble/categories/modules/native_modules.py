@@ -104,7 +104,11 @@ class _RingModulePresentation:
         assert Modules.ParentMethods._native_module_presentation(module) is None, "the native module is constructed once"
         module._preamble_native_module_presentation = self
         module._preamble_base_ring = self.base_ring()
-        refine(module, category)
+        match module in category:
+            case True:
+                pass
+            case False:
+                refine(module, category)
         if self.is_regular():
             assert self._basis is None, "the canonical regular frame is supplied by its unit"
             free = self.base_ring().free_module(1)
@@ -121,13 +125,21 @@ class _RingModulePresentation:
                 self._basis.image,
                 source.framing_source(),
             )
-            refine(module, FramedModules(self.base_ring()))
+            match module in FramedModules(self.base_ring()):
+                case True:
+                    pass
+                case False:
+                    refine(module, FramedModules(self.base_ring()))
             match source:
                 case _ if source in FramedFreeModules(self.base_ring()):
                     placement = FramedFreeModules(self.base_ring())
                     if labels.cardinality().is_finite():
                         placement = placement.FinitelyGenerated()
-                    refine(module, placement)
+                    match module in placement:
+                        case True:
+                            pass
+                        case False:
+                            refine(module, placement)
         return module
 
     def basis(self):

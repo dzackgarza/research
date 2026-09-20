@@ -23,8 +23,6 @@ from dzack_research.preamble.categories.rings.number_fields import (
 from dzack_research.preamble.categories.rings.number_fields import (
     NumberFieldsWithChosenPrimitiveElement,
     OwnedNumberFields,
-    _refine_number_field_view,
-    _refine_order_view,
 )
 from dzack_research.preamble.categories.rings.number_fields import (
     QuadraticField as _QuadraticField,
@@ -147,8 +145,8 @@ def session_ring_objects() -> dict[str, object]:
     from sage.all import ZZ as SageZZ
     from sage.all import QQbar as SageQQbar
 
-    integers = _refine_order_view(_own_ring(SageZZ))
-    rationals = _refine_number_field_view(_own_ring(SageQQ))
+    integers = _own_ring(SageZZ)
+    rationals = _own_ring(SageQQ)
     integers._preamble_ring_display = "Integer Ring"
     rationals._preamble_ring_display = "Rational Field"
     aa = _public_commutative_ring(_own_ring(SageAA))
