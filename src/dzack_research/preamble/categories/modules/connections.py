@@ -3,6 +3,8 @@ r"""Algebraic connections on represented modules over commutative algebras."""
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
+from sage.misc.unknown import Unknown
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -15,32 +17,25 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialComponentMorphism
+from dzack_research.preamble.categories.modules.cochain_complexes import (
+    CochainComplexes,
+    _CochainComplexDirectSum,
+)
 from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
-from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule
+from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumElement
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FinitelyGeneratedFreeModules,
+    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
 
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-class ModuleConnectionConstruction:
-    r"""The selected connection from which a structured module is transported."""
-
-    def __init__(self, source_connection) -> None:
-        if not isinstance(source_connection, Connection):
-            raise TypeError("a module-connection construction starts from a Connection")
-        self._source_connection = source_connection
-
-    def source_connection(self):
-        return self._source_connection
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 class ModulesWithConnection(OwnedParameterizedCategory):
@@ -92,47 +87,49 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         algebra = connection.algebra()
         if algebra is not self.algebra():
             raise ValueError("the connection belongs to a different coefficient algebra")
-        assert source in FinitelyGeneratedFreeModules(algebra), (
-            "structured connection modules are materialized here for finite free source modules"
+        assert source in FramedModules(algebra), (
+            "a represented connection is equipped on the framed module carrying its generator-indexed datum"
         )
         categories = [self]
-        if connection.is_flat():
-            categories.append(ModulesWithFlatConnection(algebra))
-        construction = ModuleConnectionConstruction(connection)
-        return algebra._fresh_free_module_on(
-            source.module_generating_set(),
-            _extra_categories=tuple(categories),
-            _extra_construction_data={"connection_construction": construction},
+        match connection.is_flat():
+            case True:
+                categories.append(ModulesWithFlatConnection(algebra))
+            case _:
+                pass
+        return source._module_with_structure(
+            tuple(categories),
+            {
+                "source_connection": connection,
+                "unformed_module": source,
+            },
         )
 
     class ParentMethods:
-        def __init__(self, connection_construction, **rest) -> None:
-            self._connection_construction = connection_construction
+        def __init__(self, source_connection, unformed_module, **rest) -> None:
+            assert source_connection.module() is unformed_module, (
+                "a module with connection retains the exact module on which its connection was stated"
+            )
+            self._preamble_source_connection = source_connection
+            self._preamble_unformed_module = unformed_module
             super().__init__(**rest)
 
-        def connection_construction(self):
-            r"""Return the selected connection construction defining this module."""
-            return self._connection_construction
+        def unformed_module(self):
+            r"""Return the module on which the selected connection was stated."""
+            return self._preamble_unformed_module
+
+        def _element_of_unformed_module(self, element):
+            module = self.unformed_module()
+            return module.linear_combination(self.framing_coefficients(element))
+
+        def _element_from_unformed_module(self, element):
+            return self.linear_combination(
+                self.unformed_module().framing_coefficients(element)
+            )
 
         @cached_method
         def connection(self):
-            source_connection = self.connection_construction().source_connection()
-            transported_target = self.connections().target_module()
-            omega = source_connection.one_forms()
-
-            def transported_image(label):
-                image = transported_target.zero()
-                for (source_label, form_label), coefficient in source_connection.target_module().framing_coefficients(source_connection.generator_image(label)).items():
-                    image += transported_target.scalar_multiple(
-                        coefficient,
-                        transported_target.pure_tensor(
-                            self.module_generator(source_label),
-                            omega.module_generator(form_label),
-                        ),
-                    )
-                return image
-
-            return self.connections()(transported_image)
+            r"""Return the selected connection datum on :meth:`unformed_module`."""
+            return self._preamble_source_connection
 
         def Mor(self, codomain, category=None):
             connections = ModulesWithConnection(self.base_ring())
@@ -378,17 +375,25 @@ class Connection(Element):
                     )
         return result
 
-    def is_flat(self) -> bool:
+    def is_flat(self):
 
         module = self.module()
         ring = module.base_ring()
-        assert module in ModulesWithChosenFinitePresentation(ring), (
-            "flatness by generator verification requires a selected finite framing"
-        )
+        match module in ModulesWithChosenFinitePresentation(ring):
+            case False:
+                return Unknown
+            case True:
+                pass
+        labels = module.module_generating_set()
+        match labels.cardinality().is_finite():
+            case True:
+                pass
+            case _:
+                return Unknown
         zero = self.curvature_target().zero()
         return all(
             self.curvature_on_generator(label) == zero
-            for label in module.module_generating_set()
+            for label in labels
         )
 
     def de_rham_module(self):
@@ -524,19 +529,28 @@ def _connections(module) -> ConnectionSpace:
 class ConnectionMorphism(Element):
     r"""An ``A``-linear map horizontal for the selected connections."""
 
-    def __init__(self, parent, images, *, verify_horizontality=True) -> None:
+    def __init__(self, parent, images) -> None:
         Element.__init__(self, parent)
         underlying = parent.arrow_set()(images)
         if underlying.linearity_decision() is not True:
             raise ValueError("a connection morphism requires an established underlying linear map")
         self._underlying_morphism = underlying
-        if verify_horizontality:
-            self._check_connection_square()
+        match self._horizontality_derivation():
+            case True:
+                pass
+            case False:
+                raise ValueError("the module map is not horizontal for the selected connections")
+            case _:
+                self._check_connection_square()
         self._underlying_morphism = HorizontalConnectionUnderlyingMorphism(
             parent.arrow_set(),
             self,
             underlying,
         )
+
+    def _horizontality_derivation(self):
+        r"""Return a construction-derived horizontality decision, or ``None``."""
+        return None
 
     def domain(self):
         return self.parent().domain_object()
@@ -555,6 +569,20 @@ class ConnectionMorphism(Element):
 
     as_morphism = underlying_linear_morphism
 
+    def __mul__(self, other):
+        match other:
+            case ConnectionMorphism():
+                pass
+            case _:
+                return NotImplemented
+        match other.codomain() is self.domain():
+            case True:
+                pass
+            case False:
+                return NotImplemented
+        underlying = self.underlying_linear_morphism() * other.underlying_linear_morphism()
+        return other.domain().Mor(self.codomain())._from_horizontal_morphism(underlying)
+
     def _check_connection_square(self) -> None:
         domain_connection = self.domain().connection()
         codomain_connection = self.codomain().connection()
@@ -563,23 +591,33 @@ class ConnectionMorphism(Element):
         omega = domain_connection.one_forms()
         identity_omega = omega.module_category().Mor(omega, omega).identity()
 
-        induced = self.underlying_linear_morphism().tensor_product_map(
+        domain_module = domain_connection.module()
+        codomain_module = codomain_connection.module()
+        underlying = _ConnectionCoefficientViewMorphism(
+            Modules(domain_connection.algebra()).Mor(domain_module, codomain_module),
+            self.underlying_linear_morphism(),
+            self.domain(),
+            self.codomain(),
+        )
+        induced = underlying.tensor_product_map(
             identity_omega,
             source=domain_connection.target_module(),
             target=codomain_connection.target_module(),
         )
 
-        domain = self.domain()
-        ring = domain.base_ring()
-        assert domain in ModulesWithChosenFinitePresentation(ring), (
+        ring = domain_module.base_ring()
+        assert domain_module in ModulesWithChosenFinitePresentation(ring), (
             "horizontality by generator verification requires a selected finite framing"
         )
-        for label in domain.module_generating_set():
-            generator = self.domain().module_generator(label)
-            if codomain_connection(self(generator)) != induced(domain_connection(generator)):
-                raise ValueError(
-                    "the module map is not horizontal for the selected connections"
-                )
+        for label in domain_module.module_generating_set():
+            generator = domain_module.module_generator(label)
+            match codomain_connection(underlying(generator)) == induced(domain_connection(generator)):
+                case True:
+                    pass
+                case _:
+                    raise ValueError(
+                        "the module map is not horizontal for the selected connections"
+                    )
 
 
 class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
@@ -599,6 +637,33 @@ class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
 
     def connection_morphism(self):
         return self._connection_morphism
+
+
+class _ConnectionCoefficientViewMorphism(ModuleMorphism):
+    r"""A structured connection map read on the exact modules carrying its connections."""
+
+    def __init__(self, parent, structured_morphism, structured_source, structured_target) -> None:
+        self._structured_morphism = structured_morphism
+        self._structured_source = structured_source
+        self._structured_target = structured_target
+        target = parent.codomain()
+        super().__init__(
+            parent,
+            lambda element: target(
+                structured_morphism(structured_source(element))
+            ),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._structured_morphism.linearity_decision()
+
+
+class _ConstructedHorizontalConnectionMorphism(ConnectionMorphism):
+    r"""A horizontal map whose construction already gives the connection square."""
+
+    def _horizontality_derivation(self):
+        return True
 
 
 class ConnectionHomset(RestrictedHomCategoryParent):
@@ -636,14 +701,13 @@ class ConnectionHomset(RestrictedHomCategoryParent):
                 return structured
         return ConnectionMorphism(self, images)
 
+    def _from_horizontal_morphism(self, underlying):
+        return _ConstructedHorizontalConnectionMorphism(self, underlying)
+
     def identity(self):
         if self.domain_object() is not self.codomain_object():
             raise ValueError("identity belongs to a connection endomorphism homset")
-        return ConnectionMorphism(
-            self,
-            self.arrow_set().identity(),
-            verify_horizontality=False,
-        )
+        return self._from_horizontal_morphism(self.arrow_set().identity())
 
 
 class ConnectionMorphismCategoryConstruction(_RestrictedHomCategoryOf):
@@ -657,26 +721,156 @@ class ConnectionMorphismCategoryConstruction(_RestrictedHomCategoryOf):
 
 
 
-class ConnectionDeRhamDifferential:
-    r"""The covariant differential on ``E tensor_A Omega^*_{A/R}``."""
+def _connection_de_rham_piece(connection, degree):
+    degree = int(degree)
+    algebra = connection.algebra()
+    match degree < 0:
+        case True:
+            return algebra.base_ring().free_module(0)
+        case False:
+            pass
+    coefficient_module = connection.module()
+    forms = connection.one_forms().exterior_power(degree)
+    tensor = Modules(coefficient_module.base_ring()).tensor_product(
+        (coefficient_module, forms)
+    )
+    return tensor.restrict_scalars(algebra.algebra_structure_morphism())
 
-    def __init__(self, module) -> None:
-        self._module = module
 
-    def module(self):
-        return self._module
+def _connection_de_rham_component(connection, degree, component, target):
+    degree = int(degree)
+    match degree < 0:
+        case True:
+            return target.zero()
+        case False:
+            pass
+    coefficient_module = connection.module()
+    omega = connection.one_forms()
+    source_forms = omega.exterior_power(degree)
+    target_forms = omega.exterior_power(degree + 1)
+    modules = Modules(coefficient_module.base_ring())
+    source_tensor = modules.tensor_product((coefficient_module, source_forms))
+    target_tensor = modules.tensor_product((coefficient_module, target_forms))
+    result = target_tensor.zero()
+    match hasattr(component, "underlying_element"):
+        case True:
+            underlying = component.underlying_element()
+        case False:
+            underlying = component
+    for (module_label, form_label), coefficient in source_tensor.framing_coefficients(underlying).items():
+        coefficient_vector = coefficient_module.scalar_multiple(
+            coefficient,
+            coefficient_module.module_generator(module_label),
+        )
+        connection_value = connection(coefficient_vector)
+        basis_form = source_forms.module_generator(form_label)
+        for (
+            output_module_label,
+            one_form_label,
+        ), connection_coefficient in connection.target_module().framing_coefficients(connection_value).items():
+            wedge = omega.exterior_power_product(
+                1,
+                omega.module_generator(one_form_label),
+                degree,
+                basis_form,
+            )
+            match wedge == target_forms.zero():
+                case True:
+                    pass
+                case _:
+                    result += target_tensor.scalar_multiple(
+                        connection_coefficient,
+                        target_tensor.pure_tensor(
+                            coefficient_module.module_generator(output_module_label),
+                            wedge,
+                        ),
+                    )
+    return target(result)
 
-    def degree_shift(self):
-        return 1
 
-    def __call__(self, element):
-        module = self.module()
-        element = module(element)
-        return module.from_components(
-            {
-                degree + 1: module._differentiate_component(degree, component)
-                for degree, component in element.homogeneous_components().items()
-            }
+def _connection_de_rham_right_action(module, module_element, algebra_element):
+    module_element = module(module_element)
+    dga = module.dga()
+    algebra_element = dga(algebra_element)
+    exterior_element = dga.realize(algebra_element)
+    exterior_algebra = dga.extension_algebra()
+    coefficient_module = module.coefficient_module()
+    omega = module.connection().one_forms()
+    result = module.zero()
+    for left_degree, left_component in module_element.homogeneous_components().items():
+        left_forms = omega.exterior_power(left_degree)
+        modules = Modules(coefficient_module.base_ring())
+        left_tensor = modules.tensor_product((coefficient_module, left_forms))
+        match hasattr(left_component, "underlying_element"):
+            case True:
+                left_underlying = left_component.underlying_element()
+            case False:
+                left_underlying = left_component
+        for right_degree, right_component in exterior_element.homogeneous_components().items():
+            target_degree = left_degree + right_degree
+            target_forms = omega.exterior_power(target_degree)
+            target_tensor = modules.tensor_product((coefficient_module, target_forms))
+            target_value = target_tensor.zero()
+            for (
+                module_label,
+                left_form_label,
+            ), left_coefficient in left_tensor.framing_coefficients(left_underlying).items():
+                left_form = left_forms.module_generator(left_form_label)
+                for right_form_label, right_coefficient in exterior_algebra.graded_piece(right_degree).framing_coefficients(right_component).items():
+                    right_form = exterior_algebra.graded_piece(right_degree).module_generator(
+                        right_form_label
+                    )
+                    wedge = omega.exterior_power_product(
+                        left_degree,
+                        left_form,
+                        right_degree,
+                        right_form,
+                    )
+                    match wedge == target_forms.zero():
+                        case True:
+                            pass
+                        case _:
+                            target_value += target_tensor.scalar_multiple(
+                                left_coefficient * right_coefficient,
+                                target_tensor.pure_tensor(
+                                    coefficient_module.module_generator(module_label),
+                                    wedge,
+                                ),
+                            )
+            match target_value == target_tensor.zero():
+                case True:
+                    pass
+                case _:
+                    result += module.from_component(
+                        target_degree,
+                        module.graded_piece(target_degree)(target_value),
+                    )
+    return result
+
+
+class _ConnectionDeRhamDirectSum(_CochainComplexDirectSum):
+    r"""The cochain direct sum underlying one flat connection's de Rham DG-module."""
+
+    def __init__(self, connection, **rest) -> None:
+        self._connection = connection
+        super().__init__(**rest)
+
+    def connection(self):
+        return self._connection
+
+    def coefficient_module(self):
+        return self.connection().module()
+
+    def from_coefficient(self, element):
+        omega = self.connection().one_forms()
+        forms_zero = omega.exterior_power(0)
+        tensor_zero = Modules(self.coefficient_module().base_ring()).tensor_product(
+            (self.coefficient_module(), forms_zero)
+        )
+        unit = forms_zero.module_generator(0)
+        return self.from_component(
+            0,
+            self.graded_piece(0)(tensor_zero.pure_tensor(element, unit)),
         )
 
 
@@ -684,174 +878,72 @@ class ConnectionDeRhamModule:
     r"""Factory namespace for a flat connection's de Rham DG-module."""
 
     def __new__(cls, connection):
-        if not connection.is_flat():
-            raise ValueError("a DG-module de Rham differential requires a flat connection")
-
-
+        match connection.is_flat():
+            case True:
+                pass
+            case _:
+                raise ValueError("a DG-module de Rham differential requires an established flat connection")
         coefficient_module = connection.module()
         algebra = connection.algebra()
-        omega = connection.one_forms()
         dga = algebra.de_rham_algebra()
-        ring_map = algebra.algebra_structure_morphism()
+        integers = _own_ring(SageZZ)
+        match dga.grading_monoid() is integers:
+            case True:
+                pass
+            case False:
+                raise ValueError("the connection de Rham DG-module requires the integer grading of its de Rham algebra")
 
-        class _ConnectionDeRhamModule(GradedDirectSumModule):
-            def __init__(self) -> None:
-                self._connection = connection
-                self._coefficient_module = coefficient_module
-                self._omega = omega
-                self._dga = dga
+        pieces = indexed_family(
+            integers,
+            lambda degree: _connection_de_rham_piece(connection, degree),
+            name="Connection de Rham pieces",
+        )
 
-                def piece(degree):
-                    forms = omega.exterior_power(degree)
-                    return Modules(coefficient_module.base_ring()).tensor_product(
-                        (coefficient_module, forms)
-                    ).restrict_scalars(ring_map)
-
-                GradedDirectSumModule.__init__(
-                    self,
-                    algebra.base_ring(),
-                    piece,
-                    name=f"de Rham DG-module of {coefficient_module}",
-                    extra_categories=(DifferentialGradedModules(dga),),
-                )
-                self._preamble_graded_algebra = dga
-                self._preamble_dg_algebra = dga
-                self._preamble_graded_algebra_action = self._right_action
-                self._preamble_differential = ConnectionDeRhamDifferential(self)
-
-            def connection(self):
-                return self._connection
-
-            def coefficient_module(self):
-                return self._coefficient_module
-
-            def from_coefficient(self, element):
-                forms_zero = self._omega.exterior_power(0)
-                tensor_zero = Modules(self._coefficient_module.base_ring()).tensor_product(
-                    (self._coefficient_module, forms_zero)
-                )
-                unit = forms_zero.module_generator(0)
-                return self.from_component(
-                    0,
-                    self.graded_piece(0)(tensor_zero.pure_tensor(element, unit)),
-                )
-
-            def _underlying_component(self, component):
-                return (
-                    component.underlying_element()
-                    if hasattr(component, "underlying_element")
-                    else component
-                )
-
-            def _differentiate_component(self, degree, component):
-                source_forms = self._omega.exterior_power(degree)
-                target_forms = self._omega.exterior_power(degree + 1)
-                modules = Modules(self._coefficient_module.base_ring())
-                source_tensor = modules.tensor_product(
-                    (self._coefficient_module, source_forms)
-                )
-                target_tensor = modules.tensor_product(
-                    (self._coefficient_module, target_forms)
-                )
-                result = target_tensor.zero()
-                underlying = self._underlying_component(component)
-                for (module_label, form_label), coefficient in source_tensor.framing_coefficients(underlying).items():
-                    coefficient_vector = self._coefficient_module.scalar_multiple(
-                        coefficient,
-                        self._coefficient_module.module_generator(module_label),
-                    )
-                    connection_value = self._connection(coefficient_vector)
-                    basis_form = source_forms.module_generator(form_label)
-                    for (
-                        output_module_label,
-                        one_form_label,
-                    ), connection_coefficient in self._connection.target_module().framing_coefficients(connection_value).items():
-                        wedge = self._omega.exterior_power_product(
-                            1,
-                            self._omega.module_generator(one_form_label),
-                            degree,
-                            basis_form,
-                        )
-                        if wedge != target_forms.zero():
-                            result += target_tensor.scalar_multiple(
-                                connection_coefficient,
-                                target_tensor.pure_tensor(
-                                    self._coefficient_module.module_generator(
-                                        output_module_label
-                                    ),
-                                    wedge,
-                                ),
-                            )
-                return self.graded_piece(degree + 1)(result)
-
-            def differential_component(self, degree):
-                degree = int(degree)
-                source = self.graded_piece(degree)
-                target = self.graded_piece(degree + 1)
-                return DifferentialComponentMorphism(
-                    source,
+        def differential(degree):
+            degree = int(degree)
+            source = pieces(degree)
+            target = pieces(degree + 1)
+            return DifferentialComponentMorphism(
+                source,
+                target,
+                lambda component: _connection_de_rham_component(
+                    connection,
+                    degree,
+                    component,
                     target,
-                    lambda component: self._differentiate_component(degree, component),
-                )
+                ),
+            )
 
-            def _right_action(self, module_element, algebra_element):
-                module_element = self(module_element)
-                algebra_element = self._dga(algebra_element)
-                exterior_element = self._dga.realize(algebra_element)
-                exterior_algebra = self._dga.extension_algebra()
-                result = self.zero()
-                for left_degree, left_component in module_element.homogeneous_components().items():
-                    left_forms = self._omega.exterior_power(left_degree)
-                    modules = Modules(self._coefficient_module.base_ring())
-                    left_tensor = modules.tensor_product(
-                        (self._coefficient_module, left_forms)
-                    )
-                    left_underlying = self._underlying_component(left_component)
-                    for right_degree, right_component in exterior_element.homogeneous_components().items():
-                        target_degree = left_degree + right_degree
-                        target_forms = self._omega.exterior_power(target_degree)
-                        target_tensor = modules.tensor_product(
-                            (self._coefficient_module, target_forms)
-                        )
-                        target_value = target_tensor.zero()
-                        for (
-                            module_label,
-                            left_form_label,
-                        ), left_coefficient in left_tensor.framing_coefficients(left_underlying).items():
-                            left_form = left_forms.module_generator(left_form_label)
-                            for right_form_label, right_coefficient in exterior_algebra.graded_piece(right_degree).framing_coefficients(right_component).items():
-                                right_form = exterior_algebra.graded_piece(
-                                    right_degree
-                                ).module_generator(right_form_label)
-                                wedge = self._omega.exterior_power_product(
-                                    left_degree,
-                                    left_form,
-                                    right_degree,
-                                    right_form,
-                                )
-                                if wedge != target_forms.zero():
-                                    target_value += target_tensor.scalar_multiple(
-                                        left_coefficient * right_coefficient,
-                                        target_tensor.pure_tensor(
-                                            self._coefficient_module.module_generator(
-                                                module_label
-                                            ),
-                                            wedge,
-                                        ),
-                                    )
-                        if target_value != target_tensor.zero():
-                            result += self.from_component(
-                                target_degree,
-                                self.graded_piece(target_degree)(target_value),
-                            )
-                return result
+        differentials = indexed_family(
+            integers,
+            differential,
+            name="Connection de Rham differentials",
+        )
 
-        return _ConnectionDeRhamModule()
+        def right_action(module_element, algebra_element):
+            return _connection_de_rham_right_action(
+                module_element.parent(),
+                module_element,
+                algebra_element,
+            )
+
+        return CochainComplexes(algebra.base_ring()).from_family(
+            pieces,
+            differentials,
+            name=f"de Rham DG-module of {coefficient_module}",
+            extra_categories=(DifferentialGradedModules(dga),),
+            extra_construction_data={
+                "connection": connection,
+                "graded_algebra": dga,
+                "graded_algebra_action": right_action,
+                "dg_algebra": dga,
+            },
+            _realization=(_ConnectionDeRhamDirectSum, GradedDirectSumElement),
+        )
 
 
 __all__ = [
     "Connection",
-    "ConnectionDeRhamDifferential",
     "ConnectionDeRhamModule",
     "ConnectionHomset",
     "ConnectionMorphism",

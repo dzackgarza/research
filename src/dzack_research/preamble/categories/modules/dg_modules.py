@@ -41,6 +41,11 @@ class GradedAlgebraModules(OwnedParameterizedCategory):
         return super().__contains__(obj)
 
     class ParentMethods:
+        def __init__(self, graded_algebra, graded_algebra_action, **rest) -> None:
+            self._preamble_graded_algebra = graded_algebra
+            self._preamble_graded_algebra_action = graded_algebra_action
+            super().__init__(**rest)
+
         def graded_algebra(self):
             return self._preamble_graded_algebra
 
@@ -91,6 +96,10 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
         return super().__contains__(obj)
 
     class ParentMethods:
+        def __init__(self, dg_algebra, **rest) -> None:
+            self._preamble_dg_algebra = dg_algebra
+            super().__init__(**rest)
+
         def dga(self):
             return self._preamble_dg_algebra
 

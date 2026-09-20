@@ -207,11 +207,6 @@ Preserve the phase-T execution rules.
 
 Paths below are relative to `src/dzack_research/preamble/categories/` unless a different root is given. These nodes repair existing constructions. A requested source review is an unresolved obligation, not a claim that every named path is broken.
 
-- [ ] **`graded-complex-connection-data`**. **Needs:** none.
-  **Owner and delta:** `modules/graded_direct_sums.py`, `cochain_complexes.py`, `connections.py` and their existing algebra/derived consumers: settle the remaining construction and membership reviews at these owners.
-  **Invariants:** grading, differential and connection are actual owned data with fixed domains and codomains. Direct sums retain finite-support semantics for arbitrary grading sets; a complex has d squared zero; a connection states its base derivation and Leibniz law. No category label supplies a missing map.
-  **Closure specimens:** a nonzero two-term differential, a graded map that changes degree incorrectly, and a connection with a nontrivial Leibniz term distinguish the promised structures. Include an infinite graded direct sum so product semantics cannot substitute for finite support. Derived/DGA operations must consume these objects, not repeat their general API.
-
 ## Diagrams, rings and geometric consumers
 
 - [ ] **`objects-through-categories-rings`**. **Needs:** none.
@@ -220,7 +215,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** each realization is retained and placed through the existing mathematical category entry; the runtime root alone realizes generic Parent/Element initialization. Constructor data replace side-channel authority, not merely attribute spellings. No category is invented for an engine's implementation class; new mathematical categories require the definition and `CAT-22` search.
   **Closure specimens:** an ideal with nontrivial containment, a number-field element and the localization/completion specimens exercise inherited operations and owned coefficients through their actual parents. Review every class, initialization, side assignment, probe and exception site in the named scope; all comply with their declaration-side boundary. Survey counts locate work but cannot close it.
 
-- [ ] **`objects-through-categories-modules`**. **Needs:** `graded-complex-connection-data`.
+- [ ] **`objects-through-categories-modules`**. **Needs:** none.
   **Owner and delta:** the complete modules subtree and its morphism categories: finish the remaining placement/constructor residue after the named shared data repairs.
   **Coverage boundary:** enumerate ordinary and stronger module/morphism constructors, overrides and raising routes, including ones absent from the original flag search. Reconcile independently remaining routes with the earlier producer deliveries; preserve those contracts instead of reopening all modules for another redesign.
   **Invariants:** general, restricted-scalar, sparse free, quotient, framed, presented, formed, graded and group modules establish their immediate structures before exposure. Stronger morphism spaces inherit the actual weaker operations and preserve stronger equations. Concrete engine realizations remain behind their existing mathematical categories.
@@ -253,7 +248,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** multiplication, unit and inverse are owned C-morphisms satisfying the group diagrams; actions carry their unit/associativity diagrams. Affine group schemes construct through Grp(AffineSchemes(R)). Distinguish an internal group object from an external abstract-group action, represented by a functor BG -> C. A constant internal group requires the relevant construction to exist; finite products alone do not provide arbitrary constant groups.
   **Closure specimens:** the additive and multiplicative affine group schemes retain their actual coordinate morphisms and a nontrivial action. An invalid inverse or action law is rejected. Existing abstract G-actions remain usable, with a comparison to internal actions only under the necessary constant-object hypotheses.
 
-- [ ] **`geometric-consumer-integration`**. **Needs:** `projectivization`, `graded-complex-connection-data`, `involution-primitive-extension`.
+- [ ] **`geometric-consumer-integration`**. **Needs:** `projectivization`, `involution-primitive-extension`.
   **Owner and delta:** existing divisor/relative-geometry, cohomology/equivariant, family/singularity and geometric research consumers affected by the repaired common contracts. Inspect their current nonidentity maps and repair remaining integration; do not recreate delivered theories.
   **Consumed outputs:** linear systems consume the sheaf projectivization and its lines convention; formal consumers use the localization/completion maps; derived and connection consumers use the actual graded/differential data. `schemes/enriques_families.py::_EnriquesMarkedIntegralCohomology` consumes an involution's primitive extension, its invariant inclusion and discriminant gluing. That input is separated below from independent orbit, centralizer and reduction classifications. If another geometric route needs one of those results, split out that exact output with its consumer and redirect the edge; do not restore a blanket arithmetic prerequisite.
   **Invariants:** products/intersections use the existing diagrams, algebra pushouts, quotients and gluing. Divisors and line bundles use their owned groups and sheaf functors. Families live in the scheme slice with actual fibre/base-change maps; formal consumers use the full completed object. Local singularity classification states its equivalence relation and retains coordinate maps. Algebraic, formal and analytic comparisons, monodromy and nearby/vanishing cycles require their own source construction and hypotheses; a shared name is not a comparison theorem.

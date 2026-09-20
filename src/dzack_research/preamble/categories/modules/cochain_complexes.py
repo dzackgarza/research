@@ -4,7 +4,7 @@ from sage.categories.category import Category
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -13,7 +13,8 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
-    GradedDirectSumModule,
+    _DirectSumOfModules,
+    _direct_sum_of_modules,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -65,8 +66,8 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
                 "the ordinary cochain-complex constructor requires dictionaries; "
                 "use CochainComplexes(R).from_family for a lazy integer family"
             )
-        return CochainComplexObject(
-            self.base_ring(),
+        return _cochain_complex(
+            self,
             pieces,
             differentials,
             name=name,
@@ -74,7 +75,16 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
             extra_construction_data=extra_construction_data,
         )
 
-    def from_family(self, pieces, differentials, name=None):
+    def from_family(
+        self,
+        pieces,
+        differentials,
+        name=None,
+        *,
+        extra_categories=(),
+        extra_construction_data=None,
+        _realization=None,
+    ):
         r"""Construct a lazy integer-graded complex from two indexed families.
 
         Unlike :meth:`_call_`, this construction does not assert that degrees
@@ -91,12 +101,14 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
             raise ValueError(
                 "the piece and differential families require one degree index set"
             )
-        return CochainComplexObject(
-            self.base_ring(),
+        return _cochain_complex(
+            self,
             pieces,
             differentials,
             name=name,
-            degree_index_set=pieces.index_set(),
+            extra_categories=extra_categories,
+            extra_construction_data=extra_construction_data,
+            _realization=_realization,
         )
 
     @classmethod
@@ -126,8 +138,9 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
         return _cohomology_functor(self.base_ring(), degree)
 
     class ParentMethods:
+        @cached_method
         def differential(self):
-            return self._preamble_differential
+            return CochainDifferential(self)
 
         def d(self, element):
             return self.differential()(element)
@@ -248,11 +261,7 @@ class CochainDifferential:
         return complex_.from_components(components)
 
 
-class CochainComplexElement(GradedDirectSumElement):
-    pass
-
-
-class CochainComplexObject(GradedDirectSumModule):
+class _CochainComplexDirectSum(_DirectSumOfModules):
     r"""A represented integer-graded cochain complex.
 
     A dictionary presentation has finite support and therefore declares every
@@ -261,74 +270,21 @@ class CochainComplexObject(GradedDirectSumModule):
     with zero.
     """
 
-    Element = CochainComplexElement
-
     def __init__(
         self,
-        base_ring,
-        pieces,
-        differentials,
-        name=None,
-        *,
-        degree_index_set=None,
-        extra_categories=(),
-        extra_construction_data=None,
+        cochain_finite_support,
+        cochain_selected_degrees,
+        cochain_selected_differentials,
+        cochain_differential_family,
+        cochain_name=None,
+        **rest,
     ) -> None:
-        integer_degrees = _own_ring(SageZZ)
-        self._finite_support = isinstance(pieces, dict)
-        if self._finite_support:
-            self._selected_pieces = {
-                int(degree): module for degree, module in pieces.items()
-            }
-            self._selected_differentials = {
-                int(degree): morphism for degree, morphism in differentials.items()
-            }
-            self._degree_family = None
-            self._differential_family = None
-            degree_index_set = integer_degrees
-        else:
-            if not isinstance(pieces, IndexedFamily):
-                raise TypeError(
-                    "an infinite represented cochain complex requires an indexed family of pieces"
-                )
-            if not isinstance(differentials, IndexedFamily):
-                raise TypeError(
-                    "an infinite represented cochain complex requires an indexed family of differentials"
-                )
-            if pieces.index_set() is not differentials.index_set():
-                raise ValueError(
-                    "the piece and differential families require one degree index set"
-                )
-            if degree_index_set is None:
-                degree_index_set = pieces.index_set()
-            if degree_index_set is not pieces.index_set():
-                raise ValueError("the selected degree set does not index the piece family")
-            if degree_index_set is not integer_degrees:
-                raise ValueError(
-                    "a represented cochain complex is indexed by the owned integers"
-                )
-            self._selected_pieces = None
-            self._selected_differentials = None
-            self._degree_family = pieces
-            self._differential_family = differentials
-        zero_module = base_ring.free_module(finite_ordered_set(()))
-
-        def piece(degree):
-            if self._finite_support:
-                return self._selected_pieces.get(int(degree), zero_module)
-            return self._degree_family(degree)
-
-        GradedDirectSumModule.__init__(
-            self,
-            base_ring,
-            piece,
-            name=name or "Cochain complex",
-            degree_index_set=degree_index_set,
-            extra_categories=(CochainComplexes(base_ring), *tuple(extra_categories)),
-            extra_construction_data=extra_construction_data,
-        )
-        self._zero_module = zero_module
-        self._preamble_differential = CochainDifferential(self)
+        self._finite_support = bool(cochain_finite_support)
+        self._selected_degrees = tuple(cochain_selected_degrees)
+        self._selected_differentials = dict(cochain_selected_differentials)
+        self._differential_family = cochain_differential_family
+        self._cochain_name = cochain_name
+        super().__init__(**rest)
         self._validate_differentials()
 
     def selected_degrees(self):
@@ -336,7 +292,7 @@ class CochainComplexObject(GradedDirectSumModule):
             raise TypeError(
                 "an infinite represented complex has no finite selected-degree list; use degree_index_set()"
             )
-        return tuple(sorted(self._selected_pieces))
+        return self._selected_degrees
 
     def has_finite_support(self) -> bool:
         return self._finite_support
@@ -354,9 +310,7 @@ class CochainComplexObject(GradedDirectSumModule):
         if self._finite_support:
             selected = self._selected_differentials.get(degree)
             if selected is None:
-                return source.module_category().Mor(source, target)(
-                    {label: target.zero() for label in source.module_generating_set()}
-                )
+                return source.module_category().Mor(source, target).zero()
             return selected
         return self._differential_family(self.degree_index_set()(degree))
 
@@ -398,6 +352,85 @@ class CochainComplexObject(GradedDirectSumModule):
                 generator = first.domain().module_generator(label)
                 if second(first(generator)) != second.codomain().zero():
                     raise ValueError(f"d^2 is nonzero in degree {degree}")
+
+    def _repr_(self):
+        return self._cochain_name or "Cochain complex"
+
+
+def _cochain_complex(
+    category,
+    pieces,
+    differentials,
+    *,
+    name=None,
+    extra_categories=(),
+    extra_construction_data=None,
+    _realization=None,
+):
+    r"""Construct one integer-graded direct sum carrying its selected differential."""
+
+    ring = category.base_ring()
+    integers = _own_ring(SageZZ)
+    match pieces:
+        case dict():
+            match differentials:
+                case dict():
+                    pass
+                case _:
+                    raise TypeError("a finite-support cochain complex uses a dictionary of differentials")
+            selected_pieces = {int(degree): module for degree, module in pieces.items()}
+            selected_differentials = {
+                int(degree): morphism for degree, morphism in differentials.items()
+            }
+            zero_module = ring.free_module(finite_ordered_set(()))
+            family = indexed_family(
+                integers,
+                lambda degree: selected_pieces.get(int(degree), zero_module),
+                name="Cochain-complex pieces",
+            )
+            finite_support = True
+            selected_degrees = tuple(sorted(selected_pieces))
+            differential_family = None
+        case IndexedFamily():
+            match differentials:
+                case IndexedFamily():
+                    pass
+                case _:
+                    raise TypeError("a family cochain complex requires an indexed family of differentials")
+            match (pieces.index_set() is integers, differentials.index_set() is integers):
+                case (True, True):
+                    pass
+                case _:
+                    raise ValueError("a represented cochain complex is indexed by the owned integers")
+            family = pieces
+            finite_support = False
+            selected_degrees = ()
+            selected_differentials = {}
+            differential_family = differentials
+        case _:
+            raise TypeError("cochain-complex pieces are a finite dictionary or an integer-indexed family")
+
+    data = dict(extra_construction_data or {})
+    data.update(
+        cochain_finite_support=finite_support,
+        cochain_selected_degrees=selected_degrees,
+        cochain_selected_differentials=selected_differentials,
+        cochain_differential_family=differential_family,
+        cochain_name=name,
+    )
+    match _realization:
+        case None:
+            realization = (_CochainComplexDirectSum, GradedDirectSumElement)
+        case selected:
+            realization = selected
+    return _direct_sum_of_modules(
+        ring,
+        integers,
+        family,
+        extra_categories=(category, *tuple(extra_categories)),
+        construction_data=data,
+        _realization=realization,
+    )
 
 
 class CochainMorphism(Morphism):
@@ -658,8 +691,6 @@ def _cohomology(complex_, degree):
 
 
 __all__ = [
-    "CochainComplexElement",
-    "CochainComplexObject",
     "CochainComplexes",
     "CochainDifferential",
     "CochainHomset",
