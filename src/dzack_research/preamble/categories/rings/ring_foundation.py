@@ -2285,7 +2285,7 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
             return True
 
         def ideal_of_definition(self):
-            return self._adic_completion_construction.defining_ideal()
+            return self._adic_defining_ideal
 
 
 def OwnedCompleteLocalRings():

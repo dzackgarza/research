@@ -1594,67 +1594,6 @@ class IdealExtensionData(SageObject):
         )
 
 
-class _AdicCompletionConstruction:
-    r"""The defining source, ideal, canonical map, and exact comparison data of an adic completion.
-
-    The completion-map realization is fixed with the source and ideal.  It may
-    be evaluated after the target parent exists, but no setter can change which
-    map the construction denotes.
-    """
-
-    def __init__(
-        self,
-        source,
-        defining_ideal,
-        precision,
-        *,
-        completion_map_factory,
-        projection_lift=None,
-        arithmetic_mode="finite_precision",
-        map_kernel=None,
-    ) -> None:
-        self._source = source
-        self._defining_ideal = defining_ideal
-        self._precision = int(precision)
-        self._projection_lift = projection_lift
-        self._arithmetic_mode = arithmetic_mode
-        self._map_kernel = map_kernel
-        if not callable(completion_map_factory):
-            raise TypeError("an adic completion fixes how its canonical map is realized")
-        self._completion_map_factory = completion_map_factory
-        self._realized_completion_map = None
-
-    def source(self):
-        return self._source
-
-    def defining_ideal(self):
-        return self._defining_ideal
-
-    def precision(self) -> int:
-        return self._precision
-
-    def projection_lift(self):
-        return self._projection_lift
-
-    def arithmetic_mode(self):
-        return self._arithmetic_mode
-
-    def map_kernel(self):
-        return self._map_kernel
-
-    def completion_map_or_none(self):
-        return self._realized_completion_map
-
-    def completion_map(self):
-        morphism = self._realized_completion_map
-        if morphism is None:
-            morphism = self._completion_map_factory()
-            if morphism.domain() is not self.source():
-                raise ValueError("the completion map has the wrong source ring")
-            self._realized_completion_map = morphism
-        return morphism
-
-
 class AdicCompletions(Category):
     r"""Adic completions equipped with source and ideal of definition."""
 
@@ -1686,10 +1625,16 @@ class AdicCompletions(Category):
 
     class ParentMethods:
         def completion_source(self):
-            return self._adic_completion_construction.source()
+            return self._adic_completion_source
 
         def completion_map(self):
-            return self._adic_completion_construction.completion_map()
+            morphism = self._realized_completion_map
+            if morphism is None:
+                morphism = self._adic_completion_map_factory()
+                if morphism.domain() is not self.completion_source():
+                    raise ValueError("the completion map has the wrong source ring")
+                self._realized_completion_map = morphism
+            return morphism
 
         def _completion_projection_lift(self):
             r"""Return the retained finite-stage lift used to realize adic projections.
@@ -1699,7 +1644,7 @@ class AdicCompletions(Category):
             completion constructor, which transports the same retained lift
             through the localization map.
             """
-            return self._adic_completion_construction.projection_lift()
+            return self._adic_projection_lift
 
         @cached_method
         def algebra_structure_morphism(self):
@@ -1746,7 +1691,7 @@ class AdicCompletions(Category):
             computations.
             """
             source = self.completion_source()
-            represented = self._adic_completion_construction.map_kernel()
+            represented = self._adic_completion_map_kernel
             if represented is not None:
                 return represented
             zero = source.ideal(source.zero())
@@ -1783,7 +1728,7 @@ class AdicCompletions(Category):
             return Unknown
 
         def computation_precision(self):
-            return self._adic_completion_construction.precision()
+            return self._adic_completion_precision
 
         @cached_method
         def adic_inverse_system(self):
@@ -2250,15 +2195,14 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 selected_engine_map,
             )
 
-        self._adic_completion_construction = _AdicCompletionConstruction(
-            source,
-            defining_ideal,
-            precision,
-            completion_map_factory=completion_map_factory,
-            projection_lift=projection_lift,
-            arithmetic_mode=arithmetic_mode,
-            map_kernel=completion_map_kernel,
-        )
+        self._adic_completion_source = source
+        self._adic_defining_ideal = defining_ideal
+        self._adic_completion_precision = int(precision)
+        self._adic_projection_lift = projection_lift
+        self._adic_arithmetic_mode = arithmetic_mode
+        self._adic_completion_map_kernel = completion_map_kernel
+        self._adic_completion_map_factory = completion_map_factory
+        self._realized_completion_map = None
         match formal_parameter_labels:
             case None:
                 self._preamble_formal_parameter_labels = None
@@ -2345,7 +2289,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 pass
 
     def completion_arithmetic_mode(self):
-        return self._adic_completion_construction.arithmetic_mode()
+        return self._adic_arithmetic_mode
 
     def _completion_element(self, value, *, source_expression=None):
         if getattr(value, "parent", lambda: None)() is not self._engine:
@@ -2359,7 +2303,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
     def _element_constructor_(self, value):
         if getattr(value, "parent", lambda: None)() is self:
             return value
-        completion_map = self._adic_completion_construction.completion_map_or_none()
+        completion_map = self._realized_completion_map
         if completion_map is None:
             return super()._element_constructor_(value)
         source = self.completion_source()
@@ -2370,13 +2314,13 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         return completion_map(selected)
 
     def zero(self):
-        completion_map = self._adic_completion_construction.completion_map_or_none()
+        completion_map = self._realized_completion_map
         if completion_map is None:
             return super().zero()
         return completion_map(self.completion_source().zero())
 
     def one(self):
-        completion_map = self._adic_completion_construction.completion_map_or_none()
+        completion_map = self._realized_completion_map
         if completion_map is None:
             return super().one()
         return completion_map(self.completion_source().one())
