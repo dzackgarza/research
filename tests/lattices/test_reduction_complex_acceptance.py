@@ -36,7 +36,7 @@ def test_reduction_complex_acceptance_keeps_faces_transporters_marks_and_complet
 
     cell = traversal.cells()[0]
     labels = finite_ordered_set(("v",))
-    mark = lattice.module_generator(0)
+    mark = lattice.basis_vector(0)
     marked = cell.with_marks(
         finite_indexed_family(labels, lambda _label: mark, name="Acceptance mark")
     )

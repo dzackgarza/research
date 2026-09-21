@@ -3,7 +3,7 @@ from dzack_research.preamble.all import NamedLattices, Sets
 
 def test_rank_one_primitive_isotropic_locus_distinguishes_vectors_from_sublattices() -> None:
     lattice = NamedLattices.E10
-    vector = lattice.module_generator(0)
+    vector = lattice.basis_vector(0)
     line = lattice.primitive_sublattice_from((vector,))
     locus = lattice.primitive_isotropic_sublattices(rank=1)
 
@@ -30,7 +30,7 @@ def test_isotropic_sublattice_orbit_decomposition_uses_cusp_stabilizers_and_tran
     assert representative in locus
     assert decomposition.stabilizer(representative).one() == group.one()
     transporter = decomposition.transporter(representative, representative)
-    image = transporter(representative.inclusion()(representative.module_generator(0)))
+    image = transporter(representative.inclusion()(representative.basis_vector(0)))
     assert image.parent() is lattice
 
 

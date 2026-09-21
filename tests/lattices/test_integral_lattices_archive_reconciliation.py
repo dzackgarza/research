@@ -25,7 +25,7 @@ def test_archived_metric_dual_discriminant_chain_is_the_live_owned_chain() -> No
     correlation = lattice.correlation_morphism()
     discriminant = lattice.discriminant_module()
     projection = lattice.discriminant_projection()
-    generator = lattice.module_generator(0)
+    generator = lattice.basis_vector(0)
     dual_image = correlation(generator)
     discriminant_class = projection(dual_image)
 

@@ -51,7 +51,7 @@ def test_a_lattice_session(name) -> None:
     generators = lattice.module_generators()
     rendered(generators)
     assert generators.cardinality() == rank
-    e0 = lattice.module_generator(0)
+    e0 = lattice.basis_vector(0)
     v = 2 * e0 - lattice.module_generator(rank - 1)
     rendered(v)
     assert lattice.b(v, v) == v.b(v)
@@ -86,7 +86,7 @@ def test_a_lattice_session(name) -> None:
     perpendicular = line.orthogonal_complement()
     rendered(perpendicular)
     assert perpendicular.module_rank() == rank - 1
-    assert lattice.b(line.inclusion()(line.module_generator(0)), perpendicular.inclusion()(perpendicular.module_generator(0))) == 0
+    assert lattice.b(line.inclusion()(line.basis_vector(0)), perpendicular.inclusion()(perpendicular.basis_vector(0))) == 0
     doubled = lattice.subobject_on([2 * e0])
     assert doubled.module_rank() == 1
     assert not doubled.is_saturated()

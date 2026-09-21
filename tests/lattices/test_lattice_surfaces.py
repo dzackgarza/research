@@ -72,7 +72,7 @@ def test_subobject_orthogonal_complement_defers_to_the_inclusion() -> None:
 
 def test_saturation_is_the_primitive_closure_of_an_inclusion() -> None:
     lattice = Lattices(ZZ)(2)
-    e0 = lattice.module_generator(0)
+    e0 = lattice.basis_vector(0)
     subobject = lattice.subobject_on((2 * e0,))
 
     assert not subobject.is_primitive()
@@ -97,7 +97,7 @@ def test_radical_and_isotropic_reduction_are_inclusion_derived() -> None:
     assert quotient.gram_tensor()[0, 0] == 1
 
     plane = Lattices(ZZ)("U")
-    isotropic_line = plane.subobject_on((plane.module_generator(0),))
+    isotropic_line = plane.subobject_on((plane.basis_vector(0),))
     reduction = isotropic_line.isotropic_reduction()
     assert reduction.module_rank() == 0
 

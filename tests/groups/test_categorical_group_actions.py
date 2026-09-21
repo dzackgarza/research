@@ -214,6 +214,7 @@ def test_finite_predicate_centralizer_action_uses_owned_orbits_and_stabilizers()
     )
     orbits = action.orbits()
 
+    assert int(action.cardinality()) == len(regular_points)
     assert orbits.cardinality() == 3
     assert centralizer.cardinality() == 2
     for orbit in orbits:

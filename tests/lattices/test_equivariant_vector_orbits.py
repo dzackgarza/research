@@ -5,8 +5,8 @@ from dzack_research.preamble.all import Sets, ZZ, Lattices
 
 def _swap_equipped_a1_squared():
     lattice = Lattices(ZZ)("A1") + Lattices(ZZ)("A1")
-    first = lattice.module_generator(0)
-    second = lattice.module_generator(1)
+    first = lattice.basis_vector(0)
+    second = lattice.basis_vector(1)
     swap = lattice.O()({0: second, 1: first})
     return swap, first, second
 

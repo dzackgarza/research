@@ -36,7 +36,7 @@ def test_discriminant_and_stable_group_vocabulary_uses_the_existing_representati
 def test_vector_and_sublattice_stabilizers_are_predicate_subgroups_of_one_O_L() -> None:
     lattice = Lattices(ZZ)("U")
     group = lattice.O()
-    e = lattice.module_generator(0)
+    e = lattice.basis_vector(0)
     line = lattice.primitive_sublattice_from((e,))
 
     vector_stabilizer = group.stabilizer(e)
@@ -55,7 +55,7 @@ def test_component_character_kernel_and_vector_transporter_are_live_group_maps()
     character = group.component_character()
     kernel = group.kernel(character)
     component = group.component_subgroup()
-    e = lattice.module_generator(0)
+    e = lattice.basis_vector(0)
 
     assert lattice.O_component().one() == group.one()
     assert kernel.one() == group.one()

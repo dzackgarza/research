@@ -241,12 +241,6 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** category membership follows construction placement or the specified functor, not engine class, duck typing, cardinality, or an implicit walk up a base-ring tower. Distinguish category membership from genuine element membership in a mathematical set; the latter may require an exact predicate at its owner.
   **Closure specimens:** a correctly placed object is accepted, a similarly represented object with the wrong structure is not. A QQ-scheme is not silently treated as a ZZ-scheme without the specified base passage. Check discrete categories and arrow helpers as well as the original scheme example; inspect every category containment body before closure.
 
-- [ ] **`inherited-operations-not-restated`**. **Needs:** none.
-  **Owner and delta:** `cardinality`, `zero`, `scalar_multiple`, `module_generator`, `module_generating_set` and the broader general-operation family implicated by these repairs.
-  **Coverage boundary:** compare the declarations, overrides and actual inherited data across this family. Earlier constructor nodes already owe usable inherited operations on their delivered routes; reconcile independently remaining restatements and genuine specializations here.
-  **Invariants:** the weakest sufficient category owns the operation; descendants inherit it from real construction data. A theorem-backed specialized algorithm may remain if it adds genuine computation and agrees with the general operation. Multiple definitions are not automatically duplication, and a forwarding copy is not inheritance.
-  **Closure specimens:** free, presented, formed and algebra objects answer these operations through their construction before special accessors run. Compare a specialization against the general operation on a separating nonzero element; inspect all definitions in the named family, including stronger morphism spaces.
-
 - [ ] **`refinement-convergence`**. **Needs:** `owned-provenance-data`.
   **Owner and delta:** every remaining `refine`/placement mutation in ring, scheme, module and functor-image construction after the bootstrap repair.
   **Invariants:** defining or selected structure exists at construction; later refinement only records a genuinely newly established mathematical fact. No accessor, engine query, import order or first arithmetic operation completes initialization retroactively.
@@ -296,7 +290,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** annotations name the actual mathematical codomain, refinement or honest union. A central mathematically named alias may express a limitation of Python syntax; a universal type with a new name may not hide it. This node does not optimize checker counts.
   **Closure specimens:** follow a functor image, a cardinality, a scheme map and a composite's components into operations their claimed codomain supports. Review every occurrence family and required central alias; no narrowing to the currently convenient engine realization or broad Any escape.
 
-- [ ] **`mathematical-display`**. **Needs:** `inherited-operations-not-restated`.
+- [ ] **`mathematical-display`**. **Needs:** none.
   **Owner and delta:** generator/family displays, maps and other public results exposing implementation labels under complaint 4 and `OWN-21`.
   **Invariants:** display gives cheap positive information about the particular mathematical object at the requested abstraction level. No engine repr delegation, object address, private class/refinement label or expensive enumeration. A bounded display of an infinite object is marked as such and does not change its meaning.
   **Closure specimens:** free-module generators display their mathematical data; an enriched lattice does not rename the same generic generator result after the leaf class. A nonidentity map exposes its mathematical endpoints, and an infinite family has a useful bounded display. Rendering is inspected at T, not inferred from source.

@@ -8,7 +8,7 @@ def test_double_coset_splitting_is_an_owned_finite_set_of_live_isometries() -> N
     lattice = Lattices(ZZ)("A2")
     special = lattice.SO()
     quotient = special.finite_character_quotient()
-    root = lattice.module_generator(0)
+    root = lattice.basis_vector(0)
     stabilizer = lattice.O().vector_stabilizer_generators(root)
 
     representatives = quotient.splitting_isometries(stabilizer)

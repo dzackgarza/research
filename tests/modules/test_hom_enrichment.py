@@ -176,3 +176,12 @@ def test_matrix_internal_hom_retains_its_free_framing_source() -> None:
         assert hom.module_generator(label) == framing(
             framing_source.module_generator(label)
         )
+
+    first_label = next(iter(hom.module_generating_set()))
+    morphism = hom.module_generator(first_label)
+    source_label = next(iter(source.module_generating_set()))
+    source_generator = source.module_generator(source_label)
+    doubled = hom.scalar_multiple(ZZ(2), morphism)
+    assert doubled(source_generator) == target.scalar_multiple(
+        ZZ(2), morphism(source_generator)
+    )

@@ -18,9 +18,9 @@ def test_infinite_metric_map_targets_the_full_algebraic_dual() -> None:
     lattice = Lattices(QQ)(QQ**NN)
     dual = lattice.linear_dual()
     correlation = lattice.metric_map()
-    e0 = lattice.module_generator(0)
-    e1 = lattice.module_generator(1)
-    e3 = lattice.module_generator(3)
+    e0 = lattice.basis_vector(0)
+    e1 = lattice.basis_vector(1)
+    e3 = lattice.basis_vector(3)
 
     assert dual is lattice.module_category().Mor(lattice, QQ.regular_module())
     assert correlation.domain() is lattice
@@ -94,8 +94,8 @@ def test_perp_is_the_same_owned_orthogonal_subobject_from_both_endpoints() -> No
     assert from_ambient.inclusion().codomain() is lattice
     assert from_line.module_rank() == from_ambient.module_rank() == 1
     assert lattice.b(
-        line.inclusion()(line.module_generator(0)),
-        from_ambient.inclusion()(from_ambient.module_generator(0)),
+        line.inclusion()(line.basis_vector(0)),
+        from_ambient.inclusion()(from_ambient.basis_vector(0)),
     ) == 0
 
 
@@ -134,7 +134,7 @@ def test_sublattice_semantic_accessors_retain_the_actual_embedding_and_form() ->
 
 def test_isotropic_reduction_exposes_its_defining_inclusion_and_live_reduction_data() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("U")
-    e = lattice.module_generator(0)
+    e = lattice.basis_vector(0)
     isotropic = lattice.primitive_sublattice_from((e,))
     reduction = isotropic.isotropic_reduction()
 

@@ -8,7 +8,7 @@ def _standard_reference():
         ZZ.Mor(QQ)(lambda element: QQ(element))
     )
     space = restriction(line)
-    e0 = line.module_generator(0)
+    e0 = line.basis_vector(0)
     reference_module = ZZ.free_module(1)
     reference = reference_module.Mono(space)({0: space.wrap(e0)})
     negation = line.Aut()({0: -e0})
@@ -26,7 +26,7 @@ def test_stable_reference_lattice_produces_the_actual_finite_quotient_action() -
     assert projection.domain() is reference.domain()
     assert projection.codomain() is quotient
     induced = quotient_data.quotient_automorphism(negation)
-    generator = reference.domain().module_generator(0)
+    generator = reference.domain().basis_vector(0)
     assert induced(projection(generator)) == -projection(generator)
     assert induced(induced(projection(generator))) == projection(generator)
     assert quotient_data.quotient_module() is quotient
@@ -40,7 +40,7 @@ def test_stable_reference_lattice_produces_the_actual_finite_quotient_action() -
 
 def test_intermediate_lattice_maps_to_its_actual_subobject_modulo_dM() -> None:
     line, space, reference, _negation, group = _standard_reference()
-    e0 = line.module_generator(0)
+    e0 = line.basis_vector(0)
     intermediate_module = ZZ.free_module(1)
     intermediate = intermediate_module.Mono(space)(
         {0: space.wrap(line.scalar_multiple(QQ(2), e0))}

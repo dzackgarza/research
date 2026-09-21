@@ -13,8 +13,8 @@ from dzack_research.preamble.all import ZZ, Lattices
 def test_embedding_homset_owns_the_actual_form_preserving_arrow() -> None:
     source = Lattices(ZZ)("A1")
     target = Lattices(ZZ)([[-2, 0], [0, -2]])
-    source_root = source.module_generator(0)
-    target_root = target.module_generator(0)
+    source_root = source.basis_vector(0)
+    target_root = target.basis_vector(0)
     homset = source.Emb(target)
 
     embedding = homset((target_root,))

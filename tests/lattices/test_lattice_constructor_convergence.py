@@ -11,7 +11,7 @@ def test_structured_lattice_specializations_retain_their_defining_data() -> None
     assert str(root_span.cartan_type()) == "['A', 2]"
 
     hyperbolic = Lattices(ZZ)("U") + root
-    reduction = hyperbolic.module_generator(0).isotropic_reduction()
+    reduction = hyperbolic.basis_vector(0).isotropic_reduction()
     assert reduction.isotropic_embedding().codomain() is hyperbolic
     assert reduction.orthogonal_complement().inclusion().codomain() is hyperbolic
     assert reduction.quotient_lattice() is reduction

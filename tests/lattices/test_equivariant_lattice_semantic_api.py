@@ -68,6 +68,6 @@ def test_identity_equivariant_isometry_is_the_live_orthogonal_identity() -> None
 def test_definite_equivariant_isometry_search_is_exhaustive() -> None:
     lattice = Lattices(ZZ)("A1")
     identity = lattice.O().one()
-    negation = lattice.O()((-lattice.module_generator(0),))
+    negation = lattice.O()((-lattice.basis_vector(0),))
 
     assert identity.equivariant_isometry_to(negation) is None

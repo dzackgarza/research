@@ -2183,15 +2183,6 @@ class _ModuleHomsetCommonMethods:
             return self._morphism_from_internal_model(self.internal_hom_model()(images))
         return self.element_class(self, images)
 
-    def base_ring(self):
-        r"""The ring acting pointwise on this Hom module: ``R`` when commutative, else its centre."""
-        ring = self.domain().base_ring()
-        match ring:
-            case _ if ring in OwnedRings().Commutative():
-                return ring
-            case _:
-                return ring.ring_center()
-
     def is_projective(self):
         r"""Answer ``Unknown`` for a Hom module with neither a matrix nor a presented model.
 
@@ -2203,9 +2194,6 @@ class _ModuleHomsetCommonMethods:
         from sage.misc.unknown import Unknown
 
         return Unknown
-
-    def scalar_multiple(self, scalar, morphism):
-        return self._owned_scalar_multiple(scalar, morphism)
 
     def _apply_pointwise_scalar(self, scalar, element):
         return self.codomain().scalar_multiple(self.base_ring()(scalar), element)
@@ -2279,23 +2267,6 @@ class _ModuleHomsetCommonMethods:
             source_leg,
             inclusion=inclusion,
         )
-
-    def source_module(self):
-        return self.domain()
-
-    def target_module(self):
-        return self.codomain()
-
-    def evaluation(self, morphism, source_element):
-        return self(morphism)(source_element)
-
-    def as_morphism(self, element):
-        r"""Compatibility spelling: Hom elements already are morphisms."""
-        return self(element)
-
-    def from_morphism(self, morphism):
-        r"""Compatibility spelling: the morphism is already a Hom element."""
-        return self(morphism)
 
     def zero(self):
         if self.domain() is self.codomain():

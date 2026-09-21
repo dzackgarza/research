@@ -11,7 +11,7 @@ def test_a1_embeds_primitively_into_u_plus_a1_with_an_actual_map() -> None:
     assert embedding.domain() is source
     assert embedding.codomain() is target
     assert embedding.is_primitive()
-    generator = source.module_generator(0)
+    generator = source.basis_vector(0)
     assert target.q(embedding(generator)) == source.q(generator)
 
 

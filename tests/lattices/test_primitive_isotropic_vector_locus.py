@@ -5,7 +5,7 @@ def test_lattice_owns_the_same_primitive_isotropic_membership_condition() -> Non
     lattice = NamedLattices.E10
     locus = lattice.primitive_isotropic_vectors()
     repeated = lattice.primitive_isotropic_vectors()
-    isotropic = lattice.module_generator(0)
+    isotropic = lattice.basis_vector(0)
 
     assert locus in Sets()
     assert locus.universe() is lattice

@@ -26,7 +26,7 @@ def test_special_orthogonal_group_has_two_right_cosets_in_O_A1() -> None:
 
 def test_each_right_coset_representative_is_a_live_lattice_isometry() -> None:
     lattice = NamedLattices.A1
-    root = lattice.module_generator(0)
+    root = lattice.basis_vector(0)
     subgroup = lattice.SO()
     representatives = subgroup.finite_character_quotient().right_coset_transversal()
 

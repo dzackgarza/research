@@ -99,9 +99,6 @@ class _FiniteOrbitDecompositionSetEngine:
             raise ValueError(f"{orbit} is not an orbit of {self}")
         return orbit
 
-    def cardinality(self):
-        return self._orbits.cardinality()
-
     def orbits(self):
         return self
 

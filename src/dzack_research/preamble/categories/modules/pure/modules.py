@@ -2285,6 +2285,7 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
             return self.codomain()
 
         def scalar_multiple(self, scalar, morphism):
+            r"""Use the Hom representation's pointwise scalar action without rebuilding the generic module action."""
             return self._owned_scalar_multiple(scalar, morphism)
 
         def as_morphism(self, element):

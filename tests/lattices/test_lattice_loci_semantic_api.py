@@ -29,8 +29,8 @@ def test_isotropic_sublattice_locus_does_not_identify_a_vector_with_its_line() -
 
 def test_isotropic_flag_locus_accepts_arbitrary_prescribed_nested_ranks() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("U")
-    e1 = lattice.module_generator(0)
-    e2 = lattice.module_generator(2)
+    e1 = lattice.basis_vector(0)
+    e2 = lattice.basis_vector(2)
     line = lattice.primitive_sublattice_from((e1,))
     plane = lattice.primitive_sublattice_from((e1, e2))
 
@@ -45,8 +45,8 @@ def test_isotropic_flag_locus_accepts_arbitrary_prescribed_nested_ranks() -> Non
 def test_existing_complete_isotropic_flag_is_a_member_of_its_rank_locus() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("U")
     flag = lattice.isotropic_flag(
-        lattice.module_generator(0),
-        lattice.module_generator(2),
+        lattice.basis_vector(0),
+        lattice.basis_vector(2),
     )
 
     assert flag in lattice.isotropic_flag_locus(ranks=(1, 2))

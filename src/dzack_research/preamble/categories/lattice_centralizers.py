@@ -107,9 +107,6 @@ class _CentralizerOrbitDecompositionEngine:
             raise ValueError(f"{orbit} is not an orbit of {self}")
         return orbit
 
-    def cardinality(self):
-        return self._orbit_set.cardinality()
-
     def orbits(self):
         return self
 

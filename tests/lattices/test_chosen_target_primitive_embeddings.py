@@ -23,7 +23,7 @@ def test_chosen_target_embedding_filters_a_nontrivial_genus() -> None:
     assert embedding.domain() is source
     assert embedding.codomain() is target
     assert embedding.is_primitive()
-    generator = source.module_generator(0)
+    generator = source.basis_vector(0)
     assert embedding(generator).q() == generator.q()
 
 

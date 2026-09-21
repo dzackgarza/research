@@ -80,14 +80,14 @@ def test_the_divisibility_ideal_is_generated_by_the_pairings_against_the_framing
 
 def test_a_vector_cuts_out_its_line_and_the_complement_of_that_line() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic = lattice.module_generator(0)
+    isotropic = lattice.basis_vector(0)
 
     line = isotropic.sublattice()
     complement = isotropic.orthogonal_complement()
 
     assert line.module_rank() == 1
     assert line.inclusion().codomain() is lattice
-    assert line.inclusion()(line.module_generator(0)) == isotropic
+    assert line.inclusion()(line.basis_vector(0)) == isotropic
     # e is isotropic, so e lies in its own complement and the rank drops by one.
     assert complement.module_rank() == 3
     assert complement.inclusion().codomain() is lattice
@@ -98,7 +98,7 @@ def test_the_complement_of_an_anisotropic_vector_splits_off_its_line() -> None:
     by one, and in \(A_2\) the surviving line has norm \(-6\).
     """
     root_lattice = Lattices(ZZ)("A2")
-    root = root_lattice.module_generator(0)
+    root = root_lattice.basis_vector(0)
 
     complement = root.orthogonal_complement()
 
@@ -113,7 +113,7 @@ def test_the_complement_of_an_anisotropic_vector_splits_off_its_line() -> None:
 
 def test_a_lattice_is_totally_isotropic_exactly_when_its_form_vanishes() -> None:
     plane = Lattices(ZZ)("U")
-    isotropic_line = plane.module_generator(0).sublattice()
+    isotropic_line = plane.basis_vector(0).sublattice()
 
     assert not plane.is_totally_isotropic()
     assert isotropic_line.is_totally_isotropic()

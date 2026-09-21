@@ -34,7 +34,7 @@ def test_selected_positive_component_distinguishes_the_two_sheets() -> None:
 
 def test_hyperbolic_projectivization_identifies_positive_integral_multiples() -> None:
     lattice = _lorentz_plane()
-    timelike = lattice.module_generator(0)
+    timelike = lattice.basis_vector(0)
     space = lattice.hyperbolic_space(timelike)
 
     assert space in HyperbolicSpaces(space.positive_cone_component())
@@ -44,7 +44,7 @@ def test_hyperbolic_projectivization_identifies_positive_integral_multiples() ->
 
 def test_projectivized_light_cone_has_ideal_vertices() -> None:
     lattice = _lorentz_plane()
-    timelike = lattice.module_generator(0)
+    timelike = lattice.basis_vector(0)
     dual = lattice.dual_module()
     first, second = dual.module_generators()
     cone = lattice.rational_polyhedral_cone((first - second, first + second), complete=True)

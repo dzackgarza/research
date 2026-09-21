@@ -11,7 +11,7 @@ from dzack_research.preamble.all import (
 def test_special_orthogonal_vector_equivalence_returns_a_live_transporter() -> None:
     lattice = Lattices(ZZ)("A2")
     group = lattice.SO()
-    root = lattice.module_generator(0)
+    root = lattice.basis_vector(0)
 
     witness = group.vector_equivalence_witness(root, root)
     assert witness == group.supergroup().one()
@@ -62,7 +62,7 @@ def test_special_orthogonal_isotropic_equivalence_returns_a_live_transporter(
         lambda _gram, _left, _right, choice="plane": [[1, 0], [0, 1]],
     )
 
-    line = lattice.primitive_isotropic_subobject(lattice.module_generator(0))
+    line = lattice.primitive_isotropic_subobject(lattice.basis_vector(0))
     special = lattice.SO()
     witness = special.isotropic_equivalence_witness(line, line)
     assert witness is not None

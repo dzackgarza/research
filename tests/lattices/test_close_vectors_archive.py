@@ -12,7 +12,7 @@ def test_close_vectors_retains_every_exact_point_in_a_rational_ball() -> None:
 
     assert close.cardinality() == 2
     vectors = close.index_set()
-    assert Set(vectors) == Set((lattice.zero(), lattice.module_generator(0)))
+    assert Set(vectors) == Set((lattice.zero(), lattice.basis_vector(0)))
     assert all(close[vector] == SageQQ(1) / 2 for vector in vectors)
     assert lattice.closest_vector(target) in close.index_set()
 

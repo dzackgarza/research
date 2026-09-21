@@ -206,9 +206,6 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             assert point in self.point_set(), f"{point!r} is not a point of {self}"
             return self.point_set()(point)
 
-        def cardinality(self):
-            return cardinal(self.point_set().cardinality())
-
         def Mor(self, codomain):
             r"""Return the equivariant Hom from this G-set to ``codomain``."""
             return FiniteGSets(self.acting_group()).Mor(self, codomain)
@@ -518,9 +515,6 @@ class OrbitSets(OwnedCategory):
         def _element_constructor_(self, orbit):
             assert orbit in self, f"{orbit} is not an orbit of {self}"
             return orbit
-
-        def cardinality(self):
-            return self._orbit_classes.cardinality()
 
         @cached_method
         def ranking_map(self):

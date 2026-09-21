@@ -43,7 +43,7 @@ def test_order_three_cyclotomic_decomposition_retains_nontrivial_glue() -> None:
     assert restrictions[3] != decomposition.summand(3).O().one()
 
     cyclotomic = decomposition.summand(3)
-    root_reflection = cyclotomic.reflection(cyclotomic.module_generator(0))
+    root_reflection = cyclotomic.reflection(cyclotomic.basis_vector(0))
     assert root_reflection in cyclotomic.O()
     assert root_reflection not in decomposition.component_centralizers()[3]
 

@@ -14,7 +14,7 @@ from dzack_research.preamble.all import ZZ, Lattices, signature_pair
 def test_reducing_a_hyperbolic_plane_off_an_isotropic_line_returns_the_complement() -> None:
     plane = Lattices(ZZ)("U")
     lattice = plane + plane
-    isotropic = lattice.module_generator(0)
+    isotropic = lattice.basis_vector(0)
 
     reduction = isotropic.isotropic_reduction()
 
@@ -30,7 +30,7 @@ def test_the_reduction_drops_one_from_each_side_of_the_signature() -> None:
     lattice = Lattices(ZZ)("U") + root_lattice
     assert lattice.signature_pair() == signature_pair(1, 3)
 
-    reduction = lattice.module_generator(0).isotropic_reduction()
+    reduction = lattice.basis_vector(0).isotropic_reduction()
 
     assert reduction.signature_pair() == signature_pair(0, 2)
     assert reduction.determinant() == 3
@@ -39,7 +39,7 @@ def test_the_reduction_drops_one_from_each_side_of_the_signature() -> None:
 
 def test_the_reduction_retains_the_embedding_and_the_complement_it_came_from() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic = lattice.module_generator(0)
+    isotropic = lattice.basis_vector(0)
 
     reduction = isotropic.isotropic_reduction()
 
@@ -54,7 +54,7 @@ def test_the_reduction_retains_the_embedding_and_the_complement_it_came_from() -
 
 def test_the_projection_kills_the_isotropic_sublattice_and_nothing_else() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic = lattice.module_generator(0)
+    isotropic = lattice.basis_vector(0)
     reduction = isotropic.isotropic_reduction()
 
     perpendicular = reduction.orthogonal_complement()
@@ -72,7 +72,7 @@ def test_the_projection_kills_the_isotropic_sublattice_and_nothing_else() -> Non
 
 def test_the_descended_form_is_the_form_of_the_complement_on_the_lifts() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    reduction = lattice.module_generator(0).isotropic_reduction()
+    reduction = lattice.basis_vector(0).isotropic_reduction()
 
     perpendicular = reduction.orthogonal_complement()
     lifts = reduction.reduction_lifts()
@@ -134,7 +134,7 @@ def test_lifting_minus_one_splits_the_lattice_along_the_chosen_lifts() -> None:
     which a lift that merely happened to be parabolic would not do.
     """
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic = lattice.module_generator(0)
+    isotropic = lattice.basis_vector(0)
     reduction = isotropic.isotropic_reduction()
     negation = reduction.Aut()(
         lambda label: -reduction.module_generator(label)

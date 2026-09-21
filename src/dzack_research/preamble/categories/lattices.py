@@ -642,12 +642,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             Integral lattice of rank 2 and signature (2, 0)
             sage: I2.gram_tensor().tensor_valence()
             (0, 2)
-            sage: e = I2.module_generator(0)
+            sage: e = I2.basis_vector(0)
             sage: e
             e_0
             sage: e.to_tuple()
             (1, 0)
-            sage: e*e, e.b(I2.module_generator(1))
+            sage: e*e, e.b(I2.basis_vector(1))
             (1, 0)
             sage: I2((1, 0))
             e_0
@@ -748,7 +748,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: from dzack_research.preamble.categories.lattices import Lattices
             sage: C = Lattices(ZZ)
             sage: L = C.colimit(lambda n: C(ZZ^n))
-            sage: L.module_generator(3) * L.module_generator(3)
+            sage: L.basis_vector(3) * L.basis_vector(3)
             1
         """
 
@@ -1370,7 +1370,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: from dzack_research.preamble.categories.lattices import Lattices
                 sage: Iinf = Lattices(ZZ)(ZZ^NN)
                 sage: f = Iinf.identity_morphism()
-                sage: f(Iinf.module_generator(7))
+                sage: f(Iinf.basis_vector(7))
                 e_7
             """
             return self.Aut().identity()
@@ -1441,21 +1441,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             labels = self.module_generating_set()
             return self.module_generator(labels[int(position)])
-
-        def module_generator(self, label):
-            r"""Evaluate the selected framing, retaining archived positional syntax.
-
-            A label is evaluated by the framing this lattice inherits.  An
-            integer that is not itself a label is read as a position in the
-            framing's enumeration; the generator-lexicon convergence pass owns
-            removal of that archived ambiguity.
-            """
-            labels = self.module_generating_set()
-            match label in labels:
-                case True:
-                    return super().module_generator(label)
-                case False:
-                    return super().module_generator(labels[int(label)])
 
         def signature_pair(self):
             r"""Return $(p,q)$: the positive and negative indices of inertia.
@@ -1582,7 +1567,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
                 sage: L = Lattices(ZZ)([[2, 0], [0, -6]])
-                sage: L.divisibility_ideal(L.module_generator(1)) == ZZ.ideal(6)
+                sage: L.divisibility_ideal(L.basis_vector(1)) == ZZ.ideal(6)
                 True
             """
             assert element.parent() is self, "the divisibility ideal is defined for an element of this lattice"
@@ -1618,7 +1603,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: U = Lattices(ZZ)("U")
                 sage: U.is_totally_isotropic()
                 False
-                sage: U.subobject_on((U.module_generator(0),)).is_totally_isotropic()
+                sage: U.subobject_on((U.basis_vector(0),)).is_totally_isotropic()
                 True
             """
             assert self.module_rank().is_finite(), "total isotropy is decided here on a finite generating set"
@@ -2336,8 +2321,8 @@ class Lattices(OwnedCategoryOverBaseRing):
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
                 sage: U = Lattices(ZZ)("U")
-                sage: root = U.module_generator(0) + U.module_generator(1)
-                sage: U.reflection(root)(U.module_generator(0))
+                sage: root = U.basis_vector(0) + U.basis_vector(1)
+                sage: U.reflection(root)(U.basis_vector(0))
                 -e_1
             """
             if root.parent() is not self:
@@ -2847,9 +2832,9 @@ class Lattices(OwnedCategoryOverBaseRing):
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
                 sage: Iinf = Lattices(ZZ)(ZZ^NN)
-                sage: Iinf.module_generator(0)^2
+                sage: Iinf.basis_vector(0)^2
                 1
-                sage: Iinf.twist(2).module_generator(0)^2
+                sage: Iinf.twist(2).basis_vector(0)^2
                 2
                 sage: latex(Iinf.twist(2).gram_tensor())
                 2\,I_{\infty}
@@ -2999,7 +2984,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             EXAMPLES::
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)("U").module_generator(0)
+                sage: Lattices(ZZ)("U").basis_vector(0)
                 e_0
             """
             return repr_lincomb(self._lattice_terms(), strip_one=True)
@@ -3014,7 +2999,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
                 sage: I2 = Lattices(ZZ)(ZZ^2)
-                sage: e, f = I2.module_generator(0), I2.module_generator(1)
+                sage: e, f = I2.basis_vector(0), I2.basis_vector(1)
                 sage: e.b(f), e*e
                 (0, 1)
             """
@@ -3047,7 +3032,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             EXAMPLES::
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)(ZZ^NN).module_generator(0).div()
+                sage: Lattices(ZZ)(ZZ^NN).basis_vector(0).div()
                 1
             """
             return self.parent().div(self)
@@ -3135,7 +3120,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
                 sage: Iinf = Lattices(ZZ)(ZZ^NN)
-                sage: Iinf.module_generator(0).is_root()
+                sage: Iinf.basis_vector(0).is_root()
                 True
                 sage: Iinf.linear_combination({0: ZZ(2), 1: ZZ(1)}).is_root()
                 False
@@ -3176,7 +3161,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             EXAMPLES::
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)(ZZ^2).module_generator(0).to_vector()
+                sage: Lattices(ZZ)(ZZ^2).basis_vector(0).to_vector()
                 (1, 0)
             """
 
@@ -3464,7 +3449,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The reduction of \(U\oplus U\) by an isotropic line, which is \(U\)."""
         plane = Lattices(self.base_ring())("U")
-        return (plane + plane).module_generator(0).isotropic_reduction()
+        return (plane + plane).basis_vector(0).isotropic_reduction()
 
     @classmethod
     def _repr_object_names(cls) -> str:

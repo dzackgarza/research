@@ -97,7 +97,7 @@ def test_tensor_universal_map_is_bilinear_and_factors_uniquely() -> None:
     assert universal.right_module() is right
     assert universal.codomain() is tensor
     x1, x2 = left.module_generators()
-    y = right.module_generator(0)
+    y = right.basis_vector(0)
     assert universal(x1 + x2, y) == universal(x1, y) + universal(x2, y)
     assert universal(2 * x1, y) == 2 * universal(x1, y)
     assert universal(x1, 3 * y) == 3 * universal(x1, y)

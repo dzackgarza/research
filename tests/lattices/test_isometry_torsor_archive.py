@@ -9,7 +9,7 @@ def test_isometry_torsor_transporter_recovers_the_acting_element() -> None:
     lattice = Lattices(integers)("A2")
     homset = lattice.Isom(lattice)
     witness = homset.an_element()
-    reflection = lattice.reflection(lattice.module_generator(0))
+    reflection = lattice.reflection(lattice.basis_vector(0))
     moved = reflection * witness
 
     transporter = homset.transporter(witness, moved)
