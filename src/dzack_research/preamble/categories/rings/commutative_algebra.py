@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     _OwnedAlgebraElement,
     _OwnedAlgebraParent,
+    _algebra_structure_morphism,
     _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
@@ -1721,6 +1722,20 @@ class AdicCompletions(Category):
             return self._adic_completion_construction.completion_map()
 
         @cached_method
+        def algebra_structure_morphism(self):
+            r"""Return the coefficient structure map without duplicating the completion map.
+
+            For an ordinary adic completion the coefficient ring is its source,
+            so the structure map is exactly the canonical completion map.  A
+            formal power-series specialization is instead an algebra over the
+            coefficient ring below its polynomial completion source and keeps
+            that distinct scalar structure.
+            """
+            if self.algebra_base_ring() is self.completion_source():
+                return self.completion_map()
+            return _algebra_structure_morphism(self)
+
+        @cached_method
         def ideal_extension(self):
             r"""Return the construction ``I -> I A^`` along the completion map."""
             return IdealExtensionData(
@@ -2327,8 +2342,6 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             categories=tuple(placements),
         )
         completion_map = self.completion_map()
-        if algebra_base is None or algebra_base is source:
-            self.algebra_structure_construction().set_structure_map(completion_map)
         match (formal_base_is_local, defining_ideal_is_maximal):
             case (True, _):
                 formal_parameters = tuple(

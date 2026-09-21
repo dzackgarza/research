@@ -629,6 +629,23 @@ def _root_algebra_law_decisions(algebra):
 # ---------------------------------------------------------------------------
 
 
+def _algebra_structure_morphism(algebra):
+    r"""Return the scalar structure map determined by an algebra's retained module action."""
+    ring = algebra.algebra_base_ring()
+    if ring is algebra:
+        return ring.Mor(ring, category=OwnedRings()).identity()
+    rho = algebra.scalar_action()
+    match algebra:
+        case _ if algebra in Algebras(ring).Associative().Unital():
+            center = algebra.ring_center()
+            unit = algebra._underlying_additive_element(algebra.one())
+            return ring.Mor(center, category=OwnedRings())(
+                lambda scalar: center(algebra(rho(ring(scalar))(unit))),
+            )
+        case _:
+            return rho
+
+
 class Algebras(OwnedCategoryOverBaseRing):
     r"""Algebras over a commutative ring ``R``: an ``R``-module with an ``R``-bilinear multiplication.
 
@@ -878,19 +895,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             the structure morphism is the ring map \(R\to Z(A)\),
             \(r\mapsto\rho(r)(1)\), computed here from \(\rho\).
             """
-            ring = self.algebra_base_ring()
-            if ring is self:
-                return ring.Mor(ring, category=OwnedRings()).identity()
-            rho = self.scalar_action()
-            match self:
-                case _ if self in Algebras(ring).Associative().Unital():
-                    center = self.ring_center()
-                    unit = self._underlying_additive_element(self.one())
-                    return ring.Mor(center, category=OwnedRings())(
-                        lambda scalar: center(self(rho(ring(scalar))(unit))),
-                    )
-                case _:
-                    return rho
+            return _algebra_structure_morphism(self)
 
         def affine_equation_family(self, relative_variables, equations):
             r"""Return the relative affine family defined over this parameter algebra."""
