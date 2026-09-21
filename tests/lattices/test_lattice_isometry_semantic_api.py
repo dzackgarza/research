@@ -1,4 +1,5 @@
 from sage.misc.unknown import Unknown
+import pytest
 
 from dzack_research.preamble.all import ZZ, Lattices
 
@@ -28,9 +29,5 @@ def test_is_isometric_to_refuses_when_only_the_three_valued_classifier_is_unknow
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
 
     assert source.is_isometric(target) is Unknown
-    try:
+    with pytest.raises(AssertionError):
         source.is_isometric_to(target)
-    except NotImplementedError:
-        pass
-    else:
-        raise AssertionError("is_isometric_to must not collapse Unknown to a boolean")

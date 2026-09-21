@@ -1,5 +1,7 @@
 r"""Affine schemes delegate regularity to their represented local rings."""
 
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.all import QQ, AffineSpaces
 
 
@@ -22,3 +24,4 @@ def test_affine_plane_and_cusp_use_the_same_pointwise_regularity_owner() -> None
 
     assert cusp.is_singular_at(cusp_origin)
     assert not cusp.is_regular_at(cusp_origin)
+    assert cusp.is_locally_factorial_at(cusp_origin) is Unknown

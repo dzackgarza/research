@@ -189,10 +189,9 @@ def _isometries_between_definite_lattices(source, target):
     empty = homset.is_empty()
     if empty is True:
         return
-    if empty is not False:
-        raise NotImplementedError(
-            "the definite complement isometry homset was not decided exactly"
-        )
+    assert empty is False, (
+        "the definite complement isometry homset must be decided exactly before enumerating its torsor"
+    )
     first = homset.an_element()
     for automorphism in target.O():
         yield homset.act(automorphism, first)
@@ -363,10 +362,9 @@ def _gluing_route_discriminant_classes(lattice, left, right):
     complement_empty = complement_homset.is_empty()
     if complement_empty is True:
         return ()
-    if complement_empty is not False:
-        raise NotImplementedError(
-            "the complement isometry class is undecided, so the discriminant gluing route cannot choose its torsor"
-        )
+    assert complement_empty is False, (
+        "the complement isometry class must be decided exactly before the discriminant gluing route chooses its torsor"
+    )
     complement_start = complement_homset.an_element().discriminant_isometry()
     line_start = _line_isometry(source, target).discriminant_isometry()
 

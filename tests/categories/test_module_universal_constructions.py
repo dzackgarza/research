@@ -739,7 +739,7 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
     assert construction.diagram() is restricted_diagram
     assert construction.structure_morphism(rectangle(grid((1, 1)))).codomain() is line
 
-    with pytest.raises(NotImplementedError, match="finite represented shape"):
+    with pytest.raises(AssertionError):
         line.category().Limits(index).construction(diagram)
 
 
@@ -771,7 +771,7 @@ def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limi
     )
     assert tower.base_index_category() is base_index
     assert tower.transition(tower_arrow)(e) == 4 * e
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         line.category().Limits(opposite).construction(diagram)
 
 

@@ -134,7 +134,5 @@ def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() 
         ZZ,
         lambda element: pulled_quadratic(element),
     )
-    with pytest.raises(NotImplementedError, match="not decidable"):
-        _ = pulled_bilinear == another_bilinear
-    with pytest.raises(NotImplementedError, match="not decidable"):
-        _ = pulled_quadratic == another_quadratic
+    assert (pulled_bilinear == another_bilinear) is Unknown
+    assert (pulled_quadratic == another_quadratic) is Unknown

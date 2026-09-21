@@ -103,7 +103,7 @@ def _homogeneous_degree(element):
     try:
         return parent.homogeneous_degree(element)
     except AttributeError as error:
-        raise NotImplementedError(
+        raise AssertionError(
             "this graded object does not expose homogeneous element degrees"
         ) from error
 

@@ -667,11 +667,9 @@ def _presented_degree_power(
             )
         return ring.free_module(labels)
 
-    if module not in ModulesWithChosenFinitePresentation(ring):
-        raise NotImplementedError(
-            f"the represented {flavor} power backend requires a free module "
-            "or a chosen finite presentation"
-        )
+    assert module in ModulesWithChosenFinitePresentation(ring), (
+        f"the represented {flavor} power backend requires a free module or a chosen finite presentation"
+    )
 
 
     if not source_labels.cardinality().is_finite():

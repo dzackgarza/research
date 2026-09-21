@@ -1,14 +1,12 @@
 r"""Adic completion objects and their finite quotient systems."""
 
-import pytest
-
 from dzack_research.preamble.all import (
     QQ,
 )
 from dzack_research.preamble.categories.abstract_categories.products import InverseSystem
 
 
-def test_presented_cusp_is_not_replaced_by_one_artin_quotient() -> None:
+def test_presented_cusp_completion_is_not_identified_with_one_artin_quotient() -> None:
     plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
@@ -16,8 +14,13 @@ def test_presented_cusp_is_not_replaced_by_one_artin_quotient() -> None:
     xbar = cusp.algebra_generator("x")
     ybar = cusp.algebra_generator("y")
     maximal = cusp.ideal(xbar, ybar)
-    with pytest.raises(NotImplementedError, match="finite Artin quotient is not the completion"):
-        cusp.adic_completion(maximal, precision=6)
+    completion = cusp.adic_completion(maximal, precision=6)
+    sixth = completion.adic_truncation(6)
+
+    assert completion is not sixth
+    assert completion.completion_source() is cusp
+    assert completion.ideal_of_definition() == maximal
+    assert completion.computation_precision() == 6
 
 
 def test_multivariable_origin_completion_is_not_truncated_by_computation_precision() -> None:
@@ -68,6 +71,7 @@ def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> Non
     assert limit.diagram() is diagram
     assert limit.object() is completion
     assert limit.structure_morphism(fourth_index) is completion.adic_projection(4)
+    assert limit.factor(limit.cone()).apex_map() == completion.Mor(completion).identity()
 
 
 def test_completion_map_and_projection_form_the_canonical_source_cone() -> None:

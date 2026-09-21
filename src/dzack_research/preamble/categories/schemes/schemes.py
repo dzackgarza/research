@@ -2563,9 +2563,9 @@ class Schemes(OwnedCategoryOverBaseRing):
                 r"""Return the negation of local regularity at ``p``."""
                 return not self.is_regular_at(point)
 
-            def is_locally_factorial_at(self, point) -> bool:
+            def is_locally_factorial_at(self, point):
                 r"""Return local factoriality at ``p`` in the supported regular regime."""
-                return bool(self._prime_point(point).is_locally_factorial())
+                return self._prime_point(point).is_locally_factorial()
 
             def cycle_group(self, cycle_dimension):
                 r"""Return the algebraic cycle group ``Z_k(self)`` in dimension ``k``."""

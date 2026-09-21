@@ -293,6 +293,30 @@ def test_unframed_algebra_classifies_its_product_and_preserves_unknown_map_equal
     assert module(three * four) == module(QQ(12))
     classifier = algebra.multiplication_morphism()
     assert classifier(classifier.domain().pure_tensor(three, four)) == three * four
+
+
+def test_kahler_computation_requires_a_selected_commutative_presentation() -> None:
+    from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+    from dzack_research.preamble.categories.sets.set_categories import Set
+
+    module = GeneralModules(QQ).from_operations(
+        Set(QQ),
+        addition=lambda x, y: x + y,
+        zero=QQ.zero(),
+        negation=lambda x: -x,
+        scalar_action=lambda r, x: r * x,
+    )
+    tensor = Modules(QQ).tensor_product((module, module))
+    product = tensor.from_bilinear_map(
+        module,
+        lambda x, y: module(x.underlying_element() * y.underlying_element()),
+    )
+    algebra = Algebras(QQ).Associative().Unital().Commutative()(
+        module, product, module(QQ.one())
+    )
+
+    with pytest.raises(AssertionError):
+        algebra.kahler_differentials()
     linear = algebra.module_category().Mor(algebra, algebra).elementwise(
         lambda x: x,
     )

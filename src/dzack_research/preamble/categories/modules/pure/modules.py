@@ -2572,15 +2572,17 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
         def dimension(self):
             r"""Return the dimension from this vector space's represented backend."""
             represented = self._represented_vector_space_dimension()
-            if represented is NotImplemented:
-                raise NotImplementedError(f"the dimension of {self} has no represented vector-space backend")
+            assert represented is not NotImplemented, (
+                f"the dimension of {self} requires a represented vector-space basis backend"
+            )
             return represented
 
         def basis_generator_labels(self):
             r"""Return selected framing labels whose classes form a basis."""
             represented = self._represented_vector_space_basis_generator_labels()
-            if represented is NotImplemented:
-                raise NotImplementedError(f"{self} has no represented basis subfamily of its selected generators")
+            assert represented is not NotImplemented, (
+                f"{self} has no represented basis subfamily of its selected generators"
+            )
             return represented
 
 
@@ -3820,8 +3822,9 @@ def _module_tensor_product_with_data(
         )
         if result is not NotImplemented:
             break
-    if result is NotImplemented:
-        raise NotImplementedError("the selected tensor-product presentation has no represented quotient constructor")
+    assert result is not NotImplemented, (
+        "the selected tensor-product presentation requires a represented quotient constructor on one presentation owner"
+    )
     return result
 
 
@@ -4026,8 +4029,9 @@ def _module_biproduct_with_data(
             )
             if result is not NotImplemented:
                 break
-    if result is NotImplemented:
-        raise NotImplementedError("the represented module factors provide no biproduct realization")
+    assert result is not NotImplemented, (
+        "the represented module factors require either their free or selected-presentation biproduct realization"
+    )
     return result
 
 
@@ -4362,11 +4366,13 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             r"""Return the named product ``(D,U,V)`` from invariant-factor presentation normalization."""
 
             ring = self.parent().base_ring()
-            if ring not in PrincipalIdealDomains():
-                raise NotImplementedError(f"Smith normal form is guaranteed here only over a PID, not {ring}")
+            assert ring in PrincipalIdealDomains(), (
+                f"Smith normal form is guaranteed here only over a PID, not {ring}"
+            )
             presented = self.codomain()._represented_cokernel_of_morphism(self)
-            if presented is NotImplemented:
-                raise NotImplementedError("Smith normalization requires a represented presentation quotient")
+            assert presented is not NotImplemented, (
+                "Smith normalization requires a represented presentation quotient"
+            )
             normalization = presented.invariant_factor_presentation()
             diagonal = normalization.codomain().arrow()
             # For a square in Arr(Mod_R), right * original = diagonal * left.

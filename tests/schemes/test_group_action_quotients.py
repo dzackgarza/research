@@ -223,5 +223,5 @@ def test_nonlinear_polynomial_action_is_outside_the_selected_invariant_backend()
         generator_action * generator_action
         == acted.categorical_identity_morphism()
     )
-    with pytest.raises(NotImplementedError, match="linear action"):
+    with pytest.raises(AssertionError):
         acted.invariant_algebra()

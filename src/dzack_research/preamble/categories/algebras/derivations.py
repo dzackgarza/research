@@ -56,6 +56,12 @@ def _commutative_presentation_data(algebra):
     base = algebra.base_ring()
     if algebra not in Algebras(base).Associative().Unital().Commutative():
         raise TypeError("Kähler calculus requires a commutative algebra")
+    assert (
+        algebra in AlgebrasWithChosenFinitePresentation(base)
+        or algebra in SymmetricAlgebras(base)
+    ), (
+        "the represented Kähler-calculus backend requires a symmetric algebra or a chosen finite commutative polynomial presentation"
+    )
 
     if algebra in AlgebrasWithChosenFinitePresentation(base):
         presentation = algebra.presentation_ring()
@@ -65,10 +71,6 @@ def _commutative_presentation_data(algebra):
         presentation = algebra
         relations = finite_ordered_set(())
         lift = presentation
-    else:
-        raise NotImplementedError(
-            "the live derivation backend requires a symmetric algebra or a chosen finite commutative polynomial presentation"
-        )
 
     labels = presentation.algebra_generating_set()
     variables = FiniteOrderedSets().from_indexed(

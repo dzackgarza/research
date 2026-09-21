@@ -14,6 +14,7 @@ from sage.all import (
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.unknown import Unknown
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.infinity import Infinity
@@ -152,22 +153,24 @@ class PrimeSpectra(OwnedCategory):
 
         @cached_method
         def residue_degree(self):
-            r"""Return ``[kappa(p):k]`` in the supported affine field case."""
+            r"""Return the finite degree ``[kappa(p):k]`` of a closed affine point."""
             ring = self.parent().ring()
             source = ring.quotient_source() if ring in QuotientRings() else ring
             base = source.base_ring()
-            if not bool(_engine_ring(base).is_field()):
-                raise NotImplementedError(
-                    "residue degree is currently represented for affine algebras over a field"
-                )
+            assert bool(_engine_ring(base).is_field()), (
+                "residue degree here is relative to the coefficient field of an affine algebra"
+            )
+            assert bool(self.ideal().is_maximal()), (
+                "a finite residue degree is represented here at a closed point"
+            )
             point_engine = _engine_ideal(ring, self.ideal())
             if ring in QuotientRings():
                 point_engine = _engine_quotient_cover_ideal(ring, point_engine)
             try:
                 degree = int(point_engine.vector_space_dimension())
             except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise NotImplementedError(
-                    "the selected point is not represented as a finite residue-field extension"
+                raise AssertionError(
+                    "the maintained affine closed-point backend must compute the finite residue-field degree"
                 ) from error
             return _own_ring(SageZZ)(degree)
 
@@ -198,10 +201,9 @@ class PrimeSpectra(OwnedCategory):
                     "generic local length requires an ideal of this point's ring"
                 )
             source = ring.quotient_source() if ring in QuotientRings() else ring
-            if not bool(_engine_ring(source.base_ring()).is_field()):
-                raise NotImplementedError(
-                    "generic local length is currently represented for polynomial algebras over a field"
-                )
+            assert bool(_engine_ring(source.base_ring()).is_field()), (
+                "generic local length here uses the affine-algebra-over-a-field degree formula"
+            )
 
             def cover_ideal(selected):
                 backend = _engine_ideal(ring, selected)
@@ -250,10 +252,9 @@ class PrimeSpectra(OwnedCategory):
             """
             ring = self.parent().ring()
             source = ring.quotient_source() if ring in QuotientRings() else ring
-            if not bool(_engine_ring(source.base_ring()).is_field()):
-                raise NotImplementedError(
-                    "finite local length is currently represented for affine algebras over a field"
-                )
+            assert bool(_engine_ring(source.base_ring()).is_field()), (
+                "finite local length here uses finite-dimensional residue algebras over a field"
+            )
             ideal_engine = _engine_ideal(ring, ideal)
             point_engine = _engine_ideal(ring, self.ideal())
             if ring in QuotientRings():
@@ -338,7 +339,7 @@ class PrimeSpectra(OwnedCategory):
             return self.embedding_dimension() == int(self.height())
 
         @cached_method
-        def is_locally_factorial(self) -> bool:
+        def is_locally_factorial(self):
             r"""Return local factoriality where it follows from represented regularity.
 
             Every regular local ring is a unique-factorization domain.  This
@@ -349,9 +350,7 @@ class PrimeSpectra(OwnedCategory):
             """
             if self.is_regular():
                 return True
-            raise NotImplementedError(
-                "local factoriality of a singular local ring requires a divisor-class criterion"
-            )
+            return Unknown
 
         def order_of_vanishing(self, function):
             r"""Return ``ord_p(f)`` at this height-one point.
@@ -438,15 +437,17 @@ class PrimeSpectra(OwnedCategory):
         def cardinality(self):
             r"""Return the exact number of prime points in supported finite spectra."""
             ring = self.ring()
+            engine = _engine_ring(ring)
+            assert (
+                ring in OwnedRings().Division().Commutative()
+                or isinstance(engine, IntegerModRing_generic)
+            ), (
+                f"exact cardinality of Spec({ring}) is represented only for a field or Z/nZ"
+            )
             if ring in OwnedRings().Division().Commutative():
                 return cardinal(1)
-            engine = _engine_ring(ring)
-            if isinstance(engine, IntegerModRing_generic):
-                modulus = SageZZ(engine.characteristic())
-                return cardinal(len(tuple(modulus.prime_divisors())))
-            raise NotImplementedError(
-                f"the exact cardinality of Spec({ring}) has no selected computation"
-            )
+            modulus = SageZZ(engine.characteristic())
+            return cardinal(len(tuple(modulus.prime_divisors())))
 
         def ringed_space(self):
             r"""Return the affine locally ringed space ``Spec(R)`` this spectrum underlies."""
@@ -719,18 +720,18 @@ class QuotientRings(OwnedCategory):
 
         def is_unit(self):
             parent = self.parent()
-            if parent._preamble_engine_ring is None:
-                raise NotImplementedError(
-                    "unit testing in this quotient has no selected computation realization"
-                )
-            return bool(parent._engine_element(self).is_unit())
+            source = parent.quotient_source()
+            unit_ideal = source.ideal(
+                *parent.defining_ideal().ideal_generators(),
+                self.lift(),
+            )
+            return unit_ideal.contains_ambient_element(source.one())
 
         def inverse_of_unit(self):
             parent = self.parent()
-            if parent._preamble_engine_ring is None:
-                raise NotImplementedError(
-                    "unit inversion in this quotient has no selected computation realization"
-                )
+            assert parent._preamble_engine_ring is not None, (
+                "an explicit inverse representative in this quotient requires the selected quotient computation realization"
+            )
             represented = parent._engine_element(self)
             if not represented.is_unit():
                 raise ZeroDivisionError(f"{self} is not a unit")
@@ -828,18 +829,16 @@ class QuotientRings(OwnedCategory):
         def _from_engine_element(self, value):
             r"""Cross one element of the selected quotient engine into this quotient."""
             engine = self._preamble_engine_ring
-            if engine is None:
-                raise NotImplementedError(
-                    "this quotient ring has no selected computation realization"
-                )
+            assert engine is not None, (
+                "crossing from a quotient engine requires this quotient to carry that selected realization"
+            )
             return self._element_constructor_(engine(value))
 
         def _engine_element(self, value):
             engine = self._preamble_engine_ring
-            if engine is None:
-                raise NotImplementedError(
-                    "this quotient ring has no selected computation realization"
-                )
+            assert engine is not None, (
+                "crossing to a quotient engine requires this quotient to carry that selected realization"
+            )
             element = self(value)
             source_value = _engine_element(self.quotient_source(), element.lift())
             try:
@@ -907,18 +906,18 @@ class QuotientRings(OwnedCategory):
             return bool(self._preamble_engine_ring.is_field())
 
         def is_integral_domain(self):
-            if self._preamble_engine_ring is None:
-                raise NotImplementedError(
-                    "integral-domain testing for this quotient has no selected computation"
-                )
-            return bool(self._preamble_engine_ring.is_integral_domain())
+            return bool(self.defining_ideal().is_prime())
 
         def krull_dimension(self):
-            if self._preamble_engine_ring is None:
-                raise NotImplementedError(
-                    "Krull dimension of this quotient has no selected computation"
-                )
-            return _engine_krull_dimension(self)
+            if self._preamble_engine_ring is not None:
+                return _engine_krull_dimension(self)
+            backend = _engine_ideal(self.quotient_source(), self.defining_ideal())
+            try:
+                return int(backend.dimension())
+            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
+                raise AssertionError(
+                    "Krull dimension of this represented quotient requires an exact ideal-dimension backend"
+                ) from error
 
         def _repr_(self):
             return f"{self.quotient_source()} / {self.defining_ideal()}"
@@ -975,7 +974,7 @@ class QuotientRings(OwnedCategory):
             try:
                 return _engine_ring(self).characteristic()
             except NotImplementedError as error:
-                raise NotImplementedError(
+                raise AssertionError(
                     "characteristic of this quotient requires contraction of the defining ideal to the prime subring"
                 ) from error
 
@@ -1054,10 +1053,9 @@ class QuotientRings(OwnedCategory):
             r"""Return the total quotient ring of this supported reduced affine quotient."""
             if self in OwnedRings().Commutative().NoZeroDivisors():
                 return self.fraction_field()
-            if not self.is_reduced():
-                raise NotImplementedError(
-                    "the represented total quotient construction currently supports reduced affine quotients"
-                )
+            assert self.is_reduced(), (
+                "the selected total-quotient realization is the product of component fraction fields and therefore requires a reduced affine quotient"
+            )
             fields = tuple(
                 component.fraction_field() for component in self.irreducible_components()
             )
@@ -1155,10 +1153,9 @@ def _affine_reduced_quotient_normalization_data(quotient):
     source_engine = _engine_ring(source)
     if not quotient.is_reduced():
         raise ValueError("normalization here requires a reduced affine quotient")
-    if not hasattr(source_engine, "_singular_"):
-        raise NotImplementedError(
-            "affine normalization currently requires a polynomial presentation supported by Singular"
-        )
+    assert hasattr(source_engine, "_singular_"), (
+        "affine normalization currently requires a polynomial presentation supported by Singular"
+    )
 
     defining_engine = _engine_ideal(source, quotient.defining_ideal())
     from sage.interfaces.singular import singular
@@ -1752,11 +1749,14 @@ class AdicCompletions(Category):
                 return zero
             if square == defining:
                 return defining
-            if source in OwnedRings().Commutative().NoZeroDivisors():
-                return zero
-            raise NotImplementedError(
-                "the kernel of this completion map requires an exact computation of intersection I^n"
+            supported_by_krull_intersection = (
+                source in OwnedRings().Noetherian()
+                and source in OwnedRings().Commutative().NoZeroDivisors()
             )
+            assert supported_by_krull_intersection, (
+                "the completion-map kernel is intersection I^n; outside the represented exact cases and the Noetherian-domain Krull-intersection theorem, that intersection has no selected exact computation"
+            )
+            return zero
 
         def is_adically_separated(self) -> bool:
             r"""Return whether the represented source embeds in this completion."""
@@ -1767,13 +1767,11 @@ class AdicCompletions(Category):
             r"""Return injectivity exactly when the represented kernel is known."""
             return self.is_adically_separated()
 
-        def is_flat_over_source(self) -> bool:
+        def is_flat_over_source(self):
             r"""Return flatness of ``A^`` over ``A`` in the Noetherian regime."""
             if self.completion_source() in OwnedRings().Noetherian():
                 return True
-            raise NotImplementedError(
-                "flatness of adic completion is asserted here only for a represented Noetherian source"
-            )
+            return Unknown
 
         def computation_precision(self):
             return self._adic_completion_construction.precision()
@@ -1831,10 +1829,9 @@ class AdicCompletions(Category):
             target = self.adic_truncation(exponent)
             quotient_map = target.quotient_map()
             projection_lift = self._adic_completion_construction.projection_lift()
-            if projection_lift is None:
-                raise NotImplementedError(
-                    "this completion realization has no maintained finite-truncation map"
-                )
+            assert projection_lift is not None, (
+                "this completion realization must carry a finite-truncation lift before its adic projections are computable"
+            )
 
             def image(element):
                 backend = _engine_element(self, self(element))
@@ -1954,11 +1951,11 @@ class AdicCompletions(Category):
             diagram = system.functor()
             cone = self.adic_limit_cone()
 
-            def factorizer(_cone):
-                raise NotImplementedError(
-                    "factorization of an arbitrary cone into an infinite adic limit "
-                    "requires a maintained compatible-series construction"
+            def factorizer(supplied_cone):
+                assert supplied_cone is cone, (
+                    "factorization of a noncanonical cone into this infinite adic limit requires a represented compatible-series construction"
                 )
+                return self.Mor(self).identity()
 
             return SelectedLimitConstruction(diagram, cone, factorizer)
 
@@ -2725,7 +2722,7 @@ def _finite_generated_localization(source, submonoid):
     try:
         generators = tuple(submonoid.monoid_generators())
     except NotImplementedError as error:
-        raise NotImplementedError(
+        raise AssertionError(
             "the active Sage localization engine requires a chosen finite generating set"
         ) from error
     if not generators:
@@ -2913,10 +2910,9 @@ def _localization_at_submonoid(source, submonoid):
 
 def _quotient_representative(element):
     lift = getattr(element, "lift", None)
-    if lift is None:
-        raise NotImplementedError(
-            "this quotient element has no represented lift to the source ring"
-        )
+    assert lift is not None, (
+        "a represented quotient element used in quotient/localization comparison must carry its canonical lift"
+    )
     return lift()
 
 
@@ -2972,7 +2968,7 @@ def _quotient_localization_comparison(source_quotient, localization_ring):
         try:
             source_generators = tuple(source_submonoid.monoid_generators())
         except NotImplementedError as error:
-            raise NotImplementedError(
+            raise AssertionError(
                 "the quotient/localization comparison reads the image of S from a chosen "
                 "finite generating set, or from the prime whose complement S is"
             ) from error
@@ -3223,10 +3219,9 @@ def _adic_completion_from_owned_data(source, defining, precision):
         bottom_projection_lift = (
             bottom_completion._adic_completion_construction.projection_lift()
         )
-        if bottom_projection_lift is None:
-            raise NotImplementedError(
-                "the selected source completion has no maintained finite-stage lift"
-            )
+        assert bottom_projection_lift is not None, (
+            "the selected source completion must carry a maintained finite-stage lift"
+        )
 
         def completion_image(element):
             return _engine_element(
@@ -3262,10 +3257,9 @@ def _adic_completion_from_owned_data(source, defining, precision):
     if defining == unit_ideal:
         zero_quotient = source.quotient_ring(unit_ideal)
         zero_engine = getattr(zero_quotient, "_preamble_engine_ring", None)
-        if zero_engine is None:
-            raise NotImplementedError(
-                "the unit-adic zero completion needs the represented zero quotient engine"
-            )
+        assert zero_engine is not None, (
+            "the unit-adic zero completion needs the represented zero quotient engine"
+        )
 
         def completion_image(_element):
             return zero_engine.zero()
@@ -3305,10 +3299,9 @@ def _adic_completion_from_owned_data(source, defining, precision):
         completion_engine = engine.completion(prime, int(precision))
 
         def projection_lift(value, exponent):
-            if exponent > int(precision):
-                raise NotImplementedError(
-                    "the selected p-adic engine has not computed enough digits for this projection"
-                )
+            assert exponent <= int(precision), (
+                "the selected p-adic computation precision must reach the requested truncation exponent"
+            )
             return source(int(value.lift()))
 
         return _AdicCompletionAlgebraParent(
@@ -3321,25 +3314,29 @@ def _adic_completion_from_owned_data(source, defining, precision):
         )
 
     base = source.base_ring()
+    assert (
+        source in SymmetricAlgebras(base)
+        or source in AlgebrasWithChosenFinitePresentation(base)
+    ), (
+        "adic completion currently has an exact maintained realization for polynomial rings, p-adic integers, and algebras with a chosen finite presentation"
+    )
     if source not in SymmetricAlgebras(base):
         if source in AlgebrasWithChosenFinitePresentation(base):
             selected_power = defining.power(int(precision))
             truncation = source.quotient_ring(selected_power)
             truncation_engine = getattr(truncation, "_preamble_engine_ring", None)
-            if truncation_engine is None:
-                raise NotImplementedError(
-                    "the presented completion has no maintained finite approximation engine"
-                )
+            assert truncation_engine is not None, (
+                "the presented completion requires its maintained finite approximation engine"
+            )
             quotient_map = truncation.quotient_map()
 
             def completion_image(element):
                 return _engine_element(truncation, quotient_map(source(element)))
 
             def projection_lift(value, exponent):
-                if exponent > int(precision):
-                    raise NotImplementedError(
-                        "the selected finite approximation has not computed enough adic levels for this projection"
-                    )
+                assert exponent <= int(precision), (
+                    "the selected finite approximation must reach the requested adic level"
+                )
                 return truncation._from_engine_element(value).lift()
 
             completed_ideal_generators = tuple(
@@ -3365,19 +3362,15 @@ def _adic_completion_from_owned_data(source, defining, precision):
                 completion_image=completion_image,
                 completion_map_kernel=completion_map_kernel,
             )
-        raise NotImplementedError(
-            "adic completion currently has an exact maintained realization for polynomial rings and p-adic integers"
-        )
 
     source_engine = _engine_ring(source)
     selected_variables = []
     engine_variables = tuple(source_engine.gens())
     for generator in generators:
         matching = tuple(variable for variable in engine_variables if generator == variable)
-        if len(matching) != 1:
-            raise NotImplementedError(
-                "the supported multivariable completion requires an ideal generated by selected polynomial variables"
-            )
+        assert len(matching) == 1, (
+            "the supported multivariable completion requires an ideal generated by selected polynomial variables"
+        )
         selected_variables.append(matching[0])
     completion_parameter = (
         selected_variables[0]

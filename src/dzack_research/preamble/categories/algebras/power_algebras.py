@@ -302,10 +302,9 @@ def _alternating_extension(module_morphism):
         raise TypeError("an alternating extension requires a unital associative algebra target")
     labels = module.module_generating_set()
     cardinality = labels.cardinality()
-    if not cardinality.is_finite():
-        raise NotImplementedError(
-            "verification of the exterior-algebra relations currently requires a finite selected framing"
-        )
+    assert cardinality.is_finite(), (
+        "verification of the exterior-algebra relations currently requires a finite selected framing"
+    )
     labels = tuple(labels)
     images = {
         label: target(module_morphism(module.module_generator(label)))

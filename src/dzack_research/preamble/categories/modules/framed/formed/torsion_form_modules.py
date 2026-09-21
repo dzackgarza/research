@@ -246,7 +246,7 @@ def _engine_torsion_form(normalized_form, *, quadratic: bool):
         )
     )
     if int(engine.cardinality()) != int(normalized_form.cardinality()):
-        raise NotImplementedError(
+        raise ArithmeticError(
             "the available finite-form engine does not retain the whole presented module"
         )
     if not quadratic:

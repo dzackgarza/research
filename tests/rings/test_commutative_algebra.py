@@ -38,6 +38,11 @@ def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
     assert Zmod(30).spectrum().cardinality() == 3
 
 
+def test_affine_line_spectrum_cardinality_stops_at_the_finite_spectrum_frontier() -> None:
+    with pytest.raises(AssertionError):
+        QQ.polynomial_ring("t").spectrum().cardinality()
+
+
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     inverted_two = ZZ.localization(2)
     assert inverted_two.localization_source() is ZZ

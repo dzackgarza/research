@@ -785,6 +785,12 @@ def _finitely_presented_algebra_from_data(
 ):
     r"""Return the selected quotient ``R[S] / (relations)``."""
     base = presentation_ring.base_ring()
+    assert (
+        presentation_ring in AlgebrasWithChosenFinitePresentation(base)
+        or presentation_ring in SymmetricAlgebras(base)
+    ), (
+        "a selected finite commutative-algebra presentation is represented by a polynomial algebra or an algebra already carrying such a presentation"
+    )
     if presentation_ring in AlgebrasWithChosenFinitePresentation(base):
         # A quotient of a quotient is one quotient of the same polynomial
         # presentation: for A = P/I, the algebra A/(J) is P/(I + J~) where J~
@@ -807,11 +813,6 @@ def _finitely_presented_algebra_from_data(
             _extra_construction_data=_extra_construction_data,
             _generating_module=_generating_module,
         )
-    if presentation_ring not in SymmetricAlgebras(base):
-        raise NotImplementedError(
-            "the active native finite-presentation adapter currently handles commutative polynomial presentations"
-        )
-
     presentation_ideal, selected_relations = _relations_to_ideal(
         presentation_ring, relations
     )
@@ -1389,17 +1390,26 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
 def _presentation_data(algebra):
     base = algebra.base_ring()
-    if hasattr(algebra, "presentation_ring") and hasattr(algebra, "relations"):
-        return algebra.presentation_ring(), tuple(algebra.relations())
-    if algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base):
-        return algebra, ()
-    if hasattr(algebra, "quotient_source") and hasattr(algebra, "defining_ideal"):
-        source = algebra.quotient_source()
-        if source in SymmetricAlgebras(base):
-            return source, tuple(algebra.defining_ideal().gens())
-    raise NotImplementedError(
+    has_selected_presentation = hasattr(algebra, "presentation_ring") and hasattr(
+        algebra, "relations"
+    )
+    is_free_polynomial = algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base)
+    has_quotient_presentation = hasattr(algebra, "quotient_source") and hasattr(
+        algebra, "defining_ideal"
+    )
+    quotient_source = algebra.quotient_source() if has_quotient_presentation else None
+    assert (
+        has_selected_presentation
+        or is_free_polynomial
+        or (has_quotient_presentation and quotient_source in SymmetricAlgebras(base))
+    ), (
         "the active commutative-algebra backend requires a free polynomial or selected finite presentation"
     )
+    if has_selected_presentation:
+        return algebra.presentation_ring(), tuple(algebra.relations())
+    if is_free_polynomial:
+        return algebra, ()
+    return quotient_source, tuple(algebra.defining_ideal().gens())
 
 
 def _transport_relations(presentation_ring, relations, target, tag):
@@ -1422,10 +1432,9 @@ def _commutative_algebra_coproduct_backend(left, right):
     category = Algebras(base).Associative().Unital().Commutative()
     if left not in category or right not in category:
         raise TypeError("both factors must be commutative algebras over the common base")
-    if left not in FramedAlgebras(base) or right not in FramedAlgebras(base):
-        raise NotImplementedError(
-            "the active finite-presentation coproduct backend requires finite algebra framings"
-        )
+    assert left in FramedAlgebras(base) and right in FramedAlgebras(base), (
+        "the active finite-presentation coproduct backend requires finite algebra framings"
+    )
 
     left_presentation, left_relations = _presentation_data(left)
     right_presentation, right_relations = _presentation_data(right)
@@ -1468,7 +1477,13 @@ def _quotient_by_algebra_elements_backend(
     if not selected:
         identity = Algebras(base).Associative().Unital().Commutative().Mor(algebra, algebra).identity()
         return algebra, identity
-    if hasattr(algebra, "presentation_ring") and hasattr(algebra, "relations"):
+    has_selected_presentation = hasattr(algebra, "presentation_ring") and hasattr(
+        algebra, "relations"
+    )
+    assert has_selected_presentation or algebra in SymmetricAlgebras(base), (
+        "quotienting by represented algebra elements requires a selected polynomial presentation"
+    )
+    if has_selected_presentation:
         presentation = algebra.presentation_ring()
         relations = tuple(algebra.relations()) + tuple(
             algebra.lift_to_presentation(element) for element in selected
@@ -1476,10 +1491,6 @@ def _quotient_by_algebra_elements_backend(
     elif algebra in SymmetricAlgebras(base):
         presentation = algebra
         relations = selected
-    else:
-        raise NotImplementedError(
-            "quotienting a commutative algebra requires a selected polynomial presentation"
-        )
     quotient = (presentation).quotient_by_relations(relations,
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
@@ -1516,10 +1527,9 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
             "the pushout span maps must belong to the represented algebra Homs "
             "of their endpoints"
         )
-    if common not in FramedAlgebras(base):
-        raise NotImplementedError(
-            "the active pushout backend requires a finite algebra framing on the common source"
-        )
+    assert common in FramedAlgebras(base), (
+        "the active pushout backend requires a finite algebra framing on the common source"
+    )
 
     tensor = _commutative_algebra_coproduct_backend(left, right)
     left_injection, right_injection = tensor.coproduct_injections()
@@ -1689,10 +1699,9 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def _finite_engine_generator_labels(self):
         labels = self.domain().algebra_generating_set()
-        if not labels.cardinality().is_finite():
-            raise NotImplementedError(
-                "the private free-algebra engine realization requires a finite generator framing"
-            )
+        assert labels.cardinality().is_finite(), (
+            "the private free-algebra engine realization requires a finite generator framing"
+        )
         return tuple(labels)
 
     def _call_(self, element):
