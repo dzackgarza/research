@@ -41,16 +41,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
-class _CohomologyAlgebraConstruction:
-    r"""The selected differential graded algebra defining one cohomology algebra."""
-
-    def __init__(self, source_dga) -> None:
-        self._source_dga = source_dga
-
-    def source_dga(self):
-        return self._source_dga
-
-
 class CohomologyAlgebraMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
         return CohomologyAlgebraMor
@@ -63,15 +53,12 @@ class _CohomologyAlgebra:
     this level is constructed.  Cycle quotients remain the actual summands.
     """
 
-    def __init__(self, cohomology_construction, **rest) -> None:
-        self._cohomology_construction = cohomology_construction
+    def __init__(self, source_dga, **rest) -> None:
+        self._source_dga = source_dga
         super().__init__(**rest)
 
-    def cohomology_construction(self):
-        return self._cohomology_construction
-
     def source_dga(self):
-        return self.cohomology_construction().source_dga()
+        return self._source_dga
 
     def _element_constructor_(self, value):
         match value:
@@ -240,7 +227,7 @@ def _cohomology_algebra_from_dga(dga):
     ))
     return _algebra_on_module(
         module, multiplication, placement=placements, unit=unit,
-        construction_data={"cohomology_construction": _CohomologyAlgebraConstruction(dga)},
+        construction_data={"source_dga": dga},
         law_decisions=law_decisions,
     )
 
