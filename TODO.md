@@ -213,11 +213,6 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`construction-datum-classification`**. **Needs:** none.
-  **Owner and delta:** every private Construction/Datum record across the preamble, including predicate subgroups, linear systems and geometric cohomology.
-  **Invariants:** a retained record denotes genuine selected mathematical data with a real consumer, such as a functor preimage; a package that only forwards constructor arguments dissolves into its owning constructor. Preserve general defining data and genuine choices without proliferating record classes.
-  **Closure specimens:** follow an actual selected preimage through its downstream map and distinguish two valid choices; compare an ordinary multiplication constructor whose `(M,m)` needs no extra category or argument bundle. Classify the complete occurrence family and transfer every consumed datum before removing a record.
-
 - [ ] **`private-owner-boundaries`**. **Needs:** none.
   **Owner and delta:** the independently remaining cross-object engine/storage accesses across the preamble under `OWN-05`--`07`. Reconcile the full declaration/caller population with the constructor and provenance deliveries; accesses used by those repairs were closure-blocking there and cannot be parked here.
   **Invariants:** ordinary mathematics calls owned operations. Protected access has a declaration-side contract naming exact permitted caller roles. A helper, underscore, importable factory or comment at the caller grants no authority. Lowering/raising lives at the single adapter for that representation. Generic construction owners do not import their specialized consumers to select a route; specialization data enter through the shared contract. Generic framework repairs belong to `sage-categories`, with owned preamble mathematics and its integration kept here, rather than another local framework.
@@ -259,7 +254,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** `construction-datum-classification`, `probe-and-exception-residue`, `canonical-notebook-contract`.
+- [ ] **`architecture-remediation`**. **Needs:** `probe-and-exception-residue`, `canonical-notebook-contract`.
   **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
   **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open. Each complaint's entire burden is discharged or retained in a required prerequisite. All alternative construction routes affected by a repair are inspected. No numerical answer, renamed field, new wrapper, source count or administrative record substitutes for delivery (`DEV-67`, `DEV-68`).
   **Closure comparison:** reconcile the original complaint/requirement clauses with the delivered owner and consumer routes, including the generality beyond their first specimens. Review later changes to each shared contract against its delivery evidence. In particular, an "assumed linear" rename, a framing proof depending on its own Mor placement, or a private access deferred from a delivered producer fails this comparison and reopens that exact repair. Existing evidence for unaffected routes remains usable.

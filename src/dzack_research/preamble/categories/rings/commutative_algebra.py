@@ -665,38 +665,6 @@ def _distinguished_open_subobject(spectrum, function):
 
 
 
-class _QuotientRingConstruction:
-    r"""The source ring, ideal, and fixed realization of the quotient map of ``R/I``.
-
-    The factory is construction data determining the canonical map.  The
-    realized morphism is only a cache, so no later caller can supply or replace
-    mathematical provenance on the shared quotient object.
-    """
-
-    def __init__(self, source, defining_ideal, quotient_map_factory) -> None:
-        self._source = source
-        self._defining_ideal = defining_ideal
-        if not callable(quotient_map_factory):
-            raise TypeError("a quotient construction fixes how its canonical map is realized")
-        self._quotient_map_factory = quotient_map_factory
-        self._realized_quotient_map = None
-
-    def source(self):
-        return self._source
-
-    def defining_ideal(self):
-        return self._defining_ideal
-
-    def quotient_map(self):
-        morphism = self._realized_quotient_map
-        if morphism is None:
-            morphism = self._quotient_map_factory()
-            if morphism.domain() is not self.source():
-                raise ValueError("the quotient map has the wrong source ring")
-            self._realized_quotient_map = morphism
-        return morphism
-
-
 class QuotientRings(OwnedCategory):
     r"""Commutative quotient rings equipped with their quotient map."""
 
@@ -775,11 +743,9 @@ class QuotientRings(OwnedCategory):
                     lambda element: self(element),
                 )
 
-            self._quotient_construction = _QuotientRingConstruction(
-                source,
-                defining_ideal,
-                quotient_map,
-            )
+            self._quotient_source = source
+            self._quotient_defining_ideal = defining_ideal
+            self._quotient_map_factory = quotient_map
             self._preamble_engine_ring = _engine_ring
             super().__init__(
                 base_ring=source,
@@ -934,13 +900,17 @@ class QuotientRings(OwnedCategory):
             return self.quotient_source()
 
         def quotient_source(self):
-            return self._quotient_construction.source()
+            return self._quotient_source
 
         def defining_ideal(self):
-            return self._quotient_construction.defining_ideal()
+            return self._quotient_defining_ideal
 
+        @cached_method
         def quotient_map(self):
-            return self._quotient_construction.quotient_map()
+            morphism = self._quotient_map_factory()
+            if morphism.domain() is not self.quotient_source():
+                raise ValueError("the quotient map has the wrong source ring")
+            return morphism
 
         def localization_comparison(self, localization_ring):
             r"""Return ``S^{-1}(R/I) ~= S^{-1}R/S^{-1}I`` with both maps."""
@@ -3576,11 +3546,9 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
                 engine_map,
             )
 
-        self._quotient_construction = _QuotientRingConstruction(
-            polynomial,
-            defining_ideal,
-            quotient_map,
-        )
+        self._quotient_source = polynomial
+        self._quotient_defining_ideal = defining_ideal
+        self._quotient_map_factory = quotient_map
         placements = [QuotientRings()]
         if base in OwnedRings().Noetherian():
             placements.append(OwnedRings().Noetherian())
