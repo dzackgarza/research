@@ -861,14 +861,6 @@ class SchemeMorphism(Morphism):
 
                 return _exact_quasi_coherent_pullback(self, sheaf)
 
-    def inverse_image_sheaf(self, sheaf):
-        r"""``f^{-1} F``, the topological inverse image of a sheaf."""
-        assert False, (
-            "the inverse image f^{-1} of a quasi-coherent sheaf is not quasi-coherent, and no "
-            "sheaf on the underlying space beyond the distinguished-open basis is represented; "
-            "the quasi-coherent pullback f^* = O_X tensor f^{-1}(-) is module_pullback"
-        )
-
     def is_open_immersion(self) -> bool:
         r"""Whether this arrow is the inclusion of an open subscheme of its codomain.
 

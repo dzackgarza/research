@@ -251,13 +251,6 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** owned operations use the category's declared contract. Any sanctioned ingress/equality/containment or adapter probe is reviewed against its declaration; the method name alone grants no exemption from `CAT-23` or `OWN-05`. Runtime exceptions do not select an alternative mathematical algorithm; declared boundary rendering preserves the real failure.
   **Closure specimens:** supported input takes its owned route; a nearby unsupported representation fails at the stated frontier; an engine defect is not converted into a false value or another algorithm. Inspect each residual site and called helper. Search completeness is coverage evidence; replacing syntax without repairing data flow fails `DEV-68`.
 
-## Maintained computation and honest frontiers
-
-- [ ] **`placeholder-stubs`**. **Needs:** none.
-  **Owner and delta:** remaining public unconditional failure/pass bodies, including the profinite abstract contract; recheck old tensor examples against current source before changing them.
-  **Invariants:** every concrete promise has a successful mathematical path; a genuine abstract contract is explicitly abstract, with its concrete obligations still assigned. Removal is permitted only for a misplaced duplicate after its behavior and consumers reach the correct owner. No required API disappears to improve a scan.
-  **Closure specimens:** tensor rank/valence and the surviving profinite interfaces expose their promised data or genuine abstract contract. Every removed concrete placeholder has an implemented owner and a consumer specimen; otherwise its implementation obligation remains open here.
-
 ## Public mathematical interaction
 
 - [ ] **`mor-spelling-convergence`**. **Needs:** none.
@@ -292,7 +285,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** `construction-datum-classification`, `probe-and-exception-residue`, `placeholder-stubs`, `canonical-notebook-contract`.
+- [ ] **`architecture-remediation`**. **Needs:** `construction-datum-classification`, `probe-and-exception-residue`, `canonical-notebook-contract`.
   **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
   **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open. Each complaint's entire burden is discharged or retained in a required prerequisite. All alternative construction routes affected by a repair are inspected. No numerical answer, renamed field, new wrapper, source count or administrative record substitutes for delivery (`DEV-67`, `DEV-68`).
   **Closure comparison:** reconcile the original complaint/requirement clauses with the delivered owner and consumer routes, including the generality beyond their first specimens. Review later changes to each shared contract against its delivery evidence. In particular, an "assumed linear" rename, a framing proof depending on its own Mor placement, or a private access deferred from a delivered producer fails this comparison and reopens that exact repair. Existing evidence for unaffected routes remains usable.
