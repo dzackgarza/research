@@ -80,11 +80,14 @@ def test_chosen_presentations_are_exposed_on_native_group_objects() -> None:
     c2 = free.quotient_by_relators([free.group_generators()[0] ** 2])
     native = (Groups.C(2), Groups.S(2), Groups.Abelian([2]))
     assert all(group not in GroupsWithChosenFinitePresentation() for group in native)
+    assert c2.presentation_source_group() is c2
+    assert c2.presentation_isomorphism().forward() is c2.Mor(c2).identity()
     for group in (c2, *(candidate.presentation() for candidate in native)):
         assert group in OwnedFinitelyPresentedGroups()
         assert group in GroupsWithChosenFinitePresentation()
         relators = tuple(relation.Tietze() for relation in group.defining_relations())
         assert relators == ((1, 1),)
+    assert all(group not in GroupsWithChosenFinitePresentation() for group in native)
 
 
 def test_subgroup_inclusion_is_a_real_morphism() -> None:

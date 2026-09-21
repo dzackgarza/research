@@ -22,9 +22,19 @@ def test_finite_presentability_does_not_select_a_group_presentation() -> None:
     assert not hasattr(group, "presenting_free_group")
 
     presented = group.presentation()
-    assert presented is group
+    assert presented is not group
+    assert group not in GroupsWithChosenFinitePresentation()
     assert presented in GroupsWithChosenFinitePresentation()
     assert presented.presentation() is presented
+    assert presented.presentation_source_group() is group
+    comparison = presented.presentation_isomorphism()
+    assert comparison.domain() is presented
+    assert comparison.codomain() is group
+    assert group.presentation() is presented
+    for presented_generator, source_generator in zip(
+        presented.group_generators(), group.group_generators(), strict=True
+    ):
+        assert comparison(presented_generator) == source_generator
     assert presented.presenting_free_group() is presented.selected_framing_source(
         OwnedGroups()
     )

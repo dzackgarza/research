@@ -526,35 +526,38 @@ def _engine_element_latex(group, backend_element) -> str:
             return ""
 
 
-def _presentation_of(group):
-    r"""Return the presenting free group and the relators of the engine's chosen presentation."""
-    engine = _engine_group(group)
+def _chosen_engine_presentation(engine):
+    r"""Return the free source and backend relators already defining ``engine``."""
     match engine:
         case FreeGroup_class():
-            return _own_group(engine), ()
+            return None, ()
         case FinitelyPresentedGroup():
-            return _own_group(engine.free_group()), tuple(engine.relations())
-        case PermutationGroup_generic():
-            presented = engine.as_finitely_presented_group()
-            return _own_group(presented.free_group()), tuple(presented.relations())
-        case AbelianGroup_class():
-            presented = engine.permutation_group().as_finitely_presented_group()
-            return _own_group(presented.free_group()), tuple(presented.relations())
+            return engine.free_group(), tuple(engine.relations())
         case CoxeterMatrixGroup():
             free, relations = _coxeter_presentation(engine.coxeter_matrix())
-            return _own_group(free), relations
+            return free, relations
+        case _:
+            raise TypeError("this engine does not itself carry a chosen finite presentation")
+
+
+def _computed_finitely_presented_engine(group):
+    r"""Compute one maintained finitely presented model of ``group``."""
+    engine = _engine_group(group)
+    match engine:
+        case PermutationGroup_generic():
+            return engine.as_finitely_presented_group()
+        case AbelianGroup_class():
+            return engine.permutation_group().as_finitely_presented_group()
         case FinitelyGeneratedMatrixGroup_gap() if _engine_finiteness(engine) is True:
-            presented = engine.as_permutation_group().as_finitely_presented_group()
-            return _own_group(presented.free_group()), tuple(presented.relations())
+            return engine.as_permutation_group().as_finitely_presented_group()
         case NamedMatrixGroup_generic() | NamedMatrixGroup_gap():
-            presented = engine.as_permutation_group().as_finitely_presented_group()
-            return _own_group(presented.free_group()), tuple(presented.relations())
+            return engine.as_permutation_group().as_finitely_presented_group()
         case _:
             assert False, f"{group} does not supply chosen finite-presentation data"
 
 
 class _SelectedGroupPresentation:
-    r"""The relation stage extending a group's already selected 1-framing."""
+    r"""The chosen free source and relators defining one presented group."""
 
     def __init__(self, free_group, relations) -> None:
         self._free_group = free_group
@@ -575,8 +578,8 @@ def _group_framing_morphism(group, source, labels, generator_morphism):
     return source.Mor(group)(generator_morphism)
 
 
-def _fix_selected_group_framing(group, *, free_basis=None, presentation=None) -> None:
-    r"""Retain one chosen free-source epimorphism, and optionally its relators."""
+def _fix_selected_group_framing(group, *, free_basis=None) -> None:
+    r"""Retain one chosen free-source epimorphism."""
     if free_basis is not None:
         source = group
         labels = free_basis
@@ -590,36 +593,6 @@ def _fix_selected_group_framing(group, *, free_basis=None, presentation=None) ->
             lambda: _group_framing_morphism(
                 group, source, labels, generator_morphism
             ),
-        )
-        return
-
-    if presentation is not None:
-        source, backend_relations = presentation
-        labels = source.free_basis()
-        generators = _engine_generators(group)
-        assert generators.cardinality() == labels.cardinality(), (
-            "the carried finite presentation has one image for each free generator"
-        )
-        ranking = labels.ranking_map()
-        generator_morphism = Sets().Mor(labels, group)(
-            lambda label: generators[int(ranking(label))]
-        )
-        _fix_selected_framing(
-            group,
-            OwnedGroups(),
-            source,
-            labels,
-            generator_morphism,
-            lambda: _group_framing_morphism(
-                group, source, labels, generator_morphism
-            ),
-        )
-        relations = finite_ordered_set(
-            tuple(source._from_engine(relation) for relation in backend_relations)
-        )
-        group._selected_group_presentation = _SelectedGroupPresentation(
-            source,
-            relations,
         )
         return
 
@@ -638,28 +611,29 @@ def _fix_selected_group_framing(group, *, free_basis=None, presentation=None) ->
     )
 
 
-def _fix_selected_group_presentation_on_existing_framing(group, presentation) -> None:
-    r"""Extend the group's already selected framing by one chosen relation family."""
-    if group.__dict__.get("_selected_group_presentation") is not None:
-        raise ValueError(f"{group} already has a selected presentation")
-    represented_source, backend_relations = presentation
-    source = group.selected_framing_source(OwnedGroups())
-    represented_labels = tuple(represented_source.free_basis())
-    selected_generators = tuple(source.group_generators())
-    if len(represented_labels) != len(selected_generators):
-        raise AssertionError(
-            "the represented finite-presentation algorithm did not preserve the selected group framing"
-        )
-    transport = represented_source.Mor(source)(
-        dict(zip(represented_labels, selected_generators, strict=True))
+def _fix_selected_group_presentation(group, source, relations) -> None:
+    r"""Install one constructor-selected presentation and its exact framing."""
+    labels = source.free_basis()
+    generators = _engine_generators(group)
+    assert generators.cardinality() == labels.cardinality(), (
+        "the carried finite presentation has one image for each free generator"
     )
-    relations = finite_ordered_set(
-        tuple(
-            transport(represented_source._from_engine(relation))
-            for relation in backend_relations
-        )
+    ranking = labels.ranking_map()
+    generator_morphism = Sets().Mor(labels, group)(
+        lambda label: generators[int(ranking(label))]
     )
-    group._selected_group_presentation = _SelectedGroupPresentation(source, relations)
+    _fix_selected_framing(
+        group,
+        OwnedGroups(),
+        source,
+        labels,
+        generator_morphism,
+        lambda: _group_framing_morphism(group, source, labels, generator_morphism),
+    )
+    group._selected_group_presentation = _SelectedGroupPresentation(
+        source,
+        finite_ordered_set(tuple(relations)),
+    )
 
 
 def _engine_quotient_by_relators(group, relators):
@@ -988,14 +962,21 @@ def _owned_group(group):
 
 
 @cached_function(
-    key=lambda group, refinements, description, free_basis: (
+    key=lambda group, refinements, description, free_basis, presentation_source_group: (
         id(group),
         refinements,
         description,
         id(free_basis),
+        id(presentation_source_group),
     )
 )
-def _own_group(group, refinements=(), description=None, free_basis=None):
+def _own_group(
+    group,
+    refinements=(),
+    description=None,
+    free_basis=None,
+    presentation_source_group=None,
+):
     r"""Return the owned group realized by the Sage group ``group``.
 
     The engine adapter through which every engine-realized group enters.  It
@@ -1006,10 +987,12 @@ def _own_group(group, refinements=(), description=None, free_basis=None):
     the owned group realized by its containing engine group.
 
     Identity is by construction on the defining data (``OWN-10``): the engine
-    object, the proved refinements, the catalogue notation and the chosen
-    free basis.  Sage groups compare structurally, so the engine enters the
-    key by identity, and the cache keeps the engine alive while its owned
-    group is.
+    object, the proved refinements, the catalogue notation, the chosen free
+    basis, and—when this is a computed presented model—the exact source group.
+    Its comparison images are derived from that source group's selected
+    framing rather than retained a second time.  Sage groups compare
+    structurally, so the engine enters the key by identity, and the cache keeps
+    the engine alive while its owned group is.
     """
     if group in OwnedGroups():
         return group
@@ -1023,12 +1006,32 @@ def _own_group(group, refinements=(), description=None, free_basis=None):
             return _transported_subgroup(_own_group(group.ambient()), group)
         case _:
             placement = (_owned_group_category(group), *refinements)
+            presentation_data = {}
+            if _has_chosen_presentation(group):
+                source_engine, backend_relations = _chosen_engine_presentation(group)
+                presentation_source = None if source_engine is None else _own_group(source_engine)
+                relation_source = presentation_source
+                if relation_source is None:
+                    owned_relations = finite_ordered_set(())
+                else:
+                    owned_relations = finite_ordered_set(
+                        tuple(
+                            relation_source._from_engine(relation)
+                            for relation in backend_relations
+                        )
+                    )
+                presentation_data = {
+                    "group_presentation_source": presentation_source,
+                    "group_presentation_relations": owned_relations,
+                    "presentation_source_group": presentation_source_group,
+                }
             if free_basis is None:
                 owned = _object_of(
                     Cat().meet(placement),
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
                     description=description,
+                    **presentation_data,
                 )
             else:
                 owned = _object_of(
@@ -1039,20 +1042,11 @@ def _own_group(group, refinements=(), description=None, free_basis=None):
                     engine=group,
                     description=description,
                     free_basis=free_basis,
+                    **presentation_data,
                 )
-            if free_basis is not None:
+            if free_basis is not None and not _has_chosen_presentation(group):
                 _fix_selected_group_framing(owned, free_basis=free_basis)
-                if isinstance(group, FreeGroup_class):
-                    owned._selected_group_presentation = _SelectedGroupPresentation(
-                        owned,
-                        finite_ordered_set(()),
-                    )
-            elif _has_chosen_presentation(group):
-                _fix_selected_group_framing(
-                    owned,
-                    presentation=_presentation_of(owned),
-                )
-            elif _has_chosen_generators(group):
+            elif not _has_chosen_presentation(group) and _has_chosen_generators(group):
                 _fix_selected_group_framing(owned)
             return owned
 
@@ -3033,29 +3027,25 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             def is_finitely_presented(self):
                 return True
 
+            @cached_method
             def presentation(self):
-                r"""Select one finite presentation on this group and retain it once.
+                r"""Return one selected finite-presentation model of this group.
 
                 Finite presentability is only the existence property.  This is
                 the explicit property-to-data crossing: an object that already
                 carries selected presentation data is returned unchanged;
-                otherwise the represented presentation algorithm is invoked
-                once, its relations are transported to the already selected
-                group framing when one exists, and this same object is refined
-                into :class:`GroupsWithChosenFinitePresentation`.  No
-                ``presenting_free_group`` accessor performs this search.
+                otherwise the maintained presentation algorithm constructs a
+                separate presented group.  That object retains this exact group
+                and the comparison morphism back to it, so selecting a
+                presentation never mutates the source group.
                 """
                 if self in GroupsWithChosenFinitePresentation():
                     return self
-                represented = _presentation_of(self)
-                if self in OwnedGroups().Framed():
-                    _fix_selected_group_presentation_on_existing_framing(
-                        self,
-                        represented,
-                    )
-                else:
-                    _fix_selected_group_framing(self, presentation=represented)
-                return refine(self, GroupsWithChosenFinitePresentation())
+                presented_engine = _computed_finitely_presented_engine(self)
+                return _own_group(
+                    presented_engine,
+                    presentation_source_group=self,
+                )
 
 
 
@@ -3182,6 +3172,38 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
         ]
 
     class ParentMethods:
+        def __init__(
+            self,
+            group_presentation_source=None,
+            group_presentation_relations=None,
+            presentation_source_group=None,
+            **rest,
+        ) -> None:
+            super().__init__(**rest)
+            if group_presentation_relations is None:
+                raise ValueError("a group with chosen finite presentation requires its relation family at construction")
+            source = self if group_presentation_source is None else group_presentation_source
+            _fix_selected_group_presentation(
+                self,
+                source,
+                group_presentation_relations,
+            )
+            selected_source_group = self if presentation_source_group is None else presentation_source_group
+            if selected_source_group is self:
+                pass
+            else:
+                if selected_source_group not in OwnedGroups().Framed():
+                    raise ValueError(
+                        "a computed presentation requires the retained source group's selected framing"
+                    )
+                presented_generators = tuple(self.group_generators())
+                source_generators = tuple(selected_source_group.group_generators())
+                if len(source_generators) != len(presented_generators):
+                    raise ValueError(
+                        "the maintained presentation must have one generator for each retained source generator"
+                    )
+            self._presentation_source_group = selected_source_group
+
         def presenting_free_group(self):
             selected = self.__dict__.get("_selected_group_presentation")
             assert selected is not None, (
@@ -3199,6 +3221,29 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
                 f"{self} was constructed without chosen finite-presentation data"
             )
             return selected.relations()
+
+        def presentation_source_group(self):
+            r"""Return the exact group for which this presentation was selected."""
+            return self._presentation_source_group
+
+        @cached_method
+        def presentation_isomorphism(self):
+            r"""Return the canonical isomorphism from this presented model to its source group."""
+            source = self.presentation_source_group()
+            if source is self:
+                return OwnedGroups().Core().Mor(self, self).identity()
+            source_generators = tuple(source.group_generators())
+            forward = self.Mor(source)(source_generators)
+            inverse = source.Mor(self)(
+                dict(
+                    zip(
+                        source_generators,
+                        (forward.lift(generator) for generator in source_generators),
+                        strict=True,
+                    )
+                )
+            )
+            return OwnedGroups().Core().Mor(self, source)(forward, inverse)
 
         def quotient_by_relators(self, relators):
             r"""Return ``G / <<relators>>``, the quotient by the normal closure of ``relators``."""

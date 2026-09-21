@@ -28,9 +28,12 @@ def test_finite_presentability_and_chosen_presentation_are_distinct_properties()
     assert not hasattr(group, "presenting_free_group")
 
     presented = group.presentation()
-    assert presented is group
+    assert presented is not group
+    assert group not in GroupsWithChosenFinitePresentation()
     assert presented in GroupsWithChosenFinitePresentation()
     assert presented.presentation() is presented
+    assert presented.presentation_source_group() is group
+    assert presented.presentation_isomorphism().codomain() is group
 
 
 def test_chosen_presentation_retains_presenting_free_group_and_relators() -> None:
@@ -53,6 +56,8 @@ def test_native_finite_group_can_retain_a_chosen_finite_presentation() -> None:
     assert cyclic in OwnedFinitelyPresentedGroups()
     assert cyclic not in GroupsWithChosenFinitePresentation()
     presented = cyclic.presentation()
+    assert cyclic not in GroupsWithChosenFinitePresentation()
+    assert presented.presentation_source_group() is cyclic
     assert presented in GroupsWithChosenFinitePresentation()
     assert presented.presenting_free_group().group_generators().cardinality() == 1
     assert tuple(relation.Tietze() for relation in presented.defining_relations()) == ((1, 1),)
