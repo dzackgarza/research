@@ -31,32 +31,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class _CommutativeIdealConstruction:
-    r"""The selected generators, engine realization, and localization source of an ideal."""
-
-    def __init__(
-        self,
-        *,
-        ideal_generators=None,
-        engine_ideal=None,
-        localization_source_ideal=None,
-    ) -> None:
-        self._ideal_generators = (
-            None if ideal_generators is None else tuple(ideal_generators)
-        )
-        self._engine_ideal = engine_ideal
-        self._localization_source_ideal = localization_source_ideal
-
-    def ideal_generators(self):
-        return self._ideal_generators
-
-    def engine_ideal(self):
-        return self._engine_ideal
-
-    def localization_source_ideal(self):
-        return self._localization_source_ideal
-
-
 @cached_function
 def _localized_commutative_ideal(source_ideal, localization_ring):
     r"""Return ``S^{-1}I <= S^{-1}R``, the localization of one ideal.
@@ -146,18 +120,18 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             localization_source_ideal=None,
             **rest,
         ) -> None:
-            self._ideal_construction = _CommutativeIdealConstruction(
-                ideal_generators=ideal_generators,
-                engine_ideal=engine_ideal,
-                localization_source_ideal=localization_source_ideal,
+            self._ideal_generators = (
+                None if ideal_generators is None else tuple(ideal_generators)
             )
+            self._selected_engine_ideal = engine_ideal
+            self._localization_source_ideal = localization_source_ideal
             super().__init__(**rest)
 
         def ring(self):
             return self.base_ring()
 
         def ideal_generators(self):
-            generators = self._ideal_construction.ideal_generators()
+            generators = self._ideal_generators
             assert generators is not None, "a represented commutative ideal must retain its selected generators"
             return generators
 
@@ -210,7 +184,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return equal if op == op_EQ else not equal
 
         def _engine_ideal(self):
-            represented = self._ideal_construction.engine_ideal()
+            represented = self._selected_engine_ideal
             if represented is not None:
                 return represented
             engine = _engine_ring(self.ring())
@@ -438,7 +412,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def contraction_from_localization(self):
             r"""Contract this selected localized extension back to its source ring."""
-            source_ideal = self._ideal_construction.localization_source_ideal()
+            source_ideal = self._localization_source_ideal
             assert source_ideal is not None, (
                 "ideal contraction here requires an ideal selected as a localization extension"
             )
@@ -544,7 +518,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
-            source_ideal = self._ideal_construction.localization_source_ideal()
+            source_ideal = self._localization_source_ideal
             if ring in LocalizationRings() and source_ideal is not None:
                 numerator, _denominator = ring.localization_fraction_data(value)
                 structure = ring.localization_submonoid().structure_data()
