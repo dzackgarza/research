@@ -130,11 +130,16 @@ def test_branch_linear_system_and_double_cover_form_one_composite_construction()
     sections = branch_bundle.global_sections()
     system = branch_bundle.linear_system()
     cover = member.cover_morphism()
+    projectivization = system.quotient_projectivization().arrow().domain()
+    projectivization_comparison = system.quotient_projectivization_comparison()
 
     assert sections.module_rank() == 25
     assert system.line_bundle() is branch_bundle
     assert system.is_basepoint_free()
     assert system.associated_morphism().domain() is family.base_surface()
+    assert projectivization.projectivization_module() is system.selected_section_space().dual_module()
+    assert projectivization_comparison.forward().domain() is projectivization
+    assert projectivization_comparison.forward().codomain() is system
     assert member.cyclic_algebra().degree() == 2
     assert member.cyclic_algebra().branch_power() is branch_bundle
     branch_local = member.cyclic_algebra().branch_section()

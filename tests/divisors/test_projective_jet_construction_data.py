@@ -12,7 +12,6 @@ def test_projective_jet_space_consumes_its_selected_local_data() -> None:
     jet = evaluation.codomain()
 
     assert jet.jet_projective_space() is line
-    assert jet.projective_jet_construction().line_bundle() is bundle
     assert jet.jet_line_bundle() is bundle
     assert jet.jet_point() is point
     assert jet.jet_order() == 1

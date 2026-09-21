@@ -424,7 +424,7 @@ def test_projective_plane_cox_ring_is_class_group_graded() -> None:
     labels = tuple(cox.algebra_generating_set())
 
     assert cox in CoxRings(plane)
-    assert cox.cox_ring_construction().scheme() is plane
+    assert cox.cox_scheme() is plane
     assert "_preamble_cox_scheme" not in cox.__dict__
     assert "_preamble_cox_rays" not in cox.__dict__
     assert cox.grading_monoid() is plane.class_group()
@@ -500,10 +500,16 @@ def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> N
 
     assert h0_line in LineBundleCohomologySpaces(QQ)
     assert h0_line.cohomology_scheme() is plane
-    assert h0_line.line_bundle_cohomology_construction().scheme() is plane
-    assert h0_line.toric_line_bundle_cohomology_construction().scheme() is plane
     assert h0_line.cohomology_divisor() == line
     assert h0_line.cohomological_degree() == 0
+    for weight in h0_line.cohomology_weight_support():
+        piece = h0_line.cohomology_weight_piece(weight)
+        inclusion = h0_line.cohomology_weight_inclusion(weight)
+        projection = h0_line.cohomology_weight_projection(weight)
+        assert inclusion.domain() is piece
+        assert inclusion.codomain() is h0_line
+        assert projection.domain() is h0_line
+        assert projection.codomain() is piece
     assert "_preamble_cohomology_scheme" not in h0_line.__dict__
     assert "_preamble_cohomology_divisor" not in h0_line.__dict__
     assert "_preamble_cohomological_degree" not in h0_line.__dict__

@@ -10,8 +10,13 @@ def test_hesse_pencil_retains_its_base_locus_and_actual_jet_maps() -> None:
     application = HesseBertiniFamily()
     system = application.linear_system()
     point = application.basepoint()
+    projectivization = system.quotient_projectivization().arrow().domain()
+    comparison = system.quotient_projectivization_comparison()
 
     assert system.projective_dimension() == 1
+    assert projectivization.projectivization_module() is system.selected_section_space().dual_module()
+    assert comparison.forward().domain() is projectivization
+    assert comparison.forward().codomain() is system
     assert application.base_locus_point().codomain() is application.base_locus()
     assert application.base_locus_point().domain() is point.domain()
     assert application.basepoint_value_evaluation().codomain().jet_point() is point

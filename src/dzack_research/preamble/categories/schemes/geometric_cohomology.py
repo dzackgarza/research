@@ -55,32 +55,6 @@ class _ToricWeightCohomologyConstruction:
         return self._weight
 
 
-class _ToricLineBundleCohomologyConstruction:
-    r"""The geometric and weight-sum data defining total toric cohomology."""
-
-    def __init__(self, scheme, divisor, degree, weight_support, weight_pieces) -> None:
-        self._scheme = scheme
-        self._divisor = divisor
-        self._degree = int(degree)
-        self._weight_support = weight_support
-        self._weight_pieces = dict(weight_pieces)
-
-    def scheme(self):
-        return self._scheme
-
-    def divisor(self):
-        return self._divisor
-
-    def degree(self):
-        return self._degree
-
-    def weight_support(self):
-        return self._weight_support
-
-    def weight_piece(self, weight):
-        return self._weight_pieces[weight]
-
-
 class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
     r"""Shifted reduced simplicial complexes computing one toric sheaf-cohomology weight."""
 
@@ -127,16 +101,22 @@ class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
         return [LineBundleCohomologySpaces(self.base_ring())]
 
     class ParentMethods:
-        def toric_line_bundle_cohomology_construction(self):
-            r"""The weight-sum construction this space was built from by ``_toric_line_bundle_cohomology``."""
-            return self.line_bundle_cohomology_construction()
+        def __init__(
+            self,
+            cohomology_weight_support,
+            cohomology_weight_pieces,
+            **rest,
+        ) -> None:
+            self._cohomology_weight_support = cohomology_weight_support
+            self._cohomology_weight_pieces = cohomology_weight_pieces
+            super().__init__(**rest)
 
         def cohomology_weight_support(self):
-            return self.toric_line_bundle_cohomology_construction().weight_support()
+            return self._cohomology_weight_support
 
         def cohomology_weight_piece(self, weight):
             weight = self.cohomology_scheme().character_lattice()(weight)
-            return self.toric_line_bundle_cohomology_construction().weight_piece(weight)
+            return self._cohomology_weight_pieces[weight]
 
         def cohomology_weight_inclusion(self, weight):
             weight = self.cohomology_scheme().character_lattice()(weight)
@@ -652,14 +632,17 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
     pieces = {weight: piece for weight, piece in pieces.items() if int(piece.dimension()) != 0}
     weights = finite_ordered_set(tuple(pieces))
     base = scheme.scheme_base_ring()
+    weight_pieces = finite_indexed_family(
+        weights,
+        lambda weight: pieces[weight],
+        name="Nonzero toric cohomology weight pieces",
+    )
     construction_data = {
-        "_line_bundle_cohomology_construction": _ToricLineBundleCohomologyConstruction(
-            scheme,
-            divisor,
-            degree,
-            weights,
-            pieces,
-        ),
+        "cohomology_scheme": scheme,
+        "cohomology_divisor": divisor,
+        "cohomological_degree": degree,
+        "cohomology_weight_support": weights,
+        "cohomology_weight_pieces": weight_pieces,
     }
     if weights.cardinality() == 0:
         total = base._fresh_free_module_on(
@@ -669,11 +652,7 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
         )
     else:
         total = Modules(base).biproduct(
-            finite_indexed_family(
-                weights,
-                lambda weight: pieces[weight],
-                name="Nonzero toric cohomology weight pieces",
-            ),
+            weight_pieces,
             extra_categories=(ToricGeometricLineBundleCohomologySpaces(base),),
             extra_construction_data=construction_data,
         )

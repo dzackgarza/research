@@ -389,6 +389,25 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
                 name="Selected sections of the linear system",
             )
 
+        @cached_method
+        def quotient_projectivization(self):
+            r"""Return the quotient-convention realization of the selected lines.
+
+            This projective linear system parametrizes lines in its selected
+            section subspace V.  With the repository's quotient convention
+            that is P_quot(V^*), not P_quot(V).
+            """
+            sections = self.selected_section_space()
+            dual = sections.dual_module()
+            base_scheme = Schemes(self.scheme_base_ring()).base_scheme()
+            return base_scheme.associated_module_sheaf(dual).projectivization()
+
+        @cached_method
+        def quotient_projectivization_comparison(self):
+            r"""Return the chartwise isomorphism from P_quot(V^*) to this system."""
+            projectivization = self.quotient_projectivization().arrow().domain()
+            return projectivization.projective_space_comparison(self)
+
         def restriction_map(self, closed_subscheme):
             return _projective_section_restriction(
                 self.line_bundle(),
