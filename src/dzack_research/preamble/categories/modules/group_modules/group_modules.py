@@ -21,9 +21,9 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.group_algebras import (
     GroupAlgebras,
@@ -51,7 +51,7 @@ from dzack_research.preamble.categories.modules.group_modules.isotypic import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
-    _ModuleHomsetCommonMethods,
+    _ModuleMorCommonMethods,
     _combined_linearity_decision,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -59,7 +59,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FramedModules,
     LinearEndCategoryConstruction,
-    LinearHomModules,
+    LinearMorModules,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
@@ -78,9 +78,9 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
 
-class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
+class GroupModuleMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return GroupModuleHomset
+        return GroupModuleMor
 
 
 class ModulesOverGroupAlgebra(Modules):
@@ -121,7 +121,7 @@ class ModulesOverGroupAlgebra(Modules):
         r"""What every module category declares; ``G``-objects over ``R`` are reached by :meth:`restriction_along_group_inclusion`."""
         return [AdditiveGroups().AdditiveCommutative()]
 
-    _HomCategory = GroupModuleHomCategoryConstruction
+    _MorCategory = GroupModuleMorCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
 
     def an_object(self):
@@ -521,9 +521,9 @@ class ModulesOverGroupAlgebra(Modules):
         def Mor(self, codomain, category=None):
             r"""``Mor_{R[G]}(M,N)``, the equivariant maps.
 
-            The underlying coefficient-linear Hom is
+            The underlying coefficient-linear Mor is
             ``Hom_R(M.unformed_module(), N.unformed_module())`` and is
-            exposed by the resulting Hom object's :meth:`underlying_homset`.
+            exposed by the resulting Mor object's :meth:`underlying_mor`.
             """
             if category is None or category.is_subcategory(Modules(self.group_algebra())):
                 return Modules(self.group_algebra()).Mor(self, codomain)
@@ -534,7 +534,7 @@ class ModulesOverGroupAlgebra(Modules):
 
             The underlying ``R``-linear endomorphisms are
             ``Modules(R).End(M.unformed_module())``.  A group module's
-            default Hom is already equivariant, so its default End uses the
+            default Mor is already equivariant, so its default End uses the
             same owner.
             """
             return Modules(self.group_algebra()).End(self)
@@ -699,7 +699,7 @@ class ModulesOverGroupAlgebra(Modules):
             r"""Restrict an equivariant automorphism to a stable subobject.
 
             The result is an actual element of ``Aut_{R[G]}(S)``.  Both the
-            forward and inverse ambient maps are checked in the equivariant Hom
+            forward and inverse ambient maps are checked in the equivariant Mor
             before restriction, and the same acted subobject is used for both
             directions; hence the returned pair is the restricted isomorphism,
             not merely an invertible-looking ``R``-linear map.
@@ -709,7 +709,7 @@ class ModulesOverGroupAlgebra(Modules):
             if inclusion.codomain() is not self.unformed_module():
                 raise ValueError("the stable subobject inclusion must land in the coefficient restriction")
 
-            from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            from dzack_research.preamble.categories.abstract_categories.mor_categories import (
                 CategoricalIsomorphism,
             )
 
@@ -887,19 +887,19 @@ def _coefficient_morphism_from_images(
     r"""Read equivariant-map data as a map of the retained coefficient modules."""
     source = parent.domain().unformed_module()
     target = parent.codomain().unformed_module()
-    homset = source.module_category().Mor(source, target)
+    mor = source.module_category().Mor(source, target)
 
     if isinstance(images, GroupModuleMorphism):
         underlying = images.underlying_module_morphism()
         if underlying.domain() is source and underlying.codomain() is target:
-            return homset(underlying)
+            return mor(underlying)
 
     if isinstance(images, ModuleMorphism):
         if images.domain() is source and images.codomain() is target:
-            return homset(images)
+            return mor(images)
         if images.domain() is parent.domain() and images.codomain() is parent.codomain():
             return _CoefficientViewModuleMorphism(
-                homset,
+                mor,
                 images,
                 parent.domain(),
                 parent.codomain(),
@@ -907,9 +907,9 @@ def _coefficient_morphism_from_images(
 
     if isinstance(images, Map):
         if images.domain() is source and images.codomain() is target:
-            return homset.elementwise(lambda element: target(images(element)))
+            return mor.elementwise(lambda element: target(images(element)))
         if images.domain() is parent.domain() and images.codomain() is parent.codomain():
-            return homset.elementwise(
+            return mor.elementwise(
                 lambda element: target(images(parent.domain()(element)))
             )
         raise ValueError("the morphism has the wrong equivariant-map endpoints")
@@ -919,17 +919,17 @@ def _coefficient_morphism_from_images(
     if elementwise:
         if not callable(images):
             raise TypeError("an elementwise equivariant map must be callable")
-        return homset.elementwise(
+        return mor.elementwise(
             lambda element: target(images(parent.domain()(element))),
         )
 
     if isinstance(images, dict):
-        return homset({label: target(value) for label, value in images.items()})
+        return mor({label: target(value) for label, value in images.items()})
     if isinstance(images, (tuple, list)):
-        return homset(tuple(target(value) for value in images))
+        return mor(tuple(target(value) for value in images))
     if callable(images):
-        return homset(lambda label: target(images(label)))
-    return homset(images)
+        return mor(lambda label: target(images(label)))
+    return mor(images)
 
 
 class GroupModuleMorphism(ModuleMorphism):
@@ -1050,7 +1050,7 @@ class GroupModuleMorphism(ModuleMorphism):
 
     def as_automorphism(self):
         r"""Return this invertible equivariant endomorphism in ``Aut_{R[G]}(M)``."""
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
             CategoricalIsomorphism,
         )
 
@@ -1081,10 +1081,10 @@ class _RestrictedActionInclusionMorphism(_ConstructedEquivariantGroupModuleMorph
         return True
 
 
-class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
+class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     Element = GroupModuleMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         assert domain.group() == codomain.group(), "R[G]-module morphisms require the same acting group"
         coefficient_ring = domain.coefficient_ring()
         if codomain.coefficient_ring() is not coefficient_ring:
@@ -1096,15 +1096,15 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         )
         self._preamble_base_ring = scalar_ring
         self._preamble_algebra_base_ring = scalar_ring
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
-            category=LinearHomModules(scalar_ring),
+            category=LinearMorModules(scalar_ring),
         )
 
-    def underlying_homset(self):
+    def underlying_mor(self):
         r"""``Hom_R(Res M, Res N)``, containing the equivariant maps."""
         source = self.domain().unformed_module()
         target = self.codomain().unformed_module()
@@ -1150,8 +1150,8 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Hom-set")
-        underlying = self.underlying_homset().identity()
+            raise ValueError("identity belongs to an endomorphism Mor object")
+        underlying = self.underlying_mor().identity()
         return self._from_equivariant_images(underlying)
 
     def _repr_(self):
@@ -1472,7 +1472,7 @@ class _LinearizationEquivalence(Adjunction):
 
 
 __all__ = [
-    "GroupModuleHomset",
+    "GroupModuleMor",
     "GroupModuleMorphism",
     "ModulesOverGroupAlgebra",
 ]

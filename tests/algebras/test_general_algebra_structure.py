@@ -83,8 +83,8 @@ def test_two_products_retain_one_exact_supplied_module() -> None:
     assert dual_numbers(x_tensor_x) == module.zero()
     assert split_idempotent(x_tensor_x) == x
     assert dual is not split
-    assert structures.carrier(dual) is module
-    assert structures.carrier(split) is module
+    assert structures.underlying_object(dual) is module
+    assert structures.underlying_object(split) is module
     assert structures.structure(dual) is dual_numbers
     assert structures.structure(split) is split_idempotent
     assert forget(dual) is module
@@ -227,7 +227,7 @@ def test_algebra_axioms_refine_the_algebra_node_inside_modules() -> None:
     assert Algebras(QQ).Associative().Unital().Commutative().is_subcategory(algebras.Commutative())
 
 
-def test_unital_refinement_retains_eta_and_strengthens_the_hom() -> None:
+def test_unital_refinement_retains_eta_and_strengthens_the_mor() -> None:
     module, dual_numbers, _split_idempotent = _two_products_on_one_module()
     one = module.module_generator("1")
     scalar_module = Algebras(QQ).underlying_module()(QQ)

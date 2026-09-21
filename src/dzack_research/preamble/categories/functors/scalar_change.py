@@ -159,9 +159,9 @@ class _ScalarExtensionFunctor(Functor):
                 morphism(original),
             )
 
-        hom = source.module_category().Mor(source, target)
+        mor = source.module_category().Mor(source, target)
         return _ScalarExtensionModuleMorphism(
-            hom,
+            mor,
             morphism,
             image,
             self,
@@ -272,7 +272,7 @@ class _CoextensionOfScalarsFunctor(Functor):
     r"""``Hom_R(S, -) : Mod_R -> Mod_S`` along ``f: R -> S``, the right adjoint of ``Res_f``.
 
     ``S`` acts on ``Hom_R(S, M)`` through its right regular action,
-    ``(s . phi)(t) = phi(t s)``.  The Hom is represented when ``S`` is a
+    ``(s . phi)(t) = phi(t s)``.  The Mor is represented when ``S`` is a
     finitely framed ``R``-module; ``Hom_ZZ(ZZ[x], M)`` is a countable product
     the module layer does not build, and is refused.
     """
@@ -311,14 +311,14 @@ class _CoextensionOfScalarsFunctor(Functor):
     def _coextends_to_group_modules(self) -> bool:
         return self._target_ring in GroupAlgebras(self._source_ring)
 
-    def _hom_element(self, coextended, element):
+    def _mor_element(self, coextended, element):
         r"""Read an element of ``Hom_R(S, M)`` off the coextended module."""
         if self._coextends_to_group_modules():
             return coextended.unformed_module()(element)
         return element.underlying_element()
 
-    def _coextended_element(self, coextended, hom_element):
-        return coextended(hom_element)
+    def _coextended_element(self, coextended, mor_element):
+        return coextended(mor_element)
 
     def _linear_map(self, domain, codomain, function):
         r"""The ``S``-linear map given elementwise by ``function``."""
@@ -335,29 +335,29 @@ class _CoextensionOfScalarsFunctor(Functor):
 
     def _apply_object(self, module):
         scalars = self.scalars_as_module()
-        hom = scalars.module_category().Mor(scalars, module)
+        mor = scalars.module_category().Mor(scalars, module)
         identity = module.module_category().Mor(module, module).identity()
-        endomorphisms = Modules(self._source_ring).End(hom)
+        endomorphisms = Modules(self._source_ring).End(mor)
         action = self._target_ring.Mor(endomorphisms)(
-            lambda scalar: self._right_multiplication(scalar).internal_hom_map(
+            lambda scalar: self._right_multiplication(scalar).internal_mor_map(
                 identity,
-                source_internal_hom=hom,
-                target_internal_hom=hom,
+                source_internal_mor=mor,
+                target_internal_mor=mor,
             ),
         )
-        return Modules(self._target_ring)(hom, action)
+        return Modules(self._target_ring)(mor, action)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         scalars = self.scalars_as_module()
         identity = scalars.module_category().Mor(scalars, scalars).identity()
-        postcomposition = identity.internal_hom_map(
+        postcomposition = identity.internal_mor_map(
             morphism,
-            source_internal_hom=scalars.module_category().Mor(
+            source_internal_mor=scalars.module_category().Mor(
                 scalars, morphism.domain()
             ),
-            target_internal_hom=scalars.module_category().Mor(
+            target_internal_mor=scalars.module_category().Mor(
                 scalars, morphism.codomain()
             ),
         )
@@ -368,7 +368,7 @@ class _CoextensionOfScalarsFunctor(Functor):
             postcomposition,
             lambda element: self._coextended_element(
                 target,
-                postcomposition(self._hom_element(source, element)),
+                postcomposition(self._mor_element(source, element)),
             ),
         )
 
@@ -428,12 +428,12 @@ class _RestrictionCoextensionAdjunction(Adjunction):
         restricted = self.left_adjoint()(module)
         coextended = self.right_adjoint()(restricted)
         scalars = self.right_adjoint().scalars_as_module()
-        hom = scalars.module_category().Mor(scalars, restricted)
+        mor = scalars.module_category().Mor(scalars, restricted)
 
         def image(element):
             return self.right_adjoint()._coextended_element(
                 coextended,
-                hom(
+                mor(
                     {
                         label: self.left_adjoint()._restricted_element(
                             restricted,
@@ -452,7 +452,7 @@ class _RestrictionCoextensionAdjunction(Adjunction):
         one = self.right_adjoint().scalars_as_module().one()
         return _ScalarChangeStructureMorphism(
             restricted.module_category().Mor(restricted, module),
-            lambda element: self.right_adjoint()._hom_element(
+            lambda element: self.right_adjoint()._mor_element(
                 coextended, self.left_adjoint()._extension_element(restricted, element)
             )(one),
             elementwise=True,

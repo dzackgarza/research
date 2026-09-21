@@ -4,8 +4,8 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -1482,7 +1482,7 @@ class _ProductProjectiveSubschemeLineBundleEngine:
 def _line_bundle_identity_local_maps(source, target):
     r"""Return the chartwise basis identifications of two line bundles on one trivialization."""
     if source.gluing_datum() is not target.gluing_datum():
-        raise ValueError("the represented line-bundle Hom requires one chosen trivializing cover")
+        raise ValueError("the represented line-bundle Mor requires one chosen trivializing cover")
     return {
         index: source.local_module(index).module_category().Mor(
             source.local_module(index),
@@ -1519,7 +1519,7 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
                     target_sheaf,
                 )(local_maps)
             case _:
-                raise TypeError("the selected trivialization has no represented descent Hom")
+                raise TypeError("the selected trivialization has no represented descent Mor")
 
     def descent_morphism(self):
         return self._descent_morphism
@@ -1581,7 +1581,7 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
                 return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().homset_category().Mor(
+        return self.parent().mor_category().Mor(
             other.domain(),
             self.codomain(),
         )(
@@ -1592,8 +1592,8 @@ class _ChosenTrivializationQuasiCoherentMorphism(Morphism):
         )
 
 
-class _ChosenTrivializationQuasiCoherentHomset(CategoricalHomset):
-    r"""The QCoh Hom of line bundles carrying one represented trivializing cover."""
+class _ChosenTrivializationQuasiCoherentMor(CategoricalMor):
+    r"""The QCoh Mor of line bundles carrying one represented trivializing cover."""
 
     Element = _ChosenTrivializationQuasiCoherentMorphism
 
@@ -1615,7 +1615,7 @@ class _ChosenTrivializationQuasiCoherentHomset(CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom")
+            raise ValueError("identity is defined only on an endomorphism Mor")
         return self(_line_bundle_identity_local_maps(self.domain(), self.domain()))
 
 
@@ -1673,14 +1673,14 @@ class _PullbackLineBundleQuasiCoherentMorphism(Morphism):
                 return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().homset_category().Mor(
+        return self.parent().mor_category().Mor(
             other.domain(),
             self.codomain(),
         )(self.ambient_morphism() * other.ambient_morphism())
 
 
-class _PullbackLineBundleQuasiCoherentHomset(CategoricalHomset):
-    r"""The QCoh Hom represented by pullback from ambient line-bundle morphisms."""
+class _PullbackLineBundleQuasiCoherentMor(CategoricalMor):
+    r"""The QCoh Mor represented by pullback from ambient line-bundle morphisms."""
 
     Element = _PullbackLineBundleQuasiCoherentMorphism
 
@@ -1699,7 +1699,7 @@ class _PullbackLineBundleQuasiCoherentHomset(CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom")
+            raise ValueError("identity is defined only on an endomorphism Mor")
         ambient = self.domain().ambient_line_bundle()
         return self(QuasiCoherentSheaves(ambient.scheme()).Mor(ambient, ambient).identity())
 

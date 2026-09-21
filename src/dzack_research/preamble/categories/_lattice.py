@@ -257,7 +257,7 @@ def _form_of_gram(module, gram):
     At finite rank \(b(e_i,e_j)\) is the component of ``gram`` at \((i,j)\),
     the positions of the framing's enumeration.  At infinite rank \(b\) is the
     pairing rule of the presentation evaluated on finite supports.  Either way
-    the result is an element of ``module.bilinear_forms(R)``, the Hom out of
+    the result is an element of ``module.bilinear_forms(R)``, the Mor out of
     the tensor square.
     """
     ring = module.base_ring()

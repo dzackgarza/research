@@ -79,7 +79,7 @@ class _OrderNumberFieldAdjunction(Adjunction):
                 return field.Mor(field).identity()
             if _engine_ring(source).degree() == 1:
                 return source.Mor(field)(
-                    _engine_ring(source).hom(_engine_ring(field))
+                    _engine_ring(source).mor(_engine_ring(field))
                 )
             return source.Mor(field)(field.primitive_element())
         embeddings = source.Mor(field).embeddings()

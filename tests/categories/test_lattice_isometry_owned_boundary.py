@@ -1,4 +1,4 @@
-r"""Lattice isometry Hom parents use the owned group category graph."""
+r"""Lattice isometry Mor parents use the owned group category graph."""
 
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFinitePresentation,

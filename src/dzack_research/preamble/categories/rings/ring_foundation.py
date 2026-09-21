@@ -52,10 +52,10 @@ from sage.structure.richcmp import op_EQ, op_GE, op_GT, op_LE, op_LT, op_NE, ric
 from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoryPacketMethods,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -267,10 +267,10 @@ class RingMorphism(Morphism):
         A ring morphism ``R -> End_R(M)`` is the scalar action that makes ``M``
         an ``R``-module, and ``rho(r) = 0`` says exactly that ``r`` kills
         ``M``, so its kernel is ``Ann_R(M)``.  The module is the endomorphism
-        Hom-object's own domain, so nothing has to be carried on the morphism
+        Mor-object's own domain, so nothing has to be carried on the morphism
         for it to be found.
         """
-        from dzack_research.preamble.categories.group.additive_homsets import (
+        from dzack_research.preamble.categories.group.additive_mors import (
             AdditiveEndomorphismRings,
         )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -294,13 +294,13 @@ class RingMorphism(Morphism):
         return self.contraction_of_ideal(codomain.ideal(codomain.zero()))
 
 
-class RingHomset(CategoricalHomset):
+class RingMor(CategoricalMor):
     r"""The owned set ``Hom_Ring(A,B)``."""
 
     Element = RingMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def __call__(self, datum):
         return self._element_constructor_(datum)
@@ -357,7 +357,7 @@ class RingHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on a ring endomorphism Hom-set")
+            raise ValueError("identity is defined only on a ring endomorphism Mor object")
         identity = self.elementwise(lambda element: element)
         identity._preamble_is_identity = True
         return identity
@@ -366,16 +366,16 @@ class RingHomset(CategoricalHomset):
         return f"Mor_Ring({self.domain()}, {self.codomain()})"
 
 
-class RingHomCategoryConstruction(HomCategoryConstruction):
+class RingMorCategoryConstruction(MorCategoryConstruction):
     r"""The owned family ``(A,B) |-> Hom_Ring(A,B)``."""
 
     def fixed_category_class(self):
-        return RingHomset
+        return RingMor
 
 
-def _ring_mor_category(domain, codomain) -> RingHomset:
-    r"""Build ``Mor_Ring(domain, codomain)`` from its owned Hom family."""
-    return RingHomCategoryConstruction(OwnedRings()).Of(domain, codomain)
+def _ring_mor_category(domain, codomain) -> RingMor:
+    r"""Build ``Mor_Ring(domain, codomain)`` from its owned Mor family."""
+    return RingMorCategoryConstruction(OwnedRings()).Of(domain, codomain)
 
 
 def _ring_morphisms_equal(left, right):
@@ -1200,7 +1200,7 @@ class LocalizationRings(OwnedCategory):
                         )
                         for generator in source_generators
                     ]
-                    engine_morphism = engine_localization.hom(
+                    engine_morphism = engine_localization.mor(
                         engine_images,
                         engine_target,
                     )
@@ -1426,7 +1426,7 @@ def _predicate_subring(ambient_ring, predicate, description, category=None):
 class OwnedSemirings(OwnedCategory):
     """Semirings on the owned operation spine."""
 
-    _HomCategory = RingHomCategoryConstruction
+    _MorCategory = RingMorCategoryConstruction
 
     def an_object(self):
         r"""The integers, which are in particular a semiring."""
@@ -1439,7 +1439,7 @@ class OwnedSemirings(OwnedCategory):
 class OwnedRngs(OwnedCategory):
     """Rngs on the owned operation spine."""
 
-    _HomCategory = RingHomCategoryConstruction
+    _MorCategory = RingMorCategoryConstruction
 
     def an_object(self):
         r"""The integers, which happen to be unital."""
@@ -1491,7 +1491,7 @@ def _install_local_ring_construction(ring, maximal_ideal, residue_field, residue
 class OwnedRings(CategoryPacketMethods, OwnedCategory):
     """Unital rings whose notebook-facing ring interface is owned here."""
 
-    _HomCategory = RingHomCategoryConstruction
+    _MorCategory = RingMorCategoryConstruction
 
     def an_object(self):
         r"""The integers, the initial object of this category."""
@@ -1549,13 +1549,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         class Commutative(CategoryWithAxiom):
             r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``."""
 
-            class _HomCategory(HomCategoryConstruction):
+            class _MorCategory(MorCategoryConstruction):
                 def fixed_category_class(self):
                     from dzack_research.preamble.categories.rings.field_morphisms import (
-                        _ExactFieldHomset,
+                        _ExactFieldMor,
                     )
 
-                    return _ExactFieldHomset
+                    return _ExactFieldMor
 
             @classmethod
             def _repr_object_names(cls):
@@ -1600,7 +1600,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 def exact_morphisms_to(self, codomain):
                     r"""Return the exact-field morphism object from this field to ``codomain``."""
-                    return OwnedFields().HomCategory().Of(self, codomain)
+                    return OwnedFields().MorCategory().Of(self, codomain)
 
                 def exact_embeddings(self, codomain):
                     r"""Return the exact embeddings of this field into ``codomain``."""
@@ -2066,7 +2066,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return FormalPowerSeriesRings(self)(*args, **kwargs)
 
         def matrix_space(self, nrows, ncols=None):
-            r"""Return the finite matrix Hom over this ring, as an algebra when square."""
+            r"""Return the finite matrix Mor over this ring, as an algebra when square."""
             from dzack_research.preamble.categories.algebras.algebras import (
                 _refine_matrix_algebra,
             )
@@ -2155,18 +2155,16 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             # coercion machinery asking for somewhere to keep a conversion map,
             # naming its own `SetsWithPartialMaps`.  `SageHom` would check that
             # this owned ring lies in that Sage category, which it does not and
-            # need not (`ARC-00`).  Build the homset directly at the engine
+            # need not (`ARC-00`).  Build the Mor directly at the engine
             # boundary instead, without the membership check.
-            from sage.categories.homset import Homset
-
-            return Homset(self, codomain, category=category, check=False)
+            return Mor(self, codomain, category=category, check=False)
 
         def _Hom_(self, codomain, category=None):
             rings = OwnedRings()
             if codomain not in rings:
-                raise TypeError("a ring Hom requires two owned rings")
+                raise TypeError("a ring Mor requires two owned rings")
             if category is not None and not category.is_subcategory(rings):
-                raise TypeError("this is not a ring homset category")
+                raise TypeError("this is not a ring Mor category")
             return rings.Mor(self, codomain)
 
         def cardinality(self):
@@ -2380,12 +2378,12 @@ class OwnedOrders(OwnedCategory):
 
     @cached_method(key=lambda self, domain, codomain: (id(domain), id(codomain)))
     def Mor(self, domain, codomain):
-        r"""Return the exact embedding Hom between two represented orders."""
+        r"""Return the exact embedding Mor between two represented orders."""
         if domain not in self or codomain not in self:
             raise TypeError("an order embedding requires two represented orders")
-        from dzack_research.preamble.categories.rings.embeddings import OrderHomset
+        from dzack_research.preamble.categories.rings.embeddings import OrderMor
 
-        return OrderHomset(domain, codomain)
+        return OrderMor(domain, codomain)
 
     class ParentMethods:
         def Mor(self, codomain, category=None):

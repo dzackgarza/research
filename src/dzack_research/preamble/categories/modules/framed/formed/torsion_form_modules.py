@@ -16,8 +16,8 @@ from sage.rings.rational_field import QQ as SageQQ
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CategoricalIsomorphism,
 )
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     IsoCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -641,7 +641,7 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     selected_relations = _presentation_matrix(module)
     known = ring.matrix_space(selected_relations.nrows(), selected_relations.ncols()).from_rows(_matrix_coordinate_rows(selected_relations))
     # Keep the actual biproduct codomain: the integral solver works on every
-    # finite framed free Hom, and its solution therefore lands in the same
+    # finite framed free Mor, and its solution therefore lands in the same
     # biproduct whose left projection selects the coefficients of the new
     # generators.  Passing through ``matrix()`` would replace that endpoint by
     # a rank-only coordinate module and discard the projection.
@@ -989,18 +989,18 @@ class TorsionFormAutomorphism(TorsionFormIsometry):
         return f"Form automorphism of {self.domain()}"
 
 
-class TorsionFormOrthogonalGroup(CategoricalHomset):
+class TorsionFormOrthogonalGroup(CategoricalMor):
     r"""The finite group of live automorphisms preserving one finite form."""
 
     Element = TorsionFormAutomorphism
 
     @staticmethod
-    def __classcall__(cls, hom_family, form, **options):
-        return typecall(cls, hom_family, form, **options)
+    def __classcall__(cls, mor_family, form, **options):
+        return typecall(cls, mor_family, form, **options)
 
     def __init__(
         self,
-        hom_family,
+        mor_family,
         form,
         *,
         quadratic: bool,
@@ -1035,9 +1035,9 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         if supergroup is not None:
             self._preamble_supergroup = supergroup
             categories.append(Subgroups(supergroup))
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             form,
             form,
             category=Category.join(tuple(categories)),
@@ -1069,7 +1069,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         packet = self.base_category().category_packet()
         form = self.domain()
         supers = [
-            packet.Homs().Of(form, form),
+            packet.Mors().Of(form, form),
             packet.Monos().Of(form, form),
             packet.Epis().Of(form, form),
         ]
@@ -1265,7 +1265,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             [generator._engine() for generator in supplied]
         )
         subgroup = TorsionFormOrthogonalGroup(
-            self.hom_family(),
+            self.mor_family(),
             self.domain(),
             quadratic=self.is_quadratic(),
             normalization=self._normalization,

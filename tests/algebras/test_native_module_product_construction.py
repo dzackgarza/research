@@ -91,7 +91,7 @@ def test_native_localization_and_quotient_thread_their_actual_scalar_bases():
     localization_map = localized.localization_map()
     assert quotient_map.domain() is polynomial and quotient_map.codomain() is quotient
     assert localization_map.domain() is polynomial and localization_map.codomain() is localized
-    assert quotient_map.parent().homset_category().is_subcategory(OwnedRings())
+    assert quotient_map.parent().mor_category().is_subcategory(OwnedRings())
     assert quotient.algebra_structure_morphism()(t) == quotient_map(t)
     assert quotient.scalar_multiple(t, quotient.one()) == quotient(t)
     assert quotient.multiplication()(quotient(t), quotient(t)) == quotient.zero()

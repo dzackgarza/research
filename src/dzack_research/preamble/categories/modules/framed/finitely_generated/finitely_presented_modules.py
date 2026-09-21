@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     VectorSpaces,
     _biproduct_label,
     _engine_matrix,
-    _refine_matrix_hom,
+    _refine_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
@@ -1065,12 +1065,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalized_target = _cover_free_module(self, target_labels)
 
             def owned_matrix_morphism(domain, codomain, backend_matrix):
-                homset = _refine_matrix_hom(domain.module_category().Mor(domain, codomain))
+                mor = _refine_matrix_mor(domain.module_category().Mor(domain, codomain))
                 source_labels = tuple(domain.module_generating_set())
                 target_labels = tuple(codomain.module_generating_set())
                 if int(backend_matrix.ncols()) != len(source_labels) or int(backend_matrix.nrows()) != len(target_labels):
                     raise ArithmeticError("the Smith basis-change matrix has incompatible endpoint ranks")
-                return homset(
+                return mor(
                     {
                         source_label: codomain.linear_combination(
                             {
@@ -1714,7 +1714,7 @@ class _GeneralPresentedModule:
 
         if engine.ngens() == 1 and "multi_polynomial" not in type(engine).__module__:
             singular_ring = coefficient_field.polynomial_ring(1, engine.variable_names())
-            to_singular = engine.hom([singular_ring.gen(0)], singular_ring)
+            to_singular = engine.mor([singular_ring.gen(0)], singular_ring)
         else:
             singular_ring = engine
             to_singular = singular_ring
@@ -1835,7 +1835,7 @@ class _PresentedModule(_GeneralPresentedModule):
 
         This is the only accessor of the Smith engine.  Protected contract of
         the presented-module realization: the discriminant-module,
-        internal-Hom and algebra-presentation adapters cross here for
+        internal-Mor and algebra-presentation adapters cross here for
         Smith-form data and convert every result back to an owned object
         before returning it.
         """
@@ -1949,7 +1949,7 @@ def _resolution_over_degrees(module, terms, differentials, augmentation, zero):
 
 
 def _presentation_matrix(module):
-    r"""Materialize the selected finite relation family as one matrix Hom element.
+    r"""Materialize the selected finite relation family as one matrix Mor element.
 
     The chosen-presentation category owns only the mathematical datum.  A
     concrete presented-module backend may already store its matrix; otherwise
@@ -1975,7 +1975,7 @@ def _presentation_matrix(module):
 
 
 def _matrix_coordinate_rows(matrix):
-    r"""Return finite coordinate rows of one matrix Hom element."""
+    r"""Return finite coordinate rows of one matrix Mor element."""
     parent = matrix.parent()
     return tuple(tuple(matrix.matrix_entry(row_label, column_label) for column_label in parent.column_index_set()) for row_label in parent.row_index_set())
 
@@ -2317,9 +2317,9 @@ def _singular_presentation_kernel(morphism):
 
     ``F x \in \operatorname{im}(Q^t,I)``.
 
-    Singular's maintained ``homolog.lib::hom_kernel(A,M,N)`` computes the
+    Singular's maintained ``homolog.lib::mor_kernel(A,M,N)`` computes the
     presentation of ``ker(A':coker(M)->coker(N))``.  Its internal first
-    ``modulo(A,N)`` is also the kernel-lift module, but ``hom_kernel`` exposes
+    ``modulo(A,N)`` is also the kernel-lift module, but ``mor_kernel`` exposes
     only the resulting presentation.  This adapter therefore calls ``modulo``
     once separately to recover exactly those generator lifts for the owned
     inclusion; it does not reconstruct the presentation algorithm.
@@ -2432,11 +2432,11 @@ def _singular_presentation_kernel(morphism):
     )
     source_relation_module = singular_relation_module(source_relations, n)
     target_relation_module = singular_relation_module(target_relations, m)
-    # ``hom_kernel`` internally computes the same ``modulo(f_matrix, N)``
+    # ``mor_kernel`` internally computes the same ``modulo(f_matrix, N)``
     # before quotienting by the source relations.  Repeat only that first
     # maintained operation so the owned kernel can retain the corresponding
     # generator lifts and hence its actual inclusion into ``domain``.  The
-    # presentation itself comes exclusively from ``hom_kernel`` below.
+    # presentation itself comes exclusively from ``mor_kernel`` below.
     kernel_lifts = tuple(
         ff.modulo(
             f_matrix,
@@ -2444,7 +2444,7 @@ def _singular_presentation_kernel(morphism):
             ring=singular_ring,
         )
     )
-    kernel_presentation = ff.homolog__lib.hom_kernel(
+    kernel_presentation = ff.homolog__lib.mor_kernel(
         f_matrix,
         source_relation_module,
         target_relation_module,
@@ -2547,7 +2547,7 @@ def _presented_module_from_morphism(
     # The cokernel here is taken in the module category.  A stricter structured
     # morphism (lattice/form/equivariant/etc.) must first be read as its
     # underlying R-linear arrow; otherwise later presentation constructions
-    # incorrectly inherit the stricter Hom object.
+    # incorrectly inherit the stricter Mor object.
 
     presentation_source = presentation.domain()
     presentation_target = presentation.codomain()

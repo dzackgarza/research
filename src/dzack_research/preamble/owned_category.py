@@ -3,7 +3,7 @@ r"""Category-owned implementation types.
 The public protocol is ``ObjectType`` and ``ElementType``.  A category's
 ``ObjectType`` is its complete object implementation, and that type's
 ``ElementType`` is the complete implementation of its elements.  The same
-protocol applied to the Hom, End, and Aut categories gives the arrow types.
+protocol applied to the Mor, End, and Aut categories gives the arrow types.
 
 Sage's ``ParentMethods`` / ``ElementMethods`` / ``MorphismMethods`` names are
 an internal input format for its named-class builder.  The adapter in this
@@ -255,7 +255,7 @@ def _category_parameter_signature(category: Category):
 
     Named implementation classes may legitimately be shared by categories with
     the same method graph, but C3 category merging still needs a strict order
-    on distinct semantic parameters.  Hom families are parameterized by their
+    on distinct semantic parameters.  Mor families are parameterized by their
     base category, while categories over scalars expose ``base``.  Record those
     parameters structurally without using object identity or ``repr``.
     """
@@ -536,7 +536,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         r"""Return the object type carried by this category's object type.
 
         Most objects are not categories, so the default has no second object
-        type.  Categories of hom categories override this: a hom category is
+        type.  Categories of Mor categories override this: a Mor category is
         itself a category, and its objects are the arrows.
         """
         return None
@@ -773,7 +773,7 @@ def _construction_contract_from_type(
     of the Python module where a concrete owned category is declared.  This is
     what makes the contract a property of the mathematical owner rather than a
     package-layout convention.  Other callers retain the narrower preamble
-    module boundary used for fixed Hom parents.
+    module boundary used for fixed Mor parents.
     """
     parameters: list[ConstructionParameter] = []
     variadic: list[type] = []
@@ -851,20 +851,20 @@ def _construction_contract(category: Category) -> ConstructionContract:
     )
 
 
-def _hom_construction_contract(
+def _mor_construction_contract(
     category: Category,
     domain: Parent,
     codomain: Parent,
 ) -> ConstructionContract:
-    r"""Discover how the fixed Hom parent ``Hom_category(domain,codomain)`` is built.
+    r"""Discover how the fixed Mor parent ``Hom_category(domain,codomain)`` is built.
 
-    This is the contract of the selected Hom object itself: its Hom family and
+    This is the contract of the selected Mor object itself: its Mor family and
     endpoints.  It is deliberately distinct from :func:`_construction_contract`
-    on the fixed Hom category, which describes construction of an arrow *in*
-    that Hom.
+    on the fixed Mor category, which describes construction of an arrow *in*
+    that Mor.
     """
-    hom = category.Mor(domain, codomain)
-    return _construction_contract_from_type(hom, type(hom))
+    mor = category.Mor(domain, codomain)
+    return _construction_contract_from_type(mor, type(mor))
 
 
 @cached_function
@@ -951,7 +951,7 @@ def _object_of(
 
     The base ring is not supplied here.  A level that sits over a ring states
     its own ``base`` when it calls ``super().__init__``, the way the module
-    homset does, because a level may name a base its category does not -- and
+    Mor does, because a level may name a base its category does not -- and
     injecting one here would arrive twice at the levels that already do.
     """
     match _engine:
@@ -1094,7 +1094,7 @@ class OwnedCategoryObject:
     computation.  Two justifications for it have been measured and falsified:
     the \(\mathbf{Cat}\) constructions do *not* reach a category this way --
     they arrive through ``subcategory_class``, which is what covers the joins
-    and axiom categories most owned categories actually are -- and ``Hom(C, D)``
+    and axiom categories most owned categories actually are -- and ``Mor(C, D)``
     does *not* route to the functor space by parenthood either; that follows
     the domain being an owned category, again through ``subcategory_class``.
     It is kept because a category **is** an object of \(\mathbf{Cat}\), which

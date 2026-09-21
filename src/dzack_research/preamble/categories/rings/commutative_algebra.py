@@ -170,7 +170,7 @@ class PrimeSpectra(OwnedCategory):
                 degree = int(point_engine.vector_space_dimension())
             except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
                 raise AssertionError(
-                    "the maintained affine closed-point backend must compute the finite residue-field degree"
+                    "the represented affine closed-point computation must compute the finite residue-field degree"
                 ) from error
             return _own_ring(SageZZ)(degree)
 
@@ -916,7 +916,7 @@ class QuotientRings(OwnedCategory):
                 return int(backend.dimension())
             except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
                 raise AssertionError(
-                    "Krull dimension of this represented quotient requires an exact ideal-dimension backend"
+                    "Krull dimension of this represented quotient requires an exact ideal-dimension computation"
                 ) from error
 
         def _repr_(self):
@@ -1213,12 +1213,12 @@ def _affine_reduced_quotient_normalization_data(quotient):
                 raise ArithmeticError(
                     "Singular's normalization map did not return one image per source generator"
                 )
-            source_component_map = source_engine.hom(target_images, target_engine)
+            source_component_map = source_engine.mor(target_images, target_engine)
             source_prime = _from_engine_ideal(source, source_component_map.kernel())
             component_prime = quotient.ideal(
                 *(quotient(generator) for generator in source_prime.ideal_generators())
             )
-            engine_component_map = source_quotient_engine.hom(target_images, target_engine)
+            engine_component_map = source_quotient_engine.mor(target_images, target_engine)
             def component_image(
                 element,
                 component=component,

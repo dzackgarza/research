@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
-    ModuleHomset,
+    ModuleMor,
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -332,7 +332,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
         return result
 
 
-class QuadraticModuleHomset(ModuleHomset):
+class QuadraticModuleMor(ModuleMor):
     r"""The ordinary Hom ``Hom_R(Gamma^2(M),W)`` with quadratic-map syntax."""
 
     Element = QuadraticModuleMorphism
@@ -357,7 +357,7 @@ class QuadraticModuleHomset(ModuleHomset):
                 - quadratic(source.module_generator(right))
             )
 
-        result = ModuleHomset._element_constructor_(self, generator_image)
+        result = ModuleMor._element_constructor_(self, generator_image)
         if lift_coordinate_values is not None:
             result._preamble_quadratic_lift_coordinate_values = lift_coordinate_values
         return result
@@ -412,7 +412,7 @@ class QuadraticModuleHomset(ModuleHomset):
 
     def _element_constructor_(self, datum):
         if isinstance(datum, ModuleMorphism):
-            return ModuleHomset._element_constructor_(self, datum)
+            return ModuleMor._element_constructor_(self, datum)
 
         if isinstance(datum, IndexedFamily) or hasattr(datum, "rows"):
             return self._from_coordinate_datum(datum)
@@ -421,7 +421,7 @@ class QuadraticModuleHomset(ModuleHomset):
             and all(isinstance(row, (tuple, list)) for row in datum)
         ):
             return self._from_coordinate_datum(datum)
-        return ModuleHomset._element_constructor_(self, datum)
+        return ModuleMor._element_constructor_(self, datum)
 
 
 class DividedSquareModules(OwnedCategoryOverBaseRing):
@@ -441,8 +441,8 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
         return [DividedPowerModules(self.base_ring())]
 
     class ParentMethods:
-        def _module_homset_class(self):
-            return QuadraticModuleHomset
+        def _module_mor_class(self):
+            return QuadraticModuleMor
 
         def divided_square_source(self):
             return self.power_source()
@@ -500,8 +500,8 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
                 )
 
 
-            homset = self.module_category().Mor(self, codomain)
-            return homset.from_quadratic_map(quadratic)
+            mor = self.module_category().Mor(self, codomain)
+            return mor.from_quadratic_map(quadratic)
 
 
 def _degree(degree) -> int:

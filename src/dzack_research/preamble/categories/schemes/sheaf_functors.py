@@ -15,14 +15,14 @@ For a represented closed immersion into projective space this module also
 realizes the object ``i^*O_P(d)``.  For another non-affine morphism it retains
 the exact quasi-coherent pullback object ``f^*F`` with its source sheaf and
 pullback morphism even when no chartwise computation is selected.  The
-quasi-coherent Hom represents arrows only in the regimes whose morphism action
+quasi-coherent Mor represents arrows only in the regimes whose morphism action
 is supplied; the exact object does not manufacture a computational pullback
 functor.
 """
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
@@ -91,7 +91,7 @@ class _AffineQuasiCoherentFunctor(Functor):
         return self.codomain().associated_sheaf(target_module)
 
     def _apply_morphism(self, morphism):
-        r"""Apply the module functor and raise the result back to the sheaf Hom."""
+        r"""Apply the module functor and raise the result back to the sheaf Mor."""
         source = self(morphism.domain())
         target = self(morphism.codomain())
         match morphism:
@@ -156,7 +156,7 @@ class AffineQuasiCoherentAdjunction(Adjunction):
         return self._module_adjunction
 
     def _unit_component(self, sheaf):
-        r"""Return ``F -> f_* f^* F`` in the quasi-coherent sheaf Hom."""
+        r"""Return ``F -> f_* f^* F`` in the quasi-coherent sheaf Mor."""
         pulled = self.left_adjoint().on_object(sheaf)
         pushed = self.right_adjoint().on_object(pulled)
         unit = self.underlying_module_adjunction().unit(sheaf.module())
@@ -165,7 +165,7 @@ class AffineQuasiCoherentAdjunction(Adjunction):
         return self.left_adjoint().domain().Mor(sheaf, pushed)(unit)
 
     def _counit_component(self, sheaf):
-        r"""Return ``f^* f_* G -> G`` in the quasi-coherent sheaf Hom."""
+        r"""Return ``f^* f_* G -> G`` in the quasi-coherent sheaf Mor."""
         pushed = self.right_adjoint().on_object(sheaf)
         pulled = self.left_adjoint().on_object(pushed)
         counit = self.underlying_module_adjunction().counit(sheaf.module())
@@ -187,7 +187,7 @@ def _projective_closed_immersion_module_pullback(scheme_morphism, sheaf):
 
     This is the object part of quasi-coherent pullback in the one non-affine
     regime whose target object is already represented.  It is deliberately not
-    exposed as a ``Functor`` until the common non-affine quasi-coherent Hom
+    exposed as a ``Functor`` until the common non-affine quasi-coherent Mor
     supplies the arrow action.
     """
     from dzack_research.preamble.categories.divisors.invertible_sheaves import (

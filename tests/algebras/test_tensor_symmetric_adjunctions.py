@@ -206,7 +206,7 @@ def test_tensor_algebra_universal_extension_preserves_word_order() -> None:
 
 
 @pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
-def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_satisfy_the_triangle_law(
+def test_tensor_and_symmetric_mor_bijections_on_nonfree_modules_are_natural_and_satisfy_the_triangle_law(
     adjunction_flavor,
 ) -> None:
     adjunction = _algebra_adjunction(adjunction_flavor)
@@ -222,8 +222,8 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
     linear = source.module_category().Mor(source, target_underlying)(
         {0: target_underlying(2 * target_generator)}
     )
-    extension = adjunction.hom_set_isomorphism_inverse(linear, target_algebra)
-    recovered = adjunction.hom_set_isomorphism_forward(extension, source)
+    extension = adjunction.mor_set_isomorphism_inverse(linear, target_algebra)
+    recovered = adjunction.mor_set_isomorphism_forward(extension, source)
     source_generator = source.module_generator(0)
     _assert_module_maps_agree(
         recovered,
@@ -233,7 +233,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
 
     free_source = free(source)
     x = free_source.algebra_generator(0)
-    reextended = adjunction.hom_set_isomorphism_inverse(recovered, target_algebra)
+    reextended = adjunction.mor_set_isomorphism_inverse(recovered, target_algebra)
     _assert_algebra_maps_agree(
         reextended,
         extension,
@@ -276,7 +276,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
             {0: smaller_module.module_generator(0)}
         )
     )
-    postcomposed = adjunction.hom_set_isomorphism_forward(algebra_map * extension, source)
+    postcomposed = adjunction.mor_set_isomorphism_forward(algebra_map * extension, source)
     transported = underlying(algebra_map) * recovered
     _assert_module_maps_agree(
         postcomposed,

@@ -14,10 +14,10 @@ from sage.misc.classcall_metaclass import typecall
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-    _category_hom,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
+    _category_mor,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
@@ -44,23 +44,23 @@ class FunctorImageMorphism(Morphism):
         )
 
 
-class FunctorImageHomset(CategoricalHomset):
+class FunctorImageMor(CategoricalMor):
     Element = FunctorImageMorphism
 
     def image_category(self):
         return self.base_category()
 
-    def _underlying_homset(self):
+    def _underlying_mor(self):
         category = self.image_category().functor().codomain()
-        return _category_hom(
+        return _category_mor(
             category,
             self.domain().underlying_image(),
             self.codomain().underlying_image(),
         )
 
-    def codomain_hom_category(self):
-        r"""Return the codomain Hom represented by this presentation Hom."""
-        return self._underlying_homset()
+    def codomain_mor_category(self):
+        r"""Return the codomain Mor represented by this presentation Mor."""
+        return self._underlying_mor()
 
     def _element_constructor_(self, arrow):
         match arrow:
@@ -68,36 +68,36 @@ class FunctorImageHomset(CategoricalHomset):
                 if arrow.parent() is self:
                     return arrow
                 arrow = arrow.underlying_arrow()
-        if arrow not in self._underlying_homset():
+        if arrow not in self._underlying_mor():
             raise ValueError("the arrow is not a morphism between the underlying functor images")
         return FunctorImageMorphism(self, arrow)
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only for an endomorphism Hom-set")
-        return self(self._underlying_homset().identity())
+            raise ValueError("identity is defined only for an endomorphism Mor object")
+        return self(self._underlying_mor().identity())
 
     def compose(self, second, first):
         r"""Compose two presented-image arrows through their codomain arrows."""
         if first.codomain() is not second.domain():
             raise ValueError("the functor-image arrows are not composable")
         if first.domain() is not self.domain() or second.codomain() is not self.codomain():
-            raise ValueError("the composite does not have this Hom-set's endpoints")
+            raise ValueError("the composite does not have this Mor object's endpoints")
         composite = second * first
         if composite.parent() is not self:
             return self(composite)
         return composite
 
 
-class FunctorImageHomCategoryConstruction(HomCategoryConstruction):
-    FixedCategoryClass = FunctorImageHomset
+class FunctorImageMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = FunctorImageMor
 
 
 class ImageOfFunctor(OwnedCategory):
     r"""The category of outputs of one functor with a chosen source presentation."""
 
-    _HomCategory = FunctorImageHomCategoryConstruction
+    _MorCategory = FunctorImageMorCategoryConstruction
 
     @staticmethod
     @cached_function(key=lambda cls, functor: (cls, id(functor)))
@@ -160,8 +160,8 @@ class ImageOfFunctor(OwnedCategory):
 
     def Mor(self, domain: Parent, codomain: Parent):
         if domain not in self or codomain not in self:
-            raise TypeError("a functor-image Hom requires two presentations of this image category")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("a functor-image Mor requires two presentations of this image category")
+        return self.MorCategory().Of(domain, codomain)
 
     def identity(self, obj):
         return self.Mor(obj, obj).identity()
@@ -195,7 +195,7 @@ class FunctorImageForgetfulFunctor(Functor):
 
 __all__ = [
     "FunctorImageForgetfulFunctor",
-    "FunctorImageHomset",
+    "FunctorImageMor",
     "FunctorImageMorphism",
     "ImageOfFunctor",
 ]

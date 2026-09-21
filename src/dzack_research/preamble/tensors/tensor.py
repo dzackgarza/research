@@ -13,7 +13,7 @@ all-upper or all-lower two-index tensor.
 
 ``tensor.vector(...)``, ``tensor.covector(...)`` and ``tensor.matrix(...)``
 accept owned rings and explicit component data.  They do not reproduce Sage's
-matrix namespace: matrices as linear maps belong to the owned Hom objects.
+matrix namespace: matrices as linear maps belong to the owned Mor objects.
 
 Every route ends in one construction: ``TensorModule(R, ps, qs)`` is the
 object of ``Modules(R)`` built by that owner's entry from
@@ -200,7 +200,7 @@ def _tensor_space_session_and_latex(
         codomain_session = _otimes_session(upper_session, ring_name)
         codomain_tex = _otimes_latex(upper_tex, ring_tex)
         return (
-            f"Hom({domain_session}, {codomain_session})",
+            f"Mor({domain_session}, {codomain_session})",
             rf"\operatorname{{Hom}}({domain_tex}, {codomain_tex})",
         )
 
@@ -798,7 +798,7 @@ class Tensor:
         For ``f: V -> W`` and ``T`` of type ``(0,q)`` on ``W``, return
         ``f^*T`` on ``V``.  The public datum is the morphism.  Finite coordinate
         matrices are only an implementation of this transport: the endpoint
-        module Hom must itself be the finite framed-free matrix Hom.
+        module Mor must itself be the finite framed-free matrix Mor.
         """
         if self._upper_index_ranks():
             raise TypeError("pullback is defined here for a covariant tensor")
@@ -1791,12 +1791,12 @@ class _TensorConstructor:
     matrix = _TensorMatrixConstructor()
 
     def from_matrix(self, matrix):
-        r"""Interpret a finite matrix Hom element as a type-``(1,1)`` tensor."""
+        r"""Interpret a finite matrix Mor element as a type-``(1,1)`` tensor."""
 
         parent = matrix.parent()
         ring = parent.base_ring()
         if parent not in MatrixSpaces(ring):
-            raise TypeError("tensor.from_matrix expects a finite matrix Hom element")
+            raise TypeError("tensor.from_matrix expects a finite matrix Mor element")
         return self(
             ring,
             (parent.nrows(),),
@@ -1811,7 +1811,7 @@ class _TensorConstructor:
     def from_morphism(self, morphism):
         r"""Interpret a finite framed-free module morphism as a type-``(1,1)`` tensor.
 
-        The ordinary module Hom of the endpoints must itself be a matrix Hom.
+        The ordinary module Mor of the endpoints must itself be a matrix Mor.
         """
         matrix = morphism.domain().module_category().Mor(
             morphism.domain(), morphism.codomain()

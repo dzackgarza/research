@@ -17,17 +17,17 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FramedFreeModules,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    TensorProductModuleHomset,
+    TensorProductModuleMor,
     TensorProductModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.powers import (
     DividedSquareModules,
-    QuadraticModuleHomset,
+    QuadraticModuleMor,
     QuadraticModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
-    InternalHomModules,
+    InternalMorModules,
     Modules,
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
@@ -59,24 +59,24 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.tensors.tensor import tensor
 
-# Historical form vocabulary now names the universal module-Hom owners.
+# Historical form vocabulary now names the universal module-Mor owners.
 # These are aliases, not parallel form implementations.
 PairingMorphism = TensorProductModuleMorphism
 BilinearFormMorphism = TensorProductModuleMorphism
-BilinearFormHomset = TensorProductModuleHomset
-QuadraticFormHomset = QuadraticModuleHomset
+BilinearFormMor = TensorProductModuleMor
+QuadraticFormMor = QuadraticModuleMor
 
 
-class BilinearFormHoms(OwnedCategoryOverBaseRing):
-    r"""Diagonal pairing Hom objects carrying the bilinear-form operations."""
+class BilinearFormMors(OwnedCategoryOverBaseRing):
+    r"""Diagonal pairing Mor objects carrying the bilinear-form operations."""
 
     @classmethod
     def _repr_object_names(cls):
-        return "bilinear-form Hom objects"
+        return "bilinear-form Mor objects"
 
     def super_categories(self):
 
-        return [InternalHomModules(self.base_ring())]
+        return [InternalMorModules(self.base_ring())]
 
     class ElementMethods:
         def values_matrix(self):
@@ -151,7 +151,7 @@ def _bilinear_classifier_is_represented(left_module, right_module, value_module)
 
     The module owner now represents the algebraic tensor product for arbitrary
     represented modules, including the unframed quotient route.  Thus a
-    module-valued bilinear map always has the tensor-Hom classifier; scalar or
+    module-valued bilinear map always has the tensor-Mor classifier; scalar or
     otherwise non-module-valued forms retain the callable-value owner.
     """
     ring = left_module.base_ring()

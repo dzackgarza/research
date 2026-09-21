@@ -118,13 +118,13 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     x = source.algebra_generator("x")
     t = target.algebra_generator("t")
 
-    ordinary_homset = source.Mor(target)
-    assert ordinary_homset is Algebras(QQ).Mor(source, target)
-    homset = GradedAlgebras(QQ).Mor(source, target)
-    assert Algebras(QQ).Mor(source, target) in homset.super_categories()
-    assert GradedModules(QQ).Mor(source, target) in homset.super_categories()
-    graded = homset({"x": t})
-    assert graded in homset
+    ordinary_mor = source.Mor(target)
+    assert ordinary_mor is Algebras(QQ).Mor(source, target)
+    mor = GradedAlgebras(QQ).Mor(source, target)
+    assert Algebras(QQ).Mor(source, target) in mor.super_categories()
+    assert GradedModules(QQ).Mor(source, target) in mor.super_categories()
+    graded = mor({"x": t})
+    assert graded in mor
     assert graded(x) == t
     assert graded(x * x) == t * t
 

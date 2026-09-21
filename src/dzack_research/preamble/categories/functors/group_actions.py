@@ -403,7 +403,7 @@ class RestrictionOfGroupActionFunctor(Functor):
         morphism = self.group_morphism()
         category = self._underlying_category
 
-        # Preserve the represented concrete carrier when that owner already
+        # Preserve the represented underlying object when that owner already
         # knows how to equip the restricted action.  The generic fallback is
         # literally precomposition BH -> BG -> C.
         from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -417,7 +417,7 @@ class RestrictionOfGroupActionFunctor(Functor):
                     lambda group_element, point: acted.act(morphism(group_element), point),
                 )
 
-        # The affine-scheme specialization still owns a concrete carrier and
+        # The affine-scheme specialization still owns a concrete underlying object and
         # its fixed-locus operations; retain that owner until the scheme stream
         # moves its two-argument compatibility constructor.
         from dzack_research.preamble.categories.schemes.schemes import Schemes

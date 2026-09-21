@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 
 
 class _ExponentialFunctor(Functor):
-    r"""The internal-Hom functor ``Set^op x Set -> Set``."""
+    r"""The internal-Mor functor ``Set^op x Set -> Set``."""
 
     def __init__(self) -> None:
         self._opposite_sets = Sets().opposite()

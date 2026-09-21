@@ -2,9 +2,9 @@
 
 The defining modules must remain independently importable. Python executes a
 package ``__init__`` before any submodule, so eager re-exports here create
-defining-module cycles: ``abstract_categories.hom_categories`` imports
+defining-module cycles: ``abstract_categories.mor_categories`` imports
 ``sets.indexed_families`` at module level, which runs this file first, and
-every set module imports ``hom_categories`` back while it is only partly
+every set module imports ``mor_categories`` back while it is only partly
 initialized.  Public names are resolved lazily until that module-level edge is
 removed at its owner.
 """

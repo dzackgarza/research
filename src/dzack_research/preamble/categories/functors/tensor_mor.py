@@ -1,4 +1,4 @@
-r"""The tensor--internal-Hom adjunction on modules with chosen finite presentations."""
+r"""The tensor--internal-Mor adjunction on modules with chosen finite presentations."""
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 
@@ -35,15 +35,15 @@ class _TensorByFunctor(Functor):
         return f"- tensor {self.fixed_module()}"
 
 
-class _InternalHomFromFunctor(Functor):
-    r"""The endofunctor ``Hom_R(M,-)`` represented by internal Hom modules."""
+class _InternalMorFromFunctor(Functor):
+    r"""The endofunctor ``Hom_R(M,-)`` represented by internal Mor modules."""
 
     def __init__(self, fixed_source) -> None:
         self._fixed_source = fixed_source
         ring = _owned_ring(fixed_source.base_ring())
         category = ModulesWithChosenFinitePresentation(ring)
         if fixed_source not in category:
-            raise TypeError("the fixed internal-Hom source must carry a chosen finite presentation")
+            raise TypeError("the fixed internal-Mor source must carry a chosen finite presentation")
         super().__init__(category, category)
 
     def fixed_source(self):
@@ -58,20 +58,20 @@ class _InternalHomFromFunctor(Functor):
         target = self(morphism.codomain())
         fixed = self.fixed_source()
         identity = fixed.module_category().Mor(fixed, fixed).identity()
-        return identity.internal_hom_map(morphism, source_internal_hom=source, target_internal_hom=target)
+        return identity.internal_mor_map(morphism, source_internal_mor=source, target_internal_mor=target)
 
     def _repr_(self):
-        return f"Internal Hom({self.fixed_source()}, -)"
+        return f"Internal Mor({self.fixed_source()}, -)"
 
 
-class _TensorHomAdjunction(Adjunction):
+class _TensorMorAdjunction(Adjunction):
     r"""The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``."""
 
     def __init__(self, fixed_module) -> None:
         self._fixed_module = fixed_module
         super().__init__(
             _TensorByFunctor(fixed_module),
-            _InternalHomFromFunctor(fixed_module),
+            _InternalMorFromFunctor(fixed_module),
         )
 
     def fixed_module(self):
@@ -80,9 +80,9 @@ class _TensorHomAdjunction(Adjunction):
 
     def _unit_component(self, module):
         tensor = self.left_adjoint()(module)
-        internal_hom = self.right_adjoint()(tensor)
+        internal_mor = self.right_adjoint()(tensor)
         fixed = self.fixed_module()
-        return module.module_category().Mor(module, internal_hom)(
+        return module.module_category().Mor(module, internal_mor)(
             lambda module_label: fixed.module_category().Mor(fixed, tensor)(
                 lambda fixed_label: tensor.pure_tensor(
                     module.module_generator(module_label),
@@ -92,18 +92,18 @@ class _TensorHomAdjunction(Adjunction):
         )
 
     def _counit_component(self, module):
-        internal_hom = self.right_adjoint()(module)
+        internal_mor = self.right_adjoint()(module)
         return BilinearMap(
-            internal_hom,
+            internal_mor,
             self.fixed_module(),
             module,
-            lambda hom_label, fixed_label: internal_hom.module_generator(hom_label)(
+            lambda mor_label, fixed_label: internal_mor.module_generator(mor_label)(
                 self.fixed_module().module_generator(fixed_label)
             ),
         )
 
     def _repr_(self):
-        return f"Tensor/internal-Hom adjunction with {self.fixed_module()}"
+        return f"Tensor/internal-Mor adjunction with {self.fixed_module()}"
 
 
 __all__ = []

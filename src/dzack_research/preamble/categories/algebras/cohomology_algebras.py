@@ -16,9 +16,9 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DGAMorphism,
@@ -51,9 +51,9 @@ class _CohomologyAlgebraConstruction:
         return self._source_dga
 
 
-class CohomologyAlgebraHomCategoryConstruction(HomCategoryConstruction):
+class CohomologyAlgebraMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return CohomologyAlgebraHomset
+        return CohomologyAlgebraMor
 
 
 class _CohomologyAlgebra:
@@ -119,7 +119,7 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [GradedAlgebras(self.base_ring())]
 
-    _HomCategory = CohomologyAlgebraHomCategoryConstruction
+    _MorCategory = CohomologyAlgebraMorCategoryConstruction
 
     ParentMethods = _CohomologyAlgebra
 
@@ -175,18 +175,18 @@ class CohomologyAlgebraMorphism(Morphism):
         )
 
 
-class CohomologyAlgebraHomset(CategoricalHomset):
+class CohomologyAlgebraMor(CategoricalMor):
     Element = CohomologyAlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, dga_morphism):
         return self.element_class(self, dga_morphism)
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a cohomology-algebra endomorphism homset")
+            raise ValueError("identity belongs to a cohomology-algebra endomorphism Mor")
 
         source_dga = self.domain().source_dga()
         return self(
@@ -247,7 +247,7 @@ def _cohomology_algebra_from_dga(dga):
 
 __all__ = [
     "CohomologyAlgebraElement",
-    "CohomologyAlgebraHomset",
+    "CohomologyAlgebraMor",
     "CohomologyAlgebraMorphism",
     "CohomologyAlgebras",
 ]

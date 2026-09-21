@@ -19,7 +19,7 @@ def _doubling(module):
     return module.module_category().Mor(module, module)({label: 2 * generator})
 
 
-def test_archived_bilinear_form_is_the_live_tensor_hom_with_gram_and_pullback() -> None:
+def test_archived_bilinear_form_is_the_live_tensor_mor_with_gram_and_pullback() -> None:
     module = _rank_one_module()
     generator = _generator(module)
     form = module.bilinear_forms(ZZ)([[ZZ.one()]])

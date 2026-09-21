@@ -80,9 +80,9 @@ def test_definite_isometry_decision_returns_an_actual_odd_lattice_witness() -> N
     reframed_gram = lattice.gram_tensor().pullback(change)
     reframed = Lattices(ZZ)(reframed_gram)
 
-    homset = reframed.Isom(lattice)
-    assert homset.is_empty() is False
-    witness = homset.an_element()
+    mor = reframed.Isom(lattice)
+    assert mor.is_empty() is False
+    witness = mor.an_element()
     assert _module_matrix(witness).parent() in MatrixSpaces(ZZ)
     for left in reframed.module_generators():
         for right in reframed.module_generators():
@@ -143,20 +143,20 @@ def test_owned_lattice_orthogonal_group_uses_sage_only_as_definite_engine() -> N
                 )
 
 
-def test_isometry_homset_is_a_torsor_under_codomain_orthogonal_group() -> None:
+def test_isometry_mor_is_a_torsor_under_codomain_orthogonal_group() -> None:
     source = Lattices(ZZ)([[4, 1], [1, 2]])
     reduction = source.lll_reduction()
     target = reduction.reduced
-    homset = source.Isom(target)
-    first = homset.an_element()
+    mor = source.Isom(target)
+    first = mor.an_element()
     automorphism = next(iter(target.Aut().group_generators()))
-    second = homset.act(automorphism, first)
-    transporter = homset.transporter(first, second)
+    second = mor.act(automorphism, first)
+    transporter = mor.transporter(first, second)
 
     assert transporter.parent() is target.Aut()
     for generator in source.module_generators():
         assert transporter(first(generator)) == second(generator)
-        assert homset.act(transporter, first)(generator) == second(generator)
+        assert mor.act(transporter, first)(generator) == second(generator)
 
 
 def test_similarity_is_an_isometry_from_the_scaled_twist() -> None:
@@ -184,21 +184,21 @@ def test_indefinite_isometry_ladder_uses_parity_as_an_exact_obstruction() -> Non
 def test_nikulin_and_eichler_nonemptiness_do_not_invent_witnesses() -> None:
     hyperbolic = Lattices(ZZ)("U")
     reframed_hyperbolic = Lattices(ZZ)([[2, 1], [1, 0]])
-    nikulin_homset = hyperbolic.Isom(reframed_hyperbolic)
+    nikulin_mor = hyperbolic.Isom(reframed_hyperbolic)
 
-    assert nikulin_homset.is_empty() is False
+    assert nikulin_mor.is_empty() is False
     with pytest.raises(AssertionError):
-        nikulin_homset.an_element()
+        nikulin_mor.an_element()
 
     source = Lattices(ZZ)([[0, 1, 0], [1, 0, 0], [0, 0, -6]])
     change = ZZ.matrix_space(3, 3).from_rows([[1, 1, 0], [0, 1, 0], [0, 0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
-    eichler_homset = source.Isom(target)
+    eichler_mor = source.Isom(target)
 
     assert not source.is_p_elementary(2)
-    assert eichler_homset.is_empty() is False
+    assert eichler_mor.is_empty() is False
     with pytest.raises(AssertionError):
-        eichler_homset.an_element()
+        eichler_mor.an_element()
 
 
 def test_unresolved_odd_indefinite_binary_isometry_remains_unknown() -> None:
@@ -230,38 +230,38 @@ def test_indefinite_isometry_backend_supplies_exact_witness_when_available(monke
         lambda _codomain_gram, _domain_gram: backend_rows,
     )
 
-    homset = source.Isom(target)
-    assert homset.is_empty() is False
-    witness = homset.an_element()
+    mor = source.Isom(target)
+    assert mor.is_empty() is False
+    witness = mor.an_element()
     assert witness.domain() is source and witness.codomain() is target
     assert target.gram_tensor().pullback(witness).is_equal_tensor(
         source.gram_tensor()
     )
 
 
-def test_definite_target_embedding_homset_enumerates_all_a1_into_a2_roots() -> None:
+def test_definite_target_embedding_mor_enumerates_all_a1_into_a2_roots() -> None:
     source = Lattices(ZZ)("A1")
     target = Lattices(ZZ)("A2")
-    homset = source.Emb(target)
-    embeddings = homset
+    mor = source.Emb(target)
+    embeddings = mor
 
-    assert homset.cardinality() == 6
+    assert mor.cardinality() == 6
     source_generator = source.module_generators()[0]
     images = Set(embedding(source_generator) for embedding in embeddings)
     assert images == Set(target.roots())
-    assert homset.is_empty() is False
-    assert homset.an_element()(source_generator) in images
+    assert mor.is_empty() is False
+    assert mor.an_element()(source_generator) in images
 
 
-def test_definite_target_embedding_homset_detects_sign_obstruction() -> None:
+def test_definite_target_embedding_mor_detects_sign_obstruction() -> None:
     source = Lattices(ZZ)([[2]])
     target = Lattices(ZZ)("A2")
-    homset = source.Emb(target)
+    mor = source.Emb(target)
 
-    assert homset.is_empty()
-    assert homset.is_empty() is True
-    with pytest.raises(ValueError, match="embedding homset is empty"):
-        homset.an_element()
+    assert mor.is_empty()
+    assert mor.is_empty() is True
+    with pytest.raises(ValueError, match="embedding Mor is empty"):
+        mor.an_element()
 
 
 def test_even_overlattice_inclusions_enumerate_isotropic_glue_for_u2() -> None:
@@ -275,7 +275,7 @@ def test_even_overlattice_inclusions_enumerate_isotropic_glue_for_u2() -> None:
     assert sum(inclusion.codomain().is_unimodular() for inclusion in inclusions) == 2
 
 
-def test_nikulin_even_unimodular_embedding_existence_controls_embedding_homset() -> None:
+def test_nikulin_even_unimodular_embedding_existence_controls_embedding_mor() -> None:
     target = Lattices(ZZ)("U")
     a1 = Lattices(ZZ)("A1")
     a2 = Lattices(ZZ)("A2")

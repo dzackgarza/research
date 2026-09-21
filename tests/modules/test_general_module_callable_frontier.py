@@ -1,7 +1,7 @@
 r"""The callable frontier for genuinely unframed infinite modules.
 
 Two Python callables can define the same linear map without carrying a finite
-presentation on which its laws or equality can be decided.  The Hom owner must
+presentation on which its laws or equality can be decided.  The Mor owner must
 retain that boundary: the elementwise realization carries ``Unknown`` linearity,
 and equality is likewise refused rather than guessed from callable identity or
 a finite sample.
@@ -24,9 +24,9 @@ def _unframed_integer_module():
 
 def test_extensionally_equal_callable_maps_do_not_acquire_a_false_equality_decision() -> None:
     module = _unframed_integer_module()
-    homset = module.module_category().Mor(module, module)
-    first = homset.elementwise(lambda element: element)
-    second = homset.elementwise(
+    mor = module.module_category().Mor(module, module)
+    first = mor.elementwise(lambda element: element)
+    second = mor.elementwise(
         lambda element: module(element.underlying_element()),
     )
 

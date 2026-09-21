@@ -61,8 +61,8 @@ from sage.schemes.projective.projective_space import (
     ProjectiveSpace as _SageProjectiveSpace,
 )
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     _MonoCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -103,7 +103,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
-    LocallyRingedHomCategoryConstruction,
+    LocallyRingedMorCategoryConstruction,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
@@ -133,7 +133,7 @@ for _scheme_axiom in (
 # scheme categories of this module.  Upstream operations: Sage's
 # ``AffineScheme``, ``AffineSpace``, ``ProjectiveSpace``,
 # ``ProductProjectiveSpaces``, ``AlgebraicScheme_subscheme`` and the scheme
-# Hom-sets of ``sage.schemes.generic.homset``.  Every inspection of a Sage
+# Mor objects of ``sage.schemes.generic.Mor``.  Every inspection of a Sage
 # scheme or Sage morphism class is one of the functions in this block.
 # ---------------------------------------------------------------------------
 
@@ -165,7 +165,7 @@ def _is_gluing_realization(realization) -> bool:
             return False
 
 
-def _native_scheme_homset(domain, codomain):
+def _native_scheme_mor(domain, codomain):
     r"""Sage's scheme Hom between the engines of two owned schemes."""
     return _engine_scheme(domain)._Hom_(_engine_scheme(codomain))
 
@@ -204,7 +204,7 @@ def _engine_coordinate_pullback_of(native, domain_algebra, codomain_algebra):
             return codomain_algebra.Mor(domain_algebra)(native.ring_homomorphism())
         case _SageSchemeMorphismPolynomial():
             return codomain_algebra.Mor(domain_algebra)(
-                _engine_ring(codomain_algebra).hom(
+                _engine_ring(codomain_algebra).mor(
                     list(native.defining_polynomials()),
                     _engine_ring(domain_algebra),
                 )
@@ -491,13 +491,13 @@ class SchemeConeMorphismConstruction:
 
 
 class SchemeMorphism(Morphism):
-    r"""A morphism of owned schemes, an element of the owned Hom of its endpoints.
+    r"""A morphism of owned schemes, an element of the owned Mor of its endpoints.
 
     The defining datum is one of: the coordinate pullback ``O(Y) -> O(X)``
     between affine endpoints; homogeneous coordinates into a projective space
     (:class:`_ProjectiveCoordinateMorphism`); or a native Sage morphism
     between the engines of the endpoints.  The endpoints are always the owned
-    schemes of the Hom, never read off the engine.  A morphism induced by a
+    schemes of the Mor, never read off the engine.  A morphism induced by a
     universal cone additionally retains that cone.
 
     Protected contract, used only by composition and equality inside this
@@ -515,7 +515,7 @@ class SchemeMorphism(Morphism):
         self,
         native_morphism,
         *,
-        homset,
+        mor,
         pullback=None,
         cone_construction=None,
         point_coordinates=None,
@@ -524,13 +524,13 @@ class SchemeMorphism(Morphism):
         self._coordinate_pullback = pullback
         self._cone_construction = cone_construction
         self._point_coordinates = point_coordinates
-        Morphism.__init__(self, homset)
+        Morphism.__init__(self, mor)
 
     def with_cone_construction(self, construction):
         r"""This morphism, retaining the universal cone it was induced by."""
         return SchemeMorphism(
             self._native_morphism,
-            homset=self.parent(),
+            mor=self.parent(),
             pullback=self._coordinate_pullback,
             cone_construction=construction,
             point_coordinates=self._point_coordinates,
@@ -540,8 +540,8 @@ class SchemeMorphism(Morphism):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
         return self._cone_construction
 
-    def _in_homset(self, homset):
-        r"""Re-site this representation in a Hom with the same endpoints.
+    def _in_mor(self, mor):
+        r"""Re-site this representation in a Mor with the same endpoints.
 
         Protected arrow-engine contract of ``SchemeMorCategory``.  Its
         constructor checks endpoints and any added scalar condition first;
@@ -550,7 +550,7 @@ class SchemeMorphism(Morphism):
         realization merely to forget the relative-base condition.
         """
         return SchemeMorphism(
-            self._native_morphism, homset=homset,
+            self._native_morphism, mor=mor,
             pullback=self._coordinate_pullback,
             cone_construction=self.cone_construction(),
             point_coordinates=self._represented_point_coordinates(),
@@ -605,8 +605,8 @@ class SchemeMorphism(Morphism):
             return self
         relative = Schemes(self.codomain().scheme_base_ring())
         if (
-            self.parent().homset_category().is_subcategory(relative)
-            and other.parent().homset_category().is_subcategory(relative)
+            self.parent().mor_category().is_subcategory(relative)
+            and other.parent().mor_category().is_subcategory(relative)
             and self.codomain() is other.domain().base_scheme()
         ):
             return other.domain().structure_morphism()
@@ -615,22 +615,22 @@ class SchemeMorphism(Morphism):
         if cone_leg is not None:
             return cone_leg
 
-        homset = _scheme_composition_hom(self, other)
+        mor = _scheme_composition_mor(self, other)
         left_pullback = self._represented_coordinate_pullback()
         right_pullback = other._represented_coordinate_pullback()
         if left_pullback is not None and right_pullback is not None:
-            return homset(right_pullback * left_pullback)
+            return mor(right_pullback * left_pullback)
         if (left_pullback is not None
                 and other.codomain() is other.domain().base_scheme()
-                and other.parent().homset_category().is_subcategory(Schemes(other.domain().scheme_base_ring()))):
-            return _ScalarStructureSchemeMorphism(homset, left_pullback)
+                and other.parent().mor_category().is_subcategory(Schemes(other.domain().scheme_base_ring()))):
+            return _ScalarStructureSchemeMorphism(mor, left_pullback)
         structured = other._postcompose_with(self)
         if structured is not None:
             return structured
-        return SchemeMorphism(self.native_morphism() * other.native_morphism(), homset=homset)
+        return SchemeMorphism(self.native_morphism() * other.native_morphism(), mor=mor)
 
     def _is_the_identity(self) -> bool:
-        r"""Whether this morphism is its Hom object's selected identity."""
+        r"""Whether this morphism is its Mor object's selected identity."""
         return self.domain() is self.codomain() and self is self.parent().identity()
 
     def _postcompose_with(self, after):
@@ -778,7 +778,7 @@ class SchemeMorphism(Morphism):
         target_algebra = pullback.codomain()
         assert source_algebra in FramedAlgebras(source_algebra.base_ring()), "the engine realization requires a chosen algebra generating set on the codomain algebra"
         target_engine = _engine_ring(target_algebra)
-        return _engine_ring(source_algebra).hom(
+        return _engine_ring(source_algebra).mor(
             [
                 target_engine(_engine_element(target_algebra, pullback(source_algebra.algebra_generator(label))))
                 for label in source_algebra.algebra_generating_set()
@@ -902,8 +902,8 @@ class SchemeMorphism(Morphism):
             relative = Schemes(base)
             if (
                 determining is not None
-                and self.parent().homset_category().is_subcategory(relative)
-                and other.parent().homset_category().is_subcategory(relative)
+                and self.parent().mor_category().is_subcategory(relative)
+                and other.parent().mor_category().is_subcategory(relative)
             ):
                 return all(left_pullback(element) == right_pullback(element) for element in determining)
             return _ring_morphisms_equal(left_pullback, right_pullback)
@@ -928,15 +928,15 @@ class _ScalarStructureSchemeMorphism(SchemeMorphism):
     compositions as distinct maps.  It introduces no scheme or category.
     """
 
-    def __init__(self, homset, scalar_pullback, *, cone_construction=None) -> None:
-        assert scalar_pullback.codomain() is homset.domain().scheme_base_ring(), (
+    def __init__(self, mor, scalar_pullback, *, cone_construction=None) -> None:
+        assert scalar_pullback.codomain() is mor.domain().scheme_base_ring(), (
             "a scalar composition uses the domain's stated base ring"
         )
-        assert homset.codomain() is Schemes(scalar_pullback.domain()).base_scheme(), (
+        assert mor.codomain() is Schemes(scalar_pullback.domain()).base_scheme(), (
             "the scalar composition lands in the spectrum of its scalar domain"
         )
         self._scalar_pullback = scalar_pullback
-        super().__init__(None, homset=homset, cone_construction=cone_construction)
+        super().__init__(None, mor=mor, cone_construction=cone_construction)
 
     def scalar_pullback(self):
         return self._scalar_pullback
@@ -973,15 +973,15 @@ class _ScalarStructureSchemeMorphism(SchemeMorphism):
 class _OpenComplementInclusion(SchemeMorphism):
     r"""The open immersion ``X - Z -> X`` defined by its closed complement ``Z``."""
 
-    def __init__(self, homset, closed_complement, *, cone_construction=None) -> None:
+    def __init__(self, mor, closed_complement, *, cone_construction=None) -> None:
         self._closed_complement = closed_complement
-        SchemeMorphism.__init__(self, None, homset=homset, cone_construction=cone_construction)
+        SchemeMorphism.__init__(self, None, mor=mor, cone_construction=cone_construction)
 
     def with_cone_construction(self, construction):
         return _OpenComplementInclusion(self.parent(), self.closed_complement(), cone_construction=construction)
 
-    def _in_homset(self, homset):
-        return _OpenComplementInclusion(homset, self.closed_complement(), cone_construction=self.cone_construction())
+    def _in_mor(self, mor):
+        return _OpenComplementInclusion(mor, self.closed_complement(), cone_construction=self.cone_construction())
 
     def closed_complement(self):
         return self._closed_complement
@@ -1004,10 +1004,10 @@ class _OpenComplementInclusion(SchemeMorphism):
 
 
 def _open_complement_inclusion(closed_complement):
-    r"""The arrow realization rule ``hom -> (X - Z -> X)`` for the closed complement ``Z``."""
+    r"""The arrow realization rule ``Mor -> (X - Z -> X)`` for the closed complement ``Z``."""
 
-    def realize(homset):
-        return _OpenComplementInclusion(homset, closed_complement)
+    def realize(mor):
+        return _OpenComplementInclusion(mor, closed_complement)
 
     return realize
 
@@ -1115,10 +1115,10 @@ def _scalar_maps_equal_on_scheme(scheme, left, right):
         ambient, _ = _engine_projective_ambient(_engine_scheme(scheme))
         ring = _engine_polynomial_algebra(ambient.coordinate_ring(), base)
         restriction = _projective_section_restriction(scheme, ring) * _restriction_to_base(ring, base)
-    hom = OwnedRings().Mor(left.domain(), restriction.codomain())
+    mor = OwnedRings().Mor(left.domain(), restriction.codomain())
     return _ring_morphisms_equal(
-        hom.elementwise(lambda scalar: restriction(left(scalar))),
-        hom.elementwise(lambda scalar: restriction(right(scalar))),
+        mor.elementwise(lambda scalar: restriction(left(scalar))),
+        mor.elementwise(lambda scalar: restriction(right(scalar))),
     )
 
 
@@ -1132,7 +1132,7 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
     this is the usual homogeneous-coordinate construction (Stacks, 01ND).
     """
 
-    def __init__(self, homset, coordinates, *, coefficient_map=None,
+    def __init__(self, mor, coordinates, *, coefficient_map=None,
                  cone_construction=None, point_coordinates=None) -> None:
         coordinates = tuple(coordinates)
         assert coordinates, "a projective coordinate presentation has a nonempty block"
@@ -1140,18 +1140,18 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         assert all(value.parent() is ring for value in coordinates), (
             "coordinate sections are written in one source coordinate ring"
         )
-        target_base = homset.codomain().scheme_base_ring()
+        target_base = mor.codomain().scheme_base_ring()
         if coefficient_map is None:
             coefficient_map = _restriction_to_base(ring, target_base)
         assert coefficient_map.domain() is target_base and coefficient_map.codomain() is ring, (
             "the coefficient map goes from the target base to the source coordinate ring"
         )
-        assert sum(_projective_coordinate_blocks(homset.codomain())) == len(coordinates), (
+        assert sum(_projective_coordinate_blocks(mor.codomain())) == len(coordinates), (
             "the coordinate family has the blocks of the target projective presentation"
         )
         self._homogeneous_coordinates = finite_family(coordinates, name="Homogeneous coordinates")
         self._coefficient_map = coefficient_map
-        super().__init__(None, homset=homset, cone_construction=cone_construction,
+        super().__init__(None, mor=mor, cone_construction=cone_construction,
                          point_coordinates=point_coordinates)
 
     def with_cone_construction(self, construction):
@@ -1184,7 +1184,7 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         assert _ring_morphisms_equal(self.coefficient_map(), natural) is True, (
             "this polynomial engine cannot realize the noncanonical coefficient map"
         )
-        return _native_scheme_homset(self.domain(), self.codomain())(
+        return _native_scheme_mor(self.domain(), self.codomain())(
             [_engine_element(ring, value) for value in self.homogeneous_coordinates()], check=False,
         )
 
@@ -1193,9 +1193,9 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         source = self.domain()
         base = self.coefficient_map().domain()
         target = Schemes(base).base_scheme()
-        hom = LocallyRingedSpaces().Mor(source, target)
+        mor = LocallyRingedSpaces().Mor(source, target)
         if source in Schemes(source.scheme_base_ring()).Affine():
-            return hom(self.coefficient_map())
+            return mor(self.coefficient_map())
         # In a homogeneous polynomial presentation degree-zero polynomials
         # are scalars.  Read that constant at the engine boundary; a rational
         # section on a more general presentation is not such a polynomial.
@@ -1221,12 +1221,12 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
             return cone_leg
         if other._is_the_identity():
             return self
-        hom = _scheme_composition_hom(self, other)
+        mor = _scheme_composition_mor(self, other)
         source = other.domain()
         if self.domain() in Schemes(self.domain().scheme_base_ring()).Affine():
             pullback = other.coordinate_algebra_morphism()
             return _ProjectiveCoordinateMorphism(
-                hom, tuple(pullback(value) for value in self.homogeneous_coordinates()),
+                mor, tuple(pullback(value) for value in self.homogeneous_coordinates()),
                 coefficient_map=OwnedRings().Mor(self.coefficient_map().domain(), pullback.codomain()).elementwise(
                     lambda value: pullback(self.coefficient_map()(value))
                 ),
@@ -1249,12 +1249,12 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         point_values = None
         if before._represented_point_coordinates() is not None:
             point_values = finite_family(values, name="Point coordinates")
-        return _ProjectiveCoordinateMorphism(hom, values, coefficient_map=coefficients, point_coordinates=point_values)
+        return _ProjectiveCoordinateMorphism(mor, values, coefficient_map=coefficients, point_coordinates=point_values)
 
     def _postcompose_with(self, after):
         relative = Schemes(self.codomain().scheme_base_ring())
         if (after.codomain() is self.codomain().base_scheme()
-                and after.parent().homset_category().is_subcategory(relative)):
+                and after.parent().mor_category().is_subcategory(relative)):
             return self._map_to_target_base()
         if after.codomain() in Schemes(after.codomain().scheme_base_ring()).Projective():
             return _projective_coordinate_morphism(after) * self
@@ -1268,10 +1268,10 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         other = _projective_coordinate_morphism(other)
         ring = self.coefficient_map().codomain()
         restriction = _projective_section_restriction(self.domain(), ring)
-        hom = OwnedRings().Mor(self.coefficient_map().domain(), restriction.codomain())
+        mor = OwnedRings().Mor(self.coefficient_map().domain(), restriction.codomain())
         coefficients_equal = _ring_morphisms_equal(
-            hom.elementwise(lambda scalar: restriction(self.coefficient_map()(scalar))),
-            hom.elementwise(lambda scalar: restriction(ring(other.coefficient_map()(scalar)))),
+            mor.elementwise(lambda scalar: restriction(self.coefficient_map()(scalar))),
+            mor.elementwise(lambda scalar: restriction(ring(other.coefficient_map()(scalar)))),
         )
         if coefficients_equal is False:
             return False
@@ -1307,9 +1307,9 @@ class _StandardProjectiveChartEmbedding(_ProjectiveCoordinateMorphism):
     def is_open_immersion(self) -> bool:
         return True
 
-    def _in_homset(self, homset):
+    def _in_mor(self, mor):
         return _StandardProjectiveChartEmbedding(
-            homset,
+            mor,
             tuple(self.homogeneous_coordinates()),
             coefficient_map=self.coefficient_map(),
             cone_construction=self.cone_construction(),
@@ -1323,10 +1323,10 @@ class _StandardMultiprojectiveChartEmbedding(SchemeMorphism):
     def is_open_immersion(self) -> bool:
         return True
 
-    def _in_homset(self, homset):
+    def _in_mor(self, mor):
         return _StandardMultiprojectiveChartEmbedding(
             self.native_morphism(),
-            homset=homset,
+            mor=mor,
             cone_construction=self.cone_construction(),
             point_coordinates=self._represented_point_coordinates(),
         )
@@ -1335,11 +1335,11 @@ class _StandardMultiprojectiveChartEmbedding(SchemeMorphism):
 class _RepresentedAffineSchemeMorphism(SchemeMorphism):
     r"""A morphism of affine schemes, which is its coordinate pullback."""
 
-    def __init__(self, homset, pullback, *, cone_construction=None, point_coordinates=None) -> None:
+    def __init__(self, mor, pullback, *, cone_construction=None, point_coordinates=None) -> None:
         SchemeMorphism.__init__(
             self,
             None,
-            homset=homset,
+            mor=mor,
             pullback=pullback,
             cone_construction=cone_construction,
             point_coordinates=point_coordinates,
@@ -1358,13 +1358,13 @@ class _RepresentedAffineSchemeMorphism(SchemeMorphism):
         r"""``Spec`` of the pullback on the engines of the two spectra."""
         if self._is_the_identity():
             return _engine_scheme(self.domain()).identity_morphism()
-        return _native_scheme_homset(self.domain(), self.codomain())(
+        return _native_scheme_mor(self.domain(), self.codomain())(
             _engine_coordinate_pullback(self.coordinate_algebra_morphism()),
             check=False,
         )
 
 
-class SchemeMorCategory(CategoricalHomset):
+class SchemeMorCategory(CategoricalMor):
     r"""The owned category \(\mathrm{Mor}_{\mathbf{Sch}/R}(X, Y)\).
 
     Its objects are the scheme morphisms \(X\to Y\) over ``R``.  An arrow is
@@ -1374,8 +1374,8 @@ class SchemeMorCategory(CategoricalHomset):
       between affine endpoints through its pullback;
     * an owned ring morphism ``O(Y) -> O(X)`` when both endpoints are affine;
     * a native Sage scheme morphism between the engines of the endpoints;
-    * an arrow realization rule, a callable ``hom -> morphism`` returning an
-      element parented by this Hom.  The rule is the datum of arrows whose
+    * an arrow realization rule, a callable ``Mor -> morphism`` returning an
+      element parented by this Mor.  The rule is the datum of arrows whose
       representation class belongs to another construction owner -- the open
       inclusions of a glued scheme, the complement of a projective closed
       subscheme -- and of the inclusion of a subobject, which cannot be built
@@ -1383,18 +1383,18 @@ class SchemeMorCategory(CategoricalHomset):
 
     Sage's scheme Hom between the two engines stays underneath as the
     computation engine for native realizations; it is built when first asked
-    for, so a Hom whose endpoint has no engine still constructs.
+    for, so a Mor whose endpoint has no engine still constructs.
     """
 
     Element = SchemeMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     @cached_method
-    def _engine_homset_crossing(self):
-        r"""Return the private Sage Hom-set these morphisms are computed in."""
-        return _native_scheme_homset(self.domain(), self.codomain())
+    def _engine_mor_crossing(self):
+        r"""Return the private Sage Mor object these morphisms are computed in."""
+        return _native_scheme_mor(self.domain(), self.codomain())
 
     def _element_constructor_(self, datum):
         domain = self.domain()
@@ -1406,7 +1406,7 @@ class SchemeMorCategory(CategoricalHomset):
                 return datum
             case _ProjectiveCoordinateMorphism():
                 assert datum.domain() is domain and datum.codomain() is codomain, "a coordinate morphism keeps its endpoints"
-                if self.homset_category().is_subcategory(Schemes(base)):
+                if self.mor_category().is_subcategory(Schemes(base)):
                     scalar_structure = _restriction_to_base(datum.coefficient_map().codomain(), base)
                     assert _ring_morphisms_equal(datum.coefficient_map(), scalar_structure) is not False, (
                         "the projective morphism does not commute with the stated scalar structures"
@@ -1417,7 +1417,7 @@ class SchemeMorCategory(CategoricalHomset):
                 )
             case _ScalarStructureSchemeMorphism():
                 assert datum.domain() is domain and datum.codomain() is codomain, "a scalar composite keeps its endpoints"
-                if self.homset_category().is_subcategory(Schemes(base)):
+                if self.mor_category().is_subcategory(Schemes(base)):
                     assert _scalar_maps_equal_on_scheme(domain, datum.scalar_pullback(), base.Mor(base).identity()) is not False, (
                         "the scalar composite does not commute with the stated scalar structures"
                     )
@@ -1436,14 +1436,14 @@ class SchemeMorCategory(CategoricalHomset):
                 assert datum.domain() is domain and datum.codomain() is codomain, (
                     "a scheme morphism with a non-affine endpoint is re-sited only onto its own endpoints"
                 )
-                return datum._in_homset(self)
+                return datum._in_mor(self)
             case _SageSchemeMorphism():
                 assert datum.domain() is _engine_scheme(domain) and datum.codomain() is _engine_scheme(codomain), (
                     "the native morphism joins the engines of these exact owned endpoints"
                 )
                 if affine_endpoints:
                     return self(_engine_coordinate_pullback_of(datum, domain.coordinate_algebra(), codomain.coordinate_algebra()))
-                return SchemeMorphism(datum, homset=self)
+                return SchemeMorphism(datum, mor=self)
             case Morphism():
                 assert affine_endpoints, (
                     "a ring morphism defines a scheme morphism between affine schemes, contravariantly"
@@ -1452,14 +1452,14 @@ class SchemeMorCategory(CategoricalHomset):
                     f"the pullback {datum} does not join the coordinate algebras of {codomain} and {domain}"
                 )
                 relative = Schemes(domain.scheme_base_ring())
-                if self.homset_category().is_subcategory(relative):
+                if self.mor_category().is_subcategory(relative):
                     ring = relative.base_ring()
                     target_algebra = domain.coordinate_algebra()
                     source_structure = codomain.structure_morphism().coordinate_algebra_morphism()
                     target_structure = domain.structure_morphism().coordinate_algebra_morphism()
-                    ring_hom = OwnedRings().Mor(ring, target_algebra)
-                    composed = ring_hom.elementwise(lambda scalar: datum(source_structure(scalar)))
-                    structural = ring_hom.elementwise(target_structure)
+                    ring_mor = OwnedRings().Mor(ring, target_algebra)
+                    composed = ring_mor.elementwise(lambda scalar: datum(source_structure(scalar)))
+                    structural = ring_mor.elementwise(target_structure)
                     assert _ring_morphisms_equal(composed, structural) is not False, (
                         "the coordinate pullback does not commute with the stated scalar structures"
                     )
@@ -1467,7 +1467,7 @@ class SchemeMorCategory(CategoricalHomset):
             case _ if callable(datum):
                 realized = datum(self)
                 assert realized.parent() is self, (
-                    "an arrow realization rule returns a morphism of the Hom it was given"
+                    "an arrow realization rule returns a morphism of the Mor it was given"
                 )
                 return realized
             case _:
@@ -1478,16 +1478,16 @@ class SchemeMorCategory(CategoricalHomset):
     @cached_method
     def identity(self):
         r"""``id_X``: the identity pullback on an affine scheme, else the engine identity."""
-        assert self.domain() is self.codomain(), "identity is defined only on an endomorphism Hom"
+        assert self.domain() is self.codomain(), "identity is defined only on an endomorphism Mor"
         scheme = self.domain()
         match scheme:
             case _ if scheme in Schemes(scheme.scheme_base_ring()).Affine():
                 algebra = scheme.coordinate_algebra()
                 return _RepresentedAffineSchemeMorphism(self, algebra.Mor(algebra).identity())
             case _ if scheme._scheme_engine_realization is None:
-                return SchemeMorphism(None, homset=self)
+                return SchemeMorphism(None, mor=self)
             case _:
-                return SchemeMorphism(_engine_scheme(scheme).identity_morphism(), homset=self)
+                return SchemeMorphism(_engine_scheme(scheme).identity_morphism(), mor=self)
 
 
 def _restriction_to_base(ring, base_ring):
@@ -1513,9 +1513,9 @@ def _restriction_to_base(ring, base_ring):
 
 
 def _scheme_mor_category(domain, codomain, *, category=None):
-    r"""The chosen Hom of two schemes, without changing either scalar structure.
+    r"""The chosen Mor of two schemes, without changing either scalar structure.
 
-    Two schemes with the same stated base use the Hom over that base.
+    Two schemes with the same stated base use the Mor over that base.
     Across bases an arrow is a morphism of their locally ringed spaces;
     its coordinate pullback retains the actual scalar map.  In particular
     two evaluations of a parameter at different values do not mutate one
@@ -1532,10 +1532,10 @@ def _scheme_mor_category(domain, codomain, *, category=None):
     return category.Mor(domain, codomain)
 
 
-def _scheme_composition_hom(after, before):
-    r"""The Hom of a composite, retaining a common base only when both arrows do."""
-    category = after.parent().homset_category()
-    match before.parent().homset_category().is_subcategory(category):
+def _scheme_composition_mor(after, before):
+    r"""The Mor of a composite, retaining a common base only when both arrows do."""
+    category = after.parent().mor_category()
+    match before.parent().mor_category().is_subcategory(category):
         case True:
             return category.Mor(before.domain(), after.codomain())
         case False:
@@ -1714,11 +1714,11 @@ def _affine_spectrum(ring_or_algebra, base_ring=None):
     return Schemes(base).Affine()(algebra)
 
 
-class SchemeHomCategoryConstruction(LocallyRingedHomCategoryConstruction):
+class SchemeMorCategoryConstruction(LocallyRingedMorCategoryConstruction):
     r"""Morphisms commuting with the chosen structure maps to ``Spec R``.
 
     Unlike an axiom on an R-scheme, specifying R restricts the morphisms:
-    its Hom is not the unrestricted locally ringed-space Hom.
+    its Mor is not the unrestricted locally ringed-space Mor.
     """
 
     def _inherits_morphisms_from(self, supercategory, domain, codomain):
@@ -1751,11 +1751,11 @@ class Schemes(OwnedCategoryOverBaseRing):
         """
         return [LocallyRingedSpaces()]
 
-    _HomCategory = SchemeHomCategoryConstruction
+    _MorCategory = SchemeMorCategoryConstruction
 
     def Mor(self, domain, codomain):
-        r"""``Mor_{Sch/R}(X, Y)``, the single Hom selected by its category family."""
-        return self.HomCategory().Of(domain, codomain)
+        r"""``Mor_{Sch/R}(X, Y)``, the single Mor selected by its category family."""
+        return self.MorCategory().Of(domain, codomain)
 
     _MonoCategory = None  # set below, once SchemeMonomorphisms is defined
 
@@ -2164,11 +2164,11 @@ class Schemes(OwnedCategoryOverBaseRing):
                 construction_data=construction_data,
             )
 
-        def _locally_ringed_homset_class(self):
+        def _locally_ringed_mor_class(self):
             r"""The arrow engine for this scheme's affine/native or gluing presentation."""
             match self._is_glued_from_affine_atlas():
                 case True:
-                    return self._scheme_engine_realization.scheme_homset_class()
+                    return self._scheme_engine_realization.scheme_mor_class()
                 case False:
                     return SchemeMorCategory
 
@@ -2225,7 +2225,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                 case _ if self._scheme_engine_realization is None:
                     return SchemeMorphism(
                         None,
-                        homset=_scheme_mor_category(self, base_scheme),
+                        mor=_scheme_mor_category(self, base_scheme),
                     )
                 case _:
                     return _scheme_mor_category(self, base_scheme)(_engine_scheme(self).base_morphism())
@@ -2351,7 +2351,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             base = self.scheme_base_ring()
             owned_coordinates = tuple(base(coordinate) for coordinate in coordinates)
             selected = finite_family(owned_coordinates, name=f"Selected coordinates of point on {self}")
-            hom = Schemes(base).Mor(self.base_scheme(), self)
+            mor = Schemes(base).Mor(self.base_scheme(), self)
             match self:
                 case _ if self in Schemes(base).Affine():
                     algebra = self.coordinate_algebra()
@@ -2359,7 +2359,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                     labels = tuple(algebra.algebra_generating_set())
                     assert len(labels) == len(owned_coordinates), "an affine point needs one coordinate per algebra generator"
                     pullback = algebra.Mor(base)(dict(zip(labels, owned_coordinates, strict=True)))
-                    return _RepresentedAffineSchemeMorphism(hom, pullback, point_coordinates=selected)
+                    return _RepresentedAffineSchemeMorphism(mor, pullback, point_coordinates=selected)
                 case _ if self in ProductProjectiveSpaces(base):
                     engine_coordinates = tuple(_engine_element(base, coordinate) for coordinate in owned_coordinates)
                     factor_points = []
@@ -2369,20 +2369,20 @@ class Schemes(OwnedCategoryOverBaseRing):
                         block = engine_coordinates[offset : offset + width]
                         assert len(block) == width, "a product-projective point has one homogeneous coordinate block per factor"
                         factor_engine = _engine_scheme(factor)
-                        factor_points.append(factor_engine._point(factor_engine.point_homset(), block, check=False))
+                        factor_points.append(factor_engine._point(factor_engine.point_mor(), block, check=False))
                         offset += width
                     assert offset == len(engine_coordinates), "too many homogeneous coordinates for this product of projective spaces"
                     engine = _engine_scheme(self)
-                    native = engine._point(engine.point_homset(), factor_points, check=False)
-                    return SchemeMorphism(native, homset=hom, point_coordinates=selected)
+                    native = engine._point(engine.point_mor(), factor_points, check=False)
+                    return SchemeMorphism(native, mor=mor, point_coordinates=selected)
                 case _:
                     engine = _engine_scheme(self)
                     native = engine._point(
-                        engine.point_homset(),
+                        engine.point_mor(),
                         [_engine_element(base, coordinate) for coordinate in owned_coordinates],
                         check=False,
                     )
-                    return SchemeMorphism(native, homset=hom, point_coordinates=selected)
+                    return SchemeMorphism(native, mor=mor, point_coordinates=selected)
 
         def projective_morphism_from_coordinates(self, target, coordinates):
             r"""Return the projective morphism defined by a basepoint-free coordinate family.
@@ -2402,7 +2402,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             return _ProjectiveCoordinateMorphism(_scheme_mor_category(self, target), coordinates)
 
         def categorical_identity_morphism(self):
-            r"""``id_X``, the identity of this scheme's endomorphism Hom."""
+            r"""``id_X``, the identity of this scheme's endomorphism Mor."""
             return _scheme_mor_category(self, self).identity()
 
         def product_with(self, other):
@@ -2956,16 +2956,16 @@ def _engine_projective_subscheme(engine, equations):
     )
 
 
-def _native_embedding_rule(homset):
+def _native_embedding_rule(mor):
     r"""The arrow realization rule for the inclusion of a realized closed subscheme into its codomain.
 
     Both realizations lie in one ambient space, and the inclusion keeps every
     homogeneous coordinate.
     """
-    ambient, _ambient_equations = _engine_projective_ambient(_engine_scheme(homset.codomain()))
+    ambient, _ambient_equations = _engine_projective_ambient(_engine_scheme(mor.codomain()))
     return SchemeMorphism(
-        _native_scheme_homset(homset.domain(), homset.codomain())(list(ambient.coordinate_ring().gens()), check=False),
-        homset=homset,
+        _native_scheme_mor(mor.domain(), mor.codomain())(list(ambient.coordinate_ring().gens()), check=False),
+        mor=mor,
     )
 
 
@@ -3120,7 +3120,7 @@ class AffineGSchemes(OwnedCategory):
         def invariant_algebra(self):
             r"""Return the represented invariant algebra ``A^G``.
 
-            The current backend supports finite linear actions on a polynomial
+            The represented invariant computation supports finite linear actions on a polynomial
             algebra over a field accepted by Sage's Singular invariant-ring
             interface.  The result carries a chosen finite polynomial
             presentation, not merely a membership predicate.
@@ -3134,7 +3134,7 @@ class AffineGSchemes(OwnedCategory):
         def invariant_algebra_element(self, element):
             r"""Express one invariant element of ``A`` in ``A^G``.
 
-            The invariant-ring backend used by the affine quotient returns a
+            The invariant-ring computation used by the affine quotient returns a
             polynomial certificate in its selected invariant generators; the
             certificate is evaluated in the owned invariant algebra.
             """
@@ -3973,8 +3973,8 @@ def _projective_projection_rule(offset, width, scalar_map=None):
     multiprojective space by those coordinates.
     """
 
-    def realize(homset):
-        source = homset.domain()
+    def realize(mor):
+        source = mor.domain()
         ambient, _ = _engine_projective_ambient(_engine_scheme(source))
         ring = _engine_polynomial_algebra(ambient.coordinate_ring(), source.scheme_base_ring())
         coordinates = tuple(
@@ -3987,7 +3987,7 @@ def _projective_projection_rule(offset, width, scalar_map=None):
             coefficient_map = OwnedRings().Mor(scalar_map.domain(), ring).elementwise(
                 lambda value: structure(scalar_map(value))
             )
-        return _ProjectiveCoordinateMorphism(homset, coordinates, coefficient_map=coefficient_map)
+        return _ProjectiveCoordinateMorphism(mor, coordinates, coefficient_map=coefficient_map)
 
     return realize
 
@@ -4055,8 +4055,8 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
                         for coordinate in range(int(factor.relative_dimension()) + 1)
                     )
                 embeddings[choice] = _StandardMultiprojectiveChartEmbedding(
-                    _native_scheme_homset(chart, self)(engine_coordinates, check=False),
-                    homset=_scheme_mor_category(chart, self),
+                    _native_scheme_mor(chart, self)(engine_coordinates, check=False),
+                    mor=_scheme_mor_category(chart, self),
                 )
 
             return choices, charts, embeddings
@@ -4500,7 +4500,7 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
             left_datum, right_datum = self.fiber_product_construction().projection_data()
             relative = Schemes(self.scheme_base_ring())
             category = relative if all(
-                leg.parent().homset_category().is_subcategory(relative)
+                leg.parent().mor_category().is_subcategory(relative)
                 for leg in (left_leg, right_leg)
             ) else LocallyRingedSpaces()
             return (
@@ -4549,9 +4549,9 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
             ).image_of(factorization)
 
 
-def _structure_morphism_rule(homset):
-    r"""The arrow realization rule for the structure morphism of the Hom's domain."""
-    return homset(homset.domain().structure_morphism())
+def _structure_morphism_rule(mor):
+    r"""The arrow realization rule for the structure morphism of the Mor's domain."""
+    return mor(mor.domain().structure_morphism())
 
 
 def _quotient_base_change_pushout(left_pullback, right_pullback):
@@ -4715,8 +4715,8 @@ def _scheme_fiber_product(left_map, right_map):
     commutative_algebras = Algebras(base_ring).Associative().Unital().Commutative()
     match base_scheme:
         case _ if (base_scheme is left.base_scheme()
-                   and left_map.parent().homset_category().is_subcategory(Schemes(base_ring))
-                   and right_map.parent().homset_category().is_subcategory(Schemes(base_ring))):
+                   and left_map.parent().mor_category().is_subcategory(Schemes(base_ring))
+                   and right_map.parent().mor_category().is_subcategory(Schemes(base_ring))):
             # Spec R is terminal in Sch/R, so both legs are structure morphisms
             # and the span sits under R, the initial object of CAlg_R: the
             # pushout is the coproduct A tensor_R B with its own factorization.

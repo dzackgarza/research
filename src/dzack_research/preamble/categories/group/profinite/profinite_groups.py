@@ -30,9 +30,9 @@ class ProfiniteGroups(OwnedCategory):
             return True
 
         def continuous_morphisms_to(self, codomain):
-            r"""Return the owned group Hom used by represented continuous morphisms.
+            r"""Return the owned group Mor used by represented continuous morphisms.
 
-            Continuity is structure on the selected arrows, not a second Homset.
+            Continuity is structure on the selected arrows, not a second Mor.
             """
             return self.Mor(codomain)
 

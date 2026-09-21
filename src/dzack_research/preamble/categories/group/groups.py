@@ -55,13 +55,13 @@ from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoryPacketMethods,
     EndCategoryConstruction,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
     IsoCategoryConstruction,
-    _category_homset,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -113,7 +113,7 @@ if "FinitelyPresentedAsGroup" not in all_axioms:
 # ``_to_subgroup_engine(element, engine_subgroup)`` and
 # ``_from_subgroup_engine(engine_element)``.  Implementers:
 # :class:`_GroupEngine`, selected privately at ``OwnedGroups``, and the
-# lattice orthogonal group and torsion-form orthogonal group on their Hom
+# lattice orthogonal group and torsion-form orthogonal group on their Mor
 # parents.  Callers: the adapters in this section and the class-function,
 # character and ``G``-set adapters of this package.  Inputs and outputs are
 # owned elements on one side and the engine's elements on the other; a
@@ -469,7 +469,7 @@ def _engine_element_action(group, backend_element, point):
         case SageGaloisGroup():
             field = _own_ring(engine.number_field())
             assert point in field, f"{point} is not an element of {field}"
-            return field._from_engine_element(backend_element.as_hom()(_engine_element(field, point)))
+            return field._from_engine_element(backend_element.as_mor()(_engine_element(field, point)))
         case PermutationGroup_generic():
             engine_point = _engine_point(engine, point)
             if engine_point not in engine.domain():
@@ -1310,7 +1310,7 @@ def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
 
 
 # --------------------------------------------------------------------------
-# Subgroup inclusions and the Hom packet.
+# Subgroup inclusions and the Mor packet.
 # --------------------------------------------------------------------------
 
 
@@ -1325,7 +1325,7 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
     assert bool(normal_subgroup.IsNormal(group_model)), (
         "a group quotient requires a normal subgroup"
     )
-    gap_projection = libgap.NaturalHomomorphismByNormalSubgroup(
+    gap_projection = libgap.NaturalMorphismByNormalSubgroup(
         group_model,
         normal_subgroup,
     )
@@ -1409,11 +1409,11 @@ def _canonical_subgroup_inclusion(subgroup):
     r"""The inclusion ``H -> G`` of a subgroup whose elements are elements of ``G``."""
     containing_group = subgroup.supergroup()
     return subgroup.Mor(containing_group)._from_realization_rule(
-        lambda homset: SubgroupInclusion(homset, containing_group)
+        lambda mor: SubgroupInclusion(mor, containing_group)
     )
 
 
-class IndexedFreeGroupHomomorphism(Morphism):
+class IndexedFreeGroupMorphism(Morphism):
     r"""A morphism out of the free group on a chosen set.
 
     The universal property of the free group ``F(S)`` makes a group morphism
@@ -1458,7 +1458,7 @@ class IndexedFreeGroupHomomorphism(Morphism):
         morphism's domain.
         """
         source = right.domain()
-        if source not in GroupsWithChosenFreeBasis() or not right.parent().hom_family().base_category().is_subcategory(OwnedGroups()):
+        if source not in GroupsWithChosenFreeBasis() or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups()):
             return NotImplemented
         return source.Mor(self.codomain())(
             Sets().Mor(source.free_basis(), self.codomain())(
@@ -1467,26 +1467,26 @@ class IndexedFreeGroupHomomorphism(Morphism):
         )
 
 
-class _GroupHomRealizationMixin:
+class _GroupMorRealizationMixin:
     def _from_realization_rule(self, rule):
-        r"""Realize a specialized group arrow through this canonical Hom parent."""
+        r"""Realize a specialized group arrow through this canonical Mor parent."""
         morphism = rule(self)
         assert morphism.parent() is self, (
-            "a group-Hom realization rule must return an arrow parented by this Hom"
+            "a group-Mor realization rule must return an arrow parented by this Mor"
         )
         return morphism
 
 
-class IndexedFreeGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
-    """The canonical Hom-set out of the free group on a chosen set."""
+class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
+    """The canonical Mor object out of the free group on a chosen set."""
 
-    Element = IndexedFreeGroupHomomorphism
+    Element = IndexedFreeGroupMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         category = Monoids() if domain is codomain else None
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
             category=category,
@@ -1500,7 +1500,7 @@ class IndexedFreeGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
         a finite ``S``, a dictionary naming every basis point.
         """
         indices = self.domain().free_basis()
-        set_homset = Sets().Mor(indices, self.codomain())
+        set_mor = Sets().Mor(indices, self.codomain())
         match images:
             case SetMorphism():
                 assert images.domain() is indices and images.codomain() is self.codomain(), (
@@ -1514,9 +1514,9 @@ class IndexedFreeGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
                 assert all(index in images for index in indices), (
                     "the generator assignment names every point of the free basis"
                 )
-                generator_morphism = set_homset(images.__getitem__)
+                generator_morphism = set_mor(images.__getitem__)
             case _ if callable(images):
-                generator_morphism = set_homset(images)
+                generator_morphism = set_mor(images)
             case _:
                 raise TypeError("an indexed-free-group morphism is specified on its free basis")
         return self.element_class(self, generator_morphism)
@@ -1526,10 +1526,10 @@ class IndexedFreeGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
         return cardinal(self.codomain().cardinality()) ** cardinal(self.domain().free_basis().cardinality())
 
     def _repr_(self):
-        return f"Hom({self.domain()}, {self.codomain()})"
+        return f"Mor({self.domain()}, {self.codomain()})"
 
 
-class GroupHomomorphism(Morphism):
+class GroupMorphism(Morphism):
     r"""An owned group morphism computed by a private GAP homomorphism."""
 
     def __init__(self, parent, gap_homomorphism, check=True) -> None:
@@ -1566,10 +1566,10 @@ class GroupHomomorphism(Morphism):
         r"""``self ∘ right`` for a group morphism ``right``, computed on the generators of its source.
 
         Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
-        morphism's domain; a map outside the group Hom is not composed here.
+        morphism's domain; a map outside the group Mor is not composed here.
         """
         source = right.domain()
-        if source not in OwnedGroups() or not right.parent().hom_family().base_category().is_subcategory(OwnedGroups()):
+        if source not in OwnedGroups() or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups()):
             return NotImplemented
         if source in GroupsWithChosenFreeBasis():
             return right.postcompose(self)
@@ -1658,24 +1658,24 @@ class GroupHomomorphism(Morphism):
         return bool(self.gap().IsSurjective())
 
 
-class GroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
-    """The canonical owned homset Hom(G,H)."""
+class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
+    """The canonical owned ``Mor(G,H)``."""
 
-    Element = GroupHomomorphism
+    Element = GroupMorphism
 
     @staticmethod
     def __classcall__(cls, family, domain, codomain):
         return typecall(cls, family, domain, codomain)
 
-    def __init__(self, hom_family, domain, codomain, *, category=None):
+    def __init__(self, mor_family, domain, codomain, *, category=None):
         placement = []
         if domain is codomain:
             placement.append(Monoids())
         if category is not None:
             placement.append(category)
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
             category=Cat().meet(tuple(placement)) if placement else None,
@@ -1710,7 +1710,7 @@ class GroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
         This is the finite analogue of specifying a map on chosen generators:
         when no framing has been selected, the multiplication table itself is
         a finite determining family.  The resulting arrow is still an element
-        of this Hom object; finite enumeration is only its admission algorithm.
+        of this Mor object; finite enumeration is only its admission algorithm.
         """
         domain = self.domain()
         assert domain.is_finite() is True, (
@@ -1778,7 +1778,7 @@ class GroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
         domain = self.domain()
         codomain = self.codomain()
         assert domain in OwnedFiniteGroups() and codomain in OwnedFiniteGroups(), (
-            "exact group-Hom cardinality is represented here for finite domain and codomain"
+            "exact group-Mor cardinality is represented here for finite domain and codomain"
         )
         homomorphisms = libgap.AllHomomorphisms(
             _gap_model(domain),
@@ -1787,10 +1787,10 @@ class GroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
         return cardinal(int(homomorphisms.Length()))
 
     def _repr_(self):
-        return f"Hom({self.domain()}, {self.codomain()})"
+        return f"Mor({self.domain()}, {self.codomain()})"
 
 
-class GroupAutomorphism(GroupHomomorphism):
+class GroupAutomorphism(GroupMorphism):
     def _composition(self, right):
         r"""Compose automorphisms inside their represented automorphism group."""
         if right.parent() is self.parent():
@@ -1802,7 +1802,7 @@ class GroupAutomorphismGroups(OwnedCategory):
     r"""Automorphism groups ``Aut(G)`` computed by GAP, and their subgroups.
 
     The datum is the group ``G`` whose automorphisms are the elements, held by
-    the Hom object, together with the GAP subgroup of ``Aut(G)`` when the
+    the Mor object, together with the GAP subgroup of ``Aut(G)`` when the
     object is a proper subgroup.
     """
 
@@ -1861,27 +1861,27 @@ class GroupAutomorphismGroups(OwnedCategory):
         def inverse(self):
             return self.parent()(self.gap().InverseGeneralMapping(), check=False)
 
-        def _composition_(self, right, homset):
+        def _composition_(self, right, mor):
             assert right.parent() is self.parent(), "automorphisms must belong to one automorphism group"
             return self.parent()(right.gap() * self.gap(), check=False)
 
 
-class GroupAutomorphismGroup(GroupHomset):
+class GroupAutomorphismGroup(GroupMor):
     Element = GroupAutomorphism
 
     @staticmethod
-    def __classcall__(cls, hom_family, group, engine_subgroup=None, supergroup=None):
-        return typecall(cls, hom_family, group, engine_subgroup=engine_subgroup, supergroup=supergroup)
+    def __classcall__(cls, mor_family, group, engine_subgroup=None, supergroup=None):
+        return typecall(cls, mor_family, group, engine_subgroup=engine_subgroup, supergroup=supergroup)
 
-    def __init__(self, hom_family, group, engine_subgroup=None, supergroup=None):
+    def __init__(self, mor_family, group, engine_subgroup=None, supergroup=None):
         self._engine_subgroup = engine_subgroup
         self._supergroup = self if supergroup is None else supergroup
         categories = [GroupAutomorphismGroups()]
         if group.is_finite() is True:
             categories.extend((OwnedFiniteGroups(), OwnedGroups().Framed()))
-        GroupHomset.__init__(
+        GroupMor.__init__(
             self,
-            hom_family,
+            mor_family,
             group,
             group,
             category=Cat().meet(tuple(categories)),
@@ -1908,7 +1908,7 @@ class GroupAutomorphismGroup(GroupHomset):
         packet = self.base_category().category_packet()
         group = self.domain()
         supers = [
-            packet.Homs().Of(group, group),
+            packet.Mors().Of(group, group),
             packet.Monos().Of(group, group),
             packet.Epis().Of(group, group),
         ]
@@ -1936,28 +1936,28 @@ class GroupAutomorphismGroup(GroupHomset):
 
     def _subgroup_from_engine(self, engine_subgroup):
         return GroupAutomorphismGroup(
-            self.hom_family(),
+            self.mor_family(),
             self.domain(),
             engine_subgroup=engine_subgroup,
             supergroup=self,
         )
 
 
-class GeneralGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
-    r"""The owned group Hom for endpoints without a selected GAP realization.
+class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
+    r"""The owned group Mor for endpoints without a selected GAP realization.
 
     Specialized morphism constructions (for example profinite restriction maps
-    and characters) parent their arrows here directly.  This Hom does not
+    and characters) parent their arrows here directly.  This Mor does not
     manufacture a group map from arbitrary literals when no representation-
     specific constructor has been selected.
     """
 
     Element = Morphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         category = Monoids() if domain is codomain else None
-        CategoricalHomset.__init__(
-            self, hom_family, domain, codomain, category=category
+        CategoricalMor.__init__(
+            self, mor_family, domain, codomain, category=category
         )
 
     def _element_constructor_(self, datum):
@@ -1966,12 +1966,12 @@ class GeneralGroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
                 return datum
             case _:
                 assert False, (
-                    "this group Hom has no generic conversion constructor; use the mathematical "
+                    "this group Mor has no generic conversion constructor; use the mathematical "
                     "specialization that supplies the represented morphism"
                 )
 
     def identity(self):
-        assert self.domain() is self.codomain(), "identity belongs to a group endomorphism Hom"
+        assert self.domain() is self.codomain(), "identity belongs to a group endomorphism Mor"
         domain = self.domain()
         return _ElementwiseGroupMorphism(self, lambda element: domain(element))
 
@@ -1986,18 +1986,18 @@ class _ElementwiseGroupMorphism(Morphism):
     def _call_(self, element):
         return self.codomain()(self._function(self.domain()(element)))
 
-    def _in_homset(self, homset):
-        return _ElementwiseGroupMorphism(homset, self._function)
+    def _in_mor(self, mor):
+        return _ElementwiseGroupMorphism(mor, self._function)
 
 
-class GroupHomCategoryConstruction(HomCategoryConstruction):
-    r"""The represented Hom categories of owned groups."""
+class GroupMorCategoryConstruction(MorCategoryConstruction):
+    r"""The represented Mor categories of owned groups."""
 
     def Of(self, domain, codomain=None):
         if codomain is None:
             codomain = domain
         if domain not in self.base_category() or codomain not in self.base_category():
-            raise TypeError("a group Hom requires two owned groups")
+            raise TypeError("a group Mor requires two owned groups")
         cached = self._cached_between(domain, codomain)
         if cached is not None:
             return cached
@@ -2007,16 +2007,16 @@ class GroupHomCategoryConstruction(HomCategoryConstruction):
 
         match domain:
             case _ if domain in GroupsWithChosenFreeBasis():
-                result = IndexedFreeGroupHomset(self, domain, codomain)
+                result = IndexedFreeGroupMor(self, domain, codomain)
             case _ if domain in ProfiniteGroups():
-                result = GeneralGroupHomset(self, domain, codomain)
+                result = GeneralGroupMor(self, domain, codomain)
             case _:
-                result = GroupHomset(self, domain, codomain)
+                result = GroupMor(self, domain, codomain)
         return self._remember_between(domain, codomain, result)
 
 
 class GroupEndCategoryConstruction(EndCategoryConstruction):
-    r"""Endomorphism monoids of groups, on the same underlying set as ``Hom(G,G)``."""
+    r"""Endomorphism monoids of groups, on the same underlying set as ``Mor(G,G)``."""
 
     def Of(self, obj, codomain=None):
         if codomain is not None and codomain is not obj:
@@ -2197,8 +2197,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a group Hom requires two owned groups")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("a group Mor requires two owned groups")
+        return self.MorCategory().Of(domain, codomain)
 
     def group_algebra(self, base_ring):
         r"""The functor \(R[-]\colon \mathbf{Grp}\to\mathbf{Alg}_R\)."""
@@ -2208,7 +2208,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         return _GroupAlgebraFunctor(base_ring)
 
-    _HomCategory = GroupHomCategoryConstruction
+    _MorCategory = GroupMorCategoryConstruction
     _EndCategory = GroupEndCategoryConstruction
     _IsoCategory = GroupIsoCategoryConstruction
 
@@ -2477,13 +2477,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             groups = OwnedGroups()
             if category is None or category.is_subcategory(groups):
                 return groups.Mor(self, codomain)
-            return _category_homset(category, self, codomain)
+            return _category_mor_parent(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             groups = OwnedGroups()
             if codomain in groups and (category is None or category.is_subcategory(groups)):
                 return groups.Mor(self, codomain)
-            raise TypeError("the requested Hom category is not a group category")
+            raise TypeError("the requested Mor category is not a group category")
 
         def is_finite(self):
             return Unknown

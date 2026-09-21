@@ -15,16 +15,16 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories._lattice import signature_pair
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
-from dzack_research.preamble.categories.rings.embeddings import NumberFieldHomset
+from dzack_research.preamble.categories.rings.embeddings import NumberFieldMor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     OwnedRings,
@@ -70,15 +70,15 @@ def _number_field(polynomial, *args, **kwargs):
     return field
 
 
-class NumberFieldHomCategoryConstruction(HomCategoryConstruction):
+class NumberFieldMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return NumberFieldHomset
+        return NumberFieldMor
 
 
 class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
     r"""Finite extensions of ``QQ``."""
 
-    _HomCategory = NumberFieldHomCategoryConstruction
+    _MorCategory = NumberFieldMorCategoryConstruction
 
     def an_object(self):
         r"""The rational field as the degree-one number field."""
@@ -95,7 +95,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a number-field embedding requires two number fields")
-        return self.HomCategory().Of(domain, codomain)
+        return self.MorCategory().Of(domain, codomain)
 
     class ParentMethods:
         def Mor(self, codomain, category=None):
@@ -211,7 +211,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             r"""Return the owned field embeddings ``K -> target``.
 
             If the target is again a number field, the arrows live in the
-            specialized number-field Hom.  Embeddings into a larger owned
+            specialized number-field Mor.  Embeddings into a larger owned
             field such as ``AA``, ``RR`` or ``CC`` are ring morphisms in the
             ambient field category; the codomain is not falsely promoted to a
             finite extension of ``QQ``.
@@ -424,7 +424,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             A number field element is canonically a ``QQ``-linear endomorphism
             of its field.  The live field object keeps its ring identity, while
             :meth:`as_algebra` supplies the selected finite-free presentation
-            used to represent this linear map.  No separate backend matrix is
+            used to represent this linear map.  No separate matrix representation is
             exposed: the matrix below is the matrix of this owned module
             morphism in that selected basis.
             """
@@ -451,7 +451,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             multiplication endomorphism ``m_self : K -> K``.  This keeps the
             archived definition on the same mathematical map already exposed
             by :meth:`multiplication_morphism` instead of asking the private
-            number-field backend for a second value.
+            number-field computation for a second value.
             """
 
             return self.multiplication_morphism().determinant()

@@ -271,7 +271,7 @@ def test_free_duality_retains_the_selected_framing_and_action() -> None:
     )
 
 
-def test_presented_duality_is_the_internal_hom_into_the_regular_module() -> None:
+def test_presented_duality_is_the_internal_mor_into_the_regular_module() -> None:
     module = _cyclic_six_from_presentation()
     dual = module.dual_module()
 
@@ -282,7 +282,7 @@ def test_presented_duality_is_the_internal_hom_into_the_regular_module() -> None
     assert dual.presentation_object().arrow() is dual.presentation()
 
 
-def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
+def test_mor_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
     ring = QQ.matrix_space(2)
     additive = AdditiveGroups().AdditiveCommutative()
     endomorphisms = additive.End(ring)

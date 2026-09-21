@@ -4,11 +4,11 @@ from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
     MonoCategoryConstruction,
-    _category_homset,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
@@ -208,7 +208,7 @@ class FormedModuleMorphism(Morphism):
         values = value_morphism.domain()
         if value_morphism.codomain() is not values:
             return False
-        # A Hom object has one identity, so this is object identity. Comparing
+        # A Mor object has one identity, so this is object identity. Comparing
         # morphisms extensionally would require extra finite-presentation data.
         return value_morphism is values.module_category().Mor(values, values).identity()
 
@@ -378,17 +378,17 @@ class FormEmbedding(FormedModuleMorphism):
         )
 
 
-class FormEmbeddingHomset(CategoricalHomset):
+class FormEmbeddingMor(CategoricalMor):
     r"""The form-preserving monomorphisms between two formed modules."""
 
     Element = FormEmbedding
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         ring = domain.base_ring()
         formed = FormModules(ring)
         if codomain.base_ring() is not ring or domain not in formed or codomain not in formed:
             raise TypeError("a form embedding requires two formed modules over one scalar ring")
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images, *, quadratic: bool | None = None):
         if isinstance(images, FormEmbedding):
@@ -427,21 +427,21 @@ class FormEmbeddingHomset(CategoricalHomset):
             for superpacket in packet.super_packets()
             if source in superpacket.C() and target in superpacket.C()
         ]
-        return [packet.Homs().Of(source, target), *inherited]
+        return [packet.Mors().Of(source, target), *inherited]
 
     def _repr_(self):
         return f"Emb_Form({self.domain()}, {self.codomain()})"
 
 
-class FormedModuleHomset(CategoricalHomset):
+class FormedModuleMor(CategoricalMor):
     Element = FormedModuleMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() != codomain.base_ring():
             raise ValueError("fixed-fiber formed morphisms require one base ring")
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -494,16 +494,16 @@ class FormedModuleHomset(CategoricalHomset):
             )
         )
 
-class FormedModuleHomCategoryConstruction(HomCategoryConstruction):
+class FormedModuleMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return FormedModuleHomset
+        return FormedModuleMor
 
 
 class FormedModuleMonoCategoryConstruction(MonoCategoryConstruction):
     r"""The form-preserving monomorphisms of formed modules."""
 
     def fixed_category_class(self):
-        return FormEmbeddingHomset
+        return FormEmbeddingMor
 
 
 class FiberedFormedModuleMorphism(Morphism):
@@ -515,7 +515,7 @@ class FiberedFormedModuleMorphism(Morphism):
     ``module_morphism : S2 tensor_S1 L1 -> L2`` and
     ``value_morphism  : S2 tensor_S1 W1 -> W2``.
 
-    The active scalar-extension backend currently materializes this for the
+    The represented scalar-extension computation currently materializes this for the
     scalar-valued finite-free formed objects supported by ``FormModules(R)``'s
     ``base_change`` method.  Unsupported scalar extensions fail at object
     construction rather than being represented by a semilinear fiction.
@@ -536,7 +536,7 @@ class FiberedFormedModuleMorphism(Morphism):
             raise ValueError("the value map has the wrong target value module")
         self._module_morphism = module_morphism
         self._value_morphism = value_morphism
-        self._underlying_semilinear_morphism = parent.module_homset()._from_linearization(
+        self._underlying_semilinear_morphism = parent.module_mor()._from_linearization(
             self.ring_map(),
             module_morphism,
         )
@@ -612,11 +612,11 @@ class FiberedFormedModuleMorphism(Morphism):
         if other.codomain() is not self.domain():
             raise ValueError("fibered formed morphisms are not composable")
         composite_ring_map = self.ring_map() * other.ring_map()
-        homset = other.domain().fibered_formed_homset(
+        mor = other.domain().fibered_formed_mor(
             self.codomain(), composite_ring_map
         )
 
-        direct_changed = homset.base_changed_domain()
+        direct_changed = mor.base_changed_domain()
         middle_changed = self.base_changed_domain()
         module_semilinear = (
             self.underlying_semilinear_morphism()
@@ -645,10 +645,10 @@ class FiberedFormedModuleMorphism(Morphism):
             )
             value_images[label] = self.value_morphism()(lifted_value)
         value_map = direct_values.module_category().Mor(direct_values, target_values)(value_images)
-        return homset((module_map, value_map))
+        return mor((module_map, value_map))
 
 
-class FiberedFormedModuleHomset(CategoricalHomset):
+class FiberedFormedModuleMor(CategoricalMor):
     Element = FiberedFormedModuleMorphism
 
     def __init__(self, domain, codomain, ring_map) -> None:
@@ -661,13 +661,13 @@ class FiberedFormedModuleHomset(CategoricalHomset):
         )
 
         self._ring_map = ring_map
-        self._module_homset = ModulesOverCommutativeRings().Mor(domain, codomain)
-        self._base_changed_domain = self._module_homset.extended_domain(ring_map)
-        # The endpoints sit over different base rings; the Hom is filed under
-        # the Hom category of the source fibre.
-        CategoricalHomset.__init__(
+        self._module_mor = ModulesOverCommutativeRings().Mor(domain, codomain)
+        self._base_changed_domain = self._module_mor.extended_domain(ring_map)
+        # The endpoints sit over different base rings; the Mor is filed under
+        # the Mor category of the source fibre.
+        CategoricalMor.__init__(
             self,
-            FormModules(domain.base_ring()).HomCategory(),
+            FormModules(domain.base_ring()).MorCategory(),
             domain,
             codomain,
         )
@@ -678,9 +678,9 @@ class FiberedFormedModuleHomset(CategoricalHomset):
     def base_changed_domain(self):
         return self._base_changed_domain
 
-    def module_homset(self):
-        r"""Return the underlying Hom in the varying-ring module category."""
-        return self._module_homset
+    def module_mor(self):
+        r"""Return the underlying Mor in the varying-ring module category."""
+        return self._module_mor
 
     def _element_constructor_(self, datum):
         module_morphism, value_morphism = datum
@@ -688,12 +688,12 @@ class FiberedFormedModuleHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism homset")
+            raise ValueError("identity is defined on an endomorphism Mor")
         if not self.ring_map().is_identity():
             raise ValueError("the fibered identity must lie over the identity ring map")
 
         changed = self.base_changed_domain()
-        module_map = self.module_homset().identity().linearization()
+        module_map = self.module_mor().identity().linearization()
         if module_map.domain() is not changed:
             raise ValueError("formed identity scalar extension disagrees with its module owner")
         source_values = _represented_value_module(changed)
@@ -772,7 +772,7 @@ class PairedModules(OwnedParameterizedCategory):
                     (pairing(left.module_generator(pair.component(0)), right.module_generator(pair.component(1))),)
                 )
             )
-        assert pairing.parent().homset_category().is_subcategory(Modules(ring)), (
+        assert pairing.parent().mor_category().is_subcategory(Modules(ring)), (
             f"a pairing in {self} is a morphism of {Modules(ring)}; {pairing} is not one, "
             "so its tensor-product domain is not represented"
         )
@@ -939,7 +939,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             _subobject_inclusion_factory=_subobject_inclusion_factory,
         )
 
-    _HomCategory = FormedModuleHomCategoryConstruction
+    _MorCategory = FormedModuleMorCategoryConstruction
     _MonoCategory = FormedModuleMonoCategoryConstruction
 
     class ParentMethods:
@@ -1005,25 +1005,25 @@ class FormModules(OwnedCategoryOverBaseRing):
         def Mor(self, codomain, category=None):
             if category is None and codomain in FormModules(self.base_ring()):
                 return FormModules(self.base_ring()).Mor(self, codomain)
-            return _category_homset(category, self, codomain)
+            return _category_mor_parent(category, self, codomain)
 
         def Mono(self, codomain):
             r"""Return the form-preserving monomorphisms into ``codomain``."""
             return FormModules(self.base_ring()).Mono(self, codomain)
 
-        def formed_hom(self, module_morphism, value_morphism):
+        def formed_mor(self, module_morphism, value_morphism):
             r"""Construct the general fixed-fiber formed morphism ``(f,h)``."""
             return self.Mor(module_morphism.codomain())(
                 (module_morphism, value_morphism)
             )
 
-        def fibered_formed_homset(self, codomain, ring_map):
+        def fibered_formed_mor(self, codomain, ring_map):
             r"""Return formed morphisms from this module to ``codomain`` over ``ring_map``."""
-            return FiberedFormedModuleHomset(self, codomain, ring_map)
+            return FiberedFormedModuleMor(self, codomain, ring_map)
 
-        def fibered_formed_hom(self, codomain, ring_map, module_morphism, value_morphism):
+        def fibered_formed_mor(self, codomain, ring_map, module_morphism, value_morphism):
             r"""Construct a formed morphism over a coefficient-ring map."""
-            return self.fibered_formed_homset(codomain, ring_map)(
+            return self.fibered_formed_mor(codomain, ring_map)(
                 (module_morphism, value_morphism)
             )
 
@@ -1212,7 +1212,7 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [FormModules(self.base_ring())]
 
-    _HomCategory = FormedModuleHomCategoryConstruction
+    _MorCategory = FormedModuleMorCategoryConstruction
 
     class ParentMethods:
         def algebraic_correlation_morphism(self):
@@ -1650,7 +1650,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [FormModules(self.base_ring())]
 
-    _HomCategory = FormedModuleHomCategoryConstruction
+    _MorCategory = FormedModuleMorCategoryConstruction
 
     class ParentMethods:
         def q(self, element):

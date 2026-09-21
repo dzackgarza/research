@@ -74,7 +74,7 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
 
     def __init__(
         self,
-        homset,
+        mor,
         pullback,
         *,
         acted_scheme,
@@ -86,7 +86,7 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
         self._ring_map = ring_map
         self._changed_acted_scheme = changed_acted_scheme
         self._base_changed_old_quotient = base_changed_old_quotient
-        super().__init__(homset, pullback)
+        super().__init__(mor, pullback)
 
     def source_acted_scheme(self):
         return self._acted_scheme
@@ -168,7 +168,7 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
             )
             if certificate is None:
                 raise ArithmeticError(
-                    "Reynolds base-change theorem applies but the invariant backend failed to express a new invariant in the base-changed old generators"
+                    "Reynolds base-change theorem applies but the exact invariant-algebra computation failed to express a new invariant in the base-changed old generators"
                 )
             inverse_images[label] = _evaluate_polynomial_in_algebra(
                 certificate,
@@ -224,11 +224,11 @@ def AffineInvariantQuotientBaseChangeComparison(acted_scheme, ring_map):
     comparison = changed_acted.factor_through_affine_quotient(
         transported_quotient_map
     )
-    hom = comparison.parent()
+    mor = comparison.parent()
     pullback = comparison.coordinate_algebra_morphism()
-    return hom(
-        lambda selected_hom: _AffineInvariantQuotientBaseChangeMorphism(
-            selected_hom,
+    return mor(
+        lambda selected_mor: _AffineInvariantQuotientBaseChangeMorphism(
+            selected_mor,
             pullback,
             acted_scheme=acted_scheme,
             ring_map=ring_map,

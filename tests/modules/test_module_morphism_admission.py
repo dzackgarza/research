@@ -119,7 +119,7 @@ def test_an_unresolved_selected_lift_cannot_prove_absence_from_the_image() -> No
         morphism.is_in_image(e)
 
 
-def test_undecided_callable_remains_undecided_under_hom_operations_and_scalar_extension() -> None:
+def test_undecided_callable_remains_undecided_under_mor_operations_and_scalar_extension() -> None:
     module = ZZ.free_module(NN)
     maps = Modules(ZZ).Mor(module, module)
     conditional = maps.elementwise(lambda element: element)

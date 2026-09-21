@@ -177,10 +177,10 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
     assert slice_object.arrow() is powers_of_two.inclusion()
     assert slice_object in subobjects.slice_category()
     assert slice_object in subobjects.monomorphism_category()
-    subobject_hom = subobjects.Mor(powers_of_two, powers_of_two)
-    slice_hom = subobjects.slice_category().Mor(slice_object, slice_object)
-    assert subobject_hom.identity().factor_morphism() == slice_hom.identity().left()
-    assert subobject_hom.canonical_morphism().factor_morphism() == slice_hom.canonical_morphism().left()
+    subobject_mor = subobjects.Mor(powers_of_two, powers_of_two)
+    slice_mor = subobjects.slice_category().Mor(slice_object, slice_object)
+    assert subobject_mor.identity().factor_morphism() == slice_mor.identity().left()
+    assert subobject_mor.canonical_morphism().factor_morphism() == slice_mor.canonical_morphism().left()
 
     localization = ZZ.localization(powers_of_two)
     assert localization.localization_submonoid() is powers_of_two
@@ -638,14 +638,14 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
 
     field = GF(3)
     finite = field.regular_module()
-    finite_hom = finite.module_category().Mor(finite, finite)
-    linear = finite_hom.elementwise(
+    finite_mor = finite.module_category().Mor(finite, finite)
+    linear = finite_mor.elementwise(
         lambda element: finite.scalar_multiple(field(2), element)
     )
     assert linear(field.one()) == finite(field(2))
 
     try:
-        finite_hom.elementwise(
+        finite_mor.elementwise(
             lambda element: field(element**2)
         )
     except ValueError as error:

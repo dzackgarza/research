@@ -10,7 +10,7 @@ from sage.structure.parent import Parent
 from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory

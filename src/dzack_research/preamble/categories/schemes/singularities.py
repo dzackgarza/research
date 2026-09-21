@@ -5,7 +5,7 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.abstract_categories.hom_categories import CategoricalIsomorphism
+from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalIsomorphism
 from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebras,
 )
@@ -106,10 +106,10 @@ def PlaneLinearRightEquivalence(source, target, forward, inverse):
         "the coordinate change does not carry the source equation to the target equation"
     )
     algebras = Algebras(ring.base_ring()).Associative().Unital()
-    core_hom = algebras.Core().Mor(ring, ring)
-    core_hom._require_base_morphisms(forward, inverse)
+    core_mor = algebras.Core().Mor(ring, ring)
+    core_mor._require_base_morphisms(forward, inverse)
     return _PlaneLinearRightEquivalence(
-        core_hom,
+        core_mor,
         forward,
         inverse,
         source=source,
@@ -185,7 +185,7 @@ class IsolatedHypersurfaceSingularity:
 
         ``forward_images`` and ``inverse_images`` are the images of the chosen
         polynomial generators under mutually inverse linear coordinate
-        changes.  The algebra-Hom owner verifies the maps; the equivalence
+        changes.  The algebra-Mor owner verifies the maps; the equivalence
         then verifies the inverse identities and the equation itself.
         """
         ring = self.polynomial_ring()

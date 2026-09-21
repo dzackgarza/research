@@ -44,7 +44,7 @@ class _CohomologyFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         # A cochain map is its family of degreewise components; the arrow was
-        # admitted by the Hom of cochain complexes, which owns that family.
+        # admitted by the Mor of cochain complexes, which owns that family.
         component = morphism.component(self.degree())
         return source.module_category().Mor(source, target)(
             {

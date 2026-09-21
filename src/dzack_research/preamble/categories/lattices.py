@@ -52,8 +52,8 @@ from dzack_research.preamble.categories._lattice import (
     signature_pairs as signature_pairs,
 )
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    MorCategoryConstruction,
     IsoCategoryConstruction,
     MonoCategoryConstruction,
 )
@@ -95,12 +95,12 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     _primitive_isotropic_sublattice_locus,
 )
 from dzack_research.preamble.categories.lattice_morphisms import (
-    LatticeEmbeddingHomset,
-    LatticeHomset,
-    LatticeIsometryHomset,
-    _lattice_embedding_homset,
-    _lattice_homset,
-    _lattice_isometry_homset,
+    LatticeEmbeddingMor,
+    LatticeMor,
+    LatticeIsometryMor,
+    _lattice_embedding_mor,
+    _lattice_mor,
+    _lattice_isometry_mor,
 )
 from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
     DiscriminantBilinearModules,
@@ -175,12 +175,12 @@ _Rings = OwnedRings()
 _INDECOMPOSABLE_NAMES = {}
 
 
-class LatticeHomCategoryConstruction(HomCategoryConstruction):
-    r"""The strict form-preserving Hom categories of lattices."""
+class LatticeMorCategoryConstruction(MorCategoryConstruction):
+    r"""The strict form-preserving Mor categories of lattices."""
 
     def fixed_category_class(self):
 
-        return LatticeHomset
+        return LatticeMor
 
 
 class LatticeMonoCategoryConstruction(MonoCategoryConstruction):
@@ -188,7 +188,7 @@ class LatticeMonoCategoryConstruction(MonoCategoryConstruction):
 
     def fixed_category_class(self):
 
-        return LatticeEmbeddingHomset
+        return LatticeEmbeddingMor
 
 
 class LatticeIsoCategoryConstruction(IsoCategoryConstruction):
@@ -196,7 +196,7 @@ class LatticeIsoCategoryConstruction(IsoCategoryConstruction):
 
     def fixed_category_class(self):
 
-        return LatticeIsometryHomset
+        return LatticeIsometryMor
 
 
 def _gram_key(gram):
@@ -451,7 +451,7 @@ class Genus:
         return Lattices(integers)(rows)
 
     def representatives(self):
-        r"""Return the owned representatives enumerated by the exact backend."""
+        r"""Return the owned representatives enumerated by the exact genus computation."""
         integers = _own_ring(SageZZ)
         return finite_ordered_set(
             tuple(
@@ -944,7 +944,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             BilinearFormModules(self.base_ring()).Symmetric(),
         ]
 
-    _HomCategory = LatticeHomCategoryConstruction
+    _MorCategory = LatticeMorCategoryConstruction
     _MonoCategory = LatticeMonoCategoryConstruction
     _IsoCategory = LatticeIsoCategoryConstruction
 
@@ -1117,8 +1117,8 @@ class Lattices(OwnedCategoryOverBaseRing):
         def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
             if category is None or category.is_subcategory(lattices):
-                return _lattice_homset(self, codomain)
-            from sage.categories.homset import Hom as SageHom
+                return _lattice_mor(self, codomain)
+            from sage.categories.mor import Hom as SageHom
 
             return SageHom(self, codomain, category)
 
@@ -1126,21 +1126,21 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             lattices = Lattices(self.base_ring())
             if codomain in lattices and (category is None or category.is_subcategory(lattices)):
-                return _lattice_homset(self, codomain)
+                return _lattice_mor(self, codomain)
             return super()._Hom_(codomain, category)
 
         def Emb(self, codomain):
             r"""Return the set of form-preserving embeddings into ``codomain``."""
 
-            return _lattice_embedding_homset(self, codomain)
+            return _lattice_embedding_mor(self, codomain)
 
         def Isom(self, codomain):
             r"""Return the set of isometries to ``codomain``."""
 
-            return _lattice_isometry_homset(self, codomain)
+            return _lattice_isometry_mor(self, codomain)
 
         def Aut(self):
-            r"""Return ``Isom(L,L)``, the orthogonal automorphism homset."""
+            r"""Return ``Isom(L,L)``, the orthogonal automorphism Mor."""
             return self.Isom(self)
 
         def orthogonal_group(self):
@@ -1296,7 +1296,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def is_isometric(self, other):
             r"""Return whether ``self`` and ``other`` are isometric when decidable.
 
-            The live isometry homset preserves ``Unknown`` outside implemented
+            The live isometry Mor preserves ``Unknown`` outside implemented
             exact regimes instead of treating matching coarse invariants as a
             proof.
             """
@@ -1308,21 +1308,21 @@ class Lattices(OwnedCategoryOverBaseRing):
         def isometry_to(self, other):
             r"""Return an explicit isometry ``self -> other`` when one is constructible.
 
-            A proved empty isometry homset returns ``None``.  An undecided
-            homset, or a theorem-backed nonempty homset whose current exact
+            A proved empty isometry Mor returns ``None``.  An undecided
+            Mor, or a theorem-backed nonempty Mor whose current exact
             machinery does not exhibit a witness, retains that distinction by
             raising from :meth:`Isom(...).an_element` rather than turning it
             into a false negative.
             """
-            homset = self.Isom(other)
-            empty = homset.is_empty()
+            mor = self.Isom(other)
+            empty = mor.is_empty()
             match empty:
                 case True:
                     return None
             assert empty is not Unknown, (
-                "the isometry homset is not decided by the available exact classifiers"
+                "the isometry Mor is not decided by the available exact classifiers"
             )
-            return homset.an_element()
+            return mor.an_element()
 
         def is_isometric_to(self, other):
             r"""Return the verified boolean isometry decision.
@@ -1345,7 +1345,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _equivariant_lattice(self, isometry)
 
-        def similarity_homset(self, other, scale):
+        def similarity_mor(self, other, scale):
             r"""Return similarities of scale ``scale`` as ``Isom(L(scale),other)``."""
             return self.twist(scale).Isom(other)
 
@@ -1360,16 +1360,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``b_M(sigma x,sigma y)=a*b_L(x,y)``.  Hence its owned
             form-preserving arrow is exactly an isometry ``L(a)->M``.  When
             ``images`` is omitted, return the distinguished isometry supplied
-            by the exact isometry homset backend.
+            by the represented exact isometry Mor.
             """
             target = self if codomain is None else codomain
-            homset = self.similarity_homset(target, scale)
+            mor = self.similarity_mor(target, scale)
             if images is None:
-                return homset.an_element()
-            return homset(images)
+                return mor.an_element()
+            return mor(images)
 
         def identity_morphism(self):
-            r"""Return ``id_L`` in the lattice endomorphism homset.
+            r"""Return ``id_L`` in the lattice endomorphism Mor.
 
             The morphism is a callable on generators, not an enumerated
             image of every \(e_i\).
@@ -1513,7 +1513,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             The represented Gram rule may decide this globally.  If it does
             not, the exact predicate stops at the declared computational
-            frontier rather than returning a soft-knowledge value.
+            frontier rather than replacing the exact predicate by an epistemic value.
             """
             decision = _gram_is_even(self.gram_tensor(), self.base_ring())
             assert decision is not Unknown, (
@@ -2730,7 +2730,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return finite line/plane incidence in the ``O(L)`` quotient building.
 
             Rank-two flag representatives come from the exact indefinite
-            backend with its flag choice.  Their two terms determine unique
+            flag computation with its selected flag.  Their two terms determine unique
             line and plane cusp orbits.  Each record retains the actual nested
             embeddings, transporters to the selected cusp representatives, and
             exact flag stabilizer generators.
@@ -3726,7 +3726,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def levi_image_generators(self):
             r"""Return exact generators of the image of ``P_I -> O(K_I)`` when ``K_I`` is definite.
 
-            The indefinite backend supplies generators of the full stabilizer
+            The exact indefinite stabilizer computation supplies generators of the full stabilizer
             ``P_I = Stab_{O(L)}(I)``.  Descending those generators through
             :meth:`levi_action` therefore generates the exact Levi image.  The
             target is required to be definite so that its owned orthogonal
@@ -3941,11 +3941,11 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
         def roots(self):
             r"""Return the finite H-root system from its Coxeter reflection group.
 
-            Sage's maintained finite Coxeter-group backend computes all roots
+            Sage's maintained finite Coxeter-group implementation computes all roots
             in the basis of simple roots.  The H3/H4 coefficients lie in the
             golden integer order defining this lattice; crossing them through
             that order both preserves the selected framing and rejects an
-            accidental nonintegral backend coordinate.
+            accidental nonintegral coordinate.
             """
             family, rank = self.coxeter_type()
             coxeter = Groups.Coxeter(

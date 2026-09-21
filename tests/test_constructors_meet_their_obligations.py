@@ -45,7 +45,7 @@ ARCHIVE_RECONCILIATION = {
 
 
 def _identity_on(source: Parent):
-    r"""Return $\mathrm{id}_S$ in the pre-existing owned Hom object."""
+    r"""Return $\mathrm{id}_S$ in the pre-existing owned Mor object."""
     return Sets().Mor(source, source).identity()
 
 
@@ -149,8 +149,8 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         # while enumeration and order state the algorithmic gap when asked.
         "abstract group automorphism group": lambda: Groups.Q().Aut(),
         "free group automorphism group": lambda: Groups.Free(2).Aut(),
-        "isometry homset": lambda: Lattices(ZZ)("A2").Isom(Lattices(ZZ)("A2")),
-        "embedding homset": lambda: Lattices(ZZ)("A1").Emb(Lattices(ZZ)("E8")),
+        "isometry Mor": lambda: Lattices(ZZ)("A2").Isom(Lattices(ZZ)("A2")),
+        "embedding Mor": lambda: Lattices(ZZ)("A1").Emb(Lattices(ZZ)("E8")),
         "discriminant image subgroup": lambda: Lattices(ZZ)("A2").discriminant_image(),
         # The stabilizer of one class in O(A): for A2 the discriminant form is
         # ZZ/3 with O(A) = {+-1}, so the stabilizer of a nonzero class is
@@ -192,7 +192,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "Hermite polynomials": lambda: HermitePolynomials(),
         "Laurent monomials": lambda: LaurentMonomials(),
         "sinc translates": lambda: SincTranslates(),
-        # ---- restricted Hom categories with independent structure ----
+        # ---- restricted Mor categories with independent structure ----
         "derivation space": lambda: _derivation_space(),
         "graded derivation space": lambda: _graded_derivation_space(),
         "connection space": lambda: _connection_space(),
@@ -226,7 +226,7 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "image set": lambda: Sets.Δ[2].image_set(lambda n: n),
         # ---- categorical constructions ----
         "coproduct of sets": lambda: Sets.Δ[1].coproduct_with(Sets.Δ[2]),
-        "isomorphism homset": lambda: Sets().Iso(Sets.Δ[1], Sets.Δ[1]),
+        "isomorphism Mor": lambda: Sets().Iso(Sets.Δ[1], Sets.Δ[1]),
         # The five limit constructors, on one-object diagrams.  Not the direct
         # sum row above: ``Lattices(ZZ)("A1") + Lattices(ZZ)("A2")`` goes through the
         # lattice-specific block-diagonal sum and reaches none of these.
@@ -275,15 +275,15 @@ def _constructions() -> dict[str, Callable[[], Parent]]:
         "divided square": lambda: Lattices(ZZ)("A2").divided_square(),
         # Not the ``torsion module`` path: this presents a module by a chosen
         # morphism of free modules.
-        "finitely presented module": lambda: (ZZ.free_module(Sets.Δ[0]).hom(
+        "finitely presented module": lambda: (ZZ.free_module(Sets.Δ[0]).mor(
                 {0: ZZ.free_module(Sets.Δ[0]).module_generator(0) * 2},
                 ZZ.free_module(Sets.Δ[0]),
             )).cokernel(),
         # ---- forms ----
-        # The two form homsets: built transiently everywhere a form is made,
+        # The two form mors: built transiently everywhere a form is made,
         # and never asked for themselves.
-        "bilinear form homset": lambda: Lattices(ZZ)("A2").bilinear_forms(ZZ),
-        "quadratic form homset": lambda: Lattices(ZZ)("A2").quadratic_forms(ZZ),
+        "bilinear form Mor": lambda: Lattices(ZZ)("A2").bilinear_forms(ZZ),
+        "quadratic form Mor": lambda: Lattices(ZZ)("A2").quadratic_forms(ZZ),
     }
 
 

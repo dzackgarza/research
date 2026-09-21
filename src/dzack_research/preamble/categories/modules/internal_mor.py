@@ -1,9 +1,9 @@
-r"""Internal Hom modules for the exact finitely presented module backend.
+r"""Internal Mor modules for the exact finitely presented module backend.
 
 ``Hom_R(M, N)`` for ``M`` with a chosen finite presentation ``F_1 -> F_0 ->
 M -> 0`` is the kernel of the evaluation ``N^{gens(M)} -> N^{rels(M)}`` of
 relations on generator assignments.  Its endpoints determine it, so the
-presented model is computed from the Hom module itself and nothing about its
+presented model is computed from the Mor module itself and nothing about its
 construction is recorded beside it.
 """
 
@@ -32,8 +32,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class _InternalHomFunctorialMorphism(ModuleMorphism):
-    r"""Pre/postcomposition on an internal Hom with its actual linear premises."""
+class _InternalMorFunctorialMorphism(ModuleMorphism):
+    r"""Pre/postcomposition on an internal Mor with its actual linear premises."""
 
     def __init__(self, parent, source_map, target_map) -> None:
         self._source_map = source_map
@@ -66,16 +66,16 @@ def _native_fgp_morphism(morphism):
         ).lift()
         for generator in smith_generators
     ]
-    native_linear = optimized.V().hom(lifted_images, codomain_engine.V())
+    native_linear = optimized.V().mor(lifted_images, codomain_engine.V())
     return FGP_Morphism(FGP_Homset(domain_engine, codomain_engine), native_linear)
 
 
 @cached_function(key=lambda source, target: (id(source), id(target)))
-def _internal_hom_model_data_from_endpoints(source, target):
+def _internal_mor_model_data_from_endpoints(source, target):
     r"""Compute the endpoint-determined finite presentation of ``Hom_R(source,target)``.
 
     This datum depends only on the two selected endpoint presentations.  In
-    particular, it is fixed before the represented Hom parent is constructed;
+    particular, it is fixed before the represented Mor parent is constructed;
     realizing the parent later cannot select another presentation.
     """
     ring = _owned_ring(source.base_ring())
@@ -112,10 +112,10 @@ def _internal_hom_model_data_from_endpoints(source, target):
         )
 
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        _auxiliary_linear_module_homset,
+        _auxiliary_linear_module_mor,
     )
 
-    relation_evaluation = _auxiliary_linear_module_homset(
+    relation_evaluation = _auxiliary_linear_module_mor(
         generator_assignments,
         relation_assignments,
     )(relation_image)
@@ -144,7 +144,7 @@ def _internal_hom_model_data_from_endpoints(source, target):
         )
         model = kernel_presentation.cokernel()
         inclusion = _module_subobject_inclusion(
-            _auxiliary_linear_module_homset(model, generator_assignments),
+            _auxiliary_linear_module_mor(model, generator_assignments),
             {
                 label: generator_assignments(
                     kernel(kernel.V().gen(position)).lift()
@@ -158,11 +158,11 @@ def _internal_hom_model_data_from_endpoints(source, target):
         ambient = construction.ambient_module()
         images = construction.generator_images()
         assert ambient is not None and images is not None, (
-            "an internal-Hom kernel must retain its subobject inclusion data"
+            "an internal-Mor kernel must retain its subobject inclusion data"
         )
         lift = construction.selected_lift()
         inclusion = _module_subobject_inclusion(
-            _auxiliary_linear_module_homset(model, ambient),
+            _auxiliary_linear_module_mor(model, ambient),
             images,
             lift=(None if lift is None else lambda element: lift(model, element)),
         )
@@ -181,44 +181,44 @@ def _internal_hom_model_data_from_endpoints(source, target):
     return model, inclusion, relation_matrix, presentation
 
 
-def _internal_hom_model_data(homset):
-    r"""Return the endpoint-fixed selected presentation data of this Hom parent."""
-    return _internal_hom_model_data_from_endpoints(homset.domain(), homset.codomain())
+def _internal_mor_model_data(mor):
+    r"""Return the endpoint-fixed selected presentation data of this Mor parent."""
+    return _internal_mor_model_data_from_endpoints(mor.domain(), mor.codomain())
 
 
-def _internal_hom_morphism(
+def _internal_mor_morphism(
     source_map,
     target_map,
     *,
-    source_internal_hom=None,
-    target_internal_hom=None,
+    source_internal_mor=None,
+    target_internal_mor=None,
 ):
-    r"""Return the internal-Hom map induced by pre- and postcomposition."""
-    if source_internal_hom is None:
+    r"""Return the internal-Mor map induced by pre- and postcomposition."""
+    if source_internal_mor is None:
         source = source_map.codomain()
-        source_internal_hom = source.module_category().Mor(
+        source_internal_mor = source.module_category().Mor(
             source,
             target_map.domain(),
         )
-    if target_internal_hom is None:
+    if target_internal_mor is None:
         source = source_map.domain()
-        target_internal_hom = source.module_category().Mor(
+        target_internal_mor = source.module_category().Mor(
             source,
             target_map.codomain(),
         )
-    if source_map.codomain() is not source_internal_hom.source_module():
+    if source_map.codomain() is not source_internal_mor.source_module():
         raise ValueError("precomposition has the wrong codomain")
-    if target_map.domain() is not source_internal_hom.target_module():
+    if target_map.domain() is not source_internal_mor.target_module():
         raise ValueError("postcomposition has the wrong domain")
-    if target_internal_hom.source_module() is not source_map.domain():
-        raise ValueError("the target internal Hom has the wrong source")
-    if target_internal_hom.target_module() is not target_map.codomain():
-        raise ValueError("the target internal Hom has the wrong target")
+    if target_internal_mor.source_module() is not source_map.domain():
+        raise ValueError("the target internal Mor has the wrong source")
+    if target_internal_mor.target_module() is not target_map.codomain():
+        raise ValueError("the target internal Mor has the wrong target")
 
-    return _InternalHomFunctorialMorphism(
-        source_internal_hom.module_category().Mor(
-            source_internal_hom,
-            target_internal_hom,
+    return _InternalMorFunctorialMorphism(
+        source_internal_mor.module_category().Mor(
+            source_internal_mor,
+            target_internal_mor,
         ),
         source_map,
         target_map,
@@ -226,5 +226,5 @@ def _internal_hom_morphism(
 
 
 __all__ = [
-    "_internal_hom_model_data",
+    "_internal_mor_model_data",
 ]

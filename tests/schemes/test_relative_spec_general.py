@@ -44,7 +44,7 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
     _same_scheme, target_cover, target = _polynomial_algebra_descent("w")
     assert source_cover.ambient_scheme().coordinate_algebra() is target_cover.ambient_scheme().coordinate_algebra()
 
-    # Rebuild the target datum on the source cover so the algebra-descent Hom
+    # Rebuild the target datum on the source cover so the algebra-descent Mor
     # has one literal cover owner, while retaining a genuinely different local algebra.
     target_local = tuple(
         source_cover.open(index).coordinate_algebra().polynomial_ring("w")

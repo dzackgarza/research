@@ -93,12 +93,12 @@ def test_relationful_module_framing_data_are_fixed_before_arrow_realization() ->
     assert module.framing_source() is source
 
     endomorphisms = Modules(ZZ).Mor(module, module)
-    hom_presentation = endomorphisms.presentation()
-    hom_source = endomorphisms.framing_source()
-    assert hom_presentation.codomain() is hom_source
-    hom_framing = endomorphisms.framing_morphism()
-    assert hom_framing.domain() is hom_source
-    assert endomorphisms.presentation_projection() is hom_framing
+    mor_presentation = endomorphisms.presentation()
+    mor_source = endomorphisms.framing_source()
+    assert mor_presentation.codomain() is mor_source
+    mor_framing = endomorphisms.framing_morphism()
+    assert mor_framing.domain() is mor_source
+    assert endomorphisms.presentation_projection() is mor_framing
 
 
 def test_a_nonsurjective_module_map_cannot_be_relabelled_as_the_selected_framing() -> None:

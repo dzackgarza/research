@@ -15,10 +15,10 @@ from sage.structure.element import parent
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, CategoryObject
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-    _category_homset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
@@ -62,13 +62,13 @@ class _CodomainFunctor(Functor):
 class DiscreteMorphism(Morphism):
     r"""The unique identity arrow of a discrete-category object."""
 
-    def __init__(self, parent: DiscreteHomset) -> None:
+    def __init__(self, parent: DiscreteMor) -> None:
         Morphism.__init__(self, parent)
         if self.domain() is not self.codomain():
             raise ValueError("a discrete category has no arrow between distinct objects")
 
     def __mul__(self, other):
-        # A discrete Hom on one object holds its identity only, so the
+        # A discrete Mor on one object holds its identity only, so the
         # composable arrows are exactly the elements of this parent.
         if parent(other) is not self.parent():
             return NotImplemented
@@ -84,16 +84,16 @@ class DiscreteMorphism(Morphism):
         return hash(id(self.parent()))
 
 
-class DiscreteHomset(CategoricalHomset):
+class DiscreteMor(CategoricalMor):
     Element = DiscreteMorphism
 
     def __init__(
         self,
-        family: HomCategoryConstruction,
+        family: MorCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self, family, domain, codomain
         )
 
@@ -109,7 +109,7 @@ class DiscreteHomset(CategoricalHomset):
             raise ValueError("there is no arrow between distinct discrete objects")
         if value is not None:
             if parent(value) is not self:
-                raise ValueError("a discrete Hom contains only its identity")
+                raise ValueError("a discrete Mor contains only its identity")
             return value
         return DiscreteMorphism(self)
 
@@ -118,8 +118,8 @@ class DiscreteHomset(CategoricalHomset):
         return self()
 
 
-class DiscreteHomCategoryConstruction(HomCategoryConstruction):
-    FixedCategoryClass = DiscreteHomset
+class DiscreteMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = DiscreteMor
 
 
 class DiscreteCategory(OwnedCategory):
@@ -147,7 +147,7 @@ class DiscreteCategory(OwnedCategory):
         True
     """
 
-    _HomCategory = DiscreteHomCategoryConstruction
+    _MorCategory = DiscreteMorCategoryConstruction
 
     @staticmethod
     @cached_function(key=lambda cls, object_set: (cls, id(object_set)))
@@ -208,10 +208,10 @@ class DiscreteCategory(OwnedCategory):
     def objects(self) -> IndexedFamily:
         return self._objects
 
-    def Mor(self, domain: Parent, codomain: Parent) -> DiscreteHomset:
+    def Mor(self, domain: Parent, codomain: Parent) -> DiscreteMor:
         if domain not in self or codomain not in self:
-            raise TypeError("a discrete Hom requires two objects of the discrete category")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("a discrete Mor requires two objects of the discrete category")
+        return self.MorCategory().Of(domain, codomain)
 
 
     def identity(self, obj: Parent) -> DiscreteMorphism:
@@ -234,7 +234,7 @@ class DiscreteCategories(OwnedCategory):
         return [Cat()]
 
     def __contains__(self, candidate) -> bool:
-        r"""Placement, read through ``Cat``'s Hom endpoint when it is handed one.
+        r"""Placement, read through ``Cat``'s Mor endpoint when it is handed one.
 
         A discrete category records this category as its placement.  The
         morphisms of this category are ``Cat``'s, whose endpoints are the
@@ -263,7 +263,7 @@ class _DiscreteFunctor(Functor):
                 or object_map.codomain() is not codomain.object_set()
             ):
                 raise ValueError("the object map has the wrong discrete-category endpoints")
-        # The set Hom between the object sets builds a map from a rule and
+        # The set Mor between the object sets builds a map from a rule and
         # keeps a map it already represents.
         self._object_map = Sets().Mor(domain.object_set(), codomain.object_set())(object_map)
         super().__init__(domain, codomain)
@@ -316,7 +316,7 @@ class _DiscreteDiagram(Functor):
 
     def _apply_morphism(self, morphism: Map) -> Map:
         image = self(morphism.domain())
-        return _category_homset(self.codomain(), image, image).identity()
+        return _category_mor_parent(self.codomain(), image, image).identity()
 
 
 class _ConstantDiagram(Functor):
@@ -336,7 +336,7 @@ class _ConstantDiagram(Functor):
 
     def _apply_morphism(self, morphism: Map) -> Map:
         value = self.constant_value()
-        return _category_homset(self.codomain(), value, value).identity()
+        return _category_mor_parent(self.codomain(), value, value).identity()
 
 
 

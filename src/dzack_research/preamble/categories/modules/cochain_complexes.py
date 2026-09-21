@@ -7,9 +7,9 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
@@ -18,7 +18,7 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    _initialize_module_hom_parent,
+    _initialize_module_mor_parent,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
@@ -119,7 +119,7 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
 
         return [GradedModules(self.base_ring())]
 
-    _HomCategory = None
+    _MorCategory = None
 
     def underlying_graded_module(self):
         r"""Return the forgetful functor from cochain complexes to graded modules."""
@@ -528,20 +528,20 @@ class CochainMorphism(Morphism):
         )
 
 
-class CochainHomset(CategoricalHomset):
+class CochainMor(CategoricalMor):
     Element = CochainMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("cochain morphisms require one common base ring")
         if domain.degree_index_set() is not codomain.degree_index_set():
             raise ValueError("cochain morphisms require one common degree index set")
-        _initialize_module_hom_parent(self, hom_family, domain, codomain)
+        _initialize_module_mor_parent(self, mor_family, domain, codomain)
 
     def _degrees(self):
         if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
             raise TypeError(
-                "an infinite represented cochain Hom has no finite degree list"
+                "an infinite represented cochain Mor has no finite degree list"
             )
         return tuple(
             sorted(
@@ -640,7 +640,7 @@ class CochainHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a cochain endomorphism homset")
+            raise ValueError("identity belongs to a cochain endomorphism Mor")
         domain = self.domain()
 
         def identity_component(degree):
@@ -656,14 +656,14 @@ class CochainHomset(CategoricalHomset):
         )
 
 
-class CochainHomCategoryConstruction(HomCategoryConstruction):
+class CochainMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return CochainHomset
+        return CochainMor
 
 
-# The declaration is placed after the concrete fixed-Hom class to avoid a
+# The declaration is placed after the concrete fixed-Mor class to avoid a
 # module-level forward-reference helper or a second registration mechanism.
-CochainComplexes._HomCategory = CochainHomCategoryConstruction
+CochainComplexes._MorCategory = CochainMorCategoryConstruction
 CochainComplexes._EndCategory = LinearEndCategoryConstruction
 
 
@@ -693,7 +693,7 @@ def _cohomology(complex_, degree):
 __all__ = [
     "CochainComplexes",
     "CochainDifferential",
-    "CochainHomset",
+    "CochainMor",
     "CochainMorphism",
     "CohomologyModules",
 ]

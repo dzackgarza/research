@@ -28,9 +28,9 @@ from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -276,7 +276,7 @@ class CardinalComparison(Enum):
 
 
 class CardinalityMorphism(Morphism):
-    def __init__(self, parent: CardinalityHomset) -> None:
+    def __init__(self, parent: CardinalityMor) -> None:
         Morphism.__init__(self, parent)
 
     def is_identity(self) -> bool:
@@ -291,8 +291,8 @@ class CardinalityMorphism(Morphism):
         """
         other_parent = element_parent(other)
         match other_parent:
-            case CategoricalHomset() if (
-                other_parent.homset_category().is_subcategory(Cardinalities())
+            case CategoricalMor() if (
+                other_parent.mor_category().is_subcategory(Cardinalities())
                 and other.codomain() is self.domain()
             ):
                 pass
@@ -304,19 +304,19 @@ class CardinalityMorphism(Morphism):
         return f"{self.domain()} <= {self.codomain()}"
 
 
-class CardinalityHomset(CategoricalHomset):
+class CardinalityMor(CategoricalMor):
     Element = CardinalityMorphism
 
     def __init__(
         self,
-        hom_family: HomCategoryConstruction,
+        mor_family: MorCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def is_empty(self):
-        r"""The cardinal-order Hom is empty exactly when its source exceeds its target.
+        r"""The cardinal-order Mor is empty exactly when its source exceeds its target.
 
         The comparison owner proves some inequalities and leaves others
         undecided.  Failure to prove an inequality is not its negation.
@@ -331,9 +331,9 @@ class CardinalityHomset(CategoricalHomset):
                 return Unknown
 
     def cardinality(self) -> Cardinal:
-        r"""Zero or one when the cardinal comparison decides the Hom's emptiness."""
+        r"""Zero or one when the cardinal comparison decides the Mor's emptiness."""
         empty = self.is_empty()
-        assert empty is not Unknown, "this cardinal comparison does not decide the Hom cardinality"
+        assert empty is not Unknown, "this cardinal comparison does not decide the Mor cardinality"
         return cardinal(0 if empty else 1)
 
     @cached_method
@@ -351,13 +351,13 @@ class CardinalityHomset(CategoricalHomset):
 
     def identity(self) -> CardinalityMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism homset")
+            raise ValueError("identity is defined only on an endomorphism Mor")
         return self.unique_morphism()
 
 
-class CardinalityHomCategoryConstruction(HomCategoryConstruction):
-    def fixed_category_class(self) -> type[CardinalityHomset]:
-        return CardinalityHomset
+class CardinalityMorCategoryConstruction(MorCategoryConstruction):
+    def fixed_category_class(self) -> type[CardinalityMor]:
+        return CardinalityMor
 
 
 class Cardinalities(OwnedCategory):
@@ -367,7 +367,7 @@ class Cardinalities(OwnedCategory):
         r"""The cardinal three."""
         return cardinal(3)
 
-    _HomCategory = CardinalityHomCategoryConstruction
+    _MorCategory = CardinalityMorCategoryConstruction
 
     def super_categories(self):
         return [Objects()]
@@ -397,8 +397,8 @@ class Cardinalities(OwnedCategory):
         self,
         domain: Cardinal | SupportsInt | AnInfinity,
         codomain: Cardinal | SupportsInt | AnInfinity,
-    ) -> CardinalityHomset:
-        return CardinalityHomCategoryConstruction(self).Of(cardinal(domain), cardinal(codomain))
+    ) -> CardinalityMor:
+        return CardinalityMorCategoryConstruction(self).Of(cardinal(domain), cardinal(codomain))
 
     class ParentMethods:
         def __init__(self, expression: _CardinalExpression, **rest) -> None:
@@ -551,7 +551,7 @@ class Cardinalities(OwnedCategory):
             self,
             codomain: Cardinal | SupportsInt | AnInfinity,
             category: Category | None = None,
-        ) -> CardinalityHomset:
+        ) -> CardinalityMor:
             if category is not None and category is not Cardinalities():
                 raise TypeError("a cardinal morphism lies in Cardinalities")
             return Cardinalities().Mor(self, codomain)
@@ -964,7 +964,7 @@ class OrdinalSemiringMorphism(Morphism):
 
     def __init__(
         self,
-        parent: OrdinalSemiringHomset,
+        parent: OrdinalSemiringMor,
         function: Callable[[Ordinal], Ordinal],
     ) -> None:
         Morphism.__init__(self, parent)
@@ -987,8 +987,8 @@ class OrdinalSemiringMorphism(Morphism):
         """
         other_parent = element_parent(other)
         match other_parent:
-            case CategoricalHomset() if (
-                other_parent.homset_category().is_subcategory(OrdinalSemirings())
+            case CategoricalMor() if (
+                other_parent.mor_category().is_subcategory(OrdinalSemirings())
                 and other.codomain() is self.domain()
             ):
                 pass
@@ -1001,20 +1001,20 @@ class OrdinalSemiringMorphism(Morphism):
         return OrdinalSemirings().Mor(other.domain(), self.codomain())(lambda element: self(other(element)))
 
     def is_identity(self) -> bool:
-        r"""Whether this is the identity arrow its endomorphism Hom-set interns."""
+        r"""Whether this is the identity arrow its endomorphism Mor object interns."""
         return self.domain() is self.codomain() and self is self.parent().identity()
 
 
-class OrdinalSemiringHomset(CategoricalHomset):
+class OrdinalSemiringMor(CategoricalMor):
     Element = OrdinalSemiringMorphism
 
     def __init__(
         self,
-        hom_family: HomCategoryConstruction,
+        mor_family: MorCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, function):
         if isinstance(function, OrdinalSemiringMorphism):
@@ -1033,13 +1033,13 @@ class OrdinalSemiringHomset(CategoricalHomset):
     def identity(self) -> OrdinalSemiringMorphism:
         r"""The identity arrow, interned: ``is_identity`` reads it by identity."""
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom-set")
+            raise ValueError("identity is defined only on an endomorphism Mor object")
         return self(lambda element: element)
 
 
-class OrdinalSemiringHomCategoryConstruction(HomCategoryConstruction):
-    def fixed_category_class(self) -> type[OrdinalSemiringHomset]:
-        return OrdinalSemiringHomset
+class OrdinalSemiringMorCategoryConstruction(MorCategoryConstruction):
+    def fixed_category_class(self) -> type[OrdinalSemiringMor]:
+        return OrdinalSemiringMor
 
 
 class OrdinalSemirings(OwnedCategory):
@@ -1145,7 +1145,7 @@ class OrdinalSemirings(OwnedCategory):
         r"""The semiring of ordinals."""
         return Ordinals()
 
-    _HomCategory = OrdinalSemiringHomCategoryConstruction
+    _MorCategory = OrdinalSemiringMorCategoryConstruction
 
     def __init__(self) -> None:
         from dzack_research.preamble.categories.rings.ring_foundation import OwnedSemirings
@@ -1164,10 +1164,10 @@ class OrdinalSemirings(OwnedCategory):
         self,
         domain: OrdinalSemiring,
         codomain: OrdinalSemiring,
-    ) -> OrdinalSemiringHomset:
+    ) -> OrdinalSemiringMor:
         if domain not in self or codomain not in self:
             raise TypeError("an ordinal-semiring morphism requires two ordinal semirings")
-        return OrdinalSemiringHomCategoryConstruction(self).Of(domain, codomain)
+        return OrdinalSemiringMorCategoryConstruction(self).Of(domain, codomain)
 
     class ParentMethods:
         def __init__(self, **rest) -> None:
@@ -1279,7 +1279,7 @@ class OrdinalSemirings(OwnedCategory):
             self,
             codomain: OrdinalSemiring,
             category: Category | None = None,
-        ) -> OrdinalSemiringHomset:
+        ) -> OrdinalSemiringMor:
             if category is not None and category is not OrdinalSemirings():
                 raise TypeError("an ordinal-semiring morphism lies in OrdinalSemirings")
             return OrdinalSemirings().Mor(self, codomain)
@@ -1328,7 +1328,7 @@ continuum = cardinal(2) ** aleph0
 __all__ = [
     "CardinalComparison",
     "Cardinalities",
-    "CardinalityHomset",
+    "CardinalityMor",
     "CardinalityMorphism",
     "OrdinalSemirings",
     "Ordinals",

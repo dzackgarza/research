@@ -21,7 +21,7 @@ def test_unframed_tensor_has_its_universal_bilinear_classifier() -> None:
     pairing = lambda x, y: module(x.underlying_element() * y.underlying_element())
     classified = tensor.from_bilinear_map(module, pairing)
     universal = tensor.universal_bilinear_map()
-    pairing_hom = module.pairings_with(module, module)(pairing)
+    pairing_mor = module.pairings_with(module, module)(pairing)
     x, y = module(QQ(2)), module(QQ(3))
     pure = tensor.pure_tensor(x, y)
 
@@ -30,12 +30,12 @@ def test_unframed_tensor_has_its_universal_bilinear_classifier() -> None:
     assert classified.domain() is tensor
     assert classified.codomain() is module
     assert classified.linearity_decision() is Unknown
-    assert pairing_hom.parent() is tensor.module_category().Mor(tensor, module)
-    assert pairing_hom.domain() is tensor
-    assert pairing_hom.codomain() is module
-    assert pairing_hom.linearity_decision() is Unknown
+    assert pairing_mor.parent() is tensor.module_category().Mor(tensor, module)
+    assert pairing_mor.domain() is tensor
+    assert pairing_mor.codomain() is module
+    assert pairing_mor.linearity_decision() is Unknown
     assert classified(pure) == module(QQ(6))
-    assert pairing_hom(x, y) == module(QQ(6))
+    assert pairing_mor(x, y) == module(QQ(6))
     assert pure + (-pure) == tensor.zero()
     assert tensor.pure_tensor(x + x, y) == pure + pure
     assert classified(tensor.pure_tensor(module.scalar_multiple(QQ(5), x), y)) == classified(

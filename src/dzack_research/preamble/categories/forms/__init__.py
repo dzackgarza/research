@@ -1,18 +1,18 @@
 """Forms and their coordinate presentations."""
 
 from dzack_research.preamble.categories.forms.forms import (
-    BilinearFormHomset,
+    BilinearFormMor,
     BilinearFormMorphism,
     PairingMorphism,
-    QuadraticFormHomset,
+    QuadraticFormMor,
     QuadraticFormMorphism,
     QuadraticMapMorphism,
 )
 __all__ = [
-    "BilinearFormHomset",
+    "BilinearFormMor",
     "BilinearFormMorphism",
     "PairingMorphism",
-    "QuadraticFormHomset",
+    "QuadraticFormMor",
     "QuadraticFormMorphism",
     "QuadraticMapMorphism",
 ]

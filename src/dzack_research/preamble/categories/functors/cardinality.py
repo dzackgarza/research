@@ -19,7 +19,7 @@ class _CardinalityFunctor(Functor):
     r"""Send a set to its cardinal and a set isomorphism to the unique order arrow.
 
     Isomorphic sets have equal cardinality, so the image of a bijection is the
-    identity of that cardinal in the thin category ``Card``; ``Card``'s Hom-set
+    identity of that cardinal in the thin category ``Card``; ``Card``'s Mor object
     supplies it.
     """
 
@@ -38,12 +38,12 @@ class _CardinalityFunctor(Functor):
         r"""Act on an arrow of ``core(Set)``, or on a set map read as one.
 
         A set map that is not already an arrow of the core is read through
-        the set Hom it belongs to and presented there as an isomorphism; that
+        the set Mor it belongs to and presented there as an isomorphism; that
         presentation is the one that decides whether it is a bijection.
         """
-        core_hom = self.domain().Mor(morphism.domain(), morphism.codomain())
+        core_mor = self.domain().Mor(morphism.domain(), morphism.codomain())
         match morphism:
-            case _ if morphism in core_hom:
+            case _ if morphism in core_mor:
                 isomorphism = morphism
             case _:
                 set_map = Sets().Mor(morphism.domain(), morphism.codomain())(morphism)

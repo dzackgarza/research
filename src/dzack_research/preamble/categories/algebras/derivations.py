@@ -17,9 +17,9 @@ from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    _RestrictedHomCategoryOf,
-    RestrictedHomCategoryParent,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    _RestrictedMorCategoryOf,
+    RestrictedMorCategoryParent,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
@@ -356,13 +356,13 @@ class _DerivationAlgebraAction(Action):
         return self._derivations.algebra_multiple(scalar, derivation)
 
 
-class DerivationSpace(RestrictedHomCategoryParent):
-    r"""The ``A``-module ``Der_R(A,M)`` with its restricted Hom inclusion.
+class DerivationSpace(RestrictedMorCategoryParent):
+    r"""The ``A``-module ``Der_R(A,M)`` with its restricted Mor inclusion.
 
     The actual subobject of ``Hom_R(A,Res_R M)`` is
     ``Res_R Der_R(A,M)``.  Keeping these two scalar structures distinct is
     essential: the derivation module is canonically an ``A``-module, whereas
-    its inclusion into the existing ``R``-linear Hom is only ``R``-linear.
+    its inclusion into the existing ``R``-linear Mor is only ``R``-linear.
     """
 
     Element = Derivation
@@ -406,7 +406,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
         # Der_R(A,M) is the subcategory of Hom_R(A,Res_R M) carved out by the
         # Leibniz rule, so the existing R-linear Mor category is the base.
         self._preamble_base_ring = algebra
-        RestrictedHomCategoryParent.__init__(
+        RestrictedMorCategoryParent.__init__(
             self,
             family,
             algebra,
@@ -512,7 +512,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
                 raise ValueError("the linear map has the wrong derivation endpoints")
             if not isinstance(generator_images, DerivationUnderlyingLinearMorphism):
                 raise ValueError(
-                    "an arbitrary R-linear map cannot be certified as a derivation by this backend"
+                    "an arbitrary R-linear map alone does not supply the Leibniz rule required of a derivation"
                 )
             selected = generator_images.derivation()
             if selected.parent() is self:
@@ -557,7 +557,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
         return f"Der_{self.algebra().base_ring()}({self.algebra()}, {self.target_module()})"
 
 
-class DerivationCategoryConstruction(_RestrictedHomCategoryOf):
+class DerivationCategoryConstruction(_RestrictedMorCategoryOf):
     _declaration_name = "_DerivationCategory"
 
     def fixed_category_class(self):
@@ -828,7 +828,7 @@ class GradedDerivationUnderlyingLinearMorphism(ModuleMorphism):
         return self.derivation().degree_shift()
 
 
-class GradedDerivationSpace(RestrictedHomCategoryParent):
+class GradedDerivationSpace(RestrictedMorCategoryParent):
     r"""The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``."""
 
     Element = GradedDerivation
@@ -856,7 +856,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
 
         ring = algebra.base_ring()
         self._preamble_base_ring = ring
-        RestrictedHomCategoryParent.__init__(
+        RestrictedMorCategoryParent.__init__(
             self,
             family,
             algebra,
@@ -866,7 +866,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
 
     @cached_method
     def inclusion(self):
-        r"""Return the canonical inclusion into the underlying graded linear Hom."""
+        r"""Return the canonical inclusion into the underlying graded linear Mor."""
         return self.Mono(self.arrow_set())._subobject_inclusion(
             lambda derivation: derivation.underlying_linear_morphism(),
         )
@@ -898,7 +898,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
                 or function.degree_shift() != self.degree_shift()
             ):
                 raise ValueError(
-                    "an arbitrary R-linear map cannot be certified as a graded derivation by this backend"
+                    "an arbitrary R-linear map alone does not supply the graded Leibniz rule required of a graded derivation"
                 )
             derivation = function.derivation()
             if derivation.parent() is self:
@@ -948,7 +948,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
         )
 
 
-class GradedDerivationCategoryConstruction(_RestrictedHomCategoryOf):
+class GradedDerivationCategoryConstruction(_RestrictedMorCategoryOf):
     _declaration_name = "_GradedDerivationCategory"
 
     @staticmethod

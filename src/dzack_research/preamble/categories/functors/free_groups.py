@@ -1,7 +1,7 @@
 r"""The free-group/underlying-set adjunction ``F ⊣ U``.
 
 The free group on an arbitrary set is an owned group carrying its chosen free
-basis.  The corresponding Hom-set is supplied by the owned group morphism
+basis.  The corresponding Mor object is supplied by the owned group morphism
 layer, so this functor does not choose names, enumerate the source, or pass
 through a finite-rank GAP presentation.
 """

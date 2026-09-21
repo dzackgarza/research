@@ -102,7 +102,7 @@ class CharacterSets(OwnedParameterizedCategory):
 
             This is the mathematical value family of the character.  Engine
             arguments used to evaluate the underlying class function remain
-            private to the class-function adapter.
+            private to the class-function construction.
             """
             return self.values()
 

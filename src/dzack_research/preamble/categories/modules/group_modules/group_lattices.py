@@ -10,14 +10,14 @@ whenever ``S`` is a group algebra; the constructor is
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.lattice_morphisms import (
-    LatticeHomset,
+    LatticeMor,
     LatticeMorphism,
 )
 from dzack_research.preamble.categories.lattices import (
@@ -47,17 +47,17 @@ class GroupLatticeMorphism(LatticeMorphism):
         )
 
 
-class GroupLatticeHomset(LatticeHomset):
+class GroupLatticeMor(LatticeMor):
     r"""Form-preserving maps commuting with one selected group action."""
 
     Element = GroupLatticeMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         if domain.group() != codomain.group():
-            raise ValueError("a group-lattice Hom has one acting group")
+            raise ValueError("a group-lattice Mor has one acting group")
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("a group-lattice Hom has one coefficient ring")
-        super().__init__(hom_family, domain, codomain)
+            raise ValueError("a group-lattice Mor has one coefficient ring")
+        super().__init__(mor_family, domain, codomain)
 
     def _check_equivariance(self, morphism) -> None:
         group = self.domain().group()
@@ -85,9 +85,9 @@ class GroupLatticeHomset(LatticeHomset):
         return morphism
 
 
-class GroupLatticeHomCategoryConstruction(HomCategoryConstruction):
+class GroupLatticeMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return GroupLatticeHomset
+        return GroupLatticeMor
 
 
 class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
@@ -109,7 +109,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         r"""``Modules(R[G])`` alone; ``G``-objects in ``Lattices(R)`` are reached by :meth:`restriction_along_group_inclusion`."""
         return [ModulesOverGroupAlgebra(self.base_ring())]
 
-    _HomCategory = GroupLatticeHomCategoryConstruction
+    _MorCategory = GroupLatticeMorCategoryConstruction
 
     # The equivalence ``Lattices(R[G]) ~ GObjects(G, Lattices(R))``, in the
     # same two directions as for modules over the group algebra.
@@ -483,8 +483,8 @@ class _LatticeLinearizationEquivalence(Adjunction):
 
 
 __all__ = [
-    "GroupLatticeHomCategoryConstruction",
-    "GroupLatticeHomset",
+    "GroupLatticeMorCategoryConstruction",
+    "GroupLatticeMor",
     "GroupLatticeMorphism",
     "LatticesOverGroupAlgebra",
 ]

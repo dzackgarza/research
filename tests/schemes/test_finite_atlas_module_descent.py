@@ -149,7 +149,7 @@ def test_varying_ring_module_rejects_additive_map_incompatible_with_scalar_map()
     x = ring.algebra_generator("x")
     scalar_map = ring.Mor(ring)({"x": -x})
     module = ring.free_module(finite_ordered_set(("e",)))
-    additive = AdditiveGroups().AdditiveCommutative().HomCategory().Of(
+    additive = AdditiveGroups().AdditiveCommutative().MorCategory().Of(
         module,
         module,
     ).elementwise(lambda element: element)

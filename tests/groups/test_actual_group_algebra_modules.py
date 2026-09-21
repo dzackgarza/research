@@ -61,26 +61,26 @@ def test_group_action_constructs_an_actual_group_algebra_module_parent() -> None
     assert module.module_rank() == line.module_rank()
 
 
-def test_regular_representation_linearizes_left_multiplication_on_the_exact_carrier() -> None:
+def test_regular_representation_linearizes_left_multiplication_on_the_exact_underlying_module() -> None:
     group = Groups.S(3)
     group_algebra = QQ[group]
     regular = group_algebra.regular_representation()
-    carrier = group_algebra.underlying_module()
+    underlying_module = group_algebra.underlying_module()
     left, right = tuple(group.group_generators())[:2]
 
     assert regular in Modules(group_algebra)
-    assert regular.unformed_module() is carrier
-    assert regular.module_rank() == carrier.module_rank() == 6
-    assert regular.action_of(left)(carrier.module_generator(right)) == (
-        carrier.module_generator(left * right)
+    assert regular.unformed_module() is underlying_module
+    assert regular.module_rank() == underlying_module.module_rank() == 6
+    assert regular.action_of(left)(underlying_module.module_generator(right)) == (
+        underlying_module.module_generator(left * right)
     )
-    equipped_right = regular(carrier.module_generator(right))
+    equipped_right = regular(underlying_module.module_generator(right))
     assert regular.act(left, equipped_right) == regular(
-        carrier.module_generator(left * right)
+        underlying_module.module_generator(left * right)
     )
 
 
-def test_group_module_retains_its_owned_set_carrier() -> None:
+def test_group_module_retains_its_owned_underlying_set() -> None:
     _group, _group_algebra, line, _generator, module = _sign_module(QQ)
     label = line.module_generating_set()[0]
     assert module in Sets()
@@ -99,7 +99,7 @@ def test_scalar_restriction_along_R_to_RG_recovers_the_exact_coefficient_module(
     assert restriction(module) is line
 
 
-def test_equivariant_hom_is_coefficient_linear_underneath() -> None:
+def test_equivariant_mor_is_coefficient_linear_underneath() -> None:
     _group, group_algebra, line, _generator, module = _sign_module(QQ)
     label = line.module_generating_set()[0]
     doubling = module.Mor(module)(
@@ -110,7 +110,7 @@ def test_equivariant_hom_is_coefficient_linear_underneath() -> None:
     assert doubling.domain() is module
     assert doubling.codomain() is module
     assert doubling.parent().base_ring() is QQ
-    assert doubling.parent().underlying_homset() is Modules(QQ).Mor(line, line)
+    assert doubling.parent().underlying_mor() is Modules(QQ).Mor(line, line)
     assert underlying.domain() is line
     assert underlying.codomain() is line
     assert underlying(line.module_generator(label)) == 2 * line.module_generator(label)

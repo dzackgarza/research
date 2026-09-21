@@ -98,7 +98,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         def configuration_automorphism_group(self, algorithm=None):
             r"""Return framing permutations preserving every pairing.
 
-            ``algorithm`` is the private graph-canonization backend selector
+            ``algorithm`` is the graph-canonization algorithm selector
             accepted by Sage (notably ``None``, ``"bliss"`` and ``"sage"``).
             The returned object is still the owned permutation group.
             """
@@ -218,7 +218,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             r"""Lift one owned pairing-graph automorphism through libGAP.
 
             The graph automorphism group is an owned permutation group.  Its
-            backend permutation crosses into GAP only long enough to evaluate
+            private permutation representation crosses into GAP only long enough to evaluate
             the action on the canonical point set ``1..m``; the resulting map
             on the configuration's own framing positions is then lifted by
             :meth:`configuration_isometry`, which verifies every pairing.

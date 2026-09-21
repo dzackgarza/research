@@ -7,11 +7,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedCatego
 def LieAlgebraMorphism(parent, linear):
     r"""Read the bracket-preserving linear map through the root algebra equation."""
     category = Algebras(parent.domain().base_ring()).Lie()
-    assert parent.homset_category().is_subcategory(category), "the supplied arrow parent is a Lie-algebra Mor"
+    assert parent.mor_category().is_subcategory(category), "the supplied arrow parent is a Lie-algebra Mor"
     return parent(linear)
 
 
-def LieAlgebraHomset(domain, codomain):
+def LieAlgebraMor(domain, codomain):
     r"""The ordinary algebra Mor between the specified Lie algebras."""
     return Algebras(domain.base_ring()).Lie().Mor(domain, codomain)
 
@@ -50,7 +50,7 @@ class CommutatorLieAlgebras(OwnedCategoryOverBaseRing):
 
 __all__ = [
     "CommutatorLieAlgebras",
-    "LieAlgebraHomset",
+    "LieAlgebraMor",
     "LieAlgebraMorphism",
     "LieAlgebras",
 ]

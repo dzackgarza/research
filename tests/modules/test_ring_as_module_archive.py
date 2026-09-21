@@ -26,7 +26,7 @@ def test_owned_ring_is_its_own_canonical_rank_one_module() -> None:
     assert module.module_generator(0) == integers.one()
 
 
-def test_hom_endpoints_use_the_same_ring_module_parent() -> None:
+def test_mor_endpoints_use_the_same_ring_module_parent() -> None:
     module = ZZ.regular_module()
     endomorphisms = module.module_category().Mor(module, module)
     identity = endomorphisms.identity()

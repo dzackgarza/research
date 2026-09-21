@@ -12,8 +12,8 @@ from sage.structure.element import parent as element_parent
 
 import dzack_research.preamble.categories.lattice_engines as lattice_engines
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     _fix_selected_framing,
@@ -77,7 +77,7 @@ def _framing_tuple(element):
 
 
 def _module_matrix(morphism):
-    r"""Return the finite-free underlying module Hom element for computation."""
+    r"""Return the finite-free underlying module Mor element for computation."""
     linear = morphism.domain().module_category().Mor(
         morphism.domain(), morphism.codomain()
     )(morphism)
@@ -689,19 +689,19 @@ class LatticeIsometry(LatticeEmbedding):
         target = other.domain()
         if source is target and self == other:
             return source.O().one()
-        homset = source.Isom(target)
-        empty = homset.is_empty()
+        mor = source.Isom(target)
+        empty = mor.is_empty()
         if empty is True:
             return None
         if target.module_rank().is_finite() and target.is_definite():
-            for candidate in homset:
+            for candidate in mor:
                 if candidate * self == other * candidate:
                     return candidate
             return None
         assert empty is not Unknown, (
-            "equivariant-isometry search in the indefinite regime requires the underlying isometry Hom to be decided exactly"
+            "equivariant-isometry search in the indefinite regime requires the underlying isometry Mor to be decided exactly"
         )
-        witness = homset.an_element()
+        witness = mor.an_element()
         assert witness * self == other * witness, (
             "the represented indefinite equivariant-isometry path requires the selected underlying isometry witness to intertwine the equipped actions; no exhaustive indefinite conjugacy classifier is selected"
         )
@@ -909,7 +909,7 @@ class LatticeIsometry(LatticeEmbedding):
         )
         if not lattice.is_even():
             raise ValueError(
-                "the hermitian Miranda--Morrison centralizer-image backend requires an even lattice"
+                "the hermitian Miranda--Morrison centralizer-image computation requires an even lattice"
             )
         if not lattice.module_rank().is_finite() or not lattice.is_nondegenerate():
             raise ValueError(
@@ -957,17 +957,17 @@ class LatticeIsometry(LatticeEmbedding):
         return image
 
 
-class LatticeHomset(CategoricalHomset):
+class LatticeMor(CategoricalMor):
     Element = LatticeMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         domain.base_ring()
         lattices = domain.lattice_category()
         if domain not in lattices or codomain not in lattices:
-            raise TypeError("a lattice homset has lattices as its domain and codomain")
-        CategoricalHomset.__init__(
+            raise TypeError("a lattice Mor has lattices as its domain and codomain")
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -1000,23 +1000,23 @@ class LatticeHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a lattice endomorphism homset")
+            raise ValueError("identity belongs to a lattice endomorphism Mor")
         return self.elementwise(lambda element: element)
 
     def _repr_(self):
-        return f"LatticeHom({self.domain()}, {self.codomain()})"
+        return f"LatticeMor({self.domain()}, {self.codomain()})"
 
 
-class LatticeEmbeddingHomset(CategoricalHomset):
+class LatticeEmbeddingMor(CategoricalMor):
     Element = LatticeEmbedding
 
-    def __init__(self, hom_family, domain, codomain, *, category=None) -> None:
+    def __init__(self, mor_family, domain, codomain, *, category=None) -> None:
         lattices = domain.lattice_category()
         if domain not in lattices or codomain not in lattices:
-            raise TypeError("a lattice embedding homset has lattice endpoints")
-        CategoricalHomset.__init__(
+            raise TypeError("a lattice embedding Mor has lattice endpoints")
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
             category=category,
@@ -1073,7 +1073,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             for superpacket in packet.super_packets()
             if source in superpacket.C() and target in superpacket.C()
         ]
-        return [packet.Homs().Of(source, target), *inherited]
+        return [packet.Mors().Of(source, target), *inherited]
 
     def _repr_(self):
         return f"Emb({self.domain()}, {self.codomain()})"
@@ -1123,7 +1123,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             "target-specific primitive embeddings require an integral nondegenerate target and the OSCAR embedding provider"
         )
         if data is False:
-            raise ValueError("the primitive embedding homset is empty")
+            raise ValueError("the primitive embedding Mor is empty")
         return self._reconstruct_target_primitive_embedding(data)
 
     def _reconstruct_target_primitive_embedding(self, data):
@@ -1281,7 +1281,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         if self.codomain().module_rank().is_finite() and self.codomain().is_definite():
             for embedding in self:
                 return embedding
-            raise ValueError("the embedding homset is empty")
+            raise ValueError("the embedding Mor is empty")
         source = self.domain()
         target = self.codomain()
         if (
@@ -1301,7 +1301,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             return self._target_primitive_embedding()
         if self._codomain_is_even_unimodular_indefinite():
             if self.is_empty():
-                raise ValueError("the embedding homset is empty")
+                raise ValueError("the embedding Mor is empty")
             _signature = self.codomain().signature_pair()
             positive, negative = _signature.first(), _signature.second()
             for inclusion in self.even_overlattice_inclusions():
@@ -1330,10 +1330,10 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         )
 
 
-class LatticeIsometryHomset(LatticeEmbeddingHomset):
+class LatticeIsometryMor(LatticeEmbeddingMor):
     Element = LatticeIsometry
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         categories = []
         if domain is codomain:
             categories.append(OwnedGroups())
@@ -1344,9 +1344,9 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             ):
                 categories.append(OwnedFiniteGroups())
                 categories.append(OwnedGroups().Framed())
-        LatticeEmbeddingHomset.__init__(
+        LatticeEmbeddingMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
             category=Cat().meet(tuple(categories)) if categories else None,
@@ -1382,7 +1382,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             if source in superpacket.C() and target in superpacket.C()
         ]
         supers = [
-            packet.Homs().Of(source, target),
+            packet.Mors().Of(source, target),
             packet.Monos().Of(source, target),
             packet.Epis().Of(source, target),
             *inherited,
@@ -1398,7 +1398,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an automorphism homset")
+            raise ValueError("identity is defined on an automorphism Mor")
         return self(lambda label: self.domain().module_generator(label))
 
     def one(self):
@@ -1415,13 +1415,13 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     identity_automorphism = identity
 
     def acting_group(self):
-        r"""Return ``O(codomain)`` acting by postcomposition on this homset."""
+        r"""Return ``O(codomain)`` acting by postcomposition on this Mor."""
         return self.codomain().Aut()
 
     def cardinality(self):
         r"""Return the cardinality of ``Isom(L,M)`` from its torsor structure.
 
-        An empty isometry Hom has cardinality zero.  A nonempty one is a
+        An empty isometry Mor has cardinality zero.  A nonempty one is a
         torsor under ``O(M)`` by postcomposition and therefore has the same
         cardinality as ``O(M)``.  When emptiness is genuinely undecided, keep
         that three-valued boundary instead of turning it into a cardinal.
@@ -1438,7 +1438,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         if automorphism.parent() is not self.acting_group():
             raise ValueError("the torsor action is by the orthogonal group of the codomain")
         if element_parent(isometry) is not self:
-            raise ValueError("the torsor action is on this isometry homset")
+            raise ValueError("the torsor action is on this isometry Mor")
         return self(
             lambda label: automorphism(
                 isometry(self.domain().module_generator(label))
@@ -1461,7 +1461,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             return self.vector_equivalence_witness(source, target)
         for candidate in (source, target):
             if element_parent(candidate) is not self:
-                raise ValueError("a transporter compares two isometries in this homset")
+                raise ValueError("a transporter compares two isometries in this Mor")
         codomain = self.codomain()
         return self.acting_group()(
             lambda label: target(
@@ -1669,14 +1669,14 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def _engine_group(self):
         r"""Return Sage's private orthogonal-group engine when it is exact.
 
-        The public group remains this homset of live lattice isometries.  Sage's
+        The public group remains this Mor of live lattice isometries.  Sage's
         ``GroupOfIsometries`` is used only to compute the finite definite
         integral case; its matrices act on row vectors, hence are transposed
-        when converted to this homset's column-image convention.
+        when converted to this Mor's column-image convention.
         """
         lattice = self.domain()
         if lattice is not self.codomain():
-            raise ValueError("an orthogonal group is an automorphism homset")
+            raise ValueError("an orthogonal group is an automorphism Mor")
         assert _engine_ring(lattice.base_ring()) is SageZZ, (
             "the active orthogonal-group engine currently computes integral ZZ-lattices"
         )
@@ -1695,7 +1695,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         return self._from_backend_row_action(engine(_engine_element).matrix())
 
     def _from_backend_row_action(self, row_action_matrix):
-        r"""Cross a private row-action matrix into this live isometry homset."""
+        r"""Cross a private row-action matrix into this live isometry Mor."""
         codomain = self.codomain()
         ring = codomain.base_ring()
         generators = tuple(codomain.module_generators())
@@ -1808,7 +1808,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def structure_description(self):
         r"""Return GAP's descriptive structure label for a finite ``O(L)``.
 
-        The maintained Sage ``GroupOfIsometries`` backend is GAP-backed and
+        The maintained Sage ``GroupOfIsometries`` computation uses GAP internally and
         supplies ``StructureDescription``.  This method is intentionally
         descriptive only: GAP does not promise that the returned string is an
         isomorphism invariant, so no equality or subgroup decision in the
@@ -1828,7 +1828,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
         In the finite definite regime this is an exact search through the full
         owned orthogonal group.  Indefinite vector equivalence belongs to its
-        separate exact backend and is not approximated here.
+        separate exact computation and is not approximated here.
         """
         lattice = self.domain()
         if lattice is not self.codomain():
@@ -1851,7 +1851,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             result = self._from_backend_row_action(witness)
             if result(left) != right:
                 raise ArithmeticError(
-                    "the indefinite vector-equivalence backend returned a witness with the wrong action"
+                    "the exact indefinite vector-equivalence computation returned a witness with the wrong action"
                 )
             return result
         for automorphism in self:
@@ -2004,7 +2004,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         r"""Return exact orbit data on a represented locus supported by this group.
 
         The first supported infinite locus is the primitive isotropic vector
-        locus.  It uses the exact rank-one isotropic backend and returns a
+        locus.  It uses the exact rank-one isotropic orbit computation and returns a
         structured finite list of orbits, each retaining its representative,
         stabilizer and transporter operation.  The locus states which orbit
         decomposition it has.
@@ -2064,7 +2064,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
     @cached_method
     def _isometry_decision(self):
-        r"""The decision of this isometry Hom object, with the witness that decided it.
+        r"""The decision of this isometry Mor object, with the witness that decided it.
 
         Private computation record of :meth:`is_empty` and :meth:`an_element`:
         the triple of the emptiness answer (``True``, ``False`` or
@@ -2143,7 +2143,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             if transformation is False:
                 return (True, None, None)
             if transformation.transpose() * codomain_gram * transformation != domain_gram:
-                raise ArithmeticError("the definite-isometry backend returned an invalid witness")
+                raise ArithmeticError("the exact definite-isometry computation returned an invalid witness")
             return (False, self._isometry_from_column_matrix(transformation), None)
 
         if int(domain.module_rank()) == 2:
@@ -2211,11 +2211,11 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def an_element(self):
         r"""Return an explicit isometry when the exact decision exhibits one."""
         empty, witness, reason = self._isometry_decision()
-        assert empty is not Unknown, "no exact isometry witness backend is available for this pair"
+        assert empty is not Unknown, "no exact isometry witness construction is available for this pair"
         if empty:
-            raise ValueError("the isometry homset is empty")
+            raise ValueError("the isometry Mor is empty")
         assert witness is not None, (
-            f"{reason} proves this isometry homset is nonempty, but no explicit witness backend is available"
+            f"{reason} proves this isometry Mor is nonempty, but no explicit witness construction is available"
         )
         return witness
 
@@ -2226,7 +2226,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def _lattice_homset(domain, codomain) -> LatticeHomset:
+def _lattice_mor(domain, codomain) -> LatticeMor:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
         raise ValueError("lattice morphisms require one common base ring")
@@ -2234,7 +2234,7 @@ def _lattice_homset(domain, codomain) -> LatticeHomset:
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def _lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
+def _lattice_embedding_mor(domain, codomain) -> LatticeEmbeddingMor:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
         raise ValueError("lattice embeddings require one common base ring")
@@ -2242,7 +2242,7 @@ def _lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
 
 
 @cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def _lattice_isometry_homset(domain, codomain) -> LatticeIsometryHomset:
+def _lattice_isometry_mor(domain, codomain) -> LatticeIsometryMor:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
         raise ValueError("lattice isometries require one common base ring")
@@ -2252,9 +2252,9 @@ def _lattice_isometry_homset(domain, codomain) -> LatticeIsometryHomset:
 
 __all__ = [
     "LatticeEmbedding",
-    "LatticeEmbeddingHomset",
-    "LatticeHomset",
+    "LatticeEmbeddingMor",
+    "LatticeMor",
     "LatticeIsometry",
-    "LatticeIsometryHomset",
+    "LatticeIsometryMor",
     "LatticeMorphism",
 ]

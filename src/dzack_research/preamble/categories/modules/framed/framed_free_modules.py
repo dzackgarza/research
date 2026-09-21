@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     VectorSpaces,
-    _refine_matrix_hom,
+    _refine_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
@@ -330,9 +330,9 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def _Hom_(self, codomain, category=None):
 
             if category is not None and not category.is_subcategory(Modules(self.base_ring())):
-                raise TypeError("this is not a module homset category")
+                raise TypeError("this is not a module Mor category")
             if codomain not in FramedModules(self.base_ring()):
-                raise TypeError("the parent-level module Hom constructor requires a framed target")
+                raise TypeError("the parent-level module Mor constructor requires a framed target")
 
             return self.module_category().Mor(self, codomain)
 
@@ -345,7 +345,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Return this free module as the full subobject of itself.
 
             The selected framing is already a basis, so this construction does
-            not ask a backend to row-reduce it.  That distinction is essential
+            not ask a private matrix computation to row-reduce it.  That distinction is essential
             over exact local PIDs, where echelon normalization can divide by a
             nonunit even though the whole-span basis is already known.
             """
@@ -883,7 +883,7 @@ def _matrix_space(base_ring, nrows, ncols=None):
     ncols = nrows if ncols is None else dimension(ncols)
     source = ring.free_module(ncols)
     target = ring.free_module(nrows)
-    return _refine_matrix_hom(source.module_category().Mor(source, target))
+    return _refine_matrix_mor(source.module_category().Mor(source, target))
 
 
 def _fresh_free_module_on(

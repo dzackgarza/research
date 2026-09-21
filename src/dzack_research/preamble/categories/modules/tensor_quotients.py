@@ -152,7 +152,7 @@ class _TensorQuotientClassifierMorphism(TensorProductModuleMorphism):
     r"""The classifier induced by one elementwise bilinear evaluation.
 
     A raw Python evaluation does not prove its own bilinearity.  The map is an
-    element of the tensor Hom with that premise retained as ``Unknown``; named
+    element of the tensor Mor with that premise retained as ``Unknown``; named
     constructions whose bilinearity is derived override that decision.
     """
 
@@ -199,7 +199,7 @@ class _TensorQuotientModule:
     def from_bilinear_map(self, codomain, bilinear):
         r"""Classify the stated R-bilinear evaluation, which kills the relations.
 
-        The callable states the two-variable evaluation.  The resulting Hom
+        The callable states the two-variable evaluation.  The resulting Mor
         element retains ``Unknown`` linearity unless its construction derives
         bilinearity; no finite framing is invented to certify it.
         """

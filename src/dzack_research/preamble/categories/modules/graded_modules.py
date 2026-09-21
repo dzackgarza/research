@@ -5,9 +5,9 @@ from sage.rings.infinity import Infinity as _Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveMonoids,
@@ -15,8 +15,8 @@ from dzack_research.preamble.categories.group.magmas import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
-    _initialize_module_hom_parent,
-    _ModuleHomsetCommonMethods,
+    _initialize_module_mor_parent,
+    _ModuleMorCommonMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
@@ -227,14 +227,14 @@ class _CompositeGradedModuleMorphism(GradedModuleMorphism):
         return True
 
 
-class GradedModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
+class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     Element = GradedModuleMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         indices = domain.grading_index_set()
         assert indices is codomain.grading_index_set(), "graded-module arrows use the same indexing set"
-        assert indices is hom_family.base_category().grading_index_set(), "the graded-module arrow category uses those indices"
-        _initialize_module_hom_parent(self, hom_family, domain, codomain)
+        assert indices is mor_family.base_category().grading_index_set(), "the graded-module arrow category uses those indices"
+        _initialize_module_mor_parent(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images):
         if isinstance(images, ModuleMorphism):
@@ -247,9 +247,9 @@ class GradedModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
 
 
 
-class GradedModuleHomCategoryConstruction(HomCategoryConstruction):
+class GradedModuleMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return GradedModuleHomset
+        return GradedModuleMor
 
 
 class GradedModules(OwnedCategoryOverBaseRing):
@@ -333,7 +333,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
 
         return [Modules(self.base_ring())]
 
-    _HomCategory = GradedModuleHomCategoryConstruction
+    _MorCategory = GradedModuleMorCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
 
     class ParentMethods:

@@ -14,7 +14,7 @@ other chart is computed automatically only in the ``C_2`` case below.
 
 :class:`FiniteGluedInvariantQuotient` is the construction.  Every object it
 produces is an object of ``Schemes(R)`` built by that category's gluing entry:
-the source ``X`` and the quotient ``X/G``.  Every arrow is built by the Hom of
+the source ``X`` and the quotient ``X/G``.  Every arrow is built by the Mor of
 its glued domain from local maps: the action ``g: X -> X``, the quotient
 morphism ``X -> X/G`` and the factorization of an invariant morphism.  For an
 affine target an invariant morphism out of ``X`` factors uniquely through
@@ -289,7 +289,7 @@ class FiniteGluedInvariantQuotient(SageObject):
             )
 
     def action_of(self, group_element):
-        r"""``g: X -> X``, glued from the chart actions by the Hom out of ``X``."""
+        r"""``g: X -> X``, glued from the chart actions by the Mor out of ``X``."""
         assert group_element in self.acting_group(), f"{group_element} is not an element of {self.acting_group()}"
         return self._action_at(self.acting_group()(group_element))
 

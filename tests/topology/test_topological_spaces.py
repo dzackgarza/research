@@ -1,4 +1,4 @@
-r"""Topological spaces are sets with a selected topology and continuous-map Hom."""
+r"""Topological spaces are sets with a selected topology and continuous-map Mor."""
 
 import pytest
 

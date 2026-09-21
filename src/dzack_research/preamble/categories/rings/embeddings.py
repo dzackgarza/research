@@ -6,8 +6,8 @@ from sage.misc.cachefunc import cached_function
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
@@ -89,17 +89,17 @@ class NumberFieldEmbedding(Morphism):
         source = other.domain()
         if _engine_ring(source) is SageQQ:
             return source.Mor(target)(
-                _engine_ring(source).hom(_engine_ring(target))
+                _engine_ring(source).mor(_engine_ring(target))
             )
         primitive = source.primitive_element()
         return source.Mor(target)(self(other(primitive)))
 
 
-class NumberFieldHomset(CategoricalHomset):
+class NumberFieldMor(CategoricalMor):
     Element = NumberFieldEmbedding
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, datum):
         if isinstance(datum, NumberFieldEmbedding):
@@ -112,21 +112,21 @@ class NumberFieldHomset(CategoricalHomset):
         engine_domain = _engine_ring(self.domain())
         engine_codomain = _engine_ring(self.codomain())
         if engine_domain is SageQQ:
-            return self.element_class(self, engine_domain.hom(engine_codomain))
+            return self.element_class(self, engine_domain.mor(engine_codomain))
         image = datum(self.domain().primitive_element()) if callable(datum) else datum
         owned_image = self.codomain()(image)
         backend_image = _engine_element(self.codomain(), owned_image)
         return self.element_class(
             self,
-            engine_domain.hom([backend_image], engine_codomain),
+            engine_domain.mor([backend_image], engine_codomain),
         )
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism homset")
+            raise ValueError("identity is defined on an endomorphism Mor")
         engine = _engine_ring(self.domain())
         if engine is SageQQ:
-            return self(engine.hom(engine))
+            return self(engine.mor(engine))
         return self(self.domain().primitive_element())
 
     def embeddings(self):
@@ -198,12 +198,12 @@ class OrderEmbedding(Morphism):
         )
 
 
-class OrderHomset(CategoricalHomset):
+class OrderMor(CategoricalMor):
     Element = OrderEmbedding
 
     def __init__(self, domain, codomain) -> None:
-        CategoricalHomset.__init__(
-            self, OwnedOrders().HomCategory(), domain, codomain
+        CategoricalMor.__init__(
+            self, OwnedOrders().MorCategory(), domain, codomain
         )
 
     def _element_constructor_(self, field_embedding):
@@ -222,7 +222,7 @@ class OrderHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism homset")
+            raise ValueError("identity is defined on an endomorphism Mor")
         field = self.domain().fraction_field()
         return self(field.Mor(field).identity())
 
@@ -232,7 +232,7 @@ class OrderHomset(CategoricalHomset):
 
 __all__ = [
     "NumberFieldEmbedding",
-    "NumberFieldHomset",
+    "NumberFieldMor",
     "OrderEmbedding",
-    "OrderHomset",
+    "OrderMor",
 ]

@@ -426,7 +426,7 @@ class _CuspEngine:
         return self._representative.module_rank()
 
     def representative(self):
-        r"""Return the member of this orbit the backend chose."""
+        r"""Return the selected representative of this orbit."""
         return self._representative
 
     def parabolic_subgroup(self):
@@ -436,7 +436,7 @@ class _CuspEngine:
     stabilizer = parabolic_subgroup
 
     def stabilizer_generators(self):
-        r"""Return backend generators of the representative's stabilizer."""
+        r"""Return generators of the representative's stabilizer."""
         return self.lattice().Aut().isotropic_stabilizer_generators(
             self._representative
         )

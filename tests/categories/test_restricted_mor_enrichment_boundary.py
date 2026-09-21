@@ -1,11 +1,11 @@
-r"""A restricted Hom parent keeps both its arrow predicate and extra enrichment."""
+r"""A restricted Mor parent keeps both its arrow predicate and extra enrichment."""
 
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.modules import Modules
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
-def test_derivation_space_is_an_enriched_restricted_hom_parent() -> None:
+def test_derivation_space_is_an_enriched_restricted_mor_parent() -> None:
     algebra = QQ.polynomial_ring("x")
     target = algebra.free_module(finite_ordered_set(("e",)))
     derivations = algebra.derivations(target)

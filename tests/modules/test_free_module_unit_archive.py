@@ -9,7 +9,7 @@ ARCHIVE_RECONCILIATION = {
     "live_owner": "src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py",
     "owner_overrides": {
         "FramedFreeModules.ParentMethods.module_generator_morphism": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "FramedFreeModules.ParentMethods.hom": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "FramedFreeModules.ParentMethods.Mor": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
     },
     "disposition": "reconciled-live-owner",
 }

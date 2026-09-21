@@ -14,10 +14,10 @@ the latter is an action of an abstract group through a functor ``BG -> Sch_R``.
 from sage.categories.morphism import Morphism
 from sage.misc.classcall_metaclass import typecall
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoryPacketMethods,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -34,9 +34,9 @@ from dzack_research.preamble.categories.schemes.schemes import (
 from dzack_research.preamble.owned_category import _object_of
 
 
-class AffineGroupSchemeHomCategoryConstruction(HomCategoryConstruction):
+class AffineGroupSchemeMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return AffineGroupSchemeHomset
+        return AffineGroupSchemeMor
 
 
 class AffineGroupSchemes(OwnedCategoryOverBaseRing):
@@ -76,7 +76,7 @@ class AffineGroupSchemes(OwnedCategoryOverBaseRing):
     def an_object(self):
         return self.roots_of_unity(1)
 
-    _HomCategory = AffineGroupSchemeHomCategoryConstruction
+    _MorCategory = AffineGroupSchemeMorCategoryConstruction
 
 
 class _AffineGroupSchemeEngine:
@@ -143,7 +143,7 @@ class AffineGroupSchemeMorphism(Morphism):
         return f"Group-scheme morphism from {self.domain()} to {self.codomain()}"
 
 
-class AffineGroupSchemeHomset(CategoricalHomset):
+class AffineGroupSchemeMor(CategoricalMor):
     r"""Morphisms of affine group schemes over one represented base."""
 
     Element = AffineGroupSchemeMorphism
@@ -158,16 +158,16 @@ class AffineGroupSchemeHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a group-scheme endomorphism Hom")
+            raise ValueError("identity belongs to a group-scheme endomorphism Mor")
         return self(self.domain().scheme().categorical_identity_morphism())
 
 
 _ACTION_CATEGORIES = {}
 
 
-class AffineGroupSchemeActionHomCategoryConstruction(HomCategoryConstruction):
+class AffineGroupSchemeActionMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return AffineGroupSchemeActionHomset
+        return AffineGroupSchemeActionMor
 
 
 class AffineGroupSchemeActions(CategoryPacketMethods, OwnedCategory):
@@ -214,7 +214,7 @@ class AffineGroupSchemeActions(CategoryPacketMethods, OwnedCategory):
         action = product.projection(1)
         return self(base, action)
 
-    _HomCategory = AffineGroupSchemeActionHomCategoryConstruction
+    _MorCategory = AffineGroupSchemeActionMorCategoryConstruction
 
 
 class _AffineGroupSchemeActionEngine:
@@ -275,15 +275,15 @@ class AffineGroupSchemeEquivariantMorphism(Morphism):
         return f"Equivariant morphism from {self.domain()} to {self.codomain()}"
 
 
-class AffineGroupSchemeActionHomset(CategoricalHomset):
+class AffineGroupSchemeActionMor(CategoricalMor):
     r"""Equivariant morphisms between two actions of the same affine group scheme."""
 
     Element = AffineGroupSchemeEquivariantMorphism
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.group_scheme() is not codomain.group_scheme():
-            raise ValueError("an equivariant Hom requires one common acting group scheme")
-        CategoricalHomset.__init__(self, family, domain, codomain)
+            raise ValueError("an equivariant Mor requires one common acting group scheme")
+        CategoricalMor.__init__(self, family, domain, codomain)
 
     def _element_constructor_(self, arrow):
         internal = self.domain().internal_action().Mor(
@@ -293,7 +293,7 @@ class AffineGroupSchemeActionHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an equivariant endomorphism Hom")
+            raise ValueError("identity belongs to an equivariant endomorphism Mor")
         return self(self.domain().scheme().categorical_identity_morphism())
 
 

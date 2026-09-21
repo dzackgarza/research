@@ -1,4 +1,4 @@
-from sage.categories.homset import Homset
+from sage.categories.mor import Mor
 
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.modules import Modules
@@ -41,7 +41,7 @@ def test_vector_fields_are_derivations_and_have_the_expected_lie_bracket() -> No
         vector_fields.domain_object(), vector_fields.codomain_object()
     )
 
-    assert not isinstance(vector_fields, Homset)
+    assert not isinstance(vector_fields, Mor)
     assert vector_fields.arrow_set() is module_morphisms
     assert module_morphisms in vector_fields.super_categories()
     assert d_dx.as_morphism().parent() is module_morphisms
@@ -72,7 +72,7 @@ def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
     lie = vector.lie_derivative()
     graded_morphisms = Modules(QQ).Mor(de_rham, de_rham)
 
-    assert not isinstance(contraction.parent(), Homset)
+    assert not isinstance(contraction.parent(), Mor)
     assert contraction.parent().arrow_set() is graded_morphisms
     assert graded_morphisms in contraction.parent().super_categories()
     assert contraction.as_morphism().parent() is graded_morphisms

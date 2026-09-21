@@ -30,11 +30,11 @@ def test_presheaves_with_different_values_over_one_site_are_distinct_objects_of_
     points = finite_ordered_set(("a", "b"))
     constant_set = set_valued(set_valued.constant_functor(points))
     constant_module = module_valued(module_valued.constant_functor(ZZ.free_module(points)))
-    set_hom = set_valued.Mor(constant_set, constant_set)
-    module_hom = module_valued.Mor(constant_module, constant_module)
+    set_mor = set_valued.Mor(constant_set, constant_set)
+    module_mor = module_valued.Mor(constant_module, constant_module)
 
-    assert set_hom is not module_hom
-    assert set_hom.identity() * set_hom.identity() == set_hom.identity()
+    assert set_mor is not module_mor
+    assert set_mor.identity() * set_mor.identity() == set_mor.identity()
 
 
 def test_yoneda_sends_an_object_to_its_representable_presheaf() -> None:

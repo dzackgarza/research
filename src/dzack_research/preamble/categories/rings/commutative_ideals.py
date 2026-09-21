@@ -253,7 +253,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     ValueError,
                 ) as quotient_error:
                     raise AssertionError(
-                        "primality of this ideal requires an active exact ideal or quotient-cover backend"
+                        "primality of this ideal requires an exact represented ideal or quotient-cover computation"
                     ) from quotient_error
 
         def is_maximal(self):
@@ -280,7 +280,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     ValueError,
                 ) as error:
                     raise AssertionError(
-                        "maximality of this ideal requires an active exact ideal or quotient-cover backend"
+                        "maximality of this ideal requires an exact represented ideal or quotient-cover computation"
                     ) from error
                 try:
                     return bool(lifted.is_maximal())
@@ -293,7 +293,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         return bool(lifted.is_prime() and lifted.dimension() == 0)
                     except NotImplementedError as fallback_error:
                         raise AssertionError(
-                            "the selected quotient-cover backend must decide primality and dimension for maximality"
+                            "the selected quotient-cover computation must decide primality and dimension for maximality"
                         ) from fallback_error
 
         def radical(self):
@@ -559,10 +559,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     # ask instead.
                     prime = structure["prime_ideal"]
                     source = source_ideal.ring()
-                    carriers = source_ideal.colon(source.ideal(numerator))
+                    colon_ideal = source_ideal.colon(source.ideal(numerator))
                     return any(
                         not prime.contains_ambient_element(generator)
-                        for generator in carriers.ideal_generators()
+                        for generator in colon_ideal.ideal_generators()
                     )
                 contracted = self.contraction_from_localization()
                 return _engine_ring_value(contracted.ring(), numerator) in contracted._engine_ideal()

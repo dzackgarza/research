@@ -10,8 +10,8 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoricalIsomorphism,
     _precomposable,
 )
@@ -87,7 +87,7 @@ def _integral_left_solver(system, ring):
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
     assert ring in OwnedRings(), "integral solving requires an owned coefficient ring"
-    assert system.parent() in MatrixSpaces(ring), f"an integral linear system over {ring} is an element of a matrix homset over it, and {system.parent()} is not one"
+    assert system.parent() in MatrixSpaces(ring), f"an integral linear system over {ring} is an element of a matrix mor over it, and {system.parent()} is not one"
 
     transposed = system.transpose()
     smith, left, right = transposed.smith_form()
@@ -266,7 +266,7 @@ class ModuleMorphism(Morphism):
             self._refute_invalid_selected_lift_when_decidable()
             return
         labels = self.domain().module_generating_set()
-        set_homset = Sets().Mor(labels, self.codomain())
+        set_mor = Sets().Mor(labels, self.codomain())
         if isinstance(images, SetMorphism):
             if images.domain() is not labels or images.codomain() is not self.codomain():
                 raise ValueError("the generator map has the wrong framing or codomain")
@@ -289,7 +289,7 @@ class ModuleMorphism(Morphism):
                 name="Generator images",
             )
             self._generator_image = self._generator_images.value
-            self._generator_morphism = set_homset(self._generator_image)
+            self._generator_morphism = set_mor(self._generator_image)
         elif isinstance(images, dict):
             size = labels.cardinality()
             if not size.is_finite():
@@ -327,7 +327,7 @@ class ModuleMorphism(Morphism):
                     name="Generator images",
                 )
             self._generator_image = self._generator_images.value
-            self._generator_morphism = set_homset(self._generator_image)
+            self._generator_morphism = set_mor(self._generator_image)
         elif isinstance(images, (tuple, list)):
             values = tuple(images)
             size = labels.cardinality()
@@ -343,7 +343,7 @@ class ModuleMorphism(Morphism):
                 name="Generator images",
             )
             self._generator_image = self._generator_images.value
-            self._generator_morphism = set_homset(self._generator_image)
+            self._generator_morphism = set_mor(self._generator_image)
         elif callable(images):
             self._generator_images = indexed_family(
                 labels,
@@ -351,7 +351,7 @@ class ModuleMorphism(Morphism):
                 name="Generator images",
             )
             self._generator_image = self._generator_images.value
-            self._generator_morphism = set_homset(self._generator_image)
+            self._generator_morphism = set_mor(self._generator_image)
         else:
             raise TypeError("a module morphism is specified on the domain framing")
         self._linearity_decision = self._check_selected_domain_relations()
@@ -638,13 +638,13 @@ class ModuleMorphism(Morphism):
     def __add__(self, other):
         r"""Return the pointwise sum in ``Hom_R(M, N)``.
 
-        ``other`` is read in this Hom module by its element constructor: a
+        ``other`` is read in this Mor module by its element constructor: a
         linear map with the same endpoints, or a scalar of an endomorphism
         ring, which is that multiple of the identity.
         """
         parent = self.parent()
         summand = parent(other)
-        from dzack_research.preamble.categories.group.additive_homsets import _scalar_identity_coefficient
+        from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
         left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(summand)
         if left is not None and right is not None:
@@ -653,7 +653,7 @@ class ModuleMorphism(Morphism):
 
     def __neg__(self):
         parent = self.parent()
-        from dzack_research.preamble.categories.group.additive_homsets import _scalar_identity_coefficient
+        from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
         scalar = _scalar_identity_coefficient(self)
         if scalar is not None:
@@ -680,7 +680,7 @@ class ModuleMorphism(Morphism):
             return op == op_EQ
         from sage.misc.unknown import Unknown
 
-        from dzack_research.preamble.categories.group.additive_homsets import _scalar_identity_coefficient
+        from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
         left, right = _scalar_identity_coefficient(self), _scalar_identity_coefficient(other)
         if left is not None and right is not None and (left == right) is True:
@@ -714,10 +714,10 @@ class ModuleMorphism(Morphism):
         # ordinary endpoint check and composition constructor remain the one
         # owner of the operation.
         from dzack_research.preamble.categories.modules.pure.modules import (
-            LinearHomModules,
+            LinearMorModules,
         )
 
-        match element_parent(actor) in LinearHomModules(self.domain().base_ring()):
+        match element_parent(actor) in LinearMorModules(self.domain().base_ring()):
             case True:
                 return actor.__mul__(self)
             case False:
@@ -730,7 +730,7 @@ class ModuleMorphism(Morphism):
         return self._lmul_(scalar)
 
     def _acted_upon_(self, actor, self_on_left):
-        r"""Use the canonical pointwise scalar action of the Hom module."""
+        r"""Use the canonical pointwise scalar action of the Mor module."""
         _ = self_on_left
         match actor:
             case _ if actor in self.parent().base_ring():
@@ -804,23 +804,23 @@ class ModuleMorphism(Morphism):
             target=target,
         )
 
-    def internal_hom_map(
+    def internal_mor_map(
         self,
         target_map,
         *,
-        source_internal_hom=None,
-        target_internal_hom=None,
+        source_internal_mor=None,
+        target_internal_mor=None,
     ):
-        r"""Return the internal-Hom map induced by pre- and postcomposition."""
-        from dzack_research.preamble.categories.modules.internal_hom import (
-            _internal_hom_morphism,
+        r"""Return the internal-Mor map induced by pre- and postcomposition."""
+        from dzack_research.preamble.categories.modules.internal_mor import (
+            _internal_mor_morphism,
         )
 
-        return _internal_hom_morphism(
+        return _internal_mor_morphism(
             self,
             target_map,
-            source_internal_hom=source_internal_hom,
-            target_internal_hom=target_internal_hom,
+            source_internal_mor=source_internal_mor,
+            target_internal_mor=target_internal_mor,
         )
 
     def stack(self, other):
@@ -1469,7 +1469,7 @@ class ModuleMorphism(Morphism):
         )(forward, inverse)
 
     def _is_the_identity(self) -> bool:
-        r"""Return whether this morphism is its Hom object's identity."""
+        r"""Return whether this morphism is its Mor object's identity."""
         if self.domain() is not self.codomain():
             return False
         module = self.domain()
@@ -1494,12 +1494,12 @@ class ModuleMorphism(Morphism):
                     return other
                 if other is source.module_category().Mor(source, source).identity():
                     return self
-                homset = source.module_category().Mor(source, target)
+                mor = source.module_category().Mor(source, target)
                 # Composition of certified linear maps is linear.  Keep that
                 # theorem as construction data instead of rebuilding the
                 # composite from all selected generator images and rechecking
                 # the source relations.
-                return _CompositeModuleMorphism(homset, self, other)
+                return _CompositeModuleMorphism(mor, self, other)
 
     @cached_method
     def cokernel(self):
@@ -1584,9 +1584,9 @@ class ModuleMorphism(Morphism):
         r"""Return the two-sided inverse, with coordinate inversion on matrix objects.
 
         A general module morphism must be an isomorphism.  The canonical
-        matrix Hom is also the coordinate-matrix object, where inversion is
+        matrix Mor is also the coordinate-matrix object, where inversion is
         the ordinary matrix operation and may extend coefficients to the
-        backend inverse's scalar ring (for example ``ZZ`` to ``QQ``).
+        computed inverse's scalar ring (for example ``ZZ`` to ``QQ``).
         """
         self._require_established_linearity("module-morphism inversion")
         if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
@@ -1628,7 +1628,7 @@ class ModuleMorphism(Morphism):
         r"""Return this invertible endomorphism as an element of ``Aut_R(M)``.
 
         An automorphism is not a kind of morphism; it is an element of the
-        automorphism group the Hom packet gives the module.  This states the
+        automorphism group the Mor packet gives the module.  This states the
         endomorphism together with the inverse it constructs, which is what
         that group's elements are.
         """
@@ -1720,7 +1720,7 @@ class _CompositeModuleMorphism(ModuleMorphism):
 
 
 class _TransportedModuleMorphism(ModuleMorphism):
-    r"""The same module map viewed in another Hom parent with the same endpoints."""
+    r"""The same module map viewed in another Mor parent with the same endpoints."""
 
     def __init__(self, parent, morphism) -> None:
         self._transported_morphism = morphism
@@ -1734,7 +1734,7 @@ class _ScalarIdentityModuleMorphism(ModuleMorphism):
     r"""The scalar multiple of the identity, linear by the module action."""
 
     def __init__(self, parent, scalar) -> None:
-        from dzack_research.preamble.categories.group.additive_homsets import _ScalarIdentityEvaluation
+        from dzack_research.preamble.categories.group.additive_mors import _ScalarIdentityEvaluation
 
         evaluation = _ScalarIdentityEvaluation(parent, scalar)
         super().__init__(parent, evaluation, elementwise=True)
@@ -1946,17 +1946,17 @@ class _ModuleMorphismProposedAsEmbedding(ModuleEmbedding):
         return self._proposed_morphism.linearity_decision()
 
 
-class ModuleEmbeddingHomset(CategoricalHomset):
+class ModuleEmbeddingMor(CategoricalMor):
     r"""The declared monomorphisms between two modules over one scalar ring."""
 
     Element = ModuleEmbedding
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         modules = domain.module_category()
         assert domain in modules and codomain in modules, (
-            "a module embedding Hom requires two modules over one scalar ring"
+            "a module embedding Mor requires two modules over one scalar ring"
         )
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images, *, lift=None):
         if isinstance(images, ModuleEmbedding):
@@ -1983,7 +1983,7 @@ class ModuleEmbeddingHomset(CategoricalHomset):
         return self.domain().base_ring()
 
     def scalar_multiple(self, scalar, morphism):
-        r"""Scale an embedding in the underlying linear Hom.
+        r"""Scale an embedding in the underlying linear Mor.
 
         A scalar multiple of an injective map need not remain injective, so
         this operation deliberately returns through ``Mor_R`` rather than the
@@ -2005,35 +2005,35 @@ class ModuleEmbeddingHomset(CategoricalHomset):
             for superpacket in packet.super_packets()
             if source in superpacket.C() and target in superpacket.C()
         ]
-        return [packet.Homs().Of(source, target), *inherited]
+        return [packet.Mors().Of(source, target), *inherited]
 
     def _repr_(self):
         return f"Emb({self.domain()}, {self.codomain()})"
 
 
-def _initialize_module_hom_parent(
+def _initialize_module_mor_parent(
     parent,
-    hom_family,
+    mor_family,
     domain,
     codomain,
     *,
-    full_internal_hom=False,
+    full_internal_mor=False,
 ) -> None:
-    r"""Install the common enriched ``R``-module Hom parent semantics.
+    r"""Install the common enriched ``R``-module Mor parent semantics.
 
-    This is implementation reuse only.  Structured Hom categories such as
+    This is implementation reuse only.  Structured Mor categories such as
     ``Hom_{R[G]}`` must not subclass ``Hom_R`` as Python classes merely because
     they have ``Hom_R`` as a categorical supercategory.
     """
-    modules = hom_family.base_category()
+    modules = mor_family.base_category()
     ring = modules.base_ring()
     assert domain in modules and codomain in modules, (
-        f"a Hom of {modules} has two of its objects as endpoints; got {domain} and {codomain}"
+        f"a Mor of {modules} has two of its objects as endpoints; got {domain} and {codomain}"
     )
-    placement = domain.module_category()._hom_parent_placement(
+    placement = domain.module_category()._mor_parent_placement(
         domain,
         codomain,
-        full_internal_hom=full_internal_hom,
+        full_internal_mor=full_internal_mor,
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
@@ -2045,7 +2045,7 @@ def _initialize_module_hom_parent(
         _matrix_unit,
     )
 
-    # Fix all chosen data before the mixed Sage Homset is initialized and then
+    # Fix all chosen data before the mixed Sage Mor is initialized and then
     # refined into its owned enrichment.  The generator-map callables below are
     # representations of those fixed data and are evaluated only after the
     # parent exists; no accessor can choose another framing or presentation.
@@ -2062,12 +2062,12 @@ def _initialize_module_hom_parent(
             )
         case _ if placement.is_subcategory(_SelectedFinitePresentationModules(ring)):
             # ``Hom_R(M, N)`` between presented modules is presented by the
-            # model its endpoints determine (see ``internal_hom``).
-            from dzack_research.preamble.categories.modules.internal_hom import (
-                _internal_hom_model_data_from_endpoints,
+            # model its endpoints determine (see ``internal_mor``).
+            from dzack_research.preamble.categories.modules.internal_mor import (
+                __internal_mor_model_data_from_endpoints,
             )
 
-            model, _inclusion, relation_matrix, presentation = _internal_hom_model_data_from_endpoints(
+            model, _inclusion, relation_matrix, presentation = __internal_mor_model_data_from_endpoints(
                 domain,
                 codomain,
             )
@@ -2085,9 +2085,9 @@ def _initialize_module_hom_parent(
                 presentation,
             )
 
-    CategoricalHomset.__init__(
+    CategoricalMor.__init__(
         parent,
-        hom_family,
+        mor_family,
         domain,
         codomain,
         category=placement,
@@ -2097,22 +2097,22 @@ def _initialize_module_hom_parent(
     if domain is codomain:
         from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
 
-        # Construct composition in this exact parent; asking the Hom factory
+        # Construct composition in this exact parent; asking the Mor factory
         # for these same endpoints while it is still constructing would
         # recursively allocate another copy before it can be cached.
         _algebra_from_native_ring(
             parent,
             parent._compose_endomorphisms,
-            _ModuleHomsetCommonMethods.identity(parent),
-            lambda scalar, arrow: _ModuleHomsetCommonMethods._owned_scalar_multiple(parent, scalar, arrow),
+            _ModuleMorCommonMethods.identity(parent),
+            lambda scalar, arrow: _ModuleMorCommonMethods._owned_scalar_multiple(parent, scalar, arrow),
         )
 
 
-class _ModuleHomsetCommonMethods:
-    r"""Python implementation shared by module-enriched Hom parents.
+class _ModuleMorCommonMethods:
+    r"""Python implementation shared by module-enriched Mor parents.
 
-    This is not a mathematical Hom category.  Concrete Hom parents remain
-    distinct categories and use this class only to share ordinary module-Hom
+    This is not a mathematical Mor category.  Concrete Mor parents remain
+    distinct categories and use this class only to share ordinary module-Mor
     operations.
     """
 
@@ -2128,7 +2128,7 @@ class _ModuleHomsetCommonMethods:
             return self.from_rows(images)
         if isinstance(images, ModuleMorphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError("the morphism has the wrong Hom source or target")
+                raise ValueError("the morphism has the wrong Mor source or target")
             if images.parent() is self:
                 return images
             if images.linearity_decision() is not True:
@@ -2138,7 +2138,7 @@ class _ModuleHomsetCommonMethods:
             images = {label: images(self.domain().module_generator(label)) for label in self.domain().module_generating_set()}
         elif isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError("the morphism has the wrong Hom source or target")
+                raise ValueError("the morphism has the wrong Mor source or target")
             return self.elementwise(lambda element: images(element))
         base_ring = self.base_ring()
         if self.domain() is self.codomain() and (images in base_ring or images in _engine_ring(base_ring)):
@@ -2148,16 +2148,16 @@ class _ModuleHomsetCommonMethods:
             _SelectedFinitePresentationModules,
         )
 
-        if self in _SelectedFinitePresentationModules(base_ring) and images in self.internal_hom_model():
-            return self._morphism_from_internal_model(self.internal_hom_model()(images))
+        if self in _SelectedFinitePresentationModules(base_ring) and images in self._internal_mor_model():
+            return self._morphism_from_internal_model(self._internal_mor_model()(images))
         return self.element_class(self, images)
 
     def is_projective(self):
-        r"""Answer ``Unknown`` for a Hom module with neither a matrix nor a presented model.
+        r"""Answer ``Unknown`` for a Mor module with neither a matrix nor a presented model.
 
-        A matrix space is free on its matrix units and a Hom between modules
+        A matrix space is free on its matrix units and a Mor between modules
         with chosen finite presentations is decided from its presented model;
-        both answer through their placement.  The Hom modules reaching this
+        both answer through their placement.  The Mor modules reaching this
         method have neither, and projectivity is not decided for them.
         """
         from sage.misc.unknown import Unknown
@@ -2172,7 +2172,7 @@ class _ModuleHomsetCommonMethods:
 
     def _compose_endomorphisms(self, left, right):
         r"""Compose endomorphisms while retaining both module-linearity premises."""
-        from dzack_research.preamble.categories.group.additive_homsets import (
+        from dzack_research.preamble.categories.group.additive_mors import (
             _scalar_identity_coefficient,
         )
 
@@ -2183,11 +2183,11 @@ class _ModuleHomsetCommonMethods:
         return _CompositeModuleMorphism(self, left, right)
 
     def _owned_scalar_multiple(self, scalar, morphism):
-        r"""Realize the pointwise action defining this Hom's scalar enrichment."""
+        r"""Realize the pointwise action defining this Mor's scalar enrichment."""
         if morphism.parent() is not self:
             morphism = self(morphism)
         scalar = self.base_ring()(scalar)
-        from dzack_research.preamble.categories.group.additive_homsets import _scalar_identity_coefficient
+        from dzack_research.preamble.categories.group.additive_mors import _scalar_identity_coefficient
 
         coefficient = _scalar_identity_coefficient(morphism)
         if coefficient is not None:
@@ -2244,14 +2244,14 @@ class _ModuleHomsetCommonMethods:
 
     @cached_method
     def identity(self):
-        r"""Return the identity of this endomorphism Hom.
+        r"""Return the identity of this endomorphism Mor.
 
-        A Hom object has one identity.  Returning a fresh morphism on each call
+        A Mor object has one identity.  Returning a fresh morphism on each call
         makes it incomparable with itself, since module-morphism equality is
         not decidable without a chosen finite presentation of the source.
         """
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism homset")
+            raise ValueError("identity is defined on an endomorphism Mor")
         return self._scalar_identity(self.base_ring().one())
 
     def one(self):
@@ -2259,12 +2259,12 @@ class _ModuleHomsetCommonMethods:
         return self.identity()
 
 
-class _AuxiliaryLinearModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
-    r"""Private linear-Hom parent used while realizing an internal Hom module.
+class _AuxiliaryLinearModuleMor(_ModuleMorCommonMethods, CategoricalMor):
+    r"""Private linear-Mor parent used while realizing an internal Mor module.
 
     This parent represents a linear arrow space needed by an algorithm.  It is
-    deliberately placed only in ``LinearHomModules(R)`` and therefore cannot
-    recursively demand another internal-Hom module presentation.
+    deliberately placed only in ``LinearMorModules(R)`` and therefore cannot
+    recursively demand another internal-Mor module presentation.
     """
 
     Element = ModuleMorphism
@@ -2273,32 +2273,32 @@ class _AuxiliaryLinearModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         modules = Modules(_owned_ring(domain.base_ring()))
-        _initialize_module_hom_parent(
+        _initialize_module_mor_parent(
             self,
-            modules.HomCategory(),
+            modules.MorCategory(),
             domain,
             codomain,
-            full_internal_hom=False,
+            full_internal_mor=False,
         )
 
     def __call__(self, images):
         return self._element_constructor_(images)
 
 
-def _auxiliary_linear_module_homset(domain, codomain):
-    return _AuxiliaryLinearModuleHomset(domain, codomain)
+def _auxiliary_linear_module_mor(domain, codomain):
+    return _AuxiliaryLinearModuleMor(domain, codomain)
 
 
-class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
+class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     Element = ModuleMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        _initialize_module_hom_parent(
+    def __init__(self, mor_family, domain, codomain) -> None:
+        _initialize_module_mor_parent(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
-            full_internal_hom=True,
+            full_internal_mor=True,
         )
 
     def __call__(self, images):
@@ -2306,21 +2306,21 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         return self._element_constructor_(images)
 
     def presentation_matrix(self):
-        r"""Return the relation rows of the presented model of this Hom module."""
-        from dzack_research.preamble.categories.modules.internal_hom import (
-            _internal_hom_model_data,
+        r"""Return the relation rows of the presented model of this Mor module."""
+        from dzack_research.preamble.categories.modules.internal_mor import (
+            __internal_mor_model_data,
         )
 
-        _model, _inclusion, relation_matrix, _presentation = _internal_hom_model_data(self)
+        _model, _inclusion, relation_matrix, _presentation = __internal_mor_model_data(self)
         return relation_matrix
 
     def presentation(self):
-        r"""Return the presentation of the presented model of this Hom module."""
-        from dzack_research.preamble.categories.modules.internal_hom import (
-            _internal_hom_model_data,
+        r"""Return the presentation of the presented model of this Mor module."""
+        from dzack_research.preamble.categories.modules.internal_mor import (
+            __internal_mor_model_data,
         )
 
-        _model, _inclusion, _relation_matrix, presentation = _internal_hom_model_data(self)
+        _model, _inclusion, _relation_matrix, presentation = __internal_mor_model_data(self)
         return presentation
 
     def linear_combination(self, coefficients):
@@ -2334,7 +2334,7 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         return result
 
     def _repr_(self):
-        return f"Hom({self.domain()}, {self.codomain()})"
+        return f"Mor({self.domain()}, {self.codomain()})"
 
 
 class SubFramingMorphism(ModuleEmbedding):
@@ -2371,8 +2371,8 @@ class SubFramingMorphism(ModuleEmbedding):
 
 def _framing_morphism(codomain) -> FramingMorphism:
     domain = codomain.framing_source()
-    homset = domain.module_category().Mor(domain, codomain)
-    framing = FramingMorphism(homset, codomain.module_generator_morphism())
+    mor = domain.module_category().Mor(domain, codomain)
+    framing = FramingMorphism(mor, codomain.module_generator_morphism())
     return framing
 
 
@@ -2449,7 +2449,7 @@ class _FramedTensorBilinearEvaluationMorphism(TensorProductModuleMorphism):
     r"""Conditional classifier of a two-variable evaluation on framed factors.
 
     The selected tensor framing determines the only possible linear extension
-    from the values on pairs of factor generators, and ordinary module-Hom
+    from the values on pairs of factor generators, and ordinary module-Mor
     admission still rejects any selected tensor relation that those values do
     not kill.  A Python callable, however, does not establish that its values
     on arbitrary factor elements agree with that bilinear extension.  Retain
@@ -2588,16 +2588,16 @@ class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
         identity_automorphism = identity
 
 
-class ModuleAutomorphismGroup(CategoricalHomset):
+class ModuleAutomorphismGroup(CategoricalMor):
     r"""The unit group of ``End_R(M)``, retaining its actual module maps."""
 
     Element = ModuleAutomorphism
 
-    def __init__(self, hom_family, module) -> None:
+    def __init__(self, mor_family, module) -> None:
         self._base_ring = _owned_ring(module.base_ring())
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             module,
             module,
             category=ModuleAutomorphismGroups(self._base_ring),
@@ -2608,9 +2608,9 @@ class ModuleAutomorphismGroup(CategoricalHomset):
 
     def _from_known_inverse_pair(self, forward, inverse):
         module = self.domain()
-        homset = module.module_category().Mor(module, module)
-        forward = homset(forward)
-        inverse = homset(inverse)
+        mor = module.module_category().Mor(module, module)
+        forward = mor(forward)
+        inverse = mor(inverse)
         return _ConstructedModuleAutomorphism(self, forward, inverse)
 
     def __call__(self, datum):
@@ -2624,11 +2624,11 @@ class ModuleAutomorphismGroup(CategoricalHomset):
             datum = datum.as_morphism()
         if isinstance(datum, CategoricalIsomorphism):
             module = self.domain()
-            homset = module.module_category().Mor(module, module)
+            mor = module.module_category().Mor(module, module)
             return self.element_class(
                 self,
-                homset(datum.forward()),
-                homset(datum.inverse()),
+                mor(datum.forward()),
+                mor(datum.inverse()),
             )
         module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
@@ -2666,7 +2666,7 @@ class ModuleAutomorphismGroup(CategoricalHomset):
         packet = self.base_category().category_packet()
         module = self.domain()
         supers = [
-            packet.Homs().Of(module, module),
+            packet.Mors().Of(module, module),
             packet.Monos().Of(module, module),
             packet.Epis().Of(module, module),
         ]
@@ -2678,8 +2678,8 @@ class ModuleAutomorphismGroup(CategoricalHomset):
         return f"Aut_{self.base_category()}({self.module()})"
 
 
-class TensorProductModuleHomset(ModuleHomset):
-    r"""The ordinary module Hom with tensor-domain bilinear constructor syntax."""
+class TensorProductModuleMor(ModuleMor):
+    r"""The ordinary module Mor with tensor-domain bilinear constructor syntax."""
 
     Element = TensorProductModuleMorphism
 

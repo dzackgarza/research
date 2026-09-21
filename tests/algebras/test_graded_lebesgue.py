@@ -191,7 +191,7 @@ def test_pointwise_algebra_reuses_the_module_components_and_tensor_classifier() 
     assert multiplication(multiplication.domain().pure_tensor(two, three)) == algebra(Lp(Infinity)(RR(6)))
     assert algebra.one() * two == two
     assert two * algebra.one() == two
-    assert algebra.degree_projection(NonNegativeReals.zero()).parent().homset_category().is_subcategory(Modules(RR))
-    assert algebra.integral_form().parent().homset_category().is_subcategory(Modules(RR))
-    assert algebra.integral_pairing_morphism().parent().homset_category().is_subcategory(Modules(RR))
+    assert algebra.degree_projection(NonNegativeReals.zero()).parent().mor_category().is_subcategory(Modules(RR))
+    assert algebra.integral_form().parent().mor_category().is_subcategory(Modules(RR))
+    assert algebra.integral_pairing_morphism().parent().mor_category().is_subcategory(Modules(RR))
     assert module.graded_piece(NonNegativeReals(Infinity)).is_zero()

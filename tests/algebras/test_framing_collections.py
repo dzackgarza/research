@@ -31,10 +31,10 @@ def test_infinite_free_algebra_morphism_keeps_generator_images_lazy() -> None:
 def test_infinite_graded_map_retains_unknown_degree_hypothesis_but_structural_maps_derive_it() -> None:
     module = ZZ.free_module(NN)
     algebra = module.tensor_algebra()
-    homset = GradedAlgebras(ZZ).Mor(algebra, algebra)
+    mor = GradedAlgebras(ZZ).Mor(algebra, algebra)
 
-    stated = homset(lambda label: algebra.algebra_generator(label))
-    identity = homset.identity()
+    stated = mor(lambda label: algebra.algebra_generator(label))
+    identity = mor.identity()
     composite = identity * identity
 
     assert stated.degree_preservation_decision() is Unknown

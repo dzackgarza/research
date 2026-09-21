@@ -34,7 +34,7 @@ class EichlerCoveringOrbitDatum(SageObject):
     A covering discriminant class need not be a distinct full ``O(L)`` orbit.
     This object therefore retains both the vector constructed from that class
     and the actual full-orbit representative selected by the indefinite
-    backend, together with a transporter between them and generators of the
+    exact orbit computation, together with a transporter between them and generators of the
     covering vector's stabilizer ``P_v``.
     """
 
@@ -678,9 +678,9 @@ class TwoUEichlerModel(SageObject):
         r"""Return exact stabilizer/transporter data for every covering class.
 
         The finite discriminant list indexes explicitly constructed primitive
-        vectors.  For each one, the exact indefinite backend supplies
+        vectors.  For each one, the exact indefinite orthogonal-group computation supplies
         generators of its full-orthogonal stabilizer and a transporter to one
-        of the backend's full ``O(L)`` orbit representatives.  Several covering
+        of the computed full ``O(L)`` orbit representatives.  Several covering
         classes are allowed to land in the same full orbit; this method records
         that fact instead of quotienting the covering list prematurely.
         """
@@ -713,7 +713,7 @@ class TwoUEichlerModel(SageObject):
                             transporter,
                         )
             raise ArithmeticError(
-                "an explicit covering vector did not belong to any full orthogonal-group orbit returned by the backend"
+                "an explicit covering vector did not belong to any full orthogonal-group orbit represented by the exact orbit computation"
             )
 
         return finite_indexed_family(
@@ -726,7 +726,7 @@ class TwoUEichlerModel(SageObject):
         r"""Return the exact rank-one-smaller stabilizer actions for the covering vectors.
 
         The full orthogonal stabilizer generators are supplied by the existing
-        exact lattice backend.  Each generator fixes the selected covering
+        exact lattice computation.  Each generator fixes the selected covering
         vector and therefore preserves its embedded orthogonal complement.
         Restricting through that embedding gives a live isometry of the
         rank-one-smaller lattice.  This is the recursive stabilizer step; it

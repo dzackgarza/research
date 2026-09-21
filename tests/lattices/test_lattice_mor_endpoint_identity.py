@@ -1,10 +1,10 @@
-r"""Lattice Hom caches are keyed by endpoint identity, not lattice hashing."""
+r"""Lattice Mor caches are keyed by endpoint identity, not lattice hashing."""
 
 import pytest
 
 from dzack_research.preamble.all import ZZ, Lattices
 
-def test_unhashable_lattice_endpoints_have_stable_hom_embedding_and_isometry_parents() -> None:
+def test_unhashable_lattice_endpoints_have_stable_mor_embedding_and_isometry_parents() -> None:
     source = Lattices(ZZ)([[2]])
     target = Lattices(ZZ)([[2]])
 

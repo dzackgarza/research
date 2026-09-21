@@ -166,15 +166,15 @@ class Functor:
     def morphism_image(self, morphism: Map) -> Map:
         r"""The image ``F(f): F(A) -> F(B)`` of an arrow ``f: A -> B`` of the domain.
 
-        Both sides are decided by the Hom categories that own them: ``f`` is
+        Both sides are decided by the Mor categories that own them: ``f`` is
         an arrow of ``Hom_C(A, B)``, and its image is an arrow of
         ``Hom_D(F(A), F(B))``, a membership that also fixes both endpoints.
         """
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            _category_hom,
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+            _category_mor,
         )
 
-        if morphism not in _category_hom(self.domain(), morphism.domain(), morphism.codomain()):
+        if morphism not in _category_mor(self.domain(), morphism.domain(), morphism.codomain()):
             raise TypeError("the supplied map is not a morphism of the functor's domain")
         cached = self._cached_morphism_image(morphism)
         if cached is not None:
@@ -182,7 +182,7 @@ class Functor:
         domain = self.object_image(morphism.domain())
         codomain = self.object_image(morphism.codomain())
         image = self._apply_morphism(morphism)
-        if image not in _category_hom(self.codomain(), domain, codomain):
+        if image not in _category_mor(self.codomain(), domain, codomain):
             raise TypeError("the image is not a morphism of the functor's codomain")
         return self._record_morphism_image(morphism, image)
 
@@ -199,7 +199,7 @@ class Functor:
         r"""Apply the object action to an object of the domain, the arrow action otherwise.
 
         Whether ``value`` is an object is the domain category's question.
-        Asking it first is what lets a functor out of a Hom category, whose
+        Asking it first is what lets a functor out of a Mor category, whose
         objects are themselves arrows, read an arrow as the object it is.
         """
         match value:
@@ -290,7 +290,7 @@ class Functor:
         return Cat().arrow(self)
 
     def natural_transformations_to(self, target: Functor):
-        r"""Return the Hom of natural transformations ``self ⇒ target``."""
+        r"""Return the Mor of natural transformations ``self ⇒ target``."""
         if self.domain() != target.domain() or self.codomain() != target.codomain():
             raise ValueError("natural transformations require parallel functors")
         category = self.functor_category()
@@ -311,21 +311,21 @@ class Functor:
         inverse = target.natural_transformations_to(self)(inverse_components)
         return _isomorphism_from_known_inverse_pair(forward, inverse)
 
-    def induced_hom_functor(self, domain_object: Parent, codomain_object: Parent):
-        r"""Return the functor induced by this functor on one Hom category."""
-        from dzack_research.preamble.categories.functors.hom_packets import _InducedHomFunctor
+    def induced_mor_functor(self, domain_object: Parent, codomain_object: Parent):
+        r"""Return the functor induced by this functor on one Mor category."""
+        from dzack_research.preamble.categories.functors.mor_packets import _InducedMorFunctor
 
-        return _InducedHomFunctor(self, domain_object, codomain_object)
+        return _InducedMorFunctor(self, domain_object, codomain_object)
 
     def induced_end_functor(self, obj: Parent):
         r"""Return the functor induced by this functor on ``End(obj)``."""
-        from dzack_research.preamble.categories.functors.hom_packets import _InducedEndFunctor
+        from dzack_research.preamble.categories.functors.mor_packets import _InducedEndFunctor
 
         return _InducedEndFunctor(self, obj)
 
     def induced_aut_functor(self, obj: Parent):
         r"""Return the functor induced by this functor on ``Aut(obj)``."""
-        from dzack_research.preamble.categories.functors.hom_packets import _InducedAutFunctor
+        from dzack_research.preamble.categories.functors.mor_packets import _InducedAutFunctor
 
         return _InducedAutFunctor(self, obj)
 
@@ -468,17 +468,17 @@ class NaturalTransformation:
     def component(self, obj: Parent) -> Morphism:
         r"""The component ``eta_X``, an arrow of ``Hom_D(F(X), G(X))``.
 
-        Membership in that Hom category is the whole requirement: it decides
+        Membership in that Mor category is the whole requirement: it decides
         both that the component is an arrow of the common codomain category
         and that its endpoints are ``F(X)`` and ``G(X)``.
         """
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            _category_hom,
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+            _category_mor,
         )
 
         domain, codomain = self.source()(obj), self.target()(obj)
         arrow = self._component(obj)
-        if arrow not in _category_hom(self.source().codomain(), domain, codomain):
+        if arrow not in _category_mor(self.source().codomain(), domain, codomain):
             raise TypeError(
                 "a natural-transformation component at an object X is an arrow "
                 "F(X) -> G(X) of the common codomain category"
@@ -501,9 +501,9 @@ class NaturalTransformation:
         The square has two paths ``F(A) -> G(B)``, indexed by the two-element
         set ``Sets.Δ[1]``: ``0`` is ``G(f) o eta_A`` and ``1`` is
         ``eta_B o F(f)``.  Its value is one element of the product of the
-        family of the Hom-sets holding those two composites over that index
+        family of the Mor objects holding those two composites over that index
         set (`CON-15`); projecting at an index recovers that path in its own
-        Hom-set.  Naturality is the statement that the two components agree.
+        Mor object.  Naturality is the statement that the two components agree.
         """
         from dzack_research.preamble.categories.sets.indexed_families import indexed_family
         from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -534,7 +534,7 @@ class _UnitCounitPresentation:
 
     This is the complete defining datum consumed by :class:`Adjunction`: the
     two adjoint functors and the two component families.  It validates the
-    actual component endpoints once at their shared owner.  Hom transposes,
+    actual component endpoints once at their shared owner.  Mor transposes,
     natural transformations and the public component accessors are derived
     from this presentation rather than supplied as parallel interfaces.
     """
@@ -568,8 +568,8 @@ class _UnitCounitPresentation:
         return self._right_adjoint
 
     def unit(self, obj: Parent) -> Morphism:
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            _category_hom,
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+            _category_mor,
         )
 
         category = self.left_adjoint().domain()
@@ -580,7 +580,7 @@ class _UnitCounitPresentation:
                 raise TypeError("a unit component is indexed by an object of the left-adjoint domain")
         target = self.right_adjoint()(self.left_adjoint()(obj))
         arrow = self._unit_component(obj)
-        match arrow in _category_hom(category, obj, target):
+        match arrow in _category_mor(category, obj, target):
             case True:
                 pass
             case False:
@@ -588,8 +588,8 @@ class _UnitCounitPresentation:
         return arrow
 
     def counit(self, obj: Parent) -> Morphism:
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            _category_hom,
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+            _category_mor,
         )
 
         category = self.right_adjoint().domain()
@@ -600,7 +600,7 @@ class _UnitCounitPresentation:
                 raise TypeError("a counit component is indexed by an object of the right-adjoint domain")
         source = self.left_adjoint()(self.right_adjoint()(obj))
         arrow = self._counit_component(obj)
-        match arrow in _category_hom(category, source, obj):
+        match arrow in _category_mor(category, source, obj):
             case True:
                 pass
             case False:
@@ -627,7 +627,7 @@ class Adjunction:
     cannot replace any of the public equivalent-data interfaces independently.
 
     Everything else is derived from it and is not supplied again: the natural
-    Hom-set bijection ``Phi: Hom_D(F(A), B) -> Hom_C(A, U(B))``, with
+    Mor object bijection ``Phi: Hom_D(F(A), B) -> Hom_C(A, U(B))``, with
     ``Phi(f) = U(f) o eta_A`` and ``Phi^{-1}(g) = epsilon_B o F(g)``, and the
     unit and counit as natural transformations.  The triangle identities are
     theorems about the supplied datum, established where it is constructed,
@@ -637,8 +637,8 @@ class Adjunction:
     _DERIVED_PUBLIC_INTERFACES = frozenset((
         "unit",
         "counit",
-        "hom_set_isomorphism_forward",
-        "hom_set_isomorphism_inverse",
+        "mor_set_isomorphism_forward",
+        "mor_set_isomorphism_inverse",
         "unit_transformation",
         "counit_transformation",
     ))
@@ -707,7 +707,7 @@ class Adjunction:
         return self._unit_counit_presentation().counit(obj)
 
     @final
-    def hom_set_isomorphism_forward(
+    def mor_set_isomorphism_forward(
         self,
         morphism: Morphism,
         source: Parent,
@@ -724,7 +724,7 @@ class Adjunction:
         return self.right_adjoint()(morphism) * self.unit(source)
 
     @final
-    def hom_set_isomorphism_inverse(
+    def mor_set_isomorphism_inverse(
         self,
         morphism: Morphism,
         codomain: Parent,

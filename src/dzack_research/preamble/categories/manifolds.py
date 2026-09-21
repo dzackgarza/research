@@ -15,9 +15,9 @@ from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -542,11 +542,11 @@ class HolomorphicMap(Morphism):
         return f"Holomorphic map {self.domain()} -> {self.codomain()}"
 
 
-class ComplexManifoldHomset(CategoricalHomset):
+class ComplexManifoldMor(CategoricalMor):
     Element = HolomorphicMap
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     @staticmethod
     def _unique_chart(manifold):
@@ -596,15 +596,15 @@ class ComplexManifoldHomset(CategoricalHomset):
         return self.polynomial(tuple(chart.coordinates()))
 
 
-class ComplexManifoldHomCategoryConstruction(HomCategoryConstruction):
+class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return ComplexManifoldHomset
+        return ComplexManifoldMor
 
 
 class ComplexManifolds(OwnedCategory):
     r"""Finite-dimensional complex analytic manifolds with holomorphic atlases."""
 
-    _HomCategory = ComplexManifoldHomCategoryConstruction
+    _MorCategory = ComplexManifoldMorCategoryConstruction
 
     def super_categories(self):
         return [TopologicalManifolds()]
@@ -788,7 +788,7 @@ class _ComplexDiscEngine(_ComplexOpenEngine):
 
 
 __all__ = [
-    "ComplexManifoldHomset",
+    "ComplexManifoldMor",
     "ComplexManifolds",
     "DifferentiableManifolds",
     "HolomorphicMap",

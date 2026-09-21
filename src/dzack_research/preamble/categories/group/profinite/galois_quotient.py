@@ -490,8 +490,8 @@ class GaloisRestrictionMap(Morphism):
 
 
 def _galois_restriction_rule(extension):
-    r"""The group-Hom realization rule for restriction to one finite Galois stage."""
-    return lambda homset: GaloisRestrictionMap(homset, extension)
+    r"""The group-Mor realization rule for restriction to one finite Galois stage."""
+    return lambda mor: GaloisRestrictionMap(mor, extension)
 
 
 class _LiftCosetEngine:

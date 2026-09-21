@@ -409,7 +409,7 @@ class PerfectDomainOrbitAdjacency(SageObject):
     r"""One quotient adjacency in a complete Lorentzian perfect-domain traversal.
 
     The source is a selected orbit representative.  Flipping its retained
-    facet produces ``neighbor``.  The backend then identifies that actual
+    facet produces ``neighbor``.  The exact arithmetic computation then identifies that actual
     neighbor with the selected representative ``target`` of its orbit.  The
     source and target representatives need not themselves be adjacent or lie
     in the same orbit, so this is deliberately not a ``ReductionCellAdjacency``.
@@ -458,7 +458,7 @@ class PerfectDomainOrbitAdjacency(SageObject):
 class LorentzianPerfectDomainTraversal(SageObject):
     r"""A completed orbit traversal of Lorentzian perfect domains.
 
-    The provider returns only after every adjacency has been processed.  The
+    The exact traversal computation returns only after every adjacency has been processed.  The
     stored generator family is exactly the family used upstream to reconstruct
     ``O(L)``: stabilizer generators of every orbit representative together
     with one equivalence matrix for every quotient adjacency.
@@ -500,11 +500,11 @@ class LorentzianPerfectDomainTraversal(SageObject):
     def unpaired_facets(self):
         r"""Return representative facets missing from the quotient adjacency list.
 
-        A provider result is complete only when every irredundant facet of
+        A traversal result is complete only when every irredundant facet of
         every retained orbit representative occurs as the source-side common
         face of a quotient adjacency.  This check prevents a finite traversal
         prefix from being promoted to a complete reduction domain merely
-        because it used the ``total`` provider entry point.
+        because it used the complete-traversal entry point.
         """
         return _unpaired_facets(
             self.cells(),
@@ -545,7 +545,7 @@ class LorentzianPerfectDomainTraversal(SageObject):
         r"""Return ``True`` for this completed perfect-domain traversal.
 
         Construction of this object has already verified that every facet of
-        every orbit representative is paired.  Together with the provider's
+        every orbit representative is paired.  Together with the traversal's
         completed orbit traversal, the reduction-complex generation theorem
         identifies :meth:`generation_subgroup` with ``O(L)``.  Finite-prefix
         objects are represented by :class:`RationalReductionComplexExploration`

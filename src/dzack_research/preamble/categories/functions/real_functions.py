@@ -516,7 +516,7 @@ class _RealMap(ModuleElement):
 
     def as_set_morphism(self):
         r"""This map as an element of \(\operatorname{Hom}_{\mathbf{Set}}(X,Y)\)."""
-        return self.parent().set_homset()(self.evaluate_at)
+        return self.parent().set_mor()(self.evaluate_at)
 
     def __call__(self, argument):
         r"""Evaluate at a point, or compose with a map landing in the domain.
@@ -733,7 +733,7 @@ class _FunctionSpace:
     def indeterminate(self):
         return self._indeterminate
 
-    def set_homset(self):
+    def set_mor(self):
         r"""\(\operatorname{Hom}_{\mathbf{Set}}(X,Y)\)."""
         return Sets().Mor(self.domain(), self.codomain())
 

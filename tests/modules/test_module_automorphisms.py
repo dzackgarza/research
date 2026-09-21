@@ -1,6 +1,6 @@
 r"""An automorphism is an element of the automorphism group, not a kind of map.
 
-The Hom packet already gives every object its endomorphism ring and its
+The Mor packet already gives every object its endomorphism ring and its
 automorphism group, so a module reaches them the way a group and a lattice do.
 An invertible endomorphism becomes an element of that group by supplying the
 inverse it constructs, and the inverse is the section construction with nothing

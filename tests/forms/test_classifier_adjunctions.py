@@ -80,8 +80,8 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
 
     zz_to_qq = ZZ.Mor(QQ)(lambda element: QQ(element))
     middle = source.base_change(zz_to_qq)
-    first_homset = source.fibered_formed_homset(middle, zz_to_qq)
-    source_over_qq = first_homset.base_changed_domain()
+    first_mor = source.fibered_formed_mor(middle, zz_to_qq)
+    source_over_qq = first_mor.base_changed_domain()
     middle_generator = middle.module_generator("e")
     first_module_map = source_over_qq.module_category().Mor(source_over_qq, middle)(
         {"e": middle.scalar_multiple(3, middle_generator)}
@@ -91,16 +91,16 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     first_value_map = source_values.module_category().Mor(source_values, middle_values)(
         {0: middle_values.scalar_multiple(9, middle_values.module_generator(0))}
     )
-    first = first_homset((first_module_map, first_value_map))
+    first = first_mor((first_module_map, first_value_map))
 
     field = QuadraticField(2, "a")
     qq_to_field = QQ.Mor(field)(lambda element: field(element))
     target = middle.base_change(qq_to_field)
-    second_homset = middle.fibered_formed_homset(
+    second_mor = middle.fibered_formed_mor(
         target,
         qq_to_field,
     )
-    middle_over_field = second_homset.base_changed_domain()
+    middle_over_field = second_mor.base_changed_domain()
     target_generator = target.module_generator("e")
     second_module_map = middle_over_field.module_category().Mor(middle_over_field, target)(
         {"e": target.scalar_multiple(2, target_generator)}
@@ -110,7 +110,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     second_value_map = middle_changed_values.module_category().Mor(middle_changed_values, target_values)(
         {0: target_values.scalar_multiple(4, target_values.module_generator(0))}
     )
-    second = second_homset((second_module_map, second_value_map))
+    second = second_mor((second_module_map, second_value_map))
 
     composite = second * first
     assert composite.ring_map().domain() is ZZ
@@ -121,7 +121,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     # Identities are genuine fibered morphisms over identity ring maps, not
     # an unrelated fixed-fiber shortcut.
     identity_ring_map = QQ.Mor(QQ).identity()
-    middle_identity = middle.fibered_formed_homset(
+    middle_identity = middle.fibered_formed_mor(
         middle,
         identity_ring_map,
     ).identity()
@@ -138,7 +138,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
         ("quadratic_free_form_adjunction", 8),
     ],
 )
-def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_triangles(
+def test_free_form_classifier_adjunctions_have_mor_bijections_naturality_and_triangles(
     adjunction_method,
     expected_classifier_invariants,
 ) -> None:
@@ -160,11 +160,11 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
 
     doubling = source.module_category().Mor(source, source)({0: 2 * source_generator})
     module_map = adjunction.unit(source) * doubling
-    transpose_inverse = adjunction.hom_set_isomorphism_inverse(
+    transpose_inverse = adjunction.mor_set_isomorphism_inverse(
         module_map,
         free_source,
     )
-    recovered = adjunction.hom_set_isomorphism_forward(transpose_inverse, source)
+    recovered = adjunction.mor_set_isomorphism_forward(transpose_inverse, source)
     _assert_module_maps_agree(recovered, module_map)
 
     # The universal value map is forced, not selected independently.

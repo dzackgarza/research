@@ -6,7 +6,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 
 
 def _module_matrix(morphism):
-    r"""Forget a structured map to its finite-free module Hom."""
+    r"""Forget a structured map to its finite-free module Mor."""
     return morphism.domain().module_category().Mor(
         morphism.domain(), morphism.codomain()
     )(morphism)
@@ -203,16 +203,16 @@ class VectorPrimitiveExtension:
 
 def _isometries_between_definite_lattices(source, target):
     r"""Yield the finite ``Isom(source,target)`` torsor exactly."""
-    homset = source.Isom(target)
-    empty = homset.is_empty()
+    mor = source.Isom(target)
+    empty = mor.is_empty()
     if empty is True:
         return
     assert empty is False, (
-        "the definite complement isometry homset must be decided exactly before enumerating its torsor"
+        "the definite complement isometry Mor must be decided exactly before enumerating its torsor"
     )
-    first = homset.an_element()
+    first = mor.an_element()
     for automorphism in target.O():
-        yield homset.act(automorphism, first)
+        yield mor.act(automorphism, first)
 
 
 def _definite_complement_extensions(lattice, left, right):
@@ -226,7 +226,7 @@ def _definite_complement_extensions(lattice, left, right):
     ``A_right * C * A_left^{-1}``.
 
     Exactly the rational ambient morphisms preserving the integral lattice
-    belong to ``O(L)``.  Since the complement isometry homset is a finite
+    belong to ``O(L)``.  Since the complement isometry Mor is a finite
     torsor in this regime, the returned tuple is exhaustive.
     """
     source = VectorPrimitiveExtension(lattice, left)
@@ -376,14 +376,14 @@ def _gluing_route_discriminant_classes(lattice, left, right):
 
     source_complement = source.complement.inclusion().domain()
     target_complement = target.complement.inclusion().domain()
-    complement_homset = source_complement.Isom(target_complement)
-    complement_empty = complement_homset.is_empty()
+    complement_mor = source_complement.Isom(target_complement)
+    complement_empty = complement_mor.is_empty()
     if complement_empty is True:
         return ()
     assert complement_empty is False, (
         "the complement isometry class must be decided exactly before the discriminant gluing route chooses its torsor"
     )
-    complement_start = complement_homset.an_element().discriminant_isometry()
+    complement_start = complement_mor.an_element().discriminant_isometry()
     line_start = _line_isometry(source, target).discriminant_isometry()
 
     source_line_form = source.line_discriminant_inclusion.domain()

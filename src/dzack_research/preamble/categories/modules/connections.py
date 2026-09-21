@@ -7,10 +7,10 @@ from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    _RestrictedHomCategoryOf,
-    RestrictedHomCategoryParent,
-    _category_homset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    _RestrictedMorCategoryOf,
+    RestrictedMorCategoryParent,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
@@ -73,7 +73,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
     def Mor(self, domain, codomain):
         r"""Return horizontal module maps between two objects with connection."""
         if domain not in self or codomain not in self:
-            raise TypeError("a connection Hom requires two modules with connection over this algebra")
+            raise TypeError("a connection Mor requires two modules with connection over this algebra")
         return ConnectionMorphismCategoryConstruction(Modules(self.algebra())).Of(
             domain,
             codomain,
@@ -139,7 +139,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
                 return connections.Mor(self, codomain)
             if category is None:
                 return self.module_category().Mor(self, codomain)
-            return _category_homset(category, self, codomain)
+            return _category_mor_parent(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             return self.Mor(codomain, category=category)
@@ -415,7 +415,7 @@ class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
         return True
 
 
-class ConnectionSpace(RestrictedHomCategoryParent):
+class ConnectionSpace(RestrictedMorCategoryParent):
     Element = Connection
 
     @staticmethod
@@ -449,7 +449,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
         # A connection is an R-linear map E -> E (x) Omega satisfying Leibniz,
         # so this is the subcategory of the existing R-linear Mor category cut
         # out by that rule.
-        RestrictedHomCategoryParent.__init__(
+        RestrictedMorCategoryParent.__init__(
             self,
             family,
             restricted_source,
@@ -486,7 +486,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
                 raise ValueError("the linear map has the wrong connection endpoints")
             if not isinstance(generator_images, ConnectionUnderlyingLinearMorphism):
                 raise ValueError(
-                    "an arbitrary R-linear map cannot be certified as a connection by this backend"
+                    "an arbitrary R-linear map alone does not supply the Leibniz rule required of a connection"
                 )
             connection = generator_images.connection()
             if connection.parent() is self:
@@ -498,7 +498,7 @@ class ConnectionSpace(RestrictedHomCategoryParent):
         return f"Connections on {self.module()} over {self.algebra().base_ring()}"
 
 
-class ConnectionCategoryConstruction(_RestrictedHomCategoryOf):
+class ConnectionCategoryConstruction(_RestrictedMorCategoryOf):
     _declaration_name = "_ConnectionCategory"
 
     def fixed_category_class(self):
@@ -666,7 +666,7 @@ class _ConstructedHorizontalConnectionMorphism(ConnectionMorphism):
         return True
 
 
-class ConnectionHomset(RestrictedHomCategoryParent):
+class ConnectionMor(RestrictedMorCategoryParent):
     Element = ConnectionMorphism
 
     @staticmethod
@@ -685,7 +685,7 @@ class ConnectionHomset(RestrictedHomCategoryParent):
     def __init__(self, family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("connection morphisms require one coefficient algebra")
-        RestrictedHomCategoryParent.__init__(
+        RestrictedMorCategoryParent.__init__(
             self,
             family,
             domain,
@@ -706,15 +706,15 @@ class ConnectionHomset(RestrictedHomCategoryParent):
 
     def identity(self):
         if self.domain_object() is not self.codomain_object():
-            raise ValueError("identity belongs to a connection endomorphism homset")
+            raise ValueError("identity belongs to a connection endomorphism Mor")
         return self._from_horizontal_morphism(self.arrow_set().identity())
 
 
-class ConnectionMorphismCategoryConstruction(_RestrictedHomCategoryOf):
+class ConnectionMorphismCategoryConstruction(_RestrictedMorCategoryOf):
     _declaration_name = "_ConnectionMorphismCategory"
 
     def fixed_category_class(self):
-        return ConnectionHomset
+        return ConnectionMor
 
     def accepts(self, arrow) -> bool:
         return isinstance(arrow, HorizontalConnectionUnderlyingMorphism)
@@ -945,7 +945,7 @@ class ConnectionDeRhamModule:
 __all__ = [
     "Connection",
     "ConnectionDeRhamModule",
-    "ConnectionHomset",
+    "ConnectionMor",
     "ConnectionMorphism",
     "ConnectionSpace",
     "ModulesWithConnection",

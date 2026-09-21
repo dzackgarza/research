@@ -342,7 +342,7 @@ class _OscarLatticeAdapter:
             ),
         )
 
-        # OSCAR emits source basis images as rows.  The live Hom matrix acts on
+        # OSCAR emits source basis images as rows.  The live Mor matrix acts on
         # coordinate columns, so transpose those rows into target-by-source shape.
         embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
             tuple(

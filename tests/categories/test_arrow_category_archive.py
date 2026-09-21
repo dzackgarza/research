@@ -21,19 +21,19 @@ def test_arrow_category_homs_are_commuting_squares_with_componentwise_compositio
     arrows = Sets().ArrowCategory()
     assert arrows is Cat().Mor(FiniteOrdinalCategory(2), Sets())
     arrow_object = arrows(identity)
-    hom = arrows.Mor(arrow_object, arrow_object)
-    square = hom(swap, swap)
+    mor = arrows.Mor(arrow_object, arrow_object)
+    square = mor(swap, swap)
     components = square.components()
 
     assert components.parent().projection(0)(components) == square.left()
     assert components.parent().projection(1)(components) == square.right()
     assert arrow_object.arrow() is identity
-    assert hom is arrows.HomCategory().Of(arrow_object, arrow_object)
+    assert mor is arrows.MorCategory().Of(arrow_object, arrow_object)
     assert square.left() is swap
     assert square.right() is swap
-    assert square * square == hom.identity()
-    assert hom.identity().left() == identity
-    assert hom.identity().right() == identity
+    assert square * square == mor.identity()
+    assert mor.identity().left() == identity
+    assert mor.identity().right() == identity
     assert arrow_object is Cat().Mor(FiniteOrdinalCategory(2), Sets()).object(identity)
     assert square.component(FiniteOrdinalCategory(2)(0)) is square.left()
     assert square.component(FiniteOrdinalCategory(2)(1)) is square.right()
@@ -84,11 +84,11 @@ def test_archived_wide_subcategory_and_core_keep_actual_allowed_arrows() -> None
     isomorphism = Sets().Core().Mor(points, points)(swap, swap)
     core = Sets().Core()
     assert core.Core() is core
-    core_hom = core.Mor(points, points)
-    assert isomorphism in core_hom
-    converted = core_hom(isomorphism)
-    assert converted.parent() is core_hom
+    core_mor = core.Mor(points, points)
+    assert isomorphism in core_mor
+    converted = core_mor(isomorphism)
+    assert converted.parent() is core_mor
     assert converted.forward() is isomorphism.forward()
     assert converted.inverse() is isomorphism.inverse()
-    assert converted * core_hom.identity() == converted
-    assert core_hom.identity() * converted == converted
+    assert converted * core_mor.identity() == converted
+    assert core_mor.identity() * converted == converted

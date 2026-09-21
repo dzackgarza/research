@@ -62,11 +62,11 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
-    CategoricalHomset,
-    HomCategoryConstruction,
-    _category_homset,
+    CategoricalMor,
+    MorCategoryConstruction,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -351,7 +351,7 @@ class _CoverPresentationDiagram(Functor):
         source_object = self(morphism.domain())
         target_object = self(morphism.codomain())
         if morphism.domain() is morphism.codomain():
-            return _category_homset(self.codomain(), source_object, source_object).identity()
+            return _category_mor_parent(self.codomain(), source_object, source_object).identity()
         if source_kind == "member" and target_kind == "target":
             return self._members[self._member_index(source_position)]
         if source_kind == "overlap" and target_kind == "member":
@@ -407,7 +407,7 @@ class CoveringFamilyMorphism(Morphism):
         if target_map is None:
             if source.target() is not target.target():
                 raise ValueError("a comparison of covers with different targets needs its target map")
-            target_map = _category_homset(site, source.target(), source.target()).identity()
+            target_map = _category_mor_parent(site, source.target(), source.target()).identity()
         if target_map not in site.Mor(source.target(), target.target()):
             raise TypeError("the target comparison is a morphism of the site category")
         self._target_map = target_map
@@ -417,7 +417,7 @@ class CoveringFamilyMorphism(Morphism):
             fine_member = source.member(label)
             coarse_member = target.member(coarse_label)
             if component not in site.Mor(fine_member.domain(), coarse_member.domain()):
-                raise TypeError("a cover-comparison component has the wrong site Hom")
+                raise TypeError("a cover-comparison component has the wrong site Mor")
             if coarse_member * component != self.target_map() * fine_member:
                 raise ValueError("a cover-comparison component does not commute over the target map")
 
@@ -466,7 +466,7 @@ class CoveringFamilyMorphism(Morphism):
         return not self == other
 
 
-class CoveringFamilyHomset(CategoricalHomset):
+class CoveringFamilyMor(CategoricalMor):
     r"""Comparisons between two represented covering families."""
 
     Element = CoveringFamilyMorphism
@@ -506,22 +506,22 @@ class CoveringFamilyHomset(CategoricalHomset):
         return self(
             {label: label for label in cover.index_set()},
             {
-                label: _category_homset(
+                label: _category_mor_parent(
                     site,
                     cover.member(label).domain(),
                     cover.member(label).domain(),
                 ).identity()
                 for label in cover.index_set()
             },
-            target_map=_category_homset(site, cover.target(), cover.target()).identity(),
+            target_map=_category_mor_parent(site, cover.target(), cover.target()).identity(),
         )
 
 
-class CoveringFamilyHomCategoryConstruction(HomCategoryConstruction):
-    r"""The Hom family of represented covering families."""
+class CoveringFamilyMorCategoryConstruction(MorCategoryConstruction):
+    r"""The Mor family of represented covering families."""
 
     def fixed_category_class(self):
-        return CoveringFamilyHomset
+        return CoveringFamilyMor
 
 
 def _covering_family(category: Category, target: Parent, members, overlaps, **data):
@@ -634,7 +634,7 @@ class CoveringFamilies(OwnedCategory):
         True
     """
 
-    _HomCategory = CoveringFamilyHomCategoryConstruction
+    _MorCategory = CoveringFamilyMorCategoryConstruction
 
     @staticmethod
     def __classcall__(cls, site_category: Category):
@@ -660,7 +660,7 @@ class CoveringFamilies(OwnedCategory):
 
     def an_object(self):
         target = self.site_category().an_object()
-        identity = _category_homset(self.site_category(), target, target).identity()
+        identity = _category_mor_parent(self.site_category(), target, target).identity()
         return self.family(target, (identity,), {})
 
     class ParentMethods:
@@ -810,7 +810,7 @@ class TrivialCoveringFamilies(OwnedCategoryBase):
         r"""The singleton identity cover of ``target``, one for each target."""
         if target not in self.site_category():
             raise TypeError("a trivial cover target must be an object of the site")
-        identity = _category_homset(self.site_category(), target, target).identity()
+        identity = _category_mor_parent(self.site_category(), target, target).identity()
         return _covering_family(self, target, (identity,), {})
 
     def an_object(self):
@@ -840,7 +840,7 @@ class DescentDataOnCover(OwnedCategoryBase):
 
     This is the placement common to concrete descent theories: modules,
     algebras, or objects of another represented fibre theory may carry
-    different local data and different Hom constructions, but they are all
+    different local data and different Mor constructions, but they are all
     descent data on the same cover.  The concrete theory remains responsible
     for its transition maps, cocycle law, and morphisms; this category records
     the cover-relative mathematical placement instead of rediscovering it by
@@ -925,7 +925,7 @@ def _identity_equalizer_construction(value_category: Category, obj: Parent):
         _parallel_pair_diagram,
     )
 
-    identity = _category_homset(value_category, obj, obj).identity()
+    identity = _category_mor_parent(value_category, obj, obj).identity()
     diagram = _parallel_pair_diagram(identity, identity, value_category)
     shape = diagram.domain()
     universal_cone = diagram.Cones().cone(
@@ -1008,7 +1008,7 @@ class DescentEqualizer(SageObject):
 
         pairs = tuple(cover.pair_index_set())
         if not pairs:
-            identity = _category_homset(
+            identity = _category_mor_parent(
                 self.value_category(), local_product, local_product
             ).identity()
             self._left = identity
@@ -1065,7 +1065,7 @@ class DescentEqualizer(SageObject):
             global_value is self._equalizer.object()
             and selected_inclusion is self._restriction_to_product
         ):
-            self._canonical_map = _category_homset(
+            self._canonical_map = _category_mor_parent(
                 self.value_category(), global_value, global_value
             ).identity()
             return
@@ -1271,7 +1271,7 @@ class DescentData(SageObject):
 
         def inverse_for(equalizer: DescentEqualizer):
             global_value = equalizer.canonical_map().domain()
-            return _category_homset(
+            return _category_mor_parent(
                 equalizer.value_category(),
                 global_value,
                 global_value,
@@ -1415,7 +1415,7 @@ class Sheaves(OwnedCategoryBase):
 
     def Mor(self, domain: Parent, codomain: Parent):
         if domain not in self or codomain not in self:
-            raise TypeError("a sheaf Hom requires two sheaves for this coverage")
+            raise TypeError("a sheaf Mor requires two sheaves for this coverage")
         return self.presheaf_category().Mor(domain, codomain)
 
     def identity(self, obj: Parent):

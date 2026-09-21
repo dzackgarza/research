@@ -9,8 +9,8 @@ from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import CategoricalHomset
-from dzack_research.preamble.categories.algebras.algebras import Algebras, FramedAlgebras, _AlgebraHomsetCommonMethods, _algebra_on_module
+from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalMor
+from dzack_research.preamble.categories.algebras.algebras import Algebras, FramedAlgebras, _AlgebraMorCommonMethods, _algebra_on_module
 from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebras, GradedFreeAlgebras, TensorAlgebras, SymmetricAlgebras
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
@@ -37,11 +37,11 @@ class _SparseFreeAlgebra(_WordModule):
     def _source_has_component_protocol(self):
         return _has_component_presentation(self.generating_module())
 
-    def _algebra_homset_class(self):
-        return SparseFreeAlgebraHomset
+    def _algebra_mor_class(self):
+        return SparseFreeAlgebraMor
 
-    def algebra_homset(self, hom_family, codomain):
-        return SparseFreeAlgebraHomset(hom_family, self, codomain)
+    def algebra_mor(self, mor_family, codomain):
+        return SparseFreeAlgebraMor(mor_family, self, codomain)
 
     def _element_constructor_(self, value):
         source = element_parent(value)
@@ -124,7 +124,7 @@ def _word_product(module, left, right):
     ), module.zero())
 
 
-def _uses_free_construction_homset(domain):
+def _uses_free_construction_mor(domain):
     ring = domain.base_ring()
     return domain in TensorAlgebras(ring) or domain in SymmetricAlgebras(ring)
 
@@ -135,7 +135,7 @@ def _compose_with_free_construction(left, right):
         return NotImplemented
     source = right.domain()
     target = left.codomain()
-    if _uses_free_construction_homset(source):
+    if _uses_free_construction_mor(source):
         return source.Mor(target)(lambda label: left(right(source.algebra_generator(label))))
 
     underlying = Algebras(source.base_ring()).underlying_module()
@@ -229,20 +229,20 @@ class SparseFreeAlgebraMorphism(Morphism):
         return _compose_with_free_construction(self, other)
 
     def _postcompose_algebra_morphism(self, morphism):
-        r"""Return ``morphism ∘ self`` through the free-construction Hom."""
+        r"""Return ``morphism ∘ self`` through the free-construction Mor."""
         return _compose_with_free_construction(morphism, self)
 
 
-class SparseFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
+class SparseFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
     Element = SparseFreeAlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         assert domain in TensorAlgebras(domain.base_ring()) or domain in SymmetricAlgebras(domain.base_ring()), (
             "the word-map domain is a tensor or symmetric algebra"
         )
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -252,7 +252,7 @@ class SparseFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Hom-set")
+            raise ValueError("identity belongs to an endomorphism Mor object")
         return self(lambda label: self.domain().algebra_generator(label))
 
 
@@ -317,5 +317,5 @@ def _sparse_free_algebra_of(source, flavor):
 
 __all__ = [
     "SparseFreeAlgebra", "SparseFreeAlgebraDegreeElement", "SparseFreeAlgebraDegreeModule",
-    "SparseFreeAlgebraElement", "SparseFreeAlgebraHomset", "SparseFreeAlgebraMorphism",
+    "SparseFreeAlgebraElement", "SparseFreeAlgebraMor", "SparseFreeAlgebraMorphism",
 ]

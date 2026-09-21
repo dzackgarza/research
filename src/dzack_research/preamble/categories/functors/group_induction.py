@@ -70,7 +70,7 @@ def _transport_element(element, source, target):
     return target.linear_combination(source.framing_coefficients(element))
 
 
-def _equivariant_hom(domain, codomain, images):
+def _equivariant_mor(domain, codomain, images):
     r"""Construct a group-module map whose equivariance is structural."""
     return domain.Mor(codomain)._from_equivariant_images(images)
 
@@ -167,7 +167,7 @@ class _RestrictionOfActingGroupFunctor(_RestrictionOfScalarsFunctor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return _equivariant_hom(source, target,
+        return _equivariant_mor(source, target,
             {
                 label: _transport_element(
                     morphism(morphism.domain().module_generator(label)),
@@ -275,7 +275,7 @@ class _InductionFunctor(_ScalarExtensionFunctor):
                         for target_label, coefficient in coefficients.items()
                     }
                 )
-        return _equivariant_hom(source, target, images)
+        return _equivariant_mor(source, target, images)
 
     def _repr_(self):
         return f"Induction from {self.subgroup()} to {self.supergroup()}"
@@ -409,7 +409,7 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
                         for target_label, coefficient in morphism.codomain().framing_coefficients(image).items()
                     }
                 )
-        return _equivariant_hom(source, target, images)
+        return _equivariant_mor(source, target, images)
 
     def _repr_(self):
         return f"Coinduction from {self.subgroup()} to {self.supergroup()}"
@@ -425,7 +425,7 @@ class _InductionRestrictionAdjunction(_BaseChangeAdjunction):
         induced = self.left_adjoint()(group_module)
         restricted = self.right_adjoint()(induced)
         representative = self.left_adjoint().identity_representative()
-        return _equivariant_hom(group_module, restricted,
+        return _equivariant_mor(group_module, restricted,
             {
                 label: _transport_element(
                     induced.module_generator(_coset_label(induced.module_generating_set(), representative, label)),
@@ -439,7 +439,7 @@ class _InductionRestrictionAdjunction(_BaseChangeAdjunction):
     def _counit_component(self, group_module):
         restricted = self.right_adjoint()(group_module)
         induced = self.left_adjoint()(restricted)
-        return _equivariant_hom(induced, group_module,
+        return _equivariant_mor(induced, group_module,
             {
                 _coset_label(induced.module_generating_set(), representative, label): group_module.act(
                     representative, group_module.module_generator(label)
@@ -459,7 +459,7 @@ class _RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
     def _unit_component(self, group_module):
         restricted = self.left_adjoint()(group_module)
         coinduced = self.right_adjoint()(restricted)
-        return _equivariant_hom(group_module, coinduced,
+        return _equivariant_mor(group_module, coinduced,
             {
                 label: self.right_adjoint().element_from_values(
                     restricted,
@@ -481,7 +481,7 @@ class _RestrictionCoinductionAdjunction(_RestrictionCoextensionAdjunction):
         coinduced = self.right_adjoint()(group_module)
         restricted = self.left_adjoint()(coinduced)
         representative = self.right_adjoint().identity_representative()
-        return _equivariant_hom(restricted, group_module,
+        return _equivariant_mor(restricted, group_module,
             {
                 label: self.right_adjoint().value_at(
                     group_module,

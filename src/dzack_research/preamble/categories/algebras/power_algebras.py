@@ -10,8 +10,8 @@ from sage.misc.cachefunc import cached_function
 from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras, FramedAlgebras, _algebra_on_module
 from dzack_research.preamble.categories.algebras.graded_algebras import _graded_multiplication_from_components
@@ -47,8 +47,8 @@ class _PowerAlgebra:
         source = self.generating_module()
         return self.from_component(1, source.module_generator(label))
 
-    def _power_algebra_homset_class(self):
-        return PowerAlgebraHomset
+    def _power_algebra_mor_class(self):
+        return PowerAlgebraMor
 
     def _element_constructor_(self, value):
         source = element_parent(value)
@@ -169,24 +169,24 @@ class PowerAlgebraMorphism(Morphism):
         return other.domain().Mor(self.codomain())(self.degree_one_map() * other.degree_one_map())
 
 
-class PowerAlgebraHomset(CategoricalHomset):
+class PowerAlgebraMor(CategoricalMor):
     Element = PowerAlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        category = hom_family.base_category()
+    def __init__(self, mor_family, domain, codomain) -> None:
+        category = mor_family.base_category()
         assert domain in category and codomain in category, "power-algebra arrows use the stated category"
         if domain.flavor() != codomain.flavor():
             raise ValueError("power-algebra morphisms preserve the construction flavor")
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("power-algebra morphisms require one common base ring")
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, degree_one_map):
         return self.element_class(self, degree_one_map)
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Hom-set")
+            raise ValueError("identity belongs to an endomorphism Mor object")
         module = self.domain().generating_module()
         identity = self(module.module_category().Mor(module, module).identity())
         identity._preamble_is_identity = True
@@ -345,6 +345,6 @@ def _alternating_extension(module_morphism):
 __all__ = [
     "PowerAlgebra",
     "PowerAlgebraElement",
-    "PowerAlgebraHomset",
+    "PowerAlgebraMor",
     "PowerAlgebraMorphism",
 ]

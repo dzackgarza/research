@@ -6,7 +6,7 @@ from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
-def test_empty_isometry_hom_has_cardinality_zero() -> None:
+def test_empty_isometry_mor_has_cardinality_zero() -> None:
     even = Lattices(ZZ)("U")
     odd = Lattices(ZZ)([[1, 0], [0, -1]])
 
@@ -15,7 +15,7 @@ def test_empty_isometry_hom_has_cardinality_zero() -> None:
     assert isometries.cardinality() == cardinal(0)
 
 
-def test_nonempty_isometry_hom_has_orthogonal_group_cardinality() -> None:
+def test_nonempty_isometry_mor_has_orthogonal_group_cardinality() -> None:
     lattice = Lattices(ZZ)("A2")
     isometries = lattice.Isom(lattice)
 
@@ -23,7 +23,7 @@ def test_nonempty_isometry_hom_has_orthogonal_group_cardinality() -> None:
     assert isometries.cardinality() == lattice.O().cardinality()
 
 
-def test_unknown_isometry_hom_keeps_unknown_cardinality() -> None:
+def test_unknown_isometry_mor_keeps_unknown_cardinality() -> None:
     source = Lattices(ZZ)([[1, 0], [0, -1]])
     change = ZZ.matrix_space(2, 2).from_rows([[1, 2], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))

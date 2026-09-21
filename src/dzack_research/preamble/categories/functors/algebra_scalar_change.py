@@ -9,11 +9,11 @@ structure map.  Scalar extension is materialized on tensor/symmetric free
 constructions through scalar change of their exact generating module, and on
 chosen finite commutative polynomial presentations through their selected
 relations.  The functors act on algebra morphisms, and the represented
-adjunction supplies the actual Hom bijection, unit, and counit on that
+adjunction supplies the actual Mor bijection, unit, and counit on that
 executable subdomain.
 """
 
-from sage.categories.homset import Hom as _SageHom
+from sage.categories.mor import Hom as _SageHom
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function
@@ -60,7 +60,7 @@ def _base_change_presented_element(algebra, element, target, ring_map):
     presentation_ring = algebra.presentation_ring()
     presentation = _engine_ring(presentation_ring)
     target_engine = _engine_ring(target)
-    presentation_map = presentation.hom(
+    presentation_map = presentation.mor(
         [
             _engine_element(target, target.algebra_generator(label))
             for label in algebra.algebra_generating_set()
@@ -253,7 +253,7 @@ class _AlgebraRestrictionOfScalarsFunctor(Functor):
         target = self(morphism.codomain())
         # Restriction changes only the scalar structure; the underlying map is
         # the original algebra morphism.  When the restricted source retains a
-        # framing, state the map on that framing so its Hom constructor can
+        # framing, state the map on that framing so its Mor constructor can
         # check the selected relations.
 
         if source in FramedAlgebras(source.base_ring()):

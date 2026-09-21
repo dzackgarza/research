@@ -5,7 +5,7 @@ An ``R``-module is an abelian group ``A`` and a ring morphism
 underlying set, its addition, zero and negation are the abelian group, and
 ``rho`` is the scalar action.  Nothing here is a second kind of module.  The
 object is built through the owned module chain like every other module, so
-every operation the module graph owns -- Hom-sets, scalar change,
+every operation the module graph owns -- Mor objects, scalar change,
 localization, the annihilator as the kernel of ``rho`` -- answers on it
 without being restated at this level.
 """
@@ -147,7 +147,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 assert all(datum is None for datum in (underlying_set, addition, zero, negation, scalar_action)), (
                     "the action morphism determines the underlying additive group"
                 )
-                assert rho.parent().homset_category().is_subcategory(OwnedRings()) and rho.domain() is ring, (
+                assert rho.parent().mor_category().is_subcategory(OwnedRings()) and rho.domain() is ring, (
                     "the scalar action must be a ring morphism out of the module's base ring"
                 )
                 underlying_set = rho.codomain().domain()

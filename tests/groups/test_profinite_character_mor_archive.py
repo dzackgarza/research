@@ -1,8 +1,8 @@
-r"""Archive reconciliation for finite-quotient profinite character Homs.
+r"""Archive reconciliation for finite-quotient profinite character Mors.
 
 The archive used a bespoke ``ProfiniteCharacterHomsets`` category.  The live
-owner is the shared continuous group Hom: cyclotomic and quadratic characters,
-Galois restriction maps, and their restrictions all live in that same Hom
+owner is the shared continuous group Mor: cyclotomic and quadratic characters,
+Galois restriction maps, and their restrictions all live in that same Mor
 construction rather than a parallel character-only morphism graph.
 """
 
@@ -31,15 +31,15 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_continuous_group_hom_is_canonical_for_exact_endpoints() -> None:
+def test_continuous_group_mor_is_canonical_for_exact_endpoints() -> None:
     group = AbsoluteGaloisGroup(GF(5))
     character = CyclotomicCharacter(group, 3)
-    homset = group.continuous_morphisms_to(character.codomain())
+    mor = group.continuous_morphisms_to(character.codomain())
 
-    assert character.parent() is homset
-    assert group.continuous_morphisms_to(character.codomain()) is homset
-    assert homset.domain() is group
-    assert homset.codomain() is character.codomain()
+    assert character.parent() is mor
+    assert group.continuous_morphisms_to(character.codomain()) is mor
+    assert mor.domain() is group
+    assert mor.codomain() is character.codomain()
 
 
 def test_nontrivial_cyclotomic_character_retains_factor_kernel_and_restriction() -> None:
@@ -58,8 +58,8 @@ def test_nontrivial_cyclotomic_character_retains_factor_kernel_and_restriction()
     assert kernel.index() == 2
 
     restricted = character.restrict(kernel)
-    restricted_hom = kernel.continuous_morphisms_to(character.codomain())
-    assert restricted.parent() is restricted_hom
+    restricted_mor = kernel.continuous_morphisms_to(character.codomain())
+    assert restricted.parent() is restricted_mor
     assert restricted.domain() is kernel
     assert restricted.codomain() is character.codomain()
     assert restricted.is_continuous()

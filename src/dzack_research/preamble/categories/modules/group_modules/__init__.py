@@ -2,8 +2,8 @@
 
 from importlib import import_module as _import_module
 
-_EXPORTS = {'GroupModuleHomset': ('dzack_research.preamble.categories.modules.group_modules.group_modules',
-                       'GroupModuleHomset'),
+_EXPORTS = {'GroupModuleMor': ('dzack_research.preamble.categories.modules.group_modules.group_modules',
+                       'GroupModuleMor'),
  'GroupModuleMorphism': ('dzack_research.preamble.categories.modules.group_modules.group_modules',
                          'GroupModuleMorphism'),
  'ModulesOverGroupAlgebra': ('dzack_research.preamble.categories.modules.group_modules.group_modules',
@@ -11,7 +11,7 @@ _EXPORTS = {'GroupModuleHomset': ('dzack_research.preamble.categories.modules.gr
  'LatticesOverGroupAlgebra': ('dzack_research.preamble.categories.modules.group_modules.group_lattices',
                              'LatticesOverGroupAlgebra')}
 
-__all__ = ['GroupModuleHomset',
+__all__ = ['GroupModuleMor',
  'GroupModuleMorphism',
  'ModulesOverGroupAlgebra',
  'LatticesOverGroupAlgebra',

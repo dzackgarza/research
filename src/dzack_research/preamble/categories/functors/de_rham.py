@@ -59,11 +59,11 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
                 result += term
         return result
 
-    homset = DifferentialGradedAlgebras(source_dga.base_ring()).Mor(
+    mor = DifferentialGradedAlgebras(source_dga.base_ring()).Mor(
         source_dga,
         target_dga,
     )
-    return homset._from_differential_preserving_generator_map(
+    return mor._from_differential_preserving_generator_map(
         lambda label: image(source_dga.algebra_generator(label))
     )
 
@@ -133,7 +133,7 @@ class _DegreeZeroDGAFunctor(Functor):
 class _DeRhamAdjunction(Adjunction):
     r"""The adjunction ``DR_R ⊣ (-)^0``.
 
-    On the represented algebras the Hom-set bijection is the universal
+    On the represented algebras the Mor object bijection is the universal
     extension of an algebra map ``A -> B^0`` by ``da |-> d_B(a)``.
     """
 

@@ -10,9 +10,9 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -91,7 +91,7 @@ class ChamberSystemMorphism(Morphism):
     __hash__ = None
 
 
-class ChamberSystemHomset(CategoricalHomset):
+class ChamberSystemMor(CategoricalMor):
     Element = ChamberSystemMorphism
 
     def _verify(self, morphism) -> None:
@@ -125,14 +125,14 @@ class ChamberSystemHomset(CategoricalHomset):
         )
 
 
-class ChamberSystemHomCategoryConstruction(HomCategoryConstruction):
-    FixedCategoryClass = ChamberSystemHomset
+class ChamberSystemMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = ChamberSystemMor
 
 
 class ChamberSystems(OwnedCategory):
     r"""Chamber systems with type-preserving adjacency-preserving morphisms."""
 
-    _HomCategory = ChamberSystemHomCategoryConstruction
+    _MorCategory = ChamberSystemMorCategoryConstruction
 
     def super_categories(self):
         return [Sets()]

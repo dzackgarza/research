@@ -246,7 +246,7 @@ def test_de_rham_functor_sends_f_to_f_and_df_to_d_of_f() -> None:
     assert mapped(source_dr.d(X)) == target_dr.d(T2)
 
 
-def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
+def test_de_rham_degree_zero_adjunction_mor_bijection_and_triangles() -> None:
     source = QQ.free_module(("x",)).symmetric_algebra()
     degree_zero = QQ.free_module(("t",)).symmetric_algebra()
     x = source.algebra_generator("x")
@@ -257,11 +257,11 @@ def test_de_rham_degree_zero_adjunction_hom_bijection_and_triangles() -> None:
     target = adjunction.left_adjoint()(degree_zero)
     algebra_map = Algebras(source.base_ring()).Associative().Unital().Mor(source, degree_zero)({"x": t**2})
 
-    transpose = adjunction.hom_set_isomorphism_inverse(
+    transpose = adjunction.mor_set_isomorphism_inverse(
         algebra_map,
         codomain=target,
     )
-    recovered = adjunction.hom_set_isomorphism_forward(transpose, source)
+    recovered = adjunction.mor_set_isomorphism_forward(transpose, source)
     source_dr = adjunction.left_adjoint()(source)
 
     assert recovered(x) == algebra_map(x)

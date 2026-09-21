@@ -6,7 +6,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 from dzack_research.preamble.owned_category import (
     _construction_contract,
-    _hom_construction_contract,
+    _mor_construction_contract,
 )
 
 
@@ -62,16 +62,16 @@ def test_constructor_contract_retains_adoption_and_refinement_hooks() -> None:
     assert any(name.endswith("Modules.ParentMethods") for name in hook_names)
 
 
-def test_hom_constructor_contract_retains_family_and_endpoints() -> None:
+def test_mor_constructor_contract_retains_family_and_endpoints() -> None:
     integers = _own_ring(SageZZ)
     modules = Modules(integers)
     module = modules.an_object()
-    contract = _hom_construction_contract(modules, module, module)
+    contract = _mor_construction_contract(modules, module, module)
 
     required = contract.required_names()
     assert "domain" in required
     assert "codomain" in required
-    assert any(name in required for name in ("hom_family", "family"))
+    assert any(name in required for name in ("mor_family", "family"))
     assert contract.owner.domain_object() is module
     assert contract.owner.codomain_object() is module
 

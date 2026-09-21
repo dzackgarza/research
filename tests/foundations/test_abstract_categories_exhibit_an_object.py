@@ -13,7 +13,7 @@ from dzack_research.preamble.all import (
     Sets,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
-from dzack_research.preamble.categories.sets.set_categories import Homsets
+from dzack_research.preamble.categories.sets.set_categories import Mors
 
 
 def test_the_root_of_the_graph_exhibits_an_object() -> None:
@@ -38,8 +38,8 @@ def test_the_category_of_discrete_categories_exhibits_one() -> None:
     assert witness.an_object() in witness
 
 
-def test_the_category_of_hom_objects_exhibits_one() -> None:
-    witness = Homsets().an_object()
+def test_the_category_of_mor_objects_exhibits_one() -> None:
+    witness = Mors().an_object()
 
     assert witness in Sets()
     assert witness.domain() is witness.codomain()

@@ -1,4 +1,4 @@
-r"""Graded derivations use the owned category meet for restricted-Hom placement."""
+r"""Graded derivations use the owned category meet for restricted-Mor placement."""
 
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects

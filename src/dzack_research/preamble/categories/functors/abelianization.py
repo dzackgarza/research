@@ -37,7 +37,7 @@ class _AbelianizationFunctor(Functor):
     def _apply_object(self, group):
         model = _gap_model(group)
         derived = libgap.DerivedSubgroup(model)
-        projection = libgap.NaturalHomomorphismByNormalSubgroup(model, derived)
+        projection = libgap.NaturalMorphismByNormalSubgroup(model, derived)
         quotient = _own_group(GroupLibGAP(projection.Range()))
         # A quotient of a finite group is finite.
         placement = (

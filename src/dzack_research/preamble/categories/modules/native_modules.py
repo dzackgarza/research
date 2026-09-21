@@ -142,7 +142,7 @@ class _RingModulePresentation:
                             refine(module, placement)
         return module
 
-    def basis(self):
+    def module_basis(self):
         return self._basis
 
     def coefficients(self, element):

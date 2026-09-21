@@ -14,11 +14,11 @@ def test_generator_images_define_an_actual_checked_group_homomorphism() -> None:
     target = Groups.C(2)
     source_generator = source.group_generators()[0]
     target_generator = target.group_generators()[0]
-    hom = source.Mor(target)
-    morphism = hom({source_generator: target_generator})
+    mor = source.Mor(target)
+    morphism = mor({source_generator: target_generator})
 
-    assert hom is Groups().HomCategory().Of(source, target)
-    assert morphism.parent() is hom
+    assert mor is Groups().MorCategory().Of(source, target)
+    assert morphism.parent() is mor
     assert morphism.domain() is source
     assert morphism.codomain() is target
     assert morphism(source_generator) == target_generator
@@ -27,7 +27,7 @@ def test_generator_images_define_an_actual_checked_group_homomorphism() -> None:
     assert not morphism.is_injective()
 
 
-def test_finite_group_homset_cardinality_uses_the_represented_gap_homset() -> None:
+def test_finite_group_mor_cardinality_uses_the_represented_gap_mor() -> None:
     assert Groups.C(2).Mor(Groups.C(3)).cardinality() == 1
     assert Groups.C(4).Mor(Groups.C(6)).cardinality() == 2
     assert Groups.C(12).Mor(Groups.C(18)).cardinality() == 6

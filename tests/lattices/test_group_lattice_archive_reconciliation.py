@@ -76,7 +76,7 @@ def test_equipping_an_existing_sublattice_preserves_its_ambient_inclusion() -> N
     )
 
 
-def test_archive_group_lattice_hom_is_both_isometric_and_equivariant() -> None:
+def test_archive_group_lattice_mor_is_both_isometric_and_equivariant() -> None:
     acted = _acted_a2()
     group_generator = acted.group().group_generators()[0]
     action = acted.action_of(group_generator)
@@ -106,7 +106,7 @@ def test_archive_group_lattice_hom_is_both_isometric_and_equivariant() -> None:
         assert square(generator) == generator
 
 
-def test_archive_group_lattice_hom_rejects_a_nonequivariant_isometry() -> None:
+def test_archive_group_lattice_mor_rejects_a_nonequivariant_isometry() -> None:
     acted = _acted_a2()
     labels = acted.module_generating_set()
     root = acted.module_generator(labels[0])

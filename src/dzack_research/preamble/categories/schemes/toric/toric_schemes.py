@@ -64,7 +64,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     SchemeMorphism,
     Schemes,
     _engine_scheme,
-    _native_scheme_homset,
+    _native_scheme_mor,
     _scheme_mor_category,
 )
 from dzack_research.preamble.categories.schemes.toric.fans import (
@@ -367,7 +367,7 @@ def _toric_chart_pullback(lattice_morphism, source_cone, target_cone, base_ring)
 class ToricSchemeMorphism(SchemeMorphism):
     r"""The toric morphism ``X_Sigma -> X_Sigma'`` of a fan-compatible lattice map.
 
-    An element of ``Mor_{Sch/k}(X_Sigma, X_Sigma')``, constructed by that Hom
+    An element of ``Mor_{Sch/k}(X_Sigma, X_Sigma')``, constructed by that Mor
     from an arrow realization rule (:meth:`ToricSchemes.ParentMethods.toric_morphism`).
     Its defining datum is the lattice map ``phi: N -> N'``; the chart targets
     and chart pullbacks are the families, indexed by the maximal cones of
@@ -377,14 +377,14 @@ class ToricSchemeMorphism(SchemeMorphism):
 
     def __init__(
         self,
-        homset,
+        mor,
         native_morphism,
         *,
         lattice_morphism,
         chart_targets,
         chart_pullbacks,
     ) -> None:
-        super().__init__(native_morphism, homset=homset)
+        super().__init__(native_morphism, mor=mor)
         self._lattice_morphism = lattice_morphism
         self._chart_targets = chart_targets
         self._chart_pullbacks = chart_pullbacks
@@ -412,11 +412,11 @@ class ToricSchemeMorphism(SchemeMorphism):
         return target_embedding * self.chart_morphism(source_cone)
 
     def _postcompose_with(self, after):
-        r"""Compose on the affine charts, then use their common glued Hom."""
-        from dzack_research.preamble.categories.schemes.schemes import _scheme_composition_hom
+        r"""Compose on the affine charts, then use their common glued Mor."""
+        from dzack_research.preamble.categories.schemes.schemes import _scheme_composition_mor
 
         datum = self.domain().gluing_datum()
-        return _scheme_composition_hom(after, self)(
+        return _scheme_composition_mor(after, self)(
             finite_indexed_family(datum.chart_index_set(), lambda index: after * self.local_map(index))
         )
 
@@ -555,7 +555,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""The affine chart ``U_sigma = Spec k[S_sigma]`` of one cone.
 
             This is the owned construction from the semigroup algebra, not a
-            patch read back from a backend.  For a maximal cone it is the chart
+            patch reconstructed from a computational image.  For a maximal cone it is the chart
             of the atlas this variety is glued from, the same object
             ``chart(cone)`` answers with.
             """
@@ -1542,7 +1542,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
             Orbit closures generate the full Chow group of a toric variety,
             and Sage's toric Chow implementation computes their exact rational-
-            equivalence quotient, including integral torsion.  The backend
+            equivalence quotient, including integral torsion.  The Smith-form computation
             returns a finitely generated ``ZZ``-module in invariant-factor
             form; crossing those invariants back through a diagonal owned
             presentation keeps the computation private while the public result
@@ -1746,13 +1746,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 ),
                 name="Chart pullbacks of a toric morphism",
             )
-            native = _engine_scheme(self).hom(
+            native = _engine_scheme(self).mor(
                 _engine_fan_morphism(lattice_morphism, self.fan(), codomain_fan),
                 _engine_scheme(codomain),
             )
             return _scheme_mor_category(self, codomain)(
-                lambda homset: ToricSchemeMorphism(
-                    homset,
+                lambda mor: ToricSchemeMorphism(
+                    mor,
                     native,
                     lattice_morphism=lattice_morphism,
                     chart_targets=chart_targets,

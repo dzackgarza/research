@@ -14,9 +14,9 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -142,8 +142,8 @@ class ContinuousMap(Morphism):
     def __mul__(self, other):
         if not _precomposable(self, other):
             return NotImplemented
-        hom = TopologicalSpaces().Mor(other.domain(), self.codomain())
-        return hom._from_continuous_set_map(
+        mor = TopologicalSpaces().Mor(other.domain(), self.codomain())
+        return mor._from_continuous_set_map(
             self.underlying_set_morphism()
             * other.underlying_set_morphism()
         )
@@ -160,7 +160,7 @@ class ContinuousMap(Morphism):
     __hash__ = None
 
 
-class TopologicalSpaceHomset(CategoricalHomset):
+class TopologicalSpaceMor(CategoricalMor):
     r"""Continuous maps between two represented topological spaces."""
 
     Element = ContinuousMap
@@ -202,17 +202,17 @@ class TopologicalSpaceHomset(CategoricalHomset):
         )
 
 
-class TopologicalSpaceHomCategoryConstruction(HomCategoryConstruction):
-    r"""The Hom family of topological spaces."""
+class TopologicalSpaceMorCategoryConstruction(MorCategoryConstruction):
+    r"""The Mor family of topological spaces."""
 
     def fixed_category_class(self):
-        return TopologicalSpaceHomset
+        return TopologicalSpaceMor
 
 
 class TopologicalSpaces(OwnedCategory):
     r"""Sets equipped with a topology, with continuous maps as morphisms."""
 
-    _HomCategory = TopologicalSpaceHomCategoryConstruction
+    _MorCategory = TopologicalSpaceMorCategoryConstruction
 
     def super_categories(self):
         return [Sets()]
@@ -261,6 +261,6 @@ class TopologicalSpaces(OwnedCategory):
 
 __all__ = [
     "ContinuousMap",
-    "TopologicalSpaceHomset",
+    "TopologicalSpaceMor",
     "TopologicalSpaces",
 ]

@@ -18,8 +18,8 @@ class UnderlyingAdditiveGroupFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = morphism.domain()
         target = morphism.codomain()
-        hom = self.codomain().Mor(self(source), self(target))
-        return hom.elementwise(
+        mor = self.codomain().Mor(self(source), self(target))
+        return mor.elementwise(
             lambda element: target._underlying_additive_element(morphism(source(element)))
         )
 

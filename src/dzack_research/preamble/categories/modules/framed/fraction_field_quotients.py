@@ -187,11 +187,11 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                     return self._from_engine_element(_engine_element(parent, value))
                 if isinstance(value, SageObject):
                     raise TypeError(
-                        "raw backend elements are not accepted by the public fraction-field quotient"
+                        "foreign implementation elements are not accepted by the public fraction-field quotient"
                     )
             if isinstance(value, SageObject):
                 raise TypeError(
-                    "raw backend objects are not accepted by the public fraction-field quotient"
+                    "foreign implementation objects are not accepted by the public fraction-field quotient"
                 )
             return self._from_engine_element(value)
 

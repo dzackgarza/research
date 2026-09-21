@@ -104,11 +104,11 @@ def test_bilinear_classifier_preserves_an_infinite_selected_factor_framing() -> 
     assert pairing(left.module_generator(NN(137)), right.module_generator("e")) == ZZ.one()
 
 
-def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_and_triangles() -> None:
+def test_tensor_internal_mor_adjunction_has_bijection_naturality_functoriality_and_triangles() -> None:
     fixed = _cyclic(4)
-    adjunction = fixed.tensor_hom_adjunction()
+    adjunction = fixed.tensor_mor_adjunction()
     tensor_by = adjunction.left_adjoint()
-    internal_hom_from = adjunction.right_adjoint()
+    internal_mor_from = adjunction.right_adjoint()
 
     source = ZZ.free_module(finite_ordered_set(("a", "b")))
     target = _cyclic(4)
@@ -127,14 +127,14 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
     )
     morphism = beta
     assert morphism.domain() is tensor_source
-    transpose = adjunction.hom_set_isomorphism_forward(morphism, source)
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose, target)
+    transpose = adjunction.mor_set_isomorphism_forward(morphism, source)
+    recovered = adjunction.mor_set_isomorphism_inverse(transpose, target)
     _assert_module_maps_agree(recovered, morphism)
 
-    hom_object = internal_hom_from(target)
+    mor_object = internal_mor_from(target)
     for source_label in source.module_generating_set():
         curried = transpose(source.module_generator(source_label))
-        assert curried.parent() is hom_object
+        assert curried.parent() is mor_object
         assert curried(fixed_generator) == beta(
             source.module_generator(source_label),
             fixed_generator,
@@ -172,11 +172,11 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
     tensor_stepwise = tensor_by(second_map) * tensor_by(source_map)
     _assert_module_maps_agree(tensor_composite, tensor_stepwise)
 
-    hom_composite = internal_hom_from(target_map)
-    hom_identity = internal_hom_from(target.module_category().Mor(target, target).identity())
+    mor_composite = internal_mor_from(target_map)
+    mor_identity = internal_mor_from(target.module_category().Mor(target, target).identity())
     _assert_module_maps_agree(
-        hom_composite * hom_identity,
-        hom_composite,
+        mor_composite * mor_identity,
+        mor_composite,
     )
 
     # The two triangle identities are the definitive coherence conditions.
@@ -190,9 +190,9 @@ def test_tensor_internal_hom_adjunction_has_bijection_naturality_functoriality_a
         tensor_source.module_category().Mor(tensor_source, tensor_source).identity(),
     )
 
-    right_object = internal_hom_from(target)
+    right_object = internal_mor_from(target)
     right_triangle = (
-        internal_hom_from(adjunction.counit(target))
+        internal_mor_from(adjunction.counit(target))
         * adjunction.unit(right_object)
     )
     _assert_module_maps_agree(

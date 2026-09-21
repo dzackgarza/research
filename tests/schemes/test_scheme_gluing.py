@@ -219,7 +219,7 @@ def test_finite_affine_atlas_retains_indexed_transition_data_and_maps_out() -> N
 
 def test_finite_affine_atlas_verifies_inverse_and_nontrivial_triple_cocycle() -> None:
     from dzack_research.preamble.all import QQ, AffineSpaces
-    from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import (
         CategoricalIsomorphism,
     )
     from dzack_research.preamble.categories.schemes.schemes import Schemes

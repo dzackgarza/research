@@ -22,8 +22,8 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.categories.morphism import Morphism
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules.fibered_modules import (
@@ -58,13 +58,13 @@ class _RelativeProjectivizationProjection(SchemeMorphism):
 
     def __init__(self, parent, source_sheaf) -> None:
         self._source_sheaf = source_sheaf
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
 
     def source_sheaf(self):
         return self._source_sheaf
 
-    def _in_homset(self, homset):
-        return _RelativeProjectivizationProjection(homset, self.source_sheaf())
+    def _in_mor(self, mor):
+        return _RelativeProjectivizationProjection(mor, self.source_sheaf())
 
     def _postcompose_with(self, after):
         match after is self.codomain().structure_morphism():
@@ -92,13 +92,13 @@ class _RelativeProjectivizationBaseChangeComposite(SchemeMorphism):
 
     def __init__(self, parent, comparison) -> None:
         self._comparison = comparison
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
 
     def comparison(self):
         return self._comparison
 
-    def _in_homset(self, homset):
-        return _RelativeProjectivizationBaseChangeComposite(homset, self.comparison())
+    def _in_mor(self, mor):
+        return _RelativeProjectivizationBaseChangeComposite(mor, self.comparison())
 
 
 class _RelativeProjectivizationBaseChangeTotalMorphism(SchemeMorphism):
@@ -106,13 +106,13 @@ class _RelativeProjectivizationBaseChangeTotalMorphism(SchemeMorphism):
 
     def __init__(self, parent, comparison) -> None:
         self._comparison = comparison
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
 
     def comparison(self):
         return self._comparison
 
-    def _in_homset(self, homset):
-        return _RelativeProjectivizationBaseChangeTotalMorphism(homset, self.comparison())
+    def _in_mor(self, mor):
+        return _RelativeProjectivizationBaseChangeTotalMorphism(mor, self.comparison())
 
     def _postcompose_with(self, after):
         if after is self.comparison().projectivization().projectivization_projection():
@@ -125,14 +125,14 @@ class _RelativeProjectivizationBaseChangeBaseMorphism(SchemeMorphism):
 
     def __init__(self, parent, comparison, ring_map) -> None:
         self._comparison = comparison
-        super().__init__(None, homset=parent, pullback=ring_map)
+        super().__init__(None, mor=parent, pullback=ring_map)
 
     def comparison(self):
         return self._comparison
 
-    def _in_homset(self, homset):
+    def _in_mor(self, mor):
         return _RelativeProjectivizationBaseChangeBaseMorphism(
-            homset,
+            mor,
             self.comparison(),
             self.coordinate_algebra_morphism(),
         )
@@ -151,7 +151,7 @@ class _RelativeProjectivizationBaseProjectionMorphism(SchemeMorphism):
     def __init__(self, parent, comparison, underlying_projection) -> None:
         self._comparison = comparison
         self._underlying_projection = underlying_projection
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
 
     def comparison(self):
         return self._comparison
@@ -159,9 +159,9 @@ class _RelativeProjectivizationBaseProjectionMorphism(SchemeMorphism):
     def underlying_projection(self):
         return self._underlying_projection
 
-    def _in_homset(self, homset):
+    def _in_mor(self, mor):
         return _RelativeProjectivizationBaseProjectionMorphism(
-            homset,
+            mor,
             self.comparison(),
             self.underlying_projection(),
         )
@@ -226,21 +226,21 @@ class GeneralProjectivizationBaseChangeComparison(SageObject):
         self._changed_source_sheaf = changed_sheaf
         self._changed_projectivization = changed_family
         self._square_composite = changed_total.Mor(source_scheme)(
-            lambda homset: _RelativeProjectivizationBaseChangeComposite(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseChangeComposite(
+                mor,
                 self,
             )
         )
         self._base_morphism = changed_scheme.Mor(source_scheme)(
-            lambda homset: _RelativeProjectivizationBaseChangeBaseMorphism(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseChangeBaseMorphism(
+                mor,
                 self,
                 ring_map,
             )
         )
         self._projection_to_original = changed_total.Mor(projectivization)(
-            lambda homset: _RelativeProjectivizationBaseChangeTotalMorphism(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseChangeTotalMorphism(
+                mor,
                 self,
             )
         )
@@ -305,21 +305,21 @@ class ExactProjectivizationBaseChangeComparison(SageObject):
         self._changed_projectivization = changed_family
         self._underlying_base_projection = underlying_base_projection
         self._square_composite = changed_total.Mor(source_scheme)(
-            lambda homset: _RelativeProjectivizationBaseChangeComposite(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseChangeComposite(
+                mor,
                 self,
             )
         )
         self._base_projection = changed_base.Mor(source_scheme)(
-            lambda homset: _RelativeProjectivizationBaseProjectionMorphism(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseProjectionMorphism(
+                mor,
                 self,
                 underlying_base_projection,
             )
         )
         self._total_projection = changed_total.Mor(projectivization)(
-            lambda homset: _RelativeProjectivizationBaseChangeTotalMorphism(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseChangeTotalMorphism(
+                mor,
                 self,
             )
         )
@@ -396,21 +396,21 @@ class ExactFiniteAtlasProjectivizationBaseChangeComparison(SageObject):
         self._changed_projectivization = changed_family
         self._underlying_base_projection = changed_base.left_projection()
         self._square_composite = changed_total.Mor(source_scheme)(
-            lambda homset: _RelativeProjectivizationBaseChangeComposite(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseChangeComposite(
+                mor,
                 self,
             )
         )
         self._base_projection = changed_base.Mor(source_scheme)(
-            lambda homset: _RelativeProjectivizationBaseProjectionMorphism(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseProjectionMorphism(
+                mor,
                 self,
                 self._underlying_base_projection,
             )
         )
         self._total_projection = changed_total.Mor(projectivization)(
-            lambda homset: _RelativeProjectivizationBaseChangeTotalMorphism(
-                homset,
+            lambda mor: _RelativeProjectivizationBaseChangeTotalMorphism(
+                mor,
                 self,
             )
         )
@@ -548,8 +548,8 @@ class RelativeProjectivizationQuasiCoherentMorphism(Morphism):
     __hash__ = None
 
 
-class RelativeProjectivizationQuasiCoherentHomset(CategoricalHomset):
-    r"""QCoh Hom on an exact relative Proj when no chartwise Hom is materialized."""
+class RelativeProjectivizationQuasiCoherentMor(CategoricalMor):
+    r"""QCoh Mor on an exact relative Proj when no chartwise Mor is materialized."""
 
     Element = RelativeProjectivizationQuasiCoherentMorphism
 
@@ -573,12 +573,12 @@ class RelativeProjectivizationQuasiCoherentHomset(CategoricalHomset):
                     return self.element_class(self, datum)
                 raise ValueError("this relative Proj does not define the requested QCoh endpoints")
             case _:
-                raise TypeError("this exact QCoh Hom accepts its relative-Proj universal quotient datum")
+                raise TypeError("this exact QCoh Mor accepts its relative-Proj universal quotient datum")
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom")
+            raise ValueError("identity is defined only on an endomorphism Mor")
         scheme = self.domain().scheme()
         return self.element_class(self, scheme, identity=True)
 
@@ -663,8 +663,8 @@ class RelativeProjectivizations(OwnedCategoryOverBaseRing):
         def projectivization_projection(self):
             source_scheme = self.projectivization_source_sheaf().scheme()
             return self.Mor(source_scheme)(
-                lambda homset: _RelativeProjectivizationProjection(
-                    homset,
+                lambda mor: _RelativeProjectivizationProjection(
+                    mor,
                     self.projectivization_source_sheaf(),
                 )
             )
@@ -1658,7 +1658,7 @@ class _RelativeProjectivizationSurjectivityOpenInclusion(SchemeMorphism):
 
     def __init__(self, parent, sheaf_morphism) -> None:
         self._sheaf_morphism = sheaf_morphism
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
 
     def sheaf_morphism(self):
         return self._sheaf_morphism
@@ -1666,9 +1666,9 @@ class _RelativeProjectivizationSurjectivityOpenInclusion(SchemeMorphism):
     def is_open_immersion(self) -> bool:
         return True
 
-    def _in_homset(self, homset):
+    def _in_mor(self, mor):
         return _RelativeProjectivizationSurjectivityOpenInclusion(
-            homset,
+            mor,
             self.sheaf_morphism(),
         )
 
@@ -1702,14 +1702,14 @@ class _RelativeProjectivizationInducedMorphism(SchemeMorphism):
 
     def __init__(self, parent, sheaf_morphism) -> None:
         self._sheaf_morphism = sheaf_morphism
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
 
     def sheaf_morphism(self):
         return self._sheaf_morphism
 
-    def _in_homset(self, homset):
+    def _in_mor(self, mor):
         return _RelativeProjectivizationInducedMorphism(
-            homset,
+            mor,
             self.sheaf_morphism(),
         )
 
@@ -1737,9 +1737,9 @@ def _exact_projectivization_map(
 
     category = OpenImmersions(target_total)
 
-    def inclusion(homset):
+    def inclusion(mor):
         return _RelativeProjectivizationSurjectivityOpenInclusion(
-            homset,
+            mor,
             sheaf_morphism,
         )
 
@@ -1753,8 +1753,8 @@ def _exact_projectivization_map(
         projectivization_sheaf_morphism=sheaf_morphism,
     )
     induced = locus.Mor(source_total)(
-        lambda homset: _RelativeProjectivizationInducedMorphism(
-            homset,
+        lambda mor: _RelativeProjectivizationInducedMorphism(
+            mor,
             sheaf_morphism,
         )
     )

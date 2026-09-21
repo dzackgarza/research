@@ -105,7 +105,7 @@ def _reduction_from_backend_rows(lattice, backend_rows):
 def _reduction_from_transformation(lattice, basis_map):
 
     if basis_map.parent() not in MatrixSpaces(lattice.base_ring()):
-        raise TypeError("a lattice reframing is an owned matrix-Hom morphism")
+        raise TypeError("a lattice reframing is an owned matrix-Mor morphism")
     original_generators = tuple(lattice.module_generators())
     images = tuple(
         sum(

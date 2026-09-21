@@ -40,7 +40,7 @@ def _tensored_resolution(module, other, shift, steps):
     ring = _common_base_ring(module, other)
     resolution = module.free_resolution(steps)
     length = resolution.length()
-    tensor = other.tensor_hom_adjunction().left_adjoint()
+    tensor = other.tensor_mor_adjunction().left_adjoint()
     return CochainComplexes(ring)(
         {shift - term: tensor(resolution.term(term)) for term in range(length + 1)},
         {
@@ -74,12 +74,12 @@ def _ext(module, other, degree=0):
     dualized = CochainComplexes(ring)(
         {term: resolution.term(term).module_category().Mor(resolution.term(term), other) for term in range(length + 1)},
         {
-            term - 1: resolution.differential(term).internal_hom_map(
+            term - 1: resolution.differential(term).internal_mor_map(
                 identity,
-                source_internal_hom=resolution.term(term - 1).module_category().Mor(
+                source_internal_mor=resolution.term(term - 1).module_category().Mor(
                     resolution.term(term - 1), other
                 ),
-                target_internal_hom=resolution.term(term).module_category().Mor(
+                target_internal_mor=resolution.term(term).module_category().Mor(
                     resolution.term(term), other
                 ),
             )
@@ -118,7 +118,7 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
                 raise ValueError("the selected Tor lift uses different resolutions")
             if lifted.module_morphism() is not morphism:
                 raise ValueError("the selected Tor lift lies over a different module morphism")
-            tensor = other.tensor_hom_adjunction().left_adjoint()
+            tensor = other.tensor_mor_adjunction().left_adjoint()
             component = tensor(lifted.component(degree))
             source = morphism.domain().tor(other, degree=degree)
             target = morphism.codomain().tor(other, degree=degree)
@@ -149,7 +149,7 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
 
     The first variable is contravariant and the second is covariant.  Both
     maps are induced on the owned cohomology quotient by the corresponding
-    internal-Hom component, rather than by recomputing an abstract Ext group.
+    internal-Mor component, rather than by recomputing an abstract Ext group.
     """
     degree = int(degree)
     if degree < 0:
@@ -171,10 +171,10 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             identity = other.module_category().Mor(other, other).identity()
             source_internal = target_resolution.term(degree).module_category().Mor(target_resolution.term(degree), other)
             target_internal = source_resolution.term(degree).module_category().Mor(source_resolution.term(degree), other)
-            component = lifted.component(degree).internal_hom_map(
+            component = lifted.component(degree).internal_mor_map(
                 identity,
-                source_internal_hom=source_internal,
-                target_internal_hom=target_internal,
+                source_internal_mor=source_internal,
+                target_internal_mor=target_internal,
             )
             source = morphism.codomain().ext(other, degree=degree)
             target = morphism.domain().ext(other, degree=degree)
@@ -187,10 +187,10 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             identity = term.module_category().Mor(term, term).identity()
             source_internal = term.module_category().Mor(term, morphism.domain())
             target_internal = term.module_category().Mor(term, morphism.codomain())
-            component = identity.internal_hom_map(
+            component = identity.internal_mor_map(
                 morphism,
-                source_internal_hom=source_internal,
-                target_internal_hom=target_internal,
+                source_internal_mor=source_internal,
+                target_internal_mor=target_internal,
             )
             source = other.ext(morphism.domain(), degree=degree)
             target = other.ext(morphism.codomain(), degree=degree)

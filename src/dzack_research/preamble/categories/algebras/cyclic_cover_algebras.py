@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from sage.structure.element import Element
     from sage.structure.parent import Parent
 
-    from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import (
         CategoricalIsomorphism,
     )
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (

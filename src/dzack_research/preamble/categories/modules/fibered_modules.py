@@ -21,9 +21,9 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
@@ -64,8 +64,8 @@ class SemilinearModuleMorphism(Morphism):
         if scalar_map.codomain() is not self.codomain().base_ring():
             raise ValueError("a semilinear scalar map ends at the target module base ring")
         restricted = parent.restricted_codomain(scalar_map)
-        linear_hom = Modules(self.domain().base_ring()).Mor(self.domain(), restricted)
-        restricted_morphism = linear_hom(restricted_morphism)
+        linear_mor = Modules(self.domain().base_ring()).Mor(self.domain(), restricted)
+        restricted_morphism = linear_mor(restricted_morphism)
         self._scalar_map = scalar_map
         self._restricted_codomain = restricted
         self._restricted_morphism = restricted_morphism
@@ -90,7 +90,7 @@ class SemilinearModuleMorphism(Morphism):
     @cached_method
     def additive_map(self):
         r"""Return the underlying additive map ``M -> N`` of this semilinear arrow."""
-        additive = AdditiveGroups().AdditiveCommutative().HomCategory().Of(
+        additive = AdditiveGroups().AdditiveCommutative().MorCategory().Of(
             self.domain(),
             self.codomain(),
         )
@@ -106,7 +106,7 @@ class SemilinearModuleMorphism(Morphism):
         adjunction = Modules(self.domain().base_ring()).base_change_adjunction(
             self.scalar_map()
         )
-        return adjunction.hom_set_isomorphism_inverse(
+        return adjunction.mor_set_isomorphism_inverse(
             self.restricted_morphism(),
             self.codomain(),
         )
@@ -148,9 +148,9 @@ class SemilinearModuleMorphism(Morphism):
                 return NotImplemented
         source = other.domain()
         scalar_map = self.scalar_map() * other.scalar_map()
-        hom = ModulesOverCommutativeRings().Mor(source, self.codomain())
-        restricted = hom.restricted_codomain(scalar_map)
-        linear_hom = Modules(source.base_ring()).Mor(source, restricted)
+        mor = ModulesOverCommutativeRings().Mor(source, self.codomain())
+        restricted = mor.restricted_codomain(scalar_map)
+        linear_mor = Modules(source.base_ring()).Mor(source, restricted)
         decision = (
             True
             if self.restricted_morphism().linearity_decision() is True
@@ -158,11 +158,11 @@ class SemilinearModuleMorphism(Morphism):
             else Unknown
         )
         composite = _DerivedRestrictedSemilinearMorphism(
-            linear_hom,
+            linear_mor,
             lambda element: restricted.wrap(self(other(element))),
             decision,
         )
-        return hom(scalar_map, composite)
+        return mor(scalar_map, composite)
 
     @classmethod
     def identity(cls, module):
@@ -177,18 +177,18 @@ class SemilinearModuleMorphism(Morphism):
         if source.base_ring() is not target.base_ring():
             raise ValueError("a linear map has one scalar ring")
         morphism = Modules(source.base_ring()).Mor(source, target)(morphism)
-        hom = ModulesOverCommutativeRings().Mor(source, target)
+        mor = ModulesOverCommutativeRings().Mor(source, target)
         scalar_map = source.base_ring().Mor(source.base_ring()).identity()
-        restricted = hom.restricted_codomain(scalar_map)
+        restricted = mor.restricted_codomain(scalar_map)
         compatible = _DerivedRestrictedSemilinearMorphism(
             Modules(source.base_ring()).Mor(source, restricted),
             lambda element: restricted.wrap(morphism(element)),
             morphism.linearity_decision(),
         )
-        return hom(scalar_map, compatible)
+        return mor(scalar_map, compatible)
 
 
-class SemilinearModuleHomset(CategoricalHomset):
+class SemilinearModuleMor(CategoricalMor):
     r"""All semilinear arrows between two modules over commutative rings."""
 
     Element = SemilinearModuleMorphism
@@ -212,7 +212,7 @@ class SemilinearModuleHomset(CategoricalHomset):
         r"""Return ``Res_sigma(N)`` in the source module fibre."""
         return self.base_change_adjunction(scalar_map).right_adjoint()(self.codomain())
 
-    def compatible_hom(self, scalar_map):
+    def compatible_mor(self, scalar_map):
         r"""Return ``Hom_R(M, Res_sigma(N))`` classifying these semilinear arrows."""
         restricted = self.restricted_codomain(scalar_map)
         return Modules(self.domain().base_ring()).Mor(self.domain(), restricted)
@@ -225,40 +225,40 @@ class SemilinearModuleHomset(CategoricalHomset):
             scalar_map = scalar_map.scalar_map()
         self._validate_scalar_map(scalar_map)
         restricted = self.restricted_codomain(scalar_map)
-        compatible_hom = self.compatible_hom(scalar_map)
+        compatible_mor = self.compatible_mor(scalar_map)
         match compatible_map:
             case Morphism() if (
                 compatible_map.domain() is self.domain()
                 and compatible_map.codomain() is self.codomain()
             ):
-                additive = AdditiveGroups().AdditiveCommutative().HomCategory().Of(
+                additive = AdditiveGroups().AdditiveCommutative().MorCategory().Of(
                     self.domain(), self.codomain()
                 )(compatible_map)
                 if isinstance(compatible_map, ModuleMorphism):
                     compatible_map = _DerivedRestrictedSemilinearMorphism(
-                        compatible_hom,
+                        compatible_mor,
                         lambda element: restricted.wrap(additive(element)),
                         compatible_map.linearity_decision(),
                     )
                 else:
-                    compatible_map = compatible_hom.elementwise(
+                    compatible_map = compatible_mor.elementwise(
                         lambda element: restricted.wrap(additive(element))
                     )
             case _:
-                compatible_map = compatible_hom(compatible_map)
+                compatible_map = compatible_mor(compatible_map)
         return self.element_class(self, scalar_map, compatible_map)
 
     def _from_linearization(self, scalar_map, linearization):
         r"""Construct from the equivalent target-fibre map ``S tensor_R M -> N``."""
         self._validate_scalar_map(scalar_map)
         extended = self.extended_domain(scalar_map)
-        linear_hom = Modules(self.codomain().base_ring()).Mor(
+        linear_mor = Modules(self.codomain().base_ring()).Mor(
             extended,
             self.codomain(),
         )
-        linearization = linear_hom(linearization)
+        linearization = linear_mor(linearization)
         adjunction = self.base_change_adjunction(scalar_map)
-        compatible = adjunction.hom_set_isomorphism_forward(
+        compatible = adjunction.mor_set_isomorphism_forward(
             linearization,
             self.domain(),
         )
@@ -266,7 +266,7 @@ class SemilinearModuleHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism Hom")
+            raise ValueError("identity is defined on an endomorphism Mor")
         module = self.domain()
         ring = module.base_ring()
         scalar_map = ring.Mor(ring).identity()
@@ -279,11 +279,11 @@ class SemilinearModuleHomset(CategoricalHomset):
         return self(scalar_map, compatible)
 
 
-class SemilinearModuleHomCategoryConstruction(HomCategoryConstruction):
-    r"""The Hom family of the Grothendieck category of modules over rings."""
+class SemilinearModuleMorCategoryConstruction(MorCategoryConstruction):
+    r"""The Mor family of the Grothendieck category of modules over rings."""
 
     def fixed_category_class(self):
-        return SemilinearModuleHomset
+        return SemilinearModuleMor
 
 
 class ModuleBaseRingProjection(Functor):
@@ -312,7 +312,7 @@ class ModulesOverCommutativeRings(OwnedCategory):
     give the cocartesian/cartesian transports of the represented fibration.
     """
 
-    _HomCategory = SemilinearModuleHomCategoryConstruction
+    _MorCategory = SemilinearModuleMorCategoryConstruction
 
     def an_object(self):
         return CommutativeRings().an_object().free_module(1)
@@ -322,8 +322,8 @@ class ModulesOverCommutativeRings(OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("semilinear Hom endpoints must be modules over commutative rings")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("semilinear Mor endpoints must be modules over commutative rings")
+        return self.MorCategory().Of(domain, codomain)
 
     def fiber(self, ring):
         r"""Return the fixed-base fibre ``Modules(R)`` over a commutative ring ``R``."""
@@ -363,6 +363,6 @@ class ModulesOverCommutativeRings(OwnedCategory):
 __all__ = [
     "ModuleBaseRingProjection",
     "ModulesOverCommutativeRings",
-    "SemilinearModuleHomset",
+    "SemilinearModuleMor",
     "SemilinearModuleMorphism",
 ]

@@ -30,7 +30,7 @@ def test_algebra_transpose_uses_the_stated_left_adjoint_source() -> None:
     morphism = independently_extended.Mor(target)(
         {"x": target.algebra_generator("y")}
     )
-    transpose = adjunction.hom_set_isomorphism_forward(morphism, source)
+    transpose = adjunction.mor_set_isomorphism_forward(morphism, source)
     restricted_target = adjunction.right_adjoint()(target)
 
     assert transpose.domain() is source
@@ -54,8 +54,8 @@ def test_abelianization_transpose_uses_the_quotient_projection_on_its_domain() -
 
     first_adjunction = Groups().abelianization_adjunction()
     assert first_adjunction.right_adjoint()(target) is target
-    factored = first_adjunction.hom_set_isomorphism_inverse(group_morphism, target)
-    recovered = first_adjunction.hom_set_isomorphism_forward(factored, group)
+    factored = first_adjunction.mor_set_isomorphism_inverse(group_morphism, target)
+    recovered = first_adjunction.mor_set_isomorphism_forward(factored, group)
 
     for generator in group_generators:
         assert recovered(generator) == group_morphism(generator)
@@ -73,11 +73,11 @@ def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> Non
     assert fraction_field(nonmaximal_order) is field
 
     identity = field.Mor(field).identity()
-    maximal_restriction = adjunction.hom_set_isomorphism_forward(
+    maximal_restriction = adjunction.mor_set_isomorphism_forward(
         identity,
         maximal_order,
     )
-    nonmaximal_restriction = adjunction.hom_set_isomorphism_forward(
+    nonmaximal_restriction = adjunction.mor_set_isomorphism_forward(
         identity,
         nonmaximal_order,
     )
@@ -91,7 +91,7 @@ def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> Non
             basis_element
         )
 
-    recovered = adjunction.hom_set_isomorphism_inverse(nonmaximal_restriction, field)
+    recovered = adjunction.mor_set_isomorphism_inverse(nonmaximal_restriction, field)
     assert recovered(field.primitive_element()) == field.primitive_element()
 
 
@@ -104,7 +104,7 @@ def test_free_group_transpose_uses_the_stated_left_adjoint_source() -> None:
     generator_map = Sets().Mor(source, target)(lambda point: target_generator if point == 11 else target_generator**2)
     group_morphism = free_group.Mor(target)(generator_map)
 
-    transpose = adjunction.hom_set_isomorphism_forward(group_morphism, source)
+    transpose = adjunction.mor_set_isomorphism_forward(group_morphism, source)
 
     for point in source:
         assert transpose(point) == generator_map(point)

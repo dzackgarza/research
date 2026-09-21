@@ -44,7 +44,7 @@ def test_adjunction_rejects_parallel_public_equivalent_data() -> None:
             def unit(self, obj):
                 return obj
 
-            def hom_set_isomorphism_forward(self, morphism, source):
+            def mor_set_isomorphism_forward(self, morphism, source):
                 return morphism
 
 
@@ -92,7 +92,7 @@ def test_group_invariants_and_coinvariants_impose_all_generator_relations() -> N
     assert tuple(invariant_factors) == (ZZ(2), ZZ(2))
 
 
-def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_and_triangles() -> None:
+def test_free_module_underlying_set_adjunction_has_the_mor_bijection_naturality_and_triangles() -> None:
     adjunction = Sets().free_module_adjunction(ZZ)
     free = adjunction.left_adjoint()
     underlying = adjunction.right_adjoint()
@@ -106,8 +106,8 @@ def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_
             "y": 2 * module.module_generator("a"),
         }
     )
-    transpose = adjunction.hom_set_isomorphism_forward(phi, labels)
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose, module)
+    transpose = adjunction.mor_set_isomorphism_forward(phi, labels)
+    recovered = adjunction.mor_set_isomorphism_inverse(transpose, module)
 
     for label in labels:
         assert transpose(label) == phi(free_labels.module_generator(label))
@@ -175,8 +175,8 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
             "v": order(2) * target.module_generator("p"),
         }
     )
-    transpose = adjunction.hom_set_isomorphism_forward(phi, source)
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose, target)
+    transpose = adjunction.mor_set_isomorphism_forward(phi, source)
+    recovered = adjunction.mor_set_isomorphism_inverse(transpose, target)
     for label in source.module_generating_set():
         assert recovered(extended_source.module_generator(label)) == phi(
             extended_source.module_generator(label)
@@ -212,7 +212,7 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
         assert second_triangle(generator) == generator
 
 
-def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets() -> None:
+def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_mors() -> None:
     group, acted = _swap_group_module()
     e = acted.module_generator("e")
     f = acted.module_generator("f")
@@ -224,7 +224,7 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
     except ValueError as error:
         assert "not G-equivariant" in str(error)
     else:
-        raise AssertionError("an R[G]-Hom set accepted a non-equivariant module map")
+        raise AssertionError("an R[G]-Mor set accepted a non-equivariant module map")
 
     adjunction = Modules(ZZ).trivial_invariants_adjunction(group)
     invariants = adjunction.right_adjoint()(acted)
@@ -236,8 +236,8 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
     equivariant = trivial_source.Mor(acted)(
         {"n": e + f}
     )
-    transpose = adjunction.hom_set_isomorphism_forward(equivariant, source)
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose, acted)
+    transpose = adjunction.mor_set_isomorphism_forward(equivariant, source)
+    recovered = adjunction.mor_set_isomorphism_inverse(transpose, acted)
     assert recovered(trivial_source.module_generator("n")) == equivariant(
         trivial_source.module_generator("n")
     )
@@ -289,8 +289,8 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
             "f": target.module_generator("n"),
         }
     )
-    transpose = adjunction.hom_set_isomorphism_forward(quotient_map, source=acted)
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose, target)
+    transpose = adjunction.mor_set_isomorphism_forward(quotient_map, source=acted)
+    recovered = adjunction.mor_set_isomorphism_inverse(transpose, target)
     for label in coinvariants.module_generating_set():
         assert recovered(coinvariants.module_generator(label)) == quotient_map(
             coinvariants.module_generator(label)
@@ -337,8 +337,8 @@ def test_fraction_field_is_left_adjoint_to_ring_of_integers_with_embedding_natur
     assert ring_of_integers(field) is order
 
     identity = fraction_field(order).Mor(field).identity()
-    restricted = adjunction.hom_set_isomorphism_forward(identity, order)
-    recovered = adjunction.hom_set_isomorphism_inverse(restricted, field)
+    restricted = adjunction.mor_set_isomorphism_forward(identity, order)
+    recovered = adjunction.mor_set_isomorphism_inverse(restricted, field)
     for basis_element in order.integral_basis():
         assert restricted(basis_element) == basis_element
     assert recovered(field.primitive_element()) == field.primitive_element()
@@ -393,8 +393,8 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
             group_generators[1]: target_generator**3,
         }
     )
-    factored = adjunction.hom_set_isomorphism_inverse(sign_to_six, target)
-    recovered = adjunction.hom_set_isomorphism_forward(factored, group)
+    factored = adjunction.mor_set_isomorphism_inverse(sign_to_six, target)
+    recovered = adjunction.mor_set_isomorphism_forward(factored, group)
     for generator in group_generators:
         assert recovered(generator) == sign_to_six(generator)
 
@@ -485,8 +485,8 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
             for label in extended.module_generating_set()
         }
     )
-    transpose = adjunction.hom_set_isomorphism_forward(extended_identity, acted)
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose, extended)
+    transpose = adjunction.mor_set_isomorphism_forward(extended_identity, acted)
+    recovered = adjunction.mor_set_isomorphism_inverse(transpose, extended)
     for generator in extended.module_generators():
         assert recovered(generator) == generator
 

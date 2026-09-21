@@ -1,20 +1,20 @@
-"""Dependency-light runtime foundation for owned Hom-set parents."""
+"""Dependency-light runtime foundation for owned Mor object parents."""
 
 from __future__ import annotations
 
 from sage.categories.category import Category
-from sage.categories.homset import Homset
+from sage.categories.mor import Mor as SageMor
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
 
-class OwnedHomset(Homset):
-    r"""A Hom-set whose elements enter through its owned constructor directly.
+class OwnedMor(SageMor):
+    r"""A Mor object whose elements enter through its owned constructor directly.
 
-    Sage's ``Homset`` remains the runtime parent required by ``Morphism``.
+    Sage's ``Mor`` remains the runtime parent required by ``Morphism``.
     Mathematical inputs are not sent through Sage coercion discovery: each
-    concrete Hom-set owns the interpretation implemented by
+    concrete Mor object owns the interpretation implemented by
     ``_element_constructor_``.
     """
 
@@ -23,19 +23,19 @@ class OwnedHomset(Homset):
 
     def identity_at(self, obj: Parent) -> Morphism:
         if obj is not self.domain() or obj is not self.codomain():
-            raise ValueError("this Hom parent does not represent endomorphisms of the stated object")
+            raise ValueError("this Mor parent does not represent endomorphisms of the stated object")
         return self.identity()
 
 
-__all__ = ["CategoryPacketMethods", "OwnedHomset", "UnderlyingSetHomset"]
+__all__ = ["CategoryPacketMethods", "OwnedMor", "UnderlyingSetMor"]
 
-class UnderlyingSetHomset(OwnedHomset):
-    r"""Plain-function Homset used only when an owned category declares no stronger arrows."""
+class UnderlyingSetMor(OwnedMor):
+    r"""Plain-function Mor used only when an owned category declares no stronger arrows."""
 
     Element = SetMorphism
 
     def __init__(self, domain: Parent, codomain: Parent) -> None:
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        SageMor.__init__(self, domain, codomain, category=SageSets())
 
     def _element_constructor_(self, datum):
         if isinstance(datum, SetMorphism):
@@ -54,29 +54,29 @@ class UnderlyingSetHomset(OwnedHomset):
         return SetMorphism(self, lambda element: element)
 
 
-_underlying_set_homsets = {}
+_underlying_set_mors = {}
 
-def _underlying_set_homset(domain: Parent, codomain: Parent) -> UnderlyingSetHomset:
-    r"""Return the identity-cached plain-function Homset on these endpoints."""
+def _underlying_set_mor(domain: Parent, codomain: Parent) -> UnderlyingSetMor:
+    r"""Return the identity-cached plain-function Mor on these endpoints."""
     key = (id(domain), id(codomain))
-    cached = _underlying_set_homsets.get(key)
+    cached = _underlying_set_mors.get(key)
     if cached is not None and cached.domain() is domain and cached.codomain() is codomain:
         return cached
-    result = UnderlyingSetHomset(domain, codomain)
-    _underlying_set_homsets[key] = result
+    result = UnderlyingSetMor(domain, codomain)
+    _underlying_set_mors[key] = result
     return result
 
 
 def _has_category_packet_surface(category: Category) -> bool:
-    r"""Whether ``category``'s Hom construction is the owned packet or Sage's ``Hom``.
+    r"""Whether ``category``'s Mor construction is the owned packet or Sage's ``Hom``.
 
     ``OWN-06`` adapter.  Every category is an object of ``Cat``; what differs
-    is the runtime that realizes its Homs.  The owned packet reaches a
+    is the runtime that realizes its Mors.  The owned packet reaches a
     category in exactly two ways, both fixed by the runtime root: an owned
     category, and every join or axiom category Sage assembles from owned
     members, carries ``Cat.ParentMethods`` through its ``subcategory_class``
     (``CatConstructionsMixin`` in ``owned_category.py``); ``Cat`` itself and
-    the Hom categories realized on Sage's ``Homset`` carry
+    the Mor categories realized on Sage's ``Mor`` carry
     :class:`CategoryPacketMethods` as a declared base.  A category carrying
     neither is Sage's own and keeps Sage's ``Hom`` ingress.  This reads which
     of the two realizations is present and decides nothing else; it is not
@@ -98,14 +98,14 @@ class CategoryPacketMethods:
 
     Sited here, below the packet itself, so that the owned category bases can
     carry it: an axiom category is built from those bases, states no morphisms
-    of its own, and must still be askable for the Hom of the category it
+    of its own, and must still be askable for the Mor of the category it
     refines.
 
     The packet assembles into two categories of its own: the arrow category
-    ``Ar(C) = [[1], C]``, whose objects are all the arrows the Hom families
+    ``Ar(C) = [[1], C]``, whose objects are all the arrows the Mor families
     classify, and the core, whose arrows are the isomorphisms the Iso family
-    classifies.  Both are stated here once, so a Hom category realized on
-    Sage's ``Homset`` reaches them by the same construction as every other
+    classifies.  Both are stated here once, so a Mor category realized on
+    Sage's ``Mor`` reaches them by the same construction as every other
     category; ``Cat.ParentMethods`` names these same functions.
     """
 
@@ -126,8 +126,8 @@ class CategoryPacketMethods:
 
         return _CoreCategory(self)
 
-    def _hom_endpoint(self, obj: Parent | Category) -> Parent | Category:
-        r"""Represent an endpoint in this category's Hom construction.
+    def _mor_endpoint(self, obj: Parent | Category) -> Parent | Category:
+        r"""Represent an endpoint in this category's Mor construction.
 
         Ordinary categories already receive their objects. ``Cat`` overrides
         this at its own boundary because Sage morphisms use parent objects
@@ -136,15 +136,15 @@ class CategoryPacketMethods:
         return obj
 
     def category_packet(self):
-        r"""Return the Hom/End/Mono/Epi/Iso/Aut packet owned by this category."""
-        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+        r"""Return the Mor/End/Mono/Epi/Iso/Aut packet owned by this category."""
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
             _category_packet,
         )
 
         return _category_packet(self)
 
-    def HomCategory(self) -> Category:
-        return self.category_packet().Homs()
+    def MorCategory(self) -> Category:
+        return self.category_packet().Mors()
 
     def EndCategory(self) -> Category:
         return self.category_packet().Ends()
@@ -162,7 +162,7 @@ class CategoryPacketMethods:
         return self.category_packet().Auts()
 
     def Mor(self, source: Parent, target: Parent) -> Category:
-        return self.HomCategory().Of(source, target)
+        return self.MorCategory().Of(source, target)
 
     def End(self, obj: Parent) -> Category:
         return self.EndCategory().Of(obj)

@@ -108,9 +108,9 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
             source_inclusion = module.inclusion()
             localized_ambient = self(source_inclusion.codomain())
             def inclusion(localized_subobject):
-                hom = localized_subobject.Mono(localized_ambient)
+                mor = localized_subobject.Mono(localized_ambient)
                 return _LocalizedModuleEmbedding(
-                    hom,
+                    mor,
                     source_inclusion,
                     self,
                     lambda element: localized_ambient.fraction(
@@ -170,23 +170,23 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
                 return super()._apply_morphism(morphism)
 
         # Flatness preserves a selected monomorphism.  Read its mathematical
-        # Hom placement, not its concrete morphism implementation.
-        source_hom = morphism.parent().homset_category()
+        # Mor placement, not its concrete morphism implementation.
+        source_mor = morphism.parent().mor_category()
         monomorphisms = morphism.domain().module_category().Mono()
-        match source_hom.is_subcategory(monomorphisms):
+        match source_mor.is_subcategory(monomorphisms):
             case True:
-                hom = source.Mono(target)
+                mor = source.Mono(target)
                 return _LocalizedModuleEmbedding(
-                    hom,
+                    mor,
                     morphism,
                     self,
                     action,
                     elementwise=elementwise,
                 )
             case False:
-                hom = source.module_category().Mor(source, target)
+                mor = source.module_category().Mor(source, target)
         return _LocalizedModuleMorphism(
-            hom,
+            mor,
             morphism,
             self,
             action,

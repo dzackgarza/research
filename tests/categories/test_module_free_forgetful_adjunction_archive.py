@@ -43,15 +43,15 @@ ARCHIVE_RECONCILIATIONS = (
             "Adjunction.right_adjoint": "src/dzack_research/preamble/categories/functors/core.py",
             "Adjunction.unit": "src/dzack_research/preamble/categories/functors/core.py",
             "Adjunction.counit": "src/dzack_research/preamble/categories/functors/core.py",
-            "Adjunction.hom_set_isomorphism_forward": "src/dzack_research/preamble/categories/functors/core.py",
-            "Adjunction.hom_set_isomorphism_inverse": "src/dzack_research/preamble/categories/functors/core.py",
+            "Adjunction.mor_set_isomorphism_forward": "src/dzack_research/preamble/categories/functors/core.py",
+            "Adjunction.mor_set_isomorphism_inverse": "src/dzack_research/preamble/categories/functors/core.py",
         },
         "disposition": "reconciled-live-owner",
     },
 )
 
 
-def test_archived_hom_bijection_is_the_live_adjunction_transpose() -> None:
+def test_archived_mor_bijection_is_the_live_adjunction_transpose() -> None:
     adjunction = Sets().free_module_adjunction(ZZ)
     labels = finite_ordered_set(("x", "y"))
     module = ZZ.free_module(finite_ordered_set(("a", "b")))
@@ -65,8 +65,8 @@ def test_archived_hom_bijection_is_the_live_adjunction_transpose() -> None:
 
     # The free-module adjunction reads its source from the constructor-owned
     # framing, not from a reverse functor-provenance cache.
-    transpose = adjunction.hom_set_isomorphism_forward(morphism, labels)
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose, module)
+    transpose = adjunction.mor_set_isomorphism_forward(morphism, labels)
+    recovered = adjunction.mor_set_isomorphism_inverse(transpose, module)
 
     assert transpose(labels("x")) == morphism(free.module_generator("x"))
     assert transpose(labels("y")) == morphism(free.module_generator("y"))

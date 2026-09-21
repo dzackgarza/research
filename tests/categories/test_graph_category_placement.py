@@ -19,7 +19,7 @@ def test_undirected_graphs_are_symmetric_digraphs() -> None:
     assert graph.has_edge(1, 0)
 
 
-def test_digraph_hom_rejects_a_vertex_map_that_destroys_an_arc() -> None:
+def test_digraph_mor_rejects_a_vertex_map_that_destroys_an_arc() -> None:
     source = Digraphs().from_edges((0, 1), ((0, 1),))
     target = Digraphs().from_edges((0, 1), ())
 
@@ -27,7 +27,7 @@ def test_digraph_hom_rejects_a_vertex_map_that_destroys_an_arc() -> None:
         Digraphs().Mor(source, target)(lambda vertex: vertex)
 
 
-def test_labelled_graph_hom_preserves_edge_labels() -> None:
+def test_labelled_graph_mor_preserves_edge_labels() -> None:
     source = LabelledGraphs().an_object()
     target = LabelledGraphs().from_labels(
         (0, 1),

@@ -446,7 +446,7 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             r"""Return one element of the finite group ``group`` carrying this cone to ``other``, or ``None``.
 
             The search runs over the elements of the represented finite
-            group; an infinite arithmetic group is the traversal provider's.
+            group; an infinite arithmetic group is handled by the surrounding traversal.
             """
             if other.ambient_lattice() is not self.ambient_lattice():
                 return None

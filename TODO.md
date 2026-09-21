@@ -258,12 +258,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** annotations name the actual mathematical codomain, refinement or honest union. A central mathematically named alias may express a limitation of Python syntax; a universal type with a new name may not hide it. This node does not optimize checker counts.
   **Closure specimens:** follow a functor image, a cardinality, a scheme map and a composite's components into operations their claimed codomain supports. Review every occurrence family and required central alias; no narrowing to the currently convenient engine realization or broad Any escape.
 
-- [ ] **`banned-language-residue`**. **Needs:** none.
-  **Owner and delta:** the terminology replacement index across the remaining preamble public source and examples, including carrier and opaque implementation vocabulary.
-  **Invariants:** replace each term with the actual object it denotes, such as an underlying set, module or arrow target. Preserve different mathematical notions even when old names resemble each other. No opaque synonym or new alias evades the dictionary.
-  **Closure specimens:** read complete declarations and their callers for each remaining family, checking that terminology exposes correct domains/codomains. Search for prohibited terms verifies coverage, while the mathematical reading establishes acceptance. Private Sage calls retain Sage's exact API names.
-
-- [ ] **`canonical-notebook-contract`**. **Needs:** `mathematical-return-types`, `banned-language-residue`.
+- [ ] **`canonical-notebook-contract`**. **Needs:** `mathematical-return-types`.
   **Owner and delta:** `computations/notebooks/preamble.ipynb`, through japi, organized around research questions and their mathematical witnesses (`NB-01`--`05`).
   **Invariants:** all substantive claims are executable assertions or displayed witnesses using the final owned session API. Preserve the existing useful research content; replace raw constructors, global Hom, ambiguous generators and coordinate workarounds with their mathematical owners. Clear stale failure output without representing unexecuted replacements as passed.
   **Closure specimens:** actual algebra substitutions, a nonidentity morphism, group/lattice constructions and the notebook's geometric claims have falsifiable expected results. Source authoring closes here; clean-kernel execution and visual inspection of every relevant rendered output remain required in `terminal-session`.

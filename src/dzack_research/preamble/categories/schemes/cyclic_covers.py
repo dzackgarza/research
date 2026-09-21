@@ -283,7 +283,7 @@ def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
     source_atlas = line_bundle.gluing_datum()
     changed_atlas = changed_line_bundle.gluing_datum()
     base_projection = changed_line_bundle.base_change_projection()
-    morphisms = base_projection.parent().homset_category()
+    morphisms = base_projection.parent().mor_category()
     local_projections = {}
     local_maps_to_cover = {}
     for source_index in cyclic_algebra.chart_index_set():
@@ -456,7 +456,7 @@ def RelativeCyclicCoverLift(
 ):
     r"""Construct the lift as the commuting endomorphism square of its cover map."""
     relative = cyclic_algebra.relative_spectrum()
-    morphisms = base_automorphism.parent().homset_category()
+    morphisms = base_automorphism.parent().mor_category()
     arrows = morphisms.ArrowCategory()
     cover_map = arrows(relative.arrow())
     return arrows.Mor(cover_map, cover_map)._square(

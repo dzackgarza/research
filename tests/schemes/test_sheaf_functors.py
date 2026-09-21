@@ -240,9 +240,9 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
             )
         }
     )
-    target_sheaf_hom = QuasiCoherentSheaves(plane).Mor(target_sheaf, target_sheaf)
-    times_two = target_sheaf_hom(times_two_module)
-    target_identity = target_sheaf_hom.identity()
+    target_sheaf_mor = QuasiCoherentSheaves(plane).Mor(target_sheaf, target_sheaf)
+    times_two = target_sheaf_mor(times_two_module)
+    target_identity = target_sheaf_mor.identity()
 
     pulled = pullback.on_object(target_sheaf)
     assert pullback(target_sheaf) is pulled
@@ -270,9 +270,9 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
             )
         }
     )
-    source_sheaf_hom = QuasiCoherentSheaves(line).Mor(source_sheaf, source_sheaf)
-    times_three = source_sheaf_hom(times_three_module)
-    source_identity = source_sheaf_hom.identity()
+    source_sheaf_mor = QuasiCoherentSheaves(line).Mor(source_sheaf, source_sheaf)
+    times_three = source_sheaf_mor(times_three_module)
+    source_identity = source_sheaf_mor.identity()
 
     pushed = direct.on_object(source_sheaf)
     assert morphism.direct_image(source_sheaf) is pushed

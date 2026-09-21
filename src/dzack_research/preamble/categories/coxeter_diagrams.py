@@ -13,9 +13,9 @@ from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.graph_categories import LabelledGraphs
@@ -120,7 +120,7 @@ class CoxeterDiagramMorphism(Morphism):
         )
 
 
-class CoxeterDiagramHomset(CategoricalHomset):
+class CoxeterDiagramMor(CategoricalMor):
     r"""The bond-preserving maps between two represented Coxeter diagrams."""
 
     Element = CoxeterDiagramMorphism
@@ -155,14 +155,14 @@ class CoxeterDiagramHomset(CategoricalHomset):
         return self(lambda vertex: vertex)
 
 
-class CoxeterDiagramHomCategoryConstruction(HomCategoryConstruction):
-    FixedCategoryClass = CoxeterDiagramHomset
+class CoxeterDiagramMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = CoxeterDiagramMor
 
 
 class CoxeterDiagrams(OwnedCategory):
     r"""Finite Coxeter diagrams: labelled graphs encoding a symmetric angle matrix."""
 
-    _HomCategory = CoxeterDiagramHomCategoryConstruction
+    _MorCategory = CoxeterDiagramMorCategoryConstruction
 
     def an_object(self):
         r"""The diagram of ``A_2``: two vertices joined by an edge of order 3."""
@@ -178,7 +178,7 @@ class CoxeterDiagrams(OwnedCategory):
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a Coxeter-diagram morphism requires two Coxeter diagrams")
-        return self.HomCategory().Of(domain, codomain)
+        return self.MorCategory().Of(domain, codomain)
 
     @cached_method
     def minimal_edge_lattices(self):
@@ -291,7 +291,7 @@ class CoxeterDiagrams(OwnedCategory):
         def num_vertices(self):
             return int(self.cardinality())
 
-        def hom(self, images, codomain):
+        def mor(self, images, codomain):
             return CoxeterDiagrams().Mor(self, codomain)(images)
 
         def vertex_weight(self, vertex):

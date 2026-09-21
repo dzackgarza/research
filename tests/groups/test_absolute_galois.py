@@ -1,7 +1,7 @@
 import pytest
 
 from sage.misc.unknown import Unknown
-from sage.categories.homset import Homset
+from sage.categories.mor import Mor
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
 from dzack_research.preamble.all import GF, QQ, QuadraticField
@@ -20,8 +20,6 @@ from dzack_research.preamble.categories.rings.field_morphisms import (
 )
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
     PrimeProlongation,
-)
-from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 from dzack_research.preamble.categories.sets import Sets
@@ -95,8 +93,8 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert tuple(group.topological_group_generators()) == (frobenius,)
 
     field_endomorphisms = group.arrow_set()
-    assert field_endomorphisms is group.field_automorphism_hom()
-    assert not isinstance(group, Homset)
+    assert field_endomorphisms is group.field_automorphism_mor()
+    assert not isinstance(group, Mor)
     assert frobenius.as_morphism().parent() is field_endomorphisms
     assert frobenius.as_morphism() is frobenius.as_morphism()
     assert "_preamble_underlying_field_morphism" not in frobenius.__dict__
@@ -110,13 +108,13 @@ def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_ma
 ):
     group = AbsoluteGaloisGroup(QQ)
     closure = group.algebraic_closure()
-    homset = closure.exact_morphisms_to(closure)
-    identity = homset.identity()
-    same_identity = homset.identity()
+    mor = closure.exact_morphisms_to(closure)
+    identity = mor.identity()
+    same_identity = mor.identity()
     separate_identity = closure.exact_morphisms_to(closure).identity()
 
-    assert closure.exact_morphisms_to(closure) is homset
-    assert homset is OwnedFields().HomCategory().Of(closure, closure)
+    assert closure.exact_morphisms_to(closure) is mor
+    assert mor is OwnedFields().MorCategory().Of(closure, closure)
     assert identity == same_identity
     assert hash(identity) == hash(same_identity)
     assert identity == separate_identity

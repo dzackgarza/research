@@ -59,10 +59,10 @@ def test_selected_module_presentation_and_resolution_reuse_the_framing_maps() ->
 
 def test_finite_framing_decides_map_equality_only_with_established_linearity() -> None:
     module = ZZ.free_module(("e",))
-    hom = Modules(ZZ).Mor(module, module)
-    identity = hom.identity()
-    stated = hom({"e": module.module_generator("e")})
-    opaque = hom.elementwise(lambda element: element)
+    mor = Modules(ZZ).Mor(module, module)
+    identity = mor.identity()
+    stated = mor({"e": module.module_generator("e")})
+    opaque = mor.elementwise(lambda element: element)
 
     assert identity == stated
     assert opaque.linearity_decision() is Unknown

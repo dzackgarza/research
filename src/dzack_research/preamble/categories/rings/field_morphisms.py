@@ -17,8 +17,8 @@ from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteFiel
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import AlgebraicField_common
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_element, _engine_ring, _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -62,9 +62,9 @@ def _field_generators(field):
 
 
 class ExactFieldMorphism(Morphism):
-    r"""A field morphism with owned endpoints and an exact Sage map backend.
+    r"""A field morphism with owned endpoints and an exact Sage field map retained privately.
 
-    The backend is admitted by the exact field Hom's element constructor,
+    The private map is admitted by the exact field Mor's element constructor,
     which checks it is a field homomorphism between the engine fields of the
     endpoints.
     """
@@ -94,7 +94,7 @@ class ExactFieldMorphism(Morphism):
         r"""Whether two exact maps with the same endpoints agree.
 
         On a finite or number field the full tower generating family
-        determines the map; other realizations use their exact backend equality.
+        determines the map; other realizations use exact equality of their represented maps.
         """
         if (
             self.domain() is not other.domain()
@@ -185,12 +185,12 @@ class ExactFieldMorphism(Morphism):
         return f"Exact field morphism {self.domain()} -> {self.codomain()} ({images})"
 
 
-class _ExactFieldHomset(CategoricalHomset):
+class _ExactFieldMor(CategoricalMor):
     Element = ExactFieldMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(
-            self, hom_family, domain, codomain
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(
+            self, mor_family, domain, codomain
         )
 
     def _element_constructor_(self, datum):
@@ -201,7 +201,7 @@ class _ExactFieldHomset(CategoricalHomset):
             datum = datum._engine_morphism_crossing()
         if not isinstance(datum, Map):
             raise TypeError("an exact field morphism requires a Sage map backend")
-        if not datum.parent().homset_category().is_subcategory(SageFields()):
+        if not datum.parent().mor_category().is_subcategory(SageFields()):
             raise TypeError(
                 "an exact field morphism requires a genuine field-homomorphism backend"
             )
@@ -213,9 +213,9 @@ class _ExactFieldHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom-set")
+            raise ValueError("identity is defined only on an endomorphism Mor object")
         engine = _engine_ring(self.domain())
-        return self(engine.hom(engine))
+        return self(engine.mor(engine))
 
     def _repr_(self) -> str:
         return f"Exact field morphisms from {self.domain()} to {self.codomain()}"

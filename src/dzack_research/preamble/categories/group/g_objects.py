@@ -34,10 +34,10 @@ from sage.misc.unknown import Unknown
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoryPacketMethods,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.group.groups import (
@@ -124,7 +124,7 @@ class InternalGroupObjectMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().hom_family().Of(
+        return self.parent().mor_family().Of(
             other.domain(),
             self.codomain(),
         )(
@@ -135,12 +135,12 @@ class InternalGroupObjectMorphism(Morphism):
         return f"Internal-group morphism induced by {self.underlying_arrow()}"
 
 
-class InternalGroupObjectHomset(CategoricalHomset):
+class InternalGroupObjectMor(CategoricalMor):
     r"""Morphisms in the category of internal group objects."""
 
     Element = InternalGroupObjectMorphism
 
-    def underlying_homset(self):
+    def underlying_mor(self):
         category = self.domain().underlying_category()
         return category.Mor(
             self.domain().underlying_object(),
@@ -150,7 +150,7 @@ class InternalGroupObjectHomset(CategoricalHomset):
     def _element_constructor_(self, arrow):
         source = self.domain()
         target = self.codomain()
-        arrow = self.underlying_homset()(arrow)
+        arrow = self.underlying_mor()(arrow)
 
         source_square = source.square_construction()
         target_square = target.square_construction()
@@ -183,13 +183,13 @@ class InternalGroupObjectHomset(CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an internal-group endomorphism Hom")
-        return self(self.underlying_homset().identity())
+            raise ValueError("identity belongs to an internal-group endomorphism Mor")
+        return self(self.underlying_mor().identity())
 
 
-class InternalGroupObjectHomCategoryConstruction(HomCategoryConstruction):
+class InternalGroupObjectMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return InternalGroupObjectHomset
+        return InternalGroupObjectMor
 
 
 class InternalGroupObjects(CategoryPacketMethods, OwnedCategory):
@@ -217,7 +217,7 @@ class InternalGroupObjects(CategoryPacketMethods, OwnedCategory):
     def _repr_object_names(self):
         return f"internal group objects in {self.underlying_category()}"
 
-    _HomCategory = InternalGroupObjectHomCategoryConstruction
+    _MorCategory = InternalGroupObjectMorCategoryConstruction
 
     def _call_(self, underlying_object, multiplication, unit, inverse):
         return _object_of(
@@ -370,7 +370,7 @@ class InternalGroupActionMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().hom_family().Of(
+        return self.parent().mor_family().Of(
             other.domain(),
             self.codomain(),
         )(
@@ -378,10 +378,10 @@ class InternalGroupActionMorphism(Morphism):
         )
 
 
-class InternalGroupActionHomset(CategoricalHomset):
+class InternalGroupActionMor(CategoricalMor):
     Element = InternalGroupActionMorphism
 
-    def underlying_homset(self):
+    def underlying_mor(self):
         category = self.domain().group_object().underlying_category()
         return category.Mor(
             self.domain().underlying_object(),
@@ -391,7 +391,7 @@ class InternalGroupActionHomset(CategoricalHomset):
     def _element_constructor_(self, arrow):
         source = self.domain()
         target = self.codomain()
-        arrow = self.underlying_homset()(arrow)
+        arrow = self.underlying_mor()(arrow)
         source_product = source.action_product_construction()
         target_product = target.action_product_construction()
         group_leg, point_leg = _product_projections(source_product)
@@ -410,13 +410,13 @@ class InternalGroupActionHomset(CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an internal-action endomorphism Hom")
-        return self(self.underlying_homset().identity())
+            raise ValueError("identity belongs to an internal-action endomorphism Mor")
+        return self(self.underlying_mor().identity())
 
 
-class InternalGroupActionHomCategoryConstruction(HomCategoryConstruction):
+class InternalGroupActionMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return InternalGroupActionHomset
+        return InternalGroupActionMor
 
 
 class InternalGroupActions(CategoryPacketMethods, OwnedCategory):
@@ -439,7 +439,7 @@ class InternalGroupActions(CategoryPacketMethods, OwnedCategory):
     def _repr_object_names(self):
         return f"objects acted on by {self.group_object()}"
 
-    _HomCategory = InternalGroupActionHomCategoryConstruction
+    _MorCategory = InternalGroupActionMorCategoryConstruction
 
     def _call_(self, underlying_object, action_morphism):
         return _object_of(
@@ -567,8 +567,8 @@ class EquivariantMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        homset = self.parent().hom_family().Of(other.domain(), self.codomain())
-        return homset._from_equivariant_arrow(self.underlying_arrow() * other.underlying_arrow())
+        mor = self.parent().mor_family().Of(other.domain(), self.codomain())
+        return mor._from_equivariant_arrow(self.underlying_arrow() * other.underlying_arrow())
 
     def __eq__(self, other) -> bool:
         r"""Equal when the underlying morphisms of ``C`` are; ``other`` may be either."""
@@ -605,7 +605,7 @@ class ExternalInternalActionComparison(SageObject):
         return self._internal_action
 
 
-class GObjectHomset(CategoricalHomset):
+class GObjectMor(CategoricalMor):
     r"""The represented ``Mor_G(X, Y)``: the equivariant morphisms of ``C``.
 
     Equivariance is decided on a determining family of the acting group:
@@ -615,11 +615,11 @@ class GObjectHomset(CategoricalHomset):
 
     Element = EquivariantMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         assert domain.acting_group() is codomain.acting_group(), "equivariant morphisms require one acting group"
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
-    def underlying_homset(self):
+    def underlying_mor(self):
         r"""Return ``Mor_C(U(X), U(Y))``, where equivariant maps live.
 
         A concrete ``G``-object need not itself be an object of ``C``: an
@@ -629,7 +629,7 @@ class GObjectHomset(CategoricalHomset):
         concrete specializations, so use that rather than treating the acted
         wrapper as its own underlying object.
         """
-        category = self.hom_family().base_category()
+        category = self.mor_family().base_category()
         forget = category.forgetful_functor()
         source = forget(self.domain())
         target = forget(self.codomain())
@@ -638,7 +638,7 @@ class GObjectHomset(CategoricalHomset):
     def is_equivariant(self, arrow):
         r"""Decide ``f rho_X(g) = rho_Y(g) f`` on a determining family of ``G``."""
         group = self.domain().acting_group()
-        arrow = self.underlying_homset()(arrow)
+        arrow = self.underlying_mor()(arrow)
         match group:
             case _ if group in GroupsWithChosenFiniteGeneratingSet():
                 determining = group.group_generators()
@@ -657,22 +657,22 @@ class GObjectHomset(CategoricalHomset):
         return self.element_class(self, arrow)
 
     def _element_constructor_(self, datum):
-        arrow = self.underlying_homset()(datum)
+        arrow = self.underlying_mor()(datum)
         if self.is_equivariant(arrow) is not True:
             raise ValueError(f"{arrow} does not commute with the {self.domain().acting_group()}-actions")
         return self._from_equivariant_arrow(arrow)
 
     def identity(self):
-        assert self.domain() is self.codomain(), "identity belongs to an endomorphism Hom-set"
-        return self._from_equivariant_arrow(self.underlying_homset().identity())
+        assert self.domain() is self.codomain(), "identity belongs to an endomorphism Mor object"
+        return self._from_equivariant_arrow(self.underlying_mor().identity())
 
     def _repr_(self) -> str:
         return f"Mor_{self.domain().acting_group()}({self.domain()}, {self.codomain()})"
 
 
-class GObjectHomCategoryConstruction(HomCategoryConstruction):
+class GObjectMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return GObjectHomset
+        return GObjectMor
 
 
 class GObjects(CategoryPacketMethods, OwnedCategory):
@@ -700,7 +700,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
     def _repr_object_names(self):
         return f"{self.acting_group()}-objects in {self.underlying_category()._repr_object_names()}"
 
-    _HomCategory = GObjectHomCategoryConstruction
+    _MorCategory = GObjectMorCategoryConstruction
 
     def functor_category(self):
         r"""Return the represented functor category ``[BG,C]``."""
@@ -1012,7 +1012,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 __all__ = [
     "EquivariantMorphism",
     "ExternalInternalActionComparison",
-    "GObjectHomset",
+    "GObjectMor",
     "GObjects",
     "Grp",
     "InternalGroupActionMorphism",

@@ -13,7 +13,7 @@ from dzack_research.preamble.all import (
     Schemes,
     Algebras,
 )
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (

@@ -1,4 +1,4 @@
-r"""The ring Hom family refines both multiplicative-additive operation spines."""
+r"""The ring Mor family refines both multiplicative-additive operation spines."""
 
 from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -8,10 +8,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 
 
-def test_ring_hom_is_owned_after_semiring_and_rng_hom_specialization() -> None:
-    semiring_homs = OwnedSemirings().category_packet().Homs()
-    rng_homs = OwnedRngs().category_packet().Homs()
-    ring_homs = OwnedRings().category_packet().Homs()
+def test_ring_mor_is_owned_after_semiring_and_rng_mor_specialization() -> None:
+    semiring_homs = OwnedSemirings().category_packet().Mors()
+    rng_homs = OwnedRngs().category_packet().Mors()
+    ring_homs = OwnedRings().category_packet().Mors()
 
     assert semiring_homs.base_category() is OwnedSemirings()
     assert rng_homs.base_category() is OwnedRngs()

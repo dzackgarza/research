@@ -30,7 +30,7 @@ PREAMBLE_PROOF_SURFACES = (
     "tests/lattices/test_lattice_catalogue_constructors_archive.py",
     "tests/lattices/test_sterk_coble.py",
     "tests/lattices/test_cusp_lattices.py",
-    "tests/lattices/test_lattice_embedding_homsets_archive.py",
+    "tests/lattices/test_lattice_embedding_mors_archive.py",
     "tests/lattices/test_catalogue_identities_archive.py",
     "tests/lattices/test_isometry_involution_archive.py",
     "tests/lattices/test_lattice_subobjects_archive.py",

@@ -9,10 +9,10 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoryPacketMethods,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
@@ -21,8 +21,8 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
     Coverage,
     CoveringFamilies,
-    CoveringFamilyHomCategoryConstruction,
-    CoveringFamilyHomset,
+    CoveringFamilyMorCategoryConstruction,
+    CoveringFamilyMor,
     CoveringFamilyMorphism,
     DescentData,
     DescentDataOnCover,
@@ -70,7 +70,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _affine_scheme,
     _affine_structure_morphism_to_base,
-    _scheme_composition_hom,
+    _scheme_composition_mor,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -150,23 +150,23 @@ def _lands_in_distinguished_open(morphism, distinguished_open):
     return distinguished_open.contains_image_of(morphism)
 
 
-def _scheme_core_hom(isomorphism):
+def _scheme_core_mor(isomorphism):
     r"""``Core(Sch_R)(U, V)``, the isomorphisms of ``R``-schemes an overlap transition ``U -> V`` lies in."""
     domain = isomorphism.domain()
     return Schemes(domain.scheme_base_ring()).Core().Mor(domain, isomorphism.codomain())
 
 
-def _algebra_homset(source, target):
-    r"""Return the algebra Hom selected by the scalar algebra structure.
+def _algebra_mor(source, target):
+    r"""Return the algebra Mor selected by the scalar algebra structure.
 
     An engine-backed algebra is also an owned ring and often a module, so its
     bare parent-level ``Mor`` is not enough to identify which of those several
-    mathematical Hom theories is intended.  Algebra descent always means
+    mathematical Mor theories is intended.  Algebra descent always means
     morphisms of associative unital algebras over the declared scalar ring.
     """
     base = source.algebra_base_ring()
     if target.algebra_base_ring() is not base:
-        raise ValueError("an algebra Hom requires one common scalar base ring")
+        raise ValueError("an algebra Mor requires one common scalar base ring")
     category = Algebras(base).Associative().Unital()
     if source not in category or target not in category:
         raise TypeError("algebra descent maps require associative unital algebra endpoints")
@@ -190,7 +190,7 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
     r"""The chosen inclusion of one chart image into the glued scheme."""
 
     def __init__(self, parent, gluing_datum, chart_index) -> None:
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
         self._gluing_datum = gluing_datum
         self._chart_index = gluing_datum.normalize_chart_index(chart_index)
 
@@ -200,8 +200,8 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
     def chart_index(self):
         return self._chart_index
 
-    def _in_homset(self, homset):
-        return _GluedSchemeOpenInclusion(homset, self.gluing_datum(), self.chart_index())
+    def _in_mor(self, mor):
+        return _GluedSchemeOpenInclusion(mor, self.gluing_datum(), self.chart_index())
 
     def is_open_immersion(self) -> bool:
         return True
@@ -244,7 +244,7 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         open_image,
         chart_isomorphism,
     ) -> None:
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
         self._gluing_datum = gluing_datum
         self._chart_index = gluing_datum.normalize_chart_index(chart_index)
         self._open_image = open_image
@@ -265,9 +265,9 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
     def open_inclusion(self):
         return self.open_image().inclusion()
 
-    def _in_homset(self, homset):
+    def _in_mor(self, mor):
         return _GluedSchemeChartEmbedding(
-            homset, self.gluing_datum(), self.chart_index(),
+            mor, self.gluing_datum(), self.chart_index(),
             self.open_image(), self.chart_isomorphism(),
         )
 
@@ -280,7 +280,7 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
             return NotImplemented
         chart_map = other
         return _GluedSchemeChartMap(
-            _scheme_composition_hom(self, other),
+            _scheme_composition_mor(self, other),
             self.gluing_datum().chart_embedding(self.chart_index()),
             chart_map,
         )
@@ -324,13 +324,13 @@ class _GluedSchemeChartMap(SchemeMorphism):
     r"""A map into a glued scheme factoring through one selected affine chart."""
 
     def __init__(self, parent, chart_embedding, chart_map) -> None:
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
         if chart_embedding is not chart_embedding.gluing_datum().chart_embedding(chart_embedding.chart_index()):
             raise TypeError("a glued chart-factor map factors through a chart embedding selected by the gluing datum")
         if chart_map.codomain() is not chart_embedding.domain():
             raise ValueError("the affine factor must land in the selected glued chart")
         if chart_map.domain() is not self.domain() or chart_embedding.codomain() is not self.codomain():
-            raise ValueError("the glued chart-factor map has the wrong Hom endpoints")
+            raise ValueError("the glued chart-factor map has the wrong Mor endpoints")
         self._chart_embedding = chart_embedding
         self._chart_map = chart_map
 
@@ -346,16 +346,16 @@ class _GluedSchemeChartMap(SchemeMorphism):
     def gluing_datum(self):
         return self.chart_embedding().gluing_datum()
 
-    def _in_homset(self, homset):
-        chart_map = homset.homset_category().Mor(self.domain(), self.chart_embedding().domain())(self.chart_map())
-        return _GluedSchemeChartMap(homset, self.chart_embedding(), chart_map)
+    def _in_mor(self, mor):
+        chart_map = mor.mor_category().Mor(self.domain(), self.chart_embedding().domain())(self.chart_map())
+        return _GluedSchemeChartMap(mor, self.chart_embedding(), chart_map)
 
     def __mul__(self, other):
         composite = self.chart_map() * other
         if composite is NotImplemented:
             return NotImplemented
         return _GluedSchemeChartMap(
-            _scheme_composition_hom(self, other), self.chart_embedding(), composite,
+            _scheme_composition_mor(self, other), self.chart_embedding(), composite,
         )
 
     def _postcompose_with(self, after):
@@ -403,7 +403,7 @@ class _GluedSchemeMorphism(SchemeMorphism):
     r"""A morphism out of a glued scheme, represented by compatible chart maps."""
 
     def __init__(self, parent, local_maps, *, verify_compatibility=True, cone_construction=None) -> None:
-        super().__init__(None, homset=parent, cone_construction=cone_construction)
+        super().__init__(None, mor=parent, cone_construction=cone_construction)
         datum = self.parent().gluing_datum()
         raw_local_maps = _family_on_finite_ordered_set(
             datum.chart_index_set(),
@@ -411,7 +411,7 @@ class _GluedSchemeMorphism(SchemeMorphism):
             name="Raw local maps of a glued-scheme morphism",
             noun="a glued-scheme morphism",
         )
-        schemes = self.parent().homset_category()
+        schemes = self.parent().mor_category()
         self._local_maps = finite_indexed_family(
             datum.chart_index_set(),
             lambda index: schemes.Mor(datum.chart(index), self.codomain())(
@@ -456,7 +456,7 @@ class _GluedSchemeMorphism(SchemeMorphism):
     def _postcompose_with(self, after):
         if after.domain() is not self.codomain():
             return NotImplemented
-        return _scheme_composition_hom(after, self)(
+        return _scheme_composition_mor(after, self)(
             tuple(after * local_map for local_map in self.local_maps())
         )
 
@@ -505,7 +505,7 @@ class _FiniteAtlasSchemeMorphism(SchemeMorphism):
     """
 
     def __init__(self, parent, atlas, local_maps) -> None:
-        super().__init__(None, homset=parent)
+        super().__init__(None, mor=parent)
         match atlas.scheme() is self.domain():
             case True:
                 pass
@@ -518,7 +518,7 @@ class _FiniteAtlasSchemeMorphism(SchemeMorphism):
             name="Raw local maps of a finite-atlas scheme morphism",
             noun="a finite-atlas scheme morphism",
         )
-        schemes = self.parent().homset_category()
+        schemes = self.parent().mor_category()
         self._local_maps = finite_indexed_family(
             atlas.chart_index_set(),
             lambda index: schemes.Mor(atlas.chart(index), self.codomain())(
@@ -560,7 +560,7 @@ class _FiniteAtlasSchemeMorphism(SchemeMorphism):
             case False:
                 return NotImplemented
         return _FiniteAtlasSchemeMorphism(
-            _scheme_composition_hom(after, self),
+            _scheme_composition_mor(after, self),
             self.atlas(),
             self.local_maps().map(lambda local_map: after * local_map),
         )
@@ -637,14 +637,14 @@ def _finite_atlas_scheme_morphism(domain, codomain, atlas, local_maps):
 class _GluedSchemeMorCategory(SchemeMorCategory):
     r"""Maps out of a glued scheme, represented by compatible local maps on its charts.
 
-    The gluing datum of the domain is retained by this Hom: a map out of the
+    The gluing datum of the domain is retained by this Mor: a map out of the
     glued scheme is a family of maps out of its charts agreeing through the
     transitions, so every element reads the charts from it.
     """
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         self._gluing_datum = domain.gluing_datum()
-        super().__init__(hom_family, domain, codomain)
+        super().__init__(mor_family, domain, codomain)
 
     def gluing_datum(self):
         return self._gluing_datum
@@ -665,7 +665,7 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on a glued-scheme endomorphism Hom")
+            raise ValueError("identity is defined only on a glued-scheme endomorphism Mor")
         datum = self.gluing_datum()
         return _GluedSchemeMorphism(
             self,
@@ -686,7 +686,7 @@ def _glued_chart_image(datum, index):
         datum.base_ring(),
         (OpenImmersions(scheme),),
         inclusion_codomain=scheme,
-        inclusion_datum=lambda hom: _GluedSchemeOpenInclusion(hom, datum, index),
+        inclusion_datum=lambda mor: _GluedSchemeOpenInclusion(mor, datum, index),
     )
 
 
@@ -750,8 +750,8 @@ class _GluedScheme(SageObject):
     determines.
 
     Its consumer is the engine adapter of the ``Schemes(R)`` level, which reads
-    the datum through :meth:`gluing_datum` and asks this realization for the Hom
-    out of ``X`` (:meth:`scheme_homset_class`), the structure morphism
+    the datum through :meth:`gluing_datum` and asks this realization for the Mor
+    out of ``X`` (:meth:`scheme_mor_class`), the structure morphism
     (:meth:`structure_morphism`) and the chartwise constructions.
     """
 
@@ -769,8 +769,8 @@ class _GluedScheme(SageObject):
         )
         return self._native_realization
 
-    def scheme_homset_class(self):
-        r"""The compatible-chart-map realization of the Hom chosen by its family."""
+    def scheme_mor_class(self):
+        r"""The compatible-chart-map realization of the Mor chosen by its family."""
         return _GluedSchemeMorCategory
 
     def structure_morphism(self, scheme):
@@ -834,7 +834,7 @@ class _TwoChartSchemeGluingDatum(SageObject):
         base = schemes.base_ring()
         if left_chart not in Schemes(base).Affine() or right_chart not in Schemes(base).Affine():
             raise TypeError("the represented two-chart gluing currently requires affine charts")
-        if transition not in _scheme_core_hom(transition):
+        if transition not in _scheme_core_mor(transition):
             raise TypeError("scheme gluing requires an isomorphism of schemes between the two overlaps")
         forward = transition.forward()
         inverse = transition.inverse()
@@ -1036,7 +1036,7 @@ class _FiniteSchemeGluingDatum(SageObject):
     def _verify_pairwise_transitions(self) -> None:
         for source_index, target_index in self.transition_index_set():
             transition = self.transitions()[source_index, target_index]
-            if transition not in _scheme_core_hom(transition):
+            if transition not in _scheme_core_mor(transition):
                 raise TypeError("each finite-atlas transition is an isomorphism of schemes between its two overlaps")
             forward = transition.forward()
             inverse = transition.inverse()
@@ -1404,7 +1404,7 @@ class _FiniteAffineAtlasEngine:
             Modules(base).Mor(functions, target),
             image,
         )
-        return _algebra_homset(functions, target)(linear)
+        return _algebra_mor(functions, target)(linear)
 
     @cached_method
     def global_function_overlap_restriction(self, source_index, target_index):
@@ -1421,7 +1421,7 @@ class _FiniteAffineAtlasEngine:
             Modules(base).Mor(functions, target),
             lambda section: target(overlap_restriction(chart_restriction(section))),
         )
-        return _algebra_homset(functions, target)(linear)
+        return _algebra_mor(functions, target)(linear)
 
     def _repr_(self):
         return f"Finite affine atlas of {self.scheme()} indexed by {self.chart_index_set()}"
@@ -1476,8 +1476,8 @@ class FiniteAtlasRefinement(CoveringFamilyMorphism):
             coarse_chart = coarse_datum.chart(coarse_index)
             fine_member = fine_datum.member(fine_index).domain()
             coarse_member = coarse_datum.member(coarse_index).domain()
-            slice_hom = site.Mor(fine_member, coarse_member)
-            match chart_map in slice_hom:
+            slice_mor = site.Mor(fine_member, coarse_member)
+            match chart_map in slice_mor:
                 case True:
                     normalized_chart_maps[fine_index] = chart_map
                 case False:
@@ -1485,7 +1485,7 @@ class FiniteAtlasRefinement(CoveringFamilyMorphism):
                         raise TypeError(
                             "a finite-atlas refinement chart map is a scheme morphism from its fine chart to its coarse chart"
                         )
-                    normalized_chart_maps[fine_index] = slice_hom(chart_map)
+                    normalized_chart_maps[fine_index] = slice_mor(chart_map)
         normalized_chart_maps = finite_indexed_family(
             fine_indices,
             normalized_chart_maps.__getitem__,
@@ -1718,7 +1718,7 @@ class FiniteAtlasRefinement(CoveringFamilyMorphism):
         return FiniteAtlasLineBundlePullbackComparison(self, line_bundle)
 
 
-class FiniteAtlasHomset(CoveringFamilyHomset):
+class FiniteAtlasMor(CoveringFamilyMor):
     r"""Refinements/comparisons between two finite affine atlases."""
 
     Element = FiniteAtlasRefinement
@@ -1749,11 +1749,11 @@ class FiniteAtlasHomset(CoveringFamilyHomset):
         )
 
 
-class FiniteAtlasHomCategoryConstruction(CoveringFamilyHomCategoryConstruction):
-    r"""The Hom family of finite affine atlases."""
+class FiniteAtlasMorCategoryConstruction(CoveringFamilyMorCategoryConstruction):
+    r"""The Mor family of finite affine atlases."""
 
     def fixed_category_class(self):
-        return FiniteAtlasHomset
+        return FiniteAtlasMor
 
 
 class FiniteAffineAtlases(OwnedParameterizedCategory):
@@ -1793,7 +1793,7 @@ class FiniteAffineAtlases(OwnedParameterizedCategory):
         True
     """
 
-    _HomCategory = FiniteAtlasHomCategoryConstruction
+    _MorCategory = FiniteAtlasMorCategoryConstruction
 
     @staticmethod
     def __classcall__(cls, scheme):
@@ -1947,7 +1947,7 @@ def _finite_atlas_of_sheaf_placement(sheaf):
             case _:
                 pass
     raise TypeError(
-        "the represented non-affine quasi-coherent Hom requires a concrete finite-atlas sheaf placement"
+        "the represented non-affine quasi-coherent Mor requires a concrete finite-atlas sheaf placement"
     )
 
 
@@ -2042,7 +2042,7 @@ class SemilinearAlgebraMorphism(SageObject):
     For ``sigma : R -> S`` this is the algebra morphism
     ``A -> Res_sigma(B)`` written as a map from the original ``R``-algebra
     ``A`` to the original ``S``-algebra ``B``.  Multiplication and the unit are
-    therefore checked by the existing algebra-Hom owner, while composition
+    therefore checked by the existing algebra-Mor owner, while composition
     retains the composed scalar map.
     """
 
@@ -2063,7 +2063,7 @@ class SemilinearAlgebraMorphism(SageObject):
             if callable(images)
             else dict(images)
         )
-        self._morphism = _algebra_homset(source, self._restricted_target)(
+        self._morphism = _algebra_mor(source, self._restricted_target)(
             {
                 label: self._restricted_target(target(supplied[label]))
                 for label in labels
@@ -2134,7 +2134,7 @@ class SemilinearAlgebraMorphism(SageObject):
         target_labels = self.target().algebra_generating_set()
         if source_labels != target_labels:
             raise ValueError("scalar extension must retain the selected algebra generating set")
-        algebra_factor = _algebra_homset(self.target(), target_view)(
+        algebra_factor = _algebra_mor(self.target(), target_view)(
             {
                 label: target_view(morphism(self.source().algebra_generator(label)))
                 for label in target_labels
@@ -2207,7 +2207,7 @@ class FiniteAtlasAlgebraTransition(SageObject):
     r"""One semilinear algebra-descent isomorphism across two affine overlaps."""
 
     def __init__(self, scheme_transition, source_algebra, target_algebra, pullback, inverse_pullback) -> None:
-        if scheme_transition not in _scheme_core_hom(scheme_transition):
+        if scheme_transition not in _scheme_core_mor(scheme_transition):
             raise TypeError("an algebra overlap transition lies over a represented scheme isomorphism")
         self._scheme_transition = scheme_transition
         self._source_algebra = source_algebra
@@ -2266,7 +2266,7 @@ class FiniteAtlasModuleTransition(SageObject):
         pullback,
         inverse_pullback,
     ) -> None:
-        if scheme_transition not in _scheme_core_hom(scheme_transition):
+        if scheme_transition not in _scheme_core_mor(scheme_transition):
             raise TypeError("a module overlap transition lies over a represented scheme isomorphism")
         self._scheme_transition = scheme_transition
         self._source_module = source_module
@@ -3308,8 +3308,8 @@ class FiniteAtlasModuleSheafMorphism(FiniteAtlasModuleGluingMorphism):
         return _projectivization_map(self)
 
 
-class FiniteAtlasModuleSheafHomset(CategoricalHomset):
-    r"""The represented Hom between two finite-atlas module sheaves."""
+class FiniteAtlasModuleSheafMor(CategoricalMor):
+    r"""The represented Mor between two finite-atlas module sheaves."""
 
     Element = FiniteAtlasModuleSheafMorphism
 
@@ -3328,7 +3328,7 @@ class FiniteAtlasModuleSheafHomset(CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom")
+            raise ValueError("identity is defined only on an endomorphism Mor")
         datum = self.domain().gluing_datum()
         return self(
             {
@@ -3340,14 +3340,14 @@ class FiniteAtlasModuleSheafHomset(CategoricalHomset):
         )
 
 
-class FiniteAtlasModuleGluingHomset(CategoricalHomset):
+class FiniteAtlasModuleGluingMor(CategoricalMor):
     r"""Compatible local maps between two module descent data on one finite atlas."""
 
     Element = FiniteAtlasModuleGluingMorphism
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.gluing_datum() is not codomain.gluing_datum():
-            raise ValueError("a finite-atlas module descent Hom uses one atlas")
+            raise ValueError("a finite-atlas module descent Mor uses one atlas")
         super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, local_maps):
@@ -3365,7 +3365,7 @@ class FiniteAtlasModuleGluingHomset(CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a descent endomorphism Hom")
+            raise ValueError("identity belongs to a descent endomorphism Mor")
         datum = self.domain()
         return self(
             {
@@ -3377,11 +3377,11 @@ class FiniteAtlasModuleGluingHomset(CategoricalHomset):
         )
 
 
-class FiniteAtlasModuleGluingHomCategoryConstruction(HomCategoryConstruction):
-    r"""The Hom family of finite-atlas module descent data."""
+class FiniteAtlasModuleGluingMorCategoryConstruction(MorCategoryConstruction):
+    r"""The Mor family of finite-atlas module descent data."""
 
     def fixed_category_class(self):
-        return FiniteAtlasModuleGluingHomset
+        return FiniteAtlasModuleGluingMor
 
 
 class FiniteAtlasModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
@@ -3394,7 +3394,7 @@ class FiniteAtlasModuleGluingData(CategoryPacketMethods, OwnedParameterizedCateg
     than a host record carrying a private gluing presentation.
     """
 
-    _HomCategory = FiniteAtlasModuleGluingHomCategoryConstruction
+    _MorCategory = FiniteAtlasModuleGluingMorCategoryConstruction
 
     @staticmethod
     def __classcall__(cls, atlas):
@@ -3658,7 +3658,7 @@ class _FiniteAtlasAlgebraGluingDatumEngine:
             .scalar_extension(ring_map)(local_map)
         )
         extended_source = extended_map.domain()
-        return _algebra_homset(source_pair, target_pair)(
+        return _algebra_mor(source_pair, target_pair)(
             {
                 label: target_pair(
                     extended_map(extended_source.algebra_generator(label))
@@ -3763,14 +3763,14 @@ class FiniteAtlasAlgebraGluingMorphism(Morphism):
                 )
 
 
-class FiniteAtlasAlgebraGluingHomset(CategoricalHomset):
+class FiniteAtlasAlgebraGluingMor(CategoricalMor):
     r"""Compatible local algebra maps between two descent data on one finite atlas."""
 
     Element = FiniteAtlasAlgebraGluingMorphism
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.gluing_datum() is not codomain.gluing_datum():
-            raise ValueError("a finite-atlas algebra descent Hom uses one atlas")
+            raise ValueError("a finite-atlas algebra descent Mor uses one atlas")
         super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, local_maps):
@@ -3788,11 +3788,11 @@ class FiniteAtlasAlgebraGluingHomset(CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a descent endomorphism Hom")
+            raise ValueError("identity belongs to a descent endomorphism Mor")
         datum = self.domain()
         return self(
             {
-                index: _algebra_homset(
+                index: _algebra_mor(
                     datum.local_algebra(index),
                     datum.local_algebra(index),
                 ).identity()
@@ -3801,17 +3801,17 @@ class FiniteAtlasAlgebraGluingHomset(CategoricalHomset):
         )
 
 
-class FiniteAtlasAlgebraGluingHomCategoryConstruction(HomCategoryConstruction):
-    r"""The Hom family of finite-atlas algebra descent data."""
+class FiniteAtlasAlgebraGluingMorCategoryConstruction(MorCategoryConstruction):
+    r"""The Mor family of finite-atlas algebra descent data."""
 
     def fixed_category_class(self):
-        return FiniteAtlasAlgebraGluingHomset
+        return FiniteAtlasAlgebraGluingMor
 
 
 class FiniteAtlasAlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""Unital associative algebra descent data on one finite affine atlas."""
 
-    _HomCategory = FiniteAtlasAlgebraGluingHomCategoryConstruction
+    _MorCategory = FiniteAtlasAlgebraGluingMorCategoryConstruction
 
     @staticmethod
     def __classcall__(cls, atlas):
@@ -3905,9 +3905,9 @@ def _restriction_scalar_map(cover, labels):
     return scheme.structure_sheaf().restriction_map(scheme, cover.intersection(*labels))
 
 
-class ModuleGluingHomCategoryConstruction(HomCategoryConstruction):
+class ModuleGluingMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return ModuleGluingHomset
+        return ModuleGluingMor
 
 
 class _ModuleGluingSheafEngine:
@@ -4018,7 +4018,7 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
     def _repr_object_names(self):
         return f"module descent data on {self.cover()}"
 
-    _HomCategory = ModuleGluingHomCategoryConstruction
+    _MorCategory = ModuleGluingMorCategoryConstruction
 
     class ParentMethods:
         def __init__(self, local_modules, transitions, **rest) -> None:
@@ -4398,7 +4398,7 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             )
 
         def Mor(self, target):
-            r"""Return the represented Hom category of descent morphisms to ``target``."""
+            r"""Return the represented Mor category of descent morphisms to ``target``."""
             return self.category().Mor(self, target)
 
         def _repr_(self):
@@ -4484,13 +4484,13 @@ class _ModuleGluingCechPresheaf(Functor):
         target_label = tuple(target_label)
         source = self.value_on_label(source_label)
         target = self.value_on_label(target_label)
-        homset = source.module_category().Mor(source, target)
+        mor = source.module_category().Mor(source, target)
         match source_label == target_label:
             case True:
-                return homset.identity()
+                return mor.identity()
             case False:
                 return _CanonicalDescentRestrictionMorphism(
-                    homset,
+                    mor,
                     lambda element: self._restriction_value(
                         source_label,
                         target_label,
@@ -4754,14 +4754,14 @@ class ModuleGluingMorphism(Morphism):
         return f"Module descent morphism from {self.domain()} to {self.codomain()}"
 
 
-class ModuleGluingHomset(CategoricalHomset):
-    r"""The fixed Hom category between two module descent data on one cover."""
+class ModuleGluingMor(CategoricalMor):
+    r"""The fixed Mor category between two module descent data on one cover."""
 
     Element = ModuleGluingMorphism
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.cover() is not codomain.cover():
-            raise ValueError("a module descent Hom requires one common affine cover")
+            raise ValueError("a module descent Mor requires one common affine cover")
         super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, local_maps):
@@ -4775,7 +4775,7 @@ class ModuleGluingHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a descent endomorphism Hom")
+            raise ValueError("identity belongs to a descent endomorphism Mor")
         return self(
             self.domain().local_modules().map(
                 lambda module: module.module_category().Mor(module, module).identity()
@@ -4805,9 +4805,9 @@ def _finite_algebra_framing(algebra):
     return labels
 
 
-class AlgebraGluingHomCategoryConstruction(HomCategoryConstruction):
+class AlgebraGluingMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return AlgebraGluingHomset
+        return AlgebraGluingMor
 
 
 class _AlgebraGluingSheafEngine:
@@ -4933,7 +4933,7 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
     def _repr_object_names(self):
         return f"algebra descent data on {self.cover()}"
 
-    _HomCategory = AlgebraGluingHomCategoryConstruction
+    _MorCategory = AlgebraGluingMorCategoryConstruction
 
     class ParentMethods:
         def __init__(self, local_algebras, transitions, **rest) -> None:
@@ -5007,12 +5007,12 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                     )
                 if not _algebra_maps_agree_on_generators(
                     transition.inverse() * transition.forward(),
-                    _algebra_homset(source, source).identity(),
+                    _algebra_mor(source, source).identity(),
                 ):
                     raise ValueError("the stated algebra transition is not left-invertible on the overlap")
                 if not _algebra_maps_agree_on_generators(
                     transition.forward() * transition.inverse(),
-                    _algebra_homset(target, target).identity(),
+                    _algebra_mor(target, target).identity(),
                 ):
                     raise ValueError("the stated algebra transition is not right-invertible on the overlap")
 
@@ -5033,12 +5033,12 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             source = self.restricted_algebra(chart, *source_labels)
             target = self.restricted_algebra(chart, *target_labels)
             if target is source:
-                return _algebra_homset(source, source).identity()
+                return _algebra_mor(source, source).identity()
             source_open = self.cover().intersection(*source_labels)
             target_open = self.cover().intersection(*target_labels)
             ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
             restricted_target = target.restrict_scalars(ring_map)
-            return _algebra_homset(source, restricted_target)(
+            return _algebra_mor(source, restricted_target)(
                 lambda label: restricted_target(target.algebra_generator(label))
             )
 
@@ -5081,7 +5081,7 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             source = self.restricted_algebra(source_label, *labels)
             target = self.restricted_algebra(target_label, *labels)
             target_restriction = self.restriction_between_intersections(target_label, pair, labels)
-            return _algebra_homset(source, target)(
+            return _algebra_mor(source, target)(
                 lambda label: target(target_restriction(transition(pair_source.algebra_generator(label))))
             )
 
@@ -5106,7 +5106,7 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                 .scalar_extension(ring_map)(local_map)
             )
             extended_source = extended_map.domain()
-            return _algebra_homset(source, target)(
+            return _algebra_mor(source, target)(
                 {
                     label: target(extended_map(extended_source.algebra_generator(label)))
                     for label in source.algebra_generating_set()
@@ -5223,7 +5223,7 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                 if equalizer.covering_family() is not selected_cover:
                     raise ValueError("this affine descent datum belongs to a different Čech family")
                 global_sections = self.compatible_sections()
-                return _algebra_homset(global_sections, global_sections).identity()
+                return _algebra_mor(global_sections, global_sections).identity()
 
             return DescentData(self.cover().cech_coverage(), presheaf, inverse_for)
 
@@ -5341,10 +5341,10 @@ class _AlgebraGluingCechPresheaf(Functor):
         target_label = tuple(underlying.domain().value())
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
-        homset = _algebra_homset(source, target)
+        mor = _algebra_mor(source, target)
         if source_label == target_label:
-            return homset.identity()
-        return homset(
+            return mor.identity()
+        return mor(
             SetMorphism(
                 Sets().Mor(source, target),
                 lambda element: self._restriction_value(source_label, target_label, element),
@@ -5367,7 +5367,7 @@ class AlgebraGluingMorphism(Morphism):
         )
         self._local_maps = finite_indexed_family(
             self.cover().atlas(),
-            lambda label: _algebra_homset(
+            lambda label: _algebra_mor(
                 self.domain().local_algebra(label),
                 self.codomain().local_algebra(label),
             )(supplied[label]),
@@ -5434,7 +5434,7 @@ class AlgebraGluingMorphism(Morphism):
                 )
             )
 
-        return _algebra_homset(source, target)(SetMorphism(Sets().Mor(source, target), image))
+        return _algebra_mor(source, target)(SetMorphism(Sets().Mor(source, target), image))
 
     def relative_spectrum_morphism(self):
         r"""Return the contravariant morphism of relative spectra induced by this algebra map."""
@@ -5464,12 +5464,12 @@ class AlgebraGluingMorphism(Morphism):
         return f"Algebra descent morphism from {self.domain()} to {self.codomain()}"
 
 
-class AlgebraGluingHomset(CategoricalHomset):
+class AlgebraGluingMor(CategoricalMor):
     Element = AlgebraGluingMorphism
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.cover() is not codomain.cover():
-            raise ValueError("an algebra descent Hom requires one common affine cover")
+            raise ValueError("an algebra descent Mor requires one common affine cover")
         super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, local_maps):
@@ -5483,10 +5483,10 @@ class AlgebraGluingHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an algebra descent endomorphism Hom")
+            raise ValueError("identity belongs to an algebra descent endomorphism Mor")
         return self(
             self.domain().local_algebras().map(
-                lambda algebra: _algebra_homset(algebra, algebra).identity()
+                lambda algebra: _algebra_mor(algebra, algebra).identity()
             )
         )
 
@@ -5640,8 +5640,8 @@ class _FiniteAtlasInverseImageModuleMorphism(Morphism):
                 return NotImplemented
 
 
-class _FiniteAtlasInverseImageModuleHomset(CategoricalHomset):
-    r"""Hom in ``Mod(f^{-1}O_Y)`` for one represented finite-atlas refinement."""
+class _FiniteAtlasInverseImageModuleMor(CategoricalMor):
+    r"""Mor in ``Mod(f^{-1}O_Y)`` for one represented finite-atlas refinement."""
 
     Element = _FiniteAtlasInverseImageModuleMorphism
 
@@ -5653,33 +5653,33 @@ class _FiniteAtlasInverseImageModuleHomset(CategoricalHomset):
                 source_morphism = source_morphism.source_morphism()
             case _:
                 pass
-        source_hom = self.base_category().source_category().Mor(
+        source_mor = self.base_category().source_category().Mor(
             self.domain().source_sheaf(),
             self.codomain().source_sheaf(),
         )
-        if source_morphism not in source_hom:
+        if source_morphism not in source_mor:
             raise TypeError("an inverse-image module arrow comes from a morphism of the source sheaves")
         return self.element_class(self, source_morphism)
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom")
+            raise ValueError("identity is defined only on an endomorphism Mor")
         source = self.domain().source_sheaf()
         return self(self.base_category().source_category().Mor(source, source).identity())
 
 
-class _FiniteAtlasInverseImageModuleHomCategoryConstruction(HomCategoryConstruction):
-    r"""Hom family for finite-atlas presentations of ``f^{-1}O_Y``-modules."""
+class _FiniteAtlasInverseImageModuleMorCategoryConstruction(MorCategoryConstruction):
+    r"""Mor family for finite-atlas presentations of ``f^{-1}O_Y``-modules."""
 
     def fixed_category_class(self):
-        return _FiniteAtlasInverseImageModuleHomset
+        return _FiniteAtlasInverseImageModuleMor
 
 
 class _FiniteAtlasInverseImageModuleSheaves(OwnedCategory):
     r"""Represented ``f^{-1}O_Y``-modules for one finite-atlas refinement ``f:X->Y``."""
 
-    _HomCategory = _FiniteAtlasInverseImageModuleHomCategoryConstruction
+    _MorCategory = _FiniteAtlasInverseImageModuleMorCategoryConstruction
 
     def __init__(self, refinement) -> None:
         self._refinement = refinement
@@ -5718,8 +5718,8 @@ class _FiniteAtlasInverseImageModuleSheaves(OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("an inverse-image module Hom requires two objects over the same refinement")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("an inverse-image module Mor requires two objects over the same refinement")
+        return self.MorCategory().Of(domain, codomain)
 
     def _repr_(self):
         return f"Modules over the inverse-image structure sheaf along {self.refinement().comparison_morphism()}"
@@ -6204,7 +6204,7 @@ def _glued_chartwise_subscheme(
 
 __all__ = [
     "AlgebraGluingData",
-    "AlgebraGluingHomset",
+    "AlgebraGluingMor",
     "AlgebraGluingMorphism",
     "FiniteAtlasAlgebraGluingData",
     "FiniteAtlasAlgebraGluingMorphism",
@@ -6217,7 +6217,7 @@ __all__ = [
     "FiniteAtlasModuleGluingMorphism",
     "FiniteAtlasModuleTransition",
     "ModuleGluingData",
-    "ModuleGluingHomset",
+    "ModuleGluingMor",
     "ModuleGluingMorphism",
     "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",

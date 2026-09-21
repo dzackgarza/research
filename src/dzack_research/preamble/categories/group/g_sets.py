@@ -14,16 +14,16 @@ from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.functors.core import NaturalTransformation
-from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
+from dzack_research.preamble.categories.group.g_objects import GObjectMor, GObjects
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _integer_engine_point,
@@ -49,9 +49,9 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import refine
 
 
-class GSetHomCategoryConstruction(HomCategoryConstruction):
+class GSetMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return GSetHomset
+        return GSetMor
 
 
 class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
@@ -134,7 +134,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
         return _underlying_cofree_g_set_adjunction(self.group())
 
-    _HomCategory = GSetHomCategoryConstruction
+    _MorCategory = GSetMorCategoryConstruction
 
     class ParentMethods:
         _derived_construction_parameters = frozenset(
@@ -205,7 +205,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             return self.point_set()(point)
 
         def Mor(self, codomain):
-            r"""Return the equivariant Hom from this G-set to ``codomain``."""
+            r"""Return the equivariant Mor from this G-set to ``codomain``."""
             return FiniteGSets(self.acting_group()).Mor(self, codomain)
 
         def orbits(self):
@@ -255,7 +255,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
             A nonempty finite set cannot carry a free action of an infinite
             group.  For a finite acting group, direct finite enumeration is an
-            exact backend for the point-stabilizer condition.
+            exact decision procedure for the point-stabilizer condition.
             """
             group = self.acting_group()
             if group.is_finite() is False:
@@ -358,7 +358,7 @@ class GSetMorphism(SetMorphism):
         return self._as_set_map().is_surjective()
 
 
-class GSetHomset(GObjectHomset):
+class GSetMor(GObjectMor):
     r"""The equivariant Mor category between represented finite ``G``-sets."""
 
     Element = GSetMorphism
@@ -367,7 +367,7 @@ class GSetHomset(GObjectHomset):
         return self.element_class(self, function)
 
     def identity(self):
-        assert self.domain() is self.codomain(), "identity is defined on an endomorphism Hom-set"
+        assert self.domain() is self.codomain(), "identity is defined on an endomorphism Mor object"
         return self(lambda point: point)
 
 
@@ -586,10 +586,10 @@ def _finite_g_set_from_action(group, point_set, action):
     # mathematical point set remains the owned set above.
     backend_points = [_integer_engine_point(point) for point in point_set]
     permutations = _own_group(SymmetricGroup(backend_points))
-    homset = group.Mor(permutations)
+    mor = group.Mor(permutations)
     match group:
         case _ if group in OwnedGroups().Framed():
-            permutation_representation = homset(
+            permutation_representation = mor(
                 {
                     group_generator: _permutation_from_point_map(
                         permutations,
@@ -600,7 +600,7 @@ def _finite_g_set_from_action(group, point_set, action):
                 }
             )
         case _ if group.is_finite() is True:
-            permutation_representation = homset._from_finite_elementwise_rule(
+            permutation_representation = mor._from_finite_elementwise_rule(
                 lambda group_element: _permutation_from_point_map(
                     permutations,
                     point_set,
@@ -680,7 +680,7 @@ class Torsors(OwnedParameterizedCategory):
 
 __all__ = [
     "FiniteGSets",
-    "GSetHomset",
+    "GSetMor",
     "GSetMorphism",
     "OrbitSets",
     "Torsors",

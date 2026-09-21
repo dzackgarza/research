@@ -81,7 +81,7 @@ class AbsoluteGaloisGroupElement(Element):
 
     @cached_method
     def as_morphism(self):
-        field_endomorphisms = self.parent().field_automorphism_hom()
+        field_endomorphisms = self.parent().field_automorphism_mor()
         if self._exact_action is not None:
             return field_endomorphisms(self._exact_action._engine_morphism_crossing())
         return field_endomorphisms.elementwise(lambda element: self(element))
@@ -277,9 +277,9 @@ def ElementConjugacyClass(supergroup, representative):
 
 
 def _as_exact_embedding(domain, codomain, embedding) -> ExactFieldMorphism:
-    r"""Read ``embedding`` as an element of the exact field Hom from ``domain`` to ``codomain``.
+    r"""Read ``embedding`` as an element of the exact field Mor from ``domain`` to ``codomain``.
 
-    That Hom's element constructor admits its own elements and exact Sage
+    That Mor's element constructor admits its own elements and exact Sage
     field maps between the corresponding engine fields, and refuses anything
     else, including a map with other endpoints.
     """
@@ -320,12 +320,13 @@ class _AbsoluteGaloisGroupEngine:
         return self._embedding
 
     @cached_method
-    def field_automorphism_hom(self):
-        r"""The owned field Hom ``Hom(\bar K,\bar K)`` containing the exact actions of elements of ``G_K``."""
+    def field_automorphism_mor(self):
+        r"""The owned field ``Mor(\bar K,\bar K)`` containing the exact actions of elements of ``G_K``."""
         return self.algebraic_closure().exact_morphisms_to(self.algebraic_closure())
 
-    # Compatibility spelling for callers that used the former restricted-Hom host.
-    arrow_set = field_automorphism_hom
+    def arrow_set(self):
+        r"""Return the underlying field Mor carrying these automorphisms."""
+        return self.field_automorphism_mor()
 
     geometric_point = base_embedding
 
@@ -365,9 +366,9 @@ class _AbsoluteGaloisGroupEngine:
         r"""Regard ``element`` as an isomorphism of the coslice object (K\to\bar K)."""
         element = element if element in self else self(element)
         extension = self.extension_object()
-        hom = self.slice_category().Mor(extension, extension)
-        forward = hom(element.as_morphism())
-        inverse = hom(element.inverse().as_morphism())
+        mor = self.slice_category().Mor(extension, extension)
+        forward = mor(element.as_morphism())
+        inverse = mor(element.inverse().as_morphism())
         return self.slice_category().Core().Mor(
             extension, extension
         )._from_known_inverse_pair(
@@ -773,9 +774,9 @@ class OpenSubgroupInclusion(Morphism):
         return True
 
 
-def _open_subgroup_inclusion_rule(homset):
-    r"""The group-Hom realization rule for an open absolute-Galois subgroup inclusion."""
-    return OpenSubgroupInclusion(homset)
+def _open_subgroup_inclusion_rule(mor):
+    r"""The group-Mor realization rule for an open absolute-Galois subgroup inclusion."""
+    return OpenSubgroupInclusion(mor)
 
 
 class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):

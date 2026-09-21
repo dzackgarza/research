@@ -4,9 +4,9 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -29,7 +29,7 @@ class DegreewiseLinearMorphism(Morphism):
     r"""An ``R``-linear map between two represented homogeneous pieces.
 
     This is deliberately independent of a selected finite framing. When the
-    source and target pieces admit the finite module-morphism backend,
+    source and target pieces admit the finite module-morphism realization,
     :meth:`represented_module_morphism` exposes it and therefore enables the
     usual kernel/image algorithms; otherwise the component remains a genuine
     morphism with exact evaluation but no fabricated finite presentation.
@@ -172,7 +172,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
         return [GradedAlgebras(self.base_ring()), CochainComplexes(self.base_ring())]
 
-    _HomCategory = None
+    _MorCategory = None
 
     def degree_zero_algebra(self):
         r"""Return the functor taking a DGA to its degree-zero algebra."""
@@ -403,13 +403,13 @@ class DGAMorphism(Morphism):
     ) -> None:
         Morphism.__init__(self, parent)
         source = self.domain()
-        graded_hom = GradedAlgebras(
+        graded_mor = GradedAlgebras(
             source.base_ring(), source.grading_monoid()
         ).Mor(source, self.codomain())
-        if isinstance(morphism, GradedAlgebraMorphism) and morphism.parent() is graded_hom:
+        if isinstance(morphism, GradedAlgebraMorphism) and morphism.parent() is graded_mor:
             self._underlying = morphism
         else:
-            self._underlying = graded_hom(morphism)
+            self._underlying = graded_mor(morphism)
         observed = self._decide_differential_compatibility()
         if observed is False:
             raise ValueError("a DGA morphism must commute with the differential")
@@ -504,15 +504,15 @@ class DGAMorphism(Morphism):
         )
 
 
-class DGAHomset(CategoricalHomset):
+class DGAMor(CategoricalMor):
     Element = DGAMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("DGA morphisms require one common differential base ring")
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -543,7 +543,7 @@ class DGAHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a DGA endomorphism homset")
+            raise ValueError("identity belongs to a DGA endomorphism Mor")
         source = self.domain()
         underlying = GradedAlgebras(
             source.base_ring(), source.grading_monoid()
@@ -554,17 +554,17 @@ class DGAHomset(CategoricalHomset):
         )
 
 
-class DGAHomCategoryConstruction(HomCategoryConstruction):
+class DGAMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return DGAHomset
+        return DGAMor
 
 
-DifferentialGradedAlgebras._HomCategory = DGAHomCategoryConstruction
+DifferentialGradedAlgebras._MorCategory = DGAMorCategoryConstruction
 
 
 __all__ = [
-    "DGAHomset",
-    "DGAHomCategoryConstruction",
+    "DGAMor",
+    "DGAMorCategoryConstruction",
     "DGAMorphism",
     "DegreewiseLinearMorphism",
     "Differential",

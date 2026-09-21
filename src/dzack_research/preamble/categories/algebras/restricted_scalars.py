@@ -5,7 +5,7 @@ chosen algebra structure map, from ``S -> B`` to ``R -> S -> B``.  The
 underlying computation ring is therefore retained.  When both ``S/R`` and
 ``B/S`` carry the live commutative polynomial-quotient presentations, this
 module also constructs an exact finite ``R``-presentation of the restricted
-algebra.  That presentation is what makes the represented Hom surface and the
+algebra.  That presentation is what makes the represented Mor surface and the
 scalar-extension/restriction adjunction executable without replacing ``B`` by
 a second authoritative ring implementation.
 """
@@ -192,7 +192,7 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
             engine_base.Hom(algebra_engine),
             engine_base_image,
         )
-        presentation_engine_map = presentation_engine.hom(
+        presentation_engine_map = presentation_engine.mor(
             [generator_values(label) for label in labels],
             algebra_engine,
             base_map=engine_base_map,
@@ -269,7 +269,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
 
     extension_presentation_engine = _engine_ring(extension_ring.presentation_ring())
     # Private finite backend serialization required by Sage's polynomial-Hom constructor.
-    extension_presentation_map = extension_presentation_engine.hom(
+    extension_presentation_map = extension_presentation_engine.mor(
         list(scalar_variables),
         presentation_engine,
     )

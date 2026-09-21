@@ -17,9 +17,9 @@ from sage.rings.ideal import Ideal_generic
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebraMorphism,
@@ -29,7 +29,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebraPushouts,
     FinitelyPresentedAlgebras,
     FramedAlgebras,
-    _AlgebraHomsetCommonMethods,
+    _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
     _SelectedFiniteAlgebraPresentation,
     _refine_algebra,
@@ -663,7 +663,7 @@ def _localized_coefficient_presentation_backend(
     engine_generators = tuple(engine_presentation.gens())
     flattened_generators = engine_generators[: flattened.ngens()]
     inverse_generators = engine_generators[flattened.ngens() :]
-    flattened_to_engine = flattened.hom(
+    flattened_to_engine = flattened.mor(
         flattened_generators,
         engine_presentation,
     )
@@ -733,7 +733,7 @@ def _localized_coefficient_presentation_backend(
             )
             for generator in coefficient_generators
         ]
-        engine_scalar_map = base_engine.hom(
+        engine_scalar_map = base_engine.mor(
             scalar_images,
             quotient_engine,
         )
@@ -764,7 +764,7 @@ def _localized_coefficient_presentation_backend(
         )
         for inverted_element in inverted
     )
-    engine_to_presentation = engine_presentation.hom(
+    engine_to_presentation = engine_presentation.mor(
         reverse_images,
         presentation_engine,
     )
@@ -921,11 +921,11 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         def is_free(self) -> bool:
             return True
 
-        def _algebra_homset_class(self):
-            return FramedFreeAlgebraHomset
+        def _algebra_mor_class(self):
+            return FramedFreeAlgebraMor
 
         def Mor(self, codomain, category=None):
-            r"""Use the free-algebra universal Hom before the inherited ring Hom."""
+            r"""Use the free-algebra universal Mor before the inherited ring Mor."""
             ordinary = Algebras(self.base_ring()).Associative().Unital()
             if category is None:
                 return ordinary.Mor(self, codomain)
@@ -1105,10 +1105,10 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
 
 
-class PowerAlgebraHomCategoryConstruction(HomCategoryConstruction):
+class PowerAlgebraMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class_for(self, domain, codomain):
         _ = codomain
-        return domain._power_algebra_homset_class()
+        return domain._power_algebra_mor_class()
 
 
 class TensorAlgebras(OwnedCategoryOverBaseRing):
@@ -1371,7 +1371,7 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
 
-    _HomCategory = PowerAlgebraHomCategoryConstruction
+    _MorCategory = PowerAlgebraMorCategoryConstruction
 
     def _call_(self, module):
         from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
@@ -1524,7 +1524,7 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         right
     ):
         raise TypeError(
-            "the pushout span maps must belong to the represented algebra Homs "
+            "the pushout span maps must belong to the represented algebra Mors "
             "of their endpoints"
         )
     assert common in FramedAlgebras(base), (
@@ -1559,7 +1559,7 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Commutative()]
 
-    _HomCategory = PowerAlgebraHomCategoryConstruction
+    _MorCategory = PowerAlgebraMorCategoryConstruction
 
     def _call_(self, module):
         from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
@@ -1739,13 +1739,13 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         return super().__mul__(other)
 
 
-class FramedFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
+class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
     Element = FramedFreeAlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -1755,7 +1755,7 @@ class FramedFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Hom-set")
+            raise ValueError("identity belongs to an endomorphism Mor object")
         identity = self(lambda label: self.domain().algebra_generator(label))
         identity._preamble_is_identity = True
         return identity

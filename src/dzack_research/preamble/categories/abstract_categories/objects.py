@@ -9,7 +9,7 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
 # The marker every owned category base carries, axiom categories included.
-# Re-exported so the Hom packet can recognize one without reaching past this
+# Re-exported so the Mor packet can recognize one without reaching past this
 # module into the bases it is built from.
 from dzack_research.preamble.owned_category import (  # noqa: F401
     OwnedCategoryMixin,
@@ -55,7 +55,7 @@ class _SelectedFraming:
     def source(self):
         return self._source
 
-    def generating_set(self):
+    def framing_generating_set(self):
         return self._generating_set
 
     def generator_morphism(self):
@@ -274,7 +274,7 @@ class Objects(OwnedCategory):
 
             The values an owned object accepts are themselves owned, and Sage's
             coercion graph has never heard of them: asked for a conversion map
-            it tries to build a Hom in its own ``Sets``, finds the domain absent
+            it tries to build a Mor in its own ``Sets``, finds the domain absent
             and raises, before this object's own constructor is ever reached.
             The crossing into owned data happens in ``_element_constructor_``,
             which is the one boundary that admits foreign values.
@@ -316,7 +316,7 @@ class Objects(OwnedCategory):
 
             def selected_framing_generating_set(self, owner):
                 r"""Return the set indexing the selected free source in ``owner``."""
-                return self.selected_framing(owner).generating_set()
+                return self.selected_framing(owner).framing_generating_set()
 
             def selected_framing_generator_morphism(self, owner):
                 r"""Return the selected map from framing labels into this object."""

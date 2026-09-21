@@ -23,13 +23,13 @@ from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoricalIsomorphism,
     EpiCategoryConstruction,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
     MonoCategoryConstruction,
-    _category_hom,
+    _category_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
@@ -270,7 +270,7 @@ class _Aleph:
 
 
 class OwnedSetMorphism(SetMorphism):
-    r"""A set map whose composition remains in the canonical owned Set Hom.
+    r"""A set map whose composition remains in the canonical owned Set Mor.
 
     Unverified construction specimens, including a subset inclusion and maps
     of Python labels rather than Sage elements::
@@ -339,7 +339,7 @@ class OwnedSetMorphism(SetMorphism):
         return Unknown if equal is Unknown else not equal
 
     def __hash__(self) -> int:
-        # Equality is extensional within one Hom.  An identity-based hash of
+        # Equality is extensional within one Mor.  An identity-based hash of
         # the function would give equal maps different hashes; hashing only
         # the parent also works when points of either endpoint are unhashable.
         return hash(id(self.parent()))
@@ -347,7 +347,7 @@ class OwnedSetMorphism(SetMorphism):
     def is_identity(self) -> bool | UnknownClass:
         r"""Decide identity on a finite enumeration; retain unknown otherwise.
 
-        The identity of a Hom-set is the one arrow its ``identity()`` interns,
+        The identity of a Mor object is the one arrow its ``identity()`` interns,
         so that arrow answers by identity of objects; any other arrow answers
         extensionally, which is the same three-valued equality as ``==``.
         """
@@ -423,31 +423,31 @@ class OwnedSetMorphism(SetMorphism):
         """
         if not isinstance(other, Morphism) or other.codomain() is not self.domain():
             return NotImplemented
-        homset = Sets().Mor(other.domain(), self.codomain())
-        if self.domain() is self.codomain() and self is self.parent().identity() and other.parent() is homset:
+        mor = Sets().Mor(other.domain(), self.codomain())
+        if self.domain() is self.codomain() and self is self.parent().identity() and other.parent() is mor:
             return other
         if other.domain() is other.codomain() and other is other.parent().identity():
             return self
-        return homset(lambda element: self(other(element)))
+        return mor(lambda element: self(other(element)))
 
 
-class SetMorCategory(CategoricalHomset):
+class SetMorCategory(CategoricalMor):
     r"""The owned category $\mathrm{Mor}_{\mathbf{Set}}(X, Y)$.
 
     Its objects are the functions $X \to Y$.  A set is a category -- the
     discrete one -- so this is a category like every other `Mor`, and not a
     special set-valued case: `ARC-07` has `Mor` return a category at every
-    level.  Sage's ``Homset``, reached through ``CategoricalHomset``, remains
+    level.  Sage's ``Mor``, reached through ``CategoricalMor``, remains
     the runtime parent its ``SetMorphism`` elements require.
     """
 
     def __init__(
         self,
-        mor_family: HomCategoryConstruction,
+        mor_family: MorCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        CategoricalHomset.__init__(self, mor_family, domain, codomain)
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, datum):
         r"""Admit an arrow: a set map between these endpoints, or a callable.
@@ -478,7 +478,7 @@ class SetMorCategory(CategoricalHomset):
         return f"Mor_Set({self.domain()}, {self.codomain()})"
 
 
-class SetMorCategoryConstruction(HomCategoryConstruction):
+class SetMorCategoryConstruction(MorCategoryConstruction):
     r"""The owned family $(X, Y) \mapsto \mathrm{Mor}_{\mathbf{Set}}(X, Y)$."""
 
     def fixed_category_class(self) -> type[SetMorCategory]:
@@ -506,7 +506,7 @@ class Sets(OwnedCategory):
     behavior, but the mathematical supercategory edge is entirely owned.
     """
 
-    _HomCategory = SetMorCategoryConstruction
+    _MorCategory = SetMorCategoryConstruction
 
     Δ = _Delta()
     ℵ = _Aleph()
@@ -865,9 +865,9 @@ class Sets(OwnedCategory):
                 lambda index: left_morphism if int(index) == 0 else right_morphism,
             )
 
-        def Homsets(self) -> Category:
-            r"""A Hom object of any owned category is a set."""
-            return Homsets()
+        def Mors(self) -> Category:
+            r"""A Mor object of any owned category is a set."""
+            return Mors()
 
         # Functors out of ``Set``, each spelled as a method of this, their
         # domain category, and named by the construction it performs.
@@ -1101,7 +1101,7 @@ class Sets(OwnedCategory):
         ) -> Category:
             if category is None:
                 return Sets().Mor(self, codomain)
-            return _category_hom(category, self, codomain)
+            return _category_mor(category, self, codomain)
 
         def condition_set(self, predicate) -> Parent:
             r"""Return the represented subset of ``self`` cut out by ``predicate``."""
@@ -1358,7 +1358,7 @@ class _CompositeSetSurjection(SetSurjection):
         return True
 
 
-class SetInjectionHomset(SetMorCategory):
+class SetInjectionMor(SetMorCategory):
     r"""The declared injections between two sets."""
 
     def _element_constructor_(self, datum):
@@ -1378,10 +1378,10 @@ class SetInjectionHomset(SetMorCategory):
     def arrow_set(self):
         return Sets().Mor(self.domain(), self.codomain())
 
-    underlying_homset = arrow_set
+    underlying_mor = arrow_set
 
     def accepts(self, arrow):
-        r"""Membership: an arrow of the Hom-set decided injective."""
+        r"""Membership: an arrow of the Mor object decided injective."""
         return arrow in self.arrow_set() and self.arrow_set()(arrow).is_injective() is True
 
     @cached_method
@@ -1403,7 +1403,7 @@ class SetInjectionHomset(SetMorCategory):
         return f"Mono_Set({self.domain()}, {self.codomain()})"
 
 
-class SetSurjectionHomset(SetMorCategory):
+class SetSurjectionMor(SetMorCategory):
     r"""The declared surjections between two sets."""
 
     def _element_constructor_(self, datum):
@@ -1423,10 +1423,10 @@ class SetSurjectionHomset(SetMorCategory):
     def arrow_set(self):
         return Sets().Mor(self.domain(), self.codomain())
 
-    underlying_homset = arrow_set
+    underlying_mor = arrow_set
 
     def accepts(self, arrow):
-        r"""Membership: an arrow of the Hom-set decided surjective."""
+        r"""Membership: an arrow of the Mor object decided surjective."""
         return arrow in self.arrow_set() and self.arrow_set()(arrow).is_surjective() is True
 
     @cached_method
@@ -1452,7 +1452,7 @@ class SetMonoCategoryConstruction(MonoCategoryConstruction):
     r"""The declared monomorphisms of sets."""
 
     def fixed_category_class(self):
-        return SetInjectionHomset
+        return SetInjectionMor
 
     def accepts(self, arrow):
         r"""A monomorphism of sets is exactly an injective set map."""
@@ -1465,7 +1465,7 @@ class SetEpiCategoryConstruction(EpiCategoryConstruction):
     r"""The declared epimorphisms of sets."""
 
     def fixed_category_class(self):
-        return SetSurjectionHomset
+        return SetSurjectionMor
 
     def accepts(self, arrow):
         r"""An epimorphism of sets is exactly a surjective set map."""
@@ -1643,7 +1643,7 @@ class PowerSets(OwnedCategory):
         def truth_values(self) -> Parent:
             return Sets.Δ[1]
 
-        def characteristic_homset(self) -> SetMorCategory:
+        def characteristic_mor(self) -> SetMorCategory:
             return Sets().Mor(self.base_set(), self.truth_values())
 
         def from_predicate(
@@ -1659,8 +1659,8 @@ class PowerSets(OwnedCategory):
             characteristic_morphism: SetMorphism,
         ):
             r"""The subset classified by \(\chi\colon X\to\Delta[1]\): where \(\chi=1\)."""
-            if characteristic_morphism.parent() is not self.characteristic_homset():
-                raise ValueError("a characteristic morphism must lie in Hom(X, Δ[1])")
+            if characteristic_morphism.parent() is not self.characteristic_mor():
+                raise ValueError("a characteristic morphism must lie in Mor(X, Δ[1])")
             truth = self.truth_values()(1)
             return self.from_predicate(lambda member: characteristic_morphism(member) == truth)
 
@@ -1824,7 +1824,7 @@ class FunctionSets(OwnedCategory):
         def exponent(self) -> Parent:
             return self._exponent
 
-        def homset(self) -> SetMorCategory:
+        def mor(self) -> SetMorCategory:
             return Sets().Mor(self.exponent(), self.base())
 
         def __call__(self, *args, **kwargs):
@@ -1832,13 +1832,13 @@ class FunctionSets(OwnedCategory):
             return self._element_constructor_(*args, **kwargs)
 
         def _element_constructor_(self, definition):
-            homset = self.homset()
-            if definition in homset:
+            mor = self.mor()
+            if definition in mor:
                 return definition
-            return homset(definition)
+            return mor(definition)
 
         def __contains__(self, function) -> bool:
-            return function in self.homset()
+            return function in self.mor()
 
         def _repr_(self) -> str:
             return f"{self.base()}^{self.exponent()}"
@@ -3020,8 +3020,8 @@ class NaturalNumberSets(OwnedCategory):
             return r"\mathbb{N}=\{0,1,2,\ldots\}"
 
 
-class Homsets(OwnedCategory):
-    r"""Hom objects \(\operatorname{Hom}(X,Y)\), which are sets."""
+class Mors(OwnedCategory):
+    r"""Mor objects \(\operatorname{Hom}(X,Y)\), which are sets."""
 
     def an_object(self) -> SetMorCategory:
         r"""The endomorphisms of a set, which hold at least its identity."""

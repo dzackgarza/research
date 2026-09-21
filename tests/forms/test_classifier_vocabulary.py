@@ -8,8 +8,8 @@ ARCHIVE_RECONCILIATION = {
     "live_owner": "src/dzack_research/preamble/categories/forms/forms.py",
     "owner_overrides": {
         "QuadraticMapMorphism": "src/dzack_research/preamble/categories/modules/powers.py",
-        "QuadraticFormHomset": "src/dzack_research/preamble/categories/modules/powers.py",
-        "QuadraticFormHomset.module": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMor": "src/dzack_research/preamble/categories/modules/powers.py",
+        "QuadraticFormMor.module": "src/dzack_research/preamble/categories/modules/powers.py",
         "QuadraticFormMorphism": "src/dzack_research/preamble/categories/modules/powers.py",
         "QuadraticFormMorphism.parent": "src/dzack_research/preamble/categories/modules/powers.py",
         "QuadraticFormMorphism.module": "src/dzack_research/preamble/categories/modules/powers.py",
@@ -21,8 +21,8 @@ ARCHIVE_RECONCILIATION = {
         "QuadraticFormMorphism.descends_along": "src/dzack_research/preamble/categories/modules/powers.py",
         "QuadraticFormMorphism.values_matrix": "src/dzack_research/preamble/categories/modules/powers.py",
         "QuadraticFormMorphism.image": "src/dzack_research/preamble/categories/modules/powers.py",
-        "BilinearFormHomset": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
-        "BilinearFormHomset.module": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMor": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+        "BilinearFormMor.module": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
         "BilinearFormMorphism": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
         "BilinearFormMorphism.parent": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
         "BilinearFormMorphism.module": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
@@ -41,25 +41,25 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_archived_form_type_names_alias_the_universal_module_hom_owners() -> None:
+def test_archived_form_type_names_alias_the_universal_module_mor_owners() -> None:
     from dzack_research.preamble.categories.forms.forms import (
-        BilinearFormHomset,
+        BilinearFormMor,
         BilinearFormMorphism,
-        QuadraticFormHomset,
+        QuadraticFormMor,
         QuadraticFormMorphism,
     )
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        TensorProductModuleHomset,
+        TensorProductModuleMor,
         TensorProductModuleMorphism,
     )
     from dzack_research.preamble.categories.modules.powers import (
-        QuadraticModuleHomset,
+        QuadraticModuleMor,
         QuadraticModuleMorphism,
     )
 
-    assert BilinearFormHomset is TensorProductModuleHomset
+    assert BilinearFormMor is TensorProductModuleMor
     assert BilinearFormMorphism is TensorProductModuleMorphism
-    assert QuadraticFormHomset is QuadraticModuleHomset
+    assert QuadraticFormMor is QuadraticModuleMor
     assert QuadraticFormMorphism is QuadraticModuleMorphism
 
 

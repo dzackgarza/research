@@ -394,7 +394,7 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
     assert coinvariants.is_torsion_free()
 
 
-def test_group_lattice_rejects_actions_outside_the_orthogonal_automorphism_hom() -> None:
+def test_group_lattice_rejects_actions_outside_the_orthogonal_automorphism_mor() -> None:
     group = Groups.C(2)
     plane = Lattices(ZZ)("U")
 

@@ -1,7 +1,7 @@
 r"""Every owned ring is a ``ZZ``-algebra, and every commutative one an algebra over itself.
 
 The placement is made once, at construction, for every route that builds an
-owned ring; what it buys is the algebra homsets into the ring itself, such as
+owned ring; what it buys is the algebra mors into the ring itself, such as
 the augmentation ``R[G] -> R`` for a number field ``R``.
 """
 
@@ -104,7 +104,7 @@ def test_the_augmentation_of_a_group_algebra_over_a_number_field_is_an_algebra_m
     assert permutation.module_invariants().module_rank() == 2
 
 
-def test_a_self_algebra_keeps_the_ring_morphism_homset_as_its_default_mor() -> None:
+def test_a_self_algebra_keeps_the_ring_morphism_mor_as_its_default_mor() -> None:
     real_ring = cast(Any, RR)
     assert real_ring.Mor(real_ring) is OwnedRings().Mor(real_ring, real_ring)
     identity = real_ring.Mor(real_ring)(lambda element: real_ring(element))

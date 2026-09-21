@@ -63,8 +63,8 @@ class _ModuleAlgebraFunctor(Functor):
                 morphism(morphism.domain().module_generator(label)),
             )
 
-        homset = source.Mor(target)
-        return homset._from_degree_preserving_generator_map(image)
+        mor = source.Mor(target)
+        return mor._from_degree_preserving_generator_map(image)
 
     def _repr_(self):
         return f"{self._name} functor on {self.base_ring()}-modules"
@@ -182,9 +182,9 @@ class _ModuleAlgebraAdjunction(Adjunction):
         r"""Evaluation \(F(U(A))\to A\) when ``U(A)`` is represented."""
         module = self.right_adjoint()(algebra)
         free_algebra = self.left_adjoint()(module)
-        homset = free_algebra.Mor(algebra)
+        mor = free_algebra.Mor(algebra)
 
-        return homset._from_degree_preserving_generator_map(module.module_generator)
+        return mor._from_degree_preserving_generator_map(module.module_generator)
 
 
     def _repr_(self):

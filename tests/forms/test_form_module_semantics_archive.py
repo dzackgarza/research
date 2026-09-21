@@ -40,7 +40,7 @@ def test_quadratic_form_module_is_not_reclassified_as_a_bilinear_form_module() -
     assert formed not in BilinearFormModules(ZZ)
 
 
-def test_identity_in_the_formed_homset_is_an_exact_form_morphism() -> None:
+def test_identity_in_the_formed_mor_is_an_exact_form_morphism() -> None:
     module = ZZ.free_module(finite_ordered_set(("e", "f")))
     formed = FormModules(ZZ)(module.bilinear_forms(ZZ)([[0, 1], [1, 0]]))
     identity = formed.Mor(formed).identity()
@@ -64,9 +64,9 @@ def test_two_forms_on_one_module_retain_that_module_but_remain_distinct() -> Non
     probe = e + 2 * f
     assert first.scalar_multiple(ZZ(3), probe) == 3 * e + 6 * f
 
-    module_hom = Modules(ZZ).Mor(first, first)
-    identity = module_hom.identity()
-    doubling = module_hom({"e": 2 * e, "f": 2 * f})
+    module_mor = Modules(ZZ).Mor(first, first)
+    identity = module_mor.identity()
+    doubling = module_mor({"e": 2 * e, "f": 2 * f})
     assert (doubling * identity)(probe) == 2 * e + 4 * f
 
     assert first.b(e, e) == ZZ(2)

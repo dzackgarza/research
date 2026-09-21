@@ -26,7 +26,7 @@ def test_transported_subgroup_keeps_owned_subgroup_and_group_placement() -> None
     assert subgroup.supergroup() is group
 
 
-def test_endomorphism_hom_and_automorphism_group_keep_owned_placements() -> None:
+def test_endomorphism_mor_and_automorphism_group_keep_owned_placements() -> None:
     group = OwnedGroups().S(3)
     endomorphisms = group.Mor(group)
     automorphisms = group.Aut()

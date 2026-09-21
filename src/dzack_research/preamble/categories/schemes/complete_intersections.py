@@ -35,7 +35,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _projective_equation_family,
     _engine_scheme,
     _equation_family,
-    _native_scheme_homset,
+    _native_scheme_mor,
     _scheme_mor_category,
     _structure_morphism_rule,
 )

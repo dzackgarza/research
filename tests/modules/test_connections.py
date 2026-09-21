@@ -1,4 +1,4 @@
-from sage.categories.homset import Homset
+from sage.categories.mor import Mor
 from sage.misc.unknown import Unknown
 
 import pytest
@@ -33,7 +33,7 @@ def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> No
     module_morphisms = Modules(QQ).Mor(
         space.restricted_source_module(), space.restricted_target_module()
     )
-    assert not isinstance(space, Homset)
+    assert not isinstance(space, Mor)
     assert space.arrow_set() is module_morphisms
     assert module_morphisms in space.super_categories()
     assert trivial.as_morphism().parent() is module_morphisms
@@ -74,7 +74,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
     horizontal_maps = structured.Mor(structured)
     module_morphisms = Modules(algebra).Mor(structured, structured)
     identity = horizontal_maps.identity()
-    assert not isinstance(horizontal_maps, Homset)
+    assert not isinstance(horizontal_maps, Mor)
     assert horizontal_maps.arrow_set() is module_morphisms
     assert module_morphisms in horizontal_maps.super_categories()
     assert identity.as_morphism().parent() is module_morphisms

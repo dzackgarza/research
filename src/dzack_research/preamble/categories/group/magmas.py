@@ -2,9 +2,9 @@
 
 from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
@@ -27,11 +27,11 @@ class Magmas(OwnedCategory):
             return self._with_axiom("Commutative")
 
 
-class MonoidHomCategoryConstruction(HomCategoryConstruction):
-    r"""The fixed-endpoint Hom categories of owned monoids."""
+class MonoidMorCategoryConstruction(MorCategoryConstruction):
+    r"""The fixed-endpoint Mor categories of owned monoids."""
 
     def fixed_category_class(self):
-        return MonoidHomset
+        return MonoidMor
 
 
 class Semigroups(OwnedCategory):
@@ -81,12 +81,12 @@ class Monoids(OwnedCategory):
                 structure_data=structure_data,
             )
 
-    _HomCategory = MonoidHomCategoryConstruction
+    _MorCategory = MonoidMorCategoryConstruction
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a monoid Hom requires two monoids")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("a monoid Mor requires two monoids")
+        return self.MorCategory().Of(domain, codomain)
 
 
 
@@ -131,13 +131,13 @@ class AdditiveGroups(OwnedCategory):
     class AdditiveCommutative(CategoryWithAxiom):
         """Additive groups whose addition is commutative."""
 
-        class _HomCategory(HomCategoryConstruction):
+        class _MorCategory(MorCategoryConstruction):
             def fixed_category_class(self):
-                from dzack_research.preamble.categories.group.additive_homsets import (
-                    AdditiveHomset,
+                from dzack_research.preamble.categories.group.additive_mors import (
+                    AdditiveMor,
                 )
 
-                return AdditiveHomset
+                return AdditiveMor
 
         @classmethod
         def _repr_object_names(cls):
@@ -163,16 +163,16 @@ class MonoidMorphism(Morphism):
         r"""``self ∘ right`` for a monoid morphism ``right``.
 
         Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
-        morphism's domain; a map outside the monoid Hom is not composed here.
+        morphism's domain; a map outside the monoid Mor is not composed here.
         """
-        if right.domain() not in Monoids() or not right.parent().hom_family().base_category().is_subcategory(Monoids()):
+        if right.domain() not in Monoids() or not right.parent().mor_family().base_category().is_subcategory(Monoids()):
             return NotImplemented
-        hom = self.parent().hom_family().Of(right.domain(), self.codomain())
-        return hom(lambda element: self(right(element)))
+        mor = self.parent().mor_family().Of(right.domain(), self.codomain())
+        return mor(lambda element: self(right(element)))
 
 
-class MonoidHomset(CategoricalHomset):
-    r"""The owned fixed Hom category ``Mor_Mon(A,B)``."""
+class MonoidMor(CategoricalMor):
+    r"""The owned fixed Mor category ``Mor_Mon(A,B)``."""
 
     Element = MonoidMorphism
 
@@ -190,5 +190,5 @@ class MonoidHomset(CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on a monoid endomorphism Hom-set")
+            raise ValueError("identity is defined only on a monoid endomorphism Mor object")
         return self(lambda element: element)

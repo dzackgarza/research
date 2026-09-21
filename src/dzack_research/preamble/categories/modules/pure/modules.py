@@ -21,12 +21,12 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     EndCategoryConstruction,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
     IsoCategoryConstruction,
     MonoCategoryConstruction,
-    _category_homset,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -41,16 +41,16 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _parallel_pair_diagram,
 )
 from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
-    AssociativeAlgebraHomCategoryConstruction,
+    AssociativeAlgebraMorCategoryConstruction,
 )
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleAutomorphismGroup,
-    ModuleEmbeddingHomset,
-    ModuleHomset,
+    ModuleEmbeddingMor,
+    ModuleMor,
     ModuleMorphism,
     SubFramingMorphism,
-    TensorProductModuleHomset,
+    TensorProductModuleMor,
     _framing_morphism,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -112,20 +112,20 @@ def _register_module_scalar_action(module) -> None:
         module.register_action(_ModuleScalarAction(scalar_parent, module, False))
 
 
-class ModuleHomCategoryConstruction(HomCategoryConstruction):
+class ModuleMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
 
-        return ModuleHomset
+        return ModuleMor
 
     def fixed_category_class_for(self, domain, codomain):
-        return domain._module_homset_class()
+        return domain._module_mor_class()
 
 
 class ModuleMonoCategoryConstruction(MonoCategoryConstruction):
     r"""The declared monomorphisms of modules over one scalar ring."""
 
     def fixed_category_class(self):
-        return ModuleEmbeddingHomset
+        return ModuleEmbeddingMor
 
 
 class LinearEndCategoryConstruction(EndCategoryConstruction):
@@ -139,7 +139,7 @@ class LinearEndCategoryConstruction(EndCategoryConstruction):
         endomorphisms = super().Of(obj)
         endomorphisms.attach_end_family(self)
         if endomorphisms not in OwnedRings():
-            raise TypeError("a module endomorphism Hom must be constructed as an owned ring")
+            raise TypeError("a module endomorphism Mor must be constructed as an owned ring")
         return endomorphisms
 
     def __contains__(self, candidate) -> bool:
@@ -227,7 +227,7 @@ class Modules(OwnedCategoryOverBaseRing):
     def _call_(self, datum, scalar_action=None):
         r"""Construct the left module defined by ``rho : R -> End_Ab(X)``.
 
-        ``Modules(R)(rho)`` obtains ``X`` from the target Hom endpoints.
+        ``Modules(R)(rho)`` obtains ``X`` from the target Mor endpoints.
         ``Modules(R)(X, rho)`` states those same endpoints explicitly.
         """
         from dzack_research.preamble.categories.modules.general_modules import GeneralModules
@@ -243,7 +243,7 @@ class Modules(OwnedCategoryOverBaseRing):
             module = scalar_action.codomain().domain()
         else:
             module = datum
-        assert scalar_action.parent().homset_category().is_subcategory(OwnedRings()), (
+        assert scalar_action.parent().mor_category().is_subcategory(OwnedRings()), (
             "a left module requires a unital ring morphism"
         )
         assert _owned_ring(scalar_action.domain()) is self.base_ring(), f"the scalar action must be a ring morphism out of {self.base_ring()}"
@@ -713,11 +713,11 @@ class Modules(OwnedCategoryOverBaseRing):
             ):
                 raise ValueError("module equalizer arrows must be parallel R-linear maps")
             ambient_modules = Modules(left_morphism.domain().base_ring())
-            ambient_hom = ambient_modules.Mor(
+            ambient_mor = ambient_modules.Mor(
                 left_morphism.domain(),
                 left_morphism.codomain(),
             )
-            match left_morphism in ambient_hom, right_morphism in ambient_hom:
+            match left_morphism in ambient_mor, right_morphism in ambient_mor:
                 case True, True:
                     pass
                 case _:
@@ -900,19 +900,19 @@ class Modules(OwnedCategoryOverBaseRing):
                 return [AdditiveGroups().AdditiveCommutative()]
 
     def Mor(self, domain, codomain):
-        r"""Return the unique Hom-set ``Hom_R(domain,codomain)``."""
-        domain = self._hom_endpoint(domain)
-        codomain = self._hom_endpoint(codomain)
+        r"""Return the unique Mor object ``Hom_R(domain,codomain)``."""
+        domain = self._mor_endpoint(domain)
+        codomain = self._mor_endpoint(codomain)
         if domain not in self or codomain not in self:
-            raise TypeError("an R-module Hom requires two R-modules")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("an R-module Mor requires two R-modules")
+        return self.MorCategory().Of(domain, codomain)
 
-    def _hom_endpoint(self, obj):
+    def _mor_endpoint(self, obj):
         r"""Read an ``R[G]``-module over ``R`` by restriction of scalars along ``R -> R[G]``.
 
-        ``Hom_R(M, N)`` for two ``R[G]``-modules is the Hom of their
-        restrictions, so the endpoints of this category's Hom are restricted
-        before the Hom parent is built.
+        ``Hom_R(M, N)`` for two ``R[G]``-modules is the Mor of their
+        restrictions, so the endpoints of this category's Mor are restricted
+        before the Mor parent is built.
         """
         if obj in self:
             return obj
@@ -924,21 +924,21 @@ class Modules(OwnedCategoryOverBaseRing):
             return group_modules.restriction_of_scalars(group_modules.coefficient_inclusion())(obj)
         return obj
 
-    def _hom_parent_placement(self, domain, codomain, *, full_internal_hom=False):
-        r"""Return the category chosen when the canonical module Hom is constructed."""
+    def _mor_parent_placement(self, domain, codomain, *, full_internal_mor=False):
+        r"""Return the category chosen when the canonical module Mor is constructed."""
 
-        from dzack_research.preamble.categories.group.additive_homsets import (
+        from dzack_research.preamble.categories.group.additive_mors import (
             AdditiveEndomorphismRings,
         )
 
         ring = self.base_ring()
         if ring not in OwnedRings().Commutative():
             center = ring.ring_center()
-            placement = [LinearHomModules(center)]
+            placement = [LinearMorModules(center)]
             if domain is codomain:
                 placement.append(AdditiveEndomorphismRings(center))
             return Category.join(tuple(placement))
-        placement = [InternalHomModules(ring) if full_internal_hom else LinearHomModules(ring)]
+        placement = [InternalMorModules(ring) if full_internal_mor else LinearMorModules(ring)]
         matrix = _coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring)
         if matrix:
             placement.append(MatrixSpaces(ring))
@@ -950,22 +950,22 @@ class Modules(OwnedCategoryOverBaseRing):
                 placement.append(MatrixAlgebras(ring))
         elif domain is codomain:
             placement.append(AdditiveEndomorphismRings(ring))
-        if full_internal_hom and not matrix:
+        if full_internal_mor and not matrix:
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
                 _SelectedFinitePresentationModules,
             )
 
             if _represented_finite_presentation(domain) and _represented_finite_presentation(codomain):
                 placement.append(_SelectedFinitePresentationModules(ring))
-        if full_internal_hom and domain in TensorProductModules(ring):
+        if full_internal_mor and domain in TensorProductModules(ring):
             factors = domain.tensor_factors()
             if factors.cardinality().is_finite() and int(factors.cardinality().finite_value()) == 2 and factors[0] is factors[1]:
-                from dzack_research.preamble.categories.forms.forms import BilinearFormHoms
+                from dzack_research.preamble.categories.forms.forms import BilinearFormMors
 
-                placement.append(BilinearFormHoms(ring))
+                placement.append(BilinearFormMors(ring))
         return Category.join(tuple(placement))
 
-    _HomCategory = ModuleHomCategoryConstruction
+    _MorCategory = ModuleMorCategoryConstruction
     _MonoCategory = ModuleMonoCategoryConstruction
     _IsoCategory = ModuleIsoCategoryConstruction
     _EndCategory = ModuleEndCategoryConstruction
@@ -1023,7 +1023,7 @@ class Modules(OwnedCategoryOverBaseRing):
             modules = Modules(self.base_ring())
             if category is None:
                 return modules.Mor(self, codomain)
-            return _category_homset(category, self, codomain)
+            return _category_mor_parent(category, self, codomain)
 
         def Mono(self, codomain):
             r"""Return the declared injective linear maps into ``codomain``."""
@@ -1036,7 +1036,7 @@ class Modules(OwnedCategoryOverBaseRing):
         def Aut(self):
             r"""Return ``Aut_R(M)``, the automorphisms of this module.
 
-            The Hom packet gives every object its automorphisms, so a module
+            The Mor packet gives every object its automorphisms, so a module
             reaches them the way a group and a lattice already do rather than
             through a class of its own.
             """
@@ -1285,10 +1285,10 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return the degree-two tensor polarization map."""
             return self.tensor_power_polarization(2)
 
-        def _module_homset_class(self):
-            r"""Return the canonical fixed homset for maps out of this module type."""
+        def _module_mor_class(self):
+            r"""Return the canonical fixed Mor for maps out of this module type."""
 
-            return ModuleHomset
+            return ModuleMor
 
         def base_ring(self):
             r"""Return the ring acting on this module.
@@ -1413,7 +1413,7 @@ class Modules(OwnedCategoryOverBaseRing):
             supplies their selected coefficients.
             """
             native = self._native_module_presentation()
-            if native is not None and native.basis() is not None:
+            if native is not None and native.module_basis() is not None:
                 return native.coefficients(element)
             match self:
                 case _ if self in OwnedOrders():
@@ -1573,7 +1573,7 @@ class Modules(OwnedCategoryOverBaseRing):
             these parents: their ``__call__`` goes straight to
             ``_element_constructor_`` because the generic conversion map Sage
             would build (``Parent.discover_convert_map_from``,
-            ``sage/structure/parent.pyx``) takes its homset in
+            ``sage/structure/parent.pyx``) takes its Mor in
             ``SetsWithPartialMaps``, which owned parents are not in.  So the
             level that retains the module declares the reading, and the
             receiving constructor asks the element's parent for it.
@@ -1657,7 +1657,7 @@ class Modules(OwnedCategoryOverBaseRing):
             For left modules over a noncommutative ring, ``Hom_R(M,R)`` is
             naturally a right module and therefore is not an object of this
             left-module category without a separate bimodule/opposite-ring
-            construction.  The commutative case is the internal Hom into the
+            construction.  The commutative case is the internal Mor into the
             regular rank-one module and inherits its selected presentation
             whenever the endpoint data represent one.
             """
@@ -1737,7 +1737,7 @@ class Modules(OwnedCategoryOverBaseRing):
 
                 The global ``Framed`` owner retains the source, label set,
                 generator map and epimorphism.  This specialization supplies
-                only the module Hom realization of those data.
+                only the module Mor realization of those data.
                 """
                 super().__init__(**rest)
                 if module_generating_set is None:
@@ -2248,8 +2248,8 @@ def FinitelyGeneratedFreeModules(base_ring):
     return FramedFreeModules(base_ring).FinitelyGenerated()
 
 
-class LinearHomModules(OwnedCategoryOverBaseRing):
-    r"""Represented Hom parents closed under pointwise ``R``-linear operations."""
+class LinearMorModules(OwnedCategoryOverBaseRing):
+    r"""Represented Mor parents closed under pointwise ``R``-linear operations."""
 
     def an_object(self):
         r"""The endomorphisms of the free module of rank one."""
@@ -2261,7 +2261,7 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
 
     @classmethod
     def _repr_object_names(cls):
-        return "linear Hom modules"
+        return "linear Mor modules"
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -2288,7 +2288,7 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
             return self.codomain()
 
         def scalar_multiple(self, scalar, morphism):
-            r"""Use the Hom representation's pointwise scalar action without rebuilding the generic module action."""
+            r"""Use the Mor representation's pointwise scalar action without rebuilding the generic module action."""
             return self._owned_scalar_multiple(scalar, morphism)
 
         def as_morphism(self, element):
@@ -2301,8 +2301,8 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
             return self(map_element)(source_element)
 
 
-class InternalHomModules(OwnedCategoryOverBaseRing):
-    r"""The canonical full enriched Hom modules ``Hom_R(M,N)``."""
+class InternalMorModules(OwnedCategoryOverBaseRing):
+    r"""The canonical full enriched Mor modules ``Hom_R(M,N)``."""
 
     def an_object(self):
         r"""The endomorphisms of the free module of rank one."""
@@ -2314,25 +2314,25 @@ class InternalHomModules(OwnedCategoryOverBaseRing):
 
     @classmethod
     def _repr_object_names(cls):
-        return "internal Hom modules"
+        return "internal Mor modules"
 
     def super_categories(self):
-        return [LinearHomModules(self.base_ring())]
+        return [LinearMorModules(self.base_ring())]
 
     class ParentMethods:
         def _smith_engine(self):
             r"""Read the native FGP workspace of the endpoint-determined model."""
-            return self.internal_hom_model()._smith_engine()
+            return self._internal_mor_model()._smith_engine()
 
         def _to_smith_engine_element(self, morphism):
-            model = self.internal_hom_model()
+            model = self._internal_mor_model()
             return model._to_smith_engine_element(self._internal_model_from_morphism(morphism))
 
         def _from_smith_engine_element(self, element):
-            model = self.internal_hom_model()
+            model = self._internal_mor_model()
             return self._morphism_from_internal_model(model._from_smith_engine_element(element))
 
-        def internal_hom_model(self):
+        def _internal_mor_model(self):
             r"""The presented module ``ker(N^{gens(M)} -> N^{rels(M)})`` modelling ``Hom_R(M, N)``.
 
             A map out of ``M = coker(F_1 -> F_0)`` is an assignment of an
@@ -2340,24 +2340,24 @@ class InternalHomModules(OwnedCategoryOverBaseRing):
             so ``Hom_R(M, N)`` is the kernel of the evaluation of relations on
             generator assignments; its endpoints determine it.
             """
-            from dzack_research.preamble.categories.modules.internal_hom import (
-                _internal_hom_model_data,
+            from dzack_research.preamble.categories.modules.internal_mor import (
+                __internal_mor_model_data,
             )
 
-            model, _inclusion, _relations, _presentation = _internal_hom_model_data(self)
+            model, _inclusion, _relations, _presentation = __internal_mor_model_data(self)
             return model
 
         def inclusion_into_generator_maps(self):
             r"""The inclusion of the presented model of ``Hom(M, N)`` into ``N^{gens(M)}``."""
-            from dzack_research.preamble.categories.modules.internal_hom import (
-                _internal_hom_model_data,
+            from dzack_research.preamble.categories.modules.internal_mor import (
+                __internal_mor_model_data,
             )
 
-            _model, inclusion, _relations, _presentation = _internal_hom_model_data(self)
+            _model, inclusion, _relations, _presentation = __internal_mor_model_data(self)
             return inclusion
 
         def _morphism_from_internal_model(self, model_element):
-            r"""Read an element of :meth:`internal_hom_model` as the linear map it assigns."""
+            r"""Read an element of :meth:`_internal_mor_model` as the linear map it assigns."""
             assignment_space = self.inclusion_into_generator_maps().codomain()
             assignment = self.inclusion_into_generator_maps()(model_element)
             coefficients = assignment_space.framing_coefficients(assignment)
@@ -2376,8 +2376,8 @@ class InternalHomModules(OwnedCategoryOverBaseRing):
             )
 
         def _internal_model_from_morphism(self, morphism):
-            r"""Read a linear map as the element of :meth:`internal_hom_model` assigning its generator images."""
-            model = self.internal_hom_model()
+            r"""Read a linear map as the element of :meth:`_internal_mor_model` assigning its generator images."""
+            model = self._internal_mor_model()
             power = self.inclusion_into_generator_maps().codomain()
             power_labels = power.module_generating_set()
             coefficients = {}
@@ -2393,7 +2393,7 @@ class InternalHomModules(OwnedCategoryOverBaseRing):
 
         def _selected_module_coefficients(self, morphism):
             r"""Coordinates of a linear map in the framing of the presented model."""
-            model = self.internal_hom_model()
+            model = self._internal_mor_model()
             return model.framing_coefficients(self._internal_model_from_morphism(self(morphism)))
 
 
@@ -2573,10 +2573,10 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def dimension(self):
-            r"""Return the dimension from this vector space's represented backend."""
+            r"""Return the dimension from this vector space's represented basis."""
             represented = self._represented_vector_space_dimension()
             assert represented is not NotImplemented, (
-                f"the dimension of {self} requires a represented vector-space basis backend"
+                f"the dimension of {self} requires a represented vector-space basis"
             )
             return represented
 
@@ -2654,13 +2654,13 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         @cached_method
-        def tensor_hom_adjunction(self):
+        def tensor_mor_adjunction(self):
             r"""Return ``- tensor self ⊣ Hom_R(self,-)`` on chosen finite presentations."""
-            from dzack_research.preamble.categories.functors.tensor_hom import (
-                _TensorHomAdjunction,
+            from dzack_research.preamble.categories.functors.tensor_mor import (
+                _TensorMorAdjunction,
             )
 
-            return _TensorHomAdjunction(self)
+            return _TensorMorAdjunction(self)
 
         @cached_method
         def presentation_object(self):
@@ -2970,11 +2970,11 @@ class FreeResolutionMorphism:
                     for label in source_term.module_generating_set()
                 }
             )
-        return FreeResolutionHomotopy(self, other, components)
+        return FreeResolutionMorotopy(self, other, components)
 
 
 @dataclass(frozen=True)
-class FreeResolutionHomotopy:
+class FreeResolutionMorotopy:
     r"""A selected homotopy ``h`` with ``f-g = d h + h d``."""
 
     _source: FreeResolutionMorphism
@@ -3017,7 +3017,7 @@ class FreeResolutionHomotopy:
 
 
 def _fix_selected_module_framing(module, base_ring, labels, generator_function, source=None) -> None:
-    r"""Realize the global selected framing in the module Hom category."""
+    r"""Realize the global selected framing in the module Mor category."""
     if source is None:
         source = base_ring.free_module(labels)
     if source.base_ring() is not base_ring:
@@ -3376,7 +3376,7 @@ def BilinearMap(left, right, codomain, generator_images):
 
     ``BilinearMap`` is generator-image ingress, not a second representation of
     a pairing.  The returned object is the actual tensor-domain module
-    morphism.  Consequently its ordinary module-Hom admission is the one
+    morphism.  Consequently its ordinary module-Mor admission is the one
     authority that checks every selected tensor relation.
     """
     ring = left.base_ring()
@@ -3391,7 +3391,7 @@ def BilinearMap(left, right, codomain, generator_images):
         case _:
             raise TypeError(
                 "generator-image bilinear syntax requires selected factor framings; "
-                "use the tensor Hom with an elementwise bilinear evaluation otherwise"
+                "use the tensor Mor with an elementwise bilinear evaluation otherwise"
             )
 
     factor_family = _factor_family((left, right), name="Tensor factors")
@@ -3483,9 +3483,9 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             self._preamble_tensor_factors = tensor_factors
             super().__init__(**rest)
 
-        def _module_homset_class(self):
+        def _module_mor_class(self):
 
-            return TensorProductModuleHomset
+            return TensorProductModuleMor
 
         def tensor_factors(self):
             r"""Return the family of factors, indexed by the product's own index set."""
@@ -3500,7 +3500,7 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
             A tensor product over an index set of any size is constructed
             here, but its universal multilinear map is represented only for
-            two factors, where the classifier is the tensor-domain module Hom.
+            two factors, where the classifier is the tensor-domain module Mor.
             """
             factors = self.tensor_factors()
             assert factors.cardinality() == cardinal(2), (
@@ -3539,8 +3539,8 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
         def from_bilinear_map(self, codomain, bilinear):
             r"""Classify a stated R-bilinear evaluation without inferring its law from framing values."""
             self._two_factors()
-            hom = self.module_category().Mor(self, codomain)
-            return hom._from_bilinear_evaluation(bilinear)
+            mor = self.module_category().Mor(self, codomain)
+            return mor._from_bilinear_evaluation(bilinear)
 
 
 def _represented_finite_presentation(module) -> bool:
@@ -4063,7 +4063,7 @@ def _biproduct_morphism(left_morphism, right_morphism, source=None, target=None)
 
 
 class MatrixSpaces(OwnedCategoryOverBaseRing):
-    r"""Hom objects between finitely generated framed free ``R``-modules."""
+    r"""Mor objects between finitely generated framed free ``R``-modules."""
 
     def an_object(self):
         r"""The one-by-one matrices over the base ring."""
@@ -4075,7 +4075,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
     @classmethod
     def _repr_object_names(cls):
-        return "matrix Hom objects"
+        return "matrix Mor objects"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -4083,7 +4083,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         )
 
         return [
-            InternalHomModules(self.base_ring()),
+            InternalMorModules(self.base_ring()),
             FramedFreeModules(self.base_ring()).FinitelyGenerated(),
         ]
 
@@ -4134,12 +4134,12 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             r"""Read a compatible type-``(1,1)`` tensor as this linear map.
 
             This is an explicit interpretation, not a second matrix object:
-            the returned object is an element of this Hom object.
+            the returned object is an element of this Mor object.
             """
             if coordinate_tensor.tensor_valence() != (NN**2)((1, 1)):
                 raise TypeError("a matrix morphism is represented here by a type-(1,1) tensor")
             if coordinate_tensor.base_ring() is not self.base_ring():
-                raise TypeError("the tensor and matrix Hom must have one base ring")
+                raise TypeError("the tensor and matrix Mor must have one base ring")
             # A type-(1,1) tensor represents a morphism here when its
             # contravariant index has the codomain's rank and its covariant
             # index the domain's rank.
@@ -4157,7 +4157,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
     class ElementMethods:
         def matrix(self):
-            r"""Return the canonical matrix Hom in the selected finite framings.
+            r"""Return the canonical matrix Mor in the selected finite framings.
 
             This operation exists only on MatrixSpaces. A map between
             arbitrary structured objects does not inherit it; the coordinate
@@ -4168,7 +4168,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             target = self.codomain().framing_source()
             coordinate_parent = source.module_category().Mor(source, target)
             assert coordinate_parent in MatrixSpaces(self.parent().base_ring()), (
-                "finite framing sources must have their coordinate matrix Hom"
+                "finite framing sources must have their coordinate matrix Mor"
             )
             if self.parent() is coordinate_parent:
                 return self
@@ -4356,7 +4356,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             source = self.codomain()
             codomain = self.domain()
             target = source.module_category().Mor(source, codomain)
-            _refine_matrix_hom(target)
+            _refine_matrix_mor(target)
             return target.from_rows(
                 tuple(tuple(self.matrix_entry(row_label, column_label) for row_label in self.parent().row_index_set()) for column_label in self.parent().column_index_set())
             )
@@ -4372,7 +4372,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             ring = self.parent().base_ring()
             source = self.codomain()
             codomain = self.domain()
-            target = _refine_matrix_hom(source.module_category().Mor(source, codomain))
+            target = _refine_matrix_mor(source.module_category().Mor(source, codomain))
             return target.from_rows((ring._from_engine_element(backend[row, column]) for column in range(target.ncols())) for row in range(target.nrows()))
 
         __invert__ = inverse
@@ -4470,7 +4470,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
 
     # The two above state two different morphisms, so this names which of
     # them End_R(F) means: the one that preserves everything it is.
-    _HomCategory = AssociativeAlgebraHomCategoryConstruction
+    _MorCategory = AssociativeAlgebraMorCategoryConstruction
 
     class ParentMethods:
         def is_commutative(self):
@@ -4550,12 +4550,12 @@ def _matrix_index(index_set, key):
 
 
 def _engine_matrix(morphism):
-    r"""Privately materialize one matrix-Hom element in Sage."""
+    r"""Privately materialize one matrix-Mor element in Sage."""
     from sage.matrix.constructor import matrix as sage_matrix
 
-    parent = _refine_matrix_hom(morphism.parent())
+    parent = _refine_matrix_mor(morphism.parent())
     if parent not in MatrixSpaces(parent.base_ring()):
-        raise TypeError("backend matrix materialization requires a matrix Hom element")
+        raise TypeError("backend matrix materialization requires a matrix Mor element")
     ring = parent.base_ring()
     return sage_matrix(
         _engine_ring(ring),
@@ -4569,36 +4569,36 @@ def _engine_matrix(morphism):
     )
 
 
-def _matrix_unit(homset, label):
-    label = homset.module_generating_set()(label)
+def _matrix_unit(mor, label):
+    label = mor.module_generating_set()(label)
     row_label = label[0]
     column_label = label[1]
-    column_labels = homset.column_index_set()
-    return homset(
-        {source_label: (homset.codomain().module_generator(row_label) if source_label == column_label else homset.codomain().zero()) for source_label in column_labels}
+    column_labels = mor.column_index_set()
+    return mor(
+        {source_label: (mor.codomain().module_generator(row_label) if source_label == column_label else mor.codomain().zero()) for source_label in column_labels}
     )
 
 
-def _matrix_coefficients(homset, morphism):
+def _matrix_coefficients(mor, morphism):
 
-    morphism = homset(morphism)
-    labels = homset.module_generating_set()
+    morphism = mor(morphism)
+    labels = mor.module_generating_set()
     coefficients = {}
-    for column_label in homset.column_index_set():
+    for column_label in mor.column_index_set():
         for row_label, coefficient in morphism._matrix_column_coefficients(column_label).items():
             coefficients[labels((row_label, column_label))] = coefficient
     return coefficients
 
 
-def _refine_matrix_hom(homset):
-    r"""Return the already-constructed matrix Hom for finite free endpoints."""
-    ring = homset.base_ring()
-    domain = homset.domain()
-    codomain = homset.codomain()
+def _refine_matrix_mor(mor):
+    r"""Return the already-constructed matrix Mor for finite free endpoints."""
+    ring = mor.base_ring()
+    domain = mor.domain()
+    codomain = mor.codomain()
     if not (_coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring)):
-        return homset
-    assert homset in MatrixSpaces(ring), "a Hom between coordinate framed free modules is constructed as a matrix Hom"
-    return homset
+        return mor
+    assert mor in MatrixSpaces(ring), "a Mor between coordinate framed free modules is constructed as a matrix Mor"
+    return mor
 
 
 def _coordinate_framed_free_module(module, ring) -> bool:

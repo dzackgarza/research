@@ -51,7 +51,7 @@ def ComplexNumber(real, imag=None):
 
 
 def matrix(rows):
-    r"""Construct the owned matrix-Hom represented by a rectangular row family."""
+    r"""Construct the owned matrix-Mor represented by a rectangular row family."""
     rows = tuple(tuple(row) for row in rows)
     if rows:
         width = len(rows[0])

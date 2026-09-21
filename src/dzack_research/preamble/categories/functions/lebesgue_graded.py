@@ -66,7 +66,7 @@ def _pointwise_piece_product(left, right, degree):
 
 
 def _compose_morphisms(left, right):
-    r"""Compose the represented linear maps in their common module Hom."""
+    r"""Compose the represented linear maps in their common module Mor."""
     assert right.codomain() is left.domain(), "linear maps compose at their common module"
     modules = Modules(left.domain().base_ring())
     return modules.Mor(left.domain(), left.codomain())(left) * modules.Mor(

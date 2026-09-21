@@ -86,9 +86,9 @@ from sage.categories.filtered_modules import (
 from sage.categories.graded_modules import (
     GradedModulesCategory as SageGradedModulesCategory,
 )
-from sage.categories.homsets import Homsets as SageHomsets
-from sage.categories.homsets import HomsetsCategory as SageHomsetsCategory
-from sage.categories.homsets import HomsetsOf as SageHomsetsOf
+from sage.categories.mors import Mors as SageMors
+from sage.categories.mors import MorsCategory as SageMorsCategory
+from sage.categories.mors import MorsOf as SageMorsOf
 from sage.categories.isomorphic_objects import (
     IsomorphicObjectsCategory as SageIsomorphicObjectsCategory,
 )
@@ -111,7 +111,7 @@ from sage.misc.constant_function import ConstantFunction
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
 )
 from dzack_research.preamble.owned_category import (
@@ -238,9 +238,9 @@ class CategoryWithAxiom(
     r"""Owned base over Sage's category-with-axiom base.
 
     An axiom states a property of the objects and no new morphisms, so the
-    Hom packet is the one the refined category already has; carrying
+    Mor packet is the one the refined category already has; carrying
     ``CategoryPacketMethods`` here is what lets an axiom category be asked for
-    it, and the Hom family's supercategory walk is what makes the answer the
+    it, and the Mor family's supercategory walk is what makes the answer the
     same object rather than a second parent for the same maps.
 
     Sage's ``CategoryWithAxiom_over_base_ring`` is not the base to use for an
@@ -334,26 +334,26 @@ class Category_ideal(
         SageCategoryIdeal.__init__(self, ring, name)
 
 
-class HomCategoryConstruction(
-    OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsCategory, Parent
+class MorCategoryConstruction(
+    OwnedCategoryMixin, OwnedCategoryObject, SageMorsCategory, Parent
 ):
-    r"""Sage-homset backend for a category's ``HomCategory``.
+    r"""Sage-Mor backend for a category's ``MorCategory``.
 
-    This class is a specialization, not the definition of a hom category.
-    Categories whose hom objects are not sets use another implementation.
+    This class is a specialization, not the definition of a Mor category.
+    Categories whose Mor objects are not sets use another implementation.
     """
 
     def __init__(self, category: SageCategory) -> None:
         self._init_cat_object()
-        SageHomsetsCategory.__init__(self, category)
+        SageMorsCategory.__init__(self, category)
 
     def extra_super_categories(self) -> list:
-        r"""A set-valued hom object inherits the owned set Hom implementation.
+        r"""A set-valued Mor object inherits the owned set Mor implementation.
 
-        Sage's ``HomsetsOf`` answers a flat ``[Homsets()]``: it does not carry
+        Sage's ``MorsOf`` answers a flat ``[Mors()]``: it does not carry
         a category's own super categories across the construction, so
-        ``Modules(R).HomCategory()`` would not inherit
-        ``Sets().HomCategory()``.  The owned set-valued Hom chain has a root, and a chain
+        ``Modules(R).MorCategory()`` would not inherit
+        ``Sets().MorCategory()``.  The owned set-valued Mor chain has a root, and a chain
         that does not reach its root cannot construct -- cooperative
         ``super().__init__`` runs off the end into ``object``.  This states
         the missing edge once for every category using this backend.
@@ -361,13 +361,13 @@ class HomCategoryConstruction(
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
         owned_sets = Sets()
-        categorical_hom = self.base_category().HomCategory()
+        categorical_mor = self.base_category().MorCategory()
         if self.base_category() is owned_sets:
-            return [categorical_hom]
-        return [categorical_hom, owned_sets.HomCategory()]
+            return [categorical_mor]
+        return [categorical_mor, owned_sets.MorCategory()]
 
     def Of(self, source: Parent, target: Parent) -> Parent:
-        r"""Return the set-valued hom object supplied by Sage's Hom backend."""
+        r"""Return the set-valued Mor object supplied by Sage's Mor backend."""
         return self._object(source, target, self)
 
     def _object(
@@ -376,7 +376,7 @@ class HomCategoryConstruction(
         target: Parent,
         placement: SageCategory,
     ) -> Parent:
-        r"""Construct one locally small hom object through its owned type."""
+        r"""Construct one locally small Mor object through its owned type."""
         return placement.ObjectType(
             domain=source,
             codomain=target,
@@ -384,42 +384,42 @@ class HomCategoryConstruction(
         )
 
 
-class _SageHomCategoryOf(
-    OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsOf, Parent
+class _SageMorCategoryOf(
+    OwnedCategoryMixin, OwnedCategoryObject, SageMorsOf, Parent
 ):
-    r"""Owned base over Sage's category-specific homsets base."""
+    r"""Owned base over Sage's category-specific mors base."""
 
     def __init__(self, category: SageCategory) -> None:
         self._init_cat_object()
-        SageHomsetsOf.__init__(self, category)
+        SageMorsOf.__init__(self, category)
 
 
-class _SageHomCategoryRoot(
+class _SageMorCategoryRoot(
     _SingletonClasscallMixin,
     OwnedCategoryMixin,
     OwnedCategoryObject,
-    SageHomsets,
+    SageMors,
     Parent,
 ):
-    r"""Owned base over Sage's singleton homsets category."""
+    r"""Owned base over Sage's singleton mors category."""
 
     def __init__(self) -> None:
         self._init_cat_object()
-        SageHomsets.__init__(self)
+        SageMors.__init__(self)
 
     def Endset(self) -> SageCategory:
         r"""Return Sage's root category of endomorphism sets.
 
         Forced by Sage's singleton-axiom descriptor, not by mathematics.
-        Sage's ``Homsets.Endset`` nested class records Sage's own ``Homsets``
+        Sage's ``Mors.Endset`` nested class records Sage's own ``Mors``
         as its base category class, and ``CategoryWithAxiom.__classget__``
         asserts that the class it is reached through is that one
         (``sage/categories/category_with_axiom.py``).  Reached through an owned
-        ``Homsets`` the assertion fails, so the axiom is named here instead.
+        ``Mors`` the assertion fails, so the axiom is named here instead.
         A subcategory that owns the ``Endset`` axiom declares it as its own
         nested class, which replaces this method outright.
         """
-        return SageHomsets().Endset()
+        return SageMors().Endset()
 
 
 class FunctorialConstructionCategory(

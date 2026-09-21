@@ -23,16 +23,16 @@ def test_left_and_right_sl2_actions_are_actual_action_functors() -> None:
     assert left.domain() == group.classifying_category()
     assert right.domain() == group.classifying_category()
     lattice = model.lattice()
-    lattice_hom = left.codomain().Mor(lattice, lattice)
-    assert lattice_hom is lattice.Mor(lattice)
+    lattice_mor = left.codomain().Mor(lattice, lattice)
+    assert lattice_mor is lattice.Mor(lattice)
     left_arrow = left(arrows(generators[0]))
     right_arrow = right(arrows(generators[0]))
     left_isometry = model.left_action(generators[0])
     right_isometry = model.right_action(generators[0])
     assert left_arrow.parent() is lattice.O()
     assert right_arrow.parent() is lattice.O()
-    assert lattice_hom(left_arrow) is left_arrow
-    assert lattice_hom(right_arrow) is right_arrow
+    assert lattice_mor(left_arrow) is left_arrow
+    assert lattice_mor(right_arrow) is right_arrow
     assert left_arrow == left_isometry
     assert right_arrow == right_isometry
 

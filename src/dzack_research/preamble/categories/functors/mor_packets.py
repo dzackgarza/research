@@ -1,4 +1,4 @@
-r"""Functorial transport of Hom/End/Aut category packets."""
+r"""Functorial transport of Mor/End/Aut category packets."""
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     _isomorphism_from_known_inverse_pair,
@@ -6,43 +6,43 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.functors.core import Functor
 
 
-def _arrow_of(hom_category, arrow_object):
-    r"""The arrow that an object of a Hom category is.
+def _arrow_of(mor_category, arrow_object):
+    r"""The arrow that an object of a Mor category is.
 
-    The objects of ``Hom_C(A, B)`` are the arrows ``A -> B``; the Hom category
+    The objects of ``Hom_C(A, B)`` are the arrows ``A -> B``; the Mor category
     presents one either as the arrow or as its arrow object.  Its discrete
-    2-Hom at that object has the object as its source, normalized by the Hom
+    2-Mor at that object has the object as its source, normalized by the Mor
     category itself, so the arrow is read from there for either presentation.
-    ``two_hom`` is the spelling both Hom-category shapes share and that no
-    enrichment of the Hom object (a group of automorphisms, say) rebinds.
+    ``two_mor`` is the spelling both Mor-category shapes share and that no
+    enrichment of the Mor object (a group of automorphisms, say) rebinds.
     """
-    return hom_category.two_hom(arrow_object, arrow_object).domain().arrow()
+    return mor_category.two_mor(arrow_object, arrow_object).domain().arrow()
 
 
 def _identity_two_arrow_image(functor, two_arrow):
-    r"""The image of a 2-arrow of a represented Hom category.
+    r"""The image of a 2-arrow of a represented Mor category.
 
-    Those Hom categories are discrete: the only 2-arrow on an arrow object is
+    Those Mor categories are discrete: the only 2-arrow on an arrow object is
     its identity, so the image is the identity on the image object.
     """
-    assert two_arrow in functor.domain().two_hom(two_arrow.domain(), two_arrow.codomain()), (
-        "a 2-arrow of a represented Hom category is the identity of its discrete 2-Hom"
+    assert two_arrow in functor.domain().two_mor(two_arrow.domain(), two_arrow.codomain()), (
+        "a 2-arrow of a represented Mor category is the identity of its discrete 2-Mor"
     )
     source_image = functor.on_object(two_arrow.domain())
     target_image = functor.on_object(two_arrow.codomain())
-    return functor.codomain().two_hom(source_image, target_image).identity()
+    return functor.codomain().two_mor(source_image, target_image).identity()
 
 
-class _InducedHomFunctor(Functor):
+class _InducedMorFunctor(Functor):
     r"""The functor ``Hom_C(A,B) -> Hom_D(F(A),F(B))`` induced by ``F``."""
 
     def __init__(self, functor, domain_object, codomain_object) -> None:
         self._functor = functor
-        source = functor.domain().category_packet().Homs().Of(
+        source = functor.domain().category_packet().Mors().Of(
             domain_object,
             codomain_object,
         )
-        target = functor.codomain().category_packet().Homs().Of(
+        target = functor.codomain().category_packet().Mors().Of(
             functor.on_object(domain_object),
             functor.on_object(codomain_object),
         )
@@ -63,7 +63,7 @@ class _InducedHomFunctor(Functor):
         return _identity_two_arrow_image(self, morphism)
 
     def _repr_(self):
-        return f"Hom functor induced by {self.base_functor()}"
+        return f"Mor functor induced by {self.base_functor()}"
 
 
 class _InducedEndFunctor(Functor):

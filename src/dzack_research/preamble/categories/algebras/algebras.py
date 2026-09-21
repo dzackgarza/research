@@ -29,10 +29,10 @@ from sage.misc.unknown import Unknown
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-    _category_homset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     _fix_selected_framing,
@@ -105,14 +105,14 @@ if "FinitelyPresentedAsAlgebra" not in all_axioms:
 
 
 # ---------------------------------------------------------------------------
-# The algebra Hom: linear maps preserving the multiplication.
+# The algebra Mor: linear maps preserving the multiplication.
 # ---------------------------------------------------------------------------
 
 
 class MultiplicativeAlgebraMorphism(Morphism):
     r"""An algebra morphism: an ``R``-linear \(f\colon A\to B\) with \(f\,m_A = m_B\,(f\otimes f)\).
 
-    The datum is the linear map, an element of the module Hom.  The defining
+    The datum is the linear map, an element of the module Mor.  The defining
     equation is one equation between two module morphisms out of
     \(A\otimes_R A\), asked of the module Mor: its finite generating data
     decide the equation when value equality is decided; otherwise it answers
@@ -141,7 +141,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
         self._preserves_multiplication = preserved
 
     def underlying_morphism(self):
-        r"""The linear map this algebra morphism is, in the module Hom."""
+        r"""The linear map this algebra morphism is, in the module Mor."""
         return self._underlying_morphism
 
     def tensor_square_morphism(self):
@@ -175,7 +175,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
     def cokernel_projection(self):
         r"""The multiplication-preserving quotient map onto ``coker(self)``."""
         quotient = self.cokernel()
-        category = self.parent().homset_category()
+        category = self.parent().mor_category()
         return category.Mor(self.codomain(), quotient)(quotient.algebra_quotient_projection())
 
     def _call_(self, element):
@@ -197,12 +197,12 @@ class MultiplicativeAlgebraMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        category = self.parent().homset_category()
+        category = self.parent().mor_category()
         forget = Algebras(self.domain().algebra_base_ring()).underlying_module()
         return category.Mor(other.domain(), self.codomain())(self.underlying_morphism() * forget(other))
 
 
-class MultiplicativeAlgebraHomset(CategoricalHomset):
+class MultiplicativeAlgebraMor(CategoricalMor):
     r"""``Hom_{R-Alg}(A, B)``: the linear maps preserving the multiplication."""
 
     Element = MultiplicativeAlgebraMorphism
@@ -211,15 +211,15 @@ class MultiplicativeAlgebraHomset(CategoricalHomset):
         return self._element_constructor_(datum)
 
     def _element_constructor_(self, datum):
-        # The one boundary admitting data this Hom did not build.  An arrow of
-        # an algebra Hom with these endpoints is admitted by the linear map the
+        # The one boundary admitting data this Mor did not build.  An arrow of
+        # an algebra Mor with these endpoints is admitted by the linear map the
         # forgetful functor reads it as; any other datum states the linear map.
         parent = element_parent(datum)
         if parent is self:
             return datum
         algebras = Algebras(self.domain().algebra_base_ring())
         match parent:
-            case CategoricalHomset() if parent.homset_category().is_subcategory(algebras):
+            case CategoricalMor() if parent.mor_category().is_subcategory(algebras):
                 datum = algebras.underlying_module()(datum)
             case _:
                 pass
@@ -247,8 +247,8 @@ class UnitalMultiplicativeAlgebraMorphism(MultiplicativeAlgebraMorphism):
         return self._preserves_unit
 
 
-class UnitalMultiplicativeAlgebraHomset(MultiplicativeAlgebraHomset):
-    r"""``Hom`` of unital algebras: the multiplicative linear maps preserving the unit."""
+class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):
+    r"""``Mor`` of unital algebras: the multiplicative linear maps preserving the unit."""
 
     Element = UnitalMultiplicativeAlgebraMorphism
 
@@ -286,20 +286,20 @@ def _algebra_from_native_ring(algebra, product, unit, scalar_action, *, module_b
     )
 
 
-class AlgebraHomCategoryConstruction(HomCategoryConstruction):
-    r"""The fixed-endpoint Hom categories of ``R``-algebras: linear maps preserving the multiplication.
+class AlgebraMorCategoryConstruction(MorCategoryConstruction):
+    r"""The fixed-endpoint Mor categories of ``R``-algebras: linear maps preserving the multiplication.
 
     An axiom that adds no condition on morphisms -- associativity,
-    commutativity, the Lie identities -- shares this Hom object.
+    commutativity, the Lie identities -- shares this Mor object.
     """
 
-    FixedCategoryClass = MultiplicativeAlgebraHomset
+    FixedCategoryClass = MultiplicativeAlgebraMor
 
 
-class UnitalAlgebraHomCategoryConstruction(HomCategoryConstruction):
-    r"""The fixed-endpoint Hom categories of unital ``R``-algebras: the unit is preserved too.
+class UnitalAlgebraMorCategoryConstruction(MorCategoryConstruction):
+    r"""The fixed-endpoint Mor categories of unital ``R``-algebras: the unit is preserved too.
 
-    The domain names the parent realizing this Hom.  An algebra stated by
+    The domain names the parent realizing this Mor.  An algebra stated by
     ``(M, m)`` takes the linear maps preserving product and unit; a data
     subcategory whose objects state their maps on further data -- algebra
     generators, a chosen presentation -- names its realization of the same
@@ -307,7 +307,7 @@ class UnitalAlgebraHomCategoryConstruction(HomCategoryConstruction):
     """
 
     def fixed_category_class_for(self, domain, codomain):
-        return domain._algebra_homset_class()
+        return domain._algebra_mor_class()
 
 
 # ---------------------------------------------------------------------------
@@ -711,12 +711,12 @@ class Algebras(OwnedCategoryOverBaseRing):
             return self._with_axiom("Lie")
 
     def Mor(self, domain, codomain):
-        r"""Return the unique Hom-set ``Hom_{R-Alg}(domain,codomain)``."""
+        r"""Return the unique Mor object ``Hom_{R-Alg}(domain,codomain)``."""
         if domain not in self or codomain not in self:
-            raise TypeError("an R-algebra Hom requires two R-algebras")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("an R-algebra Mor requires two R-algebras")
+        return self.MorCategory().Of(domain, codomain)
 
-    _HomCategory = AlgebraHomCategoryConstruction
+    _MorCategory = AlgebraMorCategoryConstruction
 
     def _call_(self, module, multiplication):
         r"""The algebra on ``M`` with multiplication ``m: M (x)_R M -> M``: the one entry.
@@ -967,7 +967,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return ordinary.Mor(self, codomain)
             if category.is_subcategory(algebras):
                 return algebras.Mor(self, codomain)
-            return _category_homset(category, self, codomain)
+            return _category_mor_parent(category, self, codomain)
 
         @cached_method
         def center(self):
@@ -1139,7 +1139,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _Hom_(self, codomain, category=None):
             if category is not None and not category.is_subcategory(Algebras(self.algebra_base_ring())):
-                raise TypeError("this is not an algebra homset category")
+                raise TypeError("this is not an algebra Mor category")
             ordinary = Algebras(self.algebra_base_ring()).Associative().Unital()
             if self in ordinary and codomain in ordinary:
                 return ordinary.Mor(self, codomain)
@@ -1191,7 +1191,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     OwnedRings(),
                 ]
 
-            _HomCategory = UnitalAlgebraHomCategoryConstruction
+            _MorCategory = UnitalAlgebraMorCategoryConstruction
 
             class SubcategoryMethods:
                 def FinitelyPresentedAsAlgebra(self):
@@ -1267,9 +1267,9 @@ class Algebras(OwnedCategoryOverBaseRing):
                     def number_of_algebra_generators(self):
                         return self.selected_framing_generator_count(self.algebra_framing_owner())
 
-                    def _algebra_homset_class(self):
+                    def _algebra_mor_class(self):
                         r"""A framed algebra states its morphisms on its selected generators."""
-                        return AlgebraHomset
+                        return AlgebraMor
 
                     def finite_algebra_generators(self):
                         r"""Return the selected algebra generators as a finite ordered family."""
@@ -1342,7 +1342,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             class Commutative(CategoryWithAxiom):
                 r"""Commutative associative unital ``R``-algebras."""
 
-                _HomCategory = UnitalAlgebraHomCategoryConstruction
+                _MorCategory = UnitalAlgebraMorCategoryConstruction
                 SubcategoryMethods = _CommutativeUnitalAlgebraSubcategoryMethods
                 ParentMethods = _CommutativeUnitalAlgebraParentMethods
 
@@ -1388,7 +1388,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         r"""Algebras whose bilinear multiplication is a Lie bracket: alternating and satisfying the Jacobi identity.
 
         No associativity or unit is implied: the multiplication at this node
-        is the bracket itself, so the algebra Hom already has the right
+        is the bracket itself, so the algebra Mor already has the right
         morphisms, the linear maps preserving it.
         """
 
@@ -1434,7 +1434,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         by the construction.
         """
 
-        _HomCategory = UnitalAlgebraHomCategoryConstruction
+        _MorCategory = UnitalAlgebraMorCategoryConstruction
 
         @classmethod
         def _repr_object_names(cls):
@@ -1483,9 +1483,9 @@ class Algebras(OwnedCategoryOverBaseRing):
                 r"""\(\eta\colon U_R(R)\to A\), \(r\mapsto\rho(r)(1)\)."""
                 return _unit_morphism_from_element(self, self.one(), self.algebra_base_ring())
 
-            def _algebra_homset_class(self):
+            def _algebra_mor_class(self):
                 r"""A unital algebra stated by ``(M, m)`` takes the multiplicative unit-preserving linear maps."""
-                return UnitalMultiplicativeAlgebraHomset
+                return UnitalMultiplicativeAlgebraMor
 
     class Commutative(CategoryWithAxiom):
         r"""Algebras whose multiplication is commutative."""
@@ -1671,7 +1671,7 @@ def FramedAlgebras(base_ring):
 
 
 class MatrixAlgebras(OwnedCategoryOverBaseRing):
-    r"""Finite matrix endomorphism Hom objects with their canonical algebra structure."""
+    r"""Finite matrix endomorphism Mor objects with their canonical algebra structure."""
 
     def an_object(self):
         r"""``End_R(Free_R([2]))``, the two-by-two matrix algebra."""
@@ -1696,9 +1696,9 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         ]
 
     # M_n(R) is unital, so a morphism of matrix algebras preserves the unit.
-    # The associative Hom that arrives from the endomorphism spaces below does
+    # The associative Mor that arrives from the endomorphism spaces below does
     # not ask that, and this says which of the two the category means.
-    _HomCategory = UnitalAlgebraHomCategoryConstruction
+    _MorCategory = UnitalAlgebraMorCategoryConstruction
 
     class ParentMethods:
         def __init_extra__(self) -> None:
@@ -1722,7 +1722,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
             )
 
         def algebra_base_ring(self):
-            r"""``R`` for ``End_R(F)``: the base ring of the Hom module this algebra is."""
+            r"""``R`` for ``End_R(F)``: the base ring of the Mor module this algebra is."""
             return self.base_ring()
 
         def is_commutative(self) -> bool:
@@ -1739,17 +1739,17 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
             r"""The unit of ``End_R(F)``: the identity, the unit of composition."""
             return self.identity()
 
-def _refine_matrix_algebra(homset):
-    r"""Return a square matrix Hom after requiring constructor-time algebra placement."""
+def _refine_matrix_algebra(mor):
+    r"""Return a square matrix Mor after requiring constructor-time algebra placement."""
 
-    ring = homset.base_ring()
-    if homset not in MatrixEndomorphismSpaces(ring):
-        return homset
+    ring = mor.base_ring()
+    if mor not in MatrixEndomorphismSpaces(ring):
+        return mor
     if ring not in OwnedRings().Commutative():
-        return homset
-    if homset not in MatrixAlgebras(ring):
-        raise TypeError("a finite-free endomorphism Hom over a commutative ring must be constructed in its canonical matrix-algebra category")
-    return homset
+        return mor
+    if mor not in MatrixAlgebras(ring):
+        raise TypeError("a finite-free endomorphism Mor over a commutative ring must be constructed in its canonical matrix-algebra category")
+    return mor
 
 
 class _SelectedFiniteAlgebraPresentation:
@@ -1841,8 +1841,8 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         )
 
     class ParentMethods:
-        def _algebra_homset_class(self):
-            return PresentedAlgebraHomset
+        def _algebra_mor_class(self):
+            return PresentedAlgebraMor
 
         def selected_algebra_presentation(self):
             r"""Return the one chosen polynomial-presentation datum for this algebra."""
@@ -1919,7 +1919,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 ValueError,
             ) as error:
                 raise AssertionError(
-                    "the selected algebra presentation requires a quotient-cover elimination backend"
+                    "the selected algebra presentation requires exact quotient-cover elimination"
                 ) from error
 
             if cover is presentation_engine:
@@ -1948,7 +1948,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 ValueError,
             ) as error:
                 raise AssertionError(
-                    "the selected polynomial presentation backend must eliminate the algebra variables"
+                    "the selected polynomial presentation must support elimination of the algebra variables"
                 ) from error
             return bool(scalar_kernel.is_zero())
 
@@ -2199,7 +2199,7 @@ class AlgebraMorphism(Morphism):
 
         if isinstance(images, ModuleMorphism):
             if images.domain() is not domain or images.codomain() is not codomain:
-                raise ValueError("an adopted module morphism must have the owned algebra homset's exact domain and codomain")
+                raise ValueError("an adopted module morphism must have the owned algebra Mor's exact domain and codomain")
 
             labels = domain.module_generating_set()
             size = labels.cardinality()
@@ -2297,8 +2297,8 @@ class AlgebraMorphism(Morphism):
             raise TypeError("an algebra morphism is specified on the algebra generating set")
 
         assert engine_domain in SageRings() and engine_codomain in SageRings(), (
-            "generator-defined maps at this generic algebra-Hom boundary require native Sage ring endpoints; "
-            "owned-only maps use the free or chosen-presentation Hom categories"
+            "generator-defined maps at this generic algebra-Mor boundary require native Sage ring endpoints; "
+            "owned-only maps use the free or chosen-presentation Mor categories"
         )
         self._engine_morphism = _engine_algebra_morphism_from_generator_images(
             domain,
@@ -2509,8 +2509,8 @@ class PresentedAlgebraMorphism(Morphism):
         )
 
 
-class _AlgebraHomsetCommonMethods:
-    r"""Shared equality protocol for represented algebra Hom parents."""
+class _AlgebraMorCommonMethods:
+    r"""Shared equality protocol for represented algebra Mor parents."""
 
     def _from_degree_preserving_generator_map(self, images):
         r"""Construct from a structurally degree-preserving generator map."""
@@ -2524,7 +2524,7 @@ def _corestrict_algebra_morphism_to_center(morphism):
     is verified on that family.  Scalars already land centrally because
     ``morphism`` is an algebra map, so checking the selected algebra generators
     proves that its whole image lies in ``Z(B)``.  The factor is returned in the
-    owned ring Hom category, matching the mathematical codomain ``ring_center``
+    owned ring Mor category, matching the mathematical codomain ``ring_center``
     rather than requiring that the predicate centre carry a second algebra
     presentation.
     """
@@ -2546,13 +2546,13 @@ def _corestrict_algebra_morphism_to_center(morphism):
     return domain.Mor(center)(lambda element: center(morphism(element)))
 
 
-class PresentedAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
+class PresentedAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
     Element = PresentedAlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -2562,29 +2562,29 @@ class PresentedAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
 
     @cached_method
     def identity(self):
-        r"""Return the identity of this endomorphism Hom.
+        r"""Return the identity of this endomorphism Mor.
 
         The identity of an object needs no framing: an unframed algebra such as
         the integers regarded over themselves has no algebra generating set,
-        and its identity is still the identity.  A Hom object has one identity,
+        and its identity is still the identity.  A Mor object has one identity,
         so this is cached.
         """
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism homset")
+            raise ValueError("identity is defined on an endomorphism Mor")
         domain = self.domain()
         if domain in FramedAlgebras(domain.base_ring()):
             return self(lambda label: domain.algebra_generator(label))
         engine = _engine_ring(domain)
-        return self(engine.hom(engine))
+        return self(engine.mor(engine))
 
 
-class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
+class AlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
     Element = AlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -2596,7 +2596,7 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
         r"""Construct an algebra map whose supplying construction proves the algebra laws.
 
         This protected route is for canonical maps such as the factorial
-        comparison ``Gamma(M) -> Sym(M)``.  It retains the ordinary algebra-Hom
+        comparison ``Gamma(M) -> Sym(M)``.  It retains the ordinary algebra-Mor
         parent and an actual owned set map; arbitrary user element functions do
         not enter through this route.
         """
@@ -2611,7 +2611,7 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism homset")
+            raise ValueError("identity is defined on an endomorphism Mor")
         algebra = self.domain()
         return self(algebra.module_category().Mor(algebra, algebra).identity())
 
@@ -3019,7 +3019,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
         # Keep that theorem visible to Sage's quotient-Hom verifier instead of
         # wrapping id_R as an opaque set map whose multiplicativity Sage cannot
         # certify when checking the defining relations.
-        base_map = engine_base.hom(engine_base)
+        base_map = engine_base.mor(engine_base)
     else:
         native_base_map = engine_codomain.coerce_map_from(engine_base)
         if native_base_map is not None:
@@ -3090,7 +3090,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
                 owned_generator = domain._from_engine_element(engine_generator)
                 selected_lift = domain.lift_to_presentation(owned_generator)
                 private_images.append(presentation_map(_engine_element(presentation, selected_lift)))
-            return engine_domain.hom(
+            return engine_domain.mor(
                 private_images,
                 engine_codomain,
             )
@@ -3124,7 +3124,7 @@ def _engine_morphism_from_generator_images(engine_domain, engine_codomain, image
     assert engine_domain in SageRings() and engine_codomain in SageRings(), (
         "a native engine ring morphism requires native Sage ring endpoints"
     )
-    return engine_domain.hom(
+    return engine_domain.mor(
         [engine_codomain(image) for image in images],
         engine_codomain,
         base_map=base_map,
@@ -3132,7 +3132,7 @@ def _engine_morphism_from_generator_images(engine_domain, engine_codomain, image
 
 
 __all__ = [
-    "AlgebraHomset",
+    "AlgebraMor",
     "AlgebraMorphism",
     "Algebras",
     "AlgebrasWithChosenFinitePresentation",
@@ -3141,6 +3141,6 @@ __all__ = [
     "FinitelyPresentedAlgebras",
     "FramedAlgebras",
     "MatrixAlgebras",
-    "MultiplicativeAlgebraHomset",
-    "UnitalMultiplicativeAlgebraHomset",
+    "MultiplicativeAlgebraMor",
+    "UnitalMultiplicativeAlgebraMor",
 ]

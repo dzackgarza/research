@@ -15,7 +15,7 @@ def test_isometry_to_returns_a_live_lattice_isometry_for_an_identical_lattice() 
     assert isometry == lattice.O().one()
 
 
-def test_isometry_to_returns_none_only_when_the_exact_homset_is_proved_empty() -> None:
+def test_isometry_to_returns_none_only_when_the_exact_mor_is_proved_empty() -> None:
     even = Lattices(ZZ)([[2]])
     odd = Lattices(ZZ)([[1]])
 

@@ -11,10 +11,10 @@ from sage.structure.element import parent as element_parent
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
-    CategoricalHomset,
-    HomCategoryConstruction,
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -24,8 +24,8 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
     Coverage,
     CoveringFamilies,
-    CoveringFamilyHomCategoryConstruction,
-    CoveringFamilyHomset,
+    CoveringFamilyMorCategoryConstruction,
+    CoveringFamilyMor,
     CoveringFamilyMorphism,
     DescentData,
     _CechCoveringFamilies,
@@ -533,19 +533,19 @@ class DistinguishedAffineCoverRefinement(CoveringFamilyMorphism):
         return _affine_cover_refinement_cohomology_map(self, sheaf, degree)
 
 
-class DistinguishedAffineCoverHomset(CoveringFamilyHomset):
-    r"""The refinement Hom between two distinguished affine covers."""
+class DistinguishedAffineCoverMor(CoveringFamilyMor):
+    r"""The refinement Mor between two distinguished affine covers."""
 
     Element = DistinguishedAffineCoverRefinement
 
 
-class DistinguishedAffineCoverHomCategoryConstruction(
-    CoveringFamilyHomCategoryConstruction
+class DistinguishedAffineCoverMorCategoryConstruction(
+    CoveringFamilyMorCategoryConstruction
 ):
-    r"""The Hom family of distinguished affine covers."""
+    r"""The Mor family of distinguished affine covers."""
 
     def fixed_category_class(self):
-        return DistinguishedAffineCoverHomset
+        return DistinguishedAffineCoverMor
 
 
 class ZariskiCoveringFamilies(OwnedParameterizedCategory):
@@ -657,7 +657,7 @@ class DistinguishedAffineCovers(OwnedCategory):
     for the distinguished-affine coverage of ``X``.
     """
 
-    _HomCategory = DistinguishedAffineCoverHomCategoryConstruction
+    _MorCategory = DistinguishedAffineCoverMorCategoryConstruction
 
     @staticmethod
     @cached_function(
@@ -1185,7 +1185,7 @@ class AffineQuasiCoherentSheafMorphism(Morphism):
             return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().homset_category().Mor(
+        return self.parent().mor_category().Mor(
             other.domain(),
             self.codomain(),
         )(
@@ -1194,7 +1194,7 @@ class AffineQuasiCoherentSheafMorphism(Morphism):
         )
 
 
-class AffineQuasiCoherentSheafHomset(CategoricalHomset):
+class AffineQuasiCoherentSheafMor(CategoricalMor):
     r"""``Hom_{O_X}(M~,N~)`` on affine ``X``, with sheaf endpoints."""
 
     Element = AffineQuasiCoherentSheafMorphism
@@ -1217,20 +1217,20 @@ class AffineQuasiCoherentSheafHomset(CategoricalHomset):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom")
+            raise ValueError("identity is defined only on an endomorphism Mor")
         module = self.domain().module()
         return self(module.module_category().Mor(module, module).identity())
 
 
-class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
-    r"""Choose the represented Hom realization from the sheaves' defining presentations."""
+class QuasiCoherentSheafMorCategoryConstruction(MorCategoryConstruction):
+    r"""Choose the represented Mor realization from the sheaves' defining presentations."""
 
     def fixed_category_class_for(self, domain, codomain):
         category = self.base_category()
         scheme = category.scheme()
 
         from dzack_research.preamble.categories.schemes.relative_proj import (
-            RelativeProjectivizationQuasiCoherentHomset,
+            RelativeProjectivizationQuasiCoherentMor,
             RelativeProjectivizations,
         )
 
@@ -1244,7 +1244,7 @@ class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
                     _finite_atlas_of_sheaf_placement(domain)
                     _finite_atlas_of_sheaf_placement(codomain)
                 except TypeError:
-                    return RelativeProjectivizationQuasiCoherentHomset
+                    return RelativeProjectivizationQuasiCoherentMor
             case False:
                 pass
 
@@ -1252,10 +1252,10 @@ class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
         match (domain in trivialized, codomain in trivialized):
             case (True, True):
                 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                    _ChosenTrivializationQuasiCoherentHomset,
+                    _ChosenTrivializationQuasiCoherentMor,
                 )
 
-                return _ChosenTrivializationQuasiCoherentHomset
+                return _ChosenTrivializationQuasiCoherentMor
             case _:
                 pass
 
@@ -1263,10 +1263,10 @@ class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
         match (domain in invertible, codomain in invertible):
             case (True, True):
                 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                    _PullbackLineBundleQuasiCoherentHomset,
+                    _PullbackLineBundleQuasiCoherentMor,
                 )
 
-                return _PullbackLineBundleQuasiCoherentHomset
+                return _PullbackLineBundleQuasiCoherentMor
             case _:
                 pass
 
@@ -1275,10 +1275,10 @@ class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
         affine = Schemes(scheme.scheme_base_ring()).Affine()
         match scheme in affine:
             case True:
-                return AffineQuasiCoherentSheafHomset
+                return AffineQuasiCoherentSheafMor
             case False:
                 from dzack_research.preamble.categories.schemes.gluing import (
-                    FiniteAtlasModuleSheafHomset,
+                    FiniteAtlasModuleSheafMor,
                     _finite_atlas_of_sheaf_placement,
                     _finite_atlas_quasi_coherent_sheaves,
                 )
@@ -1289,9 +1289,9 @@ class QuasiCoherentSheafHomCategoryConstruction(HomCategoryConstruction):
                     "a represented non-affine quasi-coherent source must carry its concrete sheaf placement"
                 )
                 assert codomain.category().is_subcategory(represented), (
-                    "a finite-atlas quasi-coherent Hom requires endpoints on the same represented Čech site"
+                    "a finite-atlas quasi-coherent Mor requires endpoints on the same represented Čech site"
                 )
-                return FiniteAtlasModuleSheafHomset
+                return FiniteAtlasModuleSheafMor
 
 
 class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
@@ -1325,7 +1325,7 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
     def an_object(self):
         return self.scheme().structure_sheaf()
 
-    _HomCategory = QuasiCoherentSheafHomCategoryConstruction
+    _MorCategory = QuasiCoherentSheafMorCategoryConstruction
 
     class ParentMethods:
         @cached_method
@@ -1564,22 +1564,22 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
             return _scheme_underlying_space(self)
 
 
-class LocallyRingedHomCategoryConstruction(HomCategoryConstruction):
-    r"""The Hom of locally ringed spaces, realized by the domain's presentation.
+class LocallyRingedMorCategoryConstruction(MorCategoryConstruction):
+    r"""The Mor of locally ringed spaces, realized by the domain's presentation.
 
     An affine scheme is determined by its ring, and maps out of a glued
     scheme by compatible maps out of its charts (Stacks, Tags 01I1, 01JA).
-    Those presentations choose the arrow engine, not another Hom object.
+    Those presentations choose the arrow engine, not another Mor object.
     """
 
     def fixed_category_class_for(self, domain, codomain):
-        return domain._locally_ringed_homset_class()
+        return domain._locally_ringed_mor_class()
 
 
 class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
     r"""Ringed spaces whose stalks are local rings."""
 
-    _HomCategory = LocallyRingedHomCategoryConstruction
+    _MorCategory = LocallyRingedMorCategoryConstruction
 
     def an_object(self):
         r"""The locally ringed affine scheme ``Spec(ZZ)``."""

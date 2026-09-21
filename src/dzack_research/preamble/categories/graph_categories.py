@@ -12,9 +12,9 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -147,7 +147,7 @@ class GraphMorphism(Morphism):
     __hash__ = None
 
 
-class DigraphHomset(CategoricalHomset):
+class DigraphMor(CategoricalMor):
     r"""Adjacency-preserving vertex maps between represented digraphs."""
 
     Element = GraphMorphism
@@ -177,7 +177,7 @@ class DigraphHomset(CategoricalHomset):
         )
 
 
-class LabelledDigraphHomset(DigraphHomset):
+class LabelledDigraphMor(DigraphMor):
     r"""Digraph morphisms preserving the selected vertex and edge labels."""
 
     def _verify_graph_map(self, morphism) -> None:
@@ -194,18 +194,18 @@ class LabelledDigraphHomset(DigraphHomset):
                 raise ValueError("a labelled-graph morphism must preserve edge labels")
 
 
-class DigraphHomCategoryConstruction(HomCategoryConstruction):
-    FixedCategoryClass = DigraphHomset
+class DigraphMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = DigraphMor
 
 
-class LabelledDigraphHomCategoryConstruction(HomCategoryConstruction):
-    FixedCategoryClass = LabelledDigraphHomset
+class LabelledDigraphMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = LabelledDigraphMor
 
 
 class Digraphs(OwnedCategory):
     r"""Finite directed graphs with graph homomorphisms."""
 
-    _HomCategory = DigraphHomCategoryConstruction
+    _MorCategory = DigraphMorCategoryConstruction
 
     def super_categories(self):
         return [Sets()]
@@ -238,7 +238,7 @@ class Digraphs(OwnedCategory):
 class Graphs(OwnedCategory):
     r"""Finite undirected graphs, viewed as symmetric directed graphs."""
 
-    _HomCategory = DigraphHomCategoryConstruction
+    _MorCategory = DigraphMorCategoryConstruction
 
     def super_categories(self):
         return [Digraphs()]
@@ -271,7 +271,7 @@ class Graphs(OwnedCategory):
 class LabelledDigraphs(OwnedCategory):
     r"""Finite digraphs with selected vertex and edge labels."""
 
-    _HomCategory = LabelledDigraphHomCategoryConstruction
+    _MorCategory = LabelledDigraphMorCategoryConstruction
 
     def super_categories(self):
         return [Digraphs()]
@@ -318,7 +318,7 @@ class LabelledDigraphs(OwnedCategory):
 class LabelledGraphs(OwnedCategory):
     r"""Finite undirected graphs with selected vertex and edge labels."""
 
-    _HomCategory = LabelledDigraphHomCategoryConstruction
+    _MorCategory = LabelledDigraphMorCategoryConstruction
 
     def super_categories(self):
         return [Graphs(), LabelledDigraphs()]

@@ -11,11 +11,11 @@ from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.element import parent
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-    _category_hom,
-    _category_homset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
+    _category_mor,
+    _category_mor_parent,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
@@ -27,7 +27,7 @@ class OppositeMorphism(Morphism):
 
     def __init__(
         self,
-        parent: OppositeHomset,
+        parent: OppositeMor,
         underlying_arrow: Morphism,
     ) -> None:
         Morphism.__init__(self, parent)
@@ -62,16 +62,16 @@ class OppositeMorphism(Morphism):
         )(other.underlying_arrow() * self.underlying_arrow())
 
 
-class OppositeHomset(CategoricalHomset):
+class OppositeMor(CategoricalMor):
     Element = OppositeMorphism
 
     def __init__(
         self,
-        family: HomCategoryConstruction,
+        family: MorCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self, family, domain, codomain
         )
 
@@ -87,7 +87,7 @@ class OppositeHomset(CategoricalHomset):
                     raise ValueError("the opposite morphism has the wrong endpoints")
                 underlying_arrow = underlying_arrow.underlying_arrow()
         base = self.opposite_category().base_category()
-        if underlying_arrow not in _category_hom(
+        if underlying_arrow not in _category_mor(
             base, self.codomain().underlying_object(), self.domain().underlying_object()
         ):
             raise ValueError("the reversed arrow does not belong to the base category")
@@ -95,20 +95,20 @@ class OppositeHomset(CategoricalHomset):
 
     def identity(self) -> OppositeMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom-set")
+            raise ValueError("identity is defined only on an endomorphism Mor object")
         underlying = self.domain().underlying_object()
         base = self.opposite_category().base_category()
-        return self(_category_homset(base, underlying, underlying).identity())
+        return self(_category_mor_parent(base, underlying, underlying).identity())
 
 
-class OppositeHomCategoryConstruction(HomCategoryConstruction):
-    FixedCategoryClass = OppositeHomset
+class OppositeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = OppositeMor
 
 
 class _OppositeCategory(OwnedCategory):
     r"""The opposite category ``C^op``."""
 
-    _HomCategory = OppositeHomCategoryConstruction
+    _MorCategory = OppositeMorCategoryConstruction
 
     def an_object(self) -> Parent:
         r"""An object of the base category, read in the opposite."""
@@ -151,10 +151,10 @@ class _OppositeCategory(OwnedCategory):
 
     __call__ = object
 
-    def Mor(self, domain: Parent, codomain: Parent) -> OppositeHomset:
+    def Mor(self, domain: Parent, codomain: Parent) -> OppositeMor:
         if domain not in self or codomain not in self:
-            raise TypeError("an opposite Hom requires two opposite objects")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("an opposite Mor requires two opposite objects")
+        return self.MorCategory().Of(domain, codomain)
 
 
     def identity(self, obj: Parent) -> OppositeMorphism:
@@ -173,7 +173,7 @@ class ProductMorphism(Morphism):
 
     def __init__(
         self,
-        parent: ProductHomset,
+        parent: ProductMor,
         first: Morphism,
         second: Morphism,
     ) -> None:
@@ -216,16 +216,16 @@ class ProductMorphism(Morphism):
         )(self.first() * other.first(), self.second() * other.second())
 
 
-class ProductHomset(CategoricalHomset):
+class ProductMor(CategoricalMor):
     Element = ProductMorphism
 
     def __init__(
         self,
-        family: HomCategoryConstruction,
+        family: MorCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self, family, domain, codomain
         )
 
@@ -243,32 +243,32 @@ class ProductHomset(CategoricalHomset):
         if second is None:
             first, second = first
         product = self.product_category()
-        if first not in _category_hom(product.first_category(), self.domain().first(), self.codomain().first()):
+        if first not in _category_mor(product.first_category(), self.domain().first(), self.codomain().first()):
             raise ValueError("the first map is not a morphism of the first category")
-        if second not in _category_hom(product.second_category(), self.domain().second(), self.codomain().second()):
+        if second not in _category_mor(product.second_category(), self.domain().second(), self.codomain().second()):
             raise ValueError("the second map is not a morphism of the second category")
         return ProductMorphism(self, first, second)
 
     def identity(self) -> ProductMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Hom-set")
+            raise ValueError("identity is defined only on an endomorphism Mor object")
         first = self.domain().first()
         second = self.domain().second()
         product = self.product_category()
         return self(
-            _category_homset(product.first_category(), first, first).identity(),
-            _category_homset(product.second_category(), second, second).identity(),
+            _category_mor_parent(product.first_category(), first, first).identity(),
+            _category_mor_parent(product.second_category(), second, second).identity(),
         )
 
 
-class ProductHomCategoryConstruction(HomCategoryConstruction):
-    FixedCategoryClass = ProductHomset
+class ProductMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = ProductMor
 
 
 class _ProductCategory(OwnedCategory):
     r"""The categorical product ``C x D``.
 
-    Unverified specimens use nonidentity component maps and check both Hom
+    Unverified specimens use nonidentity component maps and check both Mor
     ownership and the reversed composition in an opposite category::
 
         sage: from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -278,20 +278,20 @@ class _ProductCategory(OwnedCategory):
         sage: collapse = Sets().Mor(points, points)(lambda point: "a")
         sage: category = Cat().product((Sets(), Sets()))
         sage: obj = category(points, points)
-        sage: hom = category.Mor(obj, obj)
-        sage: hom is category.HomCategory().Of(obj, obj)
+        sage: Mor = category.Mor(obj, obj)
+        sage: Mor is category.MorCategory().Of(obj, obj)
         True
-        sage: arrow = hom(swap, swap)
-        sage: arrow * arrow == hom.identity()
+        sage: arrow = Mor(swap, swap)
+        sage: arrow * arrow == Mor.identity()
         True
         sage: opposite = Sets().opposite()
         sage: obj = opposite(points)
-        sage: hom = opposite.Mor(obj, obj)
-        sage: hom is opposite.HomCategory().Of(obj, obj)
+        sage: Mor = opposite.Mor(obj, obj)
+        sage: Mor is opposite.MorCategory().Of(obj, obj)
         True
-        sage: (hom(swap) * hom(collapse)).underlying_arrow()("a")
+        sage: (Mor(swap) * Mor(collapse)).underlying_arrow()("a")
         'a'
-        sage: (hom(collapse) * hom(swap)).underlying_arrow()("a")
+        sage: (Mor(collapse) * Mor(swap)).underlying_arrow()("a")
         'b'
 
     Unverified specimens: equal endpoints alone do not admit an arrow of a
@@ -316,7 +316,7 @@ class _ProductCategory(OwnedCategory):
         ValueError: the reversed arrow does not belong to the base category
     """
 
-    _HomCategory = ProductHomCategoryConstruction
+    _MorCategory = ProductMorCategoryConstruction
 
     def an_object(self) -> Parent:
         r"""The pair of witnesses of the two factors."""
@@ -379,10 +379,10 @@ class _ProductCategory(OwnedCategory):
 
     __call__ = pair
 
-    def Mor(self, domain: Parent, codomain: Parent) -> ProductHomset:
+    def Mor(self, domain: Parent, codomain: Parent) -> ProductMor:
         if domain not in self or codomain not in self:
-            raise TypeError("a product Hom requires two product-category objects")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("a product Mor requires two product-category objects")
+        return self.MorCategory().Of(domain, codomain)
 
 
     def identity(self, obj: Parent) -> ProductMorphism:
@@ -393,8 +393,8 @@ class _ProductCategory(OwnedCategory):
 
 
 __all__ = [
-    "OppositeHomset",
+    "OppositeMor",
     "OppositeMorphism",
-    "ProductHomset",
+    "ProductMor",
     "ProductMorphism",
 ]
