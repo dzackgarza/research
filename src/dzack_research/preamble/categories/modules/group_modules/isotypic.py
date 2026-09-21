@@ -191,7 +191,7 @@ def _central_projector(module, character: IsotypicCharacter):
                 _engine_element(backend_coefficient.parent(), backend_coefficient)
             )
         ) / order
-        source = module.action_of(group_element).matrix()
+        source = module.action_of(group_element)
         transported = matrices.from_rows(
             [
                 [
@@ -245,8 +245,11 @@ def _isotypic_component(module, character):
     if _engine_ring(base_ring) is SageZZ:
         integers = base_ring
         denominator = integers.one()
-        for entry in relation.list():
-            denominator = denominator.lcm(entry.denominator())
+        for row_label in relation.parent().row_index_set():
+            for column_label in relation.parent().column_index_set():
+                denominator = denominator.lcm(
+                    relation[row_label, column_label].denominator()
+                )
         cleared = denominator * relation
 
         relation = integers.matrix_space(int(coefficient_module.module_rank())).from_rows(

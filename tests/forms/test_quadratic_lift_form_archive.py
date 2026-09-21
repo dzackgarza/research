@@ -22,7 +22,11 @@ def test_coordinate_quadratic_form_retains_its_bilinear_lift_as_a_form() -> None
 
 def test_callable_quadratic_form_does_not_fabricate_a_chosen_lift() -> None:
     module = ZZ.regular_module()
-    quadratic = module.quadratic_map(ZZ, lambda element: element.to_tuple()[0] ** 2)
+    label = module.module_generating_set()[0]
+    quadratic = module.quadratic_map(
+        ZZ,
+        lambda element: module.framing_coefficients(element).get(label, ZZ.zero()) ** 2,
+    )
 
     with pytest.raises(TypeError, match="no chosen bilinear lift"):
         quadratic.lift_form()

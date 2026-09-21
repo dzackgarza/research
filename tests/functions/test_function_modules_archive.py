@@ -101,7 +101,12 @@ def test_archived_finite_formed_module_still_has_a_gram_matrix() -> None:
     from dzack_research.preamble.all import ZZ, Lattices
 
     root_lattice = Lattices(ZZ)("A2")
-    assert root_lattice.gram_matrix().list() == [-2, 1, 1, -2]
+    gram = root_lattice.gram_matrix()
+    assert tuple(
+        gram[row, column]
+        for row in range(2)
+        for column in range(2)
+    ) == (-2, 1, 1, -2)
 
 
 def test_function_algebra_retains_root_multiplication_and_scalar_structure() -> None:

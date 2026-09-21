@@ -5,6 +5,24 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import _torsion_form_isometry
 
 
+def _module_matrix(morphism):
+    r"""Forget a structured map to its finite-free module Hom."""
+    return morphism.domain().module_category().Mor(
+        morphism.domain(), morphism.codomain()
+    )(morphism)
+
+
+def _rank_one_coefficient(element):
+    r"""Return the coefficient in a selected rank-one framing."""
+    parent = element.parent()
+    labels = tuple(parent.module_generating_set())
+    if len(labels) != 1:
+        raise ValueError("rank-one coefficient extraction requires one framing generator")
+    return parent.framing_coefficients(element).get(
+        labels[0], parent.base_ring().zero()
+    )
+
+
 class VectorPrimitiveExtension:
     r"""Nikulin's primitive extension cut out by one anisotropic primitive vector.
 
@@ -93,7 +111,7 @@ class VectorPrimitiveExtension:
             raise ArithmeticError("L/M is not isotropic for the discriminant quadratic form of M")
 
         discriminant_form = lattice.discriminant_group()
-        dual_restriction = inclusion.matrix().transpose()
+        dual_restriction = _module_matrix(inclusion).transpose()
         lattice_rank = int(lattice.module_rank())
         discriminant_representatives = []
         for position in range(lattice_rank):
@@ -231,15 +249,15 @@ def _definite_complement_extensions(lattice, left, right):
     ring = lattice.base_ring()
     rationals = ring.fraction_field()
 
-    source_inclusion = source.inclusion.matrix().change_ring(rationals)
-    target_inclusion = target.inclusion.matrix().change_ring(rationals)
+    source_inclusion = _module_matrix(source.inclusion).change_ring(rationals)
+    target_inclusion = _module_matrix(target.inclusion).change_ring(rationals)
     source_inverse = source_inclusion.inverse()
     ambient_generators = lattice.module_generators()
     source_line_vector = source.line.inclusion().lift(source.vector)
     target_line_vector = target.line.inclusion().lift(target.vector)
     target_line_generator = target_line.module_generators()[0]
-    source_coefficient = source_line_vector.to_tuple()[0]
-    target_coefficient = target_line_vector.to_tuple()[0]
+    source_coefficient = _rank_one_coefficient(source_line_vector)
+    target_coefficient = _rank_one_coefficient(target_line_vector)
     if source_coefficient not in (ring.one(), -ring.one()) or target_coefficient not in (ring.one(), -ring.one()):
         raise ArithmeticError("a primitive rank-one line vector must be a signed selected generator")
     line_isometry = source_line.Isom(target_line)(
@@ -251,13 +269,13 @@ def _definite_complement_extensions(lattice, left, right):
     )
     if line_isometry(source_line_vector) != target_line_vector:
         raise ArithmeticError("the rank-one block does not carry the source vector to the target vector")
-    line_matrix = line_isometry.matrix().change_ring(rationals)
+    line_matrix = _module_matrix(line_isometry).change_ring(rationals)
     extensions = []
     for restriction in _isometries_between_definite_lattices(
         source_complement,
         target_complement,
     ):
-        restriction_matrix = restriction.matrix().change_ring(rationals)
+        restriction_matrix = _module_matrix(restriction).change_ring(rationals)
         block = rationals.matrix_space(source_rank).from_rows(
             (
                 line_matrix[0, 0]
@@ -304,8 +322,8 @@ def _line_isometry(source, target):
     target_line = target.line.inclusion().domain()
     source_vector = source.line.inclusion().lift(source.vector)
     target_vector = target.line.inclusion().lift(target.vector)
-    source_coefficient = source_vector.to_tuple()[0]
-    target_coefficient = target_vector.to_tuple()[0]
+    source_coefficient = _rank_one_coefficient(source_vector)
+    target_coefficient = _rank_one_coefficient(target_vector)
     target_generator = target_line.module_generators()[0]
     if source_coefficient not in (1, -1) or target_coefficient not in (1, -1):
         raise ArithmeticError("primitive rank-one line vectors must be signed selected generators")

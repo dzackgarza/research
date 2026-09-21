@@ -12,7 +12,7 @@ def test_archive_unimodular_gram_raises_to_identity_and_lowers_back() -> None:
     identity = gram.raise_index(plane, 0)
 
     assert identity.tensor_valence() == (1, 1)
-    assert identity.components() == [[1, 0], [0, 1]]
+    assert identity == tensor(ZZ, (2,), (2,), [[1, 0], [0, 1]])
     assert identity.lower_index(plane, 0) == gram
 
 
@@ -40,7 +40,7 @@ def test_archive_nondegenerate_form_raises_after_fraction_field_base_change() ->
 
     assert raised.base_ring() is rationalized.base_ring()
     assert raised.tensor_valence() == (1, 1)
-    assert raised.components() == [[1, 0], [0, 1]]
+    assert raised == tensor(raised.base_ring(), (2,), (2,), [[1, 0], [0, 1]])
     assert rationalized.lower_index(raised, 0) == rationalized.gram_tensor()
 
 

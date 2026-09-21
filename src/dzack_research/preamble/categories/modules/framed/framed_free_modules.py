@@ -500,11 +500,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     codomain_is_zero = False
                 if codomain_is_zero:
                     return self.whole_subobject()
-                try:
-                    coordinate_matrix = morphism.matrix()
-                    coordinate_generators = coordinate_matrix._kernel_spanning_family()
-                except (AttributeError, NotImplementedError):
+                coordinate_matrix = self.module_category().Mor(
+                    self, morphism.codomain()
+                )(morphism)
+                from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+                if coordinate_matrix.parent() not in MatrixSpaces(self.base_ring()):
                     return NotImplemented
+                coordinate_generators = coordinate_matrix._kernel_spanning_family()
 
                 source_labels = tuple(self.module_generating_set())
                 coordinate_domain = coordinate_matrix.domain()

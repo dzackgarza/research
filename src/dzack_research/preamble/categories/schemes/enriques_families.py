@@ -149,7 +149,11 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
         return self.primitive_extension().index()
 
     def h2_trace(self):
-        return self.enriques_involution_on_h2().matrix().trace()
+        involution = self.enriques_involution_on_h2()
+        linear = involution.domain().module_category().Mor(
+            involution.domain(), involution.codomain()
+        )(involution)
+        return linear.trace()
 
     def topological_lefschetz_number(self):
         # H^0 and H^4 each contribute +1; H^1 and H^3 vanish for K3.

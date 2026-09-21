@@ -408,7 +408,7 @@ def _close_vectors(lattice, target, square_bound):
         signed_square = rationals._from_engine_element(
             SageQQ(_engine_element(ring, sign)) * positive_square
         )
-        candidates[tuple(vector.to_tuple())] = (vector, signed_square)
+        candidates[_coordinate_tuple(lattice, vector)] = (vector, signed_square)
 
     vectors = finite_ordered_set(
         tuple(vector for vector, _square in candidates.values())
@@ -418,7 +418,7 @@ def _close_vectors(lattice, target, square_bound):
     }
     return finite_indexed_family(
         vectors,
-        lambda vector: by_coordinates[tuple(vector.to_tuple())],
+        lambda vector: by_coordinates[_coordinate_tuple(lattice, vector)],
         name=f"Vectors of {lattice} close to {point}",
     )
 
@@ -492,7 +492,7 @@ def _voronoi_region(lattice, bound=None):
                 square = covector * signed
                 owned_entries = [
                     square / rationals(2),
-                    *(-entry for entry in covector.components()),
+                    *(-covector[index] for index in range(int(covector.tensor_shape()[0]))),
                 ]
                 inequalities.append(
                     [_engine_element(rationals, entry) for entry in owned_entries]

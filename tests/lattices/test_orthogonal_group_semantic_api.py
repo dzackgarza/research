@@ -13,7 +13,7 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_orthogonal_group_owns_acted_lattice_generators_and_matrix_elements() -> None:
+def test_orthogonal_group_owns_acted_lattice_and_live_isometries() -> None:
     lattice = Lattices(ZZ)("A1")
     group = lattice.O()
     identity = group.one()
@@ -21,7 +21,8 @@ def test_orthogonal_group_owns_acted_lattice_generators_and_matrix_elements() ->
     assert group.ambient_lattice() is lattice
     assert group.group_generators().cardinality() >= 1
     assert group.contains(identity)
-    assert group.element(identity.matrix()) == identity
+    generator = lattice.module_generators()[0]
+    assert identity(generator) == generator
 
 
 def test_discriminant_and_stable_group_vocabulary_uses_the_existing_representation() -> None:

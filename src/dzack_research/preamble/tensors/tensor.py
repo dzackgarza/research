@@ -346,8 +346,8 @@ class Tensor:
         r"""Return the two variance-indexed generating-set families as an object of ``Objects x Objects``."""
         return self.tensor_space().tensor_indices()
 
-    def components(self):
-        r"""Return the finite rectangular component array of this tensor."""
+    def _component_array(self):
+        r"""Private finite rectangular component array for tensor-owner computations."""
         shape = self._index_ranks()
         if Infinity in shape:
             raise ValueError("an infinite tensor has no finite component array")
@@ -359,17 +359,17 @@ class Tensor:
         )
         return _nested(entries, shape)
 
-    def list(self):
-        r"""Return flattened finite components in tensor-index order."""
+    def _flat_components(self):
+        r"""Private flattened finite components in tensor-index order."""
         shape = self._index_ranks()
         if Infinity in shape:
             raise ValueError("an infinite tensor has no finite component list")
         from itertools import product as cartesian_product
 
-        return [
+        return tuple(
             self[position]
             for position in cartesian_product(*(range(rank) for rank in shape))
-        ]
+        )
 
     def _tensor_hash(self) -> int:
         r"""Hash the data equality compares: variance, ranks, components.
@@ -382,7 +382,7 @@ class Tensor:
         if Infinity in self._index_ranks():
             return object.__hash__(self)
         return hash(
-            (self.tensor_valence(), self._index_ranks(), tuple(self.list()))
+            (self.tensor_valence(), self._index_ranks(), tuple(self._flat_components()))
         )
 
     def __eq__(self, other) -> bool:
@@ -405,7 +405,7 @@ class Tensor:
             return self is other
         return all(
             left == right
-            for left, right in zip(self.list(), other.list(), strict=True)
+            for left, right in zip(self._flat_components(), other._flat_components(), strict=True)
         )
 
     def __ne__(self, other) -> bool:
@@ -426,7 +426,7 @@ class Tensor:
             ring,
             self._upper_index_ranks(),
             self._lower_index_ranks(),
-            self.components(),
+            self._component_array(),
         )
 
     def is_symmetric(self) -> bool:
@@ -797,9 +797,8 @@ class Tensor:
 
         For ``f: V -> W`` and ``T`` of type ``(0,q)`` on ``W``, return
         ``f^*T`` on ``V``.  The public datum is the morphism.  Finite coordinate
-        matrices are only an implementation of this transport: the morphism's
-        own ``matrix()`` states and asserts that its endpoints are finitely
-        generated framed free modules.
+        matrices are only an implementation of this transport: the endpoint
+        module Hom must itself be the finite framed-free matrix Hom.
         """
         if self._upper_index_ranks():
             raise TypeError("pullback is defined here for a covariant tensor")
@@ -808,7 +807,9 @@ class Tensor:
                 "tensor pullback requires an owned linear morphism with finite framed-free "
                 "endpoints; a tensor is component data, not a map"
             )
-        matrix = morphism.matrix()
+        matrix = morphism.domain().module_category().Mor(
+            morphism.domain(), morphism.codomain()
+        )(morphism)
 
         if matrix.parent() not in MatrixSpaces(self.base_ring()):
             raise TypeError("tensor pullback requires one coefficient ring")
@@ -902,7 +903,7 @@ def _engine_component_vector(value):
     ring = value.base_ring()
     return _sage_vector(
         _engine_ring(ring),
-        [_engine_element(ring, entry) for entry in value.list()],
+        [_engine_element(ring, entry) for entry in value._flat_components()],
     )
 
 
@@ -960,7 +961,7 @@ class _TensorCovectorConstructor:
             contravariant.base_ring(),
             (),
             contravariant._upper_index_ranks(),
-            contravariant.list(),
+            contravariant._flat_components(),
         )
 
 
@@ -996,7 +997,7 @@ class _TensorMatrixConstructor:
                     base,
                     (contravariant_rank,),
                     (covariant_rank,),
-                    components.components(),
+                    components._component_array(),
                 )
             shape = _component_shape(components)
             if len(shape) != 2:
@@ -1133,7 +1134,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
     def _latex_(self) -> str:
         if len(self._index_ranks()) == 2:
             return str(latex(_engine_component_matrix(self)))
-        return str(latex(self.components()))
+        return str(latex(self._component_array()))
 
     def _repr_(self) -> str:
         p, q = self.tensor_type()
@@ -1141,13 +1142,13 @@ class _CoordinateTensor(ModuleElement, Tensor):
         body = _coordinate_component_repr(self)
         return f"Type ({p}, {q}) tensor in {space}\n{body}"
 
-    def components(self):
-        r"""Return the rectangular nested component array."""
+    def _component_array(self):
+        r"""Private rectangular component array for tensor-owner computations."""
         return _nested(self._entries, self._index_ranks())
 
-    def list(self):
-        r"""Return flattened components in index order."""
-        return list(self._entries)
+    def _flat_components(self):
+        r"""Private flattened components in index order."""
+        return tuple(self._entries)
 
     def __getitem__(self, index):
         r"""Return the component at a position, one integer per slot.
@@ -1339,7 +1340,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 self.base_ring(),
                 self._upper_index_ranks(),
                 self._lower_index_ranks(),
-                self.components(),
+                self._component_array(),
             ),
         )
 
@@ -1352,7 +1353,7 @@ def _coordinate_component_repr(tensor_value) -> str:
         case 2:
             return repr(_engine_component_matrix(tensor_value))
         case _:
-            return repr(tensor_value.components())
+            return repr(tensor_value._component_array())
 
 
 def _normalized_rank(rank):
@@ -1791,16 +1792,22 @@ class _TensorConstructor:
             ring,
             (parent.nrows(),),
             (parent.ncols(),),
-            matrix.list(),
+            tuple(
+                matrix[row_label, column_label]
+                for row_label in parent.row_index_set()
+                for column_label in parent.column_index_set()
+            ),
         )
 
     def from_morphism(self, morphism):
         r"""Interpret a finite framed-free module morphism as a type-``(1,1)`` tensor.
 
-        The morphism's own ``matrix()`` states and asserts that its endpoints
-        are finitely generated framed free modules.
+        The ordinary module Hom of the endpoints must itself be a matrix Hom.
         """
-        return self.from_matrix(morphism.matrix())
+        matrix = morphism.domain().module_category().Mor(
+            morphism.domain(), morphism.codomain()
+        )(morphism)
+        return self.from_matrix(matrix)
 
     def __call__(
         self,

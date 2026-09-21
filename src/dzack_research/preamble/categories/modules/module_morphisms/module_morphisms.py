@@ -770,40 +770,6 @@ class ModuleMorphism(Morphism):
         coefficients = self.domain().framing_coefficients(element)
         return self._linear_combination_of_generator_images(coefficients)
 
-    def matrix(self):
-        r"""Return the canonical coordinate matrix of this finite free map.
-
-        Coordinates live in the canonical matrix Hom
-        ``Hom_R(F_R([n]), F_R([m]))``.  A map whose endpoints already are
-        those canonical free modules is literally that matrix element; an
-        arbitrary framed map is transported only at this coordinate-view
-        boundary.
-        """
-
-        self._require_established_linearity("a coordinate matrix")
-        assert _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()), (
-            "a coordinate matrix requires finitely generated framed free endpoints"
-        )
-        domain_labels = tuple(self.domain().module_generating_set())
-        codomain_labels = tuple(self.codomain().module_generating_set())
-        coordinate_parent = self.domain().base_ring().matrix_space(len(codomain_labels), len(domain_labels))
-        if self.parent() is coordinate_parent:
-            return self
-        columns = {
-            domain_label: self.codomain().framing_coefficients(self(self.domain().module_generator(domain_label)))
-            for domain_label in domain_labels
-        }
-        zero = self.codomain().base_ring().zero()
-        return coordinate_parent.from_rows(
-            tuple(
-                tuple(
-                    columns[domain_label].get(codomain_label, zero)
-                    for domain_label in domain_labels
-                )
-                for codomain_label in codomain_labels
-            )
-        )
-
     def alternating_extension(self):
         r"""Extend this linear map through the exterior-algebra universal property."""
         from dzack_research.preamble.categories.algebras.power_algebras import (
@@ -1162,8 +1128,11 @@ class ModuleMorphism(Morphism):
         codomain_labels = tuple(self.codomain().module_generating_set())
         coefficients = self.codomain().framing_coefficients(element)
         target = [coefficients[label] if label in coefficients else self.codomain().base_ring().zero() for label in codomain_labels]
+        coordinate_map = self.domain().module_category().Mor(
+            self.domain(), self.codomain()
+        )(self)
         solution = _solve_left_integrally(
-            self.matrix().transpose(),
+            coordinate_map.transpose(),
             target,
             ring,
         )
@@ -2532,11 +2501,17 @@ class ModuleAutomorphism(CategoricalIsomorphism):
     def as_morphism(self):
         return self.forward()
 
-    def matrix(self):
-        return self.forward().matrix()
-
     def order(self):
-        return self.matrix().multiplicative_order()
+        forward = self.forward()
+        linear = forward.domain().module_category().Mor(
+            forward.domain(), forward.codomain()
+        )(forward)
+        from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+        assert linear.parent() in MatrixSpaces(linear.parent().base_ring()), (
+            "represented automorphism order currently requires a finite framed-free module"
+        )
+        return linear.multiplicative_order()
 
     def __eq__(self, other):
         if self is other:

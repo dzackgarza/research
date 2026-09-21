@@ -14,17 +14,31 @@ from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor
 
 
-def test_lattice_element_to_vector_is_the_preamble_vector_tensor() -> None:
-    lattice = Lattices(ZZ)(ZZ**2)
-    coordinates = lattice.basis_vector(0).to_vector()
-    expected = tensor.vector(ZZ, [1, 0])
+def _framing_vector(lattice, element):
+    coefficients = lattice.framing_coefficients(element)
+    zero = lattice.base_ring().zero()
+    return tensor.vector(
+        lattice.base_ring(),
+        [
+            coefficients.get(label, zero)
+            for label in lattice.module_generating_set()
+        ],
+    )
 
+
+def test_lattice_framing_coordinates_feed_an_owned_vector_tensor() -> None:
+    lattice = Lattices(ZZ)(ZZ**2)
+    element = lattice.basis_vector(0)
+    coefficients = lattice.framing_coefficients(element)
+    coordinates = _framing_vector(lattice, element)
+
+    assert coefficients == {lattice.module_generating_set()[0]: ZZ.one()}
     assert Tensor in coordinates.__class__.__mro__
     assert coordinates.tensor_valence() == (NN**2)((1, 0))
     _shape = coordinates.tensor_shape()
     assert _shape.cardinality() == 1
     assert _shape[0] == 2
-    assert coordinates == expected
+    assert coordinates == tensor.vector(ZZ, [1, 0])
 
 
 def test_lattice_pairing_is_exactly_gram_tensor_contraction() -> None:
@@ -33,7 +47,7 @@ def test_lattice_pairing_is_exactly_gram_tensor_contraction() -> None:
     left = 2 * e + 3 * f
     right = -e + 4 * f
 
-    expected = lattice.gram_tensor().contract(left.to_vector(), right.to_vector())
+    expected = lattice.gram_tensor().contract(_framing_vector(lattice, left), _framing_vector(lattice, right))
     assert lattice.b(left, right) == expected
     assert left.b(right) == expected
 
@@ -41,13 +55,13 @@ def test_lattice_pairing_is_exactly_gram_tensor_contraction() -> None:
 def test_gram_tensor_contracts_a_lattice_vector_to_its_dual_covector() -> None:
     lattice = Lattices(ZZ)("U")
     e, f = lattice.module_generators()
-    vector_value = (2 * e + 3 * f).to_vector()
+    vector_value = _framing_vector(lattice, 2 * e + 3 * f)
     covector = lattice.gram_tensor() * vector_value
 
     assert covector.tensor_valence() == (NN**2)((0, 1))
     assert covector == tensor.covector(ZZ, [3, 2])
-    assert covector * e.to_vector() == lattice.b(e, 2 * e + 3 * f)
-    assert covector * f.to_vector() == lattice.b(f, 2 * e + 3 * f)
+    assert covector * _framing_vector(lattice, e) == lattice.b(e, 2 * e + 3 * f)
+    assert covector * _framing_vector(lattice, f) == lattice.b(f, 2 * e + 3 * f)
 
 
 def test_a_lattice_is_free_on_formal_symbols_in_sr_by_default() -> None:

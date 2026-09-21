@@ -200,7 +200,11 @@ class LatticeIsoCategoryConstruction(IsoCategoryConstruction):
 
 
 def _gram_key(gram):
-    return tuple(tuple(row) for row in gram.components())
+    rank = int(gram.tensor_shape()[0])
+    return tuple(
+        tuple(gram[row, column] for column in range(rank))
+        for row in range(rank)
+    )
 
 
 def _register_indecomposable_gram(name, gram):
@@ -221,7 +225,12 @@ def _indecomposable_name(lattice):
     exact = _INDECOMPOSABLE_NAMES.get(_gram_key(gram))
     if exact is not None:
         return exact
-    content = gcd(gram.list())
+    rank = int(gram.tensor_shape()[0])
+    content = gcd(
+        gram[row, column]
+        for row in range(rank)
+        for column in range(rank)
+    )
     for scale in (content, -content):
         if scale in (0, 1, -1):
             continue
@@ -645,8 +654,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: e = I2.basis_vector(0)
             sage: e
             e_0
-            sage: e.to_tuple()
-            (1, 0)
+            sage: I2.framing_coefficients(e)
+            {e_0: 1}
             sage: e*e, e.b(I2.basis_vector(1))
             (1, 0)
             sage: I2((1, 0))
@@ -1430,7 +1439,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert self.module_rank().is_finite(), (
                 "the default Gram matrix requires finite rank; use gram_tensor() for an infinite form or pass a finite list of vectors"
             )
-            return self.algebraic_correlation_morphism().matrix()
+            correlation = self.algebraic_correlation_morphism()
+            linear = correlation.domain().module_category().Mor(
+                correlation.domain(), correlation.codomain()
+            )(correlation)
+            return linear.matrix()
 
         def basis_vector(self, position):
             r"""Return the selected lattice basis vector at integer ``position``.
@@ -1661,14 +1674,21 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             fraction_field = ring.fraction_field()
             dual_tensor = self.gram_tensor().change_ring(fraction_field).dual_tensor()
-            inverse_components = dual_tensor.components()
-            match all(entry in ring for row in inverse_components for entry in row):
+            rank = int(self.module_rank())
+            match all(
+                dual_tensor[row, column] in ring
+                for row in range(rank)
+                for column in range(rank)
+            ):
                 case True:
                     integral_dual_form = tensor(
                         ring,
                         (),
-                        (int(self.module_rank()), int(self.module_rank())),
-                        [[ring(entry) for entry in row] for row in inverse_components],
+                        (rank, rank),
+                        [
+                            [ring(dual_tensor[row, column]) for column in range(rank)]
+                            for row in range(rank)
+                        ],
                     )
                     return Lattices(ring)(
                         integral_dual_form,
@@ -2082,7 +2102,13 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             graph = {}
             for ambient_generator in self.module_generators():
-                ambient_covector = ambient_gram * ambient_generator.to_vector()
+                coefficients = self.framing_coefficients(ambient_generator)
+                labels = tuple(self.module_generating_set())
+                ambient_vector = tensor.vector(
+                    ring,
+                    [coefficients.get(label, ring.zero()) for label in labels],
+                )
+                ambient_covector = ambient_gram * ambient_vector
                 first_covector = ambient_covector * first_inclusion
                 second_covector = ambient_covector * second_inclusion
                 first_class = first_discriminant.linear_combination(
@@ -3139,33 +3165,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 for coefficient in parent.generator_pairings(self).values()
             )
 
-        def to_list(self):
-            r"""Return the coordinates of this element as a Python list."""
-            parent = self.parent()
-            coefficients = self.monomial_coefficients()
-            keys = parent.module_generating_set()
-            zero = parent.base_ring().zero()
-            match parent.module_rank().is_finite():
-                case True:
-                    return [coefficients.get(key, zero) for key in keys]
-            last = max((int(keys.ranking_map()(key)) for key in coefficients), default=-1)
-            return [coefficients.get(keys[index], zero) for index in range(last + 1)]
-
-        def to_tuple(self):
-            r"""Return the coordinates of this element as a Python tuple."""
-            return tuple(self.to_list())
-
-        def to_vector(self):
-            r"""Return the coordinates of this element as a vector tensor of type $(1,0)$.
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)(ZZ^2).basis_vector(0).to_vector()
-                (1, 0)
-            """
-
-            return tensor.vector(self.parent().base_ring(), self.to_list())
 
 
 class BiproductLattices(OwnedCategoryOverBaseRing):

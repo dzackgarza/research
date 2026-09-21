@@ -84,8 +84,10 @@ def _gram_rows(gram, rank):
                 for row in range(parent.nrows())
             )
         else:
+            shape = gram.tensor_shape()
             rows = tuple(
-                tuple(row) for row in gram.components()
+                tuple(gram[row, column] for column in range(int(shape[1])))
+                for row in range(int(shape[0]))
             )
     else:
         rows = tuple(tuple(row) for row in gram)
@@ -311,7 +313,11 @@ def _relations_among_generators(form, generators):
     relations = (
         combined.codomain().left_projection() * kernel.inclusion()
     ).image()
-    return relations.inclusion().matrix().transpose()
+    inclusion = relations.inclusion()
+    linear_inclusion = inclusion.domain().module_category().Mor(
+        inclusion.domain(), inclusion.codomain()
+    )(inclusion)
+    return linear_inclusion.transpose()
 
 
 def _quadratic_gram_on(form, generators):

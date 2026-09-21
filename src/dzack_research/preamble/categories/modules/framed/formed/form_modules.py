@@ -2128,7 +2128,13 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             def scale_submodule(self):
                 assert self.value_module() is self.base_ring()
 
-                return _engine_ring(self.base_ring()).ideal(self.gram_tensor().list())
+                gram = self.gram_tensor()
+                rank = int(self.module_rank())
+                return _engine_ring(self.base_ring()).ideal(
+                    gram[row, column]
+                    for row in range(rank)
+                    for column in range(rank)
+                )
 
 
 def _form_module(

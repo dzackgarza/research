@@ -4991,7 +4991,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `API-02`: Coordinates Are Framing Data; Coordinate Objects Keep Their Mathematical Type
 
-- **Rule**: Coordinates of an element are exposed through the chosen framing as the owned `module_coefficients` map.
+- **Rule**: Coordinates of an element are exposed through the chosen framing as the owning module's `framing_coefficients(element)` map.
   When an algorithm genuinely requires an ordered coordinate array, use the owned object whose mathematics describes that array.
   A coordinate vector may be a typed tensor when only variance/index data is intended.  A matrix of a linear map between finitely generated framed free modules is the corresponding Hom element
   `Hom_R(F_R(S), F_R(T))`, framed by the matrix units indexed by `T × S`; it is not replaced by a tensor or backend matrix.
@@ -5003,7 +5003,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: `M.coordinate_vector(x)` returning `M_engine.V().coordinate_vector(...)`; representing `Hom_R(R^n,R^m)` by `tensor.matrix(...)`; passing a raw Sage matrix downstream to reconstruct a morphism later.
 
-- **Correct Example**: Use `module_coefficients(x, M)` for the finite support of an element.  Use a typed tensor for a genuine tensor coordinate array.  For finite framed free modules, `MatrixSpace(R,m,n)` is literally `Hom_R(F_R([n]),F_R([m]))`, and a matrix element is that module morphism itself.
+- **Correct Example**: Use `M.framing_coefficients(x)` for the finite support of an element.  Use a typed tensor for a genuine tensor coordinate array.  For finite framed free modules, `MatrixSpace(R,m,n)` is literally `Hom_R(F_R([n]),F_R([m]))`, and a matrix element is that module morphism itself.
 
 #### `API-06`: The Session Namespace and Literal Constructors Are Owned
 
@@ -5046,7 +5046,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: A lattice element prints as `[1, 2]`; a quotient element prints only its Smith-coordinate vector; a generic module printer applies integer sign tricks that assume an ordered coefficient ring.
 
-- **Correct Example**: An element of `Free_R(S)` renders as its finite formal `R`-linear combination of the actual symbols in `S`, using each coefficient/symbol's own representation.  Explicit `module_coefficients(...)` exposes coordinates when the researcher asks for them.
+- **Correct Example**: An element of `Free_R(S)` renders as its finite formal `R`-linear combination of the actual symbols in `S`, using each coefficient/symbol's own representation.  Explicit `M.framing_coefficients(x)` exposes coordinates when the researcher asks for them.
 
 #### `API-10`: Public Mathematical Signatures Are Closed and Precise
 
@@ -5089,7 +5089,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Adding `M.gen(i)` to an owned free module because one lattice invariant still calls Sage's free-module API; adding `M.submodule(vectors)` because a discriminant-form routine expects Sage submodules.
 
-- **Correct Example**: Rewrite the consumers to use `module_generator`, `module_generating_set`, `framing_morphism`, `subobject_on`, `module_coefficients`, `presentation_matrix`, `invariant_factors`, `smith_form_module_generators`, and `invariant_factor_form` as the mathematics requires.
+- **Correct Example**: Rewrite the consumers to use `module_generator`, `module_generating_set`, `framing_morphism`, `subobject_on`, `framing_coefficients`, `presentation_matrix`, `invariant_factors`, `smith_form_module_generators`, and `invariant_factor_form` as the mathematics requires.
 
 #### `API-04`: Chosen Presentations Survive Engine Normalization
 
@@ -6274,7 +6274,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Asserting `M.coordinate_vector(x) == M._engine.coordinate_vector(x)`, `hasattr(M, "gen")`, or that an owned subobject is a Sage submodule.
 
-- **Correct Example**: Assert that `module_coefficients(x, M)` gives the coefficients in the selected framing, that a presentation matrix is the expected tensor, that a computed kernel comes with the correct owned inclusion, or that an invariant-factor normalization is connected to the original module by the claimed isomorphism.
+- **Correct Example**: Assert that `M.framing_coefficients(x)` gives the coefficients in the selected framing, that a presentation matrix is the expected tensor, that a computed kernel comes with the correct owned inclusion, or that an invariant-factor normalization is connected to the original module by the claimed isomorphism.
 
 #### `DEV-07`: Ownership Migrations Rewrite Their Consumers; They Do Not Preserve the Leak
 
@@ -6286,7 +6286,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: After replacing a reclassed or backend-element free module by a genuinely owned module, keep `.gen()`, `.basis_matrix()`, and `.coordinate_vector()` because Internal Hom, free resolutions, and lattice invariants still use those names.
 
-- **Correct Example**: Rewrite those consumers to `module_generator`, `module_coefficients`, morphism tensors, `presentation_matrix`, `subobject_on`, and the documented private engine crossing where a specialized Smith computation is genuinely irreducible; then delete the old engine spellings from the public surface.
+- **Correct Example**: Rewrite those consumers to `module_generator`, `framing_coefficients`, morphism tensors, `presentation_matrix`, `subobject_on`, and the documented private engine crossing where a specialized Smith computation is genuinely irreducible; then delete the old engine spellings from the public surface.
 
 #### `DEV-08`: Promote Durable Repository Memory into Concrete Policy Codes
 

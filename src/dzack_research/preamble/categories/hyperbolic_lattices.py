@@ -172,6 +172,17 @@ def _rational_pair(value):
     return (int(value.numerator()), int(value.denominator()))
 
 
+def _framing_coordinates(element):
+    r"""Return ordered framing coefficients at a private engine boundary."""
+    parent = element.parent()
+    coefficients = parent.framing_coefficients(element)
+    zero = parent.base_ring().zero()
+    return tuple(
+        coefficients.get(label, zero)
+        for label in parent.module_generating_set()
+    )
+
+
 def _number_field_coefficients(field_engine, value):
     value = field_engine(value)
     degree = int(field_engine.degree())
@@ -665,7 +676,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             )
             gram, negated = self._engine_gram_of_signature_n_1()
             coordinates = (
-                None if controlling_vector is None else list(controlling_vector.to_vector())
+                None if controlling_vector is None else list(_framing_coordinates(controlling_vector))
             )
             complete, rows = engine_capabilities.compute(
                 "vinberg_root_enumeration",
@@ -821,7 +832,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             _complete, roots = self._vinberg_search(
                 controlling_vector, max_roots, max_decompositions
             )
-            wall_normals = [engine_vector(root.to_vector()) * gram for root in roots]
+            wall_normals = [engine_vector(_framing_coordinates(root)) * gram for root in roots]
             chamber = Cone(wall_normals).dual()
             return tuple(
                 (engine_matrix(ray) * gram * engine_matrix(ray).transpose())[0][0]
@@ -973,7 +984,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                         shell = complement.vectors_of_square(target_square)
                 for perpendicular in shell:
                     numerator = inclusion(perpendicular) + pairing * timelike
-                    coordinates = numerator.to_tuple()
+                    coordinates = _framing_coordinates(numerator)
                     if not all(square.divides(coordinate) for coordinate in coordinates):
                         continue
                     candidate = self(

@@ -113,7 +113,11 @@ class _HyperbolicTopologyData(SageObject):
 
 def _primitive_on_selected_ray(lattice, vector, timelike):
     vector = lattice(vector)
-    coordinates = tuple(int(entry) for entry in vector.to_tuple())
+    coefficients = lattice.framing_coefficients(vector)
+    coordinates = tuple(
+        int(coefficients.get(label, lattice.base_ring().zero()))
+        for label in lattice.module_generating_set()
+    )
     nonzero_coordinates = tuple(abs(entry) for entry in coordinates if entry)
     if not nonzero_coordinates:
         raise ValueError("a projective ray is represented by a nonzero vector")

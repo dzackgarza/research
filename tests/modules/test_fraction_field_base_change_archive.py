@@ -45,7 +45,9 @@ def test_fraction_field_base_change_is_live_scalar_extension_on_objects_and_maps
     assert changed.base_ring() is rationals
     assert carried.domain() is changed
     assert carried.codomain() is changed
-    assert carried.matrix() == morphism.matrix().change_ring(rationals)
+    carried_matrix = carried.matrix()
+    source_matrix = morphism.matrix()
+    assert carried_matrix == source_matrix.change_ring(rationals)
 
 
 def test_fraction_field_base_change_has_the_extension_restriction_unit() -> None:

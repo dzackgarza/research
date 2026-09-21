@@ -168,9 +168,10 @@ def test_archived_action_matrix_and_splitting_field_are_owned_group_module_data(
     group, group_algebra, line, generator, module = _sign_module(QQ)
     category = Modules(group_algebra)
 
-    assert module.action_matrix(generator).nrows() == 1
-    assert module.action_matrix(generator).ncols() == 1
-    assert module.action_matrix(generator)[0, 0] == QQ(-1)
+    action = module.action_of(generator)
+    assert action.nrows() == 1
+    assert action.ncols() == 1
+    assert action[0, 0] == QQ(-1)
     assert category.splitting_field() is QQ
     assert category.is_split()
 

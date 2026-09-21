@@ -443,7 +443,6 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
             return self.multiplication_morphism().matrix()
 
-        matrix = multiplication_matrix
 
         def norm(self):
             r"""Return the field norm ``N_{K/QQ}(self)``.

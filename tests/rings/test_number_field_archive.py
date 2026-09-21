@@ -18,7 +18,6 @@ def test_number_field_element_retains_its_multiplication_endomorphism() -> None:
     assert morphism.domain().module_rank() == field.degree()
     assert morphism.codomain() is morphism.domain()
     assert morphism.matrix() == element.multiplication_matrix()
-    assert element.matrix() == element.multiplication_matrix()
     matrix = element.multiplication_matrix()
     assert matrix[0, 0] == 1
     assert matrix[1, 0] == 1

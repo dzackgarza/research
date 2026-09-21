@@ -4153,6 +4153,32 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             return self.from_rows(tuple(entries[row * self.ncols() : (row + 1) * self.ncols()] for row in range(self.nrows())))
 
     class ElementMethods:
+        def matrix(self):
+            r"""Return the canonical matrix Hom in the selected finite framings.
+
+            This operation exists only on MatrixSpaces. A map between
+            arbitrary structured objects does not inherit it; the coordinate
+            view is the induced map between the canonical finite free framing
+            sources.
+            """
+            source = self.domain().framing_source()
+            target = self.codomain().framing_source()
+            coordinate_parent = source.module_category().Mor(source, target)
+            assert coordinate_parent in MatrixSpaces(self.parent().base_ring()), (
+                "finite framing sources must have their coordinate matrix Hom"
+            )
+            if self.parent() is coordinate_parent:
+                return self
+            return coordinate_parent.from_rows(
+                tuple(
+                    tuple(
+                        self.matrix_entry(row_label, column_label)
+                        for column_label in self.parent().column_index_set()
+                    )
+                    for row_label in self.parent().row_index_set()
+                )
+            )
+
         def nrows(self):
             return self.parent().nrows()
 
@@ -4321,13 +4347,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 ),
                 name=f"Kernel spanning family of {self}",
             )
-
-        def list(self):
-            ring = self.parent().base_ring()
-            rows = tuple(self.parent().row_index_set())
-            columns = tuple(self.parent().column_index_set())
-            column_coefficients = {column_label: self._matrix_column_coefficients(column_label) for column_label in columns}
-            return [column_coefficients[column_label].get(row_label, ring.zero()) for row_label in rows for column_label in columns]
 
         def transpose(self):
 
@@ -4539,7 +4558,11 @@ def _engine_matrix(morphism):
         _engine_ring(ring),
         parent.nrows(),
         parent.ncols(),
-        [_engine_element(ring, entry) for entry in morphism.list()],
+        [
+            _engine_element(ring, morphism.matrix_entry(row_label, column_label))
+            for row_label in parent.row_index_set()
+            for column_label in parent.column_index_set()
+        ],
     )
 
 

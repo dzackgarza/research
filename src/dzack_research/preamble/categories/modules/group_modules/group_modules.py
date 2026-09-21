@@ -449,10 +449,6 @@ class ModulesOverGroupAlgebra(Modules):
                 raise ValueError(f"{group_element} is not an element of {self.group()}")
             return self.action()(group_element)
 
-        def action_matrix(self, group_element):
-            r"""Return the matrix of the selected coefficient-linear action in the retained framing."""
-            return self.action_of(group_element).matrix()
-
         def act(self, group_element, element):
             r"""Act on an ``R[G]``-module element through the module the action was stated on."""
             module = self.unformed_module()
@@ -786,7 +782,7 @@ class ModulesOverGroupAlgebra(Modules):
             basis = computation_module.basis()
 
             def on_basis(group_element, index):
-                action_matrix = self.action_of(group_element).matrix()
+                action_matrix = self.action_of(group_element)
                 return computation_module.sum(
                     _engine_element(
                         coefficient_ring,
@@ -997,10 +993,6 @@ class GroupModuleMorphism(ModuleMorphism):
             return op == op_NE
         equal = self.underlying_module_morphism() == other.underlying_module_morphism()
         return equal if op == op_EQ else not equal
-
-    def matrix(self):
-        r"""The matrix of the underlying coefficient-linear map."""
-        return self.underlying_module_morphism().matrix()
 
     def __mul__(self, other):
         if not isinstance(other, GroupModuleMorphism):

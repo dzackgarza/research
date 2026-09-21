@@ -253,11 +253,6 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Public mathematical interaction
 
-- [ ] **`coordinate-firewall`**. **Needs:** none.
-  **Owner and delta:** ordinary lattice, module, tensor and morphism coordinate/storage accessors and all research consumers of them.
-  **Invariants:** coordinate views belong to a specified finite framing/presentation; a coordinate matrix of a linear map requires the chosen free endpoint framings (`CON-04`). Nonfree generators are not a basis. Ordinary operations use owned morphisms, tensors and universal constructions, without extracting raw engine storage.
-  **Closure specimens:** express the same map in two selected bases and preserve its semantic action; a relationful module cannot acquire a free-module matrix by listing generators. Include an unframed/infinite object. Migrate actual consumers before removing to_list/to_tuple/to_vector/components/list escapes; their mathematical needs remain required.
-
 - [ ] **`mathematical-return-types`**. **Needs:** `refinement-convergence`, `recursive-owned-results`.
   **Owner and delta:** the full public return-annotation family using Parent, Element, CategoryObject or ad hoc Any, including functor images, cardinalities and scheme operations.
   **Invariants:** annotations name the actual mathematical codomain, refinement or honest union. A central mathematically named alias may express a limitation of Python syntax; a universal type with a new name may not hide it. This node does not optimize checker counts.
@@ -273,7 +268,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** replace each term with the actual object it denotes, such as an underlying set, module or arrow target. Preserve different mathematical notions even when old names resemble each other. No opaque synonym or new alias evades the dictionary.
   **Closure specimens:** read complete declarations and their callers for each remaining family, checking that terminology exposes correct domains/codomains. Search for prohibited terms verifies coverage, while the mathematical reading establishes acceptance. Private Sage calls retain Sage's exact API names.
 
-- [ ] **`canonical-notebook-contract`**. **Needs:** `coordinate-firewall`, `mathematical-return-types`, `banned-language-residue`.
+- [ ] **`canonical-notebook-contract`**. **Needs:** `mathematical-return-types`, `banned-language-residue`.
   **Owner and delta:** `computations/notebooks/preamble.ipynb`, through japi, organized around research questions and their mathematical witnesses (`NB-01`--`05`).
   **Invariants:** all substantive claims are executable assertions or displayed witnesses using the final owned session API. Preserve the existing useful research content; replace raw constructors, global Hom, ambiguous generators and coordinate workarounds with their mathematical owners. Clear stale failure output without representing unexecuted replacements as passed.
   **Closure specimens:** actual algebra substitutions, a nonidentity morphism, group/lattice constructions and the notebook's geometric claims have falsifiable expected results. Source authoring closes here; clean-kernel execution and visual inspection of every relevant rendered output remain required in `terminal-session`.

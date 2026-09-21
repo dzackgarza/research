@@ -731,7 +731,17 @@ def _basis_rows(obj, flag):
             basis = obj.isotropic_basis()
         case False:
             basis = _embedded_basis(obj)
-    return [[int(entry) for entry in element.to_list()] for element in basis]
+    rows = []
+    for element in basis:
+        parent = element.parent()
+        coefficients = parent.framing_coefficients(element)
+        rows.append(
+            [
+                int(coefficients.get(label, parent.base_ring().zero()))
+                for label in parent.module_generating_set()
+            ]
+        )
+    return rows
 
 
 def _terms(obj, flag):

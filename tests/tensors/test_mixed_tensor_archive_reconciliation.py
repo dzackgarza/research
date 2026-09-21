@@ -58,7 +58,7 @@ def test_archive_partial_contraction_preserves_remaining_variance() -> None:
     contracted = left.contract(covector, slot=1)
 
     assert contracted.tensor_valence() == (1, 0)
-    assert contracted.list() == [4, 9]
+    assert contracted == tensor.vector(ZZ, [4, 9])
 
 
 def test_archive_tensor_product_orders_upper_slots_before_lower_slots() -> None:
@@ -67,7 +67,7 @@ def test_archive_tensor_product_orders_upper_slots_before_lower_slots() -> None:
     product = vector.tensor_product(covector)
 
     assert product.tensor_valence() == (1, 1)
-    assert product.components() == [[10, 14], [15, 21]]
+    assert product == tensor(ZZ, (2,), (2,), [[10, 14], [15, 21]])
     assert product.trace() == 31
 
 
@@ -83,7 +83,7 @@ def test_trace_can_leave_a_mixed_tensor() -> None:
     )
     traced = tensor_three.trace(slot=1, other_slot=0)
     assert traced.tensor_valence() == (1, 0)
-    assert traced.list() == [1, 1]
+    assert traced == tensor.vector(ZZ, [1, 1])
 
 
 def test_archive_tensor_evaluation_is_partial_in_covariant_slots() -> None:

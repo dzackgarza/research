@@ -49,7 +49,13 @@ def test_nonidentity_isometry_keeps_its_matrix_after_twisting() -> None:
 
     assert carried.domain() is twisted_plane
     assert carried.codomain() is twisted_plane
-    assert carried.matrix() == swap.matrix()
+    carried_linear = twisted_plane.module_category().Mor(
+        twisted_plane, twisted_plane
+    )(carried)
+    swap_linear = plane.module_category().Mor(plane, plane)(swap)
+    for row in range(2):
+        for column in range(2):
+            assert carried_linear[row, column] == swap_linear[row, column]
     assert carried(twisted_plane.module_generator(labels[0])) == (
         twisted_plane.module_generator(labels[1])
     )

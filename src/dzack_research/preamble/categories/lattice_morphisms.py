@@ -65,6 +65,30 @@ def _engine_gram_rows(lattice):
     return [[int(gram[i, j]) for j in range(rank)] for i in range(rank)]
 
 
+def _framing_tuple(element):
+    r"""Return ordered framing coefficients only at a private engine boundary."""
+    parent = element.parent()
+    coefficients = parent.framing_coefficients(element)
+    zero = parent.base_ring().zero()
+    return tuple(
+        coefficients.get(label, zero)
+        for label in parent.module_generating_set()
+    )
+
+
+def _module_matrix(morphism):
+    r"""Return the finite-free underlying module Hom element for computation."""
+    linear = morphism.domain().module_category().Mor(
+        morphism.domain(), morphism.codomain()
+    )(morphism)
+    from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+    assert linear.parent() in MatrixSpaces(linear.parent().base_ring()), (
+        "matrix computation requires finite framed-free module endpoints"
+    )
+    return linear
+
+
 def _binary_form_from_gram(gram):
     r"""Return the integral binary quadratic form ``x^T gram x``."""
     return BinaryQF(
@@ -516,12 +540,11 @@ class LatticeIsometry(LatticeEmbedding):
         return not self == other
 
     def __hash__(self) -> int:
-        tensor_ = _tensor_view(self)
         return hash(
             (
                 id(self.domain()),
                 id(self.codomain()),
-                tuple(tensor_.list()),
+                _tensor_view(self),
             )
         )
 
@@ -529,7 +552,7 @@ class LatticeIsometry(LatticeEmbedding):
         r"""Return the determinant of this automorphism/isometry tensor."""
         if self.domain().module_rank() != self.codomain().module_rank():
             raise ValueError("determinant is defined here for equal-rank isometries")
-        return self.matrix().determinant()
+        return _module_matrix(self).determinant()
 
     def __mul__(self, other):
         if isinstance(other, LatticeIsometry) and other.codomain() is self.domain():
@@ -747,7 +770,7 @@ class LatticeIsometry(LatticeEmbedding):
         target = self.codomain().discriminant_group()
         target_dual = target.projection().domain()
         target_dual_generators = target_dual.module_generators()
-        dual_map = self.matrix().inverse().transpose()
+        dual_map = _module_matrix(self).inverse().transpose()
         images = {}
         for source_position, label in enumerate(source.module_generating_set()):
             dual_image = sum(
@@ -1385,34 +1408,6 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         r"""Return the lattice acted on by this orthogonal group."""
         return self.lattice()
 
-    def element(self, matrix):
-        r"""Construct the isometry having the stated coordinate matrix.
-
-        Matrix columns are generator images, matching the repository's
-        ``MatrixSpaces`` convention.  The ordinary isometry constructor then
-        verifies form preservation and invertibility; this method does not
-        trust a matrix merely because it has the right shape.
-        """
-        lattice = self.lattice()
-        if not lattice.module_rank().is_finite():
-            raise TypeError("a coordinate-matrix isometry requires a finite-rank lattice")
-        rank = int(lattice.module_rank())
-        if int(matrix.nrows()) != rank or int(matrix.ncols()) != rank:
-            raise ValueError("the isometry matrix has the wrong lattice rank")
-        labels = tuple(lattice.module_generating_set())
-        ring = lattice.base_ring()
-        images = tuple(
-            lattice.linear_combination(
-                {
-                    labels[row]: ring(matrix[row, column])
-                    for row in range(rank)
-                    if ring(matrix[row, column]) != ring.zero()
-                }
-            )
-            for column in range(rank)
-        )
-        return self(images)
-
     def contains(self, element) -> bool:
         r"""Return whether ``element`` is an isometry in this fixed orthogonal group."""
         return element in self
@@ -1733,7 +1728,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             )
         # Publicly the linear map acts on columns. Sage matrix groups act on
         # coordinate rows on the right, hence one transpose at this boundary.
-        return _engine_matrix(automorphism.matrix()).transpose()
+        return _engine_matrix(_module_matrix(automorphism)).transpose()
 
     def _to_engine(self, automorphism):
         r"""Transport one live automorphism to the full private engine."""
@@ -1848,8 +1843,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             witness = engine_capabilities.compute(
                 "lattice.indefinite_vector_isometry_witness",
                 _engine_gram_rows(lattice),
-                [int(entry) for entry in left.to_list()],
-                [int(entry) for entry in right.to_list()],
+                [int(entry) for entry in _framing_tuple(left)],
+                [int(entry) for entry in _framing_tuple(right)],
             )
             if witness is None:
                 return None
@@ -1883,7 +1878,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                     for engine_isometry in engine_capabilities.compute(
                         "lattice.indefinite_vector_stabilizer",
                         _engine_gram_rows(lattice),
-                        [int(entry) for entry in element.to_list()],
+                        [int(entry) for entry in _framing_tuple(element)],
                     )
                 )
             )
@@ -1939,7 +1934,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 )
             return finite_ordered_set(representatives)
         remaining = {
-            tuple(vector.to_tuple()): vector
+            _framing_tuple(vector): vector
             for vector in lattice.vectors_of_square(square)
         }
         representatives = []
@@ -1948,7 +1943,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             representatives.append(representative)
             for automorphism in self:
                 image = automorphism(representative)
-                remaining.pop(tuple(image.to_tuple()), None)
+                remaining.pop(_framing_tuple(image), None)
         return finite_ordered_set(representatives)
 
     def isotropic_orbit_representatives(self, rank, *, flag=False):
@@ -2167,8 +2162,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         if engine_capabilities.is_available("lattice.indefinite_isometry_witness"):
             witness_rows = engine_capabilities.compute(
                 "lattice.indefinite_isometry_witness",
-                [list(row) for row in codomain_gram.components()],
-                [list(row) for row in domain_gram.components()],
+                _engine_gram_rows(codomain),
+                _engine_gram_rows(domain),
             )
             if witness_rows is None:
                 return (True, None, None)

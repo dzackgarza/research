@@ -15,6 +15,16 @@ from dzack_research.preamble.all import (
 )
 
 
+def _module_matrix(morphism):
+    linear = morphism.domain().module_category().Mor(
+        morphism.domain(), morphism.codomain()
+    )(morphism)
+    assert linear.parent() in MatrixSpaces(linear.parent().base_ring())
+    return linear
+
+
+
+
 def test_lll_is_a_change_of_framing_with_actual_isometry_witness() -> None:
     lattice = Lattices(ZZ)([[4, 1], [1, 2]])
     reduction = lattice.lll_reduction()
@@ -73,7 +83,7 @@ def test_definite_isometry_decision_returns_an_actual_odd_lattice_witness() -> N
     homset = reframed.Isom(lattice)
     assert homset.is_empty() is False
     witness = homset.an_element()
-    assert witness.matrix().parent() in MatrixSpaces(ZZ)
+    assert _module_matrix(witness).parent() in MatrixSpaces(ZZ)
     for left in reframed.module_generators():
         for right in reframed.module_generators():
             assert reframed.b(left, right) == lattice.b(
@@ -125,7 +135,7 @@ def test_owned_lattice_orthogonal_group_uses_sage_only_as_definite_engine() -> N
     assert group.order() == 12
     for automorphism in group.group_generators():
         assert automorphism.parent() is group
-        assert automorphism.matrix().parent() in MatrixSpaces(ZZ)
+        assert _module_matrix(automorphism).parent() in MatrixSpaces(ZZ)
         for left in lattice.module_generators():
             for right in lattice.module_generators():
                 assert lattice.b(left, right) == lattice.b(

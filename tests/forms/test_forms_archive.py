@@ -37,7 +37,11 @@ def test_archived_bilinear_form_is_the_live_tensor_hom_with_gram_and_pullback() 
 def test_archived_quadratic_form_is_classified_by_divided_square_and_polarizes() -> None:
     module = _rank_one_module()
     generator = _generator(module)
-    quadratic = module.quadratic_map(ZZ, lambda element: element.to_tuple()[0] ** 2)
+    label = module.module_generating_set()[0]
+    quadratic = module.quadratic_map(
+        ZZ,
+        lambda element: module.framing_coefficients(element).get(label, ZZ.zero()) ** 2,
+    )
 
     assert quadratic.module() is module
     assert quadratic.codomain() is ZZ
