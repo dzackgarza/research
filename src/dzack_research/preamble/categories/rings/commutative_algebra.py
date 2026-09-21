@@ -1721,6 +1721,16 @@ class AdicCompletions(Category):
         def completion_map(self):
             return self._adic_completion_construction.completion_map()
 
+        def _completion_projection_lift(self):
+            r"""Return the retained finite-stage lift used to realize adic projections.
+
+            Protected completion-realization contract. Its callers are this
+            completion's projection operation and the prime-localization
+            completion constructor, which transports the same retained lift
+            through the localization map.
+            """
+            return self._adic_completion_construction.projection_lift()
+
         @cached_method
         def algebra_structure_morphism(self):
             r"""Return the coefficient structure map without duplicating the completion map.
@@ -1857,7 +1867,7 @@ class AdicCompletions(Category):
                 raise ValueError("an adic projection exponent is positive")
             target = self.adic_truncation(exponent)
             quotient_map = target.quotient_map()
-            projection_lift = self._adic_completion_construction.projection_lift()
+            projection_lift = self._completion_projection_lift()
             assert projection_lift is not None, (
                 "this completion realization must carry a finite-truncation lift before its adic projections are computable"
             )
@@ -3246,9 +3256,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
             bottom_completion.completion_map()
         )
         completion_engine = _engine_ring(bottom_completion)
-        bottom_projection_lift = (
-            bottom_completion._adic_completion_construction.projection_lift()
-        )
+        bottom_projection_lift = bottom_completion._completion_projection_lift()
         assert bottom_projection_lift is not None, (
             "the selected source completion must carry a maintained finite-stage lift"
         )

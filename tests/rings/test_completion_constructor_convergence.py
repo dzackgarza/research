@@ -69,6 +69,9 @@ def test_power_series_notation_is_the_same_selected_completion() -> None:
     assert completion.completion_map().codomain() is completion
     assert completion.algebra_structure_morphism().domain() is QQ
     assert completion.algebra_structure_morphism() is not completion.completion_map()
+    projection = completion.adic_projection(2)
+    assert projection.domain() is completion
+    assert projection.codomain() is completion.adic_truncation(2)
 
 
 def test_power_series_over_integers_does_not_require_a_maximal_ideal_decision() -> None:

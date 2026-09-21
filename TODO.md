@@ -213,18 +213,12 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`owned-provenance-data`**. **Needs:** none.
-  **Owner and delta:** all remaining source/preimage, coordinate-morphism, presentation, comparison, completion and base-change side channels throughout the preamble, including schemes.
-  **Coverage boundary:** reconcile residual declaration/assignment/read families against earlier construction deliveries. A producer cannot defer defining data used by its own consumers to this sweep; distinct untouched constructions remain this node's work.
-  **Invariants:** each selected source or map is declared construction data at its mathematical owner. Derived/debug metadata carries no mathematical authority. A shared result object never receives caller-specific presentation state. A genuine chosen preimage of a functor remains a choice, not a reconstructed equal object (`CON-05`, `OWN-19`).
-  **Closure specimens:** two constructions sharing an underlying result but choosing different presentations keep both choices without contaminating each other; base-change and completion consumers recover their exact maps from the defining datum. Review every residual assignment and read, not only `_preamble_*` names. Renaming or moving fields to a dictionary cannot close this node.
-
-- [ ] **`construction-datum-classification`**. **Needs:** `owned-provenance-data`.
+- [ ] **`construction-datum-classification`**. **Needs:** none.
   **Owner and delta:** every private Construction/Datum record across the preamble, including predicate subgroups, linear systems and geometric cohomology.
   **Invariants:** a retained record denotes genuine selected mathematical data with a real consumer, such as a functor preimage; a package that only forwards constructor arguments dissolves into its owning constructor. Preserve general defining data and genuine choices without proliferating record classes.
   **Closure specimens:** follow an actual selected preimage through its downstream map and distinguish two valid choices; compare an ordinary multiplication constructor whose `(M,m)` needs no extra category or argument bundle. Classify the complete occurrence family and transfer every consumed datum before removing a record.
 
-- [ ] **`private-owner-boundaries`**. **Needs:** `owned-provenance-data`.
+- [ ] **`private-owner-boundaries`**. **Needs:** none.
   **Owner and delta:** the independently remaining cross-object engine/storage accesses across the preamble under `OWN-05`--`07`. Reconcile the full declaration/caller population with the constructor and provenance deliveries; accesses used by those repairs were closure-blocking there and cannot be parked here.
   **Invariants:** ordinary mathematics calls owned operations. Protected access has a declaration-side contract naming exact permitted caller roles. A helper, underscore, importable factory or comment at the caller grants no authority. Lowering/raising lives at the single adapter for that representation. Generic construction owners do not import their specialized consumers to select a route; specialization data enter through the shared contract. Generic framework repairs belong to `sage-categories`, with owned preamble mathematics and its integration kept here, rather than another local framework.
   **Closure specimens:** a geometric section operation and a lattice/group operation traverse the owned owner and retain their maps and coefficients; no consumer opens another object's backend to finish the calculation. Inspect the call chain across the boundary, including lazy results. A private extraction of the same access is not remediation.
@@ -241,7 +235,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** category membership follows construction placement or the specified functor, not engine class, duck typing, cardinality, or an implicit walk up a base-ring tower. Distinguish category membership from genuine element membership in a mathematical set; the latter may require an exact predicate at its owner.
   **Closure specimens:** a correctly placed object is accepted, a similarly represented object with the wrong structure is not. A QQ-scheme is not silently treated as a ZZ-scheme without the specified base passage. Check discrete categories and arrow helpers as well as the original scheme example; inspect every category containment body before closure.
 
-- [ ] **`refinement-convergence`**. **Needs:** `owned-provenance-data`.
+- [ ] **`refinement-convergence`**. **Needs:** none.
   **Owner and delta:** every remaining `refine`/placement mutation in ring, scheme, module and functor-image construction after the bootstrap repair.
   **Invariants:** defining or selected structure exists at construction; later refinement only records a genuinely newly established mathematical fact. No accessor, engine query, import order or first arithmetic operation completes initialization retroactively.
   **Closure specimens:** request categories and inherited operations in different orders for ring, scheme, module and functor-image objects and obtain the same mathematical data. Each surviving refinement identifies the later theorem and its evidence. Moving mutation behind a helper or converting it into a category flag cannot close the node.

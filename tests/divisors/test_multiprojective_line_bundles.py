@@ -80,3 +80,6 @@ def test_multiprojective_line_bundle_base_change_preserves_multidegree_and_secti
     assert tuple(changed.multidegree()[label] for label in labels) == (1, 2)
     assert comparison.forward().domain().module_rank() == 6
     assert comparison.forward().codomain() is changed.global_sections()
+    squared = changed.tensor_power(2)
+    assert squared.base_change_source_bundle() is bundle.tensor_power(2)
+    assert squared.base_change_projection() is squared.scheme().left_projection()

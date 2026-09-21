@@ -92,6 +92,9 @@ def test_projective_line_bundle_base_change_retains_projection_and_section_compa
     assert comparison.forward().domain().base_ring() is field
     assert comparison.forward().codomain() is changed.global_sections()
     assert comparison.forward().domain().module_rank() == changed.global_sections().module_rank()
+    squared = changed.tensor_power(2)
+    assert squared.base_change_source_bundle() is bundle.tensor_power(2)
+    assert squared.base_change_projection() is squared.scheme().left_projection()
 
 
 def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:

@@ -286,6 +286,7 @@ class _FiniteAtlasInvertibleSheafEngine:
         *,
         section_space=None,
         associated_divisor=None,
+        base_change_image=None,
         **rest,
     ) -> None:
         if gluing_datum not in FiniteAffineAtlases(gluing_datum.scheme()):
@@ -295,6 +296,7 @@ class _FiniteAtlasInvertibleSheafEngine:
         self._finite_gluing_datum = gluing_datum
         self._section_space = section_space
         self._associated_divisor = associated_divisor
+        self._base_change_image = base_change_image
         self._local_modules = {
             index: gluing_datum.chart(index).coordinate_algebra().free_module(1)
             for index in gluing_datum.chart_indices()
@@ -340,6 +342,16 @@ class _FiniteAtlasInvertibleSheafEngine:
         if self._associated_divisor is None:
             raise TypeError("this line bundle was not constructed from a selected divisor")
         return self._associated_divisor
+
+    def _selected_base_change_image(self):
+        r"""Return the selected scalar-base-change datum, or None.
+
+        Protected finite-atlas line-bundle construction contract. The
+        base-change source/projection/section operations and tensor-power
+        transport in this module are its callers; they must not read the
+        realization's storage directly.
+        """
+        return self._base_change_image
 
     def _stored_pair(self, source_index, target_index):
         datum = self.gluing_datum()
@@ -581,7 +593,7 @@ def _section_base_change_comparison(source_sections, target_sections, ring_map):
 
 
 def _base_change_image(bundle):
-    image = bundle._base_change_image
+    image = bundle._selected_base_change_image()
     assert image is not None, "this line bundle was not constructed as a scalar base change"
     return image
 
@@ -600,7 +612,7 @@ def _section_base_change_comparison_of(bundle):
 
 def _tensor_power_base_change_image(bundle, exponent):
     r"""Return the scalar-change provenance inherited by one tensor power."""
-    match bundle._base_change_image:
+    match bundle._selected_base_change_image():
         case None:
             return None
         case image:
@@ -670,7 +682,6 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
             raise TypeError("O(d) is constructed here on a represented projective space")
         self._projective_space = projective_space
         self._degree = _own_ring(SageZZ)(degree)
-        self._base_change_image = base_change_image
         atlas = projective_space.standard_affine_atlas()
         units = {}
         for source_index, target_index in atlas.transition_index_set():
@@ -696,7 +707,13 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
             if self._degree >= 0
             else None
         )
-        super().__init__(atlas, units, section_space=section_space, **rest)
+        super().__init__(
+            atlas,
+            units,
+            section_space=section_space,
+            base_change_image=base_change_image,
+            **rest,
+        )
 
     def projective_space(self):
         return self._projective_space
@@ -1108,7 +1125,6 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
                 if len(degree_values) != len(factor_labels):
                     raise ValueError("a line-bundle multidegree has one degree per projective factor")
         self._projective_product = projective_product
-        self._base_change_image = base_change_image
         self._multidegree = finite_indexed_family(
             factor_indices,
             lambda label: degree_values[
@@ -1156,7 +1172,13 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
             if all(self.multidegree()[label] >= 0 for label in factor_labels)
             else None
         )
-        super().__init__(atlas, units, section_space=section_space, **rest)
+        super().__init__(
+            atlas,
+            units,
+            section_space=section_space,
+            base_change_image=base_change_image,
+            **rest,
+        )
 
     def projective_product(self):
         return self._projective_product
