@@ -1215,6 +1215,11 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
     _HomCategory = FormedModuleHomCategoryConstruction
 
     class ParentMethods:
+        def algebraic_correlation_morphism(self):
+            r"""Return ``b^flat : M -> Hom_R(M,R)`` for this scalar-valued bilinear form."""
+            injective = self in FormModules(self.base_ring()).Nondegenerate()
+            return _algebraic_correlation_morphism(self, injective=injective)
+
         def q(self, vector):
             r"""Return the quadratic form \(q(v)=b(v,v)\) of the bilinear form.
 
@@ -1283,10 +1288,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     half_norm(generator)
 
                 return unformed.equip_quadratic_form(ring, half_norm)
-
-            def algebraic_correlation_morphism(self):
-
-                return _algebraic_correlation_morphism(self)
 
             def correlation_isomorphism(self):
 
@@ -2030,6 +2031,27 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         base_change = _formed_module_base_change
 
+        @cached_method
+        def correlation_morphism(self):
+            r"""Return the algebraic correlation ``M -> Hom_R(M,R)``."""
+            injective = self in FormModules(self.base_ring()).Nondegenerate()
+            return _algebraic_correlation_morphism(self, injective=injective)
+
+        def is_nondegenerate(self) -> bool:
+            r"""Return whether the algebraic correlation is injective."""
+            injective = self in FormModules(self.base_ring()).Nondegenerate()
+            return _algebraic_correlation_morphism(
+                self, injective=injective
+            ).is_injective()
+
+        def is_unimodular(self) -> bool:
+            r"""Return whether the algebraic correlation is an isomorphism."""
+            injective = self in FormModules(self.base_ring()).Nondegenerate()
+            correlation = _algebraic_correlation_morphism(
+                self, injective=injective
+            )
+            return correlation.is_injective() and correlation.is_surjective()
+
         def subobject_on(self, module_generating_set):
             r"""Return the span equipped with the pulled-back form."""
 
@@ -2064,29 +2086,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 return self.base_ring().free_module(self.module_generating_set())
 
             @cached_method
-            def correlation_morphism(self):
-                if self.value_module() is not self.base_ring():
-                    raise TypeError("the correlation morphism to the dual requires a scalar-valued form")
-                dual = self.dual_module()
-                images = {}
-                for label in self.module_generating_set():
-                    source_generator = self.module_generator(label)
-                    images[label] = dual.linear_combination(
-                        {
-                            dual_label: coefficient
-                            for dual_label in dual.module_generating_set()
-                            if (
-                                coefficient := self.b(
-                                    source_generator,
-                                    self.module_generator(dual_label),
-                                )
-                            )
-                        }
-                    )
-
-                return self.module_category().Mor(self, dual)(images)
-
-            @cached_method
             def radical(self):
                 r"""Return ``rad(M)=ker(M -> M^vee)`` as an actual module subobject.
 
@@ -2097,7 +2096,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 """
                 if self.value_module() is not self.base_ring():
                     raise TypeError("the radical via correlation requires a scalar-valued form")
-                return self.correlation_morphism().kernel()
+                injective = self in FormModules(self.base_ring()).Nondegenerate()
+                return _algebraic_correlation_morphism(
+                    self, injective=injective
+                ).kernel()
 
             @cached_method
             def radical_quotient(self):
@@ -2122,19 +2124,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                     "the determinant of a form is defined for ring-valued forms"
                 )
                 return self.gram_matrix().determinant()
-
-            def is_nondegenerate(self) -> bool:
-                r"""Whether the Gram determinant is nonzero, for values in an integral domain."""
-                value = self.value_module()
-                assert value in OwnedRings() and _engine_ring(value).is_integral_domain(), (
-                    "nondegeneracy by the Gram determinant needs values in an integral domain"
-                )
-                return self.determinant() != 0
-
-            def is_unimodular(self) -> bool:
-                r"""Return whether the correlation morphism is an isomorphism."""
-                assert self.value_module() is self.base_ring()
-                return bool(self.determinant().is_unit())
 
             def scale_submodule(self):
                 assert self.value_module() is self.base_ring()

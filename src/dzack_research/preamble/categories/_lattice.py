@@ -1376,19 +1376,18 @@ def _lattice_latex(lattice, ring_tex: str) -> str:
     gram_latex = str(latex(lattice.gram_tensor()))
     gram_latex = re.sub(r"\b0\b", lambda _match: r"\cdot", gram_latex)
     signature_field = _engine_ring(lattice.base_ring().fraction_field())
+    signature = _signature_pair_of_gram(lattice.gram_tensor())
 
     match cardinal(rank).is_finite():
         case False:
-            if signature_field is QQ and lattice.signature_pair() is not Unknown:
-                _signature = lattice.signature_pair()
-                pos, neg = _signature.first(), _signature.second()
+            if signature_field is QQ and signature is not Unknown:
+                pos, neg = signature.first(), signature.second()
                 invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)}, \\quad \\mathrm{{sig}}(L) = ({latex(pos)}, {neg}) \\\\"
             else:
                 invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)} \\\\"
         case True:
             if signature_field is QQ:
-                _signature = lattice.signature_pair()
-                pos, neg = _signature.first(), _signature.second()
+                pos, neg = signature.first(), signature.second()
                 disc_latex = _format_disc_latex(lattice.discriminant())
                 invariants = (
                     f"L \\in \\mathrm{{Lattices}}({ring_tex}), "

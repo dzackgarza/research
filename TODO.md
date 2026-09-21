@@ -211,17 +211,12 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Forms, actions and arithmetic realizations
 
-- [ ] **`infinite-form-contract`**. **Needs:** none.
-  **Owner and delta:** infinite formed modules and their lattice specializations: retain actual functional, dual and inverse data where claimed.
-  **Invariants:** nondegeneracy is over the declared coefficient ring; unimodularity requires an isomorphism with the full algebraic dual. An infinite free module's finite-support dual is not its full dual. Infinite signatures, pairings or colimits cannot be decided from sampled finite stages; exact computations require the stated sufficient data.
-  **Closure specimens:** multiplication by 2 as the Gram map on Z is injective but not unimodular; the diagonal form on a countable direct sum over a field maps into the full dual without surjecting onto all functionals. Contrast a genuinely supplied dual inverse. Preserve the mathematical objects when a requested invariant is undecidable (`DEV-52`).
-
 - [ ] **`lattice-action-results`**. **Needs:** none.
   **Owner and delta:** isotropic loci, orbit decompositions, centralizers, reduction adjacency and their functors/arrows; use the shared action/G-set and existing private arithmetic engines.
   **Invariants:** a locus is its owned mathematical set, an orbit comes from the actual action, a centralizer comes with its subgroup inclusion, and adjacency belongs to its represented complex. Preserve transporter/representative/completeness distinctions and defining equations. Existing torsion-form delegation through the G-set owner is a dependency to preserve, not work to recreate.
   **Closure specimens:** a finite action with multiple orbits gives orbit maps and stabilizers satisfying orbit-stabilizer; an isometry centralizer retains commuting witnesses. A bounded indefinite-lattice search is not a complete orbit classification. Review remaining isotropic, centralizer and reduction host records and their consumers; do not replace missing algorithms by unconditional stubs.
 
-- [ ] **`objects-through-categories-lattice-files`**. **Needs:** `infinite-form-contract`, `lattice-action-results`.
+- [ ] **`objects-through-categories-lattice-files`**. **Needs:** `lattice-action-results`.
   **Owner and delta:** lattice, hyperbolic, orthogonal-quotient and reduction files under categories: finish placement and inherited-construction review across their remaining host records and maps.
   **Coverage boundary:** enumerate the construction routes and retained mathematical records in these files, including the arithmetic application callers. Earlier formed-module, primitive-extension and action deliveries already own defects on their changed paths; reconcile only independently remaining cases here while preserving their acceptance.
   **Invariants:** Lattices(R) constructs through its formed module on the exact selected module. Polytopes/cones/rays, manifold points and analytic opens stay at their existing mathematical owners. Category declarations state immediate sufficient structure rather than defaulting to Sets because an owner is inconvenient.

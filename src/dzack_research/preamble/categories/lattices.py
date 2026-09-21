@@ -38,8 +38,6 @@ from dzack_research.preamble.categories._lattice import (
     _discriminant_of_gram,
     _generating_set_for,
     _gram_is_even,
-    _gram_is_nondegenerate,
-    _gram_is_unimodular,
     _lattice,
     _lattice_latex,
     _lattice_object,
@@ -743,15 +741,19 @@ class Lattices(OwnedCategoryOverBaseRing):
         r"""Return \(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).
 
         ``stage(n)`` is a rank-\(n\) lattice in this category.  The
-        odd unimodular lattice \(I_{\infty,1}\) is the colimit of
-        \(I_{n,1}\).
+        resulting form is evaluated in a finite stage containing the supports
+        of the vectors being paired.  The stage callback alone does not prove
+        an infinite signature, nondegeneracy or unimodularity; those predicates
+        remain undecided unless the represented Gram rule supplies the missing
+        global information.
 
         EXAMPLES::
 
             sage: from dzack_research.preamble.categories.lattices import Lattices
             sage: C = Lattices(ZZ)
-            sage: C.colimit(lambda n: C(ZZ^n))
-            Integral lattice of rank +Infinity and signature (+Infinity, 0)
+            sage: L = C.colimit(lambda n: C(ZZ^n))
+            sage: L.module_generator(3) * L.module_generator(3)
+            1
         """
 
         return _colimit_lattice(stage, category=self, row_support=row_support)
@@ -1404,13 +1406,15 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self._preamble_gram_tensor
 
         def gram_matrix(self, basis=None):
-            r"""Return the matrix of \(L\to\operatorname{Hom}_R(L,R)\) in the framing and its dual.
+            r"""Return the finite coordinate matrix of the selected form.
 
-            The Gram tensor is the form; this is its coordinate presentation,
-            the matrix of :meth:`algebraic_correlation_morphism` as an element
-            of \(\operatorname{Hom}_R(F(S),F(S^\vee))\), so its entry at
-            \((i,j)\) is \(b(e_i,e_j)\) and its determinant is the
-            discriminant.
+            With no ``basis`` this is the matrix of
+            :meth:`algebraic_correlation_morphism` in the selected finite
+            framing and its dual.  An infinite algebraic dual has no
+            finite-support dual framing, so an infinite lattice has no
+            default Gram *matrix*; its Gram tensor remains the form.  Passing
+            finitely many vectors explicitly returns their finite pairing
+            matrix.
 
             EXAMPLES::
 
@@ -1427,6 +1431,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                         raise ValueError("a Gram matrix basis consists of vectors of this lattice")
                 size = len(selected)
                 return self.base_ring().matrix_space(size, size).from_rows(tuple(tuple(self.b(left, right) for right in selected) for left in selected))
+            assert self.module_rank().is_finite(), (
+                "the default Gram matrix requires finite rank; use gram_tensor() for an infinite form or pass a finite list of vectors"
+            )
             return self.algebraic_correlation_morphism().matrix()
 
         def basis_vector(self, position):
@@ -1470,7 +1477,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 (+Infinity, 0)
             """
 
-            return _signature_pair_of_gram(self.gram_tensor())
+            signature = _signature_pair_of_gram(self.gram_tensor())
+            assert signature is not Unknown, (
+                "the exact signature of this infinite lattice is not determined by its represented Gram rule"
+            )
+            return signature
 
         def signature(self):
             r"""Return the inertia pair ``(p,q)`` of the lattice form."""
@@ -1503,21 +1514,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             matrix = self.value_module().matrix_space(rank).from_rows((gram[row, column] for column in range(rank)) for row in range(rank))
             return matrix.determinant()
 
-        def is_nondegenerate(self) -> bool:
-            r"""Return whether the correlation map has zero radical.
-
-            The Gram presentation uses its correlation over the stated base
-            ring, never nonzero determinant over an arbitrary zero-divisor ring.
-            """
-            return _gram_is_nondegenerate(self.gram_tensor(), self.base_ring())
-
         def is_even(self) -> bool:
             r"""Return whether ``b(x,x)`` lies in ``2R`` for every lattice vector.
 
-            Decided on the diagonal of the Gram presentation in the ideal
-            \(2R\) of the commutative base ring, or ``Unknown``.
+            The represented Gram rule may decide this globally.  If it does
+            not, the exact predicate stops at the declared computational
+            frontier rather than returning a soft-knowledge value.
             """
-            return _gram_is_even(self.gram_tensor(), self.base_ring())
+            decision = _gram_is_even(self.gram_tensor(), self.base_ring())
+            assert decision is not Unknown, (
+                "exact evenness of this infinite lattice is not determined by its represented Gram rule"
+            )
+            return decision
 
         def level(self):
             r"""Return the level of a finite nondegenerate integral lattice.
@@ -1567,20 +1575,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             if other not in Lattices(self.base_ring()):
                 raise TypeError("local lattice isometry compares lattices over one base ring")
             return bool(self.genus().local_symbol(prime) == other.genus().local_symbol(prime))
-
-        def is_unimodular(self) -> bool:
-            r"""Return whether the correlation ``L -> L^#`` is an isomorphism.
-
-            A degenerate form is not unimodular; otherwise the Gram
-            presentation decides it, or answers ``Unknown``.
-            """
-            match self.is_nondegenerate():
-                case True:
-                    return _gram_is_unimodular(self.gram_tensor(), self.base_ring())
-                case False:
-                    return False
-                case _:
-                    return Unknown
 
         def divisibility_ideal(self, element):
             r"""Return the ideal \(b(v, L) = \{b(v,x) : x\in L\}\) of the base ring.
@@ -1656,12 +1650,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 divisor = divisor.gcd(value)
             return abs(divisor)
 
-        @cached_method
-        def dual_module(self):
-            r"""Return the algebraic dual module ``Hom_R(L,R)`` in the dual framing."""
-
-            return self.base_ring().free_module(self.module_generating_set())
-
         def linear_dual(self):
             r"""Return the exact algebraic dual ``Hom_R(L,R)``."""
             return self.dual_module()
@@ -1677,11 +1665,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             The underlying module remains an ``R``-module.  For a
             non-unimodular integral lattice its form takes values in
             ``Frac(R)``; it is not turned into a vector space over ``Frac(R)``.
+            At infinite rank this is a represented metric-dual lattice in the
+            rational span when the Gram rule supplies an inverse rule.  It is
+            not the full algebraic dual returned by :meth:`linear_dual`.
             """
-            assert self.is_nondegenerate() is True, (
-                "the metric dual is taken of a lattice whose form is decided nondegenerate"
-            )
             ring = self.base_ring()
+            assert self in FormModules(ring).Nondegenerate(), (
+                "the metric dual requires nondegeneracy established by the lattice construction"
+            )
             match self.module_rank().is_finite():
                 case False:
                     dual = ring.free_module(self.module_generating_set())
@@ -1718,7 +1709,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         def correlation_morphism(self):
             r"""Return ``L -> L^#``, ``v |-> b(v,-)``, whose selected-basis matrix is ``G``."""
 
-            assert self.is_nondegenerate()
             dual_lattice = self.dual_lattice()
             return self.module_category().Mor(self, dual_lattice)(
                 lambda label: dual_lattice.linear_combination(
@@ -2421,10 +2411,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.Aut()(image)
 
         def is_positive_definite(self) -> bool:
-            return bool(self.module_rank().is_finite() and self.signature_pair() == signature_pair(self.module_rank(), 0))
+            rank = self.module_rank()
+            return self.signature_pair() == signature_pair(rank, 0)
 
         def is_negative_definite(self) -> bool:
-            return bool(self.module_rank().is_finite() and self.signature_pair() == signature_pair(0, self.module_rank()))
+            rank = self.module_rank()
+            return self.signature_pair() == signature_pair(0, rank)
 
         def is_definite(self) -> bool:
             return self.is_positive_definite() or self.is_negative_definite()
@@ -2984,8 +2976,8 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             kind = "Integral lattice" if _engine_ring(self.base_ring()) is ZZ else "Lattice"
             rank = self.module_rank()
-            if _engine_ring(self.base_ring().fraction_field()) is QQ and self.signature_pair() is not Unknown:
-                _signature = self.signature_pair()
+            _signature = _signature_pair_of_gram(self.gram_tensor())
+            if _engine_ring(self.base_ring().fraction_field()) is QQ and _signature is not Unknown:
                 pos, neg = _signature.first(), _signature.second()
                 return f"{kind} of rank {rank} and signature ({pos}, {neg})"
             return f"{kind} of rank {rank} over {self.base_ring()}"

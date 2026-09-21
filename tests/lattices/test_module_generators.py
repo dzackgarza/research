@@ -1,4 +1,5 @@
 from sage.all import SR
+import pytest
 
 from dzack_research.preamble.all import (
     ZZ,
@@ -240,6 +241,12 @@ def test_colimit_lattice_constructs_before_undecidable_property_refinement() -> 
     assert e0 * e0 == 1
     assert e0 * e3 == 0
     assert support * support == 2
+    with pytest.raises(AssertionError, match="exact signature"):
+        colimit.signature_pair()
+    with pytest.raises(AssertionError, match="kernel construction"):
+        colimit.is_nondegenerate()
+    with pytest.raises(AssertionError, match="kernel construction"):
+        colimit.is_unimodular()
 
 
 def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
@@ -251,9 +258,13 @@ def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
     support = e0 + e3
 
     assert infinite.is_nondegenerate()
+    assert infinite.is_positive_definite()
+    assert not infinite.is_negative_definite()
     # The full dual is R^N, not the restricted finite-support dual.
     # Sending every basis vector to 1 is outside the correlation image.
-    assert infinite.is_unimodular() is False
+    assert infinite.gram_tensor().is_unimodular() is False
+    with pytest.raises(AssertionError, match="cokernel construction"):
+        infinite.is_unimodular()
     assert infinite.unformed_module() is ZZ**NN
     assert not infinite.is_even()
     assert e0.div() == 1
@@ -265,7 +276,9 @@ def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
     doubled = infinite.twist(2)
     assert doubled.module_rank() == Infinity
     assert doubled.is_even()
-    assert not doubled.is_unimodular()
+    assert doubled.gram_tensor().is_unimodular() is False
+    with pytest.raises(AssertionError, match="cokernel construction"):
+        doubled.is_unimodular()
     assert doubled.module_generator(0).div() == 2
     assert not (2 * doubled.module_generator(0) + doubled.module_generator(1)).is_root()
 
@@ -306,8 +319,6 @@ def test_distinct_sublattices_are_distinct_objects_at_equal_gram() -> None:
 
 
 def test_colimit_does_not_infer_signature_from_early_stages():
-    from sage.misc.unknown import Unknown
-
     category = Lattices(ZZ)
 
     def stage(n):
@@ -315,7 +326,8 @@ def test_colimit_does_not_infer_signature_from_early_stages():
         return category(module.diagonal_gram({8: -1} if n > 8 else {}))
 
     lattice = category.colimit(stage)
-    assert lattice.signature_pair() is Unknown
+    with pytest.raises(AssertionError, match="exact signature"):
+        lattice.signature_pair()
     assert lattice.module_generator(8).q() == -1
     assert lattice.module_generator(0).q() == 1
     assert "rank" in repr(lattice)
