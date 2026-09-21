@@ -1,5 +1,4 @@
 import pytest
-from sage.categories.homset import Hom
 
 from dzack_research.preamble.all import (
     QQ,
@@ -71,7 +70,7 @@ def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
     assert underlying(order) is order
     assert order in Modules(ZZ)
 
-    identity = Hom(order, order).identity()
+    identity = order.Mor(order).identity()
     module_identity = underlying(identity)
     assert module_identity.domain() is order
     assert module_identity.codomain() is order

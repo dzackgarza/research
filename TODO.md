@@ -253,11 +253,6 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Public mathematical interaction
 
-- [ ] **`mor-spelling-convergence`**. **Needs:** none.
-  **Owner and delta:** all owned morphism-category definitions, exports, imports and consumers: the public spelling is `X.Mor(Y)`. Sage `Hom` remains only at a private adapter calling the actual Sage operation.
-  **Invariants:** rename the entire owned definition/reference family coherently without compatibility aliases or fake upstream stubs. Endpoint categories and inherited operations are preserved. Protected expectation subtrees are never rewritten to make the new implementation pass.
-  **Closure specimens:** direct session construction and composition in module, algebra and scheme morphism spaces use Mor and exercise nonidentity maps. Source review covers owned definitions and dynamic exports as well as call sites. A spelling-only search cannot certify that the resulting morphism belongs to the right category.
-
 - [ ] **`coordinate-firewall`**. **Needs:** none.
   **Owner and delta:** ordinary lattice, module, tensor and morphism coordinate/storage accessors and all research consumers of them.
   **Invariants:** coordinate views belong to a specified finite framing/presentation; a coordinate matrix of a linear map requires the chosen free endpoint framings (`CON-04`). Nonfree generators are not a basis. Ordinary operations use owned morphisms, tensors and universal constructions, without extracting raw engine storage.
@@ -273,7 +268,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** display gives cheap positive information about the particular mathematical object at the requested abstraction level. No engine repr delegation, object address, private class/refinement label or expensive enumeration. A bounded display of an infinite object is marked as such and does not change its meaning.
   **Closure specimens:** free-module generators display their mathematical data; an enriched lattice does not rename the same generic generator result after the leaf class. A nonidentity map exposes its mathematical endpoints, and an infinite family has a useful bounded display. Rendering is inspected at T, not inferred from source.
 
-- [ ] **`banned-language-residue`**. **Needs:** `mor-spelling-convergence`, `mathematical-display`.
+- [ ] **`banned-language-residue`**. **Needs:** `mathematical-display`.
   **Owner and delta:** the terminology replacement index across the remaining preamble public source and examples, including carrier and opaque implementation vocabulary.
   **Invariants:** replace each term with the actual object it denotes, such as an underlying set, module or arrow target. Preserve different mathematical notions even when old names resemble each other. No opaque synonym or new alias evades the dictionary.
   **Closure specimens:** read complete declarations and their callers for each remaining family, checking that terminology exposes correct domains/codomains. Search for prohibited terms verifies coverage, while the mathematical reading establishes acceptance. Private Sage calls retain Sage's exact API names.
