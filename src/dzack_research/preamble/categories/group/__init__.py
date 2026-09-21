@@ -4,6 +4,9 @@ from dzack_research.preamble.categories.group.g_objects import (
     EquivariantMorphism,
     GObjectHomset,
     GObjects,
+    Grp,
+    InternalGroupActions,
+    InternalGroupObjects,
 )
 
 from dzack_research.preamble.categories.group.g_sets import (
@@ -111,6 +114,7 @@ __all__ = [
     'FrobeniusElement',
     'GObjectHomset',
     'GObjects',
+    'Grp',
     'GSetHomset',
     'GSetMorphism',
     'GroupAutomorphism',
@@ -120,6 +124,8 @@ __all__ = [
     'IndexedFreeGroupHomomorphism',
     'IndexedFreeGroupHomset',
     'InertiaGroupConjugacyClass',
+    'InternalGroupActions',
+    'InternalGroupObjects',
     'LiftCoset',
     'OpenAbsoluteGaloisSubgroup',
     'OpenAbsoluteGaloisSubgroups',

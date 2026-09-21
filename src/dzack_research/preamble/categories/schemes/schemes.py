@@ -1787,10 +1787,65 @@ class Schemes(OwnedCategoryOverBaseRing):
             the factor at $i$ is an arrow out of that product rather than a
             composite through nested binary products.
             """
-            return _scheme_product(_finite_factor_family(factors, name="Product factors"))
+            return self._categorical_product_construction(factors).object()
+
+        def _categorical_product_construction(self, factors):
+            r"""Return the selected finite scheme product with its universal cone."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                SelectedLimitConstruction,
+                _discrete_diagram,
+            )
+
+            family = _finite_factor_family(factors, name="Product factors")
+            if any(factor not in self for factor in family):
+                raise TypeError("a scheme product requires schemes in one selected category")
+            labels = tuple(family.index_set())
+            match len(labels):
+                case 0:
+                    product = Schemes(self.base_ring()).base_scheme()
+                case 1:
+                    product = family[labels[0]]
+                case _:
+                    product = _selected_scheme_product(family)
+            diagram = _discrete_diagram(family, self)
+
+            def projection(index):
+                label = index.value()
+                match len(labels):
+                    case 1:
+                        return product.categorical_identity_morphism()
+                    case _:
+                        return product.projection(label)
+
+            universal_cone = diagram.ProductCones().cone(product, projection)
+
+            def factorizer(cone):
+                match len(labels):
+                    case 0:
+                        apex_map = self.Mor(cone.apex(), product)(
+                            cone.apex().structure_morphism()
+                        )
+                    case 1:
+                        apex_map = cone.structure_morphism(
+                            diagram.domain()(labels[0])
+                        )
+                    case _:
+                        legs = indexed_family(
+                            family.index_set(),
+                            lambda label: cone.structure_morphism(
+                                diagram.domain()(label)
+                            ),
+                            name="Scheme product cone legs",
+                        )
+                        apex_map = product.from_product_cone(legs)
+                return diagram.Cones().Mor(cone, universal_cone)._from_commuting_apex_map(
+                    apex_map
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
         def _categorical_product(self, left, right):
-            return _scheme_product(left, right)
+            return self._categorical_product_construction((left, right)).object()
 
         def fiber_product(self, left_leg, right_leg):
             r"""Return the fiber product of the cospan these two legs form."""
@@ -4104,6 +4159,19 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
             return self.O(*(int(factor.relative_dimension()) + 1 for factor in self.factors()))
 
         anticanonical_bundle = anticanonical_line_bundle
+
+
+def _scheme_product_cache_key(factors):
+    return (
+        id(factors.index_set()),
+        tuple(id(factor) for factor in factors),
+    )
+
+
+@cached_function(key=_scheme_product_cache_key)
+def _selected_scheme_product(factors):
+    r"""Return the selected ordinary product of one finite indexed scheme family."""
+    return _scheme_product(factors)
 
 
 def _scheme_product(*schemes, placements=(), **level_data):
