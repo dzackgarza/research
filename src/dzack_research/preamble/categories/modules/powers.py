@@ -225,6 +225,10 @@ class DividedPowerModules(OwnedCategoryOverBaseRing):
 class QuadraticModuleMorphism(ModuleMorphism):
     r"""A classifier ``Gamma^2(M) -> W``, read as the quadratic map ``M -> W``."""
 
+    def __init__(self, parent, images, *, lift_coordinate_values=None) -> None:
+        self._lift_coordinate_values = lift_coordinate_values
+        super().__init__(parent, images)
+
     def module(self):
         return self.domain().divided_square_source()
 
@@ -241,7 +245,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
         return self
 
     def lift_coordinate_values(self):
-        values = self.__dict__.get("_preamble_quadratic_lift_coordinate_values")
+        values = self._lift_coordinate_values
         if values is None:
             raise TypeError(
                 "this quadratic map has no selected bilinear coordinate presentation"
@@ -311,7 +315,8 @@ class QuadraticModuleMorphism(ModuleMorphism):
             raise ValueError("the pullback map must land in the form's module")
         induced = morphism.divided_square()
         result = self * induced
-        values = self.__dict__.get("_preamble_quadratic_lift_coordinate_values")
+        values = self._lift_coordinate_values
+        pulled_values = None
         if values is not None:
             try:
                 labels = _finite_framing(morphism.domain())
@@ -327,15 +332,26 @@ class QuadraticModuleMorphism(ModuleMorphism):
                 )
             except TypeError:
                 pass
-            else:
-                result._preamble_quadratic_lift_coordinate_values = pulled_values
-        return result
+        parent = result.parent()
+        return parent._from_classifying_morphism(
+            result,
+            lift_coordinate_values=pulled_values,
+        )
 
 
 class QuadraticModuleMor(ModuleMor):
     r"""The ordinary Hom ``Hom_R(Gamma^2(M),W)`` with quadratic-map syntax."""
 
     Element = QuadraticModuleMorphism
+
+    def _from_classifying_morphism(self, morphism, *, lift_coordinate_values=None):
+        if morphism.domain() is not self.domain() or morphism.codomain() is not self.codomain():
+            raise ValueError("the quadratic classifier has the wrong endpoints")
+        return self.element_class(
+            self,
+            morphism,
+            lift_coordinate_values=lift_coordinate_values,
+        )
 
     def from_quadratic_map(self, quadratic, *, lift_coordinate_values=None):
         square = self.domain()
@@ -357,10 +373,11 @@ class QuadraticModuleMor(ModuleMor):
                 - quadratic(source.module_generator(right))
             )
 
-        result = ModuleMor._element_constructor_(self, generator_image)
-        if lift_coordinate_values is not None:
-            result._preamble_quadratic_lift_coordinate_values = lift_coordinate_values
-        return result
+        return self.element_class(
+            self,
+            generator_image,
+            lift_coordinate_values=lift_coordinate_values,
+        )
 
     def _from_coordinate_datum(self, datum):
         source = self.domain().divided_square_source()

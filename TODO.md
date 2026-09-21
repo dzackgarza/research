@@ -213,7 +213,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`owned-provenance-data`**. **Needs:** `sheaf-descent-threading`.
+- [ ] **`owned-provenance-data`**. **Needs:** none.
   **Owner and delta:** all remaining source/preimage, coordinate-morphism, presentation, comparison, completion and base-change side channels throughout the preamble, including schemes.
   **Coverage boundary:** reconcile residual declaration/assignment/read families against earlier construction deliveries. A producer cannot defer defining data used by its own consumers to this sweep; distinct untouched constructions remain this node's work.
   **Invariants:** each selected source or map is declared construction data at its mathematical owner. Derived/debug metadata carries no mathematical authority. A shared result object never receives caller-specific presentation state. A genuine chosen preimage of a functor remains a choice, not a reconstructed equal object (`CON-05`, `OWN-19`).
@@ -235,7 +235,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** raising reaches every publicly reachable mathematical constituent and subsequent arithmetic, through its canonical constructor. An owned parent containing raw engine children does not satisfy `OWN-04`. Arbitrary raw-engine ingress is not an alternative public API.
   **Closure specimens:** project a returned morphism component, evaluate a delayed family stage, extract a coefficient and perform arithmetic on it; each result has the correct owned parent and expected equation. Use both a geometric sheaf result and an arithmetic orbit/presentation result so a top-level wrapper cannot certify the boundary.
 
-- [ ] **`membership-by-placement`**. **Needs:** `sheaf-descent-threading`.
+- [ ] **`membership-by-placement`**. **Needs:** none.
   **Owner and delta:** category containment throughout the preamble, including abstract functor, arrow, product, morphism and sheaf categories and predicates hidden in helpers.
   **Coverage boundary:** enumerate category declarations and follow their inherited/overridden containment and helper calls, then compare every route with the original "each category" requirement. Distinguish genuine element membership at set owners explicitly. A scan of `__contains__` bodies or the original scheme complaint alone is incomplete. Earlier producer repairs must already establish their placements; this node reconciles the untouched remainder.
   **Invariants:** category membership follows construction placement or the specified functor, not engine class, duck typing, cardinality, or an implicit walk up a base-ring tower. Distinguish category membership from genuine element membership in a mathematical set; the latter may require an exact predicate at its owner.
