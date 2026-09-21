@@ -258,12 +258,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** annotations name the actual mathematical codomain, refinement or honest union. A central mathematically named alias may express a limitation of Python syntax; a universal type with a new name may not hide it. This node does not optimize checker counts.
   **Closure specimens:** follow a functor image, a cardinality, a scheme map and a composite's components into operations their claimed codomain supports. Review every occurrence family and required central alias; no narrowing to the currently convenient engine realization or broad Any escape.
 
-- [ ] **`mathematical-display`**. **Needs:** none.
-  **Owner and delta:** generator/family displays, maps and other public results exposing implementation labels under complaint 4 and `OWN-21`.
-  **Invariants:** display gives cheap positive information about the particular mathematical object at the requested abstraction level. No engine repr delegation, object address, private class/refinement label or expensive enumeration. A bounded display of an infinite object is marked as such and does not change its meaning.
-  **Closure specimens:** free-module generators display their mathematical data; an enriched lattice does not rename the same generic generator result after the leaf class. A nonidentity map exposes its mathematical endpoints, and an infinite family has a useful bounded display. Rendering is inspected at T, not inferred from source.
-
-- [ ] **`banned-language-residue`**. **Needs:** `mathematical-display`.
+- [ ] **`banned-language-residue`**. **Needs:** none.
   **Owner and delta:** the terminology replacement index across the remaining preamble public source and examples, including carrier and opaque implementation vocabulary.
   **Invariants:** replace each term with the actual object it denotes, such as an underlying set, module or arrow target. Preserve different mathematical notions even when old names resemble each other. No opaque synonym or new alias evades the dictionary.
   **Closure specimens:** read complete declarations and their callers for each remaining family, checking that terminology exposes correct domains/codomains. Search for prohibited terms verifies coverage, while the mathematical reading establishes acceptance. Private Sage calls retain Sage's exact API names.

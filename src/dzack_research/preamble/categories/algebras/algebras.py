@@ -1259,7 +1259,10 @@ class Algebras(OwnedCategoryOverBaseRing):
                         return self.selected_framing_generator(self.algebra_framing_owner(), label)
 
                     def algebra_generators(self):
-                        return self.selected_framing_generators(self.algebra_framing_owner())
+                        return self.selected_framing_generators(
+                            self.algebra_framing_owner(),
+                            name="Algebra generators",
+                        )
 
                     def number_of_algebra_generators(self):
                         return self.selected_framing_generator_count(self.algebra_framing_owner())

@@ -1772,7 +1772,10 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
 
             def module_generators(self):
-                return self.selected_framing_generators(Modules(self.base_ring()))
+                return self.selected_framing_generators(
+                    Modules(self.base_ring()),
+                    name="Module generators",
+                )
 
             def number_of_module_generators(self):
                 return self.selected_framing_generator_count(

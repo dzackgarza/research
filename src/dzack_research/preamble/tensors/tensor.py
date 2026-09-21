@@ -1132,9 +1132,24 @@ class _CoordinateTensor(ModuleElement, Tensor):
         return tensor(ring, upper, remaining, _nested(values, result_ranks))
 
     def _latex_(self) -> str:
-        if len(self._index_ranks()) == 2:
-            return str(latex(_engine_component_matrix(self)))
-        return str(latex(self._component_array()))
+        ranks = self._index_ranks()
+        match len(ranks):
+            case 1:
+                entries = ", ".join(
+                    str(latex(self[index])) for index in range(ranks[0])
+                )
+                return rf"\left({entries}\right)"
+            case 2:
+                rows = [
+                    " & ".join(
+                        str(latex(self[row, column]))
+                        for column in range(ranks[1])
+                    )
+                    for row in range(ranks[0])
+                ]
+                return r"\begin{pmatrix}" + r" \\ ".join(rows) + r"\end{pmatrix}"
+            case _:
+                return str(latex(self._component_array()))
 
     def _repr_(self) -> str:
         p, q = self.tensor_type()
@@ -1346,14 +1361,8 @@ class _CoordinateTensor(ModuleElement, Tensor):
 
 
 def _coordinate_component_repr(tensor_value) -> str:
-    r"""Plain-text components: a vector, a matrix, or a nested array."""
-    match len(tensor_value._index_ranks()):
-        case 1:
-            return repr(_engine_component_vector(tensor_value))
-        case 2:
-            return repr(_engine_component_matrix(tensor_value))
-        case _:
-            return repr(tensor_value._component_array())
+    r"""Render owned tensor coefficients without delegating display to an engine."""
+    return repr(tensor_value._component_array())
 
 
 def _normalized_rank(rank):

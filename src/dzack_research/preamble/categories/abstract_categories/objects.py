@@ -330,7 +330,7 @@ class Objects(OwnedCategory):
                 return self.selected_framing_generator_morphism(owner)(labels(label))
 
             @cached_method
-            def selected_framing_generators(self, owner):
+            def selected_framing_generators(self, owner, *, name):
                 r"""Return the selected generator family ``s |-> x_s``."""
                 from dzack_research.preamble.categories.sets.indexed_families import (
                     indexed_family,
@@ -339,7 +339,7 @@ class Objects(OwnedCategory):
                 return indexed_family(
                     self.selected_framing_generating_set(owner),
                     lambda label: self.selected_framing_generator(owner, label),
-                    name=f"Framing generators of {self}",
+                    name=name,
                 )
 
             def selected_framing_generator_count(self, owner):

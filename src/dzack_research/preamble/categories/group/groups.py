@@ -2976,7 +2976,10 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         class ParentMethods:
             def group_generators(self):
-                return self.selected_framing_generators(OwnedGroups())
+                return self.selected_framing_generators(
+                    OwnedGroups(),
+                    name="Group generators",
+                )
 
             def number_of_group_generators(self):
                 return self.selected_framing_generator_count(OwnedGroups())
