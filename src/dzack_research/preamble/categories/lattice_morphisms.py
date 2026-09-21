@@ -581,7 +581,14 @@ class LatticeIsometry(LatticeEmbedding):
 
     @cached_method
     def primitive_extension(self):
-        r"""Return the invariant/coinvariant primitive extension cut out by this isometry."""
+        r"""Return the retained primitive extension cut out by this isometry.
+
+        The two primitive sublattices are ``S = ker(self-id)`` and
+        ``T = S^perp`` inside the ambient lattice.  The extension retains
+        their inclusions, the finite-index map ``S direct-sum T -> L``, and
+        its discriminant gluing.  Here ``T`` is the formed orthogonal
+        complement; it is not the module quotient ``L/(self-id)L``.
+        """
         if self.domain() is not self.codomain():
             raise ValueError("a primitive extension is cut out by a lattice automorphism")
         from dzack_research.preamble.categories.lattice_centralizers import (

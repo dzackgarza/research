@@ -45,11 +45,31 @@ def test_enriques_integral_h2_retains_torsion_pullback_and_primitive_gluing() ->
     invariant = cohomology.invariant_lattice()
     anti = cohomology.anti_invariant_lattice()
     glue = cohomology.discriminant_gluing_map()
+    extension = cohomology.primitive_extension()
     assert invariant.module_rank() == 10
     assert anti.module_rank() == 12
+    assert cohomology.invariant_lattice_inclusion() is extension.invariant_inclusion()
+    assert cohomology.anti_invariant_lattice_inclusion() is extension.orthogonal_complement_inclusion()
+    assert cohomology.primitive_extension_inclusion() is extension.orthogonal_sum_inclusion()
+    assert cohomology.primitive_extension_inclusion().codomain() is NamedLattices.LK3
+    assert all(
+        pullback(free_generator)
+        == cohomology.invariant_lattice_inclusion()(invariant_generator)
+        for free_generator, invariant_generator in zip(
+            free.module_generators(),
+            invariant.module_generators(),
+            strict=True,
+        )
+    )
+    assert all(
+        pullback(left).b(pullback(right)) == 2 * left.b(right)
+        for left in free.module_generators()
+        for right in free.module_generators()
+    )
     assert cohomology.discriminant_gluing_subgroup().cardinality() == 1024
     assert cohomology.primitive_gluing_index() == 1024
     assert glue.domain() is cohomology.discriminant_gluing_subgroup()
+    assert glue is extension.glue()
 
 
 def test_lattice_representation_and_fixed_locus_satisfy_lefschetz() -> None:

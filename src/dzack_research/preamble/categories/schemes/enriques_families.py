@@ -115,8 +115,17 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
     def invariant_lattice(self):
         return self.primitive_extension().invariant
 
+    def invariant_lattice_inclusion(self):
+        return self.primitive_extension().invariant_inclusion()
+
     def anti_invariant_lattice(self):
-        return self.primitive_extension().coinvariant
+        return self.primitive_extension().orthogonal_complement
+
+    def anti_invariant_lattice_inclusion(self):
+        return self.primitive_extension().orthogonal_complement_inclusion()
+
+    def primitive_extension_inclusion(self):
+        return self.primitive_extension().orthogonal_sum_inclusion()
 
     def enriques_free_h2_lattice(self):
         return self._quotient_free

@@ -784,22 +784,30 @@ class IsometryPrimitiveExtension:
     def __init__(self, isometry) -> None:
         lattice = isometry.domain()
         assert isometry.codomain() is lattice, "a primitive extension is cut out by an automorphism of one lattice"
-        assert lattice.module_rank().is_finite() and lattice.is_nondegenerate(), "the invariant and coinvariant lattices span L only when L is a finite nondegenerate lattice"
+        assert lattice.module_rank().is_finite() and lattice.is_nondegenerate(), "the invariant lattice and its orthogonal complement span L only when L is a finite nondegenerate lattice"
         invariant = isometry.invariant_lattice()
-        coinvariant = isometry.formed_coinvariants()
-        assert invariant.module_rank() + coinvariant.module_rank() == lattice.module_rank(), (
+        orthogonal_complement = isometry.formed_coinvariants()
+        assert invariant.module_rank() + orthogonal_complement.module_rank() == lattice.module_rank(), (
             "the invariant lattice and its orthogonal complement do not have complementary rank; f is not of finite order on this lattice"
         )
 
         self.isometry = isometry
         self.lattice = lattice
         self.invariant = invariant
-        self.coinvariant = coinvariant
+        self.orthogonal_complement = orthogonal_complement
+
+    def invariant_inclusion(self):
+        r"""Return the retained primitive inclusion of the invariant lattice."""
+        return self.invariant.inclusion()
+
+    def orthogonal_complement_inclusion(self):
+        r"""Return the retained primitive inclusion of the orthogonal complement."""
+        return self.orthogonal_complement.inclusion()
 
     @cached_method
     def glue(self):
         r"""Return the Nikulin anti-isometry ``H_+ -> H_-(-1)`` of this extension."""
-        return self.lattice.glue_map(self.invariant, self.coinvariant)
+        return self.lattice.glue_map(self.invariant, self.orthogonal_complement)
 
     def gluing_subgroup(self):
         r"""Return ``H_+ = L/(L^f + (L^f)^perp)`` seen inside ``A_{L^f}``."""
@@ -808,7 +816,7 @@ class IsometryPrimitiveExtension:
     @cached_method
     def index(self):
         r"""Return ``[L : L^f + (L^f)^perp]``, the order of the glue subgroup."""
-        return self.invariant.sum(self.coinvariant).index()
+        return self.orthogonal_sum_inclusion().index()
 
     def centralizer_group(self):
         r"""Return ``O(L,f) = Z_{O(L)}(f)`` as a predicate subgroup of ``O(L)``."""
@@ -823,7 +831,7 @@ class IsometryPrimitiveExtension:
         r"""Return the primitive glue data when both discriminant forms are glued in full."""
         glue = self.glue()
         invariant_form = self.invariant.discriminant_group()
-        coinvariant_form = self.coinvariant.discriminant_group()
+        coinvariant_form = self.orthogonal_complement.discriminant_group()
         glue_source = glue.domain()
         glue_target = glue.codomain()
         assert glue_source.cardinality() == invariant_form.cardinality(), (
@@ -864,7 +872,7 @@ class IsometryPrimitiveExtension:
         allowed_discriminant_image = coinvariant_orthogonal_group.subgroup_on(
             tuple(self._coinvariant_discriminant_from_invariant(generator) for generator in invariant_image.group_generators())
         )
-        return self.coinvariant.O().discriminant_preimage(allowed_discriminant_image)
+        return self.orthogonal_complement.O().discriminant_preimage(allowed_discriminant_image)
 
     def _coinvariant_discriminant_from_invariant(self, invariant_automorphism):
         r"""Conjugate an invariant discriminant action across the primitive glue.
@@ -911,7 +919,7 @@ class IsometryPrimitiveExtension:
         subgroup = self.coinvariant_extension_subgroup()
         if coinvariant_part not in subgroup:
             raise ValueError("the selected coinvariant isometry does not preserve the primitive gluing")
-        coinvariant_part = self.coinvariant.O()(coinvariant_part)
+        coinvariant_part = self.orthogonal_complement.O()(coinvariant_part)
         target_action = coinvariant_part.discriminant_morphism()
         invariant_group = self.invariant.O()
         invariant_image = self.invariant.discriminant_image()
@@ -976,7 +984,7 @@ class IsometryPrimitiveExtension:
 
     def coinvariant_restriction(self, automorphism):
         r"""Return ``g|_{(L^f)^perp}`` in ``O((L^f)^perp)`` for ``g`` in the centralizer."""
-        return self._restriction(automorphism, self.coinvariant)
+        return self._restriction(automorphism, self.orthogonal_complement)
 
     def acts_as_negation_on_coinvariants(self) -> bool:
         r"""Return whether ``f`` restricts to ``-1`` on ``(L^f)^perp``.
@@ -985,7 +993,7 @@ class IsometryPrimitiveExtension:
         ``ker(f + 1)``, which is the statement the eigenspace decomposition
         ``V_pm = ker(f -+ 1)`` makes.
         """
-        inclusion = self.coinvariant.inclusion()
+        inclusion = self.orthogonal_complement_inclusion()
         return all(self.isometry(inclusion(generator)) == -inclusion(generator) for generator in inclusion.domain().module_generators())
 
     @cached_method
@@ -999,8 +1007,8 @@ class IsometryPrimitiveExtension:
         image: an isometry of the two summands is read on ``L`` by clearing
         that one denominator.
         """
-        invariant_inclusion = self.invariant.inclusion()
-        coinvariant_inclusion = self.coinvariant.inclusion()
+        invariant_inclusion = self.invariant_inclusion()
+        coinvariant_inclusion = self.orthogonal_complement_inclusion()
         invariant_summand = invariant_inclusion.domain()
         coinvariant_summand = coinvariant_inclusion.domain()
         summands = invariant_summand + coinvariant_summand
@@ -1090,8 +1098,8 @@ class IsometryPrimitiveExtension:
         the assembled map preserves the form and is bijective.
         """
         lattice = self.lattice
-        invariant_inclusion = self.invariant.inclusion()
-        coinvariant_inclusion = self.coinvariant.inclusion()
+        invariant_inclusion = self.invariant_inclusion()
+        coinvariant_inclusion = self.orthogonal_complement_inclusion()
         invariant_summand = invariant_inclusion.domain()
         coinvariant_summand = coinvariant_inclusion.domain()
         assert invariant_part.parent() is invariant_summand.Aut(), "the invariant half of the pair is an element of O(L^f)"

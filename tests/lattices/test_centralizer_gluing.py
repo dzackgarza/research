@@ -39,14 +39,14 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
     extension = swap.primitive_extension()
     assert extension.lattice is lattice
     assert extension.invariant.module_rank() == 1
-    assert extension.coinvariant.module_rank() == 1
+    assert extension.orthogonal_complement.module_rank() == 1
     assert extension.acts_as_negation_on_coinvariants()
 
     invariant_vector = extension.invariant.embedded_module_generators()[
         extension.invariant.module_generating_set()[0]
     ]
-    coinvariant_vector = extension.coinvariant.embedded_module_generators()[
-        extension.coinvariant.module_generating_set()[0]
+    coinvariant_vector = extension.orthogonal_complement.embedded_module_generators()[
+        extension.orthogonal_complement.module_generating_set()[0]
     ]
     assert invariant_vector.q() == 2
     assert coinvariant_vector.q() == -2
@@ -59,6 +59,12 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
     assert extension.index() == 2
     assert extension.gluing_subgroup().cardinality() == 2
     assert extension.glue().domain() is extension.gluing_subgroup()
+    extension_inclusion = extension.orthogonal_sum_inclusion()
+    extension_generators = tuple(extension_inclusion.domain().module_generators())
+    assert extension_inclusion.codomain() is lattice
+    assert extension_inclusion.index() == 2
+    assert extension_inclusion(extension_generators[0]) == invariant_vector
+    assert extension_inclusion(extension_generators[1]) == coinvariant_vector
     assert invariant_vector in (first + second, -(first + second))
     assert coinvariant_vector in (first - second, second - first)
 
@@ -71,7 +77,7 @@ def test_the_swap_restricts_to_plus_and_minus_one_on_its_summands() -> None:
     assert lattice.Aut().one() in extension.centralizer_group()
 
     invariant_summand = extension.invariant.inclusion().domain()
-    coinvariant_summand = extension.coinvariant.inclusion().domain()
+    coinvariant_summand = extension.orthogonal_complement.inclusion().domain()
     invariant_part = extension.invariant_restriction(swap)
     coinvariant_part = extension.coinvariant_restriction(swap)
 
@@ -111,12 +117,12 @@ def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
 
     assert extension.lattice is NamedLattices.LK3
     assert extension.invariant.module_rank() == 10
-    assert extension.coinvariant.module_rank() == 12
+    assert extension.orthogonal_complement.module_rank() == 12
     assert extension.acts_as_negation_on_coinvariants()
-    assert extension.coinvariant.inclusion().domain().is_isometric(NamedLattices.TEn)
+    assert extension.orthogonal_complement.inclusion().domain().is_isometric(NamedLattices.TEn)
 
     assert extension.invariant.discriminant_group().cardinality() == 1024
-    assert extension.coinvariant.discriminant_group().cardinality() == 1024
+    assert extension.orthogonal_complement.discriminant_group().cardinality() == 1024
     assert extension.index() == 1024
     assert extension.gluing_subgroup().cardinality() == 1024
 
@@ -175,7 +181,7 @@ def test_reassembly_inverts_restriction_on_the_four_pairs_over_the_hyperbolic_pl
     lattice, swap = _hyperbolic_swap()
     extension = swap.primitive_extension()
     invariant_summand = extension.invariant.inclusion().domain()
-    coinvariant_summand = extension.coinvariant.inclusion().domain()
+    coinvariant_summand = extension.orthogonal_complement.inclusion().domain()
 
     # Both summands have rank one, so each orthogonal group is {1,-1} and
     # there are four pairs.  A_{Z(e+f)} has order two and so has no
@@ -224,14 +230,18 @@ def test_the_a2_diagram_involution_reassembles_across_a_nontrivial_glue() -> Non
     extension = involution.primitive_extension()
 
     assert extension.invariant.module_rank() == 1
-    assert extension.coinvariant.module_rank() == 1
+    assert extension.orthogonal_complement.module_rank() == 1
     assert extension.invariant.discriminant_group().cardinality() == 2
-    assert extension.coinvariant.discriminant_group().cardinality() == 6
+    assert extension.orthogonal_complement.discriminant_group().cardinality() == 6
     # A_{Z(a1-a2)} is cyclic of order six, on which negation acts
     # non-trivially; the glue subgroup is its subgroup of order two, and the
     # index of the orthogonal sum is that order.
     assert extension.index() == 2
     assert extension.gluing_subgroup().cardinality() == 2
+    glue = extension.glue()
+    assert glue.domain().cardinality() == 2
+    assert glue.codomain().cardinality() == 2
+    assert glue.codomain().inclusion().codomain().cardinality() == 6
 
     invariant_part = extension.invariant_restriction(involution)
     coinvariant_part = extension.coinvariant_restriction(involution)
@@ -315,12 +325,12 @@ def test_the_cubic_cyclic_permutation_glues_an_odd_lattice_bilinearly() -> None:
 
     assert not lattice.is_even()
     assert extension.invariant.module_rank() == 1
-    assert extension.coinvariant.module_rank() == 2
-    assert extension.coinvariant.inclusion().domain().is_even()
+    assert extension.orthogonal_complement.module_rank() == 2
+    assert extension.orthogonal_complement.inclusion().domain().is_even()
 
     assert not extension.glue().is_quadratic()
     assert extension.invariant.discriminant_group().cardinality() == 3
-    assert extension.coinvariant.discriminant_group().cardinality() == 3
+    assert extension.orthogonal_complement.discriminant_group().cardinality() == 3
     assert extension.index() == 3
     assert extension.gluing_subgroup().cardinality() == 3
 
@@ -352,7 +362,7 @@ def test_the_negation_pair_reassembles_minus_one_on_the_cubic_lattice() -> None:
     lattice, rotation = _cubic_cyclic_permutation()
     extension = rotation.primitive_extension()
     invariant_summand = extension.invariant.inclusion().domain()
-    coinvariant_summand = extension.coinvariant.inclusion().domain()
+    coinvariant_summand = extension.orthogonal_complement.inclusion().domain()
 
     # The graph of gamma is a subgroup of the sum of the two discriminant
     # forms, so negation on both factors permutes it.  The assembled isometry
@@ -377,7 +387,7 @@ def test_negating_one_summand_of_the_cubic_split_breaks_the_glue_graph() -> None
     _lattice, rotation = _cubic_cyclic_permutation()
     extension = rotation.primitive_extension()
     invariant_summand = extension.invariant.inclusion().domain()
-    coinvariant_summand = extension.coinvariant.inclusion().domain()
+    coinvariant_summand = extension.orthogonal_complement.inclusion().domain()
 
     # gamma is injective on a group of order three, so ``(x, -gamma x)`` lies
     # on the graph only where ``gamma x = -gamma x``, that is only at zero.

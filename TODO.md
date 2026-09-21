@@ -209,7 +209,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Diagrams, rings and geometric consumers
 
-- [ ] **`geometric-consumer-integration`**. **Needs:** `involution-primitive-extension`.
+- [ ] **`geometric-consumer-integration`**. **Needs:** none.
   **Owner and delta:** existing divisor/relative-geometry, cohomology/equivariant, family/singularity and geometric research consumers affected by the repaired common contracts. Inspect their current nonidentity maps and repair remaining integration; do not recreate delivered theories.
   **Consumed outputs:** linear systems consume the sheaf projectivization and its lines convention; formal consumers use the localization/completion maps; derived and connection consumers use the actual graded/differential data. `schemes/enriques_families.py::_EnriquesMarkedIntegralCohomology` consumes an involution's primitive extension, its invariant inclusion and discriminant gluing. That input is separated below from independent orbit, centralizer and reduction classifications. If another geometric route needs one of those results, split out that exact output with its consumer and redirect the edge; do not restore a blanket arithmetic prerequisite.
   **Invariants:** products/intersections use the existing diagrams, algebra pushouts, quotients and gluing. Divisors and line bundles use their owned groups and sheaf functors. Families live in the scheme slice with actual fibre/base-change maps; formal consumers use the full completed object. Local singularity classification states its equivalence relation and retains coordinate maps. Algebraic, formal and analytic comparisons, monodromy and nearby/vanishing cycles require their own source construction and hypotheses; a shared name is not a comparison theorem.
@@ -218,17 +218,12 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Forms, actions and arithmetic realizations
 
-- [ ] **`involution-primitive-extension`**. **Needs:** none.
-  **Owner and delta:** `lattice_morphisms.py::primitive_extension`, the retained construction in `lattice_centralizers.py`, and its Enriques marked-cohomology consumer: repair the owned invariant/orthogonal-complement extension and its maps, preserving the existing arithmetic realization.
-  **Invariants:** for an integral nondegenerate lattice L with an involutive isometry g, retain S=ker(g-id), T=S-perp, their actual inclusions and forms, S direct-sum T -> L, and the finite discriminant gluing that reconstructs this extension. The orthogonal complement is not the module coinvariant quotient. Discriminant anti-isometries retain their domain subgroups and applicable integral/even hypotheses; no full-discriminant isomorphism is inferred without the necessary hypotheses. The geometric consumer retains the selected marking and the surface theorem's hypotheses; matching a signature does not construct cohomology or its pullback.
-  **Closure specimens and consumer:** on the hyperbolic plane with g swapping its two isotropic basis vectors, S and T have Gram entries 2 and -2 and their sum has index 2 in L; the gluing reconstructs L with its inclusions. The Enriques consumer recovers the invariant inclusion, free H^2 pullback scaling the form by 2, zero pullback on the canonical Z/2 class, and the same discriminant gluing. These maps are the delivered output; computing every centralizer or orbit is a separate obligation.
-
 - [ ] **`infinite-form-contract`**. **Needs:** none.
   **Owner and delta:** infinite formed modules and their lattice specializations: retain actual functional, dual and inverse data where claimed.
   **Invariants:** nondegeneracy is over the declared coefficient ring; unimodularity requires an isomorphism with the full algebraic dual. An infinite free module's finite-support dual is not its full dual. Infinite signatures, pairings or colimits cannot be decided from sampled finite stages; exact computations require the stated sufficient data.
   **Closure specimens:** multiplication by 2 as the Gram map on Z is injective but not unimodular; the diagonal form on a countable direct sum over a field maps into the full dual without surjecting onto all functionals. Contrast a genuinely supplied dual inverse. Preserve the mathematical objects when a requested invariant is undecidable (`DEV-52`).
 
-- [ ] **`lattice-action-results`**. **Needs:** `involution-primitive-extension`.
+- [ ] **`lattice-action-results`**. **Needs:** none.
   **Owner and delta:** isotropic loci, orbit decompositions, centralizers, reduction adjacency and their functors/arrows; use the shared action/G-set and existing private arithmetic engines.
   **Invariants:** a locus is its owned mathematical set, an orbit comes from the actual action, a centralizer comes with its subgroup inclusion, and adjacency belongs to its represented complex. Preserve transporter/representative/completeness distinctions and defining equations. Existing torsion-form delegation through the G-set owner is a dependency to preserve, not work to recreate.
   **Closure specimens:** a finite action with multiple orbits gives orbit maps and stabilizers satisfying orbit-stabilizer; an isometry centralizer retains commuting witnesses. A bounded indefinite-lattice search is not a complete orbit classification. Review remaining isotropic, centralizer and reduction host records and their consumers; do not replace missing algorithms by unconditional stubs.
