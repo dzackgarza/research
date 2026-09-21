@@ -2,7 +2,8 @@ r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."
 from sage.libs.gap.libgap import libgap
 
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Set, Sets
 
 
 class OrthogonalCharacterQuotient:
@@ -39,8 +40,12 @@ class OrthogonalCharacterQuotient:
                 "a finite orthogonal-character quotient requires discriminant, determinant, or spinor data"
             )
         self._has_discriminant = bool(self.discriminant_preimages)
+        factors = {}
+        labels = []
         if self._has_discriminant:
             self._discriminant_group = self.lattice.discriminant_group().O()
+            labels.append("discriminant")
+            factors["discriminant"] = self._discriminant_group
             for target in self.discriminant_preimages:
                 ambient = (
                     target
@@ -49,43 +54,60 @@ class OrthogonalCharacterQuotient:
                 )
                 if ambient is not self._discriminant_group:
                     raise ValueError("a discriminant preimage must lie in O(A_L)")
+        signs = finite_ordered_set(
+            (self.lattice.base_ring()(-1), self.lattice.base_ring()(1))
+        )
+        if self.determinant_kernel:
+            labels.append("determinant")
+            factors["determinant"] = signs
+        if self.spinor_kernel:
+            labels.append("spinor")
+            factors["spinor"] = signs
+        self._image_labels = finite_ordered_set(tuple(labels))
+        self._image_space = Sets().product(
+            finite_indexed_family(
+                self._image_labels,
+                factors.__getitem__,
+                name="Orthogonal character quotient factors",
+            )
+        )
         self._witnesses = self._enumerate_image()
 
+    def image_space(self):
+        r"""Return the owned product in which all character images live."""
+        return self._image_space
+
     def image(self, isometry):
-        components = []
+        components = {}
         if self._has_discriminant:
-            components.append(isometry.discriminant_morphism())
+            components["discriminant"] = isometry.discriminant_morphism()
         if self.determinant_kernel:
-            components.append(int(isometry.determinant()))
+            components["determinant"] = self.lattice.base_ring()(isometry.determinant())
         if self.spinor_kernel:
-            components.append(int(isometry.real_spinor_norm_sign()))
-        return tuple(components)
+            components["spinor"] = self.lattice.base_ring()(
+                isometry.real_spinor_norm_sign()
+            )
+        return self.image_space()(components.__getitem__)
 
     def _multiply(self, left, right):
-        result = []
-        position = 0
+        result = {}
         if self._has_discriminant:
-            result.append(left[position] * right[position])
-            position += 1
+            result["discriminant"] = left["discriminant"] * right["discriminant"]
         if self.determinant_kernel:
-            result.append(left[position] * right[position])
-            position += 1
+            result["determinant"] = left["determinant"] * right["determinant"]
         if self.spinor_kernel:
-            result.append(left[position] * right[position])
-        return tuple(result)
+            result["spinor"] = left["spinor"] * right["spinor"]
+        return self.image_space()(result.__getitem__)
 
     def _inverse(self, value):
-        result = []
-        position = 0
+        result = {}
         if self._has_discriminant:
-            result.append(~value[position])
-            position += 1
+            result["discriminant"] = ~value["discriminant"]
         if self.determinant_kernel:
-            result.append(value[position])
-            position += 1
+            result["determinant"] = value["determinant"]
         if self.spinor_kernel:
-            result.append(value[position])
-        return tuple(result)
+            result["spinor"] = value["spinor"]
+        return self.image_space()(result.__getitem__)
 
     def _ambient_bound(self):
         bound = 1
@@ -123,20 +145,17 @@ class OrthogonalCharacterQuotient:
         return witnesses
 
     def _allowed(self, key) -> bool:
-        position = 0
         if self._has_discriminant:
-            discriminant_image = key[position]
-            position += 1
+            discriminant_image = key["discriminant"]
             if any(
                 discriminant_image not in target
                 for target in self.discriminant_preimages
             ):
                 return False
         if self.determinant_kernel:
-            if key[position] != 1:
+            if key["determinant"] != 1:
                 return False
-            position += 1
-        if self.spinor_kernel and key[position] != 1:
+        if self.spinor_kernel and key["spinor"] != 1:
             return False
         return True
 

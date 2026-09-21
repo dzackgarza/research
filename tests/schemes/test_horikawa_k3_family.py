@@ -80,7 +80,10 @@ def test_two_tau_lifts_are_involutions_with_actual_fixed_subschemes_and_top_form
     member = HorikawaK3Family().member()
     enriques = member.enriques_lift()
     nikulin = member.nikulin_lift()
-    enriques_fixed, nikulin_fixed = member.fixed_subschemes()
+    fixed = member.fixed_subschemes()
+    assert tuple(fixed.index_set()) == ("enriques", "nikulin")
+    enriques_fixed = fixed["enriques"]
+    nikulin_fixed = fixed["nikulin"]
 
     assert member.both_lifts_have_order_two()
     assert enriques.automorphism() is enriques.left()

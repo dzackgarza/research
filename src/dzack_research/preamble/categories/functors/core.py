@@ -23,6 +23,22 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
 
+def _functor_factor_family(factors):
+    r"""Return a finite ordinal-indexed family of composition factors without a foundational import cycle."""
+    from dzack_research.preamble.categories.sets.indexed_families import (
+        finite_indexed_family,
+    )
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+    factors = tuple(factors)
+    positions = Sets.Δ[len(factors) - 1]
+    return finite_indexed_family(
+        positions,
+        lambda index: factors[int(index)],
+        name="Functor-composition factors",
+    )
+
+
 class Functor:
     r"""Construction data for a functor with explicit object and arrow actions.
 
@@ -200,9 +216,9 @@ class Functor:
         """
         if self.codomain() != other.domain():
             raise ValueError("functor composition requires matching middle categories")
-        if not self.factors():
+        if self.factors().cardinality() == 0:
             return other
-        if not other.factors():
+        if other.factors().cardinality() == 0:
             return self
         return _CompositeFunctor(self, other)
 
@@ -313,8 +329,8 @@ class Functor:
 
         return _InducedAutFunctor(self, obj)
 
-    def factors(self) -> tuple[Functor, ...]:
-        return (self,)
+    def factors(self):
+        return _functor_factor_family((self,))
 
     def is_faithful(self) -> bool:
         return bool(self._faithful)
@@ -340,8 +356,8 @@ class IdentityFunctor(Functor):
     def _apply_morphism(self, morphism: Map) -> Map:
         return morphism
 
-    def factors(self) -> tuple[()]:
-        return ()
+    def factors(self):
+        return _functor_factor_family(())
 
     def is_faithful(self) -> bool:
         return True
@@ -408,8 +424,9 @@ class _CompositeFunctor(Functor):
             )
         return super().adopt_object_image(preimage, image)
 
-    def factors(self) -> tuple[Functor, ...]:
-        return self._first.factors() + self._second.factors()
+    def factors(self):
+        factors = tuple(self._first.factors()) + tuple(self._second.factors())
+        return _functor_factor_family(factors)
 
     def is_faithful(self) -> bool:
         return self._first.is_faithful() and self._second.is_faithful()

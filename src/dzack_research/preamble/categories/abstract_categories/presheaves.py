@@ -1090,8 +1090,11 @@ class DescentEqualizer(SageObject):
     def matching_product_construction(self):
         return self._matching_product
 
-    def parallel_maps(self) -> tuple[Morphism, Morphism]:
-        return self._left, self._right
+    def parallel_maps(self):
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        product = Sets().product((self._left.parent(), self._right.parent()))
+        return product((self._left, self._right))
 
     def equalizer_construction(self):
         return self._equalizer

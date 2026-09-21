@@ -9,6 +9,7 @@ def test_special_orthogonal_group_has_two_right_cosets_in_O_A1() -> None:
     quotient = subgroup.finite_character_quotient()
     representatives = quotient.right_coset_transversal()
 
+    assert tuple(quotient.image_space().index_set()) == ("determinant",)
     assert quotient.image_keys().cardinality() == 2
     assert quotient.subgroup_image_keys().cardinality() == 1
     assert representatives.cardinality() == 2
@@ -17,6 +18,7 @@ def test_special_orthogonal_group_has_two_right_cosets_in_O_A1() -> None:
     representative_images = finite_ordered_set(
         [quotient.image(representative) for representative in representatives]
     )
+    assert all(image.parent() is quotient.image_space() for image in representative_images)
     assert representative_images.cardinality() == 2
     assert representative_images == quotient.image_keys()
     assert sum(representative in subgroup for representative in representatives) == 1

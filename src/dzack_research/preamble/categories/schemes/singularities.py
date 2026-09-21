@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
 
 def _parse_ade_type(ade_type):
@@ -218,7 +219,15 @@ class IsolatedHypersurfaceSingularity:
 
     def jacobian_generators(self):
         ring = self.polynomial_ring()
-        return tuple(ring._from_engine_element(value) for value in self._engine_derivatives)
+        labels = ring.algebra_generating_set()
+        derivatives = tuple(
+            ring._from_engine_element(value) for value in self._engine_derivatives
+        )
+        return finite_indexed_family(
+            labels,
+            lambda label: derivatives[int(labels.ranking_map()(label))],
+            name="Jacobian generators indexed by coordinate variables",
+        )
 
     def milnor_algebra(self):
         return (self.polynomial_ring()).quotient_by_relations(self.jacobian_generators())

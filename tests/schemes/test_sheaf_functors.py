@@ -97,7 +97,7 @@ def test_inverse_image_and_module_pullback_keep_the_structural_map_distinct() ->
     inverse_image = inverse_image_functor(source)
     pulled = inverse_image.module_pullback()
 
-    assert pullback.factors() == (inverse_image_functor, scalar_extension)
+    assert tuple(pullback.factors()) == (inverse_image_functor, scalar_extension)
     assert inverse_image.category() is inverse_image_functor.codomain()
     assert pulled is scalar_extension(inverse_image)
     assert pulled is pullback(source)

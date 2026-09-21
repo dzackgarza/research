@@ -239,7 +239,7 @@ class CyclicCoverAlgebra(SageObject):
     def local_multiplication(self, index: Integer) -> ModuleMorphism:
         return self.local_algebra(index).multiplication_morphism()
 
-    def local_presentation(self, index: Integer) -> tuple[Parent, IndexedFamily]:
+    def local_presentation(self, index: Integer) -> IndexedFamily:
         return self.local_algebra(index).presentation()
 
     def local_equation(self, index: Integer) -> Element:

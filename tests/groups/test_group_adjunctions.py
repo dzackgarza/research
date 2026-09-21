@@ -70,7 +70,12 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     _assert_maps_agree(orbit_map, recovered_orbit_map, orbits)
 
     acted_endomorphism = acted.Mor(acted)(lambda point: acted.act(group_generator, point))
-    left, right = orbit_adjunction.unit_transformation().naturality_square(acted_endomorphism)
+    naturality = orbit_adjunction.unit_transformation().naturality_square(acted_endomorphism)
+    left, right = naturality
+    assert naturality.parent().factor(0) is left.parent()
+    assert naturality.parent().factor(1) is right.parent()
+    assert naturality.parent().projection(0)(naturality) == left
+    assert naturality.parent().projection(1)(naturality) == right
     _assert_maps_agree(left, right, acted)
 
     target_map = Sets().Mor(target, second_target)(lambda point: ZZ(30) if point == 10 else ZZ(40))

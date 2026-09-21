@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _polynomial_exponents,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
@@ -160,10 +161,10 @@ class _AnalyticDiscFamilyEngine:
         return self
 
     def comparison_maps(self):
-        return (
-            self.analytic_total_space().open_inclusion(),
-            self.analytic_base().open_inclusion(),
-        )
+        total_inclusion = self.analytic_total_space().open_inclusion()
+        base_inclusion = self.analytic_base().open_inclusion()
+        product = Sets().product((total_inclusion.parent(), base_inclusion.parent()))
+        return product((total_inclusion, base_inclusion))
 
     def comparison_square_commutes(self) -> bool:
         total_inclusion, base_inclusion = self.comparison_maps()

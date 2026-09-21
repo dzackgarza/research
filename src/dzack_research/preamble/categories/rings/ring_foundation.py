@@ -2965,10 +2965,12 @@ class _OwnedRingElement(RingElement):
     def quo_rem(self, other):
         other = self.parent()(other)
         quotient, remainder = self._backend().quo_rem(other._backend())
-        return (
-            self.parent()._from_engine_element(quotient),
-            self.parent()._from_engine_element(remainder),
-        )
+        ring = self.parent()
+        product = Sets().product((ring, ring))
+        return product((
+            ring._from_engine_element(quotient),
+            ring._from_engine_element(remainder),
+        ))
 
     def divides(self, other):
         other = self.parent()(other)
@@ -2982,11 +2984,13 @@ class _OwnedRingElement(RingElement):
         r"""Return ``(g,s,t)`` with ``g = s*self + t*other`` in this ring."""
         other = self.parent()(other)
         gcd, left, right = self._backend().xgcd(other._backend())
-        return (
-            self.parent()._from_engine_element(gcd),
-            self.parent()._from_engine_element(left),
-            self.parent()._from_engine_element(right),
-        )
+        ring = self.parent()
+        product = Sets().product((ring, ring, ring))
+        return product((
+            ring._from_engine_element(gcd),
+            ring._from_engine_element(left),
+            ring._from_engine_element(right),
+        ))
 
     def lcm(self, other):
         other = self.parent()(other)

@@ -322,9 +322,15 @@ class _HorikawaK3DoubleCoverEngine:
         return -self.base_ring().one()
 
     def fixed_subschemes(self):
-        return (
-            self.enriques_lift().fixed_subscheme(),
-            self.nikulin_lift().fixed_subscheme(),
+        labels = finite_ordered_set(("enriques", "nikulin"))
+        fixed = {
+            "enriques": self.enriques_lift().fixed_subscheme(),
+            "nikulin": self.nikulin_lift().fixed_subscheme(),
+        }
+        return finite_indexed_family(
+            labels,
+            fixed.__getitem__,
+            name="Fixed subschemes of the two Horikawa lifts",
         )
 
     def enriques_lift_is_fixed_point_free(self) -> bool:

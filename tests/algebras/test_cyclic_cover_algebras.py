@@ -116,8 +116,10 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
             multiplication.domain().pure_tensor(one_basis, z_basis)
         ) == z_basis
         assert z**2 == local(cyclic.local_branch_coefficient(index))
+        presentation = cyclic.local_presentation(index)
+        assert tuple(presentation.index_set()) == ("presentation_ring", "relations")
         assert cyclic.local_equation(index) == (
-            cyclic.local_presentation(index)[0].algebra_generator("z") ** 2
+            presentation["presentation_ring"].algebra_generator("z") ** 2
             - cyclic.local_branch_coefficient(index)
         )
 

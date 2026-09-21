@@ -14,7 +14,11 @@ def test_cusp_milnor_tjurina_and_completion_share_the_hypersurface_equation() ->
     plane = QQ.polynomial_ring(("x", "y"))
     x, y = plane.algebra_generators()
     cusp = IsolatedHypersurfaceSingularity(plane, y**2 - x**3)
+    jacobian = cusp.jacobian_generators()
 
+    assert tuple(jacobian.index_set()) == tuple(plane.algebra_generating_set())
+    assert jacobian["x"] == -3 * x**2
+    assert jacobian["y"] == 2 * y
     assert cusp.milnor_number() == 2
     assert cusp.tjurina_number() == 2
     assert cusp.milnor_algebra().relations().cardinality() == 2

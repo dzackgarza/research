@@ -4358,7 +4358,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             return result
 
         def smith_form(self):
-            r"""Return ``(D,U,V)`` from invariant-factor presentation normalization."""
+            r"""Return the named product ``(D,U,V)`` from invariant-factor presentation normalization."""
 
             ring = self.parent().base_ring()
             if ring not in PrincipalIdealDomains():
@@ -4372,15 +4372,43 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             # Thus D = right * A * left^{-1} in matrix notation.
             left_change = normalization.forward().right()
             right_change = normalization.inverse().left()
-            return diagonal, left_change, right_change
+            labels = finite_ordered_set((
+                "diagonal",
+                "left_change",
+                "right_change",
+            ))
+            factors = {
+                "diagonal": diagonal.parent(),
+                "left_change": left_change.parent(),
+                "right_change": right_change.parent(),
+            }
+            values = {
+                "diagonal": diagonal,
+                "left_change": left_change,
+                "right_change": right_change,
+            }
+            product = Sets().product(
+                indexed_family(labels, factors.__getitem__, name="Smith-form factors")
+            )
+            return product(values.__getitem__)
 
         def smith_normal_form(self):
-            return self.smith_form()[0]
+            return self.smith_form()["diagonal"]
 
         def invariant_factors(self):
             diagonal = self.smith_normal_form()
             zero = self.parent().base_ring().zero()
-            return tuple(diagonal[index, index] for index in range(min(diagonal.parent().nrows(), diagonal.parent().ncols())) if diagonal[index, index] != zero)
+            count = min(diagonal.parent().nrows(), diagonal.parent().ncols())
+            positions = Sets.Δ[count - 1]
+            retained = positions.filtered(
+                lambda index: diagonal[int(index), int(index)] != zero,
+                name="Nonzero Smith-diagonal positions",
+            )
+            return finite_indexed_family(
+                retained,
+                lambda index: diagonal[int(index), int(index)],
+                name="Invariant factors indexed by Smith-diagonal position",
+            )
 
 
 class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):

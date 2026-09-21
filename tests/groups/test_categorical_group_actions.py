@@ -118,7 +118,8 @@ def test_transport_is_postcomposition_on_objects_and_nonidentity_arrows() -> Non
     module = GObjects(group, free_module.codomain()).forgetful_functor()(transported)
     classifying = group.classifying_category()
 
-    assert transported.arrow().functor().factors()[-1] is free_module
+    factors = transported.arrow().functor().factors()
+    assert tuple(factors)[-1] is free_module
     assert transported_arrow.component(classifying.an_object())(
         module.module_generator(Sets.Δ[1](0))
     ) == module.module_generator(Sets.Δ[1](1))

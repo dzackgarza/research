@@ -12,7 +12,9 @@ def test_bilinear_value_matrix_and_image_keep_the_scale_submodule() -> None:
     generator = _generator(module)
     form = module.bilinear_forms(ZZ)([[ZZ(2)]])
 
-    assert form.values_matrix() == ((ZZ(2),),)
+    values = form.values_matrix()
+    assert values.index_set().cardinality() == 1
+    assert tuple(values) == (ZZ(2),)
     image = form.image()
     assert image.inclusion().codomain() is ZZ.regular_module()
     image_generator = image.module_generators()[0]

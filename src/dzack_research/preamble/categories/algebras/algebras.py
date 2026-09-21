@@ -1882,7 +1882,16 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return self.selected_algebra_presentation().presentation_ideal()
 
         def presentation(self):
-            return self.presentation_ring(), self.relations()
+            labels = finite_ordered_set(("presentation_ring", "relations"))
+            values = {
+                "presentation_ring": self.presentation_ring(),
+                "relations": self.relations(),
+            }
+            return indexed_family(
+                labels,
+                values.__getitem__,
+                name="Selected finite algebra presentation data",
+            )
 
         def _represented_structure_morphism_kernel_is_zero(self) -> bool:
             r"""Decide whether the selected scalar map has zero kernel by elimination.
