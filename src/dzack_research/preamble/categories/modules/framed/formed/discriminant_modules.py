@@ -39,20 +39,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class _DiscriminantModuleConstruction:
-    r"""The lattice and metric dual defining the discriminant quotient ``L^#/L``."""
-
-    def __init__(self, source_lattice, dual_lattice) -> None:
-        self._source_lattice = source_lattice
-        self._dual_lattice = dual_lattice
-
-    def source_lattice(self):
-        return self._source_lattice
-
-    def dual_lattice(self):
-        return self._dual_lattice
-
-
 class DiscriminantModules(OwnedCategoryOverBaseRing):
     r"""Cokernels ``A_L = coker(L -> L^#)`` of nondegenerate finite lattices."""
 
@@ -71,18 +57,16 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def __init__(self, source_lattice, dual_lattice, **rest) -> None:
-            self._discriminant_module_construction = _DiscriminantModuleConstruction(
-                source_lattice,
-                dual_lattice,
-            )
+            self._source_lattice = source_lattice
+            self._dual_lattice = dual_lattice
             super().__init__(**rest)
 
         def source_lattice(self):
-            return self._discriminant_module_construction.source_lattice()
+            return self._source_lattice
 
         def dual_lattice(self):
             r"""Return the selected metric dual ``L^#`` covering this quotient."""
-            return self._discriminant_module_construction.dual_lattice()
+            return self._dual_lattice
 
         def cover(self):
             r"""Return the metric dual lattice whose quotient gives this discriminant module."""

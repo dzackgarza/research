@@ -68,20 +68,6 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.tensors.tensor import tensor
 
 
-class _PowerConstruction:
-    r"""The selected source module and degree defining one module power."""
-
-    def __init__(self, source, degree) -> None:
-        self._source = source
-        self._degree = int(degree)
-
-    def source(self):
-        return self._source
-
-    def degree(self):
-        return self._degree
-
-
 class _PowerModuleInclusion(ModuleEmbedding):
     r"""The canonical inclusion of a homogeneous power piece into its graded algebra."""
 
@@ -107,18 +93,16 @@ class _PowerModuleInclusion(ModuleEmbedding):
 
 
 class _PowerModuleParentMethods:
-    def __init__(self, power_construction, **rest) -> None:
-        self._power_construction = power_construction
+    def __init__(self, power_source, power_degree, **rest) -> None:
+        self._power_source = power_source
+        self._power_degree = int(power_degree)
         super().__init__(**rest)
 
-    def power_construction(self):
-        return self._power_construction
-
     def power_source(self):
-        return self.power_construction().source()
+        return self._power_source
 
     def power_degree(self):
-        return self.power_construction().degree()
+        return self._power_degree
 
     def _lift_from_ambient_power_algebra(self, element):
         r"""Read an ambient homogeneous element back in this power module."""
@@ -749,7 +733,8 @@ def _divided_square(module):
             DividedSquareModules(module.base_ring()),
         ),
         extra_construction_data={
-            "power_construction": _PowerConstruction(module, 2),
+            "power_source": module,
+            "power_degree": 2,
         },
     )
 
@@ -783,7 +768,8 @@ def _tensor_power_nontrivial(module, degree):
         family,
         extra_categories=(TensorPowerModules(module.base_ring()),),
         extra_construction_data={
-            "power_construction": _PowerConstruction(module, degree),
+            "power_source": module,
+            "power_degree": degree,
         },
     )
 
@@ -804,7 +790,8 @@ def _symmetric_power_nontrivial(module, degree):
         "symmetric",
         extra_categories=(SymmetricPowerModules(module.base_ring()),),
         extra_construction_data={
-            "power_construction": _PowerConstruction(module, degree),
+            "power_source": module,
+            "power_degree": degree,
         },
     )
 
@@ -825,7 +812,8 @@ def _alternating_power_nontrivial(module, degree):
         "alternating",
         extra_categories=(AlternatingPowerModules(module.base_ring()),),
         extra_construction_data={
-            "power_construction": _PowerConstruction(module, degree),
+            "power_source": module,
+            "power_degree": degree,
         },
     )
 
@@ -852,7 +840,8 @@ def _divided_power_nontrivial(module, degree):
         "divided",
         extra_categories=(DividedPowerModules(module.base_ring()),),
         extra_construction_data={
-            "power_construction": _PowerConstruction(module, degree),
+            "power_source": module,
+            "power_degree": degree,
         },
     )
 
