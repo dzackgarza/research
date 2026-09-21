@@ -125,6 +125,45 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
     assert inclusion(lifted) == element
 
 
+def test_coordinate_axes_multiplication_kernel_retains_its_nonfree_presentation() -> None:
+    polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
+    x = polynomial.algebra_generator("x")
+    y = polynomial.algebra_generator("y")
+    algebra = polynomial.quotient_by_relations([x * y])
+    xbar = algebra.algebra_generator("x")
+    ybar = algebra.algebra_generator("y")
+
+    zero = algebra.free_module(finite_ordered_set(()))
+    free = algebra.free_module(finite_ordered_set(("e",)))
+    line = zero.module_category().Mor(zero, free)({}).cokernel()
+    generator = line.module_generator("e")
+    multiplication_by_x = line.Mor(line)(
+        {"e": line.scalar_multiple(xbar, generator)}
+    )
+
+    kernel = multiplication_by_x.kernel()
+    inclusion = kernel.inclusion()
+    assert int(kernel.module_generating_set().cardinality()) == 1
+    kernel_label = next(iter(kernel.module_generating_set()))
+    kernel_generator = kernel.module_generator(kernel_label)
+    image = inclusion(kernel_generator)
+    assert line.framing_coefficients(image).get("e", algebra.zero()) == ybar
+    assert kernel.scalar_multiple(xbar, kernel_generator) == kernel.zero()
+    assert kernel_generator != kernel.zero()
+
+    presentation = kernel.presentation()
+    assert int(presentation.domain().module_generating_set().cardinality()) == 1
+    relation_label = next(iter(presentation.domain().module_generating_set()))
+    relation = presentation(presentation.domain().module_generator(relation_label))
+    assert relation != presentation.codomain().zero()
+    assert presentation.codomain().framing_coefficients(relation).get(
+        kernel_label, algebra.zero()
+    ) == xbar
+
+    lifted = inclusion.lift(line.scalar_multiple(ybar, generator))
+    assert inclusion(lifted) == line.scalar_multiple(ybar, generator)
+
+
 def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
     source_free = ZZ.free_module(finite_ordered_set(("x",)))
     source_relations = ZZ.free_module(finite_ordered_set(("r4",)))

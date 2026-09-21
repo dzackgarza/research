@@ -2317,11 +2317,12 @@ def _singular_presentation_kernel(morphism):
 
     ``F x \in \operatorname{im}(Q^t,I)``.
 
-    Singular's ``modulo(F, [Q^t \mid I])`` computes these kernel lifts
-    directly.  Applying ``modulo`` again to their matrix modulo
-    ``[D^t \mid I]`` gives the relations of the kernel presentation.  This is
-    the native formulation in Singular's tutorial, §4.3.7,
-    ``https://www.singular.uni-kl.de/ftp/pub/Math/Singular/doc/tutor.pdf``.
+    Singular's maintained ``homolog.lib::hom_kernel(A,M,N)`` computes the
+    presentation of ``ker(A':coker(M)->coker(N))``.  Its internal first
+    ``modulo(A,N)`` is also the kernel-lift module, but ``hom_kernel`` exposes
+    only the resulting presentation.  This adapter therefore calls ``modulo``
+    once separately to recover exactly those generator lifts for the owned
+    inclusion; it does not reconstruct the presentation algorithm.
 
     This is a private computation crossing.  The returned object is the owned
     finitely presented module equipped with its actual inclusion into the
@@ -2329,7 +2330,8 @@ def _singular_presentation_kernel(morphism):
     """
     from sage.libs.singular.function_factory import ff
     from sage.matrix.constructor import matrix
-    from sage.matrix.special import identity_matrix
+    from sage.modules.free_module import FreeModule as SageFreeModule
+    from sage.structure.sequence import Sequence
 
     domain = morphism.domain()
     codomain = morphism.codomain()
@@ -2378,49 +2380,76 @@ def _singular_presentation_kernel(morphism):
     target_relations = _presentation_matrix(codomain)
     n = len(source_labels)
     m = len(target_labels)
+    assert n > 0 and m > 0, (
+        "the Singular kernel provider receives only nonzero finite presentations; "
+        "a map from or to the zero module is already handled by the selected-presentation dispatcher"
+    )
 
     def singular_relation_module(relations, width):
-        columns = matrix(singular_ring, width, 0, [])
-        if relations.nrows():
-            lifted_relations = matrix(
-                singular_ring,
-                relations.nrows(),
-                width,
-                [
-                    to_singular(lift_scalar(entry))
-                    for row in _matrix_coordinate_rows(relations)
-                    for entry in row
-                ],
-            )
-            columns = columns.augment(lifted_relations.transpose())
-        for relation in coefficient_relations:
-            columns = columns.augment(
-                to_singular(backend_coefficient_relation(relation))
-                * identity_matrix(singular_ring, width)
-            )
-        return columns
-
-    if m == 0:
-        kernel_lifts = [tuple(singular_ring.one() if i == j else singular_ring.zero() for i in range(n)) for j in range(n)]
-    else:
-        coordinate_columns = []
-        for source_label in source_labels:
-            image = morphism(domain.module_generator(source_label))
-            coefficients = codomain.framing_coefficients(image)
-            coordinate_columns.append(tuple(to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in target_labels))
-        f_matrix = matrix(
-            singular_ring,
-            m,
-            n,
-            [coordinate_columns[column][row] for row in range(m) for column in range(n)],
-        )
-        kernel_lifts = [
-            tuple(vector)
-            for vector in ff.modulo(
-                f_matrix,
-                singular_relation_module(target_relations, m),
-            )
+        free = SageFreeModule(singular_ring, width)
+        vectors = [
+            free(tuple(to_singular(lift_scalar(entry)) for entry in row))
+            for row in _matrix_coordinate_rows(relations)
         ]
+        for relation in coefficient_relations:
+            coefficient = to_singular(backend_coefficient_relation(relation))
+            for position in range(width):
+                vectors.append(
+                    free(
+                        tuple(
+                            coefficient if index == position else singular_ring.zero()
+                            for index in range(width)
+                        )
+                    )
+                )
+        if not vectors:
+            vectors.append(free.zero())
+        return Sequence(vectors, universe=free, check=False, immutable=True)
+
+    def singular_module_matrix(module_vectors, width):
+        vectors = tuple(module_vectors)
+        return matrix(
+            singular_ring,
+            width,
+            len(vectors),
+            [
+                vectors[column][row]
+                for row in range(width)
+                for column in range(len(vectors))
+            ],
+        )
+
+    coordinate_columns = []
+    for source_label in source_labels:
+        image = morphism(domain.module_generator(source_label))
+        coefficients = codomain.framing_coefficients(image)
+        coordinate_columns.append(tuple(to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in target_labels))
+    f_matrix = matrix(
+        singular_ring,
+        m,
+        n,
+        [coordinate_columns[column][row] for row in range(m) for column in range(n)],
+    )
+    source_relation_module = singular_relation_module(source_relations, n)
+    target_relation_module = singular_relation_module(target_relations, m)
+    # ``hom_kernel`` internally computes the same ``modulo(f_matrix, N)``
+    # before quotienting by the source relations.  Repeat only that first
+    # maintained operation so the owned kernel can retain the corresponding
+    # generator lifts and hence its actual inclusion into ``domain``.  The
+    # presentation itself comes exclusively from ``hom_kernel`` below.
+    kernel_lifts = tuple(
+        ff.modulo(
+            f_matrix,
+            target_relation_module,
+            ring=singular_ring,
+        )
+    )
+    kernel_presentation = ff.homolog__lib.hom_kernel(
+        f_matrix,
+        source_relation_module,
+        target_relation_module,
+        ring=singular_ring,
+    )
 
     kernel_count = len(kernel_lifts)
     kernel_labels = Sets.Δ[kernel_count - 1]
@@ -2434,17 +2463,11 @@ def _singular_presentation_kernel(morphism):
     else:
         kernel_columns = matrix(singular_ring, n, 0, [])
 
-    if n == 0:
-        kernel_relation_rows = []
-    else:
-        kernel_relation_rows = [
-            tuple(from_singular(entry) for entry in vector)
-            for vector in ff.modulo(
-                kernel_columns,
-                singular_relation_module(source_relations, n),
-            )
-            if any(entry != 0 for entry in vector)
-        ]
+    kernel_relation_rows = [
+        tuple(from_singular(entry) for entry in vector)
+        for vector in kernel_presentation
+        if any(entry != 0 for entry in vector)
+    ]
     relation_labels = Sets.Δ[len(kernel_relation_rows) - 1]
     relation_matrix = _matrix_space_like(
         domain,
@@ -2477,7 +2500,7 @@ def _singular_presentation_kernel(morphism):
             [to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in source_labels],
         )
         spanning = kernel_columns.augment(
-            singular_relation_module(source_relations, n)
+            singular_module_matrix(source_relation_module, n)
         )
         coefficients_in_spanning = _singular_module_lift(spanning, requested.transpose())
         if coefficients_in_spanning is None:
