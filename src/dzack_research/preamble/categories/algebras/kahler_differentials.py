@@ -19,35 +19,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
-class _KahlerDifferentialConstruction:
-    r"""The selected algebra and conormal data defining one differential module."""
-
-    def __init__(
-        self,
-        source_algebra,
-        *,
-        conormal_module=None,
-        ambient_differentials=None,
-        conormal_morphism=None,
-    ) -> None:
-        self._source_algebra = source_algebra
-        self._conormal_module = conormal_module
-        self._ambient_differentials = ambient_differentials
-        self._conormal_morphism = conormal_morphism
-
-    def source_algebra(self):
-        return self._source_algebra
-
-    def conormal_module(self):
-        return self._conormal_module
-
-    def ambient_differentials(self):
-        return self._ambient_differentials
-
-    def conormal_morphism(self):
-        return self._conormal_morphism
-
-
 class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
     r"""Selected modules ``Omega^1_{A/R}`` for the coefficient algebra ``A``."""
 
@@ -78,20 +49,27 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         return [ModulesWithChosenFinitePresentation(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, kahler_construction, **rest) -> None:
-            self._kahler_construction = kahler_construction
+        def __init__(
+            self,
+            source_algebra,
+            conormal_module=None,
+            ambient_differentials=None,
+            conormal_morphism=None,
+            **rest,
+        ) -> None:
+            self._source_algebra = source_algebra
+            self._conormal_module = conormal_module
+            self._ambient_differentials = ambient_differentials
+            self._conormal_morphism = conormal_morphism
             super().__init__(**rest)
 
-        def kahler_construction(self):
-            return self._kahler_construction
-
         def source_algebra(self):
-            return self.kahler_construction().source_algebra()
+            return self._source_algebra
 
         def conormal_module(self):
             r"""Return ``A tensor_P I ~= I/I^2`` for the selected quotient ``P -> A``."""
 
-            conormal = self.kahler_construction().conormal_module()
+            conormal = self._conormal_module
             assert conormal is not None, (
                 "conormal_module requires selected quotient-presentation conormal data"
             )
@@ -100,7 +78,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         def ambient_differentials(self):
             r"""Return ``Omega^1_{P/R} tensor_P A`` in the selected conormal sequence."""
 
-            ambient = self.kahler_construction().ambient_differentials()
+            ambient = self._ambient_differentials
             assert ambient is not None, (
                 "ambient_differentials requires selected quotient-presentation differential data"
             )
@@ -109,7 +87,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         def conormal_morphism(self):
             r"""Return ``I/I^2 -> Omega^1_{P/R} tensor_P A``, ``f |-> df``."""
 
-            morphism = self.kahler_construction().conormal_morphism()
+            morphism = self._conormal_morphism
             assert morphism is not None, (
                 "conormal_morphism requires selected quotient-presentation conormal data"
             )
@@ -285,7 +263,7 @@ def _construct_kahler_differentials(algebra):
             algebra.localization_functor(),
             extra_categories=(KahlerDifferentialModules(algebra),),
             extra_construction_data={
-                "kahler_construction": _KahlerDifferentialConstruction(algebra)
+                "source_algebra": algebra,
             },
         )
 
@@ -331,12 +309,10 @@ def _construct_kahler_differentials(algebra):
             relation_map,
             category=Category.join((KahlerDifferentialModules(algebra),)),
             **{
-                "kahler_construction": _KahlerDifferentialConstruction(
-                    algebra,
-                    conormal_module=conormal_module,
-                    ambient_differentials=ambient_differentials,
-                    conormal_morphism=conormal_morphism,
-                ),
+                "source_algebra": algebra,
+                "conormal_module": conormal_module,
+                "ambient_differentials": ambient_differentials,
+                "conormal_morphism": conormal_morphism,
             },
         )
     else:
@@ -344,7 +320,7 @@ def _construct_kahler_differentials(algebra):
             differential_labels,
             _extra_categories=(KahlerDifferentialModules(algebra),),
             _extra_construction_data={
-                "kahler_construction": _KahlerDifferentialConstruction(algebra)
+                "source_algebra": algebra,
             },
         )
     return omega

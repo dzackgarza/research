@@ -81,7 +81,6 @@ def test_graded_scalar_restriction_is_owned_by_the_graded_algebra() -> None:
     restricted = algebra.restrict_scalars(identity)
 
     assert restricted.extension_algebra() is algebra
-    assert restricted.restricted_scalars_construction().algebra_over_extension() is algebra
     assert restricted.ring_map() is identity
     assert "_preamble_extension_algebra" not in restricted.__dict__
     assert "_preamble_ring_map" not in restricted.__dict__
