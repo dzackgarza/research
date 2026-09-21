@@ -1756,7 +1756,9 @@ class _SelectedFiniteAlgebraPresentation:
     r"""The chosen polynomial presentation defining a presented algebra.
 
     The presenting algebra, relation family, defining ideal, quotient map, and
-    selected lift are one mathematical choice.  Keep them together so the
+    selected lift are one mathematical choice.  The quotient-map realization
+    is fixed at construction and may be evaluated later; its cache is not a
+    second mathematical datum.  Keep them together so the
     chosen-presentation category does not infer that choice from unrelated
     private attributes on its objects.
     """
@@ -1767,12 +1769,16 @@ class _SelectedFiniteAlgebraPresentation:
         relations,
         presentation_ideal,
         lift_to_presentation,
+        presentation_morphism_factory,
     ) -> None:
         self._presentation_ring = presentation_ring
         self._relations = relations
         self._presentation_ideal = presentation_ideal
         self._lift_to_presentation = lift_to_presentation
-        self._presentation_morphism = None
+        if not callable(presentation_morphism_factory):
+            raise TypeError("a selected algebra presentation fixes how its quotient morphism is realized")
+        self._presentation_morphism_factory = presentation_morphism_factory
+        self._realized_presentation_morphism = None
 
     def presentation_ring(self):
         return self._presentation_ring
@@ -1786,16 +1792,14 @@ class _SelectedFiniteAlgebraPresentation:
     def lift(self, element):
         return self._lift_to_presentation(element)
 
-    def set_presentation_morphism(self, morphism) -> None:
-        if self._presentation_morphism is not None and self._presentation_morphism is not morphism:
-            raise ValueError("the selected algebra presentation already has its quotient morphism")
-        self._presentation_morphism = morphism
-
     def presentation_morphism(self):
-        assert self._presentation_morphism is not None, (
-            "the selected algebra presentation must acquire its quotient morphism during construction"
-        )
-        return self._presentation_morphism
+        morphism = self._realized_presentation_morphism
+        if morphism is None:
+            morphism = self._presentation_morphism_factory()
+            if morphism.domain() is not self.presentation_ring():
+                raise ValueError("the selected algebra-presentation morphism has the wrong source")
+            self._realized_presentation_morphism = morphism
+        return morphism
 
 
 class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):

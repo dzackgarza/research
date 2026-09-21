@@ -89,6 +89,7 @@ def test_native_localization_and_quotient_thread_their_actual_scalar_bases():
     assert localized.base_ring() is QQ
     quotient_map = quotient.quotient_map()
     localization_map = localized.localization_map()
+    assert quotient_map is quotient.quotient_map()
     assert quotient_map.domain() is polynomial and quotient_map.codomain() is quotient
     assert localization_map.domain() is polynomial and localization_map.codomain() is localized
     assert quotient_map.parent().mor_category().is_subcategory(OwnedRings())

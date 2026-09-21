@@ -77,7 +77,9 @@ def test_selected_algebra_presentation_extends_one_retained_algebra_framing() ->
 
     assert algebra in AlgebrasWithChosenFinitePresentation(ZZ)
     assert algebra.presentation_ring() is algebra.selected_framing_source(owner)
-    assert algebra.algebra_presentation_morphism() is algebra.selected_framing_morphism(owner)
+    framing = algebra.selected_framing_morphism(owner)
+    assert framing is algebra.algebra_presentation_morphism()
+    assert framing is algebra.algebra_presentation_morphism()
     assert algebra.generating_module() is generating
     assert algebra.algebra_generating_set() == generating.module_generating_set()
     assert algebra.relations().cardinality() == 1

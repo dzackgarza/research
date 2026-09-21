@@ -665,12 +665,20 @@ def _distinguished_open_subobject(spectrum, function):
 
 
 class _QuotientRingConstruction:
-    r"""The source ring, defining ideal, and quotient map of ``R/I``."""
+    r"""The source ring, ideal, and fixed realization of the quotient map of ``R/I``.
 
-    def __init__(self, source, defining_ideal) -> None:
+    The factory is construction data determining the canonical map.  The
+    realized morphism is only a cache, so no later caller can supply or replace
+    mathematical provenance on the shared quotient object.
+    """
+
+    def __init__(self, source, defining_ideal, quotient_map_factory) -> None:
         self._source = source
         self._defining_ideal = defining_ideal
-        self._quotient_map = None
+        if not callable(quotient_map_factory):
+            raise TypeError("a quotient construction fixes how its canonical map is realized")
+        self._quotient_map_factory = quotient_map_factory
+        self._realized_quotient_map = None
 
     def source(self):
         return self._source
@@ -678,16 +686,14 @@ class _QuotientRingConstruction:
     def defining_ideal(self):
         return self._defining_ideal
 
-    def set_quotient_map(self, morphism) -> None:
-        if self._quotient_map is not None and self._quotient_map is not morphism:
-            raise ValueError("this quotient construction already has its canonical map")
-        self._quotient_map = morphism
-
     def quotient_map(self):
-        assert self._quotient_map is not None, (
-            "a quotient construction must acquire its canonical map during construction"
-        )
-        return self._quotient_map
+        morphism = self._realized_quotient_map
+        if morphism is None:
+            morphism = self._quotient_map_factory()
+            if morphism.domain() is not self.source():
+                raise ValueError("the quotient map has the wrong source ring")
+            self._realized_quotient_map = morphism
+        return morphism
 
 
 class QuotientRings(OwnedCategory):
@@ -763,9 +769,15 @@ class QuotientRings(OwnedCategory):
             _engine_ring=None,
             **rest,
         ) -> None:
+            def quotient_map():
+                return source.Mor(self, category=OwnedRings())(
+                    lambda element: self(element),
+                )
+
             self._quotient_construction = _QuotientRingConstruction(
                 source,
                 defining_ideal,
+                quotient_map,
             )
             self._preamble_engine_ring = _engine_ring
             super().__init__(
@@ -775,11 +787,6 @@ class QuotientRings(OwnedCategory):
                 _engine_unit=lambda algebra: QuotientRings.ParentMethods.one(algebra),
                 **rest,
             )
-
-            quotient_map = source.Mor(self, category=OwnedRings())(
-                lambda element: self(element),
-            )
-            self._quotient_construction.set_quotient_map(quotient_map)
 
         def _element_constructor_(self, value):
             from sage.structure.element import parent as element_parent
@@ -1617,7 +1624,12 @@ class IdealExtensionData(SageObject):
 
 
 class _AdicCompletionConstruction:
-    r"""The defining source, ideal, canonical map, and exact comparison data of an adic completion."""
+    r"""The defining source, ideal, canonical map, and exact comparison data of an adic completion.
+
+    The completion-map realization is fixed with the source and ideal.  It may
+    be evaluated after the target parent exists, but no setter can change which
+    map the construction denotes.
+    """
 
     def __init__(
         self,
@@ -1625,6 +1637,7 @@ class _AdicCompletionConstruction:
         defining_ideal,
         precision,
         *,
+        completion_map_factory,
         projection_lift=None,
         arithmetic_mode="finite_precision",
         map_kernel=None,
@@ -1635,7 +1648,10 @@ class _AdicCompletionConstruction:
         self._projection_lift = projection_lift
         self._arithmetic_mode = arithmetic_mode
         self._map_kernel = map_kernel
-        self._completion_map = None
+        if not callable(completion_map_factory):
+            raise TypeError("an adic completion fixes how its canonical map is realized")
+        self._completion_map_factory = completion_map_factory
+        self._realized_completion_map = None
 
     def source(self):
         return self._source
@@ -1655,19 +1671,17 @@ class _AdicCompletionConstruction:
     def map_kernel(self):
         return self._map_kernel
 
-    def set_completion_map(self, morphism) -> None:
-        if self._completion_map is not None and self._completion_map is not morphism:
-            raise ValueError("this adic completion construction already has its canonical map")
-        self._completion_map = morphism
-
     def completion_map_or_none(self):
-        return self._completion_map
+        return self._realized_completion_map
 
     def completion_map(self):
-        assert self._completion_map is not None, (
-            "an adic completion construction must acquire its canonical map during construction"
-        )
-        return self._completion_map
+        morphism = self._realized_completion_map
+        if morphism is None:
+            morphism = self._completion_map_factory()
+            if morphism.domain() is not self.source():
+                raise ValueError("the completion map has the wrong source ring")
+            self._realized_completion_map = morphism
+        return morphism
 
 
 class AdicCompletions(Category):
@@ -2213,10 +2227,39 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         formal_parameter_labels=None,
         extra_categories=(),
     ) -> None:
+        selected_engine_map = engine_map
+        if completion_image is None:
+            source_engine = _engine_ring(source)
+            if selected_engine_map is None:
+                selected_engine_map = engine.coerce_map_from(source_engine)
+
+            def completion_image(element):
+                source_value = _engine_element(source, source(element))
+                value = (
+                    selected_engine_map(source_value)
+                    if selected_engine_map is not None
+                    else engine(source_value)
+                )
+                return engine(value)
+
+        def completion_map_factory():
+            def completion_map_image(element):
+                selected = source(element)
+                return self._completion_element(
+                    completion_image(selected),
+                    source_expression=selected,
+                )
+
+            return source.Mor(self)._elementwise_with_engine(
+                completion_map_image,
+                selected_engine_map,
+            )
+
         self._adic_completion_construction = _AdicCompletionConstruction(
             source,
             defining_ideal,
             precision,
+            completion_map_factory=completion_map_factory,
             projection_lift=projection_lift,
             arithmetic_mode=arithmetic_mode,
             map_kernel=completion_map_kernel,
@@ -2283,33 +2326,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             algebra_labels,
             categories=tuple(placements),
         )
-        selected_engine_map = engine_map
-        if completion_image is None:
-            source_engine = _engine_ring(source)
-            if selected_engine_map is None:
-                selected_engine_map = engine.coerce_map_from(source_engine)
-
-            def completion_image(element):
-                source_value = _engine_element(source, source(element))
-                value = (
-                    selected_engine_map(source_value)
-                    if selected_engine_map is not None
-                    else engine(source_value)
-                )
-                return engine(value)
-
-        def completion_map_image(element):
-            selected = source(element)
-            return self._completion_element(
-                completion_image(selected),
-                source_expression=selected,
-            )
-
-        completion_map = source.Mor(self)._elementwise_with_engine(
-            completion_map_image,
-            selected_engine_map,
-        )
-        self._adic_completion_construction.set_completion_map(completion_map)
+        completion_map = self.completion_map()
         if algebra_base is None or algebra_base is source:
             self.algebra_structure_construction().set_structure_map(completion_map)
         match (formal_base_is_local, defining_ideal_is_maximal):
@@ -3529,9 +3546,19 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
     r"""The dual-number quotient with its defining quotient data fixed at construction."""
 
     def __init__(self, engine, base, polynomial, defining_ideal, label) -> None:
+        engine_map = engine.coerce_map_from(_engine_ring(polynomial))
+
+        def quotient_map():
+            return _canonical_map(
+                polynomial,
+                self,
+                engine_map,
+            )
+
         self._quotient_construction = _QuotientRingConstruction(
             polynomial,
             defining_ideal,
+            quotient_map,
         )
         placements = [QuotientRings()]
         if base in OwnedRings().Noetherian():
@@ -3547,12 +3574,6 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
             (label,),
             categories=tuple(placements),
         )
-        quotient_map = _canonical_map(
-            polynomial,
-            self,
-            engine.coerce_map_from(_engine_ring(polynomial)),
-        )
-        self._quotient_construction.set_quotient_map(quotient_map)
         if base in OwnedRings().Commutative().Local():
             epsilon_bar = self._from_engine_element(engine.gen())
             maximal_ideal = _maximal_ideal_over_local_base(

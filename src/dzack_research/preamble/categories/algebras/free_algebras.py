@@ -411,11 +411,19 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
                 representative = unflatten(representative)
             return presentation_ring._from_engine_element(representative)
 
+        def presentation_morphism():
+            return Algebras(
+                presentation_ring.base_ring()
+            ).Associative().Unital().Mor(presentation_ring, self)(
+                lambda label: self.algebra_generator(label)
+            )
+
         self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
             presentation_ring,
             selected_relations,
             presentation_ideal,
             lift_to_presentation,
+            presentation_morphism,
         )
         if generating_module is not None:
             self._generating_module = generating_module
@@ -485,10 +493,6 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             categories=tuple(placement),
             law_decisions=law_decisions,
         )
-        presentation_morphism = Algebras(presentation_ring.base_ring()).Associative().Unital().Mor(presentation_ring, self)(
-            lambda label: self.algebra_generator(label)
-        )
-        self.selected_algebra_presentation().set_presentation_morphism(presentation_morphism)
         if commutative_backend:
             self._preamble_commutative_algebra_coproduct_backend = lambda left, right: (
                 _commutative_algebra_coproduct_backend(left, right)
