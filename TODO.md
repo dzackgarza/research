@@ -211,12 +211,6 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Forms, actions and arithmetic realizations
 
-- [ ] **`objects-through-categories-lattice-files`**. **Needs:** none.
-  **Owner and delta:** lattice, hyperbolic, orthogonal-quotient and reduction files under categories: finish placement and inherited-construction review across their remaining host records and maps.
-  **Coverage boundary:** enumerate the construction routes and retained mathematical records in these files, including the arithmetic application callers. Earlier formed-module, primitive-extension and action deliveries already own defects on their changed paths; reconcile only independently remaining cases here while preserving their acceptance.
-  **Invariants:** Lattices(R) constructs through its formed module on the exact selected module. Polytopes/cones/rays, manifold points and analytic opens stay at their existing mathematical owners. Category declarations state immediate sufficient structure rather than defaulting to Sets because an owner is inconvenient.
-  **Closure specimens:** lattice arithmetic and induced forms, an isotropic locus, a centralizer inclusion and a nontrivial reduction adjacency answer through those owners. Review the complete named family, preserving currently integrated Voronoi and Allcock realizations and their maps. No deletion or class-label rewrite alone satisfies this node.
-
 ## Common categorical authority and public boundaries
 
 - [ ] **`owned-product-results`**. **Needs:** none.
@@ -224,7 +218,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** genuinely mathematical products and indexed families have owned parents, projections and component codomains. Use existing product/family constructions; do not introduce a record class for each pair. Private adapter tuples remain representation data at their boundary.
   **Closure specimens:** project each square component into its actual morphism space and recover the naturality equation on a nonidentity arrow. Tensor shape/valence and invariant-factor families retain their mathematical indexing rather than a Python positional convention.
 
-- [ ] **`owned-provenance-data`**. **Needs:** `objects-through-categories-lattice-files`, `sheaf-descent-threading`.
+- [ ] **`owned-provenance-data`**. **Needs:** `sheaf-descent-threading`.
   **Owner and delta:** all remaining source/preimage, coordinate-morphism, presentation, comparison, completion and base-change side channels throughout the preamble, including schemes.
   **Coverage boundary:** reconcile residual declaration/assignment/read families against earlier construction deliveries. A producer cannot defer defining data used by its own consumers to this sweep; distinct untouched constructions remain this node's work.
   **Invariants:** each selected source or map is declared construction data at its mathematical owner. Derived/debug metadata carries no mathematical authority. A shared result object never receives caller-specific presentation state. A genuine chosen preimage of a functor remains a choice, not a reconstructed equal object (`CON-05`, `OWN-19`).
@@ -246,13 +240,13 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** raising reaches every publicly reachable mathematical constituent and subsequent arithmetic, through its canonical constructor. An owned parent containing raw engine children does not satisfy `OWN-04`. Arbitrary raw-engine ingress is not an alternative public API.
   **Closure specimens:** project a returned morphism component, evaluate a delayed family stage, extract a coefficient and perform arithmetic on it; each result has the correct owned parent and expected equation. Use both a geometric sheaf result and an arithmetic orbit/presentation result so a top-level wrapper cannot certify the boundary.
 
-- [ ] **`membership-by-placement`**. **Needs:** `objects-through-categories-lattice-files`, `sheaf-descent-threading`.
+- [ ] **`membership-by-placement`**. **Needs:** `sheaf-descent-threading`.
   **Owner and delta:** category containment throughout the preamble, including abstract functor, arrow, product, morphism and sheaf categories and predicates hidden in helpers.
   **Coverage boundary:** enumerate category declarations and follow their inherited/overridden containment and helper calls, then compare every route with the original "each category" requirement. Distinguish genuine element membership at set owners explicitly. A scan of `__contains__` bodies or the original scheme complaint alone is incomplete. Earlier producer repairs must already establish their placements; this node reconciles the untouched remainder.
   **Invariants:** category membership follows construction placement or the specified functor, not engine class, duck typing, cardinality, or an implicit walk up a base-ring tower. Distinguish category membership from genuine element membership in a mathematical set; the latter may require an exact predicate at its owner.
   **Closure specimens:** a correctly placed object is accepted, a similarly represented object with the wrong structure is not. A QQ-scheme is not silently treated as a ZZ-scheme without the specified base passage. Check discrete categories and arrow helpers as well as the original scheme example; inspect every category containment body before closure.
 
-- [ ] **`inherited-operations-not-restated`**. **Needs:** `objects-through-categories-lattice-files`.
+- [ ] **`inherited-operations-not-restated`**. **Needs:** none.
   **Owner and delta:** `cardinality`, `zero`, `scalar_multiple`, `module_generator`, `module_generating_set` and the broader general-operation family implicated by these repairs.
   **Coverage boundary:** compare the declarations, overrides and actual inherited data across this family. Earlier constructor nodes already owe usable inherited operations on their delivered routes; reconcile independently remaining restatements and genuine specializations here.
   **Invariants:** the weakest sufficient category owns the operation; descendants inherit it from real construction data. A theorem-backed specialized algorithm may remain if it adds genuine computation and agrees with the general operation. Multiple definitions are not automatically duplication, and a forwarding copy is not inheritance.
@@ -280,7 +274,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** delegate the semantic operation to its weakest sufficient owned or maintained computation owner. Keep only representation adaptation or source-justified theory-specific algorithms; a list comprehension or a private helper containing the old loop is not a repair. Preserve already-correct torsion-form action delegation.
   **Closure specimens:** a noncommutative word preserves order under a universal extension; a divided-power product has its actual coefficient; a finite action with several orbits preserves representatives and stabilizers. Review every catalogue family, documenting the theorem for retained specialized loops and the actual dependency operation for replaced algorithms.
 
-- [ ] **`assertion-frontiers`**. **Needs:** `singular-kernel-delegation`, `imperative-algorithm-cleanup`, `objects-through-categories-lattice-files`.
+- [ ] **`assertion-frontiers`**. **Needs:** `singular-kernel-delegation`, `imperative-algorithm-cleanup`.
   **Owner and delta:** all public mathematical operations using `NotImplementedError` or equivalent runtime dispatch failures across schemes, algebras, rings, modules, lattices and groups.
   **Invariants:** keep the full mathematical domain. Supported exact cases use their maintained owner; only the precise unsupported computational remainder fails at the declared hypothesis/representation frontier. Existence, representation and computability are distinct. An undecidable assertion is not a false theorem, and making a required concrete operation abstract does not deliver it.
   **Closure specimens:** each operation family has a positive supported case and a nearby unsupported case distinguished by its actual hypothesis. Retain integral torsion, infinite objects and nonfree presentations where required. Review complete control flow, not only exception spellings; no blanket replacement with `assert False` or an unconditional message closes the family.

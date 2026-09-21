@@ -405,11 +405,29 @@ class OrbitSets(OwnedCategory):
             return self.parent().orbit_points(self)
 
         elements = points
+        members = points
 
         def acting_group(self):
             return self.parent().g_set().acting_group()
 
+        group = acting_group
         supergroup = acting_group
+
+        def __contains__(self, point) -> bool:
+            return point in self.points()
+
+        def stabilizer(self):
+            r"""Return the stabilizer of the selected representative."""
+            return self.parent().g_set().stabilizer(self.representative())
+
+        def transporter_from(self, point):
+            r"""Return one group element carrying ``point`` to the representative."""
+            if point not in self:
+                return None
+            return self.parent().g_set().transporter_witness(
+                point,
+                self.representative(),
+            )
 
         def __eq__(self, other) -> bool:
             return other in self.parent() and other._index == self._index

@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.group.predicate_subgroups import (
     StabilizerSubgroups,
 )
 from dzack_research.preamble.categories.isotropic_orbits import (
+    _primitive_isotropic_vector_orbit_decomposition,
     _isotropic_equivalence_witness,
     _isotropic_orbit_representatives,
     _isotropic_stabilizer_generators,
@@ -631,9 +632,113 @@ class LatticeIsometry(LatticeEmbedding):
         )
         return evaluated.kernel()
 
+    @cached_method
+    def cyclotomic_decomposition(self, order):
+        r"""Return the integral cyclotomic decomposition for this finite-order automorphism."""
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            CyclotomicDecomposition,
+        )
+
+        return CyclotomicDecomposition(self, order)
+
+    @cached_method
+    def polarized(self, polarization):
+        r"""Retain an invariant nonzero polarization together with this automorphism."""
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            PolarizedEquivariantLattice,
+        )
+
+        return PolarizedEquivariantLattice(self, polarization)
+
+    def equivariant_sublattice(self, sublattice):
+        r"""Return this automorphism restricted to a stable represented sublattice."""
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            _restrict_isometry,
+        )
+
+        return _restrict_isometry(self, sublattice)
+
+    def equivariant_isometry_to(self, other):
+        r"""Return ``h`` with ``h*self = other*h`` when exactly decidable."""
+        if self.domain() is not self.codomain() or other.domain() is not other.codomain():
+            raise ValueError("equivariant isometry compares two lattice automorphisms")
+        source = self.domain()
+        target = other.domain()
+        if source is target and self == other:
+            return source.O().one()
+        homset = source.Isom(target)
+        empty = homset.is_empty()
+        if empty is True:
+            return None
+        if target.module_rank().is_finite() and target.is_definite():
+            for candidate in homset:
+                if candidate * self == other * candidate:
+                    return candidate
+            return None
+        assert empty is not Unknown, (
+            "equivariant-isometry search in the indefinite regime requires the underlying isometry Hom to be decided exactly"
+        )
+        witness = homset.an_element()
+        assert witness * self == other * witness, (
+            "the represented indefinite equivariant-isometry path requires the selected underlying isometry witness to intertwine the equipped actions; no exhaustive indefinite conjugacy classifier is selected"
+        )
+        return witness
+
+    def equivariant_vector_orbit_decomposition(self, square):
+        r"""Return exact centralizer orbits on vectors of the selected square."""
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            _equivariant_vector_orbit_decomposition,
+        )
+
+        return _equivariant_vector_orbit_decomposition(self, square)
+
     def equivariant_vector_orbit_representatives(self, square):
         r"""Return vector-orbit representatives under ``Z_{O(L)}(self)`` in the supported regime."""
-        return self.primitive_extension().equivariant_vector_orbit_representatives(square)
+        return self.equivariant_vector_orbit_decomposition(square).representatives()
+
+    def equivariant_sublattice_orbit_decomposition(self, sublattices):
+        r"""Return exact centralizer orbits on a finite stable family of sublattices."""
+        from dzack_research.preamble.categories.isotropic_orbits import _same_subobject
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            _equivariant_finite_orbit_decomposition,
+            _transport_sublattice,
+        )
+
+        sublattices = tuple(sublattices)
+        for sublattice in sublattices:
+            self.equivariant_sublattice(sublattice)
+        return _equivariant_finite_orbit_decomposition(
+            self,
+            sublattices,
+            _transport_sublattice,
+            _same_subobject,
+        )
+
+    def equivariant_flag(self, terms):
+        r"""Return the represented nested flag of sublattices stable under this automorphism."""
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            EquivariantSublatticeFlag,
+        )
+
+        return EquivariantSublatticeFlag(self, terms)
+
+    def equivariant_flag_orbit_decomposition(self, flags):
+        r"""Return exact centralizer orbits on a finite stable family of equivariant flags."""
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            _equivariant_finite_orbit_decomposition,
+            _same_equivariant_flag,
+            _transport_equivariant_flag,
+        )
+
+        flags = tuple(flags)
+        if any(flag.isometry() != self for flag in flags):
+            raise ValueError("an equivariant flag family belongs to one lattice automorphism")
+        return _equivariant_finite_orbit_decomposition(
+            self,
+            flags,
+            _transport_equivariant_flag,
+            _same_equivariant_flag,
+        )
 
     @cached_method
     def _discriminant_forward_morphism(self):
@@ -1884,11 +1989,11 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
     def cusps(self, rank=1):
         r"""Return the ``O(L)``-orbits of primitive isotropic rank-``rank`` subobjects."""
-        from dzack_research.preamble.categories.isotropic_orbits import Cusp
+        from dzack_research.preamble.categories.isotropic_orbits import _cusp
 
         return finite_ordered_set(
             tuple(
-                Cusp(representative)
+                _cusp(representative)
                 for representative in self.isotropic_orbit_representatives(rank)
             )
         )
@@ -1941,6 +2046,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         stabilizer and transporter operation.  The locus states which orbit
         decomposition it has.
         """
+        if locus is self.lattice().primitive_isotropic_vectors():
+            return _primitive_isotropic_vector_orbit_decomposition(self, locus)
         return locus.orbit_decomposition(self)
 
     def isotropic_equivalence_witness(self, left, right, *, flag=False):

@@ -179,9 +179,7 @@ class EnriquesEquivariantK3Application(SageObject):
 
     @cached_method
     def polarized_equivariant_lattice(self):
-        return self.lattice().with_isometry(self.involution()).polarized(
-            self.polarization()
-        )
+        return self.involution().polarized(self.polarization())
 
     def polarization_stabilizer(self):
         return self.polarized_equivariant_lattice().polarization_stabilizer()

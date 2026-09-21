@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import NamedLattices
+from dzack_research.preamble.all import NamedLattices, Sets
 
 
 def test_lattice_owns_the_same_primitive_isotropic_membership_condition() -> None:
@@ -7,8 +7,9 @@ def test_lattice_owns_the_same_primitive_isotropic_membership_condition() -> Non
     repeated = lattice.primitive_isotropic_vectors()
     isotropic = lattice.module_generator(0)
 
-    assert locus.lattice() is lattice
+    assert locus in Sets()
     assert locus.universe() is lattice
+    assert locus.inclusion().codomain() is lattice
     assert isotropic in locus
     assert repeated is locus
     assert isotropic in repeated
@@ -22,6 +23,7 @@ def test_primitive_isotropic_orbit_decomposition_retains_representative_stabiliz
     locus = lattice.primitive_isotropic_vectors()
     decomposition = group.orbit_decomposition(locus)
 
+    assert decomposition in Sets()
     assert decomposition.group() is group
     assert decomposition.locus() is locus
     assert decomposition.representatives().cardinality() == 1

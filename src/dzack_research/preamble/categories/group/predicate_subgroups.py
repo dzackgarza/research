@@ -286,14 +286,14 @@ class PredicateSubgroups(OwnedParameterizedCategory):
 
         def cusps(self, rank=1):
             r"""Return this arithmetic subgroup's primitive-isotropic cusp orbits."""
-            from dzack_research.preamble.categories.isotropic_orbits import ArithmeticCusp
+            from dzack_research.preamble.categories.isotropic_orbits import _arithmetic_cusp
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
                 finite_ordered_set,
             )
 
             return finite_ordered_set(
                 tuple(
-                    ArithmeticCusp(self, representative)
+                    _arithmetic_cusp(self, representative)
                     for representative in self.isotropic_orbit_representatives(rank)
                 )
             )

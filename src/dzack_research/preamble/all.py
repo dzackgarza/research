@@ -238,7 +238,6 @@ from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F4
     HyperbolicLattices,
 )
 from dzack_research.preamble.categories.isotropic_orbits import (  # noqa: F401
-    Cusp,
     IsotropicFlag,
 )
 from dzack_research.preamble.categories.isotropic_parabolics import (  # noqa: F401

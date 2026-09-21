@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import ZZ, Lattices, Sets
 
 
 def test_vector_locus_distinguishes_norm_and_primitivity() -> None:
@@ -21,6 +21,7 @@ def test_isotropic_sublattice_locus_does_not_identify_a_vector_with_its_line() -
     line = lattice.sublattice_from((2 * e,))
     locus = lattice.isotropic_sublattice_locus(rank=1)
 
+    assert locus in Sets()
     assert line in locus
     assert e not in locus
     assert not line.is_primitive()
@@ -35,6 +36,7 @@ def test_isotropic_flag_locus_accepts_arbitrary_prescribed_nested_ranks() -> Non
 
     locus = lattice.isotropic_flag_locus(ranks=(1, 2))
 
+    assert locus in Sets()
     assert (line, plane) in locus
     assert (plane, line) not in locus
     assert line not in locus

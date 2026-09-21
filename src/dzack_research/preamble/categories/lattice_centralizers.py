@@ -25,8 +25,7 @@ the cyclotomic summands ``ker Phi_d(f)`` of a finite-order isometry.
 """
 
 from sage.arith.misc import divisors
-from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
@@ -34,56 +33,88 @@ from dzack_research.preamble.categories.isotropic_orbits import _same_subobject
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-
-
-class EquivariantVectorOrbit(SageObject):
-    r"""One orbit of a vector under the centralizer of an equipped isometry."""
-
-    def __init__(self, decomposition, orbit) -> None:
-        self._decomposition = decomposition
-        self._orbit = orbit
-
-    def decomposition(self):
-        return self._decomposition
-
-    def decorated_lattice(self):
-        return self.decomposition().decorated_lattice()
-
-    def group(self):
-        return self.decomposition().group()
-
-    def representative(self):
-        return self._orbit.representative()
-
-    def members(self):
-        return self._orbit.points()
-
-    def stabilizer(self):
-        r"""Return the exact point stabilizer inside ``O(L,f)``."""
-        return self.decomposition().action().stabilizer(self.representative())
-
-    def transporter_from(self, vector):
-        r"""Return ``g in O(L,f)`` carrying ``vector`` to the representative."""
-        action = self.decomposition().action()
-        vector = self.decomposition().point(vector)
-        if action.orbits().orbit_of(vector) != self._orbit:
-            return None
-        return action.transporter_witness(vector, self.representative())
-
-    def __contains__(self, vector) -> bool:
-        lattice = self.decorated_lattice().lattice()
-        if vector.parent() is not lattice:
-            return False
-        if vector.q() != self.decomposition().square():
-            return False
-        return vector in self.members()
-
-    def _repr_(self) -> str:
-        return f"Orbit of {self.representative()} under {self.group()}"
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import _object_of
 
 
 
-class EquivariantVectorOrbitDecomposition(SageObject):
+@cached_function
+def _equivariant_lattice_acting_group():
+    r"""Return the canonical infinite cyclic group acting on an equipped lattice."""
+    from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+    return OwnedGroups().Free(1, names="t")
+
+
+def _equivariant_lattice(lattice, isometry):
+    r"""Return ``(L,f)`` as the actual ``ZZ``-object in ``Lattices(R)`` defined by ``f``."""
+    from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+    from dzack_research.preamble.categories.group.g_objects import GObjects
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    isometry = lattice.O()(isometry)
+    if isometry.domain() is not lattice or isometry.codomain() is not lattice:
+        raise ValueError("an equivariant lattice is equipped by an automorphism of that lattice")
+    group = _equivariant_lattice_acting_group()
+    orthogonal_group = lattice.O()
+
+    def action(group_element):
+        result = orthogonal_group.one()
+        for _index, sign in group.reduced_word(group_element):
+            step = isometry if sign > 0 else ~isometry
+            result = step * result
+        return result
+
+    category = Lattices(lattice.base_ring())
+    functor = GroupActionFunctor(group, category, lattice, action)
+    return GObjects(group, category)(functor)
+
+
+def _restrict_isometry(isometry, sublattice):
+    r"""Return the restriction of ``isometry`` to one stable represented sublattice."""
+    lattice = isometry.domain()
+    if isometry.codomain() is not lattice:
+        raise ValueError("an equivariant sublattice restriction requires a lattice automorphism")
+    assert sublattice in ModuleSubobjects(lattice.base_ring()), (
+        "an equivariant sublattice is a represented lattice subobject"
+    )
+    inclusion = sublattice.inclusion()
+    if inclusion.codomain() is not lattice:
+        raise ValueError("the selected sublattice is a subobject of another lattice")
+    images = {}
+    for label in sublattice.module_generating_set():
+        embedded = inclusion(sublattice.module_generator(label))
+        moved = isometry(embedded)
+        if not inclusion.is_in_image(moved):
+            raise ValueError("the selected sublattice is not stable under the equipped isometry")
+        images[label] = inclusion.lift(moved)
+    return sublattice.O()(images)
+
+
+class _CentralizerOrbitDecompositionEngine:
+    r"""Private finite-set realization of a centralizer orbit quotient."""
+
+    def __iter__(self):
+        return iter(self._orbit_set)
+
+    def __contains__(self, orbit) -> bool:
+        return orbit in self._orbit_set
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, orbit):
+        if orbit not in self:
+            raise ValueError(f"{orbit} is not an orbit of {self}")
+        return orbit
+
+    def cardinality(self):
+        return self._orbit_set.cardinality()
+
+    def orbits(self):
+        return self
+
+
+class _EquivariantVectorOrbitDecompositionEngine(_CentralizerOrbitDecompositionEngine):
     r"""The exact vector-orbit decomposition under ``O(L,f)`` when finite.
 
     The centralizer of ``f`` is listed only when the full orthogonal group is
@@ -92,53 +123,51 @@ class EquivariantVectorOrbitDecomposition(SageObject):
     arithmetic centralizer.
     """
 
-    def __init__(self, decorated_lattice, square) -> None:
-        self._decorated_lattice = decorated_lattice
-        self._square = decorated_lattice.lattice().base_ring()(square)
-        centralizer = decorated_lattice.centralizer_group()
+    def __init__(self, isometry, square, **rest) -> None:
+        self._isometry = isometry
+        lattice = isometry.domain()
+        if isometry.codomain() is not lattice:
+            raise ValueError("centralizer vector orbits require a lattice automorphism")
+        self._square = lattice.base_ring()(square)
+        centralizer = isometry.centralizer_group()
         points = finite_ordered_set(
-            tuple(decorated_lattice.lattice().vectors_of_square(self._square))
+            tuple(lattice.vectors_of_square(self._square))
         )
         self._action = FiniteGSets(centralizer)(
             points,
             lambda automorphism, vector: automorphism(vector),
         )
-        self._orbits = finite_ordered_set(
-            tuple(EquivariantVectorOrbit(self, orbit) for orbit in self._action.orbits())
-        )
+        self._orbit_set = self._action.orbits()
+        super().__init__(facade=True, **rest)
 
-    def decorated_lattice(self):
-        return self._decorated_lattice
+    def isometry(self):
+        return self._isometry
+
+    def lattice(self):
+        return self.isometry().domain()
 
     def square(self):
         return self._square
 
     def group(self):
-        return self.decorated_lattice().centralizer_group()
+        return self.isometry().centralizer_group()
 
     def action(self):
         return self._action
 
     def point(self, vector):
-        lattice = self.decorated_lattice().lattice()
+        lattice = self.lattice()
         if vector.parent() is not lattice:
             vector = lattice(vector)
         if vector.q() != self.square():
             raise ValueError("the vector is not in the selected square shell")
         return self.action()(vector)
 
-    def orbits(self):
-        return self._orbits
-
     def representatives(self):
-        return finite_ordered_set(tuple(orbit.representative() for orbit in self.orbits()))
+        return finite_ordered_set(tuple(orbit.representative() for orbit in self))
 
     def orbit_of(self, vector):
-        vector = self.point(vector)
-        for orbit in self.orbits():
-            if vector in orbit:
-                return orbit
-        raise ArithmeticError("the exact centralizer orbit list did not cover the square shell")
+        return self.action().orbits().orbit_of(self.point(vector))
 
     def stabilizer(self, representative):
         return self.orbit_of(representative).stabilizer()
@@ -154,6 +183,15 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         return f"Vector orbits of square {self.square()} under {self.group()}: {self.representatives()}"
 
 
+def _equivariant_vector_orbit_decomposition(isometry, square):
+    return _object_of(
+        Sets().Finite(),
+        _engine=(Sets(), _EquivariantVectorOrbitDecompositionEngine, None),
+        isometry=isometry,
+        square=square,
+    )
+
+
 def _transport_sublattice(automorphism, sublattice):
     return (automorphism * sublattice.inclusion()).image()
 
@@ -161,26 +199,26 @@ def _transport_sublattice(automorphism, sublattice):
 class EquivariantSublatticeFlag(SageObject):
     r"""A nested finite flag of represented sublattices stable under ``f``."""
 
-    def __init__(self, decorated_lattice, terms) -> None:
+    def __init__(self, isometry, terms) -> None:
         terms = tuple(terms)
         if not terms:
             raise ValueError("an equivariant sublattice flag has at least one term")
         previous = None
         for term in terms:
-            decorated_lattice.equivariant_sublattice(term)
+            _restrict_isometry(isometry, term)
             if previous is not None:
                 previous.inclusion().factor_through(term.inclusion())
                 if int(previous.module_rank()) >= int(term.module_rank()):
                     raise ValueError("an equivariant flag has strictly increasing ranks")
             previous = term
-        self._decorated_lattice = decorated_lattice
+        self._isometry = isometry
         self._terms = terms
 
-    def decorated_lattice(self):
-        return self._decorated_lattice
+    def isometry(self):
+        return self._isometry
 
     def lattice(self):
-        return self.decorated_lattice().lattice()
+        return self.isometry().domain()
 
     def terms(self):
         return finite_ordered_set(self._terms)
@@ -201,45 +239,20 @@ def _same_equivariant_flag(left, right) -> bool:
 
 
 def _transport_equivariant_flag(automorphism, flag):
-    decorated = flag.decorated_lattice()
     return EquivariantSublatticeFlag(
-        decorated,
+        flag.isometry(),
         tuple(_transport_sublattice(automorphism, term) for term in flag.terms()),
     )
 
 
-class _EquivariantFiniteOrbit(SageObject):
-    def __init__(self, decomposition, orbit) -> None:
-        self._decomposition = decomposition
-        self._orbit = orbit
-
-    def decomposition(self):
-        return self._decomposition
-
-    def group(self):
-        return self.decomposition().group()
-
-    def representative(self):
-        return self._orbit.representative()
-
-    def members(self):
-        return self._orbit.points()
-
-    def stabilizer(self):
-        return self.decomposition().action().stabilizer(self.representative())
-
-    def transporter_from(self, source):
-        return self.decomposition().transporter(source, self.representative())
-
-
-class EquivariantFiniteOrbitDecomposition(SageObject):
+class _EquivariantFiniteOrbitDecompositionEngine(_CentralizerOrbitDecompositionEngine):
     r"""Exact centralizer orbits on a supplied finite centralizer-stable family."""
 
-    def __init__(self, decorated_lattice, candidates, action, equality) -> None:
+    def __init__(self, isometry, candidates, action, equality, **rest) -> None:
         candidates = tuple(candidates)
         if not candidates:
             raise ValueError("an equivariant finite orbit decomposition needs candidates")
-        self._decorated_lattice = decorated_lattice
+        self._isometry = isometry
         self._candidate_action = action
         self._equality = equality
         self._points = finite_ordered_set(candidates)
@@ -252,19 +265,18 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
             )
             return matches[0]
 
-        self._g_set = FiniteGSets(decorated_lattice.centralizer_group())(
+        self._g_set = FiniteGSets(isometry.centralizer_group())(
             self._points,
             acted_point,
         )
-        self._orbits = finite_ordered_set(
-            tuple(_EquivariantFiniteOrbit(self, orbit) for orbit in self._g_set.orbits())
-        )
+        self._orbit_set = self._g_set.orbits()
+        super().__init__(facade=True, **rest)
 
-    def decorated_lattice(self):
-        return self._decorated_lattice
+    def isometry(self):
+        return self._isometry
 
     def group(self):
-        return self.decorated_lattice().centralizer_group()
+        return self.isometry().centralizer_group()
 
     def action(self):
         return self._g_set
@@ -275,9 +287,6 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
     def same(self, left, right) -> bool:
         return bool(self._equality(left, right))
 
-    def orbits(self):
-        return self._orbits
-
     def point(self, candidate):
         matches = tuple(point for point in self._points if self.same(candidate, point))
         if len(matches) != 1:
@@ -285,14 +294,10 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
         return matches[0]
 
     def representatives(self):
-        return finite_ordered_set(tuple(orbit.representative() for orbit in self.orbits()))
+        return finite_ordered_set(tuple(orbit.representative() for orbit in self))
 
     def orbit_of(self, candidate):
-        candidate = self.point(candidate)
-        for orbit in self.orbits():
-            if candidate in orbit.members():
-                return orbit
-        raise ArithmeticError("the owned G-set orbit was not represented in the centralizer orbit wrapper")
+        return self.action().orbits().orbit_of(self.point(candidate))
 
     def stabilizer(self, candidate):
         return self.orbit_of(candidate).stabilizer()
@@ -301,6 +306,17 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
         if self.orbit_of(source) is not self.orbit_of(target):
             return None
         return self.action().transporter_witness(self.point(source), self.point(target))
+
+
+def _equivariant_finite_orbit_decomposition(isometry, candidates, action, equality):
+    return _object_of(
+        Sets().Finite(),
+        _engine=(Sets(), _EquivariantFiniteOrbitDecompositionEngine, None),
+        isometry=isometry,
+        candidates=tuple(candidates),
+        action=action,
+        equality=equality,
+    )
 
 
 def _isometry_power(isometry, exponent):
@@ -325,13 +341,15 @@ class CyclotomicDecomposition(SageObject):
     quotient to an actual isometry of ``L`` commuting with ``f``.
     """
 
-    def __init__(self, decorated_lattice, order) -> None:
-        self._decorated_lattice = decorated_lattice
+    def __init__(self, isometry, order) -> None:
+        self._isometry = isometry
         self._order = int(order)
         if self._order <= 0:
             raise ValueError("the order of a finite-order isometry is positive")
-        isometry = decorated_lattice.isometry()
-        identity = decorated_lattice.lattice().O().one()
+        lattice = isometry.domain()
+        if isometry.codomain() is not lattice:
+            raise ValueError("a cyclotomic decomposition requires a lattice automorphism")
+        identity = lattice.O().one()
         if _isometry_power(isometry, self._order) != identity:
             raise ValueError("the supplied integer does not annihilate the equipped isometry")
         for proper_divisor in divisors(self._order):
@@ -366,14 +384,11 @@ class CyclotomicDecomposition(SageObject):
                 ):
                     raise ArithmeticError("distinct cyclotomic summands are not orthogonal")
 
-    def decorated_lattice(self):
-        return self._decorated_lattice
-
     def lattice(self):
-        return self.decorated_lattice().lattice()
+        return self.isometry().domain()
 
     def isometry(self):
-        return self.decorated_lattice().isometry()
+        return self._isometry
 
     def order(self):
         return self._order
@@ -420,10 +435,9 @@ class CyclotomicDecomposition(SageObject):
     @cached_method
     def component_isometries(self):
         r"""Return the restrictions ``f_d`` on every nonzero cyclotomic summand."""
-        equipped = self.decorated_lattice()
         return finite_indexed_family(
             self.nonzero_divisors(),
-            lambda divisor: equipped.equivariant_sublattice(self.summand(divisor)).isometry(),
+            lambda divisor: _restrict_isometry(self.isometry(), self.summand(divisor)),
             name=f"Cyclotomic restrictions of {self.isometry()}",
         )
 
@@ -439,7 +453,7 @@ class CyclotomicDecomposition(SageObject):
 
     def centralizer_group(self):
         r"""Return the actual ambient arithmetic centralizer ``Z_{O(L)}(f)``."""
-        return self.decorated_lattice().centralizer_group()
+        return self.isometry().centralizer_group()
 
     def restrict_centralizer_element(self, automorphism):
         r"""Restrict one ambient centralizer element to every cyclotomic summand.
@@ -553,151 +567,6 @@ class CyclotomicDecomposition(SageObject):
         )
 
 
-class EquivariantLattice(SageObject):
-    r"""A lattice equipped with a specified lattice automorphism.
-
-    This is the semantic object ``(L,f)``.  The underlying lattice and the
-    isometry remain live owned objects; equivariant constructions are defined
-    by literal commutation with the selected automorphisms.
-    """
-
-    def __init__(self, lattice, isometry) -> None:
-        if isometry.domain() is not lattice or isometry.codomain() is not lattice:
-            raise ValueError("an equivariant lattice is equipped by an automorphism of that lattice")
-        self._lattice = lattice
-        self._isometry = lattice.O()(isometry)
-
-    def lattice(self):
-        return self._lattice
-
-    def isometry(self):
-        return self._isometry
-
-    @cached_method
-    def centralizer_group(self):
-        r"""Return ``O(L,f)=Z_{O(L)}(f)``."""
-        return self.lattice().O().centralizer(self.isometry())
-
-    def primitive_extension(self):
-        r"""Return the invariant/coinvariant primitive extension cut out by ``f``."""
-        return self.isometry().primitive_extension()
-
-    @cached_method
-    def cyclotomic_decomposition(self, order):
-        r"""Return the integral cyclotomic decomposition for the exact stated order."""
-        return CyclotomicDecomposition(self, order)
-
-    @cached_method
-    def polarized(self, polarization):
-        r"""Return this equivariant lattice together with an invariant polarization.
-
-        The polarization is an actual vector of ``L`` fixed by the equipped
-        isometry.  The resulting object owns the structured arithmetic group
-        ``Z_{O(L)}(f) cap Stab(h)`` rather than requiring callers to reconstruct
-        that intersection ad hoc.
-        """
-        return PolarizedEquivariantLattice(self, polarization)
-
-    def equivariant_sublattice(self, sublattice):
-        r"""Equip an ``f``-stable represented sublattice with the restricted isometry."""
-        assert sublattice in ModuleSubobjects(self.lattice().base_ring()), (
-            "an equivariant sublattice is a represented lattice subobject"
-        )
-        inclusion = sublattice.inclusion()
-        if inclusion.codomain() is not self.lattice():
-            raise ValueError("the selected sublattice is a subobject of another lattice")
-
-        images = {}
-        for label in sublattice.module_generating_set():
-            embedded = inclusion(sublattice.module_generator(label))
-            moved = self.isometry()(embedded)
-            if not inclusion.is_in_image(moved):
-                raise ValueError("the selected sublattice is not stable under the equipped isometry")
-            images[label] = inclusion.lift(moved)
-        restricted = sublattice.O()(images)
-        return EquivariantLattice(sublattice, restricted)
-
-    def equivariant_isometry_to(self, other):
-        r"""Return ``h:(L,f)->(M,g)`` with ``h f = g h`` when exactly decidable.
-
-        Definite target lattices have a finite enumerable isometry torsor, so
-        the search is exhaustive there.  In an indefinite regime one exact
-        underlying witness may be available without an exact conjugacy
-        classifier; a non-equivariant witness is therefore not evidence that
-        no equivariant isometry exists, and this method refuses in that case.
-        """
-        source = self.lattice()
-        target = other.lattice()
-        if source is target and self.isometry() == other.isometry():
-            return source.O().one()
-
-        homset = source.Isom(target)
-        empty = homset.is_empty()
-        if empty is True:
-            return None
-        if target.module_rank().is_finite() and target.is_definite():
-            for candidate in homset:
-                if candidate * self.isometry() == other.isometry() * candidate:
-                    return candidate
-            return None
-        assert empty is not Unknown, (
-            "equivariant-isometry search in the indefinite regime requires the underlying isometry Hom to be decided exactly"
-        )
-
-        witness = homset.an_element()
-        assert witness * self.isometry() == other.isometry() * witness, (
-            "the represented indefinite equivariant-isometry path requires the selected underlying isometry witness to intertwine the equipped actions; "
-            "no exhaustive indefinite conjugacy classifier is selected"
-        )
-        return witness
-
-    def equivariant_vector_orbit_representatives(self, square):
-        r"""Return vector-orbit representatives under ``O(L,f)`` in the supported regime."""
-        return self.equivariant_vector_orbit_decomposition(square).representatives()
-
-    def equivariant_vector_orbit_decomposition(self, square):
-        r"""Return exact ``O(L,f)``-orbits on vectors of the selected square."""
-        return EquivariantVectorOrbitDecomposition(self, square)
-
-    def equivariant_sublattice_orbit_decomposition(self, sublattices):
-        r"""Return exact centralizer orbits on a finite stable family of sublattices.
-
-        Every selected sublattice must be stable under ``f`` and the supplied
-        finite family must be stable under the full centralizer.  In the
-        definite regime the centralizer is finite and is listed exactly, so
-        the returned representatives, stabilizers and transporters form the
-        complete quotient of the stated family rather than a search prefix.
-        """
-        sublattices = tuple(sublattices)
-        for sublattice in sublattices:
-            self.equivariant_sublattice(sublattice)
-        return EquivariantFiniteOrbitDecomposition(
-            self,
-            sublattices,
-            _transport_sublattice,
-            _same_subobject,
-        )
-
-    def equivariant_flag(self, terms):
-        r"""Return the represented nested flag of ``f``-stable sublattices."""
-        return EquivariantSublatticeFlag(self, terms)
-
-    def equivariant_flag_orbit_decomposition(self, flags):
-        r"""Return exact centralizer orbits on a finite stable family of flags."""
-        flags = tuple(flags)
-        if any(flag.decorated_lattice() is not self for flag in flags):
-            raise ValueError("an equivariant flag family belongs to one equipped lattice")
-        return EquivariantFiniteOrbitDecomposition(
-            self,
-            flags,
-            _transport_equivariant_flag,
-            _same_equivariant_flag,
-        )
-
-    def __repr__(self) -> str:
-        return f"{self.lattice()} equipped with {self.isometry()}"
-
-
 class PolarizedEquivariantLattice(SageObject):
     r"""An equivariant lattice ``(L,f)`` with an invariant polarization ``h``.
 
@@ -707,30 +576,29 @@ class PolarizedEquivariantLattice(SageObject):
     ambient lattice and through its lift to the invariant lattice ``L^f``.
     """
 
-    def __init__(self, decorated_lattice, polarization) -> None:
-        lattice = decorated_lattice.lattice()
+    def __init__(self, isometry, polarization) -> None:
+        lattice = isometry.domain()
+        if isometry.codomain() is not lattice:
+            raise ValueError("a polarized equivariant lattice requires a lattice automorphism")
         polarization = lattice(polarization)
-        if decorated_lattice.isometry()(polarization) != polarization:
+        if isometry(polarization) != polarization:
             raise ValueError("a polarization of (L,f) must lie in the invariant lattice")
         if polarization == lattice.zero():
             raise ValueError("a polarization is nonzero")
-        self._decorated_lattice = decorated_lattice
+        self._isometry = isometry
         self._polarization = polarization
 
-    def decorated_lattice(self):
-        return self._decorated_lattice
-
     def lattice(self):
-        return self.decorated_lattice().lattice()
+        return self.isometry().domain()
 
     def isometry(self):
-        return self.decorated_lattice().isometry()
+        return self._isometry
 
     def polarization(self):
         return self._polarization
 
     def primitive_extension(self):
-        return self.decorated_lattice().primitive_extension()
+        return self.isometry().primitive_extension()
 
     @cached_method
     def invariant_polarization(self):
@@ -741,7 +609,7 @@ class PolarizedEquivariantLattice(SageObject):
         return inclusion.lift(self.polarization())
 
     def centralizer_group(self):
-        return self.decorated_lattice().centralizer_group()
+        return self.isometry().centralizer_group()
 
     @cached_method
     def polarization_stabilizer(self):
@@ -753,7 +621,7 @@ class PolarizedEquivariantLattice(SageObject):
         return self.centralizer_group().intersection(self.polarization_stabilizer())
 
     def __repr__(self) -> str:
-        return f"{self.decorated_lattice()} polarized by {self.polarization()}"
+        return f"{self.lattice()} equipped with {self.isometry()} and polarized by {self.polarization()}"
 
 
 class IsometryPrimitiveExtension:
@@ -1123,17 +991,11 @@ class IsometryPrimitiveExtension:
         For the orbits under the full ``O(L)`` use
         ``L.O().vector_orbit_representatives(square)``.
         """
-        return EquivariantLattice(
-            self.lattice,
-            self.isometry,
-        ).equivariant_vector_orbit_representatives(square)
+        return self.isometry.equivariant_vector_orbit_representatives(square)
 
     def equivariant_vector_orbit_decomposition(self, square):
         r"""Return the exact decorated-vector orbit package for this isometry."""
-        return EquivariantLattice(
-            self.lattice,
-            self.isometry,
-        ).equivariant_vector_orbit_decomposition(square)
+        return self.isometry.equivariant_vector_orbit_decomposition(square)
 
     def __repr__(self) -> str:
         return f"Primitive extension of {self.lattice} cut out by {self.isometry}"
@@ -1141,9 +1003,6 @@ class IsometryPrimitiveExtension:
 
 __all__ = [
     "CyclotomicDecomposition",
-    "EquivariantLattice",
-    "EquivariantVectorOrbit",
-    "EquivariantVectorOrbitDecomposition",
     "IsometryPrimitiveExtension",
     "PolarizedEquivariantLattice",
 ]
