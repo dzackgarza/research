@@ -608,8 +608,9 @@ class ExternalInternalActionComparison(SageObject):
 class GObjectHomset(CategoricalHomset):
     r"""The represented ``Mor_G(X, Y)``: the equivariant morphisms of ``C``.
 
-    Equivariance is decided on the chosen generators of the acting group,
-    since the morphisms commuting with a group element form a subgroup.
+    Equivariance is decided on a determining family of the acting group:
+    selected generators when present, or every element when the group is
+    represented as finite.
     """
 
     Element = EquivariantMorphism
@@ -635,12 +636,21 @@ class GObjectHomset(CategoricalHomset):
         return category.underlying_category().Mor(source, target)
 
     def is_equivariant(self, arrow):
-        r"""Decide ``f rho_X(s) = rho_Y(s) f`` on the chosen generators ``s``."""
+        r"""Decide ``f rho_X(g) = rho_Y(g) f`` on a determining family of ``G``."""
         group = self.domain().acting_group()
-        if group not in GroupsWithChosenFiniteGeneratingSet():
-            return Unknown
         arrow = self.underlying_homset()(arrow)
-        return all(arrow * self.domain().action_of(generator) == self.codomain().action_of(generator) * arrow for generator in group.group_generators())
+        match group:
+            case _ if group in GroupsWithChosenFiniteGeneratingSet():
+                determining = group.group_generators()
+            case _ if group.is_finite() is True:
+                determining = group
+            case _:
+                return Unknown
+        return all(
+            arrow * self.domain().action_of(element)
+            == self.codomain().action_of(element) * arrow
+            for element in determining
+        )
 
     def _from_equivariant_arrow(self, arrow):
         r"""Wrap an arrow whose equivariance follows from its construction."""
@@ -987,11 +997,16 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             return True
 
         def is_invariant(self, element):
-            r"""Decide ``g . element = element`` for all ``g``, on the chosen generators."""
+            r"""Decide ``g . element = element`` on a determining family of the acting group."""
             group = self.acting_group()
-            if group not in GroupsWithChosenFiniteGeneratingSet():
-                return Unknown
-            return all(self.act(generator, element) == element for generator in group.group_generators())
+            match group:
+                case _ if group in GroupsWithChosenFiniteGeneratingSet():
+                    determining = group.group_generators()
+                case _ if group.is_finite() is True:
+                    determining = group
+                case _:
+                    return Unknown
+            return all(self.act(group_element, element) == element for group_element in determining)
 
 
 __all__ = [

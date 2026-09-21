@@ -1882,6 +1882,56 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
         return _isotropic_orbit_representatives(self, rank, flag=flag)
 
+    def cusps(self, rank=1):
+        r"""Return the ``O(L)``-orbits of primitive isotropic rank-``rank`` subobjects."""
+        from dzack_research.preamble.categories.isotropic_orbits import Cusp
+
+        return finite_ordered_set(
+            tuple(
+                Cusp(representative)
+                for representative in self.isotropic_orbit_representatives(rank)
+            )
+        )
+
+    def tits_building_incidence(self):
+        r"""Return the line/plane incidence in the full orthogonal-group quotient building."""
+        from dzack_research.preamble.categories.isotropic_orbits import CuspIncidence
+
+        lattice = self.lattice()
+        line_cusps = self.cusps(1)
+        plane_cusps = self.cusps(2)
+        incidences = []
+        for flag in self.isotropic_orbit_representatives(2, flag=True):
+            line, plane = flag.terms()
+            line_vertices = tuple(cusp for cusp in line_cusps if line in cusp)
+            plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
+            if len(line_vertices) != 1 or len(plane_vertices) != 1:
+                raise ArithmeticError(
+                    "an isotropic flag term does not determine a unique full-group cusp orbit"
+                )
+            line_cusp = line_vertices[0]
+            plane_cusp = plane_vertices[0]
+            line_transporter = line_cusp.transporter_witness(line)
+            plane_transporter = plane_cusp.transporter_witness(plane)
+            if line_transporter is None or plane_transporter is None:
+                raise ArithmeticError(
+                    "a flag term lies in a cusp with no transporter witness"
+                )
+            incidences.append(
+                CuspIncidence(
+                    flag,
+                    line_cusp,
+                    plane_cusp,
+                    line_transporter,
+                    plane_transporter,
+                    self.isotropic_stabilizer_generators(flag, flag=True),
+                )
+            )
+        assert all(incidence.lattice() is lattice for incidence in incidences), (
+            "a full-group quotient-building incidence changed its ambient lattice"
+        )
+        return finite_ordered_set(tuple(incidences))
+
     def orbit_decomposition(self, locus):
         r"""Return exact orbit data on a represented locus supported by this group.
 

@@ -29,11 +29,9 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.isotropic_orbits import _same_subobject
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
-from dzack_research.preamble.categories.orthogonal_quotients import (
-    _finite_supergroup_elements,
-)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
@@ -41,46 +39,44 @@ from dzack_research.preamble.categories.sets.indexed_families import finite_inde
 class EquivariantVectorOrbit(SageObject):
     r"""One orbit of a vector under the centralizer of an equipped isometry."""
 
-    def __init__(self, decorated_lattice, representative, centralizer_elements) -> None:
-        self._decorated_lattice = decorated_lattice
-        self._representative = representative
-        self._centralizer_elements = tuple(centralizer_elements)
+    def __init__(self, decomposition, orbit) -> None:
+        self._decomposition = decomposition
+        self._orbit = orbit
+
+    def decomposition(self):
+        return self._decomposition
 
     def decorated_lattice(self):
-        return self._decorated_lattice
+        return self.decomposition().decorated_lattice()
 
     def group(self):
-        return self.decorated_lattice().centralizer_group()
+        return self.decomposition().group()
 
     def representative(self):
-        return self._representative
+        return self._orbit.representative()
+
+    def members(self):
+        return self._orbit.points()
 
     def stabilizer(self):
         r"""Return the exact point stabilizer inside ``O(L,f)``."""
-        from dzack_research.preamble.categories.group.predicate_subgroups import (
-            StabilizerSubgroups,
-        )
-
-        representative = self.representative()
-        return StabilizerSubgroups(self.group())(
-            representative,
-            "pointwise",
-            lambda automorphism: automorphism(representative) == representative,
-            description=f"g fixes {representative}",
-        )
+        return self.decomposition().action().stabilizer(self.representative())
 
     def transporter_from(self, vector):
         r"""Return ``g in O(L,f)`` carrying ``vector`` to the representative."""
-        lattice = self.decorated_lattice().lattice()
-        if vector.parent() is not lattice:
-            vector = lattice(vector)
-        for automorphism in self._centralizer_elements:
-            if automorphism(vector) == self.representative():
-                return automorphism
-        return None
+        action = self.decomposition().action()
+        vector = self.decomposition().point(vector)
+        if action.orbits().orbit_of(vector) != self._orbit:
+            return None
+        return action.transporter_witness(vector, self.representative())
 
     def __contains__(self, vector) -> bool:
-        return self.transporter_from(vector) is not None
+        lattice = self.decorated_lattice().lattice()
+        if vector.parent() is not lattice:
+            return False
+        if vector.q() != self.decomposition().square():
+            return False
+        return vector in self.members()
 
     def _repr_(self) -> str:
         return f"Orbit of {self.representative()} under {self.group()}"
@@ -100,21 +96,16 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         self._decorated_lattice = decorated_lattice
         self._square = decorated_lattice.lattice().base_ring()(square)
         centralizer = decorated_lattice.centralizer_group()
-        elements = _finite_supergroup_elements(centralizer)
-        self._centralizer_elements = tuple(elements)
-        remaining = {tuple(vector.to_tuple()): vector for vector in decorated_lattice.lattice().vectors_of_square(self._square)}
-        orbits = []
-        while remaining:
-            _coordinates, representative = next(iter(remaining.items()))
-            orbit = EquivariantVectorOrbit(
-                decorated_lattice,
-                representative,
-                elements,
-            )
-            orbits.append(orbit)
-            for automorphism in elements:
-                remaining.pop(tuple(automorphism(representative).to_tuple()), None)
-        self._orbits = finite_ordered_set(tuple(orbits))
+        points = finite_ordered_set(
+            tuple(decorated_lattice.lattice().vectors_of_square(self._square))
+        )
+        self._action = FiniteGSets(centralizer)(
+            points,
+            lambda automorphism, vector: automorphism(vector),
+        )
+        self._orbits = finite_ordered_set(
+            tuple(EquivariantVectorOrbit(self, orbit) for orbit in self._action.orbits())
+        )
 
     def decorated_lattice(self):
         return self._decorated_lattice
@@ -125,6 +116,17 @@ class EquivariantVectorOrbitDecomposition(SageObject):
     def group(self):
         return self.decorated_lattice().centralizer_group()
 
+    def action(self):
+        return self._action
+
+    def point(self, vector):
+        lattice = self.decorated_lattice().lattice()
+        if vector.parent() is not lattice:
+            vector = lattice(vector)
+        if vector.q() != self.square():
+            raise ValueError("the vector is not in the selected square shell")
+        return self.action()(vector)
+
     def orbits(self):
         return self._orbits
 
@@ -132,11 +134,7 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         return finite_ordered_set(tuple(orbit.representative() for orbit in self.orbits()))
 
     def orbit_of(self, vector):
-        lattice = self.decorated_lattice().lattice()
-        if vector.parent() is not lattice:
-            vector = lattice(vector)
-        if vector.q() != self.square():
-            raise ValueError("orbit_of requires a vector of the selected square")
+        vector = self.point(vector)
         for orbit in self.orbits():
             if vector in orbit:
                 return orbit
@@ -150,15 +148,7 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         target_orbit = self.orbit_of(target)
         if source_orbit is not target_orbit:
             return None
-        lattice = self.decorated_lattice().lattice()
-        if source.parent() is not lattice:
-            source = lattice(source)
-        if target.parent() is not lattice:
-            target = lattice(target)
-        for automorphism in self._centralizer_elements:
-            if automorphism(source) == target:
-                return automorphism
-        raise ArithmeticError("one centralizer orbit has no transporter between two of its members")
+        return self.action().transporter_witness(self.point(source), self.point(target))
 
     def _repr_(self) -> str:
         return f"Vector orbits of square {self.square()} under {self.group()}: {self.representatives()}"
@@ -219,10 +209,9 @@ def _transport_equivariant_flag(automorphism, flag):
 
 
 class _EquivariantFiniteOrbit(SageObject):
-    def __init__(self, decomposition, representative, members) -> None:
+    def __init__(self, decomposition, orbit) -> None:
         self._decomposition = decomposition
-        self._representative = representative
-        self._members = finite_ordered_set(tuple(members))
+        self._orbit = orbit
 
     def decomposition(self):
         return self._decomposition
@@ -231,24 +220,13 @@ class _EquivariantFiniteOrbit(SageObject):
         return self.decomposition().group()
 
     def representative(self):
-        return self._representative
+        return self._orbit.representative()
 
     def members(self):
-        return self._members
+        return self._orbit.points()
 
     def stabilizer(self):
-        from dzack_research.preamble.categories.group.predicate_subgroups import (
-            StabilizerSubgroups,
-        )
-
-        representative = self.representative()
-        decomposition = self.decomposition()
-        return StabilizerSubgroups(self.group())(
-            representative,
-            "on the represented finite family",
-            lambda automorphism: decomposition.same(decomposition.act(automorphism, representative), representative),
-            description=f"g fixes {representative}",
-        )
+        return self.decomposition().action().stabilizer(self.representative())
 
     def transporter_from(self, source):
         return self.decomposition().transporter(source, self.representative())
@@ -262,27 +240,25 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
         if not candidates:
             raise ValueError("an equivariant finite orbit decomposition needs candidates")
         self._decorated_lattice = decorated_lattice
-        self._action = action
+        self._candidate_action = action
         self._equality = equality
-        self._centralizer_elements = tuple(_finite_supergroup_elements(decorated_lattice.centralizer_group()))
+        self._points = finite_ordered_set(candidates)
 
-        for candidate in candidates:
-            for automorphism in self._centralizer_elements:
-                image = self.act(automorphism, candidate)
-                if not any(self.same(image, target) for target in candidates):
-                    raise ValueError("the supplied finite family is not stable under the full centralizer")
+        def acted_point(automorphism, candidate):
+            image = self.act(automorphism, candidate)
+            matches = tuple(target for target in self._points if self.same(image, target))
+            assert len(matches) == 1, (
+                "the supplied finite family is not a stable family of distinct mathematical points under the full centralizer"
+            )
+            return matches[0]
 
-        remaining = list(candidates)
-        orbits = []
-        while remaining:
-            representative = remaining.pop(0)
-            members = []
-            for candidate in candidates:
-                if any(self.same(self.act(automorphism, representative), candidate) for automorphism in self._centralizer_elements):
-                    members.append(candidate)
-            remaining = [candidate for candidate in remaining if not any(self.same(candidate, member) for member in members)]
-            orbits.append(_EquivariantFiniteOrbit(self, representative, members))
-        self._orbits = finite_ordered_set(tuple(orbits))
+        self._g_set = FiniteGSets(decorated_lattice.centralizer_group())(
+            self._points,
+            acted_point,
+        )
+        self._orbits = finite_ordered_set(
+            tuple(_EquivariantFiniteOrbit(self, orbit) for orbit in self._g_set.orbits())
+        )
 
     def decorated_lattice(self):
         return self._decorated_lattice
@@ -290,8 +266,11 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
     def group(self):
         return self.decorated_lattice().centralizer_group()
 
+    def action(self):
+        return self._g_set
+
     def act(self, automorphism, candidate):
-        return self._action(automorphism, candidate)
+        return self._candidate_action(automorphism, candidate)
 
     def same(self, left, right) -> bool:
         return bool(self._equality(left, right))
@@ -299,14 +278,21 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
     def orbits(self):
         return self._orbits
 
+    def point(self, candidate):
+        matches = tuple(point for point in self._points if self.same(candidate, point))
+        if len(matches) != 1:
+            raise ValueError("the selected object is not one unique point of the represented finite family")
+        return matches[0]
+
     def representatives(self):
         return finite_ordered_set(tuple(orbit.representative() for orbit in self.orbits()))
 
     def orbit_of(self, candidate):
+        candidate = self.point(candidate)
         for orbit in self.orbits():
-            if any(self.same(candidate, member) for member in orbit.members()):
+            if candidate in orbit.members():
                 return orbit
-        raise ValueError("the selected object is not in the represented finite family")
+        raise ArithmeticError("the owned G-set orbit was not represented in the centralizer orbit wrapper")
 
     def stabilizer(self, candidate):
         return self.orbit_of(candidate).stabilizer()
@@ -314,10 +300,7 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
     def transporter(self, source, target):
         if self.orbit_of(source) is not self.orbit_of(target):
             return None
-        for automorphism in self._centralizer_elements:
-            if self.same(self.act(automorphism, source), target):
-                return automorphism
-        raise ArithmeticError("one exact centralizer orbit has no transporter")
+        return self.action().transporter_witness(self.point(source), self.point(target))
 
 
 def _isometry_power(isometry, exponent):

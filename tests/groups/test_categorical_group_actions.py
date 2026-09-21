@@ -2,6 +2,7 @@ r"""Classifying categories and categorical group actions ``BG -> C``."""
 
 from dzack_research.preamble.all import (
     Cat,
+    FiniteGSets,
     QQ,
     GObjects,
     Groups,
@@ -194,3 +195,34 @@ def test_transitive_action_with_nontrivial_stabilizer_is_not_a_torsor() -> None:
     orbit_stabilizers = natural.orbit_stabilizers()
     assert orbit_stabilizers.index_set() is natural.orbits()
     assert group.one() in orbit_stabilizers[orbit]
+
+
+def test_finite_predicate_centralizer_action_uses_owned_orbits_and_stabilizers() -> None:
+    group = Groups.S(3)
+    identity = group.one()
+    transposition = next(
+        element
+        for element in group
+        if element != identity and element * element == identity
+    )
+    centralizer = group.centralizer(transposition)
+    regular_points = tuple(group)
+    action = FiniteGSets(centralizer)(
+        regular_points,
+        lambda centralizing_element, point: centralizing_element * point,
+    )
+    orbits = action.orbits()
+
+    assert orbits.cardinality() == 3
+    assert centralizer.cardinality() == 2
+    for orbit in orbits:
+        representative = orbit.representative()
+        stabilizer = action.stabilizer(representative)
+        assert (
+            int(orbit.points().cardinality()) * int(stabilizer.cardinality())
+            == int(centralizer.cardinality())
+        )
+        target = orbit.points()[-1]
+        transporter = action.transporter_witness(representative, target)
+        assert transporter in centralizer
+        assert action.act(transporter, representative) == target

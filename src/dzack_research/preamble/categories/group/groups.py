@@ -1704,6 +1704,26 @@ class GroupHomset(_GroupHomRealizationMixin, CategoricalHomset):
                 return self._from_gap_generator_images(images, check=check)
         raise TypeError(f"unable to convert {images!r} to an element of {self}")
 
+    def _from_finite_elementwise_rule(self, function):
+        r"""Admit an elementwise group map by exhaustive verification on a finite domain.
+
+        This is the finite analogue of specifying a map on chosen generators:
+        when no framing has been selected, the multiplication table itself is
+        a finite determining family.  The resulting arrow is still an element
+        of this Hom object; finite enumeration is only its admission algorithm.
+        """
+        domain = self.domain()
+        assert domain.is_finite() is True, (
+            "an elementwise group-morphism rule is admitted here only by exhaustive finite-domain verification"
+        )
+        morphism = _ElementwiseGroupMorphism(self, function)
+        assert all(
+            morphism(left * right) == morphism(left) * morphism(right)
+            for left in domain
+            for right in domain
+        ), "the stated elementwise rule does not preserve group multiplication"
+        return morphism
+
     def _from_gap_homomorphism(self, gap_homomorphism, check=True):
         if check:
             assert gap_homomorphism.Source() == _gap_model(self.domain()), (

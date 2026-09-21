@@ -211,12 +211,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Forms, actions and arithmetic realizations
 
-- [ ] **`lattice-action-results`**. **Needs:** none.
-  **Owner and delta:** isotropic loci, orbit decompositions, centralizers, reduction adjacency and their functors/arrows; use the shared action/G-set and existing private arithmetic engines.
-  **Invariants:** a locus is its owned mathematical set, an orbit comes from the actual action, a centralizer comes with its subgroup inclusion, and adjacency belongs to its represented complex. Preserve transporter/representative/completeness distinctions and defining equations. Existing torsion-form delegation through the G-set owner is a dependency to preserve, not work to recreate.
-  **Closure specimens:** a finite action with multiple orbits gives orbit maps and stabilizers satisfying orbit-stabilizer; an isometry centralizer retains commuting witnesses. A bounded indefinite-lattice search is not a complete orbit classification. Review remaining isotropic, centralizer and reduction host records and their consumers; do not replace missing algorithms by unconditional stubs.
-
-- [ ] **`objects-through-categories-lattice-files`**. **Needs:** `lattice-action-results`.
+- [ ] **`objects-through-categories-lattice-files`**. **Needs:** none.
   **Owner and delta:** lattice, hyperbolic, orthogonal-quotient and reduction files under categories: finish placement and inherited-construction review across their remaining host records and maps.
   **Coverage boundary:** enumerate the construction routes and retained mathematical records in these files, including the arithmetic application callers. Earlier formed-module, primitive-extension and action deliveries already own defects on their changed paths; reconcile only independently remaining cases here while preserving their acceptance.
   **Invariants:** Lattices(R) constructs through its formed module on the exact selected module. Polytopes/cones/rays, manifold points and analytic opens stay at their existing mathematical owners. Category declarations state immediate sufficient structure rather than defaulting to Sets because an owner is inconvenient.
@@ -280,7 +275,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** inspect the installed Sage/Singular contract for input relations, coefficient rings, output presentation, inclusion and lifting/factorization. `homolog.lib::hom_kernel` and `modules.lib::kerHom` are discovery candidates, not interchangeable promises. Representation conversion remains private; two low-level `modulo` calls inside the old Python algorithm do not count as delegation. Preserve exact unsupported coefficient frontiers.
   **Closure specimens:** over A=Q[x,y]/(xy), the kernel of multiplication by x is the ideal (y), with its nonfree presentation, inclusion and factorization. Recover the relation x*y=0 inside that kernel presentation; a free rank-one substitute fails. Source review establishes maintained computation and all owned maps, not merely agreement of dimensions.
 
-- [ ] **`imperative-algorithm-cleanup`**. **Needs:** `lattice-action-results`.
+- [ ] **`imperative-algorithm-cleanup`**. **Needs:** none.
   **Owner and delta:** the complete catalogue of bilinear accumulation, duplicate free-algebra target multiplication, divided-power coefficients, absolute-Galois filtering, grouping and frontier/seen traversal in actions/lattices.
   **Invariants:** delegate the semantic operation to its weakest sufficient owned or maintained computation owner. Keep only representation adaptation or source-justified theory-specific algorithms; a list comprehension or a private helper containing the old loop is not a repair. Preserve already-correct torsion-form action delegation.
   **Closure specimens:** a noncommutative word preserves order under a universal extension; a divided-power product has its actual coefficient; a finite action with several orbits preserves representatives and stabilizers. Review every catalogue family, documenting the theorem for retained specialized loops and the actual dependency operation for replaced algorithms.

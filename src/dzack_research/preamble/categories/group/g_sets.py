@@ -146,10 +146,6 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         def __init__(self, point_set, permutation_representation, **rest) -> None:
             assert point_set in FiniteSets(), "a represented G-set is on a finite point set"
             group = permutation_representation.domain()
-            assert group in OwnedGroups().Framed(), (
-                "the represented equivariant Hom-set requires a chosen finite group "
-                "generating set"
-            )
             self._point_set = point_set
             self._permutation_representation = permutation_representation
             permutations = permutation_representation.codomain()
@@ -160,7 +156,17 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 )
                 return _owned_point(backend_permutation(_integer_engine_point(point)))
 
-            for group_generator in group.group_generators():
+            match group:
+                case _ if group in OwnedGroups().Framed():
+                    determining = group.group_generators()
+                case _ if group.is_finite() is True:
+                    determining = group
+                case _:
+                    assert False, (
+                        "a represented finite G-set requires either selected group generators "
+                        "or an exhaustively enumerable finite acting group"
+                    )
+            for group_generator in determining:
                 for point in point_set:
                     assert permute(group_generator, point) in point_set, (
                         "the action morphism does not preserve the stated point set"
@@ -421,10 +427,15 @@ class OrbitSets(OwnedCategory):
         def __init__(self, g_set, **rest) -> None:
             self._g_set = g_set
             group = g_set.acting_group()
-            assert group in OwnedGroups().Framed(), (
-                "constructing finite orbits requires a chosen finite group "
-                "generating set"
-            )
+            match group:
+                case _ if group in OwnedGroups().Framed():
+                    action_generators = group.group_generators()
+                case _ if group.is_finite() is True:
+                    action_generators = group
+                case _:
+                    assert False, (
+                        "constructing finite orbits requires selected generators or an exhaustively enumerable finite acting group"
+                    )
 
             point_set = finite_ordered_set(g_set)
             point_ranking = point_set.ranking_map()
@@ -441,7 +452,7 @@ class OrbitSets(OwnedCategory):
                 while frontier:
                     point_rank = frontier.popleft()
                     point = point_at(point_rank)
-                    for group_generator in group.group_generators():
+                    for group_generator in action_generators:
                         image_rank = int(
                             point_ranking(g_set.act(group_generator, point))
                         )
@@ -568,33 +579,46 @@ def _owned_point_set(point_set):
 def _finite_g_set_from_action(group, point_set, action):
     r"""Construct a represented finite ``G``-set from a binary action.
 
-    ``action(g, x)`` is read once, on the chosen group generators, into the
-    defining group morphism ``G -> Sym(X)``; the returned object stores that
-    morphism rather than the temporary binary callback.
+    ``action(g, x)`` is read into the defining group morphism
+    ``G -> Sym(X)``.  Chosen generators are used when present; otherwise a
+    finite acting group is verified exhaustively.  The returned object stores
+    that morphism rather than the temporary binary callback.
     """
     point_set = _owned_point_set(point_set)
     assert point_set in FiniteSets(), (
         "the represented G-set constructor requires a finite point set"
     )
     group = _owned_group(group)
-    assert group in OwnedGroups().Framed(), (
-        "constructing a represented action morphism requires a chosen finite group generating set"
-    )
     # Private finite backend serialization: Sage's SymmetricGroup constructor
     # requires a sliceable concrete domain of engine points, while the
     # mathematical point set remains the owned set above.
     backend_points = [_integer_engine_point(point) for point in point_set]
     permutations = _own_group(SymmetricGroup(backend_points))
-    permutation_representation = group.Mor(permutations)(
-        {
-            group_generator: _permutation_from_point_map(
-                permutations,
-                point_set,
-                lambda point, group_generator=group_generator: action(group_generator, point),
+    homset = group.Mor(permutations)
+    match group:
+        case _ if group in OwnedGroups().Framed():
+            permutation_representation = homset(
+                {
+                    group_generator: _permutation_from_point_map(
+                        permutations,
+                        point_set,
+                        lambda point, group_generator=group_generator: action(group_generator, point),
+                    )
+                    for group_generator in group.group_generators()
+                }
             )
-            for group_generator in group.group_generators()
-        }
-    )
+        case _ if group.is_finite() is True:
+            permutation_representation = homset._from_finite_elementwise_rule(
+                lambda group_element: _permutation_from_point_map(
+                    permutations,
+                    point_set,
+                    lambda point: action(group_element, point),
+                )
+            )
+        case _:
+            assert False, (
+                "a represented finite G-set requires selected generators or an exhaustively enumerable finite acting group"
+            )
     return _object_of(
         FiniteGSets(permutation_representation.domain()),
         point_set=point_set,
@@ -604,10 +628,6 @@ def _finite_g_set_from_action(group, point_set, action):
 
 def _fixed_point_set(g_set):
     r"""Return the finite fixed-point set ``X^G``."""
-    group = g_set.acting_group()
-    assert group in OwnedGroups().Framed(), (
-        "constructing fixed points requires a chosen finite group generating set"
-    )
     return finite_ordered_set(g_set).filtered(g_set.is_invariant)
 
 

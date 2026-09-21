@@ -11,10 +11,16 @@ def _swap_on_hyperbolic_plane():
 def test_lattice_with_isometry_owns_the_equipped_object_and_centralizer() -> None:
     lattice, _e, _f, swap = _swap_on_hyperbolic_plane()
     equipped = lattice.with_isometry(swap)
+    centralizer = equipped.centralizer_group()
+    inclusion = centralizer.inclusion()
 
     assert equipped.lattice() is lattice
     assert equipped.isometry() == swap
-    assert swap in equipped.centralizer_group()
+    assert swap in centralizer
+    assert centralizer.centralizing_element() == swap
+    assert inclusion.domain() is centralizer
+    assert inclusion.codomain() is lattice.O()
+    assert inclusion(swap) == swap
     assert equipped.primitive_extension().isometry == swap
 
 

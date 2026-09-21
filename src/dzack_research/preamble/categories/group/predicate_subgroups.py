@@ -1,5 +1,7 @@
 """Subgroups specified by a membership predicate rather than generators."""
 
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
@@ -155,6 +157,15 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 or data.get("spinor_kernel", False)
                 or data.get("discriminant_preimages", ())
             )
+
+        def is_finite(self):
+            r"""A subgroup of a finite group is finite; finite-index character preimages inherit infinitude."""
+            ambient = self.supergroup().is_finite()
+            if ambient is True:
+                return True
+            if ambient is False and self.contains_character_kernel():
+                return False
+            return Unknown
 
         def cardinality(self):
             r"""``|H|``: from the retained character data, else by counting a finite supergroup.

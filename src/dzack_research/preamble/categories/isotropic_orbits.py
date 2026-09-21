@@ -189,11 +189,11 @@ class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
     r"""The finite cusp decomposition of one primitive isotropic sublattice locus."""
 
     def __init__(self, group, locus) -> None:
-        if group.lattice() is not locus.lattice():
+        if group.supergroup().domain() is not locus.lattice():
             raise ValueError("the orbit group and isotropic-sublattice locus require one lattice")
         self._group = group
         self._locus = locus
-        self._orbits = locus.lattice().cusps(rank=locus.rank())
+        self._orbits = group.cusps(rank=locus.rank())
 
     def group(self):
         return self._group
@@ -218,7 +218,7 @@ class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
         raise ArithmeticError("the exact cusp list did not cover the isotropic-sublattice locus")
 
     def stabilizer(self, sublattice):
-        return self.group().stabilizer(sublattice, action="setwise")
+        return self.orbit_of(sublattice).stabilizer()
 
     def transporter(self, source, target):
         if source not in self.locus() or target not in self.locus():
@@ -404,6 +404,8 @@ class Cusp:
     def parabolic_subgroup(self):
         r"""Return ``Gamma = Stab_{O(L)}(I)`` of the representative."""
         return self._representative.parabolic_subgroup()
+
+    stabilizer = parabolic_subgroup
 
     def stabilizer_generators(self):
         r"""Return backend generators of the representative's stabilizer."""
