@@ -797,13 +797,6 @@ def _through_formed_copy(module, formed, normalization):
     return forward, inverse
 
 
-def _element_key(module, element):
-    r"""A hashable key deciding equality of classes via the private Smith engine."""
-    if module._smith_engine() is None:
-        raise NotImplementedError("finite discriminant-class keys require the Smith engine")
-    return tuple(module._to_smith_engine_element(module(element)).vector())
-
-
 def _subquotient_module(subgroup, larger):
     r"""Return the literal cokernel of ``subgroup -> larger`` inside one ambient module."""
     if subgroup.ambient_discriminant_module() is not larger.ambient_discriminant_module():
@@ -878,42 +871,28 @@ def _discriminant_subgroup(ambient, generators):
 
 
 def _all_discriminant_subgroups(ambient):
+    r"""Return the subgroup lattice through GAP's finite-abelian routine."""
+    from sage.groups.abelian_gps.abelian_group_gap import AbelianGroupGap
 
-    elements = ambient.elements()
-    zero_key = frozenset((_element_key(ambient, ambient.zero()),))
-    zero_subgroup = ambient.subgroup_on(())
-    known = {zero_key: zero_subgroup}
-    known_by_position = {0: zero_subgroup}
-    frontier = [zero_subgroup]
-    while frontier:
-        subgroup = frontier.pop()
-        embedded = subgroup.embedded_elements()
-        subgroup_keys = {_element_key(ambient, element) for element in embedded}
-        for element in elements:
-            if _element_key(ambient, element) in subgroup_keys:
-                continue
-            existing_count = int(embedded.cardinality())
-            indices = Sets.Δ[existing_count]
-            candidate_generators = finite_indexed_family(
-                indices,
-                lambda position, embedded=embedded, element=element, existing_count=existing_count: (
-                    embedded[int(position)]
-                    if int(position) < existing_count
-                    else element
-                ),
+    smith_engine = ambient._smith_engine()
+    assert smith_engine is not None, (
+        "discriminant subgroup enumeration requires the integral Smith engine"
+    )
+    additive_group = AbelianGroupGap(smith_engine.invariants())
+    return finite_ordered_set(
+        tuple(
+            ambient.subgroup_on(
+                tuple(
+                    ambient._from_smith_engine_element(
+                        smith_engine.linear_combination_of_smith_form_gens(
+                            additive_group(generator).exponents()
+                        )
+                    )
+                    for generator in subgroup.gens()
+                )
             )
-            candidate = ambient.subgroup_on(candidate_generators)
-            key = frozenset(
-                _element_key(ambient, x) for x in candidate.embedded_elements()
-            )
-            if key not in known:
-                known[key] = candidate
-                known_by_position[len(known_by_position)] = candidate
-                frontier.append(candidate)
-    positions = Sets.Δ[len(known_by_position) - 1]
-    return FiniteOrderedSets().from_indexed(
-        positions,
-        lambda position: known_by_position[int(position)],
+            for subgroup in additive_group.all_subgroups()
+        )
     )
 
 

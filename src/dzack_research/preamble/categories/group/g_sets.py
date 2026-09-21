@@ -7,8 +7,6 @@ the engine used to compute equivariance, fixed points, orbits, and the
 standard finite free/cofree constructions.
 """
 
-from collections import deque
-
 from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.cachefunc import cached_method
@@ -455,40 +453,34 @@ class OrbitSets(OwnedCategory):
             point_set = finite_ordered_set(g_set)
             point_ranking = point_set.ranking_map()
             point_at = point_ranking.inverse()
-            point_count = int(point_set.cardinality())
-            unseen = {position for position in range(point_count)}
-            orbit_families = {}
-            orbit_count = 0
-            while unseen:
-                seed_rank = min(unseen)
-                unseen.remove(seed_rank)
-                orbit_ranks = {seed_rank}
-                frontier = deque((seed_rank,))
-                while frontier:
-                    point_rank = frontier.popleft()
-                    point = point_at(point_rank)
-                    for group_generator in action_generators:
-                        image_rank = int(
-                            point_ranking(g_set.act(group_generator, point))
+            representation = g_set.permutation_representation()
+            permutation_group = representation.codomain()
+            image_group = permutation_group.subgroup(
+                tuple(representation(generator) for generator in action_generators)
+            )
+            orbit_rank_sets = sorted(
+                {
+                    tuple(
+                        sorted(
+                            int(point_ranking(image))
+                            for image in image_group.orbit(point)
                         )
-                        if image_rank in orbit_ranks:
-                            continue
-                        orbit_ranks.add(image_rank)
-                        unseen.discard(image_rank)
-                        frontier.append(image_rank)
-
-                rank_by_position = {
-                    position: rank
-                    for position, rank in enumerate(sorted(orbit_ranks))
-                }
-                orbit_families[orbit_count] = FiniteOrderedSets().from_indexed(
-                    Sets.Δ[len(rank_by_position) - 1],
-                    lambda position, rank_by_position=rank_by_position: point_at(
-                        rank_by_position[int(position)]
+                    )
+                    for point in point_set
+                },
+                key=lambda orbit: orbit[0],
+            )
+            orbit_families = {
+                orbit_index: FiniteOrderedSets().from_indexed(
+                    Sets.Δ[len(orbit_ranks) - 1],
+                    lambda position, orbit_ranks=orbit_ranks: point_at(
+                        orbit_ranks[int(position)]
                     ),
-                    name=f"Orbit {orbit_count}",
+                    name=f"Orbit {orbit_index}",
                 )
-                orbit_count += 1
+                for orbit_index, orbit_ranks in enumerate(orbit_rank_sets)
+            }
+            orbit_count = len(orbit_rank_sets)
 
             self._orbit_indices = Sets.Δ[orbit_count - 1]
             self._orbit_points = finite_indexed_family(
@@ -550,21 +542,9 @@ def _permutation_from_point_map(permutation_group, point_set, mapping):
             "a group action must send each group element to a permutation"
         )
 
-    remaining = list(point_set)
-    cycles = []
-    while remaining:
-        start = remaining[0]
-        cycle = [start]
-        remaining.remove(start)
-        current = mapping(start)
-        while current != start:
-            cycle.append(current)
-            remaining.remove(current)
-            current = mapping(current)
-        if len(cycle) > 1:
-            # The engine permutes the engine's points; owned integers cross here.
-            cycles.append(tuple(_integer_engine_point(point) for point in cycle))
-    return permutation_group(cycles)
+    return permutation_group(
+        [_integer_engine_point(image) for image in images]
+    )
 
 
 def _owned_point_set(point_set):

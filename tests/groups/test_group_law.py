@@ -68,4 +68,11 @@ def test_orbits_and_stabilizers_of_the_natural_action() -> None:
     assert stabilizer in Subgroups(symmetric)
     assert stabilizer.order() == 6
     assert symmetric.left_cosets(stabilizer).cardinality() == 4
-    assert Groups.C(2).action_on((1, 2, 3, 4)).orbits().cardinality() == 3
+    action = Groups.C(2).action_on((1, 2, 3, 4))
+    orbits = action.orbits()
+    assert orbits.cardinality() == 3
+    assert tuple(int(orbit.representative()) for orbit in orbits) == (1, 3, 4)
+    assert tuple(
+        int(point_stabilizer.order())
+        for point_stabilizer in action.orbit_stabilizers()
+    ) == (1, 2, 2)

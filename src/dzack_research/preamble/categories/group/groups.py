@@ -2536,6 +2536,83 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             )
             return bool(ring(int(self.order())).is_unit())
 
+        def finite_image_lifts(
+            self,
+            image,
+            *,
+            generators=None,
+            multiply=None,
+            image_bound=None,
+        ):
+            r"""Retain one source lift above every element of a finite generated image.
+
+            This is the Cayley-graph image algorithm for a group map whose
+            source generators are represented.  ``image`` may be an owned
+            group morphism or another exact represented homomorphism.  When
+            its codomain is an owned finite group, that cardinality is the
+            termination bound; a finite quotient represented by another
+            exact multiplication law supplies ``multiply`` and
+            ``image_bound`` explicitly.
+
+            Supplying ``generators`` asks for the image of the subgroup they
+            generate, while the retained witnesses remain elements of
+            ``self``.  The consistency check on every newly retained word
+            makes this operation unsuitable for an arbitrary nonhomomorphic
+            callback: it is the owner for finite group images with lifts, not
+            a generic graph traversal.
+            """
+            if generators is None:
+                assert self in OwnedGroups().Framed(), (
+                    "finite image enumeration requires selected group generators or an explicit generating family"
+                )
+                generators = tuple(self.group_generators())
+            else:
+                generators = tuple(generators)
+                assert all(generator in self for generator in generators), (
+                    "finite image generators must lie in the source group"
+                )
+
+            if multiply is None:
+                multiply = lambda left, right: left * right
+            if image_bound is None:
+                codomain = image.codomain()
+                assert codomain in OwnedFiniteGroups(), (
+                    "finite image enumeration requires a finite represented codomain or an explicit image_bound"
+                )
+                image_bound = int(codomain.cardinality())
+            image_bound = int(image_bound)
+            if image_bound < 1:
+                raise ValueError("a group image contains its identity")
+
+            identity = self.one()
+            identity_image = image(identity)
+            witnesses = {identity_image: identity}
+            steps = tuple(
+                (image(word), word)
+                for generator in generators
+                for word in (generator, ~generator)
+            )
+            frontier = [identity_image]
+            while frontier:
+                current_image = frontier.pop()
+                current_witness = witnesses[current_image]
+                for step_image, step_witness in steps:
+                    candidate_image = multiply(step_image, current_image)
+                    if candidate_image in witnesses:
+                        continue
+                    candidate_witness = step_witness * current_witness
+                    if image(candidate_witness) != candidate_image:
+                        raise ArithmeticError(
+                            "the retained source word has the wrong finite image"
+                        )
+                    witnesses[candidate_image] = candidate_witness
+                    frontier.append(candidate_image)
+                    if len(witnesses) > image_bound:
+                        raise ArithmeticError(
+                            "the generated image exceeds its declared finite bound"
+                        )
+            return witnesses
+
         def subgroup(self, generators):
             return _engine_subgroup(self, generators)
 

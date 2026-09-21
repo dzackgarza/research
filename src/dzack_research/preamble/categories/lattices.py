@@ -87,7 +87,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _voronoi_facets,
     _voronoi_relevant_vectors,
 )
-from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.group.groups import Groups, OwnedGroups, _engine_group
 from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
     _isotropic_flag_locus,
@@ -3760,35 +3760,24 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                     raise ArithmeticError("a rank-one parabolic generator does not act on I by a unit")
                 return scalar
 
-            target_identity = self.Aut().one()
-            ambient_identity = self.parabolic_subgroup().one()
-            identity_key = (ring.one(), target_identity)
-            witnesses = {identity_key: ambient_identity}
-            steps = []
-            for ambient_generator, target_generator in self._parabolic_levi_generator_pairs():
-                scalar = line_scalar(ambient_generator)
-                steps.append((scalar, target_generator, ambient_generator))
-                inverse = ~ambient_generator
-                steps.append((scalar, ~target_generator, inverse))
-            frontier = [identity_key]
             levi = self.levi_action()
-            while frontier:
-                current_scalar, current_target = frontier.pop()
-                current_ambient = witnesses[current_scalar, current_target]
-                for step_scalar, step_target, step_ambient in steps:
-                    candidate_scalar = step_scalar * current_scalar
-                    candidate_target = step_target * current_target
-                    key = (candidate_scalar, candidate_target)
-                    if key in witnesses:
-                        continue
-                    candidate_ambient = step_ambient * current_ambient
-                    if line_scalar(candidate_ambient) != candidate_scalar:
-                        raise ArithmeticError("the retained parabolic word has the wrong action on I")
-                    if levi(candidate_ambient) != candidate_target:
-                        raise ArithmeticError("the retained parabolic word has the wrong action on K_I")
-                    witnesses[key] = candidate_ambient
-                    frontier.append(key)
-            return witnesses
+            generators = tuple(
+                ambient_generator
+                for ambient_generator, _target_generator in self._parabolic_levi_generator_pairs()
+            )
+
+            def combined_image(isometry):
+                return (line_scalar(isometry), levi(isometry))
+
+            def multiply(left, right):
+                return (left[0] * right[0], left[1] * right[1])
+
+            return self.parabolic_subgroup().finite_image_lifts(
+                combined_image,
+                generators=generators,
+                multiply=multiply,
+                image_bound=2 * int(self.Aut().cardinality()),
+            )
 
         @cached_method
         def pointwise_levi_image(self):
@@ -3820,28 +3809,15 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def _levi_lift_table(self):
             r"""Return one actual parabolic lift of every element of the finite Levi image."""
             image = self.levi_image()
-            ambient_identity = self.parabolic_subgroup().one()
-            target_identity = self.Aut().one()
-            witnesses = {target_identity: ambient_identity}
-            steps = []
-            for ambient_generator, target_generator in self._parabolic_levi_generator_pairs():
-                steps.append((ambient_generator, target_generator))
-                steps.append((~ambient_generator, ~target_generator))
-            frontier = [target_identity]
-            while frontier:
-                current_target = frontier.pop()
-                current_ambient = witnesses[current_target]
-                for ambient_step, target_step in steps:
-                    candidate_target = target_step * current_target
-                    if candidate_target in witnesses:
-                        continue
-                    candidate_ambient = ambient_step * current_ambient
-                    if candidate_target not in image:
-                        raise ArithmeticError("a descended parabolic word left the represented Levi image")
-                    if self.levi_action()(candidate_ambient) != candidate_target:
-                        raise ArithmeticError("a retained parabolic word descends to the wrong Levi element")
-                    witnesses[candidate_target] = candidate_ambient
-                    frontier.append(candidate_target)
+            generators = tuple(
+                ambient_generator
+                for ambient_generator, _target_generator in self._parabolic_levi_generator_pairs()
+            )
+            witnesses = self.parabolic_subgroup().finite_image_lifts(
+                self.levi_action(),
+                generators=generators,
+                image_bound=int(image.cardinality()),
+            )
             if len(witnesses) != int(image.cardinality()):
                 raise ArithmeticError("the paired parabolic generators did not enumerate the represented Levi image")
             return witnesses
@@ -3964,22 +3940,39 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def roots(self):
-            r"""Return the finite root orbit generated by the simple reflections."""
-            simple = tuple(self.simple_roots())
-            reflections = tuple(self.reflection(root) for root in simple)
-            ordered = list(simple) + [-root for root in simple]
-            seen = set(ordered)
-            frontier = list(ordered)
-            while frontier:
-                root = frontier.pop()
-                for reflection in reflections:
-                    image = reflection(root)
-                    if image in seen:
-                        continue
-                    seen.add(image)
-                    ordered.append(image)
-                    frontier.append(image)
-            return finite_ordered_set(tuple(ordered))
+            r"""Return the finite H-root system from its Coxeter reflection group.
+
+            Sage's maintained finite Coxeter-group backend computes all roots
+            in the basis of simple roots.  The H3/H4 coefficients lie in the
+            golden integer order defining this lattice; crossing them through
+            that order both preserves the selected framing and rejects an
+            accidental nonintegral backend coordinate.
+            """
+            family, rank = self.coxeter_type()
+            coxeter = Groups.Coxeter(
+                [family, rank],
+                base_ring=self.base_ring().fraction_field(),
+            )
+            backend_roots = _engine_group(coxeter).roots()
+            ring = self.base_ring()
+            engine_order = _engine_ring(ring)
+            labels = tuple(self.module_generating_set())
+            return finite_ordered_set(
+                tuple(
+                    self.linear_combination(
+                        {
+                            label: ring._from_engine_element(
+                                engine_order(coefficient)
+                            )
+                            for label, coefficient in zip(
+                                labels, tuple(root), strict=True
+                            )
+                            if coefficient
+                        }
+                    )
+                    for root in backend_roots
+                )
+            )
 
         def coxeter_number(self):
             family, rank = self.coxeter_type()

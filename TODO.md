@@ -253,12 +253,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Maintained computation and honest frontiers
 
-- [ ] **`imperative-algorithm-cleanup`**. **Needs:** none.
-  **Owner and delta:** the complete catalogue of bilinear accumulation, duplicate free-algebra target multiplication, divided-power coefficients, absolute-Galois filtering, grouping and frontier/seen traversal in actions/lattices.
-  **Invariants:** delegate the semantic operation to its weakest sufficient owned or maintained computation owner. Keep only representation adaptation or source-justified theory-specific algorithms; a list comprehension or a private helper containing the old loop is not a repair. Preserve already-correct torsion-form action delegation.
-  **Closure specimens:** a noncommutative word preserves order under a universal extension; a divided-power product has its actual coefficient; a finite action with several orbits preserves representatives and stabilizers. Review every catalogue family, documenting the theorem for retained specialized loops and the actual dependency operation for replaced algorithms.
-
-- [ ] **`assertion-frontiers`**. **Needs:** `imperative-algorithm-cleanup`.
+- [ ] **`assertion-frontiers`**. **Needs:** none.
   **Owner and delta:** all public mathematical operations using `NotImplementedError` or equivalent runtime dispatch failures across schemes, algebras, rings, modules, lattices and groups.
   **Invariants:** keep the full mathematical domain. Supported exact cases use their maintained owner; only the precise unsupported computational remainder fails at the declared hypothesis/representation frontier. Existence, representation and computability are distinct. An undecidable assertion is not a false theorem, and making a required concrete operation abstract does not deliver it.
   **Closure specimens:** each operation family has a positive supported case and a nearby unsupported case distinguished by its actual hypothesis. Retain integral torsion, infinite objects and nonfree presentations where required. Review complete control flow, not only exception spellings; no blanket replacement with `assert False` or an unconditional message closes the family.

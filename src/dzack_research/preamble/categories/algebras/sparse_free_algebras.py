@@ -1,5 +1,6 @@
 r"""Tensor and symmetric products on the module of relationful words."""
 
+from math import prod
 from typing import Any
 
 from sage.categories.morphism import Morphism, SetMorphism
@@ -123,13 +124,6 @@ def _word_product(module, left, right):
     ), module.zero())
 
 
-def _multiply_in_target(target, factors):
-    result = target.one()
-    for factor in factors:
-        result *= factor
-    return result
-
-
 def _uses_free_construction_homset(domain):
     ring = domain.base_ring()
     return domain in TensorAlgebras(ring) or domain in SymmetricAlgebras(ring)
@@ -219,7 +213,7 @@ class SparseFreeAlgebraMorphism(Morphism):
             factors = (self._image(inner.component(position)) for position in inner.parent().index_set())
         else:
             factors = (self._image(label) for label in inner.support() for _ in range(int(inner.multiplicity(label))))
-        return _multiply_in_target(self.codomain(), factors)
+        return prod(factors, start=self.codomain().one())
 
     def _call_(self, element):
         element = self.domain()(element)

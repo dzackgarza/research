@@ -43,11 +43,9 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
     def __init__(self, presentation_ring, module, relations) -> None:
         engine = _engine_ring(presentation_ring)
         Ideal_nc.__init__(self, engine, relations, side="twosided")
+        self._presentation_ring = presentation_ring
         self._module = module
         self._labels = module.module_generating_set()
-        self._monoid_generator_labels = dict(
-            zip(engine.monoid().gens(), self._labels, strict=True)
-        )
         self._tensor_powers = {1: module}
 
     def _tensor_power(self, degree):
@@ -61,13 +59,6 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         self._tensor_powers[degree] = power
         return power
 
-    def _word_labels(self, monomial):
-        return tuple(
-            self._monoid_generator_labels[generator]
-            for generator, exponent in monomial
-            for _ in range(int(exponent))
-        )
-
     def _free_word(self, word):
         engine = self.ring()
         result = engine.one()
@@ -77,35 +68,36 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         return result
 
     def reduce(self, element):
-
         engine = self.ring()
-        homogeneous_terms = {}
-        for monomial, coefficient in engine(element).monomial_coefficients().items():
-            word = self._word_labels(monomial)
-            homogeneous_terms.setdefault(len(word), []).append((word, coefficient))
+        represented = self._presentation_ring._from_engine_element(engine(element))
+        homogeneous_components = self._presentation_ring.homogeneous_components(
+            represented
+        )
 
         result = engine.zero()
-        for degree, terms in homogeneous_terms.items():
+        for degree, component in homogeneous_components.items():
+            degree = int(degree)
             if degree == 0:
-                result += sum(
-                    (coefficient for _word, coefficient in terms),
-                    engine.base_ring().zero(),
+                coefficients = component.parent().framing_coefficients(component)
+                scalar = next(
+                    iter(coefficients.values()),
+                    self._module.base_ring().zero(),
                 )
+                result += _engine_element(self._module.base_ring(), scalar)
                 continue
 
             tensor_power = self._tensor_power(degree)
-            tensor_ring = tensor_power.base_ring()
-            tensor_element = sum(
-                (
-                    tensor_ring._from_engine_element(
-                        _engine_ring(tensor_ring)(coefficient)
-                    )
-                    * tensor_power.module_generator(
-                        _nested_tensor_label(self._module, word)
-                    )
-                    for word, coefficient in terms
-                ),
-                tensor_power.zero(),
+            source_power = component.parent()
+            tensor_element = tensor_power.linear_combination(
+                {
+                    _nested_tensor_label(
+                        self._module,
+                        _flatten_tensor_label(source_label, degree),
+                    ): coefficient
+                    for source_label, coefficient in source_power.framing_coefficients(
+                        component
+                    ).items()
+                }
             )
             representative = tensor_power._smith_representative(tensor_element)
             for tensor_label, coefficient in tensor_power.framing_coefficients(representative).items():

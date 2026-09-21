@@ -1566,13 +1566,6 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
 
 
-def _multiply_in_target(target, factors):
-    result = target.one()
-    for factor in factors:
-        result *= factor
-    return result
-
-
 class FramedFreeAlgebraMorphism(AlgebraMorphism):
     r"""A generator-defined map from a framed free algebra to any algebra."""
 
@@ -1712,8 +1705,9 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         return sum(
             (
                 coefficient
-                * _multiply_in_target(
-                    self.codomain(), (self._images[label] for label in factors)
+                * prod(
+                    (self._images[label] for label in factors),
+                    start=self.codomain().one(),
                 )
                 for factors, coefficient in terms
             ),

@@ -412,37 +412,15 @@ def _embedded_elements(subobject):
 
 def _torsion_form_isotropic_subobjects(form, *, quadratic: bool):
     r"""Return all form-bearing subobjects on which the selected form vanishes."""
-
-    zero = form.zero()
-    zero_subobject = _torsion_form_subobject_on(form, (), quadratic=quadratic)
-    zero_elements = _embedded_elements(zero_subobject)
-    seen = {zero_elements}
-    frontier = [zero_subobject]
-    isotropic = [zero_subobject]
-    candidates = tuple(
-        element
-        for element in form.elements()
-        if element != zero and form.form_vanishes_on((element,))
-    )
-    while frontier:
-        current = frontier.pop()
-        selected_generators = tuple(current.embedded_module_generators())
-        current_elements = _embedded_elements(current)
-        for element in candidates:
-            if element in current_elements:
-                continue
-            candidate = _torsion_form_subobject_on(
-                form,
-                selected_generators + (element,),
-                quadratic=quadratic,
+    return finite_ordered_set(
+        tuple(
+            subobject
+            for subobject in _torsion_form_all_subobjects(
+                form, quadratic=quadratic
             )
-            elements = _embedded_elements(candidate)
-            if elements in seen or not form.form_vanishes_on(elements):
-                continue
-            seen.add(elements)
-            frontier.append(candidate)
-            isotropic.append(candidate)
-    return finite_ordered_set(tuple(isotropic))
+            if form.form_vanishes_on(_embedded_elements(subobject))
+        )
+    )
 
 
 def _torsion_form_maximal_isotropic_subobjects(form, *, quadratic: bool):
@@ -458,31 +436,50 @@ def _torsion_form_maximal_isotropic_subobjects(form, *, quadratic: bool):
 
 
 def _torsion_form_all_subobjects(form, *, quadratic: bool):
-    r"""Return every finite form-bearing subobject of ``form`` exactly once."""
-    zero_subobject = _torsion_form_subobject_on(form, (), quadratic=quadratic)
-    seen = {_embedded_elements(zero_subobject)}
-    frontier = [zero_subobject]
-    subobjects = [zero_subobject]
-    elements = tuple(form.elements())
-    while frontier:
-        current = frontier.pop()
-        current_elements = _embedded_elements(current)
-        selected = tuple(current.embedded_module_generators())
-        for element in elements:
-            if element in current_elements:
-                continue
-            candidate = _torsion_form_subobject_on(
+    r"""Return every finite form-bearing subobject of ``form`` exactly once.
+
+    The owned finite-torsion enumeration itself is the ``ZZ`` Smith
+    specialization.  On that exact frontier Sage's finite-quadratic-module
+    backend owns the complete subgroup enumeration: ``ZZ``-submodules are
+    additive subgroups, and ``all_submodules()`` delegates the finite abelian
+    subgroup lattice to GAP.  We cross only its returned generators through
+    the invariant-factor normalization.
+    """
+    integers = _own_ring(SageZZ)
+    assert form.base_ring() is integers, (
+        "finite torsion-form subobject enumeration uses the represented ZZ Smith specialization"
+    )
+    normalization = form.invariant_factor_form()
+    normalized = normalization.codomain()
+    engine = _engine_torsion_form(normalized, quadratic=quadratic)
+    cover = engine.V()
+    labels = tuple(normalized.module_generating_set())
+    ring = normalized.base_ring()
+
+    def owned_engine_generator(engine_generator):
+        coordinates = cover.coordinates(engine(engine_generator).lift())
+        normalized_element = normalized.linear_combination(
+            {
+                label: ring._from_engine_element(SageZZ(coefficient))
+                for label, coefficient in zip(labels, coordinates, strict=True)
+                if coefficient
+            }
+        )
+        return normalization.inverse()(normalized_element)
+
+    return finite_ordered_set(
+        tuple(
+            _torsion_form_subobject_on(
                 form,
-                selected + (element,),
+                tuple(
+                    owned_engine_generator(generator)
+                    for generator in engine_submodule.gens()
+                ),
                 quadratic=quadratic,
             )
-            embedded = _embedded_elements(candidate)
-            if embedded in seen:
-                continue
-            seen.add(embedded)
-            frontier.append(candidate)
-            subobjects.append(candidate)
-    return finite_ordered_set(tuple(subobjects))
+            for engine_submodule in engine.all_submodules()
+        )
+    )
 
 
 def _torsion_form_orthogonal_subobject(form, subobject, *, quadratic: bool):

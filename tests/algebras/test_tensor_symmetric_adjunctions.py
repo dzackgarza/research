@@ -189,6 +189,22 @@ def test_presented_algebra_functors_act_on_nonfree_module_morphisms_and_preserve
     )
 
 
+def test_tensor_algebra_universal_extension_preserves_word_order() -> None:
+    source_module = ZZ.free_module(finite_ordered_set(("x", "y")))
+    target_module = ZZ.free_module(finite_ordered_set(("a", "b")))
+    source = source_module.tensor_algebra()
+    target = target_module.tensor_algebra()
+    x = source.algebra_generator("x")
+    y = source.algebra_generator("y")
+    a = target.algebra_generator("a")
+    b = target.algebra_generator("b")
+
+    extension = source.Mor(target)({"x": a, "y": b})
+
+    assert extension(x * y) == a * b
+    assert extension(x * y) != b * a
+
+
 @pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
 def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_satisfy_the_triangle_law(
     adjunction_flavor,
