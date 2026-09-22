@@ -38,7 +38,14 @@ from dzack_research.preamble.owned_category import _object_of
 
 
 class CategoryObject(OwnedParent, Parent):
-    r"""A Sage category regarded as an object of ``Cat``."""
+    r"""A category regarded as a Mor endpoint, retaining its placement in ``Cat``.
+
+    A represented discrete category remains an object of
+    ``DiscreteCategories`` at a functor endpoint.  This is selected when the
+    endpoint is constructed, not recovered by a containment predicate.
+    A Mor parent's independent set/module enrichment is not a category of
+    categories and must not be transferred to this endpoint.
+    """
 
     def __init__(
         self,
@@ -47,7 +54,12 @@ class CategoryObject(OwnedParent, Parent):
     ) -> None:
         self._category_of_categories = category_of_categories
         self._represented_category = represented_category
-        super().__init__(category=category_of_categories)
+        placement = represented_category.category()
+        match placement.is_subcategory(category_of_categories):
+            case True:
+                super().__init__(category=placement)
+            case False:
+                super().__init__(category=category_of_categories)
 
     def category_of_categories(self) -> Cat:
         return self._category_of_categories

@@ -17,7 +17,9 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _category_accepts_morphism,
     _category_mor,
+    _category_mor_parent,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
@@ -68,7 +70,12 @@ class FunctorImageMor(CategoricalMor):
                 if arrow.parent() is self:
                     return arrow
                 arrow = arrow.underlying_arrow()
-        if arrow not in self._underlying_mor():
+        if not _category_accepts_morphism(
+            self.image_category().functor().codomain(),
+            self.domain().underlying_image(),
+            self.codomain().underlying_image(),
+            arrow,
+        ):
             raise ValueError("the arrow is not a morphism between the underlying functor images")
         return FunctorImageMorphism(self, arrow)
 
@@ -76,7 +83,9 @@ class FunctorImageMor(CategoricalMor):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only for an endomorphism Mor object")
-        return self(self._underlying_mor().identity())
+        underlying = self.domain().underlying_image()
+        category = self.image_category().functor().codomain()
+        return self(_category_mor_parent(category, underlying, underlying).identity())
 
     def compose(self, second, first):
         r"""Compose two presented-image arrows through their codomain arrows."""

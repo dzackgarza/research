@@ -231,7 +231,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Public mathematical interaction
 
-- [ ] **`mathematical-return-types`**. **Needs:** `refinement-convergence`, `recursive-owned-results`.
+- [ ] **`mathematical-return-types`**. **Needs:** `refinement-convergence`.
   **Owner and delta:** the full public return-annotation family using Parent, Element, CategoryObject or ad hoc Any, including functor images, cardinalities and scheme operations.
   **Invariants:** annotations name the actual mathematical codomain, refinement or honest union. A central mathematically named alias may express a limitation of Python syntax; a universal type with a new name may not hide it. This node does not optimize checker counts.
   **Closure specimens:** follow a functor image, a cardinality, a scheme map and a composite's components into operations their claimed codomain supports. Review every occurrence family and required central alias; no narrowing to the currently convenient engine realization or broad Any escape.

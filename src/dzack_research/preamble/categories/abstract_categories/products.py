@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     _precomposable,
     MorCategoryConstruction,
-    _category_mor,
+    _category_accepts_morphism,
     _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects as OwnedObjects
@@ -768,8 +768,11 @@ class ConeMorphism(Morphism):
             raise ValueError("the cone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cone map has the wrong codomain apex")
-        if apex_map not in _category_mor(
-            parent.cone_category().target_category(), self.domain().apex(), self.codomain().apex()
+        if not _category_accepts_morphism(
+            parent.cone_category().target_category(),
+            self.domain().apex(),
+            self.codomain().apex(),
+            apex_map,
         ):
             raise ValueError("the apex map is not a morphism of the diagram's target category")
         self._apex_map = apex_map
@@ -817,8 +820,11 @@ class CoconeMorphism(Morphism):
             raise ValueError("the cocone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cocone map has the wrong codomain apex")
-        if apex_map not in _category_mor(
-            parent.cocone_category().target_category(), self.domain().apex(), self.codomain().apex()
+        if not _category_accepts_morphism(
+            parent.cocone_category().target_category(),
+            self.domain().apex(),
+            self.codomain().apex(),
+            apex_map,
         ):
             raise ValueError("the apex map is not a morphism of the diagram's target category")
         if verify and not _commutes_with_diagram(

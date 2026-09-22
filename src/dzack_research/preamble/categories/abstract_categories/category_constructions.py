@@ -14,7 +14,7 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
-    _category_mor,
+    _category_accepts_morphism,
     _category_mor_parent,
     _precomposable,
 )
@@ -87,8 +87,11 @@ class OppositeMor(CategoricalMor):
                     raise ValueError("the opposite morphism has the wrong endpoints")
                 underlying_arrow = underlying_arrow.underlying_arrow()
         base = self.opposite_category().base_category()
-        if underlying_arrow not in _category_mor(
-            base, self.codomain().underlying_object(), self.domain().underlying_object()
+        if not _category_accepts_morphism(
+            base,
+            self.codomain().underlying_object(),
+            self.domain().underlying_object(),
+            underlying_arrow,
         ):
             raise ValueError("the reversed arrow does not belong to the base category")
         return OppositeMorphism(self, underlying_arrow)
@@ -243,9 +246,19 @@ class ProductMor(CategoricalMor):
         if second is None:
             first, second = first
         product = self.product_category()
-        if first not in _category_mor(product.first_category(), self.domain().first(), self.codomain().first()):
+        if not _category_accepts_morphism(
+            product.first_category(),
+            self.domain().first(),
+            self.codomain().first(),
+            first,
+        ):
             raise ValueError("the first map is not a morphism of the first category")
-        if second not in _category_mor(product.second_category(), self.domain().second(), self.codomain().second()):
+        if not _category_accepts_morphism(
+            product.second_category(),
+            self.domain().second(),
+            self.codomain().second(),
+            second,
+        ):
             raise ValueError("the second map is not a morphism of the second category")
         return ProductMorphism(self, first, second)
 

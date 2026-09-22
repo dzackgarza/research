@@ -65,9 +65,11 @@ def _category_mor(
 ) -> FixedMorObject | SageMor:
     r"""The complete selected Mor, including any defining arrow predicate.
 
-    Mathematical admission uses this object. Its private ``arrow_set`` may
-    also represent maps outside a restricted Mor category, so membership in
-    that parent alone is not admission to the selected category.
+    Mathematical admission uses this object's ``accepts`` operation via
+    :func:`_category_accepts_morphism`. Category containment instead concerns
+    its constructed arrow objects. Its private ``arrow_set`` may also
+    represent maps outside a restricted Mor category, so membership in that
+    parent alone is not admission to the selected category.
     """
     if _has_category_packet_surface(category):
         # Admission follows the category's public Mor selector.  Most owned
@@ -78,6 +80,29 @@ def _category_mor(
         # more specific representation.
         return category.Mor(domain, codomain)
     return SageHom(domain, codomain, category)
+
+
+def _category_accepts_morphism(
+    category: Category | None,
+    domain: Parent,
+    codomain: Parent,
+    arrow: Morphism,
+) -> bool:
+    r"""Ask the selected Mor owner to admit an arrow with these endpoints.
+
+    This is the shared admission adapter for functors and categorical
+    constructions. An owned fixed Mor category distinguishes an arrow's
+    defining datum from the object constructed on it: ``accepts`` admits
+    that datum; ``in`` reads object placement. The native Sage-Mor boundary
+    instead uses its element-membership operation. Neither route constructs
+    a trial object or drops a selected restriction by asking ``arrow_set``.
+    """
+    selected = _category_mor(category, domain, codomain)
+    match selected:
+        case Category():
+            return selected.accepts(arrow)
+        case _:
+            return arrow in selected
 
 
 def _arrow_is_inherited_from_subcategory(target, arrow: Morphism) -> bool:
@@ -195,7 +220,7 @@ def _precomposable(second: Morphism, first) -> bool:
     match first:
         case Morphism() if first.codomain() is second.domain():
             base = second.parent().base_category()
-            return first in _category_mor(base, first.domain(), first.codomain())
+            return _category_accepts_morphism(base, first.domain(), first.codomain(), first)
         case _:
             return False
 

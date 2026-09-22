@@ -166,15 +166,16 @@ class Functor:
     def morphism_image(self, morphism: Map) -> Map:
         r"""The image ``F(f): F(A) -> F(B)`` of an arrow ``f: A -> B`` of the domain.
 
-        Both sides are decided by the Mor categories that own them: ``f`` is
-        an arrow of ``Hom_C(A, B)``, and its image is an arrow of
-        ``Hom_D(F(A), F(B))``, a membership that also fixes both endpoints.
+        Both sides are admitted by the Mor categories that own them: ``f``
+        is an arrow of ``Hom_C(A, B)``, and its image is an arrow of
+        ``Hom_D(F(A), F(B))``. This is admission of the actual maps, not
+        placement of the objects constructed on them in those categories.
         """
         from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-            _category_mor,
+            _category_accepts_morphism,
         )
 
-        if morphism not in _category_mor(self.domain(), morphism.domain(), morphism.codomain()):
+        if not _category_accepts_morphism(self.domain(), morphism.domain(), morphism.codomain(), morphism):
             raise TypeError("the supplied map is not a morphism of the functor's domain")
         cached = self._cached_morphism_image(morphism)
         if cached is not None:
@@ -182,7 +183,7 @@ class Functor:
         domain = self.object_image(morphism.domain())
         codomain = self.object_image(morphism.codomain())
         image = self._apply_morphism(morphism)
-        if image not in _category_mor(self.codomain(), domain, codomain):
+        if not _category_accepts_morphism(self.codomain(), domain, codomain, image):
             raise TypeError("the image is not a morphism of the functor's codomain")
         return self._record_morphism_image(morphism, image)
 
@@ -468,17 +469,18 @@ class NaturalTransformation:
     def component(self, obj: Parent) -> Morphism:
         r"""The component ``eta_X``, an arrow of ``Hom_D(F(X), G(X))``.
 
-        Membership in that Mor category is the whole requirement: it decides
-        both that the component is an arrow of the common codomain category
-        and that its endpoints are ``F(X)`` and ``G(X)``.
+        That Mor owner's admission decides both that the component is an
+        arrow of the common codomain category and that its endpoints are
+        ``F(X)`` and ``G(X)``. The raw component need not itself be an object
+        placed in the fixed Mor category.
         """
         from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-            _category_mor,
+            _category_accepts_morphism,
         )
 
         domain, codomain = self.source()(obj), self.target()(obj)
         arrow = self._component(obj)
-        if arrow not in _category_mor(self.source().codomain(), domain, codomain):
+        if not _category_accepts_morphism(self.source().codomain(), domain, codomain, arrow):
             raise TypeError(
                 "a natural-transformation component at an object X is an arrow "
                 "F(X) -> G(X) of the common codomain category"
@@ -569,7 +571,7 @@ class _UnitCounitPresentation:
 
     def unit(self, obj: Parent) -> Morphism:
         from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-            _category_mor,
+            _category_accepts_morphism,
         )
 
         category = self.left_adjoint().domain()
@@ -580,7 +582,7 @@ class _UnitCounitPresentation:
                 raise TypeError("a unit component is indexed by an object of the left-adjoint domain")
         target = self.right_adjoint()(self.left_adjoint()(obj))
         arrow = self._unit_component(obj)
-        match arrow in _category_mor(category, obj, target):
+        match _category_accepts_morphism(category, obj, target, arrow):
             case True:
                 pass
             case False:
@@ -589,7 +591,7 @@ class _UnitCounitPresentation:
 
     def counit(self, obj: Parent) -> Morphism:
         from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-            _category_mor,
+            _category_accepts_morphism,
         )
 
         category = self.right_adjoint().domain()
@@ -600,7 +602,7 @@ class _UnitCounitPresentation:
                 raise TypeError("a counit component is indexed by an object of the right-adjoint domain")
         source = self.left_adjoint()(self.right_adjoint()(obj))
         arrow = self._counit_component(obj)
-        match arrow in _category_mor(category, source, obj):
+        match _category_accepts_morphism(category, source, obj, arrow):
             case True:
                 pass
             case False:

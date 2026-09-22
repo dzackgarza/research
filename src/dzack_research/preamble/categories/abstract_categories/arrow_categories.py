@@ -45,7 +45,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategories,
     MorCategoryConstruction,
     _RestrictedMorCategoryOf,
-    _category_mor,
+    _category_accepts_morphism,
     _category_mor_parent,
     _precomposable,
 )
@@ -203,9 +203,9 @@ class ArrowMor(NaturalTransformationMor):
         if right.domain() is not source.codomain() or right.codomain() is not target.codomain():
             raise ValueError("the right edge has the wrong square endpoints")
         base = self._edge_category()
-        if left not in _category_mor(base, source.domain(), target.domain()):
+        if not _category_accepts_morphism(base, source.domain(), target.domain(), left):
             raise ValueError("the left edge is not a morphism of the base category")
-        if right not in _category_mor(base, source.codomain(), target.codomain()):
+        if not _category_accepts_morphism(base, source.codomain(), target.codomain(), right):
             raise ValueError("the right edge is not a morphism of the base category")
         if verify and (right * source == target * left) is not True:
             raise ValueError("the supplied edges do not establish a commuting square")
@@ -286,7 +286,7 @@ class _WalkingArrowFunctorCategory(_FunctorCategory):
         return (
             arrow.domain() in base
             and arrow.codomain() in base
-            and arrow in _category_mor(base, arrow.domain(), arrow.codomain())
+            and _category_accepts_morphism(base, arrow.domain(), arrow.codomain(), arrow)
         )
 
     def object(self, value: Functor | Morphism):
@@ -351,7 +351,7 @@ class _SubcategoryOfArrows(OwnedCategory):
         return (
             arrow.domain() in base
             and arrow.codomain() in base
-            and arrow in _category_mor(base, arrow.domain(), arrow.codomain())
+            and _category_accepts_morphism(base, arrow.domain(), arrow.codomain(), arrow)
         )
 
     def an_object(self):
@@ -929,8 +929,11 @@ class SubobjectMorphism(Morphism):
         if factor_morphism.codomain() is not _subobject_source(self.codomain()):
             raise ValueError("the subobject factor has the wrong codomain")
         base = parent.subobject_category().base_category()
-        if factor_morphism not in _category_mor(
-            base, _subobject_source(self.domain()), _subobject_source(self.codomain())
+        if not _category_accepts_morphism(
+            base,
+            _subobject_source(self.domain()),
+            _subobject_source(self.codomain()),
+            factor_morphism,
         ):
             raise ValueError("the subobject factor is not a morphism of the base category")
         if verify:
@@ -1488,9 +1491,9 @@ class CoreMor(CategoricalMor):
 
     def _require_base_morphisms(self, forward: Morphism, inverse: Morphism) -> None:
         base = self.core_category().base_category()
-        if forward not in _category_mor(base, self.domain(), self.codomain()):
+        if not _category_accepts_morphism(base, self.domain(), self.codomain(), forward):
             raise ValueError("the forward map is not a morphism of the core's base category")
-        if inverse not in _category_mor(base, self.codomain(), self.domain()):
+        if not _category_accepts_morphism(base, self.codomain(), self.domain(), inverse):
             raise ValueError("the inverse map is not a morphism of the core's base category")
 
     def _from_known_inverse_pair(self, forward, inverse):
