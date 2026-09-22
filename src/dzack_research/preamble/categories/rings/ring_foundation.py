@@ -67,19 +67,6 @@ from dzack_research.preamble.categories.group.magmas import (
     Monoids,
     Semigroups,
 )
-from dzack_research.preamble.categories.sets.cardinals import (
-    aleph0,
-    cardinal,
-    continuum,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.categories.sets.set_categories import (
-    CountablyInfiniteSets,
-    FiniteSets,
-    Sets,
-    UncountableSets,
-)
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category, refine
 
@@ -2053,6 +2040,16 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def cardinality(self):
             r"""Return the exact represented cardinal of the underlying set."""
+            from dzack_research.preamble.categories.sets.cardinals import (
+                aleph0,
+                cardinal,
+                continuum,
+            )
+            from dzack_research.preamble.categories.sets.set_categories import (
+                CountablyInfiniteSets,
+                FiniteSets,
+                UncountableSets,
+            )
 
             category = self.category()
             if category.is_subcategory(FiniteSets()):
@@ -2080,6 +2077,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def _exact_coefficient_presentation_relations(self):
             r"""Return the selected coefficient relations in the computation ring."""
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             return finite_ordered_set(())
 
@@ -2482,6 +2480,9 @@ class OwnedFactorization(SageObject):
         owned_factors = tuple(
             parent._from_engine_element(factor) for factor, _multiplicity in engine_pairs
         )
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+
         indices = finite_ordered_set(owned_factors)
         multiplicities = {
             factor: _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity))
@@ -2883,6 +2884,8 @@ class _OwnedRingElement(RingElement):
 
     def prime_divisors(self):
         r"""Return the distinct prime divisors as an owned finite ordered set."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
         return finite_ordered_set(
             tuple(
                 self.parent()._from_engine_element(prime)
@@ -2895,6 +2898,8 @@ class _OwnedRingElement(RingElement):
 
     def divisors(self):
         r"""Return the positive divisors as an owned finite ordered set."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
         return finite_ordered_set(
             tuple(
                 self.parent()._from_engine_element(divisor)
@@ -2949,6 +2954,9 @@ class _OwnedRingElement(RingElement):
                 )
                 for root, multiplicity in backend_roots
             )
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+
         indices = finite_ordered_set(tuple(root for root, _multiplicity in owned_pairs))
         multiplicities = dict(owned_pairs)
         return finite_indexed_family(
@@ -3166,6 +3174,9 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     def elements(self):
         r"""Return all elements when this ring is finite, as an owned ordered set."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
         if self not in FiniteSets():
             raise ValueError("elements() is represented only for a finite ring")
         return finite_ordered_set(
@@ -3291,6 +3302,13 @@ def _owned_ring_size(engine):
     from sage.categories.sets_cat import Sets as SageSets
     from sage.rings.qqbar import AA as SageAA
     from sage.rings.qqbar import QQbar as SageQQbar
+
+    from dzack_research.preamble.categories.sets.set_categories import (
+        CountablyInfiniteSets,
+        FiniteSets,
+        Sets,
+        UncountableSets,
+    )
 
     if engine.category().is_subcategory(SageSets().Finite()):
         return FiniteSets()

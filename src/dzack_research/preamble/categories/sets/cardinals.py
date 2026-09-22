@@ -959,26 +959,6 @@ class OrdinalSemirings(OwnedCategory):
             return OrdinalSemirings().Mor(self, codomain)
 
 
-OrdinalSemiring = OrdinalSemirings().ObjectType
-Ordinal = OrdinalSemirings().ElementType
-
-
-@cached_function
-def Ordinals() -> OrdinalSemiring:
-    return _object_of(OrdinalSemirings())
-
-
-def ordinal(value: Ordinal | SupportsInt) -> Ordinal:
-    return Ordinals()(value)
-
-
-def omega(index: Ordinal | SupportsInt) -> Ordinal:
-    return Ordinals().initial(index)
-
-
-omega0 = omega(0)
-
-
 @cached_function
 def _cardinal_with_expression(expression) -> Cardinalities.ObjectType:
     return _object_of(Cardinalities(), expression=expression)
@@ -1005,12 +985,45 @@ def cardinal(
     return _cardinal_with_expression(_FiniteCardinal(integer))
 
 
+@cached_function
+def Ordinals() -> OrdinalSemiring:
+    return _object_of(OrdinalSemirings())
+
+
+def ordinal(value: Ordinal | SupportsInt) -> Ordinal:
+    return Ordinals()(value)
+
+
+def omega(index: Ordinal | SupportsInt) -> Ordinal:
+    return Ordinals().initial(index)
+
+
 def aleph(index: Ordinal | SupportsInt) -> Cardinalities.ObjectType:
     return _cardinal_with_expression(_AlephCardinal(ordinal(index)))
 
 
-aleph0 = aleph(0)
-continuum = cardinal(2) ** aleph0
+def __getattr__(name: str):
+    if name == "OrdinalSemiring":
+        val = OrdinalSemirings().ObjectType
+        globals()["OrdinalSemiring"] = val
+        return val
+    if name == "Ordinal":
+        val = OrdinalSemirings().ElementType
+        globals()["Ordinal"] = val
+        return val
+    if name == "omega0":
+        val = omega(0)
+        globals()["omega0"] = val
+        return val
+    if name == "aleph0":
+        val = aleph(0)
+        globals()["aleph0"] = val
+        return val
+    if name == "continuum":
+        val = cardinal(2) ** aleph(0)
+        globals()["continuum"] = val
+        return val
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 __all__ = [

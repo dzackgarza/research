@@ -36,8 +36,6 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
     CardinalityMorphism,
-    aleph,
-    aleph0,
     cardinal,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
@@ -318,6 +316,8 @@ class _Delta:
     def __getitem__(self, dimension):
         if isinstance(dimension, (int, SageInteger)):
             return finite_ordinal_set(int(dimension) + 1)
+        from dzack_research.preamble.categories.sets.cardinals import aleph0
+
         size = cardinal(dimension)
         if size == aleph0:
             return NN
@@ -331,6 +331,8 @@ class _Delta:
 
 class _Aleph:
     def __getitem__(self, index):
+        from dzack_research.preamble.categories.sets.cardinals import aleph
+
         return aleph(index)
 
     def __repr__(self) -> str:
@@ -2824,6 +2826,8 @@ class NaturalNumberSets(OwnedCategory):
             return self._ranking_isomorphism(lambda value: int(self(value)), self)
 
         def cardinality(self) -> Parent:
+            from dzack_research.preamble.categories.sets.cardinals import aleph0
+
             return aleph0
 
         def zero(self) -> Element:
