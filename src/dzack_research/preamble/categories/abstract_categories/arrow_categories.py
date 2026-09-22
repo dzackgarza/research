@@ -1582,9 +1582,20 @@ def _represented_morphism_category(forward: Morphism, inverse: Morphism) -> Cate
             return None
 
 
-def _isomorphism_from_known_inverse_pair(forward, inverse):
-    r"""Transport a previously proved inverse pair without re-solving equality."""
-    base_category = _represented_morphism_category(forward, inverse)
+def _isomorphism_from_known_inverse_pair(
+    forward, inverse, *, base_category: Category | None = None
+):
+    r"""Transport a previously proved inverse pair in the selected arrow theory.
+
+    An induced Aut functor supplies its target category: its image arrows may
+    retain stronger parents, which must not choose a different target core.
+    Without a selected target, use the pair's common represented Mor theory.
+    The selected core still admits both arrows; this parameter changes their
+    mathematical ambient category, not their admission obligations.
+    """
+    match base_category:
+        case None:
+            base_category = _represented_morphism_category(forward, inverse)
     return _core_mor(
         forward.domain(),
         forward.codomain(),

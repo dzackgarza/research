@@ -358,6 +358,116 @@ def test_induced_map_reads_arrows_as_objects_and_preserves_their_identity_two_ar
     assert induced(identity) is induced.codomain().identity_2(swap)
 
 
+def test_induced_mor_constructs_an_unenriched_target_and_preserves_its_two_arrow_endpoints() -> None:
+    import pytest
+    from dzack_research.preamble.categories.abstract_categories.objects import Objects
+
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    inclusion = Sets().inclusion_into(Objects())
+    induced = inclusion.induced_mor_functor(source, target)
+    maps = Sets().Mor(source, target)
+    shift = maps(lambda point: target(int(point) + 1))
+    image = induced(shift)
+
+    assert induced.domain() is maps
+    assert induced.codomain() is Objects().Mor(source, target)
+    assert image in induced.codomain()
+    assert shift not in induced.codomain()
+    assert image.arrow() is shift
+    assert image.arrow()(source(0)) == target(1)
+    assert image.arrow()(source(1)) == target(2)
+    assert induced(shift) is image
+    assert induced(maps.object(shift)) is image
+    assert induced.codomain().object(shift) is image
+
+    identity = maps.identity_2(shift)
+    image_identity = induced(identity)
+    assert image_identity.domain() is image
+    assert image_identity.codomain() is image
+    assert image_identity is induced.codomain().identity_2(image)
+    assert induced(identity) is image_identity
+    assert induced(identity * identity) == image_identity * image_identity
+
+    reverse = Sets().Mor(target, source)(lambda point: source(int(point) % 2))
+    wrong = Sets().Mor(target, source).object(reverse)
+    with pytest.raises(TypeError, match="not an object"):
+        induced.on_object(wrong)
+
+
+def test_induced_mor_on_an_unenriched_source_requires_its_constructed_object() -> None:
+    import pytest
+    from dzack_research.preamble.categories.abstract_categories.objects import Objects
+    from dzack_research.preamble.categories.functors.core import IdentityFunctor
+
+    points = Sets.Δ[1]
+    swap = Sets().Mor(points, points)(lambda point: points(1 - int(point)))
+    induced = IdentityFunctor(Objects()).induced_mor_functor(points, points)
+    stated = induced.domain().object(swap)
+
+    assert swap not in induced.domain()
+    assert stated in induced.domain()
+    assert induced(stated) is stated
+    assert induced(stated).arrow() is swap
+    identity = induced.domain().identity_2(stated)
+    assert induced(identity) is identity
+    with pytest.raises(TypeError, match="not an object"):
+        induced.on_object(swap)
+
+
+def test_induced_end_constructs_the_same_unenriched_diagonal_mor() -> None:
+    from dzack_research.preamble.categories.abstract_categories.objects import Objects
+
+    points = Sets.Δ[1]
+    inclusion = Sets().inclusion_into(Objects())
+    induced = inclusion.induced_end_functor(points)
+    swap = Sets().Mor(points, points)(lambda point: points(1 - int(point)))
+    image = induced(swap)
+
+    assert induced.codomain() is Objects().End(points)
+    assert induced.codomain() is Objects().Mor(points, points)
+    assert image in induced.codomain()
+    assert image.arrow() is swap
+    assert induced(swap) is image
+    assert induced(induced.domain().object(swap)) is image
+    identity = induced.domain().identity_2(swap)
+    assert induced(identity).domain() is image
+    assert induced(identity).codomain() is image
+    assert induced(identity) is induced.codomain().identity_2(image)
+
+
+def test_induced_aut_retains_the_selected_target_core_and_one_image_object() -> None:
+    import pytest
+    from dzack_research.preamble.categories.abstract_categories.objects import Objects
+
+    points = Sets.Δ[1]
+    inclusion = Sets().inclusion_into(Objects())
+    induced = inclusion.induced_aut_functor(points)
+    maps = Sets().Mor(points, points)
+    swap = maps(lambda point: points(1 - int(point)))
+    isomorphism = Sets().Core().Mor(points, points)(swap, swap)
+    stated = induced.domain().object(isomorphism)
+    image = induced(stated)
+
+    assert image in induced.codomain()
+    assert induced(stated) is image
+    assert image.arrow().parent() is Objects().Core().Mor(points, points)
+    assert image.arrow().forward() is swap
+    assert image.arrow().inverse() is swap
+    assert image.arrow()(points(0)) == points(1)
+    assert image.arrow().inverse()(points(1)) == points(0)
+    identity = induced.domain().identity_2(stated)
+    image_identity = induced(identity)
+    assert image_identity.domain() is image
+    assert image_identity.codomain() is image
+    assert induced(identity) is image_identity
+    assert image_identity is induced.codomain().identity_2(image)
+
+    constant = maps(lambda _point: points(0))
+    with pytest.raises(TypeError, match="not an object"):
+        induced.on_object(maps.object(constant))
+
+
 def test_identity_functor_composition_requires_matching_categories() -> None:
     import pytest
     from dzack_research.preamble.categories.functors.core import IdentityFunctor

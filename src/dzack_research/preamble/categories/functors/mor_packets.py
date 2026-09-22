@@ -34,7 +34,16 @@ def _identity_two_arrow_image(functor, two_arrow):
 
 
 class _InducedMorFunctor(Functor):
-    r"""The functor ``Hom_C(A,B) -> Hom_D(F(A),F(B))`` induced by ``F``."""
+    r"""The induced ``Hom_C(A,B) -> Hom_D(F(A),F(B))`` for discrete fixed Mors.
+
+    The target's constructor admits the image arrow and gives its selected
+    representation: an element of an enriched Mor, or a constructed object
+    of an unenriched fixed category.  Raw-arrow membership is not object
+    placement in the latter.  The common functor action owns admission and
+    caches both objects and identity 2-arrows, as for End and Aut below.
+    The identity-only action does not supply the extra action required on
+    nonidentity natural transformations in a represented functor category.
+    """
 
     def __init__(self, functor, domain_object, codomain_object) -> None:
         self._functor = functor
@@ -51,15 +60,11 @@ class _InducedMorFunctor(Functor):
     def base_functor(self):
         return self._functor
 
-    def object_image(self, arrow_object):
-        if arrow_object not in self.domain():
-            raise TypeError(f"{arrow_object} is not an object of {self.domain()}")
+    def _apply_object(self, arrow_object):
         image = self.base_functor().on_morphism(_arrow_of(self.domain(), arrow_object))
-        if image not in self.codomain():
-            raise TypeError(f"{image} is not an object of {self.codomain()}")
-        return image
+        return self.codomain()(image)
 
-    def morphism_image(self, morphism):
+    def _apply_morphism(self, morphism):
         return _identity_two_arrow_image(self, morphism)
 
     def _repr_(self):
@@ -80,13 +85,11 @@ class _InducedEndFunctor(Functor):
     def base_functor(self):
         return self._functor
 
-    def object_image(self, arrow_object):
-        if arrow_object not in self.domain():
-            raise TypeError(f"{arrow_object} is not an object of {self.domain()}")
+    def _apply_object(self, arrow_object):
         image = self.base_functor().on_morphism(_arrow_of(self.domain(), arrow_object))
         return self.codomain()(image)
 
-    def morphism_image(self, morphism):
+    def _apply_morphism(self, morphism):
         return _identity_two_arrow_image(self, morphism)
 
     def _repr_(self):
@@ -111,15 +114,17 @@ class _InducedAutFunctor(Functor):
     def base_functor(self):
         return self._functor
 
-    def object_image(self, arrow_object):
-        if arrow_object not in self.domain():
-            raise TypeError(f"{arrow_object} is not an automorphism in {self.domain()}")
+    def _apply_object(self, arrow_object):
         isomorphism = _arrow_of(self.domain(), arrow_object)
         forward = self.base_functor().on_morphism(isomorphism.forward())
         inverse = self.base_functor().on_morphism(isomorphism.inverse())
-        return self.codomain()(_isomorphism_from_known_inverse_pair(forward, inverse))
+        return self.codomain()(
+            _isomorphism_from_known_inverse_pair(
+                forward, inverse, base_category=self.codomain().base_category()
+            )
+        )
 
-    def morphism_image(self, morphism):
+    def _apply_morphism(self, morphism):
         return _identity_two_arrow_image(self, morphism)
 
     def _repr_(self):
