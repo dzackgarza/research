@@ -312,23 +312,40 @@ class Functor:
         inverse = target.natural_transformations_to(self)(inverse_components)
         return _isomorphism_from_known_inverse_pair(forward, inverse)
 
-    def induced_mor_functor(self, domain_object: Parent, codomain_object: Parent):
-        r"""Return the functor induced by this functor on one Mor category."""
+    def induced_mor_functor(
+        self, domain_object: Parent, codomain_object: Parent, *,
+        on_two_morphism: Callable[[Morphism], Morphism] | None = None,
+    ):
+        r"""Lift this functor to one Mor category with the specified 2-arrow action.
+
+        A discrete source Mor forces that action. On a non-discrete Mor,
+        supply the local action on 2-arrows, preserving identities and vertical
+        composition; the identity functor has its canonical identity lift.
+        This datum does not assert a globally coherent 2-functor structure.
+        """
         from dzack_research.preamble.categories.functors.mor_packets import _InducedMorFunctor
 
-        return _InducedMorFunctor(self, domain_object, codomain_object)
+        return _InducedMorFunctor(
+            self, domain_object, codomain_object, on_two_morphism=on_two_morphism,
+        )
 
-    def induced_end_functor(self, obj: Parent):
-        r"""Return the functor induced by this functor on ``End(obj)``."""
+    def induced_end_functor(
+        self, obj: Parent, *,
+        on_two_morphism: Callable[[Morphism], Morphism] | None = None,
+    ):
+        r"""Lift to ``End(obj)`` with the same 2-arrow datum as ``induced_mor_functor``."""
         from dzack_research.preamble.categories.functors.mor_packets import _InducedEndFunctor
 
-        return _InducedEndFunctor(self, obj)
+        return _InducedEndFunctor(self, obj, on_two_morphism=on_two_morphism)
 
-    def induced_aut_functor(self, obj: Parent):
-        r"""Return the functor induced by this functor on ``Aut(obj)``."""
+    def induced_aut_functor(
+        self, obj: Parent, *,
+        on_two_morphism: Callable[[Morphism], Morphism] | None = None,
+    ):
+        r"""Lift to ``Aut(obj)`` with the same 2-arrow datum as ``induced_mor_functor``."""
         from dzack_research.preamble.categories.functors.mor_packets import _InducedAutFunctor
 
-        return _InducedAutFunctor(self, obj)
+        return _InducedAutFunctor(self, obj, on_two_morphism=on_two_morphism)
 
     def factors(self):
         return _functor_factor_family((self,))
