@@ -216,7 +216,7 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             return finite_ordered_set(tuple(self._edge_weights))
 
         def num_edges(self):
-            return int(self.edges().cardinality())
+            return self.edges().cardinality()
 
         def induced_subgraph(self, vertices):
             r"""Return the projectively weighted subgraph on ``vertices``.

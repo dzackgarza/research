@@ -19,7 +19,12 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.rings.field_morphisms import (
     ExactFieldMorphism,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_ring, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
+    _engine_ring,
+    _own_ring,
+    _owned_engine_element,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -42,7 +47,7 @@ def _relative_degree(base_field, extension_field):
     assert extension_degree % base_degree == 0, (
         "the stated field cannot be finite over the base field"
     )
-    return extension_degree // base_degree
+    return _owned_engine_element(ZZ, extension_degree // base_degree)
 
 
 class _FiniteGaloisExtensionEngine:
@@ -240,7 +245,7 @@ class FiniteGaloisAutomorphism(Element):
         for order in range(1, int(self.parent().order()) + 1):
             value = value * self
             if value == identity:
-                return ZZ(order)
+                return _owned_engine_element(ZZ, ZZ(order))
         raise ArithmeticError(
             "the represented finite group element has no finite order"
         )
@@ -330,7 +335,10 @@ class _FiniteFieldAutomorphismEngine:
         return self.element_class(self, self._signature_positions()[identity_signature])
 
     def order(self):
-        return ZZ(int(self.automorphisms().cardinality()))
+        return _owned_engine_element(
+            ZZ,
+            ZZ(int(self.automorphisms().cardinality())),
+        )
 
     def cardinality(self):
         return cardinal(self.order())

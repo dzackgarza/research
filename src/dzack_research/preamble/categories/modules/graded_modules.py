@@ -444,7 +444,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             parent = self.parent()
             degrees = {
                 parent.degree_on_module_generator(parent.module_generator(label))
-                for label in parent.framing_coefficients(self)
+                for label in parent.framing_coefficients(self).index_set()
             }
             return len(degrees) <= 1
 

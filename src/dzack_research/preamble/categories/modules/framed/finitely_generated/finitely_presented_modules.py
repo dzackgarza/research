@@ -789,7 +789,13 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             from sage.rings.integer_ring import ZZ as SageZZ
 
             relation_matrix = _engine_matrix(self.presentation_matrix())
-            return SageZZ(int(self.number_of_module_generators()) - relation_matrix.rank())
+            return _owned_engine_element(
+                SageZZ,
+                SageZZ(
+                    int(self.number_of_module_generators())
+                    - relation_matrix.rank()
+                ),
+            )
 
         def _represented_vector_space_basis_generator_labels(self):
             r"""Choose a basis subfamily of the selected generators over a field."""

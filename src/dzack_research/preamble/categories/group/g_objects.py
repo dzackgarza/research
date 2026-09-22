@@ -44,6 +44,7 @@ from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
     OwnedFiniteGroups,
+    OwnedGroups,
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -62,17 +63,12 @@ def _verify_relators(action, group, endomorphisms) -> None:
     presentation search.
     """
     if group in GroupsWithChosenFinitePresentation():
-        # Private serialization: Tietze letters index the chosen generators in
-        # their recorded order, and a negative letter names an inverse.
-        generators = tuple(group.group_generators())
         identity = endomorphisms.identity()
+        presentation_projection = group.selected_framing_morphism(OwnedGroups())
         for relator in group.defining_relations():
             composite = identity
-            for letter in relator.Tietze():
-                generator = generators[abs(int(letter)) - 1]
-                composite = composite * action(
-                    generator if int(letter) > 0 else ~generator
-                )
+            for letter in relator.parent().reduced_word(relator):
+                composite = composite * action(presentation_projection(letter))
             assert composite == identity, (
                 f"the generator images do not satisfy the relator {relator}, "
                 f"so they define no left action of {group}"

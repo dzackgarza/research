@@ -50,7 +50,7 @@ class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def __init__(self, cycle_scheme, cycle_dimension, **rest) -> None:
             self._cycle_scheme = cycle_scheme
-            self._cycle_dimension = int(cycle_dimension)
+            self._cycle_dimension = _own_ring(SageZZ)(cycle_dimension)
             super().__init__(**rest)
 
         def cycle_scheme(self):
@@ -62,7 +62,7 @@ class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
             return self._cycle_dimension
 
         def cycle_codimension(self):
-            return int(self.cycle_scheme().dimension()) - int(self.cycle_dimension())
+            return self.cycle_scheme().dimension() - self.cycle_dimension()
 
         def prime_cycle(self, point):
             return self.module_generator(point)
@@ -159,7 +159,7 @@ class ChowGroups(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def __init__(self, chow_scheme, cycle_dimension, **rest) -> None:
             self._chow_scheme = chow_scheme
-            self._cycle_dimension = int(cycle_dimension)
+            self._cycle_dimension = _own_ring(SageZZ)(cycle_dimension)
             super().__init__(**rest)
 
         def chow_scheme(self):
@@ -171,7 +171,7 @@ class ChowGroups(OwnedCategoryOverBaseRing):
             return self._cycle_dimension
 
         def cycle_codimension(self):
-            return int(self.chow_scheme().dimension()) - int(self.cycle_dimension())
+            return self.chow_scheme().dimension() - self.cycle_dimension()
 
         def rational_equivalence_morphism(self):
             r"""The rational-equivalence morphism \(\rho\) into the \(k\)-cycles with \(A_k(X) = \operatorname{coker}\rho\).

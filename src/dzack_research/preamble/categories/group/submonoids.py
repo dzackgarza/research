@@ -76,7 +76,8 @@ class _SubmonoidEngine:
             Monoids().Mor(self, self.ambient_monoid()), lambda element: element
         )
 
-    def structure_data(self):
+    def _structure_data(self):
+        r"""Return private constructor metadata for localization adapters."""
         return dict(self._submonoid_structure_data)
 
     def defining_predicate(self):

@@ -762,7 +762,7 @@ class _GluedScheme(SageObject):
     def gluing_datum(self):
         return self._gluing_datum
 
-    def native_realization(self):
+    def _native_realization_for_scheme_adapter(self):
         r"""The optional native scheme of this same atlas, supplied by its construction."""
         assert self._native_realization is not None, (
             "this gluing datum has no additional native scheme realization"
@@ -875,7 +875,7 @@ class _TwoChartSchemeGluingDatum(SageObject):
         return self.chart_index_set()(index)
 
     def number_of_charts(self):
-        return 2
+        return self.chart_index_set().cardinality()
 
     def chart_indices(self):
         return self.chart_index_set()
@@ -987,7 +987,7 @@ class _FiniteSchemeGluingDatum(SageObject):
         return self.chart_index_set()(index)
 
     def number_of_charts(self):
-        return int(self.chart_index_set().cardinality().finite_value())
+        return self.chart_index_set().cardinality()
 
     def chart(self, index):
         return self.charts()[self.normalize_chart_index(index)]

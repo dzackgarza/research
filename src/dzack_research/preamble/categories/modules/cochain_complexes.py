@@ -244,7 +244,7 @@ class CochainDifferential:
         return self._complex
 
     def degree_shift(self):
-        return 1
+        return _own_ring(SageZZ).one()
 
     def component(self, degree):
         return self.complex().differential_component(degree)

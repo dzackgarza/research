@@ -180,9 +180,7 @@ class PrimeSpectra(OwnedCategory):
         @cached_method
         def closure_dimension(self):
             r"""Return ``dim closure({p}) = dim R/p`` for this prime point."""
-            return int(
-                self.parent().ring().quotient_ring(self.ideal()).krull_dimension()
-            )
+            return self.parent().ring().quotient_ring(self.ideal()).krull_dimension()
 
         def generic_local_length(self, ideal):
             r"""Return ``length_{R_p}((R/I)_p)`` at an associated generic point.
@@ -315,7 +313,7 @@ class PrimeSpectra(OwnedCategory):
                 "what makes it catenary and equidimensional"
             )
             quotient = ring.quotient_ring(self.ideal())
-            return int(ring.krull_dimension()) - int(quotient.krull_dimension())
+            return ring.krull_dimension() - quotient.krull_dimension()
 
         @cached_method
         def embedding_dimension(self):
@@ -328,7 +326,7 @@ class PrimeSpectra(OwnedCategory):
             Jacobian formula.
             """
             local = self.local_ring()
-            return int(local.maximal_ideal().minimal_number_of_generators())
+            return local.maximal_ideal().minimal_number_of_generators()
 
         @cached_method
         def is_regular(self) -> bool:
@@ -339,7 +337,7 @@ class PrimeSpectra(OwnedCategory):
             dimension of the represented maximal ideal and the second is the
             height of ``p`` in the supported catenary affine-domain regime.
             """
-            return self.embedding_dimension() == int(self.height())
+            return self.embedding_dimension() == self.height()
 
         @cached_method
         def is_locally_factorial(self):
@@ -879,7 +877,7 @@ class QuotientRings(OwnedCategory):
                 return _engine_krull_dimension(self)
             backend = _engine_ideal(self.quotient_source(), self.defining_ideal())
             try:
-                return int(backend.dimension())
+                return _owned_engine_element(SageZZ, SageZZ(backend.dimension()))
             except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
                 raise AssertionError(
                     "Krull dimension of this represented quotient requires an exact ideal-dimension computation"
@@ -933,16 +931,22 @@ class QuotientRings(OwnedCategory):
                 generator = abs(
                     SageZZ(generators[0]) if generators else SageZZ.zero()
                 )
-                return generator
+                return _owned_engine_element(SageZZ, generator)
             coefficient_ring = _engine_coefficient_ring(source_engine)
             if coefficient_ring is not None:
                 try:
                     if bool(coefficient_ring.is_field()):
-                        return coefficient_ring.characteristic()
+                        return _owned_engine_element(
+                            SageZZ,
+                            SageZZ(coefficient_ring.characteristic()),
+                        )
                 except (AttributeError, NotImplementedError, TypeError, ValueError):
                     pass
             try:
-                return _engine_ring(self).characteristic()
+                return _owned_engine_element(
+                    SageZZ,
+                    SageZZ(_engine_ring(self).characteristic()),
+                )
             except NotImplementedError as error:
                 raise AssertionError(
                     "characteristic of this quotient requires contraction of the defining ideal to the prime subring"
@@ -1532,7 +1536,7 @@ class PrimeLocalizations(OwnedCategory):
             return self.localization_functor()(module)
 
         def localized_prime(self):
-            structure = self.localization_submonoid().structure_data()
+            structure = self.localization_submonoid()._structure_data()
             if structure.get("kind") != "prime_complement":
                 raise ArithmeticError(
                     "a prime localization must retain a prime-complement localization submonoid"
@@ -1929,8 +1933,8 @@ class _AdicQuotientInverseSystem(Functor):
     def system_category(self):
         return self._system_category
 
-    def exponent(self, index) -> int:
-        return int(index.underlying_object().value()) + 1
+    def exponent(self, index):
+        return NN(int(index.underlying_object().value()) + 1)
 
     def _apply_object(self, index):
         return self.completion().adic_truncation(self.exponent(index))
@@ -2781,7 +2785,7 @@ def _fraction_field_localization(source, submonoid):
     r"""Realize ``(R-{0})^-1 R`` while retaining the represented localization datum."""
     if source not in OwnedRings().Commutative().NoZeroDivisors():
         raise ValueError("fraction-field localization requires an integral domain")
-    if submonoid.structure_data().get("kind") != "nonzero_elements":
+    if submonoid._structure_data().get("kind") != "nonzero_elements":
         raise ValueError("fraction-field localization requires the nonzero-element submonoid")
     if source in OwnedRings().Division().Commutative():
         return source
@@ -2844,7 +2848,7 @@ def _localization_at_elements(source, elements):
 @cached_function
 def _localization_at_submonoid(source, submonoid):
     r"""Return the one ``S^{-1}R`` for this ring and this represented submonoid."""
-    structure = submonoid.structure_data()
+    structure = submonoid._structure_data()
     if structure.get("kind") == "prime_complement":
         return _PrimeLocalizationFromSubmonoid(source, submonoid)
     if structure.get("kind") == "nonzero_elements":
@@ -3074,7 +3078,7 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     equal, which lie in an ideal -- is an ideal computation in ``R`` against
     ``p`` rather than a question put to a realization.
     """
-    structure = submonoid.structure_data()
+    structure = submonoid._structure_data()
     prime_ideal = structure.get("prime_ideal")
     if prime_ideal is None:
         raise ValueError("prime-complement localization requires its represented prime ideal")

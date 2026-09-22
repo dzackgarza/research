@@ -48,7 +48,7 @@ def test_hermite_polynomials_are_enumerated_by_naturals() -> None:
     assert hermite.ranking_map()(H3) == 3
     assert hermite[3] == H3
     assert hermite[3] == H3
-    assert H0 in SR
+    assert H0.parent() is indexed_symbol("H", 0, "H").parent()
     assert str(H0) == "H_0"
     assert 1 not in hermite
     assert indexed_symbol("H", -1, "H") not in hermite

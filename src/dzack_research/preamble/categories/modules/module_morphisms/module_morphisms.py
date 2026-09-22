@@ -2362,7 +2362,10 @@ class SubFramingMorphism(ModuleEmbedding):
         if element.parent() is not self.codomain():
             return False
         source_labels = self.domain().module_generating_set()
-        return all(label in source_labels for label in self.codomain().framing_coefficients(element))
+        return all(
+            label in source_labels
+            for label in self.codomain().framing_coefficients(element).index_set()
+        )
 
     def lift(self, element):
         r"""Return the unique element of the smaller free module mapping here."""

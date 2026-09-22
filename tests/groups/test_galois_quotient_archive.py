@@ -1,6 +1,6 @@
 r"""Archive reconciliation for finite Galois quotients and restriction maps."""
 
-from dzack_research.preamble.all import GF
+from dzack_research.preamble.all import GF, ZZ
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
@@ -19,6 +19,9 @@ def test_restriction_map_is_the_actual_finite_galois_quotient_coordinate() -> No
     quotient = group.finite_quotient(stage)
     restriction = group.restriction_map(stage)
 
+    assert stage.degree().parent() is ZZ
+    assert quotient.order().parent() is ZZ
+    assert quotient.an_element().multiplicative_order().parent() is ZZ
     assert restriction.parent() is group.Mor(quotient)
     assert restriction.domain() is group
     assert restriction.codomain() is quotient

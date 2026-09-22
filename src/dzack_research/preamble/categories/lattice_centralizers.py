@@ -57,11 +57,15 @@ def _equivariant_lattice(lattice, isometry):
         raise ValueError("an equivariant lattice is equipped by an automorphism of that lattice")
     group = _equivariant_lattice_acting_group()
     orthogonal_group = lattice.O()
+    generator = next(iter(group.group_generators()))
 
     def action(group_element):
         result = orthogonal_group.one()
-        for _index, sign in group.reduced_word(group_element):
-            step = isometry if sign > 0 else ~isometry
+        for letter in group.reduced_word(group_element):
+            assert letter == generator or letter == ~generator, (
+                "the equivariant-lattice acting group has one signed generator"
+            )
+            step = isometry if letter == generator else ~isometry
             result = step * result
         return result
 

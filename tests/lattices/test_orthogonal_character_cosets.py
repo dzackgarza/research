@@ -1,6 +1,6 @@
 r"""Finite-character right cosets retain live orthogonal-group lifts."""
 
-from dzack_research.preamble.all import NamedLattices, finite_ordered_set
+from dzack_research.preamble.all import ZZ, NamedLattices, finite_ordered_set
 
 
 def test_special_orthogonal_group_has_two_right_cosets_in_O_A1() -> None:
@@ -36,3 +36,8 @@ def test_each_right_coset_representative_is_a_live_lattice_isometry() -> None:
     assert images.cardinality() == 2
     assert root in images
     assert -root in images
+    for image in images:
+        coefficients = lattice.framing_coefficients(image)
+        assert all(coefficient.parent() is ZZ for coefficient in coefficients.values())
+        shifted = tuple(coefficient + ZZ.one() for coefficient in coefficients.values())
+        assert all(coefficient.parent() is ZZ for coefficient in shifted)

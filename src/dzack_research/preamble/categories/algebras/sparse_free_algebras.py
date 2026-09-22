@@ -76,7 +76,10 @@ class _SparseFreeAlgebra(_WordModule):
 
     def is_central(self, element):
         element = self(element)
-        if all(int(label.summand_index()) == 0 for label in self.framing_coefficients(element)):
+        if all(
+            int(label.summand_index()) == 0
+            for label in self.framing_coefficients(element).index_set()
+        ):
             return True
         if self.is_commutative() is True:
             return True

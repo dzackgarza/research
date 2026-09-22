@@ -5,7 +5,7 @@ from typing import SupportsIndex
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
@@ -14,8 +14,21 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _own_ring,
+    _owned_engine_element,
+)
 from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
+
+
+def _integers():
+    return _own_ring(SageZZ)
+
+
+def _symbolic_ring():
+    return _own_ring(SR)
 
 
 def _natural_position(value, *, error_type: type[LookupError] | type[ValueError]) -> int:
@@ -29,55 +42,66 @@ def _natural_position(value, *, error_type: type[LookupError] | type[ValueError]
     match value:
         case _ if value in NN:
             return int(NN(value))
-        case _ if value in ZZ and ZZ(value) >= 0:
-            return int(ZZ(value))
+        case _ if value in _integers() and _integers()(value) >= _integers().zero():
+            return int(_integers()(value))
+        case _ if value in SageZZ and SageZZ(value) >= 0:
+            return int(SageZZ(value))
         case _:
             raise error_type(value)
 
 
-def integer_from_natural(n: SupportsIndex) -> Integer:
+def integer_from_natural(n: SupportsIndex):
     r"""The bijection \(\mathbb N\to\mathbb Z\) sending \(0,1,2,3,4,\ldots\) to \(0,1,-1,2,-2,\ldots\)."""
-    n = ZZ(_natural_position(n, error_type=IndexError))
+    n = SageZZ(_natural_position(n, error_type=IndexError))
     if n == 0:
-        return ZZ(0)
-    if n % 2 == 1:
-        return (n + 1) // 2
-    return -n // 2
+        result = SageZZ.zero()
+    elif n % 2 == 1:
+        result = (n + 1) // 2
+    else:
+        result = -n // 2
+    return _owned_engine_element(_integers(), result)
 
 
-def natural_from_integer(k: SupportsIndex) -> int:
+def natural_from_integer(k: SupportsIndex):
     r"""The inverse of :func:`integer_from_natural`."""
-    k = ZZ(k)
+    k = SageZZ(int(_integers()(k))) if k in _integers() else SageZZ(k)
     if k == 0:
-        return 0
+        return NN(0)
     if k > 0:
-        return int(2 * k - 1)
-    return int(-2 * k)
+        return NN(int(2 * k - 1))
+    return NN(int(-2 * k))
 
 
 def indexed_symbol(
     prefix: str,
     index: SupportsIndex,
     latex_prefix: str,
-) -> Expression:
+) :
     r"""The symbol in \(\mathrm{SR}\) for this prefix and integer index."""
-    index = ZZ(index)
+    index = SageZZ(int(_integers()(index))) if index in _integers() else SageZZ(index)
     if index >= 0:
         name = f"{prefix}_{index}"
     else:
         name = f"{prefix}_m{-index}"
-    return SR.var(name, latex_name=rf"{latex_prefix}_{{{index}}}")
+    return _owned_engine_element(
+        _symbolic_ring(),
+        SR.var(name, latex_name=rf"{latex_prefix}_{{{index}}}"),
+    )
 
 
 def _symbol_index(
-    elt: Expression,
+    elt,
     prefix: str,
     latex_prefix: str | None,
 ) -> int | None:
     r"""The integer \(n\) when ``elt`` is the indexed symbol of this prefix, and ``None`` otherwise."""
-    if elt not in SR:
+    parent = getattr(elt, "parent", lambda: None)()
+    if parent is _symbolic_ring():
+        symbol = SR(_engine_element(_symbolic_ring(), elt))
+    elif elt in SR:
+        symbol = SR(elt)
+    else:
         return None
-    symbol = SR(elt)
     if not symbol.is_symbol():
         return None
     text = str(symbol)
@@ -93,7 +117,8 @@ def _symbol_index(
         case _:
             return None
     latex = prefix if latex_prefix is None else latex_prefix
-    if symbol != indexed_symbol(prefix, index, latex):
+    expected = _engine_element(_symbolic_ring(), indexed_symbol(prefix, index, latex))
+    if symbol != expected:
         return None
     return index
 
@@ -102,12 +127,12 @@ def index_of_symbol(
     elt: Expression,
     prefix: str,
     latex_prefix: str | None = None,
-) -> Integer:
+):
     r"""Return \(n\) when ``elt`` is the indexed symbol of this prefix."""
     index = _symbol_index(elt, prefix, latex_prefix)
     if index is None:
         raise ValueError(elt)
-    return ZZ(index)
+    return _integers()(index)
 
 
 class FunctionEnumeratedSets(OwnedCategory):
@@ -162,7 +187,7 @@ class IndexedSymbolicFunctionSet:
         self._symbol_prefix = symbol_prefix
         self._latex_symbol_prefix = latex_symbol_prefix
         self._description = description
-        super().__init__(facade=SR, **rest)
+        super().__init__(facade=_symbolic_ring(), **rest)
 
     def _an_element_(self):
         r"""Return the rank-zero function symbol."""
@@ -201,7 +226,7 @@ class IndexedSymbolicFunctionSet:
     def _element_constructor_(self, element):
         if element not in self:
             raise ValueError(f"{element!r} is not in {self}")
-        return SR(element)
+        return _symbolic_ring()(element)
 
     def __iter__(self):
         symbol_at = self.ranking_map().inverse()
@@ -232,12 +257,12 @@ class EnumeratedByNaturals(OwnedCategory):
             return NN
 
         def _index_from_rank(self, position):
-            return ZZ(_natural_position(position, error_type=IndexError))
+            return _integers()(_natural_position(position, error_type=IndexError))
 
         def _rank_from_index(self, index):
             return _natural_position(index, error_type=ValueError)
 
-        def function(self, index: SupportsIndex) -> Expression:
+        def function(self, index: SupportsIndex):
             return self[self._rank_from_index(index)]
 
 
@@ -260,7 +285,7 @@ class EnumeratedByIntegers(OwnedCategory):
 
     class ParentMethods:
         def index_set(self) -> Parent:
-            return ZZ
+            return _integers()
 
         def _index_from_rank(self, position):
             return integer_from_natural(position)
@@ -268,5 +293,5 @@ class EnumeratedByIntegers(OwnedCategory):
         def _rank_from_index(self, index):
             return natural_from_integer(index)
 
-        def function(self, index: SupportsIndex) -> Expression:
+        def function(self, index: SupportsIndex):
             return self[self._rank_from_index(index)]

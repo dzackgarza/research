@@ -85,8 +85,13 @@ def test_chosen_presentations_are_exposed_on_native_group_objects() -> None:
     for group in (c2, *(candidate.presentation() for candidate in native)):
         assert group in OwnedFinitelyPresentedGroups()
         assert group in GroupsWithChosenFinitePresentation()
-        relators = tuple(relation.Tietze() for relation in group.defining_relations())
-        assert relators == ((1, 1),)
+        presenting = group.presenting_free_group()
+        generator = next(iter(presenting.group_generators()))
+        relators = tuple(
+            tuple(relation.parent().reduced_word(relation))
+            for relation in group.defining_relations()
+        )
+        assert relators == ((generator, generator),)
     assert all(group not in GroupsWithChosenFinitePresentation() for group in native)
 
 

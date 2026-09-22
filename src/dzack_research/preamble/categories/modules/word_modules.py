@@ -21,7 +21,11 @@ from dzack_research.preamble.categories.modules.graded_modules import GradedModu
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules, Modules, ModuleSubobjects, ModulesWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets as OwnedSets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -452,7 +456,10 @@ class _WordModuleElement:
         return self.parent().framing_coefficients(self)
 
     def homogeneous_components(self):
-        degrees = {int(label.summand_index()) for label in self.monomial_coefficients()}
+        degrees = {
+            int(label.summand_index())
+            for label in self.monomial_coefficients().index_set()
+        }
         return {degree: self.parent().homogeneous_component(self, degree) for degree in degrees}
 
     def homogeneous_component(self, degree):
@@ -568,20 +575,35 @@ class _WordModule:
                 return piece(self(selected).underlying_element())
 
     def homogeneous_components(self, element):
-        degrees = {int(label.summand_index()) for label in self.framing_coefficients(self(element))}
-        return {degree: self.homogeneous_component(element, degree) for degree in degrees}
+        degrees = finite_ordered_set(
+            tuple(
+                self.grading_monoid()(int(label.summand_index()))
+                for label in self.framing_coefficients(self(element)).index_set()
+            )
+        )
+        return finite_indexed_family(
+            degrees,
+            lambda degree: self.homogeneous_component(element, degree),
+            name="Nonzero homogeneous word components",
+        )
 
     def from_components(self, components):
         return sum((self.from_component(degree, component) for degree, component in components.items()), self.zero())
 
     def homogeneous_degree(self, element):
-        degrees = {int(label.summand_index()) for label in self.framing_coefficients(self(element))}
+        degrees = {
+            int(label.summand_index())
+            for label in self.framing_coefficients(self(element)).index_set()
+        }
         if len(degrees) != 1:
             raise ValueError("a nonzero homogeneous element has exactly one degree")
         return self.grading_monoid()(next(iter(degrees)))
 
     def degree_on_module_generator(self, element):
-        degrees = {int(label.summand_index()) for label in self.framing_coefficients(self(element))}
+        degrees = {
+            int(label.summand_index())
+            for label in self.framing_coefficients(self(element)).index_set()
+        }
         assert len(degrees) == 1, "a nonzero homogeneous framing element has one degree"
         return self.grading_monoid()(next(iter(degrees)))
 
@@ -599,7 +621,7 @@ class _WordDegreeModule:
         classes = word_module.underlying_set()
         subset = OwnedSets().condition_set(classes, lambda value: all(
             int(label.summand_index()) == word_degree
-            for label in classes.presentation().cover().framing_coefficients(value._representative)
+            for label in classes.presentation().cover().framing_coefficients(value._representative).index_set()
         ))
         cover = word_module.base_ring().free_module(word_module.degree_basis(word_degree))
         super().__init__(

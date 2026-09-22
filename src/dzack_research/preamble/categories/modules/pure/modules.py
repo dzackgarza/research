@@ -1423,7 +1423,7 @@ class Modules(OwnedCategoryOverBaseRing):
             labels of ``module_generating_set()``.  The default reads an
             element that stores its own finite support.
             """
-            return dict(element.monomial_coefficients())
+            return element.monomial_coefficients()
 
         def framing_coefficients(self, element):
             r"""Return the finite-support coefficients in this module's selected framing.
@@ -1435,28 +1435,47 @@ class Modules(OwnedCategoryOverBaseRing):
             """
             native = self._native_module_presentation()
             if native is not None and native.module_basis() is not None:
-                return native.coefficients(element)
-            match self:
-                case _ if self in OwnedOrders():
-                    # The selected integral basis of an order: the engine
-                    # reads coordinates in that basis, one per framing label.
-                    labels = self.module_generating_set()
-                    engine = _engine_ring(self)
-                    backend_element = _engine_element(self, element)
-                    coordinates = (
-                        (SageZZ(backend_element),)
-                        if engine is SageZZ
-                        else tuple(engine.coordinates(backend_element))
-                    )
-                    base = self.base_ring()
-                    base_engine = _engine_ring(base)
-                    return {
-                        label: _owned_engine_element(base, base_engine(coefficient))
-                        for label, coefficient in zip(labels, coordinates, strict=True)
-                        if coefficient != 0
-                    }
-                case _:
-                    return self._selected_module_coefficients(element)
+                selected = native.coefficients(element)
+            else:
+                match self:
+                    case _ if self in OwnedOrders():
+                        # The selected integral basis of an order: the engine
+                        # reads coordinates in that basis, one per framing label.
+                        labels = self.module_generating_set()
+                        engine = _engine_ring(self)
+                        backend_element = _engine_element(self, element)
+                        coordinates = (
+                            (SageZZ(backend_element),)
+                            if engine is SageZZ
+                            else tuple(engine.coordinates(backend_element))
+                        )
+                        base = self.base_ring()
+                        base_engine = _engine_ring(base)
+                        selected = {
+                            label: _owned_engine_element(base, base_engine(coefficient))
+                            for label, coefficient in zip(labels, coordinates, strict=True)
+                            if coefficient != 0
+                        }
+                    case _:
+                        selected = self._selected_module_coefficients(element)
+
+            if isinstance(selected, IndexedFamily):
+                support = selected.index_set()
+                assert support.cardinality().is_finite(), (
+                    "framing coefficients have finite support"
+                )
+                return finite_indexed_family(
+                    support,
+                    lambda label: self.base_ring()(selected[label]),
+                    name="Nonzero framing coefficients",
+                )
+
+            support = finite_ordered_set(tuple(selected))
+            return finite_indexed_family(
+                support,
+                lambda label: self.base_ring()(selected[label]),
+                name="Nonzero framing coefficients",
+            )
 
         def _represented_kernel_of_morphism(self, morphism):
             _ = morphism
@@ -2008,12 +2027,12 @@ class Modules(OwnedCategoryOverBaseRing):
                 bound is inferred over a more general ring.
                 """
                 if self.is_projective():
-                    return 0
+                    return NN(0)
                 assert self.base_ring() in PrincipalIdealDomains(), (
                     "projective dimension beyond the projective and PID regimes "
                     "requires a represented finite resolution bound"
                 )
-                return 1
+                return NN(1)
 
         class Torsion(CategoryWithAxiom):
             r"""Finitely presented torsion modules over a PID."""
@@ -2823,7 +2842,7 @@ class FreeResolution:
 
     def length(self):
         r"""Return the largest degree carrying a nonzero term."""
-        return int(max(self._degrees))
+        return _own_ring(SageZZ)(int(max(self._degrees)))
 
     def is_exact(self):
         r"""Decide exactness of ``0 -> F_n -> ... -> F_0 -> M -> 0``.
@@ -4116,13 +4135,20 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             return self.domain().module_generating_set()
 
         def nrows(self):
-            return int(self.row_index_set().cardinality())
+            return _owned_engine_element(
+                SageZZ,
+                SageZZ(int(self.row_index_set().cardinality())),
+            )
 
         def ncols(self):
-            return int(self.column_index_set().cardinality())
+            return _owned_engine_element(
+                SageZZ,
+                SageZZ(int(self.column_index_set().cardinality())),
+            )
 
         def matrix_shape(self):
-            return self.nrows(), self.ncols()
+            integers = _own_ring(SageZZ)
+            return Sets().product((integers, integers))((self.nrows(), self.ncols()))
 
         def matrix_unit(self, row_label, column_label):
             label = self.module_generating_set()((row_label, column_label))
@@ -4255,10 +4281,18 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             return self(self.domain().module_generator(column_label))
 
         def rows(self):
-            return tuple(self.row(label) for label in self.parent().row_index_set())
+            return finite_indexed_family(
+                self.parent().row_index_set(),
+                self.row,
+                name="Matrix rows",
+            )
 
         def columns(self):
-            return tuple(self.column(label) for label in self.parent().column_index_set())
+            return finite_indexed_family(
+                self.parent().column_index_set(),
+                self.column,
+                name="Matrix columns",
+            )
 
         def determinant(self):
             if self.parent().nrows() != self.parent().ncols():

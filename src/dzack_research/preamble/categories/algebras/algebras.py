@@ -2149,7 +2149,12 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
             return factor.Mor(self)({label: self.algebra_generator((tag, label)) for label in factor.algebra_generating_set()})
 
         def coproduct_injections(self):
-            return tuple(self.coproduct_injection(index) for index in range(2))
+            factors = self.coproduct_factors()
+            return indexed_family(
+                factors.index_set(),
+                self.coproduct_injection,
+                name="Coproduct injections",
+            )
 
         def left_coproduct_map(self):
             return self.coproduct_injection(0)
@@ -2203,7 +2208,10 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
         def pushout_maps(self):
             coproduct = self._preamble_pushout_coproduct
             quotient_map = coproduct.Mor(self)({label: self.algebra_generator(label) for label in coproduct.algebra_generating_set()})
-            return tuple(quotient_map * injection for injection in coproduct.coproduct_injections())
+            return coproduct.coproduct_injections().map(
+                lambda injection: quotient_map * injection,
+                name="Pushout structure maps",
+            )
 
         def left_pushout_map(self):
             return self.pushout_maps()[0]

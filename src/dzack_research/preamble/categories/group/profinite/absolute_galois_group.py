@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_ring,
     _own_ring,
+    _owned_engine_element,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -129,7 +130,9 @@ class AbsoluteGaloisGroupElement(Element):
         self._coordinates.append((stage, coordinate))
 
     def frobenius_exponent(self):
-        return self._frobenius_exponent
+        if self._frobenius_exponent is None:
+            return None
+        return _owned_engine_element(ZZ, self._frobenius_exponent)
 
     def is_globally_evaluable(self) -> bool:
         return self._frobenius_exponent is not None or self._exact_action is not None
@@ -414,7 +417,10 @@ class _AbsoluteGaloisGroupEngine:
     def base_field_order(self):
         if not self._is_finite_field():
             raise TypeError("q is defined here only for a finite base field")
-        return ZZ(_engine_ring(self._field).cardinality())
+        return _owned_engine_element(
+            ZZ,
+            ZZ(_engine_ring(self._field).cardinality()),
+        )
 
     def _element_constructor_(self, datum=None, **options):
         if isinstance(datum, AbsoluteGaloisGroupElement):

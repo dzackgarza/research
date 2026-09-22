@@ -47,6 +47,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
     _underlying_set_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 from dzack_research.preamble.refine import (
@@ -1091,9 +1092,12 @@ class CategoryPacket:
         return self._auts
 
     def super_packets(self):
-        return tuple(
-            _category_packet(category)
-            for category in _packet_supercategories(self.category())
+        return finite_family(
+            (
+                _category_packet(category)
+                for category in _packet_supercategories(self.category())
+            ),
+            name="Supercategory packets",
         )
 
     def __repr__(self) -> str:

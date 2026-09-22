@@ -54,6 +54,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -1089,7 +1090,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             if any(self.homogeneous_degree(relation) != 1 for relation in selected):
                 raise ValueError("these graded-ideal generators must lie in degree one")
             if degree == 0:
-                return ()
+                return finite_family((), name=f"Degree-{degree} ideal generators")
 
             generators = []
             for relation in selected:
@@ -1113,7 +1114,10 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                         )
                         for label in complementary.index_set():
                             generators.append(divided * complementary[label])
-            return tuple(generators)
+            return finite_family(
+                generators,
+                name=f"Degree-{degree} ideal generators",
+            )
 
         def graded_piece(self, degree):
             r"""Return the canonical degree piece of this free construction.

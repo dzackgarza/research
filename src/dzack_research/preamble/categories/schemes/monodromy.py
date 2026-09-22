@@ -132,17 +132,16 @@ class LegendreMonodromyFamily(SageObject):
         )
         forward = cohomology.Mor(cohomology)(forward_linear)
         inverse = cohomology.Mor(cohomology)(inverse_linear)
+        generator = next(iter(pi_one.group_generators()))
 
         def loop_action(loop):
             loop = pi_one(loop)
             result = cohomology.Mor(cohomology).identity()
-            for letter in loop.Tietze():
-                assert letter in (1, -1), "the punctured-disc fundamental group has one signed generator"
-                match letter:
-                    case 1:
-                        result = forward * result
-                    case -1:
-                        result = inverse * result
+            for letter in pi_one.reduced_word(loop):
+                assert letter == generator or letter == ~generator, (
+                    "the punctured-disc fundamental group has one signed generator"
+                )
+                result = (forward if letter == generator else inverse) * result
             return result
 
         action_functor = GroupActionFunctor(
@@ -207,7 +206,7 @@ class LegendreMonodromyFamily(SageObject):
         return self.local_system()
 
     def cohomological_degree(self):
-        return 1
+        return _own_ring(SageZZ).one()
 
     def local_system(self):
         return self._local_system

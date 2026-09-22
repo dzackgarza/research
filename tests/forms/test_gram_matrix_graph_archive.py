@@ -62,5 +62,5 @@ def test_archived_connected_block_cuts_require_consecutive_components() -> None:
         ),
     )
 
-    assert consecutive.gram_connected_component_cuts() == [2]
-    assert interlaced.gram_connected_component_cuts() == []
+    assert tuple(consecutive.gram_connected_component_cuts()) == (2,)
+    assert interlaced.gram_connected_component_cuts().cardinality() == 0

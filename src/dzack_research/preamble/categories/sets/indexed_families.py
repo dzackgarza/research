@@ -93,8 +93,26 @@ class IndexedFamily[IndexT, ValueT]:
     def items(self) -> Iterator[tuple[IndexT, ValueT]]:
         return ((index, self.value(index)) for index in self.index_set())
 
+    def keys(self) -> Parent:
+        r"""Return the mathematical index set of this family."""
+        return self.index_set()
+
+    def values(self) -> Iterator[ValueT]:
+        return iter(self)
+
+    def get(self, index: IndexT, default=None):
+        r"""Return the value at ``index`` when indexed here, otherwise ``default``."""
+        return self.value(index) if index in self.index_set() else default
+
     def __iter__(self) -> Iterator[ValueT]:
         return (self.value(index) for index in self.index_set())
+
+    def __len__(self) -> int:
+        r"""Return the Python length when the mathematical index set is finite."""
+        size = self.cardinality()
+        if not size.is_finite():
+            raise TypeError("an infinite indexed family has no Python length")
+        return int(size.finite_value())
 
     def map[MappedValueT](
         self,

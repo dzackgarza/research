@@ -84,7 +84,7 @@ def test_formal_divisor_keeps_support_and_combines_repeated_terms() -> None:
     group = divisor.parent()
 
     assert group in FormalDivisorGroups(ZZ)
-    assert group.components(divisor) == ("D0", "D1")
-    terms = tuple(group.terms(divisor))
-    assert terms == ((ZZ(5), "D0"), (ZZ(-1), "D1"))
+    assert tuple(group.components(divisor)) == ("D0", "D1")
+    terms = tuple(group.terms(divisor).items())
+    assert terms == (("D0", ZZ(5)), ("D1", ZZ(-1)))
     assert group.divisor_repr(divisor) == "5*D0 - 1*D1"

@@ -8,6 +8,8 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     Subgroups,
+    _finite_group_morphism_kernel_cardinality,
+    _finite_group_morphism_kernel_is_abelian,
     _owned_group,
 )
 from dzack_research.preamble.categories.orthogonal_quotients import (
@@ -85,7 +87,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def defining_predicate(self):
             return self._predicate
 
-        def character_data(self):
+        def _character_data_snapshot(self):
+            r"""Return private finite-character representation metadata."""
             return dict(self._character_data)
 
         def character_data_is_complete(self) -> bool:
@@ -93,7 +96,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             return self._character_data_complete
 
         def contains_character_kernel(self) -> bool:
-            data = self.character_data()
+            data = self._character_data_snapshot()
             return self.character_data_is_complete() and bool(
                 data.get("determinant_kernel", False)
                 or data.get("spinor_kernel", False)
@@ -166,8 +169,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def intersection(self, other):
             if other.supergroup() is not self.supergroup():
                 raise ValueError("predicate-subgroup intersections require one ambient group")
-            left = self.character_data()
-            right = other.character_data()
+            left = self._character_data_snapshot()
+            right = other._character_data_snapshot()
             data = {
                 "determinant_kernel": bool(left.get("determinant_kernel", False))
                 or bool(right.get("determinant_kernel", False)),
@@ -341,13 +344,17 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         def cardinality(self):
             r"""Return the exact kernel order when the ambient group is finite."""
             if self.supergroup().is_finite() is True:
-                return cardinal(int(self.kernel_morphism().gap().Kernel().Size()))
+                return _finite_group_morphism_kernel_cardinality(
+                    self.kernel_morphism()
+                )
             return super().cardinality()
 
         def is_abelian(self):
             r"""Decide abelianity from the represented exact kernel when finite."""
             if self.supergroup().is_finite() is True:
-                return bool(self.kernel_morphism().gap().Kernel().IsAbelian())
+                return _finite_group_morphism_kernel_is_abelian(
+                    self.kernel_morphism()
+                )
             assert False, (
                 "kernel abelianity is mathematically defined generally, but the current "
                 "exact computation requires a finite ambient group with a GAP-backed morphism"

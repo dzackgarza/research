@@ -8,9 +8,13 @@ answers, so nothing is placed and no property is asserted twice.
 """
 
 from sage.misc.cachefunc import cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _own_ring,
+)
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
     ProjectiveSpaces,
@@ -172,10 +176,13 @@ class Curves(_DimensionSubcategoryOfVarieties):
             assert self in Schemes(base).Projective(), (
                 "arithmetic genus here requires a represented projective curve"
             )
+            integers = _own_ring(SageZZ)
             if self in ProjectiveSpaces(base):
-                return 0
+                return integers.zero()
             defining_ideal = self.defining_ideal_owned()
-            return 1 - int(defining_ideal.hilbert_polynomial_value(0))
+            return integers.one() - integers(
+                defining_ideal.hilbert_polynomial_value(0)
+            )
 
         @cached_method
         def normalization_data(self):

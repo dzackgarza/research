@@ -289,7 +289,7 @@ class CoxeterDiagrams(OwnedCategory):
             return self.coxeter_entry(left, right)
 
         def num_vertices(self):
-            return int(self.cardinality())
+            return self.cardinality()
 
         def mor(self, images, codomain):
             return CoxeterDiagrams().Mor(self, codomain)(images)

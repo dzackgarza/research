@@ -13,7 +13,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.owned_category import _object_of
 
 from dzack_research.preamble.engine_capabilities import engine_capabilities
@@ -28,7 +28,7 @@ def _is_lattice_subobject_of_rank(sublattice, lattice, rank) -> bool:
     return (
         sublattice in ModuleSubobjects(lattice.base_ring())
         and sublattice.inclusion().codomain() is lattice
-        and int(sublattice.module_rank()) == rank
+        and int(sublattice.module_rank()) == int(rank)
     )
 
 
@@ -176,7 +176,7 @@ class _IsotropicSublatticeLocusEngine:
         if rank <= 0:
             raise ValueError("an isotropic sublattice rank must be positive")
         self._lattice = lattice
-        self._rank = rank
+        self._rank = NN(rank)
         self._primitive = bool(primitive)
         super().__init__(facade=True, **rest)
 

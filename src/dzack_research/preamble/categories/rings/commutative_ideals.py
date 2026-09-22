@@ -3,7 +3,6 @@
 from sage.categories.category import Category
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
-from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -29,6 +28,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -134,7 +134,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             **rest,
         ) -> None:
             self._ideal_generators = (
-                None if ideal_generators is None else tuple(ideal_generators)
+                None
+                if ideal_generators is None
+                else finite_family(ideal_generators, name="Selected ideal generators")
             )
             self._selected_engine_ideal = engine_ideal
             self._localization_source_ideal = localization_source_ideal
@@ -541,7 +543,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             source_ideal = self._localization_source_ideal
             if ring in LocalizationRings() and source_ideal is not None:
                 numerator, _denominator = ring.localization_fraction_data(value)
-                structure = ring.localization_submonoid().structure_data()
+                structure = ring.localization_submonoid()._structure_data()
                 if structure.get("kind") == "prime_complement":
                     # ``a/s`` lies in ``I R_p`` exactly when some element
                     # outside ``p`` carries ``a`` into ``I``, and the elements
@@ -632,10 +634,18 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             assert rows is not None, (
                 "syzygy_matrix requires a selected exact ideal module-presentation backend"
             )
-            engine = _engine_ring(self.ring())
-            if rows:
-                return matrix(engine, rows)
-            return matrix(engine, 0, len(selected))
+            ring = self.ring()
+            owned_rows = tuple(
+                tuple(
+                    _owned_engine_element(ring, coefficient)
+                    for coefficient in row
+                )
+                for row in rows
+            )
+            return ring.matrix_space(
+                len(owned_rows),
+                len(selected),
+            ).from_rows(owned_rows)
 
         def primary_decomposition(self):
             method = _engine_ideal_method(
@@ -643,7 +653,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 "primary_decomposition",
                 "this ideal backend has no primary decomposition",
             )
-            return tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+            return finite_ordered_set(
+                tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+            )
 
         def hilbert_polynomial_value(self, argument):
             r"""Return the value at \`argument\` of the Hilbert polynomial of \`R/I\`.
@@ -660,7 +672,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             value = method()(SageZZ(argument))
             parent = getattr(value, "parent", lambda: None)()
             if parent is None:
-                return value
+                return _owned_engine_element(SageZZ, SageZZ(value))
             return _owned_engine_element(parent, value)
 
         def associated_primes(self):
@@ -669,7 +681,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 "associated_primes",
                 "this ideal backend has no associated-prime computation",
             )
-            return tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+            return finite_ordered_set(
+                tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+            )
 
         def _repr_(self):
             listed = ", ".join(str(generator) for generator in self.ideal_generators())

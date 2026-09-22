@@ -46,7 +46,7 @@ class _GramTensorGraphEngine:
         )
         return graph
 
-    def connected_component_cuts(self) -> list[int]:
+    def connected_component_cuts(self):
         r"""Return cuts between consecutive connected diagonal blocks.
 
         NetworkX remains private to this owner; the mathematical output is
@@ -54,7 +54,7 @@ class _GramTensorGraphEngine:
         """
         n = int(self.vertices().cardinality())
         if n <= 1:
-            return []
+            return finite_ordered_set(())
         graph = self._engine_graph()
         graph.remove_edges_from(list(nx.selfloop_edges(graph)))
         components = sorted(
@@ -62,8 +62,10 @@ class _GramTensorGraphEngine:
             key=lambda component: component[0],
         )
         if [index for component in components for index in component] != list(range(n)):
-            return []
-        return list(accumulate(len(component) for component in components[:-1]))
+            return finite_ordered_set(())
+        return finite_ordered_set(
+            tuple(NN(cut) for cut in accumulate(len(component) for component in components[:-1]))
+        )
 
     def _repr_(self) -> str:
         return f"Gram graph on {self.vertices().cardinality()} framing positions"
@@ -101,7 +103,7 @@ def _gram_tensor_graph(gram):
     )
 
 
-def _tensor_connected_component_cuts(gram) -> list[int]:
+def _tensor_connected_component_cuts(gram):
     r"""Return cuts between consecutive connected diagonal blocks.
 
     Engine adapter (`OWN-06`): NetworkX computes the connected components of

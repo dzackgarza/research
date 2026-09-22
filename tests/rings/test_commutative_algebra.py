@@ -1,7 +1,9 @@
 import pytest
 
 from dzack_research.preamble.all import (
+    AffineSpaces,
     GF,
+    ProjectiveSpaces,
     QQ,
     ZZ,
     ArtinianRings,
@@ -90,6 +92,8 @@ def test_quotient_residue_field_dual_numbers_and_adic_completion() -> None:
 
     quotient = polynomial.quotient_ring(t**2)
     tbar = quotient.quotient_map()(t)
+    assert quotient.characteristic().parent() is ZZ
+    assert quotient.characteristic() == 5
     assert tbar != 0
     assert tbar**2 == 0
 
@@ -127,17 +131,23 @@ def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
     affine_plane = AffineSpaces(field)(2)
     projective_plane = ProjectiveSpaces(field)(2)
 
+    assert affine_plane.dimension().parent() is ZZ
+    assert projective_plane.dimension().parent() is ZZ
+
     _values = affine_plane.point_counts(3)
 
     assert _values.cardinality() == 3
+    assert all(value.parent() is ZZ for value in _values)
 
     assert _values[0] == 25
+    assert (_values[0] + ZZ.one()).parent() is ZZ
 
     assert _values[1] == 625
 
     assert _values[2] == 15625
     _values = projective_plane.point_counts(3)
     assert _values.cardinality() == 3
+    assert all(value.parent() is ZZ for value in _values)
     assert _values[0] == 31
     assert _values[1] == 651
     assert _values[2] == 15751
@@ -322,8 +332,10 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
     principal = family.ideal(x_family)
     assert principal.inclusion().is_injective()
     assert family.krull_dimension() == 2
-    assert principal.syzygy_matrix().ncols() == 1
-    assert principal.syzygy_matrix().nrows() == 0
+    principal_syzygies = principal.syzygy_matrix()
+    assert principal_syzygies.parent().base_ring() is family
+    assert principal_syzygies.ncols() == 1
+    assert principal_syzygies.nrows() == 0
 
     special_fiber, _family_to_fiber = family._quotient_by_algebra_elements(
         (family.algebra_structure_morphism()(t),)
@@ -336,8 +348,10 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
     assert x0 * y0 == special_fiber.zero()
     assert origin.is_prime()
     assert origin.is_maximal()
-    assert origin.syzygy_matrix().ncols() == 2
-    assert origin.syzygy_matrix().nrows() == 2
+    origin_syzygies = origin.syzygy_matrix()
+    assert origin_syzygies.parent().base_ring() is special_fiber
+    assert origin_syzygies.ncols() == 2
+    assert origin_syzygies.nrows() == 2
 
     origin_point = special_fiber.spectrum()(origin)
     assert origin_point.ideal() is origin

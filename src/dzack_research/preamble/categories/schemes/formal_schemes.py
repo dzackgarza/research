@@ -46,8 +46,8 @@ class _FormalThickeningSystem(Functor):
     def system_category(self):
         return self._system_category
 
-    def exponent(self, index) -> int:
-        return int(index.value()) + 1
+    def exponent(self, index):
+        return NN(int(index.value()) + 1)
 
     def thickening_ring(self, exponent):
         exponent = int(exponent)

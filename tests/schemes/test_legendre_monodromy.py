@@ -16,7 +16,8 @@ def test_legendre_family_retains_singular_fiber_and_smooth_punctured_stratum() -
     assert smooth.base_change_source_complete_intersection() is family
     assert data.smooth_stratum().disc_radius() == 0.75
     assert data.base_point().manifold() is data.smooth_stratum()
-    assert data.base_point().coordinates() == (0.5,)
+    assert tuple(data.base_point().coordinates()) == (0.5,)
+    assert data.base_point().coordinates()[0].parent() is data.base_point().chart().coordinate(0).parent()
 
     singular_ring = singular.complete_intersection_ambient().O(3).global_sections().homogeneous_coordinate_ring()
     singular_equation = tuple(singular.homogeneous_defining_equations(singular_ring))[0]

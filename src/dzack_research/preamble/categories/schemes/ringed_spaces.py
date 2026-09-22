@@ -806,7 +806,11 @@ class DistinguishedAffineCovers(OwnedCategory):
             return self._defining_elements[self.chart_label(index)]
 
         def opens(self):
-            return tuple(self.open(index) for index in self.atlas())
+            return finite_indexed_family(
+                self.atlas(),
+                self.open,
+                name="Distinguished affine opens",
+            )
 
         def atlas(self):
             r"""The set the charts are indexed by, and the only source of chart labels."""
@@ -828,7 +832,9 @@ class DistinguishedAffineCovers(OwnedCategory):
             r"""Read the stated chart labels, deduplicated and in the atlas order."""
             labels = {self.chart_label(index) for index in indices}
             assert labels, "an affine-cover intersection requires at least one chart"
-            return tuple(sorted(labels, key=self.atlas().ranking_map()))
+            return finite_ordered_set(
+                tuple(sorted(labels, key=self.atlas().ranking_map()))
+            )
 
         def intersection(self, *indices):
             r"""Return ``D(prod_i f_i)``, the intersection of the selected charts."""

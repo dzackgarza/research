@@ -172,6 +172,19 @@ def _native_scheme_mor(domain, codomain):
     return _engine_scheme(domain)._Hom_(_engine_scheme(codomain))
 
 
+def _engine_scheme_morphism(morphism):
+    r"""Lower one owned scheme morphism to its selected private Sage map.
+
+    Protected scheme contract (OWN-05--OWN-07). The ordinary scheme API never
+    returns this value. Callers are the scheme-owner adapters in this module
+    plus the toric divisor-pullback adapter, which must invoke Sage on the
+    represented native scheme. The input remains the owned morphism; the raw
+    Sage map is consumed inside that computation and never becomes a public
+    result or a defining datum of another mathematical subsystem.
+    """
+    return morphism._engine_morphism_crossing()
+
+
 def _engine_defining_polynomials(native):
     r"""The coordinate polynomials of a Sage polynomial scheme morphism.
 
@@ -564,7 +577,7 @@ class SchemeMorphism(Morphism):
     def _represented_point_coordinates(self):
         return self._point_coordinates
 
-    def native_morphism(self):
+    def _engine_morphism_crossing(self):
         r"""The Sage morphism between the engines this morphism computes in."""
         assert self._native_morphism is not None, (
             f"{self} is represented by its owned datum and selected no native Sage realization"
@@ -629,7 +642,10 @@ class SchemeMorphism(Morphism):
         structured = other._postcompose_with(self)
         if structured is not None:
             return structured
-        return SchemeMorphism(self.native_morphism() * other.native_morphism(), mor=mor)
+        return SchemeMorphism(
+            _engine_scheme_morphism(self) * _engine_scheme_morphism(other),
+            mor=mor,
+        )
 
     def _is_the_identity(self) -> bool:
         r"""Whether this morphism is its Mor object's selected identity."""
@@ -755,8 +771,12 @@ class SchemeMorphism(Morphism):
             legs = construction.legs()
             equations = []
             for label in domain.factors().index_set():
-                moved_values = _engine_defining_polynomials(legs[label].native_morphism())
-                fixed_values = _engine_defining_polynomials(domain.projection(label).native_morphism())
+                moved_values = _engine_defining_polynomials(
+                    _engine_scheme_morphism(legs[label])
+                )
+                fixed_values = _engine_defining_polynomials(
+                    _engine_scheme_morphism(domain.projection(label))
+                )
                 assert len(moved_values) == len(fixed_values), (
                     "parallel projective maps expose different coordinate arities"
                 )
@@ -909,7 +929,10 @@ class SchemeMorphism(Morphism):
             ):
                 return all(left_pullback(element) == right_pullback(element) for element in determining)
             return _ring_morphisms_equal(left_pullback, right_pullback)
-        return bool(self.native_morphism() == other.native_morphism())
+        return bool(
+            _engine_scheme_morphism(self)
+            == _engine_scheme_morphism(other)
+        )
 
     def __ne__(self, other):
         equal = self == other
@@ -946,9 +969,12 @@ class _ScalarStructureSchemeMorphism(SchemeMorphism):
     def with_cone_construction(self, construction):
         return _ScalarStructureSchemeMorphism(self.parent(), self.scalar_pullback(), cone_construction=construction)
 
-    def native_morphism(self):
+    def _engine_morphism_crossing(self):
         base_arrow = LocallyRingedSpaces().Mor(self.domain().base_scheme(), self.codomain())(self.scalar_pullback())
-        return base_arrow.native_morphism() * self.domain().structure_morphism().native_morphism()
+        return (
+            _engine_scheme_morphism(base_arrow)
+            * _engine_scheme_morphism(self.domain().structure_morphism())
+        )
 
     def __eq__(self, other):
         if self is other:
@@ -1043,7 +1069,7 @@ def _projective_coordinate_morphism(morphism):
         )
     source = morphism.domain()
     base = source.scheme_base_ring()
-    native = morphism.native_morphism()
+    native = _engine_scheme_morphism(morphism)
     if source in Schemes(base).Affine():
         ring = source.coordinate_algebra()
     else:
@@ -1171,7 +1197,7 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         return self._homogeneous_coordinates
 
     @cached_method
-    def native_morphism(self):
+    def _engine_morphism_crossing(self):
         r"""The native polynomial map, when its scalar coercion is the stated map.
 
         This is a private engine boundary.  Sage's polynomial-map entry has
@@ -1327,7 +1353,7 @@ class _StandardMultiprojectiveChartEmbedding(SchemeMorphism):
 
     def _in_mor(self, mor):
         return _StandardMultiprojectiveChartEmbedding(
-            self.native_morphism(),
+            _engine_scheme_morphism(self),
             mor=mor,
             cone_construction=self.cone_construction(),
             point_coordinates=self._represented_point_coordinates(),
@@ -1356,7 +1382,7 @@ class _RepresentedAffineSchemeMorphism(SchemeMorphism):
         )
 
     @cached_method
-    def native_morphism(self):
+    def _engine_morphism_crossing(self):
         r"""``Spec`` of the pullback on the engines of the two spectra."""
         if self._is_the_identity():
             return _engine_scheme(self.domain()).identity_morphism()
@@ -1995,7 +2021,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             )
             match self._is_glued_from_affine_atlas():
                 case True:
-                    return self._scheme_engine_realization.native_realization()
+                    return self._scheme_engine_realization._native_realization_for_scheme_adapter()
                 case False:
                     return self._scheme_engine_realization
 
@@ -2238,7 +2264,10 @@ class Schemes(OwnedCategoryOverBaseRing):
                 case _ if self in Schemes(self.scheme_base_ring()).Affine():
                     return self.coordinate_algebra().krull_dimension()
                 case _:
-                    return _engine_scheme(self).dimension()
+                    return _owned_engine_element(
+                        SageZZ,
+                        SageZZ(_engine_scheme(self).dimension()),
+                    )
 
         def relative_dimension(self):
             r"""The relative dimension of ``X -> Spec R``.
@@ -2252,15 +2281,26 @@ class Schemes(OwnedCategoryOverBaseRing):
             base = self.scheme_base_ring()
             match self:
                 case _ if self is self.base_scheme():
-                    return 0
+                    return _owned_engine_element(SageZZ, SageZZ.zero())
                 case _ if self in AffineSpaces(base):
                     return self.coordinate_algebra().algebra_generating_set().cardinality()
                 case _ if self in ProductSchemes(base):
-                    return sum(int(factor.relative_dimension()) for factor in self.factors())
+                    return _owned_engine_element(
+                        SageZZ,
+                        SageZZ(
+                            sum(
+                                int(factor.relative_dimension())
+                                for factor in self.factors()
+                            )
+                        ),
+                    )
                 case _ if self in Schemes(base).Affine():
                     return self.dimension() - base.krull_dimension()
                 case _:
-                    return _engine_scheme(self).dimension_relative()
+                    return _owned_engine_element(
+                        SageZZ,
+                        SageZZ(_engine_scheme(self).dimension_relative()),
+                    )
 
         def is_smooth(self) -> bool:
             r"""Whether ``X -> Spec R`` is smooth: by placement, else by the realization's Jacobian criterion."""
@@ -2428,7 +2468,13 @@ class Schemes(OwnedCategoryOverBaseRing):
             assert base in OwnedFields() and base.cardinality().is_finite(), (
                 "finite-field point counts require a finite base field"
             )
-            return finite_family(tuple(_engine_scheme(self).count_points(degree)), name="Point counts")
+            return finite_family(
+                tuple(
+                    _owned_engine_element(SageZZ, SageZZ(value))
+                    for value in _engine_scheme(self).count_points(degree)
+                ),
+                name="Point counts",
+            )
 
         def point_count(self, extension_degree=1):
             r"""Return ``#X(F_{q^n})`` for the stated extension degree ``n``."""
@@ -4842,10 +4888,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                 case _ if codomain in Schemes(codomain.scheme_base_ring()).Affine():
                     coordinate_algebra = codomain.coordinate_algebra()
                     quotient = self.defining_ideal_owned().quotient_ring()
-                    return int(
-                        coordinate_algebra.krull_dimension()
-                        - quotient.krull_dimension()
-                    )
+                    return coordinate_algebra.krull_dimension() - quotient.krull_dimension()
                 case _:
                     return codomain.dimension() - self.dimension()
 

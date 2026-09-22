@@ -28,7 +28,7 @@ class OrthogonalCharacterQuotient:
         # this quotient; merely knowing O(L) is finitely generated would not be.
         self.supergroup = subgroup.supergroup().framing()
         self.lattice = self.supergroup.domain()
-        data = subgroup.character_data()
+        data = subgroup._character_data_snapshot()
         self.discriminant_preimages = tuple(data.get("discriminant_preimages", ()))
         self.determinant_kernel = bool(data.get("determinant_kernel", False))
         self.spinor_kernel = bool(data.get("spinor_kernel", False))

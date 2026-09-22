@@ -82,7 +82,12 @@ class _SparseFreeModuleElement(ModuleElement):
         }
 
     def monomial_coefficients(self):
-        return dict(self._coefficients)
+        support = finite_ordered_set(tuple(self._coefficients))
+        return finite_indexed_family(
+            support,
+            self._coefficients.__getitem__,
+            name="Nonzero module coefficients",
+        )
 
     def __iter__(self):
         r"""Iterate coordinates when the selected framing is finite and ordered."""
@@ -660,7 +665,7 @@ def _finite_support_labels(module, elements):
     support = []
     for candidate in elements:
         element = candidate if candidate.parent() is module else module(candidate)
-        for label in module.framing_coefficients(element):
+        for label in module.framing_coefficients(element).index_set():
             if not any(label == known for known in support):
                 support.append(label)
     return finite_ordered_set(support)

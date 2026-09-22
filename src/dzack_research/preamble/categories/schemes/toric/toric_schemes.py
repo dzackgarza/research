@@ -64,6 +64,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     SchemeMorphism,
     Schemes,
     _engine_scheme,
+    _engine_scheme_morphism,
     _native_scheme_mor,
     _scheme_mor_category,
 )
@@ -436,7 +437,7 @@ class ToricSchemeMorphism(SchemeMorphism):
         engine_divisor = _engine_scheme(codomain).divisor(
             [int(target_coefficients.get(ray, zero)) for ray in target_rays]
         )
-        pulled = self.native_morphism().pullback_divisor(engine_divisor)
+        pulled = _engine_scheme_morphism(self).pullback_divisor(engine_divisor)
         source = self.domain()
         source_group = source.weil_divisor_group()
         source_rays = source.fan().cones(1)

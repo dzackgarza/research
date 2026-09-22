@@ -345,7 +345,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                 self._engine_polyhedron().ambient_dim()
             ), "the normal fan is taken of a full-dimensional polytope"
             cocharacters = self.ambient_lattice().dual_module()
-            return RationalPolyhedralFans(cocharacters).from_engine_fan(
+            return RationalPolyhedralFans(cocharacters)._from_engine_fan(
                 self._engine_normal_fan()
             )
 

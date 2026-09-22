@@ -192,7 +192,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             engine_cones = [_SageCone([], lattice=engine_lattice)]
         return _object_of(self, engine_fan=_SageFan(engine_cones, lattice=engine_lattice))
 
-    def from_engine_fan(self, engine_fan):
+    def _from_engine_fan(self, engine_fan):
         r"""Adopt one engine fan whose lattice rank matches ``N``."""
         assert int(engine_fan.lattice_dim()) == int(self.lattice().module_rank()), (
             "the engine fan lives in a lattice of the wrong rank"
@@ -244,7 +244,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         assert homogeneous_weights.cardinality() == int(self.lattice().module_rank()) + 1, (
             "P(q_0,...,q_n) has dimension n, one less than the number of weights"
         )
-        return self.from_engine_fan(
+        return self._from_engine_fan(
             toric_varieties.WP(
                 *(weight for _, weight in homogeneous_weights)
             ).fan()
@@ -298,7 +298,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
 
         def dimension(self):
             r"""The rank of ``N``, which is the dimension of the toric variety."""
-            return self.lattice().module_rank()
+            return _integers()(int(self.lattice().module_rank()))
 
         def _cone(self, engine_cone):
             return self.element_class(self, engine_cone)
@@ -445,7 +445,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             return self.parent().lattice()
 
         def dimension(self):
-            return cardinal(int(self._engine_cone().dim()))
+            return _integers()(int(self._engine_cone().dim()))
 
         def rays(self):
             r"""The primitive ray generators of this cone, as elements of ``N``."""

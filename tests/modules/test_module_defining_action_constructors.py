@@ -100,7 +100,9 @@ def test_infinite_free_module_keeps_finite_support_and_the_same_action_morphism(
     assert module.scalar_action()(ZZ(4))(element) == module.scalar_multiple(
         ZZ(4), element
     )
-    assert module.scalar_multiple(ZZ(4), element).monomial_coefficients() == {
+    assert dict(
+        module.scalar_multiple(ZZ(4), element).monomial_coefficients().items()
+    ) == {
         NN(2): ZZ(12),
         NN(100): ZZ(-4),
     }

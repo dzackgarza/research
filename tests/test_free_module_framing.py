@@ -19,7 +19,7 @@ def test_keyed_coordinates_are_normalized_through_the_owned_framing() -> None:
     element = module({0: 2, NN(2): -1})
 
     coefficients = element.monomial_coefficients()
-    assert set(coefficients) == {NN(0), NN(2)}
+    assert set(coefficients.index_set()) == {NN(0), NN(2)}
     assert coefficients[NN(0)] == ZZ(2)
     assert coefficients[NN(2)] == ZZ(-1)
 
@@ -31,7 +31,10 @@ def test_infinite_free_module_rejects_implicit_finite_prefix_coordinates() -> No
         module((1, 0, 0, 1))
 
     element = module({NN(0): 1, NN(3): 1})
-    assert element.monomial_coefficients() == {NN(0): ZZ(1), NN(3): ZZ(1)}
+    assert dict(element.monomial_coefficients().items()) == {
+        NN(0): ZZ(1),
+        NN(3): ZZ(1),
+    }
 
 
 def test_infinite_framing_is_not_enumerated_for_finite_ring_linearity_checks() -> None:

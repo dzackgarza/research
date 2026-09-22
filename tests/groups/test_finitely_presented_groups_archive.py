@@ -59,5 +59,10 @@ def test_native_finite_group_can_retain_a_chosen_finite_presentation() -> None:
     assert cyclic not in GroupsWithChosenFinitePresentation()
     assert presented.presentation_source_group() is cyclic
     assert presented in GroupsWithChosenFinitePresentation()
-    assert presented.presenting_free_group().group_generators().cardinality() == 1
-    assert tuple(relation.Tietze() for relation in presented.defining_relations()) == ((1, 1),)
+    presenting = presented.presenting_free_group()
+    generator = next(iter(presenting.group_generators()))
+    assert presenting.group_generators().cardinality() == 1
+    assert tuple(
+        tuple(relation.parent().reduced_word(relation))
+        for relation in presented.defining_relations()
+    ) == ((generator, generator),)

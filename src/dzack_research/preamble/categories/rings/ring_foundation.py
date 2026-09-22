@@ -619,7 +619,7 @@ class LocalizationRings(OwnedCategory):
 
             parent = self.parent()
             source = parent.localization_source()
-            structure = parent.localization_submonoid().structure_data()
+            structure = parent.localization_submonoid()._structure_data()
             match structure.get("kind"):
                 case "prime_complement":
                     prime = structure["prime_ideal"]
@@ -786,7 +786,7 @@ class LocalizationRings(OwnedCategory):
             source = self.localization_source()
             if denominator == source.one():
                 return True
-            structure = self.localization_submonoid().structure_data()
+            structure = self.localization_submonoid()._structure_data()
             match structure.get("kind"):
                 case "prime_complement":
                     prime = structure["prime_ideal"]
@@ -832,7 +832,7 @@ class LocalizationRings(OwnedCategory):
                     value_parent = getattr(value, "parent", lambda: None)()
                     engine_value = _engine_element(value_parent, value) if value_parent in OwnedRings() else value
                     represented = self._preamble_engine_ring(engine_value)
-                    structure = self.localization_submonoid().structure_data()
+                    structure = self.localization_submonoid()._structure_data()
                     source = self.localization_source()
                     source_engine = _engine_ring(source)
                     return self.fraction(
@@ -956,7 +956,7 @@ class LocalizationRings(OwnedCategory):
             if source in OwnedRings().Commutative().NoZeroDivisors():
                 return False
 
-            structure = self.localization_submonoid().structure_data()
+            structure = self.localization_submonoid()._structure_data()
             if structure.get("kind") == "prime_complement":
                 prime = structure.get("prime_ideal")
                 if prime is None:
@@ -1046,7 +1046,7 @@ class LocalizationRings(OwnedCategory):
         def is_fraction_field_localization(self) -> bool:
             r"""Whether this localizes a domain at all of its nonzero elements."""
             return (
-                self.localization_submonoid().structure_data().get("kind")
+                self.localization_submonoid()._structure_data().get("kind")
                 == "nonzero_elements"
             )
 
@@ -2264,7 +2264,7 @@ def _engine_krull_dimension(ring):
     method = getattr(engine, "krull_dimension", None)
     if callable(method):
         try:
-            return method()
+            return _owned_engine_element(SageZZ, SageZZ(method()))
         except NotImplementedError:
             pass
     defining_ideal = getattr(engine, "defining_ideal", None)
@@ -2277,7 +2277,7 @@ def _engine_krull_dimension(ring):
         f"Krull dimension of {ring} requires a dimension operation on its selected defining ideal"
     )
     try:
-        return dimension()
+        return _owned_engine_element(SageZZ, SageZZ(dimension()))
     except NotImplementedError as error:
         raise AssertionError(
             f"Krull dimension of {ring} is unsupported by the selected defining-ideal engine"

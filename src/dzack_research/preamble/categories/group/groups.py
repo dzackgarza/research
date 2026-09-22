@@ -269,6 +269,18 @@ def _finite_order(group):
     return _owned_engine_element(ZZ, ZZ(backend_order))
 
 
+def _finite_group_morphism_kernel_cardinality(morphism):
+    r"""Return the exact kernel order without exporting the GAP morphism."""
+    return cardinal(
+        int(morphism._gap_morphism_crossing().Kernel().Size())
+    )
+
+
+def _finite_group_morphism_kernel_is_abelian(morphism) -> bool:
+    r"""Decide kernel abelianity without exporting the GAP morphism."""
+    return bool(morphism._gap_morphism_crossing().Kernel().IsAbelian())
+
+
 def _conjugacy_class_elements(group, representative):
     r"""Return the elements of the conjugacy class of ``representative`` in the finite ``group``."""
     engine = _engine_group(group)
@@ -405,12 +417,13 @@ def _free_generator(group, index):
     return group._from_engine(_engine_group(group).gen(_engine_basis_label(basis, label)))
 
 
-def _reduced_word(group, element):
-    r"""Read a reduced native word in the owned basis and multiplication order.
+def _reduced_word_data(group, element):
+    r"""Read private reduced-word coordinates in the owned multiplication order.
 
     Sage's finite FreeGroup uses signed positions (Tietze); IndexedFreeGroup
     uses basis labels with exponents.  Both represent finite words, including
-    when the generating set is infinite.
+    when the generating set is infinite.  This coordinate data is private to
+    the free-group owner; public words are families of owned signed generators.
     """
     basis = group.free_basis()
     backend = group._to_engine(group(element))
@@ -426,6 +439,20 @@ def _reduced_word(group, element):
                 for index, exponent in backend.to_word_list()
             )
     return letters[::-1] if _law_reversed(group) else letters
+
+
+def _reduced_word(group, element):
+    r"""Return the reduced word as an owned finite family of signed generators."""
+    from dzack_research.preamble.categories.sets.finite_families import finite_family
+
+    letters = []
+    for index, exponent in _reduced_word_data(group, element):
+        exponent = int(exponent)
+        assert exponent != 0, "a reduced-word coordinate has nonzero exponent"
+        generator = _free_generator(group, index)
+        letter = generator if exponent > 0 else ~generator
+        letters.extend(letter for _ in range(abs(exponent)))
+    return finite_family(letters, name="Reduced group word")
 
 
 def _law_reversed(group) -> bool:
@@ -913,10 +940,6 @@ class _GroupElement(MultiplicativeGroupElement):
         r"""Apply this element to a point of the set it acts on."""
         return _engine_element_action(self.parent(), self._backend(), point)
 
-    def Tietze(self):
-        r"""The word of this element in the chosen generators, as signed generator positions."""
-        return _engine_word(self.parent(), self._backend())
-
     def _invert_(self):
         return self.parent()._from_engine(~self._backend())
 
@@ -1395,7 +1418,9 @@ class SubgroupInclusion(SetMorphism):
 
         match subgroup:
             case _ if subgroup in KernelSubgroups(ambient):
-                subgroup_model = subgroup.kernel_morphism().gap().Kernel()
+                subgroup_model = (
+                    subgroup.kernel_morphism()._gap_morphism_crossing().Kernel()
+                )
             case _:
                 assert subgroup not in PredicateSubgroups(ambient), (
                     "the current exact cokernel computation for a predicate subgroup "
@@ -1445,7 +1470,7 @@ class IndexedFreeGroupMorphism(Morphism):
             mul,
             (
                 self.generator_morphism()(index) ** sign
-                for index, sign in self.domain().reduced_word(element)
+                for index, sign in _reduced_word_data(self.domain(), element)
             ),
             codomain.one(),
         )
@@ -1553,8 +1578,8 @@ class GroupMorphism(Morphism):
             )
         self._gap_homomorphism = gap_homomorphism
 
-    def gap(self):
-        r"""Return the private GAP realization of this owned morphism."""
+    def _gap_morphism_crossing(self):
+        r"""Return the private GAP realization to the group computation owner."""
         return self._gap_homomorphism
 
     def __eq__(self, other):
@@ -1595,13 +1620,19 @@ class GroupMorphism(Morphism):
         model = _element_to_engine(self.domain(), element)
         if self.parent()._is_twisted():
             model = model.Inverse()
-        return _element_from_engine(self.codomain(), self.gap().Image(model))
+        return _element_from_engine(
+            self.codomain(),
+            self._gap_morphism_crossing().Image(model),
+        )
 
     def lift(self, element):
         r"""Return one preimage of ``element``."""
         engine_element = _element_to_engine(self.codomain(), element)
-        assert engine_element in self.gap().Image(), f"{element} is not in the image of {self}"
-        preimage = self.gap().PreImagesRepresentative(engine_element)
+        gap_morphism = self._gap_morphism_crossing()
+        assert engine_element in gap_morphism.Image(), (
+            f"{element} is not in the image of {self}"
+        )
+        preimage = gap_morphism.PreImagesRepresentative(engine_element)
         if self.parent()._is_twisted():
             preimage = preimage.Inverse()
         return _element_from_engine(self.domain(), preimage)
@@ -1637,7 +1668,10 @@ class GroupMorphism(Morphism):
         return KernelSubgroups(self.domain())(self)
 
     def image(self):
-        return _subgroup_from_gap(self.codomain(), self.gap().Image())
+        return _subgroup_from_gap(
+            self.codomain(),
+            self._gap_morphism_crossing().Image(),
+        )
 
     @cached_method
     def _cokernel_data(self):
@@ -1648,7 +1682,7 @@ class GroupMorphism(Morphism):
         )
         normal_closure = libgap.NormalClosure(
             _gap_model(codomain),
-            self.gap().Image(),
+            self._gap_morphism_crossing().Image(),
         )
         return _finite_group_quotient_by_gap_normal_subgroup(
             codomain,
@@ -1662,10 +1696,10 @@ class GroupMorphism(Morphism):
         return self._cokernel_data()[1]
 
     def is_injective(self):
-        return bool(self.gap().IsInjective())
+        return bool(self._gap_morphism_crossing().IsInjective())
 
     def is_surjective(self):
-        return bool(self.gap().IsSurjective())
+        return bool(self._gap_morphism_crossing().IsSurjective())
 
 
 class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
@@ -1804,7 +1838,10 @@ class GroupAutomorphism(GroupMorphism):
     def _composition(self, right):
         r"""Compose automorphisms inside their represented automorphism group."""
         if right.parent() is self.parent():
-            return self.parent()(right.gap() * self.gap(), check=False)
+            return self.parent()(
+                right._gap_morphism_crossing() * self._gap_morphism_crossing(),
+                check=False,
+            )
         return super()._composition(right)
 
 
@@ -1869,11 +1906,17 @@ class GroupAutomorphismGroups(OwnedCategory):
 
     class ElementMethods:
         def inverse(self):
-            return self.parent()(self.gap().InverseGeneralMapping(), check=False)
+            return self.parent()(
+                self._gap_morphism_crossing().InverseGeneralMapping(),
+                check=False,
+            )
 
         def _composition_(self, right, mor):
             assert right.parent() is self.parent(), "automorphisms must belong to one automorphism group"
-            return self.parent()(right.gap() * self.gap(), check=False)
+            return self.parent()(
+                right._gap_morphism_crossing() * self._gap_morphism_crossing(),
+                check=False,
+            )
 
 
 class GroupAutomorphismGroup(GroupMor):
@@ -1940,7 +1983,9 @@ class GroupAutomorphismGroup(GroupMor):
                 automorphism = self.element_class(self, images, check=False)
             case _:
                 automorphism = super()._element_constructor_(images, check=check, **options)
-        if check and not bool(automorphism.gap().IsBijective()):
+        if check and not bool(
+            automorphism._gap_morphism_crossing().IsBijective()
+        ):
             raise ValueError("the endomorphism is not invertible")
         return automorphism
 
@@ -3105,7 +3150,7 @@ class GroupsWithChosenFreeBasis(OwnedCategory):
             return _free_generator(self, index)
 
         def reduced_word(self, element):
-            r"""Return the reduced word of ``element`` as ``(index, sign)`` pairs."""
+            r"""Return the reduced word as an owned finite family of signed generators."""
             return _reduced_word(self, element)
 
 

@@ -12,6 +12,7 @@ from dzack_research.preamble.all import (
     Groups,
     Subgroups,
 )
+from dzack_research.preamble.categories.group.groups import OwnedGroups
 
 
 def _natural_permutation_module(ring, group, degree):
@@ -49,12 +50,11 @@ def test_the_natural_permutation_representation_is_a_left_action() -> None:
 def test_chosen_relators_multiply_to_the_identity_in_the_owned_order() -> None:
     for native in (Groups.S(3), Groups.D(4), Groups.A(4)):
         group = native.presentation()
-        generators = tuple(group.group_generators())
+        projection = group.selected_framing_morphism(OwnedGroups())
         for relator in group.defining_relations():
             product = group.one()
-            for letter in relator.Tietze():
-                generator = generators[abs(letter) - 1]
-                product = product * (generator if letter > 0 else ~generator)
+            for letter in relator.parent().reduced_word(relator):
+                product = product * projection(letter)
             assert product.is_one()
 
 

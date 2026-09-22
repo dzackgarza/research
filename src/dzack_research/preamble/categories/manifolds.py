@@ -8,12 +8,13 @@ represented atlas transition.
 
 from sage.categories.morphism import Morphism
 from sage.manifolds.manifold import Manifold as _SageManifold
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
+from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -22,12 +23,19 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _own_ring,
+    _owned_engine_element,
+)
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
+from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 
@@ -39,6 +47,10 @@ class ManifoldAtlasChart(SageObject):
         self._manifold = manifold
         self._label = label
         self._engine = engine_chart
+        self._coordinates = _raise_manifold_expression_family(
+            engine_chart[:],
+            name=f"Coordinates of chart {label}",
+        )
 
     def manifold(self):
         return self._manifold
@@ -47,10 +59,11 @@ class ManifoldAtlasChart(SageObject):
         return self._label
 
     def coordinates(self):
-        return tuple(self._engine[:])
+        return self._coordinates
 
     def coordinate(self, index):
-        return self._engine[int(index)]
+        position = self.coordinates().index_set()[int(index)]
+        return self.coordinates()[position]
 
     def _engine_chart(self):
         return self._engine
@@ -81,8 +94,14 @@ class ManifoldAtlasTransition(SageObject):
         self._source = source
         self._target = target
         self._engine = engine_transition
-        self._forward = tuple(forward_expressions)
-        self._inverse_expressions = tuple(inverse_expressions)
+        self._forward = _admit_manifold_expression_family(
+            forward_expressions,
+            name=f"Coordinate change {source.label()} to {target.label()}",
+        )
+        self._inverse_expressions = _admit_manifold_expression_family(
+            inverse_expressions,
+            name=f"Coordinate change {target.label()} to {source.label()}",
+        )
         self._inverse_transition = None
 
     def source(self):
@@ -117,7 +136,14 @@ class ManifoldAtlasTransition(SageObject):
         return self._inverse_transition
 
     def __call__(self, *coordinates):
-        return self._engine(*coordinates)
+        image = self._engine(
+            *(_engine_manifold_expression(coordinate) for coordinate in coordinates)
+        )
+        values = image if isinstance(image, (tuple, list)) else (image,)
+        return _raise_manifold_expression_family(
+            values,
+            name=f"Coordinates after {self.source().label()} to {self.target().label()}",
+        )
 
     def _repr_(self):
         return (
@@ -131,12 +157,12 @@ def _engine_manifold(manifold):
 
     Protected manifold contract (\`OWN-05\`--\`OWN-07\`).  The
     implementation endpoint is
-    \`TopologicalManifolds.ParentMethods._engine_manifold\`.  Permitted
+    \`TopologicalManifolds.ParentMethods._engine_manifold_realization\`.  Permitted
     callers are the point, chart, holomorphic-map, and analytic-open adapters
     in this module after the corresponding owned construction has been
     selected.  The Sage manifold remains private to those adapters.
     """
-    return manifold._engine_manifold()
+    return manifold._engine_manifold_realization()
 
 
 def _engine_manifold_chart(chart):
@@ -149,6 +175,48 @@ def _engine_manifold_chart(chart):
     if not isinstance(chart, ManifoldAtlasChart):
         raise TypeError("a manifold chart crossing requires an owned atlas chart")
     return chart._engine_chart()
+
+
+@cached_function
+def _manifold_expression_ring():
+    r"""Return the owned facade of Sage's exact symbolic-expression ring."""
+    return _own_ring(SR)
+
+
+def _raise_manifold_expression(value):
+    r"""Raise one private symbolic engine expression into the owned expression ring."""
+    return _owned_engine_element(_manifold_expression_ring(), value)
+
+
+def _admit_manifold_expression(value):
+    r"""Admit public literal/owned formula data, rejecting raw Sage expressions."""
+    return _manifold_expression_ring()(value)
+
+
+def _engine_manifold_expression(value):
+    r"""Lower one owned chart/formula expression for a SageManifolds adapter.
+
+    Protected manifold-expression contract under OWN-05--OWN-07.  Permitted
+    callers are atlas/map/open-submanifold adapters in this module and the
+    affine-analytification adapter, all of which consume the raw expression
+    immediately and return owned manifold/formula data.
+    """
+    expression = _admit_manifold_expression(value)
+    return _engine_element(_manifold_expression_ring(), expression)
+
+
+def _admit_manifold_expression_family(values, *, name):
+    return finite_family(
+        tuple(_admit_manifold_expression(value) for value in values),
+        name=name,
+    )
+
+
+def _raise_manifold_expression_family(values, *, name):
+    return finite_family(
+        tuple(_raise_manifold_expression(value) for value in values),
+        name=name,
+    )
 
 
 def _engine_manifold_point(point):
@@ -169,7 +237,7 @@ class _ManifoldTopologyData(SageObject):
     def __init__(self, engine_manifold) -> None:
         self._engine_manifold = engine_manifold
 
-    def engine_manifold(self):
+    def _engine_manifold_realization(self):
         return self._engine_manifold
 
     def open_subsets(self, space):
@@ -231,10 +299,16 @@ class TopologicalManifolds(OwnedCategory):
 
         def __init__(self, parent: Parent, coordinates, chart_label) -> None:
             Element.__init__(self, parent)
-            self._coordinates = tuple(coordinates)
+            self._coordinates = _admit_manifold_expression_family(
+                coordinates,
+                name=f"Coordinates of point of {parent}",
+            )
             self._chart_label = chart_label
             self._engine_point = _engine_manifold(parent)(
-                self._coordinates,
+                tuple(
+                    _engine_manifold_expression(coordinate)
+                    for coordinate in self._coordinates
+                ),
                 chart=_engine_manifold_chart(parent.atlas()[chart_label]),
             )
 
@@ -278,10 +352,14 @@ class TopologicalManifolds(OwnedCategory):
             **rest,
         ) -> None:
             self._preamble_engine_manifold = engine_manifold
-            self._preamble_manifold_dimension = int(manifold_dimension)
+            self._preamble_manifold_dimension = NN(int(manifold_dimension))
             self._preamble_manifold_name = str(manifold_name)
             self._preamble_manifold_structure = str(manifold_structure)
-            self._preamble_differentiability_degree = differentiability_degree
+            self._preamble_differentiability_degree = (
+                differentiability_degree
+                if differentiability_degree is None or differentiability_degree == Infinity
+                else NN(int(differentiability_degree))
+            )
             self._preamble_manifold_field = str(manifold_field)
             self._preamble_charts = {}
             self._preamble_transitions = {}
@@ -316,11 +394,11 @@ class TopologicalManifolds(OwnedCategory):
         def is_smooth(self) -> bool:
             return self._preamble_differentiability_degree == Infinity
 
-        def _engine_manifold(self):
+        def _engine_manifold_realization(self):
             return self._preamble_engine_manifold
 
         def chart(self, label, coordinates):
-            return self._register_chart(label, self._engine_manifold().chart(coordinates))
+            return self._register_chart(label, self._engine_manifold_realization().chart(coordinates))
 
         def _register_chart(self, label, engine_chart):
             r"""Record the chart ``engine_chart`` of this manifold's engine under ``label``."""
@@ -368,17 +446,31 @@ class TopologicalManifolds(OwnedCategory):
         ):
             source = self.atlas()[source_label]
             target = self.atlas()[target_label]
-            forward_expressions = tuple(forward_expressions)
-            inverse_expressions = tuple(inverse_expressions)
-            if len(forward_expressions) != self.dimension():
+            forward_expressions = _admit_manifold_expression_family(
+                forward_expressions,
+                name=f"Coordinate change {source_label} to {target_label}",
+            )
+            inverse_expressions = _admit_manifold_expression_family(
+                inverse_expressions,
+                name=f"Coordinate change {target_label} to {source_label}",
+            )
+            if int(forward_expressions.cardinality()) != self.dimension():
                 raise ValueError("a coordinate change has one target expression per coordinate")
-            if len(inverse_expressions) != self.dimension():
+            if int(inverse_expressions.cardinality()) != self.dimension():
                 raise ValueError("an inverse coordinate change has one source expression per coordinate")
             engine_transition = _engine_manifold_chart(source).transition_map(
                 _engine_manifold_chart(target),
-                forward_expressions,
+                tuple(
+                    _engine_manifold_expression(expression)
+                    for expression in forward_expressions
+                ),
             )
-            engine_transition.set_inverse(*inverse_expressions)
+            engine_transition.set_inverse(
+                *(
+                    _engine_manifold_expression(expression)
+                    for expression in inverse_expressions
+                )
+            )
             transition = ManifoldAtlasTransition(
                 source,
                 target,
@@ -496,11 +588,14 @@ class HolomorphicMapPresentation:
 
     def __init__(self, engine_map, coordinate_expressions, source_label, target_label) -> None:
         self._engine_map = engine_map
-        self._coordinate_expressions = tuple(coordinate_expressions)
+        self._coordinate_expressions = _admit_manifold_expression_family(
+            coordinate_expressions,
+            name="Holomorphic-map coordinate expressions",
+        )
         self._source_label = source_label
         self._target_label = target_label
 
-    def engine_map(self):
+    def _engine_map_crossing(self):
         return self._engine_map
 
     def coordinate_expressions(self):
@@ -535,7 +630,10 @@ def _holomorphic_map_from_engine(
     r"""Raise a private Sage map into the selected owned holomorphic Mor object."""
     return mor._from_engine_polynomial_map(
         engine,
-        expressions,
+        _raise_manifold_expression_family(
+            expressions,
+            name="Holomorphic-map coordinate expressions",
+        ),
         source_label,
         target_label,
     )
@@ -561,7 +659,7 @@ class HolomorphicMap(Morphism):
         return self.codomain().atlas()[self.presentation().target_chart_label()]
 
     def _engine_holomorphic_map(self):
-        return self.presentation().engine_map()
+        return self.presentation()._engine_map_crossing()
 
     def __mul__(self, other):
         if not isinstance(other, HolomorphicMap) or other.codomain() is not self.domain():
@@ -622,15 +720,28 @@ class ComplexManifoldMor(CategoricalMor):
         r"""Construct the holomorphic map defined by polynomial chart formulas."""
         source = self._unique_chart(self.domain())
         target = self._unique_chart(self.codomain())
-        expressions = tuple(coordinate_expressions)
-        if len(expressions) != self.codomain().dimension():
+        expressions = _admit_manifold_expression_family(
+            coordinate_expressions,
+            name="Holomorphic-map coordinate expressions",
+        )
+        if int(expressions.cardinality()) != self.codomain().dimension():
             raise ValueError("a holomorphic coordinate map has one expression per target coordinate")
-        variables = tuple(source.coordinates())
-        if any(not all(expression.is_polynomial(variable) for variable in variables) for expression in expressions):
+        engine_variables = tuple(
+            _engine_manifold_expression(variable)
+            for variable in source.coordinates()
+        )
+        engine_expressions = tuple(
+            _engine_manifold_expression(expression)
+            for expression in expressions
+        )
+        if any(
+            not all(expression.is_polynomial(variable) for variable in engine_variables)
+            for expression in engine_expressions
+        ):
             raise ValueError("this constructor certifies holomorphicity only for polynomial coordinate formulas")
         engine = _engine_manifold(self.domain()).diff_map(
             _engine_manifold(self.codomain()),
-            expressions if len(expressions) != 1 else expressions[0],
+            engine_expressions if len(engine_expressions) != 1 else engine_expressions[0],
             chart1=_engine_manifold_chart(source),
             chart2=_engine_manifold_chart(target),
         )
@@ -641,7 +752,7 @@ class ComplexManifoldMor(CategoricalMor):
     def _from_engine_polynomial_map(self, engine, expressions, source_label, target_label):
         presentation = HolomorphicMapPresentation(
             engine,
-            tuple(expressions),
+            expressions,
             source_label,
             target_label,
         )
@@ -655,7 +766,7 @@ class ComplexManifoldMor(CategoricalMor):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only for equal complex-manifold endpoints")
         chart = self._unique_chart(self.domain())
-        return self.polynomial(tuple(chart.coordinates()))
+        return self.polynomial(chart.coordinates())
 
 
 class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
@@ -767,11 +878,12 @@ class ComplexManifolds(OwnedCategory):
         z = containing_manifold.atlas()[
             tuple(containing_manifold.chart_labels())[0]
         ].coordinate(0)
+        engine_z = _engine_manifold_expression(z)
         match punctured:
             case True:
-                restriction = (abs(z) < radius, z != 0)
+                restriction = (abs(engine_z) < radius, engine_z != 0)
             case False:
-                restriction = abs(z) < radius
+                restriction = abs(engine_z) < radius
         return _object_of(
             self,
             _engine=(self, _ComplexDiscEngine, None),
@@ -819,18 +931,18 @@ class _ComplexOpenEngine:
         self._register_chart(
             chart_label,
             _engine_manifold_chart(containing_manifold.atlas()[chart_label]).restrict(
-                self._engine_manifold()
+                self._engine_manifold_realization()
             ),
         )
 
-    def open_restriction(self):
+    def _engine_open_restriction(self):
         return self._open_restriction
 
     @cached_method
     def open_inclusion(self):
         r"""Return the holomorphic inclusion of this open subset into the manifold it is open in."""
         label = tuple(self.chart_labels())[0]
-        coordinates = tuple(self.atlas()[label].coordinates())
+        coordinates = self.atlas()[label].coordinates()
         return self.Mor(self._containing_manifold).polynomial(coordinates)
 
 

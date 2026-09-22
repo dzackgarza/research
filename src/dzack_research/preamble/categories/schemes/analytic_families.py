@@ -18,7 +18,11 @@ from sage.all import QQ as SageQQ
 from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.manifolds import ComplexManifolds
+from dzack_research.preamble.categories.manifolds import (
+    ComplexManifolds,
+    _engine_manifold_expression,
+    _raise_manifold_expression,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -44,7 +48,10 @@ def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
     target_ring = scalar_embedding.codomain()
     engine_source = _engine_ring(source_ring)
     engine_target = _engine_ring(target_ring)
-    variables = tuple(chart.coordinates())
+    variables = tuple(
+        _engine_manifold_expression(variable)
+        for variable in chart.coordinates()
+    )
     result = 0
     for exponent, coefficient in backend.monomial_coefficients().items():
         powers = _polynomial_exponents(exponent, len(variables))
@@ -54,7 +61,7 @@ def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
             if power:
                 term *= variable**power
         result += term
-    return result
+    return _raise_manifold_expression(result)
 
 
 class _AffineSpaceAnalytificationFunctor(Functor):
@@ -215,10 +222,11 @@ def AnalyticDiscFamily(radius=1):
     )
     total_chart = analytic_total_ambient.atlas()["standard"]
     total_parameter = total_chart.coordinate(1)
+    engine_total_parameter = _engine_manifold_expression(total_parameter)
     analytic_total = ComplexManifolds().open_submanifold(
         analytic_total_ambient,
         "X_Delta",
-        abs(total_parameter) < float(radius),
+        abs(engine_total_parameter) < float(radius),
     )
     restricted_parameter = analytic_total.atlas()["standard"].coordinate(1)
     analytic_family = analytic_total.holomorphic_polynomial_map(

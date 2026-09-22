@@ -15,6 +15,7 @@ is ``X_{R'} -> X`` and its right projection is the structure morphism.
 """
 
 from sage.misc.cachefunc import cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -22,6 +23,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
     _engine_ring,
+    _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
@@ -167,9 +169,9 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return self.defining_equations().cardinality()
 
         def expected_dimension(self):
-            return int(self.complete_intersection_ambient().relative_dimension()) - int(
-                self.complete_intersection_codimension()
-            )
+            return self.complete_intersection_ambient().relative_dimension() - _own_ring(
+                SageZZ
+            )(int(self.complete_intersection_codimension()))
 
         def family_base_scheme(self):
             return self.base_scheme()

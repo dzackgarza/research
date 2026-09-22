@@ -15,6 +15,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
 
@@ -99,7 +101,12 @@ class GradedDirectSumElement(ModuleElement):
         self._components = normalized
 
     def homogeneous_components(self):
-        return dict(self._components)
+        support = finite_ordered_set(tuple(self._components))
+        return finite_indexed_family(
+            support,
+            self._components.__getitem__,
+            name="Nonzero homogeneous components",
+        )
 
     def homogeneous_component(self, degree):
         degree = self.parent().normalize_degree(degree)

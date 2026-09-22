@@ -270,7 +270,14 @@ def test_hyperplane_linear_system_defines_the_projective_plane_identity_coordina
     assert morphism.domain() is plane
     assert morphism.codomain() is system
     assert morphism.codomain().linear_system_divisor() == line
-    assert len(morphism.native_morphism().defining_polynomials()) == 3
+    for index in morphism.parent().gluing_datum().chart_indices():
+        local_map = morphism.local_map(index)
+        coordinates = local_map.homogeneous_coordinates()
+        assert coordinates.cardinality() == 3
+        assert all(
+            coordinate.parent() is local_map.coefficient_map().codomain()
+            for coordinate in coordinates
+        )
 
 
 def test_non_basepoint_free_divisor_has_no_everywhere_defined_associated_morphism() -> None:

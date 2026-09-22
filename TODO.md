@@ -213,12 +213,6 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`recursive-owned-results`**. **Needs:** none.
-  **Owner and delta:** public results throughout the affected algebraic, geometric and arithmetic owners, including maps, coefficients, base rings, representatives and lazy family values.
-  **Coverage boundary:** follow return paths and subsequent public operations across the full named family, preserving recursive ownership already delivered with each producer and repairing independently remaining escapes. A producer's owned top level never authorizes deferring its raw children to this sweep.
-  **Invariants:** raising reaches every publicly reachable mathematical constituent and subsequent arithmetic, through its canonical constructor. An owned parent containing raw engine children does not satisfy `OWN-04`. Arbitrary raw-engine ingress is not an alternative public API.
-  **Closure specimens:** project a returned morphism component, evaluate a delayed family stage, extract a coefficient and perform arithmetic on it; each result has the correct owned parent and expected equation. Use both a geometric sheaf result and an arithmetic orbit/presentation result so a top-level wrapper cannot certify the boundary.
-
 - [ ] **`membership-by-placement`**. **Needs:** none.
   **Owner and delta:** category containment throughout the preamble, including abstract functor, arrow, product, morphism and sheaf categories and predicates hidden in helpers.
   **Coverage boundary:** enumerate category declarations and follow their inherited/overridden containment and helper calls, then compare every route with the original "each category" requirement. Distinguish genuine element membership at set owners explicitly. A scan of `__contains__` bodies or the original scheme complaint alone is incomplete. Earlier producer repairs must already establish their placements; this node reconciles the untouched remainder.

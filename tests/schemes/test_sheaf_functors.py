@@ -144,9 +144,18 @@ def test_module_pullback_preserves_nonidentity_maps_identity_and_composition() -
     for fine_index in fine.chart_indices():
         module = pulled_composite.domain().gluing_datum().local_module(fine_index)
         label = module.module_generating_set()[0]
-        image = pulled_composite.local_map(fine_index)(module.module_generator(label))
+        local_map = pulled_composite.local_maps()[
+            pulled_composite.cover().chart_label(fine_index)
+        ]
+        assert local_map is pulled_composite.local_map(fine_index)
+        image = local_map(module.module_generator(label))
         codomain = pulled_composite.codomain().gluing_datum().local_module(fine_index)
         target_label = codomain.module_generating_set()[0]
+        coefficient = codomain.framing_coefficients(image)[target_label]
+        shifted_coefficient = coefficient + codomain.base_ring().one()
+        assert coefficient.parent() is codomain.base_ring()
+        assert shifted_coefficient.parent() is codomain.base_ring()
+        assert shifted_coefficient == codomain.base_ring()(7)
         assert image == codomain.scalar_multiple(
             codomain.base_ring()(6), codomain.module_generator(target_label)
         )

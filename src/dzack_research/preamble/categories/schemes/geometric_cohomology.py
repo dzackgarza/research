@@ -729,7 +729,7 @@ class _QuarticK3HodgeData(SageObject):
         return _degree_hodge_number_family(self, degree, range(3), 2)
 
     def middle_betti_number(self):
-        return int(self.integral_cohomology(2).module_rank())
+        return self.integral_cohomology(2).module_rank()
 
     def polarization_class(self):
         return self.integral_topology().hyperplane_first_chern_class()

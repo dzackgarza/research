@@ -43,8 +43,8 @@ def test_archived_framed_free_module_surface_is_owned_by_the_live_free_module() 
     framing = module.framing_morphism()
     generator_map = module.module_generator_morphism()
 
-    assert alpha.monomial_coefficients() == {"alpha": ZZ.one()}
-    assert beta.monomial_coefficients() == {"beta": ZZ.one()}
+    assert dict(alpha.monomial_coefficients().items()) == {"alpha": ZZ.one()}
+    assert dict(beta.monomial_coefficients().items()) == {"beta": ZZ.one()}
     generators = module.module_generators()
     assert repr(generators) == "{[alpha], [beta]}"
     assert generators[0] == alpha

@@ -2130,10 +2130,12 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
                 gram = self.gram_tensor()
                 rank = int(self.module_rank())
-                return _engine_ring(self.base_ring()).ideal(
-                    gram[row, column]
-                    for row in range(rank)
-                    for column in range(rank)
+                return self.base_ring().ideal(
+                    *(
+                        gram[row, column]
+                        for row in range(rank)
+                        for column in range(rank)
+                    )
                 )
 
 

@@ -182,7 +182,7 @@ def _resolve_key(keys, index):
 
 def _vector_coefficients(vector):
     r"""The finite support of a module vector, as its coefficient on each framing label."""
-    return dict(vector.monomial_coefficients())
+    return dict(vector.monomial_coefficients().items())
 
 
 def _lattice_vector_from_coefficients(lattice, coefficients):
