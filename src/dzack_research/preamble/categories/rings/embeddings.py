@@ -9,6 +9,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     _engine_element,
@@ -30,10 +31,6 @@ class NumberFieldEmbedding(Morphism):
             raise ValueError("the engine embedding has the wrong codomain")
         self._engine_morphism = engine_morphism
 
-    def _engine_morphism_crossing(self):
-        r"""Return the private exact Sage embedding."""
-        return self._engine_morphism
-
     def __call__(self, element):
         r"""Apply the exact embedding to an element of the owned facade field.
 
@@ -51,7 +48,7 @@ class NumberFieldEmbedding(Morphism):
         target = _engine_ring(self.codomain())
         backend_source = _engine_element(self.domain(), self.domain()(element))
         image = self._engine_morphism(backend_source)
-        return self.codomain()._from_engine_element(target(image))
+        return _owned_engine_element(self.codomain(), target(image))
 
     def _primitive_image_key(self):
         engine_domain = _engine_ring(self.domain())
@@ -105,7 +102,10 @@ class NumberFieldMor(CategoricalMor):
         if isinstance(datum, NumberFieldEmbedding):
             if datum.parent() is self:
                 return datum
-            datum = datum._engine_morphism_crossing()
+            source = self.domain()
+            datum = lambda element, embedding=datum: self.codomain()(
+                embedding(embedding.domain()(source(element)))
+            )
         if isinstance(datum, Map):
             return self.element_class(self, datum)
 
@@ -156,14 +156,11 @@ class OrderEmbedding(Morphism):
             raise ValueError("the field embedding does not extend this source order")
         if _engine_ring(field_embedding.codomain()) is not _engine_ring(target_field):
             raise ValueError("the field embedding does not land in this target order's field")
-        target_engine = _engine_ring(self.codomain())
         for basis_element in self.domain().integral_basis():
             source_owned = source_field(basis_element)
-            image = field_embedding._engine_morphism_crossing()(
-                _engine_element(source_field, source_owned)
-            )
+            image = field_embedding(source_owned)
             try:
-                target_engine(image)
+                self.codomain()(image)
             except (TypeError, ValueError) as error:
                 raise ValueError(
                     "the field embedding does not carry the source order into the target order"
@@ -180,12 +177,8 @@ class OrderEmbedding(Morphism):
     def _call_(self, element):
         source_field = self.domain().fraction_field()
         source_owned = source_field(self.domain()(element))
-        image = self.field_embedding()._engine_morphism_crossing()(
-            _engine_element(source_field, source_owned)
-        )
-        return self.codomain()._from_engine_element(
-            _engine_ring(self.codomain())(image)
-        )
+        image = self.field_embedding()(source_owned)
+        return self.codomain()(image)
 
     def is_injective(self) -> bool:
         return True
@@ -216,7 +209,9 @@ class OrderMor(CategoricalMor):
             or field_embedding.codomain() is not target_field
         ):
             field_embedding = source_field.Mor(target_field)(
-                field_embedding._engine_morphism_crossing()
+                lambda element, embedding=field_embedding: target_field(
+                    embedding(embedding.domain()(element))
+                )
             )
         return self.element_class(self, field_embedding)
 

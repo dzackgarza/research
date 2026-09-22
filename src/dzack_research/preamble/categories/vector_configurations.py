@@ -27,7 +27,6 @@ of order six, and ``E8`` gives the trivial group.
 """
 
 from sage.graphs.graph import Graph
-from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
@@ -229,14 +228,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                     "the permutation to lift must lie in this configuration's automorphism group"
                 )
             positions = self.configuration_positions()
-            backend = automorphisms._to_engine(automorphism)
-            gap_permutation = libgap(backend)
-
             def position_map(label):
                 source = int(positions.ranking_map()(label)) + 1
-                target = int(
-                    libgap.OnPoints(libgap(source), gap_permutation).sage()
-                )
+                target = int(automorphism(source))
                 return positions[target - 1]
 
             return self.configuration_isometry(position_map)
@@ -249,14 +243,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                     "the permutation to lift must lie in this configuration's automorphism group"
                 )
             positions = self.configuration_positions()
-            backend = automorphisms._to_engine(automorphism)
-            gap_permutation = libgap(backend)
-
             def position_map(label):
                 source = int(positions.ranking_map()(label)) + 1
-                target = int(
-                    libgap.OnPoints(libgap(source), gap_permutation).sage()
-                )
+                target = int(automorphism(source))
                 return positions[target - 1]
 
             return self.ambient_isometry(position_map)

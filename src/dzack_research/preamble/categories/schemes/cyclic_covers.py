@@ -60,6 +60,7 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CyclicCoverAlgebra,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
@@ -590,7 +591,7 @@ def _primitive_root_of_unity(scalars, degree):
         f"group of a degree-{degree} cyclic cover over it is the group scheme "
         "mu_n, which the preamble does not own"
     )
-    return scalars._from_engine_element(primitive[0])
+    return _owned_engine_element(scalars, primitive[0])
 
 
 class CyclicCovers(OwnedCategory):

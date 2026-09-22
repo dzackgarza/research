@@ -9,9 +9,8 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebras,
 )
-from dzack_research.preamble.categories.rings.commutative_ideals import (
-    _from_engine_ideal,
-)
+from dzack_research.preamble.categories.rings.commutative_ideals import _from_engine_ideal
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -221,7 +220,7 @@ class IsolatedHypersurfaceSingularity:
         ring = self.polynomial_ring()
         labels = ring.algebra_generating_set()
         derivatives = tuple(
-            ring._from_engine_element(value) for value in self._engine_derivatives
+            _owned_engine_element(ring, value) for value in self._engine_derivatives
         )
         return finite_indexed_family(
             labels,
@@ -275,7 +274,7 @@ class IsolatedHypersurfaceSingularity:
         coefficients = dict(
             zip(
                 tuple(ambient.module_generating_set()),
-                (base._from_engine_element(derivative.constant_coefficient()) for derivative in self._engine_derivatives),
+                (_owned_engine_element(base, derivative.constant_coefficient()) for derivative in self._engine_derivatives),
                 strict=True,
             )
         )
@@ -348,9 +347,15 @@ class IsolatedHypersurfaceSingularity:
         equation_ideal = engine.ideal(equation)
         assert equation_ideal.radical() == equation_ideal, "delta and conductor require a reduced plane curve"
         singular_lib("normal.lib")
+        point_ideal = engine.ideal(
+            tuple(
+                _engine_element(ring, generator)
+                for generator in point.ideal().ideal_generators()
+            )
+        )
         local_data = singular_function("deltaLoc")(
             equation,
-            point.ideal()._engine_ideal(),
+            point_ideal,
             ring=engine,
         )
         total_delta, total_tjurina, total_branches = (

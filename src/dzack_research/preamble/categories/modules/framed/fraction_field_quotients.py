@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     _torsion_module_presented_by_matrix,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -62,13 +63,13 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return self._backend_element
 
         def _add_(self, other):
-            return self.parent()._from_engine_element(self._backend() + other._backend())
+            return _owned_engine_element(self.parent(), self._backend() + other._backend())
 
         def _neg_(self):
-            return self.parent()._from_engine_element(-self._backend())
+            return _owned_engine_element(self.parent(), -self._backend())
 
         def _lmul_(self, scalar):
-            return self.parent()._from_engine_element(
+            return _owned_engine_element(self.parent(),
                 _engine_element(self.parent().base_ring(), scalar) * self._backend()
             )
 
@@ -103,13 +104,13 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             a discriminant value uses that one.
             """
             fraction_field = self.parent().base_ring().fraction_field()
-            return fraction_field._from_engine_element(
+            return _owned_engine_element(fraction_field,
                 _engine_ring(fraction_field)(self._backend().lift())
             )
 
         def additive_order(self):
             order = SageZZ(self._backend().additive_order())
-            return self.parent().base_ring()._from_engine_element(order)
+            return _owned_engine_element(self.parent().base_ring(), order)
 
         def _repr_(self):
             return f"[{self.lift()}] in {self.parent()}"
@@ -146,7 +147,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             self._engine = engine
             base_ring = _own_ring(SageZZ)
             field = base_ring.fraction_field()
-            self._fraction_field_modulus = field._from_engine_element(SageQQ(engine.n))
+            self._fraction_field_modulus = _owned_engine_element(field, SageQQ(engine.n))
             super().__init__(
                 base_ring=base_ring,
                 module_generating_set=Sets.Δ[aleph0],
@@ -232,7 +233,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             r"""Return the selected representative of ``element`` in the fraction field."""
             element = self(element)
             representative = element._backend().lift()
-            return self.fraction_field()._from_engine_element(representative)
+            return _owned_engine_element(self.fraction_field(), representative)
 
         def divisibility_chain(self, index):
             r"""Return the chosen cofinal divisibility chain element ``d_index``."""
@@ -293,7 +294,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 for value in values
             )
             generator_numerator = abs(gcd(numerators))
-            generator = field._from_engine_element(
+            generator = _owned_engine_element(field,
                 SageQQ(generator_numerator) / SageQQ(denominator)
             )
             # ``g`` divides every lift and the modulus, so ``n/g`` is integral.

@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     VectorSpaces,
     _refine_matrix_mor,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
     OwnedCategoryOverBaseRing,
@@ -717,7 +718,7 @@ def _span_basis_elements(module, module_generating_set):
         row = basis.row(int(position))
         return module.linear_combination(
             {
-                support_labels[column]: ring._from_engine_element(row[column])
+                support_labels[column]: _owned_engine_element(ring, row[column])
                 for column in range(support_count)
                 if row[column]
             }

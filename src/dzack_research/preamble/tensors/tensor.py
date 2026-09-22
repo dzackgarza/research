@@ -47,6 +47,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.modules.pure.modules import (
     _engine_matrix as _engine_module_matrix,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -687,7 +688,7 @@ class Tensor:
                 "raising an index over this ring requires the inverse Gram entries in the base ring"
             )
         coefficients = {
-            (raised, contracted): ring._from_engine_element(inverse[raised, contracted])
+            (raised, contracted): _owned_engine_element(ring, inverse[raised, contracted])
             for raised in range(rank)
             for contracted in range(rank)
         }
@@ -784,7 +785,7 @@ class Tensor:
             inverse = _engine_component_matrix(self).inverse()
             ring = self.base_ring()
             components = [
-                tuple(ring._from_engine_element(entry) for entry in row)
+                tuple(_owned_engine_element(ring, entry) for entry in row)
                 for row in inverse.rows()
             ]
             if valence == (NN**2)((0, 2)):
@@ -832,7 +833,7 @@ class Tensor:
             backend_pullback = backend_map.transpose() * backend_form * backend_map
             ring = self.base_ring()
             entries = tuple(
-                ring._from_engine_element(entry) for entry in backend_pullback.list()
+                _owned_engine_element(ring, entry) for entry in backend_pullback.list()
             )
             return tensor(
                 ring,

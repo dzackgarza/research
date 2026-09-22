@@ -102,8 +102,7 @@ class _RingModulePresentation:
         assert module in AdditiveGroups().AdditiveCommutative(), "the action is on the supplied owned additive group"
         assert module.base_ring() is self.base_ring(), "native scalar structure cannot overwrite another chosen base"
         assert Modules.ParentMethods._native_module_presentation(module) is None, "the native module is constructed once"
-        module._preamble_native_module_presentation = self
-        module._preamble_base_ring = self.base_ring()
+        Modules.ParentMethods._retain_native_module_presentation(module, self)
         match module in category:
             case True:
                 pass

@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _engine_matrix,
     _refine_matrix_mor,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     LocalRings,
@@ -83,7 +84,7 @@ def _canonical_pid_associate(ring, element):
     if canonical_associate is None:
         return element
     canonical, _unit = canonical_associate()
-    return ring._from_engine_element(canonical)
+    return _owned_engine_element(ring, canonical)
 
 
 def _finite_generating_family(module_generators):
@@ -175,7 +176,14 @@ class _SelectedModulePresentationData:
 
 
 def _fix_selected_module_presentation(module, base_ring, relation_matrix, presentation, cokernel_morphism=None) -> None:
-    r"""Fix one chosen presentation before ``module`` is exposed in its data category."""
+    r"""Fix one chosen presentation at the presented-module owner.
+
+    Protected module-storage contract under OWN-05. The permitted caller roles
+    are this module constructor, the derivation-module constructor, and the
+    represented morphism-kernel/cokernel constructor. They provide the owned
+    module, relation matrix and presentation morphism; downstream consumers
+    read them through the presentation operations rather than this storage.
+    """
     if module.__dict__.get("_selected_module_presentation") is not None:
         raise ValueError(f"{module} already has a selected presentation")
     module._selected_module_presentation = _SelectedModulePresentationData(
@@ -466,7 +474,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             def image(label):
                 row = relation_matrix.row(int(relation_labels.ranking_map()(label)))
                 return degree_zero.linear_combination(
-                    {target_label: ring._from_engine_element(coefficient) for target_label, coefficient in zip(target_labels, row, strict=True) if coefficient}
+                    {target_label: _owned_engine_element(ring, coefficient) for target_label, coefficient in zip(target_labels, row, strict=True) if coefficient}
                 )
 
             return _resolution_over_degrees(
@@ -515,6 +523,14 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return selected.relation_matrix()
 
         def _selected_presentation_rows(self):
+            r"""Return relation rows to represented module-construction adapters.
+
+            Protected presented-module contract under OWN-05--07. Permitted
+            callers are module, group-module and module-morphism constructors
+            that rebuild owned kernels, quotients, direct constructions, or
+            scalar changes from the selected finite presentation. The returned
+            rows are owned scalar data, not a Smith-engine object.
+            """
             return _matrix_coordinate_rows(self.presentation_matrix())
 
         def _represented_kernel_of_morphism(self, morphism):
@@ -641,7 +657,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if minor_size > min(matrix.nrows(), matrix.ncols()):
                 return ring.ideal(ring.zero())
             minors = tuple(matrix.minors(minor_size))
-            return ring.ideal(*(tuple(ring._from_engine_element(_engine_ring(ring)(minor)) for minor in minors) or (ring.zero(),)))
+            return ring.ideal(*(tuple(_owned_engine_element(ring, _engine_ring(ring)(minor)) for minor in minors) or (ring.zero(),)))
 
         def _represented_annihilator_ideal(self):
             r"""Represent the scalar-action kernel in exact presentation regimes."""
@@ -665,7 +681,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if int(self.number_of_module_generators()) == 1:
                 matrix = _engine_matrix(self.presentation_matrix())
                 entries = tuple(matrix[row, 0] for row in range(matrix.nrows()))
-                return ring.ideal(*(tuple(ring._from_engine_element(_engine_ring(ring)(entry)) for entry in entries) or (ring.zero(),)))
+                return ring.ideal(*(tuple(_owned_engine_element(ring, _engine_ring(ring)(entry)) for entry in entries) or (ring.zero(),)))
 
             # A scalar kills M exactly when it kills each chosen generator, so
             # Ann(M) is the intersection of the ideals Ann(e_j).  Each of those
@@ -1074,7 +1090,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     {
                         source_label: codomain.linear_combination(
                             {
-                                target_label: ring._from_engine_element(backend_matrix[row, column])
+                                target_label: _owned_engine_element(ring, backend_matrix[row, column])
                                 for row, target_label in enumerate(target_labels)
                                 if backend_matrix[row, column]
                             }
@@ -1144,7 +1160,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             labels = self.module_generating_set()
             rows = tuple(
                 tuple(
-                    ring._from_engine_element(backend[row, column])
+                    _owned_engine_element(ring, backend[row, column])
                     for column in range(int(backend.ncols()))
                 )
                 for row in range(int(backend.nrows()))
@@ -1537,7 +1553,7 @@ class _GeneralPresentedElement(ModuleElement):
             "additive order requires a represented finite torsion Smith presentation"
         )
         order = parent._to_smith_engine_element(self).additive_order()
-        return parent.base_ring()._from_engine_element(SageZZ(order))
+        return _owned_engine_element(parent.base_ring(), SageZZ(order))
 
     def _repr_(self):
         parent = self.parent()
@@ -1623,7 +1639,7 @@ class _GeneralPresentedModule:
         ring = self.base_ring()
         return indexed_family(
             labels,
-            lambda label: ring._from_engine_element(native[int(labels.ranking_map()(label))]),
+            lambda label: _owned_engine_element(ring, native[int(labels.ranking_map()(label))]),
             name="Cover coordinates",
         )
 
@@ -1765,7 +1781,7 @@ class _GeneralPresentedModule:
         presentation_ring = base_ring._exact_coefficient_presentation_ring()
 
         def lift_backend_coefficient(coefficient):
-            owned_coefficient = base_ring._from_engine_element(coefficient)
+            owned_coefficient = _owned_engine_element(base_ring, coefficient)
             lifted_owned = base_ring._lift_coefficient_to_presentation(owned_coefficient)
             return _engine_element(presentation_ring, lifted_owned)
 
@@ -1842,7 +1858,12 @@ class _PresentedModule(_GeneralPresentedModule):
         return self._pid_engine
 
     def _to_smith_engine_element(self, element):
-        r"""Cross an owned quotient element into the private FGP workspace."""
+        r"""Cross an owned quotient element into the private FGP workspace.
+
+        This is the lowering side of the protected Smith contract documented
+        by ``_smith_engine``; only the named discriminant, internal-Mor and
+        algebra-presentation adapters may use the raw result.
+        """
         owned = self(element)
         coordinates = self._cover_coordinates(owned)
         backend = self._pid_engine
@@ -1850,11 +1871,16 @@ class _PresentedModule(_GeneralPresentedModule):
         return backend(backend.V()(tuple(_engine_element(self.base_ring(), coordinates[label]) for label in labels)))
 
     def _from_smith_engine_element(self, element):
-        r"""Cross one private FGP element back to an owned quotient element."""
+        r"""Cross one private FGP element back to an owned quotient element.
+
+        This is the raising side of the protected Smith contract documented by
+        ``_smith_engine``. The private FGP element is consumed here and an
+        element of this owned module is returned.
+        """
         backend = self._pid_engine
         lift = backend(element).lift()
         ring = self.base_ring()
-        coordinates = tuple(ring._from_engine_element(coefficient) for coefficient in tuple(lift))
+        coordinates = tuple(_owned_engine_element(ring, coefficient) for coefficient in tuple(lift))
         return self._from_coordinates(coordinates)
 
 
@@ -2199,7 +2225,7 @@ def _pid_presentation_kernel(morphism):
             "a module morphism carries the source relations into the target relations"
         )
         coordinates = preimage.coordinate_vector(source_relation)
-        relation_coordinate_rows.append(tuple(ring._from_engine_element(engine(coefficient)) for coefficient in coordinates))
+        relation_coordinate_rows.append(tuple(_owned_engine_element(ring, engine(coefficient)) for coefficient in coordinates))
 
     relation_labels = Sets.Δ[len(relation_coordinate_rows) - 1]
     relation_matrix = _matrix_space_like(
@@ -2216,7 +2242,7 @@ def _pid_presentation_kernel(morphism):
     generator_images = {
         label: domain.linear_combination(
             {
-                source_label: ring._from_engine_element(engine(coefficient))
+                source_label: _owned_engine_element(ring, engine(coefficient))
                 for source_label, coefficient in zip(
                     source_labels,
                     basis_rows[int(label)],
@@ -2244,7 +2270,7 @@ def _pid_presentation_kernel(morphism):
         if representative not in preimage:
             return None
         coordinates = preimage.coordinate_vector(representative)
-        return kernel.linear_combination({label: ring._from_engine_element(engine(coordinates[int(label)])) for label in kernel_labels if coordinates[int(label)] != 0})
+        return kernel.linear_combination({label: _owned_engine_element(ring, engine(coordinates[int(label)])) for label in kernel_labels if coordinates[int(label)] != 0})
 
     return _presented_module_from_morphism(
         presentation,
@@ -2351,7 +2377,7 @@ def _singular_presentation_kernel(morphism):
         return _engine_element(coefficient_presentation, lifted)
 
     def descend_scalar(value):
-        lifted = coefficient_presentation._from_engine_element(presentation_ring(value))
+        lifted = _owned_engine_element(coefficient_presentation, presentation_ring(value))
         return ring._descend_coefficient_from_presentation(lifted)
 
     from sage.categories.fields import Fields as SageFields

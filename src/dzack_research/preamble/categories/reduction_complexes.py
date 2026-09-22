@@ -599,8 +599,11 @@ def _perfect_domain_traversal_from_records(lattice, records):
     for cell, rays, record in zip(cells, raw_rays, records, strict=True):
         stabilizer_by_cell[cell] = finite_ordered_set(
             tuple(
-                orthogonal_group._from_backend_row_action(
-                    _row_action_from_ray_permutation(rays, permutation)
+                orthogonal_group(
+                    tuple(
+                        lattice(tuple(row))
+                        for row in _row_action_from_ray_permutation(rays, permutation)
+                    )
                 )
                 for permutation in record["x"]["GRP"]
             )
@@ -624,7 +627,9 @@ def _perfect_domain_traversal_from_records(lattice, records):
                 tuple(SageZZ(entry) for entry in row)
                 for row in adjacency_record["x"]["eBigMat"]
             )
-            target_to_neighbor = orthogonal_group._from_backend_row_action(row_action)
+            target_to_neighbor = orthogonal_group(
+                tuple(lattice(tuple(row)) for row in row_action)
+            )
             neighbor_rays = tuple(target_to_neighbor(lattice(row)) for row in target_rays)
             neighbor = cones.from_rays(neighbor_rays)
             incidence = tuple(int(value) for value in adjacency_record["x"]["eInc"])

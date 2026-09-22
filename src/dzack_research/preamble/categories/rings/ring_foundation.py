@@ -115,7 +115,12 @@ class RingMorphism(Morphism):
         return self.codomain()(self._function(self.domain()(element)))
 
     def _engine_morphism_crossing(self):
-        r"""Return the private engine realization when one was selected."""
+        r"""Return the private engine realization when one was selected.
+
+        Protected ring-morphism realization endpoint under OWN-05--07. The
+        representation is exposed only through the owner dispatcher below;
+        ordinary mathematical consumers use this morphism itself.
+        """
         assert self._engine_morphism is not None, (
             "the private engine crossing requires a selected engine realization of this ring morphism"
         )
@@ -294,6 +299,21 @@ class RingMorphism(Morphism):
         return self.contraction_of_ideal(codomain.ideal(codomain.zero()))
 
 
+def _selected_engine_ring_morphism(morphism):
+    r"""Return a retained private ring-map realization, or None.
+
+    Protected ring-morphism contract under OWN-05--07. The permitted external
+    caller role is a computation adapter that must preserve the exact native
+    coefficient map selected when this owned ring morphism was built; scheme
+    coordinate pullback is such an adapter. The raw map may be used only inside
+    that adapter and mathematical values are raised through owned endpoints.
+    Reconstructible maps need no crossing and return None here.
+    """
+    if not isinstance(morphism, RingMorphism):
+        return None
+    return morphism._engine_morphism
+
+
 class RingMor(CategoricalMor):
     r"""The owned set ``Hom_Ring(A,B)``."""
 
@@ -335,7 +355,7 @@ class RingMor(CategoricalMor):
                 raise ValueError("the engine ring map has the wrong codomain")
             return self.element_class(
                 self,
-                lambda element: self.codomain()._from_engine_element(
+                lambda element: _owned_engine_element(self.codomain(),
                     datum(_engine_element(self.domain(), element))
                 ),
                 engine_morphism=datum,
@@ -376,6 +396,18 @@ class RingMorCategoryConstruction(MorCategoryConstruction):
 def _ring_mor_category(domain, codomain) -> RingMor:
     r"""Build ``Mor_Ring(domain, codomain)`` from its owned Mor family."""
     return RingMorCategoryConstruction(OwnedRings()).Of(domain, codomain)
+
+
+def _ring_morphism_with_engine(domain, codomain, function, engine_morphism):
+    r"""Construct an owned ring morphism retaining one private engine map.
+
+    Protected ring-Mor construction contract under OWN-05--07. Permitted
+    external caller roles are commutative-algebra and scheme base-change
+    adapters that have already selected an exact engine map realizing the
+    supplied owned element function. The raw map is retained by the ring-Mor
+    owner and is never mathematical output.
+    """
+    return domain.Mor(codomain)._elementwise_with_engine(function, engine_morphism)
 
 
 def _ring_morphisms_equal(left, right):
@@ -558,7 +590,7 @@ class LocalizationRings(OwnedCategory):
             engine = parent._selected_engine_ring()
             represented = parent._engine_element(self)
             inverse = engine(represented) ** -1
-            return parent._from_engine_element(inverse)
+            return _owned_engine_element(parent, inverse)
 
         def is_unit(self):
             r"""Return whether ``a/s`` is invertible in ``S^{-1}R``.
@@ -804,8 +836,8 @@ class LocalizationRings(OwnedCategory):
                     source = self.localization_source()
                     source_engine = _engine_ring(source)
                     return self.fraction(
-                        source._from_engine_element(source_engine(represented.numerator())),
-                        source._from_engine_element(source_engine(represented.denominator())),
+                        _owned_engine_element(source, source_engine(represented.numerator())),
+                        _owned_engine_element(source, source_engine(represented.denominator())),
                     )
                 except (AttributeError, TypeError, ValueError):
                     pass
@@ -864,7 +896,7 @@ class LocalizationRings(OwnedCategory):
                         for position, exponent in enumerate(exponents[: len(source_names)]):
                             source_monomial *= source_cover.gen(position) ** int(exponent)
                         term = self.fraction(
-                            source._from_engine_element(source_engine(source_monomial))
+                            _owned_engine_element(source, source_engine(source_monomial))
                         )
                         for position, exponent in enumerate(exponents[len(source_names) :]):
                             if exponent:
@@ -878,8 +910,8 @@ class LocalizationRings(OwnedCategory):
                 pass
 
             return self.fraction(
-                source._from_engine_element(source_engine(represented.numerator())),
-                source._from_engine_element(source_engine(represented.denominator())),
+                _owned_engine_element(source, source_engine(represented.numerator())),
+                _owned_engine_element(source, source_engine(represented.denominator())),
             )
 
         def _engine_element(self, value):
@@ -1156,7 +1188,7 @@ class LocalizationRings(OwnedCategory):
                     engine_images = [
                         _engine_element(
                             morphism.codomain(),
-                            morphism(source._from_engine_element(generator)),
+                            morphism(_owned_engine_element(source, generator)),
                         )
                         for generator in source_generators
                     ]
@@ -1362,7 +1394,7 @@ class _PredicateSubringParent(Parent):
         larger = self._ambient_ring
         if _engine_ring(larger) is larger:
             return larger(native)
-        return larger._from_engine_element(native)
+        return _owned_engine_element(larger, native)
 
     def _engine_element(self, element):
         return self(element)._backend()
@@ -2135,7 +2167,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 from sage.rings.integer_ring import ZZ as SageZZ
 
                 integers = _own_ring(SageZZ)
-                return cardinal(integers._from_engine_element(SageZZ(_engine_ring(self).cardinality())))
+                return cardinal(_owned_engine_element(integers, SageZZ(_engine_ring(self).cardinality())))
             if category.is_subcategory(CountablyInfiniteSets()):
                 return aleph0
             if category.is_subcategory(UncountableSets()):
@@ -2543,7 +2575,7 @@ def _cross_engine_ring_value(value):
     r"""Cross a private engine-ring value back into the owned universe when possible."""
     parent = getattr(value, "parent", lambda: None)()
     if parent in SageRings():
-        return _own_ring(parent)._from_engine_element(value)
+        return _owned_engine_element(parent, value)
     return value
 
 
@@ -2552,14 +2584,14 @@ class OwnedFactorization(SageObject):
 
     def __init__(self, parent, unit, factors) -> None:
         self._parent = parent
-        self._unit = parent._from_engine_element(unit)
+        self._unit = _owned_engine_element(parent, unit)
         engine_pairs = tuple(factors)
         owned_factors = tuple(
-            parent._from_engine_element(factor) for factor, _multiplicity in engine_pairs
+            _owned_engine_element(parent, factor) for factor, _multiplicity in engine_pairs
         )
         indices = finite_ordered_set(owned_factors)
         multiplicities = {
-            factor: _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity))
+            factor: _owned_engine_element(SageZZ, SageZZ(multiplicity))
             for factor, (_engine_factor, multiplicity) in zip(
                 owned_factors, engine_pairs, strict=True
             )
@@ -2646,7 +2678,7 @@ def _owned_polynomial_text(parent, backend_value) -> str:
     variables = tuple(parent.variable_names())
     terms = []
     for exponent, coefficient in backend_value.dict().items():
-        owned_coefficient = base._from_engine_element(coefficient)
+        owned_coefficient = _owned_engine_element(base, coefficient)
         terms.append((exponent, owned_coefficient))
     if not terms:
         return "0"
@@ -2680,7 +2712,7 @@ def _owned_ring_element_text(element) -> str:
         try:
             polynomial = value.polynomial()
             owned_parent = _own_ring(polynomial.parent())
-            return repr(owned_parent._from_engine_element(polynomial))
+            return repr(_owned_engine_element(owned_parent, polynomial))
         except (AttributeError, TypeError, ValueError):
             try:
                 coefficients = tuple(value.list())
@@ -2715,7 +2747,7 @@ class _OwnedRingElement(RingElement):
 
     def _add_(self, other):
         parent = self.parent()
-        return parent._from_engine_element(self._backend() + other._backend())
+        return _owned_engine_element(parent, self._backend() + other._backend())
 
     def __add__(self, other):
         try:
@@ -2742,7 +2774,7 @@ class _OwnedRingElement(RingElement):
 
     def _mul_(self, other):
         parent = self.parent()
-        return parent._from_engine_element(self._backend() * other._backend())
+        return _owned_engine_element(parent, self._backend() * other._backend())
 
     def _lmul_(self, scalar):
         r"""``r * a`` for ``r`` in the ring this ring is presented over: the engine's own action.
@@ -2793,7 +2825,7 @@ class _OwnedRingElement(RingElement):
         return _OwnedRingElement._mul_(other, self)
 
     def _neg_(self):
-        return self.parent()._from_engine_element(-self._backend())
+        return _owned_engine_element(self.parent(), -self._backend())
 
     def _richcmp_(self, other, op):
         if not isinstance(other, _OwnedRingElement) or other.parent() is not self.parent():
@@ -2870,19 +2902,19 @@ class _OwnedRingElement(RingElement):
     def inverse_of_unit(self):
         if not self.is_unit():
             raise ZeroDivisionError(f"{self} is not a unit")
-        return self.parent()._from_engine_element(self._backend() ** -1)
+        return _owned_engine_element(self.parent(), self._backend() ** -1)
 
     def __invert__(self):
-        return self.parent()._from_engine_element(~self._backend())
+        return _owned_engine_element(self.parent(), ~self._backend())
 
     def __truediv__(self, other):
         other = self.parent()(other)
         value = self._backend() / other._backend()
         value_parent = getattr(value, "parent", lambda: None)()
         if value_parent is self.parent()._engine:
-            return self.parent()._from_engine_element(value)
+            return _owned_engine_element(self.parent(), value)
         if value_parent in SageRings():
-            return _own_ring(value_parent)._from_engine_element(value)
+            return _owned_engine_element(value_parent, value)
         return value
 
     def __pow__(self, exponent, modulus=None):
@@ -2900,9 +2932,9 @@ class _OwnedRingElement(RingElement):
             value = self._backend() ** exponent
         value_parent = getattr(value, "parent", lambda: None)()
         if value_parent is self.parent()._engine:
-            return self.parent()._from_engine_element(value)
+            return _owned_engine_element(self.parent(), value)
         if value_parent in SageRings():
-            return _own_ring(value_parent)._from_engine_element(value)
+            return _owned_engine_element(value_parent, value)
         return value
 
     def __rtruediv__(self, other):
@@ -2914,11 +2946,11 @@ class _OwnedRingElement(RingElement):
 
     def __floordiv__(self, other):
         other = self.parent()(other)
-        return self.parent()._from_engine_element(self._backend() // other._backend())
+        return _owned_engine_element(self.parent(), self._backend() // other._backend())
 
     def __mod__(self, other):
         other = self.parent()(other)
-        return self.parent()._from_engine_element(self._backend() % other._backend())
+        return _owned_engine_element(self.parent(), self._backend() % other._backend())
 
     def quo_rem(self, other):
         other = self.parent()(other)
@@ -2926,8 +2958,8 @@ class _OwnedRingElement(RingElement):
         ring = self.parent()
         product = Sets().product((ring, ring))
         return product((
-            ring._from_engine_element(quotient),
-            ring._from_engine_element(remainder),
+            _owned_engine_element(ring, quotient),
+            _owned_engine_element(ring, remainder),
         ))
 
     def divides(self, other):
@@ -2936,7 +2968,7 @@ class _OwnedRingElement(RingElement):
 
     def gcd(self, other):
         other = self.parent()(other)
-        return self.parent()._from_engine_element(self._backend().gcd(other._backend()))
+        return _owned_engine_element(self.parent(), self._backend().gcd(other._backend()))
 
     def xgcd(self, other):
         r"""Return ``(g,s,t)`` with ``g = s*self + t*other`` in this ring."""
@@ -2945,25 +2977,25 @@ class _OwnedRingElement(RingElement):
         ring = self.parent()
         product = Sets().product((ring, ring, ring))
         return product((
-            ring._from_engine_element(gcd),
-            ring._from_engine_element(left),
-            ring._from_engine_element(right),
+            _owned_engine_element(ring, gcd),
+            _owned_engine_element(ring, left),
+            _owned_engine_element(ring, right),
         ))
 
     def lcm(self, other):
         other = self.parent()(other)
-        return self.parent()._from_engine_element(self._backend().lcm(other._backend()))
+        return _owned_engine_element(self.parent(), self._backend().lcm(other._backend()))
 
     def valuation(self, prime):
         prime = self.parent()(prime)
         integers = _own_ring(SageZZ)
-        return integers._from_engine_element(SageZZ(self._backend().valuation(prime._backend())))
+        return _owned_engine_element(integers, SageZZ(self._backend().valuation(prime._backend())))
 
     def prime_divisors(self):
         r"""Return the distinct prime divisors as an owned finite ordered set."""
         return finite_ordered_set(
             tuple(
-                self.parent()._from_engine_element(prime)
+                _owned_engine_element(self.parent(), prime)
                 for prime in self._backend().prime_divisors()
             )
         )
@@ -2975,7 +3007,7 @@ class _OwnedRingElement(RingElement):
         r"""Return the positive divisors as an owned finite ordered set."""
         return finite_ordered_set(
             tuple(
-                self.parent()._from_engine_element(divisor)
+                _owned_engine_element(self.parent(), divisor)
                 for divisor in self._backend().divisors()
             )
         )
@@ -2983,12 +3015,12 @@ class _OwnedRingElement(RingElement):
     def euler_phi(self):
         r"""Return Euler's totient as an owned nonnegative integer."""
         integers = _own_ring(SageZZ)
-        return integers._from_engine_element(SageZZ(_engine_euler_phi(self._backend())))
+        return _owned_engine_element(integers, SageZZ(_engine_euler_phi(self._backend())))
 
     def number_of_divisors(self):
         r"""Return the number of positive divisors as an owned integer."""
         integers = _own_ring(SageZZ)
-        return integers._from_engine_element(
+        return _owned_engine_element(integers,
             SageZZ(_engine_number_of_divisors(self._backend()))
         )
 
@@ -3015,15 +3047,15 @@ class _OwnedRingElement(RingElement):
             owned_pairs = tuple(
                 (
                     _cross_engine_ring_value(root),
-                    _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity)),
+                    _owned_engine_element(SageZZ, SageZZ(multiplicity)),
                 )
                 for root, multiplicity in backend_roots
             )
         else:
             owned_pairs = tuple(
                 (
-                    ring._from_engine_element(root),
-                    _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity)),
+                    _owned_engine_element(ring, root),
+                    _owned_engine_element(SageZZ, SageZZ(multiplicity)),
                 )
                 for root, multiplicity in backend_roots
             )
@@ -3057,7 +3089,7 @@ class _OwnedRingElement(RingElement):
         return _own_number_field(self._backend().splitting_field("a"))
 
     def factorial(self):
-        return self.parent()._from_engine_element(self._backend().factorial())
+        return _owned_engine_element(self.parent(), self._backend().factorial())
 
     def is_square(self):
         return bool(self._backend().is_square())
@@ -3068,24 +3100,24 @@ class _OwnedRingElement(RingElement):
     def numerator(self):
         value = self._backend().numerator()
         parent = value.parent()
-        return _own_ring(parent)._from_engine_element(value)
+        return _owned_engine_element(parent, value)
 
     def denominator(self):
         value = self._backend().denominator()
         parent = value.parent()
-        return _own_ring(parent)._from_engine_element(value)
+        return _owned_engine_element(parent, value)
 
     def additive_order(self):
         value = self._backend().additive_order()
-        return _own_ring(SageZZ)._from_engine_element(SageZZ(value))
+        return _owned_engine_element(SageZZ, SageZZ(value))
 
     def multiplicative_order(self):
         value = self._backend().multiplicative_order()
-        return _own_ring(SageZZ)._from_engine_element(SageZZ(value))
+        return _owned_engine_element(SageZZ, SageZZ(value))
 
     def degree(self):
         value = self._backend().degree()
-        return _own_ring(SageZZ)._from_engine_element(SageZZ(value))
+        return _owned_engine_element(SageZZ, SageZZ(value))
 
     def trace(self):
         return _cross_engine_ring_value(self._backend().trace())
@@ -3095,7 +3127,7 @@ class _OwnedRingElement(RingElement):
 
     def minpoly(self):
         polynomial = self._backend().minpoly()
-        return _own_ring(polynomial.parent())._from_engine_element(polynomial)
+        return _owned_engine_element(polynomial.parent(), polynomial)
 
 
 class _PredicateSubringElement(_OwnedRingElement):
@@ -3310,7 +3342,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     def characteristic(self):
         integers = _own_ring(SageZZ)
-        return integers._from_engine_element(SageZZ(self._engine.characteristic()))
+        return _owned_engine_element(integers, SageZZ(self._engine.characteristic()))
 
     def is_exact(self):
         return self._engine.is_exact()
@@ -3625,7 +3657,7 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
                 ring,
                 integers,
                 labels,
-                lambda label: ring._from_engine_element(
+                lambda label: _owned_engine_element(ring,
                     engine.basis()[labels.ranking_map()(label)]
                 ),
                 source,
@@ -3715,6 +3747,22 @@ def _own_ring(ring):
     return _owned_engine_ring(ring)
 
 
+def _set_owned_ring_display(ring, display, *, kind=None):
+    r"""Install presentation metadata at the owned ring boundary.
+
+    Protected ring-storage contract under OWN-05. Ring and algebra
+    constructors may select human-readable display metadata, but they do not
+    write the ring parent's private storage directly. This owner dispatcher
+    returns the same owned ring after installing only presentation metadata;
+    it changes no mathematical category or realization.
+    """
+    owned = _own_ring(ring)
+    owned._preamble_ring_display = str(display)
+    if kind is not None:
+        owned._preamble_ring_display_kind = str(kind)
+    return owned
+
+
 @cached_function
 def _owned_integers() -> _OwnedRingParent:
     r"""The canonical owned integers, including their initial order placement."""
@@ -3788,6 +3836,29 @@ def _engine_element(ring, element):
     return engine(element)
 
 
+def _owned_engine_element(ring, engine_element):
+    r"""Raise one private computation result into the owned ring.
+
+    Protected ring-realization contract (OWN-05--07).  Implementers are the
+    ring parents' private ``_from_engine_element`` methods; callers are only
+    computation adapters that have already selected this ring's realization
+    and must immediately return to the owned mathematical parent.  Raw engine
+    elements do not leave that adapter.  This is the raising companion to
+    :func:`_engine_element`, so every ring realization has one lowering and
+    one raising dispatcher.
+    """
+    owned = _own_ring(ring)
+    if getattr(engine_element, "parent", lambda: None)() is owned:
+        return owned(engine_element)
+    converter = getattr(owned, "_from_engine_element", None)
+    if callable(converter):
+        return converter(engine_element)
+    engine = _engine_ring(owned)
+    if engine is owned:
+        return owned(engine_element)
+    return owned(engine(engine_element))
+
+
 def _engine_numeral(ring, value):
     r"""Cross an ingress numeral to the selected private Sage ring.
 
@@ -3828,8 +3899,7 @@ def _constructor_over_ring(constructor):
 def GF(*args, **kwargs):
     engine = _SageGF(*args, **kwargs)
     field = _own_ring(engine)
-    field._preamble_ring_display = f"GF({engine.order()})"
-    field._preamble_ring_display_kind = "finite_field"
+    _set_owned_ring_display(field, f"GF({engine.order()})", kind="finite_field")
     return field
 
 
@@ -3847,8 +3917,7 @@ def Zmod(*args, **kwargs):
     if engine is SageZZ:
         return ring
     modulus = SageZZ(engine.characteristic())
-    ring._preamble_ring_display = f"ZZ/{modulus}ZZ"
-    ring._preamble_ring_display_kind = "modular"
+    _set_owned_ring_display(ring, f"ZZ/{modulus}ZZ", kind="modular")
 
     return ring
 
@@ -3860,24 +3929,33 @@ Integers = Zmod
 def Qp(*args, **kwargs):
     engine = _SageQp(*args, **kwargs)
     ring = _own_ring(engine)
-    ring._preamble_ring_display = f"Q_{engine.prime()} with precision {engine.precision_cap()}"
-    ring._preamble_ring_display_kind = "padic"
+    _set_owned_ring_display(
+        ring,
+        f"Q_{engine.prime()} with precision {engine.precision_cap()}",
+        kind="padic",
+    )
     return ring
 
 
 def RealField(*args, **kwargs):
     engine = _SageRealField(*args, **kwargs)
     ring = _own_ring(engine)
-    ring._preamble_ring_display = f"Real field with {engine.precision()} bits precision"
-    ring._preamble_ring_display_kind = "real"
+    _set_owned_ring_display(
+        ring,
+        f"Real field with {engine.precision()} bits precision",
+        kind="real",
+    )
     return ring
 
 
 def ComplexField(*args, **kwargs):
     engine = _SageComplexField(*args, **kwargs)
     ring = _own_ring(engine)
-    ring._preamble_ring_display = f"Complex field with {engine.precision()} bits precision"
-    ring._preamble_ring_display_kind = "complex"
+    _set_owned_ring_display(
+        ring,
+        f"Complex field with {engine.precision()} bits precision",
+        kind="complex",
+    )
     return ring
 
 
@@ -3917,6 +3995,6 @@ def _enumerated_ring_elements(ring):
     match ring:
         case _ if ring in FiniteSets():
             engine = _engine_ring(ring)
-            return tuple(ring._from_engine_element(engine(value)) for value in engine)
+            return tuple(_owned_engine_element(ring, engine(value)) for value in engine)
         case _:
             return None

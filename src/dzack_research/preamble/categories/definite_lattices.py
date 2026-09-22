@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     ModuleSubobjects,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -26,7 +27,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.rings.real import RR, _owned_real_from_engine_expression
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
 
@@ -56,7 +57,7 @@ def _element_from_coordinates(lattice, coordinates):
     def owned(coefficient):
         if element_parent(coefficient) is ring:
             return coefficient
-        return ring._from_engine_element(coefficient)
+        return _owned_engine_element(ring, coefficient)
 
     return lattice.linear_combination(
         {
@@ -93,7 +94,7 @@ def _reduction_from_backend_rows(lattice, backend_rows):
     basis_map = ring.matrix_space(rank, rank).from_rows(
         tuple(
             tuple(
-                ring._from_engine_element(backend_rows[column, row])
+                _owned_engine_element(ring, backend_rows[column, row])
                 for column in range(rank)
             )
             for row in range(rank)
@@ -190,7 +191,7 @@ def _hkz_reduction(lattice):
 def _minimum(lattice):
     sign, positive_gram = _positive_gram(lattice)
     backend = IntegralLattice(_engine_component_matrix(positive_gram))
-    minimum_value = lattice.base_ring()._from_engine_element(
+    minimum_value = _owned_engine_element(lattice.base_ring(),
         SageZZ(backend.minimum())
     )
     return sign * minimum_value
@@ -405,7 +406,7 @@ def _close_vectors(lattice, target, square_bound):
             continue
         coordinates = tuple(ring(int(entry)) for entry in column)
         vector = _element_from_coordinates(lattice, coordinates)
-        signed_square = rationals._from_engine_element(
+        signed_square = _owned_engine_element(rationals,
             SageQQ(_engine_element(ring, sign)) * positive_square
         )
         candidates[_coordinate_tuple(lattice, vector)] = (vector, signed_square)
@@ -481,7 +482,7 @@ def _voronoi_region(lattice, bound=None):
             column = tensor.vector(
                 rationals,
                 [
-                    rationals._from_engine_element(
+                    _owned_engine_element(rationals,
                         SageQQ(coordinates[row_index, column_index])
                     )
                     for row_index in range(rank)
@@ -541,13 +542,13 @@ def _relevant_vector_of_inequality(lattice, inequality):
     rationals = ring.fraction_field()
     dual_gram = gram.change_ring(rationals).dual_tensor()
     coefficients = tuple(
-        rationals._from_engine_element(SageQQ(entry)) for entry in inequality.A()
+        _owned_engine_element(rationals, SageQQ(entry)) for entry in inequality.A()
     )
     covector = tensor(rationals, (), (rank,), coefficients)
     direction = -(dual_gram * covector)
     gram_q = gram.change_ring(rationals)
     square = (gram_q * direction) * direction
-    constant = rationals._from_engine_element(SageQQ(inequality.b()))
+    constant = _owned_engine_element(rationals, SageQQ(inequality.b()))
     scalar = rationals(2) * constant / square
     vector_coordinates = tuple(scalar * coordinate for coordinate in direction)
     assert all(coordinate in ring for coordinate in vector_coordinates), (
@@ -620,7 +621,7 @@ def _successive_minima(lattice):
         tensor.vector(
             ring,
             [
-                ring._from_engine_element(
+                _owned_engine_element(ring,
                     SageZZ(coordinate_array[row, column])
                 )
                 for row in range(rank)
@@ -691,7 +692,7 @@ def _gaussian_heuristic(lattice, *, exact_form=False):
     expression = (covolume / unit_ball_volume) ** (SageQQ.one() / rank)
     if exact_form:
         return expression
-    return RR._from_engine_expression(expression)
+    return _owned_real_from_engine_expression(expression)
 
 
 def _hadamard_ratio(lattice):
@@ -744,14 +745,14 @@ def _covering_radius(lattice):
             tensor.vector(
                 rationals,
                 [
-                    rationals._from_engine_element(SageQQ(coordinate))
+                    _owned_engine_element(rationals, SageQQ(coordinate))
                     for coordinate in vertex
                 ],
             ),
             tensor.vector(
                 rationals,
                 [
-                    rationals._from_engine_element(SageQQ(coordinate))
+                    _owned_engine_element(rationals, SageQQ(coordinate))
                     for coordinate in vertex
                 ],
             ),
@@ -779,7 +780,7 @@ def _packing_density(lattice):
 
     rank = int(lattice.module_rank())
     factor = pi ** (SageQQ(rank) / 2) / gamma(1 + SageQQ(rank) / 2)
-    return RR._from_engine_expression(factor) * lattice.center_density()
+    return _owned_real_from_engine_expression(factor) * lattice.center_density()
 
 
 def _theta_series(lattice, precision=20, variable="q"):
@@ -794,7 +795,7 @@ def _theta_series(lattice, precision=20, variable="q"):
     )
     series_ring = lattice.base_ring().power_series_ring(variable)
     engine = _engine_ring(series_ring)
-    return series_ring._from_engine_element(engine(backend_series))
+    return _owned_engine_element(series_ring, engine(backend_series))
 
 
 def _hermite_invariant(lattice):
@@ -807,7 +808,7 @@ def _hermite_invariant(lattice):
     from sage.symbolic.ring import SR
 
     value = SR(metric_minimum) / SR(determinant) ** (SageQQ.one() / rank)
-    return RR._from_engine_expression(value)
+    return _owned_real_from_engine_expression(value)
 
 
 def _packing_radius(lattice):

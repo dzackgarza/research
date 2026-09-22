@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     _isotropic_stabilizer_generators,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+    _torsion_form_automorphism_from_engine_matrix,
     _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -43,6 +44,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -859,7 +861,7 @@ class LatticeIsometry(LatticeEmbedding):
                 lattice.gram_tensor(), _tensor_view(self)
             )
         )
-        return ring._from_engine_element(backend_sign) * self.determinant()
+        return _owned_engine_element(ring, backend_sign) * self.determinant()
 
     def preserves_positive_cone(self) -> bool:
         r"""Return whether an isometry preserves a component of the positive cone.
@@ -934,7 +936,8 @@ class LatticeIsometry(LatticeEmbedding):
 
         orthogonal_group = lattice.discriminant_group().orthogonal_group()
         generators = tuple(
-            orthogonal_group._from_engine_matrix(
+            _torsion_form_automorphism_from_engine_matrix(
+                orthogonal_group,
                 # Both OSCAR's finite discriminant group and Sage's FQF
                 # engine act on their Smith generators on the right.
                 _engine_component_matrix(engine_generator)
@@ -1707,7 +1710,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 sum(
                     (
                         codomain.scalar_multiple(
-                            ring._from_engine_element(SageZZ(coefficient)),
+                            _owned_engine_element(ring, SageZZ(coefficient)),
                             generator,
                         )
                         for coefficient, generator in zip(
@@ -2049,7 +2052,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 sum(
                     (
                         codomain.scalar_multiple(
-                            ring._from_engine_element(coefficient), generator
+                            _owned_engine_element(ring, coefficient), generator
                         )
                         for coefficient, generator in zip(
                             column, codomain_generators, strict=True

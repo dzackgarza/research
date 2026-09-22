@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     _torsion_module_presented_by_matrix,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -466,7 +467,7 @@ def _torsion_form_all_subobjects(form, *, quadratic: bool):
         coordinates = cover.coordinates(engine(engine_generator).lift())
         normalized_element = normalized.linear_combination(
             {
-                label: ring._from_engine_element(SageZZ(coefficient))
+                label: _owned_engine_element(ring, SageZZ(coefficient))
                 for label, coefficient in zip(labels, coordinates, strict=True)
                 if coefficient
             }
@@ -716,13 +717,13 @@ def _p_adic_jordan_decomposition(form, *, quadratic: bool):
             ring = normalized.base_ring()
             normalized_element = normalized.linear_combination(
                 {
-                    label: ring._from_engine_element(SageZZ(coefficient))
+                    label: _owned_engine_element(ring, SageZZ(coefficient))
                     for label, coefficient in zip(labels, coordinates, strict=True)
                     if coefficient
                 }
             )
             generators.append(normalization.inverse()(normalized_element))
-        result[normalized.base_ring()._from_engine_element(SageZZ(prime))] = tuple(generators)
+        result[_owned_engine_element(normalized.base_ring(), SageZZ(prime))] = tuple(generators)
     return _prime_indexed_generators(result)
 
 
@@ -815,7 +816,7 @@ def _bilinear_p_adic_jordan_decomposition(form):
             normalized_element = sum(
                 (
                     normalized.scalar_multiple(
-                        ring._from_engine_element(SageZZ(coefficient)), generator
+                        _owned_engine_element(ring, SageZZ(coefficient)), generator
                     )
                     for coefficient, generator in zip(
                         row, primary_generators, strict=True
@@ -1111,7 +1112,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             coordinates = cover.coordinates(image.lift())
             images[label] = self._normalized_form.linear_combination(
                 {
-                    target_label: self._normalized_form.base_ring()._from_engine_element(SageZZ(coefficient))
+                    target_label: self._owned_engine_element(_normalized_form.base_ring(), SageZZ(coefficient))
                     for target_label, coefficient in zip(
                         labels,
                         coordinates,
@@ -1125,9 +1126,9 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def _from_engine_matrix(self, engine_matrix):
         r"""Cross one private engine matrix to an owned form automorphism.
 
-        Protected contract for exact backend consumers: no engine-group parent
-        escapes this object; callers hand the engine matrix in and receive the
-        owned automorphism back.
+        Implementation endpoint of
+        :func:\`_torsion_form_automorphism_from_engine_matrix\`.  No
+        engine-group parent escapes this object.
         """
         return self._from_engine(self._engine_group_parent(engine_matrix))
 
@@ -1320,6 +1321,21 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         if self.supergroup() is self:
             return f"Orthogonal group of {self.domain()}"
         return f"Subgroup of the orthogonal group of {self.domain()}"
+
+
+def _torsion_form_automorphism_from_engine_matrix(orthogonal_group, engine_matrix):
+    r"""Raise one exact backend matrix to an owned torsion-form automorphism.
+
+    Protected torsion-form contract (\`OWN-05\`--\`OWN-07\`).  The
+    permitted caller is the lattice centralizer-image adapter, which receives
+    exact matrices from OSCAR in the common Smith-generator row convention.
+    The matrix is consumed by this torsion-form owner and the returned value is
+    an owned automorphism; neither the private orthogonal-group parent nor an
+    engine element leaves this dispatcher.
+    """
+    if not isinstance(orthogonal_group, TorsionFormOrthogonalGroup):
+        raise TypeError("an engine matrix is raised only by a torsion-form orthogonal group")
+    return orthogonal_group._from_engine_matrix(engine_matrix)
 
 
 def _torsion_form_automorphism_group(form, *, quadratic: bool):

@@ -27,6 +27,8 @@ and that is a statement about the presentation rather than about the lattice.
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.group.groups import _matrix_group_element_matrix
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 
 class EichlerCoveringOrbitDatum(SageObject):
     r"""One explicit covering vector together with its recursive orbit data.
@@ -296,10 +298,10 @@ class TwoUEichlerModel(SageObject):
 
     def _sl2_entries(self, element):
         r"""Return the exact entries of an owned ``SL_2(ZZ)`` element."""
-        matrix = element._backend().matrix()
+        matrix = _matrix_group_element_matrix(element.parent(), element)
         ring = self.lattice().base_ring()
         return tuple(
-            ring._from_engine_element(matrix[row, column])
+            _owned_engine_element(ring, matrix[row, column])
             for row in range(2)
             for column in range(2)
         )

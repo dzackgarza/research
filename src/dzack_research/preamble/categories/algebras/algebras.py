@@ -57,6 +57,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
@@ -757,6 +758,27 @@ class Algebras(OwnedCategoryOverBaseRing):
             return algebra(product(module(self), module(other)))
 
     class ParentMethods:
+        def _refined_specialized_algebra(
+            self,
+            base_ring,
+            labels,
+            categories,
+            construction_data,
+        ):
+            r"""Internal refinement hook for a specialized algebra realization.
+
+            Protected Algebras constructor contract under OWN-05.  The sole
+            caller is _refine_algebra.  A specialized algebra owner may return
+            the owned algebra preserving its defining representation while
+            adding the requested labels, categories, and construction data;
+            the default returns None.  No engine handle is exchanged.  This
+            hook exists because representation-preserving reconstruction is a
+            constructor responsibility, not an ordinary mathematical
+            operation on an already constructed algebra.
+            """
+            _ = (base_ring, labels, categories, construction_data)
+            return None
+
         def __init__(self, unformed_module=None, multiplication=None, *, algebra_law_decisions=None,
                      _engine_product=None, _engine_scalar_action=None, _native_unit_factory=None, **rest) -> None:
             r"""Construct the algebra from its exact module and tensor multiplication.
@@ -1609,7 +1631,7 @@ def _algebra_on_module(
             data["unit"] = module(unit)
         case _:
             assert unit is None, "a unit is stated only with a unital placement"
-    native = module._native_module_presentation()
+    native = Modules.ParentMethods._native_module_presentation(module)
     if native is not None and construction_data is None and multiplication is native.multiplication():
         # This is the original ring product on its constructed module, not an
         # alternative multiplication admitted merely because M is a ring.
@@ -2003,7 +2025,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             presentation = self.presentation_ring()
             presentation_engine = _engine_ring(presentation)
             backend_relation = presentation_engine(_engine_element(presentation, relation))
-            coefficient_ideal = self.base_ring().ideal(*tuple(self.base_ring()._from_engine_element(coefficient) for coefficient in backend_relation.coefficients()))
+            coefficient_ideal = self.base_ring().ideal(*tuple(_owned_engine_element(self.base_ring(), coefficient) for coefficient in backend_relation.coefficients()))
             assert coefficient_ideal == self.base_ring().ideal(self.base_ring().one()), (
                 "the represented hypersurface relative-dimension criterion requires a primitive defining equation"
             )
@@ -2043,7 +2065,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 for label, power in zip(labels, powers, strict=True):
                     if power:
                         monomial *= presentation.algebra_generator(label) ** power
-                terms[monomial] = base._from_engine_element(engine_base(coefficient))
+                terms[monomial] = _owned_engine_element(base, engine_base(coefficient))
             return terms
 
         def base_change(self, ring_map):
@@ -2058,6 +2080,15 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return _base_change_commutative_presentation(self, ring_map)
 
         def _commutative_algebra_coproduct(self, left, right):
+            r"""Evaluate the selected binary-coproduct construction on this object.
+
+            Protected algebra-construction contract under OWN-05--07. The sole
+            external caller role is ``Algebras._categorical_coproduct`` after
+            it has selected one of the two operands as the construction owner.
+            The installed callable returns an owned algebra and its owned
+            injections; no engine algebra or presentation storage crosses this
+            method.
+            """
             operation = getattr(
                 self,
                 "_preamble_commutative_algebra_coproduct_backend",
@@ -2069,6 +2100,14 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return operation(left, right)
 
         def _commutative_algebra_pushout(self, left_map, right_map):
+            r"""Evaluate the selected commutative-algebra pushout on this object.
+
+            Protected algebra-construction contract under OWN-05--07. The sole
+            external caller role is ``Algebras._categorical_pushout`` once an
+            operand has supplied the represented construction. The result and
+            its structure maps are owned algebraic objects; private
+            presentation data remain inside the construction implementation.
+            """
             operation = getattr(
                 self,
                 "_preamble_commutative_algebra_pushout_backend",
@@ -2811,27 +2850,15 @@ def _refine_algebra(
     view is the existing object.  Other scalar structures retain their own
     native algebra constructor, without assuming a monomial basis.
     """
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        _NativeFreeAlgebraParent, _native_free_algebra,
-    )
-
     base = _owned_ring(base_ring)
-    match algebra:
-        case _NativeFreeAlgebraParent() if algebra.base_ring() is base:
-            selected_labels = algebra.algebra_generating_set() if labels is None else finite_ordered_set(labels)
-            generating = algebra.generating_module()
-            match selected_labels == algebra.algebra_generating_set():
-                case True:
-                    if not construction_data and all(algebra in category for category in categories):
-                        return algebra
-                case False:
-                    generating = base.free_module(selected_labels)
-            return _native_free_algebra(
-                _engine_ring(algebra), generating, algebra._native_free_flavor,
-                categories=tuple(categories), construction_data=tuple(construction_data),
-            )
-        case _:
-            pass
+    specialized = algebra._refined_specialized_algebra(
+        base,
+        labels,
+        tuple(categories),
+        tuple(construction_data),
+    )
+    if specialized is not None:
+        return specialized
     return _owned_algebra_view(
         _engine_ring(algebra),
         base,
@@ -2865,7 +2892,7 @@ class _ScalarAlgebraEngine:
         return super()._element_constructor_(module_value)
 
     def _from_engine_element(self, value):
-        return self(self._native_ring._from_engine_element(value))
+        return self(_owned_engine_element(self._native_ring, value))
 
     def _engine_element(self, value):
         module_element = self.unformed_module()(self(value))
@@ -2967,7 +2994,7 @@ def _unit_from_multiplication(multiplication):
         coefficients = system.solve_right(target)
     except (ValueError, ArithmeticError) as error:
         raise TypeError("the multiplication morphism has no left unit") from error
-    unit = module.linear_combination({labels[index]: ring._from_engine_element(engine(coefficients[index])) for index in range(rank) if coefficients[index]})
+    unit = module.linear_combination({labels[index]: _owned_engine_element(ring, engine(coefficients[index])) for index in range(rank) if coefficients[index]})
     for label in labels:
         generator = module.module_generator(label)
         if multiplication(tensor_square.pure_tensor(generator, unit)) != generator:
@@ -3020,7 +3047,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
     target_structure = codomain.algebra_structure_morphism()
 
     def engine_base_image(scalar):
-        owned_scalar = base._from_engine_element(engine_base(scalar))
+        owned_scalar = _owned_engine_element(base, engine_base(scalar))
         return _engine_element(codomain, target_structure(owned_scalar))
 
     if codomain is base and engine_codomain is engine_base:
@@ -3096,7 +3123,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
             )
             private_images = []
             for engine_generator in engine_labels:
-                owned_generator = domain._from_engine_element(engine_generator)
+                owned_generator = _owned_engine_element(domain, engine_generator)
                 selected_lift = domain.lift_to_presentation(owned_generator)
                 private_images.append(presentation_map(_engine_element(presentation, selected_lift)))
             return engine_domain.mor(

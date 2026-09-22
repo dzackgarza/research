@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     Zmod,
@@ -809,7 +810,7 @@ def _discriminant_subgroup(ambient, generators):
     )
     ring = ambient.base_ring()
     invariants = tuple(
-        ring._from_engine_element(invariant)
+        _owned_engine_element(ring, invariant)
         for invariant in engine_subgroup.invariants()
         if invariant > 1
     )

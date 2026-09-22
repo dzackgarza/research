@@ -63,6 +63,31 @@ def _owned_vector(module, coordinates):
     )
 
 
+def _engine_fan(fan):
+    r"""Return a fan's private Sage realization to a toric-engine adapter.
+
+    Protected fan contract (\`OWN-05\`--\`OWN-07\`).  The implementing
+    endpoint is \`RationalPolyhedralFans.ParentMethods._engine_fan\`.
+    Permitted callers are the toric-scheme adapters that must construct a Sage
+    toric variety, Sage fan morphism, or Sage Chow-class computation after the
+    owned fan operation has been selected.  The returned fan remains inside
+    that adapter.
+    """
+    return fan._engine_fan()
+
+
+def _engine_cone(cone):
+    r"""Return a cone's private Sage realization to a toric-engine adapter.
+
+    Protected cone contract paired with :func:\`_engine_fan\`.  The
+    implementing endpoint is \`RationalPolyhedralFans.ElementMethods._engine_cone\`;
+    permitted callers are maintained Sage adapters whose selected operation
+    requires this cone object.  The raw cone does not become mathematical
+    output.
+    """
+    return cone._engine_cone()
+
+
 def _cone_key(engine_cone):
     return frozenset(tuple(int(c) for c in ray) for ray in engine_cone.rays())
 
@@ -250,7 +275,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             super().__init__(**rest)
 
         def _engine_fan(self):
-            r"""The private polyhedral computation object."""
+            r"""The private polyhedral computation object; see :func:\`_engine_fan\`."""
             return self._fan_engine
 
         def lattice(self):
@@ -413,6 +438,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             super().__init__(parent)
 
         def _engine_cone(self):
+            r"""The private cone computation object; see :func:\`_engine_cone\`."""
             return self._cone_engine
 
         def lattice(self):

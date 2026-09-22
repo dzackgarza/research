@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.algebras.finitely_presented_algebras imp
     AlgebrasWithChosenFinitePresentation,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     _engine_element,
@@ -44,7 +45,7 @@ def _engine_ring_map(ring_map):
     target = _engine_ring(owned_target)
 
     def image(scalar):
-        owned_scalar = owned_source._from_engine_element(source(scalar))
+        owned_scalar = _owned_engine_element(owned_source, source(scalar))
         return _engine_element(owned_target, ring_map(owned_scalar))
 
     return SetMorphism(_SageHom(source, target, SageRings()), image)
@@ -73,7 +74,7 @@ def _base_change_presented_element(algebra, element, target, ring_map):
         representative = presentation(lifted)
     else:
         representative = _engine_element(presentation_ring, lifted)
-    return target._from_engine_element(
+    return _owned_engine_element(target,
         target_engine(presentation_map(representative))
     )
 
@@ -189,7 +190,7 @@ class _AlgebraScalarExtensionFunctor(Functor):
                 primitive_image = morphism.field_embedding()(
                     source_field.primitive_element()
                 )
-                target_image = target._from_engine_element(
+                target_image = _owned_engine_element(target,
                     _engine_element(target_field, primitive_image)
                 )
                 return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(

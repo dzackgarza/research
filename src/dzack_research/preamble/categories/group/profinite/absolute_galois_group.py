@@ -83,7 +83,7 @@ class AbsoluteGaloisGroupElement(Element):
     def as_morphism(self):
         field_endomorphisms = self.parent().field_automorphism_mor()
         if self._exact_action is not None:
-            return field_endomorphisms(self._exact_action._engine_morphism_crossing())
+            return field_endomorphisms(self._exact_action)
         return field_endomorphisms.elementwise(lambda element: self(element))
 
     underlying_field_morphism = as_morphism
@@ -529,8 +529,7 @@ class _AbsoluteGaloisGroupEngine:
             return FrobeniusElement(self, -element.frobenius_exponent())
         if element == self.one():
             return self.one()
-        inverse_backend = element.exact_action()._engine_morphism_crossing().inverse()
-        return self(self._closure.exact_morphisms_to(self._closure)(inverse_backend))
+        return self(element.exact_action().inverse())
 
     def extension_data(self, extension, *, embedding=None, base_embedding=None):
         r"""The stage ``K -> L -> Kbar`` named by a stage of this realization or by an owned field ``L``.

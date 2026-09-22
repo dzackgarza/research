@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
@@ -29,6 +30,18 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
+
+
+def _engine_commutative_ideal(ideal):
+    r"""Lower one owned commutative ideal to its selected computation model.
+
+    Protected commutative-ideal contract under OWN-05--07. The permitted
+    external caller role is the commutative-algebra construction adapter when
+    an engine operation literally takes an ideal of the selected computation
+    ring. The input remains the owned ideal; the raw ideal must not escape that
+    adapter, and ordinary ideal mathematics uses public ideal operations.
+    """
+    return ideal._engine_ideal()
 
 
 @cached_function
@@ -184,6 +197,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return equal if op == op_EQ else not equal
 
         def _engine_ideal(self):
+            r"""Return this ideal's private selected computation realization.
+
+            This is the implementation endpoint of
+            :func:\`_engine_commutative_ideal\`.  Ordinary mathematical
+            consumers do not call it directly; the only external crossing is
+            the declared commutative-algebra construction adapter.
+            """
             represented = self._selected_engine_ideal
             if represented is not None:
                 return represented
@@ -506,7 +526,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         if gcd != 0 and not gcd.is_unit():
                             generator = engine(generator / gcd)
                             changed = True
-                return source_ring.ideal(source_ring._from_engine_element(engine(generator)))
+                return source_ring.ideal(_owned_engine_element(source_ring, engine(generator)))
 
             assert engine in PrincipalIdealDomains(), (
                 "localization-ideal contraction requires either engine saturation or the supported PID fallback"
@@ -577,6 +597,33 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def quotient_ring(self):
             return self.ring().quotient_ring(self)
 
+        def image_under_fraction_field_automorphism(self, morphism):
+            r"""Return the conjugate ideal under an automorphism of the fraction field.
+
+            The ideal is transported from its owned generators.  No
+            number-field ideal realization crosses to the caller.
+            """
+            ring = self.ring()
+            field = ring.fraction_field()
+            if morphism.domain() is not field or morphism.codomain() is not field:
+                raise ValueError(
+                    "ideal conjugation requires an automorphism of the ambient fraction field"
+                )
+            images = tuple(
+                ring(morphism(field(generator)))
+                for generator in self.ideal_generators()
+            )
+            return ring.ideal(*images)
+
+        def congruent(self, left, right) -> bool:
+            r"""Return whether left and right have the same image in the quotient ring."""
+            ring = self.ring()
+            return ring(left) - ring(right) in self
+
+        def residue_cardinality(self):
+            r"""Return the cardinality of the quotient ring when it is finite."""
+            return self.quotient_ring().cardinality()
+
         def syzygy_matrix(self):
 
             backend = self._engine_ideal()
@@ -597,6 +644,24 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 "this ideal backend has no primary decomposition",
             )
             return tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+
+        def hilbert_polynomial_value(self, argument):
+            r"""Return the value at \`argument\` of the Hilbert polynomial of \`R/I\`.
+
+            The maintained ideal engine computes the polynomial, but the
+            engine polynomial itself does not cross the ideal boundary.  Only
+            its exact scalar value is raised into the owned coefficient ring.
+            """
+            method = _engine_ideal_method(
+                self,
+                "hilbert_polynomial",
+                "this ideal backend has no Hilbert-polynomial computation",
+            )
+            value = method()(SageZZ(argument))
+            parent = getattr(value, "parent", lambda: None)()
+            if parent is None:
+                return value
+            return _owned_engine_element(parent, value)
 
         def associated_primes(self):
             method = _engine_ideal_method(
@@ -794,10 +859,10 @@ def _owned_engine_value(ring, value):
     r"""Cross one private engine value back into the owned ring."""
     source = _own_ring(ring)
     engine_value = _engine_ring(source)(value)
-    ambient = getattr(source, "_ambient_ring", None)
-    if ambient is not None:
-        return source(ambient._from_engine_element(engine_value))
-    return source._from_engine_element(engine_value)
+    ambient_ring = getattr(source, "ambient_ring", None)
+    if callable(ambient_ring):
+        return source(_owned_engine_element(ambient_ring(), engine_value))
+    return _owned_engine_element(source, engine_value)
 
 
 def _flat_extension_commutative_ideal(source_ideal, morphism):

@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _represented_finite_presentation,
     _tensor_pair,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
@@ -130,7 +131,7 @@ def _internal_mor_model_data_from_endpoints(source, target):
         engine_kernel_relations = kernel._relative_matrix().change_ring(engine_ring)
         kernel_relations = ring.matrix_space(engine_kernel_relations.nrows(), engine_kernel_relations.ncols()).from_rows(
             tuple(
-                tuple(ring._from_engine_element(engine_ring(entry)) for entry in row)
+                tuple(_owned_engine_element(ring, engine_ring(entry)) for entry in row)
                 for row in engine_kernel_relations.rows()
             )
         )

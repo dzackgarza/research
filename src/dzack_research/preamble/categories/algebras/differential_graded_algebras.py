@@ -376,7 +376,14 @@ def _fix_selected_differential(
     graded_leibniz=Unknown,
     square_zero=Unknown,
 ) -> None:
-    r"""Install one selected DGA differential after the algebra datum exists."""
+    r"""Install one selected DGA differential at the DGA owner.
+
+    Protected DGA storage contract under OWN-05. The permitted callers are
+    the DGA constructor in this module and the de-Rham-algebra constructor,
+    after each has supplied the owned algebra and the exact differential
+    operation. The retained datum is read only through ``differential()``;
+    callers never open the private storage.
+    """
     if algebra.__dict__.get("_preamble_differential") is not None:
         raise ValueError(f"{algebra} already has a selected differential")
     if not (graded_leibniz is True or graded_leibniz is Unknown) or not (

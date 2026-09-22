@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -186,7 +187,7 @@ def _central_projector(module, character: IsotypicCharacter):
         )
         # A Galois-orbit sum of character values is rational, so it lands in
         # the computation ring through the value field's engine.
-        coefficient = computation_ring._from_engine_element(
+        coefficient = _owned_engine_element(computation_ring,
             computation_engine(
                 _engine_element(backend_coefficient.parent(), backend_coefficient)
             )
@@ -195,7 +196,7 @@ def _central_projector(module, character: IsotypicCharacter):
         transported = matrices.from_rows(
             [
                 [
-                    computation_ring._from_engine_element(
+                    _owned_engine_element(computation_ring,
                         computation_engine(
                             _engine_element(base_ring, source[row, column])
                         )

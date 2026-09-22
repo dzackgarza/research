@@ -44,6 +44,7 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
@@ -1453,7 +1454,7 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
     rank = int(cartan_type.rank())
     components = [
         tuple(
-            -ring._from_engine_element(symmetrizer[indices[i]] * cartan[i, j])
+            -_owned_engine_element(ring, symmetrizer[indices[i]] * cartan[i, j])
             for j in range(rank)
         )
         for i in range(rank)

@@ -175,8 +175,7 @@ class Curves(_DimensionSubcategoryOfVarieties):
             if self in ProjectiveSpaces(base):
                 return 0
             defining_ideal = self.defining_ideal_owned()
-            polynomial = defining_ideal._engine_ideal().hilbert_polynomial()
-            return int(1 - polynomial(0))
+            return 1 - int(defining_ideal.hilbert_polynomial_value(0))
 
         @cached_method
         def normalization_data(self):

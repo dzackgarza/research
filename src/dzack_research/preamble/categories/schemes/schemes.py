@@ -87,6 +87,7 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
     QuotientRings,
     _refine_commutative_algebra,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
@@ -99,6 +100,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _ring_morphisms_equal,
+    _selected_engine_ring_morphism,
     _proper_restriction_base_ring,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
@@ -273,7 +275,7 @@ def _engine_coordinate_pullback(pullback):
     base = source.base_ring()
     # Declared engine adapter: a selected native ring map includes its own
     # coefficient map, which rebuilding an R-algebra map would erase.
-    native = getattr(pullback, "_engine_morphism", None)
+    native = _selected_engine_ring_morphism(pullback)
     if native is not None:
         return native
     match source:
@@ -355,7 +357,7 @@ def _evaluate_owned_homogeneous_polynomial_on_coordinates(
     result = source_ring.zero()
     for exponent, coefficient in backend.monomial_coefficients().items():
         powers = _polynomial_exponents(exponent, len(labels))
-        term = scalar_map(base._from_engine_element(engine_base(coefficient)))
+        term = scalar_map(_owned_engine_element(base, engine_base(coefficient)))
         for coordinate, power in zip(coordinates, powers, strict=True):
             term *= coordinate**power
         result += term
@@ -375,7 +377,7 @@ def _evaluate_polynomial_in_algebra(polynomial, algebra):
     result = algebra.zero()
     for exponent, coefficient in polynomial.dict().items():
         powers = _polynomial_exponents(exponent, len(labels))
-        term = structure(base._from_engine_element(engine_base(coefficient)))
+        term = structure(_owned_engine_element(base, engine_base(coefficient)))
         for label, power in zip(labels, powers, strict=True):
             term *= algebra.algebra_generator(label) ** power
         result += term
@@ -799,7 +801,7 @@ class SchemeMorphism(Morphism):
         assert self.domain() in Schemes(base).Affine() and self.codomain() in Schemes(base).Affine(), "the represented scheme-theoretic image currently requires affine schemes"
         kernel = self._engine_pullback_with_trivial_base_map().kernel()
         algebra = self.codomain().coordinate_algebra()
-        equations = tuple(algebra._from_engine_element(generator) for generator in kernel.gens())
+        equations = tuple(_owned_engine_element(algebra, generator) for generator in kernel.gens())
         return self.codomain().closed_subscheme(equations)
 
     @cached_method
@@ -1048,7 +1050,7 @@ def _projective_coordinate_morphism(morphism):
         ambient, _ = _engine_projective_ambient(_engine_scheme(source))
         ring = _engine_polynomial_algebra(ambient.coordinate_ring(), base)
     engine = _engine_ring(ring)
-    values = tuple(ring._from_engine_element(engine(value)) for value in _engine_defining_polynomials(native))
+    values = tuple(_owned_engine_element(ring, engine(value)) for value in _engine_defining_polynomials(native))
     return _ProjectiveCoordinateMorphism(morphism.parent(), values)
 
 
@@ -1075,12 +1077,12 @@ def _projective_section_restriction(scheme, ring):
     variables = tuple(engine.gens())
 
     def owned(polynomial):
-        return ring._from_engine_element(
+        return _owned_engine_element(ring,
             _copy_polynomial_by_exponents(polynomial, engine, variables)
         )
 
     ideal = ring.ideal(*(owned(equation) for equation in equations))
-    owned_variables = tuple(ring._from_engine_element(variable) for variable in variables)
+    owned_variables = tuple(_owned_engine_element(ring, variable) for variable in variables)
     blocks = []
     offset = 0
     for width in _projective_coordinate_blocks(scheme):
@@ -1205,7 +1207,7 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
         def scalar(value):
             polynomial = _engine_element(ring, self.coefficient_map()(value))
             assert polynomial.is_constant(), "a homogeneous coefficient has degree zero"
-            return source_base._from_engine_element(_engine_ring(source_base)(polynomial.constant_coefficient()))
+            return _owned_engine_element(source_base, _engine_ring(source_base)(polynomial.constant_coefficient()))
 
         scalar_map = OwnedRings().Mor(base, source_base).elementwise(scalar)
         base_arrow = LocallyRingedSpaces().Mor(source.base_scheme(), target)(scalar_map)
@@ -2905,7 +2907,7 @@ def _projective_equation_family(equations):
         match parent:
             case _ if parent in _SageRings():
                 owned = _own_ring(parent)
-                raised.append(owned._from_engine_element(equation))
+                raised.append(_owned_engine_element(owned, equation))
             case _:
                 raised.append(equation)
     assert all(equation.is_homogeneous() for equation in raised), (
@@ -3285,7 +3287,7 @@ def _affine_linear_invariant_algebra_data(scheme):
     engine_invariants = tuple(
         _copy_polynomial_by_exponents(invariant, engine_algebra, variables) for invariant in backend_invariants
     )
-    invariant_elements = tuple(algebra._from_engine_element(invariant) for invariant in engine_invariants)
+    invariant_elements = tuple(_owned_engine_element(algebra, invariant) for invariant in engine_invariants)
     assert all(pullback(invariant) == invariant for pullback in pullbacks for invariant in invariant_elements), (
         "the backend invariant generators do not match the represented coordinate action"
     )
@@ -3319,7 +3321,7 @@ def _affine_linear_invariant_algebra_data(scheme):
             powers = _polynomial_exponents(exponent, ambient_count + invariant_count)
             assert not any(powers[:ambient_count]), "the elimination backend returned a non-eliminated relation"
             relation_terms[powers[ambient_count:]] = coefficient
-        relations.append(presentation._from_engine_element(presentation_engine(relation_terms)))
+        relations.append(_owned_engine_element(presentation, presentation_engine(relation_terms)))
     invariant_algebra = presentation if not relations else presentation.quotient_by_relations(tuple(relations))
     invariant_labels = tuple(invariant_algebra.algebra_generating_set())
     inclusion = invariant_algebra.Mor(algebra)(
@@ -3978,7 +3980,7 @@ def _projective_projection_rule(offset, width, scalar_map=None):
         ambient, _ = _engine_projective_ambient(_engine_scheme(source))
         ring = _engine_polynomial_algebra(ambient.coordinate_ring(), source.scheme_base_ring())
         coordinates = tuple(
-            ring._from_engine_element(value)
+            _owned_engine_element(ring, value)
             for value in ambient.coordinate_ring().gens()[offset : offset + width]
         )
         coefficient_map = None
@@ -4838,8 +4840,12 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             codomain = self.inclusion().codomain()
             match codomain:
                 case _ if codomain in Schemes(codomain.scheme_base_ring()).Affine():
-                    ideal_engine = self.defining_ideal_owned()._engine_ideal()
-                    return int(_engine_ring(codomain.coordinate_algebra()).krull_dimension() - ideal_engine.dimension())
+                    coordinate_algebra = codomain.coordinate_algebra()
+                    quotient = self.defining_ideal_owned().quotient_ring()
+                    return int(
+                        coordinate_algebra.krull_dimension()
+                        - quotient.krull_dimension()
+                    )
                 case _:
                     return codomain.dimension() - self.dimension()
 
@@ -4853,7 +4859,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             target_variables = tuple(engine_target.gens())
             return finite_family(
                 tuple(
-                    coordinate_ring._from_engine_element(
+                    _owned_engine_element(coordinate_ring,
                         _copy_polynomial_by_exponents(
                             _engine_element(equation.parent(), equation),
                             engine_target,
@@ -5011,25 +5017,8 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                     point = spectrum(point)
             point_ideal = point.ideal()
             assert point_ideal.is_maximal(), "intersection multiplicity here is taken at a closed point"
-            backend_meeting = self.intersection(other).defining_ideal_owned()._engine_ideal()
-            backend_point = point_ideal._engine_ideal()
-            local_components = tuple(
-                component for component in backend_meeting.primary_decomposition() if component.radical() == backend_point
-            )
-            match len(local_components):
-                case 0:
-                    return _own_ring(SageZZ).zero()
-                case 1:
-                    component = local_components[0]
-                case _:
-                    assert False, "a zero-dimensional primary decomposition has one component at the selected point"
-            assert int(component.dimension()) == 0, "the two hypersurfaces do not meet properly at the selected point"
-            colength = SageZZ(component.vector_space_dimension())
-            residue_degree = SageZZ(backend_point.vector_space_dimension())
-            assert residue_degree > 0 and colength % residue_degree == 0, (
-                "the local primary colength is incompatible with the selected residue field"
-            )
-            return _own_ring(SageZZ)(colength // residue_degree)
+            meeting = self.intersection(other).defining_ideal_owned()
+            return point.local_length(meeting)
 
         def ideal_sheaf(self):
             r"""``I_Z = I~``, the quasi-coherent ideal sheaf of ``Z = V(I)`` on affine ``X``."""

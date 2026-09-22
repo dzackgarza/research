@@ -131,6 +131,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     TensorProductModules,
     _torsion_module_presented_by_matrix,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -344,15 +345,15 @@ class LocalGenusSymbol:
 
     def excess(self):
         integers = self.prime().parent()
-        return integers._from_engine_element(SageZZ(self._engine().excess()))
+        return _owned_engine_element(integers, SageZZ(self._engine().excess()))
 
     def level(self):
         integers = self.prime().parent()
-        return integers._from_engine_element(SageZZ(self._engine().level()))
+        return _owned_engine_element(integers, SageZZ(self._engine().level()))
 
     def norm(self):
         integers = self.prime().parent()
-        return integers._from_engine_element(SageZZ(self._engine().norm()))
+        return _owned_engine_element(integers, SageZZ(self._engine().norm()))
 
     def number_of_blocks(self):
         return self.prime().parent()(len(self.jordan_blocks()))
@@ -427,7 +428,7 @@ class Genus:
     def determinant(self):
         r"""Return the determinant of a representative of this genus."""
         integers = _own_ring(SageZZ)
-        return integers._from_engine_element(SageZZ(self._engine().determinant()))
+        return _owned_engine_element(integers, SageZZ(self._engine().determinant()))
 
     def local_symbol(self, prime):
         r"""Return the owned exact ``ZZ_p`` genus symbol at ``prime``."""
@@ -447,7 +448,7 @@ class Genus:
         r"""Return one owned integral lattice representing this genus."""
         integers = _own_ring(SageZZ)
         representative = self._engine().representative()
-        rows = [[integers._from_engine_element(entry) for entry in row] for row in representative.rows()]
+        rows = [[_owned_engine_element(integers, entry) for entry in row] for row in representative.rows()]
         return Lattices(integers)(rows)
 
     def representatives(self):
@@ -457,7 +458,7 @@ class Genus:
             tuple(
                 Lattices(integers)(
                     [
-                        [integers._from_engine_element(entry) for entry in row]
+                        [_owned_engine_element(integers, entry) for entry in row]
                         for row in representative.rows()
                     ]
                 )
@@ -479,7 +480,7 @@ class Genus:
         if positive != 0 and negative != 0:
             raise ValueError("the finite orthogonal-group mass is defined here for definite genera")
         rationals = _own_ring(SageQQ)
-        return rationals._from_engine_element(SageQQ(self._engine().mass()))
+        return _owned_engine_element(rationals, SageQQ(self._engine().mass()))
 
     def __eq__(self, other):
         if not isinstance(other, Genus):
@@ -1873,11 +1874,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             scaled_rows = [[SageZZ(backend_denominator * _engine_element(rationals, coordinate)) for coordinate in row] for row in rational_rows]
             scaled_span = SageFreeModule(SageZZ, rank).submodule(scaled_rows)
             integral_basis_backend = scaled_span.basis_matrix()
-            integral_basis_rows = [[ring._from_engine_element(entry) for entry in row] for row in integral_basis_backend.rows()]
+            integral_basis_rows = [[_owned_engine_element(ring, entry) for entry in row] for row in integral_basis_backend.rows()]
             basis_rows = tensor.matrix(
                 rationals,
                 tuple(
-                    tuple(rationals._from_engine_element(SageQQ(_engine_element(ring, entry)) / SageQQ(backend_denominator)) for entry in row) for row in integral_basis_rows
+                    tuple(_owned_engine_element(rationals, SageQQ(_engine_element(ring, entry)) / SageQQ(backend_denominator)) for entry in row) for row in integral_basis_rows
                 ),
             )
 
@@ -3960,7 +3961,7 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
                 tuple(
                     self.linear_combination(
                         {
-                            label: ring._from_engine_element(
+                            label: _owned_engine_element(ring,
                                 engine_order(coefficient)
                             )
                             for label, coefficient in zip(

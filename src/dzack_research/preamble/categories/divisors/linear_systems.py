@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
@@ -179,7 +180,7 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
                 assert powers in by_exponents, (
                     "the polynomial is not homogeneous of this section-space degree"
                 )
-                coefficients[by_exponents[powers]] = base._from_engine_element(
+                coefficients[by_exponents[powers]] = _owned_engine_element(base,
                     engine_base(coefficient)
                 )
             return self.linear_combination(coefficients)

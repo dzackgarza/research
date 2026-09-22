@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
 from dzack_research.preamble.categories.rings.embeddings import NumberFieldMor
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     OwnedRings,
@@ -33,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_engine_ring,
+    _set_owned_ring_display,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -48,7 +50,7 @@ def CyclotomicField(order, *args, **kwargs):
     field = _own_number_field(
         _SageCyclotomicField(_engine_numeral(SageZZ, order), *args, **kwargs)
     )
-    field._preamble_ring_display = f"Cyclotomic field Q(zeta_{order})"
+    _set_owned_ring_display(field, f"Cyclotomic field Q(zeta_{order})")
     return field
 
 
@@ -56,7 +58,7 @@ def QuadraticField(discriminant, *args, **kwargs):
     field = _own_number_field(
         _SageQuadraticField(_engine_numeral(SageQQ, discriminant), *args, **kwargs)
     )
-    field._preamble_ring_display = f"Quadratic field of discriminant {discriminant}"
+    _set_owned_ring_display(field, f"Quadratic field of discriminant {discriminant}")
     return field
 
 
@@ -66,7 +68,7 @@ def _number_field(polynomial, *args, **kwargs):
         raise TypeError("number-field construction expects a polynomial in an owned polynomial ring")
     backend_polynomial = _engine_element(parent, polynomial)
     field = _own_number_field(_SageNumberField(backend_polynomial, *args, **kwargs))
-    field._preamble_ring_display = f"Number field defined by {polynomial}"
+    _set_owned_ring_display(field, f"Number field defined by {polynomial}")
     return field
 
 
@@ -118,7 +120,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                     else engine.absolute_degree()
                 )
             )
-            return integers._from_engine_element(value)
+            return _owned_engine_element(integers, value)
 
         def discriminant(self):
             r"""Return the discriminant of the ring of integers of ``K``."""
@@ -126,7 +128,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
             value = SageZZ.one() if engine is SageQQ else SageZZ(engine.discriminant())
-            return integers._from_engine_element(value)
+            return _owned_engine_element(integers, value)
 
         def signature(self):
             r"""Return the signature pair ``(r_1,r_2)`` with ``r_1+2r_2=[K:QQ]``."""
@@ -143,7 +145,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
             value = SageZZ.one() if engine is SageQQ else SageZZ(engine.class_number())
-            return integers._from_engine_element(value)
+            return _owned_engine_element(integers, value)
 
         def extension(self, polynomial, name="a"):
             r"""Return the finite extension defined by an owned polynomial over ``self``."""
@@ -167,7 +169,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             ideals = []
             for backend_ideal in _engine_ring(self).primes_above(backend_prime):
                 generators = tuple(
-                    order._from_engine_element(order_engine(generator))
+                    _owned_engine_element(order, order_engine(generator))
                     for generator in backend_ideal.gens()
                 )
                 ideals.append(order.ideal(*generators))
@@ -397,7 +399,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 degree = int(engine.degree())
 
             presentation = rationals.free_module(labels).symmetric_algebra()
-            relation = presentation._from_engine_element(
+            relation = _owned_engine_element(presentation,
                 _engine_ring(presentation)(polynomial)
             )
             return _presented_algebra_on_engine(
@@ -431,7 +433,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
             field = self.parent()
             algebra = field.as_algebra()
-            multiplier = algebra._from_engine_element(
+            multiplier = _owned_engine_element(algebra,
                 _engine_element(field, self)
             )
             return algebra.module_category().Mor(algebra, algebra)(
@@ -474,7 +476,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             generate the whole number field.
             """
             polynomial = self._backend().charpoly()
-            return _own_ring(polynomial.parent())._from_engine_element(polynomial)
+            return _owned_engine_element(polynomial.parent(), polynomial)
 
         def minimal_polynomial(self):
             r"""Return the minimal polynomial of ``self`` over ``QQ``."""
@@ -527,7 +529,7 @@ class NumberFieldsWithChosenPrimitiveElement(OwnedCategory):
 
             polynomial = _engine_ring(self).defining_polynomial()
             parent = _own_ring(polynomial.parent())
-            return parent._from_engine_element(polynomial)
+            return _owned_engine_element(parent, polynomial)
 
         def embedding_images(self, target):
             r"""Return the images of the selected primitive element under ``K -> target``."""

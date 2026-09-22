@@ -33,9 +33,7 @@ class _FractionFieldFunctor(Functor):
     def _apply_morphism(self, embedding: OrderEmbedding):
         source = self(embedding.domain())
         target = self(embedding.codomain())
-        return source.Mor(target)(
-            embedding.field_embedding()._engine_morphism_crossing()
-        )
+        return source.Mor(target)(embedding.field_embedding())
 
     def _repr_(self):
         return "Fraction-field functor"

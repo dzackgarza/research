@@ -38,6 +38,7 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedRings,
@@ -56,7 +57,7 @@ def RealApproximation(value):
     backend = _create_real_approximation(value)
 
     parent = _own_ring(backend.parent())
-    return parent._from_engine_element(backend)
+    return _owned_engine_element(parent, backend)
 
 
 _RELATION_SYMBOL = {
@@ -497,7 +498,7 @@ class ExactRealField(UniqueRepresentation, Field):
         return self.element_class(self, _closed_exact_real_expression(value))
 
     def _from_engine_expression(self, value) -> ExactRealNumber:
-        r"""Cross a private exact backend expression into the owned real field."""
+        r"""Cross a private exact expression; implementation endpoint for the protected dispatcher."""
         return self.element_class(self, _closed_exact_real_expression(value))
 
     def __contains__(self, value) -> bool:
@@ -573,6 +574,18 @@ class ExactRealField(UniqueRepresentation, Field):
 
 
 RR = ExactRealField()
+
+
+def _owned_real_from_engine_expression(value) -> ExactRealNumber:
+    r"""Raise a private exact symbolic expression into the owned real field.
+
+    Protected exact-real contract (\`OWN-05\`--\`OWN-07\`).  Permitted
+    callers are exact symbolic computation adapters for definite-lattice
+    invariants and convolution evaluation.  They produce a closed exact
+    expression and immediately raise it here; the symbolic engine value never
+    becomes public mathematical storage.
+    """
+    return RR._from_engine_expression(value)
 
 
 def _restore_exact_real(expression: Expression) -> ExactRealNumber:

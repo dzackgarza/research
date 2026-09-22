@@ -26,6 +26,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -83,7 +84,7 @@ def _rational_point(coordinates):
     rationals = _rationals()
     return tensor.vector(
         rationals,
-        tuple(rationals._from_engine_element(SageQQ(coordinate)) for coordinate in coordinates),
+        tuple(_owned_engine_element(rationals, SageQQ(coordinate)) for coordinate in coordinates),
     )
 
 
@@ -185,26 +186,6 @@ def _ade_polygon_data(letter, rank, variant, affine):
     assert letter == "E", "an ADE type has letter A, D or E"
     vertices, point = _e_family_polygon_data(rank)
     return (vertices, point, empty)
-
-
-def _engine_pairing_values(engine_polyhedron, engine_ray):
-    r"""The values ``<v, u>`` on the vertices of the polytope."""
-    return tuple(
-        sum(int(entry) * coordinate for entry, coordinate in zip(engine_ray, vertex))
-        for vertex in engine_polyhedron.vertices()
-    )
-
-
-def _supports_point(engine_polyhedron, engine_ray, engine_point):
-    r"""Whether the point lies on the face where ``u`` is minimized on ``Q``.
-
-    For an inner normal ``u`` of a facet ``F`` of ``Q``, ``F`` is exactly the
-    locus in ``Q`` where ``<-, u>`` attains its minimum, so this is the
-    condition that ``p*`` lies on ``F``.  The arithmetic is exact and stays on
-    the engine side, which is the one frame crossing this file performs.
-    """
-    value = sum(int(entry) * coordinate for entry, coordinate in zip(engine_ray, engine_point))
-    return value == min(_engine_pairing_values(engine_polyhedron, engine_ray))
 
 
 def _validated_at21_low_level_variant(letter, rank, variant, affine):
@@ -580,13 +561,10 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
         def _blue_rays(self):
             polygon = self.polygon()
-            engine_polyhedron = polygon._engine_polyhedron()
-            engine_point = polygon._engine_coordinates(self.distinguished_point())
             return self.fan().cones(1).filtered(
-                lambda ray: _supports_point(
-                    engine_polyhedron,
-                    ray._engine_cone().rays()[0],
-                    engine_point,
+                lambda ray: polygon.normal_supports_point(
+                    next(iter(ray.rays())),
+                    self.distinguished_point(),
                 ),
                 name="Blue rays",
             )
@@ -603,16 +581,13 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             lattice.
             """
             polygon = self.polygon()
-            engine_polyhedron = polygon._engine_polyhedron()
             blue_rays = self._blue_rays()
 
             def lies_on_blue_facet(point):
-                engine_point = polygon._engine_coordinates(point)
                 return any(
-                    _supports_point(
-                        engine_polyhedron,
-                        ray._engine_cone().rays()[0],
-                        engine_point,
+                    polygon.normal_supports_point(
+                        next(iter(ray.rays())),
+                        point,
                     )
                     for ray in blue_rays
                 )
@@ -648,13 +623,14 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             cases ``P`` is a rational polytope.
             """
             polygon = self.polygon()
+            rationals = _rationals()
             base = tuple(
-                (*tuple(vertex), SageQQ.zero())
-                for vertex in polygon._engine_polyhedron().vertices()
+                (*tuple(vertex), rationals.zero())
+                for vertex in polygon.vertices()
             )
             apex = (
-                *polygon._engine_coordinates(self.distinguished_point()),
-                SageQQ(2),
+                *tuple(self.distinguished_point()),
+                rationals(2),
             )
             pyramid_lattice = _own_ring(SageZZ).free_module(3)
             return ConvexPolytopes(pyramid_lattice)((*base, apex))

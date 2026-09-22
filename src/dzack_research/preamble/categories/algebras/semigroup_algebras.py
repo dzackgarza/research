@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     Algebras,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
@@ -104,7 +105,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             base_ring=_engine_ring(base),
         )
         relations = tuple(
-            presentation._from_engine_element(engine_presentation(relation))
+            _owned_engine_element(presentation, engine_presentation(relation))
             for relation in engine_ideal.gens()
         )
         construction_data = (

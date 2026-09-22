@@ -77,6 +77,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.modules.pure.modules import Modules, VectorSpaces
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -122,7 +123,7 @@ def _integrability(p):
         case True:
             expression = real.expression()
             if expression in QQ:
-                rational = _own_ring(QQ)._from_engine_element(QQ(expression))
+                rational = _owned_engine_element(QQ, QQ(expression))
                 integers = _own_ring(ZZ)
                 return integers(rational) if rational in integers else rational
             return real

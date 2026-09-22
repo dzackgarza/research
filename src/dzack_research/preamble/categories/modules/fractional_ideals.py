@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.commutative_ideals import (
     CommutativeIdeals,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedOrders,
@@ -86,7 +87,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             return richcmp(self._value, other._value, op)
 
         def _repr_(self):
-            return repr(self.parent().fraction_field()._from_engine_element(self._value))
+            return repr(_owned_engine_element(self.parent().fraction_field(), self._value))
 
     class ParentMethods:
         def __init__(
@@ -151,7 +152,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             return (
                 {}
                 if coefficient == 0
-                else {labels[0]: integers._from_engine_element(SageZZ(coefficient))}
+                else {labels[0]: _owned_engine_element(integers, SageZZ(coefficient))}
             )
 
         def _element_constructor_(self, value):
@@ -236,10 +237,10 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             r"""Return ``a`` with ``I=aR`` when this ideal is principal."""
             assert self.is_principal(), f"{self} is not principal"
             if _engine_ring(self.base_ring()) is SageZZ:
-                return self.fraction_field()._from_engine_element(
+                return _owned_engine_element(self.fraction_field(),
                     _zz_fractional_generator(self._module_generator_values)
                 )
-            return self.fraction_field()._from_engine_element(
+            return _owned_engine_element(self.fraction_field(),
                 _principal_generator_from_order_values(
                     self.base_ring(),
                     self._module_generator_values,
@@ -267,7 +268,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             other = _in_fraction_field(self.base_ring(), other)
             field = self.fraction_field()
             values = tuple(
-                field._from_engine_element(value)
+                _owned_engine_element(field, value)
                 for value in (
                     self._module_generator_values
                     + other._module_generator_values
@@ -294,8 +295,8 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
                 if left == field.zero() or right == field.zero():
                     return self.base_ring().fractional_ideal(field.zero())
                 ratio = _engine_element(field, left / right)
-                numerator = field._from_engine_element(abs(ratio.numerator()))
-                denominator = field._from_engine_element(ratio.denominator())
+                numerator = _owned_engine_element(field, abs(ratio.numerator()))
+                denominator = _owned_engine_element(field, ratio.denominator())
                 return self.base_ring().fractional_ideal(left * denominator, right * numerator)
             integer_submodule = _integer_coordinate_submodule(self).intersection(
                 _integer_coordinate_submodule(other)
@@ -398,7 +399,7 @@ class FractionalIdealInclusion(ModuleEmbedding):
         target = self.codomain()
         extension_module = target.module_over_extension()
         (label,) = tuple(extension_module.module_generating_set())
-        scalar = target.extension_ring()._from_engine_element(value)
+        scalar = _owned_engine_element(target.extension_ring(), value)
         underlying = extension_module.scalar_multiple(
             scalar,
             extension_module.module_generator(label),
@@ -455,7 +456,7 @@ def _fractional_ideal_inclusion(ideal):
     (unit_label,) = tuple(extension_module.module_generating_set())
     images = {}
     for label in ideal.module_generating_set():
-        value = ideal.fraction_field()._from_engine_element(
+        value = _owned_engine_element(ideal.fraction_field(),
             ideal.module_generator(label)._inclusion_value()
         )
         images[label] = target(
@@ -505,7 +506,7 @@ def _order_coordinate_vector(base_ring, value):
     return tensor.vector(
         rationals,
         tuple(
-            rationals._from_engine_element(SageQQ(coefficient))
+            _owned_engine_element(rationals, SageQQ(coefficient))
             for coefficient in backend_value.vector()
         ),
     )
@@ -600,7 +601,7 @@ def _principal_generator_from_order_values(base_ring, module_generator_values):
     rank = int(order.module_rank())
     order_basis = rationals.matrix_space(rank, rank).from_rows(
         (
-            rationals._from_engine_element(SageQQ(coefficient))
+            _owned_engine_element(rationals, SageQQ(coefficient))
             for coefficient in field(basis_element).vector()
         )
         for basis_element in order.basis()
@@ -611,7 +612,7 @@ def _principal_generator_from_order_values(base_ring, module_generator_values):
         backend_coordinates = field(value).vector()
         target = basis_map.codomain().linear_combination(
             {
-                label: rationals._from_engine_element(
+                label: _owned_engine_element(rationals,
                     SageQQ(backend_coordinates[position])
                 )
                 for position, label in enumerate(

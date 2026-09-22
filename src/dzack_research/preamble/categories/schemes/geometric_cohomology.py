@@ -21,10 +21,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.schemes.toric.fans import (
-    _engine_vector,
-    _owned_vector,
-)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
@@ -427,37 +423,6 @@ class _ToricHodgeData(SageObject):
         return f"Pure toric Hodge data of {self.scheme()}"
 
 
-def _matrix_morphism(base, source, target, matrix):
-    r"""Cross one engine incidence matrix into an owned module morphism."""
-    source_labels = tuple(source.module_generating_set())
-    target_labels = tuple(target.module_generating_set())
-    assert matrix.ncols() == len(source_labels) and matrix.nrows() == len(target_labels), "the simplicial differential matrix has inconsistent endpoint ranks"
-
-    def image(source_label):
-        column = source_labels.index(source_label)
-        return target.linear_combination({target_label: base(int(matrix[row, column])) for row, target_label in enumerate(target_labels) if matrix[row, column]})
-
-    return source.module_category().Mor(source, target)(image)
-
-
-def _toric_weight_simplicial_complex(scheme, divisor, weight):
-    r"""Private Sage adapter for the simplicial support ``V_{D,m}``.
-
-    Sage's maintained toric-divisor implementation owns the combinatorial
-    selection of the negative-cone subcomplex.  The private helper is confined
-    here because the public cohomology operation returns only the resulting
-    vector space and does not expose the augmented incidence maps needed by the
-    owned cochain complex.
-    """
-    engine_divisor = scheme._engine_toric_divisor(divisor)
-    return engine_divisor._sheaf_complex(_engine_vector(scheme.character_lattice(), weight))
-
-
-def _toric_weight_support_hull(scheme, divisor):
-    r"""Private Sage adapter for the finite weight-support hull of ``O_X(D)``."""
-    return scheme._engine_toric_divisor(divisor)._sheaf_cohomology_support()
-
-
 def _toric_weight_cohomology_complex(scheme, divisor, weight):
     r"""Return the finite complex computing ``H^*(X,O_X(D))_weight``.
 
@@ -471,45 +436,18 @@ def _toric_weight_cohomology_complex(scheme, divisor, weight):
     divisor = scheme.weil_divisor_group()(divisor)
     assert scheme.is_cartier(divisor), "the represented toric weight complex requires a Cartier divisor"
     weight = scheme.character_lattice()(weight)
-    simplicial = _toric_weight_simplicial_complex(scheme, divisor, weight)
-
-    if int(simplicial.dimension()) == -1:
-        degree_zero = base.free_module(1)
-        degree_one = base.free_module(0)
-        complex_ = CochainComplexes(base)(
-            {0: degree_zero, 1: degree_one},
-            {0: degree_zero.module_category().Mor(degree_zero, degree_one)({0: degree_one.zero()})},
-            name="Toric weight cohomology complex",
-            extra_categories=(ToricWeightCohomologyComplexes(base),),
-            extra_construction_data={
-                "cohomology_scheme": scheme,
-                "cohomology_divisor": divisor,
-                "cohomology_weight": weight,
-            },
-        )
-    else:
-        engine = simplicial.chain_complex(
-            augmented=True,
-            base_ring=SageZZ,
-            cochain=True,
-        )
-        top = int(simplicial.dimension())
-        matrices = {q: engine.differential(q) for q in range(-1, top + 1)}
-        pieces = {q + 1: base.free_module(matrix.ncols()) for q, matrix in matrices.items()}
-        pieces[top + 2] = base.free_module(0)
-        differentials = {q + 1: _matrix_morphism(base, pieces[q + 1], pieces[q + 2], matrix) for q, matrix in matrices.items()}
-        complex_ = CochainComplexes(base)(
-            pieces,
-            differentials,
-            name="Toric weight cohomology complex",
-            extra_categories=(ToricWeightCohomologyComplexes(base),),
-            extra_construction_data={
-                "cohomology_scheme": scheme,
-                "cohomology_divisor": divisor,
-                "cohomology_weight": weight,
-            },
-        )
-    return complex_
+    pieces, differentials = scheme._weight_cohomology_presentation(divisor, weight)
+    return CochainComplexes(base)(
+        pieces,
+        differentials,
+        name="Toric weight cohomology complex",
+        extra_categories=(ToricWeightCohomologyComplexes(base),),
+        extra_construction_data={
+            "cohomology_scheme": scheme,
+            "cohomology_divisor": divisor,
+            "cohomology_weight": weight,
+        },
+    )
 
 
 def _toric_weight_cohomology(scheme, divisor, weight, degree):
@@ -547,9 +485,9 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
     divisor = scheme.weil_divisor_group()(divisor)
     assert scheme.is_cartier(divisor), "the represented geometric cohomology requires a Cartier divisor"
 
-    support_hull = _toric_weight_support_hull(scheme, divisor)
-    characters = scheme.character_lattice()
-    candidate_weights = tuple(_owned_vector(characters, point) for point in support_hull.integral_points())
+    candidate_weights = tuple(
+        scheme._line_bundle_cohomology_candidate_weights(divisor)
+    )
     pieces = {
         weight: scheme.weight_cohomology(divisor, weight, degree)
         for weight in candidate_weights

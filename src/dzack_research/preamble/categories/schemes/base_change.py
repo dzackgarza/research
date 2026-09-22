@@ -39,11 +39,12 @@ from dzack_research.preamble.categories.functors.algebra_scalar_change import (
     _engine_ring_map,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedRings,
     _engine_element,
     _engine_ring,
     _owned_ring,
+    _ring_morphism_with_engine,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
@@ -113,7 +114,7 @@ def _base_changed_element(algebra, element, changed_algebra, ring_map):
                 _engine_ring_map(ring_map),
                 new_base_ring=_engine_ring(_owned_ring(ring_map.codomain())),
             )
-            return changed_algebra._from_engine_element(_engine_ring(changed_algebra)(engine_image))
+            return _owned_engine_element(changed_algebra, _engine_ring(changed_algebra)(engine_image))
 
 
 def _base_change_unit(algebra, changed_algebra, ring_map):
@@ -132,7 +133,9 @@ def _base_change_unit(algebra, changed_algebra, ring_map):
                 changed_engine,
                 base_map=_engine_ring_map(ring_map),
             )
-    return OwnedRings().Mor(algebra, changed_algebra)._elementwise_with_engine(
+    return _ring_morphism_with_engine(
+        algebra,
+        changed_algebra,
         lambda element: _base_changed_element(algebra, element, changed_algebra, ring_map),
         engine,
     )
@@ -404,8 +407,12 @@ class _SchemeBaseChangeFunctor(Functor):
                          for label in algebra.algebra_generating_set()],
                         engine_target, base_map=_engine_ring_map(to_base),
                     )
-                    return OwnedRings().Mor(changed_algebra, target)._elementwise_with_engine(
-                        lambda element: target._from_engine_element(native(_engine_element(changed_algebra, element))),
+                    return _ring_morphism_with_engine(
+                        changed_algebra,
+                        target,
+                        lambda element: _owned_engine_element(
+                            target, native(_engine_element(changed_algebra, element))
+                        ),
                         native,
                     )
 

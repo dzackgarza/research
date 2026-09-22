@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras, _alge
 from dzack_research.preamble.categories.functions.real_functions import Lp
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.rings.real import RR, _owned_real_from_engine_expression
 from dzack_research.preamble.rings.unit_interval import UnitInterval
 
 
@@ -116,7 +116,7 @@ def _convolution_representative(space, left, right):
         if value in (sympy.oo, -sympy.oo, sympy.zoo, sympy.nan):
             return RR.zero()
         assert not value.has(sympy.Integral), "the exact convolution integral is not evaluated by the selected symbolic engine"
-        return RR._from_engine_expression(SR(value))
+        return _owned_real_from_engine_expression(SR(value))
 
     return space.element_class(space, evaluate=evaluate, expression=formula)
 

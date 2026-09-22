@@ -76,6 +76,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     _engine_matrix,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
@@ -222,6 +223,21 @@ def _element_from_engine(group, gap_element):
             return group._from_engine(engine(gap_element))
 
 
+def _matrix_group_element_matrix(group, element):
+    r"""Return the private exact matrix of one owned matrix-group element.
+
+    Protected group contract (\`OWN-05\`--\`OWN-07\`).  The permitted
+    external caller is the Eichler determinant-model lattice adapter for its
+    represented \`SL_2(ZZ)\` action.  The group owner validates and lowers the
+    owned element; only the exact matrix required by that adapter crosses, and
+    its entries are immediately raised into the lattice's owned scalar ring.
+    """
+    represented = group._to_engine(group(element))
+    matrix = getattr(represented, "matrix", None)
+    assert callable(matrix), "the selected group realization is not a matrix group"
+    return matrix()
+
+
 def _subgroup_from_gap(group, gap_subgroup):
     r"""Return the owned subgroup of ``group`` modelled by the GAP subgroup.
 
@@ -250,7 +266,7 @@ def _finite_order(group):
             backend_order = _gap_model(group).Size().sage()
         case _:
             backend_order = _engine_group(group).order()
-    return _own_ring(ZZ)._from_engine_element(ZZ(backend_order))
+    return _owned_engine_element(ZZ, ZZ(backend_order))
 
 
 def _conjugacy_class_elements(group, representative):
@@ -377,7 +393,7 @@ def _owned_basis_label(basis, engine_label):
         case _ if basis in FiniteSets():
             return next(candidate for position, candidate in enumerate(basis) if position == int(engine_label))
         case _ if basis in OwnedRings():
-            return basis._from_engine_element(engine_label)
+            return _owned_engine_element(basis, engine_label)
         case _:
             return engine_label
 
@@ -453,7 +469,7 @@ def _owned_point(point):
     r"""Read a point of a Sage permutation group's domain as an owned point."""
     match point:
         case Integer():
-            return _own_ring(ZZ)._from_engine_element(point)
+            return _owned_engine_element(ZZ, point)
         case _:
             return point
 
@@ -469,7 +485,7 @@ def _engine_element_action(group, backend_element, point):
         case SageGaloisGroup():
             field = _own_ring(engine.number_field())
             assert point in field, f"{point} is not an element of {field}"
-            return field._from_engine_element(backend_element.as_mor()(_engine_element(field, point)))
+            return _owned_engine_element(field, backend_element.as_mor()(_engine_element(field, point)))
         case PermutationGroup_generic():
             engine_point = _engine_point(engine, point)
             if engine_point not in engine.domain():
@@ -934,7 +950,7 @@ class _GroupElement(MultiplicativeGroupElement):
         backend_order = self._backend().order()
         if backend_order == infinity:
             return aleph(0)
-        return _own_ring(ZZ)._from_engine_element(ZZ(backend_order))
+        return _owned_engine_element(ZZ, ZZ(backend_order))
 
     multiplicative_order = order
 
@@ -2839,7 +2855,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                             self.class_function(
                                 field,
                                 tuple(
-                                    field._from_engine_element(engine_field(value.sage()))
+                                    _owned_engine_element(field, engine_field(value.sage()))
                                     for value in character.List()
                                 ),
                                 representatives=representatives,
@@ -3115,7 +3131,7 @@ class PermutationGroups(OwnedCategory):
     class ElementMethods:
         def sign(self):
             r"""The sign of this element as a permutation of the natural points."""
-            return _own_ring(ZZ)._from_engine_element(ZZ(self.parent()._to_engine(self).sign()))
+            return _owned_engine_element(ZZ, ZZ(self.parent()._to_engine(self).sign()))
 
     class ParentMethods:
         def natural_points(self):

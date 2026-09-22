@@ -2,7 +2,6 @@ r"""Decomposition, inertia, and Frobenius projections of (G_K)."""
 
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
-from sage.rings.number_field.number_field_ideal import NumberFieldIdeal
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
@@ -15,8 +14,6 @@ from dzack_research.preamble.categories.group.profinite.profinite_groups import 
     ProfiniteGroups,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _engine_ring,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import Set, Sets
@@ -56,46 +53,21 @@ def PrimeProlongation(base_prime, at_stage):
     )
 
 
-def _engine_prime(prime):
-    r"""Return the number-field prime ideal represented by ``prime``.
-
-    Engine adapter: an owned prime ideal of ``O_L`` crosses through its ideal
-    owner's engine realization (``_engine_ideal``, the protected contract of
-    ``commutative_ideals.py``), and an ideal of Sage's maximal order is read
-    as the ideal of the number field it generates, which is where Sage's
-    ``apply_morphism``, ``residue_field``, ``ramification_index`` and
-    ``norm`` are defined.
-    """
-    match prime:
-        case NumberFieldIdeal():
-            return prime
-        case _:
-            return _number_field_ideal(prime._engine_ideal())
-
-
-def _number_field_ideal(engine_ideal):
-    match engine_ideal:
-        case NumberFieldIdeal():
-            return engine_ideal
-        case _:
-            return engine_ideal.ring().number_field().ideal(tuple(engine_ideal.gens()))
-
-
 def _image_prime(prime, automorphism):
     r"""``sigma(P)``, the image of a number-field prime under an exact automorphism."""
-    return _engine_prime(prime).apply_morphism(automorphism.action()._engine_morphism_crossing())
+    return prime.image_under_fraction_field_automorphism(automorphism.action())
 
 
 def _fixes_residue_field(prime, automorphism) -> bool:
     r"""Whether ``sigma`` acts trivially on ``O_L / P``, read on a basis of ``O_L``."""
-    prime = _engine_prime(prime)
-    residue = prime.residue_field()
     owned_field = automorphism.parent().top_field()
-    field = _engine_ring(owned_field)
+    order = owned_field.ring_of_integers()
     return all(
-        residue(_engine_element(owned_field, automorphism(owned_field._from_engine_element(field(basis_element)))))
-        == residue(basis_element)
-        for basis_element in field.maximal_order().basis()
+        prime.congruent(
+            order(automorphism(owned_field(basis_element))),
+            basis_element,
+        )
+        for basis_element in order.integral_basis()
     )
 
 
@@ -113,7 +85,7 @@ def _residue_field_order(base_prime):
         case _ if base_prime in integers:
             return abs(ZZ(int(base_prime)))
         case _:
-            return abs(ZZ(_engine_prime(base_prime).norm()))
+            return abs(ZZ(int(base_prime.residue_cardinality())))
 
 
 def FiniteGaloisSubgroup(supergroup, elements, description):
@@ -142,11 +114,10 @@ def FiniteElementConjugacyClass(supergroup, representative):
 
 def _finite_decomposition_group(quotient, prime_above):
     r"""``D_P = {sigma in Gal(L/K) : sigma(P) = P}``, the stabilizer of ``P``."""
-    engine_prime = _engine_prime(prime_above)
     return StabilizerSubgroups(quotient)(
         prime_above,
         "prime ideal",
-        lambda automorphism: _image_prime(engine_prime, automorphism) == engine_prime,
+        lambda automorphism: _image_prime(prime_above, automorphism) == prime_above,
         description=f"Decomposition group at {prime_above}",
     )
 
@@ -162,18 +133,18 @@ def _finite_inertia_group(quotient, prime_above):
 
 def _finite_frobenius_class(quotient, base_prime, prime_above):
     r"""The Frobenius class at an unramified ``P``: the ``sigma in D_P`` with ``sigma(x) = x^q`` mod ``P``."""
-    engine_prime = _engine_prime(prime_above)
     assert quotient.inertia_group(prime_above).cardinality() == 1, "Frobenius is defined here only at a relatively unramified prime"
-    residue = engine_prime.residue_field()
     residue_order = _residue_field_order(base_prime)
-    field = _engine_ring(quotient.top_field())
     owned_field = quotient.top_field()
+    order = owned_field.ring_of_integers()
 
     def acts_as_frobenius(automorphism) -> bool:
         return all(
-            residue(_engine_element(owned_field, automorphism(owned_field._from_engine_element(field(basis_element)))))
-            == residue(basis_element) ** residue_order
-            for basis_element in field.maximal_order().basis()
+            prime_above.congruent(
+                order(automorphism(owned_field(basis_element))),
+                order(owned_field(basis_element) ** int(residue_order)),
+            )
+            for basis_element in order.integral_basis()
         )
 
     candidates = tuple(

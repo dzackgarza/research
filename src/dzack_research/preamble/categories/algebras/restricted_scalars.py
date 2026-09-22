@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _OwnedAlgebraParent,
     _SelectedFiniteAlgebraPresentation,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -113,7 +114,7 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
                 engine_base = _engine_ring(base_ring)
 
                 def engine_base_image(scalar):
-                    owned_scalar = base_ring._from_engine_element(engine_base(scalar))
+                    owned_scalar = _owned_engine_element(base_ring, engine_base(scalar))
                     return _engine_element(
                         algebra,
                         source_structure(ring_map(owned_scalar)),
@@ -266,7 +267,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
                 algebra_variables,
                 presentation_engine,
             )
-        return presentation_ring._from_engine_element(presentation_engine(backend))
+        return _owned_engine_element(presentation_ring, presentation_engine(backend))
 
     selected_relations = indexed_family(
         relation_indices,
@@ -275,7 +276,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
     )
     # Private finite backend serialization required by Sage's ideal constructor.
     presentation_ideal = presentation_engine.ideal(
-        [presentation_ring._engine_element(relation) for relation in selected_relations]
+        [_engine_element(presentation_ring, relation) for relation in selected_relations]
     )
 
     structure_map = algebra.algebra_structure_morphism()

@@ -149,10 +149,8 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             permutations = permutation_representation.codomain()
 
             def permute(group_element, point):
-                backend_permutation = permutations._to_engine(
-                    permutation_representation(group_element)
-                )
-                return _owned_point(backend_permutation(_integer_engine_point(point)))
+                permutation = permutations(permutation_representation(group_element))
+                return permutation(point)
 
             match group:
                 case _ if group in OwnedGroups().Framed():

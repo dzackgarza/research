@@ -19,6 +19,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import ComplexManifolds
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -47,7 +48,7 @@ def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
     result = 0
     for exponent, coefficient in backend.monomial_coefficients().items():
         powers = _polynomial_exponents(exponent, len(variables))
-        owned_coefficient = source_ring._from_engine_element(engine_source(coefficient))
+        owned_coefficient = _owned_engine_element(source_ring, engine_source(coefficient))
         term = engine_target(_engine_element(target_ring, scalar_embedding(owned_coefficient)))
         for variable, power in zip(variables, powers, strict=True):
             if power:

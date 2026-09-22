@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     _engine_element,
@@ -88,8 +89,8 @@ def _differentiate_representative(algebra, representative, variables):
     target = _engine_ring(algebra)
 
     def derivative(variable):
-        engine_variable = presentation._engine_element(variable)
-        return algebra._from_engine_element(
+        engine_variable = _engine_element(presentation, variable)
+        return _owned_engine_element(algebra,
             target(source.derivative(engine_variable))
         )
 

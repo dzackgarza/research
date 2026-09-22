@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.rings.field_morphisms import (
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteGaloisExtension,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _own_ring
 
 
@@ -84,7 +85,7 @@ def _finite_root_at_stage(root, stage):
         raise ValueError(
             "the finite-stage root does not realize the chosen closure root"
         )
-    return stage.field()._from_engine_element(value)
+    return _owned_engine_element(stage.field(), value)
 
 
 class CyclotomicCharacter(ProfiniteCharacter):
@@ -101,7 +102,7 @@ class CyclotomicCharacter(ProfiniteCharacter):
         target = Integers(n).unit_group()
         closure = _engine_ring(domain.algebraic_closure())
         root = closure.zeta(n)
-        self._root = domain.algebraic_closure()._from_engine_element(root)
+        self._root = _owned_engine_element(domain.algebraic_closure(), root)
 
         if domain._is_finite_field():
             q_mod_n = Integers(n)(int(domain.base_field_order()))
@@ -124,7 +125,7 @@ class CyclotomicCharacter(ProfiniteCharacter):
                     backend,
                 )
                 stage = domain.extension_data(owned_field, embedding=embedding)
-                self._root_at_stage = owned_field._from_engine_element(field.gen())
+                self._root_at_stage = _owned_engine_element(owned_field, field.gen())
         else:
             assert False, (
                 "the cyclotomic character exists over every field of characteristic prime to n; "
@@ -191,11 +192,11 @@ class QuadraticCharacter(ProfiniteCharacter):
         closure = _engine_ring(domain.algebraic_closure())
         embedded_a = domain.base_embedding()(owned_a)
         root = _engine_element(domain.algebraic_closure(), embedded_a).sqrt()
-        self._root = domain.algebraic_closure()._from_engine_element(closure(root))
+        self._root = _owned_engine_element(domain.algebraic_closure(), closure(root))
 
         if backend_a.is_square():
             stage = domain.extension_data(domain.base_field())
-            self._root_at_stage = domain.base_field()._from_engine_element(backend_a.sqrt())
+            self._root_at_stage = _owned_engine_element(domain.base_field(), backend_a.sqrt())
         elif domain._is_finite_field():
             stage = domain.finite_extension(2)
             self._root_at_stage = _finite_root_at_stage(root, stage)
@@ -211,7 +212,7 @@ class QuadraticCharacter(ProfiniteCharacter):
                 backend,
             )
             stage = domain.extension_data(owned_field, embedding=embedding)
-            self._root_at_stage = owned_field._from_engine_element(field.gen())
+            self._root_at_stage = _owned_engine_element(owned_field, field.gen())
 
         target = _own_group(CyclicPermutationGroup(2))
         super().__init__(domain, target, stage)

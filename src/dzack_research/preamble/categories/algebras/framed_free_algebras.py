@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -96,7 +97,7 @@ def _symmetric_algebra_of(module):
             coefficient = relation_matrix[row_position, position]
             if coefficient:
                 backend += _engine_element(base, coefficient) * engine.gen(position)
-        return presentation_ring._from_engine_element(backend)
+        return _owned_engine_element(presentation_ring, backend)
 
     relations = indexed_family(
         relation_indices,

@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import Monoids
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedAdicallyCompleteRings,
@@ -54,6 +55,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _install_local_ring_construction,
     _own_ring,
+    _ring_morphism_with_engine,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -515,15 +517,17 @@ def _engine_ring_value(ring, value):
 
 def _engine_ideal(ring, ideal):
     r"""Return the computation-ring ideal represented by ``ideal``."""
-    engine = _engine_ring(ring)
-    represented = getattr(ideal, "_preamble_engine_ideal", None)
-    if represented is not None:
-        return represented
+    source = _own_ring(ring)
+    engine = _engine_ring(source)
     if getattr(ideal, "ring", lambda: None)() is engine:
         return ideal
-    values = getattr(ideal, "_preamble_module_generator_values", None)
-    if values is not None:
-        return engine.ideal(tuple(_engine_ring_value(ring, value) for value in values))
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        CommutativeIdeals,
+        _engine_commutative_ideal,
+    )
+
+    if ideal in CommutativeIdeals(source):
+        return _engine_commutative_ideal(ideal)
     ideal_generators = getattr(ideal, "ideal_generators", None)
     if ideal_generators is not None:
         return engine.ideal(
@@ -557,7 +561,7 @@ def _owned_ideal(ring, ideal):
     backend = _engine_ideal(source, ideal)
     engine = _engine_ring(source)
     return source.ideal(
-        *(source._from_engine_element(engine(generator)) for generator in backend.gens())
+        *(_owned_engine_element(source, engine(generator)) for generator in backend.gens())
     )
 
 
@@ -570,22 +574,10 @@ def _canonical_map(domain, codomain, engine_map=None):
     def image(element):
         source = _engine_element(domain, domain(element))
         value = engine_map(source) if engine_map is not None else source
-        converter = getattr(codomain, "_from_engine_element", None)
-        if converter is not None:
-            return converter(target_engine(value))
-        ambient_ring = getattr(codomain, "ambient_ring", None)
-        if ambient_ring is not None:
-            ambient = ambient_ring()
-            ambient_engine = _engine_ring(ambient)
-            represented = ambient._from_engine_element(ambient_engine(value))
-            return codomain(represented)
-        return codomain(value)
+        return _owned_engine_element(codomain, target_engine(value))
 
 
-    return domain.Mor(codomain)._elementwise_with_engine(
-        image,
-        engine_map,
-    )
+    return _ring_morphism_with_engine(domain, codomain, image, engine_map)
 
 
 
@@ -775,14 +767,14 @@ class QuotientRings(OwnedCategory):
                     raise TypeError(
                         "the selected quotient-engine element has no lift to the source ring"
                     )
-                value = source._from_engine_element(source_engine(lift()))
+                value = _owned_engine_element(source, source_engine(lift()))
             elif value_parent in OwnedRings():
                 try:
                     value_engine = _engine_ring(value_parent)
                 except (TypeError, ValueError, AttributeError):
                     value_engine = None
                 if value_parent is source or value_engine is source_engine:
-                    value = source._from_engine_element(
+                    value = _owned_engine_element(source,
                         source_engine(_engine_element(value_parent, value))
                     )
                 elif quotient_engine is not None and value_engine is quotient_engine:
@@ -792,9 +784,9 @@ class QuotientRings(OwnedCategory):
                         raise TypeError(
                             "the equivalent owned quotient element has no lift to the source ring"
                         )
-                    value = source._from_engine_element(source_engine(lift()))
+                    value = _owned_engine_element(source, source_engine(lift()))
             elif value_parent is source_engine:
-                value = source._from_engine_element(source_engine(value))
+                value = _owned_engine_element(source, source_engine(value))
             return self.element_class(self, value)
 
         def __call__(self, value):
@@ -1062,7 +1054,7 @@ class QuotientRings(OwnedCategory):
                         for field, value in zip(fields, values, strict=True)
                     )
                 )
-                return target._from_engine_element(backend)
+                return _owned_engine_element(target, backend)
 
             return self.Mor(target)(image)
 
@@ -1153,7 +1145,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
         conductor_engine = conductor_singular.sage(source_engine)
         conductor = source.ideal(
             *(
-                source._from_engine_element(source_engine(generator))
+                _owned_engine_element(source, source_engine(generator))
                 for generator in conductor_engine.gens()
             )
         )
@@ -1177,7 +1169,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
             normal_cover = _own_ring(normal_cover_engine)
             normal_ideal = normal_cover.ideal(
                 *(
-                    normal_cover._from_engine_element(normal_cover_engine(generator))
+                    _owned_engine_element(normal_cover, normal_cover_engine(generator))
                     for generator in normal_ideal_engine.gens()
                 )
             )
@@ -1202,13 +1194,12 @@ def _affine_reduced_quotient_normalization_data(quotient):
                 component=component,
                 engine_component_map=engine_component_map,
             ):
-                return component._from_engine_element(
+                return _owned_engine_element(component,
                     engine_component_map(_engine_element(quotient, element))
                 )
 
-            component_map = quotient.Mor(component)._elementwise_with_engine(
-                component_image,
-                engine_component_map,
+            component_map = _ring_morphism_with_engine(
+                quotient, component, component_image, engine_component_map
             )
             normalizations.append(component)
             normalization_maps.append(component_map)
@@ -1231,7 +1222,7 @@ def _affine_reduced_quotient_normalization_data(quotient):
                         for component, value in zip(normalizations, values, strict=True)
                     )
                 )
-                return normalization._from_engine_element(backend)
+                return _owned_engine_element(normalization, backend)
 
             normalization_map = quotient.Mor(normalization)(into_product)
 
@@ -1971,7 +1962,7 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
     def _with_source_expression(self, backend_value, source_expression):
         constructor = getattr(self.parent(), "_completion_element", None)
         if constructor is None:
-            return self.parent()._from_engine_element(backend_value)
+            return _owned_engine_element(self.parent(), backend_value)
         return constructor(backend_value, source_expression=source_expression)
 
     def _add_(self, other):
@@ -2122,7 +2113,7 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
     def inverse_of_unit(self):
         if not self.is_unit():
             raise ZeroDivisionError(f"{self} is not a unit")
-        return self.parent()._from_engine_element(self._backend() ** -1)
+        return _owned_engine_element(self.parent(), self._backend() ** -1)
 
     def precision_absolute(self):
         r"""Return the selected absolute computation precision when represented."""
@@ -2190,9 +2181,8 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                     source_expression=selected,
                 )
 
-            return source.Mor(self)._elementwise_with_engine(
-                completion_map_image,
-                selected_engine_map,
+            return _ring_morphism_with_engine(
+                source, self, completion_map_image, selected_engine_map
             )
 
         self._adic_completion_source = source
@@ -2383,7 +2373,7 @@ def _maximal_ideal_over_local_base(algebra, base, uniformizers):
 
     engine = _engine_ring(algebra)
     base_maximal = tuple(
-        algebra._from_engine_element(engine(_engine_element(base, generator)))
+        _owned_engine_element(algebra, engine(_engine_element(base, generator)))
         for generator in base.maximal_ideal().ideal_generators()
     )
     return GeneratedIdealView(
@@ -2667,7 +2657,7 @@ def _flattened_symmetric_localization_engine(source, inverted):
 
     def decode(element):
         nested = unflatten(engine_bottom(element))
-        return source._from_engine_element(source_engine(nested))
+        return _owned_engine_element(source, source_engine(nested))
 
     return localization_engine, decode
 
@@ -3208,8 +3198,8 @@ def _adic_completion_from_owned_data(source, defining, precision):
     unit_ideal = source.ideal(source.one())
     if defining == unit_ideal:
         zero_quotient = source.quotient_ring(unit_ideal)
-        zero_engine = getattr(zero_quotient, "_preamble_engine_ring", None)
-        assert zero_engine is not None, (
+        zero_engine = _engine_ring(zero_quotient)
+        assert zero_engine is not zero_quotient, (
             "the unit-adic zero completion needs the represented zero quotient engine"
         )
 
@@ -3231,7 +3221,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
         )
     if defining == zero_ideal:
         def projection_lift(value, _exponent):
-            return source._from_engine_element(engine(value))
+            return _owned_engine_element(source, engine(value))
 
         return _AdicCompletionAlgebraParent(
             engine,
@@ -3276,8 +3266,8 @@ def _adic_completion_from_owned_data(source, defining, precision):
         if source in AlgebrasWithChosenFinitePresentation(base):
             selected_power = defining.power(int(precision))
             truncation = source.quotient_ring(selected_power)
-            truncation_engine = getattr(truncation, "_preamble_engine_ring", None)
-            assert truncation_engine is not None, (
+            truncation_engine = _engine_ring(truncation)
+            assert truncation_engine is not truncation, (
                 "the presented completion requires its maintained finite approximation engine"
             )
             quotient_map = truncation.quotient_map()
@@ -3289,7 +3279,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
                 assert exponent <= int(precision), (
                     "the selected finite approximation must reach the requested adic level"
                 )
-                return truncation._from_engine_element(value).lift()
+                return _owned_engine_element(truncation, value).lift()
 
             completed_ideal_generators = tuple(
                 completion_image(generator)
@@ -3340,7 +3330,7 @@ def _adic_completion_from_owned_data(source, defining, precision):
 
     def projection_lift(value, exponent):
         polynomial = value.truncate(exponent).polynomial()
-        return source._from_engine_element(source_engine(polynomial))
+        return _owned_engine_element(source, source_engine(polynomial))
 
     algebra_base = None
     formal_parameter_labels = None
@@ -3455,7 +3445,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
             parent = self.parent()
             base = parent.base_ring()
             backend = parent._engine_element(self)
-            return base._from_engine_element(backend[degree])
+            return _owned_engine_element(base, backend[degree])
 
         def __getitem__(self, degree):
             return self.coefficient(degree)

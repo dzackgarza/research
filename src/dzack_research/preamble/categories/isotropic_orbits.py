@@ -842,7 +842,7 @@ def _isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False)
     )
     if witness is None:
         return None
-    isometry = orthogonal_group._from_backend_row_action(witness)
+    isometry = orthogonal_group(tuple(lattice(tuple(row)) for row in witness))
     left_terms = _terms(left, flag)
     right_terms = _terms(right, flag)
     checked_left = left_terms if flag else left_terms[-1:]
@@ -861,7 +861,7 @@ def _isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
     nature = "flag" if flag else "plane"
     isometries = finite_ordered_set(
         tuple(
-            orthogonal_group._from_backend_row_action(rows)
+            orthogonal_group(tuple(lattice(tuple(row)) for row in rows))
             for rows in engine_capabilities.compute(
                 "lattice.indefinite_isotropic_subspace_stabilizer",
                 _gram_rows(lattice),

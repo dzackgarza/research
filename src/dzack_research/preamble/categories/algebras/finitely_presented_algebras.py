@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.modules.tensor_products import (
     _flatten_tensor_label,
     _nested_tensor_label,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -69,7 +70,7 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
 
     def reduce(self, element):
         engine = self.ring()
-        represented = self._presentation_ring._from_engine_element(engine(element))
+        represented = _owned_engine_element(self._presentation_ring, engine(element))
         homogeneous_components = self._presentation_ring.homogeneous_components(
             represented
         )
@@ -131,7 +132,7 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
 
     selected_relations = indexed_family(
         relation_indices,
-        lambda index: presentation_ring._from_engine_element(
+        lambda index: _owned_engine_element(presentation_ring,
             backend_relation(index)
         ),
         name="Tensor-algebra defining relations",

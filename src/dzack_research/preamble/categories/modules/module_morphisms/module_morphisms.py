@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalIsomorphism,
     _precomposable,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     LocalRings,
@@ -1609,7 +1610,7 @@ class ModuleMorphism(Morphism):
                 return target.from_rows(
                     tuple(
                         tuple(
-                            result_ring._from_engine_element(backend[row, column])
+                            _owned_engine_element(result_ring, backend[row, column])
                             for column in range(backend.ncols())
                         )
                         for row in range(backend.nrows())

@@ -20,6 +20,7 @@ from sage.rings.qqbar import AlgebraicField_common
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_element, _engine_ring, _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -56,7 +57,7 @@ def _field_generators(field):
         "this adapter reads field generators from finite-field and number-field presentations"
     )
     return finite_ordered_set(tuple(
-        field._from_engine_element(generator)
+        _owned_engine_element(field, generator)
         for generator in _native_field_generators(_engine_ring(field))
     ))
 
@@ -74,7 +75,12 @@ class ExactFieldMorphism(Morphism):
         self._engine_morphism = engine_morphism
 
     def _engine_morphism_crossing(self) -> Map:
-        r"""Return the private exact Sage field-map realization."""
+        r"""Return the private exact Sage field-map realization.
+
+        This is the implementation endpoint of
+        :func:\`_engine_exact_field_morphism\`; ordinary mathematical
+        consumers use this morphism itself.
+        """
         return self._engine_morphism
 
     def __call__(self, element):
@@ -85,10 +91,17 @@ class ExactFieldMorphism(Morphism):
         target = _engine_ring(self.codomain())
         backend_element = _engine_element(self.domain(), self.domain()(element))
         image = target(self._engine_morphism(source(backend_element)))
-        return self.codomain()._from_engine_element(image)
+        return _owned_engine_element(self.codomain(), image)
 
     def is_injective(self) -> bool:
         return True
+
+    def inverse(self):
+        r"""Return the inverse exact field morphism of this field automorphism."""
+        if self.domain() is not self.codomain():
+            raise ValueError("inverse is represented here only for a field automorphism")
+        backend = self._engine_morphism_crossing().inverse()
+        return self.domain().exact_morphisms_to(self.domain())(backend)
 
     def agrees_on_field(self, other) -> bool:
         r"""Whether two exact maps with the same endpoints agree.

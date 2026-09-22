@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.functors.scalar_change import (
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
+    _element_from_engine,
     _engine_group,
     _owned_group,
 )
@@ -63,6 +64,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModulesWithChosenFinitePresentation,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
@@ -799,7 +801,7 @@ class ModulesOverGroupAlgebra(Modules):
             engine_group = _engine_group(group)
 
             def engine_on_basis(engine_group_element, index):
-                return on_basis(group._from_engine(engine_group_element), index)
+                return on_basis(_element_from_engine(group, engine_group_element), index)
 
             backend_character = engine_group.representation(
                 computation_module,
@@ -811,7 +813,7 @@ class ModulesOverGroupAlgebra(Modules):
                 raise ArithmeticError("a finite group has at least the identity p-regular class")
             value_ring = _own_ring(backend_values[0].parent())
             engine_value_ring = _engine_ring(value_ring)
-            values = tuple(value_ring._from_engine_element(engine_value_ring(value)) for value in backend_values)
+            values = tuple(_owned_engine_element(value_ring, engine_value_ring(value)) for value in backend_values)
             characteristic = int(coefficient_ring.characteristic())
             representatives = tuple(representative for representative in group.conjugacy_classes_representatives() if int(representative.order()) % characteristic)
             if len(representatives) != len(values):

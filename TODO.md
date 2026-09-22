@@ -213,12 +213,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`private-owner-boundaries`**. **Needs:** none.
-  **Owner and delta:** the independently remaining cross-object engine/storage accesses across the preamble under `OWN-05`--`07`. Reconcile the full declaration/caller population with the constructor and provenance deliveries; accesses used by those repairs were closure-blocking there and cannot be parked here.
-  **Invariants:** ordinary mathematics calls owned operations. Protected access has a declaration-side contract naming exact permitted caller roles. A helper, underscore, importable factory or comment at the caller grants no authority. Lowering/raising lives at the single adapter for that representation. Generic construction owners do not import their specialized consumers to select a route; specialization data enter through the shared contract. Generic framework repairs belong to `sage-categories`, with owned preamble mathematics and its integration kept here, rather than another local framework.
-  **Closure specimens:** a geometric section operation and a lattice/group operation traverse the owned owner and retain their maps and coefficients; no consumer opens another object's backend to finish the calculation. Inspect the call chain across the boundary, including lazy results. A private extraction of the same access is not remediation.
-
-- [ ] **`recursive-owned-results`**. **Needs:** `private-owner-boundaries`.
+- [ ] **`recursive-owned-results`**. **Needs:** none.
   **Owner and delta:** public results throughout the affected algebraic, geometric and arithmetic owners, including maps, coefficients, base rings, representatives and lazy family values.
   **Coverage boundary:** follow return paths and subsequent public operations across the full named family, preserving recursive ownership already delivered with each producer and repairing independently remaining escapes. A producer's owned top level never authorizes deferring its raw children to this sweep.
   **Invariants:** raising reaches every publicly reachable mathematical constituent and subsequent arithmetic, through its canonical constructor. An owned parent containing raw engine children does not satisfy `OWN-04`. Arbitrary raw-engine ingress is not an alternative public API.
@@ -235,7 +230,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** defining or selected structure exists at construction; later refinement only records a genuinely newly established mathematical fact. No accessor, engine query, import order or first arithmetic operation completes initialization retroactively.
   **Closure specimens:** request categories and inherited operations in different orders for ring, scheme, module and functor-image objects and obtain the same mathematical data. Each surviving refinement identifies the later theorem and its evidence. Moving mutation behind a helper or converting it into a category flag cannot close the node.
 
-- [ ] **`probe-and-exception-residue`**. **Needs:** `private-owner-boundaries`, `membership-by-placement`, `refinement-convergence`.
+- [ ] **`probe-and-exception-residue`**. **Needs:** `membership-by-placement`, `refinement-convergence`.
   **Owner and delta:** all remaining `isinstance`, `getattr`, `hasattr`, `__dict__` probes and exception branches across preamble mathematics.
   **Invariants:** owned operations use the category's declared contract. Any sanctioned ingress/equality/containment or adapter probe is reviewed against its declaration; the method name alone grants no exemption from `CAT-23` or `OWN-05`. Runtime exceptions do not select an alternative mathematical algorithm; declared boundary rendering preserves the real failure.
   **Closure specimens:** supported input takes its owned route; a nearby unsupported representation fails at the stated frontier; an engine defect is not converted into a false value or another algorithm. Inspect each residual site and called helper. Search completeness is coverage evidence; replacing syntax without repairing data flow fails `DEV-68`.

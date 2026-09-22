@@ -69,6 +69,8 @@ from dzack_research.preamble.categories.schemes.schemes import (
 )
 from dzack_research.preamble.categories.schemes.toric.fans import (
     RationalPolyhedralFans,
+    _engine_cone,
+    _engine_fan,
     _engine_vector,
     _owned_vector,
 )
@@ -454,6 +456,26 @@ class ToricSchemeMorphism(SchemeMorphism):
         return self.domain().invertible_sheaf_of_divisor(
             self.pullback_divisor(bundle.associated_divisor())
         )
+
+
+def _owned_incidence_morphism(base, source, target, engine_matrix):
+    r"""Raise one private incidence matrix to an owned module morphism."""
+    source_labels = tuple(source.module_generating_set())
+    target_labels = tuple(target.module_generating_set())
+    assert engine_matrix.ncols() == len(source_labels)
+    assert engine_matrix.nrows() == len(target_labels)
+
+    def image(source_label):
+        column = source_labels.index(source_label)
+        return target.linear_combination(
+            {
+                target_label: base(int(engine_matrix[row, column]))
+                for row, target_label in enumerate(target_labels)
+                if engine_matrix[row, column]
+            }
+        )
+
+    return source.module_category().Mor(source, target)(image)
 
 
 class ToricSchemes(OwnedCategoryOverBaseRing):
@@ -1223,7 +1245,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             )
 
         def _engine_toric_divisor(self, divisor):
-            r"""Return Sage's private toric divisor with the same ray coefficients."""
+            r"""Return Sage's private toric divisor; see :func:\`_engine_toric_divisor\`."""
             divisor = self.weil_divisor_group()(divisor)
             coefficients = [
                 int(self.weil_multiplicity(divisor, ray))
@@ -1274,6 +1296,81 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             )
 
             return _toric_weight_cohomology_complex(self, divisor, weight)
+
+        def _weight_cohomology_presentation(self, divisor, weight):
+            r"""Return owned module pieces and differentials for one toric weight.
+
+            Protected ToricSchemes computation contract under OWN-05--07.  The
+            sole caller is geometric_cohomology._toric_weight_cohomology_complex.
+            Inputs are an owned toric divisor and character; outputs are
+            dictionaries of owned free modules and owned module morphisms.
+            Sage's divisor, simplicial complex, chain complex and incidence
+            matrices remain inside this toric adapter because no public Sage
+            operation exposes the augmented incidence maps required by the
+            represented cohomology complex.
+            """
+            base = self.scheme_base_ring()
+            divisor = self.weil_divisor_group()(divisor)
+            weight = self.character_lattice()(weight)
+            engine_divisor = self._engine_toric_divisor(divisor)
+            simplicial = engine_divisor._sheaf_complex(
+                _engine_vector(self.character_lattice(), weight)
+            )
+            if int(simplicial.dimension()) == -1:
+                degree_zero = base.free_module(1)
+                degree_one = base.free_module(0)
+                return (
+                    {0: degree_zero, 1: degree_one},
+                    {
+                        0: degree_zero.module_category().Mor(
+                            degree_zero, degree_one
+                        )({0: degree_one.zero()})
+                    },
+                )
+
+            engine = simplicial.chain_complex(
+                augmented=True,
+                base_ring=SageZZ,
+                cochain=True,
+            )
+            top = int(simplicial.dimension())
+            matrices = {
+                q: engine.differential(q)
+                for q in range(-1, top + 1)
+            }
+            pieces = {
+                q + 1: base.free_module(engine_matrix.ncols())
+                for q, engine_matrix in matrices.items()
+            }
+            pieces[top + 2] = base.free_module(0)
+            differentials = {
+                q + 1: _owned_incidence_morphism(
+                    base,
+                    pieces[q + 1],
+                    pieces[q + 2],
+                    engine_matrix,
+                )
+                for q, engine_matrix in matrices.items()
+            }
+            return pieces, differentials
+
+        def _line_bundle_cohomology_candidate_weights(self, divisor):
+            r"""Return the finite owned character set containing every nonzero weight.
+
+            Protected ToricSchemes computation contract under OWN-05--07.  The
+            sole caller is geometric_cohomology._toric_line_bundle_cohomology.
+            The private Sage support polyhedron is consumed here; only owned
+            character-lattice elements cross the boundary.
+            """
+            divisor = self.weil_divisor_group()(divisor)
+            support = self._engine_toric_divisor(divisor)._sheaf_cohomology_support()
+            characters = self.character_lattice()
+            return finite_ordered_set(
+                tuple(
+                    _owned_vector(characters, point)
+                    for point in support.integral_points()
+                )
+            )
 
         def weight_cohomology(self, divisor, weight, degree):
             r"""Return one weight piece ``H^degree(X,O_X(D))_weight``."""
@@ -1609,7 +1706,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             integers = _integers()
 
             def image(cone):
-                coordinates = tuple(engine_degree(engine_chow(cone._engine_cone())).vector())
+                coordinates = tuple(engine_degree(engine_chow(_engine_cone(cone))).vector())
                 assert len(coordinates) == len(target_labels), (
                     "the Chow class of an orbit closure is read in the invariant-factor "
                     "coordinates chow_group presented the target in"
@@ -1791,7 +1888,7 @@ def _engine_fan_morphism(lattice_morphism, domain_fan, codomain_fan):
             for label in domain_lattice.module_generating_set()
         ],
     )
-    return FanMorphism(rows, domain_fan._engine_fan(), codomain_fan._engine_fan())
+    return FanMorphism(rows, _engine_fan(domain_fan), _engine_fan(codomain_fan))
 
 
 def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **level_data):
@@ -1833,7 +1930,7 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
             for source_cone, target_cone in combinations(cones, 2)
         ),
         placements=(*decided, *placements),
-        scheme_engine=_SageToricVariety(fan._engine_fan(), base_ring=_engine_ring(base)),
+        scheme_engine=_SageToricVariety(_engine_fan(fan), base_ring=_engine_ring(base)),
         toric_fan=fan,
         polarizing_polytope=polarizing_polytope,
         **level_data,

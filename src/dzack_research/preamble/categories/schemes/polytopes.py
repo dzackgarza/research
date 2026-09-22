@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -39,7 +40,7 @@ def _owned_rational(coordinate):
     function rather than by asking the value for an attribute.
     """
     if engine_parent(coordinate) in (SageZZ, SageQQ):
-        return _own_ring(SageQQ)._from_engine_element(SageQQ(coordinate))
+        return _owned_engine_element(SageQQ, SageQQ(coordinate))
     return _own_ring(SageQQ)(coordinate)
 
 
@@ -253,11 +254,11 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
         def _owned_rational_coordinate(self, coordinate):
             rationals = _own_ring(SageQQ)
-            return rationals._from_engine_element(SageQQ(coordinate))
+            return _owned_engine_element(rationals, SageQQ(coordinate))
 
         def _owned_integral_coordinate(self, coordinate):
             integers = _own_ring(SageZZ)
-            return integers._from_engine_element(SageZZ(coordinate))
+            return _owned_engine_element(integers, SageZZ(coordinate))
 
         def _engine_coordinates(self, point):
             rationals = _own_ring(SageQQ)
@@ -365,7 +366,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
         def volume(self):
             rationals = _own_ring(SageQQ)
-            return rationals._from_engine_element(
+            return _owned_engine_element(rationals,
                 SageQQ(self._engine_polyhedron().volume())
             )
 
@@ -390,6 +391,43 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                 self._engine_polyhedron().relative_interior_contains(
                     self._engine_coordinates(point)
                 )
+            )
+
+        def normal_value(self, normal, point):
+            r"""Return ``<point, normal>`` in the owned rational coordinate frame.
+
+            The polytope lives in ``M_Q`` and an inner normal lives in the
+            dual lattice ``N``.  This pairing is part of the mathematical
+            polytope interface: consumers that need a supporting face do not
+            need either the Sage polyhedron or its coordinate tuples.
+            """
+            rationals = _own_ring(SageQQ)
+            ambient = self.ambient_space()
+            dual = self.ambient_lattice().dual_module()
+            point = ambient(point)
+            normal = dual(normal)
+            point_coefficients = ambient.framing_coefficients(point)
+            normal_coefficients = dual.framing_coefficients(normal)
+            zero = rationals.zero()
+            return sum(
+                (
+                    rationals(normal_coefficients.get(label, zero))
+                    * rationals(point_coefficients.get(label, zero))
+                    for label in ambient.module_generating_set()
+                ),
+                zero,
+            )
+
+        def normal_supports_point(self, normal, point) -> bool:
+            r"""Whether ``point`` lies where the inner normal is minimized.
+
+            If ``normal`` is the primitive inner normal of a facet, this says
+            exactly that ``point`` lies on that facet.
+            """
+            value = self.normal_value(normal, point)
+            return value == min(
+                self.normal_value(normal, vertex)
+                for vertex in self.vertices()
             )
 
         def integral_points(self):

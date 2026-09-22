@@ -53,6 +53,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     TensorProductModuleMor,
     _framing_morphism,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
     LocalizationRings,
@@ -992,12 +993,32 @@ class Modules(OwnedCategoryOverBaseRing):
         def _native_module_presentation(self):
             r"""The supplied native additive-group realization, or no such realization.
 
-            Protected Modules constructor contract. Only the module entry
-            installs it; its scalar/coordinate operations and the algebra
-            constructor consume it. It records the complete defining action,
-            never a category claim or a deferred reconstruction.
+            Protected Modules constructor contract under OWN-05. The module
+            constructor installs it through the retaining dispatcher; permitted
+            readers are this module owner's scalar/coordinate construction and
+            the algebra constructor deciding whether it is retaining the ring's
+            original multiplication. It records the complete defining action,
+            never a category claim or a deferred reconstruction. No engine
+            handle crosses this contract.
             """
             return self._preamble_native_module_presentation
+
+        def _retain_native_module_presentation(self, presentation):
+            r"""Install the native module datum at its Modules owner.
+
+            Protected Modules constructor contract under OWN-05. The sole
+            caller is the native ring-module presentation constructor.
+            Installation is one-shot and may not replace the module's selected
+            scalar ring. Consumers read the retained owned constructor datum
+            through the owner query rather than opening this object's storage.
+            """
+            assert self._preamble_native_module_presentation is None, (
+                "the native module is constructed once"
+            )
+            assert self.base_ring() is presentation.base_ring(), (
+                "native scalar structure cannot overwrite another chosen base"
+            )
+            self._preamble_native_module_presentation = presentation
 
 
         def __init__(self, base_ring, **rest) -> None:
@@ -1430,7 +1451,7 @@ class Modules(OwnedCategoryOverBaseRing):
                     base = self.base_ring()
                     base_engine = _engine_ring(base)
                     return {
-                        label: base._from_engine_element(base_engine(coefficient))
+                        label: _owned_engine_element(base, base_engine(coefficient))
                         for label, coefficient in zip(labels, coordinates, strict=True)
                         if coefficient != 0
                     }
@@ -4243,7 +4264,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             if self.parent().nrows() != self.parent().ncols():
                 raise ValueError("a determinant requires a square matrix")
             backend = _engine_matrix(self)
-            return self.parent().base_ring()._from_engine_element(backend.det())
+            return _owned_engine_element(self.parent().base_ring(), backend.det())
 
         det = determinant
 
@@ -4257,13 +4278,13 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
             if order == Infinity:
                 return Infinity
-            return _own_ring(SageZZ)._from_engine_element(SageZZ(order))
+            return _owned_engine_element(SageZZ, SageZZ(order))
 
         def matrix_rank(self):
             from sage.rings.integer_ring import ZZ as SageZZ
 
             integers = _own_ring(SageZZ)
-            return integers._from_engine_element(SageZZ(_engine_matrix(self).rank()))
+            return _owned_engine_element(integers, SageZZ(_engine_matrix(self).rank()))
 
         def solve_right(self, target):
             r"""Return ``x`` in the domain with ``self(x)=target``."""
@@ -4278,7 +4299,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             )
             solution = _engine_matrix(self).solve_right(rhs)
             return self.domain().linear_combination(
-                {label: ring._from_engine_element(solution[position]) for position, label in enumerate(self.parent().column_index_set()) if solution[position]}
+                {label: _owned_engine_element(ring, solution[position]) for position, label in enumerate(self.parent().column_index_set()) if solution[position]}
             )
 
         def _kernel_spanning_family(self):
@@ -4346,7 +4367,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             return finite_indexed_family(
                 positions,
                 lambda position: self.domain().linear_combination(
-                    {label: ring._from_engine_element(basis[int(position), column]) for column, label in enumerate(labels) if basis[int(position), column]}
+                    {label: _owned_engine_element(ring, basis[int(position), column]) for column, label in enumerate(labels) if basis[int(position), column]}
                 ),
                 name=f"Kernel spanning family of {self}",
             )
@@ -4373,7 +4394,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             source = self.codomain()
             codomain = self.domain()
             target = _refine_matrix_mor(source.module_category().Mor(source, codomain))
-            return target.from_rows((ring._from_engine_element(backend[row, column]) for column in range(target.ncols())) for row in range(target.nrows()))
+            return target.from_rows((_owned_engine_element(ring, backend[row, column]) for column in range(target.ncols())) for row in range(target.nrows()))
 
         __invert__ = inverse
 

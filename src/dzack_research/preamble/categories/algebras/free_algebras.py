@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlg
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
@@ -46,6 +47,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    _set_owned_ring_display,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -124,7 +126,7 @@ class _NativeMonomialEvaluation:
                     degree = sum(exponents)
                     powers = dict(zip(labels, exponents, strict=True))
                     inner = module_labels.cofactor(NN(degree)).from_multiplicities(powers)
-            coefficients[module_labels(NN(degree), inner)] = base._from_engine_element(
+            coefficients[module_labels(NN(degree), inner)] = _owned_engine_element(base,
                 _engine_ring(base)(coefficient)
             )
         return coefficients
@@ -178,6 +180,38 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             law_decisions=(("grading", True),),
         )
 
+    def _refined_specialized_algebra(
+        self,
+        base_ring,
+        labels,
+        categories,
+        construction_data,
+    ):
+        r"""Preserve this native free-algebra realization under common refinement."""
+        if self.base_ring() is not base_ring:
+            return None
+        selected_labels = (
+            self.algebra_generating_set()
+            if labels is None
+            else finite_ordered_set(labels)
+        )
+        generating = self.generating_module()
+        if selected_labels == self.algebra_generating_set():
+            if (
+                not construction_data
+                and all(self in category for category in categories)
+            ):
+                return self
+        else:
+            generating = base_ring.free_module(selected_labels)
+        return _native_free_algebra(
+            _engine_ring(self),
+            generating,
+            self._native_free_flavor,
+            categories=categories,
+            construction_data=construction_data,
+        )
+
 @cached_function(key=lambda engine, generating_module, flavor, categories=(), construction_data=(): (
     engine, id(generating_module), flavor, categories, construction_data,
 ))
@@ -216,8 +250,9 @@ def _polynomial_ring(base_ring, *args, **kwargs):
     engine = _SagePolynomialRing(_engine_ring(base), *args, **kwargs)
     labels = tuple(engine.variable_names())
     algebra = _native_free_algebra(engine, base.free_module(labels), "symmetric")
-    algebra._preamble_ring_display = f"{base}[{', '.join(labels)}]"
-    algebra._preamble_ring_display_kind = "polynomial"
+    _set_owned_ring_display(
+        algebra, f"{base}[{', '.join(labels)}]", kind="polynomial"
+    )
 
     return algebra
 
@@ -229,8 +264,11 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
     )
     labels = tuple(_engine_ring(result).variable_names())
     algebra = _refine_algebra(result, base, labels)
-    algebra._preamble_ring_display = f"{base}[{', '.join(labels)}^±1]"
-    algebra._preamble_ring_display_kind = "laurent_polynomial"
+    _set_owned_ring_display(
+        algebra,
+        f"{base}[{', '.join(labels)}^±1]",
+        kind="laurent_polynomial",
+    )
 
     return algebra
 
@@ -288,7 +326,7 @@ def _relations_to_ideal(presentation_ring, relations):
         indices = Sets.Δ[len(backend_by_position) - 1]
         selected_relations = indexed_family(
             indices,
-            lambda index: presentation_ring._from_engine_element(
+            lambda index: _owned_engine_element(presentation_ring,
                 backend_by_position[int(index)]
             ),
             name="Defining relation family",
@@ -327,7 +365,7 @@ def _relations_to_ideal(presentation_ring, relations):
         )
 
     backend_relations = [
-        presentation_ring._engine_element(selected_relations.value(index))
+        _engine_element(presentation_ring, selected_relations.value(index))
         for index in selected_relations.index_set()
     ]
     return engine.ideal(backend_relations), selected_relations
@@ -348,7 +386,7 @@ def _base_change_commutative_presentation(algebra, ring_map):
     target_engine = _engine_ring(target_presentation_ring)
 
     def map_backend_scalar(scalar):
-        owned_scalar = source_base._from_engine_element(source_engine(scalar))
+        owned_scalar = _owned_engine_element(source_base, source_engine(scalar))
         return _engine_element(target_base, ring_map(owned_scalar))
 
     backend_base_map = SetMorphism(
@@ -357,7 +395,7 @@ def _base_change_commutative_presentation(algebra, ring_map):
     )
     source_presentation = algebra.presentation_ring()
     mapped_relations = tuple(
-        target_presentation_ring._from_engine_element(
+        _owned_engine_element(target_presentation_ring,
             target_engine(
                 _engine_element(source_presentation, relation).map_coefficients(
                     backend_base_map,
@@ -409,7 +447,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             )
             if unflatten is not None:
                 representative = unflatten(representative)
-            return presentation_ring._from_engine_element(representative)
+            return _owned_engine_element(presentation_ring, representative)
 
         def presentation_morphism():
             return Algebras(
@@ -452,7 +490,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
                 backend = self._engine_element(self(element))
                 coordinates = backend if finite_free_coordinates is None else finite_free_coordinates(backend)
                 return {
-                    label: base._from_engine_element(coefficient)
+                    label: _owned_engine_element(base, coefficient)
                     for label, coefficient in zip(module_labels, coordinates, strict=True)
                     if coefficient != 0
                 }
@@ -841,7 +879,8 @@ def _finitely_presented_algebra_from_data(
         quotient_ideal = quotient_presentation_engine.ideal(
             [
                 presentation_flattening(
-                    presentation_ring._engine_element(
+                    _engine_element(
+                        presentation_ring,
                         selected_relations.value(index)
                     )
                 )
@@ -1182,7 +1221,7 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             engine_ring = _engine_ring(ring)
             return piece.linear_combination(
                 {
-                    word_to_label[word]: ring._from_engine_element(engine_ring(coefficient))
+                    word_to_label[word]: _owned_engine_element(ring, engine_ring(coefficient))
                     for word, coefficient in coefficients.items()
                     if coefficient and len(word) == degree
                 }
@@ -1306,7 +1345,7 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             engine_ring = _engine_ring(ring)
             return piece.linear_combination(
                 {
-                    exponent_to_label[exponent]: ring._from_engine_element(
+                    exponent_to_label[exponent]: _owned_engine_element(ring,
                         engine_ring(coefficient)
                     )
                     for exponent, coefficient in coefficients.items()
@@ -1337,9 +1376,22 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             }
 
         def _commutative_algebra_coproduct(self, left, right):
+            r"""Supply the symmetric-algebra coproduct to the generic algebra owner.
+
+            Protected construction contract: the sole external caller role is
+            ``Algebras._categorical_coproduct``. The backend implementation is
+            selected here by the symmetric-algebra owner and returns only the
+            owned coproduct object and owned maps.
+            """
             return _commutative_algebra_coproduct_backend(left, right)
 
         def _commutative_algebra_pushout(self, left_map, right_map):
+            r"""Supply the symmetric-algebra pushout to the generic algebra owner.
+
+            Protected construction contract: the sole external caller role is
+            ``Algebras._categorical_pushout``. The specialized computation
+            remains in this owner and returns an owned pushout.
+            """
             return _commutative_algebra_pushout_backend(left_map, right_map)
 
     class ElementMethods:
@@ -1668,7 +1720,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
                 for _ in range(int(exponent))
             )
             base = domain.base_ring()
-            yield word, base._from_engine_element(_engine_ring(base)(coefficient))
+            yield word, _owned_engine_element(base, _engine_ring(base)(coefficient))
 
     def _symmetric_terms(self, element):
         domain = self.domain()
@@ -1699,7 +1751,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
                 for _ in range(int(exponent))
             )
             base = domain.base_ring()
-            yield factors, base._from_engine_element(_engine_ring(base)(coefficient))
+            yield factors, _owned_engine_element(base, _engine_ring(base)(coefficient))
 
     def _finite_engine_generator_labels(self):
         labels = self.domain().algebra_generating_set()

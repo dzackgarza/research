@@ -37,6 +37,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories._lattice import signature_pair
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -232,17 +233,14 @@ engine_capabilities.register(
 def _signature_at_real_embedding(lattice, embedding):
     order = lattice.base_ring()
     field = order.fraction_field()
-    field_engine = _engine_ring(field)
-    order_engine = _engine_ring(order)
-    embedding_engine = embedding._engine_morphism_crossing()
     rank = int(lattice.module_rank())
     rows = []
     for i in range(rank):
         row = []
         for j in range(rank):
-            entry = _engine_element(order, lattice.gram_tensor()[i, j])
-            image = embedding_engine(field_engine(order_engine(entry)))
-            row.append(SageAA(image))
+            entry = field(lattice.gram_tensor()[i, j])
+            image = embedding(entry)
+            row.append(SageAA(_engine_element(embedding.codomain(), image)))
         rows.append(row)
     eigenvalues = engine_matrix(SageAA, rows).eigenvalues()
     positive = sum(value > 0 for value in eigenvalues)
@@ -385,7 +383,7 @@ class NumberFieldVinbergLattice(SageObject):
                 numerator, denominator = pair
                 value += SageQQ(numerator) / SageQQ(denominator) * generator**exponent
             integral = order_engine(value)
-            coefficients.append(order._from_engine_element(integral))
+            coefficients.append(_owned_engine_element(order, integral))
         root = lattice(tuple(coefficients))
         if root.q() <= 0:
             raise ArithmeticError("VinbergsAlgorithmNF returned a non-positive root")
@@ -1052,7 +1050,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
 
             automorphisms = self.O()
             isometry_generators = tuple(
-                automorphisms._from_backend_row_action(rows)
+                automorphisms(tuple(self(tuple(row)) for row in rows))
                 for rows in record["isometry_generator_rows"]
             )
             return AllcockEdgewalkReport(
