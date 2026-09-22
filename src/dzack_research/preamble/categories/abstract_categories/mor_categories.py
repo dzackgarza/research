@@ -50,6 +50,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import (
     construction_scope,
     realize_owned_category,
@@ -118,7 +119,7 @@ def _arrow_is_inherited_from_subcategory(target, arrow: Morphism) -> bool:
         parent in MorCategories()
         and parent.domain_object() is target.domain_object()
         and parent.codomain_object() is target.codomain_object()
-        and parent.base_category().is_subcategory(target.base_category())
+        and _declared_category_reaches(parent, target)
     )
 
 
@@ -223,6 +224,26 @@ def _precomposable(second: Morphism, first) -> bool:
             return _category_accepts_morphism(base, first.domain(), first.codomain(), first)
         case _:
             return False
+
+
+@cached_function(key=lambda category, arrow: (id(category), id(arrow)))
+def _fixed_mor_arrow_object(category: FixedMorObject, arrow: Morphism) -> Parent:
+    r"""Construct the one object of a fixed Mor on this admitted arrow.
+
+    The two fixed-Mor realizations share this entry. Their raw arrows have
+    parent semantics, while their objects carry the fixed Mor's category
+    placement and the walking-arrow functor. Interning by those two
+    identities makes every spelling of an endpoint select the same object;
+    it does not identify two distinct arrow data by a sampled equality test.
+    """
+    if not category.accepts(arrow):
+        raise ValueError(f"{arrow} is not an arrow of {category}")
+    arrows = category.base_category().ArrowCategory()
+    represented = arrows(arrow)
+    return _object_of(
+        Category.join((arrows, category)),
+        functor=represented.functor(),
+    )
 
 
 class MorArrowIdentity(Morphism):
@@ -416,32 +437,36 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
             return False
         return self._already_parented_arrow(arrow)
 
-    def object(self, arrow: Morphism):
-        r"""``arrow`` as an object of this category: the object of ``Ar(C)`` on it."""
-        if not self.accepts(arrow):
-            arrow = self(arrow)
-        return self.base_category().ArrowCategory()(arrow)
+    def object(self, arrow: Parent | Morphism):
+        r"""``arrow`` as an object placed in this fixed Mor and in ``Ar(C)``."""
+        match arrow:
+            case Morphism():
+                if not self.accepts(arrow):
+                    arrow = self(arrow)
+                return _fixed_mor_arrow_object(self, arrow)
+            case _ if Category.__contains__(self, arrow):
+                return arrow
+            case _ if arrow in self.base_category().ArrowCategory():
+                return self.object(arrow.arrow())
+            case _:
+                raise TypeError("a fixed Mor object is constructed from an arrow or an arrow object")
 
     def _mor_endpoint(self, obj: Parent | Category | Morphism):
-        match obj:
-            case Morphism():
-                return self.object(obj)
-            case _ if obj in self.base_category().ArrowCategory():
-                return obj
-            case _:
-                return self.object(obj)
+        return self.object(obj)
 
     def __contains__(self, candidate: Any) -> bool:
-        # The candidate is arbitrary.  An object of ``Ar(C)`` lies here when
-        # its arrow does; otherwise only a map can be an arrow, and whether it
-        # is one of these is this Mor's own construction protocol.
+        r"""Read raw-map element membership separately from object placement.
+
+        An enriched Mor can be a mathematical set of maps, whose owner may
+        decide an exact element predicate (injectivity of a finite set map,
+        for example). An arrow object is instead placed in a category; its
+        underlying arrow is not reclassified by that element predicate.
+        """
         match candidate:
             case Morphism():
                 return self.accepts(candidate)
-            case _ if candidate in self.base_category().ArrowCategory():
-                return self.accepts(candidate.arrow())
             case _:
-                return False
+                return Category.__contains__(self, candidate)
 
     def super_categories(self):
         supers = []
@@ -636,38 +661,24 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
         return arrow.parent() is mor or _arrow_is_inherited_from_subcategory(self, arrow)
 
     def object(self, arrow: Parent | Morphism):
-        r"""``arrow`` as an object of this category: the object of ``Ar(C)`` on it."""
-        arrows = self.base_category().ArrowCategory()
+        r"""``arrow`` as an object placed in this fixed Mor and in ``Ar(C)``."""
         match arrow:
             case Morphism():
-                pass
+                return _fixed_mor_arrow_object(self, arrow)
+            case _ if Category.__contains__(self, arrow):
+                return arrow
+            case _ if arrow in self.base_category().ArrowCategory():
+                return self.object(arrow.arrow())
             case _:
-                arrow = arrow.arrow()
-        if not self.accepts(arrow):
-            raise ValueError(f"{arrow} is not an arrow of {self}")
-        return arrows(arrow)
+                raise TypeError("a fixed Mor object is constructed from an arrow or an arrow object")
 
     __call__ = object
 
     def _mor_endpoint(self, obj: Parent | Category | Morphism):
-        match obj:
-            case Morphism():
-                return self.object(obj)
-            case _ if obj in self.base_category().ArrowCategory():
-                return obj
-            case _:
-                return self.object(obj)
+        return self.object(obj)
 
     def __contains__(self, candidate: Any) -> bool:
-        # The candidate is arbitrary: an object of ``Ar(C)`` lies here when it
-        # lies over these endpoints; a map when this Mor accepts it.
-        match candidate:
-            case Morphism():
-                return self.accepts(candidate)
-            case _ if candidate in self.base_category().ArrowCategory():
-                return self.accepts(candidate.arrow())
-            case _:
-                return False
+        return Category.__contains__(self, candidate)
 
     def objects(self) -> IndexedFamily:
         arrows = self.arrow_set()
@@ -1027,12 +1038,14 @@ class MorCategories(OwnedCategoryBase):
         placement as its ``category()``.  A Mor realized on Sage's ``Mor``
         has one ``category()`` slot, holding the enrichment its arrows form (a
         set, a module), so its placement here is recorded where it was made:
-        by the family whose ``Of`` entry built it for its endpoints.
+        by the family whose ``Of`` entry built it for its endpoints. Read
+        that recorded construction; containment must not call ``Of`` again
+        and select or construct another Mor as a side effect.
         """
         match candidate:
             case CategoricalMor():
                 return (
-                    candidate.mor_family().Of(
+                    candidate.mor_family()._cached_between(
                         candidate.domain_object(), candidate.codomain_object()
                     )
                     is candidate

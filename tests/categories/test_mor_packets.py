@@ -36,6 +36,107 @@ def test_mor_and_end_families_recover_actual_external_mors() -> None:
         assert identity(value) == value
 
 
+def test_fixed_mor_objects_and_two_mor_endpoints_share_the_owned_constructor() -> None:
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    maps = Sets().Mor(source, target)
+    inclusion = maps(lambda point: target(int(point) + 1))
+    arrows = Sets().ArrowCategory()
+    generic = arrows(inclusion)
+    stated = maps.object(inclusion)
+
+    assert stated in maps
+    assert stated in arrows
+    assert generic not in maps
+    assert stated.arrow() is inclusion
+    assert maps.object(inclusion) is stated
+    assert maps.object(generic) is stated
+    assert maps.object(stated) is stated
+    assert generic not in maps
+
+    identities = maps.two_mor(inclusion, inclusion)
+    assert identities.domain() is stated
+    assert identities.codomain() is stated
+    assert maps.two_mor(generic, stated) is identities
+    assert maps.MorCategory().Of(stated, inclusion) is identities
+    assert maps.identity_2(inclusion).domain() is stated
+    assert identities.identity() * identities.identity() == identities.identity()
+
+
+def test_fixed_mor_endpoint_construction_rejects_a_different_fibre() -> None:
+    import pytest
+
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    maps = Sets().Mor(source, target)
+    reverse = Sets().Mor(target, source)(lambda point: source(int(point) % 2))
+    wrong = Sets().ArrowCategory()(reverse)
+
+    assert wrong not in maps
+    with pytest.raises(ValueError, match="wrong source or target"):
+        maps.object(wrong)
+    with pytest.raises(ValueError, match="wrong source or target"):
+        maps.two_mor(wrong, wrong)
+
+
+def test_the_unenriched_fixed_mor_constructor_retains_an_inherited_arrow() -> None:
+    from dzack_research.preamble.categories.abstract_categories.objects import Objects
+
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    inclusion = Sets().Mor(source, target)(lambda point: target(int(point) + 1))
+    maps = Objects().Mor(source, target)
+    stated = maps.object(inclusion)
+
+    assert stated in maps
+    assert stated.arrow() is inclusion
+    assert maps.object(inclusion) is stated
+    assert maps.object(stated) is stated
+    identities = maps.two_mor(inclusion, stated)
+    assert identities.domain() is stated
+    assert identities.codomain() is stated
+    assert maps.identity_2(inclusion).domain() is stated
+
+
+def test_a_fixed_mor_retains_an_object_already_placed_in_a_subcategory() -> None:
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    injections = Sets().Mono(source, target)
+    inclusion = injections(lambda point: target(int(point) + 1))
+    stated = injections.object(inclusion)
+    maps = Sets().Mor(source, target)
+
+    assert injections in MorCategories()
+    assert maps in MorCategories()
+    assert stated in injections
+    assert stated in maps
+    assert maps.object(stated) is stated
+    identities = injections.two_mor(stated, stated)
+    assert identities is maps.two_mor(stated, stated)
+    assert identities.domain() is stated
+    assert identities.codomain() is stated
+
+
+def test_an_exact_set_map_predicate_does_not_reclassify_its_arrow_object() -> None:
+    points = Sets.Δ[1]
+    maps = Sets().Mor(points, points)
+    injections = Sets().Mono(points, points)
+    swap = maps(lambda point: points(1 - int(point)))
+    constant = maps(lambda _point: points(0))
+    arrows = Sets().ArrowCategory()
+    generic = arrows(swap)
+
+    assert swap in injections
+    assert constant not in injections
+    assert generic not in injections
+    stated = injections.object(swap)
+    assert stated in injections
+    assert stated.arrow() is swap
+    assert generic not in injections
+
+
 def test_mono_epi_iso_and_aut_mor_families_have_the_expected_arrow_classes() -> None:
     source = Sets.Δ[1]
     target = Sets.Δ[3]
