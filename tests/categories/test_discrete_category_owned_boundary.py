@@ -86,3 +86,43 @@ def test_category_endpoints_do_not_infer_discreteness_or_set_enrichment() -> Non
     assert endpoint.represented_category() is set_mor
     assert endpoint in Cat()
     assert endpoint not in Sets()
+
+
+def test_a_mor_category_endpoint_retains_its_family_without_its_element_enrichment() -> None:
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+    points = finite_ordered_set(("s", "t"))
+    other = finite_ordered_set(("u", "v", "w"))
+    family = Sets().MorCategory()
+    maps = family.Of(points, other)
+    endpoint = Cat().object(maps)
+
+    assert maps in family
+    assert endpoint.represented_category() is maps
+    assert endpoint.category() is MorCategories()
+    assert endpoint in MorCategories()
+    assert endpoint in family
+    assert endpoint not in Sets()
+    assert endpoint not in Sets().EndCategory()
+    assert endpoint not in Sets().MonoCategory()
+    identity = Cat().identity(maps)
+    assert identity.domain() is endpoint
+    assert identity.codomain() is endpoint
+    assert identity * identity == identity
+
+
+def test_a_functor_category_endpoint_retains_the_selected_fixed_category() -> None:
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+
+    source = DiscreteCategory(finite_ordered_set((0, 1)))
+    target = DiscreteCategory(finite_ordered_set(("x", "y", "z")))
+    functors = Cat().Mor(source, target)
+    endpoint = Cat().object(functors)
+
+    assert endpoint.category() is MorCategories()
+    assert endpoint.represented_category() is functors
+    assert endpoint in Cat().MorCategory()
+    assert endpoint not in Cat().EndCategory()
+    assert endpoint not in DiscreteCategories()
+    assert Cat().object(functors) is endpoint

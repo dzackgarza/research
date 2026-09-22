@@ -44,7 +44,9 @@ class CategoryObject(OwnedParent, Parent):
     ``DiscreteCategories`` at a functor endpoint.  This is selected when the
     endpoint is constructed, not recovered by a containment predicate.
     A Mor parent's independent set/module enrichment is not a category of
-    categories and must not be transferred to this endpoint.
+    categories and must not be transferred to this endpoint.  Its constructed
+    placement among ``MorCategories`` is retained instead.  The endpoint
+    represents that exact category; it does not select another fixed Mor.
     """
 
     def __init__(
@@ -58,6 +60,11 @@ class CategoryObject(OwnedParent, Parent):
         match placement.is_subcategory(category_of_categories):
             case True:
                 super().__init__(category=placement)
+            case False if (
+                MorCategories().is_subcategory(category_of_categories)
+                and represented_category in MorCategories()
+            ):
+                super().__init__(category=MorCategories())
             case False:
                 super().__init__(category=category_of_categories)
 

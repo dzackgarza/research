@@ -23,6 +23,12 @@ def test_derivation_space_is_an_enriched_restricted_mor_parent() -> None:
     assert derivations not in Modules(QQ).MorCategory()
     assert derivations.arrow_set() not in derivations.mor_family()
     assert target not in MorCategories()
+    endpoint = Cat().object(derivations)
+    assert endpoint.represented_category() is derivations
+    assert endpoint.category() is MorCategories()
+    assert endpoint in derivations.mor_family()
+    assert endpoint not in Modules(algebra)
+    assert derivations in Modules(algebra)
     assert derivations.domain_object() is algebra
     assert derivations.codomain_object() is derivations.restricted_target_module()
     assert derivation.as_morphism() in derivations.arrow_set()
