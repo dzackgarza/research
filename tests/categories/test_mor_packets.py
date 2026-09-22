@@ -167,7 +167,7 @@ def test_mono_epi_iso_and_aut_mor_families_have_the_expected_arrow_classes() -> 
     assert auts.identity_automorphism() in auts
 
 
-def test_category_packet_transports_mor_end_aut_supercategories() -> None:
+def test_packet_families_do_not_confuse_fixed_categories_with_their_arrows() -> None:
     algebras = Algebras(QQ)
     modules = Modules(QQ)
     packet = algebras.category_packet()
@@ -180,13 +180,14 @@ def test_category_packet_transports_mor_end_aut_supercategories() -> None:
     assert module_packet.Mors() not in packet.Mors().super_categories()
     assert module_packet.Ends() not in packet.Ends().super_categories()
     assert module_packet.Auts() not in packet.Auts().super_categories()
-    assert packet.Mors() in packet.Monos().super_categories()
-    assert packet.Mors() in packet.Epis().super_categories()
-    assert packet.Mors() in packet.Isos().super_categories()
-    assert packet.Monos() in packet.Isos().super_categories()
-    assert packet.Epis() in packet.Isos().super_categories()
-    assert packet.Ends() in packet.Auts().super_categories()
-    assert packet.Isos() in packet.Auts().super_categories()
+    assert packet.Ends().is_subcategory(packet.Mors())
+    assert packet.Auts().is_subcategory(packet.Isos())
+    assert not packet.Monos().is_subcategory(packet.Mors())
+    assert not packet.Epis().is_subcategory(packet.Mors())
+    assert not packet.Isos().is_subcategory(packet.Mors())
+    assert not packet.Isos().is_subcategory(packet.Monos())
+    assert not packet.Isos().is_subcategory(packet.Epis())
+    assert not packet.Auts().is_subcategory(packet.Ends())
 
     algebra = QQ.free_module(("x",)).symmetric_algebra()
     algebra_mor_category = packet.Mors().Of(algebra, algebra)
@@ -393,6 +394,11 @@ def test_each_packet_family_contains_its_selected_fixed_mors() -> None:
     maps, monos, epis, isos, ends, auts = selected
     assert maps is ends
     assert isos is auts
+    assert ends in packet.Mors()
+    assert auts in packet.Isos()
+    assert auts not in packet.Ends()
+    assert auts not in packet.Monos()
+    assert auts not in packet.Epis()
     assert maps not in packet.Monos()
     assert maps not in packet.Epis()
     assert maps not in packet.Isos()
@@ -408,6 +414,55 @@ def test_each_packet_family_contains_its_selected_fixed_mors() -> None:
     assert rectangular_isos in packet.Isos()
     assert rectangular not in packet.Ends()
     assert rectangular_isos not in packet.Auts()
+
+
+def test_diagonal_family_inclusions_retain_the_selected_category_and_its_cat_endpoint() -> None:
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    points = finite_ordered_set(("left", "right"))
+    packet = Sets().category_packet()
+    # Select the diagonal first: membership in its superfamily must not need
+    # a later constructor call there or substitute a different fixed category.
+    end = packet.Ends().Of(points)
+    end_endpoint = Cat().object(end)
+    assert end in packet.Ends()
+    assert end in packet.Mors()
+    assert end_endpoint in packet.Ends()
+    assert end_endpoint in packet.Mors()
+    assert packet.Mors().Of(points, points) is end
+
+    aut = packet.Auts().Of(points)
+    aut_endpoint = Cat().object(aut)
+    assert aut in packet.Auts()
+    assert aut in packet.Isos()
+    assert aut_endpoint in packet.Auts()
+    assert aut_endpoint in packet.Isos()
+    assert packet.Isos().Of(points, points) is aut
+    assert aut is not end
+    assert aut not in packet.Ends()
+    assert aut_endpoint not in packet.Ends()
+    assert end not in packet.Auts()
+    assert end_endpoint not in packet.Auts()
+
+
+def test_wide_mor_families_do_not_classify_the_unrestricted_base_mor() -> None:
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+
+    sets = Sets()
+    wide = sets.WideSubcategory(sets.MonomorphismArrowCategory())
+    family = wide.MorCategory()
+    points = Sets.Δ[1]
+    maps = sets.Mor(points, points)
+    swap = maps(lambda point: points(1 - int(point)))
+    constant = maps(lambda _point: points(0))
+
+    assert wide.admits(swap)
+    assert not wide.admits(constant)
+    assert maps in sets.MorCategory()
+    assert maps not in family
+    assert family.is_subcategory(MorCategories())
+    assert not family.is_subcategory(sets.MorCategory())
 
 
 def test_inherited_family_construction_records_both_names_of_one_fixed_mor() -> None:
@@ -454,6 +509,9 @@ def test_a_linear_mor_does_not_become_the_set_mor_with_the_same_endpoints() -> N
     assert linear is not functions
     assert linear not in set_family
     assert functions not in linear_family
+    assert not linear_family.is_subcategory(set_family)
+    assert not Modules(QQ).EndCategory().is_subcategory(Sets().EndCategory())
+    assert not Modules(QQ).AutCategory().is_subcategory(Sets().AutCategory())
     assert identity in functions
     assert identity.parent() is linear
     assert linear in linear_family

@@ -3,9 +3,13 @@ r"""Mor/End/Mono/Epi/Iso/Aut category packets.
 For every category ``C`` and objects ``A,B`` in ``C`` we represent
 ``Hom_C(A,B)`` itself as a category.  Its objects are the actual arrows
 ``A -> B``.  In the absence of represented 2-morphisms this category is
-discrete.  The Mor/End/Aut families travel functorially with the main category
-graph: every supercategory ``C <= D`` induces corresponding supercategory
-edges ``Hom_C <= Hom_D``, ``End_C <= End_D`` and ``Aut_C <= Aut_D``.
+discrete.  An inclusion ``C <= D`` can include these fixed categories' arrows
+without identifying ``Hom_C(A,B)`` with ``Hom_D(A,B)``.  The families classify
+the selected category objects, not their individual arrows: their inclusions
+must preserve those category objects.  In particular ``Ends(C) <= Mors(C)``
+and ``Auts(C) <= Isos(C)`` reuse the same diagonal categories.  A functor
+changing the fixed category acts through ``induced_mor_functor``,
+``induced_end_functor`` or ``induced_aut_functor``.
 
 This is intentionally distinct from the *underlying Mor object parent*.  The
 latter may carry additional enrichment -- for example ``Hom_R(M,N)`` is an
@@ -1074,10 +1078,9 @@ class CategoryPacket:
 
     def __init__(self, category: Category) -> None:
         self._category = category
-        # Family objects are deliberately lazy.  A family category such as
-        # ``Mono_C`` has ``Hom_C`` as a semantic supercategory, and Sage asks
-        # for that supercategory while constructing ``Mono_C`` itself.  Eager
-        # construction therefore recurses through an only half-built packet.
+        # Family objects are deliberately lazy.  The End family has the Mor
+        # family as a semantic supercategory, which Sage requests during End
+        # initialization.  Eager construction would re-enter a half-built packet.
         # The packet object is interned first; each family can then safely ask
         # for its siblings during category initialization.
         self._homs = None
@@ -1208,7 +1211,15 @@ def _category_packet(category: Category) -> CategoryPacket:
 
 
 class _MorCategoryOf(OwnedCategoryBase):
-    r"""The family ``(A,B) |-> Hom_C(A,B)`` attached to one category ``C``."""
+    r"""The family ``(A,B) |-> Hom_C(A,B)`` attached to one category ``C``.
+
+    An object here is the exact category selected by ``Of``, not an arbitrary
+    subcategory of it.  Restricting its arrows or changing their base theory
+    need not select that same category, so neither operation declares an
+    inclusion of the classifying families.  A property category may still
+    reuse an individual fixed Mor literally; its constructor records that
+    shared object in both families.
+    """
 
     FixedCategoryClass = FixedMorCategory
     _declaration_name = "_MorCategory"
@@ -1300,11 +1311,7 @@ class _MorCategoryOf(OwnedCategoryBase):
         return self.Of(witness, witness)
 
     def super_categories(self):
-        supers = [
-            self.family_over(category)
-            for category in _packet_supercategories(self.base_category())
-        ]
-        return supers + [MorCategories()]
+        return [MorCategories()]
 
     def Of(self, domain: Parent, codomain: Parent) -> FixedMorObject:
         r"""Select the defining Mor object without losing inherited structure.
@@ -1527,13 +1534,16 @@ def _carves_the_same_mor(self, supercategory, domain, codomain) -> bool:
 
 
 class _EndCategoryOf(_MorCategoryOf):
-    r"""The family ``A |-> End_C(A)``."""
+    r"""The diagonal Mor family, with ``End_C(A) is Hom_C(A,A)``."""
 
     FixedCategoryClass = FixedEndCategory
     _declaration_name = "_EndCategory"
 
     def family_over(self, category: Category) -> _EndCategoryOf:
         return _category_packet(category).Ends()
+
+    def super_categories(self):
+        return [_category_packet(self.base_category()).Mors()]
 
     def an_object(self) -> Category:
         return self.Of(self.base_category().an_object())
@@ -1600,13 +1610,6 @@ class _RestrictedMorCategoryOf(_MorCategoryOf):
             and _declared_category_reaches(arrow_parent, selected)
         )
 
-    def super_categories(self):
-        inherited = [
-            self.family_over(category)
-            for category in _packet_supercategories(self.base_category())
-        ]
-        return [_category_packet(self.base_category()).Mors(), *inherited, MorCategories()]
-
 
 _RestrictedCategoryOf = _RestrictedMorCategoryOf
 
@@ -1655,23 +1658,9 @@ class _IsoCategoryOf(_MorCategoryOf):
     def family_over(self, category: Category) -> _IsoCategoryOf:
         return _category_packet(category).Isos()
 
-    def super_categories(self):
-        packet = _category_packet(self.base_category())
-        inherited = [
-            self.family_over(category)
-            for category in _packet_supercategories(self.base_category())
-        ]
-        return [
-            packet.Mors(),
-            packet.Monos(),
-            packet.Epis(),
-            *inherited,
-            MorCategories(),
-        ]
-
 
 class _AutCategoryOf(_IsoCategoryOf):
-    r"""The family ``A |-> Aut_C(A)``."""
+    r"""The diagonal Iso family, with ``Aut_C(A) is Iso_C(A,A)``."""
 
     FixedCategoryClass = FixedAutCategory
     _declaration_name = "_AutCategory"
@@ -1683,12 +1672,7 @@ class _AutCategoryOf(_IsoCategoryOf):
         return self.Of(self.base_category().an_object())
 
     def super_categories(self):
-        packet = _category_packet(self.base_category())
-        inherited = [
-            self.family_over(category)
-            for category in _packet_supercategories(self.base_category())
-        ]
-        return [packet.Ends(), packet.Isos(), *inherited, MorCategories()]
+        return [_category_packet(self.base_category()).Isos()]
 
     def Of(
         self,

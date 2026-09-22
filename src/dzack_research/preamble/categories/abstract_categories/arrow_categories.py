@@ -1323,9 +1323,6 @@ class WideMorCategoryConstruction(_RestrictedMorCategoryOf):
     def accepts(self, arrow: Morphism) -> bool:
         return self.base_category().admits(arrow)
 
-    def super_categories(self) -> list[Category]:
-        return [self.base_category().base_category().category_packet().Mors()]
-
 
 class _WideSubcategory(OwnedCategoryBase):
     r"""A category with the same objects as ``C`` and a selected class of arrows.
