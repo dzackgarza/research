@@ -368,3 +368,92 @@ def test_identity_functor_composition_requires_matching_categories() -> None:
         sets_identity.then(module_identity)
     with pytest.raises(ValueError, match="matching middle categories"):
         module_identity.then(sets_identity)
+
+
+def test_each_packet_family_contains_its_selected_fixed_mors() -> None:
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    points = finite_ordered_set(("left", "right"))
+    other = finite_ordered_set(("north", "south", "east"))
+    packet = Sets().category_packet()
+    families = (
+        packet.Mors(), packet.Monos(), packet.Epis(),
+        packet.Isos(), packet.Ends(), packet.Auts(),
+    )
+    selected = tuple(family.Of(points, points) for family in families)
+
+    for family, maps in zip(families, selected):
+        assert maps in family
+        assert maps in MorCategories()
+        assert maps in Cat()
+        assert points not in family
+
+    maps, monos, epis, isos, ends, auts = selected
+    assert maps is ends
+    assert isos is auts
+    assert maps not in packet.Monos()
+    assert maps not in packet.Epis()
+    assert maps not in packet.Isos()
+    assert monos not in packet.Mors()
+    assert epis not in packet.Mors()
+    assert isos not in packet.Mors()
+
+    # A family contains its chosen fixed categories, not every subcategory
+    # of a chosen category or every category with endpoints of the right type.
+    rectangular = packet.Mors().Of(points, other)
+    rectangular_isos = packet.Isos().Of(points, other)
+    assert rectangular in packet.Mors()
+    assert rectangular_isos in packet.Isos()
+    assert rectangular not in packet.Ends()
+    assert rectangular_isos not in packet.Auts()
+
+
+def test_inherited_family_construction_records_both_names_of_one_fixed_mor() -> None:
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+    points = finite_ordered_set(("a", "b", "c"))
+    inherited = FiniteSets().category_packet()
+    defining = Sets().category_packet()
+    pairs = (
+        (inherited.Mors(), defining.Mors()),
+        (inherited.Monos(), defining.Monos()),
+        (inherited.Epis(), defining.Epis()),
+        (inherited.Isos(), defining.Isos()),
+        (inherited.Ends(), defining.Ends()),
+        (inherited.Auts(), defining.Auts()),
+    )
+
+    for family, owner in pairs:
+        maps = family.Of(points, points)
+        # The canonical family's membership is available before its Of entry
+        # is called explicitly.  In particular End/Aut do not acquire it by
+        # a membership query that silently finishes the other construction.
+        assert maps in family
+        assert maps in owner
+        assert owner.Of(points, points) is maps
+        assert maps in family
+
+
+def test_a_linear_mor_does_not_become_the_set_mor_with_the_same_endpoints() -> None:
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+
+    module = QQ.free_module(("u", "v"))
+    linear_family = Modules(QQ).MorCategory()
+    set_family = Sets().MorCategory()
+    linear = linear_family.Of(module, module)
+    functions = set_family.Of(module, module)
+    identity = linear.identity()
+
+    assert linear in linear_family
+    assert functions in set_family
+    assert linear in MorCategories()
+    assert linear in Modules(QQ)
+    assert linear is not functions
+    assert linear not in set_family
+    assert functions not in linear_family
+    assert identity in functions
+    assert identity.parent() is linear
+    assert linear in linear_family

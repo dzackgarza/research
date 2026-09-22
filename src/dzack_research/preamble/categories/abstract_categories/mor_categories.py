@@ -382,6 +382,7 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
         if self._end_family is not None and self._end_family is not owner:
             raise ValueError("one fixed Mor category cannot carry two End-family roles")
         self._end_family = owner
+        owner._remember_between(self.domain_object(), self.codomain_object(), self)
 
     def end_family(self) -> _EndCategoryOf | None:
         return self._end_family
@@ -399,6 +400,7 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
         if self._aut_family is not None and self._aut_family is not owner:
             raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
         self._aut_family = owner
+        owner._remember_between(self.domain_object(), self.codomain_object(), self)
 
     def aut_family(self) -> _AutCategoryOf | None:
         return self._aut_family
@@ -597,6 +599,7 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
         if self._end_family is not None and self._end_family is not owner:
             raise ValueError("one fixed Mor category cannot carry two End-family roles")
         self._end_family = owner
+        owner._remember_between(self.domain_object(), self.codomain_object(), self)
 
     def end_family(self) -> _EndCategoryOf | None:
         return self._end_family
@@ -614,6 +617,7 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
         if self._aut_family is not None and self._aut_family is not owner:
             raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
         self._aut_family = owner
+        owner._remember_between(self.domain_object(), self.codomain_object(), self)
 
     def aut_family(self) -> _AutCategoryOf | None:
         return self._aut_family
@@ -1035,15 +1039,16 @@ class MorCategories(OwnedCategoryBase):
         r"""Whether ``candidate`` is a fixed Mor category.
 
         A fixed Mor category built over the owned category base records this
-        placement as its ``category()``.  A Mor realized on Sage's ``Mor``
-        has one ``category()`` slot, holding the enrichment its arrows form (a
-        set, a module), so its placement here is recorded where it was made:
+        placement as its ``category()``.  A Mor realized on Sage's ``Mor``,
+        or a restricted Mor with independently enriched elements, has one
+        ``category()`` slot holding that enrichment (a set, a module).  Its
+        placement here is therefore recorded where it was made:
         by the family whose ``Of`` entry built it for its endpoints. Read
         that recorded construction; containment must not call ``Of`` again
         and select or construct another Mor as a side effect.
         """
         match candidate:
-            case CategoricalMor():
+            case CategoricalMor() | RestrictedMorCategoryParent():
                 return (
                     candidate.mor_family()._cached_between(
                         candidate.domain_object(), candidate.codomain_object()
@@ -1279,6 +1284,13 @@ class _MorCategoryOf(OwnedCategoryBase):
         ) else None
 
     def _remember_between(self, domain, codomain, value):
+        r"""Record this family's constructed fixed Mor, including literal reuse.
+
+        All ``Of`` specializations finish here.  The canonical End/Aut role
+        attachments use this same record when an inherited family constructs
+        their shared object first.  Containment only reads the record; it
+        neither populates it nor infers a different family from the endpoints.
+        """
         self._objects[id(domain), id(codomain)] = value
         return value
 
@@ -1407,14 +1419,20 @@ class _MorCategoryOf(OwnedCategoryBase):
     Between = Of
 
     def __contains__(self, candidate: Any) -> bool:
-        r"""A fixed Mor category of this family: the object built for its endpoints."""
+        r"""Read the fixed Mor selected at this family's construction entry.
+
+        ``Of`` records both a newly constructed Mor and an inherited Mor that
+        is reused literally.  Membership reads that same identity-sensitive
+        record; it does not select a construction from the candidate's
+        endpoints or implicitly pass to another base category.  An End or
+        Aut attachment records its canonical owning family at attachment, so
+        an inherited constructor need not be followed by an owner query.
+        """
         if candidate not in MorCategories():
             return False
-        domain = candidate.domain_object()
-        codomain = candidate.codomain_object()
-        if domain not in self.base_category() or codomain not in self.base_category():
-            return False
-        return self.Of(domain, codomain) is candidate
+        return self._cached_between(
+            candidate.domain_object(), candidate.codomain_object()
+        ) is candidate
 
     def _repr_(self) -> str:
         return f"Mor-category packet of {self.base_category()}"
