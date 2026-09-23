@@ -10,8 +10,8 @@ def test_frobenius_topologically_generates_zhat_which_is_not_finitely_generated(
     no finite set generates it as an abstract group (Serre, *Local Fields*, XIII.1).
     """
     group = GF(5).absolute_galois_group()
-    generators = group.topological_group_generators()
+    topological_generators = group.topological_group_generators()
 
-    assert generators.cardinality() == 1
-    assert group.frobenius() in generators
+    assert topological_generators.cardinality() == 1
+    assert group.frobenius() in topological_generators
     assert group.is_finitely_generated() is False

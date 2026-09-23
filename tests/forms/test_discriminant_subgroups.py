@@ -11,8 +11,7 @@ def test_a2_discriminant_form_is_anisotropic_and_not_metabolic() -> None:
 def test_a1_four_has_diagonal_lagrangian_and_primary_component() -> None:
     a1 = Lattices(ZZ)("A1")
     discriminant = (a1 + a1 + a1 + a1).discriminant_module()
-    generators = discriminant.smith_form_module_generators()
-    diagonal = sum(generators, discriminant.zero())
+    diagonal = sum(discriminant.smith_form_module_generators(), discriminant.zero())
     subgroup = discriminant.subgroup_on((diagonal,))
 
     assert subgroup.cardinality() == 2
@@ -37,8 +36,7 @@ def test_orthogonal_quotient_and_overlattice_are_the_nikulin_pair() -> None:
     a1 = Lattices(ZZ)("A1")
     lattice = a1 + a1 + a1 + a1
     discriminant = lattice.discriminant_quadratic_form()
-    generators = discriminant.smith_form_module_generators()
-    diagonal = sum(generators, discriminant.zero())
+    diagonal = sum(discriminant.smith_form_module_generators(), discriminant.zero())
     subgroup = discriminant.subgroup_on((diagonal,))
 
     quotient_form = discriminant.orthogonal_quotient(subgroup)
@@ -72,19 +70,22 @@ def test_local_modification_is_exactly_p_primary_isotropic_glue() -> None:
 def test_discriminant_pairing_identifies_the_group_with_its_pontryagin_dual() -> None:
     discriminant = Lattices(ZZ)("A2").discriminant_bilinear_form()
     identification = discriminant.pontryagin_dual_identification()
-    generators = discriminant.module_generators()
 
-    character_values = set()
     for element in discriminant.elements():
         character = identification(element)
-        values = tuple(character(generator) for generator in generators)
-        character_values.add(values)
         assert all(
             character(target) == discriminant.b(element, target)
             for target in discriminant.elements()
         )
-
-    assert len(character_values) == discriminant.cardinality()
+        # Distinct elements give distinct characters: they differ on a module generator.
+        assert all(
+            any(
+                character(generator) != identification(other)(generator)
+                for generator in discriminant.module_generators()
+            )
+            for other in discriminant.elements()
+            if other != element
+        )
 
 
 def test_brown_invariant_is_the_exact_gauss_sum_phase() -> None:

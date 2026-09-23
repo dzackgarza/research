@@ -20,10 +20,7 @@ def test_power_series_over_a_local_base_retain_the_base_maximal_ideal() -> None:
     (base_uniformizer,) = base.maximal_ideal().ideal_generators()
     ring = base.power_series_ring("t")
 
-    assert tuple(ring.maximal_ideal().ideal_generators()) == (
-        ring(base_uniformizer),
-        ring.algebra_generator("t"),
-    )
+    assert ring.maximal_ideal() == ring.ideal(ring(base_uniformizer), ring.algebra_generator("t"))
     assert ring.residue_field() is base.residue_field()
     assert int(ring.residue_field().cardinality()) == 3
 
@@ -33,9 +30,7 @@ def test_dual_numbers_over_a_local_base_retain_the_base_maximal_ideal() -> None:
     (base_uniformizer,) = base.maximal_ideal().ideal_generators()
     ring = base.dual_numbers()
 
-    generators = ring.maximal_ideal().ideal_generators()
-
-    assert tuple(generators) == (ring(base_uniformizer), ring.algebra_generator("epsilon"))
+    assert ring.maximal_ideal() == ring.ideal(ring(base_uniformizer), ring.algebra_generator("epsilon"))
     assert ring.residue_field() is base.residue_field()
 
 

@@ -30,8 +30,6 @@ def test_fractional_ideal_keeps_module_generators_membership_and_inverse() -> No
 
 def test_the_generator_family_is_the_module_family_not_a_parallel_copy() -> None:
     ideal = ZZ.ideal(12, 18)
-    generators = tuple(ideal.module_generators())
-
-    assert generators
-    assert all(generator.parent() is ideal for generator in generators)
+    assert ideal.number_of_module_generators() > 0
+    assert all(generator.parent() is ideal for generator in ideal.module_generators())
     assert ideal.principal_generator() == 6

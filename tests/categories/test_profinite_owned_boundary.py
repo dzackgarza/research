@@ -12,13 +12,13 @@ def test_absolute_galois_group_of_F2_is_procyclic_on_frobenius() -> None:
     """
     galois = GF(2).absolute_galois_group()
     frobenius = galois.frobenius()
-    generators = galois.topological_group_generators()
+    topological_generators = galois.topological_group_generators()
     square = galois.subgroup((frobenius**2,))
 
     assert galois.is_profinite()
     assert galois.is_abelian()
-    assert generators.cardinality() == 1
-    assert frobenius in generators
+    assert topological_generators.cardinality() == 1
+    assert frobenius in topological_generators
     assert square.index() == 2
     assert square.fixed_field().cardinality() == 4
     assert galois.subgroup((frobenius**3,)).index() == 3
