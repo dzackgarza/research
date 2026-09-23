@@ -406,10 +406,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             # where tildes denote the selected lifts to P.  This is the same
             # exact presentation data used by quotient-coefficient module
             # equality and by localization fraction equality.
-            try:
-                has_presentation = source_ring._has_selected_exact_coefficient_presentation()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                has_presentation = False
+            has_presentation = (
+                source_ring._has_selected_exact_coefficient_presentation()
+            )
             if has_presentation:
                 presentation_ring = source_ring._exact_coefficient_presentation_ring()
                 lifted_ideal_generators = tuple(
@@ -517,10 +516,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def __contains__(self, candidate) -> bool:
             if getattr(candidate, "parent", lambda: None)() is self:
                 return True
-            try:
-                return self.contains_ambient_element(candidate)
-            except (TypeError, ValueError):
+            if candidate not in self.ring():
                 return False
+            return self.contains_ambient_element(candidate)
 
         def sum(self, other):
             _require_same_ring(self, other)
@@ -722,32 +720,35 @@ def _engine_ideal_syzygy_rows(ring, backend, selected):
     relation modulo ``J`` iff ``sum a_i f_i`` is a linear combination of the
     generators of ``J``.
     """
-    try:
-        syzygies = backend.syzygy_module()
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        engine = _engine_ring(ring)
-        if isinstance(engine, SageNumberFieldOrder):
+    engine = _engine_ring(ring)
+    match engine:
+        case SageNumberFieldOrder():
             return _order_ideal_syzygy_rows(engine, selected)
-        try:
+        case QuotientRing_generic():
             cover = engine.cover_ring()
             defining = engine.defining_ideal()
             lifted = tuple(engine(generator).lift() for generator in selected)
             augmented = cover.ideal(lifted + tuple(defining.gens()))
             syzygies = augmented.syzygy_module()
-        except (
-            AttributeError,
-            NotImplementedError,
-            TypeError,
-            ValueError,
-        ):
-            return None
 
-        rows = tuple(
-            tuple(engine(syzygies[position, column]) for column in range(len(selected)))
-            for position in range(syzygies.nrows())
-        )
-        zero = engine.zero()
-        return tuple(row for row in rows if any(coefficient != zero for coefficient in row))
+            rows = tuple(
+                tuple(
+                    engine(syzygies[position, column])
+                    for column in range(len(selected))
+                )
+                for position in range(syzygies.nrows())
+            )
+            zero = engine.zero()
+            return tuple(
+                row
+                for row in rows
+                if any(coefficient != zero for coefficient in row)
+            )
+        case _:
+            method = _optional_engine_method(backend, "syzygy_module")
+            if method is None:
+                return None
+            syzygies = method()
 
     return tuple(
         tuple(syzygies[position, column] for column in range(syzygies.ncols()))
