@@ -3958,6 +3958,7 @@ ArtinianRings = OwnedArtinianRings
 LocalRings = OwnedLocalRings
 AdicallyCompleteRings = OwnedAdicallyCompleteRings
 CompleteLocalRings = OwnedCompleteLocalRings
+Orders = OwnedOrders
 
 
 def CommutativeRings():

@@ -103,15 +103,6 @@ whole preamble for engine behaviour re-implemented locally is the TODO node
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
-### The tests are written against internals, not as mathematical sessions
-
-- **User action:** run the suite after a refactor of the preamble's internals.
-- **Expected:** every test is a mathematician's session and nothing else, the standard [`tests/constructions/CONTRIBUTING.md`](tests/constructions/CONTRIBUTING.md) records: names come from the session star import, objects are built by the canonical category constructors (a general category delegating to its specialized ones), and the assertions are mathematical facts a source states. A refactor that keeps the mathematics cannot turn such a test red.
-- **Actual:** 364 of the 668 test files outside the protected specifications import beyond the session: internal preamble modules (344 files; 89 import `categories.sets`, 53 `finite_ordered_sets`, 46 `ring_foundation`, and so on) or Sage and SymPy directly (100); 102 use Python introspection or control flow (`getattr`, `hasattr`, `isinstance`, `type`, `__dict__`, `try`). Such a test verifies wiring and representation, and fails when either changes. In the protected specifications themselves, 22 of 43 files import beyond the session; they are the owner's to correct.
-- **Owning boundary:** the non-protected tests under `tests/`.
-- **Example:** `rg -l --pcre2 '^\s*(from dzack_research(?!\.preamble\.all import \*)|from sage|import sage)' tests`.
-- **Work:** TODO node `test-suite-mathematical-assertions`.
-
 ### Intended research Sage runtime needs terminal verification
 
 - **User action:** run the repository's mandatory commit gate or regenerate the live preamble megadoc using the `SAGE_BIN` exported by the tracked `.envrc`.
