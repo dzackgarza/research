@@ -5283,6 +5283,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: `Algebras(R)(A, m)` as the one entry, with \(A\) an \(R\)-module and \(m\) an \(R\)-bilinear multiplication, producing \(\rho\colon R\to Z(A)\) from the scalar action of \(A\) (for \(R\) over itself, \(A=R\) as the free rank-one module with its multiplication, so \(\rho=\mathrm{id}_R\)); `M.algebra_from_multiplication(m)` calling that entry; `M.equip_bilinear_form(R, b)` calling the form-module entry with `(M, b)`, whose result answers `unformed_module()` with `M`; a Sage polynomial ring constructed as its module with its own multiplication through the same entry; an algebra Mor admitting a linear map by asking the module Mor whether `f composed with m_A = m_B composed with (f tensor f)`, and carrying `Unknown` as its hypothesis when that is not decidable.
 
+#### `CON-17`: The Hom Set Owns the Construction of Its Elements; a Function Space Is a Subobject of It
+
+- **Rule**: A space of maps \(X\to Y\) -- continuous, smooth, integrable, square-summable, bounded -- is a subobject of \(\operatorname{Mor}_{\mathbf C}(X, Y)\), cut out by its condition, with the structure its category adds. Its defining data are that inclusion and that structure. How an element is given belongs to the element constructor of \(\operatorname{Mor}_{\mathbf C}(X, Y)\), which is the one boundary: a callable, a lambda, a formula with its own bound variable (`f(t) = integral(x^2, x, 0, t)`), and in finitary cases a table, a matrix or a tensor. The subobject constructs its element there and admits it by its condition. A hom set has no variable. When a construction needs something standing for a point of \(X\) -- an indeterminate point, a generic point, a local parameter at a point -- it asks \(X\) for it and builds the map from that, never a variable attached to the hom set or to the subspace.
+
+- **Rationale**: A variable belongs to the formula that presents one map, not to the set of maps. Storing one on the space turns a representation choice for formulas into defining data, lets two spaces on one \(X\to Y\) differ by the name of a variable, and makes `space.indeterminate()` an element with no referent, from which incoherent statements (`2^x` as a statement about the space) then follow. Element construction outside \(\operatorname{Mor}(X, Y)\) also duplicates the one boundary where maps enter.
+
+- **Violation Example**: `Lp(p)` built with `indeterminate=SR.var("x")` and `ell(p)` with `SR.var("n")`, storing the variable and handing it out as `indeterminate()`, with `space(expr)` reading an expression in it as the map; a test writing `x = space.indeterminate()` and then `space(exp(-x^2))`.
+
+- **Correct Example**: \(L^2(\mathbb R)\) as the subobject of \(\operatorname{Mor}_{\mathbf{Set}}(\mathbb R,\mathbb R)\) of square-integrable maps (with its quotient by null functions where the classes are meant); `f(t) = exp(-t^2)` binds `t` in its own definition, `Sets().Mor(RR, RR)(f)` constructs the map, and the space admits it; a local parameter at a point of a scheme obtained from the scheme and used to build the map.
+
 * * *
 
 ### 4. Category Placement & Capability (`CAT-*`)
