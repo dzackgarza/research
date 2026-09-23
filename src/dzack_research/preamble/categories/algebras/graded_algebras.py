@@ -100,12 +100,7 @@ def _rank_one_unit_algebra(category):
 def _homogeneous_degree(element):
     r"""Return the degree owned by ``element.parent()``."""
     parent = element.parent()
-    try:
-        return parent.homogeneous_degree(element)
-    except AttributeError as error:
-        raise AssertionError(
-            "this graded object does not expose homogeneous element degrees"
-        ) from error
+    return parent.homogeneous_degree(element)
 
 
 class GradedAlgebraMorphism(Morphism):
