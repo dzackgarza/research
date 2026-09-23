@@ -360,6 +360,9 @@ def test_finite_form_group_predicates_do_not_replace_category_placement() -> Non
         QQ, ZZ, FractionFieldQuotients,
         TorsionBilinearFormModules, TorsionQuadraticFormModules,
     )
+    from dzack_research.preamble.categories.group.groups import (
+        GeneratedSubgroups, OwnedGroups, Subgroups,
+    )
 
     for category, modulus in (
         (TorsionBilinearFormModules(ZZ), 1),
@@ -392,13 +395,41 @@ def test_finite_form_group_predicates_do_not_replace_category_placement() -> Non
         assert IdentityFunctor(group)(identity) is identity
 
         trivial = group.subgroup_on(())
+        assert trivial in Subgroups(group)
+        assert trivial in GeneratedSubgroups(group)
+        assert trivial in OwnedGroups().Framed()
+        assert trivial not in Cat()
         assert group.one() in trivial
-        assert trivial.accepts(group.one())
         assert negative not in trivial
-        assert not trivial.accepts(negative)
         assert stated not in trivial
-        with pytest.raises((TypeError, ValueError)):
-            trivial.object(negative)
+        assert trivial.cardinality() == 1
+        assert tuple(trivial.group_generators()) == ()
+        with pytest.raises(ValueError):
+            trivial(negative)
+
+        generated = group.subgroup_on((negative,))
+        assert generated is not group
+        assert generated in Subgroups(group)
+        assert generated not in Cat()
+        assert generated.cardinality() == 2
+        assert tuple(generated.group_generators()) == (negative,)
+        assert generated.group_generators()[0] is negative
+        inclusion = generated.inclusion()
+        assert inclusion.domain() is generated and inclusion.codomain() is group
+        assert inclusion(negative) is negative
+        assert all(arrow.parent() is group for arrow in generated)
+        assert category.Iso(form, form) is group
+        assert category.Aut(form) is group
+
+        restricted = group.element_action().restrict_action(inclusion)
+        assert restricted.acting_group() is generated
+        assert restricted.act(negative, generator) == -generator
+
+        nested = generated.subgroup((negative,))
+        assert nested in Subgroups(generated)
+        assert nested.supergroup() is generated
+        assert nested.inclusion()(negative) is negative
+        assert all(arrow.parent() is group for arrow in nested)
 
         other_form = category.from_relations_and_gram([[3]], [[QQ(2) / 3]], values)
         assert other_form is not form
@@ -408,5 +439,24 @@ def test_finite_form_group_predicates_do_not_replace_category_placement() -> Non
         assert wrong_arrow not in group
         assert wrong_object not in group
         assert not group.accepts(wrong_arrow)
+        with pytest.raises(ValueError):
+            group(wrong_arrow)
+        with pytest.raises(ValueError):
+            group.subgroup((wrong_arrow,))
         with pytest.raises((TypeError, ValueError)):
             group.MorCategory().Of(wrong_object, stated)
+
+
+def test_generated_subgroups_keep_the_selected_generator_framing() -> None:
+    from dzack_research.preamble.categories.group.groups import (
+        GeneratedSubgroups, OwnedGroups,
+    )
+
+    group = OwnedGroups().S(3)
+    generator = group.group_generators()[0]
+    subgroup = group.subgroup((generator,))
+    assert subgroup in GeneratedSubgroups(group)
+    assert subgroup in OwnedGroups().Framed()
+    assert subgroup.selected_subgroup_generators()[0] is generator
+    assert subgroup.group_generators()[0] is generator
+    assert subgroup.inclusion()(generator) is generator

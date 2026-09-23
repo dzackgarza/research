@@ -32,14 +32,12 @@ The generated megadoc predates some source changes. Its placement diagnostics
 require regeneration at T before they can establish additional current findings.
 Execution ordering and closure live only in [TODO.md](TODO.md).
 
-### Automorphism subgroups reuse the ambient fixed-Mor family
+### Group-automorphism subgroups reuse the ambient fixed-Mor family
 
 For a subgroup `H <= Aut_C(X)`, its group inclusion and action on `X` must
 retain the subgroup restriction without changing the selected `Iso_C(X,X)`.
-Source inspection finds that `TorsionFormOrthogonalGroup.subgroup_on`
-(`categories/modules/framed/formed/torsion_form_modules.py`) and
-`GroupAutomorphismGroup._subgroup_from_engine` (`categories/group/groups.py`)
-construct another mixed Mor/category parent with the ambient parent's
+Source inspection finds that `GroupAutomorphismGroup._subgroup_from_engine`
+(`categories/group/groups.py`) constructs another mixed Mor/category parent with the ambient parent's
 `mor_family()` and endpoints. That family's canonical record still selects
 the full automorphism group. `MorCategories.__contains__` correctly reads the
 record, so the new parent's category role is not placed there; its independent

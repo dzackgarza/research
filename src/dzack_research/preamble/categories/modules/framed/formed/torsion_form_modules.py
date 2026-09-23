@@ -7,7 +7,6 @@ descent before equipping the module with the form.
 """
 
 from sage.categories.category import Category
-from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -29,7 +28,6 @@ from dzack_research.preamble.categories.group.groups import (
     Groups,
     OwnedFiniteGroups,
     OwnedGroups,
-    Subgroups,
     _group_framing_morphism,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -951,7 +949,7 @@ class TorsionFormAutomorphism(TorsionFormIsometry):
 
         Orthogonal-group admission and subgroup construction in this module
         may read it to ask the maintained engine about a raw group element.
-        It is not a category-membership datum and does not leave this owner.
+        It is not a category-membership datum or a public group result.
         """
         return self._engine_element
 
@@ -1010,43 +1008,21 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         form,
         *,
         quadratic: bool,
-        normalization=None,
-        engine_module=None,
-        engine_group=None,
-        supergroup=None,
     ) -> None:
-
         self._quadratic = bool(quadratic)
-        self._normalization = (
-            form.invariant_factor_form()
-            if normalization is None
-            else normalization
-        )
+        self._normalization = form.invariant_factor_form()
         self._normalized_form = self._normalization.codomain()
-        self._engine_module = (
-            _engine_torsion_form(
-                self._normalized_form,
-                quadratic=self._quadratic,
-            )
-            if engine_module is None
-            else engine_module
+        self._engine_module = _engine_torsion_form(
+            self._normalized_form,
+            quadratic=self._quadratic,
         )
-        self._engine_group_parent = (
-            self._engine_module.orthogonal_group()
-            if engine_group is None
-            else engine_group
-        )
-        self._supergroup = self if supergroup is None else supergroup
-        categories = [OwnedFiniteGroups(), OwnedGroups().Framed()]
-        if supergroup is not None:
-            self._preamble_supergroup = supergroup
-            categories.append(Subgroups(supergroup))
+        self._engine_group_parent = self._engine_module.orthogonal_group()
         CategoricalMor.__init__(
             self,
             mor_family,
             form,
             form,
-            category=Category.join(tuple(categories)),
+            category=Category.join((OwnedFiniteGroups(), OwnedGroups().Framed())),
         )
         realize_owned_category(self)
         engine_generators = tuple(self._engine_group_parent.gens())
@@ -1070,8 +1046,6 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         return self._quadratic
 
     def super_categories(self):
-        if self.supergroup() is not self:
-            return [self.supergroup()]
         packet = self.base_category().category_packet()
         form = self.domain()
         supers = [
@@ -1100,11 +1074,35 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         return self._normalization
 
     def supergroup(self):
-        return self._supergroup
+        return self
 
     def _engine_group(self):
         r"""Return the private Sage orthogonal-group parent."""
         return self._engine_group_parent
+
+    def _to_engine(self, automorphism):
+        r"""Lower a live automorphism under the owned-group engine contract.
+
+        The subgroup and G-set adapters in ``groups.py`` may use this
+        crossing; the engine value stays private to those adapters.
+        """
+        if not self.accepts(automorphism):
+            raise ValueError("the engine crossing requires an automorphism of this form")
+        return self._engine_group_parent(automorphism._engine())
+
+    def _engine_subgroup_from_generators(self, generators):
+        r"""Compute a generated subgroup without allocating another fixed Mor."""
+        return self._engine_group_parent.subgroup(
+            [self._to_engine(generator) for generator in generators]
+        )
+
+    def _to_subgroup_engine(self, automorphism, engine_subgroup):
+        r"""Lower an ambient automorphism into the subgroup's private engine."""
+        return engine_subgroup(self._to_engine(automorphism))
+
+    def _from_subgroup_engine(self, engine_element):
+        r"""Raise a subgroup element as an automorphism in the ambient group."""
+        return self._from_engine(engine_element)
 
     def _normalized_map(self, engine_automorphism):
 
@@ -1217,6 +1215,8 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def _element_constructor_(self, datum):
 
         if isinstance(datum, TorsionFormAutomorphism):
+            if datum.domain() is not self.domain():
+                raise ValueError("the automorphism must act on this finite form")
             if datum.parent() is self:
                 return datum
             return self._from_engine(datum._engine())
@@ -1227,9 +1227,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def accepts(self, candidate) -> bool:
         r"""Admit a raw form automorphism to this finite group of maps.
 
-        Membership of a subgroup can require the maintained engine's exact
-        element predicate. This is raw-arrow admission, also used before
-        constructing a fixed-Mor object, not category containment. The
+        A differently parented automorphism of the exact same form can be
+        checked by the maintained engine's exact element predicate. This is
+        raw-arrow admission, also used before constructing a fixed-Mor
+        object, not category containment. The
         inherited containment reads placement for the constructed objects and
         delegates only raw morphisms to this operation.
         """
@@ -1269,22 +1270,16 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         return orbits.orbit_of(element).points()
 
     def subgroup_on(self, group_generators):
+        r"""Return the generated subgroup with its ambient automorphisms unchanged.
+
+        ``Subgroups(self)`` owns its inclusion. The subgroup is a group, not
+        another realization of this form's fixed Iso category. Restrict the
+        form action along that inclusion to obtain its action on the form.
+        """
         supplied = tuple(group_generators)
         if any(generator.parent() is not self for generator in supplied):
             raise ValueError("orthogonal subgroup generators must belong to this group")
-        engine_subgroup = self._engine_group_parent.subgroup(
-            [generator._engine() for generator in supplied]
-        )
-        subgroup = TorsionFormOrthogonalGroup(
-            self.mor_family(),
-            self.domain(),
-            quadratic=self.is_quadratic(),
-            normalization=self._normalization,
-            engine_module=self._engine_module,
-            engine_group=engine_subgroup,
-            supergroup=self,
-        )
-        return subgroup
+        return self.subgroup(supplied)
 
     def stabilizer_of_element(self, element):
         r"""Return the point stabilizer through the represented G-set action."""
@@ -1316,21 +1311,8 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
 
     stabilizer_of_subobject = stabilizer_of_subgroup
 
-    def inclusion(self):
-        supergroup = self.supergroup()
-        return SetMorphism(
-            self.Mor(supergroup),
-            lambda element: (
-                element
-                if supergroup is self
-                else supergroup._from_engine(element._engine())
-            ),
-        )
-
     def _repr_(self):
-        if self.supergroup() is self:
-            return f"Orthogonal group of {self.domain()}"
-        return f"Subgroup of the orthogonal group of {self.domain()}"
+        return f"Orthogonal group of {self.domain()}"
 
 
 def _torsion_form_automorphism_from_engine_matrix(orthogonal_group, engine_matrix):
