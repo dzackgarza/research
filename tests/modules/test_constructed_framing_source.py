@@ -52,6 +52,27 @@ def test_free_framing_and_its_enriched_morphism_module_have_fixed_sources() -> N
     assert nested_zero(morphisms.zero()) == morphisms.zero()
 
 
+def test_native_module_category_and_framing_are_order_independent() -> None:
+    category_first = QQ.free_module(("category_x", "category_y"))
+    placement = category_first.category()
+    framing = category_first.framing_morphism()
+
+    assert category_first.category() is placement
+    assert category_first.framing_morphism() is framing
+    assert framing.domain() is category_first
+    assert framing.codomain() is category_first
+
+    framing_first = QQ.free_module(("framing_x", "framing_y"))
+    other_framing = framing_first.framing_morphism()
+    other_placement = framing_first.category()
+
+    assert framing_first.framing_morphism() is other_framing
+    assert framing_first.category() is other_placement
+    assert other_framing.domain() is framing_first
+    assert other_framing.codomain() is framing_first
+    assert other_placement is placement
+
+
 def test_the_integral_basis_is_the_order_module_frame() -> None:
     order = QuadraticField(5, "a").ring_of_integers()
     frame = order.framing_morphism()

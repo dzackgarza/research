@@ -58,3 +58,23 @@ def test_functor_forward_cache_and_chosen_image_presentations_are_distinct_data(
     assert presented.preimage() is source
     assert presented.underlying_image() is image
     assert presented.constructing_functor() is free
+
+
+def test_functor_image_category_and_underlying_image_are_order_independent() -> None:
+    ring = __import__("dzack_research.preamble.all", fromlist=["ZZ"]).ZZ
+    free = Sets().free_module_adjunction(ring).left_adjoint()
+
+    category_first = free.Image()(Sets.Δ[0])
+    placement = category_first.category()
+    underlying = category_first.underlying_image()
+    assert category_first.category() is placement
+    assert category_first.underlying_image() is underlying
+    assert free(category_first.preimage()) is underlying
+
+    image_first = free.Image()(Sets.Δ[1])
+    other_underlying = image_first.underlying_image()
+    other_placement = image_first.category()
+    assert image_first.underlying_image() is other_underlying
+    assert image_first.category() is other_placement
+    assert free(image_first.preimage()) is other_underlying
+    assert other_placement is placement

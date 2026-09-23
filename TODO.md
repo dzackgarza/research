@@ -213,19 +213,14 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`refinement-convergence`**. **Needs:** none.
-  **Owner and delta:** every remaining `refine`/placement mutation in ring, scheme, module and functor-image construction after the bootstrap repair.
-  **Invariants:** defining or selected structure exists at construction; later refinement only records a genuinely newly established mathematical fact. No accessor, engine query, import order or first arithmetic operation completes initialization retroactively.
-  **Closure specimens:** request categories and inherited operations in different orders for ring, scheme, module and functor-image objects and obtain the same mathematical data. Each surviving refinement identifies the later theorem and its evidence. Moving mutation behind a helper or converting it into a category flag cannot close the node.
-
-- [ ] **`probe-and-exception-residue`**. **Needs:** `refinement-convergence`.
+- [ ] **`probe-and-exception-residue`**. **Needs:** none.
   **Owner and delta:** all remaining `isinstance`, `getattr`, `hasattr`, `__dict__` probes and exception branches across preamble mathematics.
   **Invariants:** owned operations use the category's declared contract. Any sanctioned ingress/equality/containment or adapter probe is reviewed against its declaration; the method name alone grants no exemption from `CAT-23` or `OWN-05`. Runtime exceptions do not select an alternative mathematical algorithm; declared boundary rendering preserves the real failure.
   **Closure specimens:** supported input takes its owned route; a nearby unsupported representation fails at the stated frontier; an engine defect is not converted into a false value or another algorithm. Inspect each residual site and called helper. Search completeness is coverage evidence; replacing syntax without repairing data flow fails `DEV-68`.
 
 ## Public mathematical interaction
 
-- [ ] **`mathematical-return-types`**. **Needs:** `refinement-convergence`.
+- [ ] **`mathematical-return-types`**. **Needs:** none.
   **Owner and delta:** the full public return-annotation family using Parent, Element, CategoryObject or ad hoc Any, including functor images, cardinalities and scheme operations.
   **Invariants:** annotations name the actual mathematical codomain, refinement or honest union. A central mathematically named alias may express a limitation of Python syntax; a universal type with a new name may not hide it. This node does not optimize checker counts.
   **Closure specimens:** follow a functor image, a cardinality, a scheme map and a composite's components into operations their claimed codomain supports. Review every occurrence family and required central alias; no narrowing to the currently convenient engine realization or broad Any escape.

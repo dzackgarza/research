@@ -193,21 +193,26 @@ def test_number_field_orders_keep_the_integer_base_in_both_access_orders() -> No
     finite_integer_modules = Modules(ZZ).FinitelyGenerated()
 
     category_first = QuadraticField(5, "a_bootstrap").ring_of_integers()
+    category_first_placement = category_first.category()
     assert category_first in OwnedOrders()
     assert category_first in finite_integer_algebras
     assert category_first in finite_integer_modules
     assert category_first.base_ring() is ZZ
     assert category_first.as_algebra_over(ZZ) is category_first
     assert category_first.module_rank() == 2
+    assert category_first.category() is category_first_placement
 
     field = QuadraticField(2, "b_bootstrap")
     base_first = field.order_generated_by(field.primitive_element())
     assert base_first.base_ring() is ZZ
     assert base_first.as_algebra_over(ZZ) is base_first
     assert base_first.module_rank() == 2
+    base_first_placement = base_first.category()
     assert base_first in finite_integer_algebras
     assert base_first in finite_integer_modules
     assert base_first in OwnedOrders()
+    assert base_first.category() is base_first_placement
+    assert base_first_placement is category_first_placement
 
 
 def test_an_infinite_rank_integer_algebra_is_not_an_order() -> None:
