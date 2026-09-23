@@ -2420,10 +2420,22 @@ class TensorProductModuleMorphism(ModuleMorphism):
         )
 
     def _gram_entry(self, left_label, right_label):
-        return self(
-            self.left_module().module_generator(left_label),
-            self.right_module().module_generator(right_label),
-        )
+        r"""``b(e_l, e_r)``, the value of this map at the framing generator ``e_l ⊗ e_r``.
+
+        A map given by its values on the framing of the tensor product reads
+        that value; a map given by a function is evaluated.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import _tensor_pair
+
+        match self._generator_image:
+            case None:
+                return self(
+                    self.left_module().module_generator(left_label),
+                    self.right_module().module_generator(right_label),
+                )
+            case generator_image:
+                labels = self.domain().module_generating_set()
+                return generator_image(_tensor_pair(labels, left_label, right_label))
 
     def norm(self, element):
         if self.left_module() is not self.right_module():
