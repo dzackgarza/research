@@ -69,16 +69,11 @@ from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
 from sage.misc.cachefunc import cached_function
-from sage.misc.classcall_metaclass import ClasscallMetaclass
 from sage.misc.constant_function import ConstantFunction
-from sage.misc.inherit_comparison import InheritComparisonMetaclass
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.category_object import CategoryObject
 from sage.structure.dynamic_class import (
-    DynamicClasscallMetaclass,
     DynamicInheritComparisonClasscallMetaclass,
-    DynamicInheritComparisonMetaclass,
-    DynamicMetaclass,
     dynamic_class,
 )
 from sage.structure.parent import Parent as SageParent
@@ -97,37 +92,105 @@ if TYPE_CHECKING:
     type ConstructionData = Any
 
 
-class _DynamicABCMetaclass(DynamicMetaclass, ABCMeta):
+def _c3_merge(sequences: list[list[type]]) -> list[type]:
+    r"""The C3 merge of linearizations, as Python computes an MRO.
+
+    Reference: M. Simionato, *The Python 2.3 Method Resolution Order*
+    (https://docs.python.org/3/howto/mro.html), the algorithm CPython's
+    ``type.mro`` implements.
+    """
+    sequences = [list(sequence) for sequence in sequences if sequence]
+    merged: list[type] = []
+    while sequences:
+        for sequence in sequences:
+            head = sequence[0]
+            if not any(head in other[1:] for other in sequences):
+                break
+        else:
+            raise TypeError(
+                "Cannot create a consistent method resolution order (MRO) for the category graph: "
+                + ", ".join(sequence[0].__name__ for sequence in sequences)
+            )
+        merged.append(head)
+        sequences = [
+            (sequence[1:] if sequence[0] is head else sequence) for sequence in sequences
+        ]
+        sequences = [sequence for sequence in sequences if sequence]
+    return merged
+
+
+def _owned_providers(cls: type) -> tuple[type, ...]:
+    r"""The authored method classes a generated category class declares as its own bases."""
+    return vars(cls).get("_owned_providers", ())
+
+
+class _OwnedOrderMetaclass(type):
+    def mro(cls) -> list[type]:
+        r"""Order classes as the category graph orders the categories.
+
+        A generated category class has the authored ``ParentMethods`` (or
+        ``ElementMethods``, ``MorphismMethods``, ``SubcategoryMethods``) of its
+        level among its bases, so every category contributes two classes.
+        Plain C3 treats them as unrelated and may interleave other levels
+        between them, and two branches can then interleave them in orders no
+        single linearization satisfies, although the categories themselves
+        linearize.  Here each level is one node: the merge runs over the
+        generated classes, and each level's authored classes follow its
+        generated class immediately.  This is the order Sage's own
+        ``parent_class`` has, where each category is a single class.
+        ``type.mro`` is Python's documented hook for a metaclass to supply it.
+        """
+        own = _owned_providers(cls)
+        others = [base for base in cls.__bases__ if base not in own]
+        glued = {
+            provider
+            for ancestor in (cls, *(entry for base in cls.__bases__ for entry in base.__mro__))
+            for provider in _owned_providers(ancestor)
+        }
+
+        def level_nodes(sequence) -> list[type]:
+            return [entry for entry in sequence if entry not in glued]
+
+        merged = _c3_merge(
+            [level_nodes(base.__mro__) for base in others]
+            + [level_nodes(provider.__mro__[1:]) for provider in own]
+            + [level_nodes(others)]
+        )
+        # One authored class can serve several generated classes: a
+        # parameterized category's instances share it.  It then follows the
+        # last level that uses it, which every one of them precedes.
+        levels = [cls, *merged]
+        last_owner = {}
+        for index, entry in enumerate(levels):
+            for provider in own if entry is cls else _owned_providers(entry):
+                last_owner[provider] = index
+        order = []
+        for index, entry in enumerate(levels):
+            order.append(entry)
+            order.extend(provider for provider, owner in last_owner.items() if owner == index)
+        return order
+
+
+# One ordered metaclass over Sage's most derived dynamic metaclass, so it
+# dominates every mixture of Sage's four: Sage re-wraps an adopted parent's
+# class with the category's ``parent_class`` choosing among its own four, and
+# only a common subclass lets Python resolve that class.  ``ABCMeta`` comes
+# first in the crossed one so its ``__new__`` runs ahead of the Cython
+# metaclasses and records the abstract methods.
+class _OwnedDynamicMetaclass(_OwnedOrderMetaclass, DynamicInheritComparisonClasscallMetaclass):
     pass
 
 
-class _DynamicABCClasscallMetaclass(DynamicClasscallMetaclass, _DynamicABCMetaclass):
+class _DynamicABCMetaclass(ABCMeta, _OwnedDynamicMetaclass):
     pass
 
 
-class _DynamicABCInheritComparisonMetaclass(DynamicInheritComparisonMetaclass, _DynamicABCMetaclass):
-    pass
-
-
-class _DynamicABCInheritComparisonClasscallMetaclass(
-    DynamicInheritComparisonClasscallMetaclass,
-    _DynamicABCClasscallMetaclass,
-    _DynamicABCInheritComparisonMetaclass,
-):
-    pass
-
-
-for _abc_metaclass in (
-    _DynamicABCMetaclass,
-    _DynamicABCClasscallMetaclass,
-    _DynamicABCInheritComparisonMetaclass,
-    _DynamicABCInheritComparisonClasscallMetaclass,
-):
+for _owned_metaclass in (_OwnedDynamicMetaclass, _DynamicABCMetaclass):
     # Pickle dispatches a *class* on its metaclass, and Sage registers its four
     # dynamic metaclasses this way; without the same registration for the
-    # crossed ones, pickling a parent_class that carries obligations falls
-    # through to a by-name lookup that cannot resolve a dynamic class.
-    copyreg.pickle(_abc_metaclass, _abc_metaclass.__reduce__)
+    # owned ones, pickling a parent_class falls through to a by-name lookup
+    # that cannot resolve a dynamic class.
+    copyreg.pickle(_owned_metaclass, _owned_metaclass.__reduce__)
 
 
 def _abc_metaclass_for(bases: tuple[type, ...]) -> type:
@@ -152,21 +215,16 @@ def _abc_metaclass_for(bases: tuple[type, ...]) -> type:
     bases instead is what makes cooperative ``super()`` work, so the collection
     has to come from the provider being an ABC in its own right.
 
-    The four crossings above mirror Sage's own four dynamic metaclasses and,
-    critically, **inherit from each other the same way Sage's do**.  Generating
-    them independently (one cached ``type(base, ABCMeta)`` per Sage metaclass)
-    is wrong and was measured wrong: a class whose bases mix a plain-crossed
-    ``parent_class`` with a ``ClasscallMetaclass`` base then has two sibling
-    metaclasses and neither dominates, so Python refuses it with ``TypeError:
-    metaclass conflict``.  Preserving the lattice is what makes a Classcall
-    level compose with an obligation declared further down.
+    Both owned metaclasses derive from Sage's most derived dynamic metaclass,
+    so either dominates every Sage metaclass a base can carry; the crossed one
+    is chosen exactly when a base declares obligations.
     """
-    metaclass: type = _DynamicABCMetaclass
-    if any(isinstance(base, ClasscallMetaclass) for base in bases):
-        metaclass = _DynamicABCClasscallMetaclass
-    if any(isinstance(base, InheritComparisonMetaclass) for base in bases):
-        metaclass = _DynamicABCInheritComparisonClasscallMetaclass if metaclass is _DynamicABCClasscallMetaclass else _DynamicABCInheritComparisonMetaclass
-    assert all(issubclass(metaclass, type(base)) for base in bases), f"no crossed metaclass dominates the bases of {bases}"
+    match any(isinstance(base, ABCMeta) for base in bases):
+        case True:
+            metaclass = _DynamicABCMetaclass
+        case False:
+            metaclass = _OwnedDynamicMetaclass
+    assert all(issubclass(metaclass, type(base)) for base in bases), f"no owned metaclass dominates the bases of {bases}"
     return metaclass
 
 
@@ -589,7 +647,8 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         # for it earlier contradicts that order, which C3 refuses.
         declared = () if provider is None or any(provider in base.mro() for base in bases) else (provider,)
         carried = tuple(ancestor_provider for ancestor_provider in inherited if not any(ancestor_provider in base.mro() for base in bases))
-        bases = declared + carried + bases
+        providers = declared + carried
+        bases = providers + bases
         # A base reached twice -- a join whose members share a super category --
         # is one base, in the position it was first required.
         seen: dict[type, None] = {}
@@ -625,19 +684,12 @@ class OwnedCategoryMixin(CatConstructionsMixin):
                 return shared
 
         def build() -> type:
-            if not any(isinstance(base, ABCMeta) for base in bases):
-                return dynamic_class(
-                    class_name,
-                    bases,
-                    None,
-                    doccls=doccls,
-                    reduction=reduction,
-                    cache=cache,
-                )
-            # A level declared obligations, so this class carries them.  Built
-            # by hand because :func:`dynamic_class` takes no metaclass, so the
-            # crossed dynamic/ABCMeta one cannot be requested from it; this
-            # mirrors ``dynamic_class_internal`` in
+            # Built with the owned crossed metaclass, whose ``mro`` keeps each
+            # level's authored classes next to its generated class, and which
+            # carries any obligations a level declared.  Built by hand because
+            # :func:`dynamic_class` takes no metaclass, so the crossed
+            # dynamic/ABCMeta one cannot be requested from it; this mirrors
+            # ``dynamic_class_internal`` in
             # ``sage/structure/dynamic_class.py`` and reproduces exactly its
             # ``_reduction`` / ``_doccls`` / ``__doc__`` / ``__module__``
             # bookkeeping.  Two things there are deliberately not mirrored: its
@@ -653,6 +705,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
                     "_doccls": (doccls,),
                     "__doc__": doccls.__doc__,
                     "__module__": doccls.__module__,
+                    "_owned_providers": tuple(provider for provider in providers if provider in bases),
                 },
             )
 
