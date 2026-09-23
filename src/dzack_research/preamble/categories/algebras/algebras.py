@@ -3026,11 +3026,11 @@ def _own_algebra(structure_map):
         placement = Algebras(base).Associative().Unital()
         if base in OwnedRings().Commutative():
             placement = placement.Commutative()
-        match base in placement:
-            case True:
-                return base
-            case False:
-                return refine(base, placement)
+        assert base in placement, (
+            "the regular algebra structure of a self-based owned ring is fixed "
+            "by its ring constructor"
+        )
+        return base
     return _algebra_structure_view(structure_map.codomain(), structure_map)
 
 
