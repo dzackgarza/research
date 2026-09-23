@@ -339,7 +339,7 @@ from dzack_research.preamble.categories.rational_integral_stabilizers import (  
     FiniteCommensurabilityQuotient,
     IntegralStructureAction,
 )
-from dzack_research.preamble.categories.schemes import (
+from dzack_research.preamble.schemes import (
     ADELogPairs,
     AlgebraSheaves,
     AffineGroupSchemeActions,

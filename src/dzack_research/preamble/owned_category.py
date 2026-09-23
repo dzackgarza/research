@@ -906,28 +906,28 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
 def _engine_object_type(object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine):
     r"""The native parent/element realization, without a second category node."""
     realized = _implementation_with_engine(object_type, owner_object_type, object_engine)
-    elements = (
-        element_type
-        if element_engine is None
-        else _implementation_with_engine(element_type, owner_element_type, element_engine)
-    )
-    return type(realized)(
-        f"{realized.__name__}.ObjectType",
-        (realized,),
-        {
+    namespace = {
+        "_reduction": (
+            _engine_object_type,
+            (object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine),
+        ),
+        "_doccls": (object_engine,),
+        "__doc__": object_engine.__doc__,
+        "__module__": object_engine.__module__,
+    }
+    match element_engine:
+        case None:
+            # The category's element type is the implementation, which
+            # OwnedParent.element_class returns for a parent declaring no
+            # Element; declaring it would make Sage compose it with itself.
+            pass
+        case _:
             # Sage Parent.element_class consumes Element; the owned public
             # type protocol exposes the identical complete implementation.
-            "Element": elements,
-            "ElementType": elements,
-            "_reduction": (
-                _engine_object_type,
-                (object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine),
-            ),
-            "_doccls": (object_engine,),
-            "__doc__": object_engine.__doc__,
-            "__module__": object_engine.__module__,
-        },
-    )
+            elements = _implementation_with_engine(element_type, owner_element_type, element_engine)
+            namespace["Element"] = elements
+            namespace["ElementType"] = elements
+    return type(realized)(f"{realized.__name__}.ObjectType", (realized,), namespace)
 
 
 def _object_of(

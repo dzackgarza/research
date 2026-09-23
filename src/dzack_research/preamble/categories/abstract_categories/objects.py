@@ -6,6 +6,7 @@ from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 # The marker every owned category base carries, axiom categories included.
@@ -227,6 +228,9 @@ class Objects(OwnedCategory):
             which is the one boundary that admits foreign values.
             """
             return self._element_constructor_(*arguments, **options)
+
+    class ElementMethods(Element):
+        r"""The owned root of every element chain: the host element runtime, as ``ParentMethods`` is for objects."""
 
     class SubcategoryMethods:
         def Framed(self):

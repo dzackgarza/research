@@ -46,7 +46,6 @@ from dzack_research.preamble.categories.algebras.semigroup_algebras import (
 from dzack_research.preamble.categories.divisors.chow_groups import (
     ChowGroups,
     TorusInvariantCycleGroups,
-    _CycleDegreeConstruction,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
@@ -1684,15 +1683,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "a cycle degree lies between zero and the scheme dimension"
             )
             cone_dimension = dimension - cycle_dimension
-            return _integers()._fresh_free_module_on(
+            return TorusInvariantCycleGroups(_integers())(
+                self,
+                cycle_dimension,
                 self.fan().cones(cone_dimension),
-                _extra_categories=(TorusInvariantCycleGroups(_integers()),),
-                _extra_construction_data=(
-                    (
-                        "_cycle_degree_construction",
-                        _CycleDegreeConstruction(self, cycle_dimension),
-                    ),
-                ),
             )
 
         @cached_method

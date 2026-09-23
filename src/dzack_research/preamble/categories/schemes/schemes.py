@@ -3610,7 +3610,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             return _projective_point_blowup(self, point)
 
         @cached_method
-        def divisor_class_theory(
+        def picard_to_class_group_morphism(
             self,
             base_picard_group=None,
             base_class_group=None,
@@ -3624,7 +3624,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             ``Spec k``.
             """
             from dzack_research.preamble.categories.divisors.general_divisors import (
-                _projective_space_divisor_class_theory,
+                _projective_space_picard_to_class_group_morphism,
             )
 
             supplied = (base_picard_group, base_class_group, base_picard_to_class)
@@ -3644,13 +3644,13 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     base_picard = PicardGroups().trivial(base_scheme)
                     base_class = ClassGroups()(zero_module, scheme=base_scheme)
                     comparison = base_picard.module_category().Mor(base_picard, base_class)({})
-                    return _projective_space_divisor_class_theory(self, base_picard, base_class, comparison)
+                    return _projective_space_picard_to_class_group_morphism(self, base_picard, base_class, comparison)
                 case _:
                     assert all(value is not None for value in supplied), (
                         "projective divisor-class theory requires the base Picard group, "
                         "base class group, and their comparison together"
                     )
-                    return _projective_space_divisor_class_theory(self, *supplied)
+                    return _projective_space_picard_to_class_group_morphism(self, *supplied)
 
         def picard_group(self, base_picard_group=None):
             r"""Return the represented Picard group of this projective space.
@@ -3661,16 +3661,14 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             """
             match base_picard_group:
                 case None:
-                    return self.divisor_class_theory().picard_group()
+                    return self.picard_to_class_group_morphism().domain()
                 case _:
-                    from dzack_research.preamble.categories.divisors.general_divisors import (
-                        _projective_space_picard_group,
-                    )
+                    from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 
-                    return _projective_space_picard_group(self, base_picard_group)
+                    return PicardGroups().projective_bundle(self, base_picard_group)
 
         def class_group(self):
-            return self.divisor_class_theory().class_group()
+            return self.picard_to_class_group_morphism().codomain()
 
         def homogeneous_coordinate_generators(self):
             r"""Return the chosen homogeneous coordinate generators of this projective space."""

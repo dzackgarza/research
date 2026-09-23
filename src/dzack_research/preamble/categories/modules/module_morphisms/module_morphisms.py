@@ -2065,10 +2065,10 @@ def _initialize_module_mor_parent(
             # ``Hom_R(M, N)`` between presented modules is presented by the
             # model its endpoints determine (see ``internal_mor``).
             from dzack_research.preamble.categories.modules.internal_mor import (
-                __internal_mor_model_data_from_endpoints,
+                _internal_mor_model_data_from_endpoints,
             )
 
-            model, _inclusion, relation_matrix, presentation = __internal_mor_model_data_from_endpoints(
+            model, _inclusion, relation_matrix, presentation = _internal_mor_model_data_from_endpoints(
                 domain,
                 codomain,
             )
@@ -2154,16 +2154,22 @@ class _ModuleMorCommonMethods:
         return self.element_class(self, images)
 
     def is_projective(self):
-        r"""Answer ``Unknown`` for a Mor module with neither a matrix nor a presented model.
+        r"""Decide projectivity of ``Hom_R(M, N)`` where its endpoints determine it.
 
-        A matrix space is free on its matrix units and a Mor between modules
-        with chosen finite presentations is decided from its presented model;
-        both answer through their placement.  The Mor modules reaching this
-        method have neither, and projectivity is not decided for them.
+        Over a commutative ring, ``Hom_R(F_R(S), F_R(T))`` between finite
+        framed free modules is free on the matrix units ``T x S``, hence
+        projective.  This is asked while the Mor parent is being admitted
+        into its placement, so it is answered from the endpoints rather than
+        from that placement.  Otherwise projectivity is not decided here.
         """
         from sage.misc.unknown import Unknown
 
-        return Unknown
+        ring = self.base_ring()
+        match ring in OwnedRings().Commutative():
+            case True if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
+                return True
+            case _:
+                return Unknown
 
     def _apply_pointwise_scalar(self, scalar, element):
         return self.codomain().scalar_multiple(self.base_ring()(scalar), element)
@@ -2309,19 +2315,19 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     def presentation_matrix(self):
         r"""Return the relation rows of the presented model of this Mor module."""
         from dzack_research.preamble.categories.modules.internal_mor import (
-            __internal_mor_model_data,
+            _internal_mor_model_data,
         )
 
-        _model, _inclusion, relation_matrix, _presentation = __internal_mor_model_data(self)
+        _model, _inclusion, relation_matrix, _presentation = _internal_mor_model_data(self)
         return relation_matrix
 
     def presentation(self):
         r"""Return the presentation of the presented model of this Mor module."""
         from dzack_research.preamble.categories.modules.internal_mor import (
-            __internal_mor_model_data,
+            _internal_mor_model_data,
         )
 
-        _model, _inclusion, _relation_matrix, presentation = __internal_mor_model_data(self)
+        _model, _inclusion, _relation_matrix, presentation = _internal_mor_model_data(self)
         return presentation
 
     def linear_combination(self, coefficients):

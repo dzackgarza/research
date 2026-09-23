@@ -2377,19 +2377,19 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
             generator assignments; its endpoints determine it.
             """
             from dzack_research.preamble.categories.modules.internal_mor import (
-                __internal_mor_model_data,
+                _internal_mor_model_data,
             )
 
-            model, _inclusion, _relations, _presentation = __internal_mor_model_data(self)
+            model, _inclusion, _relations, _presentation = _internal_mor_model_data(self)
             return model
 
         def inclusion_into_generator_maps(self):
             r"""The inclusion of the presented model of ``Hom(M, N)`` into ``N^{gens(M)}``."""
             from dzack_research.preamble.categories.modules.internal_mor import (
-                __internal_mor_model_data,
+                _internal_mor_model_data,
             )
 
-            _model, inclusion, _relations, _presentation = __internal_mor_model_data(self)
+            _model, inclusion, _relations, _presentation = _internal_mor_model_data(self)
             return inclusion
 
         def _morphism_from_internal_model(self, model_element):
