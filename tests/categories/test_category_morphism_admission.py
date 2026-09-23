@@ -248,3 +248,68 @@ def test_core_of_cat_uses_the_same_category_endpoint_on_every_mor_entry() -> Non
     assert core.object(stated) is stated
     assert IdentityFunctor(core)(stated) is stated
     assert maps.identity().domain() is stated
+
+
+def test_native_functor_mor_retains_placed_natural_transformation_endpoints(
+    discrete_arrow: CategoryFunctorMorphism,
+) -> None:
+    arrow = discrete_arrow
+    functor = arrow.functor()
+    functors = Cat().Mor(arrow.domain(), arrow.codomain())
+    native = functors.arrow_set()
+    stated = native.object(functor)
+    assert stated is functors.object(arrow)
+    assert stated in native
+    assert stated in functors
+    assert arrow in native
+    assert arrow not in functors
+    assert functor not in native
+    assert functor not in functors
+
+    transformations = functors.Mor(stated, stated)
+    assert native.Mor(stated, stated) is transformations
+    assert native.MorCategory().Of(functor, arrow) is transformations
+    assert native.MorCategory().Between(stated, functor) is transformations
+    identity = transformations.identity()
+    assert identity.domain() is stated and identity.codomain() is stated
+    assert identity * identity == identity
+    assert IdentityFunctor(native)(stated) is stated
+    assert IdentityFunctor(native)(identity) is identity
+
+    wrong_functor = IdentityFunctor(functor.domain())
+    wrong_object = wrong_functor.object()
+    assert wrong_object not in native
+    assert wrong_object not in functors
+    with pytest.raises(TypeError):
+        native.MorCategory().Of(wrong_object, stated)
+    with pytest.raises(ValueError):
+        native.MorCategory().Of(wrong_functor, functor)
+
+
+def test_functor_construction_does_not_identify_equal_but_distinct_mor_domains() -> None:
+    left = finite_ordered_set(("a", "b"))
+    right = finite_ordered_set(("a", "b"))
+    assert left == right and left is not right
+    first = Sets().Mor(left, left)
+    second = Sets().Mor(right, right)
+    assert first is not second
+    selected = Cat().Mor(first, first)
+    other = Cat().Mor(second, second)
+    identity = IdentityFunctor(first)
+    wrong_identity = IdentityFunctor(second)
+    stated = selected.object(identity)
+    wrong_object = other.object(wrong_identity)
+    assert stated in selected
+    assert wrong_object not in selected
+    assert wrong_object not in selected.arrow_set()
+    assert selected.domain_category() is first
+    assert other.domain_category() is second
+
+    with pytest.raises(ValueError):
+        selected.object(wrong_identity)
+    with pytest.raises(ValueError):
+        selected.arrow_set()(wrong_identity)
+    with pytest.raises(ValueError):
+        selected.MorCategory().Of(wrong_identity, identity)
+    with pytest.raises(TypeError):
+        selected.MorCategory().Of(wrong_object, stated)

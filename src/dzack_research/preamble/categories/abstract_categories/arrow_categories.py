@@ -339,8 +339,9 @@ class _SubcategoryOfArrows(OwnedCategory):
     condition, :meth:`admits_arrow`.  Its entry reads an arrow as the functor
     out of the walking arrow it determines and builds the object on that
     functor, so the object is placed here and threads through ``Ar(C)``.  An
-    object of the declared categories whose arrow satisfies the condition lies
-    here as well.  A subcategory whose morphisms are all the squares between
+    object of a declared category does not acquire narrower placement merely
+    because its arrow satisfies the condition; it enters through this
+    constructor. A subcategory whose morphisms are all the squares between
     its objects declares no Mor family and has the Mor of ``Ar(C)``.
     """
 
