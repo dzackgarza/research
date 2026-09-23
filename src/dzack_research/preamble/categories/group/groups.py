@@ -862,10 +862,14 @@ class _GroupEngine:
         return self._from_engine(value)
 
     def __contains__(self, value) -> bool:
-        supergroup = self.supergroup()
-        if supergroup is not self:
-            return value in supergroup and _engine_subgroup_admits(self, value)
-        return isinstance(value, Element) and value.parent() is self
+        r"""Test group elements, not categorical objects of a mixed Mor parent."""
+        match value:
+            case Element() if self.supergroup() is self:
+                return value.parent() is self
+            case Element():
+                return value in self.supergroup() and _engine_subgroup_admits(self, value)
+            case _:
+                return False
 
     def __iter__(self):
         return (self._from_engine(element) for element in self._engine)
@@ -1854,7 +1858,7 @@ class GroupAutomorphismGroups(OwnedCategory):
     """
 
     def super_categories(self):
-        return [OwnedGroups(), OwnedGroups().Subobjects(self.supergroup())]
+        return [OwnedGroups()]
 
     class ParentMethods:
         @cached_method
@@ -3429,7 +3433,12 @@ class Subgroups(OwnedParameterizedCategory):
 
 
 class GeneratedSubgroups(OwnedParameterizedCategory):
-    r"""Subgroups equipped with the selected family used to generate them."""
+    r"""Subgroups equipped with the selected family used to generate them.
+
+    The map from the free group on that family is the selected framing
+    epimorphism. Its generator images are the supplied ambient elements,
+    not a new generating family chosen by the engine.
+    """
 
     @staticmethod
     def __classcall__(cls, supergroup):
@@ -3442,7 +3451,7 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
         return self.base().subgroup(())
 
     def super_categories(self):
-        return [Subgroups(self.base())]
+        return [Subgroups(self.base()), OwnedGroups().Framed()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -3452,6 +3461,19 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
         def __init__(self, selected_subgroup_generators, **rest) -> None:
             self._selected_subgroup_generators = selected_subgroup_generators
             super().__init__(**rest)
+            labels = selected_subgroup_generators
+            source = Groups.Free(index_set=labels)
+            generator_morphism = Sets().Mor(labels, self)(lambda generator: self(generator))
+            _fix_selected_framing(
+                self,
+                OwnedGroups(),
+                source,
+                labels,
+                generator_morphism,
+                lambda: _group_framing_morphism(
+                    self, source, labels, generator_morphism
+                ),
+            )
 
         def selected_subgroup_generators(self):
             return self._selected_subgroup_generators

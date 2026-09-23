@@ -2135,7 +2135,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             # this owned ring lies in that Sage category, which it does not and
             # need not (`ARC-00`).  Build the Mor directly at the engine
             # boundary instead, without the membership check.
-            return Mor(self, codomain, category=category, check=False)
+            from sage.categories.homset import Homset as SageHomset
+
+            return SageHomset(self, codomain, category=category, check=False)
 
         def _Hom_(self, codomain, category=None):
             rings = OwnedRings()

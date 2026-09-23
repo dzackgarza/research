@@ -2599,7 +2599,13 @@ class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
 
 
 class ModuleAutomorphismGroup(CategoricalMor):
-    r"""The unit group of ``End_R(M)``, retaining its actual module maps."""
+    r"""The unit group of ``End_R(M)``, retaining its actual module maps.
+
+    The inherited Mor containment distinguishes group elements from the
+    categorical objects constructed on them. Both retain their construction
+    placement; an invertible underlying endomorphism still enters the group
+    through its constructor rather than becoming a group element by inspection.
+    """
 
     Element = ModuleAutomorphism
 
@@ -2655,9 +2661,6 @@ class ModuleAutomorphismGroup(CategoricalMor):
 
     def module(self):
         return self.domain()
-
-    def __contains__(self, candidate):
-        return isinstance(candidate, ModuleAutomorphism) and candidate.parent() is self
 
     def is_finite(self):
         r"""A finite module has finitely many automorphisms; otherwise this is not decided here.

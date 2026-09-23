@@ -1696,7 +1696,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                         module_generators=self.module_generating_set(),
                     )
                 case False:
-                    rational = self.dual_module().equip_bilinear_form(fraction_field, inverse_components)
+                    rational = self.dual_module().equip_bilinear_form(fraction_field, dual_tensor)
                     return refine(rational, FormModules(ring).Nondegenerate())
 
         def metric_dual(self):

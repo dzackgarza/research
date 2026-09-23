@@ -1564,7 +1564,7 @@ class Modules(OwnedCategoryOverBaseRing):
                         self.module_generating_set(), _extra_categories=categories,
                         _extra_construction_data=construction_data,
                     )
-                case _ if _is_framed_free_module(self):
+                case _ if _represented_framed_free(self):
                     return self._fresh_free_module_on(
                         self.module_generating_set(), _extra_categories=categories,
                         _extra_construction_data=construction_data,

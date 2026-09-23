@@ -6,6 +6,7 @@ from sage.categories.category import Category
 from sage.categories.homset import Homset as SageHomset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 
@@ -109,6 +110,16 @@ class CategoryPacketMethods:
     category; ``Cat.ParentMethods`` names these same functions.
     """
 
+    @property
+    def ObjectType(self) -> type[Parent]:
+        r"""The implementation type for objects of this category."""
+        return self.parent_class
+
+    @property
+    def ElementType(self) -> type[Element]:
+        r"""The implementation type for elements of those objects."""
+        return self.element_class
+
     def ArrowCategory(self) -> Category:
         r"""Return \(\mathrm{Ar}(C) = [[1], C]\), the functor category out of the walking arrow."""
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -132,6 +143,12 @@ class CategoryPacketMethods:
         Ordinary categories already receive their objects. ``Cat`` overrides
         this at its own boundary because Sage morphisms use parent objects
         representing categories as their endpoints.
+
+        Protected construction protocol: Mor-family entries and categories
+        with the same objects may delegate to this method. Such a category
+        retains the base's endpoint representation, not its Mor family or
+        its arrow admission. The method does not establish membership;
+        the receiving Mor-family entry checks placement after normalization.
         """
         return obj
 

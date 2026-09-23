@@ -802,6 +802,8 @@ def _order_ideal_syzygy_rows(order, selected):
     of the products ``g_i b_j``; each kernel basis vector, read in blocks of
     ``n``, is one relation ``(a_1, ..., a_k)`` in ``O``.
     """
+    from sage.matrix.constructor import matrix
+
     basis = tuple(order(element) for element in order.basis())
     rank = len(basis)
     images = matrix(

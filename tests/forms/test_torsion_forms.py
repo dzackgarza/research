@@ -138,7 +138,11 @@ def test_owned_quadratic_orthogonal_group_uses_live_form_automorphisms() -> None
     )
     trivial = group.subgroup_on((group.one(),))
     assert trivial.supergroup() is group
-    assert group in trivial.super_categories()
+    from dzack_research.preamble.categories.group.groups import Subgroups
+
+    assert trivial in Subgroups(group)
+    assert trivial.inclusion().codomain() is group
+    assert all(trivial.inclusion()(element) is element for element in trivial)
 
 
 def test_bilinear_and_quadratic_orthogonal_groups_are_not_conflated() -> None:

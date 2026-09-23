@@ -83,9 +83,9 @@ class CategoryFunctorMorphism(Morphism):
 
     def __init__(self, parent: CategoryFunctorMor, functor: Functor) -> None:
         Morphism.__init__(self, parent)
-        if functor.domain() != self.domain().represented_category():
+        if functor.domain() is not self.domain().represented_category():
             raise ValueError("the functor has the wrong Cat-domain")
-        if functor.codomain() != self.codomain().represented_category():
+        if functor.codomain() is not self.codomain().represented_category():
             raise ValueError("the functor has the wrong Cat-codomain")
         self._functor = functor
 
@@ -171,7 +171,19 @@ class CategoryFunctorMor(CategoricalMor):
         return self.functor_category()._mor_endpoint(obj)
 
     def __contains__(self, candidate: Any) -> bool:
-        return parent(candidate) is self
+        r"""Read raw-arrow membership and the canonical functor-object placement.
+
+        This native Mor realizes ``[C,D]``; its object entry constructs in
+        that category, and its natural-transformation endpoints use the same
+        objects. Reading their placement must therefore use that owner, not
+        the native arrow-parent test. A raw functor action is still defining
+        data, not a placed object, even when it has the right endpoints.
+        """
+        match candidate:
+            case Morphism():
+                return self.accepts(candidate)
+            case _:
+                return candidate in self.functor_category()
 
     def _element_constructor_(self, functor):
         match functor:
@@ -463,15 +475,8 @@ class Cat(CategoryPacketMethods, Category):
 
             return _CoproductsOfCategory(index_category, self)
 
-        @property
-        def ObjectType(self) -> type[Parent]:
-            r"""Return the complete implementation type for objects of this category."""
-            return self.parent_class
-
-        @property
-        def ElementType(self) -> type[Element]:
-            r"""Return the complete implementation type for their elements."""
-            return self.element_class
+        ObjectType = CategoryPacketMethods.ObjectType
+        ElementType = CategoryPacketMethods.ElementType
 
         @abstract_method(optional=True)
         def _categorical_tensor_product(self, left: Parent, right: Parent) -> Parent:
@@ -1316,8 +1321,16 @@ class _FunctorCategory(FixedMorCategory):
         )
 
     def _has_endpoints_of(self, functor: Functor) -> bool:
-        r"""Whether ``functor`` runs from this category's domain to its codomain."""
-        return functor.domain() == self.domain_category() and functor.codomain() == self.codomain_category()
+        r"""Whether ``functor`` has the exact categories selected by this packet.
+
+        Equal-valued Mor parents may represent different endpoint objects.
+        Such a comparison cannot identify functor domains or codomains:
+        the category's identity-sensitive construction must retain both.
+        """
+        return (
+            functor.domain() is self.domain_category()
+            and functor.codomain() is self.codomain_category()
+        )
 
     @cached_method(key=lambda self, functor: id(functor))
     def _object_on(self, functor: Functor):
