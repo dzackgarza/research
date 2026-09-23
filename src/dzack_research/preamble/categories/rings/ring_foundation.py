@@ -3064,6 +3064,10 @@ class _OwnedRingElement(RingElement):
     def factorial(self):
         return _owned_engine_element(self.parent(), self._backend().factorial())
 
+    def binomial(self, m):
+        r"""The binomial coefficient of this element over the natural number ``m``."""
+        return _owned_engine_element(self.parent(), self._backend().binomial(int(m)))
+
     def is_square(self):
         return bool(self._backend().is_square())
 
@@ -3301,6 +3305,21 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         except (TypeError, ValueError):
             return False
         return True
+
+    def _coerce_map_from_(self, source):
+        r"""The owned rings that coerce into this one: those whose engine ring coerces into this ring's.
+
+        A coercion is the canonical ring morphism, and the owned rings
+        realize their engine rings, so the canonical morphisms between them
+        are the engine's: \(\mathbb{Z}\to\mathbb{Q}\), \(R\to R[x]\),
+        \(\mathcal{O}_K\to K\).  Sage builds the map from this ring's element
+        constructor, which reads the source element through its engine.
+        """
+        match source:
+            case _ if source in OwnedRings():
+                return self._engine.has_coerce_map_from(_engine_ring(source))
+            case _:
+                return None
 
     def zero(self):
         return self._from_engine_element(self._engine.zero())
@@ -3962,6 +3981,11 @@ LocalRings = OwnedLocalRings
 AdicallyCompleteRings = OwnedAdicallyCompleteRings
 CompleteLocalRings = OwnedCompleteLocalRings
 Orders = OwnedOrders
+
+
+def binomial(x, m):
+    r"""The binomial coefficient \(\binom{x}{m}\), for a natural number \(m\)."""
+    return x.binomial(m)
 
 
 def CommutativeRings():

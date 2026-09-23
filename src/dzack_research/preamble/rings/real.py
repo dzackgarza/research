@@ -18,6 +18,12 @@ from __future__ import annotations
 
 import operator
 
+from sage.functions import generalized as _sage_generalized
+from sage.functions import hyperbolic as _sage_hyperbolic
+from sage.functions import log as _sage_log
+from sage.functions import transcendental as _sage_transcendental
+from sage.functions import trig as _sage_trig
+from sage.misc import functional as _sage_functional
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ
@@ -370,9 +376,7 @@ class ExactRealNumber(FieldElement):
     def __pow__(self, exponent, modulus=None):
         if modulus is not None:
             raise TypeError("modular exponentiation is not defined in the real field")
-        if isinstance(exponent, ExactRealNumber):
-            exponent = exponent.expression()
-        return self.parent()(self._expression**exponent)
+        return self.parent()(self._expression ** _closed_exact_real_expression(exponent))
 
     def __rpow__(self, base):
         base_expression = _closed_exact_real_expression(base)
@@ -398,6 +402,36 @@ class ExactRealNumber(FieldElement):
 
     def tan(self):
         return self.parent()(self._expression.tan())
+
+    def sinh(self):
+        return self.parent()(self._expression.sinh())
+
+    def cosh(self):
+        return self.parent()(self._expression.cosh())
+
+    def tanh(self):
+        return self.parent()(self._expression.tanh())
+
+    def sech(self):
+        from sage.functions.hyperbolic import sech
+
+        return self.parent()(sech(self._expression))
+
+    def zeta(self):
+        r"""The Riemann zeta function at this real number, which must exceed 1."""
+        from sage.functions.transcendental import zeta
+
+        assert self > 1, "the Riemann zeta function is summed here only for real arguments above 1"
+        return self.parent()(zeta(self._expression))
+
+    def sgn(self):
+        r"""The sign of this real number, in the integers: \(1\), \(0\) or \(-1\)."""
+        integers = _own_ring(ZZ)
+        if self.is_zero() is True:
+            return integers(0)
+        positive = self.is_positive()
+        assert positive is True or positive is False, "the sign of this real number is undecided"
+        return integers(1 if positive else -1)
 
     def __abs__(self):
         return self.parent()(abs(self._expression))
@@ -598,6 +632,125 @@ class ExactRealField(UniqueRepresentation, Field):
 RR = ExactRealField()
 
 
+pi = RR.pi()
+e = RR.e()
+
+
+# The elementary functions of a session.  On a real number each is the
+# operation of the real field.  Any other argument -- a power series, a
+# matrix, the symbolic indeterminate of a function space -- goes to Sage's
+# function of the same name, which applies the argument's own method where it
+# has one.
+
+
+def sqrt(x):
+    r"""The square root of ``x``; of a real number, the nonnegative real root."""
+    match x:
+        case _ if x in RR:
+            return RR(x).sqrt()
+        case _:
+            return _sage_functional.sqrt(x)
+
+
+def exp(x):
+    r"""The exponential of ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).exp()
+        case _:
+            return _sage_log.exp(x)
+
+
+def log(x, base=None):
+    r"""The logarithm of ``x``, natural unless ``base`` is given."""
+    match x:
+        case _ if x in RR:
+            return RR(x).log(base)
+        case _:
+            return _sage_functional.log(x) if base is None else _sage_functional.log(x, base)
+
+
+def sin(x):
+    r"""The sine of ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).sin()
+        case _:
+            return _sage_trig.sin(x)
+
+
+def cos(x):
+    r"""The cosine of ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).cos()
+        case _:
+            return _sage_trig.cos(x)
+
+
+def tan(x):
+    r"""The tangent of ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).tan()
+        case _:
+            return _sage_trig.tan(x)
+
+
+def sinh(x):
+    r"""The hyperbolic sine of ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).sinh()
+        case _:
+            return _sage_hyperbolic.sinh(x)
+
+
+def cosh(x):
+    r"""The hyperbolic cosine of ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).cosh()
+        case _:
+            return _sage_hyperbolic.cosh(x)
+
+
+def tanh(x):
+    r"""The hyperbolic tangent of ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).tanh()
+        case _:
+            return _sage_hyperbolic.tanh(x)
+
+
+def sech(x):
+    r"""The hyperbolic secant of ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).sech()
+        case _:
+            return _sage_hyperbolic.sech(x)
+
+
+def sgn(x):
+    r"""The sign of ``x``: \(1\), \(0\) or \(-1\) for a real number."""
+    match x:
+        case _ if x in RR:
+            return RR(x).sgn()
+        case _:
+            return _sage_generalized.sgn(x)
+
+
+def zeta(x):
+    r"""The Riemann zeta function at ``x``."""
+    match x:
+        case _ if x in RR:
+            return RR(x).zeta()
+        case _:
+            return _sage_transcendental.zeta(x)
+
+
 def _owned_real_from_engine_expression(value) -> ExactRealNumber:
     r"""Raise a private exact symbolic expression into the owned real field.
 
@@ -615,6 +768,20 @@ def _restore_exact_real(expression: Expression) -> ExactRealNumber:
 
 
 __all__ = [
+    "cos",
+    "cosh",
+    "e",
+    "exp",
+    "log",
+    "pi",
+    "sech",
+    "sgn",
+    "sin",
+    "sinh",
+    "sqrt",
+    "tan",
+    "tanh",
+    "zeta",
     "ExactRealField",
     "ExactRealNumber",
     "RR",
