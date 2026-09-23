@@ -143,3 +143,21 @@ report, and pytest aborts with `INTERNALERROR ... Failed: Timeout`;
 
 Route chosen: a triage catalogue run resumes after the interrupted file; the
 gated default run treats any test at its time limit as a failed run anyway.
+
+### Sage's default conversion into a parent needs the source in Sage's categories
+
+`SR(x)` for an element of a parent whose category is not one of Sage's own
+(the owned `ZZ`) fails with `ValueError: Integer Ring is not in Category of
+sets with partial maps`. `Parent._internal_convert_map_from` finds no
+registered map and falls back to `_generic_convert_map`. That builds
+`DefaultConvertMap_unique(S, self)`, whose homset is
+`S.Hom(self, category=self.category()._meet_(S.category()))`. The meet of the
+symbolic ring's category and an owned category is Sage's
+`SetsWithPartialMaps`, and `Hom` asserts that both endpoints lie in it
+(`sage/structure/parent.pyx` 1963, `sage/categories/homset.py` 449). The
+coercion model's `bin_op` does not reach the element's `_symbolic_`, so
+`1/2 + pi` and `binomial(5, 2)` fail the same way. Observed with Sage 10.9
+(`sage-dev-allopts`) on 2026-09-23.
+
+Route chosen: none yet; `TODO.md` node `triage-owned-rings-sage-coercion`
+holds the decision.
