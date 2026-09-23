@@ -32,11 +32,12 @@ def test_the_gaussian_convolved_with_one_is_root_pi_on_every_representative() ->
     r"""$(e^{-x^2} * 1)(y) = \int e^{-x^2}\,dx = \sqrt\pi$, and changing $1$ at $0$ does not change it."""
     first = Lp(1)
     bounded = Lp(oo)
-    x = first.indeterminate()
-    f = first.quotient_by_null_functions()(first(exp(-(x**2))))
+    g(t) = exp(-t^2)
+    s(u) = sgn(u)^2
+    f = first.quotient_by_null_functions()(first(g))
     target = bounded.quotient_by_null_functions()
     one = target(bounded.one())
-    punctured_one = target(bounded(sgn(x) ** 2))
+    punctured_one = target(bounded(s))
     pairing = f.parent().convolution_pairing(target)
     expected = target(bounded(sqrt(pi)))
 

@@ -9,13 +9,16 @@ def test_maclaurin_and_taylor_coefficients_of_elementary_functions() -> None:
     Source: Apostol, *Calculus* I, §10.7 and §10.9.
     """
     maps = C(oo, RR)
-    x = maps.indeterminate()
-    exponential = maps(exp(x))
+    e(t) = exp(t)
+    s(u) = sin(u)
+    g(v) = 1 / (1 + v)
+    c(w) = w^3
+    exponential = maps(e)
     maclaurin = exponential.maclaurin_series()
     at_one = exponential.taylor_series(1)
-    sine = maps(sin(x)).maclaurin_series()
-    geometric = maps(1 / (1 + x)).maclaurin_series()
-    cubic = maps(x**3).maclaurin_series()
+    sine = maps(s).maclaurin_series()
+    geometric = maps(g).maclaurin_series()
+    cubic = maps(c).maclaurin_series()
 
     assert maclaurin[0] == 1
     assert maclaurin[1] == 1
@@ -38,7 +41,8 @@ def test_the_l2_norm_squared_of_the_gaussian_is_root_pi_over_two() -> None:
     r"""$\|e^{-x^2}\|_2^2 = \int_{\mathbb{R}} e^{-2x^2}\,dx = \sqrt{\pi/2}$."""
     space = Lp(2)
     maps = C(oo, RR)
-    gaussian = space(maps(exp(-(maps.indeterminate() ** 2))))
+    g(t) = exp(-t^2)
+    gaussian = space(maps(g))
 
     assert space.b(gaussian, gaussian) == RR(sqrt(pi / 2))
     assert space.q(gaussian) == RR(sqrt(pi / 2))
@@ -47,7 +51,8 @@ def test_the_l2_norm_squared_of_the_gaussian_is_root_pi_over_two() -> None:
 def test_the_ell2_norm_squared_of_the_geometric_sequence_is_four_thirds() -> None:
     r"""$\sum_{n \ge 0} (2^{-n})^2 = \sum 4^{-n} = 4/3$."""
     space = ell(2)
-    geometric = space(2 ** (-space.indeterminate()))
+    a(k) = 2^(-k)
+    geometric = space(a)
 
     assert space.b(geometric, geometric) == RR(QQ(4) / 3)
     assert space.q(geometric) == RR(QQ(4) / 3)
@@ -55,10 +60,10 @@ def test_the_ell2_norm_squared_of_the_geometric_sequence_is_four_thirds() -> Non
 
 def test_the_holder_conjugate_of_ell_p_is_ell_q_with_one_over_p_plus_one_over_q_one() -> None:
     r"""$\ell^1 \times \ell^\infty \to \mathbb{R}$ sends $(2^{-n}, 1)$ to $2$; $\ell^2$ is its own conjugate; $\ell^3$ pairs with $\ell^{3/2}$."""
-    n = ell(1).indeterminate()
+    a(k) = 2^(-k)
     holder = ell(1) * ell(oo)
 
-    assert holder.pairing(ell(1)(2 ** (-n)), ell(oo)(1)) == RR(2)
+    assert holder.pairing(ell(1)(a), ell(oo)(1)) == RR(2)
     assert ell(2).pairing_module().right_module().integrability_exponent() == 2
     assert ell(3).pairing_module().right_module().integrability_exponent() == QQ(3) / 2
 
@@ -72,12 +77,16 @@ def test_ell2_pairings_sum_classical_series() -> None:
     $\ell^1 \times \ell^\infty$ pairing gives $\sum 1/n! = e$.  Source:
     Knopp, *Theory and Application of Infinite Series*, §§26, 32, 54.
     """
-    n = ell(2).indeterminate()
-    geometric = ell(2)(2 ** (-n))
-    harmonic = ell(2)(1 / (n + 1))
-    basel = ell(2)(1 / (n + 1) ** 2)
-    alternating = ell(2)((-1) ** n / (n + 1))
-    exponential = ell(2)(1 / factorial(n))
+    a(k) = 2^(-k)
+    h(m) = 1 / (m + 1)
+    b(j) = 1 / (j + 1)^2
+    s(i) = (-1)^i / (i + 1)
+    e(l) = 1 / factorial(l)
+    geometric = ell(2)(a)
+    harmonic = ell(2)(h)
+    basel = ell(2)(b)
+    alternating = ell(2)(s)
+    exponential = ell(2)(e)
 
     assert ell(2).b(harmonic, harmonic) == RR(pi**2 / 6)
     assert ell(2).b(basel, basel) == RR(pi**4 / 90)
@@ -85,4 +94,4 @@ def test_ell2_pairings_sum_classical_series() -> None:
     assert ell(2).b(geometric, harmonic) == RR(2 * log(2))
     assert ell(2).b(harmonic, alternating) == RR(pi**2 / 12)
     assert ell(2).b(exponential, geometric) == RR(exp(QQ(1) / 2))
-    assert (ell(1) * ell(oo)).pairing(ell(1)(1 / factorial(n)), ell(oo)(1)) == RR(exp(1))
+    assert (ell(1) * ell(oo)).pairing(ell(1)(e), ell(oo)(1)) == RR(exp(1))

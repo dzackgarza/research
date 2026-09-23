@@ -27,8 +27,8 @@ def test_the_form_on_a_gaussian() -> None:
     r"""$\int_{\mathbb R} e^{-2t^2}\,dt = \sqrt{\pi/2}$, and $b(f, f) = 2q(f)$."""
     space = l2()
     maps = C(Infinity, RR)
-    t = maps.indeterminate()
-    gaussian = space(maps(exp(-t ^ 2)))
+    g(t) = exp(-t^2)
+    gaussian = space(maps(g))
     assert space.b(gaussian, gaussian) == sqrt(pi / 2)
     assert space.b(gaussian, gaussian) == 2 * space.q(gaussian)
 

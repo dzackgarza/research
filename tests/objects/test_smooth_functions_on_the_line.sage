@@ -24,8 +24,8 @@ def test_there_are_continuum_many_smooth_functions() -> None:
 def test_evaluating_a_gaussian() -> None:
     r"""$g(t) = e^{-t^2}$ has $g(0) = 1$, so $(g^2)(0) = 1$ and $(g + g)(0) = 2$."""
     maps = smooth()
-    t = maps.indeterminate()
-    gaussian = maps(exp(-t ^ 2))
+    g(t) = exp(-t^2)
+    gaussian = maps(g)
     assert gaussian(0) == 1
     assert (gaussian * gaussian)(0) == 1
     assert (gaussian + gaussian)(0) == 2
