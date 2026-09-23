@@ -58,11 +58,11 @@ In various degenerations -- such as those of Enriques surfaces, realized via K3 
 We give below several examples of the polytopes for such surfaces, indicating which sides are *long* and *short*.
 In particular, folded $BC$-type surfaces appear as irreducible components in the boundary of $\ksbacpt{\fent}$.
 
-![The $A_3$ surface.](figures/ade-diagrams/A_3.png){width=48%} ![The $A_4^-$ surface.](figures/ade-diagrams/A_4_minus.png){width=48%}
+![The $A_3$ surface.](figures/rendered/A3.pdf){width=48%} ![The $A_4^-$ surface.](figures/rendered/A4-minus.pdf){width=48%}
 
 *Left:* the $A_3$ surface. *Right:* the $A_4^-$ surface.
 
-![The $D_5$ surface.](figures/ade-diagrams/D_5.png){width=48%} ![The $E_8$ surface.](figures/ade-diagrams/E_8.png){width=48%}
+![The $D_5^-$ surface.](figures/rendered/D5.pdf){width=48%} ![The ${}^-E_8^-$ surface.](figures/rendered/E8.pdf){width=48%}
 
-*Left:* the $D_5$ surface. *Right:* the $E_8$ surface.
+*Left:* the $D_5^-$ surface. *Right:* the ${}^-E_8^-$ surface.
 
