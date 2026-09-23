@@ -19,7 +19,7 @@ coble/tables/dynkin-diagrams.md
 * * *
 
 ::: {#fig-appendix-1 .figure}
-\input{tikz/fig_Coxeter_Parabolics_L_Co_1.tex}
+\input{tikz/fig_Coxeter_Diagram_L_Co_1.tex}
 
 Coxeter diagrams for $T_\Co$ and $T_\En$ parabolics.
 :::
