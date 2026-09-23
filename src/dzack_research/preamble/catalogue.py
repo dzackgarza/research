@@ -4,6 +4,7 @@ from collections.abc import Mapping
 from functools import cache
 
 from sage.combinat.root_system.cartan_type import CartanType
+from sage.misc.lazy_attribute import lazy_class_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import (
@@ -21,34 +22,6 @@ from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import tensor
 
 ZZ = _own_ring(SageZZ)
-
-
-_LAZY_CATALOGUE_UNSET = object()
-
-
-class _LazyCatalogueValue:
-    r"""A named catalogue object constructed only when its public name is read.
-
-    The catalogue namespace is imported by ``preamble.all`` at every interactive
-    startup.  Large lattice automorphisms and embeddings are genuine mathematical
-    objects, but constructing all of them merely to bind that namespace performs
-    kernel/cokernel and invariant-factor calculations before a session can answer
-    its first request.  The descriptor preserves the attribute API and caches the
-    constructed value internally; it never mutates the owning class.
-    """
-
-    def __init__(self, factory):
-        self._factory = factory
-        self._value = _LAZY_CATALOGUE_UNSET
-
-    def __get__(self, instance, owner):
-        if self._value is _LAZY_CATALOGUE_UNSET:
-            self._value = self._factory()
-        return self._value
-
-
-def _lazy_catalogue_value(factory):
-    return _LazyCatalogueValue(factory)
 
 
 def _gram_from_engine_matrix(engine_matrix):
@@ -92,86 +65,202 @@ def _named_lattice(gram, names):
 
 
 _C = Lattices(ZZ)
-_U = _C("U")
-_E8 = _C("E8")
-_Ug = _U.gram_tensor()
-_E8g = _E8.gram_tensor()
 _rank_one_2 = tensor(ZZ, (), (1, 1), [[2]])
 _rank_one_m2 = tensor(ZZ, (), (1, 1), [[-2]])
 _rank_one_m4 = tensor(ZZ, (), (1, 1), [[-4]])
 
 
+def _Ug():
+    return NamedLattices.U.gram_tensor()
+
+
+def _E8g():
+    return NamedLattices.E8.gram_tensor()
+
+
 class NamedLattices:
-    Zero = _C(0)
-    Z = _C(1)
-    Z_2 = Z.twist(2)
-    U = _U
-    H = U
-    U_2 = U.twist(2)
-    H_2 = U_2
-    E8 = _E8
-    E8_2 = E8.twist(2)
-    E10 = U + E8
-    E10_2 = U_2 + E8_2
+    r"""The named lattices, each constructed when its name is first read.
 
-    Sdp = U_2
-    SEn = E10_2
+    Every entry is a Sage ``lazy_class_attribute``: the definition stands in
+    this class body, and the lattice is built once, on first access, rather
+    than when the session imports the catalogue.  An alias returns the very
+    object it names.
+    """
 
-    Tco = _C(
-        _block_gram(
-            _rank_one_2,
-            2 * _Ug,
-            2 * _E8g,
-        ),
-        names="h,ep,fp,a1,a2,a3,a4,a5,a6,a7,a8",
-    )
-    Sco = _C(
-        _block_gram(
-            _rank_one_m2,
-            2 * _Ug,
-            2 * _E8g,
+    @lazy_class_attribute
+    def Zero(cls):
+        return _C(0)
+
+    @lazy_class_attribute
+    def Z(cls):
+        return _C(1)
+
+    @lazy_class_attribute
+    def Z_2(cls):
+        return cls.Z.twist(2)
+
+    @lazy_class_attribute
+    def Z_m2(cls):
+        return cls.Z.twist(-2)
+
+    @lazy_class_attribute
+    def U(cls):
+        return _C("U")
+
+    @lazy_class_attribute
+    def H(cls):
+        return cls.U
+
+    @lazy_class_attribute
+    def U_2(cls):
+        return cls.U.twist(2)
+
+    @lazy_class_attribute
+    def H_2(cls):
+        return cls.U_2
+
+    @lazy_class_attribute
+    def A1(cls):
+        return _C("A1")
+
+    @lazy_class_attribute
+    def A2(cls):
+        return _C("A2")
+
+    @lazy_class_attribute
+    def D4(cls):
+        return _C("D4")
+
+    @lazy_class_attribute
+    def D6(cls):
+        return _C("D6")
+
+    @lazy_class_attribute
+    def D8(cls):
+        return _C("D8")
+
+    @lazy_class_attribute
+    def E7(cls):
+        return _C("E7")
+
+    @lazy_class_attribute
+    def E8(cls):
+        return _C("E8")
+
+    @lazy_class_attribute
+    def E8_2(cls):
+        return cls.E8.twist(2)
+
+    @lazy_class_attribute
+    def E10(cls):
+        return cls.U + cls.E8
+
+    @lazy_class_attribute
+    def E10_2(cls):
+        return cls.U_2 + cls.E8_2
+
+    @lazy_class_attribute
+    def Sdp(cls):
+        return cls.U_2
+
+    @lazy_class_attribute
+    def SEn(cls):
+        return cls.E10_2
+
+    @lazy_class_attribute
+    def Tco(cls):
+        return _C(
+            _block_gram(_rank_one_2, 2 * _Ug(), 2 * _E8g()),
+            names="h,ep,fp,a1,a2,a3,a4,a5,a6,a7,a8",
         )
-    )
-    TEn = _C(
-        _block_gram(_Ug, 2 * _Ug, 2 * _E8g),
-        names="e,f,ep,fp,a1,a2,a3,a4,a5,a6,a7,a8",
-    )
-    TdP = _C(
-        _block_gram(_Ug, 2 * _Ug, _E8g, _E8g),
-        names=("e,f,ep,fp,a1,a2,a3,a4,a5,a6,a7,a8,b1,b2,b3,b4,b5,b6,b7,b8"),
-    )
-    L_20_2_0 = TdP
-    LK3 = _C(
-        _block_gram(_Ug, _Ug, _Ug, _E8g, _E8g),
-        names=("e1,f1,e2,f2,e3,f3,a1,a2,a3,a4,a5,a6,a7,a8,b1,b2,b3,b4,b5,b6,b7,b8"),
-    )
-    LK3_2 = _C(_block_gram(_rank_one_m2, _Ug, _Ug, _E8g, _E8g))
-    LK3_4 = _C(_block_gram(_rank_one_m4, _Ug, _Ug, _E8g, _E8g))
-    LpNik = _C(_block_gram(_Ug, _Ug, _Ug, 2 * _E8g))
-    LmNik = E8_2
 
-    Mukai = _C(_block_gram(_Ug, _Ug, _Ug, _Ug, _E8g, _E8g))
-    MukaiExtended = _C(_block_gram(_Ug, _Ug, _Ug, _Ug, _Ug, _E8g, _E8g))
-    MukaiAbelian = _C(_block_gram(_Ug, _Ug, _Ug, _Ug))
-    MukaiAbelianExtended = _C(_block_gram(_Ug, _Ug, _Ug, _Ug, _Ug))
-    U_E8_2 = U + E8_2
+    @lazy_class_attribute
+    def Sco(cls):
+        return _C(_block_gram(_rank_one_m2, 2 * _Ug(), 2 * _E8g()))
 
-    BogachevKolpakovNonReflective = _C([[3, 7, 49], [7, 0, 0], [49, 0, 49]]).twist(-1)
-    BogachevKolpakovWithoutRoots = _C([[0, 0, 49], [0, 49, 7], [49, 7, 3]]).twist(-1)
+    @lazy_class_attribute
+    def TEn(cls):
+        return _C(
+            _block_gram(_Ug(), 2 * _Ug(), 2 * _E8g()),
+            names="e,f,ep,fp,a1,a2,a3,a4,a5,a6,a7,a8",
+        )
+
+    @lazy_class_attribute
+    def TdP(cls):
+        return _C(
+            _block_gram(_Ug(), 2 * _Ug(), _E8g(), _E8g()),
+            names=("e,f,ep,fp,a1,a2,a3,a4,a5,a6,a7,a8,b1,b2,b3,b4,b5,b6,b7,b8"),
+        )
+
+    @lazy_class_attribute
+    def L_20_2_0(cls):
+        return cls.TdP
+
+    @lazy_class_attribute
+    def LK3(cls):
+        return _C(
+            _block_gram(_Ug(), _Ug(), _Ug(), _E8g(), _E8g()),
+            names=("e1,f1,e2,f2,e3,f3,a1,a2,a3,a4,a5,a6,a7,a8,b1,b2,b3,b4,b5,b6,b7,b8"),
+        )
+
+    @lazy_class_attribute
+    def LK3_2(cls):
+        return _C(_block_gram(_rank_one_m2, _Ug(), _Ug(), _E8g(), _E8g()))
+
+    @lazy_class_attribute
+    def LK3_4(cls):
+        return _C(_block_gram(_rank_one_m4, _Ug(), _Ug(), _E8g(), _E8g()))
+
+    @lazy_class_attribute
+    def LpNik(cls):
+        return _C(_block_gram(_Ug(), _Ug(), _Ug(), 2 * _E8g()))
+
+    @lazy_class_attribute
+    def LmNik(cls):
+        return cls.E8_2
+
+    @lazy_class_attribute
+    def Mukai(cls):
+        return _C(_block_gram(_Ug(), _Ug(), _Ug(), _Ug(), _E8g(), _E8g()))
+
+    @lazy_class_attribute
+    def MukaiExtended(cls):
+        return _C(_block_gram(_Ug(), _Ug(), _Ug(), _Ug(), _Ug(), _E8g(), _E8g()))
+
+    @lazy_class_attribute
+    def MukaiAbelian(cls):
+        return _C(_block_gram(_Ug(), _Ug(), _Ug(), _Ug()))
+
+    @lazy_class_attribute
+    def MukaiAbelianExtended(cls):
+        return _C(_block_gram(_Ug(), _Ug(), _Ug(), _Ug(), _Ug()))
+
+    @lazy_class_attribute
+    def U_E8_2(cls):
+        return cls.U + cls.E8_2
+
+    @lazy_class_attribute
+    def BogachevKolpakovNonReflective(cls):
+        return _C([[3, 7, 49], [7, 0, 0], [49, 0, 49]]).twist(-1)
+
+    @lazy_class_attribute
+    def BogachevKolpakovWithoutRoots(cls):
+        return _C([[0, 0, 49], [0, 49, 7], [49, 7, 3]]).twist(-1)
 
 
-NamedLattices.A1 = _C("A1")
-NamedLattices.A2 = _C("A2")
-NamedLattices.D4 = _C("D4")
-NamedLattices.D6 = _C("D6")
-NamedLattices.D8 = _C("D8")
-NamedLattices.E7 = _C("E7")
-NamedLattices.Z_m2 = NamedLattices.Z.twist(-2)
+def _catalogue_entry(name):
+    r"""``Lattices.<name>``: the catalogue entry itself, read on first access."""
+
+    def entry(cls):
+        return getattr(NamedLattices, name)
+
+    entry.__name__ = name
+    return lazy_class_attribute(entry)
 
 
-for _name, _value in vars(NamedLattices).items():
-    if not _name.startswith("_") and _value in _C:
-        setattr(Lattices, _name, _value)
+for _name, _entry in vars(NamedLattices).items():
+    if isinstance(_entry, lazy_class_attribute):
+        setattr(Lattices, _name, _catalogue_entry(_name))
 
 
 # Exact Gram-block names used by the represented direct-sum decomposition.
@@ -929,112 +1018,110 @@ def signature_orthogonal_sums(target_signature, blocks):
     return finite_ordered_set(tuple(realizations))
 
 
-_TCO_GENS = tuple(NamedLattices.Tco.module_generators())
-_TEN_GENS = tuple(NamedLattices.TEn.module_generators())
-_TDP_GENS = tuple(NamedLattices.TdP.module_generators())
-_LK3_GENS = tuple(NamedLattices.LK3.module_generators())
+
+def _generators(lattice):
+    return tuple(lattice.module_generators())
 
 
 class Involutions:
     r"""Named involutions of the K3 lattice in its displayed block framing."""
 
-    I_dP = _lazy_catalogue_value(
-        lambda: NamedLattices.LK3.Aut()(
+    @lazy_class_attribute
+    def I_dP(cls):
+        lk3 = _generators(NamedLattices.LK3)
+        return NamedLattices.LK3.Aut()(
             (
-                *(-generator for generator in _LK3_GENS[0:2]),
-                *_LK3_GENS[4:6],
-                *_LK3_GENS[2:4],
-                *(-generator for generator in _LK3_GENS[6:22]),
+                *(-generator for generator in lk3[0:2]),
+                *lk3[4:6],
+                *lk3[2:4],
+                *(-generator for generator in lk3[6:22]),
             )
         )
-    )
-    I_En = _lazy_catalogue_value(
-        lambda: NamedLattices.LK3.Aut()(
+
+    @lazy_class_attribute
+    def I_En(cls):
+        lk3 = _generators(NamedLattices.LK3)
+        return NamedLattices.LK3.Aut()(
             (
-                *(-generator for generator in _LK3_GENS[0:2]),
-                *_LK3_GENS[4:6],
-                *_LK3_GENS[2:4],
-                *_LK3_GENS[14:22],
-                *_LK3_GENS[6:14],
+                *(-generator for generator in lk3[0:2]),
+                *lk3[4:6],
+                *lk3[2:4],
+                *lk3[14:22],
+                *lk3[6:14],
             )
         )
-    )
-    I_Nik = _lazy_catalogue_value(
-        lambda: NamedLattices.LK3.Aut()(
+
+    @lazy_class_attribute
+    def I_Nik(cls):
+        lk3 = _generators(NamedLattices.LK3)
+        return NamedLattices.LK3.Aut()(
             (
-                *_LK3_GENS[0:6],
-                *(-generator for generator in _LK3_GENS[14:22]),
-                *(-generator for generator in _LK3_GENS[6:14]),
+                *lk3[0:6],
+                *(-generator for generator in lk3[14:22]),
+                *(-generator for generator in lk3[6:14]),
             )
         )
-    )
 
 
 class Embeddings:
-    E8_2_into_TdP = _lazy_catalogue_value(
-        lambda: NamedLattices.E8_2.Emb(NamedLattices.TdP)(
-            tuple(
-                _TDP_GENS[4 + index] + _TDP_GENS[12 + index]
-                for index in range(8)
-            )
+    @lazy_class_attribute
+    def E8_2_into_TdP(cls):
+        tdp = _generators(NamedLattices.TdP)
+        return NamedLattices.E8_2.Emb(NamedLattices.TdP)(
+            tuple(tdp[4 + index] + tdp[12 + index] for index in range(8))
         )
-    )
 
-    TCo_into_TEn = _lazy_catalogue_value(
-        lambda: NamedLattices.Tco.Emb(NamedLattices.TEn)(
+    @lazy_class_attribute
+    def TCo_into_TEn(cls):
+        ten = _generators(NamedLattices.TEn)
+        return NamedLattices.Tco.Emb(NamedLattices.TEn)(
+            (ten[0] + ten[1], ten[2], ten[3], *ten[4:12])
+        )
+
+    @lazy_class_attribute
+    def TEn_into_TdP(cls):
+        tdp = _generators(NamedLattices.TdP)
+        return NamedLattices.TEn.Emb(NamedLattices.TdP)(
             (
-                _TEN_GENS[0] + _TEN_GENS[1],
-                _TEN_GENS[2],
-                _TEN_GENS[3],
-                *_TEN_GENS[4:12],
+                tdp[0],
+                tdp[1],
+                tdp[2],
+                tdp[3],
+                *tuple(tdp[4 + index] + tdp[12 + index] for index in range(8)),
             )
         )
-    )
 
-    TEn_into_TdP = _lazy_catalogue_value(
-        lambda: NamedLattices.TEn.Emb(NamedLattices.TdP)(
+    @lazy_class_attribute
+    def TdP_into_LK3(cls):
+        lk3 = _generators(NamedLattices.LK3)
+        return NamedLattices.TdP.Emb(NamedLattices.LK3)(
             (
-                _TDP_GENS[0],
-                _TDP_GENS[1],
-                _TDP_GENS[2],
-                _TDP_GENS[3],
-                *tuple(
-                    _TDP_GENS[4 + index] + _TDP_GENS[12 + index]
-                    for index in range(8)
-                ),
+                lk3[0],
+                lk3[1],
+                lk3[2] - lk3[4],
+                lk3[3] - lk3[5],
+                *lk3[6:14],
+                *(-generator for generator in lk3[14:22]),
             )
         )
-    )
 
-    TdP_into_LK3 = _lazy_catalogue_value(
-        lambda: NamedLattices.TdP.Emb(NamedLattices.LK3)(
+    @lazy_class_attribute
+    def TEn_into_LK3(cls):
+        return cls.TdP_into_LK3 * cls.TEn_into_TdP
+
+    @lazy_class_attribute
+    def U_E8_2_into_TEn(cls):
+        ten = _generators(NamedLattices.TEn)
+        return NamedLattices.U_E8_2.Emb(NamedLattices.TEn)(
             (
-                _LK3_GENS[0],
-                _LK3_GENS[1],
-                _LK3_GENS[2] - _LK3_GENS[4],
-                _LK3_GENS[3] - _LK3_GENS[5],
-                *_LK3_GENS[6:14],
-                *(-generator for generator in _LK3_GENS[14:22]),
+                ten[0] + ten[2] + ten[3] - ten[4],
+                ten[1] + ten[2] + ten[3] - ten[4],
+                ten[2] - ten[3],
+                ten[5],
+                ten[3] + ten[6],
+                *ten[7:12],
             )
         )
-    )
-
-    TEn_into_LK3 = _lazy_catalogue_value(
-        lambda: Embeddings.TdP_into_LK3 * Embeddings.TEn_into_TdP
-    )
-
-    U_E8_2_into_TEn = _lazy_catalogue_value(
-        lambda: NamedLattices.U_E8_2.Emb(NamedLattices.TEn)(
-            (
-                _TEN_GENS[0] + _TEN_GENS[2] + _TEN_GENS[3] - _TEN_GENS[4],
-                _TEN_GENS[1] + _TEN_GENS[2] + _TEN_GENS[3] - _TEN_GENS[4],
-                _TEN_GENS[2] - _TEN_GENS[3],
-                _TEN_GENS[5],
-                _TEN_GENS[3] + _TEN_GENS[6],
-                *_TEN_GENS[7:12],
-            )
-        )
-    )
 
 
 __all__ = [
