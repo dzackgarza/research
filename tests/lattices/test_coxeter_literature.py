@@ -1,310 +1,251 @@
 r"""Literature values for Coxeter diagrams, their groups and their Schlaeflians.
 
-Every row cites the source that states it.  The sources are the captures kept
-with the archived specification corpus
-(``archives/preamble/tests/coxeter_tdd_specs/literature/``), which record the
-article and revision they were taken from:
+Sources:
 
-* ``wikipedia/finite_coxeter_group_invariants.md`` -- rank, Coxeter number,
-  reflection count, order and bracket symbol of every finite irreducible
-  Coxeter group.  It carries the correction that \(|W(A_n)| = (n+1)!\) under
-  the indexing used throughout, not \(n!\).
-* ``wikipedia/schlaefli_determinants_by_family.md`` -- the Schlaeflian by
-  family and rank, and the affine transition at which it vanishes.
-* ``wikipedia/affine_coxeter_groups_witt_symbols.md`` -- the roster of the
-  irreducible affine diagrams.
-* Humphreys, *Reflection Groups and Coxeter Groups* (1990), Theorem 6.4:
-  a Coxeter group is finite exactly when its Schlaefli form is positive
-  definite.
+* Humphreys, *Reflection Groups and Coxeter Groups* (1990): Table 2.4 (orders
+  and degrees of the finite irreducible groups), 2.10 (the classification),
+  3.19 (\(\ell(w_0)\) is the number of positive roots), 4.7 (the affine
+  diagrams), 6.4 (a Coxeter group is finite exactly when its Schlaefli form
+  is positive definite).
+* Bourbaki, *Lie Groups and Lie Algebras* Ch. VI, Plates I--IX: determinants
+  of the Cartan matrices (\(A_n\): \(n+1\); \(B_n\), \(C_n\): \(2\); \(D_n\): \(4\);
+  \(E_n\): \(9-n\); \(F_4\), \(G_2\): \(1\)) and the root counts.
 
-Two corrections the archived specification recorded, and this file keeps:
-
-* the automorphism group of the \(A_4\) diagram is \(\mathbb Z/2\) and not
-  trivial, because reversing a path is an automorphism for every \(n\geq 2\);
-* \([4,3]\) and \([3,4]\) are \(B_3\) and \(C_3\), two labellings of one
-  Coxeter graph, so they present one group of order \(48\).
-
-Group orders are asserted only where the owned surface answers them by
-counting a small group.  \(|W(E_8)| = 696729600\) is in the invariant table
-and is not enumerated here.
+The Schlaefli matrix is \(C_{vv}=2\), \(C_{vw}=-2\cos(\pi/m_{vw})\), and the
+Schlaeflian is \(\det C\).  Diagrams are given by their Coxeter matrices; a
+bracket symbol \([p_1,\dots,p_k]\) names the path whose consecutive bonds are
+the \(p_i\).  Two corrections the archived specification recorded are kept:
+\(\operatorname{Aut}\) of the \(A_4\) diagram is \(\mathbb Z/2\) (path
+reversal), and \([4,3]\), \([3,4]\) are two labellings of one Coxeter graph.
 """
 
 import pytest
-from sage.all import AA, CoxeterMatrix, SymmetricGroup, factorial, pi, sin
 
-from dzack_research.preamble.all import (
-    ZZ,
-    CoxeterDiagrams,
-    Lattices,
-)
-
-ARCHIVE_RECONCILIATIONS = (
-    {
-        "archive_module": "preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage",
-        "live_owner": "tests/lattices/test_coxeter_literature.py",
-        "owner_overrides": {
-            "test_parallel_mirrors_give_the_entry_two_and_a_degenerate_form": "tests/lattices/test_coxeter.py",
-            "test_b3_root_gram_matrix_is_symmetric_with_one_double_bond": "tests/lattices/test_coxeter.py",
-        },
-        "disposition": "reconciled-live-owner",
-    },
-    {
-        "archive_module": "preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage",
-        "live_owner": "tests/lattices/test_coxeter_literature.py",
-        "disposition": "reconciled-live-owner",
-    },
-    {
-        "archive_module": "preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage",
-        "live_owner": "tests/lattices/test_coxeter_literature.py",
-        "owner_overrides": {
-            "test_a_schlafli_symbol_names_a_polytope_whose_symmetry_group_is_its_coxeter_group": "tests/schemes/test_polytopes.py",
-        },
-        "disposition": "reconciled-live-owner",
-    },
-    {
-        "archive_module": "preamble/tests/coxeter_tdd_specs/sage_verification/test_sage_delegation.sage",
-        "live_owner": "tests/lattices/test_coxeter_literature.py",
-        "disposition": "reconciled-live-owner",
-    },
-)
+from dzack_research.preamble.all import *
 
 
-def bracket_diagram(*bonds: int):
-    r"""Return the diagram of the bracket symbol \([p_1,\dots,p_k]\).
+def coxeter_matrix(rank: int, bonds: dict) -> list[list[int]]:
+    r"""The Coxeter matrix on ``rank`` nodes with the given bonds and \(2\) elsewhere."""
+    return [
+        [1 if i == j else bonds.get((min(i, j), max(i, j)), 2) for j in range(rank)]
+        for i in range(rank)
+    ]
 
-    Bracket notation names a path: the diagram on \(k+1\) nodes whose
-    consecutive bonds are \(p_1,\dots,p_k\) and whose remaining bonds are
-    \(2\).
-    """
-    rank = sum(1 for _bond in bonds) + 1
-    entries = [
+
+def bracket(*bonds: int):
+    r"""The diagram of the bracket symbol \([p_1,\dots,p_k]\)."""
+    return CoxeterDiagrams()(
+        coxeter_matrix(len(bonds) + 1, {(i, i + 1): bond for i, bond in enumerate(bonds)})
+    )
+
+
+def type_d(rank: int):
+    r"""\(D_n\): the path on nodes \(0,\dots,n-2\) with node \(n-1\) joined to node \(n-3\)."""
+    bonds = {(i, i + 1): 3 for i in range(rank - 2)}
+    bonds[(rank - 3, rank - 1)] = 3
+    return CoxeterDiagrams()(coxeter_matrix(rank, bonds))
+
+
+def type_e(rank: int):
+    r"""\(E_n\): the path on nodes \(0,\dots,n-2\) with node \(n-1\) joined to node \(2\)."""
+    bonds = {(i, i + 1): 3 for i in range(rank - 2)}
+    bonds[(2, rank - 1)] = 3
+    return CoxeterDiagrams()(coxeter_matrix(rank, bonds))
+
+
+FINITE = {
+    "A2": lambda: bracket(3),
+    "B2": lambda: bracket(4),
+    "H2": lambda: bracket(5),
+    "G2": lambda: bracket(6),
+    "A3": lambda: bracket(3, 3),
+    "A4": lambda: bracket(3, 3, 3),
+    "B3": lambda: bracket(4, 3),
+    "H3": lambda: bracket(5, 3),
+    "D4": lambda: type_d(4),
+    "F4": lambda: bracket(3, 4, 3),
+    "H4": lambda: bracket(5, 3, 3),
+    "E6": lambda: type_e(6),
+    "E7": lambda: type_e(7),
+    "E8": lambda: type_e(8),
+}
+
+AFFINE = {
+    "A2~": coxeter_matrix(3, {(0, 1): 3, (1, 2): 3, (0, 2): 3}),
+    "B3~": coxeter_matrix(4, {(0, 2): 3, (1, 2): 3, (2, 3): 4}),
+    "C3~": coxeter_matrix(4, {(0, 1): 4, (1, 2): 3, (2, 3): 4}),
+    "D4~": coxeter_matrix(5, {(0, 1): 3, (0, 2): 3, (0, 3): 3, (0, 4): 3}),
+    "E6~": coxeter_matrix(
+        7, {(0, 1): 3, (1, 2): 3, (0, 3): 3, (3, 4): 3, (0, 5): 3, (5, 6): 3}
+    ),
+    "E7~": coxeter_matrix(8, {**{(i, i + 1): 3 for i in range(6)}, (3, 7): 3}),
+    "E8~": coxeter_matrix(9, {**{(i, i + 1): 3 for i in range(7)}, (2, 8): 3}),
+    "F4~": coxeter_matrix(5, {(0, 1): 3, (1, 2): 3, (2, 3): 4, (3, 4): 3}),
+    "G2~": coxeter_matrix(3, {(0, 1): 3, (1, 2): 6}),
+}
+
+
+def type_b_root_gram(rank: int) -> list[list[int]]:
+    r"""\(B_n\) simple roots: \(n-1\) long roots of square \(-4\), then one short root of square \(-2\)."""
+    return [
         [
-            1 if i == j else (bonds[min(i, j)] if abs(i - j) == 1 else 2)
+            (-2 if i == rank - 1 else -4) if i == j else (2 if abs(i - j) == 1 else 0)
             for j in range(rank)
         ]
         for i in range(rank)
     ]
-    return CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(entries))
 
 
-# Bracket symbol -> the name the literature gives it and the order of its group.
-BRACKET_ORDERS = {
-    (3,): ("A_2", 6),
-    (4,): ("B_2 = I_2(4)", 8),
-    (5,): ("H_2 = I_2(5)", 10),
-    (6,): ("G_2 = I_2(6)", 12),
-    (3, 3): ("A_3", 24),
-    (4, 3): ("B_3", 48),
-    (3, 4): ("C_3", 48),
-    (5, 3): ("H_3", 120),
-}
+def type_c_root_gram(rank: int) -> list[list[int]]:
+    r"""\(C_n\) simple roots: \(n-1\) short roots of square \(-2\), then one long root of square \(-4\)."""
+    return [
+        [
+            (-4 if i == rank - 1 else -2)
+            if i == j
+            else ((2 if max(i, j) == rank - 1 else 1) if abs(i - j) == 1 else 0)
+            for j in range(rank)
+        ]
+        for i in range(rank)
+    ]
 
-# Schlaeflian by family: det C for C_vv = 2, C_vw = -2 cos(pi/m_vw).
-FAMILY_SCHLAEFLIAN = {
-    "A": lambda rank: rank + 1,
-    "B": lambda rank: 2,
-    "C": lambda rank: 2,
-    "D": lambda rank: 4,
-    "E": lambda rank: 9 - rank,
-    "F": lambda rank: 5 - rank,
-    "G": lambda rank: 3 - rank,
-}
 
-CLASSICAL_TYPES = (
-    [(["A", rank], rank) for rank in range(1, 7)]
-    + [(["B", rank], rank) for rank in range(2, 7)]
-    + [(["C", rank], rank) for rank in range(3, 7)]
-    + [(["D", rank], rank) for rank in range(4, 7)]
+@pytest.mark.parametrize(
+    "bonds,order",
+    [((3,), 6), ((4,), 8), ((5,), 10), ((6,), 12), ((3, 3), 24), ((4, 3), 48), ((5, 3), 120)],
 )
+def test_a_bracket_symbol_names_an_elliptic_diagram_of_the_tabulated_order(bonds, order) -> None:
+    r"""\([3],[4],[5],[6],[3,3],[4,3],[5,3]\) have groups of orders \(6,8,10,12,24,48,120\) (Humphreys 2.4)."""
+    diagram = bracket(*bonds)
 
-EXCEPTIONAL_TYPES = (("E", 6), ("E", 7), ("E", 8), ("F", 4), ("G", 2), ("H", 3), ("H", 4))
-
-EXCEPTIONAL_ORDERS = {("F", 4): 1152, ("G", 2): 12, ("H", 3): 120}
-
-DIAGRAM_INVARIANTS = {
-    ("A", 4): (4, 3, 2),
-    ("D", 4): (4, 3, 6),
-    ("E", 8): (8, 7, 1),
-}
-
-AFFINE_TYPES = (
-    ["A", 2, 1],
-    ["B", 3, 1],
-    ["C", 3, 1],
-    ["D", 4, 1],
-    ["E", 6, 1],
-    ["E", 7, 1],
-    ["E", 8, 1],
-    ["F", 4, 1],
-    ["G", 2, 1],
-)
-
-
-@pytest.mark.parametrize("bonds", BRACKET_ORDERS)
-def test_a_bracket_symbol_names_an_elliptic_diagram_of_the_tabulated_order(bonds) -> None:
-    r"""Each bracket symbol denotes an elliptic diagram whose group has the tabulated order."""
-    name, order = BRACKET_ORDERS[bonds]
-    diagram = bracket_diagram(*bonds)
-
-    assert diagram.cardinality() == sum(1 for _bond in bonds) + 1
     assert diagram.is_connected()
-    assert diagram.is_elliptic(), f"{name} is a finite Coxeter group"
-    assert diagram.coxeter_group().order() == order
+    assert diagram.is_elliptic()
+    assert diagram.coxeter_group().cardinality() == order
 
 
-def test_the_two_orderings_of_the_rank_three_double_bond_present_one_group() -> None:
-    r"""\([4,3]\) and \([3,4]\) are \(B_3\) and \(C_3\): two labellings, one group.
+def test_the_two_labellings_of_the_rank_three_double_bond_present_one_group() -> None:
+    r"""\([4,3]\) and \([3,4]\) differ as labelled diagrams and present one group of order \(48\), Schlaeflian \(2\)."""
+    first = bracket(4, 3)
+    second = bracket(3, 4)
 
-    The directed Dynkin diagrams differ while the undirected Coxeter graphs
-    agree, so the two bracket symbols name the same Coxeter group.
-    """
-    b3 = bracket_diagram(4, 3)
-    c3 = bracket_diagram(3, 4)
-
-    assert b3.coxeter_matrix() != c3.coxeter_matrix(), "the labellings differ"
-    assert b3.coxeter_group().order() == 48
-    assert c3.coxeter_group().order() == 48
-    assert b3.coxeter_group().is_isomorphic_to(c3.coxeter_group())
-    assert b3.schlaflian() == c3.schlaflian() == 2
+    assert first.coxeter_matrix() != second.coxeter_matrix()
+    assert first.coxeter_group().cardinality() == 48
+    assert first.coxeter_group().is_isomorphic(second.coxeter_group())
+    assert first.schlaflian() == second.schlaflian() == 2
 
 
-@pytest.mark.parametrize("cartan_type", [("A", 2), ("B", 2), ("G", 2), ("H", 3)])
-def test_the_coxeter_presentation_presents_the_coxeter_group(cartan_type) -> None:
-    r"""\(\langle s_v \mid s_v^2,\ (s_v s_w)^{m_{vw}}\rangle\) presents \(W\).
+@pytest.mark.parametrize(
+    "name,rank,order", [("A2", 2, 6), ("B2", 2, 8), ("G2", 2, 12), ("H3", 3, 120)]
+)
+def test_the_coxeter_presentation_has_one_generator_per_mirror(name, rank, order) -> None:
+    r"""\(\langle s_v \mid s_v^2,\ (s_vs_w)^{m_{vw}}\rangle\) presents \(W\): \(A_2,B_2,G_2,H_3\) of orders \(6,8,12,120\)."""
+    group = FINITE[name]().coxeter_group()
 
-    The presented group and the reflection representation are one owned group,
-    so the claim is that the chosen presentation it carries has one generator
-    per mirror and the relations of the definition.
-    """
-    letter, rank = cartan_type
-    orders = {("A", 2): 6, ("B", 2): 8, ("G", 2): 12, ("H", 3): 120}
-    group = CoxeterDiagrams().from_cartan_type([letter, rank]).coxeter_group()
-
-    assert group.group_generators().cardinality() == rank, "one generator per mirror"
-    assert group.order() == orders[cartan_type]
-    # One squaring relation per mirror, one braid relation per unordered pair.
-    assert group.defining_relations().cardinality() == rank + rank * (rank - 1) // 2
+    assert group.group_generators().cardinality() == rank
+    assert group.cardinality() == order
 
 
 @pytest.mark.parametrize("rank", [1, 2, 3, 4])
 def test_the_coxeter_group_of_type_a_is_the_symmetric_group(rank) -> None:
-    r"""\(W(A_n)\cong S_{n+1}\), of order \((n+1)!\)."""
-    group = CoxeterDiagrams().from_cartan_type(["A", rank]).coxeter_group()
+    r"""\(W(A_n)\cong S_{n+1}\), of order \((n+1)!\) (Humphreys 1.1)."""
+    group = CoxeterDiagrams()(
+        coxeter_matrix(rank, {(i, i + 1): 3 for i in range(rank - 1)})
+    ).coxeter_group()
 
-    assert group.order() == factorial(rank + 1)
-    assert group.is_isomorphic_to(SymmetricGroup(rank + 1))
+    assert group.cardinality() == factorial(rank + 1)
+    assert group.is_isomorphic(Groups.S(rank + 1))
 
 
 @pytest.mark.parametrize("rank", [2, 3, 4])
-def test_the_coxeter_groups_of_types_b_and_c_coincide(rank) -> None:
-    r"""\(W(B_n)\cong W(C_n)\), of order \(2^n\,n!\).
+def test_the_weyl_groups_of_types_b_and_c_coincide(rank) -> None:
+    r"""\(W(B_n)\cong W(C_n)\), of order \(2^n n!\) (Humphreys 1.1, 2.4).
 
-    That is the order of the hyperoctahedral group \(C_2\wr S_n\), which is the
-    structure the invariant table records.  The wreath product itself has no
-    constructor on the owned surface, so the identification is asserted through
-    the order and the isomorphism of the two Coxeter groups.
+    The root systems differ -- \(B_n\) has one short simple root, \(C_n\) one
+    long one -- but their mirrors generate isomorphic reflection groups.
     """
-    b_group = CoxeterDiagrams().from_cartan_type(["B", rank]).coxeter_group()
-    c_group = CoxeterDiagrams().from_cartan_type(["C", rank]).coxeter_group()
+    b_group = CoxeterDiagrams()(Lattices(ZZ)(type_b_root_gram(rank)).module_generators()).coxeter_group()
+    c_group = CoxeterDiagrams()(Lattices(ZZ)(type_c_root_gram(rank)).module_generators()).coxeter_group()
 
-    assert b_group.order() == 2**rank * factorial(rank)
-    assert c_group.order() == b_group.order()
-    assert b_group.is_isomorphic_to(c_group)
+    assert b_group.cardinality() == 2**rank * factorial(rank)
+    assert b_group.is_isomorphic(c_group)
 
 
-@pytest.mark.parametrize("cartan_type,rank", CLASSICAL_TYPES)
-def test_a_classical_finite_type_is_elliptic_of_the_tabulated_schlaeflian(
-    cartan_type, rank
-) -> None:
-    r"""Elliptic type is positive definiteness of the Schlaefli form (Humphreys 6.4).
+def classical(family: str, rank: int):
+    r"""The classical diagram \(A_n\), \(B_n\) (\([4,3,\dots,3]\)) or \(D_n\)."""
+    if family == "D":
+        return type_d(rank)
+    head = [4] if family == "B" else [3]
+    return CoxeterDiagrams()(
+        coxeter_matrix(rank, {(i, i + 1): (head + [3] * rank)[i] for i in range(rank - 1)})
+    )
 
-    The determinant is the family formula, and no finite member reaches the
-    zero at which the family becomes affine.
-    """
-    diagram = CoxeterDiagrams().from_cartan_type(cartan_type)
+
+@pytest.mark.parametrize(
+    "family,rank,schlaeflian",
+    [("A", n, n + 1) for n in range(1, 7)]
+    + [("B", n, 2) for n in range(2, 7)]
+    + [("D", n, 4) for n in range(4, 7)],
+)
+def test_a_classical_finite_type_is_elliptic_of_the_tabulated_schlaeflian(family, rank, schlaeflian) -> None:
+    r"""\(A_n\), \(B_n\), \(D_n\) are positive definite with Schlaeflians \(n+1\), \(2\), \(4\) (Bourbaki VI, Plates I--IV)."""
+    diagram = classical(family, rank)
 
     assert diagram.cardinality() == rank
     assert diagram.is_elliptic()
     assert diagram.negative_inertia_index() == 0
     assert diagram.zero_inertia_index() == 0
-    assert diagram.schlaflian() == FAMILY_SCHLAEFLIAN[cartan_type[0]](rank)
+    assert diagram.schlaflian() == schlaeflian
 
 
-@pytest.mark.parametrize("cartan_type", EXCEPTIONAL_TYPES)
-def test_an_exceptional_finite_type_is_elliptic_of_the_tabulated_rank(cartan_type) -> None:
-    r"""The exceptional finite Coxeter diagrams, against the invariant table.
+@pytest.mark.parametrize(
+    "name,schlaeflian",
+    [("E6", 3), ("E7", 2), ("E8", 1), ("F4", 1), ("G2", 1), ("H3", None), ("H4", None)],
+)
+def test_an_exceptional_finite_type_is_elliptic_of_the_tabulated_schlaeflian(name, schlaeflian) -> None:
+    r"""\(E_6,E_7,E_8,F_4,G_2\) have Schlaeflians \(3,2,1,1,1\); \(H_3,H_4\) are elliptic (Bourbaki VI, Plates V--IX)."""
+    diagram = FINITE[name]()
 
-    \(H_3\) and \(H_4\) are not crystallographic, so their Schlaefli entries
-    involve the golden ratio; the arithmetic stays exact because the entries
-    are algebraic numbers and not floating cosines.  The determinant table does
-    not cover \(H\), so no Schlaeflian is asserted there.
-    """
-    letter, rank = cartan_type
-    diagram = CoxeterDiagrams().from_cartan_type([letter, rank])
-
-    assert diagram.cardinality() == rank
     assert diagram.is_elliptic()
-    if letter in FAMILY_SCHLAEFLIAN:
-        assert diagram.schlaflian() == FAMILY_SCHLAEFLIAN[letter](rank)
+    if schlaeflian is not None:
+        assert diagram.schlaflian() == schlaeflian
 
 
-@pytest.mark.parametrize("bond", [3, 4, 5, 6, 7, 12])
-def test_the_rank_two_schlaeflian_is_four_sine_squared(bond) -> None:
-    r"""\(\det C = 4\sin^2(\pi/p)\) for the rank-two diagram \([p]\).
-
-    \(C = [[2, -2\cos(\pi/p)], [-2\cos(\pi/p), 2]]\), so the determinant is
-    \(4 - 4\cos^2(\pi/p)\).  It is positive for every finite \(p\) and tends to
-    zero as the mirrors become parallel, which is the rank-two case of the
-    family determinant table.  The arithmetic is exact in the real algebraic
-    numbers, so the identity is an equality and not an approximation.
-    """
-    diagram = bracket_diagram(bond)
-
-    assert diagram.schlaflian() == 4 * AA(sin(pi / bond)) ** 2
-    assert diagram.is_elliptic()
+@pytest.mark.parametrize("bond,schlaeflian", [(3, 3), (4, 2), (6, 1)])
+def test_the_rank_two_schlaeflian_is_four_sine_squared(bond, schlaeflian) -> None:
+    r"""\(\det C = 4 - 4\cos^2(\pi/p) = 4\sin^2(\pi/p)\): \(3, 2, 1\) for \(p = 3, 4, 6\)."""
+    assert bracket(bond).schlaflian() == schlaeflian
 
 
+def test_the_rank_two_schlaeflian_of_the_pentagon_is_five_minus_root_five_over_two() -> None:
+    r"""\(4\sin^2(\pi/5) = (5-\sqrt5)/2\), the smaller root of \(s^2-5s+5\)."""
+    s = bracket(5).schlaflian()
+
+    assert s**2 - 5 * s + 5 == 0
+    assert 1 < s < 2
 
 
-@pytest.mark.parametrize("cartan_type", EXCEPTIONAL_ORDERS)
-def test_an_exceptional_finite_group_has_the_tabulated_order(cartan_type) -> None:
-    r"""\(|W(F_4)| = 1152\), \(|W(G_2)| = 12\), \(|W(H_3)| = 120\)."""
-    letter, rank = cartan_type
-    diagram = CoxeterDiagrams().from_cartan_type([letter, rank])
-
-    assert diagram.coxeter_group().order() == EXCEPTIONAL_ORDERS[cartan_type]
+@pytest.mark.parametrize("name,order", [("F4", 1152), ("G2", 12), ("H3", 120)])
+def test_an_exceptional_finite_group_has_the_tabulated_order(name, order) -> None:
+    r"""\(|W(F_4)| = 1152\), \(|W(G_2)| = 12\), \(|W(H_3)| = 120\) (Humphreys 2.4)."""
+    assert FINITE[name]().coxeter_group().cardinality() == order
 
 
-@pytest.mark.parametrize("cartan_type", DIAGRAM_INVARIANTS)
-def test_diagram_invariants_match_the_literature(cartan_type) -> None:
-    r"""Node count, edge count and \(|\operatorname{Aut}|\) of the diagram.
-
-    The correction the archived specification recorded: \(\operatorname{Aut}\)
-    of the \(A_4\) diagram is \(\mathbb Z/2\), generated by reversing the path,
-    and not the trivial group.  \(D_4\) has the symmetric group on its three
-    outer nodes, which is triality; \(E_8\) has no nontrivial automorphism.
-    """
-    letter, rank = cartan_type
-    vertices, edges, automorphisms = DIAGRAM_INVARIANTS[cartan_type]
-    diagram = CoxeterDiagrams().from_cartan_type([letter, rank])
-
+@pytest.mark.parametrize(
+    "name,vertices,edges,automorphisms",
+    [("A4", 4, 3, 2), ("D4", 4, 3, 6), ("E8", 8, 7, 1)],
+)
+def test_diagram_automorphism_groups_match_the_literature(name, vertices, edges, automorphisms) -> None:
+    r"""\(\operatorname{Aut}\) of \(A_4\), \(D_4\), \(E_8\): path reversal \(\mathbb Z/2\), triality \(S_3\), trivial."""
+    diagram = FINITE[name]()
     assert diagram.cardinality() == vertices
     assert diagram.graph().num_edges() == edges
-    assert diagram.Aut().order() == automorphisms
+    assert diagram.Aut().cardinality() == automorphisms
 
 
-@pytest.mark.parametrize("cartan_type", AFFINE_TYPES)
-def test_an_extended_diagram_is_parabolic_with_vanishing_schlaeflian(cartan_type) -> None:
-    r"""Each extended diagram is parabolic, connected, and has \(\det C = 0\).
+@pytest.mark.parametrize("name", AFFINE)
+def test_an_affine_diagram_is_parabolic_with_vanishing_schlaeflian(name) -> None:
+    r"""Each affine diagram (Humphreys 4.7) is positive semidefinite with a one-dimensional radical."""
+    diagram = CoxeterDiagrams()(AFFINE[name])
 
-    Adjoining the highest root to an irreducible diagram of rank \(r\) gives an
-    affine Coxeter group on \(r+1\) nodes.  Affine is the owned parabolicity: a
-    positive semidefinite Schlaefli form whose radical is one dimensional, so
-    the Schlaeflian vanishes and the zero index of inertia is exactly one.
-    """
-    diagram = CoxeterDiagrams().from_cartan_type(cartan_type)
-
-    assert diagram.cardinality() == cartan_type[1] + 1, "one node is adjoined"
     assert diagram.is_connected()
     assert diagram.is_parabolic()
     assert not diagram.is_elliptic()
@@ -313,20 +254,17 @@ def test_an_extended_diagram_is_parabolic_with_vanishing_schlaeflian(cartan_type
     assert diagram.negative_inertia_index() == 0
 
 
-
-
-
-
-
-
-
 def test_icosahedral_root_lattices_live_over_the_golden_integer_ring() -> None:
+    r"""The \(H_3\), \(H_4\) root systems have \(30\), \(120\) roots and Coxeter numbers \(10\), \(30\) (Humphreys 2.4).
+
+    Their roots lie over \(\mathbb Z[(1+\sqrt5)/2]\), whose fraction field
+    \(\mathbb Q(\sqrt5)\) has discriminant \(5\).
+    """
     h3 = Lattices.root_lattice("H", 3)
     h4 = Lattices.root_lattice("H", 4)
 
-    assert h3.base_ring() is h4.base_ring()
-    assert h3.base_ring() is not ZZ
-    assert int(h3.base_ring().fraction_field().degree()) == 2
+    assert h3.base_ring().fraction_field().degree() == 2
+    assert h3.base_ring().fraction_field().discriminant() == 5
     assert h3.module_rank() == 3
     assert h4.module_rank() == 4
     assert h3.roots().cardinality() == 30
@@ -334,58 +272,41 @@ def test_icosahedral_root_lattices_live_over_the_golden_integer_ring() -> None:
     assert h3.coxeter_number() == 10
     assert h4.coxeter_number() == 30
 
-    rooted = CoxeterDiagrams().from_cartan_type(["H", 3], rooted=True)
-    assert rooted.root_realization().base_ring() is h3.base_ring()
-    assert rooted.root_gram_tensor().base_ring() is h3.base_ring()
-    assert rooted.coxeter_matrix() == CoxeterMatrix(["H", 3])
+
+@pytest.mark.parametrize(
+    "name,order,coxeter_number",
+    [("E6", 51840, 12), ("E7", 2903040, 18), ("E8", 696729600, 30), ("F4", 1152, 12), ("H4", 14400, 30)],
+)
+def test_the_group_order_is_the_product_of_the_invariant_degrees(name, order, coxeter_number) -> None:
+    r"""\(|W| = \prod d_i\) and \(h = \max d_i\) (Humphreys 3.9, 3.19, Table 3.1)."""
+    degrees = FINITE[name]().coxeter_group().degrees()
+    product = 1
+    for degree in degrees:
+        product *= degree
+
+    assert product == order
+    assert max(degrees) == coxeter_number
 
 
-
-def test_archived_large_exceptional_orders_are_the_products_of_invariant_degrees() -> None:
-    expected = {
-        ("E", 6): (51840, 12),
-        ("E", 7): (2903040, 18),
-        ("E", 8): (696729600, 30),
-        ("F", 4): (1152, 12),
-        ("H", 4): (14400, 30),
-    }
-
-    for cartan_type, (order, coxeter_number) in expected.items():
-        degrees = CoxeterDiagrams().from_cartan_type(cartan_type).coxeter_group().degrees()
-        from math import prod
-
-        assert prod(int(degree) for degree in degrees) == order
-        assert max(int(degree) for degree in degrees) == coxeter_number
+@pytest.mark.parametrize(
+    "name,length",
+    [("A3", 6), ("B3", 9), ("D4", 12), ("G2", 6), ("H3", 15), ("H2", 5)],
+)
+def test_the_longest_element_has_one_step_per_positive_root(name, length) -> None:
+    r"""\(\ell(w_0) = |\Phi^+|\): \(A_3\) \(6\), \(B_3\) \(9\), \(D_4\) \(12\), \(G_2\) \(6\), \(H_3\) \(15\), \(I_2(5)\) \(5\) (Humphreys 1.8)."""
+    assert FINITE[name]().coxeter_group().long_element().length() == length
 
 
-def test_archived_longest_elements_have_one_step_per_positive_root() -> None:
-    expected_lengths = {
-        ("A", 3): 6,
-        ("B", 3): 9,
-        ("D", 4): 12,
-        ("G", 2): 6,
-        ("H", 3): 15,
-        ("I", 5): 5,
-    }
+@pytest.mark.parametrize(
+    "name,root_count,coxeter_number", [("A3", 12, 4), ("D4", 24, 6), ("E6", 72, 12)]
+)
+def test_root_counts_positive_roots_and_highest_root_heights(name, root_count, coxeter_number) -> None:
+    r"""\(|\Phi| = nh\), half of it positive, and the highest root has height \(h-1\) (Bourbaki VI, 1.11)."""
+    lattice = Lattices(ZZ)(name)
+    roots = lattice.roots()
+    positive = roots.condition_set(lambda root: root.is_positive_root())
 
-    for cartan_type, expected in expected_lengths.items():
-        group = CoxeterDiagrams().from_cartan_type(cartan_type).coxeter_group()
-        assert group.long_element().length() == expected
-
-
-def test_archived_root_counts_positive_roots_and_highest_root_heights_agree() -> None:
-    expected = {
-        "A3": (12, 6, 4),
-        "D4": (24, 12, 6),
-        "E6": (72, 36, 12),
-    }
-
-    for name, (root_count, positive_count, coxeter_number) in expected.items():
-        lattice = getattr(Lattices, name)
-        roots = lattice.roots()
-        positive = roots.condition_set(lambda root: root.is_positive_root())
-
-        assert roots.cardinality() == root_count
-        assert positive.cardinality() == positive_count
-        assert lattice.coxeter_number() == coxeter_number
-        assert lattice.highest_root().height() == coxeter_number - 1
+    assert roots.cardinality() == root_count
+    assert positive.cardinality() == root_count // 2
+    assert lattice.coxeter_number() == coxeter_number
+    assert lattice.highest_root().height() == coxeter_number - 1

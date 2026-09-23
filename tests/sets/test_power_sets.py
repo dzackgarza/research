@@ -1,31 +1,6 @@
+r"""Direct and inverse images of subsets along maps of sets."""
 
-from dzack_research.preamble.all import (
-    Sets,
-)
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/sets/sets.sage",
-    "live_owner": "src/dzack_research/preamble/categories/sets/set_categories.py",
-    "owner_overrides": {
-        "ObjectSetFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
-        "CartesianProductFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
-        "DisjointUnionFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
-        "ExponentialFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
-        "InverseImagePowerSetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
-        "FinitePowerSetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
-        "FixedCardinalitySubsetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
-        "object_set_functor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
-        "ObjectSet": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
-        "finite_ordered_set": "src/dzack_research/preamble/categories/sets/finite_ordered_sets.py",
-        "ordered_set_owned_by": "src/dzack_research/preamble/categories/sets/finite_ordered_sets.py",
-        "E": "src/dzack_research/preamble/categories/schemes/ade_surfaces.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
-
-
-
-
+from dzack_research.preamble.all import Sets
 
 
 def test_inverse_and_direct_image_form_the_set_subobject_galois_connection() -> None:

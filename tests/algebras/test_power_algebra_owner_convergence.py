@@ -1,47 +1,26 @@
-r"""Exterior and divided powers converge on module-owned constructions and functors."""
+r"""Exterior and divided power algebras are functors on modules."""
 
-from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_power_algebra_module_owner_and_nonidentity_functor_share_one_construction() -> None:
-    source = ZZ.free_module(finite_ordered_set(("x", "y")))
-    target = ZZ.free_module(finite_ordered_set(("a", "b")))
-    morphism = source.module_category().Mor(source, target)(
-        {
-            "x": 2 * target.module_generator("a"),
-            "y": target.module_generator("b"),
-        }
-    )
+def test_exterior_and_divided_power_functors_send_xy_to_2ab_under_x_to_2a_y_to_b() -> None:
+    r"""For ``f : ZZ^2 -> ZZ^2``, ``x ↦ 2a``, ``y ↦ b``: ``Λ(f)`` and ``Γ(f)`` are
+    algebra maps, so ``xy ↦ f(x) f(y) = 2ab``; on ``Λ^2`` this is
+    multiplication by ``det f = 2``."""
+    source = Modules(ZZ).free_module(("x", "y"))
+    target = Modules(ZZ).free_module(("a", "b"))
+    f = source.Mor(target)({
+        source.module_generator("x"): 2 * target.module_generator("a"),
+        source.module_generator("y"): target.module_generator("b"),
+    })
 
-    modules = source.module_category()
-    for source_algebra, target_algebra, functor in (
-        (source.exterior_algebra(), target.exterior_algebra(), modules.exterior_algebra()),
-        (
-            source.divided_power_algebra(),
-            target.divided_power_algebra(),
-            modules.divided_power_algebra(),
-        ),
-    ):
-        assert functor(source) is source_algebra
-        assert functor(target) is target_algebra
-        induced = functor(morphism)
+    for functor in (Modules(ZZ).exterior_algebra(), Modules(ZZ).divided_power_algebra()):
+        source_algebra, target_algebra = functor(source), functor(target)
+        x, y = source_algebra.degree_one_generator("x"), source_algebra.degree_one_generator("y")
+        a, b = target_algebra.degree_one_generator("a"), target_algebra.degree_one_generator("b")
+        induced = functor(f)
 
-        assert induced.domain() is source_algebra
-        assert induced.codomain() is target_algebra
-        assert induced(source_algebra.degree_one_generator("x")) == (
-            2 * target_algebra.degree_one_generator("a")
-        )
-        assert induced(source_algebra.degree_one_generator("y")) == (
-            target_algebra.degree_one_generator("b")
-        )
-        source_product = (
-            source_algebra.degree_one_generator("x")
-            * source_algebra.degree_one_generator("y")
-        )
-        assert induced(source_product) == (
-            induced(source_algebra.degree_one_generator("x"))
-            * induced(source_algebra.degree_one_generator("y"))
-        )
+        assert induced(x) == 2 * a
+        assert induced(y) == b
+        assert induced(x * y) == 2 * a * b
+        assert induced(x * y) != a * b

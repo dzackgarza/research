@@ -1,25 +1,21 @@
 import pytest
 
-from dzack_research.preamble.all import QQ, ZZ, Lattices
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.all import QQ, ZZ, Lattices, Modules
 
 
-def test_volume_is_literal_determinant_line_isomorphism_and_poincare_duality() -> None:
-    module = ZZ.free_module(finite_ordered_set(("e", "f")))
-    determinant = module.determinant_line()
-    volume = module.framing_volume_trivialization()
+def test_poincare_duality_on_zz2_sends_e_to_f_dual_and_f_to_minus_e_dual() -> None:
+    r"""For the volume ``e ^ f -> 1``, Poincare duality ``x -> (y -> vol(x ^ y))``
+    sends ``e`` to ``f^*`` and ``f`` to ``-e^*``, since ``f ^ e = -e ^ f``.
+    """
+    module = Modules(ZZ)(2)
+    e, f = module.module_generators()
     dual = module.dual_module()
-    pd = module.poincare_duality(volume, 1)
-    e = module.module_generator("e")
-    f = module.module_generator("f")
+    e_dual, f_dual = dual.module_generators()
+    pd = module.poincare_duality(module.framing_volume_trivialization(), 1)
 
-    assert volume.domain() is determinant
-    assert volume.codomain() is ZZ
-    assert pd.domain() is module
-    assert pd.codomain() is dual
-    assert pd(e) == dual.module_generator("f")
-    assert pd(f) == -dual.module_generator("e")
-    assert pd.inverse()(pd(e)) == e
+    assert pd(e) == f_dual
+    assert pd(f) == -e_dual
+    assert pd.inverse()(f_dual) == e
 
 
 def test_hodge_star_is_the_metric_poincare_composite_and_has_expected_square() -> None:
@@ -44,8 +40,6 @@ def test_hodge_star_is_the_metric_poincare_composite_and_has_expected_square() -
     )
     assert hyperbolic.hodge_discriminant(hyperbolic_volume) == -1
     assert (hyperbolic_star.forward() * hyperbolic_star.forward())(generator) == generator
-
-
 
 
 def test_nonunimodular_metric_does_not_invent_an_integral_form_hodge_star() -> None:

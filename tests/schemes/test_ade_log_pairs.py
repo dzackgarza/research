@@ -1,56 +1,40 @@
-r"""ADE log pairs: the integral polygon, its toric base, and the blue divisor.
+r"""ADE log pairs: the toric surface the ADE polygon's normal fan gives.
 
-The polygon table is the one recorded in the archived preamble, whose stated
-source is Table 1 of Alexeev--Thompson, *ADE surfaces and their moduli*.  The
-assertions below are about what the table then produces: which toric surface
-the normal fan gives, how the toric boundary splits at the distinguished
-point, and whether the pyramid over the polygon is integral.
+The polygons are those of Alexeev--Thompson, *ADE surfaces and their moduli*,
+Table 1.
 """
 
-from dzack_research.preamble.all import (
-    ADELogPairs,
-    LogPairs,
-    QQ,
-    ToricLogPairs,
-)
+from dzack_research.preamble.all import *
 
 
-def test_the_a_one_polygon_has_the_projective_plane_as_its_toric_base() -> None:
-    r"""``Q`` is the triangle on ``(0,2)``, ``(0,0)``, ``(2,0)``, whose inner
-    normal fan has rays ``e_1``, ``e_2`` and ``-e_1-e_2``."""
-    pair = ADELogPairs(QQ)("A", 1)
+def test_the_a1_polygon_is_a_triangle_whose_toric_surface_is_the_projective_plane() -> None:
+    r"""The \(A_1\) polygon is the triangle on \((0,2),(0,0),(2,0)\); its inner normal fan has rays
+    \(e_1, e_2, -e_1-e_2\), the fan of \(\mathbf P^2\), whose Picard group has rank \(1\).
+    With \(\Delta\) the full toric boundary, \(K_X + \Delta = 0\), so the pair is log Calabi--Yau.
 
-    assert pair in ADELogPairs(QQ)
-    assert pair in ToricLogPairs(QQ)
-    assert pair in LogPairs(QQ)
-    assert pair.dynkin_letter() == "A"
-    assert pair.dynkin_rank() == 1
-    assert not pair.is_affine_type()
+    Source: Alexeev--Thompson, *ADE surfaces and their moduli*, Table 1; Cox--Little--Schenck,
+    *Toric Varieties*, Thm. 8.2.3 (\(K_X = -\sum_\rho D_\rho\)).
+    """
+    pair = LogPairs(QQ)("A", 1)
+
     assert pair.polygon().vertices().cardinality() == 3
     assert pair.log_scheme().is_projective_space()
+    assert pair.log_scheme().torus_invariant_divisor_group().module_generating_set().cardinality() == 3
+    assert pair.log_scheme().picard_group().rank() == 1
     assert pair.is_log_calabi_yau()
 
 
+def test_the_d4_polygon_is_a_square_whose_toric_surface_is_the_quadric() -> None:
+    r"""The \(D_4\) polygon is the square \([0,2]^2\), whose normal fan is that of
+    \(\mathbf P^1\times\mathbf P^1 = \mathbf F_0\): four rays, four invariant divisors, Picard rank \(2\).
 
-
-def test_the_d_four_polygon_has_a_quadric_surface_as_its_toric_base() -> None:
-    r"""``Q`` is the square ``[0,2]^2``, whose normal fan is the fan of
-    ``P^1 x P^1``, the Hirzebruch surface ``F_0``."""
-    pair = ADELogPairs(QQ)("D", 4)
+    Source: Alexeev--Thompson, *ADE surfaces and their moduli*, Table 1; Cox--Little--Schenck,
+    *Toric Varieties*, Thm. 4.2.1 (Picard rank of a smooth complete toric surface is #rays - 2).
+    """
+    pair = LogPairs(QQ)("D", 4)
 
     assert pair.polygon().vertices().cardinality() == 4
     assert pair.log_scheme().is_hirzebruch_surface(0)
     assert not pair.log_scheme().is_projective_space()
     assert pair.log_scheme().torus_invariant_divisor_group().module_generating_set().cardinality() == 4
-
-
-
-
-
-
-
-
-
-
-
-
+    assert pair.log_scheme().picard_group().rank() == 2

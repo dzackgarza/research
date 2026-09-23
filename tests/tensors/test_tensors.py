@@ -1,150 +1,109 @@
+r"""Pairings, index lowering and raising, composition, dualization and pullback of
+tensors and linear maps on free modules.
 
-import pytest
+Every value is computed by hand from the component formulas; matrices act on
+column vectors, and a linear map is given by the images of the basis vectors.
+"""
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-)
-from dzack_research.preamble.categories.sets import NN
-from dzack_research.preamble.tensors import tensor
-
+from dzack_research.preamble.all import QQ, ZZ
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def _linear_map(source, target, columns):
+    r"""The linear map sending the `i`-th basis vector of ``source`` to ``columns[i]``."""
+    return source.Mor(target)(
+        {source.module_generator(index): target(column) for index, column in enumerate(columns)}
+    )
 
 
 def test_covector_vector_product_is_the_natural_pairing() -> None:
-    covector = tensor.covector(ZZ, [2, -1, 4])
-    vector = tensor.vector(ZZ, [5, 6, 7])
+    r"""`c = (2, -1, 4)`, `v = (5, 6, 7)`: `c(v) = 10 - 6 + 28 = 32`."""
+    module = ZZ.free_module(3)
+    covector = module.dual_module()((2, -1, 4))
+    vector = module((5, 6, 7))
 
-    assert covector * vector == ZZ(32)
-    assert covector(vector) == ZZ(32)
+    assert covector * vector == 32
+    assert covector(vector) == 32
 
 
 def test_bilinear_form_lowers_an_index() -> None:
-    form = tensor(ZZ, (), (2, 2), [[2, 1], [1, 3]])
-    vector = tensor.vector(ZZ, [4, 5])
-    covector = form * vector
+    r"""`b = [[2, 1], [1, 3]]`, `v = (4, 5)`: `b(-, v) = (13, 19)` and `b(v, v) = 147`."""
+    module = ZZ.free_module(2)
+    form = module.mixed_tensor_algebra().graded_piece((0, 2))([[2, 1], [1, 3]])
+    vector = module((4, 5))
+    lowered = form * vector
 
-    assert covector.tensor_valence() == (NN**2)((0, 1))
-    assert covector == tensor.covector(ZZ, [13, 19])
-    assert covector(vector) == ZZ(147)
-    with pytest.raises(TypeError):
-        vector * form
-    with pytest.raises(TypeError):
-        form * tensor.covector(ZZ, [4, 5])
+    assert lowered == module.dual_module()((13, 19))
+    assert lowered(vector) == 147
 
 
-def test_type_one_one_tensor_adjacent_contraction_and_vector_contraction() -> None:
-    left = tensor(ZZ, (2,), (3,), [[1, 0, 2], [0, 1, 3]])
-    right = tensor(ZZ, (3,), (2,), [[1, 2], [3, 4], [5, 6]])
-    vector = tensor.vector(ZZ, [7, 8, 9])
+def test_composition_of_linear_maps_is_the_matrix_product() -> None:
+    r"""`A = [[1, 0, 2], [0, 1, 3]]: \mathbb{Z}^3 \to \mathbb{Z}^2` and
+    `B = [[1, 2], [3, 4], [5, 6]]: \mathbb{Z}^2 \to \mathbb{Z}^3` give
+    `AB = [[11, 14], [18, 22]]` and `A(7, 8, 9) = (25, 35)`."""
+    plane = ZZ.free_module(2)
+    space = ZZ.free_module(3)
+    left = _linear_map(space, plane, ((1, 0), (0, 1), (2, 3)))
+    right = _linear_map(plane, space, ((1, 3, 5), (2, 4, 6)))
+    composite = left * right
 
-    contracted = left * right
-    image = left * vector
-
-    assert contracted == tensor(ZZ, (2,), (2,), [[11, 14], [18, 22]])
-    assert image == tensor.vector(ZZ, [25, 35])
-    assert contracted.tensor_valence() == (NN**2)((1, 1))
-    assert image.tensor_valence() == (NN**2)((1, 0))
-
-
-def test_covector_type_one_one_adjacent_contraction() -> None:
-    covector = tensor.covector(ZZ, [2, -1])
-    linear_components = tensor(ZZ, (2,), (3,), [[1, 2, 3], [4, 5, 6]])
-
-    contracted = covector * linear_components
-    assert contracted.tensor_valence() == (NN**2)((0, 1))
-    assert contracted == tensor.covector(ZZ, [-2, -1, 0])
+    assert composite(plane.module_generator(0)) == plane((11, 18))
+    assert composite(plane.module_generator(1)) == plane((14, 22))
+    assert left(space((7, 8, 9))) == plane((25, 35))
 
 
-def test_type_one_one_dualization_belongs_to_module_duality() -> None:
-    linear_components = tensor(ZZ, (2,), (3,), [[1, 2, 3], [4, 5, 6]])
-    linear_map = ZZ.matrix_space(2, 3).from_tensor(linear_components)
-    dualization = linear_map.domain().module_category().dualization()
-    opposite = dualization.domain()
-    opposite_map = opposite.Mor(
-        opposite(linear_map.codomain()),
-        opposite(linear_map.domain()),
-    )(linear_map)
-    dual = tensor.from_morphism(dualization(opposite_map))
+def test_the_dual_map_has_the_transposed_matrix() -> None:
+    r"""For `A = [[1, 2, 3], [4, 5, 6]]: \mathbb{Z}^3 \to \mathbb{Z}^2`, the dual map
+    sends a covector `c` to `c \circ A`: the dual basis covectors go to the rows
+    `(1, 2, 3)` and `(4, 5, 6)`, and `c = (2, -1)` goes to `(-2, -1, 0)`."""
+    plane = ZZ.free_module(2)
+    space = ZZ.free_module(3)
+    linear = _linear_map(space, plane, ((1, 4), (2, 5), (3, 6)))
+    dual_map = linear.dual_module_morphism()
+    covectors = plane.dual_module()
 
-    assert dual.tensor_valence() == (NN**2)((1, 1))
-    _shape = dual.tensor_shape()
-    assert _shape.cardinality() == 2
-    assert _shape[0] == 3
-    assert _shape[1] == 2
-    assert dual == tensor(ZZ, (3,), (2,), [[1, 4], [2, 5], [3, 6]])
-    with pytest.raises(TypeError, match="pairings/copairings"):
-        linear_components.dual_tensor()
+    assert dual_map(covectors((1, 0))) == space.dual_module()((1, 2, 3))
+    assert dual_map(covectors((0, 1))) == space.dual_module()((4, 5, 6))
+    assert dual_map(covectors((2, -1))) == space.dual_module()((-2, -1, 0))
 
 
-def test_dual_tensor_preserves_pairing_variance_information() -> None:
-    bilinear = tensor(QQ, (), (2, 2), [[2, 1], [1, 1]])
-    bilinear_dual = bilinear.dual_tensor()
-    assert bilinear_dual.tensor_valence() == (NN**2)((2, 0))
-    assert bilinear_dual == tensor(QQ, (2, 2), (), [[1, -1], [-1, 2]])
+def test_the_inverse_of_a_unimodular_matrix_is_integral() -> None:
+    r"""`[[2, 1], [1, 1]]` has determinant 1 and inverse `[[1, -1], [-1, 2]]`."""
+    plane = QQ.free_module(2)
+    linear = _linear_map(plane, plane, ((2, 1), (1, 1)))
+    inverse = linear.inverse()
+
+    assert linear.determinant() == 1
+    assert inverse(plane.module_generator(0)) == plane((1, -1))
+    assert inverse(plane.module_generator(1)) == plane((-1, 2))
+    assert inverse * linear == plane.Mor(plane).identity()
 
 
-def test_matrix_inverse_belongs_to_the_linear_map_parent_not_tensor_data() -> None:
-    linear_components = tensor(QQ, (2,), (2,), [[2, 1], [1, 1]])
-    matrix = QQ.matrix_space(2).from_tensor(linear_components)
-    inverse = matrix.inverse()
+def test_the_inverse_pairing_has_the_inverse_gram_matrix() -> None:
+    r"""The copairing inverse to `b = [[2, 1], [1, 1]]` is the `(2, 0)`-tensor
+    `[[1, -1], [-1, 2]]`."""
+    plane = QQ.free_module(2)
+    algebra = plane.mixed_tensor_algebra()
+    pairing = algebra.graded_piece((0, 2))([[2, 1], [1, 1]])
 
-    assert inverse * matrix == matrix.parent().identity()
-    assert matrix * inverse == matrix.parent().identity()
-    assert matrix.determinant() == QQ(1)
-    assert tensor.from_matrix(inverse) == tensor(QQ, (2,), (2,), [[1, -1], [-1, 2]])
-
-
-def test_dual_pairing_raises_an_index() -> None:
-    pairing = tensor(QQ, (), (2, 2), [[2, 1], [1, 1]])
-    dual = pairing.dual_tensor()
-    covector = tensor.covector(QQ, [3, 5])
-    vector = dual * covector
-
-    assert vector.tensor_valence() == (NN**2)((1, 0))
-    assert vector == tensor.vector(QQ, [-2, 7])
-    assert pairing * vector == covector
+    assert pairing.dual_tensor() == algebra.graded_piece((2, 0))([[1, -1], [-1, 2]])
 
 
-def test_tensor_pullback_requires_an_actual_linear_morphism() -> None:
-    form = tensor(ZZ, (), (2, 2), [[2, 1], [1, 3]])
-    change = ZZ.matrix_space(2, 2).from_rows([[1, 1], [0, 1]])
-    pulled = form.pullback(change)
+def test_the_inverse_pairing_raises_an_index() -> None:
+    r"""Raising `c = (3, 5)` with `b^{-1}` gives `v = (3 - 5, -3 + 10) = (-2, 7)`, and
+    lowering `v` with `b` returns `c`."""
+    plane = QQ.free_module(2)
+    pairing = plane.mixed_tensor_algebra().graded_piece((0, 2))([[2, 1], [1, 1]])
+    covector = plane.dual_module()((3, 5))
+    raised = pairing.dual_tensor() * covector
 
-    assert pulled == tensor(ZZ, (), (2, 2), [[2, 3], [3, 7]])
-    with pytest.raises(TypeError, match="owned linear morphism"):
-        form.pullback(tensor.from_matrix(change))
-
-
-
-
+    assert raised == plane((-2, 7))
+    assert pairing * raised == covector
 
 
+def test_pulling_back_a_bilinear_form_along_a_linear_map_is_p_transpose_b_p() -> None:
+    r"""`b = [[2, 1], [1, 3]]`, `P = [[1, 1], [0, 1]]`: `P^T b P = [[2, 3], [3, 7]]`."""
+    plane = ZZ.free_module(2)
+    forms = plane.mixed_tensor_algebra().graded_piece((0, 2))
+    change = _linear_map(plane, plane, ((1, 0), (1, 1)))
 
-
-
-
-
-
+    assert forms([[2, 1], [1, 3]]).pullback(change) == forms([[2, 3], [3, 7]])

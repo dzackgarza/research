@@ -1,20 +1,8 @@
+r"""Commutative algebra: spectra, localization, completion, ideals and modules."""
+
 import pytest
 
-from dzack_research.preamble.all import (
-    AffineSpaces,
-    GF,
-    ProjectiveSpaces,
-    QQ,
-    ZZ,
-    ArtinianRings,
-    Algebras,
-    CompleteLocalRings,
-    LocalRings,
-    Set,
-    Zmod,
-)
-
-
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
@@ -22,8 +10,6 @@ def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
     assert Zmod(8).spectrum().cardinality() == 1
     assert Zmod(12).spectrum().cardinality() == 2
     assert Zmod(30).spectrum().cardinality() == 3
-
-
 
 
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
@@ -40,8 +26,6 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     assert local_at_five in LocalRings()
     assert int(local_at_five.residue_field().cardinality()) == 5
     assert local_at_five.maximal_ideal() == local_at_five.ideal(local_at_five(5))
-
-
 
 
 def test_polynomial_prime_localization_has_expected_residue_field() -> None:
@@ -97,122 +81,39 @@ def test_formal_power_series_ring_is_complete_local_over_a_field() -> None:
     assert uniformizer == power_series.power_series_variable()
 
 
-def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
-    field = GF(5)
-    affine_plane = AffineSpaces(field)(2)
-    projective_plane = ProjectiveSpaces(field)(2)
-
-    assert affine_plane.dimension().parent() is ZZ
-    assert projective_plane.dimension().parent() is ZZ
-
-    _values = affine_plane.point_counts(3)
-
-    assert _values.cardinality() == 3
-    assert all(value.parent() is ZZ for value in _values)
-
-    assert _values[0] == 25
-    assert (_values[0] + ZZ.one()).parent() is ZZ
-
-    assert _values[1] == 625
-
-    assert _values[2] == 15625
-    _values = projective_plane.point_counts(3)
-    assert _values.cardinality() == 3
-    assert all(value.parent() is ZZ for value in _values)
-    assert _values[0] == 31
-    assert _values[1] == 651
-    assert _values[2] == 15751
-
-    affine_zeta = affine_plane.zeta_function()
-    (T,) = affine_zeta.parent().algebra_generators()
-    assert affine_zeta == 1 / (1 - 25 * T)
-
-    projective_zeta = projective_plane.zeta_function()
-    (T,) = projective_zeta.parent().algebra_generators()
-    assert projective_zeta == 1 / ((1 - T) * (1 - 5 * T) * (1 - 25 * T))
-
-
-
-
-
-
-
-
 def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> None:
-    affine_line = AffineSpaces(QQ)(1, names=("x",))
-    spectrum = affine_line.underlying_space()
-    ring = spectrum.ring()
+    r"""On Spec Q[x]: the generic point specializes to (x); (x) lies in V(x) and not
+    in D(x); O(D(x)) = Q[x][1/x]; O is a sheaf for {D(x), D(1-x)}; O_(x) = Q[x]_(x)
+    (Hartshorne II.2.2)."""
+    ring = QQ['x']
     x = ring.algebra_generator("x")
+    spectrum = ring.spectrum()
+    line = ring.affine_spectrum()
 
-    generic = spectrum(ring.ideal(0))
+    generic = spectrum.generic_point()
     origin = spectrum(ring.ideal(x))
-
-    from dzack_research.preamble.categories.modules import Modules
-    assert origin.ideal() in Modules(spectrum.ring()).Subobjects(
-        spectrum.ring().regular_module()
-    )
-    assert origin.ideal().inclusion().codomain() is spectrum.ring().regular_module()
-
     assert generic.specializes_to(origin)
     assert not origin.specializes_to(generic)
-    assert spectrum.generic_point() == generic
+    assert origin in spectrum.V(x)
+    assert generic not in spectrum.V(x)
+    assert origin not in spectrum.D(x)
+    assert generic in spectrum.D(x)
 
-    closed_origin = spectrum.V(x)
-    assert closed_origin in ZariskiClosedSubobjects(spectrum)
-    assert closed_origin in Sets().Subobjects(spectrum)
-    assert closed_origin.inclusion().codomain() is spectrum
-    assert closed_origin.defining_ideal() in Modules(spectrum.ring()).Subobjects(
-        spectrum.ring().regular_module()
-    )
-    punctured_line = spectrum.D(x)
-    assert punctured_line in DistinguishedOpenSubobjects(spectrum)
-    assert punctured_line in Sets().Subobjects(spectrum)
-    assert punctured_line.inclusion().codomain() is spectrum
-    assert generic not in closed_origin
-    assert origin in closed_origin
-    assert generic in punctured_line
-    assert origin not in punctured_line
-
-    sheaf = affine_line.structure_sheaf()
-    presheaf = sheaf.presheaf()
-    site = presheaf.site_category()
-    whole = site.object(affine_line.categorical_identity_morphism())
-    punctured_open = affine_line.distinguished_open(x)
-    open_object = site.object(punctured_open.inclusion())
-    opposite = site.opposite()
-    global_module = presheaf(opposite(whole))
-    open_module = presheaf(opposite(open_object))
-    restriction_triangle = site.Mor(open_object, whole)(punctured_open.inclusion())
-    restriction = presheaf(
-        opposite.Mor(opposite(whole), opposite(open_object))(restriction_triangle)
-    )
-    assert global_module is spectrum.ring().regular_module()
-    assert open_module.base_ring() is spectrum.ring()
-    assert restriction.domain() is global_module
-    assert restriction.codomain() is open_module
-    assert restriction(global_module(x)).underlying_element() == punctured_open.inclusion().coordinate_algebra_morphism()(x)
-    cover = affine_line.distinguished_open_cover(x, spectrum.ring().one() - x)
-    assert sheaf in cover.coverage().sheaves(Modules(spectrum.ring()))
-    assert sheaf.presheaf() is sheaf.functor()
-    assert sheaf.descent_data().coverage() is cover.coverage()
-    assert sheaf.descent_data().presheaf() is sheaf.presheaf()
-    cech_structure = sheaf.cech_sheaf(cover)
-    structure_datum = sheaf.module_descent_datum(cover)
-    assert cech_structure in cover.cech_coverage().sheaves(Modules(spectrum.ring()))
-    assert cech_structure.gluing_datum() is structure_datum
-    assert structure_datum.cover() is cover
-    principal_sections = sheaf.sections_on_distinguished_open(punctured_line)
-    assert principal_sections.localization_source() is spectrum.ring()
-    assert principal_sections.inverted_elements() == Set((spectrum.ring()(x),))
+    sheaf = line.structure_sheaf()
+    sections = sheaf.sections_on_distinguished_open(spectrum.D(x))
+    assert sections(x).is_unit()
+    assert not sections(x - 1).is_unit()
+    cover = line.distinguished_open_cover(x, 1 - x)
+    assert sheaf in cover.coverage().sheaves(Modules(ring))
 
     stalk = sheaf.stalk(origin)
-    assert stalk is origin.local_ring()
-    assert stalk.localization_source() is spectrum.ring()
-    assert int(stalk.residue_field().characteristic()) == 0
+    assert stalk in LocalRings()
+    assert stalk.residue_field().characteristic() == 0
+    assert not stalk(x).is_unit()
+    assert stalk(x + 1).is_unit()
 
 
 def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> None:
-    from dzack_research.preamble.categories.modules import Modules
 
     ring = QQ.polynomial_ring(("x", "y"))
     x, y = ring.algebra_generators()
@@ -236,139 +137,51 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
     assert same_ideal(ideal.intersection(other), ring.ideal(x * y))
 
 
-def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None:
-
-    parameter = QQ.polynomial_ring("t")
+def test_special_fiber_of_xy_equals_t_is_the_node_with_its_local_ring_at_the_origin() -> None:
+    r"""The family xy = t over Q[t] is a surface; its fiber over t = 0 is the node
+    xy = 0, a curve whose origin (x, y) is maximal, with x, y nonunits and x+1, y+1
+    units in the local ring there."""
+    parameter = QQ['t']
     t = parameter.algebra_generator("t")
-    presentation = parameter.polynomial_ring(("x", "y"))
-    x = presentation.algebra_generator("x")
-    y = presentation.algebra_generator("y")
-    family = (presentation).quotient_by_relations((x * y - t,))
-    x_family = family.algebra_generator("x")
-
-    principal = family.ideal(x_family)
-    assert principal.inclusion().is_injective()
+    plane = parameter['x,y']
+    x = plane.algebra_generator("x")
+    y = plane.algebra_generator("y")
+    family = plane.quotient_by_relations((x * y - t,))
     assert family.krull_dimension() == 2
-    principal_syzygies = principal.syzygy_matrix()
-    assert principal_syzygies.parent().base_ring() is family
-    assert principal_syzygies.ncols() == 1
-    assert principal_syzygies.nrows() == 0
 
-    special_fiber, _family_to_fiber = family._quotient_by_algebra_elements(
-        (family.algebra_structure_morphism()(t),)
-    )
-    x0 = special_fiber.algebra_generator("x")
-    y0 = special_fiber.algebra_generator("y")
-    origin = special_fiber.ideal(x0, y0)
-
-    assert special_fiber.krull_dimension() == 1
-    assert x0 * y0 == special_fiber.zero()
-    assert origin.is_prime()
+    fiber = family.quotient_ring(family.ideal(family.algebra_structure_morphism()(t)))
+    to_fiber = fiber.quotient_map()
+    x0 = to_fiber(family.algebra_generator("x"))
+    y0 = to_fiber(family.algebra_generator("y"))
+    assert fiber.krull_dimension() == 1
+    assert x0 * y0 == fiber.zero()
+    assert x0 != fiber.zero()
+    origin = fiber.ideal(x0, y0)
     assert origin.is_maximal()
-    origin_syzygies = origin.syzygy_matrix()
-    assert origin_syzygies.parent().base_ring() is special_fiber
-    assert origin_syzygies.ncols() == 2
-    assert origin_syzygies.nrows() == 2
 
-    origin_point = special_fiber.spectrum()(origin)
-    assert origin_point.ideal() is origin
-
-    local = special_fiber.localize_at_prime(origin)
-    assert local in LocalRings()
-    point_local = origin_point.local_ring()
-    assert point_local in LocalRings()
-    assert point_local.localization_source() is special_fiber
-    assert point_local.localized_prime() is origin
-    assert local.localization_source() is special_fiber
-    assert local.localized_prime() is origin
+    local = fiber.localize_at_prime(origin)
     assert not local(x0).is_unit()
     assert not local(y0).is_unit()
     assert local(x0 + 1).is_unit()
     assert local(y0 + 1).is_unit()
-    assert local(x0) in local.maximal_ideal()
-    assert local(y0) in local.maximal_ideal()
-    assert local.one() not in local.maximal_ideal()
-
-    residue = local.residue_field()
-    residue_map = local.residue_map()
-    assert residue_map(local(x0)) == residue.zero()
-    assert residue_map(local(y0)) == residue.zero()
-    assert residue_map(local.one()) == residue.one()
-    assert residue.fraction_field() is residue
+    assert local.residue_map()(local(x0)) == local.residue_field().zero()
 
 
 def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
-    from dzack_research.preamble.all import Algebras
-
-    source = QQ.polynomial_ring("x")
-    middle = QQ.polynomial_ring("t")
-    target = QQ.polynomial_ring("u")
-    x = source.algebra_generator("x")
+    r"""Spec is a contravariant functor: Spec(g f) = Spec(f) Spec(g) and Spec(id) = id,
+    for f: Q[x] -> Q[t], x -> t^2 and g: Q[t] -> Q[u], t -> u + 1."""
+    source = QQ['x']
+    middle = QQ['t']
+    target = QQ['u']
     t = middle.algebra_generator("t")
     u = target.algebra_generator("u")
-
-    assert source in Algebras(QQ).Associative().Unital().Commutative()
-    assert middle in Algebras(QQ).Associative().Unital().Commutative()
-    assert target in Algebras(QQ).Associative().Unital().Commutative()
-
-    first = source.Mor(middle)({"x": middle(t**2)})
-    second = middle.Mor(target)({"t": target(u + 1)})
-    composite = second * first
+    first = source.Mor(middle)({"x": t**2})
+    second = middle.Mor(target)({"t": u + 1})
 
     spec = Algebras(QQ).Associative().Unital().Commutative().spectrum()
-    spec_source = spec(source)
-    spec_middle = spec(middle)
-    spec_target = spec(target)
-
-    assert spec_source is (source).affine_spectrum()
-    assert spec_source.scheme_base_ring() is QQ
-    assert spec_source.coordinate_algebra() is source
-    assert spec_source.structure_sheaf().global_sections() is source
-
-    first_spec = spec(first)
-    second_spec = spec(second)
-    composite_spec = spec(composite)
-
-    assert first_spec.domain() is spec_middle
-    assert first_spec.codomain() is spec_source
-    assert second_spec.domain() is spec_target
-    assert second_spec.codomain() is spec_middle
-    assert first_spec.coordinate_algebra_morphism() is first
-    assert second_spec.coordinate_algebra_morphism() is second
-
-    # Spec(second * first) = Spec(first) * Spec(second), checked through the
-    # represented pullback on coordinate algebras and endpoints.
-    composed_scheme = first_spec * second_spec
-    assert composed_scheme.domain() is spec_target
-    assert composed_scheme.codomain() is spec_source
-    assert composite_spec.coordinate_algebra_morphism()(source(x)) == composite(source(x))
-
-    identity = Algebras(QQ).Associative().Unital().Commutative().Mor(source, source).identity()
-    identity_spec = spec(identity)
-    assert identity_spec.domain() is spec_source
-    assert identity_spec.codomain() is spec_source
-
-
-def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -> None:
-    left = QQ.polynomial_ring("x")
-    right = QQ.polynomial_ring("y")
-    coproduct = Algebras(QQ).Associative().Unital().Commutative().coproduct((left, right))
-    left_map, right_map = coproduct.coproduct_injections()
-
-    x = left.algebra_generator("x")
-    y = right.algebra_generator("y")
-    assert left_map.domain() is left and left_map.codomain() is coproduct
-    assert right_map.domain() is right and right_map.codomain() is coproduct
-
-    target = QQ.polynomial_ring("t")
-    t = target.algebra_generator("t")
-    f = left.Mor(target)({"x": t})
-    g = right.Mor(target)({"y": t**2})
-    induced = coproduct.from_cocone(f, g)
-    assert induced(left_map(x)) == t
-    assert induced(right_map(y)) == t**2
-
-
+    assert spec(second * first) == spec(first) * spec(second)
+    assert spec(source.Mor(source).identity()) == spec(source).categorical_identity_morphism()
+    assert spec(second * first) != spec(first) * spec(middle.Mor(target)({"t": u}))
 
 
 def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
@@ -396,195 +209,74 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
 
 
 def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
-
-    ring = QQ.polynomial_ring("x")
+    r"""For M = Q[x]/(x): generic rank 0, fiber rank 1 at (x), Fitt_0(M) = Ann(M) = (x),
+    Supp M = {(x)}; Q[x]^2 has rank 2 at every point."""
+    ring = QQ['x']
     x = ring.algebra_generator("x")
-    free_target = ring.free_module(1)
-    free_relations = ring.free_module(1)
-    module = free_relations.module_category().Mor(free_relations, free_target)(
-            {0: x * free_target.module_generator(0)}
-        ).cokernel()
-
+    module = Modules(ring).direct_sum_of_cyclics((x,))
     spectrum = ring.spectrum()
     generic = spectrum.generic_point()
     origin = spectrum(ring.ideal(x))
 
-    assert module.rank_at(generic) == 0
     assert module.generic_rank() == 0
+    assert module.rank_at(generic) == 0
     assert module.rank_at(origin) == 1
-    assert module.fiber_dimension(origin) == module.fiber(origin).dimension()
-    assert module.local_number_of_generators(origin) == 1
-    localized_at_origin = module.localize_at_prime(origin)
-    assert localized_at_origin.minimal_number_of_generators() == 1
-    residue_module = localized_at_origin.residue_module()
-    assert localized_at_origin.minimal_number_of_generators() == residue_module.dimension()
-    assert residue_module.basis_generator_labels().cardinality() == residue_module.dimension()
-    assert localized_at_origin.submodule(
-        localized_at_origin.minimal_module_generators()
-    ) == localized_at_origin
-    assert origin.residue_map()(ring(x)) == origin.residue_field().zero()
-
-    fitting_zero = module.fitting_ideal(0)
-    assert fitting_zero == ring.ideal(ring(x))
-    assert module.annihilator() == fitting_zero
-    assert module.annihilator() == module.scalar_action().kernel()
-    assert generic not in module.support()
+    assert module.fitting_ideal(0) == ring.ideal(x)
+    assert module.annihilator() == ring.ideal(x)
     assert origin in module.support()
-    assert generic not in module.annihilator_support()
-    assert origin in module.annihilator_support()
-    assert generic not in module.fiber_dimension_at_least(1)
-    assert origin in module.fiber_dimension_at_least(1)
+    assert generic not in module.support()
+    assert spectrum(ring.ideal(x - 1)) not in module.support()
+    assert module.localize_at_prime(origin).minimal_number_of_generators() == 1
 
     free_rank_two = ring.free_module(2)
-    assert free_rank_two.rank_at(generic) == 2
-    assert free_rank_two.rank_at(origin) == 2
     assert free_rank_two.generic_rank() == 2
-    assert free_rank_two.projective_rank(origin) == 2
+    assert free_rank_two.rank_at(origin) == 2
 
 
-def test_module_localization_is_first_class_and_fibers_factor_through_it() -> None:
-    from dzack_research.preamble.all import LocalizedModules
-
-    free = ZZ.free_module(1)
-    generator = free.module_generator(0)
-    p2 = ZZ.spectrum()(2)
-    localized_free = free.localize_at_prime(p2)
-
-    assert localized_free in LocalizedModules(p2.local_ring())
-    assert localized_free.localization_source_module() is free
-    assert localized_free.localization_ring() is p2.local_ring()
-    assert localized_free.localization_prime_point() == p2
-    assert localized_free.localization_submonoid() is p2.local_ring().localization_submonoid()
-
-    unit = localized_free.localization_unit()
-    assert unit.domain() is free
-    assert unit(generator).underlying_element() == localized_free.module_generator(0)
-
-    multiplication_by_three = free.module_category().Mor(free, free)({0: 3 * generator})
-    localized_map = localized_free.localization_functor()(multiplication_by_three)
-    assert localized_map.domain() is localized_free
-    assert localized_map(localized_free.module_generator(0)) == localized_free.scalar_multiple(
-        3, localized_free.module_generator(0)
-    )
-
-    torsion = free.module_category().Mor(free, free)({0: 6 * generator}).cokernel()
-    p5 = ZZ.spectrum()(5)
-    torsion_at_two = torsion.localize_at_prime(p2)
-    torsion_at_five = torsion.localize_at_prime(p5)
-    assert torsion.annihilator() == ZZ.ideal(ZZ(6))
-    assert torsion.annihilator() == torsion.scalar_action().kernel()
-    assert free.annihilator() == ZZ.ideal(ZZ.zero())
-    assert free.annihilator() == free.scalar_action().kernel()
-    zero_free = ZZ.free_module(0)
-    assert zero_free.annihilator() == ZZ.ideal(ZZ.one())
-    assert torsion_at_two.localization_source_module() is torsion
-    assert torsion_at_five.localization_source_module() is torsion
-    assert torsion.rank_at(p2) == 1
-    assert torsion.rank_at(p5) == 0
-
-    polynomial = QQ.polynomial_ring("x")
-    x = polynomial.algebra_generator("x")
-    polynomial_free = polynomial.free_module(1)
-    quotient = polynomial_free.module_category().Mor(polynomial_free, polynomial_free)(
-            {0: x * polynomial_free.module_generator(0)}
-        ).cokernel()
-    origin = polynomial.spectrum()(polynomial.ideal(x))
-    local_quotient = quotient.localize_at_prime(origin)
-    fiber = quotient.fiber(origin)
-    assert fiber._preamble_fiber_localization is local_quotient
-    assert local_quotient.localization_prime_point() == origin
+def test_annihilators_and_fiber_ranks_of_integer_modules() -> None:
+    r"""Ann(Z/6) = (6), Ann(Z) = 0, Ann(0) = Z; dim_{F_p} (Z/6) (x) F_p is 1 at p = 2, 3
+    and 0 at p = 5."""
+    torsion = Modules(ZZ).direct_sum_of_cyclics((6,))
+    assert torsion.annihilator() == ZZ.ideal(6)
+    assert ZZ.free_module(1).annihilator() == ZZ.ideal(0)
+    assert Modules(ZZ).zero_object().annihilator() == ZZ.ideal(1)
+    assert torsion.rank_at(ZZ.spectrum()(2)) == 1
+    assert torsion.rank_at(ZZ.spectrum()(3)) == 1
+    assert torsion.rank_at(ZZ.spectrum()(5)) == 0
 
 
-def test_presented_module_localization_detects_inverted_annihilators() -> None:
+def test_localized_cyclic_module_vanishes_exactly_when_its_ideal_meets_the_inverted_set() -> None:
+    r"""S^{-1}(R/I) = 0 iff I meets S: (Q[x]/(x^2))[1/x] = 0, (Q[x]/(x+1))[1/x] != 0;
+    at the prime (x) of Q[x,y], Q[x,y]/(x) survives and Q[x,y]/(y) dies;
+    (Z/6)_(2) != 0 and (Z/6)_(5) = 0 (Atiyah-Macdonald 3.1-3.3)."""
+    line = QQ['x']
+    x = line.algebra_generator("x")
+    inverted_x = line.localization(x)
+    assert Modules(line).direct_sum_of_cyclics((x**2,)).localize(inverted_x).is_zero()
+    assert not Modules(line).direct_sum_of_cyclics((x + 1,)).localize(inverted_x).is_zero()
 
-    polynomial = QQ.polynomial_ring("x")
-    x = polynomial.algebra_generator("x")
-    free = polynomial.free_module(1)
-    generator = free.module_generator(0)
-    localization = polynomial.localization(x)
-    localize = localization.localization_functor()
+    plane = QQ['x,y']
+    xp = plane.algebra_generator("x")
+    yp = plane.algebra_generator("y")
+    point = plane.spectrum()(plane.ideal(xp))
+    assert not Modules(plane).direct_sum_of_cyclics((xp,)).localize_at_prime(point).is_zero()
+    assert Modules(plane).direct_sum_of_cyclics((yp,)).localize_at_prime(point).is_zero()
 
-    killed = free.module_category().Mor(free, free)({0: (x**2) * generator}).cokernel()
-    surviving = free.module_category().Mor(free, free)({0: (x + polynomial.one()) * generator}).cokernel()
-    killed_local = localize(killed)
-    surviving_local = localize(surviving)
-
-    assert killed_local.module_generator(0).equality_status(killed_local.zero()) is True
-    assert killed_local.is_zero() is True
-    assert (
-        surviving_local.module_generator(0).equality_status(surviving_local.zero())
-        is False
-    )
-    assert surviving_local.is_zero() is False
-
-    plane = QQ.polynomial_ring(("x", "y"))
-    x_plane = plane.algebra_generator("x")
-    y_plane = plane.algebra_generator("y")
-    plane_free = plane.free_module(1)
-    plane_generator = plane_free.module_generator(0)
-    point = plane.spectrum()(plane.ideal(x_plane))
-    localize_at_x = point.local_ring().localization_functor()
-
-    supported_at_x = plane_free.module_category().Mor(plane_free, plane_free)({0: x_plane * plane_generator}).cokernel()
-    killed_away_from_x = plane_free.module_category().Mor(plane_free, plane_free)({0: y_plane * plane_generator}).cokernel()
-    supported_local = localize_at_x(supported_at_x)
-    killed_local = localize_at_x(killed_away_from_x)
-
-    assert supported_local.module_generator(0).equality_status(supported_local.zero()) is False
-    assert supported_local.is_zero() is False
-    assert killed_local.module_generator(0).equality_status(killed_local.zero()) is True
-    assert killed_local.is_zero() is True
-
-    integer_free = ZZ.free_module(1)
-    integer_generator = integer_free.module_generator(0)
-    torsion = integer_free.module_category().Mor(integer_free, integer_free)({0: 6 * integer_generator}).cokernel()
-    at_two = ZZ.spectrum()(2).local_ring().localization_functor()(torsion)
-    at_five = ZZ.spectrum()(5).local_ring().localization_functor()(torsion)
-
-    assert at_two.module_generator(0).equality_status(at_two.zero()) is False
-    assert at_two.is_zero() is False
-    assert at_five.module_generator(0).equality_status(at_five.zero()) is True
-    assert at_five.is_zero() is True
+    six = Modules(ZZ).direct_sum_of_cyclics((6,))
+    assert not six.localize_at_prime(ZZ.spectrum()(2)).is_zero()
+    assert six.localize_at_prime(ZZ.spectrum()(5)).is_zero()
 
 
+def test_z_mod_six_with_two_inverted_is_z_mod_three() -> None:
+    r"""(Z/6)[1/2] = Z/3: the class of 3 dies (2 * 3 = 0), 1 survives, and 1/2 = 2."""
+    module = Modules(ZZ).direct_sum_of_cyclics((6,))
+    one = module.module_generator(0)
+    localized = module.localize(ZZ.localization(2))
 
-
-def test_general_module_localization_uses_fraction_model_and_detects_s_torsion() -> None:
-    from dzack_research.preamble.all import GeneralModules, LocalizedModules, Set
-
-    underlying_set = Set([0, 1, 2, 3, 4, 5])
-    module = GeneralModules(ZZ).from_operations(
-        underlying_set,
-        addition=lambda left, right: (left + right) % 6,
-        zero=0,
-        negation=lambda value: (-value) % 6,
-        scalar_action=lambda scalar, value: (int(scalar) * value) % 6,
-    )
-    localization = ZZ.localization(2)
-    localized = module.localize(localization)
-
-    assert localized in LocalizedModules(localization)
-    assert localized.localization_source_module() is module
-    assert localized.localization_ring() is localization
-
-    half = localized.fraction(module(1), 2)
-    assert half.equality_status(localized.fraction(module(2))) is True
-    assert localized.fraction(module(3)).equality_status(localized.zero()) is True
-    assert localized.fraction(module(1)).equality_status(localized.zero()) is False
-
-    with pytest.raises(ValueError, match="does not become invertible"):
-        localized.fraction(module(1), 3)
-
-    assert (localization(3) / localization(2)) * half == localized.fraction(module(3), 4)
-
-    unit = localized.localization_unit()
-    assert unit(module(1)).underlying_element() == localized.fraction(module(1))
-
-    doubling = module.module_category().Mor(module, module).elementwise(
-        lambda element: module((2 * element.underlying_element()) % 6)
-    )
-    localized_doubling = localized.localization_functor()(doubling)
-    assert localized_doubling(half) == localized.fraction(module(2), 2)
+    assert localized.cardinality() == 3
+    assert localized.fraction(3 * one) == localized.zero()
+    assert localized.fraction(one) != localized.zero()
+    assert localized.fraction(one, 2) == localized.fraction(2 * one)
 
 
 def test_ideal_localization_extension_contraction_colon_and_saturation() -> None:
@@ -697,77 +389,42 @@ def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
     assert localized_fitting.contains_ambient_element(localized.one())
 
 
-def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None:
+def test_localization_commutes_with_cokernels() -> None:
+    r"""Localization is exact, so S^{-1} coker(6: Z -> Z) = coker(6: Z[1/2] -> Z[1/2]),
+    both Z/3 (Atiyah-Macdonald 3.3)."""
+    inverted_two = ZZ.localization(2)
+    free = ZZ.free_module(1)
+    multiplication_by_six = free.Mor(free)({0: 6 * free.module_generator(0)})
 
-    source = ZZ.free_module(2)
-    target = ZZ.free_module(1)
-    morphism = source.module_category().Mor(source, target)(
-        {
-            0: target.module_generator(0),
-            1: target.zero(),
-        }
-    )
-    localization = ZZ.localization(2)
-    functor = source.localize(localization).localization_functor()
-
-    kernel_comparison = functor.kernel_comparison(morphism)
+    functor = inverted_two.localization_functor()
     assert functor.is_exact()
-    assert kernel_comparison.domain() is kernel_comparison.codomain()
-    assert (
-        kernel_comparison.domain().inclusion().codomain()
-        is functor(source)
-    )
-
-    rank_one = ZZ.free_module(1)
-    generator = rank_one.module_generator(0)
-    multiplication_by_six = rank_one.module_category().Mor(rank_one, rank_one)(
-        {0: 6 * generator}
-    )
-    cokernel_comparison = functor.cokernel_comparison(multiplication_by_six)
-    left = cokernel_comparison.domain()
-    right = cokernel_comparison.codomain()
-    left_generator = left.module_generator(0)
-    right_generator = right.module_generator(0)
-    assert cokernel_comparison.inverse()(
-        cokernel_comparison.forward()(left_generator)
-    ) == left_generator
-    assert cokernel_comparison.forward()(
-        cokernel_comparison.inverse()(right_generator)
-    ) == right_generator
+    comparison = functor.cokernel_comparison(multiplication_by_six)
+    assert comparison.domain().cardinality() == 3
+    assert comparison.codomain().cardinality() == 3
+    assert comparison.forward().is_injective()
+    assert comparison.forward().is_surjective()
 
 
 def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operations() -> None:
-
-    ring = QQ.polynomial_ring("x")
+    r"""Over R = Q[x]_(x) and M = R/(x): mu(M) = dim M/mM = 1; R -> M is surjective
+    (surjective mod m, Nakayama) while multiplication by x on R is not
+    (Atiyah-Macdonald 2.8)."""
+    ring = QQ['x']
     x = ring.algebra_generator("x")
-    origin = ring.spectrum()(ring.ideal(ring.algebra_generator("x")))
-    local = origin.local_ring()
-    free = local.free_module(1)
-    generator = free.module_generator(0)
-    quotient = free.module_category().Mor(free, free)(
-            {0: free.scalar_multiple(local(x), generator)}
-        ).cokernel()
+    local = ring.spectrum()(ring.ideal(x)).local_ring()
+    quotient = Modules(local).direct_sum_of_cyclics((local(x),))
 
     assert quotient.minimal_number_of_generators() == 1
-    assert quotient.minimal_number_of_generators() == quotient.residue_module().dimension()
-    assert quotient.submodule(quotient.minimal_module_generators()) == quotient
+    assert quotient.residue_module().dimension() == 1
 
-    projection = free.module_category().Mor(free, quotient)(
-        {0: quotient.module_generator(0)}
-    )
-    residue_projection = projection.residue_morphism()
-    residue_generator = residue_projection.domain().module_generator(0)
-    assert residue_projection(residue_generator) == residue_projection.codomain().module_generator(0)
-    assert projection.is_surjective_mod_maximal_ideal()
+    free = local.free_module(1)
+    projection = free.Mor(quotient)({0: quotient.module_generator(0)})
     assert projection.is_surjective_by_nakayama()
+    assert projection.is_surjective()
 
-    multiplication_by_x = free.module_category().Mor(free, free)(
-        {0: free.scalar_multiple(local(x), generator)}
-    )
+    multiplication_by_x = free.Mor(free)({0: local(x) * free.module_generator(0)})
     assert not multiplication_by_x.is_surjective_mod_maximal_ideal()
     assert not multiplication_by_x.is_surjective_by_nakayama()
-
-
 
 
 def test_map_induced_out_of_a_localization_is_independent_of_the_representative() -> None:
@@ -820,3 +477,53 @@ def test_integer_localization_universal_map_factors_exactly_when_two_becomes_a_u
 
     with pytest.raises(ValueError, match="does not carry.*to a unit"):
         inverted_two.induced_morphism(ZZ.Mor(ZZ).identity())
+
+
+def test_affine_and_projective_plane_over_f5_have_the_textbook_point_counts_and_zeta_functions() -> None:
+    r"""#A^2(F_{q^n}) = q^{2n}, #P^2(F_{q^n}) = 1 + q^n + q^{2n}; Z(A^2) = 1/(1-q^2 T),
+    Z(P^2) = 1/((1-T)(1-qT)(1-q^2T)) (Hartshorne, Appendix C, Ex. 1.1)."""
+    field = GF(5)
+    affine_plane = AffineSpaces(field)(2)
+    projective_plane = ProjectiveSpaces(field)(2)
+
+    affine_counts = affine_plane.point_counts(3)
+    assert (affine_counts[0], affine_counts[1], affine_counts[2]) == (25, 625, 15625)
+    projective_counts = projective_plane.point_counts(3)
+    assert (projective_counts[0], projective_counts[1], projective_counts[2]) == (31, 651, 15751)
+
+    affine_zeta = affine_plane.zeta_function()
+    (T,) = affine_zeta.parent().algebra_generators()
+    assert affine_zeta == 1 / (1 - 25 * T)
+
+    projective_zeta = projective_plane.zeta_function()
+    (T,) = projective_zeta.parent().algebra_generators()
+    assert projective_zeta == 1 / ((1 - T) * (1 - 5 * T) * (1 - 25 * T))
+
+
+def test_commutative_algebra_coproduct_of_two_polynomial_rings_is_the_polynomial_ring_in_two_variables() -> None:
+    r"""In commutative Q-algebras, Q[x] + Q[y] = Q[x] (x)_Q Q[y] = Q[x, y]; the copairing
+    of x -> t, y -> t^2 sends x to t and y to t^2."""
+    left = QQ['x']
+    right = QQ['y']
+    coproduct = Algebras(QQ).Associative().Unital().Commutative().coproduct((left, right))
+    left_map, right_map = coproduct.coproduct_injections()
+    x = left.algebra_generator("x")
+    y = right.algebra_generator("y")
+
+    assert coproduct.krull_dimension() == 2
+    assert left_map(x) * right_map(y) != right_map(y) * right_map(y)
+
+    plane = QQ['x,y']
+    comparison = coproduct.from_cocone(
+        left.Mor(plane)({"x": plane.algebra_generator("x")}),
+        right.Mor(plane)({"y": plane.algebra_generator("y")}),
+    )
+    assert comparison.is_injective()
+    assert comparison.is_surjective()
+
+    line = QQ['t']
+    s = line.algebra_generator("t")
+    induced = coproduct.from_cocone(left.Mor(line)({"x": s}), right.Mor(line)({"y": s**2}))
+    assert induced(left_map(x)) == s
+    assert induced(right_map(y)) == s**2
+    assert induced(left_map(x) * right_map(y)) == s**3

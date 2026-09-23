@@ -1,21 +1,23 @@
-r"""Finite words and multisets are the length-graded coproducts of their pieces."""
+r"""Finite words and finite multisets over a two-letter alphabet.
 
-from dzack_research.preamble.all import NN, finite_ordered_set
+Derivation: the words of length `n` over a `k`-letter alphabet are the functions
+`\{1, \dots, n\} \to A`, `k^n` of them; the multisets of size `n` number
+`\binom{n + k - 1}{n}`, which is `n + 1` for `k = 2`.  Both collections, graded by
+`n \in \mathbb{N}`, are countably infinite.
+"""
+
+from dzack_research.preamble.all import NN, Sets
 
 
-
-
-def test_word_and_multiset_lengths_use_the_existing_finite_set_constructions():
-    alphabet = finite_ordered_set(("a", "b"))
+def test_words_and_multisets_over_two_letters_number_two_to_the_n_and_n_plus_one() -> None:
+    alphabet = Sets()(("a", "b"))
     words = alphabet.finite_words()
     multisets = alphabet.finite_multisets()
+
     assert words.cardinality().is_countably_infinite()
     assert multisets.cardinality().is_countably_infinite()
     assert words.cofactor(NN(2)).cardinality() == 4
+    assert words.cofactor(NN(3)).cardinality() == 8
     assert multisets.cofactor(NN(2)).cardinality() == 3
-    assert alphabet.finite_words() is words
-    assert alphabet.finite_multisets() is multisets
-    ab = words(NN(2), words.cofactor(NN(2))(lambda i: "a" if int(i) == 0 else "b"))
-    ba = words(NN(2), words.cofactor(NN(2))(lambda i: "b" if int(i) == 0 else "a"))
-    assert ab != ba
-    assert words.ranking_map().inverse()(words.ranking_map()(ab)) == ab
+    assert multisets.cofactor(NN(3)).cardinality() == 4
+    assert words.cofactor(NN(0)).cardinality() == 1

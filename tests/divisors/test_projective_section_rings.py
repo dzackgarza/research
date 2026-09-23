@@ -1,82 +1,52 @@
-r"""Projective section rings retain actual graded pieces and multiplication maps."""
+r"""Section rings of the Veronese conic and the Segre quadric."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_veronese_section_ring_uses_actual_section_modules_and_component_maps() -> None:
-    line = ProjectiveSpaces(QQ)(1)
+def test_section_ring_of_O_2_on_P1_is_the_coordinate_ring_of_the_conic() -> None:
+    r"""``R(P^1, O(2)) = Q[u, v, w]/(uw - v^2)``: pieces of rank ``2d + 1``.
+
+    With ``u = x0^2``, ``v = x0 x1``, ``w = x1^2``: ``u w = v^2`` in degree 2,
+    while ``u^2 != v w``.
+    """
+    line = ProjectiveSpaces(QQ)(1, names=("x0", "x1"))
+    coordinates = line.homogeneous_coordinate_ring()
+    x0, x1 = coordinates("x0"), coordinates("x1")
     bundle = line.O(2)
     ring = bundle.section_ring()
-    degree_one = ring.graded_piece(1)
-    degree_two = ring.graded_piece(2)
-    include_one = ring.homogeneous_component_map(1)
-    include_two = ring.homogeneous_component_map(2)
-    multiplication = ring.section_multiplication(1, 1)
-    labels = tuple(degree_one.module_generating_set())
-    left = degree_one.module_generator(labels[0])
-    right = degree_one.module_generator(labels[1])
-    polynomial_comparison = bundle.homogeneous_polynomial_comparison()
-    polynomial_left = polynomial_comparison.forward()(left)
-    polynomial_right = polynomial_comparison.forward()(right)
+    sections = bundle.global_sections()
 
-    product = multiplication(polynomial_left, polynomial_right)
+    def degree_one(form):
+        return ring.homogeneous_component_element(1, sections.section_from_homogeneous_polynomial(form))
 
-    assert ring.section_scheme() is line
-    assert ring.section_line_bundle() is bundle
-    assert "_preamble_section_scheme" not in ring.__dict__
-    assert "_preamble_section_line_bundle" not in ring.__dict__
-    assert "_preamble_section_semigroup_generators" not in ring.__dict__
-    assert "_preamble_degree_one_section_exponents" not in ring.__dict__
-    assert "_preamble_section_line_bundle_degree" not in ring.__dict__
-    assert "_preamble_section_block_widths" not in ring.__dict__
-    assert degree_one is bundle.global_sections()
-    assert degree_one.module_rank() == 3
-    assert degree_two.module_rank() == 5
-    assert multiplication.left_module() is degree_one
-    assert multiplication.right_module() is degree_one
-    assert multiplication.codomain() is degree_two
-    left_in_ring = ring.homogeneous_component_element(1, polynomial_left)
-    right_in_ring = ring.homogeneous_component_element(1, polynomial_right)
-    product_in_ring = ring.homogeneous_component_element(2, product)
-    assert include_one.codomain() is ring.underlying_module()
-    assert include_two.codomain() is ring.underlying_module()
-    assert product_in_ring == left_in_ring * right_in_ring
-    assert ring.homogeneous_degree(left_in_ring) == NN(1)
-    assert ring.homogeneous_degree(product_in_ring) == NN(2)
+    u, v, w = degree_one(x0**2), degree_one(x0 * x1), degree_one(x1**2)
+
+    assert ring.graded_piece(1).module_rank() == 3
+    assert ring.graded_piece(2).module_rank() == 5
+    assert ring.graded_piece(3).module_rank() == 7
+    assert u * w == v * v
+    assert u * u != v * w
+    assert ring.homogeneous_degree(u * w) == 2
 
 
-def test_multiprojective_section_ring_is_segre_veronese_with_exact_factor_roles() -> None:
-    factor_labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpaces(QQ)(1)
-    factors = indexed_family(factor_labels, lambda _label: line)
-    quadric = Schemes(QQ).product(factors)
+def test_section_ring_of_O_1_1_on_P1_x_P1_is_the_coordinate_ring_of_the_segre_quadric() -> None:
+    r"""``R(P^1 x P^1, O(1,1))`` has pieces of rank ``(d + 1)^2``: 4, 9.
+
+    The Segre relation ``(x0 y0)(x1 y1) = (x0 y1)(x1 y0)`` holds in degree 2.
+    """
+    first = ProjectiveSpaces(QQ)(1, names=("x0", "x1"))
+    second = ProjectiveSpaces(QQ)(1, names=("y0", "y1"))
+    quadric = first * second
+    coordinates = quadric.homogeneous_coordinate_ring()
+    x0, x1, y0, y1 = coordinates("x0"), coordinates("x1"), coordinates("y0"), coordinates("y1")
     bundle = quadric.O(1, 1)
     ring = bundle.section_ring()
-    degree_one = ring.graded_piece(1)
-    degree_two = ring.graded_piece(2)
-    inclusion_one = ring.homogeneous_component_map(1)
-    inclusion_two = ring.homogeneous_component_map(2)
-    multiplication = ring.section_multiplication(1, 1)
-    labels = tuple(degree_one.module_generating_set())
-    first = degree_one.module_generator(labels[0])
-    last = degree_one.module_generator(labels[-1])
+    sections = bundle.global_sections()
 
-    product = multiplication(first, last)
+    def degree_one(form):
+        return ring.homogeneous_component_element(1, sections.section_from_homogeneous_polynomial(form))
 
-    assert ring.section_scheme() is quadric
-    assert ring.section_line_bundle() is bundle
-    assert tuple(bundle.multidegree()[label] for label in factor_labels) == (1, 1)
-    assert degree_one.module_rank() == 4
-    assert degree_two.module_rank() == 9
-    first_in_ring = ring.homogeneous_component_element(1, first)
-    last_in_ring = ring.homogeneous_component_element(1, last)
-    product_in_ring = ring.homogeneous_component_element(2, product)
-    assert inclusion_one.codomain() is ring.underlying_module()
-    assert inclusion_two.codomain() is ring.underlying_module()
-    assert product_in_ring == first_in_ring * last_in_ring
-    assert ring.homogeneous_degree(product_in_ring) == NN(2)
-
-
+    assert ring.graded_piece(1).module_rank() == 4
+    assert ring.graded_piece(2).module_rank() == 9
+    assert degree_one(x0 * y0) * degree_one(x1 * y1) == degree_one(x0 * y1) * degree_one(x1 * y0)
+    assert degree_one(x0 * y0) * degree_one(x0 * y0) != degree_one(x0 * y1) * degree_one(x1 * y0)

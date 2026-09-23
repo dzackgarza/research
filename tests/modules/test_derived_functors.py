@@ -39,8 +39,6 @@ def test_ext_over_the_integers() -> None:
     assert integers.ext(six, degree=1).cardinality() == 1
 
 
-
-
 def test_tor_and_ext_of_cyclic_modules_over_a_polynomial_ring() -> None:
     ring = QQ.polynomial_ring("x")
     x = ring.algebra_generator("x")
@@ -52,3 +50,18 @@ def test_tor_and_ext_of_cyclic_modules_over_a_polynomial_ring() -> None:
     assert square.ext(ring.regular_module(), degree=0).module_rank() == 0
 
 
+def test_ext_one_into_the_integers_turns_the_quotient_z_mod_6_to_z_mod_3_into_an_injection() -> None:
+    r"""``Ext^1(Z/n, Z) = Hom(Z/n, Q/Z)``, so ``Z/6 -> Z/3`` induces the injection ``Z/3 -> Z/6``.
+
+    Source: Weibel, An Introduction to Homological Algebra, 3.3.2 and 3.6 (Pontryagin duality);
+    the induced map is precomposition with the quotient.
+    """
+    six = _cyclic(ZZ, 6)
+    three = _cyclic(ZZ, 3)
+    quotient = six.Mor(three)({0: three.module_generator(0)})
+    induced = quotient.ext_map(ZZ.regular_module(), degree=1)
+    assert induced.domain().cardinality() == 3
+    assert induced.codomain().cardinality() == 6
+    assert induced.is_injective()
+    assert not induced.is_surjective()
+    assert induced.image().cardinality() == 3

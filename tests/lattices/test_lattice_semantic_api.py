@@ -1,11 +1,10 @@
-import pytest
-
 from dzack_research.preamble.all import NN, QQ, ZZ, Lattices
 
 
-
-
-def test_infinite_metric_map_targets_the_full_algebraic_dual() -> None:
+def test_the_correlation_of_QQ_to_the_NN_is_injective_but_not_onto_its_algebraic_dual() -> None:
+    r"""With the standard form on \(\mathbb Q^{(\mathbb N)}\), \(b(v,-)\) has the finite
+    support of \(v\), so the all-ones functional is not in the image of the
+    correlation, while \(b(e_i, e_i) = 1\) makes it injective."""
     lattice = Lattices(QQ)(QQ**NN)
     dual = lattice.linear_dual()
     correlation = lattice.metric_map()
@@ -13,25 +12,17 @@ def test_infinite_metric_map_targets_the_full_algebraic_dual() -> None:
     e1 = lattice.basis_vector(1)
     e3 = lattice.basis_vector(3)
 
-    assert dual is lattice.module_category().Mor(lattice, QQ.regular_module())
-    assert correlation.domain() is lattice
-    assert correlation.codomain() is dual
-
     first_covector = correlation(e0)
-    assert first_covector.parent() is dual
     assert first_covector(e0) == 1
     assert first_covector(e1) == 0
 
-    all_ones = dual(lambda _label: QQ.regular_module()(1))
-    assert all_ones.parent() is dual
+    all_ones = dual(lambda _label: 1)
     assert all_ones(e0) == all_ones(e1) == all_ones(e3) == 1
-    # Every vector of QQ^(NN) has finite support, whereas all_ones does not.
-    # Thus the represented diagonal correlation is injective but not onto the
-    # full algebraic dual.
-    assert lattice.is_nondegenerate() is True
-    assert lattice.gram_tensor().is_unimodular() is False
-    with pytest.raises(AssertionError, match="cokernel construction"):
-        lattice.is_unimodular()
+
+    assert correlation.is_injective()
+    assert not correlation.is_surjective()
+    assert lattice.is_nondegenerate()
+    assert not lattice.is_unimodular()
 
 
 def test_nondegenerate_and_unimodular_are_distinct_and_perfectness_retains_an_inverse() -> None:
@@ -47,13 +38,17 @@ def test_nondegenerate_and_unimodular_are_distinct_and_perfectness_retains_an_in
         assert correlation.forward()(correlation.inverse()(functional)) == functional
 
 
+def test_the_isotropic_reduction_of_two_U_along_a_primitive_isotropic_line_is_U() -> None:
+    r"""In \(U \oplus U\) with first plane \(\langle e, f\rangle\), \(e^\perp = \mathbb Z e
+    \oplus U\), so \(e^\perp/\mathbb Z e \cong U\)."""
+    plane = Lattices(ZZ)("U")
+    lattice = plane + plane
+    e = lattice.basis_vector(0)
+    isotropic = lattice.primitive_sublattice_from((e,))
 
+    reduction = isotropic.isotropic_reduction()
 
-
-
-
-
-
-
-
-
+    assert reduction.orthogonal_complement().rank() == 3
+    assert reduction.quotient_lattice().rank() == 2
+    assert reduction.quotient_lattice().is_unimodular()
+    assert reduction.quotient_lattice().is_isometric_to(plane)

@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import ZZ, Genus, Lattices, signature_pair
 
 
 def test_level_uses_the_quadratic_discriminant_form_for_even_lattices() -> None:
@@ -23,6 +23,17 @@ def test_unimodular_even_lattice_has_level_one() -> None:
     assert lattice.level() == 1
 
 
+def test_genus_of_a2_is_determined_by_signature_and_discriminant_form() -> None:
+    r"""An even lattice's genus is fixed by its signature and discriminant
+    quadratic form (Nikulin 1979, Cor. 1.9.4); ``A2`` is negative definite of
+    determinant ``3``.
+    """
+    lattice = Lattices(ZZ)("A2")
+    genus = Genus(signature_pair(0, 2), lattice.discriminant_quadratic_form())
+
+    assert genus == lattice.genus()
+    assert genus.determinant() == 3
+    assert genus != Lattices(ZZ)([[-2, 0], [0, -2]]).genus()
 
 
 def test_local_genus_symbol_and_excess_detect_nonisometry() -> None:

@@ -1,47 +1,58 @@
-r"""Multidegree line bundles retain factor roles and multihomogeneous sections."""
+r"""Line bundles ``O(a, b)`` on ``P^1 x P^1``."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _quadric_with_named_factors():
-    labels = finite_ordered_set(("left", "right"))
+def quadric():
+    r"""``P^1 x P^1`` over ``Q``."""
     line = ProjectiveSpaces(QQ)(1)
-    factors = indexed_family(labels, lambda _label: line)
-    return labels, Schemes(QQ).product(factors)
+    return line * line
 
 
-def test_multiprojective_O_retains_exact_factor_multidegree_and_atlas() -> None:
-    labels, quadric = _quadric_with_named_factors()
-    bundle = quadric.O(1, 2)
+def test_O_1_2_on_P1_x_P1_has_six_sections_and_is_very_positive() -> None:
+    r"""``h^0(O(a, b)) = (a + 1)(b + 1)`` for ``a, b >= 0`` (Kuenneth); ``O(1, 2)`` is ample and basepoint free.
 
-    assert bundle.scheme() is quadric
-    assert bundle.multidegree().index_set() is labels
-    assert bundle.multidegree()["left"] == 1
-    assert bundle.multidegree()["right"] == 2
-    assert bundle.gluing_datum().scheme() is quadric
+    ``O(a, b)`` with ``a, b > 0`` is very ample through the Segre--Veronese
+    embedding; ``O(1, 0)`` is trivial on the fibres ``{p} x P^1``, so not ample.
+    """
+    surface = quadric()
+    bundle = surface.O(1, 2)
+
     assert bundle.global_sections().module_rank() == 6
+    assert surface.O(2, 2).global_sections().module_rank() == 9
     assert bundle.is_ample()
     assert bundle.is_basepoint_free()
+    assert not surface.O(1, 0).is_ample()
+    assert surface.O(1, 0).is_basepoint_free()
 
 
 def test_multiprojective_tensor_dual_and_canonical_degrees_are_componentwise() -> None:
-    labels, quadric = _quadric_with_named_factors()
-    bundle = quadric.O(1, 2)
-    other = quadric.O(2, 1)
-    tensor = bundle.tensor_product(other)
-    dual = bundle.dual_sheaf()
-    canonical = quadric.canonical_line_bundle()
+    r"""On ``P^1 x P^1``: ``O(1,2) (x) O(2,1) = O(3,3)``, ``O(1,2)^dual = O(-1,-2)``, ``K = O(-2,-2)``."""
+    surface = quadric()
+    bundle = surface.O(1, 2)
 
-    assert tuple(tensor.multidegree()[label] for label in labels) == (3, 3)
-    assert tuple(dual.multidegree()[label] for label in labels) == (-1, -2)
-    assert tuple(canonical.multidegree()[label] for label in labels) == (-2, -2)
-    assert tuple(
-        quadric.anticanonical_line_bundle().multidegree()[label]
-        for label in labels
-    ) == (2, 2)
+    assert bundle.tensor_product(surface.O(2, 1)).is_isomorphic(surface.O(3, 3))
+    assert bundle.dual_sheaf().is_isomorphic(surface.O(-1, -2))
+    assert surface.canonical_line_bundle().is_isomorphic(surface.O(-2, -2))
+    assert surface.anticanonical_line_bundle().is_isomorphic(surface.O(2, 2))
+    assert not surface.O(1, 2).is_isomorphic(surface.O(2, 1))
 
 
+def test_multiplication_of_sections_of_O_1_0_and_O_0_1_is_the_segre_isomorphism() -> None:
+    r"""``H^0(O(1,0)) (x) H^0(O(0,1)) -> H^0(O(1,1))`` is an isomorphism, ``2 * 2 = 4``.
 
+    Its image is spanned by the four products ``x_i y_j``, a basis of the
+    bihomogeneous forms of bidegree ``(1, 1)``.
+    """
+    surface = quadric()
+    left = surface.O(1, 0)
+    right = surface.O(0, 1)
+    multiplication = left.section_multiplication(right)
+    products = tuple(
+        multiplication(s, t)
+        for s in left.global_sections().basis()
+        for t in right.global_sections().basis()
+    )
 
+    assert surface.O(1, 1).global_sections().module_rank() == 4
+    assert multiplication.codomain().span(products).inclusion().index() == 1

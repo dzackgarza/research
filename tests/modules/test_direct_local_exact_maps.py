@@ -1,29 +1,23 @@
-r"""M1 exact maps constructed directly over a represented local coefficient ring.
+r"""Maps of modules over the local ring of the affine line at the origin."""
 
-Transported kernels already come from exactness of localization.  This file
-records the complementary contract: after the coefficient ring itself is
-local, an ordinary module morphism constructed there must use the same
-presented kernel/cokernel machinery rather than requiring provenance from a
-map over the unlocalized source ring.
-"""
-
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_the_cokernel_of_x_on_the_local_ring_at_the_origin_is_the_residue_field() -> None:
+    r"""For $A = \mathbb Q[x]_{(x)}$, $\operatorname{coker}(A \xrightarrow{x} A) = A/\mathfrak m = \mathbb Q$:
+    nonzero, cyclic, with annihilator $\mathfrak m = (x)$.
 
+    Source: Atiyah–Macdonald, Introduction to Commutative Algebra, ch. 3 (localization); by hand.
+    """
+    R = QQ["x"]
+    x = R.gen()
+    A = R.localization_at_prime(R.ideal(x))
+    M = Modules(A)(A)
+    multiplication_by_x = M.Mor(M)({0: x * M.module_generator(0)})
 
-def test_direct_local_map_detects_a_nonunit_cokernel() -> None:
-    ring = QQ.polynomial_ring("x")
-    x = ring.algebra_generator("x")
-    local = ring.spectrum()(ring.ideal(x)).local_ring()
-    module = local.free_module(finite_ordered_set(("g",)))
-    generator = module.module_generator("g")
-    multiplication_by_x = module.module_category().Mor(module, module)(
-        {"g": module.scalar_multiple(local(x), generator)}
-    )
+    residue_field = multiplication_by_x.cokernel()
 
-    quotient = multiplication_by_x.cokernel()
-
-    assert not quotient.is_zero()
-    assert quotient.minimal_number_of_generators() == 1
+    assert not residue_field.is_zero()
+    assert residue_field.minimal_number_of_generators() == 1
+    assert residue_field.annihilator() == A.maximal_ideal()
+    assert multiplication_by_x.is_injective()

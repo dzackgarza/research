@@ -1,42 +1,24 @@
-r"""Graded derivations use the owned category meet for restricted-Mor placement."""
+r"""Derivations of the coordinate axes ``QQ[x, y]/(xy)``."""
 
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> None:
-    polynomial = QQ.free_module(("x", "y")).symmetric_algebra()
-    x = polynomial.algebra_generator("x")
-    y = polynomial.algebra_generator("y")
-    algebra = (polynomial).quotient_by_relations([x * y])
-    xbar = algebra.algebra_generator("x")
-    ybar = algebra.algebra_generator("y")
-    values = algebra.regular_module()
-    derivation = algebra.derivations(values)(
-        {
-            "x": values.scalar_multiple(xbar, values.module_generator(0)),
-            "y": values.scalar_multiple(-ybar, values.module_generator(0)),
-        }
-    )
-    derivations = derivation.parent()
-    restricted = derivations.restricted_module()
-    inclusion = derivations.inclusion()
+def test_weight_derivation_of_the_axes_satisfies_leibniz_and_factors_through_omega() -> None:
+    r"""``D(x) = x``, ``D(y) = -y`` is a derivation of ``A = QQ[x,y]/(xy)``
+    (it respects the relation: ``D(xy) = xy - xy = 0``); it satisfies
+    ``D(fg) = f D(g) + g D(f)``, ``D(x^2 y^3) = -x^2 y^3 = 0`` in ``A``, and
+    factors through the universal derivation ``d : A -> Ω_A``."""
+    plane = QQ["x,y"]
+    axes = plane.quotient(plane.ideal([plane.gen(0) * plane.gen(1)]))
+    x, y = axes(plane.gen(0)), axes(plane.gen(1))
+    derivation = axes.derivations()({x: x, y: -y})
 
-    assert derivations in Modules(algebra)
-    assert restricted in ModuleSubobjects(QQ)
-    assert inclusion.domain() is restricted
-    assert inclusion.codomain() is derivations.arrow_set()
-    assert inclusion(restricted(derivation))(xbar).underlying_element() == derivation(xbar)
-    underlying = derivation.underlying_linear_morphism()
-    assert underlying.derivation() is derivation
-    assert derivations(underlying) is derivation
-    doubled = derivation + derivation
-    assert doubled(xbar) == derivation(xbar) + derivation(xbar)
-    assert derivation(xbar * ybar) == (
-        values.scalar_multiple(xbar, derivation(ybar))
-        + values.scalar_multiple(ybar, derivation(xbar))
-    )
+    assert derivation(x * y) == axes.zero()
+    assert derivation(x**3) == 3 * x**3
+    assert derivation(x**2 + y**2) == 2 * x**2 - 2 * y**2
+    assert derivation((x + 1) * (y + 1)) == (x + 1) * derivation(y) + (y + 1) * derivation(x)
+    assert (derivation + derivation)(x) == 2 * x
 
-    omega = algebra.kahler_differentials()
+    omega = axes.kahler_differentials()
     classifier = omega.from_derivation(derivation)
-    assert classifier(omega.universal_derivation()(xbar + ybar)) == derivation(xbar + ybar)
+    assert classifier(omega.universal_derivation()(x + y)) == x - y

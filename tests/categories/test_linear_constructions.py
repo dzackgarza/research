@@ -1,230 +1,115 @@
-from dzack_research.preamble.all import (
-    ZZ,
-    FinitelyGeneratedFreeModules,
-    FinitelyPresentedModules,
-    FinitelyPresentedTorsionModules,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+r"""Duals, biproducts, kernels and cokernels of modules over the integers."""
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _assert_module_maps_agree(left, right) -> None:
-    assert left.domain() is right.domain()
-    assert left.codomain() is right.codomain()
-    for label in left.domain().module_generating_set():
-        generator = left.domain().module_generator(label)
-        assert left(generator) == right(generator)
-
-
-def _product_object(functor, left, right):
-    return functor.domain()(left, right)
-
-
-def _product_morphism(functor, left, right):
-    source = _product_object(functor, left.domain(), right.domain())
-    target = _product_object(functor, left.codomain(), right.codomain())
-    return functor.domain().Mor(source, target)(left, right)
-
-
-def _opposite_object(functor, obj):
-    return functor.domain()(obj)
-
-
-def _opposite_morphism(functor, morphism):
-    source = _opposite_object(functor, morphism.codomain())
-    target = _opposite_object(functor, morphism.domain())
-    return functor.domain().Mor(source, target)(morphism)
+def cyclic(order):
+    r"""``Z/order`` as ``Z / order Z``, with the class of ``1``."""
+    line = Modules(ZZ)(ZZ**1)
+    (e,) = line.basis()
+    quotient = line / line.span((order * e,))
+    return quotient, quotient.projection()(e)
 
 
 def test_finite_free_dualization_is_contravariant_and_biduality_is_natural() -> None:
-    m = ZZ.free_module(finite_ordered_set(("x", "y")))
-    n = ZZ.free_module(finite_ordered_set(("u", "v")))
-    p = ZZ.free_module(finite_ordered_set(("r", "s")))
-    x, y = m.module_generators()
-    u, v = n.module_generators()
-    r, s = p.module_generators()
-    f = m.module_category().Mor(m, n)({"x": u + 2 * v, "y": 3 * u - v})
-    g = n.module_category().Mor(n, p)({"u": 2 * r + s, "v": r - 4 * s})
+    r"""``f^*`` is the transpose of ``f``, ``(g f)^* = f^* g^*``, and ``eta`` is natural.
 
-    dual = FinitelyGeneratedFreeModules(ZZ).dualization()
-    f_dual = dual(_opposite_morphism(dual, f))
-    assert f_dual(dual(_opposite_object(dual, n)).module_generator("u")) == (
-        dual(_opposite_object(dual, m)).module_generator("x")
-        + 3 * dual(_opposite_object(dual, m)).module_generator("y")
-    )
-    assert f_dual(dual(_opposite_object(dual, n)).module_generator("v")) == (
-        2 * dual(_opposite_object(dual, m)).module_generator("x")
-        - dual(_opposite_object(dual, m)).module_generator("y")
-    )
+    For ``f(x) = u + 2v``, ``f(y) = 3u - v``: ``f^*(u^*) = x^* + 3 y^*`` and
+    ``f^*(v^*) = 2 x^* - y^*``.
+    """
+    m = Modules(ZZ)(ZZ**2)
+    n = Modules(ZZ)(ZZ**2)
+    p = Modules(ZZ)(ZZ**2)
+    x, y = m.basis()
+    u, v = n.basis()
+    r, s = p.basis()
+    f = m.Mor(n)({x: u + 2 * v, y: 3 * u - v})
+    g = n.Mor(p)({u: 2 * r + s, v: r - 4 * s})
+    dual = Modules(ZZ).dualization()
+    x_star, y_star = m.dual_basis()
+    u_star, v_star = n.dual_basis()
 
-    _assert_module_maps_agree(
-        dual(_opposite_morphism(dual, g * f)),
-        dual(_opposite_morphism(dual, f)) * dual(_opposite_morphism(dual, g)),
-    )
-
-    eta_m = dual.double_dual_morphism(m)
-    eta_n = dual.double_dual_morphism(n)
-    _assert_module_maps_agree(
-        dual(_opposite_morphism(dual, dual(_opposite_morphism(dual, f)))) * eta_m,
-        eta_n * f,
-    )
+    assert dual(f)(u_star) == x_star + 3 * y_star
+    assert dual(f)(v_star) == 2 * x_star - y_star
+    assert dual(g * f) == dual(f) * dual(g)
+    assert dual(dual(f)) * dual.double_dual_morphism(m) == dual.double_dual_morphism(n) * f
 
 
-def test_module_biproduct_is_both_product_and_coproduct_and_is_functorial() -> None:
-    left = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4,))
-    right = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2,))
-    left_generator = left.module_generator(0)
-    right_generator = right.module_generator(0)
-    biproduct = FinitelyPresentedModules(ZZ).biproduct_bifunctor()
-    direct_sum = biproduct(_product_object(biproduct, left, right))
+def test_module_biproduct_is_both_product_and_coproduct() -> None:
+    r"""``Z/4 + Z/2``: ``p_i i_j = delta_ij``, and summand maps induce the (co)product maps."""
+    z4, a = cyclic(4)
+    z2, b = cyclic(2)
+    direct_sum = z4 + z2
+    i0, i1 = direct_sum.left_inclusion(), direct_sum.right_inclusion()
+    p0, p1 = direct_sum.left_projection(), direct_sum.right_projection()
 
-    left_identity = left.module_category().Mor(left, left).identity()
-    right_identity = right.module_category().Mor(right, right).identity()
-    _assert_module_maps_agree(
-        direct_sum.left_projection() * direct_sum.left_inclusion(),
-        left_identity,
-    )
-    _assert_module_maps_agree(
-        direct_sum.right_projection() * direct_sum.right_inclusion(),
-        right_identity,
-    )
-    assert (
-        direct_sum.right_projection()(direct_sum.left_inclusion()(left_generator))
-        == right.zero()
-    )
-    assert (
-        direct_sum.left_projection()(direct_sum.right_inclusion()(right_generator))
-        == left.zero()
-    )
+    assert direct_sum.cardinality() == 8
+    assert p0 * i0 == z4.Mor(z4).identity()
+    assert p1 * i1 == z2.Mor(z2).identity()
+    assert p1(i0(a)) == z2.zero()
+    assert p0(i1(b)) == z4.zero()
 
-    right_to_left = right.module_category().Mor(right, left)({0: 2 * left_generator})
-    coproduct_map = direct_sum.from_summands(left_identity, right_to_left)
-    assert coproduct_map(direct_sum.left_inclusion()(left_generator)) == left_generator
-    assert (
-        coproduct_map(direct_sum.right_inclusion()(right_generator))
-        == 2 * left_generator
-    )
+    doubling = z2.Mor(z4)({b: 2 * a})
+    coproduct_map = direct_sum.from_summands(z4.Mor(z4).identity(), doubling)
+    assert coproduct_map(i0(a)) == a
+    assert coproduct_map(i1(b)) == 2 * a
+    assert coproduct_map(i0(a) + i1(b)) == 3 * a
 
-    reduction = left.module_category().Mor(left, right)({0: right_generator})
-    product_map = direct_sum.to_product(left_identity, reduction)
-    assert direct_sum.left_projection()(product_map(left_generator)) == left_generator
-    assert direct_sum.right_projection()(product_map(left_generator)) == right_generator
-
-    left_times_three = left.module_category().Mor(left, left)({0: 3 * left_generator})
-    right_zero = right.module_category().Mor(right, right)({0: right.zero()})
-    _assert_module_maps_agree(
-        biproduct(
-            _product_morphism(
-                biproduct,
-                left_times_three * left_times_three,
-                right_zero * right_zero,
-            )
-        ),
-        biproduct(_product_morphism(biproduct, left_times_three, right_zero))
-        * biproduct(_product_morphism(biproduct, left_times_three, right_zero)),
-    )
-    _assert_module_maps_agree(
-        biproduct(_product_morphism(biproduct, left_identity, right_identity)),
-        direct_sum.module_category().Mor(direct_sum, direct_sum).identity(),
-    )
+    reduction = z4.Mor(z2)({a: b})
+    product_map = direct_sum.to_product(z4.Mor(z4).identity(), reduction)
+    assert p0(product_map(a)) == a
+    assert p1(product_map(a)) == b
+    assert product_map.kernel().cardinality() == 1
 
 
 def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> None:
-    finite_free_arrow_category = FinitelyGeneratedFreeModules(ZZ).ArrowCategory()
+    r"""``ker(Z^2 -> Z)`` has rank 1; ``coker(2: Z -> Z) = Z/2``; ``coker(2: Z/4 -> Z/4) = Z/2``.
 
-    plane = ZZ.free_module(finite_ordered_set(("x", "y")))
-    line = ZZ.free_module(finite_ordered_set(("z",)))
-    x, y = plane.module_generators()
-    z = line.module_generator("z")
-    projection = plane.module_category().Mor(plane, line)({"x": z, "y": line.zero()})
+    Kernel and cokernel are functors on the arrow category: the square
+    ``(diag(2, 3), 2)`` over the first projection induces multiplication by 3
+    on its kernel ``Z y``, and multiplication by 3 on ``Z/4`` descends to the
+    identity of ``Z/2``.
+    """
+    plane = Modules(ZZ)(ZZ**2)
+    line = Modules(ZZ)(ZZ**1)
+    x, y = plane.basis()
+    (z,) = line.basis()
+    projection = plane.Mor(line)({x: z, y: line.zero()})
+    left = plane.Mor(plane)({x: 2 * x, y: 3 * y})
+    right = line.Mor(line)({z: 2 * z})
+    left_again = plane.Mor(plane)({x: 5 * x, y: 7 * y})
+    right_again = line.Mor(line)({z: 5 * z})
+    arrows = Modules(ZZ).ArrowCategory()
+    kernel = arrows.kernel_functor()
+    cokernel = arrows.cokernel_functor()
 
-    left_three = plane.module_category().Mor(plane, plane)({"x": 2 * x, "y": 3 * y})
-    right_two = line.module_category().Mor(line, line)({"z": 2 * z})
-    projection_arrow = finite_free_arrow_category(projection)
-    first_square = finite_free_arrow_category.morphism(
-        projection_arrow, projection_arrow, left_three, right_two
-    )
-    left_seven = plane.module_category().Mor(plane, plane)({"x": 5 * x, "y": 7 * y})
-    right_five = line.module_category().Mor(line, line)({"z": 5 * z})
-    second_square = finite_free_arrow_category.morphism(
-        projection_arrow, projection_arrow, left_seven, right_five
-    )
+    arrow = arrows(projection)
+    first_square = arrows.morphism(arrow, arrow, left, right)
+    second_square = arrows.morphism(arrow, arrow, left_again, right_again)
+    kernel_object = kernel(arrow)
+    (k,) = kernel_object.basis()
 
-    kernel = FinitelyGeneratedFreeModules(ZZ).kernel_arrow_functor()
-    kernel_object = kernel(projection_arrow)
+    assert projection * left == right * projection
     assert kernel_object.module_rank() == 1
-    induced_kernel = kernel(first_square)
-    _assert_module_maps_agree(
-        kernel_object.inclusion() * induced_kernel,
-        left_three * kernel_object.inclusion(),
-    )
-    _assert_module_maps_agree(
-        kernel(finite_free_arrow_category.compose(second_square, first_square)),
-        kernel(second_square) * kernel(first_square),
-    )
-    _assert_module_maps_agree(
-        kernel(finite_free_arrow_category.identity(projection_arrow)),
-        kernel_object.module_category().Mor(kernel_object, kernel_object).identity(),
+    assert kernel_object.inclusion()(k) in (y, -y)
+    assert kernel(first_square)(k) == 3 * k
+    assert kernel(arrows.compose(second_square, first_square)) == kernel(second_square) * kernel(first_square)
+    assert kernel(arrows.compose(second_square, first_square))(k) == 21 * k
+
+    twice = line.Mor(line)({z: 2 * z})
+    twice_arrow = arrows(twice)
+    assert cokernel(twice_arrow).cardinality() == 2
+    tripling = line.Mor(line)({z: 3 * z})
+    assert cokernel(arrows.morphism(twice_arrow, twice_arrow, tripling, tripling)) == (
+        cokernel(twice_arrow).Mor(cokernel(twice_arrow)).identity()
     )
 
-    cyclic_source = ZZ.free_module(finite_ordered_set(("a",)))
-    cyclic_target = ZZ.free_module(finite_ordered_set(("b",)))
-    a = cyclic_source.module_generator("a")
-    b = cyclic_target.module_generator("b")
-    twice = cyclic_source.module_category().Mor(cyclic_source, cyclic_target)({"a": 2 * b})
-    left3 = cyclic_source.module_category().Mor(cyclic_source, cyclic_source)({"a": 3 * a})
-    right3 = cyclic_target.module_category().Mor(cyclic_target, cyclic_target)({"b": 3 * b})
-    arrow_category = FinitelyPresentedModules(ZZ).ArrowCategory()
-    twice_arrow = arrow_category(twice)
-    square3 = arrow_category.morphism(twice_arrow, twice_arrow, left3, right3)
-    left5 = cyclic_source.module_category().Mor(cyclic_source, cyclic_source)({"a": 5 * a})
-    right5 = cyclic_target.module_category().Mor(cyclic_target, cyclic_target)({"b": 5 * b})
-    square5 = arrow_category.morphism(twice_arrow, twice_arrow, left5, right5)
-
-    cokernel = FinitelyPresentedModules(ZZ).cokernel_arrow_functor()
-    cokernel_object = cokernel(twice_arrow)
-    invariants = cokernel_object.invariant_factors()
-    assert int(invariants.cardinality()) == 1
-    assert invariants[0] == ZZ(2)
-    induced_cokernel = cokernel(square3)
-    _assert_module_maps_agree(
-        induced_cokernel * cokernel_object.cokernel_projection(),
-        cokernel_object.cokernel_projection() * right3,
+    z4, a = cyclic(4)
+    torsion_twice = z4.Mor(z4)({a: 2 * a})
+    torsion_tripling = z4.Mor(z4)({a: 3 * a})
+    torsion_arrow = arrows(torsion_twice)
+    torsion_cokernel = cokernel(torsion_arrow)
+    assert torsion_cokernel.cardinality() == 2
+    assert cokernel(arrows.morphism(torsion_arrow, torsion_arrow, torsion_tripling, torsion_tripling)) == (
+        torsion_cokernel.Mor(torsion_cokernel).identity()
     )
-    _assert_module_maps_agree(
-        cokernel(arrow_category.compose(square5, square3)),
-        cokernel(square5) * cokernel(square3),
-    )
-    _assert_module_maps_agree(
-        cokernel(arrow_category.identity(twice_arrow)),
-        cokernel_object.module_category().Mor(cokernel_object, cokernel_object).identity(),
-    )
-
-    # Cokernel functoriality is not restricted to free arrows: on the
-    # presented arrow 2: Z/4 -> Z/4 the cokernel is Z/2 and multiplication by
-    # three descends to its unique nonzero automorphism.
-    torsion = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4,))
-    torsion_generator = torsion.module_generator(0)
-    torsion_twice = torsion.module_category().Mor(torsion, torsion)(
-        {0: 2 * torsion_generator}
-    )
-    torsion_times_three = torsion.module_category().Mor(torsion, torsion)(
-        {0: 3 * torsion_generator}
-    )
-    torsion_twice_arrow = arrow_category(torsion_twice)
-    torsion_square = arrow_category.morphism(
-        torsion_twice_arrow,
-        torsion_twice_arrow,
-        torsion_times_three,
-        torsion_times_three,
-    )
-    torsion_cokernel = cokernel(torsion_twice_arrow)
-    torsion_invariants = torsion_cokernel.invariant_factors()
-    assert int(torsion_invariants.cardinality()) == 1
-    assert torsion_invariants[0] == ZZ(2)
-    induced_torsion_cokernel = cokernel(torsion_square)
-    _assert_module_maps_agree(
-        induced_torsion_cokernel * torsion_cokernel.cokernel_projection(),
-        torsion_cokernel.cokernel_projection() * torsion_times_three,
-    )
-
-

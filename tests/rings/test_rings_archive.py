@@ -1,41 +1,21 @@
-r"""Archive reconciliation for the core owned-ring surface.
+r"""Centrality in the ring of two-by-two rational matrices."""
 
-The archived ring category supplied polynomial extensions, free module powers,
-the canonical algebra structure over the ring itself, centers/centrality and
-prime fields.  These are now operations of the live owned ring rather than an
-installed compatibility layer.
-"""
-
-from dzack_research.preamble.all import (
-    QQ,
-    CommutativeRings,
-    OwnedRings,
-)
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/rings/rings.sage",
-    "live_owner": "src/dzack_research/preamble/categories/rings/rings.py",
-    "owner_overrides": {
-        "OwnedFields.ParentMethods.absolute_galois_group": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-
-
-def test_archived_ring_center_and_centrality_are_live_subring_semantics() -> None:
+def test_the_central_two_by_two_rational_matrices_are_the_scalar_matrices() -> None:
+    r"""``Z(M_2(QQ)) = QQ * I`` (Lang, *Algebra*, XVII §1): it is a rank-one
+    ``QQ``-module spanned by the identity; a matrix unit or a non-scalar diagonal
+    matrix is not central."""
     matrices = QQ.matrix_space(2)
     center = matrices.ring_center()
+    e11 = matrices.matrix_unit(0, 0)
+    e12 = matrices.matrix_unit(0, 1)
 
-    assert center in OwnedRings()
-    assert center in CommutativeRings()
-    assert center.ambient_ring() is matrices
-    assert center.inclusion().codomain() is matrices
-    assert matrices.one() in center
-    assert matrices.is_central(matrices.one()) is True
-    noncentral = next(iter(matrices.algebra_generators()))
-    assert noncentral not in center
-    assert matrices.is_central(noncentral) is False
-
-
+    assert center.module_rank() == 1
+    assert center.inclusion()(center.one()) == matrices.one()
+    assert matrices.is_central(5 * matrices.one())
+    assert not matrices.is_central(e12)
+    assert not matrices.is_central(e11)
+    assert not matrices.is_central(e11 - matrices.one())
+    assert e11 * e12 != e12 * e11

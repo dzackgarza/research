@@ -1,31 +1,18 @@
-r"""Finite orthogonal-group presentations retained from the archive gap map.
+r"""The orthogonal group of \(A_4\).
 
-The archived known-mathematics suite uses ``O(A4)`` as the finite arithmetic
-group specimen.  Conway--Sloane gives its order ``240``; the live lattice
-engine already supplies four selected isometry generators.  A finite group is
-finitely presented, while selecting one concrete finite presentation remains
-an explicit data-producing crossing.
+\(O(A_4)=W(A_4)\times\{\pm1\}\cong S_5\times C_2\) (Conway--Sloane, *SPLAG*,
+ch. 4 §6.1), so its order is 240, its centre is \(\{\pm1\}\) and its derived
+subgroup is \(A_5\), of order 60.
 """
 
 from dzack_research.preamble.all import Lattices
-from dzack_research.preamble.categories.group.groups import (
-    GroupsWithChosenFinitePresentation,
-    OwnedFinitelyPresentedGroups,
-)
 
 
-def test_o_a4_retains_a_chosen_finite_presentation_on_its_selected_generators() -> None:
+def test_the_orthogonal_group_of_a4_is_s5_times_c2() -> None:
     orthogonal_group = Lattices.A4.Aut()
-    selected_generators = orthogonal_group.group_generators()
 
     assert orthogonal_group.order() == 240
-    assert selected_generators.cardinality() == 4
-    assert orthogonal_group in OwnedFinitelyPresentedGroups()
-    assert orthogonal_group not in GroupsWithChosenFinitePresentation()
-
-    presented = orthogonal_group.presentation()
-    assert presented in GroupsWithChosenFinitePresentation()
-    presenting = presented.presenting_free_group()
-    relations = presented.defining_relations()
-    assert presenting.group_generators().cardinality() > 0
-    assert relations.cardinality() > 0
+    assert orthogonal_group.is_finitely_presented()
+    assert not orthogonal_group.is_abelian()
+    assert orthogonal_group.center().order() == 2
+    assert orthogonal_group.derived_subgroup().order() == 60

@@ -1,14 +1,18 @@
-from dzack_research.preamble.all import QQ
+r"""The de Rham differential as a degree-one derivation."""
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_de_rham_differential_is_a_degree_one_graded_derivation() -> None:
-    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
+    r"""On ``Ω^•(QQ[x,y])``: ``d`` raises degree by one, ``d(xy) = dx y + x dy``,
+    ``d^2 = 0``."""
+    algebra = QQ["x,y"]
+    x, y = algebra.gens()
     dga = algebra.de_rham_algebra()
-    differential = dga.differential()
+    d = dga.differential()
+    X, Y = dga(x), dga(y)
 
-    x, y = algebra.algebra_generators()
-    assert differential.degree_shift() == 1
-    assert differential(x * y) == differential(x) * y + x * differential(y)
-    assert differential(differential(x)) == dga.zero()
-
-
+    assert d.degree_shift() == 1
+    assert d(X * Y) == d(X) * Y + X * d(Y)
+    assert d(d(X)) == dga.zero()
+    assert d(X) != dga.zero()

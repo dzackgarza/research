@@ -35,9 +35,3 @@ def test_complete_nodal_quotient_agrees_with_quotient_of_completion() -> None:
 
     assert direct_map(node_map(x * y)) == direct.zero()
     assert quotient_map(source_map(x * y)) == quotient_after.zero()
-
-
-
-
-
-

@@ -1,30 +1,23 @@
-r"""Affine semigroup presentations are owned by the algebra layer."""
+r"""The semigroup algebra of an affine monoid."""
 
-from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.algebras.semigroup_algebras import (
-    AffineSemigroupAlgebras,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_affine_semigroup_algebra_retains_its_selected_binomial_presentation() -> None:
-    owner = AffineSemigroupAlgebras(ZZ)
-    algebra = owner(
-        ((1, 0), (0, 1), (1, 1)),
-        names=("x", "y", "z"),
-    )
+def test_semigroup_algebra_of_the_monoid_generated_by_e1_e2_and_their_sum_satisfies_z_equals_xy() -> None:
+    r"""In ``ZZ[S]`` for ``S = <(1,0), (0,1), (1,1)>`` the monomials multiply by adding exponents.
+
+    Since ``(1,1) = (1,0) + (0,1)`` in ``S``, the generator ``z = t^(1,1)`` equals
+    ``xy``; since ``S = NN^2`` the algebra is the polynomial ring in ``x, y``.
+    Derivation: ``t^a t^b = t^(a+b)`` in a semigroup algebra.
+    """
+    algebra = Algebras(ZZ).semigroup_algebra(((1, 0), (0, 1), (1, 1)), names=("x", "y", "z"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
     z = algebra.algebra_generator("z")
 
-    assert algebra in owner
-    assert algebra.category().is_subcategory(owner)
     assert z == x * y
-    coordinates = algebra.affine_semigroup_generator_coordinates()
-    assert tuple(tuple(int(entry) for entry in point) for point in coordinates) == (
-        (1, 0),
-        (0, 1),
-        (1, 1),
-    )
-    assert "_preamble_affine_semigroup_generator_coordinates" not in algebra.__dict__
-
-
+    assert z * z == x**2 * y**2
+    assert z != x
+    assert x != y
+    assert x * y == y * x
+    assert x + y != z

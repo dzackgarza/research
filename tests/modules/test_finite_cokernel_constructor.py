@@ -4,10 +4,6 @@ r"""Finite cokernel construction retains its arrow and an actual free presentati
 from dzack_research.preamble.all import ZZ
 
 
-
-
-
-
 def test_infinite_numerator_module_can_have_finite_zero_localization():
     ring = ZZ.polynomial_ring(("x",))
     x = ring.algebra_generator("x")

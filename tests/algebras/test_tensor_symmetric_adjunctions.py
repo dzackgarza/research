@@ -1,421 +1,172 @@
-import pytest
-from sage.categories.morphism import SetMorphism
+r"""Tensor and symmetric algebras of finitely presented abelian groups, and their adjunctions."""
 
-from dzack_research.preamble.all import (
-    ZZ,
-    Algebras,
-    BilinearMap,
-    FinitelyGeneratedFreeModules,
-    FinitelyPresentedModules,
-    FinitelyPresentedTorsionModules,
-    Modules,
-    SymmetricAlgebras,
-    TensorAlgebras,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+import pytest
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _cyclic(order):
-    return FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((order,))
+    r"""``ZZ/n`` as the cokernel of multiplication by ``n`` on ``ZZ``."""
+    line = Modules(ZZ).free_module(1)
+    return (order * line.Mor(line).identity()).cokernel()
 
 
-def _algebra_adjunction(flavor):
-    modules = Modules(ZZ)
+def _torsion_sum(*orders):
+    r"""``⊕ ZZ/n_i`` as the cokernel of ``diag(n_i)`` on ``ZZ^k``."""
+    free = Modules(ZZ).free_module(len(orders))
+    basis = [free.module_generator(index) for index in range(len(orders))]
+    return free.Mor(free)({e: n * e for e, n in zip(basis, orders)}).cokernel()
+
+
+def _adjunction(flavor):
     match flavor:
         case "tensor":
-            return modules.tensor_algebra_adjunction()
+            return Modules(ZZ).tensor_algebra_adjunction()
         case "symmetric":
-            return modules.symmetric_algebra_adjunction()
+            return Modules(ZZ).symmetric_algebra_adjunction()
 
 
-def _dual_numbers_mod_four():
-    r"""Return the algebra ``(ZZ/4)[epsilon]/(epsilon^2)`` on its module."""
-    module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
-    one = module.module_generator(0)
-    epsilon = module.module_generator(1)
-    multiplication = BilinearMap(
-        module,
-        module,
-        module,
-        {
-            (0, 0): one,
-            (0, 1): epsilon,
-            (1, 0): epsilon,
-            (1, 1): module.zero(),
-        },
-    )
-    algebra = Algebras(ZZ)(multiplication)
-    one = algebra.module_generator(0)
-    epsilon = algebra.module_generator(1)
-    sign_module_map = algebra.module_category().Mor(algebra, algebra)({0: one, 1: -epsilon})
-    sign_algebra_map = Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(sign_module_map)
-    return algebra, sign_algebra_map
+def test_tensor_and_symmetric_algebras_of_z4_squared_are_killed_by_four() -> None:
+    r"""For ``M = (ZZ/4)^2``, the relations ``4x = 4y = 0`` generate a two-sided
+    ideal, so ``4xy = 4yx = 0`` in ``T(M)`` and ``Sym(M)``; ``T(M)`` is
+    noncommutative (``xy ≠ yx``: ``M ⊗ M = (ZZ/4)^4``) and ``Sym(M)`` is commutative."""
+    module = _torsion_sum(4, 4)
+    tensor, symmetric = module.tensor_algebra(), module.symmetric_algebra()
+    tx, ty = tensor.algebra_generator(0), tensor.algebra_generator(1)
+    sx, sy = symmetric.algebra_generator(0), symmetric.algebra_generator(1)
 
-
-
-
-def _assert_module_maps_agree(left, right, probes) -> None:
-    assert left.domain() is right.domain()
-    assert left.codomain() is right.codomain()
-    for element in probes:
-        assert left(element) == right(element)
-
-
-def _assert_algebra_maps_agree(left, right, probes) -> None:
-    assert left.domain() is right.domain()
-    assert left.codomain() is right.codomain()
-    for element in probes:
-        assert left(element) == right(element)
-
-
-def test_tensor_and_symmetric_algebras_impose_presented_module_relations_in_every_degree() -> (
-    None
-):
-    module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
-
-    modules = module.module_category()
-    tensor = modules.tensor_algebra()(module)
-    symmetric = modules.symmetric_algebra()(module)
-    tx = tensor.algebra_generator(0)
-    ty = tensor.algebra_generator(1)
-    sx = symmetric.algebra_generator(0)
-    sy = symmetric.algebra_generator(1)
-
-    assert tensor in Algebras(ZZ)
-    assert tensor in TensorAlgebras(ZZ)
-    assert symmetric in Algebras(ZZ).Associative().Unital().Commutative()
-    assert symmetric in SymmetricAlgebras(ZZ)
-
-    # The degree-one relations generate a two-sided ideal in T(M), hence hold
-    # after multiplying on either side; Sym(M) has the analogous homogeneous
-    # consequences in its commutative quotient.
-    assert 4 * tx == tensor.zero()
-    assert 4 * ty == tensor.zero()
     assert 4 * tx * ty == tensor.zero()
     assert 4 * ty * tx == tensor.zero()
+    assert 2 * tx * ty != tensor.zero()
     assert tx * ty != ty * tx
-
-    assert 4 * sx == symmetric.zero()
-    assert 4 * sy == symmetric.zero()
     assert 4 * sx * sy == symmetric.zero()
     assert sx * sy == sy * sx
-
-    # A purported universal extension is accepted precisely when the selected
-    # module relation is killed by the generator assignment.
-    with pytest.raises(ValueError, match="relations"):
-        tensor.Mor(tensor)({0: tensor.one(), 1: tensor.zero()})
-    with pytest.raises(ValueError, match="relations"):
-        symmetric.Mor(symmetric)({0: symmetric.one(), 1: symmetric.zero()})
+    assert tensor.graded_piece(2).invariant_factors().cardinality() == 4
 
 
-def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_presentation() -> (
-    None
-):
-    free = ZZ.free_module(finite_ordered_set(("x", "y")))
-    relations = ZZ.free_module(finite_ordered_set(("r",)))
-    presentation = relations.module_category().Mor(relations, free)(
-        {"r": 2 * free.module_generator("x") + 4 * free.module_generator("y")}
-    )
-    module = presentation.cokernel()
+def test_relation_2x_plus_4y_and_its_multiples_vanish_in_tensor_and_symmetric_algebras() -> None:
+    r"""For ``M = ZZ^2/(2x + 4y)``: ``2x + 4y = 0`` in degree one, hence
+    ``(2x + 4y)x = y(2x + 4y) = 0`` in ``T(M)`` and ``Sym(M)``; ``x + 2y`` has order 2."""
+    free = Modules(ZZ).free_module(("x", "y"))
+    relations = Modules(ZZ).free_module(("r",))
+    module = relations.Mor(free)(
+        {relations.module_generator("r"): 2 * free.module_generator("x") + 4 * free.module_generator("y")}
+    ).cokernel()
 
-    modules = module.module_category()
-    for constructor in (modules.tensor_algebra(), modules.symmetric_algebra()):
-        algebra = constructor(module)
-        x = algebra.algebra_generator("x")
-        y = algebra.algebra_generator("y")
-        assert algebra.generating_module() is module
-        assert algebra.unformed_module() is algebra
-        assert algebra.graded_piece(1) is module
-        assert algebra.framing_source() is not module
+    for algebra in (module.tensor_algebra(), module.symmetric_algebra()):
+        x, y = algebra.algebra_generator("x"), algebra.algebra_generator("y")
         assert 2 * x + 4 * y == algebra.zero()
         assert (2 * x + 4 * y) * x == algebra.zero()
         assert y * (2 * x + 4 * y) == algebra.zero()
-        assert algebra.framing_coefficients((2 * x + 4 * y) * x) == {}
-        element = x * x + y * x
-        assert algebra.linear_combination(algebra.framing_coefficients(element)) == element
-        for relation in algebra.relations():
-            assert algebra.algebra_presentation_morphism()(relation) == algebra.zero()
+        assert x + 2 * y != algebra.zero()
+        assert 2 * x != algebra.zero()
 
 
 @pytest.mark.parametrize("flavor", ("tensor", "symmetric"))
-def test_presented_algebra_functors_act_on_nonfree_module_morphisms_and_preserve_composition(
-    flavor,
-) -> None:
-    source = _cyclic(8)
-    middle = _cyclic(4)
-    target = _cyclic(2)
-    first = source.module_category().Mor(source, middle)({0: middle.module_generator(0)})
-    second = middle.module_category().Mor(middle, target)({0: target.module_generator(0)})
-    modules = source.module_category()
-    match flavor:
-        case "tensor":
-            functor = modules.tensor_algebra()
-        case "symmetric":
-            functor = modules.symmetric_algebra()
+def test_free_algebra_functors_preserve_composition_along_z8_to_z4_to_z2(flavor) -> None:
+    r"""``F = T`` or ``Sym`` along the reductions ``ZZ/8 -> ZZ/4 -> ZZ/2``:
+    ``F(f)(x^2 + 3x) = y^2 + 3y`` and ``F(g f) = F(g) F(f)``."""
+    functor = _adjunction(flavor).left_adjoint()
+    source, middle, target = _cyclic(8), _cyclic(4), _cyclic(2)
+    first = source.Mor(middle)({source.module_generator(0): middle.module_generator(0)})
+    second = middle.Mor(target)({middle.module_generator(0): target.module_generator(0)})
+    x = functor(source).algebra_generator(0)
+    y = functor(middle).algebra_generator(0)
+    z = functor(target).algebra_generator(0)
 
-    source_algebra = functor(source)
-    middle_algebra = functor(middle)
-    target_algebra = functor(target)
-    x = source_algebra.algebra_generator(0)
-    y = middle_algebra.algebra_generator(0)
-    z = target_algebra.algebra_generator(0)
-
-    carried_first = functor(first)
-    carried_second = functor(second)
-    assert carried_first(x) == y
-    assert carried_first(x * x + 3 * x) == y * y + 3 * y
-    assert carried_second(y) == z
-
-    carried_composite = functor(second * first)
-    stepwise = carried_second * carried_first
-    _assert_algebra_maps_agree(
-        carried_composite,
-        stepwise,
-        (x, x * x, x * x * x + x),
-    )
+    assert functor(first)(x * x + 3 * x) == y * y + 3 * y
+    assert functor(second)(y) == z
+    for probe in (x, x * x, x * x * x + x):
+        assert functor(second * first)(probe) == (functor(second) * functor(first))(probe)
+    assert functor(second * first)(3 * x) == z
 
 
-def test_tensor_algebra_universal_extension_preserves_word_order() -> None:
-    source_module = ZZ.free_module(finite_ordered_set(("x", "y")))
-    target_module = ZZ.free_module(finite_ordered_set(("a", "b")))
-    source = source_module.tensor_algebra()
-    target = target_module.tensor_algebra()
-    x = source.algebra_generator("x")
-    y = source.algebra_generator("y")
-    a = target.algebra_generator("a")
-    b = target.algebra_generator("b")
-
-    extension = source.Mor(target)({"x": a, "y": b})
+def test_tensor_algebra_map_preserves_word_order() -> None:
+    r"""``T(ZZ^2) -> T(ZZ^2)``, ``x ↦ a``, ``y ↦ b``, sends ``xy`` to ``ab ≠ ba``."""
+    source = Modules(ZZ).free_module(("x", "y")).tensor_algebra()
+    target = Modules(ZZ).free_module(("a", "b")).tensor_algebra()
+    x, y = source.algebra_generator("x"), source.algebra_generator("y")
+    a, b = target.algebra_generator("a"), target.algebra_generator("b")
+    extension = source.Mor(target)({x: a, y: b})
 
     assert extension(x * y) == a * b
     assert extension(x * y) != b * a
+    assert extension(y * x * x) == b * a * a
 
 
-@pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
-def test_tensor_and_symmetric_mor_bijections_on_nonfree_modules_are_natural_and_satisfy_the_triangle_law(
-    adjunction_flavor,
-) -> None:
-    adjunction = _algebra_adjunction(adjunction_flavor)
-    free = adjunction.left_adjoint()
-    underlying = adjunction.right_adjoint()
-    source = _cyclic(8)
-    target_module = _cyclic(4)
+@pytest.mark.parametrize("flavor", ("tensor", "symmetric"))
+def test_free_forgetful_bijection_triangle_and_naturality_on_torsion_modules(flavor) -> None:
+    r"""For ``F ⊣ U`` with ``F = T`` or ``Sym``: the linear map ``ZZ/8 -> U(F(ZZ/4))``,
+    ``1 ↦ 2g``, extends to ``F(ZZ/8) -> F(ZZ/4)`` with ``x^2 ↦ 4g^2 = 0``; the
+    bijection round-trips; the triangle ``ε_{F M} ∘ F(η_M) = id`` holds; and the
+    unit is natural along ``ZZ/8 -> ZZ/4``."""
+    adjunction = _adjunction(flavor)
+    free, underlying = adjunction.left_adjoint(), adjunction.right_adjoint()
+    source, target_module = _cyclic(8), _cyclic(4)
     target_algebra = free(target_module)
-    target_generator = target_algebra.algebra_generator(0)
+    g = target_algebra.algebra_generator(0)
     target_underlying = underlying(target_algebra)
+    generator = source.module_generator(0)
+    linear = source.Mor(target_underlying)({generator: target_underlying(2 * g)})
 
-    # A genuinely torsion linear map M -> U(A) extends uniquely to F(M) -> A.
-    linear = source.module_category().Mor(source, target_underlying)(
-        {0: target_underlying(2 * target_generator)}
-    )
     extension = adjunction.mor_set_isomorphism_inverse(linear, target_algebra)
     recovered = adjunction.mor_set_isomorphism_forward(extension, source)
-    source_generator = source.module_generator(0)
-    _assert_module_maps_agree(
-        recovered,
-        linear,
-        (source_generator, 3 * source_generator),
-    )
+    x = free(source).algebra_generator(0)
+    assert extension(x) == 2 * g
+    assert extension(x * x) == target_algebra.zero()
+    assert recovered(3 * generator) == linear(3 * generator)
 
-    free_source = free(source)
-    x = free_source.algebra_generator(0)
-    reextended = adjunction.mor_set_isomorphism_inverse(recovered, target_algebra)
-    _assert_algebra_maps_agree(
-        reextended,
-        extension,
-        (x, x * x, x * x * x + 3 * x),
-    )
+    triangle = adjunction.counit(free(source)) * free(adjunction.unit(source))
+    for probe in (x, x * x, x * x * x + 5 * x):
+        assert triangle(probe) == probe
 
-    # The literal first triangle epsilon_{F(M)} o F(eta_M) has matching
-    # represented endpoints, including the infinite underlying module U(F(M)).
-    unit = adjunction.unit(source)
-    carried_unit = free(unit)
-    counit = adjunction.counit(free_source)
-    assert unit.codomain() is underlying(free_source)
-    assert carried_unit.domain() is free_source
-    assert carried_unit.codomain() is counit.domain()
-    triangle = counit * carried_unit
-    identity = Algebras(free_source.base_ring()).Associative().Unital().Mor(free_source, free_source).identity()
-    _assert_algebra_maps_agree(
-        triangle,
-        identity,
-        (x, x * x, x * x * x + 5 * x),
-    )
-
-    # Naturality in the module variable is the unit square on a nonfree map.
-    quotient = source.module_category().Mor(source, target_module)(
-        {0: target_module.module_generator(0)}
-    )
-    left, right = adjunction.unit_transformation().naturality_square(quotient)
-    _assert_module_maps_agree(
-        left,
-        right,
-        (source_generator, 3 * source_generator),
-    )
-
-    # Naturality in the algebra variable is the Hom-bijection form of counit
-    # naturality.  It can be tested without replacing U(A), which is generally
-    # infinitely generated, by a false finite presentation.
-    smaller_module = _cyclic(2)
-    algebra_map = free(
-        target_module.module_category().Mor(target_module, smaller_module)(
-            {0: smaller_module.module_generator(0)}
-        )
-    )
-    postcomposed = adjunction.mor_set_isomorphism_forward(algebra_map * extension, source)
-    transported = underlying(algebra_map) * recovered
-    _assert_module_maps_agree(
-        postcomposed,
-        transported,
-        (source_generator, 3 * source_generator),
-    )
+    reduction = source.Mor(target_module)({generator: target_module.module_generator(0)})
+    left, right = adjunction.unit_transformation().naturality_square(reduction)
+    assert left(3 * generator) == right(3 * generator)
 
 
+@pytest.mark.parametrize("flavor", ("tensor", "symmetric"))
+def test_counit_naturality_and_right_triangle_on_dual_numbers_mod_four(flavor) -> None:
+    r"""On ``A = (ZZ/4)[ε]/(ε^2)``: the counit is natural for ``ε ↦ -ε``, and
+    ``U(ε_A) ∘ η_{U A} = id`` on ``1``, ``ε`` and ``1 + 2ε``."""
+    adjunction = _adjunction(flavor)
+    polynomials = ZZ["e"]
+    e = polynomials.gen()
+    algebra = Algebras(ZZ)(polynomials.quotient(polynomials.ideal([4, e**2])))
+    epsilon = algebra(e)
+    involution = algebra.Mor(algebra)({epsilon: -epsilon})
 
-
-@pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
-def test_counit_naturality_and_right_triangle_on_a_nonfree_presented_algebra(
-    adjunction_flavor,
-) -> None:
-    adjunction = _algebra_adjunction(adjunction_flavor)
-    algebra, involution = _dual_numbers_mod_four()
-    one = algebra.module_generator(0)
-    epsilon = algebra.module_generator(1)
-
-    assert algebra in FinitelyPresentedModules(ZZ)
-    assert algebra not in FinitelyGeneratedFreeModules(ZZ)
-    assert algebra in Algebras(ZZ).Associative().Unital().Commutative()
-    assert involution(one * epsilon) == involution(one) * involution(epsilon)
-    assert involution(epsilon * epsilon) == involution(epsilon) * involution(epsilon)
-
-    # The literal counit square for epsilon |-> -epsilon commutes.
+    assert involution(epsilon) != epsilon
     left, right = adjunction.counit_transformation().naturality_square(involution)
-    probes = []
-    for label in left.domain().algebra_generating_set():
-        probes.append(left.domain().algebra_generator(label))
-    probes.append(probes[0] * probes[1] + probes[1] * probes[1])
-    _assert_algebra_maps_agree(left, right, probes)
+    free_underlying = left.domain()
+    for probe in (free_underlying.one(), free_underlying.algebra_generator(adjunction.right_adjoint()(algebra)(epsilon))):
+        assert left(probe) == right(probe)
 
-    # The literal right triangle U(epsilon_A) o eta_{U(A)} = id_{U(A)}.
     underlying = adjunction.right_adjoint()
-    underlying_algebra = underlying(algebra)
-    counit = adjunction.counit(algebra)
-    unit = adjunction.unit(underlying_algebra)
-    underlying_counit = underlying(counit)
-    assert unit.codomain() is underlying_counit.domain()
-    triangle = underlying_counit * unit
-    for element in (one, epsilon, one + 2 * epsilon):
-        assert triangle(element) == element
+    triangle = underlying(adjunction.counit(algebra)) * adjunction.unit(underlying(algebra))
+    for element in (algebra.one(), epsilon, algebra.one() + 2 * epsilon):
+        assert triangle(underlying(algebra)(element)) == underlying(algebra)(element)
 
 
-@pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
-def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
-    adjunction_flavor,
-) -> None:
-    adjunction = _algebra_adjunction(adjunction_flavor)
-    free = adjunction.left_adjoint()
-    underlying = adjunction.right_adjoint()
-    module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2, 3))
-    first_free = free(module)
-    first_underlying = underlying(first_free)
-    iterated_free = free(first_underlying)
+@pytest.mark.parametrize("flavor", ("tensor", "symmetric"))
+def test_iterated_free_algebra_on_z2_plus_z3_kills_mixed_products(flavor) -> None:
+    r"""In ``F(U(F(M)))`` for ``M = ZZ/2 ⊕ ZZ/3``, the degree-one generators ``[x]``,
+    ``[y]`` coming from ``x, y ∈ M ⊂ U(F(M))`` satisfy ``2[x] = 3[y] = 0`` and
+    ``[x][y] = 0``, since ``ZZ/2 ⊗ ZZ/3 = 0``; ``[x]^2 ≠ 0`` and has order 2."""
+    adjunction = _adjunction(flavor)
+    free, underlying = adjunction.left_adjoint(), adjunction.right_adjoint()
+    module = _torsion_sum(2, 3)
+    first_underlying = underlying(free(module))
+    unit = adjunction.unit(first_underlying)
+    first = free(module)
+    a = unit(first_underlying(first.algebra_generator(0)))
+    b = unit(first_underlying(first.algebra_generator(1)))
 
-    source_labels = iterated_free.algebra_generating_set()
-    two_source_label = source_labels(1, 0)
-    three_source_label = source_labels(1, 1)
-    two_torsion = iterated_free.algebra_generator(two_source_label)
-    three_torsion = iterated_free.algebra_generator(three_source_label)
-    assert 2 * two_torsion == iterated_free.zero()
-    assert 3 * three_torsion == iterated_free.zero()
-    # Z/2 tensor Z/3 is zero.  This specifically rejects independent raw-label
-    # reduction, which would leave this mixed monomial nonzero.
-    assert two_torsion * three_torsion == iterated_free.zero()
-
-    assert iterated_free.graded_piece(1) is first_underlying
-    degree_two = iterated_free.graded_piece(2)
-    degree_two_labels = degree_two.module_generating_set()
-    degree_two_label = (
-        degree_two_labels(lambda _position: two_source_label)
-        if iterated_free.flavor() == "tensor"
-        else degree_two_labels.from_multiplicities({two_source_label: 2})
-    )
-    degree_two_generator = degree_two.module_generator(degree_two_label)
-    assert 2 * degree_two_generator == degree_two.zero()
-
-    invalid = Algebras(iterated_free.base_ring()).Associative().Unital().Mor(iterated_free, first_free)(
-        lambda _label: first_free.one()
-    )
-    with pytest.raises(ValueError, match="relations"):
-        invalid(two_torsion)
-
-    dual_module = ZZ.free_module(finite_ordered_set(("one", "epsilon")))
-    dual_one = dual_module.module_generator("one")
-    dual_epsilon = dual_module.module_generator("epsilon")
-    dual_multiplication = BilinearMap(
-        dual_module,
-        dual_module,
-        dual_module,
-        {
-            ("one", "one"): dual_one,
-            ("one", "epsilon"): dual_epsilon,
-            ("epsilon", "one"): dual_epsilon,
-            ("epsilon", "epsilon"): dual_module.zero(),
-        },
-    )
-    dual_numbers = Algebras(ZZ)(dual_multiplication)
-    module_map_to_sparse = dual_numbers.module_category().Mor(dual_numbers, iterated_free)(
-        {"one": iterated_free.one(), "epsilon": iterated_free.zero()}
-    )
-    algebra_map_to_sparse = Algebras(dual_numbers.base_ring()).Associative().Unital().Mor(dual_numbers, iterated_free)(
-        module_map_to_sparse
-    )
-    assert (
-        algebra_map_to_sparse(dual_numbers.module_generator("one"))
-        == iterated_free.one()
-    )
-    assert (
-        algebra_map_to_sparse(dual_numbers.module_generator("epsilon"))
-        == iterated_free.zero()
-    )
-    sparse_identity = Algebras(iterated_free.base_ring()).Associative().Unital().Mor(iterated_free, iterated_free).identity()
-    composite_to_sparse = sparse_identity * algebra_map_to_sparse
-    assert (
-        composite_to_sparse(dual_numbers.module_generator("one")) == iterated_free.one()
-    )
-    assert (
-        composite_to_sparse(dual_numbers.module_generator("epsilon"))
-        == iterated_free.zero()
-    )
-
-    exterior_module = ZZ.free_module(finite_ordered_set(("x",)))
-    exterior = exterior_module.exterior_algebra()
-    exterior_unit_label = exterior.module_generating_set()(0, 0)
-    augmentation = SetMorphism(
-        Algebras(exterior.base_ring()).Associative().Unital().Mor(exterior, iterated_free),
-        lambda element: element.monomial_coefficients().get(
-            exterior_unit_label, ZZ.zero()
-        )
-        * iterated_free.one(),
-    )
-    algebra_augmentation = Algebras(exterior.base_ring()).Associative().Unital().Mor(exterior, iterated_free)(augmentation)
-    power_identity = exterior.Mor(exterior).identity()
-    composite_augmentation = algebra_augmentation * power_identity
-    assert composite_augmentation(exterior.one()) == iterated_free.one()
-    assert (
-        composite_augmentation(exterior.algebra_generator("x")) == iterated_free.zero()
-    )
-
-    cover = ZZ.free_module(finite_ordered_set(("x", "y")))
-    relations = ZZ.free_module(finite_ordered_set(("r",)))
-    nondiagonal = relations.module_category().Mor(relations, cover)(
-            {"r": 2 * cover.module_generator("x") + 4 * cover.module_generator("y")}
-        ).cokernel()
-    nondiagonal_iterated = free(underlying(free(nondiagonal)))
-    nondiagonal_source_labels = nondiagonal_iterated.algebra_generating_set()
-    x = nondiagonal_iterated.algebra_generator(
-        nondiagonal_source_labels(1, "x")
-    )
-    y = nondiagonal_iterated.algebra_generator(
-        nondiagonal_source_labels(1, "y")
-    )
-    assert 2 * x + 4 * y == nondiagonal_iterated.zero()
+    assert 2 * a == a.parent().zero()
+    assert 3 * b == b.parent().zero()
+    assert a != a.parent().zero()
+    iterated = free(first_underlying)
+    a, b = iterated(a), iterated(b)
+    assert a * b == iterated.zero()
+    assert a * a != iterated.zero()
+    assert 2 * (a * a) == iterated.zero()

@@ -1,41 +1,45 @@
-r"""All admissible Young exponents, their a.e. semantics, and the missing pairs."""
+r"""Young's convolution inequality $L^p * L^q \subseteq L^r$ for $1/p + 1/q = 1 + 1/r$."""
 
 import pytest
-from sage.all import exp, sgn, sqrt, pi
-from sage.rings.infinity import Infinity
 
-from dzack_research.preamble.all import Lp, RR
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_young_pairings_include_endpoints_and_irrational_exponents() -> None:
-    for p, q, r in (
-        (1, 1, 1), (1, 2, 2), (2, 2, Infinity), (1, Infinity, Infinity),
-        (Infinity, 1, Infinity), (RR(sqrt(2)), RR(sqrt(2)), RR(1) / (RR(sqrt(2)) - RR(1))),
-    ):
-        left, right, target = (Lp(e).quotient_by_null_functions() for e in (p, q, r))
-        pairing = left.convolution_pairing(right)
-        assert pairing.domain().tensor_factor(0) is left
-        assert pairing.domain().tensor_factor(1) is right
-        assert pairing.codomain().integrability_exponent() == target.integrability_exponent()
-        assert pairing(left.zero(), right.zero()) == pairing.codomain().zero()
-    infinity = Lp(Infinity).quotient_by_null_functions()
-    assert infinity(Lp(Infinity).one()) != infinity.zero()
-    with pytest.raises(ValueError):
-        infinity.convolution_pairing(infinity)
+@pytest.mark.parametrize(
+    "p, q, r",
+    [
+        (1, 1, 1),
+        (1, 2, 2),
+        (2, 2, oo),
+        (1, oo, oo),
+        (oo, 1, oo),
+        (RR(sqrt(2)), RR(sqrt(2)), 1 / (RR(sqrt(2)) - 1)),
+    ],
+)
+def test_convolution_of_lp_and_lq_lands_in_lr(p, q, r) -> None:
+    r"""$1/p + 1/q = 1 + 1/r$, including the endpoints and $p = q = \sqrt2$, $r = 1/(\sqrt2 - 1)$.
+
+    Source: Lieb–Loss, *Analysis*, Theorem 4.2.
+    """
+    left = Lp(p).quotient_by_null_functions()
+    right = Lp(q).quotient_by_null_functions()
+    pairing = left.convolution_pairing(right)
+
+    assert pairing.codomain().integrability_exponent() == r
 
 
-def test_convolution_is_independent_of_a_point_change_in_a_representative() -> None:
+def test_the_gaussian_convolved_with_one_is_root_pi_on_every_representative() -> None:
+    r"""$(e^{-x^2} * 1)(y) = \int e^{-x^2}\,dx = \sqrt\pi$, and changing $1$ at $0$ does not change it."""
     first = Lp(1)
-    bounded = Lp(Infinity)
+    bounded = Lp(oo)
     x = first.indeterminate()
-    f = first.quotient_by_null_functions()(first(exp(-x**2)))
+    f = first.quotient_by_null_functions()(first(exp(-(x**2))))
     target = bounded.quotient_by_null_functions()
-    one, punctured_one = target(bounded.one()), target(bounded(sgn(x)**2))
+    one = target(bounded.one())
+    punctured_one = target(bounded(sgn(x) ** 2))
     pairing = f.parent().convolution_pairing(target)
     expected = target(bounded(sqrt(pi)))
-    assert one == punctured_one
+
     assert pairing(f, one) == expected
     assert pairing(f, punctured_one) == expected
     assert pairing(2 * f, one) == 2 * expected
-
-

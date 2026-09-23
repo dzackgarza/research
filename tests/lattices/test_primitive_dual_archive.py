@@ -1,5 +1,4 @@
-r"""Archive reconciliation for primitive dual lattice vectors."""
-
+r"""Primitive duals of lattice vectors."""
 
 from dzack_research.preamble.all import NamedLattices
 
@@ -13,7 +12,3 @@ def test_primitive_dual_retains_the_actual_dual_lattice_element() -> None:
     assert dual.parent() is lattice.dual_lattice()
     assert lattice.dual_lattice().scalar_multiple(2, dual) == lattice.correlation_morphism()(vector)
     assert lattice.discriminant_class(dual) == vector.divided_discriminant_class()
-
-
-
-

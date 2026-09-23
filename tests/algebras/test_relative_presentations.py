@@ -1,77 +1,60 @@
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.algebras.algebras import (
-    AlgebrasWithChosenFinitePresentation,
-    Algebras,
-)
+r"""Families, fibres, pushouts and tensor products of presented commutative algebras."""
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
-    parameter = QQ.polynomial_ring("t")
-    t = parameter.algebra_generator("t")
-    presentation = parameter.polynomial_ring(("x", "y"))
-    x = presentation.algebra_generator("x")
-    y = presentation.algebra_generator("y")
-    family = (presentation).quotient_by_relations((x * y - t,))
-    xbar = family.algebra_generator("x")
-    ybar = family.algebra_generator("y")
+def test_special_fiber_of_xy_equals_t_is_the_node() -> None:
+    r"""In ``A = QQ[t][x,y]/(xy - t)`` the scalar ``t`` acts as ``xy``, and the
+    fibre over ``t = 0``, ``A ⊗_{QQ[t]} QQ[t]/(t)``, is the node ``QQ[x,y]/(xy)``:
+    ``xy = 0`` there while ``x ≠ 0`` and ``y ≠ 0``."""
+    parameter = QQ["t"]
+    t = parameter.gen()
+    presentation = parameter["x,y"]
+    x, y = presentation.gens()
+    family = presentation.quotient(presentation.ideal([x * y - t]))
 
-    assert family.base_ring() is parameter
-    assert family in Algebras(parameter).Associative().Unital().Commutative()
-    assert family in AlgebrasWithChosenFinitePresentation(parameter)
-    structure = family.algebra_structure_morphism()
-    assert structure.domain() is parameter
-    assert family(structure(t)) == xbar * ybar
-    assert (
-        family.algebra_presentation_morphism()(family.relations().value(0))
-        == family.zero()
-    )
-    assert family.lift_to_presentation(xbar) == x
-    assert family.lift_to_presentation(family(t)) == presentation(t)
+    assert family(t) == family(x) * family(y)
+    assert family(t) != family.zero()
 
-    residue = parameter.Mor(QQ)({"t": QQ.zero()})
-    special_fiber = family.base_change(residue)
-    assert special_fiber.base_ring() is QQ
-    assert special_fiber in AlgebrasWithChosenFinitePresentation(QQ)
-    assert (
-        special_fiber.algebra_generator("x")
-        * special_fiber.algebra_generator("y")
-        == special_fiber.zero()
-    )
-    fiber_presentation = special_fiber.presentation_ring()
-    assert tuple(special_fiber.relations()) == (
-        fiber_presentation.algebra_generator("x")
-        * fiber_presentation.algebra_generator("y"),
-    )
+    special_fiber = family.base_change(parameter.Mor(QQ)({t: QQ.zero()}))
+    xs, ys = special_fiber.algebra_generator("x"), special_fiber.algebra_generator("y")
+    assert xs * ys == special_fiber.zero()
+    assert xs != special_fiber.zero()
+    assert ys != special_fiber.zero()
+    assert xs + ys != special_fiber.zero()
 
 
+def test_gaussian_field_tensor_itself_over_qq_splits_by_an_idempotent() -> None:
+    r"""``QQ(i) ⊗_QQ QQ(i) ≅ QQ(i) × QQ(i)``: ``e = (1 + i ⊗ i)/2`` satisfies
+    ``e^2 = e`` (as ``(i ⊗ i)^2 = i^2 ⊗ i^2 = 1``) and ``e ≠ 0, 1``, so the
+    tensor product is not an integral domain."""
+    gaussian = QuadraticField(-1, "i")
+    tensor = Algebras(QQ).Commutative().coproduct((gaussian, gaussian))
+    i_left = tensor.left_coproduct_map()(gaussian.gen())
+    i_right = tensor.right_coproduct_map()(gaussian.gen())
+    idempotent = (tensor.one() + i_left * i_right) / 2
+
+    assert idempotent * idempotent == idempotent
+    assert idempotent != tensor.zero()
+    assert idempotent != tensor.one()
+    assert idempotent * (tensor.one() - idempotent) == tensor.zero()
+    assert i_left != i_right
+    assert i_left != -i_right
 
 
+def test_pushout_of_t_to_x_squared_and_t_to_y_squared_is_qq_xy_mod_x2_minus_y2() -> None:
+    r"""The pushout of ``QQ[x] <- QQ[t] -> QQ[y]``, ``t ↦ x^2``, ``t ↦ y^2``, is
+    ``QQ[x] ⊗_{QQ[t]} QQ[y] = QQ[x, y]/(x^2 - y^2)``: there ``x^2 = y^2`` but
+    ``x ≠ ±y``."""
+    source, left, right = QQ["t"], QQ["x"], QQ["y"]
+    t = source.gen()
+    to_left = source.Mor(left)({t: left.gen() ** 2})
+    to_right = source.Mor(right)({t: right.gen() ** 2})
+    pushout = Algebras(QQ).Commutative().pushout(to_left, to_right)
+    into_pushout_left, into_pushout_right = pushout.pushout_maps()
+    x, y = into_pushout_left(left.gen()), into_pushout_right(right.gen())
 
-
-def test_number_field_algebra_uses_its_primitive_presentation_for_coproduct() -> None:
-    from dzack_research.preamble.all import (
-        FinitelyGeneratedFreeModules,
-        IntegralDomains,
-        QuadraticField,
-    )
-    from dzack_research.preamble.categories.algebras.algebras import (
-        CommutativeAlgebraCoproducts,
-    )
-
-    field = QuadraticField(-1, "i")
-    gaussian = field.as_algebra()
-    primitive = gaussian.algebra_generator("i")
-
-    assert gaussian is not field
-    assert gaussian.base_ring() is QQ
-    assert gaussian in AlgebrasWithChosenFinitePresentation(QQ)
-    assert gaussian in FinitelyGeneratedFreeModules(QQ)
-    assert tuple(gaussian.module_generators()) == (gaussian.one(), primitive)
-    assert gaussian.algebra_presentation_morphism()(gaussian.relations().value(0)) == 0
-    assert gaussian.lift_to_presentation(primitive) == gaussian.presentation_ring().algebra_generator("i")
-
-    split = Algebras(QQ).Associative().Unital().Commutative().coproduct((gaussian, gaussian))
-    assert split in CommutativeAlgebraCoproducts(QQ)
-    assert split not in IntegralDomains()
-
-
+    assert x * x == y * y
+    assert x != y
+    assert x != -y
+    assert into_pushout_left(to_left(t**3)) == into_pushout_right(to_right(t**3))

@@ -9,8 +9,6 @@ isometry because their determinants differ by a factor of four.
 from dzack_research.preamble.all import ZZ, Lattices
 
 
-
-
 def test_archived_similarity_predicate_does_not_conflate_similarity_with_isometry() -> None:
     source = Lattices(ZZ)("U")
     target = source.twist(2)

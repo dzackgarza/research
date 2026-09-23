@@ -1,104 +1,52 @@
+r"""Refining the standard atlas of ``P^1`` by the redundant chart ``U_0 ∩ U_1``.
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
-from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
-from dzack_research.preamble.categories.schemes.ringed_spaces import (
-    QuasiCoherentSheaves,
-    zariski_coverage,
-)
+``P^1_QQ = U_0 ∪ U_1`` with ``U_0 = Spec QQ[t]``, ``U_1 = Spec QQ[1/t]``.  Adding
+``U_{01} = U_0 ∩ U_1`` as a third chart gives an affine cover refining the
+standard one (send ``U_{01}`` to ``U_0``).  On a separated scheme Čech cohomology
+of a quasi-coherent sheaf on any affine cover is sheaf cohomology (Hartshorne
+III.4.5), so both atlases give ``H^0(O) = QQ`` and ``H^1(O) = 0``
+(Hartshorne III.5.1).
+"""
 
-
-def _projective_line_with_redundant_overlap_chart():
-    line = ProjectiveSpaces(QQ)(1)
-    coarse = line.standard_affine_atlas()
-    left = coarse.chart(0)
-    right = coarse.chart(1)
-    overlap = coarse.overlap(0, 1)
-    whole_overlap = overlap.distinguished_open(overlap.coordinate_algebra().one())
-
-    left_forward = whole_overlap.corestriction(overlap.categorical_identity_morphism())
-    left_inverse = whole_overlap.inclusion()
-    left_to_overlap = Schemes(QQ).Core().Mor(
-        left_forward.domain(), left_forward.codomain()
-    )(left_forward, left_inverse)
-    right_forward = whole_overlap.corestriction(
-        coarse.transition_between(1, 0).forward()
-    )
-    right_inverse = coarse.transition_between(0, 1).forward() * whole_overlap.inclusion()
-    right_to_overlap = Schemes(QQ).Core().Mor(
-        right_forward.domain(), right_forward.codomain()
-    )(right_forward, right_inverse)
-    fine = FiniteAffineAtlases(line)(
-        (left, right, overlap),
-        (
-            coarse.transition_between(0, 1),
-            left_to_overlap,
-            right_to_overlap,
-        ),
-        (
-            coarse.chart_embedding(0),
-            coarse.chart_embedding(1),
-            coarse.chart_embedding(0) * overlap.inclusion(),
-        ),
-    )
-    refinement = FiniteAffineAtlases(line).Mor(fine, coarse)(
-        (0, 1, 0),
-        (
-            left.categorical_identity_morphism(),
-            right.categorical_identity_morphism(),
-            overlap.inclusion(),
-        ),
-    )
-    return line, coarse, fine, refinement
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_redundant_projective_line_chart_refines_the_standard_atlas() -> None:
-    line, coarse, fine, refinement = _projective_line_with_redundant_overlap_chart()
-    comparison = refinement.comparison_morphism()
-
-    assert refinement in FiniteAffineAtlases(line).Mor(fine, coarse)
-    assert coarse in zariski_coverage(line)
-    assert coarse.coverage() is zariski_coverage(line)
-    assert comparison == line.categorical_identity_morphism()
-    assert refinement.coarse_index(0) == 0
-    assert refinement.coarse_index(1) == 1
-    assert refinement.coarse_index(2) == 0
-    assert refinement.chart_map(2) == coarse.overlap(0, 1).inclusion()
-    assert coarse.chart_embedding(0) * refinement.chart_map(2) == fine.chart_embedding(2)
+def _standard_and_redundant_atlases():
+    P1 = Schemes(QQ).projective_space(1)
+    U0, U1 = P1.standard_affine_charts()
+    U01 = P1.standard_chart_overlap(0, 1)
+    coarse = P1.affine_cover((U0, U1))
+    fine = P1.affine_cover((U0, U1, U01))
+    return P1, coarse, fine
 
 
+def test_the_redundant_atlas_refines_the_standard_atlas_and_computes_the_same_cech_cohomology_of_o() -> None:
+    r"""``Ȟ^0(O) = QQ`` and ``Ȟ^1(O) = 0`` on both the standard and the refined atlas of ``P^1``."""
+    P1, coarse, fine = _standard_and_redundant_atlases()
+    O = P1.structure_sheaf()
+
+    assert fine.refines(coarse)
+    assert coarse.refines(fine)
+    for cover in (coarse, fine):
+        assert O.cech_cohomology(cover, 0).dimension() == 1
+        assert O.cech_cohomology(cover, 1).dimension() == 0
 
 
-def test_nontrivial_line_bundle_pulls_back_with_actual_local_isomorphisms() -> None:
-    line, coarse, fine, refinement = _projective_line_with_redundant_overlap_chart()
-    source_overlap = coarse.overlap(0, 1)
-    ratio = source_overlap.inclusion().coordinate_algebra_morphism()(
-        line.standard_affine_chart(0).coordinate_algebra().algebra_generator(
-            "x1_over_x0"
-        )
-    )
-    bundle = QuasiCoherentSheaves(coarse.scheme()).Invertible().WithChosenTrivialization()(
-        coarse,
-        {(0, 1): ratio},
-    )
-    comparison = refinement.pullback_invertible_sheaf(bundle)
-    refined = comparison.refined_bundle()
+def test_a_line_bundle_pulled_back_to_the_refined_atlas_keeps_its_cohomology() -> None:
+    r"""The bundle with transition ``e_0 = t e_1`` is ``O(-1)``: ``h^0 = h^1 = 0`` on either atlas.
 
-    assert comparison.coarse_bundle() is bundle
-    assert refined.gluing_datum() is fine
-    assert comparison.scheme_comparison() is refinement.comparison_morphism()
-    assert refined.transition_unit(0, 2) == fine.overlap(0, 2).coordinate_algebra().one()
-    assert refined.transition_unit(0, 1) == refinement.overlap_map(
-        0, 1
-    ).coordinate_algebra_morphism()(bundle.transition_unit(0, 1))
+    Its refined transition functions are the pullbacks along the refinement:
+    ``g_{01} = t``, ``g_{02} = 1`` (``U_{01}`` is sent to ``U_0``), and
+    ``g_{12} = g_{10} = t^{-1}``.  Hartshorne III.5.1 gives ``H^i(P^1, O(-1)) = 0``.
+    """
+    P1, coarse, fine = _standard_and_redundant_atlases()
+    t = P1.standard_chart_overlap(0, 1).coordinate_ring().gen()
+    L = P1.line_bundle({(0, 1): t}, cover=coarse)
+    refined = L.transition_functions(fine)
 
-    for fine_index in fine.chart_indices():
-        local = comparison.local_isomorphism(fine_index)
-        assert local.forward().domain().base_ring() is fine.chart(
-            fine_index
-        ).coordinate_algebra()
-        assert local.forward().codomain() is refined.local_module(fine_index)
-        local_domain = local.forward().domain()
-        assert local.inverse() * local.forward() == local_domain.module_category().Mor(
-            local_domain,
-            local_domain,
-        ).identity()
+    assert refined[(0, 1)] == t
+    assert refined[(0, 2)] == 1
+    assert refined[(1, 2)] == t**-1
+    for cover in (coarse, fine):
+        assert L.cech_cohomology(cover, 0).dimension() == 0
+        assert L.cech_cohomology(cover, 1).dimension() == 0

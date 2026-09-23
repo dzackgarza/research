@@ -1,242 +1,115 @@
+r"""Equalizers, coequalizers, pullbacks and empty (co)products, computed."""
 
-from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.abstract_categories.products import (
-    PosetCategory,
-)
-from dzack_research.preamble.categories.functors.core import (
-    Functor,
-)
-from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
-from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
-    plane = ZZ.free_module(finite_ordered_set(("x", "y")))
-    line = ZZ.free_module(finite_ordered_set(("z",)))
-    probe = ZZ.free_module(finite_ordered_set(("t",)))
-    x, y = plane.module_generators()
-    z = line.module_generator("z")
-    t = probe.module_generator("t")
+def test_equalizer_of_the_two_coordinate_projections_is_the_diagonal() -> None:
+    r"""``eq(pr_x, pr_y : Z^2 -> Z) = Z(x + y)``; ``t |-> x + y`` factors through it."""
+    plane = Modules(ZZ)(ZZ**2)
+    line = Modules(ZZ)(ZZ**1)
+    probe = Modules(ZZ)(ZZ**1)
+    x, y = plane.basis()
+    (z,) = line.basis()
+    (t,) = probe.basis()
+    first = plane.Mor(line)({x: z, y: line.zero()})
+    second = plane.Mor(line)({x: line.zero(), y: z})
 
-    left = plane.module_category().Mor(plane, line)({"x": z, "y": line.zero()})
-    right = plane.module_category().Mor(plane, line)({"x": line.zero(), "y": z})
-    selected = Modules(ZZ).equalizer_construction(left, right)
-    assert Modules(ZZ).equalizer(left, right) is selected.object()
+    equalizer = Modules(ZZ).equalizer(first, second)
+    inclusion = equalizer.inclusion()
+    (generator,) = equalizer.basis()
+    diagonal = probe.Mor(plane)({t: x + y})
+    factor = equalizer.lift(diagonal)
 
-    diagram = selected.diagram()
-    shape = diagram.domain()
-    assert diagram(shape.left()) is left
-    assert diagram(shape.right()) is right
-    inclusion = selected.structure_morphism(shape.source())
-    assert inclusion.codomain() is plane
-    assert selected.structure_morphism(shape.target()) == left * inclusion
-    assert left * inclusion == right * inclusion
-
-    diagonal = probe.module_category().Mor(probe, plane)({"t": x + y})
-    cone = (diagram).Cones().cone(
-        probe,
-        lambda index: diagonal if index is shape.source() else left * diagonal,
-    )
-    factor = selected.factor(cone).apex_map()
-    assert factor.domain() is probe
-    assert factor.codomain() is selected.object()
+    assert equalizer.module_rank() == 1
+    assert inclusion(generator) in (x + y, -x - y)
+    assert first * inclusion == second * inclusion
     assert inclusion * factor == diagonal
-    assert inclusion(factor(t)) == x + y
 
 
-def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None:
-    source = ZZ.free_module(finite_ordered_set(("t",)))
-    plane = ZZ.free_module(finite_ordered_set(("x", "y")))
-    target = ZZ.free_module(finite_ordered_set(("z",)))
-    source.module_generator("t")
-    x, y = plane.module_generators()
-    z = target.module_generator("z")
+def test_coequalizer_of_the_two_basis_inclusions_is_Z_through_which_summation_factors() -> None:
+    r"""``coeq(t |-> x, t |-> y) = Z^2 / Z(x - y) = Z``; the sum map ``Z^2 -> Z`` descends."""
+    source = Modules(ZZ)(ZZ**1)
+    plane = Modules(ZZ)(ZZ**2)
+    target = Modules(ZZ)(ZZ**1)
+    (t,) = source.basis()
+    x, y = plane.basis()
+    (z,) = target.basis()
+    first = source.Mor(plane)({t: x})
+    second = source.Mor(plane)({t: y})
+    summation = plane.Mor(target)({x: z, y: z})
 
-    left = source.module_category().Mor(source, plane)({"t": x})
-    right = source.module_category().Mor(source, plane)({"t": y})
-    selected = Modules(ZZ).coequalizer_construction(left, right)
-    assert Modules(ZZ).coequalizer(left, right) is selected.object()
+    coequalizer = Modules(ZZ).coequalizer(first, second)
+    projection = coequalizer.projection()
+    factor = coequalizer.desc(summation)
 
-    diagram = selected.diagram()
-    shape = diagram.domain()
-    projection = selected.costructure_morphism(shape.target())
-    assert projection.domain() is plane
-    assert selected.costructure_morphism(shape.source()) == projection * left
-    assert projection * left == projection * right
-
-    summation = plane.module_category().Mor(plane, target)({"x": z, "y": z})
-    cocone = (diagram).Cocones().cocone(
-        target,
-        lambda index: summation * left if index is shape.source() else summation,
-    )
-    factor = selected.factor(cocone).apex_map()
-    assert factor.domain() is selected.object()
-    assert factor.codomain() is target
+    assert coequalizer.is_free()
+    assert coequalizer.module_rank() == 1
+    assert projection(x) == projection(y)
+    assert projection(x - y) == coequalizer.zero()
     assert factor * projection == summation
-    assert factor(projection(x)) == z
-    assert factor(projection(y)) == z
+    assert factor.is_isomorphism()
 
 
-def test_zero_and_times_two_separate_equalizer_from_coequalizer() -> None:
-    line = ZZ.free_module(finite_ordered_set(("e",)))
-    e = line.module_generator("e")
-    zero = line.module_category().Mor(line, line)({"e": line.zero()})
-    twice = line.module_category().Mor(line, line)({"e": 2 * e})
+def test_zero_and_times_two_on_Z_have_zero_equalizer_and_coequalizer_Z_mod_2() -> None:
+    r"""On ``Z``: ``eq(0, 2) = ker 2 = 0`` and ``coeq(0, 2) = coker 2 = Z/2``."""
+    line = Modules(ZZ)(ZZ**1)
+    (e,) = line.basis()
+    zero = line.Mor(line)({e: line.zero()})
+    twice = line.Mor(line)({e: 2 * e})
 
-    equalizer = Modules(ZZ).equalizer(zero, twice)
-    assert equalizer.module_rank() == 0
-
-    coequalizer = Modules(ZZ).coequalizer(zero, twice)
-    invariants = coequalizer.invariant_factors()
-    assert invariants.cardinality() == 1
-    assert invariants[0] == ZZ(2)
+    assert Modules(ZZ).equalizer(zero, twice).cardinality() == 1
+    assert Modules(ZZ).coequalizer(zero, twice).cardinality() == 2
 
 
+def test_twice_and_zero_on_Z_mod_4_have_the_order_two_equalizer_submodule() -> None:
+    r"""On ``Z/4``: ``eq(2, 0) = ker 2 = 2Z/4``, the submodule of order 2."""
+    line = Modules(ZZ)(ZZ**1)
+    (e,) = line.basis()
+    cyclic_four = line / line.span((4 * e,))
+    a = cyclic_four.projection()(e)
+    twice = cyclic_four.Mor(cyclic_four)({a: 2 * a})
+    zero = cyclic_four.Mor(cyclic_four)({a: cyclic_four.zero()})
 
+    equalizer = Modules(ZZ).equalizer(twice, zero)
+    inclusion = equalizer.inclusion()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def test_twice_and_zero_on_Zmod4_have_the_order_two_equalizer_submodule() -> None:
-    cover = ZZ.free_module(finite_ordered_set(("e",)))
-    relations = ZZ.free_module(finite_ordered_set(("r",)))
-    cyclic_four = relations.module_category().Mor(relations, cover)(
-        {"r": 4 * cover.module_generator("e")}
-    ).cokernel()
-    generator = cyclic_four.module_generator("e")
-    endomorphisms = cyclic_four.module_category().Mor(cyclic_four, cyclic_four)
-    twice = endomorphisms({"e": 2 * generator})
-    zero = endomorphisms.zero()
-
-    selected = Modules(ZZ).equalizer_construction(twice, zero)
-    equalizer = selected.object()
-    shape = selected.diagram().domain()
-    inclusion = selected.structure_morphism(shape.source())
-    order_two = Modules(ZZ).equalizer_element(selected, 2 * generator)
-
-    assert order_two != equalizer.zero()
-    assert inclusion(order_two) == 2 * generator
-    assert equalizer.scalar_multiple(ZZ(2), order_two) == equalizer.zero()
+    assert equalizer.cardinality() == 2
+    assert 2 * a in inclusion.image()
+    assert a not in inclusion.image()
     assert twice * inclusion == zero * inclusion
 
 
-def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> None:
-    empty_index = finite_ordered_set(())
-    empty_family = indexed_family(
-        empty_index,
-        lambda _index: finite_ordered_set(("unused",)),
-        name="Empty family of sets",
-    )
+def test_empty_product_is_a_point_and_empty_coproduct_is_empty() -> None:
+    r"""The terminal set is the empty product; the initial set is the empty coproduct."""
+    product = Sets().product(())
+    coproduct = Sets().coproduct(())
+    probe = Sets()(("a", "b"))
 
-    product = Sets().product_construction(empty_family)
-    coproduct = Sets().coproduct_construction(empty_family)
-
-    assert product.object().cardinality() == cardinal(1)
-    assert coproduct.object().cardinality() == cardinal(0)
-    assert product.object() is not coproduct.object()
-
-    probe = finite_ordered_set(("a", "b"))
-    product_cone = (product.diagram()).Cones().cone(
-        probe,
-        lambda _index: None,
-    )
-    into_terminal = product.factor(product_cone).apex_map()
-    assert into_terminal.domain() is probe
-    assert into_terminal.codomain() is product.object()
-
-    coproduct_cocone = (coproduct.diagram()).Cocones().cocone(
-        probe,
-        lambda _index: None,
-    )
-    from_initial = coproduct.factor(coproduct_cocone).apex_map()
-    assert from_initial.domain() is coproduct.object()
-    assert from_initial.codomain() is probe
+    assert product.cardinality() == 1
+    assert coproduct.cardinality() == 0
+    assert probe.Mor(product).cardinality() == 1
+    assert coproduct.Mor(probe).cardinality() == 1
+    assert probe.Mor(coproduct).cardinality() == 0
 
 
+def test_pullback_of_two_and_three_on_Z_is_Z_spanned_by_three_two() -> None:
+    r"""``Z x_{2, Z, 3} Z = {(a, b) : 2a = 3b} = Z(3, 2)``; the cone ``(3, 2)`` factors."""
+    line = Modules(ZZ)(ZZ**1)
+    probe = Modules(ZZ)(ZZ**1)
+    (e,) = line.basis()
+    (t,) = probe.basis()
+    twice = line.Mor(line)({e: 2 * e})
+    thrice = line.Mor(line)({e: 3 * e})
 
+    pullback = Modules(ZZ).pullback(twice, thrice)
+    left, right = pullback.left_projection(), pullback.right_projection()
+    (generator,) = pullback.basis()
+    to_left = probe.Mor(line)({t: 3 * e})
+    to_right = probe.Mor(line)({t: 2 * e})
+    factor = pullback.lift(to_left, to_right)
 
-
-
-
-
-def test_branching_finite_diagram_limit_imposes_compatibility_not_sequence_order() -> None:
-    points = finite_ordered_set(("left", "right", "target"))
-    shape = PosetCategory(
-        points,
-        le=lambda source, target: (
-            source == target
-            or target == "target" and source in ("left", "right")
-        ),
-    )
-    line = ZZ.free_module(finite_ordered_set(("e",)))
-    e = line.module_generator("e")
-    twice = line.module_category().Mor(line, line)({"e": 2 * e})
-    thrice = line.module_category().Mor(line, line)({"e": 3 * e})
-    identity = line.module_category().Mor(line, line).identity()
-
-    class BranchingDiagram(Functor):
-        def __init__(self):
-            super().__init__(shape, line.category())
-
-        def _apply_object(self, _obj):
-            return line
-
-        def _apply_morphism(self, morphism):
-            source = morphism.domain().value()
-            target = morphism.codomain().value()
-            match source, target:
-                case left, right if left == right:
-                    return identity
-                case "left", "target":
-                    return twice
-                case "right", "target":
-                    return thrice
-                case _:
-                    raise ValueError("unexpected arrow in the branching index category")
-
-    diagram = BranchingDiagram()
-    construction = line.category().Limits(shape).construction(diagram)
-    assert shape.Mor(shape("left"), shape("right")).cardinality() == cardinal(0)
-    assert shape.Mor(shape("right"), shape("left")).cardinality() == cardinal(0)
-    assert construction.object().module_rank() == 1
-
-    probe = ZZ.free_module(finite_ordered_set(("t",)))
-    t = probe.module_generator("t")
-    to_left = probe.module_category().Mor(probe, line)({"t": 3 * e})
-    to_right = probe.module_category().Mor(probe, line)({"t": 2 * e})
-    to_target = probe.module_category().Mor(probe, line)({"t": 6 * e})
-    cone = diagram.Cones().cone(
-        probe,
-        lambda index: {
-            "left": to_left,
-            "right": to_right,
-            "target": to_target,
-        }[index.value()],
-    )
-    factor = construction.factor(cone).apex_map()
-    assert construction.structure_morphism(shape("left")) * factor == to_left
-    assert construction.structure_morphism(shape("right")) * factor == to_right
-    assert twice * to_left == thrice * to_right == to_target
-
-
-
-
-
-
-
-
+    assert pullback.module_rank() == 1
+    assert (left(generator), right(generator)) in ((3 * e, 2 * e), (-3 * e, -2 * e))
+    assert twice * left == thrice * right
+    assert left * factor == to_left
+    assert right * factor == to_right

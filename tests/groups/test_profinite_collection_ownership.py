@@ -15,5 +15,10 @@ def test_exact_embeddings_are_an_owned_ordered_finite_set() -> None:
     assert embeddings[0].codomain() is quartic
 
 
+def test_galois_group_of_gaussian_rationals_is_generated_by_complex_conjugation() -> None:
+    r"""$\operatorname{Gal}(\mathbf{Q}(i)/\mathbf{Q}) = \{1, \sigma\}$ with $\sigma(i) = -i$."""
+    field = QuadraticField(-1, "i")
+    i = field.gen()
 
-
+    assert field.galois_group().order() == 2
+    assert {sigma(i) for sigma in field.automorphisms()} == {i, -i}

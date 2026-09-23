@@ -1,13 +1,6 @@
-from dzack_research.preamble.all import (
-    QQ,
-    Algebras,
-    BilinearMap,
-    finite_ordered_set,
-)
+r"""Two multiplications on one module give two different algebras."""
 
-
-def _rank_two_module():
-    return QQ.free_module(finite_ordered_set(("one", "x")))
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _multiplication(module, square_of_x):
@@ -26,23 +19,23 @@ def _multiplication(module, square_of_x):
     )
 
 
-def test_two_multiplications_on_one_supplied_module_remain_distinct_structures() -> None:
-    module = _rank_two_module()
-    zero_square = _multiplication(module, module.zero())
-    idempotent_square = _multiplication(module, module.module_generator("x"))
+def test_x_squared_zero_gives_the_dual_numbers_and_x_squared_x_splits() -> None:
+    r"""On $\mathbb{Q}\langle 1, x\rangle$: $x^2 = 0$ gives $\mathbb{Q}[x]/(x^2)$; $x^2 = x$ gives $\mathbb{Q} \times \mathbb{Q}$.
 
-    dual_numbers = Algebras(QQ)(module, zero_square)
-    idempotent_algebra = Algebras(QQ)(module, idempotent_square)
+    In the second algebra $x$ and $1 - x$ are orthogonal idempotents; in the
+    first, $x$ is a nonzero nilpotent, so the two algebras are not isomorphic.
+    """
+    module = Modules(QQ)(Sets()(("one", "x")))
+    dual_numbers = Algebras(QQ)(module, _multiplication(module, module.zero()))
+    split = Algebras(QQ)(module, _multiplication(module, module.module_generator("x")))
 
-    assert dual_numbers is not idempotent_algebra
-    assert dual_numbers.unformed_module() is module
-    assert idempotent_algebra.unformed_module() is module
-    assert dual_numbers.multiplication() is zero_square
-    assert idempotent_algebra.multiplication() is idempotent_square
+    x = dual_numbers.module_generator("x")
+    assert x * x == dual_numbers.zero()
+    assert x != dual_numbers.zero()
 
-    dual_x = dual_numbers.module_generator("x")
-    idempotent_x = idempotent_algebra.module_generator("x")
-    assert dual_x * dual_x == dual_numbers.zero()
-    assert idempotent_x * idempotent_x == idempotent_x
-
-
+    e = split.module_generator("x")
+    f = split.one() - e
+    assert e * e == e
+    assert f * f == f
+    assert e * f == split.zero()
+    assert not dual_numbers.is_isomorphic(split)

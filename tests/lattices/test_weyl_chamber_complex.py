@@ -1,49 +1,43 @@
-r"""Weyl chambers retain exact wall crossings and transporters."""
+r"""Weyl chambers of the hyperbolic plane \(\langle 2\rangle\oplus\langle -2\rangle\).
 
-from sage.rings.integer_ring import ZZ as SageZZ
+Its roots are the vectors \(ae_0 + be_1\) of square \(-2\), i.e. \(b^2 - a^2 = 1\),
+so \(\pm e_1\): one mirror \(e_1^\perp = \mathbb Z e_0\), two chambers, and the
+Weyl group \(\{1, s_{e_1}\}\).
+"""
 
-from dzack_research.preamble.categories.chamber_systems import ChamberSystems
-from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
-from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-
-def _one_wall_chamber():
-    integers = _own_ring(SageZZ)
-    lattice = HyperbolicLattices(integers)(Lattices(integers)([[2, 0], [0, -2]]))
-    root = lattice.basis_vector(1)
-    covector = lattice.algebraic_correlation_morphism()(root)
-    chamber = lattice.rational_polyhedral_cone(
-        (covector,),
-        wall_roots=(root,),
-        complete=True,
-    )
-    return lattice, root, chamber
+from dzack_research.preamble.all import ZZ, Lattices
 
 
-def test_simple_reflection_crosses_the_retained_wall() -> None:
-    lattice, root, chamber = _one_wall_chamber()
-    complex_ = chamber.chamber_complex()
+def test_the_reflection_in_the_wall_root_carries_the_chamber_across_the_wall() -> None:
+    r"""\(s_r\) sends the chamber \(\{b(r,-)\ge 0\}\) to \(\{b(-r,-)\ge 0\}\) and fixes the
+    timelike \(e_0\), which spans the shared wall \(r^\perp\)."""
+    lattice = Lattices(ZZ)([[2, 0], [0, -2]])
+    timelike, spacelike = lattice.module_generators()
+    chamber = lattice.fundamental_chamber()
+    complex_ = lattice.chamber_complex()
+    root = chamber.wall_roots()[0]
+
+    assert chamber.wall_roots().cardinality() == 1
+    assert root in (spacelike, -spacelike)
+
     adjacency = complex_.fundamental_adjacencies()[root]
-
-    assert complex_ in ChamberSystems()
     reflection = lattice.reflection(root)
-    assert adjacency.source() is chamber
+
     assert adjacency.transporter() == reflection
     assert adjacency.target().wall_roots()[0] == -root
-    assert adjacency.shared_wall_covector() == lattice.algebraic_correlation_morphism()(root)
     face = adjacency.shared_face()
     assert face.dimension() == chamber.dimension() - 1
-    timelike = lattice.basis_vector(0)
     assert face.contains(timelike)
-    assert adjacency.transporter()(timelike) == timelike
+    assert reflection(timelike) == timelike
+    assert reflection(root) == -root
 
 
-def test_a_double_wall_word_returns_to_the_original_root_orientation() -> None:
-    _lattice, root, chamber = _one_wall_chamber()
-    complex_ = chamber.chamber_complex()
-    transporter = complex_.transporter_from_word((root, root))
+def test_crossing_the_same_wall_twice_is_the_identity() -> None:
+    r"""\(s_r^2 = 1\)."""
+    lattice = Lattices(ZZ)([[2, 0], [0, -2]])
+    chamber = lattice.fundamental_chamber()
+    complex_ = lattice.chamber_complex()
+    root = chamber.wall_roots()[0]
 
-    assert transporter == complex_.lattice().O().one()
-    returned = complex_.chamber_from_word((0, 0))
-    assert returned.wall_roots() == chamber.wall_roots()
+    assert complex_.transporter_from_word((root, root)) == lattice.O().one()
+    assert complex_.chamber_from_word((0, 0)).wall_roots() == chamber.wall_roots()

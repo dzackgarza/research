@@ -1,21 +1,28 @@
-r"""Archive reconciliation for elementary discriminant predicates."""
+r"""Elementary discriminant groups and the parity invariant \(\delta\)."""
 
-from dzack_research.preamble.catalogue import NamedLattices
+from dzack_research.preamble.all import NamedLattices
 
 
-def test_p_elementary_predicate_separates_prime_exponent_from_prime_power_order() -> None:
+def test_p_elementary_means_prime_exponent_not_prime_power_order() -> None:
+    r"""\(A_{U(2)}=(\mathbb Z/2)^2\) and \(A_{E_8}=0\) are 2-elementary; \(A_{A_2}=\mathbb Z/3\)
+    is 3-elementary and not 2-elementary; \(A_{\langle4\rangle}=\mathbb Z/4\) has 2-power
+    order and exponent 4, so it is not 2-elementary.
+    """
     assert NamedLattices.U_2.is_p_elementary(2)
     assert NamedLattices.E8.is_p_elementary(2)
 
     assert not NamedLattices.A2.is_p_elementary(2)
     assert NamedLattices.A2.discriminant_group().is_p_elementary(3)
 
-    # <4> has discriminant group C4.  Its order is a power of two, but its
-    # exponent is four, so it is not 2-elementary.
     assert not NamedLattices.Z.twist(4).is_p_elementary(2)
 
 
-def test_two_elementary_coeven_predicate_is_the_delta_zero_condition() -> None:
+def test_delta_of_a_two_elementary_lattice_vanishes_exactly_when_it_is_coeven() -> None:
+    r"""\(\delta=0\) iff \(q_L\) takes values in \(\mathbb Z/2\mathbb Z\) (Nikulin, *Integral
+    symmetric bilinear forms*, Izv. 1979, §3.6).  For \(U(2)\), \(E_8(2)\) and their sums the
+    discriminant values \(x^2/4\) with \(x^2\in4\mathbb Z\) are integers, so \(\delta=0\);
+    for \(A_1=\langle-2\rangle\), \(q(e/2)=-1/2\), so \(\delta=1\).
+    """
     for lattice in (
         NamedLattices.U,
         NamedLattices.U_2,
@@ -24,5 +31,8 @@ def test_two_elementary_coeven_predicate_is_the_delta_zero_condition() -> None:
         NamedLattices.E10_2,
         NamedLattices.TEn,
     ):
-        assert lattice.delta() in (0, 1)
-        assert lattice.is_coeven() == (lattice.delta() == 0)
+        assert lattice.delta() == 0
+        assert lattice.is_coeven()
+
+    assert NamedLattices.A1.delta() == 1
+    assert not NamedLattices.A1.is_coeven()

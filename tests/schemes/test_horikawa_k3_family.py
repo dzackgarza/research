@@ -1,112 +1,56 @@
-r"""The Horikawa ``(4,4)`` family is built from the shared equivariant cover owners."""
+r"""The Horikawa K3 surfaces: double covers of `\mathbb{P}^1 \times \mathbb{P}^1` branched in a `(4,4)` curve.
 
-from dzack_research.preamble.all import QQ, Schemes
-from dzack_research.preamble.categories.schemes.k3_families import HorikawaK3Family
+Source: Barth, Hulek, Peters, Van de Ven, *Compact Complex Surfaces*, 2nd ed.,
+V.23 (Horikawa's model) and VIII.18; van Geemen and Sarti, *Nikulin involutions
+on K3 surfaces*, Math. Z. 255 (2007), section 1 (a symplectic involution has
+eight fixed points).  `\tau` is the involution `(x, y) \mapsto (-x, -y)` of the
+base, with four fixed points.
+"""
 
-ARCHIVE_RECONCILIATIONS = (
-    {
-        "archive_module": "preamble/tests/framework/test_group_actions_and_isotypics.sage",
-        "live_owner": "tests/schemes/test_horikawa_k3_family.py",
-        "disposition": "reconciled-live-owner",
-    },
-    {
-        "archive_module": "preamble/tests/framework/test_composite_certificates.sage",
-        "live_owner": "tests/schemes/test_horikawa_k3_family.py",
-        "disposition": "reconciled-live-owner",
-    },
-)
+from dzack_research.preamble.all import HorikawaK3Family
 
 
-def test_branch_section_action_computes_the_source_specified_13_plus_12_split() -> None:
+def test_tau_splits_the_bidegree_four_four_sections_as_thirteen_plus_twelve() -> None:
+    r"""`h^0(\mathcal{O}(4,4)) = 25`; `\tau` fixes the monomials `x_0^a x_1^{4-a} y_0^b y_1^{4-b}`
+    with `a + b` even (`3 \cdot 3 + 2 \cdot 2 = 13`) and negates the other 12."""
     family = HorikawaK3Family()
-    sections = family.branch_section_space()
-    decomposition = family.branch_isotypic_decomposition()
-    invariant = family.invariant_branch_sections()
-    anti_invariant = family.anti_invariant_branch_sections()
+    sections = family.branch_line_bundle().global_sections()
+    tau = family.base_involution().action_on_sections(family.branch_line_bundle())
 
     assert sections.module_rank() == 25
-    assert decomposition.trivial_component() is invariant
-    assert invariant.module_rank() == 13
-    assert anti_invariant.module_rank() == 12
-    assert invariant.inclusion().codomain() is sections
-    assert anti_invariant.inclusion().codomain() is sections
-
-    group = family.branch_linearization().acting_group()
-    generator = next(iter(group.group_generators()))
-    invariant_label = next(iter(invariant.module_generating_set()))
-    anti_invariant_label = next(iter(anti_invariant.module_generating_set()))
-    invariant_section = invariant.inclusion()(invariant.module_generator(invariant_label))
-    anti_invariant_section = anti_invariant.inclusion()(
-        anti_invariant.module_generator(anti_invariant_label)
-    )
-    section_action = family.branch_linearization().section_action_of(generator)
-    assert section_action(invariant_section) == invariant_section
-    assert section_action(anti_invariant_section) == -anti_invariant_section
-
-    branch = family.default_branch_section()
-    trivial = lambda _element: QQ.one()
-    assert family.branch_linearization().is_eigensection(branch, trivial)
+    assert sections.invariant_submodule(tau).module_rank() == 13
+    assert sections.anti_invariant_submodule(tau).module_rank() == 12
 
 
-def test_selected_invariant_branch_builds_a_smooth_anticanonical_double_cover() -> None:
+def test_double_cover_branched_in_an_invariant_four_four_curve_is_a_k3_surface() -> None:
+    r"""The branch curve has genus `(4-1)(4-1) = 9`, the cover has
+    `K = \pi^*(K_B + \tfrac12 B) = \pi^*\mathcal{O}(0,0) = 0` and
+    `e = 2 \cdot 4 - (2 - 2 \cdot 9) = 24`."""
     member = HorikawaK3Family().member()
-    assert member.scheme() is member
-    assert member in Schemes(QQ)
-    cyclic = member.cyclic_algebra()
-    cover = member.scheme()
-    projection = member.cover_morphism()
+    cover = member.cover_morphism()
+    k3 = cover.domain()
 
-    assert cyclic.degree() == 2
-    assert cyclic.line_bundle() is member.family().cover_line_bundle()
-    assert projection.domain() is cover
-    assert projection.codomain() is member.base_surface()
-    assert member.branch_is_smooth()
-    assert member.branch_avoids_tau_fixed_corners()
-    assert member.cover_line_bundle_is_anticanonical()
-    assert member.k3_theorem_hypotheses_hold()
-    assert member.is_k3()
-
-    # The canonical deck group scheme remains mu_2; the constant C2 map is an
-    # additional choice available over QQ rather than a replacement for it.
-    first_chart = next(iter(cyclic.chart_index_set()))
-    mu_two_action = cyclic.local_deck_group_scheme_action(first_chart)
-    mu_two_algebra = mu_two_action.group_scheme().scheme().coordinate_algebra()
-    u = mu_two_algebra.algebra_generator("u")
-    assert u**2 == mu_two_algebra.one()
-    assert cyclic.constant_deck_transformation().domain() is cover
+    assert cover.degree() == 2
+    assert member.branch_curve().genus() == 9
+    assert k3.canonical_class() == 0
+    assert k3.euler_characteristic() == 24
+    assert k3.irregularity() == 0
 
 
-def test_two_tau_lifts_are_involutions_with_actual_fixed_subschemes_and_top_form_actions() -> None:
+def test_the_two_lifts_of_tau_are_a_free_enriques_and_a_symplectic_nikulin_involution() -> None:
+    r"""Over each of the four fixed points of `\tau` the cover has two points: one lift
+    swaps them and is free, acting by `-1` on `H^0(K_X)`; the other fixes all eight
+    and acts by `+1`."""
     member = HorikawaK3Family().member()
     enriques = member.enriques_lift()
     nikulin = member.nikulin_lift()
-    fixed = member.fixed_subschemes()
-    assert tuple(fixed.index_set()) == ("enriques", "nikulin")
-    enriques_fixed = fixed["enriques"]
-    nikulin_fixed = fixed["nikulin"]
+    identity = enriques.domain().Mor(enriques.domain()).identity()
 
-    assert member.both_lifts_have_order_two()
-    assert enriques.automorphism() is enriques.left()
-    assert enriques.base_automorphism() is enriques.right()
-    assert enriques.domain() is enriques.codomain()
-    assert enriques.domain().arrow() is member.cover_morphism()
-    assert enriques.automorphism().domain() is member.scheme()
-    assert nikulin.automorphism().domain() is member.scheme()
-    assert enriques.base_automorphism() is nikulin.base_automorphism()
-    assert enriques_fixed.inclusion().codomain() is member.scheme()
-    assert nikulin_fixed.inclusion().codomain() is member.scheme()
-    assert member.enriques_lift_is_fixed_point_free()
-    assert all(
-        not nikulin.local_automorphism(index).fixed_subscheme().is_empty()
-        for index in member.cyclic_algebra().chart_index_set()
-    )
-
-    assert member.deck_top_form_scalar() == -QQ.one()
-    assert enriques.top_form_scalar() == -QQ.one()
-    assert nikulin.top_form_scalar() == QQ.one()
-
-
-
-
-
-
+    assert enriques * enriques == identity
+    assert nikulin * nikulin == identity
+    assert enriques != nikulin
+    assert enriques.fixed_locus().is_empty()
+    assert nikulin.fixed_locus().relative_dimension() == 0
+    assert nikulin.fixed_locus().length() == 8
+    assert enriques.action_on_holomorphic_two_forms() == -1
+    assert nikulin.action_on_holomorphic_two_forms() == 1

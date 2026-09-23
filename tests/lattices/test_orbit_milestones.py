@@ -59,5 +59,17 @@ def test_milestone_one_the_E10_cusp_acts_on_its_reduction_lattice() -> None:
     )
 
 
+def test_the_enriques_lattice_has_two_line_cusps_and_nine_plane_cusps() -> None:
+    r"""For \(N=U\oplus U(2)\oplus E_8(-2)\), \(O(N)\) has 2 orbits of primitive
+    isotropic lines and 9 of primitive isotropic planes (Sterk, *Compactifications of
+    the period space of Enriques surfaces I*, Math. Z. 207 (1991), 1--36).  The
+    reductions \(I^\perp/I\) have rank \(12-2\cdot 1=10\) and \(12-2\cdot 2=8\).
+    """
+    lattice = NamedLattices.TEn
+    line_cusps = lattice.cusps(1)
+    plane_cusps = lattice.cusps(2)
 
-
+    assert line_cusps.cardinality() == 2
+    assert plane_cusps.cardinality() == 9
+    assert all(cusp.reduction_lattice().module_rank() == 10 for cusp in line_cusps)
+    assert all(cusp.reduction_lattice().module_rank() == 8 for cusp in plane_cusps)

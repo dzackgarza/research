@@ -1,56 +1,40 @@
-r"""Equality of localization fractions is relation membership over the source.
+r"""Annihilators and localization on the coordinate axes $\mathbb Q[x,y]/(xy)$.
 
-``m/s = m'/s'`` in ``S^{-1}M`` exactly when some element of ``S`` kills the
-cross difference ``d = s'm - sm'``.  On a chosen presentation ``M = coker(A)``
-that says the annihilator of ``d``, the transporter carrying its coordinates
-into the relations, meets ``S``, so equality is decided by the presentation
-algorithm rather than by searching for a denominator witness.
-
-The specimen is ``QQ[x,y]/(xy)`` with ``y`` inverted.  There ``x`` becomes zero,
-because ``y`` annihilates it, while the generator does not.
+$m/1 = 0$ in $S^{-1}M$ exactly when some $s \in S$ kills $m$, that is when
+$\operatorname{Ann}(m)$ meets $S$ (Atiyah–Macdonald, *Introduction to
+Commutative Algebra*, ch. 3).  With $y$ inverted, $x$ becomes zero because $y$
+annihilates it, while $1$ does not, because no power of $y$ lies in $(xy)$.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _coordinate_axes():
-    r"""Return ``QQ[x,y]``, its variables, and ``QQ[x,y]/(xy)`` on one generator."""
-    ring = QQ.polynomial_ring(("x", "y"))
-    x = ring.algebra_generator("x")
-    y = ring.algebra_generator("y")
-    free = ring.free_module(finite_ordered_set(("g",)))
-    relations = ring.free_module(finite_ordered_set(("r",)))
-    module = relations.module_category().Mor(relations, free)(
-            {"r": free.scalar_multiple(x * y, free.module_generator("g"))}
-        ).cokernel()
-    return ring, x, y, module
+def coordinate_axes():
+    R = QQ["x,y"]
+    x, y = R.gens()
+    M = Modules(R)(R.quotient_ring(R.ideal(x * y)))
+    return R, x, y, M
 
 
-def test_the_annihilator_of_an_element_is_its_transporter_into_the_relations() -> None:
-    ring, x, y, module = _coordinate_axes()
-
-    on_the_axis = module.scalar_multiple(x, module.module_generator("g"))
-
-    assert module.annihilator_of(on_the_axis) == ring.ideal(y)
-    assert module.annihilator_of(module.module_generator("g")) == ring.ideal(x * y)
-
-
-def test_inverting_the_annihilator_of_an_element_makes_that_element_zero() -> None:
-    _ring, x, y, module = _coordinate_axes()
-    localized = module.localize(y)
-
-    on_the_axis = module.scalar_multiple(x, module.module_generator("g"))
-
-    assert localized.fraction(on_the_axis).equality_status(localized.zero()) is True
+def test_on_the_coordinate_axes_ann_x_is_y_and_ann_1_is_xy() -> None:
+    """Source: by hand; x*f in (xy) iff y | f since QQ[x,y] is a UFD."""
+    R, x, y, M = coordinate_axes()
+    g = M.module_generator(0)
+    assert M.annihilator_of(x * g) == R.ideal(y)
+    assert M.annihilator_of(g) == R.ideal(x * y)
+    assert M.annihilator() == R.ideal(x * y)
 
 
-def test_the_generator_survives_inverting_a_scalar_outside_its_annihilator() -> None:
-    _ring, _x, y, module = _coordinate_axes()
-    localized = module.localize(y)
+def test_inverting_y_on_the_coordinate_axes_kills_x() -> None:
+    """y * x = 0 in the quotient, so x/1 = 0 after inverting y. Source: Atiyah–Macdonald ch. 3."""
+    R, x, y, M = coordinate_axes()
+    L = M.localize(y)
+    assert L(x * M.module_generator(0)) == L.zero()
 
-    assert localized.fraction(module.module_generator("g")).equality_status(
-        localized.zero()
-    ) is False
+
+def test_inverting_y_on_the_coordinate_axes_keeps_1() -> None:
+    """No power y^n lies in (xy), so 1/1 != 0 after inverting y. Source: Atiyah–Macdonald ch. 3."""
+    R, x, y, M = coordinate_axes()
+    L = M.localize(y)
+    assert L(M.module_generator(0)) != L.zero()
+    assert not L.is_zero()

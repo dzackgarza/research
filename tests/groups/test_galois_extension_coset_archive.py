@@ -1,60 +1,28 @@
-from dzack_research.preamble.all import QQ, QuadraticField
-from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
-    AbsoluteGaloisGroup,
-)
+r"""Extensions of complex conjugation from $\mathbb{Q}(i)$ to $\mathbb{Q}(\zeta_{12})$."""
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_extensions_of_gaussian_conjugation_form_the_expected_finite_coset() -> None:
-    polynomial_ring = QQ.polynomial_ring("x")
-    x = polynomial_ring.algebra_generator("x")
-    cyclotomic = (x**4 - x**2 + QQ.one()).number_field("z")
+def test_complex_conjugation_of_q_i_extends_to_sigma_7_and_sigma_11() -> None:
+    r"""With $i = \zeta^3$, $\sigma_a(\zeta) = \zeta^a$ sends $i \mapsto i^a$.
+
+    So $\sigma_a$ fixes $i$ iff $a \equiv 1 \bmod 4$ ($a = 1, 5$) and sends
+    $i \mapsto -i$ iff $a \equiv 3 \bmod 4$ ($a = 7, 11$): the extensions of
+    conjugation are the coset $\sigma_7 \operatorname{Gal}(\mathbb{Q}(\zeta_{12})/\mathbb{Q}(i))$.
+    """
+    x = QQ.polynomial_ring("x").algebra_generator("x")
+    cyclotomic = (x**4 - x**2 + 1).number_field("z")
     zeta = cyclotomic.primitive_element()
     gaussian = QuadraticField(-1, "i")
-    gaussian_generator = gaussian.primitive_element()
+    i = gaussian.primitive_element()
+    embedding = next(e for e in gaussian.exact_embeddings(cyclotomic) if e(i) == zeta**3)
+    conjugation = next(s for s in gaussian.exact_embeddings(gaussian) if s(i) == -i)
 
-    embedding = next(
-        candidate
-        for candidate in gaussian.exact_embeddings(cyclotomic)
-        if candidate(gaussian_generator) == zeta**3
-    )
-    conjugation = next(
-        automorphism
-        for automorphism in gaussian.exact_embeddings(gaussian)
-        if automorphism(gaussian_generator) == -gaussian_generator
-    )
-
-    group = AbsoluteGaloisGroup(QQ)
+    group = QQ.absolute_galois_group()
     quotient = group.finite_quotient(group.extension_data(cyclotomic))
-    extensions = conjugation.extensions_along(
-        embedding,
-        tuple(automorphism.action() for automorphism in quotient),
-    )
+    extensions = conjugation.extensions_along(embedding, [sigma.action() for sigma in quotient])
 
+    assert quotient.order() == 4
     assert extensions.cardinality() == 2
-    exponents = {
-        exponent
-        for exponent in (1, 5, 7, 11)
-        if any(extension(zeta) == zeta**exponent for extension in extensions)
-    }
-    assert exponents == {7, 11}
-
-    fixing_gaussian = {
-        automorphism
-        for automorphism in quotient
-        if automorphism.action()(embedding(gaussian_generator))
-        == embedding(gaussian_generator)
-    }
-    assert len(fixing_gaussian) == 2
-
-    chosen_extension = next(
-        automorphism
-        for automorphism in quotient
-        if automorphism.action() in extensions
-    )
-    finite_coset = {
-        kernel_element * chosen_extension
-        for kernel_element in fixing_gaussian
-    }
-    assert {
-        automorphism.action() for automorphism in finite_coset
-    } == set(extensions)
+    assert {a for a in (1, 5, 7, 11) if any(e(zeta) == zeta**a for e in extensions)} == {7, 11}
+    assert {a for a in (1, 5, 7, 11) if any(s(zeta) == zeta**a and s(zeta**3) == zeta**3 for s in quotient)} == {1, 5}

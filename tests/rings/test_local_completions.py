@@ -1,11 +1,6 @@
-r"""Adic completion objects and their finite quotient systems."""
+r"""Adic completions as limits of their finite truncations."""
 
-from dzack_research.preamble.all import (
-    QQ,
-)
-from dzack_research.preamble.categories.abstract_categories.products import InverseSystem
-
-
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_multivariable_origin_completion_is_not_truncated_by_computation_precision() -> None:
@@ -25,37 +20,25 @@ def test_multivariable_origin_completion_is_not_truncated_by_computation_precisi
     assert completion.computation_precision() == 4
 
 
-def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> None:
-    plane = QQ.polynomial_ring(("x", "y"))
+def test_completion_is_the_limit_of_the_truncations_by_powers_of_the_maximal_ideal() -> None:
+    r"""R-hat = lim R/m^n for R = Q[x,y], m = (x,y): the transition R/m^4 -> R/m^2 keeps
+    x and kills x^2 and xy, pi_2 = t_{4,2} pi_4, and the limit of the projections is
+    the completion itself (Atiyah-Macdonald ch. 10)."""
+    plane = QQ['x,y']
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
     completion = plane.adic_completion(plane.ideal(x, y), precision=5)
-
     fourth = completion.adic_truncation(4)
     second = completion.adic_truncation(2)
     transition = completion.adic_transition_map(4, 2)
-    fourth_projection = completion.adic_projection(4)
-    second_projection = completion.adic_projection(2)
 
-    assert completion is not fourth
-    assert completion is not second
-    assert transition.domain() is fourth
-    assert transition.codomain() is second
     assert transition(fourth.quotient_map()(x)) == second.quotient_map()(x)
+    assert transition(fourth.quotient_map()(x)) != second.zero()
     assert transition(fourth.quotient_map()(x**2)) == second.zero()
-    assert transition * fourth_projection == second_projection
+    assert transition(fourth.quotient_map()(x * y)) == second.zero()
+    assert fourth.quotient_map()(x**3) != fourth.zero()
+    assert transition * completion.adic_projection(4) == completion.adic_projection(2)
 
-    system = completion.adic_inverse_system()
-    diagram = system.functor()
-    base = system.base_index_category()
-    opposite = system.index_category()
-    fourth_index = opposite(base(3))
-    assert system in InverseSystem(base, diagram.codomain())
-    assert system.stage(fourth_index) is fourth
     limit = completion.adic_limit_construction()
-    assert limit.diagram() is diagram
     assert limit.object() is completion
-    assert limit.structure_morphism(fourth_index) is completion.adic_projection(4)
     assert limit.factor(limit.cone()).apex_map() == completion.Mor(completion).identity()
-
-

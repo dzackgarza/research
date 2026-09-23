@@ -1,73 +1,15 @@
-r"""Sterk connected elliptic-subdiagram populations retained from the archive.
+r"""Connected elliptic subdiagrams of Sterk's five Coxeter diagrams.
 
-The committed Sterk artifact directories contain one image for every connected
-elliptic induced subdiagram, with the empty ``A_0`` diagram included as a
-separate rank-zero convention.  The live Coxeter owner follows the ordinary
-graph convention instead: ``elliptic_subdiagrams(connected=True)`` contains
-only nonempty connected diagrams.  Thus the archived totals are one plus the
-live connected counts.
+The committed artifacts under ``computations/enriques-paper-artifacts/Sterk``
+draw one picture per connected elliptic induced subdiagram of each diagram,
+together with the empty diagram; the counts and types below are read from
+them.  A type is recorded as \((\text{rank}, \text{Cartan letter}, \text{scale})\):
+a subdiagram of roots of square \(-4\) is a scale-\(2\) copy of a simply laced
+type, and a subdiagram mixing roots of square \(-2\) and \(-4\) is of type
+\(B_n = C_n\) at scale \(1\).
 """
 
-import re
-from collections import Counter
-from pathlib import Path
-
-import dzack_research
 from dzack_research.preamble.all import Set, Sterk
-
-ARCHIVE_RECONCILIATIONS = (
-    {
-        "archive_module": "preamble/sterk.sage",
-        "live_owner": "src/dzack_research/preamble/sterk.py",
-        "disposition": "reconciled-live-owner",
-    },
-    {
-        "archive_module": "preamble/tests/test_sterk_artifacts.sage",
-        "live_owner": "src/dzack_research/preamble/sterk.py",
-        "disposition": "reconciled-live-owner",
-    },
-)
-
-
-_ARTIFACTS = (
-    Path(dzack_research.__file__).resolve().parent.parent.parent
-    / "computations"
-    / "enriques-paper-artifacts"
-    / "Sterk"
-)
-
-_FILENAME = re.compile(
-    r"elliptic_subdiagram_number_\d+_rank_(?P<rank>\d+)"
-    r"_type_(?P<label>.+)_index_\d+\.png"
-)
-
-
-def _legacy_label(subdiagram) -> str:
-    if subdiagram.cardinality() == 0:
-        return "A_{0}"
-    cartan, scale = subdiagram.scaled_cartan_type()
-    letter = cartan.type()
-    rank = cartan.rank()
-    if letter in ("A", "D", "E"):
-        if scale not in (1, 2):
-            raise ArithmeticError(
-                f"the archived Sterk labels have no {letter}_{rank} scale {scale}"
-            )
-        if scale == 1:
-            return f"{letter}_{rank}"
-        return f"{letter}_{rank}(2)"
-    if scale != 1:
-        raise ArithmeticError(
-            f"the archived Sterk labels have no {letter}_{rank} scale {scale}"
-        )
-    if letter == "B":
-        return f"B_{rank}(2)"
-    if letter == "C" and rank == 2:
-        return "G_2"
-    if letter == "C":
-        return f"C_{rank}(2)"
-    raise ArithmeticError(f"the archived Sterk labels have no Cartan type {letter}_{rank}")
-
 
 _ARCHIVED_TOTALS = {
     "Sterk_1": 121,
@@ -75,6 +17,115 @@ _ARCHIVED_TOTALS = {
     "Sterk_3": 67,
     "Sterk_4": 78,
     "Sterk_5": 119,
+}
+
+_CONNECTED_ELLIPTIC_TYPES = {
+    "Sterk_1": {
+        (1, "A", 2): 12,
+        (2, "A", 2): 10,
+        (3, "A", 2): 12,
+        (4, "A", 2): 12,
+        (4, "D", 2): 2,
+        (5, "A", 2): 12,
+        (5, "D", 2): 4,
+        (6, "A", 2): 12,
+        (6, "D", 2): 4,
+        (6, "E", 2): 2,
+        (7, "A", 2): 14,
+        (7, "D", 2): 4,
+        (7, "E", 2): 4,
+        (8, "A", 2): 4,
+        (8, "D", 2): 8,
+        (8, "E", 2): 4,
+    },
+    "Sterk_2": {
+        (1, "A", 1): 1,
+        (1, "A", 2): 9,
+        (2, "A", 2): 8,
+        (2, "C", 1): 1,
+        (3, "A", 2): 8,
+        (3, "B", 1): 1,
+        (4, "A", 2): 7,
+        (4, "B", 1): 1,
+        (4, "D", 2): 1,
+        (5, "A", 2): 5,
+        (5, "B", 1): 1,
+        (5, "D", 2): 2,
+        (6, "A", 2): 4,
+        (6, "B", 1): 1,
+        (6, "D", 2): 1,
+        (6, "E", 2): 1,
+        (7, "A", 2): 3,
+        (7, "B", 1): 1,
+        (7, "D", 2): 1,
+        (7, "E", 2): 1,
+        (8, "A", 2): 1,
+        (8, "B", 1): 2,
+        (8, "D", 2): 1,
+        (8, "E", 2): 1,
+        (9, "B", 1): 1,
+    },
+    "Sterk_3": {
+        (1, "A", 1): 2,
+        (1, "A", 2): 10,
+        (2, "A", 2): 7,
+        (2, "C", 1): 4,
+        (3, "A", 2): 7,
+        (3, "B", 1): 2,
+        (4, "A", 2): 6,
+        (4, "B", 1): 2,
+        (4, "D", 2): 1,
+        (5, "A", 2): 5,
+        (5, "B", 1): 2,
+        (5, "D", 2): 2,
+        (6, "A", 2): 2,
+        (6, "B", 1): 4,
+        (6, "D", 2): 2,
+        (6, "E", 2): 1,
+        (7, "A", 2): 1,
+        (7, "B", 1): 2,
+        (7, "E", 2): 2,
+        (8, "B", 1): 2,
+    },
+    "Sterk_4": {
+        (1, "A", 1): 2,
+        (1, "A", 2): 9,
+        (2, "A", 2): 8,
+        (2, "C", 1): 2,
+        (3, "A", 2): 9,
+        (3, "B", 1): 2,
+        (4, "A", 2): 6,
+        (4, "B", 1): 4,
+        (4, "D", 2): 2,
+        (5, "A", 2): 5,
+        (5, "B", 1): 2,
+        (5, "D", 2): 2,
+        (6, "A", 2): 4,
+        (6, "B", 1): 2,
+        (6, "D", 2): 2,
+        (7, "A", 2): 4,
+        (7, "B", 1): 2,
+        (7, "D", 2): 2,
+        (8, "B", 1): 4,
+        (8, "D", 2): 4,
+    },
+    "Sterk_5": {
+        (1, "A", 1): 4,
+        (1, "A", 2): 10,
+        (2, "A", 2): 8,
+        (2, "C", 1): 8,
+        (3, "A", 2): 8,
+        (3, "B", 1): 8,
+        (4, "A", 2): 8,
+        (4, "B", 1): 8,
+        (5, "A", 2): 8,
+        (5, "B", 1): 8,
+        (6, "A", 2): 8,
+        (6, "B", 1): 8,
+        (7, "A", 2): 8,
+        (7, "B", 1): 8,
+        (8, "B", 1): 8,
+    },
 }
 
 
@@ -94,26 +145,20 @@ def test_sterk_connected_elliptic_populations_match_the_committed_archive() -> N
         assert all(subdiagram.is_connected() for subdiagram in connected)
 
 
-def test_sterk_artifact_rank_type_multisets_match_live_diagrams() -> None:
+def test_sterk_connected_elliptic_subdiagrams_have_the_recorded_types() -> None:
+    r"""Each Sterk diagram's connected elliptic subdiagrams, counted by rank, Cartan
+    letter and scale, form the multiset drawn in the committed artifacts."""
     diagrams = Sterk.diagrams()
-    for name, expected_total in _ARCHIVED_TOTALS.items():
-        parsed = []
-        for path in (_ARTIFACTS / name).iterdir():
-            match = _FILENAME.fullmatch(path.name)
-            assert match is not None
-            parsed.append((int(match.group("rank")), match.group("label")))
-        archived = Counter(parsed)
-        assert sum(archived.values()) == expected_total
 
-        diagram = diagrams[name]
-        empty = diagram.induced_subdiagram(())
-        connected = diagram.elliptic_subdiagrams(connected=True)
-        live = Counter(
-            [(0, _legacy_label(empty))]
-            + [
-                (int(subdiagram.cardinality()), _legacy_label(subdiagram))
-                for subdiagram in connected
-            ]
-        )
-        assert sum(live.values()) == expected_total
-        assert live == archived
+    def scaled_type(subdiagram):
+        cartan, scale = subdiagram.scaled_cartan_type()
+        return (cartan.rank(), cartan.type(), scale)
+
+    for name, expected in _CONNECTED_ELLIPTIC_TYPES.items():
+        connected = diagrams[name].elliptic_subdiagrams(connected=True)
+        types = [scaled_type(subdiagram) for subdiagram in connected]
+
+        assert connected.cardinality() == sum(expected.values())
+        assert Set(types) == Set(expected)
+        for key, count in expected.items():
+            assert types.count(key) == count

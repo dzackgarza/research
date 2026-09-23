@@ -1,127 +1,89 @@
+r"""Centres, finite local rings, real quadratic fields and cardinalities of the number systems."""
 
-from dzack_research.preamble.categories.sets import finite_ordered_set
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_ring,
-    _own_ring,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _session():
-    scope = {}
-    exec("from dzack_research.preamble.all import *", scope)
-    return scope
+def test_the_algebraic_reals_embed_in_the_reals_and_the_algebraic_numbers_do_not() -> None:
+    r"""``AA`` is the real closure of ``QQ`` in ``RR``, so ``sqrt 2`` in ``AA`` is a
+    real number squaring to ``2``; ``QQbar`` contains ``i`` with ``i^2 = -1``, which
+    has no square root in the ordered field ``RR``, so there is no ring morphism
+    ``QQbar -> RR``."""
+    root_two = AA(2).sqrt()
+
+    assert RR(root_two) ** 2 == RR(2)
+    assert RR(root_two) > 0
+    assert QQbar.Mor(RR).cardinality() == 0
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def test_noncommutative_center_is_a_predicate_subring() -> None:
-    session = _session()
-    QQ = session["QQ"]
-
+def test_the_centre_of_the_two_by_two_rational_matrices_is_the_scalars() -> None:
+    r"""``Z(M_2(QQ)) = QQ * I`` (Lang, *Algebra*, XVII §1): the scalars commute with
+    everything, and a matrix commuting with ``E_{12}`` and ``E_{21}`` is scalar."""
     matrices = QQ.matrix_space(2)
     center = matrices.ring_center()
+    e12 = matrices.matrix_unit(0, 1)
+    e21 = matrices.matrix_unit(1, 0)
+    e11 = matrices.matrix_unit(0, 0)
 
-    assert center in session["OwnedRings"]()
-    assert center in session["CommutativeRings"]()
-    assert center.algebra_base_ring() is center
-    assert center.regular_module() is center
-    assert center.ambient_ring() is matrices
-    assert center.inclusion().domain() is center
-    assert center.inclusion().codomain() is matrices
-
-    # Centrality is decided on the matrix units, the chosen algebra generators.
-    assert matrices.one() in center
-    assert next(iter(matrices.algebra_generators())) not in center
-
+    assert center.inclusion()(center.one()) == matrices.one()
+    assert 3 * matrices.one() in center
+    assert e12 not in center
+    assert e11 not in center
+    assert e11 + 2 * (matrices.one() - e11) not in center
+    assert e12 * e21 != e21 * e12
+    assert center.module_rank() == 1
 
 
-
-def test_finite_ring_engine_adoption_keeps_initial_semantic_placement() -> None:
-    session = _session()
-    GF = session["GF"]
-    Zmod = session["Zmod"]
-    PrimeFields = session["PrimeFields"]
-    LocalRings = session["LocalRings"]
-    ArtinianRings = session["ArtinianRings"]
-
-    prime = GF(5)
-    extension = GF(4)
+def test_integers_mod_eight_is_local_artinian_with_residue_field_two_and_four_is_not_prime() -> None:
+    r"""``ZZ/8`` has the single prime ideal ``(2)``, which is nilpotent (``2^3 = 0``),
+    so it is local Artinian with residue field ``F_2``; ``F_4`` has characteristic
+    ``2`` and four elements, so it properly contains its prime field ``F_2``."""
     local = Zmod(8)
+    two = local(2)
 
-    assert _own_ring(_engine_ring(prime)) is prime
-    assert _own_ring(_engine_ring(extension)) is extension
-    assert _own_ring(_engine_ring(local)) is local
-    assert prime in PrimeFields()
-    assert extension not in PrimeFields()
     assert local in LocalRings()
     assert local in ArtinianRings()
-    assert local.residue_field() is GF(2)
-    assert local.residue_map().domain() is local
-    assert local.residue_map().codomain() is GF(2)
+    assert local.residue_field().cardinality() == 2
+    assert local.residue_map()(two) == local.residue_field().zero()
+    assert local.residue_map()(local(3)) == local.residue_field().one()
+    assert two**3 == local.zero()
+    assert two**2 != local.zero()
+    assert not two.is_unit()
+    assert local(5).is_unit()
+
+    extension = GF(4)
+    assert GF(5) in PrimeFields()
+    assert extension not in PrimeFields()
+    assert extension.characteristic() == 2
+    assert extension.cardinality() == 4
 
 
-def test_explicit_algebraic_extensions_are_number_fields_or_orders() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    QQ = session["QQ"]
-    QuadraticField = session["QuadraticField"]
-    OwnedOrders = session["OwnedOrders"]
-    OwnedFields = session["OwnedFields"]
-    aleph0 = session["aleph0"]
-
-    gaussian_field = QuadraticField(-1, "i")
-    gaussian = gaussian_field.ring_of_integers()
+def test_real_and_imaginary_quadratic_fields_have_signatures_two_zero_and_zero_one() -> None:
+    r"""``x^2 - 2`` has two real roots, so ``QQ(sqrt 2)`` has ``(r_1, r_2) = (2, 0)``;
+    ``x^2 + 1`` has none, so ``QQ(i)`` has ``(0, 1)``; ``r_1 + 2 r_2`` is the
+    degree (Neukirch, I.5).  Orders are free of finite rank over ``ZZ``, hence
+    countably infinite."""
     real_quadratic = QuadraticField(2, "a")
+    gaussian_field = QuadraticField(-1, "i")
     order = real_quadratic.order_generated_by(real_quadratic.primitive_element())
+    gaussian = gaussian_field.ring_of_integers()
 
-    assert gaussian in OwnedOrders()
-    assert gaussian_field in OwnedFields()
-    assert order in OwnedOrders()
-    assert gaussian.cardinality() == aleph0
+    assert real_quadratic.signature() == signature_pair(2, 0)
+    assert gaussian_field.signature() == signature_pair(0, 1)
+    assert order.module_rank() == 2
     assert order.cardinality() == aleph0
-    assert order.module_rank() in session["Cardinalities"]()
-    assert real_quadratic.signature() == session["signature_pair"](2, 0)
-    assert ZZ["x"].algebra_generating_set() == finite_ordered_set(("x",))
-    assert tuple(QQ["x"].algebra_generating_set()) == ("x",)
-
-
-
-
-
+    assert gaussian.cardinality() == aleph0
 
 
 def test_owned_ring_cardinality_distinguishes_countable_and_uncountable_infinite_rings() -> None:
-    session = _session()
-    assert session["ZZ"].cardinality() == session["aleph0"]
-    assert session["QQ"].cardinality() == session["aleph0"]
-    assert session["QQbar"].cardinality() == session["aleph0"]
-    assert session["RR"].cardinality() == session["continuum"]
-    assert session["CC"].cardinality() == session["continuum"]
-    assert session["Zp"](5).cardinality() == session["continuum"]
-    assert session["Qp"](5).cardinality() == session["continuum"]
+    assert ZZ.cardinality() == aleph0
+    assert QQ.cardinality() == aleph0
+    assert QQbar.cardinality() == aleph0
+    assert RR.cardinality() == continuum
+    assert CC.cardinality() == continuum
+    assert Zp(5).cardinality() == continuum
+    assert Qp(5).cardinality() == continuum
 
 
 def test_owned_algebraic_real_and_complex_closures_are_countable() -> None:
-    session = _session()
-    AA = session["AA"]
-    QQbar = session["QQbar"]
-    aleph0 = session["aleph0"]
-
     assert AA.cardinality() == aleph0
     assert QQbar.cardinality() == aleph0
-
-

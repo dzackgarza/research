@@ -1,79 +1,62 @@
-from sage.all import Infinity
+r"""Coxeter bonds read from root pairings.
 
-from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
-from dzack_research.preamble.categories.graph_categories import LabelledGraphs
+Two roots \(r,s\) with \(q(r),q(s)<0\) span mirrors meeting at angle
+\(\pi/m\) where \(\cos^2(\pi/m) = b(r,s)^2/(q(r)q(s))\); the value \(1\) is
+the bond \(m=\infty\) with parallel mirrors, and a value above \(1\) is
+\(m=\infty\) with ultraparallel mirrors (Vinberg, *Hyperbolic reflection
+groups*, Russian Math. Surveys 40 (1985), §1).
+"""
 
-ARCHIVE_RECONCILIATIONS = (
-    {
-        "archive_module": "preamble/tests/test_coxeter_diagrams.sage",
-        "live_owner": "tests/lattices/test_coxeter.py",
-        "owner_overrides": {
-            "test_rooted_diagram_records_roots_intersections_layout_and_tikz": "tests/lattices/test_coxeter_subdiagrams.py",
-        },
-        "disposition": "reconciled-live-owner",
-    },
-    {
-        "archive_module": "preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage",
-        "live_owner": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
-        "owner_overrides": {
-            "CoxeterDiagrams.ParentMethods.vertex_weight": "src/dzack_research/preamble/categories/vinberg_invariants.py",
-            "CoxeterDiagrams.ParentMethods.edge_weight": "src/dzack_research/preamble/categories/vinberg_invariants.py",
-        },
-        "disposition": "reconciled-live-owner",
-    },
-)
+from dzack_research.preamble.all import *
 
 
-def test_a2_root_realization_gives_single_bond_and_elliptic_diagram() -> None:
-    lattice = Lattices(ZZ)("A2")
-    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
+def test_the_simple_roots_of_a2_give_a_single_bond_and_the_symmetric_group_on_three_letters() -> None:
+    r"""Gram \([[-2,1],[1,-2]]\): \(\cos^2 = 1/4\), so \(\cos(\pi/m)=1/2\) and \(m=3\); \(W\cong S_3\)."""
+    lattice = Lattices(ZZ)([[-2, 1], [1, -2]])
+    diagram = CoxeterDiagrams()(lattice.module_generators())
     vertices = diagram.index_set()
 
-    assert diagram in LabelledGraphs()
-    assert diagram.is_rooted()
-    assert diagram.coxeter_matrix()[vertices[0], vertices[1]] == 3
-    assert diagram.graph().num_edges() == 1
+    assert diagram.coxeter_entry(vertices[0], vertices[1]) == 3
     assert diagram.is_elliptic()
+    assert diagram.coxeter_group().cardinality() == 6
 
 
-def test_double_and_parallel_bonds_are_read_from_actual_root_pairings() -> None:
-    double_lattice = Lattices(ZZ)([[-2, 2], [2, -4]])
-    double = CoxeterDiagrams().from_roots(double_lattice.module_generators())
-    assert double.coxeter_matrix()[0, 1] == 4
+def test_a_double_bond_and_a_parallel_pair_are_read_from_the_root_pairing() -> None:
+    r"""Gram \([[-2,2],[2,-4]]\) gives \(\cos^2 = 4/8\), \(m=4\); Gram \([[-2,2],[2,-2]]\) gives \(m=\infty\).
 
-    parallel_lattice = Lattices(ZZ)([[-2, 2], [2, -2]])
-    parallel = CoxeterDiagrams().from_roots(parallel_lattice.module_generators())
-    assert parallel.coxeter_entry(0, 1) == Infinity
+    The first pair generates the dihedral group of order \(8\); the second
+    generates the infinite dihedral group, and its diagram is parabolic.
+    """
+    double = CoxeterDiagrams()(Lattices(ZZ)([[-2, 2], [2, -4]]).module_generators())
+    parallel = CoxeterDiagrams()(Lattices(ZZ)([[-2, 2], [2, -2]]).module_generators())
+
+    assert double.coxeter_entry(0, 1) == 4
+    assert double.coxeter_group().cardinality() == 8
+    assert not parallel.coxeter_group().is_finite()
     assert parallel.is_parabolic()
 
 
-def test_generic_g2_coxeter_matrix_can_have_m6_even_though_minus_two_minus_four_roots_cannot() -> None:
-    generic = CoxeterDiagrams().from_coxeter_matrix([[1, 6], [6, 1]])
-    assert generic.coxeter_entry(0, 1) == 6
-    assert generic.is_elliptic()
+def test_the_bond_six_is_realized_by_roots_of_squares_minus_two_and_minus_six() -> None:
+    r"""\(I_2(6)=G_2\) is elliptic of order \(12\), and Gram \([[-2,3],[3,-6]]\) gives \(\cos^2 = 9/12\), \(m=6\)."""
+    abstract = CoxeterDiagrams()([[1, 6], [6, 1]])
+    rooted = CoxeterDiagrams()(Lattices(ZZ)([[-2, 3], [3, -6]]).module_generators())
 
-    rooted = Lattices(ZZ)([[-2, 3], [3, -6]])
-    diagram = CoxeterDiagrams().from_roots(rooted.module_generators())
-    assert diagram.coxeter_matrix()[0, 1] == 6
-
-
+    assert abstract.is_elliptic()
+    assert abstract.coxeter_group().cardinality() == 12
+    assert rooted.coxeter_entry(0, 1) == 6
 
 
+def test_parallel_and_ultraparallel_pairs_share_the_bond_infinity_but_differ_in_type() -> None:
+    r"""\([[-2,2],[2,-2]]\) is parabolic (determinant \(0\)); \([[-2,3],[3,-2]]\) is hyperbolic (determinant \(-5\)).
 
+    Both have \(m=\infty\), so their Coxeter matrices agree; the roots
+    distinguish a common ideal point from a common perpendicular.
+    """
+    parallel = CoxeterDiagrams()(Lattices(ZZ)([[-2, 2], [2, -2]]).module_generators())
+    divergent = CoxeterDiagrams()(Lattices(ZZ)([[-2, 3], [3, -2]]).module_generators())
 
-
-
-
-
-def test_minimal_edge_lattices_retain_parallel_and_ultraparallel_geometry() -> None:
-    edges = CoxeterDiagrams().minimal_edge_lattices()
-    parallel = CoxeterDiagrams().from_roots(edges["parallel"].module_generators())
-    divergent = CoxeterDiagrams().from_roots(edges["ultraparallel"].module_generators())
-
-    assert parallel.coxeter_entry(0, 1) == Infinity
-    assert parallel.mirrors_are_parallel(0, 1)
-    assert divergent.coxeter_entry(0, 1) == Infinity
-    assert divergent.mirrors_are_divergent(0, 1)
     assert parallel.coxeter_matrix() == divergent.coxeter_matrix()
-
-
+    assert parallel.mirrors_are_parallel(0, 1)
+    assert parallel.is_parabolic()
+    assert divergent.mirrors_are_divergent(0, 1)
+    assert divergent.is_hyperbolic()

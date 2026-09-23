@@ -81,6 +81,21 @@ def test_the_five_sterk_cusps_split_into_two_reduction_classes() -> None:
 
 
 
+def test_the_primitive_isotropic_vectors_of_U_are_plus_or_minus_e_and_f() -> None:
+    r"""In U, q(ae + bf) = 2ab vanishes iff a = 0 or b = 0; primitivity then
+    forces the nonzero coefficient to be a unit, leaving exactly +-e, +-f."""
+    plane = NamedLattices.U
+    generators = plane.module_generators()
+    e, f = generators[0], generators[1]
+    vectors = plane.primitive_isotropic_vectors()
+
+    assert vectors.cardinality() == 4
+    assert all(vector in vectors for vector in (e, -e, f, -f))
+    assert e + f not in vectors
+    assert 2 * e not in vectors
+    assert plane.zero() not in vectors
+
+
 def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
     # II_{1,9} is even unimodular, and the isotropic reduction of a primitive
     # isotropic line in an even unimodular Lorentzian lattice is even

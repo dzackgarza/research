@@ -1,46 +1,33 @@
-"""The quartic K3 Hodge structure is attached to adjunction and the K3 lattice."""
+r"""The Hodge structure of the Fermat quartic K3 surface.
 
-from dzack_research.preamble.all import NN, QQ, ProjectiveCompleteIntersections, ProjectiveSpaces
+Source: Barth, Hulek, Peters, Van de Ven, *Compact Complex Surfaces*, 2nd ed.,
+VIII.3: a K3 surface has `h^{2,0} = h^{0,2} = 1`, `h^{1,1} = 20`, `b_2 = 22`.
+"""
+
+from dzack_research.preamble.all import QQ, ProjectiveSpaces
 
 
-def _quartic():
+def _fermat_quartic():
     space = ProjectiveSpaces(QQ)(3)
     x0, x1, x2, x3 = space.homogeneous_coordinate_generators()
-    return ProjectiveCompleteIntersections(space.scheme_base_ring())(
-        space, x0**4 + x1**4 + x2**4 + x3**4
-    )
+    return space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
 
 
-def test_quartic_k3_hodge_numbers_have_off_diagonal_holomorphic_two_forms() -> None:
-    quartic = _quartic()
-    hodge = quartic.hodge_structure()
+def test_fermat_quartic_has_hodge_numbers_one_twenty_one() -> None:
+    r"""`h^{2,0} = h^{0,2} = 1`, `h^{1,1} = 20`, and they sum to `b_2 = 22`."""
+    hodge = _fermat_quartic().hodge_structure()
 
-    assert hodge.scheme() is quartic
-    assert hodge.is_pure()
-    assert hodge.holomorphic_two_form_space().dimension() == 1
     assert hodge.hodge_number(2, 0) == 1
     assert hodge.hodge_number(0, 2) == 1
     assert hodge.hodge_number(1, 1) == 20
-    assert hodge.middle_betti_number() == 22
-
-    degree_two = hodge.degree_hodge_numbers(2)
-    assert degree_two.cardinality() == 3
-    bidegrees = tuple(degree_two.index_set())
-    assert tuple(tuple(int(component) for component in bidegree) for bidegree in bidegrees) == (
-        (0, 2),
-        (1, 1),
-        (2, 0),
-    )
-    assert tuple(degree_two) == (NN(1), NN(20), NN(1))
-    assert all(value in NN for value in degree_two)
-    assert sum(int(value) for value in degree_two) == int(hodge.integral_cohomology(2).module_rank())
+    assert hodge.hodge_number(1, 0) == 0
+    assert hodge.betti_number(2) == 22
 
 
-def test_quartic_hodge_polarization_is_the_integral_hyperplane_class() -> None:
-    quartic = _quartic()
-    hodge = quartic.hodge_structure()
-    topology = quartic.integral_topology()
+def test_fermat_quartic_polarization_is_the_hyperplane_class_of_square_four() -> None:
+    r"""The polarization is `c_1(\mathcal{O}(1))`, with `h^2 = \deg X = 4`."""
+    quartic = _fermat_quartic()
+    polarization = quartic.hodge_structure().polarization_class()
 
-    assert hodge.integral_cohomology(2) is topology.middle_cohomology_lattice()
-    assert hodge.polarization_class() == topology.hyperplane_first_chern_class()
-    assert topology.cup_product_pairing()(hodge.polarization_class(), hodge.polarization_class()) == 4
+    assert polarization == quartic.first_chern_class(quartic.O(1))
+    assert polarization.b(polarization) == 4

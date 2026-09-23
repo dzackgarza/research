@@ -5,7 +5,7 @@ SPLAG chapter 4 gives the automorphism-group orders below.  It also identifies
 ``W(E8)``, so ``Aut(E8)=W(E8)``.
 """
 
-from dzack_research.preamble.all import Groups, Lattices
+from dzack_research.preamble.all import ZZ, Groups, Lattices
 
 ROOT_AUTOMORPHISM_ORDERS = {
     "A2": 12,
@@ -19,12 +19,12 @@ ROOT_AUTOMORPHISM_ORDERS = {
 
 def test_root_lattice_automorphism_orders_match_conway_sloane() -> None:
     for name, expected in ROOT_AUTOMORPHISM_ORDERS.items():
-        assert getattr(Lattices, name).Aut().order() == expected
+        assert Lattices(ZZ)(name).Aut().order() == expected
 
 
 def test_a_n_automorphism_group_has_twice_the_weyl_order() -> None:
     for rank in (2, 4):
-        lattice = getattr(Lattices, f"A{rank}")
+        lattice = Lattices(ZZ)(f"A{rank}")
         weyl = Groups.Weyl(["A", rank])
         assert lattice.Aut().order() == 2 * weyl.order()
 

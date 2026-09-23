@@ -1,29 +1,20 @@
-r"""One-sided inverses of module morphisms.
+r"""Freeness of finitely presented abelian groups."""
 
-A section of an epimorphism chooses a preimage of each generator of the
-codomain, and those choices assemble into a morphism when the codomain is
-free.  A retraction of a monomorphism is built from a section of the quotient
-by its image: every element differs from its chosen lift by something in the
-image, and the monomorphism is injective there.
-"""
-
-from dzack_research.preamble.all import (
-    ZZ,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_z2_mod_g_is_free_and_z2_mod_6g_is_not() -> None:
+    r"""$\mathbb Z^2/(g) \cong \mathbb Z$ is free; $\mathbb Z^2/(6g) \cong \mathbb Z/6 \oplus \mathbb Z$ has
+    torsion, so it is not free.
 
-
-
-
-
-
-def test_a_presented_module_with_no_torsion_is_recognised_as_free() -> None:
-    free = ZZ.free_module(finite_ordered_set(("g", "h")))
-    relations = ZZ.free_module(finite_ordered_set(("r",)))
-    torsion_free = relations.module_category().Mor(relations, free)({"r": free.module_generator("g")}).cokernel()
-    with_torsion = relations.module_category().Mor(relations, free)({"r": 6 * free.module_generator("g")}).cokernel()
+    Source: Lang, Algebra, III.7 (structure theorem over a PID).
+    """
+    F = ZZ**2
+    g = F.module_generator(0)
+    torsion_free = F / F.submodule([g])
+    with_torsion = F / F.submodule([6 * g])
 
     assert torsion_free.is_free()
+    assert torsion_free.module_rank() == 1
     assert not with_torsion.is_free()
+    assert with_torsion.torsion_submodule().cardinality() == 6

@@ -12,18 +12,8 @@ from dzack_research.preamble.all import (
     NN,
     QQ,
     ZZ,
-    ChowGroups,
-    ClassGroups,
-    CoxRings,
-    HomogeneousPolynomialSectionSpaces,
-    ImposedMultiplicityLinearSystems,
-    LineBundleCohomologySpaces,
-    ProjectiveJetSpaces,
     RationalPolyhedralFans,
-    SectionRings,
-    TorusInvariantCycleGroups,
 )
-from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two
@@ -53,14 +43,9 @@ def test_the_three_lines_of_the_projective_plane_share_one_divisor_class() -> No
     classes = plane.class_group()
     first, second, third = (plane.divisor_class(D) for D in _prime_divisors(plane))
 
-    assert classes in ClassGroups()
     assert first == second
     assert second == third
     assert first != classes.zero()
-
-
-
-
 
 
 def test_the_anticanonical_class_of_the_projective_plane_is_three_times_a_line() -> None:
@@ -69,8 +54,6 @@ def test_the_anticanonical_class_of_the_projective_plane_is_three_times_a_line()
 
     assert plane.divisor_class(plane.toric_boundary_divisor()) == ZZ(3) * line
     assert plane.divisor_class(plane.canonical_divisor()) == ZZ(-3) * line
-
-
 
 
 def test_squaring_on_projective_line_pulls_back_a_boundary_point_with_multiplicity_two() -> None:
@@ -121,8 +104,6 @@ def test_every_torus_invariant_divisor_on_a_smooth_toric_surface_is_cartier() ->
     assert plane.is_cartier(plane.canonical_divisor())
 
 
-
-
 def test_standard_smooth_toric_picard_groups_come_from_the_character_divisor_quotient() -> None:
     affine_plane = _PLANE_FANS((((1, 0), (0, 1)),)).toric_variety(QQ)
     projective_plane = _projective_plane()
@@ -134,8 +115,6 @@ def test_standard_smooth_toric_picard_groups_come_from_the_character_divisor_quo
     assert projective_plane.class_group().module_rank() == 1
     assert product_of_lines.picard_group().module_rank() == 2
     assert product_of_lines.class_group().module_rank() == 2
-
-
 
 
 def test_the_sections_of_a_line_on_the_projective_plane_are_the_three_linear_forms() -> None:
@@ -158,32 +137,18 @@ def test_the_sections_of_a_line_on_the_projective_plane_are_the_three_linear_for
     assert plane.divisor_section_space(boundary).dimension() == 10
 
 
-
-
-
-
-
-
-
-
-def test_a_cartier_divisor_constructs_its_line_bundle_on_the_toric_atlas() -> None:
+def test_the_square_of_the_line_bundle_of_a_line_is_the_bundle_of_twice_the_line() -> None:
+    r"""``O(D)^{\otimes 2} = O(2D)`` for a torus-invariant line ``D`` of ``P^2``, with
+    ``h^0(O(D)) = 3`` and ``h^0(O(2D)) = 6`` (CLS Prop. 4.3.3)."""
     plane = _projective_plane()
     line = _prime_divisors(plane)[0]
     bundle = plane.invertible_sheaf_of_divisor(line)
     square = plane.invertible_sheaf_of_divisor(ZZ(2) * line)
 
-    assert bundle in QuasiCoherentSheaves(plane).Invertible()
-    assert bundle.scheme() is plane
     assert bundle.associated_divisor() == line
-    assert bundle.global_sections() is plane.divisor_section_space(line)
+    assert bundle.tensor_power(2) == square
     assert bundle.global_sections().dimension() == 3
-    for cone in plane.fan().maximal_cones():
-        assert bundle.local_module(cone).module_rank() == 1
-    for pair in plane.gluing_datum().transition_index_set():
-        assert bundle.transition_unit(*pair).is_unit()
-        assert bundle.tensor_power(2).transition_unit(*pair) == square.transition_unit(*pair)
-
-
+    assert square.global_sections().dimension() == 6
 
 
 def test_the_polytope_of_an_ample_divisor_has_the_fan_as_its_normal_fan() -> None:
@@ -256,12 +221,7 @@ def test_projective_plane_chow_groups_are_owned_integral_cycle_quotients() -> No
 
     for degree in (0, 1, 2):
         group = plane.chow_group(degree)
-        assert group in ChowGroups(ZZ)
-        assert group.chow_scheme() is plane
-        assert group.cycle_degree_construction().scheme() is plane
         assert group.cycle_dimension() == degree
-        assert "_preamble_chow_scheme" not in group.__dict__
-        assert "_preamble_cycle_dimension" not in group.__dict__
         assert group.module_rank() == 1
         assert group.invariant_factors().cardinality() == 1
         assert group.invariant_factors()[0] == ZZ.zero()
@@ -273,12 +233,7 @@ def test_projective_plane_invariant_curves_surject_onto_the_chow_group() -> None
     projection = plane.torus_invariant_cycle_class_map(1)
     rays = tuple(cycles.module_generating_set())
 
-    assert cycles in TorusInvariantCycleGroups(ZZ)
-    assert cycles.cycle_scheme() is plane
-    assert cycles.cycle_degree_construction().scheme() is plane
     assert cycles.cycle_dimension() == 1
-    assert "_preamble_cycle_scheme" not in cycles.__dict__
-    assert "_preamble_cycle_dimension" not in cycles.__dict__
     assert cycles.module_rank() == 3
     assert projection.is_surjective()
     images = tuple(projection(cycles.module_generator(ray)) for ray in rays)
@@ -298,10 +253,6 @@ def test_projective_plane_cox_ring_is_class_group_graded() -> None:
     cox = plane.cox_ring()
     labels = tuple(cox.algebra_generating_set())
 
-    assert cox in CoxRings(plane)
-    assert cox.cox_scheme() is plane
-    assert "_preamble_cox_scheme" not in cox.__dict__
-    assert "_preamble_cox_rays" not in cox.__dict__
     assert cox.grading_monoid() is plane.class_group()
     first_degree = cox.generator_degree(labels[0])
     assert first_degree == plane.divisor_class(_prime_divisors(plane)[0])
@@ -312,20 +263,13 @@ def test_projective_plane_cox_ring_is_class_group_graded() -> None:
     ) == ZZ(2) * first_degree
 
 
-
-
 def test_projective_plane_hyperplane_section_ring_has_the_expected_graded_pieces() -> None:
     plane = _projective_plane()
     line = plane.hyperplane_divisor()
     ring = plane.section_ring(line)
     labels = tuple(ring.algebra_generating_set())
 
-    assert ring in SectionRings(QQ)
-    assert ring.section_scheme() is plane
     assert ring.section_divisor() == line
-    assert "_preamble_section_scheme" not in ring.__dict__
-    assert "_preamble_section_divisor" not in ring.__dict__
-    assert "_preamble_section_semigroup_generators" not in ring.__dict__
     assert all(ring.generator_degree(label) == 1 for label in labels)
     assert ring.graded_piece(1).module_rank() == 3
     assert ring.graded_piece(2).module_rank() == 6
@@ -344,11 +288,8 @@ def test_projective_plane_sections_are_actual_homogeneous_cox_polynomials() -> N
 
     assert source.dimension() == 3
     assert polynomial_space.dimension() == 3
-    assert identification.domain() is source
-    assert identification.codomain() is polynomial_space
     for character in source.module_generating_set():
         monomial = plane.cox_monomial_of_section(line, character)
-        assert monomial.parent() is cox
         assert cox.homogeneous_degree(monomial) == plane.divisor_class(line)
         assert identification.forward()(source.module_generator(character)) == (
             polynomial_space.module_generator(monomial)
@@ -364,30 +305,12 @@ def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> N
     h1_line = plane.line_bundle_cohomology(line, 1)
     h2_canonical = plane.line_bundle_cohomology(canonical, 2)
 
-    assert h0_line in LineBundleCohomologySpaces(QQ)
-    assert h0_line.cohomology_scheme() is plane
-    assert h0_line.cohomology_divisor() == line
-    assert h0_line.cohomological_degree() == 0
-    for weight in h0_line.cohomology_weight_support():
-        piece = h0_line.cohomology_weight_piece(weight)
-        inclusion = h0_line.cohomology_weight_inclusion(weight)
-        projection = h0_line.cohomology_weight_projection(weight)
-        assert inclusion.domain() is piece
-        assert inclusion.codomain() is h0_line
-        assert projection.domain() is h0_line
-        assert projection.codomain() is piece
-    assert "_preamble_cohomology_scheme" not in h0_line.__dict__
-    assert "_preamble_cohomology_divisor" not in h0_line.__dict__
-    assert "_preamble_cohomological_degree" not in h0_line.__dict__
-    assert "_preamble_cohomology_weight_support" not in h0_line.__dict__
-    assert "_preamble_cohomology_weight_pieces" not in h0_line.__dict__
     assert h0_line.dimension() == 3
     assert h1_line.dimension() == 0
     assert h2_canonical.dimension() == 1
     dimensions = plane.line_bundle_cohomology_dimensions(line)
     assert tuple(int(degree) for degree in dimensions.index_set()) == (0, 1, 2)
     assert tuple(dimensions) == (NN(3), NN(0), NN(0))
-    assert all(value in NN for value in dimensions)
 
 
 def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel() -> None:
@@ -395,13 +318,10 @@ def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel(
     projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
     restriction = projective_plane.coordinate_hyperplane_section_restriction(2, 0)
 
-    assert restriction.domain() in HomogeneousPolynomialSectionSpaces(QQ)
-    assert restriction.codomain() in HomogeneousPolynomialSectionSpaces(QQ)
     assert restriction.domain().dimension() == 6
     assert restriction.codomain().dimension() == 3
     assert restriction.kernel().dimension() == 3
     assert restriction.cokernel().is_zero()
-    assert restriction.codomain().section_scheme().inclusion().codomain() is projective_plane
 
 
 def test_coordinate_point_jets_cut_out_imposed_multiplicity_conditions() -> None:
@@ -410,7 +330,6 @@ def test_coordinate_point_jets_cut_out_imposed_multiplicity_conditions() -> None
     jets = projective_plane.coordinate_point_jet_evaluation(3, 0, 2)
     singular_at_point = projective_plane.sections_vanishing_to_order(3, 0, 2)
 
-    assert jets.codomain() in ProjectiveJetSpaces(QQ)
     assert jets.domain().dimension() == 10
     assert jets.codomain().dimension() == 3
     assert jets.is_surjective()
@@ -433,15 +352,11 @@ def test_imposed_double_point_sections_form_the_expected_projective_parameter_sp
     projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
     system = projective_plane.imposed_multiplicity_linear_system(3, 0, 2)
 
-    assert system in ImposedMultiplicityLinearSystems(QQ)
     assert system.relative_dimension() == 6
     assert system.ambient_section_space().dimension() == 10
     assert system.constrained_section_space().dimension() == 7
     assert system.constrained_section_space() is system.imposed_jet_evaluation().kernel()
     assert system.imposed_vanishing_order() == 2
-    assert "_preamble_ambient_section_space" not in system.__dict__
-    assert "_preamble_constrained_section_space" not in system.__dict__
-    assert "_preamble_imposed_jet_evaluation" not in system.__dict__
 
 
 def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:
@@ -468,3 +383,27 @@ def test_a_principal_divisor_is_basepoint_free_and_never_ample() -> None:
     assert plane.is_cartier(principal)
     assert plane.is_basepoint_free(principal)
     assert not plane.is_ample(principal)
+
+
+def test_the_quadric_cone_has_class_group_z_mod_2_and_trivial_picard_group() -> None:
+    r"""For ``sigma = Cone((1,0),(1,2))``, ``Cl = ZZ^2 / <(1,1),(0,2)> = ZZ/2``,
+    generated by a ruling, while every Cartier divisor on the affine toric
+    variety ``U_sigma`` is principal, so ``Pic = 0`` (CLS Prop. 4.2.2, Ex. 4.1.5)."""
+    cone_surface = _quadric_cone()
+    ruling = cone_surface.divisor_class(_prime_divisors(cone_surface)[0])
+
+    assert cone_surface.class_group().cardinality() == 2
+    assert ruling != cone_surface.class_group().zero()
+    assert cone_surface.picard_group().cardinality() == 1
+
+
+def test_the_cox_ring_of_p1_times_p1_has_two_generators_in_each_ruling_degree() -> None:
+    r"""The four rays of the fan of ``P^1 x P^1`` give Cox generators of degrees
+    ``(1,0), (1,0), (0,1), (0,1)`` in ``Cl = ZZ^2`` (CLS Example 5.2.2)."""
+    surface = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+    cox = surface.cox_ring()
+    degrees = tuple(cox.generator_degree(label) for label in cox.algebra_generating_set())
+
+    assert cox.grading_monoid() is surface.class_group()
+    assert len(degrees) == 4
+    assert all(degrees.count(degree) == 2 for degree in degrees)

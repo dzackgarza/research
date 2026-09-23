@@ -1,40 +1,36 @@
-r"""Archive reconciliation for the selected integral form of a number field."""
+r"""``ZZ[sqrt 5]`` and ``ZZ[(1 + sqrt 5)/2]``: two orders with one fraction field."""
 
-from dzack_research.preamble.all import OwnedOrders, QuadraticField
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_selected_primitive_element_order_recovers_the_number_field_by_fraction_field() -> None:
+def test_root_five_order_is_not_maximal_and_has_fraction_field_the_number_field() -> None:
+    r"""``(1 + sqrt 5)/2`` is a root of ``x^2 - x - 1``, integral over ``ZZ`` and not
+    in ``ZZ[sqrt 5]``, so ``ZZ[sqrt 5]`` is not integrally closed; its fraction
+    field is ``QQ(sqrt 5)`` (Neukirch, *Algebraic Number Theory*, I.2)."""
     field = QuadraticField(5, "a")
-    primitive = field.primitive_element()
-    selected_order = field.order_generated_by(primitive)
-    maximal_order = field.ring_of_integers()
-    adjunction = OwnedOrders().fraction_field_adjunction()
-    fraction_field = adjunction.left_adjoint()
+    a = field.primitive_element()
+    selected = field.order_generated_by(a)
+    golden = (field.one() + a) / 2
 
-    assert selected_order is not maximal_order
-    assert fraction_field(selected_order) is field
-
-    unit = adjunction.unit(selected_order)
-    for basis_element in selected_order.integral_basis():
-        assert unit(basis_element) == basis_element
+    assert not selected.is_maximal()
+    assert selected.fraction_field() is field
+    assert golden.minimal_polynomial()(golden) == field.zero()
+    assert golden.is_integral()
+    assert golden not in selected
 
 
-def test_selected_order_and_maximal_order_have_the_same_fraction_field_but_are_distinct_integral_forms() -> None:
+def test_the_maximal_order_of_root_five_contains_the_root_five_order_with_index_two() -> None:
+    r"""``O_{QQ(sqrt 5)} = ZZ[(1 + sqrt 5)/2]`` (``5 = 1 mod 4``), and
+    ``ZZ[sqrt 5] = ZZ + 2 ZZ[(1 + sqrt 5)/2]`` has index ``2`` in it, while both
+    have fraction field ``QQ(sqrt 5)`` (Neukirch, I.2)."""
     field = QuadraticField(5, "a")
-    primitive = field.primitive_element()
-    selected_order = field.order_generated_by(primitive)
-    maximal_order = field.ring_of_integers()
-    adjunction = OwnedOrders().fraction_field_adjunction()
-    fraction_field = adjunction.left_adjoint()
+    a = field.primitive_element()
+    selected = field.order_generated_by(a)
+    maximal = field.ring_of_integers()
 
-    assert fraction_field(selected_order) is field
-    assert fraction_field(maximal_order) is field
-
-    selected_basis = tuple(selected_order.integral_basis())
-    maximal_basis = tuple(maximal_order.integral_basis())
-    assert selected_basis != maximal_basis
-
-    counit = adjunction.counit(field)
-    assert counit.domain() is fraction_field(maximal_order)
-    assert counit.codomain() is field
-    assert counit(field.primitive_element()) == field.primitive_element()
+    assert maximal.is_maximal()
+    assert maximal.fraction_field() is field
+    assert selected.fraction_field() is field
+    assert a in maximal
+    assert (field.one() + a) / 2 in maximal
+    assert selected.index_in(maximal) == 2

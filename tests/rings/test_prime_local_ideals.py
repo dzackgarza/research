@@ -16,8 +16,6 @@ from dzack_research.preamble.all import (
 )
 
 
-
-
 def test_a_unit_generates_the_whole_prime_local_ring() -> None:
     local = ZZ.localize_at_prime(2)
 
@@ -35,8 +33,6 @@ def test_the_maximal_ideal_is_the_non_units() -> None:
     assert local.maximal_ideal().contains_ambient_element(local(4))
     assert not local.maximal_ideal().contains_ambient_element(local.one())
     assert not local.maximal_ideal().contains_ambient_element(local(3))
-
-
 
 
 def test_localization_of_a_polynomial_pid_remains_a_pid() -> None:

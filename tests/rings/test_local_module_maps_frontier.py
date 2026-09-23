@@ -1,9 +1,6 @@
-r"""Comparison maps at the supported local-module boundary."""
+r"""Ideals, units and kernels under localization of a polynomial ring and of the node."""
 
-from dzack_research.preamble.all import (
-    QQ,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_generated_localization_extension_and_contraction_are_the_same_ideal() -> None:
@@ -35,37 +32,30 @@ def test_prime_local_units_and_residue_map_use_the_selected_local_ring() -> None
     assert local.source_residue_map()(x) == point.residue_map()(x)
 
 
-def test_nonreduced_local_map_kernel_agrees_before_and_after_transport() -> None:
-    presentation = QQ.polynomial_ring(("x", "y"))
-    x = presentation.algebra_generator("x")
-    y = presentation.algebra_generator("y")
-    node = (presentation).quotient_by_relations((x * y,))
-    x0 = node.algebra_generator("x")
-    y0 = node.algebra_generator("y")
-    point = node.spectrum()(node.ideal(x0, y0))
+def test_multiplication_by_x_on_the_local_ring_of_the_node_has_kernel_generated_by_y() -> None:
+    r"""On ``A = QQ[x, y]/(xy)`` the annihilator of ``x`` is ``yA``, and ``y/1`` is
+    nonzero in ``A_m`` at ``m = (x, y)`` because ``Ann(y) = (x)`` lies in ``m``.
+    Localization is exact, so the kernel of ``x`` on ``A_m`` is the localization
+    of the kernel of ``x`` on ``A`` (Atiyah--Macdonald, Prop. 3.3)."""
+    plane = QQ["x, y"]
+    x = plane.algebra_generator("x")
+    y = plane.algebra_generator("y")
+    node = plane.quotient_by_relations([x * y])
+    a = node.algebra_generator("x")
+    b = node.algebra_generator("y")
+    point = node.spectrum()(node.ideal(a, b))
+    to_local = point.local_ring().localization_map()
 
-    free = node.free_module(finite_ordered_set(("g",)))
-    generator = free.module_generator("g")
-    multiply_x = free.module_category().Mor(free, free)(
-        {"g": free.scalar_multiple(x0, generator)}
-    )
-    local_free = free.localize_at_prime(point)
-    transported = local_free.localization_functor()(multiply_x)
-    local_generator = local_free.module_generator("g")
-    direct = local_free.module_category().Mor(local_free, local_free)(
-        {
-            "g": local_free.scalar_multiple(
-                point.local_ring().localization_map()(x0),
-                local_generator,
-            )
-        }
-    )
+    module = Modules(node).free_module(("g",))
+    g = module.module_generator("g")
+    times_x = module.Mor(module)({"g": a * g})
+    local = module.localize_at_prime(point)
+    local_times_x = local.localization_functor()(times_x)
+    kernel = local_times_x.kernel()
+    local_g = local.module_generator("g")
 
-    assert transported(local_generator) == direct(local_generator)
-    transported_kernel = transported.kernel()
-    direct_kernel = direct.kernel()
-    y_local = point.local_ring().localization_map()(y0)
-    y_generator = local_free.scalar_multiple(y_local, local_generator)
-    assert transported_kernel.inclusion().is_in_image(y_generator)
-    assert direct_kernel.inclusion().is_in_image(y_generator)
-    assert transported_kernel == direct_kernel
+    assert to_local(b) != point.local_ring().zero()
+    assert kernel.inclusion().is_in_image(to_local(b) * local_g)
+    assert not kernel.inclusion().is_in_image(local_g)
+    assert not kernel.inclusion().is_in_image(to_local(a) * local_g)
+    assert kernel == times_x.kernel().localize_at_prime(point)

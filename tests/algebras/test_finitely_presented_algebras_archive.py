@@ -1,30 +1,18 @@
-"""Archive reconciliation for finitely presented algebras."""
+r"""Morphisms out of a presented algebra are determined by generator images."""
 
-from dzack_research.preamble.all import QQ
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/algebras/finitely_presented_algebras.sage",
-    "live_owner": "src/dzack_research/preamble/categories/algebras/algebras.py",
-    "owner_overrides": {
-        "FinitelyPresentedAlgebras.ParentMethods.framing_morphism": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_swapping_the_axes_is_an_involutive_automorphism_of_qq_xy_mod_xy() -> None:
+    r"""``x ↔ y`` respects the relation ``xy`` of ``QQ[x,y]/(xy)``, so it defines an
+    algebra endomorphism ``σ`` with ``σ(x^2 + y) = y^2 + x`` and ``σ^2 = id``."""
+    plane = QQ["x,y"]
+    axes = plane.quotient(plane.ideal([plane.gen(0) * plane.gen(1)]))
+    x, y = axes(plane.gen(0)), axes(plane.gen(1))
+    swap = axes.Mor(axes)({x: y, y: x})
 
-
-def test_archived_presented_algebra_morphism_is_determined_by_generator_images() -> None:
-    presentation = QQ.polynomial_ring(("x", "y"))
-    x = presentation.algebra_generator("x")
-    y = presentation.algebra_generator("y")
-    algebra = (presentation).quotient_by_relations((x * y,))
-    xbar = algebra.algebra_generator("x")
-    ybar = algebra.algebra_generator("y")
-
-    swap = algebra.Mor(algebra)({"x": ybar, "y": xbar})
-    assert swap(xbar) == ybar
-    assert swap(ybar) == xbar
-    assert swap(xbar * ybar) == algebra.zero()
-
-
+    assert swap(x) == y
+    assert swap(x**2 + y) == y**2 + x
+    assert swap(x * y) == axes.zero()
+    assert swap(swap(x**3 + 2 * y)) == x**3 + 2 * y
+    assert swap(x) != x

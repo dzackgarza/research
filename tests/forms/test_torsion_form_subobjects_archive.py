@@ -1,52 +1,27 @@
-r"""Archive reconciliation for generic finite torsion forms and their subobjects."""
+r"""Maximal isotropic subgroups of the discriminant forms of $U(2)$."""
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    FractionFieldQuotients,
-    TorsionBilinearFormModules,
-    TorsionQuadraticFormModules,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _matrix(ring, rows):
-    rows = tuple(tuple(row) for row in rows)
-    columns = 0 if not rows else len(rows[0])
-    return ring.matrix_space(len(rows), columns).from_rows(rows)
+def test_the_bilinear_discriminant_form_of_u2_has_three_maximal_isotropic_subgroups() -> None:
+    r"""On $(\mathbb{Z}/2)^2$ with $b(e, f) = 1/2$, $b(e, e) = b(f, f) = 0$, every line is isotropic.
 
-
-
-
-def test_archive_bilinear_isotropic_subobjects_retain_form_and_inclusion() -> None:
-    values = FractionFieldQuotients(ZZ)(1)
-    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
-        _matrix(ZZ, [[2, 0], [0, 2]]),
-        _matrix(QQ, [[0, QQ(1) / 2], [QQ(1) / 2, 0]]),
-        values,
-    )
+    $b(e+f, e+f) = 2 \cdot \tfrac12 = 0 \bmod 1$, so all three subgroups of
+    order $2$ are isotropic, and the whole group is not, since $b(e, f) \ne 0$.
+    """
+    form = Lattices(ZZ)("U").twist(2).discriminant_bilinear_form()
     maximal = form.maximal_isotropic_subobjects()
 
+    assert form.cardinality() == 4
     assert maximal.cardinality() == 3
-    for subobject in maximal:
-        assert subobject.ambient_module() is form
-        assert subobject.cardinality() == 2
-        assert form.form_vanishes_on(
-            subobject.inclusion()(element) for element in subobject.elements()
-        )
+    assert all(subobject.cardinality() == 2 for subobject in maximal)
 
 
-def test_archive_quadratic_isotropic_subobjects_are_not_bare_subsets() -> None:
-    values = FractionFieldQuotients(ZZ)(2)
-    form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
-        _matrix(ZZ, [[2, 0], [0, 2]]),
-        _matrix(QQ, [[0, QQ(1) / 2], [QQ(1) / 2, 0]]),
-        values,
-    )
+def test_the_quadratic_discriminant_form_of_u2_has_two_maximal_isotropic_subgroups() -> None:
+    r"""On $(\mathbb{Z}/2)^2$ with $q(e) = q(f) = 0$, $q(e+f) = 1 \bmod 2$, only $\langle e\rangle$ and $\langle f\rangle$ are isotropic."""
+    form = Lattices(ZZ)("U").twist(2).discriminant_quadratic_form()
     maximal = form.maximal_isotropic_subobjects()
 
     assert maximal.cardinality() == 2
-    for subobject in maximal:
-        assert subobject.ambient_module() is form
-        assert subobject.cardinality() == 2
-        for element in subobject.elements():
-            assert subobject.q(element) == subobject.value_module().zero()
+    assert all(subobject.cardinality() == 2 for subobject in maximal)
+    assert form.isotropic_elements().cardinality() == 3

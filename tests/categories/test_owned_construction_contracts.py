@@ -1,76 +1,55 @@
-r"""Construction preserves defining actions and the forgetful functor to Ab."""
+r"""The matrix ring ``M_2(Q)`` acting on itself."""
 
-from dzack_research.preamble.all import AdditiveGroups, Modules, QQ, Rings
-
-
-def test_left_regular_matrix_module_retains_its_additive_action() -> None:
-    ring = Modules(QQ).End(QQ**2)
-    e11 = ring.from_rows([[1, 0], [0, 0]])
-    e12 = ring.from_rows([[0, 1], [0, 0]])
-    e21 = ring.from_rows([[0, 0], [1, 0]])
-    e22 = ring.from_rows([[0, 0], [0, 1]])
-    additive_end = AdditiveGroups().AdditiveCommutative().End(ring)
-    rho = Rings().Mor(ring, additive_end).elementwise(
-        lambda scalar: additive_end.elementwise(lambda element: scalar * element)
-    )
-
-    module = Modules(ring)(rho)
-    assert module.scalar_action() is rho
-    assert module.underlying_additive_group() is ring
-    assert module.zero() + module(ring.one()) == module(ring.one())
-    assert e12 * (e21 * module(ring.one())) == module(e11)
-    assert e21 * (e12 * module(ring.one())) == module(e22)
-    assert rho(e12)(e21) == e11
-    assert e21 * rho(e12)(ring.one()) == e22
-    assert (rho(e12) * rho(e21))(ring.one()) == rho(e11)(ring.one())
-    assert (rho(e12) + rho(e21))(ring.one()) == e12 + e21
-    assert additive_end.zero()(e12) == ring.zero()
-    assert (2 * additive_end.one())(e12) == e12 + e12
-
-    end = Modules(ring).End(module)
-    right_e12 = end.elementwise(lambda element: module(element.underlying_element() * e12))
-    right_e21 = end.elementwise(lambda element: module(element.underlying_element() * e21))
-    assert end in Rings()
-    assert end.one()(module(e12)) == module(e12)
-    assert (right_e12 * right_e21)(module(ring.one())) == module(e22)
-    assert (right_e12 + right_e21)(module(e11)) == module(e12)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_additive_forgetting_retains_maps_between_two_actions_on_one_group() -> None:
-    ring = Modules(QQ).End(QQ**2)
-    exchange = ring.from_rows([[0, 1], [1, 0]])
-    e12 = ring.from_rows([[0, 1], [0, 0]])
-    e21 = ring.from_rows([[0, 0], [1, 0]])
-    additive_end = AdditiveGroups().AdditiveCommutative().End(ring)
-    actions = Rings().Mor(ring, additive_end)
-    rho = actions.elementwise(
-        lambda scalar: additive_end.elementwise(lambda element: scalar * element)
-    )
-    conjugated = actions.elementwise(
-        lambda scalar: additive_end.elementwise(
-            lambda element: exchange * scalar * exchange * element
-        )
-    )
-    modules = Modules(ring)
-    source = modules(rho)
-    target = modules(ring, conjugated)
-    forward = modules.Mor(source, target).elementwise(
-        lambda element: target(exchange * element.underlying_element())
-    )
-    inverse = modules.Mor(target, source).elementwise(
-        lambda element: source(exchange * element.underlying_element())
-    )
-
-    assert target.scalar_action() is conjugated
-    assert target.scalar_action()(e12)(ring.one()) == e21
-    assert forward(e12 * source(ring.one())) == e12 * forward(source(ring.one()))
-    forget = modules.underlying_additive_group_functor()
-    assert forget(source) is ring
-    assert forget(target) is ring
-    assert forget(forward).domain() is ring
-    assert forget(forward).codomain() is ring
-    assert forget(forward)(ring.one()) == exchange
-    assert forget(inverse * forward)(e12) == forget(inverse)(forget(forward)(e12)) == e12
-    assert forget(modules.End(source).identity())(e21) == e21
+def matrix_units():
+    r"""``R = End_Q(Q^2)`` and its matrix units ``e_ij : v_j |-> v_i``."""
+    plane = Modules(QQ)(QQ**2)
+    v1, v2 = plane.basis()
+    ring = plane.End()
+    zero = plane.zero()
+    e11 = plane.Mor(plane)({v1: v1, v2: zero})
+    e12 = plane.Mor(plane)({v1: zero, v2: v1})
+    e21 = plane.Mor(plane)({v1: v2, v2: zero})
+    e22 = plane.Mor(plane)({v1: zero, v2: v2})
+    return ring, e11, e12, e21, e22
 
 
+def test_left_regular_module_of_M2Q_has_endomorphism_ring_the_opposite_ring() -> None:
+    r"""On ``R = M_2(Q)`` acting on itself: ``e12 e21 = e11``, ``e21 e12 = e22``, ``End_R(R) = R^op``.
+
+    ``End_R(R)`` consists of the right multiplications ``x |-> x a``, and
+    ``(x |-> x a) o (x |-> x b) = (x |-> x b a)``.
+    """
+    ring, e11, e12, e21, e22 = matrix_units()
+    regular = Modules(ring)(ring)
+    one = regular(ring.one())
+
+    assert e12 * e21 == e11
+    assert e21 * e12 == e22
+    assert e11 + e22 == ring.one()
+    assert e12 * (e21 * one) == regular(e11)
+    assert e21 * (e12 * one) == regular(e22)
+    assert regular.End().is_isomorphic_to(ring.opposite())
+    assert not ring.is_commutative()
+
+
+def test_twisting_the_regular_module_by_an_inner_automorphism_gives_an_isomorphic_module() -> None:
+    r"""With ``s`` the exchange matrix, ``x |-> s x`` is ``R``-linear from ``R`` to ``R`` twisted by ``a |-> s a s``.
+
+    ``s (a x) = (s a s)(s x)`` since ``s^2 = 1``; in the twisted module
+    ``e12 . 1 = s e12 s = e21``.
+    """
+    ring, e11, e12, e21, e22 = matrix_units()
+    exchange = e12 + e21
+    regular = Modules(ring)(ring)
+    twisted = regular.twist_scalar_action(ring.conjugation_morphism(exchange))
+    forward = regular.Mor(twisted)({regular(ring.one()): twisted(exchange)})
+
+    assert exchange * exchange == ring.one()
+    assert e12 * twisted(ring.one()) == twisted(e21)
+    assert forward(e12 * regular(ring.one())) == e12 * forward(regular(ring.one()))
+    assert forward(regular(e11)) == twisted(exchange * e11)
+    assert forward.is_isomorphism()
+    assert twisted.is_isomorphic_to(regular)

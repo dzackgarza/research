@@ -1,45 +1,35 @@
-r"""Archive reconciliation for corestriction of algebra maps to the centre."""
+r"""The centre of the exterior algebra on ``QQ^2`` and maps factoring through it."""
 
-from dzack_research.preamble.all import (
-    QQ,
-    OwnedRings,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_exterior_algebra_center_is_the_archived_predicate_subring() -> None:
-    exterior = QQ.free_module(finite_ordered_set(("e1", "e2"))).exterior_algebra()
-    first = exterior.algebra_generator("e1")
-    second = exterior.algebra_generator("e2")
+def _exterior_plane():
+    exterior = Modules(QQ).free_module(("e1", "e2")).exterior_algebra()
+    return exterior, exterior.algebra_generator("e1"), exterior.algebra_generator("e2")
+
+
+def test_center_of_the_exterior_algebra_of_the_plane_contains_e1e2_but_not_e1() -> None:
+    r"""``Z(Λ(QQ^2)) = QQ ⊕ QQ e1e2``: ``e1 (e1e2) = 0 = (e1e2) e1``, while
+    ``e1 e2 = -e2 e1 ≠ e2 e1``.  Derivation by the sign rule of Λ."""
+    exterior, e1, e2 = _exterior_plane()
     center = exterior.ring_center()
 
-    assert first * second in center
-    assert first not in center
-    assert center.ambient_ring() is exterior
-    assert center.inclusion()(first * second) == first * second
-    assert center in OwnedRings().Commutative()
+    assert e1 * e2 in center
+    assert exterior.one() + e1 * e2 in center
+    assert e1 not in center
+    assert e1 + e2 not in center
 
 
-def test_archived_free_algebra_map_corestricts_to_the_exterior_center() -> None:
-    exterior = QQ.free_module(finite_ordered_set(("e1", "e2"))).exterior_algebra()
-    first = exterior.algebra_generator("e1")
-    second = exterior.algebra_generator("e2")
-    source = QQ.free_module(finite_ordered_set(("t",))).symmetric_algebra()
-    morphism = source.Mor(exterior)({"t": first * second})
-
+def test_the_map_t_to_e1e2_factors_through_the_center() -> None:
+    r"""``QQ[t] -> Λ(QQ^2)``, ``t ↦ e1e2`` corestricts to the centre, and the
+    corestriction followed by the inclusion is the original map; ``t^2 ↦ 0``."""
+    exterior, e1, e2 = _exterior_plane()
+    source = QQ["t"]
+    t = source.gen()
+    morphism = source.Mor(exterior)({t: e1 * e2})
     factor = morphism.corestrict_to_center()
-    center = exterior.ring_center()
-    variable = source.algebra_generator("t")
+    inclusion = exterior.ring_center().inclusion()
 
-    assert factor.domain() is source
-    assert factor.codomain() is center
-    assert factor(variable) == first * second
-    assert center.inclusion()(factor(variable)) == morphism(variable)
-
-
-
-
-
-
+    assert inclusion(factor(t)) == e1 * e2
+    assert inclusion(factor(1 + t)) == exterior.one() + e1 * e2
+    assert factor(t**2) == factor(t).parent().zero()

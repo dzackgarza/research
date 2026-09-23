@@ -1,44 +1,31 @@
-"""Affine invariant quotients compare with scalar field extension under Reynolds hypotheses."""
+r"""Invariant maps factor through the quotient of the affine plane by the coordinate swap."""
 
-from dzack_research.preamble.all import (
-    QQ,
-    AffineGSchemes,
-    Groups,
-    Algebras,
-)
+from dzack_research.preamble.all import QQ, Algebras, GObjects, Groups, Schemes
 
 
-def _swap_action():
+def test_the_swap_invariant_map_x_plus_y_factors_through_the_quotient() -> None:
+    r"""`(x, y) \mapsto x + y` is invariant under `x \leftrightarrow y`, so it factors
+    uniquely through `\mathbb{A}^2 \to \mathbb{A}^2 / C_2 = \operatorname{Spec}
+    \mathbb{Q}[x, y]^{C_2}`; the map `(x, y) \mapsto x` is not invariant and does not."""
     group = Groups.C(2)
     algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = (algebra).affine_spectrum()
-    swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
-    identity = scheme.categorical_identity_morphism()
-    acted = AffineGSchemes(group, QQ)(
-        scheme,
-        lambda element: identity if element == group.one() else swap,
+    plane = algebra.affine_spectrum()
+    spec = Algebras(QQ).Associative().Unital().Commutative().spectrum()
+    (generator,) = group.group_generators()
+    action = group.Mor(plane.automorphism_group())(
+        {generator: spec(algebra.Mor(algebra)({"x": y, "y": x}))}
     )
-    return group, acted
+    acted = GObjects(group, Schemes(QQ))(plane, action)
+    target_ring = QQ.polynomial_ring("t")
+    target = target_ring.affine_spectrum()
+    quotient = acted.quotient_morphism()
 
+    trace = spec(target_ring.Mor(algebra)({"t": x + y}))
+    first = spec(target_ring.Mor(algebra)({"t": x}))
+    descended = acted.descend_invariant_family(trace)
 
-
-
-
-
-def test_affine_invariant_family_map_descends_through_same_universal_quotient() -> None:
-    _group, acted = _swap_action()
-    target_algebra = QQ.polynomial_ring("t")
-    target = (target_algebra).affine_spectrum()
-    source_algebra = acted.coordinate_algebra()
-    x = source_algebra.algebra_generator("x")
-    y = source_algebra.algebra_generator("y")
-    family = acted.Mor(target)(
-        target_algebra.Mor(source_algebra)({"t": x + y})
-    )
-    descended = acted.descend_invariant_family(family)
-
-    assert descended.domain() is acted.affine_quotient()
     assert descended.codomain() is target
-    assert descended * acted.quotient_morphism() == family
+    assert descended * quotient == trace
+    assert not acted.is_invariant_family(first)

@@ -26,10 +26,6 @@ def test_the_correlation_of_a_hyperbolic_plane_swaps_the_dual_framing() -> None:
     assert second.to_covector() == dual.module_generator(first_label)
 
 
-
-
-
-
 def test_primitivity_is_a_property_of_the_line_the_vector_spans() -> None:
     plane = Lattices(ZZ)("U")
     first, second = plane.module_generators()

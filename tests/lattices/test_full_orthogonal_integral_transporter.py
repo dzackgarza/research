@@ -1,60 +1,37 @@
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    Lattices,
-    Modules,
-    IntegralStructureAction,
-)
+r"""Transporters of ``O(U_QQ)`` between commensurable lattices in ``U tensor QQ``."""
+
+from dzack_research.preamble.all import QQ, ZZ, Lattices
 
 
-def _rational_hyperbolic_space():
+def test_diagonal_rescaling_of_the_hyperbolic_basis_is_a_rational_isometry() -> None:
+    r"""``ZZe + ZZf`` and ``ZZ(2e) + ZZ(f/2)`` lie in one ``O(U_QQ)``-orbit.
+
+    With ``b(e,f) = 1`` and ``e, f`` isotropic, ``diag(2, 1/2)`` preserves the
+    form and carries the first lattice onto the second.
+    """
     plane = Lattices(QQ)("U")
-    restriction = Modules(QQ).restriction_of_scalars(
-        ZZ.Mor(QQ)(lambda element: QQ(element))
-    )
-    return plane, restriction(plane)
+    e, f = plane.module_generators()
+    source = plane.span([e, f], ZZ)
+    target = plane.span([2 * e, f / 2], ZZ)
+
+    transporter = plane.O().transporter(source, target)
+    assert not transporter.is_empty()
+    g = transporter.an_element()
+    assert plane.b(g(e), g(f)) == 1
+    assert plane.b(g(e), g(e)) == 0
+    assert all(g(v) in target for v in source.module_generators())
+    assert all((~g)(w) in source for w in target.module_generators())
 
 
-def test_oscar_transporter_lifts_to_the_actual_rational_orthogonal_group() -> None:
-    plane, space = _rational_hyperbolic_space()
-    e0, e1 = plane.module_generators()
-    source_module = ZZ.free_module(2)
-    target_module = ZZ.free_module(2)
-    source = source_module.Mono(space)(
-        {0: space.wrap(e0), 1: space.wrap(e1)}
-    )
-    target = target_module.Mono(space)(
-        {
-            0: space.wrap(plane.scalar_multiple(QQ(2), e0)),
-            1: space.wrap(plane.scalar_multiple(QQ(1) / 2, e1)),
-        },
-    )
+def test_commensurable_lattices_of_different_determinant_share_no_orbit() -> None:
+    r"""``ZZe + ZZf`` (determinant ``-1``) and ``ZZ(2e) + ZZf`` (determinant ``-4``)
+    are not isometric, so no element of ``O(U_QQ)`` carries one onto the other.
+    """
+    plane = Lattices(QQ)("U")
+    e, f = plane.module_generators()
+    source = plane.span([e, f], ZZ)
+    target = plane.span([2 * e, f], ZZ)
 
-    witness = IntegralStructureAction(plane.Aut(), source).transporter(target)
-    assert witness is not None
-    assert witness in plane.Aut()
-    for generator in source.domain().module_generators():
-        image = space.wrap(witness(source(generator).underlying_element()))
-        assert target.is_in_image(image)
-    inverse = ~witness
-    for generator in target.domain().module_generators():
-        image = space.wrap(inverse(target(generator).underlying_element()))
-        assert source.is_in_image(image)
-
-
-def test_nonisometric_commensurable_lattices_have_no_full_orthogonal_transporter() -> None:
-    plane, space = _rational_hyperbolic_space()
-    e0, e1 = plane.module_generators()
-    source_module = ZZ.free_module(2)
-    target_module = ZZ.free_module(2)
-    source = source_module.Mono(space)(
-        {0: space.wrap(e0), 1: space.wrap(e1)}
-    )
-    target = target_module.Mono(space)(
-        {
-            0: space.wrap(plane.scalar_multiple(QQ(2), e0)),
-            1: space.wrap(e1),
-        },
-    )
-
-    assert IntegralStructureAction(plane.Aut(), source).transporter(target) is None
+    assert source.determinant() == -1
+    assert target.determinant() == -4
+    assert plane.O().transporter(source, target).is_empty()

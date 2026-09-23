@@ -1,45 +1,25 @@
 r"""Normality of affine and projective space, read off the base ring.
 
-A scheme is normal when its local rings are integrally closed domains.
-Affine ``n``-space over ``R`` is covered by ``R[x_1,...,x_n]`` and projective
-``n``-space by the degree-zero parts of its graded localizations, which are
-again polynomial rings on ``n`` variables, so both are normal exactly when
-``R`` is.  The criterion stated in the preamble is that ``R`` is a principal
-ideal domain, hence a unique factorization domain, hence integrally closed.
-
-The last assertion of each test is what separates the criterion from an
-unconditional placement: over a base that is not even a domain, nothing is
-asserted normal.
+Affine and projective `n`-space over `R` are covered by polynomial rings over `R`,
+which are unique factorization domains when `R` is (Gauss's lemma), hence
+integrally closed; `\mathbb{Z}` and `\mathbb{Q}` are such.  Over
+`\mathbb{Z}/12`, where `6^2 = 0`, the coordinate ring has a nilpotent, so the scheme
+is not even reduced.
 """
 
-from dzack_research.preamble.all import (
-    NormalSchemes,
-    QQ,
-    ZZ,
-    Zmod,
-)
+from dzack_research.preamble.all import QQ, ZZ, AffineSpaces, ProjectiveSpaces, Zmod
 
 
-def test_affine_space_is_normal_over_a_principal_ideal_domain() -> None:
-    line = AffineSpaces(ZZ)(1)
-    plane = AffineSpaces(QQ)(2)
+def test_affine_space_over_a_normal_domain_is_normal_and_over_z_mod_12_is_not() -> None:
+    assert AffineSpaces(ZZ)(1).is_normal()
+    assert AffineSpaces(QQ)(2).is_normal()
 
-    assert line in NormalSchemes(ZZ)
-    assert line.is_normal()
-    assert plane in NormalSchemes(QQ)
-
-    # The criterion reads the base: Z/12 is not a domain, so A^1 over it is
-    # not asserted normal, and an unconditional placement would say it is.
-    residues = Zmod(12)
-    assert (residues).affine_spectrum(base_ring=residues) not in NormalSchemes(residues)
+    line = AffineSpaces(Zmod(12))(1)
+    assert not line.is_reduced()
+    assert not line.is_normal()
 
 
-def test_projective_space_is_normal_over_a_principal_ideal_domain() -> None:
-    projective_line = ProjectiveSpaces(QQ)(1)
-    projective_plane = ProjectiveSpaces(ZZ)(2)
-
-    assert projective_line in NormalSchemes(QQ)
-    assert projective_plane in NormalSchemes(ZZ)
-    assert projective_plane.is_normal()
-
-
+def test_projective_space_over_a_normal_domain_is_normal() -> None:
+    assert ProjectiveSpaces(QQ)(1).is_normal()
+    assert ProjectiveSpaces(ZZ)(2).is_normal()
+    assert ZZ.affine_spectrum().is_normal()

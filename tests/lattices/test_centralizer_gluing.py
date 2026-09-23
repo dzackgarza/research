@@ -21,7 +21,6 @@ from dzack_research.preamble.all import (
     Lattices,
     NamedLattices,
     ZZ,
-    finite_ordered_set,
 )
 
 
@@ -69,10 +68,6 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
     assert coinvariant_vector in (first - second, second - first)
 
 
-
-
-
-
 def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
     involution = Involutions.I_En
     extension = involution.primitive_extension()
@@ -81,7 +76,11 @@ def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
     assert extension.invariant.module_rank() == 10
     assert extension.orthogonal_complement.module_rank() == 12
     assert extension.acts_as_negation_on_coinvariants()
-    assert extension.orthogonal_complement.inclusion().domain().is_isometric(NamedLattices.TEn)
+    assert (
+        extension.orthogonal_complement.inclusion()
+        .domain()
+        .is_isometric(NamedLattices.TEn)
+    )
 
     assert extension.invariant.discriminant_group().cardinality() == 1024
     assert extension.orthogonal_complement.discriminant_group().cardinality() == 1024
@@ -121,54 +120,43 @@ def _negation(summand):
     )
 
 
+def test_the_four_sign_pairs_on_the_swap_split_of_u_glue_to_all_of_o_u() -> None:
+    r"""``O(U)`` has order four and is the centralizer of the swap.
 
-
-def test_reassembly_inverts_restriction_on_the_four_pairs_over_the_hyperbolic_plane() -> None:
+    ``O(U) = {1, -1, s, -s}`` for the swap ``s`` (it permutes the two isotropic
+    lines ``ZZe``, ``ZZf`` up to sign), so it is abelian and centralizes ``s``.
+    The swap splits ``U`` into ``Z(e+f) + Z(e-f) = <2> + <-2>``; each summand has
+    orthogonal group ``{1, -1}``, and each discriminant group has order two, so
+    every one of the four sign pairs preserves the glue and extends.
+    """
     lattice, swap = _hyperbolic_swap()
     extension = swap.primitive_extension()
     invariant_summand = extension.invariant.inclusion().domain()
     coinvariant_summand = extension.orthogonal_complement.inclusion().domain()
+    one = lattice.Aut().one()
+    plus, minus = invariant_summand.Aut().one(), _negation(invariant_summand)
+    coplus, cominus = coinvariant_summand.Aut().one(), _negation(coinvariant_summand)
 
-    # Both summands have rank one, so each orthogonal group is {1,-1} and
-    # there are four pairs.  A_{Z(e+f)} has order two and so has no
-    # automorphism but the identity, so every pair preserves the glue graph:
-    # the four assembled isometries are the whole of O(U), which is the
-    # centralizer of the swap because O(U) is abelian.
-    pairs = finite_ordered_set(
-        [
-            (invariant_part, coinvariant_part)
-            for invariant_part in (
-                invariant_summand.Aut().one(),
-                _negation(invariant_summand),
-            )
-            for coinvariant_part in (
-                coinvariant_summand.Aut().one(),
-                _negation(coinvariant_summand),
-            )
-        ]
-    )
-    assert all(
-        extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
-        for invariant_part, coinvariant_part in pairs
-    )
-    assembled = finite_ordered_set([
-        extension.centralizer_element(invariant_part, coinvariant_part)
-        for invariant_part, coinvariant_part in pairs
-    ])
+    assert lattice.Aut().cardinality() == 4
+    assert extension.centralizer_group().cardinality() == 4
 
-    for pair, element in zip(pairs, assembled, strict=True):
-        invariant_part, coinvariant_part = pair
-        assert element in extension.centralizer_group()
-        assert extension.invariant_restriction(element) == invariant_part
-        assert extension.coinvariant_restriction(element) == coinvariant_part
+    for invariant_part in (plus, minus):
+        for coinvariant_part in (coplus, cominus):
+            assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
 
-    identity, swap_again, _negated_swap, negation = assembled
-    assert identity == lattice.Aut().one()
+    identity = extension.centralizer_element(plus, coplus)
+    swap_again = extension.centralizer_element(plus, cominus)
+    negated_swap = extension.centralizer_element(minus, coplus)
+    negation = extension.centralizer_element(minus, cominus)
+    assert identity == one
     assert swap_again == swap
+    assert negation * negation == one
     assert all(
-        negation(generator) == -generator
-        for generator in lattice.module_generators()
+        negation(generator) == -generator for generator in lattice.module_generators()
     )
+    assert negated_swap == negation * swap
+    assert negated_swap != swap
+    assert negated_swap != negation
 
 
 def test_the_a2_diagram_involution_reassembles_across_a_nontrivial_glue() -> None:
@@ -192,10 +180,7 @@ def test_the_a2_diagram_involution_reassembles_across_a_nontrivial_glue() -> Non
     invariant_part = extension.invariant_restriction(involution)
     coinvariant_part = extension.coinvariant_restriction(involution)
     assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
-    assert (
-        extension.centralizer_element(invariant_part, coinvariant_part)
-        == involution
-    )
+    assert extension.centralizer_element(invariant_part, coinvariant_part) == involution
 
 
 def test_the_a2_centralizer_splits_the_single_root_orbit_in_two() -> None:
@@ -279,10 +264,6 @@ def test_the_cubic_cyclic_permutation_glues_an_odd_lattice_bilinearly() -> None:
     assert extension.orthogonal_complement.discriminant_group().cardinality() == 3
     assert extension.index() == 3
     assert extension.gluing_subgroup().cardinality() == 3
-
-
-
-
 
 
 def test_negating_one_summand_of_the_cubic_split_breaks_the_glue_graph() -> None:

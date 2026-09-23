@@ -1,24 +1,11 @@
-r"""Archived anisotropic-vector primitive-extension data on the live lattice owner.
+r"""Anisotropic-vector primitive extensions: ``Zw + w^perp -> L`` and its gluing.
 
-For a primitive anisotropic vector ``w`` the archived vector-orbit layer
-retained the finite-index orthogonal sum ``Zw + w^perp -> L``, its gluing
-subgroup in the discriminant form of that sum, and the quotient identification
-``A_L = H^perp/H``.  These specimens keep that exact mathematical structure on
-the current ``VectorPrimitiveExtension`` object.
+For a primitive anisotropic vector ``w`` of ``L``, the orthogonal sum
+``Zw + w^perp`` has finite index in ``L``, and ``L`` is recovered from it by an
+isotropic gluing subgroup of the discriminant form of the sum.
 """
 
 from dzack_research.preamble.all import ZZ, Lattices
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage",
-    "live_owner": "src/dzack_research/preamble/categories/vector_orbits.py",
-    "owner_overrides": {
-        "orthogonal_group_vector_equivalence_witness": "src/dzack_research/preamble/categories/lattice_morphisms.py",
-        "orthogonal_group_vector_stabilizer_generators": "src/dzack_research/preamble/categories/lattice_morphisms.py",
-        "vector_primitive_extension": "src/dzack_research/preamble/categories/lattices.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
 
 
 def test_archived_a2_vector_extension_has_the_expected_nontrivial_gluing() -> None:
@@ -44,7 +31,3 @@ def test_archived_a2_vector_extension_has_the_expected_nontrivial_gluing() -> No
         assert extension.sum_form.b(
             glued, glued
         ) == extension.sum_form.bilinear_value_module().zero()
-
-
-
-

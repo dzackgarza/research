@@ -1,8 +1,8 @@
-
 from dzack_research.preamble.all import (
     AA,
     Groups,
     Lattices,
+    Modules,
     ProjectiveModules,
     QuadraticField,
     Set,
@@ -10,11 +10,6 @@ from dzack_research.preamble.all import (
     ZZ,
     signature_pair,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
-
-
-
-
 
 
 def test_subobject_orthogonal_complement_defers_to_the_inclusion() -> None:
@@ -37,12 +32,6 @@ def test_subobject_orthogonal_complement_defers_to_the_inclusion() -> None:
     assert perpendicular.inclusion().is_in_image(e2)
 
 
-
-
-
-
-
-
 def test_discriminant_class_constructs_an_overlattice_inclusion() -> None:
     lattice = Lattices(ZZ)([[8]])
     discriminant = lattice.discriminant_module()
@@ -57,20 +46,19 @@ def test_discriminant_class_constructs_an_overlattice_inclusion() -> None:
     assert inclusion.codomain().gram_tensor()[0, 0] == 2
 
 
-
-
-
-
-def test_orthogonal_complement_uses_the_image_of_an_arbitrary_morphism() -> None:
-    source = ZZ.free_module(finite_ordered_set(("x", "y")))
+def test_the_complement_of_the_image_of_a_noninjective_map_into_U_is_the_isotropic_line() -> None:
+    r"""\(x, y \mapsto e\) has image \(\mathbb Z e\); in \(U\), \(e^\perp = \mathbb Z e\)
+    because \(b(ae + bf, e) = b\)."""
+    source = Modules(ZZ)(ZZ**2)
     plane = Lattices(ZZ)("U")
     e, f = plane.module_generators()
-    morphism = source.module_category().Mor(source, plane)({"x": e, "y": e})
+    x, y = source.module_generators()
+    morphism = source.Mor(plane)({x: e, y: e})
 
     perpendicular = morphism.orthogonal_complement()
 
     assert perpendicular.module_rank() == 1
-    assert perpendicular.gram_tensor() == tensor(ZZ, (), (1, 1), [[0]])
+    assert perpendicular.is_totally_isotropic()
     assert perpendicular.inclusion().is_in_image(e)
     assert not perpendicular.inclusion().is_in_image(f)
 
@@ -148,8 +136,6 @@ def test_diagonal_isotropic_class_glues_a1_four_to_an_index_two_even_overlattice
     assert all(factor == 2 for factor in overlattice_factors)
 
 
-
-
 def test_nonprincipal_ideal_in_q_sqrt_minus_five_has_a_computable_fractional_inverse() -> None:
     field = QuadraticField(-5, "a")
     a = field.primitive_element()
@@ -173,6 +159,20 @@ def test_nonprincipal_ideal_in_q_sqrt_minus_five_has_a_computable_fractional_inv
     assert order.one() in product
 
 
+def test_ZZ_sqrt5_is_a_nonmaximal_order_missing_the_golden_ratio() -> None:
+    r"""\((1+\sqrt5)/2\) is a root of \(x^2 - x - 1\), so it is integral but not in
+    \(\mathbb Z[\sqrt5]\); \(\operatorname{disc}\mathbb Z[\sqrt5] = 20 = 2^2\cdot 5\)
+    while \(\operatorname{disc}\mathbb Q(\sqrt5) = 5\) (Neukirch, ANT, I.2)."""
+    field = QuadraticField(5, "a")
+    a = field.primitive_element()
+    order = field.order_generated_by(a)
+    golden_ratio = (1 + a) / 2
+
+    assert not order.is_maximal()
+    assert golden_ratio not in order
+    assert golden_ratio in field.maximal_order()
+    assert field.maximal_order().is_maximal()
+    assert field.discriminant() == 5
 
 
 def test_real_quadratic_field_has_exact_embeddings_and_its_actual_galois_group() -> None:
@@ -218,5 +218,3 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
     assert invariants.module_rank() == 1
     assert coinvariants.module_rank() == 1
     assert coinvariants.is_torsion_free()
-
-

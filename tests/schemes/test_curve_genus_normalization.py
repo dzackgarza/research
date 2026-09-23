@@ -1,51 +1,45 @@
-"""Global curve genus is assembled from an actual normalization and local delta data."""
+r"""The genus formula ``p_a = g + sum_P [k(P):k] delta_P`` on two rational plane quintics.
 
-from dzack_research.preamble.categories.schemes.curve_genus import (
-    rational_quintic_with_nonrational_node_normalization,
-    rational_quintic_with_two_nodes_normalization,
-)
+A plane quintic has ``p_a = (5-1)(5-2)/2 = 6`` (Hartshorne I Ex. 7.2(b)); the
+genus formula is Hartshorne IV Ex. 1.8.  Both specimens are rational, since
+``y^2 = x h(x)^2`` is birational to ``y'^2 = x`` by ``y' = y / h(x)``.
 
+* ``Y^2 Z^3 = X (X - Z)^2 (X - 4Z)^2``: nodes at ``(1, 0)`` and ``(4, 0)``
+  (tangent cones ``y = ±3(x - 1)`` and ``y = ±6(x - 4)``) with ``delta = 1``, and
+  at ``[0:1:0]`` the local equation ``z^3 = x^5 + ...`` with
+  ``delta = (3-1)(5-1)/2 = 4``.
+* ``Y^2 Z^3 = X (X^2 + Z^2)^2``: one closed point ``(x^2 + 1, y)`` of residue
+  degree 2, a node at each of its two geometric points, and the same ``delta = 4``
+  point at infinity.
+"""
 
-def test_two_node_quintic_has_three_local_defects_and_rational_normalization() -> None:
-    data = rational_quintic_with_two_nodes_normalization()
-    curve = data.curve()
-    normalization = data.normalization_curve()
-
-    assert data is curve
-    assert curve.normalization_data() is curve
-    contributions = tuple(data.local_contributions())
-
-    assert data.normalization_morphism().domain() is normalization
-    assert data.normalization_morphism().codomain() is curve
-    assert normalization.relative_dimension() == 1
-    assert normalization.arithmetic_genus() == 0
-    assert curve.arithmetic_genus() == 6
-    assert tuple(int(item.delta_invariant()) for item in contributions) == (1, 1, 4)
-    assert tuple(int(item.residue_degree()) for item in contributions) == (1, 1, 1)
-    assert tuple(int(item.weighted_contribution()) for item in contributions) == (1, 1, 4)
-    assert data.total_delta_contribution() == 6
-    assert data.genus_comparison().holds()
-    assert curve.geometric_genus() == 0
-    assert curve.genus_comparison() is data.genus_comparison()
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_nonrational_singular_point_retains_residue_degree_in_global_delta_sum() -> None:
-    data = rational_quintic_with_nonrational_node_normalization()
-    curve = data.curve()
-    nonrational, infinity = tuple(data.local_contributions())
+def test_quintic_with_two_rational_nodes_and_an_e8_point_has_genus_zero_and_arithmetic_genus_six() -> None:
+    r"""``p_a = 6 = 0 + 1 + 1 + 4`` for ``Y^2 Z^3 = X (X - Z)^2 (X - 4Z)^2``."""
+    P2 = Schemes(QQ).projective_space(2, names=("X", "Y", "Z"))
+    X, Y, Z = P2.coordinate_ring().gens()
+    C = P2.closed_subscheme(Y**2 * Z**3 - X * (X - Z) ** 2 * (X - 4 * Z) ** 2)
+    singular = C.singular_locus().closed_points()
 
-    assert int(nonrational.residue_degree()) == 2
-    assert int(nonrational.delta_invariant()) == 1
-    assert int(nonrational.weighted_contribution()) == 2
-    assert int(infinity.residue_degree()) == 1
-    assert int(infinity.delta_invariant()) == 4
-    assert int(infinity.weighted_contribution()) == 4
-    assert data.total_delta_contribution() == 6
-    assert curve.arithmetic_genus() == 6
-    assert curve.geometric_genus() == 0
-    assert data.genus_comparison().arithmetic_genus() == (
-        data.genus_comparison().geometric_genus()
-        + data.genus_comparison().total_delta_contribution()
-    )
-    assert data.is_geometrically_integral()
-    assert data.normalization_is_connected()
+    assert C.arithmetic_genus() == 6
+    assert C.geometric_genus() == 0
+    assert C.normalization().arithmetic_genus() == 0
+    assert singular.cardinality() == 3
+    assert sorted(C.delta_invariant(p) for p in singular) == [1, 1, 4]
+    assert all(p.residue_degree() == 1 for p in singular)
+
+
+def test_a_node_at_a_degree_two_closed_point_contributes_two_to_the_delta_sum() -> None:
+    r"""``p_a = 6 = 0 + 2 * 1 + 4`` for ``Y^2 Z^3 = X (X^2 + Z^2)^2`` over ``QQ``."""
+    P2 = Schemes(QQ).projective_space(2, names=("X", "Y", "Z"))
+    X, Y, Z = P2.coordinate_ring().gens()
+    C = P2.closed_subscheme(Y**2 * Z**3 - X * (X**2 + Z**2) ** 2)
+    singular = C.singular_locus().closed_points()
+
+    assert C.arithmetic_genus() == 6
+    assert C.geometric_genus() == 0
+    assert singular.cardinality() == 2
+    assert sorted((p.residue_degree(), C.delta_invariant(p)) for p in singular) == [(1, 4), (2, 1)]
+    assert sum(p.residue_degree() * C.delta_invariant(p) for p in singular) == 6

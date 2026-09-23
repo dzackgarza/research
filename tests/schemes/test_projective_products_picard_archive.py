@@ -1,39 +1,22 @@
-r"""Archive reconciliation for Picard arithmetic on a product of projective lines."""
+r"""Picard arithmetic on `\mathbb{P}^1 \times \mathbb{P}^1` over QQ.
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    ProjectiveSpaces,
-    RationalPolyhedralFans,
-    Schemes,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+Source: Hartshorne, *Algebraic Geometry*, II.6.6.1 and V.1.4.3:
+`\operatorname{Pic}(\mathbb{P}^1 \times \mathbb{P}^1) = \mathbb{Z}^2` by bidegree,
+`K = \mathcal{O}(-2,-2)`, `\mathcal{O}(a,b)` is ample iff `a, b > 0`, and the
+intersection form is the hyperbolic plane.
+"""
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/framework/test_projective_products_picard.sage",
-    "live_owner": "tests/schemes/test_projective_products_picard_archive.py",
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import QQ, ZZ, ProjectiveSpaces, RationalPolyhedralFans, Schemes
 
 
-def _product_of_lines():
-    labels = finite_ordered_set(("left", "right"))
+def test_picard_arithmetic_of_a_product_of_lines_is_by_bidegree() -> None:
     line = ProjectiveSpaces(QQ)(1)
-    return labels, Schemes(QQ).product(indexed_family(labels, lambda _label: line))
+    product = Schemes(QQ).product((line, line))
 
-
-def test_picard_arithmetic_of_a_product_of_lines_is_componentwise() -> None:
-    labels, product = _product_of_lines()
-    positive = product.O(2, 1)
-    negative = product.O(-2, -1)
-    trivial = positive.tensor_product(negative)
-
-    assert tuple(trivial.multidegree()[label] for label in labels) == (0, 0)
-    assert tuple(product.canonical_line_bundle().multidegree()[label] for label in labels) == (-2, -2)
-    anticanonical = product.anticanonical_line_bundle()
-    assert tuple(anticanonical.multidegree()[label] for label in labels) == (2, 2)
-    assert anticanonical.is_ample()
+    assert product.O(2, 1).tensor_product(product.O(-2, -1)) == product.O(0, 0)
+    assert product.canonical_line_bundle() == product.O(-2, -2)
+    assert product.anticanonical_line_bundle().is_ample()
+    assert not product.O(1, 0).is_ample()
 
 
 def test_picard_pairing_of_P1_times_P1_is_the_hyperbolic_plane() -> None:

@@ -1,177 +1,62 @@
-from __future__ import annotations
+r"""Cyclic covers of the affine line branched along a section of ``L^n``.
 
-from typing import Any
+Throughout, ``X = Spec QQ[x]`` is covered by ``U_0 = D(x)`` and ``U_1 = D(1 - x)``,
+and ``L`` is the line bundle glued by multiplication by ``x`` from ``U_0`` to
+``U_1``.  The section ``s`` of ``L^n`` is ``1`` on ``U_0`` and ``x^n`` on ``U_1``,
+which is compatible because ``x^n * 1 = x^n`` on the overlap.  The cyclic cover
+algebra is ``A = ⊕_{i<n} L^{-i}`` with ``z^n = s``; on ``U_i`` it is
+``O(U_i)[z]/(z^n - s_i)``, free of rank ``n``, and the transition sends
+``z ↦ x^{-1} z``, because ``z`` is a local generator of ``L^{-1}``.
+"""
 
-
-def _generator(module: Any) -> Any:
-    return module.module_generator(next(iter(module.module_generating_set())))
-
-
-def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
-    from sage.rings.rational_field import QQ as SageQQ
-
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-    from dzack_research.preamble.categories.schemes.ringed_spaces import (
-        QuasiCoherentSheaves,
-    )
-
-    QQ = _own_ring(SageQQ)
-    algebra = QQ.polynomial_ring("x")
-    x = algebra.algebra_generator("x")
-    scheme = (algebra).affine_spectrum()
-    cover = scheme.distinguished_open_cover(x, algebra.one() - x)
-    local_modules = tuple(
-        open_subscheme.coordinate_algebra().free_module(1)
-        for open_subscheme in cover.opens()
-    )
-    left_overlap = cover.restrict_module(local_modules[0], 0, 1)
-    right_overlap = cover.restrict_module(local_modules[1], 1, 0)
-    overlap_x = scheme.structure_sheaf().restriction_map(
-        scheme,
-        cover.overlap(0, 1),
-    )(x)
-    forward = left_overlap.module_category().Mor(left_overlap, right_overlap)(
-        lambda _label: right_overlap.scalar_multiple(
-            overlap_x,
-            _generator(right_overlap),
-        )
-    )
-    inverse = right_overlap.module_category().Mor(right_overlap, left_overlap)(
-        lambda _label: left_overlap.scalar_multiple(
-            overlap_x.inverse_of_unit(),
-            _generator(left_overlap),
-        )
-    )
-    transition = left_overlap.module_category().Core().Mor(
-        left_overlap,
-        right_overlap,
-    )(
-        forward,
-        inverse,
-    )
-    line = QuasiCoherentSheaves(scheme).Invertible().WithChosenTrivialization()(
-        cover.glue_modules(local_modules, {(0, 1): transition}).gluing_datum()
-    )
-    return line, x, overlap_x
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _branch_section(line: Any, x: Any, degree: int) -> Any:
-    power = line.tensor_power(degree)
-    right_x = line.scheme().structure_sheaf().restriction_map(
-        line.scheme(),
-        line.cover().open(1),
-    )(x)
-    return power.gluing_datum().compatible_section(
-        (
-            _generator(power.local_module(0)),
-            power.local_module(1).scalar_multiple(
-                right_x**degree,
-                _generator(power.local_module(1)),
-            ),
-        )
-    )
+def _cyclic_cover(degree):
+    polynomials = QQ["x"]
+    x = polynomials.gen()
+    line_space = polynomials.affine_spectrum()
+    cover = line_space.distinguished_open_cover(x, 1 - x)
+    line = QuasiCoherentSheaves(line_space)(cover, {(0, 1): x})
+    branch = line.tensor_power(degree).section({0: 1, 1: x**degree})
+    return AlgebraSheaves(line_space).cyclic_cover(line, branch, degree), x
 
 
-def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication() -> None:
-    from dzack_research.preamble.all import CyclicCoverAlgebra
-    from dzack_research.preamble.categories.algebras.algebras import (
-        AlgebrasWithChosenFinitePresentation,
-    )
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        FinitelyGeneratedFreeModules,
-    )
+def test_double_cover_is_locally_z_squared_equals_the_branch_section() -> None:
+    cyclic, x = _cyclic_cover(2)
+    on_u0, on_u1 = cyclic.local_algebra(0), cyclic.local_algebra(1)
+    z0, z1 = on_u0.algebra_generator("z"), on_u1.algebra_generator("z")
 
-    line, x, overlap_x = _line_bundle_with_x_transition()
-    branch = _branch_section(line, x, 2)
-    cyclic = CyclicCoverAlgebra(line, branch, 2)
-
-    assert cyclic.degree() == 2
-    assert cyclic.line_bundle() is line
-    assert cyclic.branch_section() is branch
-    assert cyclic.local_branch_coefficient(0) == cyclic.local_algebra(0).base_ring().one()
-
-    right_x = line.scheme().structure_sheaf().restriction_map(
-        line.scheme(),
-        line.cover().open(1),
-    )(x)
-    assert cyclic.local_branch_coefficient(1) == right_x**2
-    for index in range(2):
-        local = cyclic.local_algebra(index)
-        assert cyclic.local_underlying_module(index) is local
-        assert local in FinitelyGeneratedFreeModules(local.base_ring())
-        assert local in AlgebrasWithChosenFinitePresentation(local.base_ring())
-        assert local.associativity_decision() is True
-        assert local.unit_laws_decision() is True
-        assert local.commutativity_decision() is True
-        assert int(local.module_rank()) == 2
-        multiplication = cyclic.local_multiplication(index)
-        assert multiplication.codomain() is local
-        z = local.algebra_generator("z")
-        one_basis = local.module_generator(0)
-        z_basis = local.module_generator(1)
-        assert multiplication(
-            multiplication.domain().pure_tensor(z_basis, z_basis)
-        ) == local(cyclic.local_branch_coefficient(index))
-        assert multiplication(
-            multiplication.domain().pure_tensor(one_basis, z_basis)
-        ) == z_basis
-        assert z**2 == local(cyclic.local_branch_coefficient(index))
-        presentation = cyclic.local_presentation(index)
-        assert tuple(presentation.index_set()) == ("presentation_ring", "relations")
-        assert cyclic.local_equation(index) == (
-            presentation["presentation_ring"].algebra_generator("z") ** 2
-            - cyclic.local_branch_coefficient(index)
-        )
-
-    transition = cyclic.transition(0, 1).forward()
-    source = transition.domain()
-    target = transition.codomain()
-    assert transition(source.algebra_generator("z")) == (
-        target(overlap_x.inverse_of_unit()) * target.algebra_generator("z")
-    )
-    assert int(cyclic.restricted_algebra(0, 0, 1).module_rank()) == 2
-    assert int(cyclic.restricted_algebra(1, 0, 1).module_rank()) == 2
-    restricted = cyclic.restricted_algebra(0, 0, 1)
-    assert restricted.multiplication_morphism().codomain() is restricted
-    assert cyclic.sheaf().global_sections() is cyclic.global_sections()
-    assert cyclic.underlying_module_datum() is cyclic.gluing_datum().underlying_module_datum()
+    assert on_u0.module_rank() == 2
+    assert on_u1.module_rank() == 2
+    assert z0**2 == on_u0.one()
+    assert z1**2 == on_u1(x**2)
+    assert z1 != on_u1(x)
+    transition = cyclic.transition(0, 1)
+    assert transition(transition.domain().algebra_generator("z")) == transition.codomain()(x) ** -1 * transition.codomain().algebra_generator("z")
 
 
+def test_triple_cover_is_locally_free_of_rank_three() -> None:
+    cyclic, x = _cyclic_cover(3)
+    on_u1 = cyclic.local_algebra(1)
+    z1 = on_u1.algebra_generator("z")
+
+    assert cyclic.local_algebra(0).module_rank() == 3
+    assert on_u1.module_rank() == 3
+    assert z1**3 == on_u1(x**3)
+    assert z1**2 != on_u1(x**2)
+    transition = cyclic.transition(0, 1)
+    assert transition(transition.domain().algebra_generator("z")) == transition.codomain()(x) ** -1 * transition.codomain().algebra_generator("z")
 
 
-def test_cyclic_cover_degree_three_uses_rank_three_scalar_extensions() -> None:
-    from dzack_research.preamble.all import CyclicCoverAlgebra
-
-    line, x, overlap_x = _line_bundle_with_x_transition()
-    branch = _branch_section(line, x, 3)
-    cyclic = CyclicCoverAlgebra(line, branch, 3)
-
-    assert all(int(local.module_rank()) == 3 for local in cyclic.local_algebras())
-    transition = cyclic.transition(0, 1).forward()
-    assert transition(transition.domain().algebra_generator("z")) == (
-        transition.codomain()(overlap_x.inverse_of_unit())
-        * transition.codomain().algebra_generator("z")
-    )
-    assert int(cyclic.restricted_algebra(0, 0, 1).module_rank()) == 3
-
-
-
-
-def test_nontrivial_double_cover_keeps_local_mu_two_actions_and_global_involution() -> None:
-    from dzack_research.preamble.all import CyclicCoverAlgebra
-
-    line, x, _overlap_x = _line_bundle_with_x_transition()
-    cyclic = CyclicCoverAlgebra(line, _branch_section(line, x, 2), 2)
-    relative = cyclic.relative_spectrum()
-    cover = relative.arrow().domain()
-
-    for index in line.cover().atlas():
-        local_action = cyclic.local_deck_group_scheme_action(index)
-        assert local_action.scheme() is cover.chart(index)
-        assert local_action.group_scheme().base_ring() is line.cover().open(index).coordinate_algebra()
-
+def test_deck_transformation_of_the_double_cover_is_an_involution_over_the_base() -> None:
+    r"""The ``μ_2``-action ``z ↦ -z`` gives ``σ`` with ``σ^2 = id`` and ``π σ = π``,
+    and ``σ ≠ id`` since ``-z ≠ z`` in characteristic 0."""
+    cyclic, _ = _cyclic_cover(2)
+    projection = cyclic.relative_spectrum()
     involution = cyclic.constant_deck_transformation()
-    assert involution.domain() is cover
-    assert involution.codomain() is cover
-    assert involution * involution == cover.categorical_identity_morphism()
-    assert relative.arrow() * involution == relative.arrow()
+    double_cover = projection.domain()
+
+    assert involution * involution == double_cover.Mor(double_cover).identity()
+    assert involution != double_cover.Mor(double_cover).identity()
+    assert projection * involution == projection

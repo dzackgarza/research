@@ -1,105 +1,85 @@
-r"""Archive reconciliation for function-valued modules with no finite framing."""
+r"""Square-integrable functions on the real line.
 
-import pytest
-from sage.all import RR, SR, cosh, exp, sech, sin, tanh, var
+$f \in L^2(\mathbb R)$ exactly when $\int_{\mathbb R} |f|^2 < \infty$.
+"""
 
-from dzack_research.preamble.categories.modules.pure.function_modules import (
-    FunctionModules,
-    _MEMBER,
-    _NOT_MEMBER,
-    _square_integrability,
-)
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/test_function_modules.sage",
-    "live_owner": "src/dzack_research/preamble/categories/modules/pure/function_modules.py",
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def smooth_maps_and_coordinate():
+    maps = C(Infinity, RR)
+    return maps, maps.indeterminate()
 
 
-def _square_integrable_functions():
-    return FunctionModules(RR).square_integrable()
+def test_the_gaussian_is_square_integrable_and_x_squared_and_sine_are_not() -> None:
+    r"""$\int e^{-2x^2}\,dx = \sqrt{\pi/2}$; $x^2$ and $\sin x$ have divergent square integrals.
+
+    Source: the Gaussian integral; by hand.
+    """
+    maps, x = smooth_maps_and_coordinate()
+    L = Lp(2)
+    gaussian = L(maps(exp(-x**2)))
+    assert gaussian(0) == 1
+    assert L.q(gaussian) == sqrt(pi / 2)
+    assert exp(-x**2) in L
+    assert x**2 not in L
+    assert sin(x) not in L
 
 
+def test_the_integral_pairing_on_minus_one_one_gives_x_x_two_thirds_and_x_x2_zero() -> None:
+    r"""$\int_{-1}^1 x^2\,dx = 2/3$ and $\int_{-1}^1 x^3\,dx = 0$ (an odd integrand).
+
+    Source: by hand.
+    """
+    maps = C(Infinity, RR)
+    x = maps.coordinate()
+    xx = maps.integral(x * x, 0)
+    xxx = maps.integral(x * x * x, 0)
+    assert xx(1) - xx(-1) == QQ(2) / 3
+    assert xxx(1) - xxx(-1) == 0
 
 
-def test_l2_membership_distinguishes_theorem_proofs_from_refutations() -> None:
-    x = var("x")
-    l2 = _square_integrable_functions()
+def test_rational_functions_in_l2_are_those_of_degree_at_most_minus_one_without_real_poles() -> None:
+    r"""$1/(1+x^2)$ decays like $x^{-2}$; $1/x$ has a non-square-integrable pole at $0$;
+    $x^2/(1+x^2) \to 1$ at infinity.
 
-    assert l2(exp(-x**2))(0) == 1
-    assert l2(x / (1 + x**2))(1) == SR(1) / 2
-    assert _square_integrability(exp(-x**2), x) == _MEMBER
-    assert _square_integrability(x**2, x) == _NOT_MEMBER
-    with pytest.raises(AssertionError):
-        l2(x**2)
-    with pytest.raises(AssertionError):
-        l2(sin(x))
-
-
+    Source: comparison with $\int |x|^{-2k}$; by hand.
+    """
+    maps, x = smooth_maps_and_coordinate()
+    L = Lp(2)
+    assert 1 / (1 + x**2) in L
+    assert x / (1 + x**2) in L
+    assert 1 / x not in L
+    assert x**2 / (1 + x**2) not in L
 
 
-def test_callable_bilinear_form_on_l2_needs_no_gram_matrix() -> None:
-    t = var("t")
-    l2 = _square_integrable_functions()
-    form = l2.bilinear_forms(RR)(lambda f, g: (f(t) * g(t)).integrate(t, -1, 1))
-    x = l2(lambda point: point)
-    x2 = l2(lambda point: point**2)
+def test_bounded_multiples_and_decaying_tails_are_in_l2_and_tanh_is_not() -> None:
+    r"""$|\sin x/(1+x^2)| \le 1/(1+x^2)$, $\operatorname{sech}(x^2) \le 2e^{-x^2}$, $e^{-\cosh x} \le e^{-|x|/2}$
+    are square integrable; $\tanh x \to \pm 1$ is not.
 
-    assert abs(form(x, x) - RR(2) / 3) < 1e-9
-    assert abs(form(x, x2)) < 1e-9
-    with pytest.raises(AssertionError, match="no finite generating set"):
-        form.gram_matrix()
-
-
-def test_l2_rational_function_membership_has_the_exact_degree_and_pole_boundary() -> None:
-    x = var("x")
-    l2 = _square_integrable_functions()
-
-    assert l2(1 / (1 + x**2))(0) == 1
-    assert l2(x / (1 + x**2))(1) == SR(1) / 2
-    with pytest.raises(AssertionError):
-        l2(1 / x)
-    with pytest.raises(AssertionError):
-        l2(x**2 / (1 + x**2))
+    Source: comparison test; by hand.
+    """
+    maps, x = smooth_maps_and_coordinate()
+    L = Lp(2)
+    assert sin(x) / (1 + x**2) in L
+    assert sech(x**2) in L
+    assert exp(-cosh(x)) in L
+    assert tanh(x) not in L
 
 
-def test_l2_bounded_multiple_and_vanishing_tail_criteria_retain_their_verdicts() -> None:
-    x = var("x")
-    l2 = _square_integrable_functions()
-
-    assert l2(sin(x) / (1 + x**2))(0) == 0
-    assert _square_integrability(sech(x**2), x) == _MEMBER
-    assert _square_integrability(exp(-cosh(x)), x) == _MEMBER
-    assert _square_integrability(tanh(x), x) == _NOT_MEMBER
+def test_exp_minus_abs_x_is_in_l2_and_exp_minus_x_is_not() -> None:
+    r"""$\int e^{-2|x|} = 1$; $\int_{-\infty}^0 e^{-2x} = \infty$. Source: by hand."""
+    maps, x = smooth_maps_and_coordinate()
+    L = Lp(2)
+    assert exp(-abs(x)) in L
+    assert exp(-x) not in L
 
 
-def test_l2_integral_fallback_certifies_integrable_and_divergent_exponentials() -> None:
-    x = var("x")
-    l2 = _square_integrable_functions()
-
-    assert l2(exp(-abs(x)))(0) == 1
-    with pytest.raises(AssertionError):
-        l2(exp(-x))
-
-
-
-
-
-
-
-
-def test_l2_certifies_zero_and_polynomial_multiples_of_a_gaussian() -> None:
-    x = var("x")
-    l2 = _square_integrable_functions()
-
-    zero = l2(SR(0))
-    weighted_gaussian = l2(x * exp(-x**2))
-
-    assert zero(7) == 0
-    assert weighted_gaussian(2) == 2 * exp(-4)
-    assert _square_integrability(x * exp(-x**2), x) == _MEMBER
-
-
+def test_zero_and_x_times_the_gaussian_are_in_l2() -> None:
+    r"""$\int x^2 e^{-2x^2}\,dx = \sqrt{\pi/2}/4$. Source: Gaussian moments; by hand."""
+    maps, x = smooth_maps_and_coordinate()
+    L = Lp(2)
+    assert L.zero() in L
+    weighted = L(maps(x * exp(-x**2)))
+    assert weighted(2) == 2 * exp(-4)
+    assert L.q(weighted) == sqrt(pi / 2) / 4

@@ -1,49 +1,24 @@
-r"""The automorphisms of a free module are a group, and a predicate carves it.
+r"""$\operatorname{Aut}_{\mathbb Z}(\mathbb Z^2) = \operatorname{End}(\mathbb Z^2)^\times = \mathrm{GL}_2(\mathbb Z)$."""
 
-\(\operatorname{Aut}_R(M)\) is the unit group of \(\operatorname{End}_R(M)\):
-an endomorphism has a two-sided inverse in that ring exactly when it is an
-isomorphism of \(M\).  Reading it that way is what makes it a group object,
-and a predicate subgroup needs a group object to carve.
-
-The specimen is the free \(\mathbf Z\)-module on two labels, whose
-automorphism group is \(\mathrm{GL}_2(\mathbf Z)\).  The predicate is the
-stabilizer of one basis element, a subgroup because the maps fixing a given
-element are closed under composition and inverses.  Doubling is injective and
-not surjective, so it is an endomorphism and not an automorphism, which is the
-case that separates the unit group from the whole ring.
-"""
-
-from dzack_research.preamble.all import (
-    ZZ,
-    OwnedGroups,
-    OwnedRings,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _plane():
-    return ZZ.free_module(finite_ordered_set(("a", "b")))
+def test_aut_z2_contains_the_swap_but_not_the_doubling() -> None:
+    r"""The swap has determinant $-1$, a unit; doubling has determinant $4$, so it is injective with
+    cokernel $(\mathbb Z/2)^2$ and not invertible.
 
+    Source: Lang, Algebra, XIII.4 (an integer matrix is invertible over Z iff its determinant is ±1).
+    """
+    M = ZZ**2
+    a, b = M.module_generator(0), M.module_generator(1)
+    swap = M.End()({0: b, 1: a})
+    doubling = M.End()({0: 2 * a, 1: 2 * b})
+    automorphisms = M.Aut()
 
-def _swap(plane):
-    return plane.module_category().Mor(plane, plane)(
-        {"a": plane.module_generator("b"), "b": plane.module_generator("a")}
-    )
-
-
-def test_the_automorphisms_of_a_free_module_are_the_units_of_its_endomorphism_ring() -> None:
-    plane = _plane()
-    automorphisms = OwnedRings().unit_group()(plane.End())
-
-    doubling = plane.module_category().Mor(plane, plane)(
-        {
-            "a": 2 * plane.module_generator("a"),
-            "b": 2 * plane.module_generator("b"),
-        }
-    )
-
-    assert automorphisms in OwnedGroups()
-    assert _swap(plane) in automorphisms
+    assert automorphisms == M.End().unit_group()
+    assert swap in automorphisms
+    assert swap * swap == M.End().one()
     assert doubling not in automorphisms
-
-
+    assert doubling.is_injective()
+    assert not doubling.is_surjective()
+    assert doubling.cokernel().cardinality() == 4

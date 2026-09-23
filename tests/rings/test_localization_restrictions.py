@@ -14,8 +14,6 @@ from dzack_research.preamble.all import (
 )
 
 
-
-
 def test_localization_restrictions_compose_along_a_chain_of_inverted_scalars() -> None:
     inverted_two = ZZ.localization(2)
     inverted_six = ZZ.localization(2, 3)
@@ -50,5 +48,3 @@ def test_a_localization_restricts_into_a_prime_localization_as_a_germ() -> None:
 
     assert germ.codomain() is at_x_minus_one
     assert germ(away_from_x(1) / x) == at_x_minus_one(1) / at_x_minus_one(x)
-
-

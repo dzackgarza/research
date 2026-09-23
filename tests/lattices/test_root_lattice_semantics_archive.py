@@ -13,12 +13,6 @@ from dzack_research.preamble.all import (
     Lattices,
 )
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage",
-    "live_owner": "src/dzack_research/preamble/categories/lattices.py",
-    "disposition": "reconciled-live-owner",
-}
-
 
 def test_archived_a2_selected_simple_system_and_highest_root_are_live() -> None:
     lattice = Lattices(ZZ)("A2")
@@ -50,8 +44,6 @@ def test_archived_simple_reflections_act_on_the_selected_root_framing() -> None:
     coxeter = first_reflection * second_reflection
     assert coxeter * coxeter * coxeter == lattice.Aut().one()
     assert coxeter != lattice.Aut().one()
-
-
 
 
 def test_archived_a2_root_sign_partition_is_exact() -> None:

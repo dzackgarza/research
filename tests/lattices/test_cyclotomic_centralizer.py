@@ -1,23 +1,16 @@
-r"""Higher finite-order lattice centralizers retain cyclotomic gluing data."""
+r"""Cyclotomic decompositions of finite-order isometries and their gluing."""
 
-from dzack_research.preamble.all import (
-    ZZ,
-    Lattices,
-    finite_ordered_set,
-)
+from dzack_research.preamble.all import *
 
 
-def _cubic_rotation():
+def cyclic_permutation_of_Z3():
     lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
     labels = lattice.module_generating_set()
     first, second, third = lattice.module_generators()
-    rotation = lattice.O()(
-        {labels[0]: second, labels[1]: third, labels[2]: first}
-    )
-    return rotation
+    return lattice.O()({labels[0]: second, labels[1]: third, labels[2]: first})
 
 
-def _negation(lattice):
+def negation_of(lattice):
     return lattice.O()(
         {
             label: -lattice.module_generator(label)
@@ -26,11 +19,15 @@ def _negation(lattice):
     )
 
 
-def test_order_three_cyclotomic_decomposition_retains_nontrivial_glue() -> None:
-    isometry = _cubic_rotation()
+def test_the_three_cycle_on_Z3_splits_into_Phi1_and_Phi3_parts_glued_with_index_three() -> None:
+    r"""The 3-cycle fixes Z(1,1,1) (norm 3) and acts with order 3 on the
+    sum-zero sublattice A2 (discriminant 3); their sum has index
+    sqrt(3 * 3 / 1) = 3 in Z^3.  A reflection of A2 does not commute with an
+    order-3 rotation of A2 (the dihedral group of order 6 is nonabelian)."""
+    isometry = cyclic_permutation_of_Z3()
     decomposition = isometry.cyclotomic_decomposition(3)
 
-    assert decomposition.nonzero_divisors() == finite_ordered_set((ZZ(1), ZZ(3)))
+    assert Set(decomposition.nonzero_divisors()) == Set((1, 3))
     assert decomposition.summand(1).module_rank() == 1
     assert decomposition.summand(3).module_rank() == 2
     assert decomposition.index() == 3
@@ -47,7 +44,7 @@ def test_order_three_cyclotomic_decomposition_retains_nontrivial_glue() -> None:
 
 
 def test_cyclotomic_component_tuple_lifts_exactly_when_it_preserves_the_glue() -> None:
-    isometry = _cubic_rotation()
+    isometry = cyclic_permutation_of_Z3()
     decomposition = isometry.cyclotomic_decomposition(3)
     restrictions = decomposition.component_isometries()
 
@@ -60,17 +57,21 @@ def test_cyclotomic_component_tuple_lifts_exactly_when_it_preserves_the_glue() -
 
     incompatible = {
         1: decomposition.summand(1).O().one(),
-        3: _negation(decomposition.summand(3)),
+        3: negation_of(decomposition.summand(3)),
     }
     assert incompatible[3] in decomposition.component_centralizers()[3]
     assert not decomposition.component_isometries_extend(incompatible)
 
 
+def test_the_centralizer_of_minus_one_on_Z3_is_the_signed_permutation_group_of_order_48() -> None:
+    r"""O(I_3) is the hyperoctahedral group (Z/2)^3 x| S_3 of order 48, and -1
+    is central in it, so its centralizer is all of O(I_3)."""
+    lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    minus_one = negation_of(lattice)
 
-
-
-
-
-
-
-
+    assert lattice.O().cardinality() == 48
+    assert minus_one.centralizer_group().cardinality() == 48
+    first, second, third = lattice.module_generators()
+    swap = lattice.O()({0: second, 1: first, 2: third})
+    assert swap in minus_one.centralizer_group()
+    assert swap(first) == second

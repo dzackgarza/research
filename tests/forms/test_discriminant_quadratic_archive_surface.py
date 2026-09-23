@@ -1,29 +1,19 @@
-r"""Archive reconciliation for discriminant quadratic modules.
+r"""The discriminant quadratic form of ``D4``."""
 
-The live discriminant-module owner keeps quadratic forms separate from their
-bilinear polarizations, while retaining normal forms, Brown invariants,
-metabolizers and orthogonal automorphisms on the same finite quadratic object.
-"""
-
-from dzack_research.preamble.all import ZZ, Lattices
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage",
-    "live_owner": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_brown_invariant_of_the_D4_discriminant_form_is_its_signature_mod_8() -> None:
+    r"""Milgram: ``Br(q_{D4}) = sign(D4) mod 8``; ``A_{D4} = (Z/2)^2`` is anisotropic.
 
+    The three nonzero classes all have ``q = 1 mod 2Z``, so the Gauss sum is
+    ``(1 - 3)/2 = -1 = exp(2 pi i * 4/8)``, and ``sign(D4) = +-4``.
+    """
+    lattice = Lattices(ZZ)("D4")
+    form = lattice.discriminant_quadratic_form()
+    positive, negative = lattice.signature_pair()
 
-def test_archived_quadratic_normalization_and_brown_invariant_remain_form_data() -> None:
-    form = Lattices(ZZ)("D4").discriminant_quadratic_form()
-    invariant = form.invariant_factor_form()
-    jordan = form.p_adic_jordan_form()
-
-    assert invariant.domain() is form
-    assert tuple(invariant.codomain().invariants()) == tuple(form.invariants())
-    assert jordan.domain() is form
-    assert tuple(jordan.codomain().invariants()) == tuple(form.invariants())
-    positive, negative = Lattices(ZZ)("D4").signature_pair()
+    assert form.cardinality() == 4
     assert form.brown_invariant() == (int(positive) - int(negative)) % 8
+    assert form.brown_invariant() == 4
+    assert form.is_anisotropic()

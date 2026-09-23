@@ -1,80 +1,59 @@
-r"""Selected projective linear systems retain base loci and rational-map domains."""
+r"""Linear systems on the projective plane: base loci, dimensions, restrictions."""
 
-from dzack_research.preamble.all import QQ, OpenImmersions, ProjectiveSpaces
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/framework/test_linear_systems_restrictions.sage",
-    "live_owner": "tests/divisors/test_projective_linear_systems.py",
-    "owner_overrides": {
-        "test_restriction_map_has_expected_rank_and_cokernel": "tests/divisors/test_projective_section_restrictions.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _coordinate_sections(bundle):
-    sections = bundle.global_sections()
-    labels = tuple(sections.module_generating_set())
-    return tuple(sections.module_generator(label) for label in labels)
+def test_pencil_of_lines_through_a_point_has_that_point_as_base_locus() -> None:
+    r"""``<x0, x1> subset H^0(P^2, O(1))`` is a pencil with base locus ``(0:0:1)``.
 
-
-def test_selected_linear_system_with_base_point_retains_actual_open_domain() -> None:
-    plane = ProjectiveSpaces(QQ)(2)
+    Its rational map is the projection ``P^2 --> P^1`` from ``(0:0:1)``,
+    defined exactly on the complement of the base point.
+    """
+    plane = ProjectiveSpaces(QQ)(2, names=("x0", "x1", "x2"))
+    ring = plane.homogeneous_coordinate_ring()
     bundle = plane.O(1)
-    x0, x1, _x2 = _coordinate_sections(bundle)
+    sections = bundle.global_sections()
+    x0 = sections.section_from_homogeneous_polynomial(ring("x0"))
+    x1 = sections.section_from_homogeneous_polynomial(ring("x1"))
 
     system = bundle.linear_system((x0, x1))
     base_locus = system.base_locus()
-    domain = system.domain_of_definition()
-    morphism = system.associated_morphism()
 
-    assert system.line_bundle() is bundle
-    assert system.selected_section_space().dimension() == 2
-    assert system.selected_section_space() is system.section_embedding().domain()
-    for old_name in (
-        "_preamble_linear_system_line_bundle",
-        "_preamble_selected_section_space",
-        "_preamble_section_embedding",
-        "_preamble_base_locus",
-    ):
-        assert old_name not in system.__dict__
     assert system.projective_dimension() == 1
-    assert system.variable_names() == ProjectiveSpaces(QQ)(1).variable_names()
-    assert base_locus.inclusion().codomain() is plane
-    assert not base_locus.is_empty()
     assert not system.is_basepoint_free()
-    assert domain in OpenImmersions(plane)
-    assert domain is not plane
-    assert morphism.domain() is domain
-    assert morphism.codomain() is system
-
-
+    assert base_locus.dimension() == 0
+    assert base_locus.contains_point(plane.point((0, 0, 1)))
+    assert not base_locus.contains_point(plane.point((1, 0, 0)))
+    assert system.domain_of_definition().contains_point(plane.point((1, 0, 0)))
+    assert not system.domain_of_definition().contains_point(plane.point((0, 0, 1)))
 
 
 def test_complete_hyperplane_system_has_empty_base_locus_and_everywhere_defined_map() -> None:
+    r"""``|O(1)|`` on ``P^2`` is basepoint free of dimension 2; its map is the identity of ``P^2``."""
     plane = ProjectiveSpaces(QQ)(2)
-    bundle = plane.O(1)
-    system = bundle.linear_system()
+    system = plane.O(1).linear_system()
 
     assert system.is_basepoint_free()
     assert system.base_locus().is_empty()
-    assert system.domain_of_definition() is plane
-    assert system.associated_morphism().domain() is plane
-    assert system.associated_morphism().codomain() is system
+    assert system.projective_dimension() == 2
+    assert system.associated_morphism().is_isomorphism()
 
 
 def test_complete_quadrics_and_restriction_to_a_line_keep_expected_dimensions() -> None:
+    r"""``|O(2)|`` on ``P^2`` has dimension 5; ``H^0(P^2, O(2)) -> H^0(L, O(2))`` for ``L = V(x)``.
+
+    The restriction is onto the 3-dimensional ``H^0(P^1, O(2))`` with kernel
+    ``x * H^0(O(1))``, of dimension 3.
+    """
     plane = ProjectiveSpaces(QQ)(2, names=("x", "y", "z"))
     bundle = plane.O(2)
-    system = bundle.linear_system()
-    ring = bundle.global_sections().homogeneous_coordinate_ring()
-    line = plane.closed_subscheme(ring.algebra_generator("x"))
+    ring = plane.homogeneous_coordinate_ring()
+    line = plane.closed_subscheme(ring("x"))
     restriction = bundle.restriction_map(line)
 
-    assert system.is_basepoint_free()
-    assert system.projective_dimension() == 5
-    assert system.associated_morphism().domain() is plane
-    assert restriction.domain() is bundle.global_sections()
+    assert bundle.linear_system().is_basepoint_free()
+    assert bundle.linear_system().projective_dimension() == 5
     assert restriction.domain().dimension() == 6
     assert restriction.codomain().dimension() == 3
     assert restriction.kernel().dimension() == 3
+    assert restriction.cokernel().dimension() == 0

@@ -1,74 +1,37 @@
-from dzack_research.preamble.all import (
-    GF,
-    Modules,
-    Groups,
-    ZZ,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+r"""Ordinary and Brauer characters of group modules."""
+
+from dzack_research.preamble.all import GF, ZZ, Groups, Modules
 
 
-def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -> None:
+def test_the_character_of_sign_plus_trivial_of_s3_is_2_0_2() -> None:
+    r"""$\chi = \operatorname{sgn} + 1$: $\chi(1) = 2$, $\chi((1\,2)) = -1 + 1 = 0$, $\chi((1\,2\,3)) = 1 + 1 = 2$."""
     group = Groups.S(3)
-    module = ZZ.free_module(finite_ordered_set(("sign", "trivial")))
-    sign_generator = module.module_generator("sign")
-    trivial_generator = module.module_generator("trivial")
-    positive = module.Mor(module)(
-        {"sign": sign_generator, "trivial": trivial_generator}
-    )
-    negative = module.Mor(module)(
-        {"sign": -sign_generator, "trivial": trivial_generator}
-    )
+    module = Modules(ZZ)(ZZ**2)
+    e0, e1 = module.module_generator(0), module.module_generator(1)
 
-    def action(group_element, vector):
-        return (positive if group_element.sign() == 1 else negative)(vector)
+    def act(g, vector):
+        return module.Mor(module)({0: g.sign() * e0, 1: e1})(vector)
 
-    acted = Modules(ZZ[group])(module, action)
-    character = acted.character()
+    character = Modules(ZZ[group])(module, act).character()
 
-    assert character.domain() is group
-    for group_element in group:
-        assert character(group_element) == acted.action_of(group_element).trace()
-
-    transposition = next(element for element in group if element.order() == 2)
-    three_cycle = next(element for element in group if element.order() == 3)
     assert character(group.one()) == 2
-    assert character(transposition) == 0
-    assert character(three_cycle) == 2
+    assert character(group((1, 2))) == 0
+    assert character(group((1, 2, 3))) == 2
 
 
-def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
-    base_ring = GF(2)
+def test_the_2_modular_brauer_character_of_the_order_three_action_of_c6_on_f2_squared_is_2_minus1_minus1() -> None:
+    r"""$g$ acts on $\mathbb{F}_2^2$ by $x \mapsto y,\ y \mapsto x + y$, of order 3 with eigenvalues the primitive cube roots of unity in $\mathbb{F}_4$; their Teichmüller lifts sum to $\omega + \omega^2 = -1$, while the modular trace is $1$ (Serre, *Linear representations of finite groups*, 18.1)."""
     group = Groups.C(6)
-    module = base_ring.free_module(finite_ordered_set(("x", "y")))
-    x = module.module_generator("x")
-    y = module.module_generator("y")
-    order_three = module.Mor(module)({"x": y, "y": x + y})
-    generator = next(iter(group.group_generators()))
+    (g,) = group.group_generators()
+    module = Modules(GF(2))(GF(2) ** 2)
+    x, y = module.module_generator(0), module.module_generator(1)
+    rotation = module.Aut()({0: y, 1: x + y})
+    rho = group.Mor(module.Aut())({g: rotation})
 
-    def action(group_element, vector):
-        exponent = next(
-            exponent for exponent in range(6) if group_element == generator**exponent
-        )
-        moved = vector
-        for _ in range(exponent % 3):
-            moved = order_three(moved)
-        return moved
+    acted = Modules(GF(2)[group])(module, lambda h, vector: rho(h)(vector))
+    brauer = acted.brauer_character()
 
-    acted = Modules(base_ring[group])(module, action)
-    brauer_character = acted.brauer_character()
-    representatives = group.conjugacy_classes_representatives()
-    regular_representatives = tuple(
-        representative for representative in representatives if representative.order() % 2
-    )
-
-    assert tuple(brauer_character) == tuple(
-        2 if representative == group.one() else -1
-        for representative in regular_representatives
-    )
-    assert brauer_character.cardinality() == 3 < representatives.cardinality()
-    order_three_element = generator**2
-    assert acted.action_of(order_three_element).trace() == GF(2).one()
-    order_three_index = regular_representatives.index(order_three_element)
-    assert brauer_character[order_three_index] == -1
-
-
+    assert brauer(group.one()) == 2
+    assert brauer(g**2) == -1
+    assert brauer(g**4) == -1
+    assert acted.action_of(g**2).trace() == GF(2).one()

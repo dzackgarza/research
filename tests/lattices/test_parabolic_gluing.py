@@ -43,15 +43,3 @@ def test_nonunimodular_gluing_restricts_the_definite_Levi_image() -> None:
     assert image.cardinality() < reduction.O().cardinality()
     assert image.cardinality() > 1
     assert all(generator in image for generator in reduction.levi_image_generators())
-
-
-
-
-
-
-
-
-
-
-
-

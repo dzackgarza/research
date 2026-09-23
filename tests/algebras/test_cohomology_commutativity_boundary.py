@@ -1,140 +1,69 @@
-r"""Cohomology algebra retains only commutativity justified by its source DGA."""
-from sage.misc.unknown import Unknown
+r"""Cohomology of differential graded algebras with zero differential."""
 
-from dzack_research.preamble.all import GF, ZZ
-from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.algebras.cohomology_algebras import (
-    CohomologyAlgebras,
-)
-from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-    DifferentialGradedAlgebras,
-)
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
-    GradedCommutativeAlgebras,
-    StrictlyGradedCommutativeAlgebras,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _noncommutative_zero_differential_dga():
-    module = ZZ.free_module(finite_ordered_set(("x", "y")))
-    algebra = module.tensor_algebra()
-    dga = DifferentialGradedAlgebras(ZZ)(
-        algebra,
-        lambda _element: algebra.zero(),
-    )
-    assert dga.underlying_graded_algebra() is algebra
-    assert dga.differential().graded_leibniz_decision() is Unknown
-    assert dga.differential().square_zero_decision() is Unknown
-    return dga
+def _free_associative_dga():
+    r"""``ZZ<x, y>`` with ``|x| = |y| = 1`` and ``d = 0``, so ``H = ZZ<x, y>``."""
+    tensor = Modules(ZZ).free_module(("x", "y")).tensor_algebra()
+    x = tensor.algebra_generator("x")
+    y = tensor.algebra_generator("y")
+    dga = DifferentialGradedAlgebras(ZZ)(tensor, {x: tensor.zero(), y: tensor.zero()})
+    return dga, dga(x), dga(y)
 
 
-
-
-def test_noncommutative_zero_differential_dga_keeps_noncommutative_cohomology() -> None:
-    dga = _noncommutative_zero_differential_dga()
+def test_cohomology_of_the_free_associative_dga_is_noncommutative() -> None:
+    r"""With ``d = 0``, ``H(ZZ<x,y>) = ZZ<x,y>``, so ``[x][y] ≠ ±[y][x]``: cohomology of
+    a DGA need not be graded-commutative."""
+    dga, x, y = _free_associative_dga()
     cohomology = dga.cohomology_algebra()
+    x_class = cohomology.class_of(x)
+    y_class = cohomology.class_of(y)
 
-    assert cohomology in CohomologyAlgebras(ZZ)
-    assert cohomology in GradedAlgebras(ZZ)
-    assert cohomology not in GradedCommutativeAlgebras(ZZ)
-    assert cohomology not in StrictlyGradedCommutativeAlgebras(ZZ)
-
-    x = dga.algebra_generator("x")
-    y = dga.algebra_generator("y")
-    x_class = cohomology.from_component(
-        1,
-        cohomology.graded_piece(1).class_of_cycle(x.homogeneous_component(1)),
-    )
-    y_class = cohomology.from_component(
-        1,
-        cohomology.graded_piece(1).class_of_cycle(y.homogeneous_component(1)),
-    )
     assert x_class * y_class != y_class * x_class
+    assert x_class * y_class != -(y_class * x_class)
+    assert x_class * y_class != cohomology.zero()
 
 
-
-
-def test_characteristic_two_does_not_turn_graded_commutativity_into_odd_square_zero() -> None:
-    field = GF(2)
-    algebra = field.free_module(("x",)).symmetric_algebra()
-    dga = DifferentialGradedAlgebras(field)(
-        algebra,
-        lambda _element: algebra.zero(),
-    )
-    x = dga.algebra_generator("x")
-
-    assert x.degree() == 1
-    assert x * x != dga.zero()
-    assert dga in DifferentialGradedAlgebras(field).Supercommutative()
-    assert dga not in StrictlyGradedCommutativeAlgebras(field)
-
+def test_swap_of_generators_induces_the_swap_on_cohomology() -> None:
+    r"""``H`` is a functor: ``σ : x ↔ y`` induces ``H(σ)`` with ``H(σ)[x] = [y]``,
+    ``H(σ)([x][y]) = [y][x]`` and ``H(σ)^2 = id``."""
+    dga, x, y = _free_associative_dga()
+    swap = dga.Mor(dga)({x: y, y: x})
     cohomology = dga.cohomology_algebra()
-    x_class = cohomology.from_component(
-        1,
-        cohomology.graded_piece(1).class_of_cycle(x.homogeneous_component(1)),
-    )
-    assert cohomology in GradedCommutativeAlgebras(field)
-    assert cohomology not in StrictlyGradedCommutativeAlgebras(field)
-    assert x_class * x_class != cohomology.zero()
-
-
-def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map() -> None:
-    dga = _noncommutative_zero_differential_dga()
-    x = dga.algebra_generator("x")
-    y = dga.algebra_generator("y")
-    swap_algebra = Algebras(dga.base_ring()).Associative().Unital().Mor(dga, dga)({"x": y, "y": x})
-    swap = DifferentialGradedAlgebras(dga.base_ring()).Mor(dga, dga)(swap_algebra)
-    assert swap.degree_preservation_decision() is True
-    assert swap.differential_compatibility_decision() is Unknown
-
-    cohomology = dga.cohomology_algebra()
-    functor = DifferentialGradedAlgebras(ZZ).cohomology_algebra()
-    assert functor.domain() is DifferentialGradedAlgebras(ZZ)
-    assert functor(dga) is cohomology
-    induced = functor(swap)
-    direct = CohomologyAlgebras(ZZ).Mor(cohomology, cohomology)(swap)
-    x_class = cohomology.from_component(
-        1,
-        cohomology.graded_piece(1).class_of_cycle(x.homogeneous_component(1)),
-    )
-    y_class = cohomology.from_component(
-        1,
-        cohomology.graded_piece(1).class_of_cycle(y.homogeneous_component(1)),
-    )
+    induced = DifferentialGradedAlgebras(ZZ).cohomology_algebra()(swap)
+    x_class = cohomology.class_of(x)
+    y_class = cohomology.class_of(y)
 
     assert induced(x_class) == y_class
     assert induced(y_class) == x_class
-    assert induced(x_class) == direct(x_class)
     assert induced(x_class * y_class) == y_class * x_class
-    assert (induced * induced)(x_class) == x_class
-    assert (induced * induced)(y_class) == y_class
+    assert induced(induced(x_class * y_class)) == x_class * y_class
 
 
-def test_graded_derivation_checks_degree_through_the_graded_algebra_owner() -> None:
-    from dzack_research.preamble.categories.algebras.derivations import (
-        GradedDerivation,
-    )
+def test_a_degree_one_class_over_gf2_can_have_nonzero_square() -> None:
+    r"""Over ``GF(2)``, ``GF(2)[x]`` with ``|x| = 1`` and ``d = 0`` is graded-commutative
+    (signs are trivial) but ``[x]^2 = [x^2] ≠ 0``: graded commutativity does not
+    force odd classes to square to zero in characteristic 2."""
+    polynomial = Modules(GF(2)).free_module(("x",)).symmetric_algebra()
+    x = polynomial.algebra_generator("x")
+    dga = DifferentialGradedAlgebras(GF(2))(polynomial, {x: polynomial.zero()})
+    cohomology = dga.cohomology_algebra()
+    x_class = cohomology.class_of(dga(x))
 
-    module = ZZ.free_module(finite_ordered_set(("x", "y")))
-    algebra = module.tensor_algebra()
+    assert dga(x).degree() == 1
+    assert x_class * x_class != cohomology.zero()
+    assert x_class * x_class * x_class != cohomology.zero()
 
-    def euler(element):
-        element = algebra(element)
-        if element == algebra.zero():
-            return algebra.zero()
-        return algebra(ZZ(algebra.homogeneous_degree(element))) * element
 
-    derivation = GradedDerivation(algebra.graded_derivations(algebra, shift=0), euler)
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
-    underlying = derivation.underlying_linear_morphism()
+def test_euler_derivation_of_the_free_associative_algebra_multiplies_by_word_length() -> None:
+    r"""The derivation ``E`` with ``E(x) = x``, ``E(y) = y`` on ``ZZ<x, y>`` acts on a
+    word of length ``n`` by ``n``: ``E(xy) = 2xy``, ``E(xyx) = 3xyx`` (Leibniz rule)."""
+    tensor = Modules(ZZ).free_module(("x", "y")).tensor_algebra()
+    x = tensor.algebra_generator("x")
+    y = tensor.algebra_generator("y")
+    euler = tensor.derivations()({x: x, y: y})
 
-    assert underlying.derivation() is derivation
-    assert underlying.degree_shift() == 0
-    assert derivation.parent()(underlying) is derivation
-    assert algebra.homogeneous_degree(derivation(x)) == 1
-    assert derivation(x * y) == algebra(ZZ(2)) * x * y
+    assert euler(x * y) == 2 * x * y
+    assert euler(x * y * x) == 3 * x * y * x
+    assert euler(x * y + y) == 2 * x * y + y

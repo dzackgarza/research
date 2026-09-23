@@ -36,5 +36,3 @@ def test_normalized_a2_facet_inequalities_recover_the_six_roots():
     lattice = Lattices.A2
     assert lattice.voronoi_relevant_vectors().cardinality() == 6
     assert all(vector.q() == 2 for vector in lattice.voronoi_relevant_vectors())
-
-

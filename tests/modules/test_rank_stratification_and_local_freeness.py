@@ -1,100 +1,64 @@
-r"""The rank of a module is a function on the spectrum, and it stratifies it.
+r"""The fibre dimension of $\mathbb Q[x]/(x) \oplus \mathbb Q[x]$ over the affine line.
 
-A module that is not locally free has no rank.  It has a fibre dimension at
-each point, and the Fitting ideals say where each value is taken: the fibre has
-dimension at least ``d`` on the closed set cut out by ``Fitt_{d-1}``, so each
-value is taken on a locally closed stratum.  Freeness at a point is the
-neighbouring statement, that the next Fitting ideal down localizes to zero.
-
-The specimen is ``R/(x) + R`` over ``QQ[x]``, which is free of rank one away
-from the origin and has a two-dimensional fibre there.
+$M = R/(x) \oplus R$ with $R = \mathbb Q[x]$ has $\dim_{\kappa(\mathfrak p)} M \otimes \kappa(\mathfrak p)$
+equal to $1$ at the generic point and $2$ at the origin; it is free of rank one
+away from the origin and not free at it.  The fibre dimension is at least $d$
+exactly on $V(\operatorname{Fitt}_{d-1} M)$ (Eisenbud, *Commutative Algebra*, 20.6).
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _torsion_plus_free():
-    r"""Return ``QQ[x]``, its variable, and ``R/(x) + R`` presented on two generators."""
-    ring = QQ.polynomial_ring("x")
-    x = ring.algebra_generator("x")
-    free = ring.free_module(finite_ordered_set(("g", "h")))
-    relations = ring.free_module(finite_ordered_set(("r",)))
-    module = relations.module_category().Mor(relations, free)(
-            {"r": free.scalar_multiple(x, free.module_generator("g"))}
-        ).cokernel()
-    return ring, x, module
+def torsion_plus_free():
+    R = QQ["x"]
+    x = R.gen()
+    F = R**2
+    M = F / F.submodule([x * F.module_generator(0)])
+    spectrum = R.spectrum()
+    return R, x, M, spectrum.generic_point(), spectrum(R.ideal(x))
 
 
-def test_the_rank_function_is_a_morphism_out_of_the_spectrum() -> None:
-    ring, x, module = _torsion_plus_free()
-    spectrum = ring.spectrum()
-
-    rank = module.rank_function()
-
-    assert rank.domain() is spectrum
-    assert rank(spectrum.generic_point()) == 1
-    assert rank(spectrum(ring.ideal(x))) == 2
+def test_the_fibre_dimension_is_1_generically_and_2_at_the_origin() -> None:
+    R, x, M, generic, origin = torsion_plus_free()
+    rank = M.rank_function()
+    assert rank(generic) == 1
+    assert rank(origin) == 2
+    assert rank(R.spectrum()(R.ideal(x - 1))) == 1
 
 
-def test_the_strata_separate_the_generic_point_from_the_origin() -> None:
-    ring, x, module = _torsion_plus_free()
-    spectrum = ring.spectrum()
-    generic = spectrum.generic_point()
-    origin = spectrum(ring.ideal(x))
-
-    assert generic in module.rank_stratum(1)
-    assert origin not in module.rank_stratum(1)
-    assert origin in module.rank_stratum(2)
-    assert generic not in module.rank_stratum(2)
+def test_the_rank_strata_separate_the_generic_point_from_the_origin() -> None:
+    """Fitt_0 = 0, Fitt_1 = (x): the rank-2 stratum is V(x). Source: Eisenbud 20.6."""
+    R, x, M, generic, origin = torsion_plus_free()
+    assert M.fitting_ideal(1) == R.ideal(x)
+    assert generic in M.rank_stratum(1)
+    assert origin not in M.rank_stratum(1)
+    assert origin in M.rank_stratum(2)
+    assert generic not in M.rank_stratum(2)
 
 
-def test_the_module_is_free_away_from_the_origin_and_not_at_it() -> None:
-    ring, x, module = _torsion_plus_free()
-    spectrum = ring.spectrum()
-
-    locus = module.local_freeness_locus()
-
-    assert spectrum.generic_point() in locus
-    assert spectrum(ring.ideal(x)) not in locus
+def test_the_module_is_locally_free_generically_and_not_at_the_origin() -> None:
+    R, x, M, generic, origin = torsion_plus_free()
+    locus = M.local_freeness_locus()
+    assert generic in locus
+    assert origin not in locus
+    assert not M.localize_at_prime(origin).is_free()
 
 
-def test_the_free_locus_supplies_its_actual_local_trivialization() -> None:
-    ring, x, module = _torsion_plus_free()
-    spectrum = ring.spectrum()
-    generic = spectrum.generic_point()
-    origin = spectrum(ring.ideal(x))
-
-    trivialization = module.local_free_trivialization_at(generic)
-
-    assert trivialization.codomain() is module.localize_at_prime(generic)
-    assert trivialization.domain().module_rank() == module.rank_at(generic)
-    assert trivialization.forward().is_injective()
-    assert trivialization.forward().is_surjective()
-
-    try:
-        module.local_free_trivialization_at(origin)
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("a point outside the local-freeness locus cannot be trivialized")
+def test_the_local_trivialization_at_the_generic_point_has_rank_one() -> None:
+    R, x, M, generic, origin = torsion_plus_free()
+    trivialization = M.local_free_trivialization_at(generic)
+    assert trivialization.domain().module_rank() == 1
+    assert trivialization.is_isomorphism()
 
 
-def test_the_annihilator_of_a_sum_of_cyclic_modules_over_a_non_pid() -> None:
-    r"""``Ann(R/(x) + R/(y))`` is ``(x) cap (y) = (xy)``, computed generator by generator."""
-    ring = QQ.polynomial_ring(("x", "y"))
-    x = ring.algebra_generator("x")
-    y = ring.algebra_generator("y")
-    free = ring.free_module(finite_ordered_set(("g", "h")))
-    relations = ring.free_module(finite_ordered_set(("r", "s")))
-    module = relations.module_category().Mor(relations, free)(
-            {
-                "r": free.scalar_multiple(x, free.module_generator("g")),
-                "s": free.scalar_multiple(y, free.module_generator("h")),
-            }
-        ).cokernel()
+def test_the_annihilator_of_q_x_y_mod_x_plus_q_x_y_mod_y_is_xy() -> None:
+    r"""$\operatorname{Ann}(R/(x) \oplus R/(y)) = (x) \cap (y) = (xy)$ over $\mathbb Q[x,y]$.
 
-    assert module.annihilator() == ring.ideal(x * y)
-    assert module.annihilator() == module.scalar_action().kernel()
+    Source: by hand; x and y are coprime in the UFD QQ[x,y].
+    """
+    R = QQ["x,y"]
+    x, y = R.gens()
+    F = R**2
+    M = F / F.submodule([x * F.module_generator(0), y * F.module_generator(1)])
+    assert M.annihilator() == R.ideal(x * y)
+    assert M.annihilator() != R.ideal(x)

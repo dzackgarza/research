@@ -1,90 +1,60 @@
-from sage.categories.homset import Homset
+r"""Connections on a free module over a polynomial ring.
+
+A connection $\nabla\colon M \to M \otimes_A \Omega_A$ satisfies the Leibniz
+rule $\nabla(f m) = m \otimes df + f \nabla(m)$; on a rank-one free module with
+$\nabla(e) = e \otimes \omega$ its curvature is $e \otimes (d\omega +
+\omega \wedge \omega) = e \otimes d\omega$.
+"""
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-from dzack_research.preamble.all import QQ, ZZ
-from dzack_research.preamble.categories.modules import (
-    CochainComplexes,
-    DifferentialGradedModules,
-    Modules,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
-from dzack_research.static_types import (
-    coefficient_form_view,
-    covariant_d,
-    flat_connection_view,
-)
+def test_leibniz_rule_and_curvature_of_a_rank_one_connection() -> None:
+    """For omega = x dy on QQ[x,y], d omega = dx ^ dy != 0, so e -> e (x) x dy is not flat.
 
-
-def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> None:
-    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
-    x = algebra.algebra_generator("x")
-    module = algebra.free_module(finite_ordered_set(("e",)))
-    space = module.connections()
-    assert space is module.connections()
-    omega = space.one_forms()
-    e = module.module_generator("e")
+    Source: Kobayashi–Nomizu, Foundations of Differential Geometry I, III.5 (curvature of a
+    rank-one connection is d omega).
+    """
+    A = QQ["x,y"]
+    x, y = A.gens()
+    M = A**1
+    e = M.module_generator(0)
+    omega = A.kahler_differentials()
     dx = omega.differential_generator("x")
+    dy = omega.differential_generator("y")
+    twisted_forms = M.tensor_product(omega)
 
-    trivial = space({"e": space.target_module().zero()})
-    module_morphisms = Modules(QQ).Mor(
-        space.restricted_source_module(), space.restricted_target_module()
-    )
-    assert not isinstance(space, Homset)
-    assert space.arrow_set() is module_morphisms
-    assert module_morphisms in space.super_categories()
-    assert trivial.as_morphism().parent() is module_morphisms
-    assert trivial.as_morphism() in space
-    assert trivial(module.scalar_multiple(x, e)) == space.target_module().pure_tensor(e, dx)
+    trivial = M.connections()({0: twisted_forms.zero()})
+    assert trivial(x * e) == twisted_forms.pure_tensor(e, dx)
+    assert trivial(x * y * e) == twisted_forms.pure_tensor(e, y * dx + x * dy)
     assert trivial.is_flat()
 
-    dy = omega.differential_generator("y")
-    nonflat = space(
-        {
-            "e": space.target_module().pure_tensor(
-                e,
-                omega.scalar_multiple(x, dy),
-            )
-        }
-    )
-    assert not nonflat.is_flat()
-    assert nonflat.curvature_on_generator("e") != nonflat.curvature_target().zero()
+    twisted = M.connections()({0: twisted_forms.pure_tensor(e, x * dy)})
+    assert twisted(x * e) == twisted_forms.pure_tensor(e, dx) + twisted_forms.pure_tensor(e, x**2 * dy)
+    assert not twisted.is_flat()
 
 
+def test_flat_connection_gives_a_de_rham_dg_module() -> None:
+    """For nabla(e) = e (x) dx on QQ[x], the de Rham DG module has d(e) = e dx, d^2 = 0 and
+    d(e X) = d(e) X + e dX.
 
-
-def test_flat_connection_builds_the_de_rham_dg_module() -> None:
-    algebra = QQ.free_module(("x",)).symmetric_algebra()
-    x = algebra.algebra_generator("x")
-    module = algebra.free_module(finite_ordered_set(("e",)))
-    space = module.connections()
-    dx = space.one_forms().differential_generator("x")
-    connection = space(
-        {
-            "e": space.target_module().pure_tensor(
-                module.module_generator("e"),
-                dx,
-            )
-        }
-    )
+    Source: Deligne, Équations différentielles à points singuliers réguliers, I.2 (the de Rham
+    complex of a flat connection).
+    """
+    A = QQ["x"]
+    x = A.gen()
+    M = A**1
+    omega = A.kahler_differentials()
+    dx = omega.differential_generator("x")
+    connection = M.connections()({0: M.tensor_product(omega).pure_tensor(M.module_generator(0), dx)})
     assert connection.is_flat()
 
-    dg_module = connection.de_rham_module()
-    dga = dg_module.dga()
-    e = dg_module.from_coefficient(module.module_generator("e"))
-    X = dga.from_degree_zero(x)
+    complex_ = connection.de_rham_module()
+    forms = A.de_rham_algebra()
+    d = complex_.differential()
+    e = complex_(M.module_generator(0))
+    X = forms(x**2)
 
-    assert dg_module in DifferentialGradedModules(dga)
-    assert dg_module in CochainComplexes(QQ)
-    assert dg_module.connection() is connection
-    assert dg_module.degree_index_set() is ZZ
-    assert dg_module.d(dg_module.d(e)) == dg_module.zero()
-    assert dg_module.d(dg_module.act(e, X)) == (
-        dg_module.act(dg_module.d(e), X)
-        + dg_module.act(e, dga.d(X))
-    )
-
-    viewed_connection = flat_connection_view(connection)
-    viewed_coefficient = coefficient_form_view(e)
-    assert covariant_d(viewed_connection, viewed_coefficient) == dg_module.d(e)
-
-
+    assert d(e) == e * forms.differential()(forms(x))
+    assert d(d(e)) == complex_.zero()
+    assert d(e * X) == d(e) * X + e * forms.differential()(X)

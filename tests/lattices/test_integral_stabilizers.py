@@ -1,85 +1,52 @@
 r"""``G_L = {g in G : g(L) = L}`` for a lattice inside a rational space.
 
-A lattice in a ``QQ``-space ``V`` is a monomorphism ``L -> Res(V)`` with ``ZZ``
-on both sides, and the integral stabilizer of a rational group ``G`` is cut out
-of ``G`` by ``g(L) = L``.  The specimens live in the hyperbolic plane over
+A lattice in a ``QQ``-space ``V`` is a ``ZZ``-submodule of the restriction of
+scalars of ``V``, and the integral stabilizer of a rational group ``G`` is cut
+out of ``G`` by ``g(L) = L``.  The specimens live in the hyperbolic plane over
 ``QQ``, where ``diag(t, 1/t)`` is an isometry for every nonzero ``t``: on the
 isotropic line ``ZZ e_0`` that isometry gives ``g(L) < L``, which separates the
 equality from the containment.
-
-Unverified: written without running the suite.
 """
 
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
+    IntegralStructureAction,
     Lattices,
     Modules,
-    IntegralStructureAction,
 )
 
 
-def _the_rational_hyperbolic_plane():
-    r"""``U`` over ``QQ`` together with ``Res(U)``, the same group read over ``ZZ``."""
+def _rational_hyperbolic_plane_and_its_underlying_ZZ_module():
     plane = Lattices(QQ)("U")
-    restriction = Modules(QQ).restriction_of_scalars(
-        ZZ.Mor(QQ)(lambda element: QQ(element))
-    )
+    restriction = Modules(QQ).restriction_of_scalars(ZZ.Mor(QQ)(lambda n: QQ(n)))
     return plane, restriction(plane)
 
 
-
-
-
-
-def test_an_isometry_shrinking_an_isotropic_line_leaves_its_stabilizer() -> None:
-    r"""``diag(2, 1/2)`` carries ``ZZ e_0`` onto ``2 ZZ e_0``, properly inside it.
-
-    The containment ``g(L) <= L`` holds and the equality does not, so a
-    stabilizer that tested only that containment would admit this isometry.
-    Negation, which does carry the line onto itself, is admitted.
-    """
-    plane, space = _the_rational_hyperbolic_plane()
+def test_diag_two_half_maps_an_isotropic_line_properly_into_itself_and_leaves_its_stabilizer() -> None:
+    r"""``diag(2, 1/2)`` carries ``ZZ e_0`` onto ``2 ZZ e_0 < ZZ e_0``; ``-1`` carries it onto itself."""
+    plane, space = _rational_hyperbolic_plane_and_its_underlying_ZZ_module()
     e0, e1 = plane.module_generators()
-    line_module = ZZ.free_module(1)
-    line = line_module.Mono(space)({0: space.wrap(e0)})
-    orthogonal_group = plane.Aut()
-    scaling = orthogonal_group(
-        {
-            0: plane.scalar_multiple(QQ(2), e0),
-            1: plane.scalar_multiple(QQ(1) / 2, e1),
-        }
-    )
-    negation = orthogonal_group({0: -e0, 1: -e1})
+    line = space.submodule([space(e0)])
+    orthogonal_group = plane.O()
+    scaling = orthogonal_group({e0: 2 * e0, e1: e1 / 2})
+    negation = orthogonal_group({e0: -e0, e1: -e1})
 
     stabilizer = IntegralStructureAction(orthogonal_group, line).stabilizer()
 
-    assert line.is_in_image(space.wrap(scaling(e0)))
+    assert space(scaling(e0)) in line
     assert scaling not in stabilizer
     assert negation in stabilizer
 
 
-def test_commensurable_lattices_have_different_stabilizers_in_one_group() -> None:
-    r"""``2M <= L <= M`` for ``M = ZZ e_0 + ZZ e_1/2``, and the swap preserves only ``L``."""
-    plane, space = _the_rational_hyperbolic_plane()
+def test_the_swap_stabilizes_the_standard_lattice_but_not_a_commensurable_one() -> None:
+    r"""The swap ``e_0 <-> e_1`` preserves ``ZZ e_0 + ZZ e_1`` but sends ``e_1/2`` out of ``ZZ e_0 + ZZ e_1/2``."""
+    plane, space = _rational_hyperbolic_plane_and_its_underlying_ZZ_module()
     e0, e1 = plane.module_generators()
-    half = plane.scalar_multiple(QQ(1) / 2, e1)
-    standard_module = ZZ.free_module(2)
-    finer_module = ZZ.free_module(2)
-    doubled_module = ZZ.free_module(2)
-    standard = standard_module.Mono(space)(
-        {0: space.wrap(e0), 1: space.wrap(e1)}
-    )
-    finer = finer_module.Mono(space)(
-        {0: space.wrap(e0), 1: space.wrap(half)}
-    )
-    doubled = doubled_module.Mono(space)(
-        {0: space.wrap(plane.scalar_multiple(QQ(2), e0)), 1: space.wrap(e1)},
-    )
-    orthogonal_group = plane.Aut()
-    swap = orthogonal_group({0: e1, 1: e0})
+    standard = space.submodule([space(e0), space(e1)])
+    finer = space.submodule([space(e0), space(e1 / 2)])
+    orthogonal_group = plane.O()
+    swap = orthogonal_group({e0: e1, e1: e0})
 
-    assert standard.factor_through(finer).codomain() is finer.domain()
-    assert doubled.factor_through(standard).codomain() is standard.domain()
     assert swap in IntegralStructureAction(orthogonal_group, standard).stabilizer()
     assert swap not in IntegralStructureAction(orthogonal_group, finer).stabilizer()

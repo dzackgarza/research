@@ -1,16 +1,11 @@
-r"""Root-lattice discriminant actions retained from the archived mathematics suite.
+r"""Root-lattice discriminant actions.
 
-Conway--Sloane, chapter 4: ``A_n`` has cyclic glue group and the diagram
+Conway--Sloane, SPLAG, chapter 4: ``A_n`` has cyclic glue group and the diagram
 automorphism acts by negation; ``D_4`` has trivial Weyl action on its glue but
-full triality permutes the three nonzero classes.  The assertions below use the
-live owned discriminant-image subgroups.
+full triality permutes the three nonzero classes.
 """
 
-from dzack_research.preamble.all import (
-    Set,
-    Lattices,
-    finite_ordered_set,
-)
+from dzack_research.preamble.all import *
 
 
 def test_a4_discriminant_image_is_negation_on_c5() -> None:
@@ -25,25 +20,25 @@ def test_a4_discriminant_image_is_negation_on_c5() -> None:
     assert Set(image.orbit(generator)) == Set((generator, -generator))
 
 
-def test_d4_weyl_group_is_trivial_on_glue_but_triality_is_not() -> None:
+def test_the_weyl_group_of_D4_acts_trivially_on_its_glue_and_triality_permutes_the_three_nonzero_classes() -> None:
+    r"""|Aut(D4)| = |W(F4)| = 1152, |W(D4)| = 2^3 * 4! = 192, and
+    Aut(D4) / W(D4) = S3 maps isomorphically onto O(q_{D4}) = GL_2(F_2)
+    (Conway--Sloane, SPLAG, ch. 4)."""
     lattice = Lattices.D4
     automorphisms = lattice.Aut()
-    reflections = finite_ordered_set(
-        [lattice.reflection(root) for root in lattice.module_generators()]
-    )
-    weyl = automorphisms.subgroup_on(reflections)
+    weyl = lattice.weyl_group()
     full_image = automorphisms.discriminant_image()
     form = lattice.discriminant_group()
-    zero = form.zero()
-    nonzero = form.condition_set(lambda element: element != zero)
     generator = form.module_generators()[0]
+    nonzero = Set(element for element in form if element != form.zero())
 
     assert automorphisms.cardinality() == 1152
     assert weyl.cardinality() == 192
     assert weyl.discriminant_image().cardinality() == 1
     assert full_image.cardinality() == 6
     assert form.orthogonal_group().cardinality() == 6
-    assert Set(full_image.orbit(generator)) == Set(nonzero)
+    assert nonzero.cardinality() == 3
+    assert Set(full_image.orbit(generator)) == nonzero
 
 
 def test_d4_triality_fuses_the_three_order_two_glue_subgroups() -> None:

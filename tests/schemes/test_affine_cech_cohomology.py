@@ -1,35 +1,20 @@
-r"""Non-toric coherent cohomology from affine acyclicity."""
+r"""Coherent cohomology of a nonreduced affine scheme."""
 
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-    AffineGeometricCohomologyComplexes,
-)
+from dzack_research.preamble.all import *
 
 
-def _dual_number_sheaf():
-    polynomial = QQ.polynomial_ring("e")
-    e = polynomial.algebra_generator("e")
-    algebra = polynomial.quotient_ring(polynomial.ideal(e**2))
-    scheme = (algebra).affine_spectrum(base_ring=QQ)
-    module = algebra.free_module(1)
-    return scheme.associated_module_sheaf(module)
+def test_the_structure_sheaf_of_the_dual_numbers_has_rank_one_global_sections_and_no_higher_cohomology() -> None:
+    r"""On \(X = \operatorname{Spec} A\), \(A = \mathbf Q[e]/(e^2)\): \(H^0(X,\mathcal O_X) = A\), free of rank \(1\)
+    over \(A\), and \(H^i(X,\mathcal O_X) = 0\) for \(i>0\).
 
+    Source: Hartshorne, *Algebraic Geometry*, III.3.5 (Serre's affine vanishing).
+    """
+    R = QQ["e"]
+    e = R.gen()
+    A = R.quotient(R.ideal(e**2))
+    X = Schemes(QQ)(A)
+    structure = X.structure_sheaf()
 
-def test_nonreduced_affine_scheme_has_actual_geometric_cohomology_complex() -> None:
-    sheaf = _dual_number_sheaf()
-    complex_ = sheaf.geometric_cohomology_complex()
-    h0 = sheaf.geometric_cohomology(0)
-    h1 = sheaf.geometric_cohomology(1)
-
-    assert complex_ in AffineGeometricCohomologyComplexes(sheaf.module().base_ring())
-    assert complex_.geometric_sheaf() is sheaf
-    assert complex_.geometric_scheme() is sheaf.scheme()
-    assert "affine" in complex_.acyclicity_reason()
-    assert complex_.augmentation().domain() is complex_.graded_piece(0)
-    assert complex_.augmentation().codomain() is sheaf.global_sections()
-    assert h0.module_rank() == 1
-    assert h1.is_zero()
-
-
-
-
+    assert structure.cohomology(0).module_rank() == 1
+    assert structure.cohomology(1).is_zero()
+    assert structure.cohomology(2).is_zero()

@@ -1,27 +1,18 @@
-r"""Archive reconciliation for open subschemes through distinguished opens.
+r"""Distinguished opens of the affine plane over QQ."""
 
-The archived open-subscheme role supplied only the chosen immersion.  The live
-scheme owner represents the standard affine case more strongly: ``D(f)`` is an
-actual scheme subobject whose inclusion is induced by ``A -> A[1/f]`` and
-retains the distinguished element.  Nested distinguished opens retain their
-actual inclusion morphism as well.
-"""
-
-from dzack_research.preamble.all import QQ, AffineSpaces, OpenImmersions
+from dzack_research.preamble.all import QQ, AffineSpaces
 
 
-
-
-def test_nested_distinguished_open_retains_the_actual_open_immersion() -> None:
+def test_inclusions_of_distinguished_opens_compose_and_intersect() -> None:
+    r"""`D(xy) \subseteq D(x) \subseteq \mathbb{A}^2` compose to the inclusion of `D(xy)`,
+    and `D(x) \cap D(y) = D(xy)` (a prime avoids `xy` iff it avoids `x` and `y`)."""
     plane = AffineSpaces(QQ)(2, names=("x", "y"))
-    x, y = plane.coordinate_algebra().algebra_generators()
+    x = plane.coordinate_ring().algebra_generator("x")
+    y = plane.coordinate_ring().algebra_generator("y")
     open_x = plane.distinguished_open(x)
+    open_y = plane.distinguished_open(y)
     open_xy = plane.distinguished_open(x * y)
 
-    inclusion = open_xy.inclusion_into(open_x)
-
-    assert open_xy in OpenImmersions(plane)
-    assert open_x in OpenImmersions(plane)
-    assert inclusion.domain() is open_xy
-    assert inclusion.codomain() is open_x
-    assert open_x.inclusion() * inclusion == open_xy.inclusion()
+    assert open_x.inclusion() * open_xy.inclusion_into(open_x) == open_xy.inclusion()
+    assert open_x.intersection(open_y) == open_xy
+    assert open_x.coordinate_ring().krull_dimension() == 2

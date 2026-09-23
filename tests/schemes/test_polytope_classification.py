@@ -6,6 +6,7 @@ polytope is Gorenstein Fano; the projective plane is among them.
 """
 
 from dzack_research.preamble.all import (
+    ConvexPolytopes,
     LatticePolygons,
     LatticePolytopes,
     QQ,
@@ -34,3 +35,13 @@ def test_one_reflexive_polygon_has_the_projective_plane_as_its_toric_variety() -
     assert not all(variety.is_projective_space() for variety in varieties)
 
 
+
+
+def test_twice_the_standard_triangle_has_no_interior_point_and_is_not_reflexive() -> None:
+    r"""`\operatorname{conv}\{(0,0),(2,0),(0,2)\}` has no lattice point `(x, y)` with
+    `x, y > 0` and `x + y < 2`, so it is not reflexive."""
+    lattice = ZZ.free_module(2)
+    triangle = ConvexPolytopes(lattice)(((0, 0), (2, 0), (0, 2)))
+
+    assert triangle.n_interior_points() == 0
+    assert not triangle.is_reflexive()

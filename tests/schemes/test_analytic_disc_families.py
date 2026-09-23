@@ -1,22 +1,21 @@
-"""Analytic disc families use complex-manifold topology and an algebraic analytification bridge."""
+r"""An analytic family over the open unit disc as the restriction of an analytified algebraic family."""
 
-from dzack_research.preamble.categories.schemes.analytic_families import (
-    AnalyticDiscFamily,
-)
+from dzack_research.preamble.all import *
 
 
+def test_the_disc_family_is_the_restriction_of_the_analytified_algebraic_family() -> None:
+    r"""With \(\iota_X, \iota_\Delta\) the inclusions of the total space and of the disc into the
+    analytifications, \(\iota_\Delta\circ\pi = \pi^{\mathrm{an}}\circ\iota_X\): the analytic family is the base change of
+    \(\pi^{\mathrm{an}}\) to the disc.
 
-
-def test_disc_family_is_the_restriction_of_the_selected_algebraic_analytification() -> None:
+    Source: SGA 1, Exposé XII, §1 (analytification commutes with base change).
+    """
     family = AnalyticDiscFamily()
     total_inclusion, base_inclusion = family.comparison_maps()
 
-    assert family.comparison_square_commutes()
     assert total_inclusion.domain() is family.analytic_total_space()
     assert base_inclusion.domain() is family.analytic_base()
     assert (
         base_inclusion * family.analytic_family_morphism()
         == family.analytified_family_morphism() * total_inclusion
     )
-
-

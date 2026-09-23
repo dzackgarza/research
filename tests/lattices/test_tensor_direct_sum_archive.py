@@ -7,12 +7,6 @@ compatibility with orthogonal direct sums, rather than only comparing ranks.
 
 from dzack_research.preamble.all import ZZ, BilinearMap, Lattices
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/test_tensor_and_direct_sum.sage",
-    "live_owner": "src/dzack_research/preamble/categories/lattices.py",
-    "disposition": "reconciled-live-owner",
-}
-
 
 def test_sum_of_a_list_is_the_orthogonal_direct_sum() -> None:
     summed = sum((Lattices.U, Lattices.U, Lattices.E8))
@@ -87,15 +81,15 @@ def test_lattice_tensor_has_product_rank_form_and_determinant() -> None:
     assert tensor.gram_matrix().determinant() == 12
 
 
-def test_tensor_universal_map_is_bilinear_and_factors_uniquely() -> None:
+def test_a_bilinear_map_factors_uniquely_through_the_universal_map_to_U_tensor_A2() -> None:
+    r"""\(\beta(x, y) = -x\otimes y\) is bilinear; the linear map it induces on
+    \(U\otimes A_2\) agrees with \(\beta\) on pure tensors, which generate, so it is
+    \(-\mathrm{id}\)."""
     left = Lattices.U
     right = Lattices.A2
     tensor = left @ right
     universal = tensor.universal_bilinear_map()
 
-    assert universal.left_module() is left
-    assert universal.right_module() is right
-    assert universal.codomain() is tensor
     x1, x2 = left.module_generators()
     y = right.basis_vector(0)
     assert universal(x1 + x2, y) == universal(x1, y) + universal(x2, y)
@@ -110,14 +104,17 @@ def test_tensor_universal_map_is_bilinear_and_factors_uniquely() -> None:
             left.module_generator(left_label), right.module_generator(right_label)
         ),
     )
-    factored = negated
-    direct = tensor.module_category().Mor(tensor, tensor)(
+    factored = universal.factor(negated)
+
+    for x in left.module_generators():
+        for y in right.module_generators():
+            assert factored(universal(x, y)) == negated(x, y)
+    assert factored == tensor.module_category().Mor(tensor, tensor)(
         {
             label: -tensor.module_generator(label)
             for label in tensor.module_generating_set()
         }
     )
-    assert factored == direct
 
 
 def test_triple_tensor_form_is_product_of_all_three_pairings() -> None:

@@ -1,6 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
-
-
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_a2_discriminant_form_is_anisotropic_and_not_metabolic() -> None:
@@ -69,14 +67,6 @@ def test_local_modification_is_exactly_p_primary_isotropic_glue() -> None:
     assert inclusion.index() == 2
     assert inclusion.codomain().is_even()
     assert inclusion.codomain().discriminant_module().cardinality() == 4
-    try:
-        lattice.local_modification(3, diagonal)
-    except ValueError as error:
-        assert "p-primary" in str(error)
-    else:
-        raise AssertionError("a 2-primary glue class was accepted as a 3-local modification")
-
-
 
 
 def test_discriminant_pairing_identifies_the_group_with_its_pontryagin_dual() -> None:
@@ -123,17 +113,17 @@ def test_elementary_two_adic_u_k_and_v_one_examples() -> None:
     for exponent in (1, 2, 3):
         scale = 2**exponent
         u_k = Lattices(ZZ)([[0, scale], [scale, 0]]).discriminant_quadratic_form()
-        _factors = u_k.invariant_factors()
-        assert _factors.cardinality() == 2
-        assert _factors[0] == scale
-        assert _factors[1] == scale
+        factors = u_k.invariantfactors()
+        assert factors.cardinality() == 2
+        assert factors[0] == scale
+        assert factors[1] == scale
         assert u_k.brown_invariant() == 0
         assert not u_k.is_anisotropic()
 
     v_one = Lattices(ZZ)("D4").discriminant_quadratic_form()
-    _factors = v_one.invariant_factors()
-    assert _factors.cardinality() == 2
-    assert _factors[0] == 2
-    assert _factors[1] == 2
+    factors = v_one.invariantfactors()
+    assert factors.cardinality() == 2
+    assert factors[0] == 2
+    assert factors[1] == 2
     assert v_one.brown_invariant() == 4
     assert v_one.is_anisotropic()

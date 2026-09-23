@@ -14,8 +14,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-
-
 def test_fractional_ideal_keeps_module_generators_membership_and_inverse() -> None:
     ideal = ZZ.fractional_ideal(QQ(2) / 3)
 

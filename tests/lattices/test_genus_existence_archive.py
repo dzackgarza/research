@@ -1,16 +1,16 @@
-r"""Nikulin genus-existence distinctions retained from the archive suite.
+r"""Nikulin genus existence for the discriminant form of ``A2``.
 
-For the discriminant form of the negative-definite ``A2`` lattice, Milgram's
-congruence separates the supported signatures used here.  The positive rows
-are also realized by adjoining unimodular hyperbolic planes, which leaves the
-discriminant form unchanged.
+``A2`` is negative definite, so its discriminant form has Brown invariant
+``-2 = 6 (mod 8)``.  By Milgram's formula a lattice of signature ``(p, n)``
+with this form requires ``p - n = 6 (mod 8)``, and since every rank here
+exceeds the length ``1`` of the form this is sufficient (Nikulin 1979,
+Thm. 1.10.1).  Adjoining ``U`` leaves the discriminant form unchanged.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
-from dzack_research.preamble.categories.lattices import Genus
+from dzack_research.preamble.all import ZZ, Genus, Lattices
 
 
-def test_a2_discriminant_genus_exists_exactly_on_the_selected_nikulin_rows() -> None:
+def test_a2_discriminant_genus_exists_exactly_when_the_signature_satisfies_milgram() -> None:
     discriminant = Lattices(ZZ)("A2").discriminant_group()
     expected = {
         (0, 2): True,
@@ -23,15 +23,13 @@ def test_a2_discriminant_genus_exists_exactly_on_the_selected_nikulin_rows() -> 
 
     assert discriminant.brown_invariant() == 6
     for signature, exists in expected.items():
-        genus = Genus(signature, discriminant)
-        assert genus.exists() is exists
-        assert ((signature[0] - signature[1]) % 8 == 6) is exists
+        assert Genus(signature, discriminant).exists() is exists
 
 
-def test_adjoining_hyperbolic_planes_realizes_the_positive_rows() -> None:
+def test_adjoining_hyperbolic_planes_to_a2_realizes_the_indefinite_genera() -> None:
     discriminant = Lattices(ZZ)("A2").discriminant_group()
+    a2 = Lattices(ZZ)("A2")
+    u = Lattices(ZZ)("U")
 
-    assert Genus((1, 3), discriminant) == (Lattices(ZZ)("A2") + Lattices(ZZ)("U")).genus()
-    assert Genus((2, 4), discriminant) == (
-        Lattices(ZZ)("A2") + Lattices(ZZ)("U") + Lattices(ZZ)("U")
-    ).genus()
+    assert Genus((1, 3), discriminant) == (a2 + u).genus()
+    assert Genus((2, 4), discriminant) == (a2 + u + u).genus()

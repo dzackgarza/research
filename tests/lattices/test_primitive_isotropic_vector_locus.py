@@ -1,8 +1,6 @@
 from dzack_research.preamble.all import NamedLattices, Sets
 
 
-
-
 def test_primitive_isotropic_orbit_decomposition_retains_representative_stabilizer_and_transporter() -> None:
     lattice = NamedLattices.E10
     group = lattice.O()

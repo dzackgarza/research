@@ -1,82 +1,40 @@
-from sage.categories.homset import Homset
+r"""Cartan calculus of polynomial vector fields on the affine plane over ``QQ``."""
 
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.modules import Modules
-from dzack_research.static_types import (
-    d as static_d,
-    form_view,
-    interior as static_interior,
-    lie_derivative as static_lie_derivative,
-    vector_field_view,
-    wedge as static_wedge,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _scalar_module_element(module, scalar):
-    label = next(iter(module.module_generating_set()))
-    return module.scalar_multiple(scalar, module.module_generator(label))
-
-
-def test_vector_fields_are_derivations_and_have_the_expected_lie_bracket() -> None:
-    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
-    values = algebra.regular_module()
+def _plane():
+    algebra = QQ["x,y"]
+    x, y = algebra.gens()
     vector_fields = algebra.vector_fields()
+    d_dx = vector_fields({x: algebra.one(), y: algebra.zero()})
+    x_d_dy = vector_fields({x: algebra.zero(), y: x})
+    return algebra, x, y, d_dx, x_d_dy
 
-    d_dx = vector_fields(
-        {
-            "x": _scalar_module_element(values, algebra.one()),
-            "y": values.zero(),
-        }
-    )
-    x_d_dy = vector_fields(
-        {
-            "x": values.zero(),
-            "y": _scalar_module_element(values, x),
-        }
-    )
+
+def test_bracket_of_d_dx_and_x_d_dy_is_d_dy() -> None:
+    r"""``[d/dx, x d/dy] = d/dy``: on ``f``, ``d/dx(x f_y) - x d/dy(f_x) = f_y``."""
+    algebra, x, y, d_dx, x_d_dy = _plane()
     bracket = d_dx.lie_bracket(x_d_dy)
-    module_morphisms = Modules(QQ).Mor(
-        vector_fields.domain_object(), vector_fields.codomain_object()
-    )
 
-    assert not isinstance(vector_fields, Homset)
-    assert vector_fields.arrow_set() is module_morphisms
-    assert module_morphisms in vector_fields.super_categories()
-    assert d_dx.as_morphism().parent() is module_morphisms
-    assert d_dx.as_morphism() in vector_fields
-    assert bracket.parent() is vector_fields
-    assert bracket(x) == values.zero()
-    assert bracket(y) == _scalar_module_element(values, algebra.one())
+    assert bracket(x) == algebra.zero()
+    assert bracket(y) == algebra.one()
+    assert bracket(x * y**2) == 2 * x * y
 
 
-def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
-    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
-    values = algebra.regular_module()
-    vector = algebra.vector_fields()(
-        {
-            "x": _scalar_module_element(values, algebra.one()),
-            "y": values.zero(),
-        }
-    )
+def test_contraction_and_lie_derivative_along_d_dx() -> None:
+    r"""For ``X = d/dx``: ``i_X`` lowers degree by one with ``i_X dx = 1``,
+    ``i_X dy = 0``, ``i_X(dx dy) = dy``; and ``L_X x = 1``, ``L_X y = 0``,
+    ``L_X dx = 0``.  Derivation: ``i_X`` is the graded derivation of degree -1
+    with ``i_X(df) = X f``, and ``L_X = d i_X + i_X d``."""
+    algebra, x, y, d_dx, _ = _plane()
     de_rham = algebra.de_rham_algebra()
-    X = de_rham.from_degree_zero(x)
-    Y = de_rham.from_degree_zero(y)
-    dx = de_rham.d(X)
-    dy = de_rham.d(Y)
+    d = de_rham.differential()
+    X, Y = de_rham(x), de_rham(y)
+    dx, dy = d(X), d(Y)
+    contraction = d_dx.interior_product()
+    lie = d_dx.lie_derivative()
 
-    contraction = vector.interior_product()
-    lie = vector.lie_derivative()
-    graded_morphisms = Modules(QQ).Mor(de_rham, de_rham)
-
-    assert not isinstance(contraction.parent(), Homset)
-    assert contraction.parent().arrow_set() is graded_morphisms
-    assert graded_morphisms in contraction.parent().super_categories()
-    assert contraction.as_morphism().parent() is graded_morphisms
-    assert contraction.as_morphism() in contraction.parent()
     assert contraction.degree_shift() == -1
     assert lie.degree_shift() == 0
     assert contraction(X) == de_rham.zero()
@@ -87,48 +45,24 @@ def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
     assert lie(Y) == de_rham.zero()
     assert lie(dx) == de_rham.zero()
 
-    viewed_vector = vector_field_view(vector)
-    viewed_dx = form_view(static_d(X))
-    viewed_dy = form_view(static_d(Y))
-    assert static_wedge(viewed_dx, viewed_dy) == dx * dy
-    assert static_interior(viewed_vector, viewed_dx) == de_rham.one()
-    assert static_lie_derivative(viewed_vector, X) == de_rham.one()
 
-
-def test_cartan_commutator_identities_hold_on_the_de_rham_algebra() -> None:
-    algebra = QQ.free_module(("x", "y")).symmetric_algebra()
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
-    values = algebra.regular_module()
-    vector_fields = algebra.vector_fields()
-    Xfield = vector_fields(
-        {
-            "x": _scalar_module_element(values, algebra.one()),
-            "y": values.zero(),
-        }
-    )
-    Yfield = vector_fields(
-        {
-            "x": values.zero(),
-            "y": _scalar_module_element(values, x),
-        }
-    )
-    bracket = Xfield.lie_bracket(Yfield)
-
+def test_cartan_identities_hold_on_a_mixed_degree_form() -> None:
+    r"""``[d, i_X] = L_X``, ``[d, L_X] = 0``, ``[L_X, i_Y] = i_[X,Y]`` and
+    ``[L_X, L_Y] = L_[X,Y]`` (graded commutators) for ``X = d/dx``,
+    ``Y = x d/dy``.  Derivation: both sides of each identity are graded
+    derivations of the same degree that agree on ``x``, ``y``, ``dx`` and ``dy``."""
+    algebra, x, y, d_dx, x_d_dy = _plane()
+    bracket = d_dx.lie_bracket(x_d_dy)
     de_rham = algebra.de_rham_algebra()
-    X = de_rham.from_degree_zero(x)
-    Y = de_rham.from_degree_zero(y)
-    test_form = X * de_rham.d(Y) + de_rham.d(X) * de_rham.d(Y)
-
-    iX = Xfield.interior_product()
-    iY = Yfield.interior_product()
-    LX = Xfield.lie_derivative()
-    LY = Yfield.lie_derivative()
-    iBracket = bracket.interior_product()
-    LBracket = bracket.lie_derivative()
     d = de_rham.differential()
+    X, Y = de_rham(x), de_rham(y)
+    form = X * d(Y) + d(X) * d(Y)
 
-    assert d.graded_commutator(iX)(test_form) == LX(test_form)
-    assert d.graded_commutator(LX)(test_form) == de_rham.zero()
-    assert LX.graded_commutator(iY)(test_form) == iBracket(test_form)
-    assert LX.graded_commutator(LY)(test_form) == LBracket(test_form)
+    i_x, i_y = d_dx.interior_product(), x_d_dy.interior_product()
+    l_x, l_y = d_dx.lie_derivative(), x_d_dy.lie_derivative()
+
+    assert d.graded_commutator(i_x)(form) == l_x(form)
+    assert d.graded_commutator(l_x)(form) == de_rham.zero()
+    assert l_x.graded_commutator(i_y)(form) == bracket.interior_product()(form)
+    assert l_x.graded_commutator(l_y)(form) == bracket.lie_derivative()(form)
+    assert l_x(form) != de_rham.zero()

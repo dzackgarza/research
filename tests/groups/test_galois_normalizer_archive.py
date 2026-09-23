@@ -1,37 +1,25 @@
-r"""Archive reconciliation for normalizers of open absolute-Galois subgroups."""
+r"""$N_{G_{\mathbb{Q}}}(G_K)/G_K = \operatorname{Aut}(K/\mathbb{Q})$."""
 
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
-    AbsoluteGaloisGroup,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_nongalois_cubic_has_trivial_open_subgroup_normalizer_quotient() -> None:
-    polynomial_ring = QQ.polynomial_ring("x")
-    x = polynomial_ring.gen()
-    cubic = (x**3 - QQ(2)).number_field("a")
-    absolute = AbsoluteGaloisGroup(QQ)
-    subgroup = absolute.open_subgroup(cubic)
-    quotient = subgroup.normalizer_quotient()
+def test_the_real_cube_root_of_two_has_no_nontrivial_automorphisms() -> None:
+    r"""$K = \mathbb{Q}(\sqrt[3]{2})$: $G_K$ has index $3$, is not normal, and $\operatorname{Aut}(K/\mathbb{Q}) = 1$ since the other roots of $x^3 - 2$ are not real."""
+    x = QQ.polynomial_ring("x").algebra_generator("x")
+    subgroup = QQ.absolute_galois_group().open_subgroup((x**3 - 2).number_field("a"))
 
     assert subgroup.index() == 3
     assert not subgroup.is_normal()
-    assert quotient.order() == 1
-    assert quotient.one().action().domain() is cubic
-    assert quotient.one().action().codomain() is cubic
+    assert subgroup.normalizer_quotient().order() == 1
 
 
-def test_quadratic_open_subgroup_normalizer_quotient_is_its_galois_group() -> None:
-    polynomial_ring = QQ.polynomial_ring("x")
-    x = polynomial_ring.gen()
-    quadratic = (x**2 - QQ(5)).number_field("a")
-    absolute = AbsoluteGaloisGroup(QQ)
-    subgroup = absolute.open_subgroup(quadratic)
+def test_the_normalizer_quotient_for_root_five_is_its_galois_group_of_order_two() -> None:
+    r"""$K = \mathbb{Q}(\sqrt5)$: $G_K$ is normal of index $2$ and $N(G_K)/G_K = \operatorname{Gal}(K/\mathbb{Q}) \cong \mathbb{Z}/2$."""
+    x = QQ.polynomial_ring("x").algebra_generator("x")
+    subgroup = QQ.absolute_galois_group().open_subgroup((x**2 - 5).number_field("a"))
     quotient = subgroup.normalizer_quotient()
 
     assert subgroup.index() == 2
     assert subgroup.is_normal()
     assert quotient.order() == 2
-    assert quotient.group_generators().cardinality() == 1
-    generator = quotient.group_generators()[0]
-    assert generator * generator == quotient.one()
+    assert quotient.is_isomorphic_to(Groups.C(2))

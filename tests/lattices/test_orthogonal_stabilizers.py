@@ -10,8 +10,6 @@ sublattice onto itself.
 from dzack_research.preamble.all import ZZ, Lattices
 
 
-
-
 def test_the_setwise_stabilizer_of_an_isotropic_line_holds_maps_the_pointwise_one_does_not() -> None:
     r"""\(-\mathrm{id}\) carries \(\mathbb Ze\) onto itself without fixing \(e\).
 
@@ -31,8 +29,6 @@ def test_the_setwise_stabilizer_of_an_isotropic_line_holds_maps_the_pointwise_on
     assert negation not in orthogonal_group.stabilizer(isotropic)
 
 
-
-
 def test_a_transvection_moving_a_line_leaves_its_setwise_stabilizer() -> None:
     r"""\(t(e,a)\) fixes \(\mathbb Ze\) but moves \(\mathbb Zf\) off itself."""
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
@@ -46,8 +42,6 @@ def test_a_transvection_moving_a_line_leaves_its_setwise_stabilizer() -> None:
     assert transvection not in orthogonal_group.setwise_stabilizer(
         partner.sublattice().inclusion()
     )
-
-
 
 
 def test_the_stabilizer_of_a_root_holds_exactly_the_expected_involution() -> None:

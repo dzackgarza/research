@@ -1,31 +1,22 @@
-r"""The relationful word module is constructed before either algebra product."""
+r"""Tensor and symmetric algebras on the torsion module Z/2 + Z/3."""
 
-from dzack_research.preamble.all import Algebras, GradedModules, Modules, ZZ
-from dzack_research.preamble.categories.modules import FinitelyPresentedTorsionModules
-from dzack_research.preamble.categories.modules.word_modules import _module_on_word_quotient
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_word_module_preserves_component_torsion_and_the_degree_inclusion() -> None:
-    pieces = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2, 3))
-    from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-    source = GradedModules(ZZ)(indexed_family(ZZ, lambda _: pieces), placements=(FramedModules(ZZ),))
-    two_label = source.module_label_from_component(1, 0)
-    three_label = source.module_label_from_component(1, 1)
-    for flavor in ("tensor", "symmetric"):
-        module = _module_on_word_quotient(source, flavor)
-        assert module in Modules(ZZ)
-        assert module not in Algebras(ZZ)
-        labels = module.degree_basis(2)
-        mixed = labels(lambda i: two_label if int(i) == 0 else three_label) if flavor == "tensor" else labels.from_multiplicities({two_label: 1, three_label: 1})
-        value = module.module_generator(module.basis_label(2, mixed))
-        assert value == module.zero()
-        assert module.framing_morphism().codomain() is module
-        assert module.framing_morphism()(module.framing_source().module_generator(module.basis_label(2, mixed))) == module.zero()
-        assert module.graded_piece(1) is source
-        square = labels(lambda _: two_label) if flavor == "tensor" else labels.from_multiplicities({two_label: 2})
-        piece = module.graded_piece(2)
-        square_element = piece.module_generator(square)
-        assert 2 * square_element == piece.zero()
-        assert piece.inclusion()(square_element) == module.from_component(2, square_element)
-        assert piece.inclusion().lift(module.from_component(2, square_element)) == square_element
+def test_degree_two_of_the_tensor_and_symmetric_algebra_on_z2_plus_z3_has_order_six() -> None:
+    r"""Mixed products vanish because Z/2 (x) Z/3 = 0, so T^2 = Sym^2 = Z/2 + Z/3.
+
+    Derivation: (Z/m) (x) (Z/n) = Z/gcd(m, n); Sym^2(Z/m) = Z/m; Sym^2(A + B) =
+    Sym^2 A + A (x) B + Sym^2 B.
+    """
+    module = Modules(ZZ).direct_sum_of_cyclics((2, 3))
+    for algebra in (module.tensor_algebra(), module.symmetric_algebra()):
+        a = algebra.algebra_generator(0)
+        b = algebra.algebra_generator(1)
+        assert a * b == algebra.zero()
+        assert b * a == algebra.zero()
+        assert a * a != algebra.zero()
+        assert 2 * (a * a) == algebra.zero()
+        assert b * b != algebra.zero()
+        assert 3 * (b * b) == algebra.zero()
+        assert algebra.graded_piece(2).cardinality() == 6

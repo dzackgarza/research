@@ -1,3 +1,5 @@
+r"""Isotypic decompositions of integral representations of cyclic groups."""
+
 from dzack_research.preamble.all import (
     Set,
     ZZ,
@@ -7,42 +9,44 @@ from dzack_research.preamble.all import (
     Modules,
     tensor,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
-def test_c2_integral_isotypic_decomposition_is_the_plus_minus_underlattice() -> None:
+def test_the_swap_on_ZZ2_has_isotypic_components_ZZ_1_1_and_ZZ_1_minus_1_of_index_two() -> None:
+    r"""``ZZ(1,1) + ZZ(1,-1)`` has determinant ``-2``, so index 2 in ``ZZ^2``."""
     group = Groups.C(2)
-    module = ZZ.free_module(finite_ordered_set(("x", "y")))
+    module = ZZ.free_module(2)
     x, y = module.module_generators()
-    swap = module.Mor(module)({"x": y, "y": x})
+    swap = module.Mor(module)({0: y, 1: x})
 
     def action(group_element, vector):
         return vector if group_element == group.one() else swap(vector)
 
     acted = Modules(ZZ[group])(module, action)
     decomposition = acted.isotypic_decomposition()
+    plus = decomposition.trivial_component()
+    minus = decomposition.nontrivial_components()[0]
 
     assert decomposition.isotypic_characters().cardinality() == 2
-    assert decomposition.trivial_component().module_rank() == 1
-    assert decomposition.nontrivial_components()[0].module_rank() == 1
+    assert plus.module_rank() == 1
+    assert minus.module_rank() == 1
+    assert plus.inclusion().is_in_image(acted(x + y))
+    assert minus.inclusion().is_in_image(acted(x - y))
     assert decomposition.index() == 2
-    assert decomposition.trivial_component().inclusion().is_in_image(acted.linear_combination({"x": 1, "y": 1}))
-    assert decomposition.nontrivial_components()[0].inclusion().is_in_image(acted.linear_combination({"x": 1, "y": -1}))
 
 
-def test_c3_integral_characters_are_grouped_into_rational_orbits() -> None:
+def test_the_permutation_module_of_C3_splits_rationally_into_degrees_one_and_two_with_index_three() -> None:
+    r"""``ZZ^3 = ZZ(1,1,1) + {sum = 0}`` up to index ``det[(1,1,1),(1,-1,0),(0,1,-1)] = 3``."""
     group = Groups.C(3)
-    module = ZZ.free_module(finite_ordered_set(("x", "y", "z")))
     generator = next(iter(group.group_generators()))
+    module = ZZ.free_module(3)
     x, y, z = module.module_generators()
-    cycle = module.Mor(module)({"x": y, "y": z, "z": x})
+    cycle = module.Mor(module)({0: y, 1: z, 2: x})
 
     def action(group_element, vector):
-        exponent = next(i for i in range(3) if group_element == generator**i)
-        moved = vector
+        exponent = next(k for k in range(3) if group_element == generator**k)
         for _ in range(exponent):
-            moved = cycle(moved)
-        return moved
+            vector = cycle(vector)
+        return vector
 
     acted = Modules(ZZ[group])(module, action)
     characters = acted.isotypic_characters()

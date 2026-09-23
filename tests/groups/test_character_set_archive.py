@@ -1,41 +1,32 @@
-r"""Archive reconciliation for ordinary characters of finite groups."""
+r"""Ordinary characters of $S_3$."""
 
-from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/group_modules/characters.py",
-    "live_owner": "src/dzack_research/preamble/categories/group/groups.py",
-    "owner_overrides": {
-        "RingElement": "src/dzack_research/preamble/lexicon/__init__.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_irreducible_characters_live_in_one_owned_character_set() -> None:
-    symmetric = OwnedGroups().S(3)
-    characters = symmetric.irreducible_characters()
-    parent = symmetric.character_set()
+def test_s3_has_three_irreducible_characters_of_degrees_one_one_two() -> None:
+    r"""$S_3$ has three conjugacy classes, hence three irreducible characters, of degrees $1, 1, 2$ with $1 + 1 + 4 = 6$.
+
+    Source: Fulton–Harris, *Representation Theory*, §1.3.
+    """
+    group = Groups.S(3)
+    characters = group.irreducible_characters()
 
     assert characters.cardinality() == 3
-    assert all(character.parent() is parent for character in characters)
-    assert sorted(int(character.degree()) for character in characters) == [1, 1, 2]
-    assert all(character(symmetric.one()) == character.degree() for character in characters)
+    assert sorted(character.degree() for character in characters) == [1, 1, 2]
+    assert sum(character.degree() ** 2 for character in characters) == 6
+    assert all(character(group.one()) == character.degree() for character in characters)
 
 
-def test_direct_sum_character_has_both_irreducible_constituents() -> None:
-    symmetric = OwnedGroups().S(3)
-    characters = symmetric.irreducible_characters()
-    linear = next(character for character in characters if int(character.degree()) == 1)
-    standard = next(character for character in characters if int(character.degree()) == 2)
-
+def test_a_sum_of_two_irreducible_characters_has_exactly_those_constituents() -> None:
+    r"""$\chi = \mathbb{1} + \chi_{\mathrm{std}}$ (a linear plus the standard character) has degree $3$ and constituents $\{\mathbb{1}, \chi_{\mathrm{std}}\}$."""
+    group = Groups.S(3)
+    characters = group.irreducible_characters()
+    linear = next(character for character in characters if character.degree() == 1)
+    standard = next(character for character in characters if character.degree() == 2)
     combined = linear + standard
     constituents = combined.irreducible_constituents()
 
-    assert combined.parent() is symmetric.character_set()
-    assert combined.degree() == linear.degree() + standard.degree()
+    assert combined.degree() == 3
+    assert constituents.cardinality() == 2
     assert linear in constituents
     assert standard in constituents
-    assert constituents.cardinality() == 2
-
-

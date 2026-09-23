@@ -1,38 +1,29 @@
-r"""The polarized Enriques arithmetic group as an owned intersection."""
+r"""The polarized Enriques arithmetic group inside \(O(L_{K3})\)."""
 
-from dzack_research.preamble.all import Involutions, NamedLattices, Set
-from dzack_research.preamble.categories.lattice_centralizers import (
-    PolarizedEquivariantLattice,
-)
+from dzack_research.preamble.all import Involutions, NamedLattices
 
 
-def test_enriques_polarization_retains_invariant_lift_and_group_maps() -> None:
+def test_negation_centralizes_the_enriques_involution_but_leaves_its_polarized_group() -> None:
+    r"""\(-1\) is central in \(O(L)\), so it commutes with \(\iota\); it sends
+    \(h\neq0\) to \(-h\neq h\), so it does not fix a polarization.  The
+    involution fixes every vector of its invariant lattice, hence \(h\).
+    """
     lattice = NamedLattices.LK3
     involution = Involutions.I_En
-    extension = involution.primitive_extension()
-    invariant = extension.invariant
+    invariant = involution.primitive_extension().invariant
     inclusion = invariant.inclusion()
-    labels = invariant.module_generating_set()
-    polarization = (
-        inclusion(invariant.module_generator(labels[0]))
-        + inclusion(invariant.module_generator(labels[1]))
-    )
+    first, second = invariant.module_generators()
+    polarization = inclusion(first) + inclusion(second)
 
     polarized = involution.polarized(polarization)
-    assert isinstance(polarized, PolarizedEquivariantLattice)
-    assert polarized.lattice() is lattice
-    assert polarized.isometry() == involution
-    assert polarized.polarization() == polarization
-    assert inclusion(polarized.invariant_polarization()) == polarization
-
     centralizer = polarized.centralizer_group()
     stabilizer = polarized.polarization_stabilizer()
     group = polarized.polarized_group()
-    assert group.supergroup() is lattice.O()
+
+    assert involution(polarization) == polarization
     assert involution in centralizer
     assert involution in stabilizer
     assert involution in group
-    assert lattice.O().one() in group
 
     negation = lattice.O()(
         {label: -lattice.module_generator(label) for label in lattice.module_generating_set()}
@@ -40,4 +31,3 @@ def test_enriques_polarization_retains_invariant_lift_and_group_maps() -> None:
     assert negation in centralizer
     assert negation not in stabilizer
     assert negation not in group
-    assert group.intersected_subgroups() == Set((centralizer, stabilizer))

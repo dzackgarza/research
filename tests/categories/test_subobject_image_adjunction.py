@@ -1,106 +1,57 @@
-from dzack_research.preamble.all import (
-    ZZ,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+r"""Direct and inverse images of submodules along a map of free modules."""
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _assert_module_maps_agree(left, right) -> None:
-    assert left.domain() is right.domain()
-    assert left.codomain() is right.codomain()
-    for label in left.domain().module_generating_set():
-        generator = left.domain().module_generator(label)
-        assert left(generator) == right(generator)
+def test_direct_image_is_left_adjoint_to_inverse_image_on_submodules() -> None:
+    r"""For ``f: e1 |-> 2u, e2 |-> v`` on ``Z^2``: ``f^{-1}<4u, v> = <2e1, e2>``, of index 2.
 
-
-def _assert_order_maps_agree(left, right) -> None:
-    assert left.domain() is right.domain()
-    assert left.codomain() is right.codomain()
-    _assert_module_maps_agree(left.factor_morphism(), right.factor_morphism())
-
-
-
-
-def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connection() -> None:
-    source = ZZ.free_module(finite_ordered_set(("e1", "e2")))
-    target = ZZ.free_module(finite_ordered_set(("u", "v")))
-    e1, e2 = source.module_generators()
-    u, v = target.module_generators()
-    morphism = source.module_category().Mor(source, target)(
-        {"e1": 2 * u, "e2": v}
-    )
-
-    source_subobjects = source.category().Subobjects(source)
-    target_subobjects = target.category().Subobjects(target)
-    a = source.subobject_on((2 * e1 + e2,))
-    not_a = source.subobject_on((e1,))
-    b = target.subobject_on((4 * u, v))
-
-    adjunction = morphism.subobject_image_adjunction()
+    ``f_*`` is left adjoint to ``f^*`` on the posets of submodules:
+    ``f(A) <= B`` iff ``A <= f^{-1}(B)``, checked on an ``A`` inside and an
+    ``A`` outside; ``A <= f^{-1} f A`` and ``f f^{-1} B = B cap im f``.
+    """
+    source = Modules(ZZ)(ZZ**2)
+    target = Modules(ZZ)(ZZ**2)
+    e1, e2 = source.basis()
+    u, v = target.basis()
+    f = source.Mor(target)({e1: 2 * u, e2: v})
+    adjunction = f.subobject_image_adjunction()
     direct = adjunction.left_adjoint()
     inverse = adjunction.right_adjoint()
-    image_a = direct(a)
-    preimage_b = inverse(b)
 
-    # The preimage is the mathematical pullback subobject, not a row-space
-    # proxy: it sits in the original source through an inclusion of index two.
-    assert preimage_b.inclusion().codomain() is source
-    assert preimage_b.index() == 2
-    assert preimage_b.inclusion().is_in_image(2 * e1)
-    assert preimage_b.inclusion().is_in_image(e2)
-    assert not preimage_b.inclusion().is_in_image(e1)
+    inside = source.span((2 * e1 + e2,))
+    outside = source.span((e1,))
+    b = target.span((4 * u, v))
+    preimage = inverse(b)
 
-    assert target_subobjects.leq(image_a, b)
-    assert source_subobjects.leq(a, preimage_b)
-    assert target_subobjects.leq(direct(not_a), b) is False
-    assert source_subobjects.leq(not_a, preimage_b) is False
+    assert preimage.inclusion().index() == 2
+    assert 2 * e1 in preimage.inclusion().image()
+    assert e2 in preimage.inclusion().image()
+    assert e1 not in preimage.inclusion().image()
 
-    forward_witness = target_subobjects.Mor(image_a, b).canonical_morphism()
-    transpose = adjunction.mor_set_isomorphism_forward(forward_witness, a)
-    recovered = adjunction.mor_set_isomorphism_inverse(transpose, b)
-    assert transpose.domain() is a
-    assert transpose.codomain() is preimage_b
-    assert recovered.domain() is image_a
-    assert recovered.codomain() is b
-
-    # Naturality uses genuine commuting-triangle morphisms in the thin
-    # fixed-ambient categories.
-    a_larger = source.subobject_on((2 * e1, e2))
-    source_order_map = source_subobjects.Mor(a, a_larger).canonical_morphism()
-    left, right = adjunction.unit_transformation().naturality_square(source_order_map)
-    _assert_order_maps_agree(left, right)
-
-    b_larger = target.subobject_on((2 * u, v))
-    target_order_map = target_subobjects.Mor(b, b_larger).canonical_morphism()
-    left, right = adjunction.counit_transformation().naturality_square(target_order_map)
-    _assert_order_maps_agree(left, right)
-
-    left_triangle = adjunction.counit(direct(a)) * direct(adjunction.unit(a))
-    _assert_order_maps_agree(
-        left_triangle,
-        target_subobjects.identity(direct(a)),
-    )
-
-    right_triangle = inverse(adjunction.counit(b)) * adjunction.unit(inverse(b))
-    _assert_order_maps_agree(
-        right_triangle,
-        source_subobjects.identity(inverse(b)),
-    )
+    assert direct(inside) <= b
+    assert inside <= preimage
+    assert not direct(outside) <= b
+    assert not outside <= preimage
+    assert outside <= inverse(direct(outside))
+    assert direct(preimage) <= b
+    assert b <= direct(preimage)
+    assert direct(source.span((e1, e2))).inclusion().index() == 2
 
 
-
-
-def test_module_subobject_intersection_is_the_kernel_pullback() -> None:
-    ambient = ZZ.free_module(finite_ordered_set(("e1", "e2")))
-    e1, e2 = ambient.module_generators()
-    left = ambient.subobject_on((2 * e1, e2))
-    right = ambient.subobject_on((e1, 2 * e2))
+def test_intersection_of_two_index_two_submodules_is_twice_the_lattice() -> None:
+    r"""``<2e1, e2> cap <e1, 2e2> = 2Z^2``, of index 4 in ``Z^2``."""
+    ambient = Modules(ZZ)(ZZ**2)
+    e1, e2 = ambient.basis()
+    left = ambient.span((2 * e1, e2))
+    right = ambient.span((e1, 2 * e2))
 
     intersection = left.intersection(right)
-    inclusion = intersection.inclusion()
+    image = intersection.inclusion().image()
 
-    assert inclusion.codomain() is ambient
-    assert intersection.index() == 4
-    assert inclusion.is_in_image(2 * e1)
-    assert inclusion.is_in_image(2 * e2)
-    assert not inclusion.is_in_image(e1)
-    assert not inclusion.is_in_image(e2)
+    assert intersection.inclusion().index() == 4
+    assert 2 * e1 in image
+    assert 2 * e2 in image
+    assert e1 + e2 not in image
+    assert e1 not in image
+    assert e2 not in image

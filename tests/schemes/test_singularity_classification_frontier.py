@@ -1,48 +1,36 @@
-r"""Supported singularity equivalences and the regular/smooth boundary."""
+r"""Right equivalence of plane curve germs, and the regular/smooth boundary."""
 
-from dzack_research.preamble.all import (
-    Algebras,
-    GF,
-    QQ,
-)
-from dzack_research.preamble.categories.schemes.singularities import (
-    IsolatedHypersurfaceSingularity,
-)
+from dzack_research.preamble.all import GF, QQ, IsolatedHypersurfaceSingularity
 
 
-def test_a_sheared_A2_is_classified_by_its_actual_coordinate_change() -> None:
+def test_a_sheared_a2_becomes_x2_plus_y3_after_x_to_x_plus_y() -> None:
+    r"""`(x - y)^2 + y^3` becomes `x^2 + y^3` under `x \mapsto x + y`, so it is right
+    equivalent to `A_2` and has Milnor number 2."""
     plane = QQ.polynomial_ring(("x", "y"))
-    x, y = tuple(plane.algebra_generators())
-    sheared = IsolatedHypersurfaceSingularity(
-        plane,
-        (x - y) ** 2 + y**3,
-    )
-
-    assert sheared.ade_normal_form_type() is None
+    x, y = plane.algebra_generator("x"), plane.algebra_generator("y")
+    sheared = IsolatedHypersurfaceSingularity(plane, (x - y) ** 2 + y**3)
     equivalence = sheared.ade_type_via_linear_right_equivalence(
         {"x": x + y, "y": y},
         {"x": x - y, "y": y},
     )
 
-    assert equivalence is not None
-    assert equivalence.parent() is Algebras(QQ).Associative().Unital().Core().Mor(plane, plane)
-    assert equivalence.coordinate_change() is equivalence.forward()
     assert equivalence.ade_type() == ("A", 2)
-    assert equivalence.forward()(sheared.equation()) == equivalence.target().equation()
-    for generator in plane.algebra_generators():
-        assert equivalence.inverse()(equivalence.forward()(generator)) == generator
+    assert equivalence.forward()(sheared.equation()) == x**2 + y**3
+    assert sheared.milnor_number() == 2
 
 
 def test_equal_milnor_and_tjurina_numbers_do_not_classify_plane_curve_germs() -> None:
+    r"""`x^2 + y^5` (`A_4`) and `xy(x - y)` (`D_4`) both have `\mu = \tau = 4`, but one
+    branch and three branches respectively (Greuel--Lossen--Shustin, I.2.4)."""
     plane = QQ.polynomial_ring(("x", "y"))
-    x, y = tuple(plane.algebra_generators())
+    x, y = plane.algebra_generator("x"), plane.algebra_generator("y")
     a4 = IsolatedHypersurfaceSingularity(plane, x**2 + y**5)
-    triple = IsolatedHypersurfaceSingularity(plane, x * y * (x - y))
+    d4 = IsolatedHypersurfaceSingularity(plane, x * y * (x - y))
 
-    assert a4.milnor_number() == triple.milnor_number() == 4
-    assert a4.tjurina_number() == triple.tjurina_number() == 4
+    assert a4.milnor_number() == d4.milnor_number() == 4
+    assert a4.tjurina_number() == d4.tjurina_number() == 4
     assert a4.number_of_branches_at_origin() == 1
-    assert triple.number_of_branches_at_origin() == 3
+    assert d4.number_of_branches_at_origin() == 3
 
 
 def test_regular_purely_inseparable_field_extension_is_not_smooth_over_its_base() -> None:

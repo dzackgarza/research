@@ -17,10 +17,6 @@ def _coefficient(module, element, label):
     )
 
 
-
-
-
-
 def test_frobenius_on_the_gf4_line_is_additive_but_not_gf4_linear() -> None:
     field = GF(4)
     line = field.free_module(("e",))
@@ -33,15 +29,3 @@ def test_frobenius_on_the_gf4_line_is_additive_but_not_gf4_linear() -> None:
 
     with pytest.raises(ValueError, match="not scalar-linear"):
         maps.elementwise(frobenius)
-
-
-
-
-
-
-
-
-
-
-
-

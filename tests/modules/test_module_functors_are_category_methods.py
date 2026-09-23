@@ -23,10 +23,6 @@ def _plane_with_swap():
     return plane, swap
 
 
-
-
-
-
 def test_the_symmetric_algebra_functor_is_asked_of_the_module_category() -> None:
     r"""``Sym_ZZ`` is commutative and ``Sym^2(ZZ^2)`` has rank three."""
     plane, swap = _plane_with_swap()
@@ -85,3 +81,34 @@ def test_the_exterior_algebra_functor_is_asked_of_the_module_category() -> None:
     assert image(x) == y
 
 
+def test_the_dual_of_the_shear_e0_to_e0_plus_e1_is_its_transpose() -> None:
+    r"""For $f(e_0) = e_0 + e_1$, $f(e_1) = e_1$, the dual map $f^\vee(\varphi) = \varphi \circ f$ sends
+    $e_0^* \mapsto e_0^*$ and $e_1^* \mapsto e_0^* + e_1^*$.
+
+    Source: by hand (the matrix of the dual map is the transpose).
+    """
+    plane = ZZ**2
+    shear = plane.End()({0: plane.module_generator(0) + plane.module_generator(1), 1: plane.module_generator(1)})
+    dualize = Modules(ZZ).dualization()
+    transpose = dualize(shear)
+    dual = transpose.domain()
+    assert dual.module_rank() == 2
+    e0, e1 = dual.module_generator(0), dual.module_generator(1)
+    assert transpose(e0) == e0
+    assert transpose(e1) == e0 + e1
+
+
+def test_the_unit_of_the_symmetric_and_tensor_algebra_adjunctions_is_the_degree_one_inclusion() -> None:
+    r"""$\eta_M\colon M \to U\operatorname{Sym}(M)$ and $M \to U T(M)$ send $e_i$ to the generator $x_i$ of
+    degree one, so they are injective and not surjective.
+
+    Source: Lang, Algebra, XVI.7 and XVI.8 (universal properties of T(M) and S(M)).
+    """
+    plane = ZZ**2
+    for adjunction in (Modules(ZZ).symmetric_algebra_adjunction(), Modules(ZZ).tensor_algebra_adjunction()):
+        algebra = adjunction.left_adjoint()(plane)
+        unit = adjunction.unit(plane)
+        assert unit.is_injective()
+        assert not unit.is_surjective()
+        assert unit(plane.module_generator(0)) == algebra.algebra_generator(0)
+        assert unit(plane.module_generator(1)) == algebra.algebra_generator(1)

@@ -1,27 +1,23 @@
-r"""Archive reconciliation for lifting discriminant-form automorphisms."""
+r"""Lifting discriminant-form automorphisms to lattice isometries."""
 
-from sage.rings.integer_ring import ZZ as SageZZ
-
-from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.all import *
 
 
-def test_nontrivial_discriminant_action_has_a_live_lattice_isometry_lift() -> None:
-    integers = _own_ring(SageZZ)
-    lattice = Lattices(integers)("A2")
-    orthogonal_group = lattice.O()
-    negation = orthogonal_group(
-        {
-            label: -lattice.module_generator(label)
-            for label in lattice.module_generating_set()
-        }
-    )
-    target_action = negation.discriminant_morphism()
+def test_O_A2_surjects_onto_O_of_its_discriminant_form() -> None:
+    r"""disc(A2) = Z/3 with q = +-2/3 mod 2, so O(q_{A2}) = {+-1} has order 2;
+    the nontrivial element -1 is induced by the isometry -1 of A2, so
+    O(A2) -> O(q_{A2}) is surjective."""
+    lattice = Lattices(ZZ)("A2")
+    form = lattice.discriminant_group()
+    form_isometries = form.orthogonal_group()
+    generator = form.module_generators()[0]
 
-    assert target_action != orthogonal_group.one().discriminant_morphism()
+    assert form_isometries.cardinality() == 2
+    assert lattice.O().discriminant_image().cardinality() == 2
 
-    lifted = orthogonal_group.discriminant_lift(target_action)
+    target = [g for g in form_isometries if g != form_isometries.one()][0]
+    assert target(generator) == -generator
 
-    assert lifted is not None
-    assert lifted in orthogonal_group
-    assert lifted.discriminant_morphism() == target_action
+    lifted = lattice.O().discriminant_lift(target)
+    assert lifted in lattice.O()
+    assert lifted.discriminant_morphism() == target

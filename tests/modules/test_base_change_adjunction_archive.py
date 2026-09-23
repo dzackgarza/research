@@ -1,47 +1,27 @@
-r"""Archive reconciliation for the full scalar-extension/restriction adjunction.
+r"""Extension and restriction of scalars along \(\mathbb Q \to \mathbb Q(i)\) form an adjunction.
 
-The archived base-change owner retained the extension functor and its unit but
-explicitly left the counit unimplemented.  The live scalar-change owner now
-represents both sides on finite free modules over a finite free coefficient
-extension.  These specimens record the actual counit and both triangle
-identities, so the archive is reconciled as an adjunction rather than merely as
-an object-level base-change operation.
+For \(\iota: \mathbb Q \to K = \mathbb Q[x]/(x^2+1)\), extension \(K\otimes_{\mathbb Q} -\)
+is left adjoint to restriction; the counit \(K \otimes_{\mathbb Q} N \to N\) multiplies
+scalars back in, and both triangle identities hold (Mac Lane, CWM, IV.1).
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    Modules,
-)
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/functors/base_change_adjunction.sage",
-    "live_owner": "src/dzack_research/preamble/categories/functors/scalar_change.py",
-    "owner_overrides": {
-        "RestrictedScalarsModules": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "RestrictedScalarsModules.super_categories": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "RestrictedScalarsModules.ParentMethods": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "RestrictedScalarsModules.ParentMethods.ring_map": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "RestrictedScalarsModules.ParentMethods.module_over_extension": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "RestrictedScalarsModules.ParentMethods.scalar_multiple": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "RestrictedScalarsModules.ParentMethods.zero": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import QQ, Modules
 
 
 def _gaussian_extension():
-    polynomials = QQ.free_module(["x"]).symmetric_algebra()
-    x = next(iter(polynomials.algebra_generators()))
-    scalars = (polynomials).quotient_by_relations([x**2 + 1])
+    polynomials = QQ["x"]
+    x = polynomials.gen()
+    scalars = polynomials.quotient(x**2 + 1)
     i = scalars(x)
     structure_map = scalars.algebra_structure_morphism()
     return scalars, i, structure_map
 
 
 def test_base_change_counit_multiplies_the_restricted_scalar_basis_back_into_the_module() -> None:
+    r"""The restriction of \(K g\) has \(\mathbb Q\)-basis \(\{g, ig\}\)."""
     scalars, i, structure_map = _gaussian_extension()
-    module = scalars.free_module(1)
-    generator = module.module_generator(0)
+    module = Modules(scalars)(scalars**1)
+    (generator,) = module.module_generators()
     adjunction = Modules(QQ).base_change_adjunction(structure_map)
 
     restricted = adjunction.right_adjoint()(module)
@@ -50,20 +30,21 @@ def test_base_change_counit_multiplies_the_restricted_scalar_basis_back_into_the
 
     assert counit.domain() is extended
     assert counit.codomain() is module
-    labels = tuple(restricted.module_generating_set())
-    assert len(labels) == 2
-    restricted_values = tuple(
+    labels = restricted.module_generating_set()
+    assert labels.cardinality() == 2
+    restricted_values = {
         restricted.module_generator(label).underlying_element()
         for label in labels
-    )
-    assert set(restricted_values) == {generator, i * generator}
+    }
+    assert restricted_values == {generator, i * generator}
     for label in extended.module_generating_set():
         assert counit(extended.module_generator(label)) == restricted.module_generator(label).underlying_element()
 
 
 def test_extension_restriction_triangle_is_the_identity_on_a_free_module() -> None:
-    scalars, _i, structure_map = _gaussian_extension()
-    source = QQ.free_module(1)
+    r"""\(\varepsilon_{FM} \circ F(\eta_M) = \mathrm{id}_{FM}\) for \(M = \mathbb Q\)."""
+    _scalars, _i, structure_map = _gaussian_extension()
+    source = Modules(QQ)(QQ**1)
     adjunction = Modules(QQ).base_change_adjunction(structure_map)
     extension = adjunction.left_adjoint()
 
@@ -81,8 +62,9 @@ def test_extension_restriction_triangle_is_the_identity_on_a_free_module() -> No
 
 
 def test_restriction_extension_triangle_is_the_identity_on_a_free_extension_module() -> None:
+    r"""\(G(\varepsilon_N) \circ \eta_{GN} = \mathrm{id}_{GN}\) for \(N = K\)."""
     scalars, _i, structure_map = _gaussian_extension()
-    target = scalars.free_module(1)
+    target = Modules(scalars)(scalars**1)
     adjunction = Modules(QQ).base_change_adjunction(structure_map)
     restriction = adjunction.right_adjoint()
 
@@ -97,5 +79,3 @@ def test_restriction_extension_triangle_is_the_identity_on_a_free_extension_modu
     for label in restricted_target.module_generating_set():
         generator = restricted_target.module_generator(label)
         assert triangle(generator) == generator
-
-

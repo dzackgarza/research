@@ -1,31 +1,30 @@
-r"""Archive reconciliation for centers of free tensor algebras."""
+r"""Centres of free associative algebras."""
 
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_tensor_algebra_on_two_generators_has_only_scalar_center() -> None:
-    tensor = QQ.free_module(finite_ordered_set(("x", "y"))).tensor_algebra()
-    x = tensor.algebra_generator("x")
-    y = tensor.algebra_generator("y")
+def test_free_associative_algebra_on_two_generators_has_centre_qq() -> None:
+    r"""``Z(QQ<x, y>) = QQ``: a noncommutative polynomial commuting with ``x`` and
+    ``y`` is a polynomial in a single word, hence a scalar.  So scalars are
+    central while ``x``, ``x^2``, ``xy + yx`` and ``x + y`` are not."""
+    tensor = Modules(QQ).free_module(("x", "y")).tensor_algebra()
+    x, y = tensor.algebra_generator("x"), tensor.algebra_generator("y")
+    center = tensor.ring_center()
 
     assert x * y != y * x
-    assert tensor.ring_center() is QQ
-    inclusion = tensor.center_inclusion()
-    assert inclusion.domain() is QQ
-    assert inclusion.codomain() is tensor
-    assert inclusion(QQ(3)) == 3 * tensor.one()
-    assert tensor.is_central(inclusion(QQ(3)))
-    assert not tensor.is_central(x)
+    assert 3 * tensor.one() in center
+    assert x not in center
+    assert x * x not in center
+    assert x * y + y * x not in center
+    assert x + y not in center
 
 
-def test_tensor_algebra_on_one_generator_is_its_own_center() -> None:
-    tensor = QQ.free_module(finite_ordered_set(("x",))).tensor_algebra()
+def test_tensor_algebra_on_one_generator_is_commutative_hence_its_own_centre() -> None:
+    r"""``T(QQ x) = QQ[x]`` is commutative, so every element is central."""
+    tensor = Modules(QQ).free_module(("x",)).tensor_algebra()
+    x = tensor.algebra_generator("x")
+    center = tensor.ring_center()
 
-    assert tensor.ring_center() is tensor
-    inclusion = tensor.center_inclusion()
-    assert inclusion.domain() is tensor
-    assert inclusion.codomain() is tensor
-    assert inclusion(tensor.algebra_generator("x")) == tensor.algebra_generator("x")
+    assert x in center
+    assert x**3 + 2 * x in center
+    assert tensor.is_commutative()

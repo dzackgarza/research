@@ -1,26 +1,21 @@
-r"""Sparse algebra multiplication is defined on the previously constructed module."""
+r"""Tensor and symmetric algebras of a finite abelian group."""
 
-from dzack_research.preamble.all import ZZ
-
-
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_sparse_root_preserves_relationful_component_products_and_maps() -> None:
-    from dzack_research.preamble.all import GradedModules
-    from dzack_research.preamble.categories.modules import FinitelyPresentedTorsionModules
-    from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+def test_generators_of_orders_two_and_three_multiply_to_zero() -> None:
+    r"""For ``M = ZZ/2 x ⊕ ZZ/3 y``: in ``T(M)`` and ``Sym(M)``, ``2x = 3y = 0`` and
+    ``xy = 0``, since ``xy`` lies in the image of ``ZZ/2 ⊗ ZZ/3 = 0``; but
+    ``x^2 ≠ 0`` and ``y^2 ≠ 0`` (``ZZ/n ⊗ ZZ/n = ZZ/n``)."""
+    free = Modules(ZZ).free_module(("x", "y"))
+    ex, ey = free.module_generator("x"), free.module_generator("y")
+    torsion = free.Mor(free)({ex: 2 * ex, ey: 3 * ey}).cokernel()
 
-    piece = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2, 3))
-    source = GradedModules(ZZ)(indexed_family(ZZ, lambda _: piece), placements=(FramedModules(ZZ),))
-    for algebra in (source.tensor_algebra(), source.symmetric_algebra()):
-        x = algebra.algebra_generator(source.module_label_from_component(1, 0))
-        y = algebra.algebra_generator(source.module_label_from_component(1, 1))
+    for algebra in (torsion.tensor_algebra(), torsion.symmetric_algebra()):
+        x, y = algebra.degree_one_generator(0), algebra.degree_one_generator(1)
         assert 2 * x == algebra.zero()
         assert 3 * y == algebra.zero()
+        assert x != algebra.zero()
         assert x * y == algebra.zero()
-        assert algebra.Mor(algebra).identity()(x + y) == x + y
-        module = algebra.unformed_module()
-        assert algebra.graded_piece(1) is source
-        assert algebra.multiplication()(module(x), module(y)) == module.zero()
-        assert algebra(module(x)) == x
+        assert x * x != algebra.zero()
+        assert y * y != algebra.zero()

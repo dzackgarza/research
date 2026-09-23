@@ -1,54 +1,27 @@
-r"""Scalar-linearity of an elementwise map is decided on a ring generating set.
+r"""Scalar-linearity of an elementwise map over an infinite ring.
 
-An additive map already commutes with every integer, and the scalars it
-commutes with are closed under sums and products, so they form a subring.  A
-generating set of the ring therefore decides scalar-linearity, and the scalar
-ring itself need not be finite.
-
-The witness is Frobenius on ``GF(3)[x]/(x^3-1)``, read as a module over
-``GF(3)[x]``.  Cubing is additive in characteristic three and fixes every
-constant, so every check available before this one accepts it.  It is not
-``x``-linear: it sends ``x`` to ``x^3 = 1`` while ``x`` times its value at one
-is ``x``.
+The witness is Frobenius $a \mapsto a^3$ on $\mathbb F_3[x]/(x^3 - 1)$, read as
+a module over $\mathbb F_3[x]$.  Cubing is additive in characteristic three and
+fixes every constant, but it sends $x$ to $x^3 = 1$ while $x \cdot 1^3 = x$, so
+it is not $\mathbb F_3[x]$-linear.
 """
 
-from dzack_research.preamble.all import (
-    GF,
-    GeneralModules,
-    Set,
-)
+import pytest
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _group_algebra_of_the_cyclic_group_of_order_three():
-    r"""Return ``GF(3)[x]`` and ``GF(3)[x]/(x^3-1)`` as a module over it."""
-    ring = GF(3).polynomial_ring("x")
-    x = ring.algebra_generator("x")
-    quotient = ring.quotient_ring(ring.ideal(x**3 - ring.one()))
-    project = quotient.quotient_map()
-    module = GeneralModules(ring).from_operations(
-        Set(quotient),
-        addition=lambda left, right: left + right,
-        zero=quotient.zero(),
-        negation=lambda value: -value,
-        scalar_action=lambda scalar, value: project(scalar) * value,
-    )
-    return ring, quotient, module
+def test_frobenius_on_f3_x_mod_x3_minus_1_is_additive_but_not_x_linear() -> None:
+    """Source: freshman's dream (a + b)^3 = a^3 + b^3 in characteristic 3; x^3 = 1 in the quotient."""
+    R = GF(3)["x"]
+    x = R.gen()
+    Q = R.quotient_ring(R.ideal(x**3 - 1))
+    M = Modules(R)(Q)
+    xbar = Q(x)
 
+    assert (xbar + 1) ** 3 == xbar**3 + 1
+    assert xbar**3 == Q.one()
+    assert xbar * Q.one() ** 3 != xbar**3
 
-
-
-def test_frobenius_is_additive_but_is_rejected_as_not_x_linear() -> None:
-    _ring, quotient, module = _group_algebra_of_the_cyclic_group_of_order_three()
-
-    try:
-        module.module_category().Mor(module, module).elementwise(
-            lambda element: module(element.underlying_element() ** 3)
-        )
-    except ValueError as error:
-        assert "not scalar-linear" in str(error)
-    else:
-        raise AssertionError(
-            "cubing is additive and fixes the constants, so only the check on x rejects it"
-        )
-
-
+    with pytest.raises(ValueError):
+        M.Mor(M).elementwise(lambda m: m**3)

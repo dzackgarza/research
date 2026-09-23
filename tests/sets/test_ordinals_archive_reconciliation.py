@@ -1,13 +1,5 @@
 from dzack_research.preamble.all import Ordinals, omega
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/sets/ordinals.py",
-    "live_owner": "src/dzack_research/preamble/categories/sets/cardinals.py",
-    "disposition": "reconciled-live-owner",
-}
-
-
-
 
 def test_archive_natural_and_ordinary_ordinal_products_are_distinct() -> None:
     one = Ordinals().one()

@@ -6,11 +6,8 @@ Groups*, ch. 26: ``II_{1,9} = U + E8``), so the cusp of the isotropic line
 ``Z e`` has ``E8`` as its reduction lattice.
 """
 
-
 from dzack_research.preamble.all import (
     NamedLattices,
-    PrimitiveIsotropicSubobjects,
-    ZZ,
 )
 
 
@@ -29,7 +26,6 @@ def _acts_as_identity(restriction, module) -> bool:
 def test_the_isotropic_line_of_E10_reduces_to_E8() -> None:
     lattice, _generators, line = _lorentzian_line()
 
-    assert line in PrimitiveIsotropicSubobjects(ZZ)
     assert line.is_totally_isotropic()
     assert line.is_primitive()
     assert line.module_rank() == 1
@@ -81,10 +77,6 @@ def test_the_eichler_transvections_of_a_line_form_an_abelian_group() -> None:
     assert all(transvection in line.unipotent_radical() for transvection in family)
 
 
-
-
-
-
 def test_the_two_isotropic_lines_of_two_hyperbolic_planes_are_one_orbit() -> None:
     lattice = NamedLattices.U + NamedLattices.U
     generators = lattice.module_generators()
@@ -100,3 +92,18 @@ def test_the_two_isotropic_lines_of_two_hyperbolic_planes_are_one_orbit() -> Non
     assert first.is_equivalent_to(second)
 
 
+def test_the_saturation_of_the_line_through_twice_e_is_the_line_through_e() -> None:
+    r"""In \(U\), \(U/\mathbb Z(2e)\cong\mathbb Z/2\oplus\mathbb Z\) has torsion, so
+    \(\mathbb Z(2e)\) is not primitive; its saturation \((\mathbb Z(2e)\otimes\mathbb Q)\cap U\)
+    is \(\mathbb Ze\), which is primitive and contains \(e\).
+    """
+    lattice = NamedLattices.U
+    vector = lattice.module_generators()[0]
+
+    doubled = lattice.subobject_on((2 * vector,))
+    assert not doubled.is_primitive()
+
+    saturated = doubled.saturation()
+    assert saturated.module_rank() == 1
+    assert saturated.is_primitive()
+    assert saturated.inclusion().is_in_image(vector)

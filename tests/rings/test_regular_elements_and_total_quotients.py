@@ -14,8 +14,6 @@ from dzack_research.preamble.all import (
 )
 
 
-
-
 def test_a_zero_divisor_in_a_nonreduced_quotient_is_not_regular() -> None:
     polynomial = GF(5).polynomial_ring("x,y")
     x = polynomial.algebra_generator("x")

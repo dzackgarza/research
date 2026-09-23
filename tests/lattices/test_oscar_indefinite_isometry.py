@@ -1,38 +1,23 @@
-from sage.rings.integer_ring import ZZ as SageZZ
+r"""An isometry between two presentations of an indefinite lattice."""
 
-from dzack_research.preamble.categories import lattice_engines
-from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.all import ZZ, Lattices
 
 
-def test_oscar_supplies_an_actual_indefinite_integral_isometry() -> None:
-    integers = _own_ring(SageZZ)
-    source = Lattices(integers)(
-        (
-            (0, 1, 0),
-            (1, 0, 0),
-            (0, 0, -2),
-        )
-    )
-    target = Lattices(integers)(
-        (
-            (0, 1, 0),
-            (1, 2, 0),
-            (0, 0, -2),
-        )
-    )
+def test_u_plus_minus_two_is_isometric_to_its_skewed_presentation() -> None:
+    r"""\(\begin{psmallmatrix}0&1\\1&2\end{psmallmatrix}\cong U\): with basis \(e,f\)
+    of the former, \(e\) and \(f-e\) satisfy \(e^2=0\), \((f-e)^2=2-2=0\),
+    \(e\cdot(f-e)=1\).  Adding \(\langle-2\rangle\) to both sides preserves this.
+    """
+    source = Lattices(ZZ)([[0, 1, 0], [1, 0, 0], [0, 0, -2]])
+    target = Lattices(ZZ)([[0, 1, 0], [1, 2, 0], [0, 0, -2]])
 
     assert not source.is_definite()
-    assert not target.is_definite()
-    witness_rows = lattice_engines._integral_isometry_witness(
-        source.gram_tensor(),
-        target.gram_tensor(),
+    assert source.is_isometric_to(target)
+    isometry = source.isometry_to(target)
+    generators = source.module_generators()
+    assert all(
+        target.b(isometry(left), isometry(right)) == source.b(left, right)
+        for left in generators
+        for right in generators
     )
-    assert witness_rows is not None
-    isometry = source.Isom(target)._from_backend_row_action(witness_rows)
-    assert isometry.domain() is source
-    assert isometry.codomain() is target
-    assert (~isometry) * isometry == source.Isom(source).identity()
-    assert source.Isom(target).is_empty() is False
-
-
+    assert (~isometry) * isometry == source.identity_morphism()

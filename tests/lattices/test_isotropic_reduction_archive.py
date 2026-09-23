@@ -1,28 +1,32 @@
-r"""Archive reconciliation for the historical isotropic-quotient entrypoints."""
+r"""Isotropic reductions ``I^perp/I`` of the Enriques lattice ``U + U(2) + E_8(2)``."""
 
-from dzack_research.preamble.all import NamedLattices
+from dzack_research.preamble.all import ZZ, Lattices
 
 
-def test_vector_e_perp_mod_e_is_the_owned_isotropic_reduction() -> None:
-    lattice = NamedLattices.TEn
+def _enriques_lattice():
+    plane = Lattices(ZZ)("U")
+    e8 = Lattices(ZZ)("E8")
+    return plane + plane.twist(2) + e8.twist(2), plane, e8
+
+
+def test_reducing_U_plus_U2_plus_E8_2_along_an_isotropic_vector_of_U_gives_E10_2() -> None:
+    r"""``e^perp/e = U(2) + E_8(2) = E_10(2)`` for ``e`` isotropic in the first summand ``U``."""
+    lattice, plane, e8 = _enriques_lattice()
     e = lattice.module_generators()[0]
 
-    archived = e.e_perp_mod_e()
-    owned = e.isotropic_reduction()
+    reduction = e.isotropic_reduction()
 
-    assert archived.is_isometric(owned) is True
-    assert archived.module_rank() == 10
-    assert archived.is_isometric(NamedLattices.E10_2) is True
+    assert reduction.module_rank() == 10
+    assert reduction.is_isometric((plane + e8).twist(2))
 
 
-def test_parent_I_perp_mod_I_retains_the_rank_two_Enriques_reduction() -> None:
-    lattice = NamedLattices.TEn
-    basis = lattice.module_generators()
-    e = basis[0]
-    e_prime = basis[2]
+def test_reducing_along_the_isotropic_plane_spanned_by_the_first_vectors_of_U_and_U2_gives_E8_2() -> None:
+    r"""For ``I = ZZ e + ZZ e'`` with ``e`` in ``U`` and ``e'`` in ``U(2)``, ``I^perp/I = E_8(2)``."""
+    lattice, _plane, e8 = _enriques_lattice()
+    generators = lattice.module_generators()
+    e, e_prime = generators[0], generators[2]
 
-    reduction = lattice.I_perp_mod_I((e, e_prime))
+    reduction = lattice.sublattice_from([e, e_prime]).isotropic_reduction()
 
     assert reduction.module_rank() == 8
-    assert reduction.is_isometric(NamedLattices.E8_2) is True
-    assert reduction.isotropic_embedding().codomain() is lattice
+    assert reduction.is_isometric(e8.twist(2))

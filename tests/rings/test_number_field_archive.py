@@ -1,6 +1,6 @@
-r"""Archive reconciliation for multiplication endomorphisms of number fields."""
+r"""Multiplication endomorphisms, norms, traces and units of ``QQ(sqrt 2)``."""
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _quadratic_field():
@@ -34,3 +34,16 @@ def test_multiplication_matrix_recovers_norm_and_trace() -> None:
     assert matrix.trace() == element.trace()
 
 
+def test_one_plus_root_two_is_a_unit_of_norm_minus_one_with_inverse_root_two_minus_one() -> None:
+    r"""``(1 + sqrt 2)(sqrt 2 - 1) = 2 - 1 = 1``, so ``1 + sqrt 2`` is a unit of
+    ``ZZ[sqrt 2]``, of norm ``1 - 2 = -1`` (the fundamental unit; Neukirch,
+    *Algebraic Number Theory*, I.7)."""
+    field = _quadratic_field()
+    a = field.primitive_element()
+    unit = field.one() + a
+
+    assert unit.norm() == -1
+    assert unit.trace() == 2
+    assert unit.inverse() == a - field.one()
+    assert unit.inverse().norm() == -1
+    assert unit.inverse() in field.ring_of_integers()

@@ -1,40 +1,19 @@
+r"""The root lattice $A_2$ from its name."""
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-ARCHIVE_RECONCILIATIONS = (
-    {
-        "archive_module": "preamble/tests/test_session_namespace.sage",
-        "live_owner": "src/dzack_research/preamble/all.py",
-        "disposition": "reconciled-live-owner",
-    },
-    {
-        "archive_module": "preamble/all.py",
-        "live_owner": "src/dzack_research/preamble/all.py",
-        "disposition": "reconciled-live-owner",
-    },
-)
+def test_a2_is_even_nondegenerate_of_determinant_three() -> None:
+    r"""$A_2$ has Gram matrix $\begin{psmallmatrix}-2&1\\1&-2\end{psmallmatrix}$: even, determinant $3$, $|b(e_1, e_2)| = 1$.
 
-
-def _session() -> dict:
-    scope: dict = {}
-    exec("from dzack_research.preamble.all import *", scope)
-    return scope
-
-
-
-
-
-
-
-
-def test_session_lattice_retains_owned_base_ring_and_form_data() -> None:
-    session = _session()
-    integers = session["ZZ"]
-    lattice = session["Lattices"](integers)("A2")
-    first, second = tuple(lattice.module_generators())
+    Source: Conway–Sloane, *Sphere Packings, Lattices and Groups*, Ch. 4 §6.1
+    (with the negative-definite sign convention of this repository).
+    """
+    lattice = Lattices(ZZ)("A2")
+    first, second = lattice.module_generator(0), lattice.module_generator(1)
 
     assert lattice.module_rank() == 2
-    assert lattice.base_ring() is integers
     assert lattice.is_even()
     assert lattice.is_nondegenerate()
-    assert lattice.gram_matrix().determinant() == 3
+    assert lattice.determinant() == 3
     assert abs(lattice.b(first, second)) == 1

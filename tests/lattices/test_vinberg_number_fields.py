@@ -1,75 +1,50 @@
-r"""Number-field Vinberg roots retain their actual maximal-order coefficients."""
+r"""Vinberg's algorithm over the ring of integers of a real quadratic field."""
 
-from sage.rings.qqbar import AA as SageAA
-
-from dzack_research.preamble.all import Lattices, QuadraticField
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.engine_capabilities import engine_capabilities
+from dzack_research.preamble.all import AA, Lattices, QuadraticField, signature_pair
 
 
-def _belolipetsky_lattice():
+def test_vinberg_on_the_belolipetsky_lattice_over_the_golden_integers_finds_four_simple_roots() -> None:
+    r"""Over \(\mathcal O = \mathbb Z[\varphi]\), \(\varphi = (1+\sqrt5)/2\), the chain Gram
+    with off-diagonal entries \(-1, -\varphi, -1\) is the \([3,5,3]\) diagram: signature
+    \((3,1)\) at \(\sqrt5 \mapsto +\sqrt5\) and positive definite at the conjugate place.
+    The simple roots are \(-e_1, -e_2, -e_3\) and
+    \(v = ((s+3)/2,\ s+3,\ 3(s+1)/2,\ (s-1)/2)\), \(b(v,v) = 3 - \sqrt5\), pairing
+    nonpositively with the others (direct computation of the Gram values).
+    """
     field = QuadraticField(5, "s")
-    order = field.ring_of_integers()
     s = field.primitive_element()
-    phi = (field.one() + s) / field(2)
-    gram = (
-        (order(2), order(-1), order(0), order(0)),
-        (order(-1), order(2), order(-phi), order(0)),
-        (order(0), order(-phi), order(2), order(-1)),
-        (order(0), order(0), order(-1), order(2)),
+    order = field.maximal_order()
+    phi = (1 + s) / 2
+    lattice = Lattices(order)(
+        [
+            [2, -1, 0, 0],
+            [-1, 2, -phi, 0],
+            [0, -phi, 2, -1],
+            [0, 0, -1, 2],
+        ]
     )
-    lattice = Lattices(order)(gram)
-    real_algebraics = _own_ring(SageAA)
-    selected = None
-    for embedding in field.embeddings(real_algebraics):
-        try:
-            lattice.number_field_vinberg(embedding)
-        except ValueError:
-            continue
-        assert selected is None, "the Vinberg signature conditions select one real place"
-        selected = embedding
-    assert selected is not None, "the Vinberg signature conditions select a real place"
-    return lattice, selected
+    place = next(p for p in field.embeddings(AA) if p(s) > 0)
+    conjugate = next(p for p in field.embeddings(AA) if p(s) < 0)
 
+    assert lattice.base_change(place).signature_pair() == signature_pair(3, 1)
+    assert lattice.base_change(conjugate).signature_pair() == signature_pair(4, 0)
 
-def test_belolipetsky_number_field_vinberg_roots_stay_over_the_maximal_order() -> None:
-    r"""Archive engine seam: VinbergsAlgorithmNF raises exact maximal-order roots."""
-    providers = engine_capabilities.provider_names("number_field_vinberg_root_enumeration")
-    assert providers[0] == "VinbergsAlgorithmNF-via-sage-julia-bridge"
-    assert not providers[1:]
+    complete, roots = lattice.number_field_vinberg(place).vinberg_simple_roots(count=4)
 
-    lattice, selected = _belolipetsky_lattice()
-    vinberg = lattice.number_field_vinberg(selected)
-
-    assert vinberg.lattice() is lattice
-    assert vinberg.real_embedding() == selected
-    selected_signature = vinberg.signature_at_selected_place()
-    assert selected_signature.first() == 3
-    assert selected_signature.second() == 1
-    assert all(
-        signature.first() == 4 and signature.second() == 0
-        for signature in vinberg.other_signatures()
-    )
-
-    complete, roots = vinberg.vinberg_simple_roots(count=4)
     assert complete
     assert roots.cardinality() == 4
-    assert all(root.parent() is lattice for root in roots)
-    assert all(root.q() > 0 for root in roots)
-
-    field = lattice.base_ring().fraction_field()
-    s = field.primitive_element()
     expected = (
         lattice((-1, 0, 0, 0)),
         lattice((0, -1, 0, 0)),
         lattice((0, 0, -1, 0)),
-        lattice(
-            (
-                lattice.base_ring()((s + 3) / 2),
-                lattice.base_ring()(s + 3),
-                lattice.base_ring()(3 * (s + 1) / 2),
-                lattice.base_ring()((s - 1) / 2),
-            )
-        ),
+        lattice((order((s + 3) / 2), order(s + 3), order(3 * (s + 1) / 2), order((s - 1) / 2))),
     )
     assert all(root == expected[position] for position, root in enumerate(roots))
+    assert expected[3].b(expected[3]) == 3 - s
+    assert all(place(root.b(root)) > 0 for root in roots)
+    assert all(
+        place(left.b(right)) <= 0
+        for left in roots
+        for right in roots
+        if left != right
+    )

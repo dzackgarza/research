@@ -21,13 +21,16 @@ def test_cusp_normalization_retains_the_actual_finite_birational_map() -> None:
     assert cusp.delta_invariant() == 1
 
 
-def test_cusp_conductor_is_a_proper_ideal_of_the_original_curve_ring() -> None:
-    cusp = _cusp_ring()
-    conductor = cusp.conductor_ideal()
+def test_cusp_conductor_is_the_maximal_ideal_at_the_cusp() -> None:
+    r"""A = Q[t^2, t^3] = Q[x,y]/(y^2 - x^3) inside its normalization Q[t]: the
+    conductor {a : a Q[t] in A} is t^2 Q[t] = (x, y) (Serre, Algebraic Groups and
+    Class Fields, IV.11)."""
+    polynomial = QQ.polynomial_ring("x", "y")
+    x, y = (polynomial.algebra_generator(name) for name in ("x", "y"))
+    cusp = polynomial.quotient_ring(polynomial.ideal(y**2 - x**3))
+    to_cusp = cusp.quotient_map()
 
-    assert conductor.ring() is cusp
-    assert cusp.zero() in conductor
-    assert cusp.one() not in conductor
+    assert cusp.conductor_ideal() == cusp.ideal(to_cusp(x), to_cusp(y))
 
 
 def test_a_smooth_affine_line_is_its_own_normalization() -> None:

@@ -1,11 +1,5 @@
 from dzack_research.preamble.all import Sterk
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/coble.sage",
-    "live_owner": "src/dzack_research/preamble/coble.py",
-    "disposition": "reconciled-live-owner",
-}
-
 _STERK_NORM_COUNTS = {
     "Sterk_1": {-4: 12, -2: 0},
     "Sterk_2": {-4: 9, -2: 1},
@@ -28,8 +22,6 @@ def test_sterk_configurations_have_the_archived_root_counts_and_norms() -> None:
     assert {name: {norm: sum(root.q() == norm for root in roots) for norm in (-4, -2)} for name, roots in configurations.items()} == _STERK_NORM_COUNTS
 
 
-
-
 def test_sterk_alternative_realizations_reproduce_the_archived_root_data() -> None:
     lattice, sterk_5 = Sterk.sterk5_in_U_E8_2()
     alternatives = Sterk.sterks_in_TEn()
@@ -45,13 +37,3 @@ def test_sterk_alternative_realizations_reproduce_the_archived_root_data() -> No
         "Sterk_3": 12,
     }
     assert all(root.q() in (-2, -4) for roots in alternatives.values() for root in roots)
-
-
-
-
-
-
-
-
-
-

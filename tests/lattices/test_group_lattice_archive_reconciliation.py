@@ -1,17 +1,8 @@
-r"""Archive reconciliation for formed isotypic sublattices of a group lattice."""
+r"""Isotypic and coinvariant sublattices of A2 under the swap action of C2."""
 
 import pytest
 
 from dzack_research.preamble.all import ZZ, Groups, Lattices
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/group_modules/group_lattices.sage",
-    "live_owner": "src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py",
-    "owner_overrides": {
-        "GroupLatticeParent.isotypic_decomposition": "src/dzack_research/preamble/categories/modules/group_modules/isotypic.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
 
 
 def _acted_a2():
@@ -58,8 +49,6 @@ def test_archive_coinvariant_lattice_is_the_formed_orthogonal_complement() -> No
     assert coinvariant.module_rank() == 1
     assert coinvariant == invariant.orthogonal_complement()
     assert acted.module_coinvariants() is not coinvariant
-
-
 
 
 def test_archive_group_lattice_mor_is_both_isometric_and_equivariant() -> None:

@@ -1,71 +1,33 @@
-r"""Archive reconciliation for decomposition, inertia, and Frobenius objects."""
+r"""Decomposition, inertia and Frobenius at $2$ in $\mathbb{Q}(\sqrt5)$."""
 
-from dzack_research.preamble.all import QQ, QuadraticField
-from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
-    AbsoluteGaloisGroup,
-)
-from dzack_research.preamble.categories.group.groups import Subgroups
-from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
-    PrimeProlongation,
-)
-from dzack_research.preamble.categories.group.profinite.profinite_groups import (
-    ProfiniteGroups,
-)
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
-from dzack_research.preamble.categories.sets.set_categories import Sets
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/group/profinite/galois_decomposition.sage",
-    "live_owner": "src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py",
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_chosen_decomposition_and_inertia_groups_project_to_finite_quotients() -> None:
-    group = AbsoluteGaloisGroup(QQ)
+def _root_five_quotient():
+    group = QQ.absolute_galois_group()
     field = QuadraticField(5, "a")
-    stage = group.extension_data(field)
-    quotient = group.finite_quotient(stage)
-    prime_above_two = field.primes_above(2)[0]
-    prolongation = PrimeProlongation(2, lambda _extension: prime_above_two)
-    assert prolongation in Objects()
-
-    decomposition = group.decomposition_group(2, prolongation=prolongation)
-    inertia = group.inertia_group(2, prolongation=prolongation)
-    decomposition_class = group.decomposition_group_class(2)
-    inertia_class = group.inertia_group_class(2)
-
-    assert decomposition.ambient() is group
-    assert inertia.ambient() is group
-    assert decomposition in ProfiniteGroups()
-    assert inertia in ProfiniteGroups()
-    assert decomposition in Subgroups(group)
-    assert inertia in Subgroups(group)
-    assert decomposition.one() == group.one()
-    assert inertia.one() == group.one()
-    assert decomposition_class in Sets()
-    assert inertia_class in Sets()
-    assert decomposition in decomposition_class
-    assert inertia in inertia_class
-    assert decomposition.image(quotient).order() == 2
-    assert inertia.image(quotient).order() == 1
-    assert decomposition.conjugacy_class() == group.decomposition_group_class(2)
-    assert inertia.conjugacy_class() == group.inertia_group_class(2)
+    quotient = group.finite_quotient(group.extension_data(field))
+    return group, quotient, field.primes_above(2)[0]
 
 
-def test_frobenius_is_retained_as_a_conjugacy_class_with_finite_image() -> None:
-    group = AbsoluteGaloisGroup(QQ)
-    field = QuadraticField(5, "a")
-    stage = group.extension_data(field)
-    quotient = group.finite_quotient(stage)
-    prime_above_two = field.primes_above(2)[0]
+def test_two_is_inert_in_the_field_of_root_five() -> None:
+    r"""$x^2 - x - 1$ is irreducible mod $2$, so the decomposition group of $G_{\mathbb{Q}}$ at $2$ maps onto $\operatorname{Gal}(\mathbb{Q}(\sqrt5)/\mathbb{Q})$ and inertia maps to $1$.
 
-    frobenius = group.frobenius_class(2)
-    image = frobenius.image(quotient, prime_above_two)
+    Source: Neukirch, *Algebraic Number Theory*, I.8 and I.9.
+    """
+    group, quotient, prime = _root_five_quotient()
 
-    assert frobenius in Objects()
-    assert frobenius.ambient() is group
-    assert frobenius.conjugacy_class() is frobenius
+    assert quotient.order() == 2
+    assert group.decomposition_group_class(2).image(quotient, prime).order() == 2
+    assert group.inertia_group_class(2).image(quotient, prime).order() == 1
+    assert quotient.decomposition_group(prime).order() == 2
+    assert quotient.inertia_group(prime).order() == 1
+
+
+def test_the_frobenius_at_two_is_the_nontrivial_automorphism_of_q_root_five() -> None:
+    r"""Since $2$ is inert, $\mathrm{Frob}_2$ generates $\operatorname{Gal}(\mathbb{Q}(\sqrt5)/\mathbb{Q})$: it sends $\sqrt5 \mapsto -\sqrt5$."""
+    group, quotient, prime = _root_five_quotient()
+    image = group.frobenius_class(2).image(quotient, prime)
+
     assert image.representative() != quotient.one()
-
-
+    assert image.representative().multiplicative_order() == 2

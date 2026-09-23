@@ -1,19 +1,11 @@
-
-from dzack_research.preamble.all import (
-    OwnedOrders,
-    QuadraticField,
-)
-
-
-
-
+from dzack_research.preamble.all import *  # noqa: F403
 
 
 def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> None:
     field = QuadraticField(2, "a")
     maximal_order = field.ring_of_integers()
     nonmaximal_order = field.order_generated_by(2 * field.primitive_element())
-    adjunction = OwnedOrders().fraction_field_adjunction()
+    adjunction = Orders().fraction_field_adjunction()
     fraction_field = adjunction.left_adjoint()
 
     assert maximal_order is not nonmaximal_order

@@ -7,32 +7,20 @@ exponent is the one generator of ``Ann_R(M)``.  Neither statement mentions the
 integers, and ``GF(5)[t]`` exhibits both without them.
 """
 
-from dzack_research.preamble.all import (
-    GF,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.all import GF, Modules
 
 
-def _cyclic_module(ring, scalar):
-    r"""Return ``R/(scalar)`` presented on one generator."""
-    free = ring.free_module(finite_ordered_set(("g",)))
-    relations = ring.free_module(finite_ordered_set(("r",)))
-    return relations.module_category().Mor(relations, free)(
-            {"r": free.scalar_multiple(scalar, free.module_generator("g"))}
-        ).cokernel()
-
-
-def test_a_cyclic_module_over_a_polynomial_pid_counts_its_residues() -> None:
-    ring = GF(5).polynomial_ring("t")
-    t = ring.algebra_generator("t")
-    module = _cyclic_module(ring, t**2)
+def test_F5t_mod_t_squared_has_25_elements_and_exponent_t_squared() -> None:
+    r"""\(\mathbb F_5[t]/(t^2)\) has \(\mathbb F_5\)-basis \(1, t\), so \(5^2 = 25\) elements,
+    and \(\operatorname{Ann}(\mathbb F_5[t]/(t^2)) = (t^2)\)."""
+    ring = GF(5)["t"]
+    t = ring.gen()
+    free = Modules(ring)(ring**1)
+    (g,) = free.module_generators()
+    relations = Modules(ring)(ring**1)
+    (r,) = relations.module_generators()
+    module = relations.Mor(free)({r: t**2 * g}).cokernel()
 
     assert module.cardinality() == 25
-    assert module.cardinality().is_finite()
     assert module.exponent() == t**2
-
-
-
-
-
-
+    assert module.annihilator() == ring.ideal(t**2)

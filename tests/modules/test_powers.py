@@ -1,99 +1,76 @@
-from itertools import permutations
+r"""Tensor, symmetric, exterior and divided powers of abelian groups.
 
-from sage.arith.misc import factorial
+For $M$ free of rank $n$: $T^d M$ has rank $n^d$, $\operatorname{Sym}^d M$ and
+$\Gamma^d M$ rank $\binom{n+d-1}{d}$, $\Lambda^d M$ rank $\binom nd$ (Bourbaki,
+*Algebra* III, §6, §7 and IV, §5).  For $M = \mathbb Z/2$ with generator $x$,
+$\Gamma^n M = \mathbb Z\gamma_n(x) / \big(2^k\binom nk \gamma_n(x)\big)_{1 \le k \le n}$,
+so $\Gamma^2 = \mathbb Z/4$, $\Gamma^3 = \mathbb Z/2$, $\Gamma^4 = \mathbb Z/8$.
+"""
 
-from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.modules import (
-    FinitelyPresentedTorsionModules,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
-
-
-def _assert_maps_agree(left, right) -> None:
-    assert left.domain() is right.domain()
-    assert left.codomain() is right.codomain()
-    for label in left.domain().module_generating_set():
-        generator = left.domain().module_generator(label)
-        assert left(generator) == right(generator)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_degree_powers_have_the_expected_free_ranks_and_use_canonical_tensor_products() -> None:
-    module = ZZ.free_module(finite_ordered_set(("x", "y")))
-    assert module.tensor_power(2) is module.tensor_power(2)
-    assert module.tensor_power(3) is module.tensor_power(3)
-    assert module.tensor_power(2).module_rank() == 4
-    assert module.symmetric_power(2).module_rank() == 3
-    assert module.exterior_power(2).module_rank() == 1
-    assert module.exterior_power(3).module_rank() == 0
-    assert module.divided_power_module(3).module_rank() == 4
+def test_ranks_of_the_powers_of_z2() -> None:
+    """T^2 = 4, Sym^2 = 3, Lambda^2 = 1, Lambda^3 = 0, Gamma^3 = 4. Source: Bourbaki, Algebra III §6-7."""
+    M = ZZ**2
+    assert M.tensor_power(2).module_rank() == 4
+    assert M.tensor_power(3).module_rank() == 8
+    assert M.symmetric_power(2).module_rank() == 3
+    assert M.exterior_power(2).module_rank() == 1
+    assert M.exterior_power(3).module_rank() == 0
+    assert M.divided_power_module(3).module_rank() == 4
 
 
-def test_integral_divided_powers_distinguish_gamma_from_symmetric_powers() -> None:
-    module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2,))
+def test_divided_powers_of_z_mod_2_differ_from_its_symmetric_powers() -> None:
+    r"""$T^3 = \operatorname{Sym}^3 = \mathbb Z/2$ while $\Gamma^2 = \mathbb Z/4$, $\Gamma^3 = \mathbb Z/2$,
+    $\Gamma^4 = \mathbb Z/8$ (orders $\gcd_k 2^k\binom nk$ = 4, 2, 8).
 
-    _factors = module.tensor_power(3).invariant_factors()
-    assert _factors.cardinality() == 1
-    assert _factors[0] == 2
-
-    _factors = module.symmetric_power(3).invariant_factors()
-    assert _factors.cardinality() == 1
-    assert _factors[0] == 2
-    _factors = module.divided_power_module(2).invariant_factors()
-    assert _factors.cardinality() == 1
-    assert _factors[0] == 4
-    _factors = module.divided_power_module(3).invariant_factors()
-    assert _factors.cardinality() == 1
-    assert _factors[0] == 2
-    _factors = module.divided_power_module(4).invariant_factors()
-    assert _factors.cardinality() == 1
-    assert _factors[0] == 8
+    Source: Roby, Lois polynômes et lois formelles en théorie des modules, III; Whitehead's
+    $\Gamma(\mathbb Z/2) = \mathbb Z/4$ (Whitehead, A certain exact sequence, 1950); by hand.
+    """
+    M = Modules(ZZ)(ZZ.quotient_ring(ZZ.ideal(2)))
+    assert tuple(M.tensor_power(3).invariant_factors()) == (2,)
+    assert tuple(M.symmetric_power(3).invariant_factors()) == (2,)
+    assert tuple(M.divided_power_module(2).invariant_factors()) == (4,)
+    assert tuple(M.divided_power_module(3).invariant_factors()) == (2,)
+    assert tuple(M.divided_power_module(4).invariant_factors()) == (8,)
 
 
-def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> None:
-    module = ZZ.free_module(finite_ordered_set(("x", "y")))
-    for degree in (2, 3):
-        divided = module.divided_power_module(degree)
-        tensor = module.tensor_power(degree)
-        inclusion = module.divided_power_invariant_inclusion(degree)
-        polarization = module.tensor_power_polarization(degree)
+def test_polarization_after_inclusion_is_d_factorial_and_inclusion_after_polarization_symmetrizes() -> None:
+    r"""$\Gamma^d M = (T^d M)^{S_d} \hookrightarrow T^d M$ and $T^d M \to \Gamma^d M$ compose to $d!$ on
+    $\Gamma^d M$ and to $\sum_{\sigma \in S_d} \sigma$ on $T^d M$.
 
-        for label in divided.module_generating_set():
-            generator = divided.module_generator(label)
-            assert polarization(inclusion(generator)) == ZZ(int(factorial(degree))) * generator
-
-        orbit_sum = tuple(permutations(range(degree)))
-        for label in tensor.module_generating_set():
-            generator = tensor.module_generator(label)
-            expected = sum(
-                (module.tensor_power_permutation(degree, sigma)(generator) for sigma in orbit_sum),
-                tensor.zero(),
-            )
-            assert inclusion(polarization(generator)) == expected
+    Source: Bourbaki, Algebra IV §5 ex. (divided powers as symmetric tensors).
+    """
+    M = ZZ**2
+    for d in (2, 3):
+        divided = M.divided_power_module(d)
+        tensor = M.tensor_power(d)
+        inclusion = M.divided_power_invariant_inclusion(d)
+        polarization = M.tensor_power_polarization(d)
+        S = Groups.S(d)
+        assert polarization * inclusion == S.cardinality() * divided.End().one()
+        symmetrization = sum((M.tensor_power_permutation(d, sigma) for sigma in S), tensor.End().zero())
+        assert inclusion * polarization == symmetrization
 
 
-def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> None:
-    module = ZZ.free_module(finite_ordered_set(("x", "y")))
-    x = module.module_generator("x")
-    y = module.module_generator("y")
-    shear = module.module_category().Mor(module, module)({"x": x + y, "y": y})
-    scale = module.module_category().Mor(module, module)({"x": 2 * x, "y": 3 * y})
+def test_symmetric_and_divided_squares_and_cubes_are_functors() -> None:
+    r"""$\operatorname{Sym}^d$ and $\Gamma^d$ preserve composition of the shear $x \mapsto x + y$ and the
+    scaling $\operatorname{diag}(2, 3)$; the shear induces isomorphisms and the scaling does not.
 
-    for induced_power in (
-        lambda morphism: morphism.symmetric_power(2),
-        lambda morphism: morphism.symmetric_power(3),
-        lambda morphism: morphism.divided_power(2),
-        lambda morphism: morphism.divided_power(3),
+    Source: functoriality of Sym^d and Gamma^d (Bourbaki, Algebra III §6, IV §5).
+    """
+    M = ZZ**2
+    x, y = M.module_generator(0), M.module_generator(1)
+    shear = M.End()({0: x + y, 1: y})
+    scale = M.End()({0: 2 * x, 1: 3 * y})
+    for power in (
+        lambda f: f.symmetric_power(2),
+        lambda f: f.symmetric_power(3),
+        lambda f: f.divided_power(2),
+        lambda f: f.divided_power(3),
     ):
-        composite = induced_power(scale * shear)
-        stepwise = induced_power(scale) * induced_power(shear)
-        _assert_maps_agree(composite, stepwise)
-
-        identity = induced_power(module.module_category().Mor(module, module).identity())
-        identity_domain = identity.domain()
-        identity_codomain = identity.codomain()
-        _assert_maps_agree(
-            identity,
-            identity_domain.module_category().Mor(identity_domain, identity_codomain).identity(),
-        )
-
-
+        assert power(scale * shear) == power(scale) * power(shear)
+        assert power(M.End().one()) == power(M.End().one()).domain().End().one()
+        assert power(shear).is_isomorphism()
+        assert not power(scale).is_surjective()

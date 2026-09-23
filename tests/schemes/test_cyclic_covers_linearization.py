@@ -1,92 +1,75 @@
 r"""The deck linearization of a cyclic cover and its fibres over the base.
 
-Pushing the structure sheaf of a cyclic cover forward gives the ``O_X``-module
-``pi_* O_Y = ⊕_{i<n} L^{-i}`` together with the deck action, and the grading of
-the cover algebra is that action's eigen-decomposition.  The specimens here
-read it off two covers.
-
-The double cover ``z^2 = x^4 - 1`` of the affine line over the rationals is the
-affine chart of a genus-one curve.  Its deck involution fixes the summand
-``A``, negates the summand ``A z``, and the fibre over a root of the branch
-section is where the two sheets collide: exactly the points at which the deck
-action is no longer free.
-
-The degree-three cover ``z^3 = x`` over ``GF(7)`` separates the two candidate
-actions on sections, which the involution cannot.  Pullback along the deck
-automorphism scales ``z`` by ``zeta``, while the left action of the same group
-element on sections is pullback along its inverse and scales ``z`` by
-``zeta^{-1}``.  For ``n = 2`` those agree; for ``n = 3`` they do not, so a
-construction that composed pullbacks the wrong way round is visible here.
+For a cyclic cover ``pi: Y -> X`` of degree ``n`` given by ``z^n = f``, the
+pushforward ``pi_* O_Y = ⊕_{i<n} O_X z^i`` is the eigen-decomposition of the deck
+action.  The degree-three cover ``z^3 = x`` over ``GF(7)`` separates pullback
+along a deck transformation from the left action on sections, which is pullback
+along the inverse; for ``n = 2`` the two agree.
 """
 
-from dzack_research.preamble.all import GF, QQ, AffineGSchemes
-from dzack_research.preamble.categories.schemes.cyclic_covers import CyclicCovers
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_the_deck_action_splits_the_cover_sections_by_the_powers_of_z() -> None:
-    algebra = QQ.polynomial_ring("x")
-    x = algebra.algebra_generator("x")
-    covers = CyclicCovers(algebra, 2)
-    cover = covers(x**4 - algebra.one())
-    group = covers.constant_deck_group()
-    generator = group.group_generators()[0]
-    acted = cover.constant_deck_action()
-    sections_functor = AffineGSchemes(group, algebra).global_sections_functor()
-    sections = sections_functor(sections_functor.domain()(acted))
+def test_the_deck_involution_acts_by_plus_one_on_o_and_minus_one_on_o_z() -> None:
+    r"""On ``pi_* O_Y = O ⊕ O z`` for ``z^2 = x^4 - 1`` the involution acts by ``+1`` and ``-1``.
 
-    trivial_summand = sections.module_generator(0)
-    sign_summand = sections.module_generator(1)
+    Derivation: the deck involution sends ``z -> -z`` and fixes ``QQ[x]``.
+    """
+    R = QQ['x']
+    x = R.gen()
+    Y = R.affine_spectrum().cyclic_cover(2, x**4 - 1)
+    B = Y.coordinate_ring()
+    z = B.algebra_generator("z")
+    G = Y.deck_group()
+    sigma = G.gen()
+    sections = Y.global_sections()
 
-    assert sections.base_ring() is algebra
-    assert sections.act(generator, trivial_summand) == trivial_summand
-    assert sections.act(generator, sign_summand) == -sign_summand
-    assert sections.act(generator, sections.act(generator, sign_summand)) == sign_summand
-
-
-def test_the_action_on_sections_is_pullback_along_the_inverse() -> None:
-    algebra = GF(7).polynomial_ring("x")
-    x = algebra.algebra_generator("x")
-    covers = CyclicCovers(algebra, 3)
-    cover = covers(x)
-    group = covers.constant_deck_group()
-    generator = group.group_generators()[0]
-    root_of_unity = covers.deck_root_of_unity()
-    acted = cover.constant_deck_action()
-    sections_functor = AffineGSchemes(group, algebra).global_sections_functor()
-    opposite = sections_functor.domain()
-    opposite_acted = opposite(acted)
-    sections = sections_functor(opposite_acted)
-
-    deck = acted.Mor(acted)(acted.action_of(generator))
-    pullback = sections_functor(opposite.Mor(opposite_acted, opposite_acted)(deck))
-    sign_summand = sections.module_generator(1)
-
-    assert root_of_unity**3 == root_of_unity.parent().one()
-    assert root_of_unity != root_of_unity.parent().one()
-    assert pullback(sign_summand) == sections.scalar_multiple(
-        algebra(root_of_unity),
-        sign_summand,
-    )
-    assert sections.act(generator, sign_summand) == sections.scalar_multiple(
-        algebra(root_of_unity**2),
-        sign_summand,
-    )
-    assert sections.act(generator, sign_summand) != pullback(sign_summand)
+    assert sections.act(sigma, B.one()) == B.one()
+    assert sections.act(sigma, B(x**3)) == B(x**3)
+    assert sections.act(sigma, z) == -z
+    assert sections.act(sigma, x * z) == -(x * z)
+    assert sections.act(sigma, sections.act(sigma, z)) == z
 
 
-def test_the_fibre_over_a_branch_point_carries_the_collided_sheets() -> None:
-    algebra = QQ.polynomial_ring("x")
-    x = algebra.algebra_generator("x")
-    cover = CyclicCovers(algebra, 2)(x**4 - algebra.one())
-    cover_algebra = cover.coordinate_algebra()
+def test_the_left_action_on_sections_of_z3_equals_x_is_pullback_along_the_inverse() -> None:
+    r"""For ``z^3 = x`` over ``GF(7)``, ``g . s = (g^{-1})^* s``; ``g^* z = zeta z`` and ``g . z = zeta^2 z``.
 
-    ramified = cover_algebra.base_change(algebra.Mor(QQ)({"x": QQ(1)}))
-    unramified = cover_algebra.base_change(algebra.Mor(QQ)({"x": QQ(0)}))
+    ``GF(7)`` contains the primitive cube roots of unity 2 and 4 (``2^3 = 8 = 1``),
+    and ``zeta^2 = zeta^{-1}``.  Derivation: a left action on functions must
+    satisfy ``(gh) . s = g . (h . s)``, which forces pullback along the inverse.
+    """
+    R = GF(7)['x']
+    x = R.gen()
+    Y = R.affine_spectrum().cyclic_cover(3, x)
+    B = Y.coordinate_ring()
+    z = B.algebra_generator("z")
+    g = Y.deck_group().gen()
+    pulled = Y.deck_transformation(g).pullback(z)
+    acted = Y.global_sections().act(g, z)
 
-    # The branch section vanishes at x = 1, so z is a nonzero nilpotent in the
-    # fibre: the two sheets have collided at the deck fixed point.
-    assert ramified.algebra_generator("z") ** 2 == ramified.zero()
-    assert ramified.algebra_generator("z") != ramified.zero()
-    # At x = 0 the branch section is the unit -1, so z^2 = -1 is a unit and the
-    # deck involution exchanges two distinct points of the fibre.
-    assert unramified.algebra_generator("z") ** 2 == -unramified.one()
+    assert Y.deck_group().cardinality() == 3
+    assert pulled in (2 * z, 4 * z)
+    assert acted in (2 * z, 4 * z)
+    assert acted != pulled
+    assert acted == Y.deck_transformation(g**-1).pullback(z)
+
+
+def test_the_fibre_of_z2_equals_x4_minus_1_over_a_branch_point_is_nonreduced() -> None:
+    r"""Over ``x = 1`` the fibre is ``Spec QQ[z]/(z^2)``; over ``x = 0`` it is ``Spec QQ[z]/(z^2 + 1)``.
+
+    Derivation: substitute ``x = 1`` and ``x = 0`` into ``z^2 = x^4 - 1``.  The first
+    fibre is a double point (the two sheets collide); the second is the reduced
+    point ``Spec QQ(i)`` of degree 2.
+    """
+    R = QQ['x']
+    x = R.gen()
+    Y = R.affine_spectrum().cyclic_cover(2, x**4 - 1)
+    over_one = Y.fiber(R.ideal(x - 1))
+    over_zero = Y.fiber(R.ideal(x))
+
+    assert over_one.degree() == 2
+    assert not over_one.is_reduced()
+    assert over_one.coordinate_ring().nilradical() != over_one.coordinate_ring().zero_ideal()
+    assert over_zero.degree() == 2
+    assert over_zero.is_reduced()
+    assert over_zero.coordinate_ring().is_field()

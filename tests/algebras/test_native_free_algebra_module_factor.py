@@ -77,3 +77,23 @@ def test_scalar_extension_of_free_algebra_morphism_uses_the_full_word_module():
     ) * changed_y
 
 
+
+
+def test_coproduct_of_qq_x_and_qq_y_in_commutative_algebras_is_qq_x_y():
+    r"""In commutative ``QQ``-algebras, ``QQ[x] ⊔ QQ[y] = QQ[x] ⊗_QQ QQ[y] = QQ[x, y]``:
+    the map to ``QQ[x, y]`` induced by ``x ↦ x``, ``y ↦ y`` is an isomorphism
+    (derivation: ``Sym(M ⊕ N) = Sym M ⊗ Sym N``, and ``⊗`` is the coproduct of
+    commutative algebras)."""
+    left, right = QQ["x"], QQ["y"]
+    coproduct = Algebras(QQ).Commutative().coproduct((left, right))
+    x = coproduct.left_coproduct_map()(left.gen())
+    y = coproduct.right_coproduct_map()(right.gen())
+    plane = QQ["x,y"]
+    comparison = coproduct.universal_morphism(
+        (left.Mor(plane)({left.gen(): plane.gen(0)}), right.Mor(plane)({right.gen(): plane.gen(1)}))
+    )
+
+    assert x * y == y * x
+    assert x**2 * y != x * y**2
+    assert comparison(x**2 * y + 3 * y) == plane.gen(0) ** 2 * plane.gen(1) + 3 * plane.gen(1)
+    assert comparison.is_isomorphism()

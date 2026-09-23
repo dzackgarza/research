@@ -28,7 +28,3 @@ def test_archived_u2_two_primary_modification_is_the_index_two_even_overlattice(
     assert enlarged.is_unimodular()
     assert abs(enlarged.determinant()) == 1
     assert enlarged.is_isometric(Lattices(ZZ)("U")) is True
-
-
-
-

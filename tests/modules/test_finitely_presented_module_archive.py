@@ -1,44 +1,38 @@
-r"""Archive reconciliation for Hermite normalization of presented modules."""
+r"""Finitely presented abelian groups and the normal forms of their relations."""
 
-from dzack_research.preamble.all import (
-    ZZ,
-)
-from dzack_research.preamble.categories.sets import finite_ordered_set
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage",
-    "live_owner": "src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py",
-    "owner_overrides": {
-        "FinitelyPresentedModules": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-        "FinitelyPresentedModules.ParentMethods.framing_morphism": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_hermite_form_changes_only_the_relation_rows() -> None:
-    free = ZZ.free_module(finite_ordered_set(("x",)))
-    relations = ZZ.free_module(finite_ordered_set(("r1", "r2")))
-    presentation = relations.module_category().Mor(relations, free)(
-        {
-            "r1": 2 * free.module_generator("x"),
-            "r2": 4 * free.module_generator("x"),
-        }
-    )
-    module = presentation.cokernel()
-    normalization = module.hermite_form()
+def test_the_relations_2x_and_4x_have_hermite_form_2x() -> None:
+    r"""$\mathbb Z x / (2x, 4x) = \mathbb Z/2$: the Hermite normal form of the relation column
+    $(2, 4)^T$ is $(2, 0)^T$, and the normalization is an isomorphism.
+
+    Source: Cohen, A Course in Computational Algebraic Number Theory, 2.4.2; by hand.
+    """
+    F = ZZ**1
+    x = F.module_generator(0)
+    M = F / F.submodule([2 * x, 4 * x])
+    assert M.cardinality() == 2
+
+    normalization = M.hermite_form()
     normalized = normalization.codomain()
-
-    assert normalization.domain() is module
-    assert normalized.module_generating_set() == module.module_generating_set()
-    assert normalized.presentation().domain().module_rank() == 1
-    relation_generator = normalized.presentation().domain().module_generator(0)
-    assert normalized.presentation()(relation_generator) == (
-        2 * normalized.presentation().codomain().module_generator("x")
-    )
-    assert normalization.forward()(module.module_generator("x")) == normalized.module_generator("x")
-    assert normalization.inverse()(normalized.module_generator("x")) == module.module_generator("x")
+    relations = normalized.presentation()
+    assert relations.domain().module_rank() == 1
+    assert relations(relations.domain().module_generator(0)) == 2 * relations.codomain().module_generator(0)
+    assert normalization.is_isomorphism()
+    assert normalized.cardinality() == 2
 
 
+def test_z2_modulo_2x_plus_4y_is_z_mod_2_plus_z() -> None:
+    r"""$\mathbb Z^2 / (2x + 4y) \cong \mathbb Z/2 \oplus \mathbb Z$: the relation row $(2, 4)$ has
+    Smith form $(2, 0)$.
 
-
+    Source: Cohen 2.4.4 (Smith normal form); by hand, gcd(2, 4) = 2.
+    """
+    F = ZZ**2
+    x, y = F.module_generator(0), F.module_generator(1)
+    M = F / F.submodule([2 * x + 4 * y])
+    assert M.torsion_submodule().cardinality() == 2
+    assert M.vector_space().module_rank() == 1
+    assert M.hermite_form().is_isomorphism()
+    assert M.invariant_factor_form().codomain().torsion_submodule().cardinality() == 2

@@ -1,30 +1,23 @@
-r"""Archive reconciliation for graded sections on a product of projective lines."""
+r"""Sections of ``O(a, b)`` on ``P^1 x P^1``."""
 
-from dzack_research.preamble.all import (
-    QQ,
-    ProjectiveSpaces,
-    Schemes,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/framework/test_graded_algebra_sections.sage",
-    "live_owner": "tests/schemes/test_framework_graded_sections_archive.py",
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_bidegree_four_section_ring_has_the_expected_first_two_graded_pieces() -> None:
-    labels = finite_ordered_set(("left", "right"))
-    line = ProjectiveSpaces(QQ)(1)
-    product = Schemes(QQ).product(indexed_family(labels, lambda _label: line))
-    bundle = product.O(4, 4)
-    section_ring = bundle.section_ring()
+def test_sections_of_o_4_4_and_o_8_8_on_p1_times_p1_have_dimensions_25_and_81() -> None:
+    r"""``h^0(P^1 x P^1, O(a, b)) = (a + 1)(b + 1)`` for ``a, b >= 0``: 25 for ``(4, 4)``, 81 for ``(8, 8)``.
 
-    assert section_ring.graded_piece(1) is bundle.global_sections()
-    assert section_ring.graded_piece(1).module_rank() == 25
-    assert section_ring.graded_piece(2).module_rank() == 81
-    assert section_ring.algebra_generating_set().cardinality() == 25
+    Derivation: Künneth, ``H^0(O(a, b)) = H^0(P^1, O(a)) ⊗ H^0(P^1, O(b))``
+    (Hartshorne III.5.1 for ``h^0(P^1, O(a)) = a + 1``).  The section ring of
+    ``O(4, 4)`` has these as its degree-1 and degree-2 pieces.
+    """
+    P1 = Schemes(QQ).projective_space(1)
+    Q = P1.product(P1)
+    bundle = Q.O(4, 4)
+    ring = bundle.section_ring()
 
-
+    assert bundle.global_sections().dimension() == 25
+    assert Q.O(8, 8).global_sections().dimension() == 81
+    assert ring.graded_piece(1).dimension() == 25
+    assert ring.graded_piece(2).dimension() == 81
+    assert Q.O(1, 0).global_sections().dimension() == 2
+    assert Q.O(-1, 3).global_sections().dimension() == 0

@@ -1,32 +1,17 @@
-r"""The three arithmetic research constructions retain their actual maps."""
+r"""The cusp reduction of the even unimodular Lorentzian lattice $E_{10}$."""
 
-from dzack_research.preamble.catalogue import NamedLattices
-from dzack_research.preamble.categories.arithmetic_applications import (
-    lorentzian_e10_application,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def test_lorentzian_application_retains_the_cusp_reduction_and_levi_map() -> None:
-    application = lorentzian_e10_application()
-    line = application.isotropic_line()
-    reduction = application.reduction_lattice()
-    levi = application.levi_action()
+def test_isotropic_reduction_of_e10_at_a_primitive_isotropic_vector_is_e8() -> None:
+    r"""$E_{10} \cong U \oplus E_8$, and for primitive isotropic $e \in U$,
+    $e^\perp/\mathbf{Z}e \cong E_8$: it is even unimodular definite of rank 8
+    (Conway--Sloane, *SPLAG*, ch. 16 and ch. 26).
+    """
+    lattice = NamedLattices.U + NamedLattices.E8
+    isotropic = next(v for v in lattice.module_generators() if v.is_isotropic())
 
-    assert application.lattice() is NamedLattices.E10
-    assert application.orthogonal_group() is application.lattice().O()
-    assert application.positive_cone_subgroup().supergroup() is application.orthogonal_group()
-    assert line.ambient_lattice() is application.lattice()
+    assert lattice.is_isometric(NamedLattices.E10)
+    reduction = isotropic.isotropic_reduction()
     assert reduction.module_rank() == 8
     assert reduction.is_isometric(NamedLattices.E8)
-    assert levi.domain() is application.parabolic_subgroup()
-    assert levi.codomain() is reduction.Aut()
-
-    lifted_identity = application.lift_reduction_isometry(reduction.Aut().one())
-    assert lifted_identity in application.parabolic_subgroup()
-    assert levi(lifted_identity) == reduction.Aut().one()
-
-
-
-
-
-

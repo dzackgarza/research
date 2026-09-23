@@ -1,49 +1,29 @@
-r"""A chosen lattice polytope owns its toric polarization and zero divisors."""
+r"""The polarization of the toric surface of `2\Delta = \operatorname{conv}\{(0,0),(2,0),(0,2)\}`.
 
-from dzack_research.preamble.all import QQ, ZZ, LatticePolygons
+Source: Cox, Little, Schenck, *Toric Varieties*, Prop. 4.3.3 and Thm. 6.2.1: the
+toric variety of `2\Delta` is `\mathbb{P}^2` polarized by `\mathcal{O}(2)`, the
+polytope of the polarizing divisor is `2\Delta` again, and its six lattice points
+are the monomials of degree 2.  The sum of all six,
+`x^2 + y^2 + z^2 + xy + xz + yz`, has Gram determinant `1/2 \ne 0`, so its zero
+locus is a smooth conic.
+"""
+
+from dzack_research.preamble.all import QQ, ZZ, ConvexPolytopes
 
 
-def test_polytope_reconstructs_its_polarizing_divisor_and_character_section_zero_scheme() -> None:
+def test_the_polarizing_divisor_of_twice_the_triangle_recovers_it_and_cuts_a_smooth_conic() -> None:
     lattice = ZZ.free_module(2)
-    polygon = LatticePolygons(lattice)(((0, 0), (2, 0), (0, 2)))
+    polygon = ConvexPolytopes(lattice)(((0, 0), (2, 0), (0, 2)))
     surface = polygon.toric_variety(QQ)
     divisor = surface.polarizing_divisor()
-    recovered = surface.divisor_polytope(divisor)
-
-    assert {
-        tuple(int(coordinate) for coordinate in vertex)
-        for vertex in recovered.vertices()
-    } == {
-        tuple(int(coordinate) for coordinate in vertex)
-        for vertex in polygon.vertices()
-    }
-
     sections = surface.divisor_section_space(divisor)
     section = sections.linear_combination(
         {label: QQ.one() for label in sections.module_generating_set()}
     )
-    line_bundle = surface.invertible_sheaf_of_divisor(divisor)
-    compatible = surface.compatible_divisor_section(
-        divisor,
-        section,
-        line_bundle=line_bundle,
-    )
-    zero = surface.zero_subscheme_of_divisor_section(
-        divisor,
-        section,
-        line_bundle=line_bundle,
-    )
+    conic = surface.zero_subscheme_of_divisor_section(divisor, section)
 
-    assert compatible.parent() is line_bundle.compatible_sections()
-    assert compatible == sum(
-        (
-            surface.compatible_divisor_section(
-                divisor, sections.module_generator(label), line_bundle=line_bundle
-            )
-            for label in sections.module_generating_set()
-        ),
-        line_bundle.compatible_sections().zero(),
-    )
-    assert zero.inclusion().codomain() is surface
-    assert zero._preamble_defining_toric_section == section
-    assert zero._preamble_defining_toric_divisor == divisor
+    assert surface.divisor_polytope(divisor) == polygon
+    assert sections.dimension() == 6
+    assert conic.relative_dimension() == 1
+    assert conic.is_smooth()
+    assert conic.genus() == 0

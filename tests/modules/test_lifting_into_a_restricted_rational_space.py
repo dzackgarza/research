@@ -65,5 +65,3 @@ def test_a_half_integral_vector_of_the_rational_plane_is_not_in_a_lattice() -> N
     half = space(plane.scalar_multiple(QQ(1) / 2, e0))
 
     assert not into_standard.is_in_image(half)
-
-

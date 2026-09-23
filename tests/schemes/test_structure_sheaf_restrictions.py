@@ -1,29 +1,31 @@
-from __future__ import annotations
+r"""Covers and containments of distinguished opens.
+
+Derivation: `D(f_1), \dots, D(f_n)` cover `\operatorname{Spec} A` iff
+`(f_1, \dots, f_n) = A`, and `D(g) \subseteq D(f)` iff `g` lies in the radical of
+`(f)`; both follow from `V(I) = \emptyset \iff I = A`.  The origin lies in neither
+`D(x)` nor `D(y)`.
+"""
+
+from dzack_research.preamble.all import QQ
 
 
+def test_d_x_and_d_y_miss_the_origin_while_d_x_and_d_1_minus_x_cover_the_line() -> None:
+    plane_ring = QQ.polynomial_ring(("x", "y"))
+    x, y = plane_ring.algebra_generator("x"), plane_ring.algebra_generator("y")
+    plane = plane_ring.affine_spectrum()
+    line_ring = QQ.polynomial_ring("t")
+    t = line_ring.algebra_generator("t")
+    line = line_ring.affine_spectrum()
+
+    assert not plane.is_covered_by((plane.distinguished_open(x), plane.distinguished_open(y)))
+    assert line.is_covered_by((line.distinguished_open(t), line.distinguished_open(1 - t)))
 
 
+def test_d_xy_lies_in_d_x_but_d_y_does_not() -> None:
+    plane_ring = QQ.polynomial_ring(("x", "y"))
+    x, y = plane_ring.algebra_generator("x"), plane_ring.algebra_generator("y")
+    plane = plane_ring.affine_spectrum()
+    open_x = plane.distinguished_open(x)
 
-
-def test_distinguished_affine_cover_rejects_a_noncover_and_noncontainment() -> None:
-    from dzack_research.preamble.all import QQ
-
-    algebra = QQ.polynomial_ring(("x", "y"))
-    x, y = algebra.algebra_generators()
-    scheme = (algebra).affine_spectrum()
-
-    try:
-        scheme.distinguished_open_cover(x, y)
-    except ValueError as error:
-        assert "do not cover" in str(error)
-    else:
-        raise AssertionError("D(x) and D(y) do not cover the affine plane")
-
-    x_open = scheme.distinguished_open(x)
-    y_open = scheme.distinguished_open(y)
-    try:
-        scheme.structure_sheaf().restriction_map(x_open, y_open)
-    except ValueError as error:
-        assert "not contained" in str(error)
-    else:
-        raise AssertionError("D(y) is not contained in D(x)")
+    assert plane.distinguished_open(x * y).is_contained_in(open_x)
+    assert not plane.distinguished_open(y).is_contained_in(open_x)

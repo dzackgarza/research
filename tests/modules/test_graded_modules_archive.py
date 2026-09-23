@@ -1,40 +1,29 @@
-r"""Archive reconciliation for the generic decomposition surface of graded modules."""
+r"""Homogeneous decomposition in the tensor algebra of $\mathbb Q^2$."""
 
-from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/graded_modules.sage",
-    "live_owner": "src/dzack_research/preamble/categories/modules/graded_modules.py",
-    "disposition": "reconciled-live-owner",
-}
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _tensor_algebra():
-    return QQ.free_module(finite_ordered_set(("x", "y"))).tensor_algebra()
+def test_x_plus_y_squared_in_the_tensor_algebra_has_components_of_degrees_one_and_two() -> None:
+    r"""$T(\mathbb Q^2) = \bigoplus_n (\mathbb Q^2)^{\otimes n}$ is graded by tensor degree; $x + y \otimes y$
+    is not homogeneous, has degree 2, and components $x$ in degree 1 and $y \otimes y$ in degree 2.
 
-
-
-
-def test_archive_generic_degree_and_homogeneous_components_live_on_graded_modules() -> None:
-    algebra = _tensor_algebra()
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
+    Source: Lang, Algebra, XVI.7 (the tensor algebra and its grading).
+    """
+    T = (QQ**2).tensor_algebra()
+    x = T.algebra_generator(0)
+    y = T.algebra_generator(1)
     mixed = x + y * y
 
     assert x.degree() == 1
     assert (y * y).degree() == 2
+    assert (x * y * x).degree() == 3
     assert mixed.degree() == 2
     assert x.is_homogeneous()
-    assert (y * y).is_homogeneous()
+    assert (x * y - y * x).is_homogeneous()
     assert not mixed.is_homogeneous()
 
     components = mixed.homogeneous_components()
-    assert set(components.index_set()) == {1, 2}
     assert components[1] == x
     assert components[2] == y * y
     assert mixed.truncate(2) == x
-
-
-
-
+    assert x * y != y * x

@@ -1,6 +1,6 @@
-r"""Reduced normalization, total quotients, and finite local lengths."""
+r"""Reduced normalization, total quotients, finite local lengths and conductors."""
 
-from dzack_research.preamble.all import QQ, IsolatedHypersurfaceSingularity
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:
@@ -49,14 +49,20 @@ def test_local_length_divides_out_nonrational_residue_degree() -> None:
     assert point.local_length(prime.power(2)) == 2
 
 
-def test_plane_curve_conductor_lives_in_the_curve_local_ring() -> None:
-    polynomial = QQ.polynomial_ring("x", "y")
-    x, y = tuple(polynomial.algebra_generators())
-    cusp = IsolatedHypersurfaceSingularity(polynomial, y**2 - x**3)
+def test_the_conductor_of_the_cusp_is_its_maximal_ideal_at_the_origin() -> None:
+    r"""``QQ[x, y]/(y^2 - x^3) = QQ[t^2, t^3]`` with normalization ``QQ[t]``; the
+    conductor ``{f : f QQ[t] in QQ[t^2, t^3]}`` is ``(t^2, t^3) = (x, y)``, and
+    ``delta = dim QQ[t]/QQ[t^2, t^3] = 1`` (Hartshorne, IV Ex. 1.8; Serre,
+    *Algebraic Groups and Class Fields*, IV §1)."""
+    plane = QQ["x, y"]
+    x = plane.algebra_generator("x")
+    y = plane.algebra_generator("y")
+    cusp = plane.quotient_by_relations([y**2 - x**3])
+    xbar = cusp.algebra_generator("x")
+    ybar = cusp.algebra_generator("y")
+    conductor = cusp.conductor_ideal()
 
-    conductor = cusp.conductor_ideal_at_origin()
-    local_curve = conductor.ring()
-    curve = local_curve.localization_source()
-    assert curve.defining_ideal().contains_ambient_element(y**2 - x**3)
-    assert local_curve.localization_map()(curve(x)) in conductor
-    assert local_curve.localization_map()(curve(y)) in conductor
+    assert conductor == cusp.ideal(xbar, ybar)
+    assert not conductor.contains_ambient_element(cusp.one())
+    assert cusp.delta_invariant() == 1
+    assert cusp.normalization().krull_dimension() == 1

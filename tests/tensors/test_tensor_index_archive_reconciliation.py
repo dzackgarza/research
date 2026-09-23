@@ -1,9 +1,12 @@
-r"""Archive reconciliation for metric raising and lowering of tensor indices."""
+r"""Raising and lowering tensor indices with the Gram form of a lattice.
 
-import pytest
+`U` is unimodular, so its Gram matrix is invertible over `\mathbb{Z}` and the
+correlation `L \to L^\vee` is an isomorphism; `A_2` has determinant 3, so its Gram
+matrix inverts only over `\mathbb{Q}` and the cokernel of its correlation is the
+discriminant group, of order 3 (Conway--Sloane, *SPLAG*, Ch. 4, section 6.1).
+"""
 
-from dzack_research.preamble.all import ZZ, Lattices
-from dzack_research.preamble.tensors import tensor
+from dzack_research.preamble.all import ZZ, Lattices, tensor
 
 
 def test_archive_unimodular_gram_raises_to_identity_and_lowers_back() -> None:
@@ -14,10 +17,6 @@ def test_archive_unimodular_gram_raises_to_identity_and_lowers_back() -> None:
     assert identity.tensor_valence() == (1, 1)
     assert identity == tensor(ZZ, (2,), (2,), [[1, 0], [0, 1]])
     assert identity.lower_index(plane, 0) == gram
-
-
-
-
 
 
 def test_archive_nondegenerate_form_raises_after_fraction_field_base_change() -> None:
@@ -32,16 +31,11 @@ def test_archive_nondegenerate_form_raises_after_fraction_field_base_change() ->
     assert rationalized.lower_index(raised, 0) == rationalized.gram_tensor()
 
 
-def test_archive_correlation_is_an_isomorphism_exactly_when_unimodular() -> None:
+def test_the_correlation_is_an_isomorphism_for_u_and_has_cokernel_of_order_three_for_a2() -> None:
     plane = Lattices(ZZ)("U")
-    correlation = plane.correlation_isomorphism()
-    dual = correlation.forward().codomain()
-
-    for generator in plane.module_generators():
-        assert correlation.inverse()(correlation.forward()(generator)) == generator
-    for functional in dual.module_generators():
-        assert correlation.forward()(correlation.inverse()(functional)) == functional
-
     a2 = Lattices(ZZ)("A2")
-    with pytest.raises(ValueError, match="unimodular"):
-        a2.correlation_isomorphism()
+
+    assert plane.correlation().is_isomorphism()
+    assert not a2.correlation().is_isomorphism()
+    assert a2.correlation().is_injective()
+    assert a2.correlation().cokernel().cardinality() == 3

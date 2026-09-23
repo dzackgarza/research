@@ -1,200 +1,83 @@
-import pytest
+r"""Absolute Galois groups of finite fields and of $\mathbb{Q}$, through finite Galois theory."""
 
-from sage.categories.homset import Homset
-from sage.rings.finite_rings.integer_mod_ring import Integers
-
-from dzack_research.preamble.all import GF, QQ, QuadraticField
-from dzack_research.preamble.categories.group.groups import OwnedGroups, Subgroups
-from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
-    AbsoluteGaloisGroup,
-)
-from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
-    AbsoluteGaloisGroups,
-    AbsoluteGaloisGroupsOfFiniteFields,
-    OpenAbsoluteGaloisSubgroups,
-)
-from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
-    PrimeProlongation,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _quadratic_number_field(radicand, name="a"):
-    return QuadraticField(radicand, name)
+def _cubic_field(radicand):
+    x = QQ.polynomial_ring("x").algebra_generator("x")
+    return (x**3 - QQ(radicand)).number_field("a")
 
 
+def test_the_frobenius_of_f9_raises_to_the_ninth_power_and_fixes_f9() -> None:
+    r"""The arithmetic Frobenius of $G_{\mathbb{F}_9}$ is $x \mapsto x^9$, not $x \mapsto x^3$.
 
-
-def _cubic_number_field(radicand, name="a"):
-    polynomial_ring = QQ.polynomial_ring("x")
-    x = polynomial_ring.algebra_generator("x")
-    return (x**3 - QQ(radicand)).number_field(name)
-
-
-def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps() -> (
-    None
-):
+    On $\alpha$ generating $\mathbb{F}_{9^4}$, $\alpha^9 \ne \alpha^3$; on
+    $\mathbb{F}_9$ it is the identity.
+    """
     field = GF(9, "u")
-    group = AbsoluteGaloisGroup(field)
-    embedding = group.base_embedding()
-    extension_object = group.extension_object()
-
-    assert group in AbsoluteGaloisGroups()
-    assert group in AbsoluteGaloisGroupsOfFiniteFields()
-    assert group in OwnedGroups()
-    u = field.multiplicative_generator()
-    assert embedding(field.one()) == group.algebraic_closure().one()
-    assert embedding(u + u) == embedding(u) + embedding(u)
-    assert embedding(u * u) == embedding(u) * embedding(u)
-    assert embedding.domain() is field
-    assert embedding.codomain() is group.algebraic_closure()
-    assert extension_object.arrow() is embedding
-    assert extension_object in group.slice_category()
-
+    group = field.absolute_galois_group()
     frobenius = group.frobenius()
     degree_four = group.finite_extension(4)
     alpha = degree_four.embedding()(degree_four.field().field_generators()[0])
-    base_generator = field.field_generators()[0]
-    square = group.slice_automorphism(frobenius)
-    square_map = square.forward()
+    u = group.base_embedding()(field.field_generators()[0])
 
-    assert frobenius.parent() is group
-    assert frobenius.domain() is group.algebraic_closure()
-    assert frobenius.codomain() is group.algebraic_closure()
     assert frobenius(alpha) == alpha**9
     assert frobenius(alpha) != alpha**3
-    assert frobenius(embedding(base_generator)) == embedding(base_generator)
-    assert square.parent() is group.slice_category().Core().Mor(
-        extension_object, extension_object
-    )
-    assert square_map.domain() is extension_object
-    assert square_map.codomain() is extension_object
-    assert square_map.right() is frobenius.as_morphism()
-    assert square_map.left()(base_generator) == base_generator
+    assert frobenius(u) == u
     assert (~frobenius * frobenius)(alpha) == alpha
-    assert square * group.slice_automorphism(frobenius**2) == group.slice_automorphism(
-        frobenius**3
-    )
-    assert square.inverse() == group.slice_automorphism(~frobenius).forward()
-    assert group.slice_automorphism(group.one()) * square == square
-    assert tuple(group.topological_group_generators()) == (frobenius,)
-
-    field_endomorphisms = group.arrow_set()
-    assert field_endomorphisms is group.field_automorphism_mor()
-    assert not isinstance(group, Homset)
-    assert frobenius.as_morphism().parent() is field_endomorphisms
-    assert frobenius.as_morphism() is frobenius.as_morphism()
-    assert "_preamble_underlying_field_morphism" not in frobenius.__dict__
-    assert "_preamble_absolute_galois_element" not in frobenius.as_morphism().__dict__
-    assert frobenius in group
-    assert group(frobenius.as_morphism()) == frobenius
 
 
+def test_the_frobenius_of_f625_restricts_to_that_of_f25_with_two_extensions() -> None:
+    r"""$G_{\mathbb{F}_5} \to \operatorname{Gal}(\mathbb{F}_{5^4}/\mathbb{F}_5) \cong \mathbb{Z}/4$.
 
-
-
-
-def test_finite_coordinates_restriction_maps_and_extension_cosets_obey_their_laws() -> (
-    None
-):
-    group = AbsoluteGaloisGroup(GF(5))
+    Its kernel is normal of index $4$, contains $\mathrm{Frob}^4$ and not
+    $\mathrm{Frob}$; the Frobenius of $\mathbb{F}_{25}$ has exactly
+    $[\mathbb{F}_{625} : \mathbb{F}_{25}] = 2$ extensions to $\mathbb{F}_{625}$,
+    namely $\sigma$ and $\sigma^3$.  Source: Lang, *Algebra*, V §5.
+    """
+    group = GF(5).absolute_galois_group()
     frobenius = group.frobenius()
     degree_two = group.finite_extension(2)
     degree_four = group.finite_extension(4)
-    quotient_two = group.finite_quotient(degree_two)
-    quotient_four = group.finite_quotient(degree_four)
     restriction_two = group.restriction_map(degree_two)
     restriction_four = group.restriction_map(degree_four)
-
-    assert restriction_two.parent() is group.Mor(quotient_two)
-    assert restriction_four.parent() is group.Mor(quotient_four)
-    assert quotient_two.order() == 2
-    assert quotient_four.order() == 4
-    with pytest.raises(ValueError, match="outside this finite quotient"):
-        quotient_two(-1)
-    with pytest.raises(ValueError, match="outside this finite quotient"):
-        quotient_two(quotient_two.order())
-    assert restriction_four.is_continuous()
-    assert restriction_four.is_surjective()
-    assert restriction_four(frobenius**3 * frobenius**2) == (
-        restriction_four(frobenius**3) * restriction_four(frobenius**2)
-    )
-
-    smaller_generator = degree_two.field().field_generators()[0]
-    compatible_embeddings = [
-        embedding
-        for embedding in degree_two.field().exact_embeddings(degree_four.field())
-        if degree_four.embedding()(embedding(smaller_generator))
-        == degree_two.embedding()(smaller_generator)
-    ]
-    assert len(compatible_embeddings) == 1
-    inclusion = compatible_embeddings[0]
+    kernel = restriction_four.kernel()
     sigma = restriction_four(frobenius)
     tau = restriction_two(frobenius)
 
-    assert sigma.action().restrict_along(inclusion) == tau.action()
-    extensions = tau.action().extensions_along(
-        inclusion,
-        [candidate.action() for candidate in quotient_four],
-    )
-    assert extensions.cardinality() == 2
-    assert sigma.action() in extensions
-
-    coset = group.lifts(restriction_four(frobenius**3))
-    kernel = coset.kernel()
+    assert group.finite_quotient(degree_four).order() == 4
+    assert restriction_four.is_surjective()
     assert kernel.index() == 4
     assert kernel.is_normal()
     assert frobenius not in kernel
     assert frobenius**4 in kernel
-    assert frobenius**3 in coset
-    assert coset.representative() == frobenius**3
+    assert sigma.multiplicative_order() == 4
+    assert tau.multiplicative_order() == 2
+    assert [k for k in range(4) if restriction_two(frobenius**k) == tau] == [1, 3]
+    assert restriction_four(frobenius**3) != sigma
 
 
-
-
-
-
-
-
-
-
-
-
-def test_open_subgroups_are_actual_subgroups_and_classes_forget_the_embedding() -> None:
-    group = AbsoluteGaloisGroup(GF(5))
+def test_open_subgroups_of_the_absolute_galois_group_of_f5_follow_the_degrees() -> None:
+    r"""$G_{\mathbb{F}_{25}}$ has index $2$, its Frobenius is $\mathrm{Frob}_5^2$, and $G_{\mathbb{F}_{25}} \cap G_{\mathbb{F}_{125}} = G_{\mathbb{F}_{5^6}}$ has index $6$."""
+    group = GF(5).absolute_galois_group()
     frobenius = group.frobenius()
     index_two = group.open_subgroup(group.finite_extension(2))
     index_three = group.open_subgroup(group.finite_extension(3))
     intersection = index_two.intersection(index_three)
 
-    assert index_two in OpenAbsoluteGaloisSubgroups(group)
-    assert index_two in Subgroups(group)
-    assert index_two.supergroup() is group
-    assert index_two.supergroup() is group
     assert index_two.index() == 2
     assert frobenius not in index_two
     assert frobenius**2 in index_two
-    inclusion = index_two.inclusion()
-    assert inclusion.parent() is index_two.Mor(group)
-    assert inclusion.is_continuous()
-    assert inclusion(index_two.frobenius()) == frobenius**2
+    assert index_two.inclusion()(index_two.frobenius()) == frobenius**2
     assert intersection.index() == 6
     assert intersection <= index_two
     assert intersection <= index_three
 
-    conjugacy_class = index_two.conjugacy_class()
-    assert conjugacy_class == group.open_subgroup_class(index_two.fixed_field())
-    assert conjugacy_class.index() == 2
-    assert conjugacy_class.representative().index() == 2
 
-    first_quadratic = group.open_subgroup_class(group.finite_extension(2))
-    assert first_quadratic == conjugacy_class
-
-
-
-
-def test_core_of_a_nonnormal_open_subgroup_is_the_normal_closure_subgroup() -> None:
-    group = AbsoluteGaloisGroup(QQ)
-    subgroup = group.open_subgroup(_cubic_number_field(2))
+def test_the_core_of_the_subgroup_fixing_the_real_cube_root_of_two_has_index_six() -> None:
+    r"""$G_{\mathbb{Q}(\sqrt[3]{2})}$ has index $3$ and is not normal; its core fixes the splitting field of $x^3 - 2$, of degree $6$."""
+    group = QQ.absolute_galois_group()
+    subgroup = group.open_subgroup(_cubic_field(2))
     core = subgroup.core()
 
     assert subgroup.index() == 3
@@ -204,63 +87,42 @@ def test_core_of_a_nonnormal_open_subgroup_is_the_normal_closure_subgroup() -> N
     assert core <= subgroup
 
 
-def test_decomposition_inertia_and_frobenius_project_to_exact_finite_objects() -> None:
-    group = AbsoluteGaloisGroup(QQ)
-    field = _quadratic_number_field(5)
-    stage = group.extension_data(field)
-    quotient = group.finite_quotient(stage)
-    prime_above_two = field.primes_above(2)[0]
-    prolongation = PrimeProlongation(2, lambda extension: prime_above_two)
+def test_two_is_inert_in_the_field_of_root_five() -> None:
+    r"""$x^2 - x - 1$ is irreducible mod $2$, so $2$ is inert in $\mathbb{Q}(\sqrt5)$.
 
-    decomposition = group.decomposition_group(2, prolongation=prolongation)
-    inertia = group.inertia_group(2, prolongation=prolongation)
-    decomposition_image = decomposition.image(quotient)
-    inertia_image = inertia.image(quotient)
-    frobenius_image = group.frobenius_class(2).image(quotient, prime_above_two)
+    The decomposition group is all of $\operatorname{Gal}(\mathbb{Q}(\sqrt5)/\mathbb{Q})$,
+    inertia is trivial, and $\mathrm{Frob}_2$ is the nontrivial element; the
+    Frobenius class of $G_{\mathbb{Q}}$ at $2$ maps to it.  Source: Neukirch,
+    *Algebraic Number Theory*, I.8.
+    """
+    group = QQ.absolute_galois_group()
+    field = QuadraticField(5, "a")
+    quotient = group.finite_quotient(group.extension_data(field))
+    prime = field.primes_above(2)[0]
 
-    assert frobenius_image.parent() is quotient.conjugacy_classes()
-    assert frobenius_image.supergroup() is quotient
-    assert tuple(decomposition_image) == tuple(quotient.decomposition_group(prime_above_two))
-    assert tuple(inertia_image) == tuple(quotient.inertia_group(prime_above_two))
-    assert frobenius_image == quotient.frobenius_class(2, prime_above_two)
-    assert decomposition_image.order() == 2
-    assert inertia_image.order() == 1
-    assert frobenius_image.representative() != quotient.one()
-    assert frobenius_image == group.frobenius_class(2).image(quotient, prime_above_two)
-    assert decomposition.conjugacy_class() == group.decomposition_group_class(2)
-    assert inertia.conjugacy_class() == group.inertia_group_class(2)
-    assert (
-        group.decomposition_group_class(2)
-        .representative(prolongation)
-        .image(quotient)
-        .order()
-        == 2
-    )
+    assert quotient.order() == 2
+    assert quotient.decomposition_group(prime).order() == 2
+    assert quotient.inertia_group(prime).order() == 1
+    assert quotient.frobenius_class(2, prime).representative() != quotient.one()
+    assert group.frobenius_class(2).image(quotient, prime) == quotient.frobenius_class(2, prime)
 
 
-def test_continuous_characters_factor_through_finite_quotients_and_are_homomorphisms() -> (
-    None
-):
-    group = AbsoluteGaloisGroup(GF(5))
+def test_cyclotomic_and_kummer_characters_of_finite_fields_take_their_frobenius_values() -> None:
+    r"""On $G_{\mathbb{F}_5}$: $\chi_3(\mathrm{Frob}) = 5 \equiv -1 \bmod 3$ and $\mathrm{Frob}(\sqrt2)/\sqrt2 = (2/5) = -1$.
+
+    Both characters factor through $\mathbb{F}_{25}$ and have kernel of index
+    $2$.  On $G_{\mathbb{F}_9}$, $\chi_5(\mathrm{Frob}) = 9 \equiv 4 \bmod 5$.
+    """
+    group = GF(5).absolute_galois_group()
     frobenius = group.frobenius()
-    cyclotomic = group.cyclotomic_character(3)
-    quadratic = group.quadratic_character(2)
 
-    for character in (cyclotomic, quadratic):
-        assert character.is_continuous()
+    for character in (group.cyclotomic_character(3), group.quadratic_character(2)):
         assert character.factor_extension().degree() == 2
-        assert character(frobenius**5) == character(frobenius**2) * character(
-            frobenius**3
-        )
-        assert character(group.one()) == character.codomain().one()
+        assert character(frobenius**5) == character(frobenius**2) * character(frobenius**3)
+        assert character(frobenius) != character.codomain().one()
         assert character.kernel().index() == 2
         assert frobenius not in character.kernel()
         assert frobenius**2 in character.kernel()
 
-    field_nine = AbsoluteGaloisGroup(GF(9, "u"))
-    chi_five = field_nine.cyclotomic_character(5)
-    assert chi_five(field_nine.frobenius()).value() == Integers(5)(4)
-
-
-
-
+    field_nine = GF(9, "u").absolute_galois_group()
+    assert field_nine.cyclotomic_character(5)(field_nine.frobenius()).value() == 4

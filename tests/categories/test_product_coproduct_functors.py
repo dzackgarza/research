@@ -1,9 +1,6 @@
+r"""Finite products and coproducts of sets and of modules."""
 
-from dzack_research.preamble.all import Sets, ZZ
-from dzack_research.preamble.categories.modules import FinitelyPresentedModules
-from dzack_research.preamble.categories.sets import finite_ordered_set
-
-
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
@@ -37,38 +34,52 @@ def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
     assert diagonal_map.second() is fx
 
 
-def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
-    category = FinitelyPresentedModules(ZZ)
-    left = ZZ.free_module(finite_ordered_set(("x",)))
-    right = ZZ.free_module(finite_ordered_set(("y",)))
-    product = category.product_functor()
-    coproduct = category.coproduct_functor()
-    pair = product.domain()(left, right)
-    product_object = product(pair)
-    coproduct_object = coproduct(pair)
-    assert product_object is coproduct_object
+def test_finite_product_and_coproduct_of_modules_coincide() -> None:
+    r"""``Z x Z = Z + Z``: the canonical map from the coproduct to the product is an isomorphism.
 
-    left_map = left.module_category().Mor(left, left)({"x": 2 * left.module_generator("x")})
-    right_map = right.module_category().Mor(right, right)({"y": 3 * right.module_generator("y")})
-    pair_map = product.domain().Mor(pair, pair)(left_map, right_map)
-    carried = product(pair_map)
-    assert product_object.left_projection()(
-        carried(product_object.left_inclusion()(left.module_generator("x")))
-    ) == 2 * left.module_generator("x")
+    The canonical map has components ``delta_ij``; for modules it is invertible
+    on finite families.  The product of ``2`` and ``3`` acts componentwise,
+    with cokernel ``Z/2 + Z/3``.
+    """
+    left = Modules(ZZ)(ZZ**1)
+    right = Modules(ZZ)(ZZ**1)
+    (x,) = left.basis()
+    (y,) = right.basis()
+    product = Modules(ZZ).product((left, right))
+    coproduct = Modules(ZZ).coproduct((left, right))
+    p0, p1 = product.left_projection(), product.right_projection()
+    zero_left_right = left.Mor(right)({x: right.zero()})
+    zero_right_left = right.Mor(left)({y: left.zero()})
+
+    comparison = coproduct.from_summands(
+        product.to_product(left.Mor(left).identity(), zero_left_right),
+        product.to_product(zero_right_left, right.Mor(right).identity()),
+    )
+    assert comparison.is_isomorphism()
+    assert product.is_isomorphic_to(coproduct)
+
+    twice = left.Mor(left)({x: 2 * x})
+    thrice = right.Mor(right)({y: 3 * y})
+    product_map = product.to_product(twice * p0, thrice * p1)
+    element = comparison(coproduct.left_inclusion()(x) + coproduct.right_inclusion()(y))
+    assert p0(product_map(element)) == 2 * x
+    assert p1(product_map(element)) == 3 * y
+    assert product_map.cokernel().cardinality() == 6
 
 
+def test_biproduct_identities_for_two_countable_free_modules() -> None:
+    r"""On ``Z^(N) + Z^(N)``: ``p_i i_j = delta_ij``, checked on basis vectors of index 5 and 7."""
+    free = Sets().free_module_adjunction(ZZ).left_adjoint()
+    left = free(NN)
+    right = free(NN)
+    direct_sum = left + right
+    e5 = left.basis()[NN(5)]
+    f7 = right.basis()[NN(7)]
+    i0, i1 = direct_sum.left_inclusion(), direct_sum.right_inclusion()
+    p0, p1 = direct_sum.left_projection(), direct_sum.right_projection()
 
-
-def test_infinite_free_module_biproduct_uses_tagged_lazy_framing() -> None:
-    from dzack_research.preamble.categories.modules import Modules
-    from dzack_research.preamble.categories.sets import NN
-
-    left = ZZ.free_module(NN)
-    right = ZZ.free_module(NN)
-    direct_sum = Modules(ZZ).biproduct((left, right))
-    e5 = left.module_generator(NN(5))
-    f7 = right.module_generator(NN(7))
-
-    assert direct_sum.left_projection()(direct_sum.left_inclusion()(e5)) == e5
-    assert direct_sum.right_projection()(direct_sum.right_inclusion()(f7)) == f7
-    assert direct_sum.left_projection()(direct_sum.right_inclusion()(f7)) == left.zero()
+    assert p0(i0(e5)) == e5
+    assert p1(i1(f7)) == f7
+    assert p0(i1(f7)) == left.zero()
+    assert p1(i0(e5)) == right.zero()
+    assert i0(p0(i0(e5) + i1(f7))) + i1(p1(i0(e5) + i1(f7))) == i0(e5) + i1(f7)

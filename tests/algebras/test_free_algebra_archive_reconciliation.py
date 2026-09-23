@@ -1,146 +1,86 @@
-r"""Archive reconciliation for the graded basis of the four free constructions."""
+r"""Graded pieces and products of the four free constructions on a free module."""
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-
-ARCHIVE_RECONCILIATIONS = (
-    {
-        "archive_module": "preamble/categories/algebras/free_algebras.sage",
-        "live_owner": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
-        "owner_overrides": {
-            "TensorAlgebras.ParentMethods.center_embedding": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
-        },
-        "disposition": "reconciled-live-owner",
-    },
-    {
-        "archive_module": "preamble/tests/test_free_constructions.sage",
-        "live_owner": "tests/algebras/test_free_algebra_archive_reconciliation.py",
-        "owner_overrides": {
-            "test_tensor_and_divided_squares_respect_a_module_presentation": "tests/algebras/test_power_algebras.py",
-            "test_the_divided_square_classifies_quadratic_maps": "tests/forms/test_classifier_vocabulary.py",
-            "test_divided_squares_are_symmetric_tensor_invariants": "tests/algebras/test_tensor_symmetric_adjunctions.py",
-            "test_higher_divided_powers_are_symmetric_tensor_invariants": "tests/algebras/test_tensor_symmetric_adjunctions.py",
-            "test_the_free_constructions_are_related_by_the_canonical_maps": "tests/algebras/test_power_algebra_extensions_archive.py",
-            "test_tensor_and_symmetric_freeness_are_homset_bijections": "tests/algebras/test_tensor_symmetric_adjunctions.py",
-            "test_the_four_free_algebra_functors_preserve_identities_and_composition": "tests/algebras/test_functor_adjunctions.py",
-            "test_the_free_algebra_units_are_natural_on_presented_modules": "tests/algebras/test_functor_adjunctions.py",
-            "test_free_algebra_functors_preserve_their_characteristic_operations": "tests/algebras/test_power_algebra_extensions_archive.py",
-        },
-        "disposition": "reconciled-live-owner",
-    },
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _two_labels():
-    return finite_ordered_set(("x", "y"))
+def test_degree_two_ranks_of_tensor_symmetric_exterior_and_divided_power_algebras() -> None:
+    r"""For ``M`` free of rank 2: ``rank T^2 = 4``, ``rank Sym^2 = 3``,
+    ``rank Λ^2 = 1``, ``rank Γ^2 = 3``, and ``Λ^3 = 0``.  Derivation:
+    ``2^2``, ``binom(3, 2)``, ``binom(2, 2)``, ``binom(3, 2)``, ``binom(2, 3)``."""
+    module = Modules(QQ).free_module(("x", "y"))
+
+    assert module.tensor_algebra().graded_piece(2).module_rank() == 4
+    assert module.symmetric_algebra().graded_piece(2).module_rank() == 3
+    assert module.exterior_algebra().graded_piece(2).module_rank() == 1
+    assert module.divided_power_algebra().graded_piece(2).module_rank() == 3
+    assert module.exterior_algebra().graded_piece(3).module_rank() == 0
+    assert module.tensor_algebra().graded_piece(3).module_rank() == 8
 
 
-def test_archive_graded_piece_monomials_are_the_live_piece_basis() -> None:
-    labels = _two_labels()
-    algebras = (
-        QQ.free_module(labels).tensor_algebra(),
-        QQ.free_module(labels).symmetric_algebra(),
-        QQ.free_module(labels).exterior_algebra(),
-        QQ.free_module(labels).divided_power_algebra(),
-    )
-    expected_degree_two = (4, 3, 1, 3)
-
-    for algebra, expected in zip(algebras, expected_degree_two, strict=True):
-        monomials = algebra.graded_piece_monomials(2)
-        assert monomials.index_set() is algebra.graded_piece(2).module_generating_set()
-        assert int(monomials.cardinality()) == expected
-        assert all(algebra.degree_on_module_generator(value) == 2 for value in monomials)
-
-
-def test_archive_exterior_degree_above_rank_has_empty_basis() -> None:
-    exterior = QQ.free_module(_two_labels()).exterior_algebra()
-    assert exterior.graded_piece_monomials(3).cardinality() == 0
-
-
-def test_archive_divided_and_symmetric_bases_agree_but_products_do_not() -> None:
-    labels = _two_labels()
-    divided = ZZ.free_module(labels).divided_power_algebra()
-    symmetric = ZZ.free_module(labels).symmetric_algebra()
+def test_divided_powers_and_symmetric_powers_have_equal_ranks_but_different_products() -> None:
+    r"""Over ``ZZ``, ``Γ^n(ZZ^2)`` and ``Sym^n(ZZ^2)`` are both free of rank
+    ``n + 1``, but ``x · x = 2 γ_2(x)`` in ``Γ`` whereas ``x · x`` is a basis
+    element of ``Sym^2``."""
+    module = Modules(ZZ).free_module(("x", "y"))
+    divided = module.divided_power_algebra()
+    symmetric = module.symmetric_algebra()
 
     for degree in range(4):
-        assert divided.graded_piece_monomials(degree).cardinality() == symmetric.graded_piece_monomials(degree).cardinality()
-
-    divided_x = divided.degree_one_generator("x")
-    symmetric_x = symmetric.algebra_generator("x")
-    gamma_two = divided.divided_power(divided_x, 2)
-    divided_basis = tuple(divided.graded_piece_monomials(2))
-    symmetric_basis = tuple(symmetric.graded_piece_monomials(2))
-    assert gamma_two in divided_basis
-    assert symmetric_x * symmetric_x in symmetric_basis
-    assert divided_x * divided_x == 2 * gamma_two
-
-
-def test_archive_divided_ideal_degree_includes_divided_relations() -> None:
-    divided = ZZ.free_module(finite_ordered_set(("x",))).divided_power_algebra()
+        assert divided.graded_piece(degree).module_rank() == degree + 1
+        assert symmetric.graded_piece(degree).module_rank() == degree + 1
     x = divided.degree_one_generator("x")
-    degree_three = divided.ideal_generators_in_degree((2 * x,), 3)
-
-    divided_relation = divided.divided_power(2 * x, 3)
-    assert any(generator == divided_relation for generator in degree_three)
+    assert x * x == 2 * divided.divided_power(x, 2)
+    assert x * x != divided.divided_power(x, 2)
 
 
+def test_divided_power_ideal_of_2x_contains_gamma_3_of_2x_outside_the_ordinary_ideal() -> None:
+    r"""In ``Γ(ZZ x)``: ``γ_3(2x) = 8 γ_3(x)`` lies in the divided power ideal
+    generated by ``2x``, but the ordinary ideal meets degree 3 in
+    ``2x · ZZ γ_2(x) = 6 ZZ γ_3(x)``, which does not contain ``8 γ_3(x)``."""
+    divided = Modules(ZZ).free_module(("x",)).divided_power_algebra()
+    x = divided.degree_one_generator("x")
+    gamma_3_of_2x = divided.divided_power(2 * x, 3)
+
+    assert gamma_3_of_2x == 8 * divided.divided_power(x, 3)
+    assert gamma_3_of_2x in divided.divided_power_ideal([2 * x])
+    assert gamma_3_of_2x not in divided.ideal([2 * x])
+    assert 6 * divided.divided_power(x, 3) in divided.ideal([2 * x])
 
 
-def test_archive_free_algebra_map_is_determined_on_generators_and_extends_multiplicatively() -> None:
+def test_a_map_of_polynomial_algebras_is_determined_by_generator_images() -> None:
+    r"""The universal property of ``Sym``: ``x ↦ v``, ``y ↦ w`` extends uniquely
+    to ``QQ[x, y] -> QQ[u, v, w]``, sending ``x^2 y + 3`` to ``v^2 w + 3``."""
+    source = Modules(QQ).free_module(("x", "y")).symmetric_algebra()
+    target = Modules(QQ).free_module(("u", "v", "w")).symmetric_algebra()
+    x, y = source.algebra_generator("x"), source.algebra_generator("y")
+    v, w = target.algebra_generator("v"), target.algebra_generator("w")
+    morphism = source.Mor(target)({x: v, y: w})
 
-    source_labels = finite_ordered_set(("x", "y"))
-    target_labels = finite_ordered_set(("u", "v", "w"))
-    source = QQ.free_module(source_labels).symmetric_algebra()
-    target = QQ.free_module(target_labels).symmetric_algebra()
-    morphism = source.Mor(target)(
-        {
-            "x": target.algebra_generator("v"),
-            "y": target.algebra_generator("w"),
-        }
-    )
-
-    assert morphism.domain() is source
-    assert morphism.codomain() is target
-    assert morphism.algebra_generator_morphism()("x") == target.algebra_generator("v")
-    assert morphism.algebra_generator_morphism()("y") == target.algebra_generator("w")
-    assert morphism(source.algebra_generator("x") * source.algebra_generator("y")) == (
-        target.algebra_generator("v") * target.algebra_generator("w")
-    )
+    assert morphism(x * y) == v * w
+    assert morphism(x**2 * y + 3) == v**2 * w + 3
 
 
-
-
-def test_archive_exterior_shuffle_parity_is_retained() -> None:
-    labels = finite_ordered_set(("x", "y", "z"))
-    exterior = QQ.free_module(labels).exterior_algebra()
-    x = exterior.algebra_generator("x")
-    y = exterior.algebra_generator("y")
-    z = exterior.algebra_generator("z")
+def test_sign_rule_for_permuted_triple_products_in_the_exterior_algebra() -> None:
+    r"""In ``Λ(QQ^3)``: ``zxy = xyz`` (a cyclic, hence even, permutation),
+    ``yxz = -xyz`` (a transposition), and ``xyz ≠ 0``."""
+    exterior = Modules(QQ).free_module(("x", "y", "z")).exterior_algebra()
+    x, y, z = (exterior.algebra_generator(label) for label in ("x", "y", "z"))
 
     assert (x * y) * z == x * (y * z)
     assert z * x * y == x * y * z
     assert y * x * z == -(x * y * z)
     assert x * y * z != exterior.zero()
+    assert x * y * x == exterior.zero()
 
 
+def test_second_tensor_power_of_the_plane_contains_xy_but_not_x() -> None:
+    r"""``T^2(QQ^2)`` has rank 4 and contains ``xy`` and ``yx`` but not ``x``."""
+    tensor = Modules(QQ).free_module(("x", "y")).tensor_algebra()
+    piece = tensor.graded_piece(2)
+    x, y = tensor.algebra_generator("x"), tensor.algebra_generator("y")
 
-
-def test_archive_graded_piece_is_a_submodule_with_its_actual_inclusion() -> None:
-    algebra = QQ.free_module(_two_labels()).tensor_algebra()
-    piece = algebra.graded_piece(2)
-    inclusion = piece.inclusion()
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
-
-    assert inclusion.codomain() is algebra
     assert piece.module_rank() == 4
     assert x * y in piece
+    assert y * x in piece
     assert x not in piece
-
-
-
-
-
+    assert x + x * y not in piece

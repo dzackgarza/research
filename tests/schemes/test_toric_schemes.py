@@ -12,7 +12,7 @@ from dzack_research.preamble.all import (
     ZZ,
     AffineSchemes,
     IntegralSchemes,
-    LatticePolygons,
+    ConvexPolytopes,
     NormalSchemes,
     RationalPolyhedralFans,
     Schemes,
@@ -108,9 +108,10 @@ def test_the_standard_identifications_are_decided_by_fan_isomorphism() -> None:
 def test_the_normal_fan_of_a_polytope_uses_inner_normals() -> None:
     r"""The facet ``x + 2y = 2`` of ``conv{(0,0),(2,0),(0,1)}`` has inner
     normal ``-e_1 - 2 e_2``; the outer normal ``e_1 + 2 e_2`` is not a ray of
-    the normal fan."""
+    the normal fan.  The cone on ``e_1`` and ``-e_1 - 2e_2`` has determinant
+    ``-2``, so the toric variety, ``P(1,1,2)``, is singular."""
     lattice = ZZ.free_module(2)
-    polygon = LatticePolygons(lattice)(((0, 0), (2, 0), (0, 1)))
+    polygon = ConvexPolytopes(lattice)(((0, 0), (2, 0), (0, 1)))
     fan = polygon.normal_fan()
     cocharacters = fan.cocharacter_lattice()
     first, second = tuple(cocharacters.module_generating_set())
@@ -120,19 +121,19 @@ def test_the_normal_fan_of_a_polytope_uses_inner_normals() -> None:
     assert fan.rays().cardinality() == 3
     assert inner in fan.rays()
     assert outer not in fan.rays()
+    assert not polygon.toric_variety(QQ).is_smooth()
 
 
 def test_the_toric_variety_of_the_standard_triangle_is_the_projective_plane() -> None:
     r"""The normal fan of ``conv{(0,0),(1,0),(0,1)}`` has rays ``e_1``, ``e_2``
     and ``-e_1-e_2``, which is the fan of ``P^2``."""
     lattice = ZZ.free_module(2)
-    triangle = LatticePolygons(lattice)(((0, 0), (1, 0), (0, 1)))
+    triangle = ConvexPolytopes(lattice)(((0, 0), (1, 0), (0, 1)))
     variety = triangle.toric_variety(QQ)
 
-    assert variety in ToricSchemes(QQ)
     assert variety.is_projective_space()
-    assert variety.is_polarized()
-    assert variety.polarizing_polytope() is triangle
+    assert variety.fan().is_isomorphic(_plane_fans().projective_space_fan())
+    assert variety.is_smooth()
 
 
 

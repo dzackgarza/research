@@ -1,4 +1,6 @@
 from dzack_research.preamble.all import (
+    ZZ,
+    Lattices,
     NamedLattices,
     NegativeDefTwoElementary,
     nikulin_invariants,
@@ -31,11 +33,26 @@ def test_block_search_recovers_the_hand_counted_rows() -> None:
         )
 
 
+def test_gluing_A1_to_the_8_along_the_all_ones_class_gives_the_8_6_0_genus() -> None:
+    r"""\(A_1^8\) has \((r, a, \delta) = (8, 8, 1)\).  The class \(c = \sum g_i\) of
+    \(A_{A_1^8} = (\tfrac12\mathbb Z/\mathbb Z)^8\) has \(q(c) = 8\cdot(-\tfrac12) = -4
+    \equiv 0 \bmod 2\).  Classes orthogonal to \(c\) are the even-weight sums, so the
+    overlattice has discriminant \(c^\perp/c \cong (\mathbb Z/2)^6\) with integral
+    values \(-k/2\), \(k\) even: \((8, 6, 0)\).  For 2-elementary even lattices the
+    signature and \((r, a, \delta)\) determine the genus (Nikulin, Integral symmetric
+    bilinear forms, Thm. 3.6.2)."""
+    root_line = Lattices(ZZ)("A1")
+    lattice = sum((root_line,) * 8)
+    discriminant = lattice.discriminant_module()
+    all_ones = sum(discriminant.module_generators(), discriminant.zero())
 
+    assert lattice.two_elementary_invariants() == nikulin_invariants(8, 8, 1)
+    assert all_ones.q() == discriminant.quadratic_value_module().zero()
 
-def test_starred_row_retains_its_live_gluing_inclusion() -> None:
-    glued = NegativeDefTwoElementary[(8, 6, 0)][0]
-    inclusion = glued._catalogue_glue_inclusion
-    assert inclusion.domain().two_elementary_invariants() == nikulin_invariants(8, 8, 1)
-    assert inclusion.codomain() is glued
+    inclusion = lattice.overlattice(all_ones)
+    overlattice = inclusion.codomain()
+
     assert inclusion.index() == 2
+    assert overlattice.is_even()
+    assert overlattice.two_elementary_invariants() == nikulin_invariants(8, 6, 0)
+    assert overlattice.genus() == NegativeDefTwoElementary[(8, 6, 0)][0].genus()

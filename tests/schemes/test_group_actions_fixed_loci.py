@@ -1,76 +1,41 @@
-r"""Affine group actions and their scheme-theoretic fixed loci."""
+r"""Scheme-theoretic fixed loci of involutions of ``A^2`` and ``P^1 x P^1``."""
+
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-from dzack_research.preamble.all import (
-    QQ,
-    AffineGSchemes,
-    Groups,
-    Algebras,
-)
+def test_the_fixed_locus_of_the_coordinate_swap_on_a2_is_the_diagonal() -> None:
+    r"""The swap ``x <-> y`` on ``A^2_QQ`` has fixed ideal ``(x - y, y - x) = (x - y)``: the diagonal line."""
+    A = QQ['x,y']
+    x, y = A.gens()
+    X = A.affine_spectrum()
+    swap = X.Mor(X)(A.Mor(A)({x: y, y: x}))
+    G = Groups.C(2)
+    acted = GObjects(G, Schemes(QQ))(X, G.Mor(X.automorphism_group())({G.gen(): swap}))
+    fixed = acted.fixed_locus()
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/framework/test_fixed_loci.sage",
-    "live_owner": "tests/schemes/test_group_actions_fixed_loci.py",
-    "disposition": "reconciled-live-owner",
-}
-
-
-def _coordinate_swap_action() -> tuple:
-    group = Groups.C(2)
-    algebra = QQ.polynomial_ring(("x", "y"))
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
-    scheme = (algebra).affine_spectrum()
-    swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
-    identity = scheme.categorical_identity_morphism()
-    acted = AffineGSchemes(group, QQ)(
-        scheme,
-        lambda element: identity if element == group.one() else swap,
-    )
-    return group, algebra, x, y, scheme, acted
+    assert fixed.defining_ideal() == A.ideal(x - y)
+    assert fixed.dimension() == 1
+    assert fixed.is_smooth()
+    assert swap * fixed.inclusion() == fixed.inclusion()
 
 
+def test_on_p1_times_p1_the_diagonal_sign_has_four_fixed_points_and_the_factor_swap_fixes_the_diagonal() -> None:
+    r"""``s = [x_0 : -x_1]`` fixes ``[1:0]`` and ``[0:1]`` on ``P^1``, so ``s x s`` fixes ``2 x 2 = 4`` points;
+    the factor swap ``(p, q) -> (q, p)`` fixes the diagonal ``Δ ≅ P^1``, a curve.
 
+    Derivation: ``[x_0 : x_1] = [x_0 : -x_1]`` iff ``x_0 x_1 = 0`` (characteristic 0).
+    """
+    P1 = Schemes(QQ).projective_space(1, names=("x0", "x1"))
+    x0, x1 = P1.coordinate_ring().gens()
+    s = P1.projective_morphism_from_coordinates(P1, (x0, -x1))
+    Q = P1.product(P1)
+    p, q = Q.projection(0), Q.projection(1)
+    diagonal_sign = Q.morphism_from_components((s * p, s * q))
+    factor_swap = Q.morphism_from_components((q, p))
 
-
-
-def test_coordinate_swap_fixed_subscheme_is_the_diagonal_equalizer() -> None:
-    group, algebra, x, y, _scheme, acted = _coordinate_swap_action()
-    generator = group.group_generators()[0]
-
-    assert acted.fixed_ideal() == algebra.ideal(x - y)
-
-    fixed = acted.fixed_subscheme()
-    inclusion = fixed.inclusion()
-    quotient = inclusion.coordinate_algebra_morphism()
-
-    assert fixed.inclusion().codomain() is acted
-    assert inclusion.domain() is fixed
-    assert inclusion.codomain() is acted
-    assert quotient(x) == quotient(y)
-    assert acted.action_of(generator) * inclusion == inclusion
-
-
-
-
-
-
-def test_projective_product_sign_and_swap_fixed_loci_keep_archive_dimensions() -> None:
-    line = ProjectiveSpaces(QQ)(1, names=("x0", "x1"))
-    product = line.product_with(line)
-    x0, x1 = line.coordinate_ring().gens()
-    sign = line.projective_morphism_from_coordinates(line, (x0, -x1))
-
-    diagonal_sign = product.from_product_cone(
-        (sign * product.projection(0), sign * product.projection(1))
-    )
-    fixed_sign = diagonal_sign.fixed_subscheme()
-    assert fixed_sign.dimension() == 0
-    assert len(fixed_sign.rational_points()) == 4
-
-    factor_swap = product.from_product_cone(
-        (product.projection(1), product.projection(0))
-    )
-    fixed_swap = factor_swap.fixed_subscheme()
-    assert fixed_swap.dimension() == 1
-    assert factor_swap * factor_swap == product.categorical_identity_morphism()
+    assert P1.fixed_locus(s).rational_points().cardinality() == 2
+    assert Q.fixed_locus(diagonal_sign).dimension() == 0
+    assert Q.fixed_locus(diagonal_sign).rational_points().cardinality() == 4
+    assert factor_swap * factor_swap == Q.identity_morphism()
+    assert Q.fixed_locus(factor_swap).dimension() == 1
+    assert Q.fixed_locus(factor_swap).is_isomorphic(P1)

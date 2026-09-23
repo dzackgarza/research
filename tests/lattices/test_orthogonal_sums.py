@@ -22,5 +22,3 @@ def test_a_definite_power_keeps_its_definiteness_and_squares_its_discriminant() 
     assert (root_lattice ** 2).signature_pair() == signature_pair(0, 4)
     assert (root_lattice ** 2).determinant() == 9
     assert (root_lattice ** 2).is_negative_definite()
-
-

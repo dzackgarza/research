@@ -1,30 +1,14 @@
-r"""Archived definite-lattice metric invariants on the live lattice owner.
+r"""Metric invariants of the square lattice and the hexagonal lattice A2.
 
-The archived ``DefiniteLattices`` category exposed closest vectors, successive
-minima, theta series, kissing number, packing/covering radii, contact
-polytopes, Hermite invariant, Hadamard ratio, and center/packing densities.
-These are geometric invariants of the represented lattice, not cached table
-entries; the specimens below retain their exact relations on both the square
-lattice and the nonorthogonal root lattice ``A2``.
+Values: Conway--Sloane, *Sphere Packings, Lattices and Groups*, 1.2 and 4.6.1.
 """
-
-from sage.symbolic.constants import pi
 
 from dzack_research.preamble.all import QQ, RR, ZZ, Lattices
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/definite_lattices.sage",
-    "live_owner": "src/dzack_research/preamble/categories/definite_lattices.py",
-    "owner_overrides": {
-        "DefiniteSubobjectParent.embedding": "src/dzack_research/preamble/categories/lattices.py",
-        "DefiniteLattices.Subobjects.ParentMethods.sum": "src/dzack_research/preamble/categories/lattices.py",
-        "DefiniteLattices.Subobjects.ParentMethods.intersection": "src/dzack_research/preamble/categories/lattices.py",
-    },
-    "disposition": "reconciled-live-owner",
-}
 
-
-def test_archived_square_lattice_metric_invariants_are_exact() -> None:
+def test_square_lattice_metric_invariants_are_exact() -> None:
+    r"""\(\mathbf Z^2\): kissing number 4, packing radius 1/2, covering radius \(1/\sqrt2\),
+    Hermite invariant 1, center density 1/4, packing density \(\pi/4\)."""
     lattice = Lattices(ZZ)(2)
     e1, _e2 = lattice.module_generators()
     target = (QQ(3) / 4, QQ(1) / 4)
@@ -45,11 +29,13 @@ def test_archived_square_lattice_metric_invariants_are_exact() -> None:
     assert lattice.hadamard_ratio() == 1
     assert lattice.hermite_invariant() == 1
     assert lattice.center_density() == QQ(1) / 4
-    assert lattice.packing_density() == RR(pi / 4)
+    assert lattice.packing_density() == RR.pi() / 4
     assert lattice.contact_polytope().n_vertices() == 4
 
 
-def test_archived_a2_invariants_see_the_nonorthogonal_hexagonal_geometry() -> None:
+def test_a2_invariants_see_the_nonorthogonal_hexagonal_geometry() -> None:
+    r"""\(A_2\): kissing number 6, six Voronoi-relevant vectors, successive minima
+    \(\sqrt2,\sqrt2\), \(\gamma^2=\min^2/\det=4/3\)."""
     lattice = Lattices(ZZ)("A2")
 
     assert lattice.minimum() == -2
@@ -62,6 +48,5 @@ def test_archived_a2_invariants_see_the_nonorthogonal_hexagonal_geometry() -> No
     assert minima[0] ** 2 == 2
     assert minima[1] ** 2 == 2
 
-    # det(-G_A2)=3 and the minimal squared length is 2.
     assert lattice.hermite_invariant() ** 2 == QQ(4) / 3
     assert lattice.packing_radius() ** 2 == QQ(1) / 2

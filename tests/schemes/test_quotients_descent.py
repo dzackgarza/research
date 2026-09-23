@@ -1,68 +1,35 @@
-r"""Descent of equivariant morphisms through an affine quotient.
+r"""Descent of an equivariant automorphism of the affine plane to its quotient by the swap.
 
-The specimen is the coordinate swap of the affine plane over the rationals,
-whose quotient is the spectrum of the symmetric invariants.  The diagonal
-translation ``(x, y) -> (x + 1, y + 1)`` commutes with the swap, so it is an
-equivariant automorphism, and it descends to the automorphism of the quotient
-that sends the first symmetric function ``x + y`` to ``x + y + 2``.
+Source: `\mathbb{Q}[x, y]^{C_2} = \mathbb{Q}[e_1, e_2]` with `e_1 = x + y`,
+`e_2 = xy` (fundamental theorem of symmetric polynomials).  The translation
+`(x, y) \mapsto (x + 1, y + 1)` commutes with the swap and descends to
+`e_1 \mapsto e_1 + 2`, `e_2 \mapsto e_2 + e_1 + 1`.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    AffineGSchemes,
-    GObjects,
-    Groups,
-    Schemes,
-    Algebras,
-)
+from dzack_research.preamble.all import QQ, Algebras, GObjects, Groups, Schemes
 
 
-def _swapped_plane():
+def test_the_diagonal_translation_descends_to_e1_plus_2_and_e2_plus_e1_plus_1() -> None:
     group = Groups.C(2)
     algebra = QQ.polynomial_ring(("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
-    scheme = (algebra).affine_spectrum()
-    swap = Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(algebra)({"x": y, "y": x}))
-    identity = scheme.categorical_identity_morphism()
-    acted = AffineGSchemes(group, QQ)(
-        scheme,
-        lambda element: identity if element == group.one() else swap,
+    plane = algebra.affine_spectrum()
+    spec = Algebras(QQ).Associative().Unital().Commutative().spectrum()
+    (generator,) = group.group_generators()
+    action = group.Mor(plane.automorphism_group())(
+        {generator: spec(algebra.Mor(algebra)({"x": y, "y": x}))}
     )
-    return group, algebra, x, y, acted
-
-
-def _label_of_the_first_symmetric_function(acted, x, y):
-    invariant_algebra = acted.invariant_algebra()
-    inclusion = acted.invariant_algebra_inclusion()
-    return next(
-        label
-        for label in invariant_algebra.algebra_generating_set()
-        if inclusion(invariant_algebra.algebra_generator(label)) == x + y
-    )
-
-
-def test_an_equivariant_translation_descends_to_the_symmetric_quotient() -> None:
-    group, algebra, x, y, acted = _swapped_plane()
-    one = algebra.one()
-    translation = Algebras(QQ).Associative().Unital().Commutative().spectrum()(
-        algebra.Mor(algebra)({"x": x + one, "y": y + one})
-    )
+    acted = GObjects(group, Schemes(QQ))(plane, action)
+    translation = spec(algebra.Mor(algebra)({"x": x + 1, "y": y + 1}))
     equivariant = GObjects(group, Schemes(QQ)).Mor(acted, acted)(translation)
-    quotient_functor = GObjects(group, Schemes(QQ)).affine_quotient_functor()
 
-    descended = quotient_functor(equivariant)
-    quotient = acted.affine_quotient()
-    assert quotient_functor(acted) is quotient
-    assert descended.domain() is quotient
-    assert descended.codomain() is quotient
+    descended = GObjects(group, Schemes(QQ)).affine_quotient_functor()(equivariant)
+    invariants = acted.quotient_morphism().coordinate_algebra_morphism()
+    descended_pullback = descended.coordinate_algebra_morphism()
+    e1 = invariants.preimage(x + y)
+    e2 = invariants.preimage(x * y)
 
-    label = _label_of_the_first_symmetric_function(acted, x, y)
-    invariant_algebra = acted.invariant_algebra()
-    inclusion = acted.invariant_algebra_inclusion()
-    image = descended.coordinate_algebra_morphism()(
-        invariant_algebra.algebra_generator(label)
-    )
-    assert inclusion(image) == x + y + one + one
-
-
+    assert invariants.domain().algebra_generating_set().cardinality() == 2
+    assert descended_pullback(e1) == e1 + 2
+    assert descended_pullback(e2) == e2 + e1 + 1

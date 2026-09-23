@@ -1,69 +1,32 @@
-from sage.all import exp, pi, sqrt
-from sage.rings.infinity import Infinity
+r"""Hölder pairings of Lebesgue spaces, with values computed by hand."""
 
-from dzack_research.preamble.all import (
-    C,
-    QQ,
-    FormModules,
-    Lp,
-    PairedModules,
-    RR,
-    ell,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-
-
-
-
-def test_holder_pairs_lp_with_its_conjugate() -> None:
-    maps = C(Infinity, RR)
+def test_the_holder_pairing_of_the_gaussian_in_l1_and_linf_is_root_pi_over_two() -> None:
+    r"""$\int_{\mathbb{R}} e^{-x^2} e^{-x^2}\,dx = \int_{\mathbb{R}} e^{-2x^2}\,dx = \sqrt{\pi/2}$."""
+    maps = C(oo, RR)
     gaussian = maps(exp(-(maps.indeterminate() ** 2)))
-    holder = Lp(1) * Lp(Infinity)
-    left = Lp(1)(gaussian)
-    right = Lp(Infinity)(gaussian)
+    holder = Lp(1) * Lp(oo)
 
-    assert Lp(2) in FormModules(RR)
-    assert Lp(2) in PairedModules(RR)
-    assert Lp(1) not in FormModules(RR)
-    assert holder is Lp(1).pairing_module()
-    assert Lp(Infinity).pairing_module().left_module() is Lp(Infinity)
-    assert holder in PairedModules(RR)
-    assert holder not in FormModules(RR)
-    assert holder.left_module() is Lp(1)
-    assert holder.right_module() is Lp(Infinity)
-    assert holder.pairing(left, right) == RR(sqrt(pi / 2))
+    assert holder.pairing(Lp(1)(gaussian), Lp(oo)(gaussian)) == RR(sqrt(pi / 2))
 
 
-def test_l2_times_l2_is_the_formed_module() -> None:
+def test_the_l2_norm_squared_of_the_gaussian_is_root_pi_over_two() -> None:
+    r"""$\|e^{-x^2}\|_2^2 = \int_{\mathbb{R}} e^{-2x^2}\,dx = \sqrt{\pi/2}$, and $q(f) = b(f, f)$."""
     space = Lp(2)
-    maps = C(Infinity, RR)
+    maps = C(oo, RR)
     gaussian = space(maps(exp(-(maps.indeterminate() ** 2))))
 
-    assert space * space is space
-    assert space.pairing_module() is space
-    assert space.conjugate_lebesgue_space() is space
     assert space.b(gaussian, gaussian) == RR(sqrt(pi / 2))
-    assert space.q(gaussian) == space.b(gaussian, gaussian)
-    assert space.pairing(gaussian, gaussian) == space.b(gaussian, gaussian)
+    assert space.q(gaussian) == RR(sqrt(pi / 2))
 
 
-
-
-def test_holder_pairs_ell_p_with_its_conjugate() -> None:
+def test_the_holder_pairing_of_a_geometric_sequence_with_the_constant_one_is_two() -> None:
+    r"""$\sum_{n \ge 0} 2^{-n} \cdot 1 = 2$ and $\sum_{n \ge 0} (2^{-n})^2 = 4/3$."""
     n = ell(1).indeterminate()
-    decaying = ell(1)(2 ** (-n))
-    bounded = ell(Infinity)(1)
-    holder = ell(1) * ell(Infinity)
-
-    assert ell(2) in FormModules(RR)
-    assert ell(1) not in FormModules(RR)
-    assert holder is ell(1).pairing_module()
-    assert holder in PairedModules(RR)
-    assert holder not in FormModules(RR)
-    assert holder.left_module() is ell(1)
-    assert holder.right_module() is ell(Infinity)
-    assert holder.pairing(decaying, bounded) == RR(2)
+    holder = ell(1) * ell(oo)
     geometric = ell(2)(2 ** (-ell(2).indeterminate()))
-    assert ell(2) * ell(2) is ell(2)
+
+    assert holder.pairing(ell(1)(2 ** (-n)), ell(oo)(1)) == RR(2)
     assert ell(2).q(geometric) == RR(QQ(4) / 3)

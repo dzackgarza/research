@@ -1,37 +1,36 @@
-"""A singular curve distinguishes ordinary from normalization-resolution cohomology."""
+r"""The nodal cubic `y^2 z = x^2 (x + z)` over QQ and its normalization.
 
-from dzack_research.preamble.all import (
-    ZZ,
-    IntegralSingularCohomologyGroups,
-    NodalCubicIntegralTopology,
-    ResolutionIntegralCohomologyGroups,
-)
+Derivation: the complex points of the nodal cubic are `\mathbb{P}^1` with two
+points identified, homotopy equivalent to `S^2 \vee S^1`, so
+`H^0 = H^1 = H^2 = \mathbb{Z}`; the normalization `\mathbb{P}^1 \to C` has
+degree 1, so it is an isomorphism on `H^2` and it kills the loop through the node.
+"""
 
-
-
-
-def test_nodal_cubic_ordinary_and_resolution_cohomology_are_distinct_selected_theories() -> None:
-    topology = NodalCubicIntegralTopology()
-    ordinary_h1 = topology.ordinary_cohomology(1)
-    resolution_h1 = topology.resolution_cohomology(1)
-
-    assert ordinary_h1 in IntegralSingularCohomologyGroups(ZZ)
-    assert resolution_h1 in ResolutionIntegralCohomologyGroups(ZZ)
-    assert ordinary_h1.module_rank() == 1
-    assert resolution_h1.module_rank() == 0
-    assert ordinary_h1.cohomology_topology() == "ordinary singular cohomology"
-    assert resolution_h1.cohomology_topology() == "resolution cohomology via normalization"
-    assert ordinary_h1.topological_scheme() is topology.scheme()
-    assert resolution_h1.topological_scheme() is topology.scheme()
+from dzack_research.preamble.all import QQ, ProjectiveSpaces
 
 
-def test_normalization_pullback_is_the_actual_induced_map_and_kills_the_node_loop() -> None:
-    topology = NodalCubicIntegralTopology()
-    pullback_h1 = topology.normalization_pullback(1)
-    source_generator = next(iter(pullback_h1.domain().module_generators()))
+def _nodal_cubic():
+    plane = ProjectiveSpaces(QQ)(2)
+    x, y, z = plane.homogeneous_coordinate_generators()
+    return plane.closed_subscheme(y**2 * z - x**2 * (x + z))
 
-    assert pullback_h1(source_generator) == pullback_h1.codomain().zero()
-    pullback_h2 = topology.normalization_pullback(2)
-    top_generator = next(iter(pullback_h2.domain().module_generators()))
-    assert pullback_h2(top_generator) != pullback_h2.codomain().zero()
-    assert topology.normalization_morphism().codomain() is topology.scheme()
+
+def test_nodal_cubic_has_first_betti_number_one_and_its_normalization_zero() -> None:
+    curve = _nodal_cubic()
+    normalization = curve.normalization()
+
+    assert curve.arithmetic_genus() == 1
+    assert curve.integral_cohomology(0).module_rank() == 1
+    assert curve.integral_cohomology(1).module_rank() == 1
+    assert curve.integral_cohomology(2).module_rank() == 1
+    assert normalization.domain().genus() == 0
+    assert normalization.domain().integral_cohomology(1).module_rank() == 0
+
+
+def test_normalization_pullback_kills_h1_and_is_an_isomorphism_on_h2() -> None:
+    normalization = _nodal_cubic().normalization()
+    on_h1 = normalization.cohomology_pullback(1)
+    on_h2 = normalization.cohomology_pullback(2)
+
+    assert on_h1.is_zero()
+    assert on_h2.is_isomorphism()
