@@ -103,15 +103,14 @@ whole preamble for engine behaviour re-implemented locally is the TODO node
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
-### The test suite collapses under refactoring instead of stating mathematical facts
+### The tests are written against internals, not as mathematical sessions
 
 - **User action:** run the suite after a refactor of the preamble's internals.
-- **Expected:** tests outside the protected specification subtrees are independently verifiable mathematical facts: about a tenth construct an object through its public mathematical entry, and the rest assert what can be done with it and what it computes. An internal refactor that keeps the mathematics leaves them green.
-- **Actual:** the 2026-09-23 triage run (TODO section *Runtime triage*) failed 11,874 of 16,309 executed tests. Where the failures are raised: 96% inside preamble or Sage code while objects are built or used, 3,680 of them in fixture setup; 496 (4%) at an assertion in the test file. The failure rate barely depends on coupling to internals (tests importing private names or reaching engine internals: 78%; public API only: 70%; specification subtrees: 73%), so the collapse is mostly construction failing, concentrated in a few raising sites. The suite nevertheless couples to internals where it should not: of the 668 test files outside `tests/constructions/` and `tests/user_simulations/`, 151 import underscored preamble names (165 imports), 32 read private attributes (61), 45 assert through `repr`/`str` (114), 52 check classes or types (127), 23 reach engine objects (51) and 16 compare a `category()` by identity (24). Each such line tests a representation or a wiring pattern rather than a mathematical claim, and breaks when the representation changes while the mathematics stays.
-- **Owning boundary:** the non-protected tests under `tests/`; `test-guidelines` and the expectation-subtree rule in `AGENTS.md`.
-- **Example:** `rg -l -U 'from dzack_research[^ ]* import \(?[^)]*\b_[a-z]' tests` outside the protected subtrees.
+- **Expected:** every test is a mathematician's session and nothing else, the standard [`tests/constructions/CONTRIBUTING.md`](tests/constructions/CONTRIBUTING.md) records: names come from the session star import, objects are built by the canonical category constructors (a general category delegating to its specialized ones), and the assertions are mathematical facts a source states. A refactor that keeps the mathematics cannot turn such a test red.
+- **Actual:** 657 of the 668 test files outside the protected specifications import beyond the session: internal preamble modules (89 files import `categories.sets`, 53 `finite_ordered_sets`, 46 `ring_foundation`, and so on) or Sage and SymPy directly; 102 use Python introspection or control flow (`getattr`, `hasattr`, `isinstance`, `type`, `__dict__`, `try`). Such a test verifies wiring and representation, and fails when either changes. In the protected specifications themselves, 22 of 43 files import beyond the session; they are the owner's to correct.
+- **Owning boundary:** the non-protected tests under `tests/`.
+- **Example:** `rg -l --pcre2 '^\s*(from dzack_research(?!\.preamble\.all import \*)|from sage|import sage)' tests`.
 - **Work:** TODO node `test-suite-mathematical-assertions`.
-
 
 ### Intended research Sage runtime needs terminal verification
 
