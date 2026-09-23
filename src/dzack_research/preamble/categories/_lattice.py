@@ -283,14 +283,13 @@ def _gram_rank(gram):
 
 
 def _gram_determinant(gram, ring):
-    r"""\(\det G\) of a finite Gram presentation, in the framing's enumeration."""
-    size = int(_gram_rank(gram))
-    return ring.matrix_space(size).from_rows(
-        tuple(
-            tuple(gram[row, column] for column in range(size))
-            for row in range(size)
-        )
-    ).determinant()
+    r"""\(\det G\) of a finite Gram presentation, in the framing's enumeration.
+
+    Computed by Sage's matrix determinant on the presentation's components
+    (`OWN-06`) and raised into ``ring``.
+    """
+    determinant = _engine_component_matrix(gram).determinant()
+    return _owned_engine_element(ring, _engine_ring(ring)(determinant))
 
 
 def _known_conjunction(values):
