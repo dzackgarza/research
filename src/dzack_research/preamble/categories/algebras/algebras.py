@@ -3065,15 +3065,18 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
         base_map = engine_base.mor(engine_base)
     else:
         native_base_map = engine_codomain.coerce_map_from(engine_base)
-        if native_base_map is not None:
-            try:
-                determining_scalars = (
-                    engine_base.one(),
-                    *tuple(engine_base.gens()),
-                )
-                native_matches_owned = all(native_base_map(scalar) == engine_base_image(scalar) for scalar in determining_scalars)
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                native_matches_owned = False
+        # Sanctioned foreign-engine capability probe at this private bridge:
+        # absence uses the owned base map; failures from a present API propagate.
+        engine_generators = getattr(engine_base, "gens", None)
+        if native_base_map is not None and callable(engine_generators):
+            determining_scalars = (
+                engine_base.one(),
+                *tuple(engine_generators()),
+            )
+            native_matches_owned = all(
+                native_base_map(scalar) == engine_base_image(scalar)
+                for scalar in determining_scalars
+            )
         else:
             native_matches_owned = False
         base_map = (
@@ -3086,9 +3089,11 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
         )
     engine_generator_images = {label: _engine_element(codomain, codomain(image)) for label, image in generator_images.items()}
 
-    scalar_labels_method = getattr(domain, "restricted_scalar_generator_labels", None)
-    algebra_labels_method = getattr(domain, "restricted_algebra_generator_labels", None)
-    if scalar_labels_method is not None and algebra_labels_method is not None:
+    from dzack_research.preamble.categories.algebras.restricted_scalars import (
+        RestrictedScalarsAlgebras,
+    )
+
+    if domain in RestrictedScalarsAlgebras(base):
         scalar_labels = tuple(domain.restricted_scalar_generator_labels())
         algebra_labels = tuple(domain.restricted_algebra_generator_labels())
         extension_engine = _engine_ring(domain.extension_ring())
@@ -3106,12 +3111,8 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
         )
 
     if domain in AlgebrasWithChosenFinitePresentation(base):
-        try:
-            engine_labels = tuple(engine_domain.gens())
-            selected_size = int(labels.cardinality().finite_value())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            engine_labels = ()
-            selected_size = -1
+        engine_labels = tuple(engine_domain.gens())
+        selected_size = int(labels.cardinality().finite_value())
         if engine_labels and len(engine_labels) != selected_size:
             # A maintained private realization may introduce coefficient or
             # inverse variables that are not algebra generators of the owned
