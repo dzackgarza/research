@@ -1934,8 +1934,8 @@ def _finite_atlas_quasi_coherent_sheaves(atlas):
     )
 
 
-def _finite_atlas_of_sheaf_placement(sheaf):
-    r"""Read the selected finite atlas from the sheaf's concrete category placement."""
+def _finite_atlas_sheaf_placement(sheaf):
+    r"""Return the finite atlas named by the sheaf's placement, if one is named."""
     for placement in sheaf.category().all_super_categories(proper=False):
         match placement:
             case Sheaves():
@@ -1946,9 +1946,18 @@ def _finite_atlas_of_sheaf_placement(sheaf):
                         pass
             case _:
                 pass
-    raise TypeError(
-        "the represented non-affine quasi-coherent Mor requires a concrete finite-atlas sheaf placement"
-    )
+    return None
+
+
+def _finite_atlas_of_sheaf_placement(sheaf):
+    r"""Read the selected finite atlas from the sheaf's concrete category placement."""
+    match _finite_atlas_sheaf_placement(sheaf):
+        case None:
+            raise TypeError(
+                "the represented non-affine quasi-coherent Mor requires a concrete finite-atlas sheaf placement"
+            )
+        case atlas:
+            return atlas
 
 
 class FiniteAtlasInvertibleSheafRefinement(SageObject):

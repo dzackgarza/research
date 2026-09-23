@@ -1243,14 +1243,17 @@ class QuasiCoherentSheafMorCategoryConstruction(MorCategoryConstruction):
         match scheme in RelativeProjectivizations(scheme.scheme_base_ring()):
             case True:
                 from dzack_research.preamble.categories.schemes.gluing import (
-                    _finite_atlas_of_sheaf_placement,
+                    _finite_atlas_sheaf_placement,
                 )
 
-                try:
-                    _finite_atlas_of_sheaf_placement(domain)
-                    _finite_atlas_of_sheaf_placement(codomain)
-                except TypeError:
-                    return RelativeProjectivizationQuasiCoherentMor
+                match (
+                    _finite_atlas_sheaf_placement(domain),
+                    _finite_atlas_sheaf_placement(codomain),
+                ):
+                    case (None, _) | (_, None):
+                        return RelativeProjectivizationQuasiCoherentMor
+                    case _:
+                        pass
             case False:
                 pass
 

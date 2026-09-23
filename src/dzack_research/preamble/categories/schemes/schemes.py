@@ -2081,6 +2081,19 @@ class Schemes(OwnedCategoryOverBaseRing):
                         "this represented scheme has no construction-selected finite affine atlas"
                     )
 
+        def has_selected_finite_affine_atlas(self) -> bool:
+            r"""Whether construction selected a concrete finite affine atlas for this scheme."""
+            base = self.scheme_base_ring()
+            match self:
+                case _ if self._is_glued_from_affine_atlas():
+                    return True
+                case _ if self in ProjectiveSpaces(base):
+                    return True
+                case _ if self in ProductProjectiveSpaces(base):
+                    return True
+                case _:
+                    return False
+
         def is_covered_by_open_immersions(self, embeddings) -> bool:
             r"""Decide joint coverage for the represented open-cover regimes owned here.
 

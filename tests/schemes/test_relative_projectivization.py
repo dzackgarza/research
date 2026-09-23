@@ -195,6 +195,7 @@ def test_nonaffine_represented_sheaf_without_selected_atlas_keeps_exact_projecti
     quotient = total.universal_quotient()
 
     assert total in RelativeProjectivizations(QQ)
+    assert not total.has_selected_finite_affine_atlas()
     try:
         total.selected_finite_affine_atlas()
     except TypeError:
@@ -214,6 +215,8 @@ def test_projectivization_map_is_available_on_finite_atlas_line_bundle_morphisms
     morphism = QuasiCoherentSheaves(line).Mor(bundle, bundle).identity()
     projectivized = morphism.projectivization_map()
 
+    assert projectivized.source_projectivization().has_selected_finite_affine_atlas()
+    assert projectivized.target_projectivization().has_selected_finite_affine_atlas()
     assert projectivized.source_projectivization() is bundle.projectivization().arrow().domain()
     assert projectivized.target_projectivization() is bundle.projectivization().arrow().domain()
     assert projectivized.open_immersion().codomain() is projectivized.target_projectivization()
