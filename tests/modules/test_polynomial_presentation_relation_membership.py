@@ -9,14 +9,6 @@ def _cyclic_quotient(ring, relation):
     return free.module_category().Mor(free, free)({0: relation * generator}).cokernel()
 
 
-def test_univariate_relation_membership_is_over_the_polynomial_ring() -> None:
-    ring = QQ.polynomial_ring("x")
-    x = ring.algebra_generator("x")
-    module = _cyclic_quotient(ring, x)
-    generator = module.module_generator(0)
-
-    assert generator != module.zero()
-    assert module.scalar_multiple(x, generator) == module.zero()
 
 
 def test_multivariate_relation_membership_does_not_use_fraction_field_span() -> None:

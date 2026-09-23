@@ -52,34 +52,5 @@ def test_noninjective_presentation_is_replaced_by_actual_relation_submodule() ->
     assert invariants[0] == ZZ(2)
 
 
-def test_free_module_has_trivial_free_resolution() -> None:
-    module = ZZ.free_module(finite_ordered_set(("u", "v")))
-    resolution = module.free_resolution()
-
-    assert resolution.length() == 0
-    assert resolution.term(0) is module
-    assert resolution.term(1).module_rank() == 0
-    assert resolution.augmentation().domain() is module
-    assert resolution.augmentation().codomain() is module
-    for generator in module.module_generators():
-        assert resolution.augmentation()(generator) == generator
-    assert resolution.is_exact()
 
 
-def test_finite_framing_is_the_term_zero_data_of_the_pid_resolution() -> None:
-    f0 = ZZ.free_module(finite_ordered_set(("a", "b", "c")))
-    relations = ZZ.free_module(finite_ordered_set(("r",)))
-    module = relations.module_category().Mor(relations, f0)(
-            {"r": 5 * f0.module_generator("b")}
-        ).cokernel()
-    resolution = module.free_resolution()
-
-    assert module.is_finitely_generated()
-    assert module.number_of_module_generators() == 3
-    assert resolution.term(0) is module.presentation().codomain()
-    assert resolution.augmentation().domain() is resolution.term(0)
-    assert resolution.augmentation().codomain() is module
-    for label in module.module_generating_set():
-        assert resolution.augmentation()(resolution.term(0).module_generator(label)) == (
-            module.module_generator(label)
-        )

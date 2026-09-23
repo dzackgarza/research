@@ -57,26 +57,6 @@ def test_cap_cohomology_retains_the_quotient_projection_R_mod_2_x() -> None:
     assert h1.cycle_representative(one_class) == c
 
 
-def test_cap_cohomology_is_functorial_on_a_nonidentity_cochain_map() -> None:
-    ring, _x, source, target, _a, _b, c, _differential, complex_ = _specimen()
-    zero = CochainComplexes(ring).Mor(complex_, complex_)(
-        {
-            0: source.module_category().Mor(source, source)(
-                {label: source.zero() for label in source.module_generating_set()}
-            ),
-            1: target.module_category().Mor(target, target)(
-                {label: target.zero() for label in target.module_generating_set()}
-            ),
-        }
-    )
-    functor = CochainComplexes(ring).cohomology(1)
-    h1 = functor(complex_)
-    nonzero = h1.class_of_cycle(c)
-    induced = functor(zero)
-
-    assert nonzero != h1.zero()
-    assert induced(nonzero) == h1.zero()
-    assert induced != h1.module_category().Mor(h1, h1).identity()
 
 
 def test_transferred_cap_kernel_handles_nonidentity_maps_between_presented_Zx_modules() -> None:

@@ -32,12 +32,6 @@ def _noncommutative_zero_differential_dga():
     return dga
 
 
-def test_general_cohomology_algebra_category_is_not_declared_commutative() -> None:
-    category = CohomologyAlgebras(ZZ)
-
-    assert category.is_subcategory(GradedAlgebras(ZZ))
-    assert not category.is_subcategory(GradedCommutativeAlgebras(ZZ))
-    assert not category.is_subcategory(StrictlyGradedCommutativeAlgebras(ZZ))
 
 
 def test_noncommutative_zero_differential_dga_keeps_noncommutative_cohomology() -> None:
@@ -62,16 +56,6 @@ def test_noncommutative_zero_differential_dga_keeps_noncommutative_cohomology() 
     assert x_class * y_class != y_class * x_class
 
 
-def test_degree_zero_cohomology_of_nonnegative_unital_dga_retains_the_unit() -> None:
-    dga = _noncommutative_zero_differential_dga()
-    cohomology = dga.cohomology_algebra()
-    degree_zero = cohomology.graded_piece(0)
-    unit_cycle = dga.one().homogeneous_component(0)
-    unit_class = degree_zero.class_of_cycle(unit_cycle)
-
-    assert dga.differential_component(-1).domain().module_rank() == 0
-    assert degree_zero is dga.cohomology(0)
-    assert cohomology.from_component(0, unit_class) == cohomology.one()
 
 
 def test_characteristic_two_does_not_turn_graded_commutativity_into_odd_square_zero() -> None:

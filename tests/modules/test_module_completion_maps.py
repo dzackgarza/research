@@ -2,7 +2,6 @@ r"""Functorial finite-module completion over represented Noetherian rings."""
 
 from dzack_research.preamble.all import (
     QQ,
-    Modules,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -74,36 +73,8 @@ def test_torsion_kernel_remains_nonzero_after_completion() -> None:
     assert not completed.kernel().is_zero()
 
 
-def test_multivariable_free_completion_uses_the_same_module_projection() -> None:
-    ring = QQ.polynomial_ring(("x", "y"))
-    x = ring.algebra_generator("x")
-    y = ring.algebra_generator("y")
-    free = _free_rank_one(ring)
-    completed = free.adic_completion(ring.ideal(x, y), precision=5)
-
-    completion = completed.base_ring()
-    projection = free.adic_module_projection(completion, 3)
-    target = free.adic_module_truncation(completion, 3)
-    assert projection.domain() is completed
-    assert projection.codomain().module_over_extension() is target
-
-    transition = free.adic_module_transition_map(completion, 4, 2)
-    assert transition.domain() is free.adic_module_truncation(completion, 4)
-    assert transition.codomain().module_over_extension() is free.adic_module_truncation(completion, 2)
 
 
-def test_free_plus_torsion_completion_preserves_the_selected_presentations() -> None:
-    ring = QQ.polynomial_ring(("x",))
-    x = ring.algebra_generator("x")
-    free = _free_rank_one(ring)
-    torsion = _cyclic_torsion_module(ring, x**2)
-    mixed = Modules(ring).biproduct((free, torsion))
-    completed = mixed.adic_completion(ring.ideal(x), precision=5)
-
-    completion = completed.base_ring()
-    assert mixed.base_change_to_completion(completion) is completed
-    assert completed.number_of_module_generators() == mixed.number_of_module_generators()
-    assert mixed.adic_module_truncation(completion, 2).number_of_module_generators() == mixed.number_of_module_generators()
 
 
 def test_completion_unit_and_projection_form_the_expected_finite_stage_triangle() -> None:

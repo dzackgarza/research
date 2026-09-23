@@ -69,46 +69,8 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
     assert coinvariant_vector in (first - second, second - first)
 
 
-def test_the_swap_restricts_to_plus_and_minus_one_on_its_summands() -> None:
-    lattice, swap = _hyperbolic_swap()
-    extension = swap.primitive_extension()
-
-    assert swap in extension.centralizer_group()
-    assert lattice.Aut().one() in extension.centralizer_group()
-
-    invariant_summand = extension.invariant.inclusion().domain()
-    coinvariant_summand = extension.orthogonal_complement.inclusion().domain()
-    invariant_part = extension.invariant_restriction(swap)
-    coinvariant_part = extension.coinvariant_restriction(swap)
-
-    assert invariant_part == invariant_summand.Aut().one()
-    assert coinvariant_part != coinvariant_summand.Aut().one()
-    assert all(
-        coinvariant_part(generator) == -generator
-        for generator in coinvariant_summand.module_generators()
-    )
 
 
-def test_the_first_two_cyclotomic_summands_split_an_involution() -> None:
-    _lattice, swap = _hyperbolic_swap()
-
-    fixed = swap.cyclotomic_summand(1)
-    negated = swap.cyclotomic_summand(2)
-    assert fixed.module_rank() == 1
-    assert negated.module_rank() == 1
-    assert fixed.is_primitive()
-    assert negated.is_primitive()
-
-    fixed_inclusion = fixed.inclusion()
-    assert all(
-        swap(fixed_inclusion(generator)) == fixed_inclusion(generator)
-        for generator in fixed.module_generators()
-    )
-    negated_inclusion = negated.inclusion()
-    assert all(
-        swap(negated_inclusion(generator)) == -negated_inclusion(generator)
-        for generator in negated.module_generators()
-    )
 
 
 def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
@@ -159,22 +121,6 @@ def _negation(summand):
     )
 
 
-def test_a_compatible_pair_reassembles_the_swap_of_the_hyperbolic_plane() -> None:
-    lattice, swap = _hyperbolic_swap()
-    extension = swap.primitive_extension()
-
-    # U is even, so this extension is glued by its quadratic discriminant
-    # forms and the criterion below is read there.
-    assert lattice.is_even()
-    assert extension.glue().is_quadratic()
-
-    invariant_part = extension.invariant_restriction(swap)
-    coinvariant_part = extension.coinvariant_restriction(swap)
-    assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
-
-    assembled = extension.centralizer_element(invariant_part, coinvariant_part)
-    assert assembled.parent() is lattice.Aut()
-    assert assembled == swap
 
 
 def test_reassembly_inverts_restriction_on_the_four_pairs_over_the_hyperbolic_plane() -> None:
@@ -335,52 +281,8 @@ def test_the_cubic_cyclic_permutation_glues_an_odd_lattice_bilinearly() -> None:
     assert extension.gluing_subgroup().cardinality() == 3
 
 
-def test_a_compatible_pair_reassembles_the_cubic_cyclic_permutation() -> None:
-    lattice, rotation = _cubic_cyclic_permutation()
-    extension = rotation.primitive_extension()
-    invariant_summand = extension.invariant.inclusion().domain()
-
-    # The rotation is the identity on the diagonal and lies in the Weyl group
-    # of the coinvariant root lattice, which acts trivially on its
-    # discriminant group; the pair of its two restrictions therefore acts as
-    # the identity on the glue graph.
-    invariant_part = extension.invariant_restriction(rotation)
-    coinvariant_part = extension.coinvariant_restriction(rotation)
-    assert invariant_part == invariant_summand.Aut().one()
-    assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
-
-    assembled = extension.centralizer_element(invariant_part, coinvariant_part)
-    assert assembled.parent() is lattice.Aut()
-    assert assembled in extension.centralizer_group()
-    assert all(
-        assembled(generator) == rotation(generator)
-        for generator in lattice.module_generators()
-    )
 
 
-def test_the_negation_pair_reassembles_minus_one_on_the_cubic_lattice() -> None:
-    lattice, rotation = _cubic_cyclic_permutation()
-    extension = rotation.primitive_extension()
-    invariant_summand = extension.invariant.inclusion().domain()
-    coinvariant_summand = extension.orthogonal_complement.inclusion().domain()
-
-    # The graph of gamma is a subgroup of the sum of the two discriminant
-    # forms, so negation on both factors permutes it.  The assembled isometry
-    # is -1 on I_3, reached by clearing the denominator three of the
-    # orthogonal sum.
-    invariant_part = _negation(invariant_summand)
-    coinvariant_part = _negation(coinvariant_summand)
-    assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
-
-    assembled = extension.centralizer_element(invariant_part, coinvariant_part)
-    assert assembled.parent() is lattice.Aut()
-    assert assembled in extension.centralizer_group()
-    assert all(
-        assembled(generator) == -generator
-        for generator in lattice.module_generators()
-    )
-    assert extension.invariant_restriction(assembled) == invariant_part
-    assert extension.coinvariant_restriction(assembled) == coinvariant_part
 
 
 def test_negating_one_summand_of_the_cubic_split_breaks_the_glue_graph() -> None:

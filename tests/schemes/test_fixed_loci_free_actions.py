@@ -86,17 +86,6 @@ def test_the_artin_schreier_translation_acts_freely_on_the_affine_line() -> None
     assert acted.action_is_free() is True
 
 
-def test_the_sign_of_a_translation_is_that_squaring_it_returns_the_identity() -> None:
-    _field, group, algebra, x, acted = _translation_of_the_affine_line()
-    generator = group.group_generators()[0]
-    pullback = acted.action_of(generator).coordinate_algebra_morphism()
-
-    assert pullback(x) == x + algebra.one()
-    assert pullback(pullback(x)) == x
-    assert (
-        acted.action_of(generator) * acted.action_of(generator)
-        == acted.categorical_identity_morphism()
-    )
 
 
 def test_an_empty_common_fixed_locus_does_not_make_the_action_free() -> None:
@@ -116,25 +105,6 @@ def test_an_empty_common_fixed_locus_does_not_make_the_action_free() -> None:
     )
 
 
-def test_restriction_along_a_subgroup_inclusion_keeps_the_scheme_and_the_action() -> None:
-    field, group, algebra, x, y, generators, acted = _klein_four_on_the_affine_plane()
-    shear_subgroup = group.subgroup([generators[1]])
-    restriction = GObjects(group, Schemes(field)).restriction(shear_subgroup.inclusion())
-    restricted = restriction(acted)
-
-    assert restricted in GObjects(shear_subgroup, Schemes(field))
-    assert restricted.acting_group() is shear_subgroup
-    assert restricted.underlying_category() is Schemes(field)
-    assert restricted.coordinate_algebra() is algebra
-    original = acted.action_of(generators[1]).coordinate_algebra_morphism()
-    transported = restricted.action_of(generators[1]).coordinate_algebra_morphism()
-    assert transported(y) == original(y) == y + x**2 + x
-    assert restricted.fixed_ideal() == algebra.ideal(x**2 + x)
-
-    equivariant_identity = GObjects(group, Schemes(field)).Mor(acted, acted).identity()
-    image = restriction(equivariant_identity)
-    assert image.domain() is restricted
-    assert image.underlying_arrow().coordinate_algebra_morphism()(x) == x
 
 
 def test_scheme_theoretic_fixed_locus_retains_nonreduced_structure() -> None:

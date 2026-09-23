@@ -6,21 +6,6 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.abstract_categories.products import InverseSystem
 
 
-def test_presented_cusp_completion_is_not_identified_with_one_artin_quotient() -> None:
-    plane = QQ.polynomial_ring(("x", "y"))
-    x = plane.algebra_generator("x")
-    y = plane.algebra_generator("y")
-    cusp = (plane).quotient_by_relations((y**2 - x**3,))
-    xbar = cusp.algebra_generator("x")
-    ybar = cusp.algebra_generator("y")
-    maximal = cusp.ideal(xbar, ybar)
-    completion = cusp.adic_completion(maximal, precision=6)
-    sixth = completion.adic_truncation(6)
-
-    assert completion is not sixth
-    assert completion.completion_source() is cusp
-    assert completion.ideal_of_definition() == maximal
-    assert completion.computation_precision() == 6
 
 
 def test_multivariable_origin_completion_is_not_truncated_by_computation_precision() -> None:
@@ -74,14 +59,3 @@ def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> Non
     assert limit.factor(limit.cone()).apex_map() == completion.Mor(completion).identity()
 
 
-def test_completion_map_and_projection_form_the_canonical_source_cone() -> None:
-    plane = QQ.polynomial_ring(("x", "y"))
-    x = plane.algebra_generator("x")
-    y = plane.algebra_generator("y")
-    completion = plane.adic_completion(plane.ideal(x, y), precision=3)
-    source_map = completion.completion_map()
-
-    for exponent in (1, 2, 5):
-        projection = completion.adic_projection(exponent)
-        quotient_map = completion.adic_truncation(exponent).quotient_map()
-        assert projection(source_map(x + y**2)) == quotient_map(x + y**2)

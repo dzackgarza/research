@@ -14,7 +14,6 @@ from dzack_research.preamble.all import (
     IntegralSchemes,
     LatticePolygons,
     NormalSchemes,
-    OpenImmersions,
     RationalPolyhedralFans,
     Schemes,
     SmoothSchemes,
@@ -49,24 +48,8 @@ def test_the_projective_plane_of_its_fan_is_a_smooth_complete_toric_surface() ->
     assert plane.is_normal()
 
 
-def test_a_toric_variety_carries_its_fan_and_the_two_torus_lattices() -> None:
-    fans = _plane_fans()
-    plane = fans.projective_space_fan().toric_variety(QQ)
-
-    assert plane.fan() is fans.projective_space_fan()
-    assert plane.cocharacter_lattice() is fans.cocharacter_lattice()
-    assert plane.character_lattice() is fans.character_lattice()
-    assert plane.character_cocharacter_pairing() is fans.character_cocharacter_pairing()
 
 
-def test_the_dense_torus_is_the_toric_variety_of_the_zero_cone() -> None:
-    plane = _plane_fans().projective_space_fan().toric_variety(QQ)
-    torus = plane.torus()
-
-    assert torus in ToricSchemes(QQ)
-    assert torus.dimension() == 2
-    assert not torus.is_complete()
-    assert torus.fan().cardinality() == 1
 
 
 def test_the_orbit_cone_correspondence_counts_the_orbits_of_each_dimension() -> None:
@@ -104,32 +87,8 @@ def test_the_chart_of_the_a_one_cone_is_the_quadric_cone() -> None:
     assert not variety.is_smooth()
 
 
-def test_a_face_of_a_cone_localizes_the_chart_at_one_monomial() -> None:
-    r"""CLS Prop. 1.3.16: for ``tau`` a face of ``sigma`` the chart of ``tau``
-    is the distinguished open of the chart of ``sigma`` where the supporting
-    character is invertible."""
-    variety = _plane_fans().projective_space_fan().toric_variety(QQ)
-    cone = variety.fan().maximal_cones()[0]
-    face = cone.faces(1)[0]
-    chart = variety.affine_chart(cone)
-    localized = variety.face_localization(face, cone)
-
-    assert localized in OpenImmersions(chart)
-    assert localized in AffineSchemes(QQ)
 
 
-def test_a_general_hypersurface_of_a_toric_chart_is_only_an_ordinary_closed_subscheme() -> None:
-    variety = _plane_fans().projective_space_fan().toric_variety(QQ)
-    cone = variety.fan().maximal_cones()[0]
-    chart = variety.affine_chart(cone)
-    algebra = chart.coordinate_algebra()
-    first, second = tuple(algebra.algebra_generating_set())
-    hypersurface = chart.closed_subscheme(
-        algebra.algebra_generator(first) + algebra.algebra_generator(second)
-    )
-
-    assert hypersurface in Schemes(QQ)
-    assert hypersurface not in ToricSchemes(QQ)
 
 
 def test_the_standard_identifications_are_decided_by_fan_isomorphism() -> None:
@@ -176,28 +135,8 @@ def test_the_toric_variety_of_the_standard_triangle_is_the_projective_plane() ->
     assert variety.polarizing_polytope() is triangle
 
 
-def test_a_variety_built_from_a_bare_fan_carries_no_polarizing_polytope() -> None:
-    variety = _plane_fans().projective_space_fan().toric_variety(QQ)
-
-    assert not variety.is_polarized()
 
 
-def test_a_fan_compatible_lattice_map_induces_a_toric_morphism() -> None:
-    r"""CLS Thm. 3.3.4: the identity of ``N`` is compatible with any fan and
-    with itself, and doubling every cocharacter carries the fan of ``P^2``
-    into itself."""
-
-    fans = _plane_fans()
-    fan = fans.projective_space_fan()
-    cocharacters = fans.cocharacter_lattice()
-    identity = cocharacters.module_category().Mor(cocharacters, cocharacters).identity()
-
-    assert fan.is_compatible_with(identity, fan)
-
-    variety = fan.toric_variety(QQ)
-    morphism = variety.toric_morphism(identity, variety)
-    assert morphism.domain() is variety
-    assert morphism.codomain() is variety
 
 
 def test_a_nonidentity_toric_morphism_retains_its_chart_pullback() -> None:

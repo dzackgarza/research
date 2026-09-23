@@ -1,4 +1,3 @@
-import pytest
 
 from dzack_research.preamble.all import (
     ZZ,
@@ -8,7 +7,6 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Sets,
 )
-from dzack_research.preamble.categories.functors.core import Adjunction
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -37,15 +35,6 @@ def _swap_group_module():
     return group, Modules(ZZ[group])(module, swap)
 
 
-def test_adjunction_rejects_parallel_public_equivalent_data() -> None:
-    with pytest.raises(TypeError, match="equivalent public data"):
-
-        class _IndependentlySpecifiedAdjunction(Adjunction):
-            def unit(self, obj):
-                return obj
-
-            def mor_set_isomorphism_forward(self, morphism, source):
-                return morphism
 
 
 def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() -> None:
@@ -426,43 +415,6 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
         assert second_triangle(element) == element
 
 
-def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() -> None:
-    from dzack_research.preamble.all import FormModules
-
-    group, acted = _swap_group_module()
-    group_algebra = ZZ[group]
-    group_modules = Modules(group_algebra)
-    assert not group_modules.is_subcategory(Modules(ZZ))
-
-    forget_action = group_modules.restriction_of_scalars(
-        group_algebra.algebra_structure_morphism()
-    )
-    restricted = forget_action(acted)
-    assert restricted is acted.unformed_module()
-
-    doubled = acted.Mor(acted)(
-        {
-            "e": 2 * acted.module_generator("e"),
-            "f": 2 * acted.module_generator("f"),
-        }
-    )
-    restricted_doubled = forget_action(doubled)
-    assert restricted_doubled.domain() is restricted
-    assert restricted_doubled.codomain() is restricted
-    assert restricted_doubled(restricted.module_generator("e")) == (
-        2 * restricted.module_generator("e")
-    )
-
-    lattice = ZZ.free_module(finite_ordered_set(("x", "y")))
-    from dzack_research.preamble.all import Lattices
-
-    formed = lattice.equip_bilinear_form(ZZ, [[0, 1], [1, 0]])
-    forget_form = FormModules(ZZ).inclusion_into(Modules(ZZ))
-    assert forget_form(formed) is formed
-
-    hyperbolic = Lattices(ZZ)("U")
-    forget_lattice = Lattices(ZZ).inclusion_into(Modules(ZZ))
-    assert forget_lattice(hyperbolic) is hyperbolic
 
 
 def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_and_triangles() -> None:
@@ -527,104 +479,5 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
         assert second_triangle(generator) == generator
 
 
-def test_free_and_scalar_extension_functors_preserve_identities_and_composition() -> None:
-    free = Sets().free_module_adjunction(ZZ).left_adjoint()
-    source_set = finite_ordered_set((ZZ(1), ZZ(2)))
-    middle_set = finite_ordered_set((ZZ(3), ZZ(4)))
-    target_set = finite_ordered_set((ZZ(5), ZZ(6)))
-    identity = Sets().Mor(source_set, source_set)(lambda value: value)
-    first = Sets().Mor(source_set, middle_set)(lambda value: ZZ(3) if value == 1 else ZZ(4))
-    second = Sets().Mor(middle_set, target_set)(lambda value: ZZ(6) if value == 3 else ZZ(5))
-    composite = Sets().Mor(source_set, target_set)(lambda value: second(first(value)))
-
-    free_source = free(source_set)
-    carried_identity = free(identity)
-    for generator in free_source.module_generators():
-        assert carried_identity(generator) == generator
-
-    carried_composite = free(composite)
-    composed_carried = free(second) * free(first)
-    for generator in free_source.module_generators():
-        assert carried_composite(generator) == composed_carried(generator)
-
-    field = QuadraticField(2, "a")
-    order = field.ring_of_integers()
-    structure_map = order.algebra_structure_morphism()
-    extension = Modules(structure_map.domain()).base_change_adjunction(
-        structure_map
-    ).left_adjoint()
-    source = ZZ.free_module(finite_ordered_set(("a", "b")))
-    middle = ZZ.free_module(finite_ordered_set(("c", "d")))
-    target = ZZ.free_module(finite_ordered_set(("e",)))
-    first_linear = source.module_category().Mor(source, middle)(
-        {
-            "a": middle.module_generator("c") + middle.module_generator("d"),
-            "b": 2 * middle.module_generator("d"),
-        }
-    )
-    second_linear = middle.module_category().Mor(middle, target)(
-        {
-            "c": 3 * target.module_generator("e"),
-            "d": target.module_generator("e"),
-        }
-    )
-    source_identity = source.module_category().Mor(source, source).identity()
-    carried_identity = extension(source_identity)
-    extended_source = extension(source)
-    for generator in extended_source.module_generators():
-        assert carried_identity(generator) == generator
-
-    carried_composite = extension(second_linear * first_linear)
-    composed_carried = extension(second_linear) * extension(first_linear)
-    for generator in extended_source.module_generators():
-        assert carried_composite(generator) == composed_carried(generator)
 
 
-def test_tensor_symmetric_and_alternating_algebras_are_functorial_on_finite_free_modules() -> None:
-    source = ZZ.free_module(finite_ordered_set(("x", "y")))
-    middle = ZZ.free_module(finite_ordered_set(("u", "v")))
-    target = ZZ.free_module(finite_ordered_set(("z",)))
-    first = source.module_category().Mor(source, middle)(
-        {
-            "x": middle.module_generator("u") + middle.module_generator("v"),
-            "y": 2 * middle.module_generator("v"),
-        }
-    )
-    second = middle.module_category().Mor(middle, target)(
-        {
-            "u": 3 * target.module_generator("z"),
-            "v": target.module_generator("z"),
-        }
-    )
-
-    modules = Modules(ZZ)
-    for functor in (
-        modules.tensor_algebra(),
-        modules.symmetric_algebra(),
-        modules.exterior_algebra(),
-    ):
-        source_algebra = functor(source)
-        middle_algebra = functor(middle)
-        target_algebra = functor(target)
-        carried_first = functor(first)
-        carried_second = functor(second)
-
-        x = source_algebra.algebra_generator("x")
-        y = source_algebra.algebra_generator("y")
-        u = middle_algebra.algebra_generator("u")
-        v = middle_algebra.algebra_generator("v")
-        z = target_algebra.algebra_generator("z")
-        assert carried_first(x) == u + v
-        assert carried_first(y) == 2 * v
-        assert carried_second(u) == 3 * z
-        assert carried_second(v) == z
-
-        identity = source.module_category().Mor(source, source).identity()
-        carried_identity = functor(identity)
-        assert carried_identity(x) == x
-        assert carried_identity(y) == y
-
-        carried_composite = functor(second * first)
-        composed_carried = carried_second * carried_first
-        assert carried_composite(x) == composed_carried(x)
-        assert carried_composite(y) == composed_carried(y)

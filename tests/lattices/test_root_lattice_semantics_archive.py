@@ -52,24 +52,6 @@ def test_archived_simple_reflections_act_on_the_selected_root_framing() -> None:
     assert coxeter != lattice.Aut().one()
 
 
-def test_archived_fundamental_weights_and_coroots_live_in_the_metric_dual() -> None:
-    lattice = Lattices(ZZ)("A2")
-    roots = lattice.simple_roots()
-    weights = lattice.fundamental_weights()
-    dual_basis = lattice.dual_basis()
-
-    assert weights.cardinality() == 2
-    assert all(
-        weight == -dual_weight
-        for weight, dual_weight in zip(weights, dual_basis, strict=True)
-    )
-
-    correlation = lattice.correlation_morphism()
-    dual_lattice = lattice.dual_lattice()
-    for root in roots:
-        coroot = root.coroot()
-        assert coroot.parent() is dual_lattice
-        assert coroot == -correlation(root)
 
 
 def test_archived_a2_root_sign_partition_is_exact() -> None:

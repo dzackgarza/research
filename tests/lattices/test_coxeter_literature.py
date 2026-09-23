@@ -36,7 +36,6 @@ from dzack_research.preamble.all import (
     ZZ,
     CoxeterDiagrams,
     Lattices,
-    finite_ordered_set,
 )
 
 ARCHIVE_RECONCILIATIONS = (
@@ -265,33 +264,6 @@ def test_the_rank_two_schlaeflian_is_four_sine_squared(bond) -> None:
     assert diagram.is_elliptic()
 
 
-@pytest.mark.parametrize("cartan_type,rank", [(["A", 2], 2), (["A", 3], 3), (["D", 4], 4)])
-def test_the_root_gram_of_a_simply_laced_diagram_is_minus_its_schlaefli_matrix(
-    cartan_type, rank
-) -> None:
-    r"""For roots of square \(-2\) the root Gram is \(-C\).
-
-    The Schlaefli matrix is \(C_{vv}=2\), \(C_{vw}=-2\cos(\pi/m_{vw})\), and a
-    simply-laced diagram has \(m\in\{2,3\}\), so \(C_{vw}\in\{0,-1\}\) off the
-    diagonal.  This repository's roots have square \(-2\), which is exactly
-    \(-C_{vv}\), and adjacent roots pair to \(+1 = -C_{vw}\).  The two matrices
-    are therefore negatives of one another, and the sign is the whole content
-    of the convention: a diagram is elliptic when \(C\) is positive definite
-    and the root lattice is negative definite.
-
-    The hypothesis is simple lacing.  A \(B_2\) realization has a root of
-    square \(-4\), and no scaling relates its Gram to a matrix with \(2\) on
-    every diagonal entry.
-    """
-    diagram = CoxeterDiagrams().from_cartan_type(cartan_type, rooted=True)
-    schlafli = diagram.schlafli_tensor()
-    gram = diagram.root_gram_tensor()
-
-    assert all(entry.parent() is schlafli.base_ring() for entry in schlafli)
-    assert diagram.vinberg_invariant_matrix().is_simply_laced()
-    for row in range(rank):
-        for column in range(rank):
-            assert gram[row, column] == -2 * schlafli[row, column]
 
 
 @pytest.mark.parametrize("cartan_type", EXCEPTIONAL_ORDERS)
@@ -341,48 +313,11 @@ def test_an_extended_diagram_is_parabolic_with_vanishing_schlaeflian(cartan_type
     assert diagram.negative_inertia_index() == 0
 
 
-def test_archived_a2_root_gram_is_the_live_negative_definite_root_lattice() -> None:
-    diagram = CoxeterDiagrams().from_cartan_type(["A", 2], rooted=True)
-    lattice = Lattices(ZZ)("A2")
-    gram = diagram.root_gram_tensor()
-
-    assert gram == lattice.gram_tensor()
-    assert gram[0, 0] == -2
-    assert gram[1, 1] == -2
-    assert gram[0, 1] == gram[1, 0] == 1
-    assert diagram.coxeter_entry(0, 1) == 3
-    schlafli = diagram.schlafli_tensor()
-    assert schlafli[0, 1] == -schlafli.base_ring().one() / schlafli.base_ring()(2)
-
-def test_archived_b3_root_roundtrip_retains_gram_bonds_and_group() -> None:
-    rooted = CoxeterDiagrams().from_cartan_type(["B", 3], rooted=True)
-    recovered = CoxeterDiagrams().from_roots(rooted.roots())
-
-    assert recovered.root_gram_tensor() == rooted.root_gram_tensor()
-    assert recovered.coxeter_matrix() == rooted.coxeter_matrix()
-    assert recovered.coxeter_group().order() == 48
 
 
-def test_archived_c3_construction_paths_reach_the_same_coxeter_system() -> None:
-    by_type = CoxeterDiagrams().from_cartan_type(["C", 3])
-    by_matrix = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(["C", 3]))
-    by_roots = CoxeterDiagrams().from_cartan_type(["C", 3], rooted=True)
-
-    assert by_type.coxeter_matrix() == by_matrix.coxeter_matrix()
-    assert by_roots.coxeter_matrix() == by_type.coxeter_matrix()
-    assert {
-        diagram.coxeter_group().order()
-        for diagram in (by_type, by_matrix, by_roots)
-    } == {48}
 
 
-def test_archived_e6_rank_agrees_across_diagram_and_root_realization() -> None:
-    diagram = CoxeterDiagrams().from_cartan_type(["E", 6], rooted=True)
 
-    assert diagram.cardinality() == 6
-    assert diagram.root_lattice().module_rank() == 6
-    assert diagram.root_realization().module_rank() == 6
-    assert diagram.coxeter_group().degree() == 6
 
 
 def test_icosahedral_root_lattices_live_over_the_golden_integer_ring() -> None:

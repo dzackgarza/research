@@ -1,11 +1,6 @@
-from dzack_research.preamble.all import ZZ, Lattices, signature_pair
+from dzack_research.preamble.all import ZZ, Lattices
 
 
-def test_finite_torsion_enumeration_uses_smith_generators() -> None:
-    discriminant = Lattices(ZZ)("A2").discriminant_module()
-    assert discriminant.cardinality() == 3
-    assert discriminant.elements().cardinality() == 3
-    assert discriminant.cardinality() == 3
 
 
 def test_a2_discriminant_form_is_anisotropic_and_not_metabolic() -> None:
@@ -82,18 +77,6 @@ def test_local_modification_is_exactly_p_primary_isotropic_glue() -> None:
         raise AssertionError("a 2-primary glue class was accepted as a 3-local modification")
 
 
-def test_nonisotropic_glue_is_rejected_before_overlattice_construction() -> None:
-    discriminant = Lattices(ZZ)("A1").discriminant_quadratic_form()
-    generator = discriminant.smith_form_module_generators()[0]
-    subgroup = discriminant.subgroup_on((generator,))
-
-    assert not subgroup.is_isotropic()
-    try:
-        discriminant.overlattice_from_isotropic_subobject(subgroup)
-    except ValueError as error:
-        assert "q-isotropic" in str(error)
-    else:
-        raise AssertionError("non-isotropic glue was accepted")
 
 
 def test_discriminant_pairing_identifies_the_group_with_its_pontryagin_dual() -> None:

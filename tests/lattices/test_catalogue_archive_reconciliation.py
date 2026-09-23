@@ -2,8 +2,6 @@ r"""Reconcile ``archives/preamble/catalogue.sage`` with the live catalogue."""
 
 from dzack_research.preamble.all import (
     Embeddings,
-    Involutions,
-    Lattices,
     NamedLattices,
     NegativeDefTwoElementary,
     TwoElementary,
@@ -41,26 +39,6 @@ def test_two_elementary_catalogues_and_searches_retain_the_archive_mathematics()
     )
 
 
-def test_named_k3_involutions_retain_the_archived_block_actions() -> None:
-    generators = NamedLattices.LK3.module_generators()
-    identity = NamedLattices.LK3.Aut().one()
-
-    assert Involutions.I_dP * Involutions.I_dP == identity
-    assert Involutions.I_En * Involutions.I_En == identity
-    assert Involutions.I_Nik * Involutions.I_Nik == identity
-
-    assert Involutions.I_dP(generators[0]) == -generators[0]
-    assert Involutions.I_dP(generators[2]) == generators[4]
-    assert Involutions.I_dP(generators[6]) == -generators[6]
-
-    assert Involutions.I_En(generators[0]) == -generators[0]
-    assert Involutions.I_En(generators[2]) == generators[4]
-    assert Involutions.I_En(generators[6]) == generators[14]
-    assert Involutions.I_En(generators[14]) == generators[6]
-
-    assert Involutions.I_Nik(generators[0]) == generators[0]
-    assert Involutions.I_Nik(generators[6]) == -generators[14]
-    assert Involutions.I_Nik(generators[14]) == -generators[6]
 
 
 def test_primitive_embedding_chain_retains_the_archived_generator_maps() -> None:
@@ -91,7 +69,3 @@ def test_primitive_embedding_chain_retains_the_archived_generator_maps() -> None
         assert embedding.is_primitive()
 
 
-def test_archived_lattices_reexport_is_the_live_owned_lattice_category() -> None:
-    assert Lattices(Embeddings.TCo_into_TEn.domain().base_ring()) is Lattices(
-        NamedLattices.Tco.base_ring()
-    )

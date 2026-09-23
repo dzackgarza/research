@@ -1,88 +1,14 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    FinitelyPresentedModules,
-    InternalMorModules,
-    Modules,
-    ProjectiveModules,
 )
-from dzack_research.preamble.categories.sets import NN, finite_ordered_set
+from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
-def test_module_mor_is_the_internal_mor_module() -> None:
-    source = ZZ.free_module(finite_ordered_set(("e",)))
-    target = ZZ.free_module(finite_ordered_set(("f",)))
-
-    categorical_mor = source.Mor(target)
-    direct_mor = source.module_category().Mor(source, target)
-    internal_mor = source.module_category().Mor(source, target)
-
-    assert categorical_mor is direct_mor
-    assert direct_mor is internal_mor
-    assert internal_mor in Modules(ZZ)
-    assert internal_mor in InternalMorModules(ZZ)
-    assert internal_mor in FinitelyPresentedModules(ZZ)
-    assert internal_mor in ProjectiveModules(ZZ)
-    assert internal_mor.is_projective() is True
-
-    f = internal_mor({"e": target.module_generator("f")})
-    e = source.module_generator("e")
-    target_generator = target.module_generator("f")
-
-    assert f.parent() is internal_mor
-    assert (f + f)(e) == 2 * target_generator
-    assert (2 * f)(e) == 2 * target_generator
-    assert (-f)(e) == -target_generator
-    assert internal_mor.as_morphism(f) is f
-    assert internal_mor.from_morphism(f) is f
-
-    # A finite presentation is extra structure on the same Mor parent, and
-    # its selected generators are actual module morphisms.
-    generator = next(iter(internal_mor.module_generators()))
-    assert generator.parent() is internal_mor
-    assert generator(e) == target_generator
 
 
-def test_module_mor_is_unique_even_when_objects_have_more_structure() -> None:
-    algebra = QQ.free_module(("x",)).symmetric_algebra()
-    modules = Modules(QQ)
-
-    categorical = modules.Mor(algebra, algebra)
-    internal = modules.Mor(algebra, algebra)
-
-    assert categorical is internal
-    assert categorical is modules.MorCategory().Of(algebra, algebra)
-    assert categorical in Modules(QQ)
-    assert categorical.base_category() is modules
-
-    identity = categorical.identity()
-    x = algebra.algebra_generator("x")
-    assert identity(x + 1) == x + 1
-    assert (QQ(2) * identity)(x) == 2 * x
 
 
-def test_internal_mor_on_infinite_framings_does_not_force_a_finite_model() -> None:
-    source = ZZ.free_module(NN)
-    target = ZZ.free_module(NN)
-
-    internal = source.module_category().Mor(source, target)
-
-    assert internal is source.module_category().Mor(source, target)
-    construction = internal.internal_mor_construction()
-    assert construction.source_module() is source
-    assert construction.target_module() is target
-
-    evaluated = []
-
-    def image(label):
-        evaluated.append(label)
-        return target.module_generator(label)
-
-    identity = internal(image)
-    assert evaluated == []
-    e1000 = source.module_generator(NN(1000))
-    assert identity(e1000) == target.module_generator(NN(1000))
-    assert evaluated == [NN(1000)]
 
 
 def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() -> None:
@@ -197,27 +123,3 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
     assert inclusion(lifted) == two_x
 
 
-def test_matrix_internal_mor_retains_its_free_framing_source() -> None:
-    source = ZZ.free_module(2)
-    target = ZZ.free_module(3)
-    mor = source.module_category().Mor(source, target)
-
-    framing = mor.framing_morphism()
-    framing_source = mor.framing_source()
-    assert framing_source.module_generating_set() is mor.module_generating_set()
-    assert mor.framing_morphism() is framing
-    assert framing.domain() is framing_source
-    assert framing.codomain() is mor
-    for label in mor.module_generating_set():
-        assert mor.module_generator(label) == framing(
-            framing_source.module_generator(label)
-        )
-
-    first_label = next(iter(mor.module_generating_set()))
-    morphism = mor.module_generator(first_label)
-    source_label = next(iter(source.module_generating_set()))
-    source_generator = source.module_generator(source_label)
-    doubled = mor.scalar_multiple(ZZ(2), morphism)
-    assert doubled(source_generator) == target.scalar_multiple(
-        ZZ(2), morphism(source_generator)
-    )

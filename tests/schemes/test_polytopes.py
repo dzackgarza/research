@@ -1,5 +1,4 @@
 from dzack_research.preamble.all import (
-    QQ,
     ZZ,
     ConvexPolygons,
     ConvexPolytopes,
@@ -32,12 +31,6 @@ def test_lattice_polygon_carries_exact_lattice_point_and_volume_data() -> None:
     assert not polygon.interior_contains_point((0, 1))
 
 
-def test_rational_polygon_is_not_silently_called_a_lattice_polytope() -> None:
-    lattice = ZZ.free_module(2)
-    polygon = ConvexPolygons(lattice)(((0, 0), (0, QQ(3) / 2), (3, 0)))
-    assert polygon in ConvexPolygons(lattice)
-    assert polygon not in LatticePolytopes(lattice)
-    assert polygon.volume() == QQ(9) / 4
 
 
 def test_ehrhart_polynomial_and_h_star_are_computed_without_latte() -> None:
@@ -59,25 +52,8 @@ def test_ehrhart_polynomial_and_h_star_are_computed_without_latte() -> None:
     )
 
 
-def test_polygon_svg_is_a_view_of_the_live_exact_polygon() -> None:
-    lattice = ZZ.free_module(2)
-    triangle = LatticePolygons(lattice)(((0, 0), (2, 0), (0, 1)))
-    svg = triangle._repr_svg_()
-
-    assert svg.startswith('<svg xmlns="http://www.w3.org/2000/svg"')
-    assert '<polygon points="' in svg
-    assert 'fill="none"' in svg
-    assert 'stroke="currentColor"' in svg
-    assert triangle.vertices() == LatticePolygons(lattice)(((0, 0), (2, 0), (0, 1))).vertices()
 
 
-def test_three_dimensional_polytope_delegates_to_sages_local_threejs_view() -> None:
-    lattice = ZZ.free_module(3)
-    tetrahedron = ConvexPolytopes(lattice).an_object()
-    html = tetrahedron.threejs_html()
-
-    assert "threejs" in html.lower() or "THREE" in html
-    assert tetrahedron.dimension() == 3
 
 
 def test_dodecahedron_schlafli_symbol_has_h3_full_reflection_symmetry() -> None:

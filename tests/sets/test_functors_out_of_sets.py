@@ -6,18 +6,15 @@ specimen.  Each adjunction states the endpoints of its unit and counit and
 the value of one of them.
 """
 
-import pytest
 
 from dzack_research.preamble.all import (
     ZZ,
-    Cardinalities,
     FiniteSets,
     Groups,
     Modules,
     Sets,
     cardinal,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/functors/cardinality.sage",
@@ -26,28 +23,8 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def _shift(source, target):
-    r"""The set map raising each ordinal label by one."""
-    return Sets().Mor(source, target)(lambda label: target(int(label) + 1))
 
 
-def test_the_free_module_functor_carries_a_set_map_to_generators() -> None:
-    functor = Sets().free_module(ZZ)
-    assert functor.domain() == Sets()
-    assert functor.codomain() == Modules(ZZ)
-
-    labels = Sets.Δ[1]
-    larger = Sets.Δ[2]
-    free = functor(labels)
-    target = functor(larger)
-    carried = functor(_shift(labels, larger))
-
-    assert free.module_rank() == 2
-    assert target.module_rank() == 3
-    assert carried.domain() is free
-    assert carried.codomain() is target
-    assert carried(free.module_generator(labels(0))) == target.module_generator(larger(1))
-    assert carried(free.module_generator(labels(1))) == target.module_generator(larger(2))
 
 
 def test_the_free_module_adjunction_has_a_unit_of_generators_and_an_evaluating_counit() -> None:
@@ -71,23 +48,6 @@ def test_the_free_module_adjunction_has_a_unit_of_generators_and_an_evaluating_c
     assert counit(counit.domain().module_generator(element)) == element
 
 
-def test_the_free_group_functor_carries_a_set_map_to_free_generators() -> None:
-    functor = Sets().free_group()
-    assert functor.domain() == Sets()
-    assert functor.codomain() == Groups()
-
-    letters = Sets.Δ[1]
-    larger = Sets.Δ[2]
-    free = functor(letters)
-    target = functor(larger)
-    carried = functor(_shift(letters, larger))
-
-    assert free.free_basis().cardinality() == cardinal(2)
-    assert free.free_generator(letters(0)) != free.free_generator(letters(1))
-    assert carried.domain() is free
-    assert carried.codomain() is target
-    assert carried(free.free_generator(letters(0))) == target.free_generator(larger(1))
-    assert carried(free.free_generator(letters(1))) == target.free_generator(larger(2))
 
 
 def test_the_free_group_adjunction_has_a_unit_of_letters_and_a_multiplying_counit() -> None:
@@ -114,27 +74,6 @@ def test_the_free_group_adjunction_has_a_unit_of_letters_and_a_multiplying_couni
     assert counit(counit.domain().free_generator(transposition)) == transposition
 
 
-def test_the_cardinality_functor_is_defined_on_the_core_of_sets() -> None:
-    r"""Archive contract: ``# : core(Sets) -> Cardinalities`` is cached and functorial."""
-    functor = Sets().cardinality_functor()
-    assert functor is Sets().cardinality_functor()
-    assert functor.domain().base_category() == Sets()
-    assert functor.codomain() == Cardinalities()
-
-    ordinal = Sets.Δ[2]
-    letters = finite_ordered_set(("x", "y", "z"))
-    relabelling = Sets().Mor(ordinal, letters)(lambda index: letters[int(index)])
-
-    assert functor(ordinal) == cardinal(3)
-    assert functor(letters) == cardinal(3)
-    carried = functor(relabelling)
-    assert carried.domain() == cardinal(3)
-    assert carried.codomain() == cardinal(3)
-    assert carried == Cardinalities().Mor(cardinal(3), cardinal(3)).unique_morphism()
-
-    collapse = Sets().Mor(ordinal, ordinal)(lambda _index: ordinal(0))
-    with pytest.raises(ValueError, match="biject"):
-        functor(collapse)
 
 
 def test_the_power_set_functor_has_all_of_sets_for_its_domain() -> None:

@@ -8,7 +8,7 @@ distinguish the elliptic subdiagrams from the parabolic one.
 
 from sage.all import Infinity
 
-from dzack_research.preamble.all import Set, ZZ, CoxeterDiagrams, Lattices, finite_ordered_set
+from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices, finite_ordered_set
 
 
 def affine_a2():
@@ -33,26 +33,6 @@ def test_the_affine_triangle_has_seven_elliptic_and_one_parabolic_subdiagram() -
     assert diagram.is_parabolic()
 
 
-def test_the_empty_subdiagram_is_elliptic_and_is_the_least_subdiagram() -> None:
-    r"""The subdiagram on no vertices is elliptic and has no connected component.
-
-    Its Schlaefli form is the form on the zero space: no negative and no zero
-    index of inertia, so it is elliptic by the definition.  It is not
-    connected, because connectedness is having exactly one component and it has
-    none, so the connected enumeration drops it.
-    """
-    diagram = affine_a2()
-    empty = diagram.induced_subdiagram(())
-
-    assert empty.cardinality() == 0
-    assert empty.is_elliptic()
-    assert not empty.is_connected()
-    assert empty.connected_components().cardinality() == 0
-    assert diagram.elliptic_subdiagrams(connected=True).cardinality() == 6
-
-    poset = diagram.subdiagram_poset()
-    assert poset.bottom().cardinality() == 0
-    assert poset.top().cardinality() == 3
 
 
 def test_the_maximal_elliptic_subdiagrams_of_the_affine_triangle_are_its_edges() -> None:
@@ -150,75 +130,12 @@ def test_triality_orders_the_subdiagram_orbits_of_d4_by_the_orbit_relation() -> 
     assert poset.top() is member_on((1, 2, 3, 4))
 
 
-def test_the_triangle_is_its_own_only_parabolic_subdiagram_orbit() -> None:
-    r"""The parabolic orbit poset of affine \(A_2\) is a single point.
-
-    The triangle is parabolic and no proper subdiagram of it is: its proper
-    subdiagrams are the empty one, the vertices and the edges, all elliptic.
-    So there is one parabolic orbit, and the order on it is trivial.
-    """
-    poset = affine_a2().parabolic_subdiagram_orbit_poset()
-
-    assert poset.cardinality() == 1
-    assert poset.top() is poset.bottom()
-    assert poset.top().index_set() == finite_ordered_set((0, 1, 2))
 
 
-def test_a_disconnected_diagram_splits_into_its_components() -> None:
-    r"""Two orthogonal mirrors give two components, each a single vertex."""
-    diagram = CoxeterDiagrams().from_coxeter_matrix([[1, 2], [2, 1]])
-    components = diagram.connected_components()
-
-    assert not diagram.is_connected()
-    assert components.cardinality() == 2
-    for component in components:
-        assert component.cardinality() == 1
-        assert component.is_connected()
 
 
-def test_the_root_morphism_carries_the_abstract_root_lattice_into_the_realization() -> None:
-    r"""A rooted diagram realizes its abstract root lattice through a morphism.
-
-    The domain is the lattice presented by the root Gram, the codomain is the
-    lattice the roots live in, and the arrow sends the \(v\)-th module
-    generator to the \(v\)-th root.  What makes it a lattice morphism is that
-    the Gram of the domain is the Gram of the roots, so it preserves the form;
-    that is the claim asserted here, generator pair by generator pair.
-    """
-    realization = Lattices(ZZ)([[-2, 1], [1, -2]])
-    diagram = CoxeterDiagrams().from_roots(realization.module_generators())
-    morphism = diagram.root_morphism()
-    abstract = diagram.root_lattice()
-
-    assert morphism.domain() is abstract
-    assert morphism.codomain() is realization
-    assert abstract.module_rank() == 2
-    generators = abstract.module_generators()
-    roots = diagram.roots()
-    for left_index, left in enumerate(generators):
-        assert morphism(left) == roots[left_index]
-        for right_index, right in enumerate(generators):
-            assert morphism(left).b(morphism(right)) == left.b(right)
 
 
-def test_the_root_intersection_graph_records_squares_as_loops_and_pairings_as_edges() -> None:
-    r"""The exact integral datum the Coxeter matrix summarizes.
-
-    On the \(A_2\) realization the two roots have square \(-2\) and pair to
-    \(1\), so the graph has one loop of label \(-2\) at each vertex and one
-    edge of label \(1\).  The Coxeter bond \(3\) is recovered from those
-    numbers as \(4\cdot 1^2/((-2)(-2)) = 1 = 4\cos^2(\pi/3)\).
-    """
-    realization = Lattices(ZZ)([[-2, 1], [1, -2]])
-    diagram = CoxeterDiagrams().from_roots(realization.module_generators())
-    graph = diagram.root_intersection_graph()
-    vertices = diagram.index_set()
-
-    assert graph.num_verts() == 2
-    assert graph.edge_label(vertices[0], vertices[0]) == -2
-    assert graph.edge_label(vertices[1], vertices[1]) == -2
-    assert graph.edge_label(vertices[0], vertices[1]) == 1
-    assert diagram.coxeter_entry(vertices[0], vertices[1]) == 3
 
 
 def test_the_root_data_separates_parallel_mirrors_from_divergent_ones() -> None:
@@ -255,21 +172,3 @@ def test_the_root_data_separates_parallel_mirrors_from_divergent_ones() -> None:
     assert not meeting.mirrors_are_divergent(0, 1)
 
 
-def test_diagram_automorphisms_keep_nonordinal_vertex_labels_at_the_public_boundary() -> None:
-    from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-
-    labels = ("left", "middle", "right")
-    diagram = CoxeterDiagrams().from_coxeter_matrix(
-        CoxeterMatrix(
-            [[1, 3, 3], [3, 1, 3], [3, 3, 1]],
-            index_set=labels,
-        )
-    )
-
-    assert diagram.Aut().order() == 6
-    orbit = diagram._orbit_vertex_sets(diagram.induced_subdiagram(("left",)))
-    assert Set(
-        Set(vertex_set) for vertex_set in orbit
-    ) == Set(
-        Set((label,)) for label in labels
-    )

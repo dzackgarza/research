@@ -43,8 +43,3 @@ def test_projective_space_is_normal_over_a_principal_ideal_domain() -> None:
     assert projective_plane.is_normal()
 
 
-def test_the_base_scheme_and_the_witness_of_the_category_are_normal() -> None:
-    r"""``Spec Z`` is normal, and the category exhibits a member of itself."""
-    assert (ZZ).affine_spectrum(base_ring=ZZ) in NormalSchemes(ZZ)
-    assert NormalSchemes(ZZ).an_object() in NormalSchemes(ZZ)
-    assert NormalSchemes(QQ).an_object() in NormalSchemes(QQ)

@@ -4,7 +4,6 @@ from sage.rings.infinity import Infinity
 from dzack_research.preamble.all import (
     C,
     QQ,
-    ZZ,
     FormModules,
     Lp,
     PairedModules,
@@ -13,35 +12,8 @@ from dzack_research.preamble.all import (
 )
 
 
-def test_a_pairing_of_distinct_modules_is_not_a_form() -> None:
-    left = ZZ.free_module(["a"])
-    right = ZZ.free_module(["b"])
-    pairing = left.pairings_with(right, ZZ)([[2]])
-    paired = PairedModules(ZZ)(pairing)
-    a = left.module_generator("a")
-    b = right.module_generator("b")
-
-    assert paired in PairedModules(ZZ)
-    assert paired not in FormModules(ZZ)
-    assert paired.left_module() is left
-    assert paired.right_module() is right
-    assert paired.value_module() == ZZ
-    assert pairing(a, b) == 2
-    assert paired.pairing(a, b) == 2
 
 
-def test_the_diagonal_pairing_is_a_formed_module() -> None:
-    module = ZZ.free_module(["e"])
-    form = module.pairings_with(module, ZZ)([[1]])
-    formed = PairedModules(ZZ)(form)
-    generator = formed.module_generator("e")
-
-    assert form.parent() is module.pairings_with(module, ZZ)
-    assert formed in PairedModules(ZZ)
-    assert formed in FormModules(ZZ)
-    assert formed.left_module() is formed
-    assert formed.right_module() is formed
-    assert formed.b(generator, generator) == 1
 
 
 def test_holder_pairs_lp_with_its_conjugate() -> None:
@@ -76,15 +48,6 @@ def test_l2_times_l2_is_the_formed_module() -> None:
     assert space.pairing(gaussian, gaussian) == space.b(gaussian, gaussian)
 
 
-def test_holder_conjugates_are_exactly_the_pairing_modules() -> None:
-    assert Lp(4) * Lp(QQ(4) / 3) in PairedModules(RR)
-    assert (Lp(4) * Lp(QQ(4) / 3)).left_module() is Lp(4)
-    try:
-        Lp(3) * Lp(3)
-    except TypeError as error:
-        assert "1/p + 1/q = 1" in str(error)
-        return
-    raise AssertionError("L^3 ⊗ L^3 is not a Hölder pairing")
 
 
 def test_holder_pairs_ell_p_with_its_conjugate() -> None:

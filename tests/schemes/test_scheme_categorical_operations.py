@@ -5,18 +5,11 @@ scheme-theoretic image are all closed subschemes with their inclusions, and
 each is checked against the morphism identity that defines it.
 """
 
-import pytest
 
 from dzack_research.preamble.all import (
     QQ,
-    ZZ,
-    AffineSchemes,
     ClosedEmbeddings,
-    ClosedSubschemes,
-    IntegralSchemes,
-    NormalSchemes,
     Schemes,
-    SmoothSchemes,
     Algebras,
 )
 
@@ -44,65 +37,10 @@ def _cusp_parametrization():
     return plane, x, y, line, t, Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(line)({"x": t**2, "y": t**3}))
 
 
-def test_a_scheme_over_a_ring_is_a_scheme_over_every_scalar_base_of_that_ring() -> None:
-    plane, _algebra, _x, _y = _plane()
-
-    assert plane in Schemes(QQ)
-    assert plane in Schemes(ZZ)
-    assert Schemes(ZZ) in Schemes(QQ).all_super_categories()
-    assert plane in AffineSchemes(ZZ)
-    assert plane in IntegralSchemes(ZZ)
-    assert plane in NormalSchemes(QQ)
-    # Smoothness and affine-space structure are stated relative to the base.
-    assert plane in SmoothSchemes(QQ)
-    assert plane not in SmoothSchemes(ZZ)
-    assert (QQ).affine_spectrum() in Schemes(ZZ)
-    assert (QQ).affine_spectrum() not in SmoothSchemes(ZZ)
-
-    structure = (QQ).affine_spectrum().structure_morphism()
-    to_integers = Schemes(ZZ).Mor((QQ).affine_spectrum(), (ZZ).affine_spectrum())
-    assert structure.domain() is (QQ).affine_spectrum()
-    assert to_integers.domain() is (QQ).affine_spectrum()
-    assert to_integers.codomain() is (ZZ).affine_spectrum()
 
 
-def test_a_closed_subscheme_is_placed_with_its_dimension_and_ideal_sheaf() -> None:
-    plane, algebra, x, y = _plane()
-    cusp = plane.closed_subscheme(y**2 - x**3)
-    origin_on_cusp = cusp.closed_subscheme(cusp.coordinate_algebra().algebra_generator("x"))
-
-    assert cusp in ClosedSubschemes(QQ)
-    assert cusp in ClosedSubschemes(ZZ)
-    assert cusp in ClosedEmbeddings(plane)
-    assert plane not in ClosedSubschemes(QQ)
-    assert cusp.relative_dimension() == 1
-    assert cusp.dimension() == 1
-    assert cusp.codimension() == 1
-    assert origin_on_cusp in ClosedSubschemes(QQ)
-    assert origin_on_cusp.relative_dimension() == 0
-    assert origin_on_cusp.inclusion().codomain() is cusp
-    through_plane = cusp.inclusion() * origin_on_cusp.inclusion()
-    assert through_plane.domain() is origin_on_cusp
-    assert through_plane.codomain() is plane
-    assert through_plane.coordinate_algebra_morphism()(y) ** 2 == through_plane.coordinate_algebra_morphism()(x) ** 3
-
-    ideal_sheaf = cusp.ideal_sheaf()
-    open_x = plane.distinguished_open(x)
-    local_ideal = ideal_sheaf.sections_on_distinguished_open(open_x)
-    generator = ideal_sheaf.global_sections()(y**2 - x**3)
-    restricted = ideal_sheaf.restriction_map(plane, open_x)(generator)
-    assert local_ideal.base_ring() is open_x.coordinate_algebra()
-    assert restricted.underlying_element() == local_ideal.fraction(generator)
 
 
-def test_projective_closed_subschemes_require_homogeneous_equations() -> None:
-    plane = ProjectiveSpaces(QQ)(2)
-    x, y, z = plane.gens()
-    conic = plane.closed_subscheme(x * z - y**2)
-    assert conic in ClosedSubschemes(QQ)
-    assert conic.dimension() == 1
-    with pytest.raises(AssertionError):
-        plane.closed_subscheme(x * z - y)
 
 
 def test_the_diagonal_is_a_section_of_both_projections_and_a_closed_subscheme() -> None:

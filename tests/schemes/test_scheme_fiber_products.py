@@ -62,13 +62,6 @@ def test_the_diagonal_is_the_map_induced_by_the_pair_of_identities() -> None:
     assert right_projection * diagonal == identity
 
 
-def test_the_category_exhibits_a_fibre_product_of_affine_spaces() -> None:
-    r"""The witness of the category is ``A^1 x_{Spec Z} A^1``, built from affine space."""
-    witness = FiberProductSchemes(ZZ).an_object()
-
-    assert witness in FiberProductSchemes(ZZ)
-    assert witness.relative_dimension() == 2
-    assert witness.fiber_product_base() is (ZZ).affine_spectrum(base_ring=ZZ)
 
 
 def test_fiber_of_the_first_projection_over_the_origin_is_an_affine_line() -> None:

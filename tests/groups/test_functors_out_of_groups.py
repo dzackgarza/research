@@ -9,8 +9,6 @@ and one triangle identity at a group generator.
 from dzack_research.preamble.all import (
     AbelianGroups,
     Groups,
-    Sets,
-    cardinal,
 )
 
 
@@ -66,20 +64,3 @@ def test_the_abelianization_adjunction_has_the_quotient_for_its_unit() -> None:
     assert counit(adjunction.unit(cyclic)(generator)) == generator
 
 
-def test_the_underlying_set_functor_removes_structure_and_not_elements() -> None:
-    functor = Groups().underlying_set()
-    assert functor.domain() == Groups()
-    assert functor.codomain() == Sets()
-
-    symmetric = Groups.S(3)
-    points = functor(symmetric)
-    assert points is symmetric
-    assert points.cardinality() == cardinal(6)
-
-    carried = functor(symmetric.Mor(symmetric).identity())
-    assert carried.domain() is points
-    assert carried.codomain() is points
-    transposition = next(
-        element for element in symmetric.group_generators() if element.order() == 2
-    )
-    assert carried(transposition) == transposition

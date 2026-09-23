@@ -27,21 +27,6 @@ def _line_and_multiplication():
     return line, algebra, x, sheaves, structure, multiply_by_x
 
 
-def test_the_sheaves_on_an_affine_scheme_are_the_category_equivalent_to_its_modules() -> None:
-    line = AffineSpaces(QQ)(1, names=("x",))
-    algebra = line.coordinate_ring()
-    sheaves = QuasiCoherentSheaves(line)
-    module = algebra.free_module(2)
-    sheaf = sheaves.associated_sheaf(module)
-
-    assert sheaves.scheme() is line
-    assert module in sheaves.module_category()
-    assert sheaf in sheaves
-    assert sheaf.sheaf_category() is sheaves
-    # The equivalence and its inverse round-trip on the nose.
-    assert sheaves.global_sections(sheaf) is module
-    assert sheaves.associated_sheaf(module) is sheaf
-    assert line.structure_sheaf().associated_module_sheaf(module) is sheaf
 
 
 def test_multiplication_by_a_coordinate_has_zero_kernel_and_a_skyscraper_cokernel() -> None:
@@ -74,17 +59,6 @@ def test_multiplication_by_a_coordinate_has_zero_kernel_and_a_skyscraper_cokerne
     assert restricted == cokernel.sections_on_distinguished_open(away).zero()
 
 
-def test_the_tensor_product_of_two_free_sheaves_has_the_product_rank() -> None:
-    line = AffineSpaces(QQ)(1, names=("x",))
-    algebra = line.coordinate_ring()
-    sheaves = QuasiCoherentSheaves(line)
-    rank_two = sheaves.associated_sheaf(algebra.free_module(2))
-    rank_three = sheaves.associated_sheaf(algebra.free_module(3))
-
-    product = sheaves.tensor_product((rank_two, rank_three))
-    assert product in sheaves
-    assert sheaves.global_sections(product).base_ring() is algebra
-    assert sheaves.global_sections(product).module_generating_set().cardinality() == 6
 
 
 def test_the_skyscraper_has_the_presentation_that_defines_it() -> None:

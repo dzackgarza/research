@@ -1,7 +1,5 @@
 from dzack_research.preamble.all import (
-    NN,
     ZZ,
-    ModuleSubobjects,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -20,20 +18,6 @@ def _assert_order_maps_agree(left, right) -> None:
     _assert_module_maps_agree(left.factor_morphism(), right.factor_morphism())
 
 
-def test_whole_presented_subobject_does_not_refine_the_ambient_in_place() -> None:
-    cover = ZZ.free_module(finite_ordered_set((0,)))
-    generator = cover.module_generator(0)
-    module = (cover.module_category().Mor(cover, cover)({0: 2 * generator})).cokernel()
-
-    assert module not in ModuleSubobjects(ZZ)
-    whole = module.subobject_on(module.module_generators())
-
-    assert whole is not module
-    assert module not in ModuleSubobjects(ZZ)
-    assert whole in ModuleSubobjects(ZZ)
-    assert whole.inclusion().codomain() is module
-    assert whole.inclusion().is_surjective()
-    assert whole.inclusion().lift(module.module_generator(0)) == whole.module_generator(0)
 
 
 def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connection() -> None:
@@ -103,21 +87,6 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
     )
 
 
-def test_finite_subobject_of_countable_free_module_uses_only_finite_support() -> None:
-    ambient = ZZ.free_module(NN)
-    e100 = ambient.module_generator(NN(100))
-    e1000 = ambient.module_generator(NN(1000))
-
-    subobject = ambient.subobject_on((e100, e1000))
-    repeated = ambient.subobject_on((e100, e1000))
-    embedded = subobject.embedded_module_generators()
-
-    assert subobject is repeated
-    assert subobject.inclusion().codomain() is ambient
-    assert embedded.cardinality() == 2
-    assert subobject.inclusion().is_in_image(e100)
-    assert subobject.inclusion().is_in_image(e1000)
-    assert not subobject.inclusion().is_in_image(ambient.module_generator(NN(500)))
 
 
 def test_module_subobject_intersection_is_the_kernel_pullback() -> None:

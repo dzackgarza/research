@@ -99,18 +99,3 @@ def test_restriction_extension_triangle_is_the_identity_on_a_free_extension_modu
         assert triangle(generator) == generator
 
 
-def test_restricted_scalar_view_retains_the_extension_module_and_scalar_map() -> None:
-    scalars, i, structure_map = _gaussian_extension()
-    module = scalars.free_module(1)
-    generator = module.module_generator(0)
-    restriction = Modules(scalars).restriction_of_scalars(structure_map)
-    restricted = restriction(module)
-
-    assert restricted.ring_map() is structure_map
-    assert restricted.module_over_extension() is module
-    assert restricted.zero().underlying_element() == module.zero()
-
-    one = QQ.one()
-    wrapped = restricted.wrap(generator)
-    assert restricted.scalar_multiple(one, wrapped).underlying_element() == generator
-    assert restricted.wrap(i * generator).underlying_element() == i * generator

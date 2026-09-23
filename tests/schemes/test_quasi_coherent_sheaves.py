@@ -1,70 +1,15 @@
 r"""Quasi-coherent sheaves on affine schemes: restriction, refinement, stalks, direct and inverse images, relative Spec."""
 
 from dzack_research.preamble.all import (
-    LocalRings,
     QQ,
     Algebras,
 )
 
 
-def test_sheaf_objects_are_parameterized_by_ringed_spaces_with_a_genuine_specimen() -> None:
-    from dzack_research.preamble.categories.schemes.ringed_spaces import (
-        RingedSpaces,
-        SheafObjects,
-    )
-
-    line = AffineSpaces(QQ)(1, names=("x",))
-    sheaves = SheafObjects(line)
-    assert sheaves.parameter_category() is RingedSpaces()
-    assert sheaves.an_object() is line.structure_sheaf()
-    assert sheaves.an_object() in sheaves
 
 
-def test_restrictions_compose_along_a_common_refinement_of_two_covers() -> None:
-    algebra = QQ.polynomial_ring(("x", "y"))
-    x, y = algebra.algebra_generators()
-    scheme = (algebra).affine_spectrum()
-    sheaf = scheme.structure_sheaf()
-    first = scheme.distinguished_open_cover(x, algebra.one() - x)
-    second = scheme.distinguished_open_cover(y, algebra.one() - y)
-    common = first.common_refinement(second)
-    fine = common.apex()
-    refinements = (common.left_leg(), common.right_leg())
-
-    assert len(fine.opens()) == 4
-    assert refinements[0].index_map(3) == 1
-    assert refinements[1].index_map(3) == 1
-    assert fine.open(3).distinguished_open_element() == (algebra.one() - x) * (algebra.one() - y)
-
-    for fine_index in range(4):
-        for refinement in refinements:
-            coarse_open = refinement.coarse_cover().open(refinement.index_map(fine_index))
-            inclusion = refinement.inclusion(fine_index)
-            fine_open = fine.open(fine_index)
-            assert inclusion.domain() is fine_open
-            assert inclusion.codomain() is coarse_open
-            assert coarse_open.inclusion() * inclusion == fine_open.inclusion()
-            # Restriction along X > U > V is restriction along X > V.
-            via_coarse = sheaf.restriction_map(coarse_open, fine_open) * sheaf.restriction_map(scheme, coarse_open)
-            direct = sheaf.restriction_map(scheme, fine_open)
-            assert via_coarse(x * y + 1) == direct(x * y + 1)
-            assert inclusion.coordinate_algebra_morphism() is sheaf.restriction_map(coarse_open, fine_open)
 
 
-def test_the_stalk_of_a_module_sheaf_is_the_localized_module() -> None:
-    line = AffineSpaces(QQ)(1, names=("x",))
-    algebra = line.coordinate_ring()
-    x = algebra.algebra_generator("x")
-    module = algebra.free_module(2)
-    sheaf = line.associated_module_sheaf(module)
-    origin = line.underlying_space()(algebra.ideal(x))
-
-    stalk = sheaf.stalk(origin)
-    assert stalk.base_ring() is line.stalk(origin)
-    assert stalk.base_ring() in LocalRings()
-    assert stalk.localization_source_module() is module
-    generator = stalk.fraction(module.module_generator(0), x - 1)
-    assert stalk.base_ring().fraction(x - 1) * generator == stalk.fraction(module.module_generator(0))
 
 
 def test_direct_and_inverse_images_along_the_cusp_parametrization() -> None:

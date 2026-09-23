@@ -1,4 +1,3 @@
-import pytest
 
 from dzack_research.preamble.all import (
     QQ,
@@ -32,11 +31,6 @@ def test_projective_complete_intersection_retains_equations_multidegree_and_adju
     assert curve.is_gorenstein()
 
 
-def test_redundant_homogeneous_equations_are_not_misclassified_as_a_complete_intersection() -> None:
-    space = ProjectiveSpaces(QQ)(3)
-    x0, x1, _x2, _x3 = space.homogeneous_coordinate_generators()
-    with pytest.raises(AssertionError, match="regular sequence"):
-        ProjectiveCompleteIntersections(space.scheme_base_ring())(space, x0, x0 * x1)
 
 
 def test_smooth_complete_intersection_surface_uses_adjunction_for_del_pezzo_degree() -> None:

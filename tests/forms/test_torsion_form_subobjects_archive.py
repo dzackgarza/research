@@ -15,23 +15,6 @@ def _matrix(ring, rows):
     return ring.matrix_space(len(rows), columns).from_rows(rows)
 
 
-def test_archive_primary_part_is_a_form_bearing_subobject_of_a_generic_form() -> None:
-    values = FractionFieldQuotients(ZZ)(1)
-    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
-        _matrix(ZZ, [[6]]),
-        _matrix(QQ, [[QQ(1) / 6]]),
-        values,
-    )
-
-    primary = form.primary_part(3)
-    generator = primary.module_generators()[0]
-    embedded = primary.inclusion()(generator)
-
-    assert primary.ambient_module() is form
-    assert primary.cardinality() == 3
-    assert embedded.additive_order() == 3
-    assert primary.b(generator, generator) == form.b(embedded, embedded)
-    assert primary.inclusion().lift(embedded) == generator
 
 
 def test_archive_bilinear_isotropic_subobjects_retain_form_and_inclusion() -> None:

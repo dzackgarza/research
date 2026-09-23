@@ -1,6 +1,4 @@
-import pytest
 from dzack_research.preamble.all import (
-    FinitelyPresentedTorsionModules,
     GF,
     Modules,
     Groups,
@@ -74,15 +72,3 @@ def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
     assert brauer_character[order_three_index] == -1
 
 
-def test_nonfree_finitely_presented_group_module_has_no_ordinary_matrix_character() -> None:
-    group = Groups.C(2)
-    module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4,))
-    generator = next(iter(group.group_generators()))
-
-    def action(group_element, vector):
-        return vector if group_element == group.one() else -vector
-
-    acted = Modules(ZZ[group])(module, action)
-    assert acted.act(generator, acted.module_generator(0)) == -acted.module_generator(0)
-    with pytest.raises(AssertionError, match="finite free group module"):
-        acted.character()

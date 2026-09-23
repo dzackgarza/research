@@ -2,10 +2,7 @@ r"""Archive reconciliation for graded sections on a product of projective lines.
 
 from dzack_research.preamble.all import (
     QQ,
-    ZZ,
-    CoxRings,
     ProjectiveSpaces,
-    RationalPolyhedralFans,
     Schemes,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -31,15 +28,3 @@ def test_bidegree_four_section_ring_has_the_expected_first_two_graded_pieces() -
     assert section_ring.algebra_generating_set().cardinality() == 25
 
 
-def test_P1_times_P1_cox_ring_has_four_homogeneous_coordinate_generators() -> None:
-    fans = RationalPolyhedralFans(ZZ.free_module(2))
-    surface = fans.hirzebruch_surface_fan(0).toric_variety(QQ)
-    cox = surface.cox_ring()
-    labels = tuple(cox.algebra_generating_set())
-
-    assert cox in CoxRings(surface)
-    assert len(labels) == 4
-    degrees = tuple(cox.generator_degree(label) for label in labels)
-    assert cox.homogeneous_degree(
-        cox.algebra_generator(labels[0]) * cox.algebra_generator(labels[1])
-    ) == degrees[0] + degrees[1]

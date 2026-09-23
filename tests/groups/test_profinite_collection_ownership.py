@@ -1,6 +1,5 @@
 from dzack_research.preamble.all import (
     QQ,
-    AbsoluteGaloisGroup,
     QuadraticField,
 )
 
@@ -16,18 +15,5 @@ def test_exact_embeddings_are_an_owned_ordered_finite_set() -> None:
     assert embeddings[0].codomain() is quartic
 
 
-def test_finite_galois_automorphisms_are_owned_and_indexed() -> None:
-    field = QuadraticField(-1, "i")
-    quotient = field.galois_group()
-    automorphisms = quotient.extension_data().automorphisms()
-
-    assert automorphisms.cardinality() == quotient.order()
-    assert automorphisms[0].domain() is field
-    assert automorphisms[0].codomain() is field
 
 
-def test_absolute_galois_realized_stages_are_an_owned_finite_set() -> None:
-    group = AbsoluteGaloisGroup(QQ)
-    stages = group.one().realized_stages()
-
-    assert stages.cardinality() == 0

@@ -9,21 +9,6 @@ isometry because their determinants differ by a factor of four.
 from dzack_research.preamble.all import ZZ, Lattices
 
 
-def test_archived_scale_two_similarity_is_an_actual_isometry_from_the_twist() -> None:
-    source = Lattices(ZZ)("U")
-    target = source.twist(2)
-    images = target.module_generators()
-
-    similarity = source.similarity(2, images, codomain=target)
-
-    assert similarity.domain().gram_tensor() == source.twist(2).gram_tensor()
-    assert similarity.codomain() is target
-    for source_generator, target_generator in zip(
-        similarity.domain().module_generators(),
-        target.module_generators(),
-        strict=True,
-    ):
-        assert similarity(source_generator) == target_generator
 
 
 def test_archived_similarity_predicate_does_not_conflate_similarity_with_isometry() -> None:

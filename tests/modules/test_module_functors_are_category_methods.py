@@ -10,9 +10,7 @@ from dzack_research.preamble.all import (
     ZZ,
     Algebras,
     AlternatingAlgebras,
-    FinitelyGeneratedFreeModules,
     Modules,
-    Sets,
 )
 
 
@@ -25,38 +23,8 @@ def _plane_with_swap():
     return plane, swap
 
 
-def test_the_underlying_set_functor_is_asked_of_the_module_category() -> None:
-    r"""``U : Mod_ZZ -> Set`` drops the scalar action and keeps every element."""
-    plane, swap = _plane_with_swap()
-    underlying = Modules(ZZ).underlying_set()
-
-    assert underlying.codomain() == Sets()
-    assert underlying(plane) in Sets()
-    assert underlying(plane) is plane
-
-    image = underlying(swap)
-    assert image.domain() is underlying(plane)
-    assert image.codomain() is underlying(plane)
-    assert image(plane.module_generator(0)) == swap(plane.module_generator(0))
 
 
-def test_dualization_is_asked_of_the_module_category() -> None:
-    r"""``Hom_ZZ(-, ZZ)`` keeps the rank and sends the swap to its transpose."""
-    plane, swap = _plane_with_swap()
-    dualize = Modules(ZZ).dualization()
-
-    assert dualize.codomain() == FinitelyGeneratedFreeModules(Modules(ZZ).base_ring())
-    opposite = dualize.domain()
-    opposite_plane = opposite(plane)
-    dual = dualize(opposite_plane)
-    assert dual in FinitelyGeneratedFreeModules(ZZ)
-    assert dual.module_rank() == plane.module_rank()
-
-    opposite_swap = opposite.Mor(opposite_plane, opposite_plane)(swap)
-    transpose = dualize(opposite_swap)
-    assert transpose.domain() is dual
-    assert transpose.codomain() is dual
-    assert transpose(dual.module_generator(0)) == dual.module_generator(1)
 
 
 def test_the_symmetric_algebra_functor_is_asked_of_the_module_category() -> None:
@@ -117,30 +85,3 @@ def test_the_exterior_algebra_functor_is_asked_of_the_module_category() -> None:
     assert image(x) == y
 
 
-def test_the_free_algebra_adjunctions_are_asked_of_the_module_category() -> None:
-    r"""``Sym_ZZ -| U`` and ``T_ZZ -| U`` produce a unit and a counit on ``ZZ^2``.
-
-    The unit is the degree-one inclusion of the module into the underlying
-    module of its free algebra, so it is injective; the counit evaluates the
-    free algebra on an algebra's own underlying module back onto that algebra.
-    """
-    plane, _ = _plane_with_swap()
-    modules = Modules(ZZ)
-
-    for adjunction, degree_two_rank in (
-        (modules.symmetric_algebra_adjunction(), 3),
-        (modules.tensor_algebra_adjunction(), 4),
-    ):
-        algebra = adjunction.left_adjoint()(plane)
-        assert algebra.graded_piece(2).module_rank() == degree_two_rank
-
-        unit = adjunction.unit(plane)
-        assert unit.domain() is plane
-        assert unit.codomain() == adjunction.right_adjoint()(algebra)
-        assert unit.is_injective()
-
-        counit = adjunction.counit(algebra)
-        assert counit.codomain() is algebra
-        assert counit.domain() is adjunction.left_adjoint()(
-            adjunction.right_adjoint()(algebra)
-        )

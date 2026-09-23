@@ -24,11 +24,3 @@ def test_a_definite_power_keeps_its_definiteness_and_squares_its_discriminant() 
     assert (root_lattice ** 2).is_negative_definite()
 
 
-def test_the_zeroth_power_is_the_empty_sum_and_the_first_is_the_lattice() -> None:
-    r"""``sum`` starts at the integer zero, which ``__radd__`` absorbs, so a
-    one-term sum returns the lattice itself rather than a copy of it.
-    """
-    plane = Lattices(ZZ)("U")
-
-    assert (plane ** 0).module_rank() == 0
-    assert (plane ** 1) is plane

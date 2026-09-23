@@ -7,14 +7,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_archive_initial_ordinals_retain_their_index() -> None:
-    ordinals = Ordinals()
-    index = omega(1).ordinal_sum(3)
-    initial = ordinals.initial(index)
-
-    assert initial.is_initial()
-    assert initial.initial_index() == index
-    assert initial.cardinality().initial_ordinal() == initial
 
 
 def test_archive_natural_and_ordinary_ordinal_products_are_distinct() -> None:

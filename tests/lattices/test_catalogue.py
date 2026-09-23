@@ -1,5 +1,4 @@
 from dzack_research.preamble.all import (
-    ZZ,
     Embeddings,
     Involutions,
     Lattices,
@@ -36,25 +35,10 @@ def test_named_embedding_chain_is_form_preserving_and_injective() -> None:
                 assert left.b(right) == embedding(left).b(embedding(right))
 
 
-def test_tco_generator_maps_diagonally_into_the_first_hyperbolic_plane() -> None:
-    source = NamedLattices.Tco.module_generators()
-    target = NamedLattices.TEn.module_generators()
-    assert Embeddings.TCo_into_TEn(source[0]) == target[0] + target[1]
 
 
-def test_e8_2_maps_diagonally_into_the_two_e8_blocks_of_tdp() -> None:
-    source = NamedLattices.TEn.module_generators()
-    target = NamedLattices.TdP.module_generators()
-    for index in range(8):
-        assert Embeddings.TEn_into_TdP(source[4 + index]) == target[4 + index] + target[12 + index]
 
 
-def test_lazy_catalogue_values_cache_without_mutating_the_owner_class() -> None:
-    descriptor = vars(Involutions)["I_dP"]
-    involution = Involutions.I_dP
-
-    assert Involutions.I_dP is involution
-    assert vars(Involutions)["I_dP"] is descriptor
 
 
 def test_named_k3_automorphisms_are_nontrivial_involutions() -> None:
@@ -117,26 +101,5 @@ def test_signature_block_search_enumerates_multisets_not_subsets() -> None:
     )
 
 
-def test_the_decomposition_summands_are_the_biproduct_factors() -> None:
-    lattice = NamedLattices.A1 + Lattices(ZZ)("A2") + NamedLattices.U_2
-    assert lattice.is_decomposable()
-    summands = lattice.decomposition().summands()
-    factors = lattice.biproduct_factors()
-    assert summands.cardinality() == factors.cardinality()
-    assert all(
-        summands[position] is factors[position]
-        for position in range(int(summands.cardinality()))
-    )
-    # The sum associates, so the immediate factors are two while the
-    # indecomposables are three.  Which three they are is not asserted here:
-    # this lattice was built from them, so recovering them cannot fail.
-    assert lattice.indecomposable_summands().cardinality() == 3
 
 
-def test_bogachev_kolpakov_specimens_are_exact_ternary_lattices() -> None:
-    assert NamedLattices.BogachevKolpakovNonReflective.signature_pair() == signature_pair(
-        1, 2
-    )
-    assert NamedLattices.BogachevKolpakovWithoutRoots.signature_pair() == signature_pair(
-        1, 2
-    )

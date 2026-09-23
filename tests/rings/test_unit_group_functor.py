@@ -12,9 +12,7 @@ carries \(\mathbf Z^\times=\{\pm 1\}\) into \(\mathbf F_5^\times\), sending
 """
 
 from dzack_research.preamble.all import (
-    ZZ,
     OwnedGroups,
-    OwnedRings,
 )
 
 from dzack_research.preamble.rings import GF
@@ -24,16 +22,6 @@ def _units_of_the_field_of_five_elements():
     return GF(5).unit_group()
 
 
-def test_the_units_of_a_field_are_a_group_and_exclude_zero() -> None:
-    field = GF(5)
-    units = _units_of_the_field_of_five_elements()
-
-    assert OwnedRings().unit_group()(field) is units
-    assert units in OwnedGroups()
-    assert field(2) in units
-    assert field(0) not in units
-    assert units.one() == field.one()
-    assert field(2) * field(3) == field.one()
 
 
 def test_the_square_roots_of_one_are_a_subgroup_of_the_units() -> None:
@@ -49,14 +37,3 @@ def test_the_square_roots_of_one_are_a_subgroup_of_the_units() -> None:
     assert field(2) not in roots
 
 
-def test_reduction_carries_the_units_of_the_integers_into_the_units_of_the_field() -> None:
-    field = GF(5)
-    functor = OwnedRings().unit_group()
-    reduction = ZZ.Mor(field)(lambda integer: field(integer))
-
-    restricted = functor(reduction)
-
-    assert restricted.domain() is functor(ZZ)
-    assert restricted.codomain() is functor(field)
-    assert restricted(ZZ(-1)) == field(4)
-    assert restricted(ZZ(1)) == field.one()

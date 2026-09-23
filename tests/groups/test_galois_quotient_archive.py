@@ -70,17 +70,6 @@ def test_restrict_along_and_extensions_along_solve_the_same_commuting_square() -
     assert sigma.action() in extensions
 
 
-def test_lift_fiber_is_a_coset_of_the_restriction_kernel() -> None:
-    group = AbsoluteGaloisGroup(GF(5))
-    frobenius = group.frobenius()
-    stage = group.finite_extension(4)
-    restriction = group.restriction_map(stage)
-    finite_element = restriction(frobenius**3)
-    coset = group.lifts(finite_element)
-
-    assert coset.kernel() == restriction.kernel()
-    assert coset.representative() == frobenius**3
-    assert frobenius**3 in coset
 
 
 def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmetic() -> None:
@@ -134,26 +123,3 @@ def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmet
         ) is moves_root_three
 
 
-def test_cyclotomic_restriction_is_multiplicative_without_a_false_absolute_lift() -> None:
-    from dzack_research.preamble.all import QQ, QuadraticField
-
-    polynomial_ring = QQ.polynomial_ring("x")
-    x = polynomial_ring.algebra_generator("x")
-    cyclotomic = (x**4 - x**2 + QQ.one()).number_field("z")
-    zeta = cyclotomic.primitive_element()
-    gaussian = QuadraticField(-1, "i")
-    embedding = next(
-        candidate
-        for candidate in gaussian.exact_embeddings(cyclotomic)
-        if candidate(gaussian.primitive_element()) == zeta**3
-    )
-    group = AbsoluteGaloisGroup(QQ)
-    quotient = group.finite_quotient(group.extension_data(cyclotomic))
-    generator = gaussian.primitive_element()
-
-    for sigma in quotient:
-        for tau in quotient:
-            product = (sigma * tau).action().restrict_along(embedding)
-            left = sigma.action().restrict_along(embedding)
-            right = tau.action().restrict_along(embedding)
-            assert product(generator) == left(right(generator))

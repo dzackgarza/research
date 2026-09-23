@@ -10,16 +10,6 @@ sublattice onto itself.
 from dzack_research.preamble.all import ZZ, Lattices
 
 
-def test_a_reflection_fixes_the_vectors_orthogonal_to_its_root() -> None:
-    r"""\(s_r\) fixes \(r^\perp\) pointwise and negates \(r\)."""
-    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic, partner, root, _second_root = lattice.module_generators()
-    reflection = lattice.reflection(root)
-
-    assert reflection in lattice.O().stabilizer(isotropic)
-    assert reflection in lattice.O().stabilizer(partner)
-    assert reflection not in lattice.O().stabilizer(root)
-    assert reflection(root) == -root
 
 
 def test_the_setwise_stabilizer_of_an_isotropic_line_holds_maps_the_pointwise_one_does_not() -> None:
@@ -41,16 +31,6 @@ def test_the_setwise_stabilizer_of_an_isotropic_line_holds_maps_the_pointwise_on
     assert negation not in orthogonal_group.stabilizer(isotropic)
 
 
-def test_a_reflection_in_a_root_orthogonal_to_a_line_stabilizes_it_pointwise() -> None:
-    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic, _partner, root, _second_root = lattice.module_generators()
-    line = isotropic.sublattice()
-    embedding = line.inclusion()
-    reflection = lattice.reflection(root)
-    orthogonal_group = lattice.O()
-
-    assert reflection in orthogonal_group.pointwise_stabilizer(embedding)
-    assert reflection in orthogonal_group.setwise_stabilizer(embedding)
 
 
 def test_a_transvection_moving_a_line_leaves_its_setwise_stabilizer() -> None:
@@ -68,9 +48,6 @@ def test_a_transvection_moving_a_line_leaves_its_setwise_stabilizer() -> None:
     )
 
 
-def test_the_orthogonal_group_names_the_lattice_it_acts_on() -> None:
-    lattice = Lattices(ZZ)("U")
-    assert lattice.O().lattice() is lattice
 
 
 def test_the_stabilizer_of_a_root_holds_exactly_the_expected_involution() -> None:

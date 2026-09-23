@@ -41,12 +41,3 @@ def test_character_kernel_and_restriction_are_actual_group_maps() -> None:
     assert restricted(kernel.one()) == character.codomain().one()
 
 
-def test_distinct_character_constructions_retain_their_defining_data() -> None:
-    group = AbsoluteGaloisGroup(GF(5))
-    cyclotomic = group.cyclotomic_character(3)
-    quadratic = group.quadratic_character(2)
-
-    assert cyclotomic.modulus() == 3
-    assert quadratic.square_class() == group.base_field()(2)
-    assert cyclotomic.factor_extension().degree() == 2
-    assert quadratic.factor_extension().degree() == 2

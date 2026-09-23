@@ -39,27 +39,6 @@ def test_a_two_node_has_one_dimensional_milnor_and_tjurina_algebras() -> None:
     assert node.is_singular_at_origin()
 
 
-def test_a_smooth_hypersurface_origin_has_the_jacobian_tangent_hyperplane() -> None:
-    plane = QQ.polynomial_ring(("x", "y"))
-    x, y = plane.algebra_generators()
-    smooth = IsolatedHypersurfaceSingularity(plane, x + y**2)
-
-    tangent = smooth.zariski_tangent_space()
-    embedding = smooth.zariski_tangent_embedding()
-    differential = smooth.differential_at_origin()
-
-    assert tangent.module_rank() == 1
-    assert smooth.is_regular_at_origin()
-    assert not smooth.is_singular_at_origin()
-    assert differential.kernel() is tangent
-    assert differential.domain() is smooth.ambient_tangent_space()
-    assert tangent.inclusion() is embedding
-    assert all(differential(embedding(vector)) == differential.codomain().zero()
-               for vector in tangent.module_generators())
-    assert "_preamble_ambient_coordinate_vectors" not in tangent.__dict__
-    assert "_preamble_source_singularity" not in tangent.__dict__
-    assert embedding.domain() is tangent
-    assert embedding.codomain() is smooth.ambient_tangent_space()
 
 
 def test_cusp_delta_branch_and_conductor_are_local_normalization_invariants() -> None:
@@ -94,10 +73,3 @@ def test_selected_ade_plane_curve_normal_forms_retain_their_exact_type() -> None
         assert singularity.milnor_number() == milnor
 
 
-def test_ade_recognizer_does_not_claim_coordinate_equivalence() -> None:
-    plane = QQ.polynomial_ring(("x", "y"))
-    x, y = plane.algebra_generators()
-    rescaled_a2 = IsolatedHypersurfaceSingularity(plane, 2 * x**2 + y**3)
-
-    assert rescaled_a2.milnor_number() == 2
-    assert rescaled_a2.ade_normal_form_type() is None

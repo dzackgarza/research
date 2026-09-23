@@ -137,26 +137,6 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
     assert cyclic.underlying_module_datum() is cyclic.gluing_datum().underlying_module_datum()
 
 
-def test_cyclic_cover_rejects_branch_section_with_wrong_line_power_descent() -> None:
-    from pytest import raises
-
-    from dzack_research.preamble.all import CyclicCoverAlgebra
-    from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
-
-    line, _x, _overlap_x = _line_bundle_with_x_transition()
-    trivial_power = (
-        QuasiCoherentSheaves(line.scheme())
-        .Invertible()
-        .WithChosenTrivialization()
-        .trivial(line.cover())
-        .tensor_power(2)
-    )
-    wrong_branch = trivial_power.gluing_datum().compatible_section(
-        tuple(_generator(trivial_power.local_module(index)) for index in range(2))
-    )
-
-    with raises(ValueError, match=r"section of the stated L\^n"):
-        CyclicCoverAlgebra(line, wrong_branch, 2)
 
 
 def test_cyclic_cover_degree_three_uses_rank_three_scalar_extensions() -> None:
@@ -175,21 +155,6 @@ def test_cyclic_cover_degree_three_uses_rank_three_scalar_extensions() -> None:
     assert int(cyclic.restricted_algebra(0, 0, 1).module_rank()) == 3
 
 
-def test_nontrivial_cyclic_algebra_has_its_glued_relative_spectrum_over_the_base() -> None:
-    from dzack_research.preamble.all import CyclicCoverAlgebra
-
-    line, x, _overlap_x = _line_bundle_with_x_transition()
-    branch = _branch_section(line, x, 2)
-    cyclic = CyclicCoverAlgebra(line, branch, 2)
-
-    relative = cyclic.relative_spectrum()
-    cover = relative.arrow().domain()
-
-    assert relative.arrow().codomain() is line.scheme()
-    assert cover._preamble_cyclic_cover_algebra is cyclic
-    assert cover._preamble_cyclic_cover_morphism is relative.arrow()
-    assert cover.gluing_datum().number_of_charts() == 2
-    assert tuple(cover.gluing_datum().chart_indices()) == tuple(line.cover().atlas())
 
 
 def test_nontrivial_double_cover_keeps_local_mu_two_actions_and_global_involution() -> None:

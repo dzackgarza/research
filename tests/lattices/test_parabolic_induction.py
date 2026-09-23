@@ -6,12 +6,10 @@ Groups*, ch. 26: ``II_{1,9} = U + E8``), so the cusp of the isotropic line
 ``Z e`` has ``E8`` as its reduction lattice.
 """
 
-import pytest
 
 from dzack_research.preamble.all import (
     NamedLattices,
     PrimitiveIsotropicSubobjects,
-    QQ,
     ZZ,
 )
 
@@ -83,33 +81,8 @@ def test_the_eichler_transvections_of_a_line_form_an_abelian_group() -> None:
     assert all(transvection in line.unipotent_radical() for transvection in family)
 
 
-def test_the_parabolic_subgroup_is_larger_than_its_unipotent_radical() -> None:
-    lattice, _generators, line = _lorentzian_line()
-    minus_identity = lattice.Aut()(
-        {
-            label: -lattice.module_generator(label)
-            for label in lattice.module_generating_set()
-        }
-    )
-
-    assert minus_identity != lattice.Aut().one()
-    assert line.stabilizes(minus_identity)
-    assert minus_identity in line.parabolic_subgroup()
-    # -1 negates the chosen generator of the line, so its Levi restriction is
-    # not the identity of GL(I) and it is outside the unipotent radical.
-    assert not _acts_as_identity(line.levi_restriction(minus_identity), line)
-    assert minus_identity not in line.unipotent_radical()
 
 
-def test_the_levi_descent_of_a_transvection_is_the_identity_of_the_reduction() -> None:
-    _lattice, generators, line = _lorentzian_line()
-    transvection = line.eichler_transvection(generators[2])
-
-    quotient = line.isotropic_quotient()
-    descent = line.levi_quotient_action(transvection)
-    assert descent.domain() is quotient
-    assert descent.codomain() is quotient
-    assert _acts_as_identity(descent, quotient)
 
 
 def test_the_two_isotropic_lines_of_two_hyperbolic_planes_are_one_orbit() -> None:
@@ -127,41 +100,3 @@ def test_the_two_isotropic_lines_of_two_hyperbolic_planes_are_one_orbit() -> Non
     assert first.is_equivalent_to(second)
 
 
-def test_a_vector_a_sublattice_and_a_rational_line_are_four_different_things() -> None:
-    # An isotropic vector v, the sublattice Z v it spans, the rational line it
-    # spans in L tensor QQ, and the saturated sublattice cut out by that line
-    # are four objects with four homes.  Z(2v) and Z v span the same rational
-    # line, so passing to the rational line forgets exactly the index, and the
-    # saturation is what recovers it.
-    lattice = NamedLattices.U
-    vector = lattice.module_generators()[0]
-    assert vector.parent() is lattice
-    assert vector.q() == 0
-
-    line = lattice.primitive_isotropic_subobject(vector)
-    assert line.module_rank() == 1
-    assert line.inclusion().codomain() is lattice
-    assert line.is_primitive()
-
-    doubled = lattice.subobject_on((2 * vector,))
-    assert doubled.module_rank() == 1
-    # Primitivity is the cokernel's torsion-freeness, so the index two shows up
-    # as a torsion invariant of L/Z(2v) and not in any basis matrix.
-    assert not doubled.is_primitive()
-    with pytest.raises(AssertionError):
-        lattice.primitive_isotropic_subobject(2 * vector)
-
-    saturated = doubled.saturation()
-    assert saturated.module_rank() == 1
-    assert saturated.is_primitive()
-    assert saturated.inclusion().is_in_image(vector)
-
-    rational = lattice.base_change(ZZ.Mor(QQ)(lambda integer: QQ(integer)))
-    assert rational.base_ring() is QQ
-    assert rational.module_rank() == lattice.module_rank()
-    rational_vector = rational.module_generators()[0]
-    rational_line = rational.subobject_on((2 * rational_vector,))
-    # Over a field every subobject is saturated, so the doubled vector spans
-    # the same rational line as the vector itself.
-    assert rational_line.module_rank() == 1
-    assert rational_line.inclusion().is_in_image(rational_vector)

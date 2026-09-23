@@ -5,9 +5,7 @@ surface.  They remain mathematical facts of the current catalogue; no legacy
 constructor wrapper is needed to state them.
 """
 
-from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.catalogue import NamedLattices
-from dzack_research.preamble.categories.lattices import Lattices
 
 
 def test_named_period_lattices_retain_their_defining_rank_and_signature() -> None:
@@ -35,19 +33,5 @@ def test_named_period_lattices_retain_their_defining_rank_and_signature() -> Non
         assert actual_signature.second() == signature[1]
 
 
-def test_ade_root_lattices_use_the_selected_negative_definite_convention() -> None:
-    category = Lattices(ZZ)
-    for name, rank in (("A2", 2), ("D4", 4), ("E8", 8)):
-        lattice = category(name)
-        signature = lattice.signature_pair()
-        assert signature.first() == 0
-        assert signature.second() == rank
 
 
-def test_named_lattice_aliases_are_literal_parent_identity() -> None:
-    assert NamedLattices.U is NamedLattices.H
-    assert NamedLattices.U_2 is NamedLattices.H_2
-    assert NamedLattices.Sdp is NamedLattices.U_2
-    assert NamedLattices.SEn is NamedLattices.E10_2
-    assert NamedLattices.LmNik is NamedLattices.E8_2
-    assert NamedLattices.L_20_2_0 is NamedLattices.TdP

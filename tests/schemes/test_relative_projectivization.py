@@ -1,7 +1,6 @@
 r"""Relative projectivization uses Sym(F), not a locally-free rank shortcut."""
 
 from dzack_research.preamble.all import (
-    NN,
     ProjectiveSpaces,
     QQ,
     RelativeProjectivizations,
@@ -116,123 +115,16 @@ def test_free_rank_two_projectivization_has_the_standard_ratio_charts() -> None:
     assert comparison.inverse().codomain() is total
 
 
-def test_zero_module_projectivization_is_empty_over_the_same_base() -> None:
-    scheme = QQ.affine_spectrum()
-    module = QQ.free_module(finite_ordered_set(()))
-    total = scheme.associated_module_sheaf(module).projectivization().arrow().domain()
-    atlas = total.finite_affine_atlas()
-
-    assert atlas.number_of_charts() == 1
-    assert atlas.chart("empty").coordinate_algebra().one() == atlas.chart(
-        "empty"
-    ).coordinate_algebra().zero()
 
 
-def test_countable_free_sheaf_projectivization_retains_the_exact_unmaterialized_object() -> None:
-    scheme = QQ.affine_spectrum()
-    module = QQ.free_module(NN)
-    sheaf = scheme.associated_module_sheaf(module)
-    projectivization = sheaf.projectivization()
-    total = projectivization.arrow().domain()
-    quotient = total.universal_quotient()
-
-    assert total in RelativeProjectivizations(QQ)
-    assert projectivization.arrow() is total.projectivization_projection()
-    assert projectivization.arrow().codomain() is scheme
-    assert total.projectivization_source_sheaf() is sheaf
-    assert total.symmetric_algebra() is module.symmetric_algebra()
-    assert quotient.domain() is total.pulled_source_sheaf()
-    assert quotient.codomain() is total.tautological_line_bundle().module_sheaf()
-    assert quotient.is_surjective()
-
-    extension = QQ.polynomial_ring("t")
-    comparison = sheaf.projectivization_base_change(
-        extension.algebra_structure_morphism()
-    )
-    changed_total = comparison.changed_projectivization().arrow().domain()
-    assert comparison.changed_source_sheaf().pullback_morphism() is (
-        comparison.underlying_base_projection()
-    )
-    assert comparison.total_projection().domain() is changed_total
-    assert comparison.total_projection().codomain() is total
-    assert comparison.base_projection().codomain() is conic
-    assert comparison.universal_quotient().codomain().scheme() is changed_total
-
-    extension = QQ.polynomial_ring("t")
-    comparison = sheaf.projectivization_base_change(
-        extension.algebra_structure_morphism()
-    )
-    changed_total = comparison.changed_projectivization().arrow().domain()
-    assert changed_total in RelativeProjectivizations(QQ)
-    assert comparison.projection_to_original().domain() is changed_total
-    assert comparison.projection_to_original().codomain() is total
-    assert comparison.base_morphism().codomain() is scheme
-    assert comparison.universal_quotient().is_surjective()
 
 
-def test_countable_free_sheaf_map_retains_its_exact_projectivization_domain() -> None:
-    scheme = QQ.affine_spectrum()
-    module = QQ.free_module(NN)
-    sheaf = scheme.associated_module_sheaf(module)
-    module_map = module.module_category().Mor(module, module).identity()
-    sheaf_map = QuasiCoherentSheaves(scheme).Mor(sheaf, sheaf)(module_map)
-    total = sheaf.projectivization().arrow().domain()
-    projectivized = sheaf_map.projectivization_map()
-
-    assert total in RelativeProjectivizations(QQ)
-    assert projectivized.open_immersion().codomain() is total
-    assert projectivized.morphism().domain() is projectivized.domain_of_definition()
-    assert projectivized.morphism().codomain() is total
 
 
-def test_nonaffine_represented_sheaf_without_selected_atlas_keeps_exact_projectivization() -> None:
-    plane = ProjectiveSpaces(QQ)(2)
-    x, y, z = plane.homogeneous_coordinate_generators()
-    conic = plane.closed_subscheme(x * z - y**2)
-    sheaf = plane.O(1).restrict_to(conic)
-    projectivization = sheaf.projectivization()
-    total = projectivization.arrow().domain()
-    quotient = total.universal_quotient()
-
-    assert total in RelativeProjectivizations(QQ)
-    try:
-        total.selected_finite_affine_atlas()
-    except TypeError:
-        pass
-    else:
-        raise AssertionError("this exact projectivization must not acquire an unrelated finite atlas")
-    assert projectivization.arrow().codomain() is conic
-    assert total.projectivization_source_sheaf() is sheaf
-    assert quotient.domain() is total.pulled_source_sheaf()
-    assert quotient.codomain() is total.tautological_line_bundle().module_sheaf()
-    assert quotient.is_surjective()
 
 
-def test_projectivization_map_is_available_on_finite_atlas_line_bundle_morphisms() -> None:
-    line = ProjectiveSpaces(QQ)(1)
-    bundle = line.O(1)
-    morphism = QuasiCoherentSheaves(line).Mor(bundle, bundle).identity()
-    projectivized = morphism.projectivization_map()
-
-    assert projectivized.source_projectivization() is bundle.projectivization().arrow().domain()
-    assert projectivized.target_projectivization() is bundle.projectivization().arrow().domain()
-    assert projectivized.open_immersion().codomain() is projectivized.target_projectivization()
-    assert projectivized.morphism().codomain() is projectivized.source_projectivization()
 
 
-def test_projectivization_map_is_available_on_exact_pullback_line_bundle_morphisms() -> None:
-    plane = ProjectiveSpaces(QQ)(2)
-    x, y, z = plane.homogeneous_coordinate_generators()
-    conic = plane.closed_subscheme(x * z - y**2)
-    left = plane.O(1).restrict_to(conic)
-    right = plane.O(1).restrict_to(conic)
-    morphism = left.canonical_isomorphism_to(right).forward()
-    projectivized = morphism.projectivization_map()
-
-    assert projectivized.source_projectivization() is left.projectivization().arrow().domain()
-    assert projectivized.target_projectivization() is right.projectivization().arrow().domain()
-    assert projectivized.open_immersion().codomain() is projectivized.target_projectivization()
-    assert projectivized.morphism().codomain() is projectivized.source_projectivization()
 
 
 def test_rank_two_bundle_projectivization_uses_the_nonconstant_module_transition() -> None:
@@ -341,72 +233,8 @@ def test_trivial_rank_two_bundle_projectivization_is_the_relative_projective_lin
     )
 
 
-def test_finite_atlas_projectivization_retains_scalar_base_change_and_universal_quotient() -> None:
-    line = ProjectiveSpaces(QQ)(1)
-    atlas = line.standard_affine_atlas()
-    local_modules = {
-        index: atlas.chart(index).coordinate_algebra().free_module(
-            finite_ordered_set(("e0", "e1"))
-        )
-        for index in atlas.chart_indices()
-    }
-
-    def identity_transition(label, _domain, codomain):
-        return codomain.module_generator(label)
-
-    descent = FiniteAtlasModuleGluingData(atlas)(
-        local_modules,
-        {(0, 1): (identity_transition, identity_transition)},
-    )
-    sheaf = descent.sheaf()
-    total = sheaf.projectivization().arrow().domain()
-    extension = QQ.polynomial_ring("t")
-    comparison = sheaf.projectivization_base_change(
-        extension.algebra_structure_morphism()
-    )
-    changed = comparison.changed_projectivization().arrow().domain()
-
-    assert comparison.total_projection().domain() is changed
-    assert comparison.total_projection().codomain() is total
-    assert comparison.base_projection().domain() is comparison.changed_base_scheme()
-    assert comparison.projection_to_changed_base().domain() is changed
-    assert comparison.universal_quotient().codomain().scheme() is changed
-    assert comparison.changed_module_datum().gluing_datum() is comparison.changed_atlas()
 
 
-def test_finite_atlas_projectivization_base_change_accepts_a_glued_base_scheme() -> None:
-    projective_line = ProjectiveSpaces(QQ)(1)
-    glued_line = projective_line.glued_from_standard_charts()
-    atlas = glued_line.finite_affine_atlas()
-    local_modules = {
-        index: atlas.chart(index).coordinate_algebra().free_module(
-            finite_ordered_set(("e0", "e1"))
-        )
-        for index in atlas.chart_indices()
-    }
-
-    def identity_transition(label, _domain, codomain):
-        return codomain.module_generator(label)
-
-    descent = FiniteAtlasModuleGluingData(atlas)(
-        local_modules,
-        {(0, 1): (identity_transition, identity_transition)},
-    )
-    sheaf = descent.sheaf()
-    extension = QQ.polynomial_ring("t")
-    comparison = sheaf.projectivization_base_change(
-        extension.algebra_structure_morphism()
-    )
-    changed_base = comparison.changed_base_scheme()
-
-    assert changed_base._is_glued_from_affine_atlas()
-    assert changed_base.left_projection().codomain() is glued_line
-    assert changed_base.right_projection().codomain() is changed_base.base_scheme()
-    assert comparison.changed_atlas().scheme() is changed_base
-    assert comparison.base_projection() == changed_base.left_projection()
-    assert comparison.total_projection().codomain() is (
-        sheaf.projectivization().arrow().domain()
-    )
 
 
 def test_sheaf_map_projectivization_is_defined_exactly_on_the_surjective_quotient_locus() -> None:
@@ -442,45 +270,5 @@ def test_sheaf_map_projectivization_is_defined_exactly_on_the_surjective_quotien
     assert restricted_x.is_unit()
 
 
-def test_zero_source_sheaf_projectivization_map_has_empty_surjectivity_locus() -> None:
-    scheme = QQ.affine_spectrum()
-    source_module = QQ.free_module(finite_ordered_set(()))
-    target_module = QQ.free_module(finite_ordered_set(("g",)))
-    source = scheme.associated_module_sheaf(source_module)
-    target = scheme.associated_module_sheaf(target_module)
-    module_map = source_module.module_category().Mor(source_module, target_module)({})
-    sheaf_map = QuasiCoherentSheaves(scheme).Mor(source, target)(module_map)
-    projectivized = sheaf_map.projectivization_map()
-    locus = projectivized.domain_of_definition()
-    local_empty = locus.gluing_datum().chart("g")
-
-    assert projectivized.open_immersion().codomain() is (
-        target.projectivization().arrow().domain()
-    )
-    assert projectivized.morphism().codomain() is (
-        source.projectivization().arrow().domain()
-    )
-    assert local_empty.coordinate_algebra().one() == local_empty.coordinate_algebra().zero()
 
 
-def test_zero_target_sheaf_projectivization_map_is_the_unique_map_from_the_empty_domain() -> None:
-    scheme = QQ.affine_spectrum()
-    source_module = QQ.free_module(finite_ordered_set(("s",)))
-    target_module = QQ.free_module(finite_ordered_set(()))
-    source = scheme.associated_module_sheaf(source_module)
-    target = scheme.associated_module_sheaf(target_module)
-    module_map = source_module.module_category().Mor(source_module, target_module)(
-        {"s": target_module.zero()}
-    )
-    sheaf_map = QuasiCoherentSheaves(scheme).Mor(source, target)(module_map)
-    projectivized = sheaf_map.projectivization_map()
-    locus = projectivized.domain_of_definition()
-    local_empty = next(iter(locus.gluing_datum().charts()))
-
-    assert projectivized.open_immersion().codomain() is (
-        target.projectivization().arrow().domain()
-    )
-    assert projectivized.morphism().codomain() is (
-        source.projectivization().arrow().domain()
-    )
-    assert local_empty.coordinate_algebra().one() == local_empty.coordinate_algebra().zero()

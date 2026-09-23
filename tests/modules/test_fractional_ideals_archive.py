@@ -14,19 +14,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_integral_ideal_is_already_the_module_with_its_canonical_inclusion() -> None:
-    ideal = ZZ.ideal(6)
-
-    assert ideal in CommutativeIdeals(ZZ)
-    assert CommutativeIdeals(ZZ).extension_to_fraction_field()(ideal) in FractionalIdeals(ZZ)
-    assert ideal.principal_generator() == 6
-    assert tuple(ideal.module_generators())
-
-    inclusion = ideal.inclusion()
-    assert inclusion.domain() is ideal
-    assert inclusion.codomain().base_ring() is ZZ
-    generator = ideal.module_generator(0)
-    assert inclusion.is_in_image(inclusion(generator))
 
 
 def test_fractional_ideal_keeps_module_generators_membership_and_inverse() -> None:

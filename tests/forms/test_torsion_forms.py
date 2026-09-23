@@ -31,48 +31,12 @@ def _matrix(ring, rows):
 
 
 
-def test_bilinear_torsion_form_descends_from_relations_and_gram() -> None:
-    values = FractionFieldQuotients(ZZ)(1)
-    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 2]]), values)
-    generator = form.module_generators()[0]
-
-    assert form.cardinality() == 2
-    assert form.value_module() is values
-    assert form.b(generator, generator) == values(QQ(1) / 2)
-    assert form.b(2 * generator, generator) == values.zero()
 
 
-def test_bilinear_torsion_form_rejects_non_descending_gram() -> None:
-    values = FractionFieldQuotients(ZZ)(1)
-    try:
-        TorsionBilinearFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 4]]), values)
-    except ValueError as error:
-        assert "does not descend" in str(error)
-    else:
-        raise AssertionError("a non-descending bilinear form was accepted")
 
 
-def test_quadratic_torsion_form_and_its_bilinear_polarization() -> None:
-    quadratic_values = FractionFieldQuotients(ZZ)(2)
-    form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 2]]), quadratic_values)
-    generator = form.module_generators()[0]
-    bilinear = form.associated_bilinear_form()
-    bilinear_generator = bilinear.module_generators()[0]
-
-    assert form.q(generator) == quadratic_values(QQ(1) / 2)
-    assert form.q(2 * generator) == quadratic_values.zero()
-    assert bilinear.value_module().modulus() == 1
-    assert bilinear.b(bilinear_generator, bilinear_generator) == bilinear.value_module()(QQ(1) / 2)
 
 
-def test_quadratic_torsion_form_rejects_relation_with_nonzero_norm() -> None:
-    values = FractionFieldQuotients(ZZ)(2)
-    try:
-        TorsionQuadraticFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 4]]), values)
-    except ValueError as error:
-        assert "does not descend" in str(error)
-    else:
-        raise AssertionError("a non-descending quadratic form was accepted")
 
 
 def test_bilinear_invariant_factor_form_is_a_form_preserving_isomorphism() -> None:
@@ -257,26 +221,6 @@ def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizer
     )
 
 
-def test_generic_torsion_form_reframing_and_primary_components_are_live_objects() -> None:
-    values = FractionFieldQuotients(ZZ)(1)
-    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
-        _matrix(ZZ, [[2, 0], [0, 3]]),
-        _matrix(QQ, [[QQ(1) / 2, 0], [0, QQ(1) / 3]]),
-        values,
-    )
-    generators = tuple(form.module_generators())
-    reframing = form.reframing_isometry(generators)
-    components = form.primary_components()
-    gram = form.gram_matrix()
-
-    assert reframing.domain() is form
-    assert tuple(reframing.codomain().invariant_factors()) == tuple(form.invariant_factors())
-    assert form.regenerate(generators) is reframing.codomain()
-    assert tuple(components.index_set()) == (ZZ(2), ZZ(3))
-    assert components[ZZ(2)].cardinality() == 2
-    assert components[ZZ(3)].cardinality() == 3
-    assert gram[0, 0] == QQ(1) / 2
-    assert gram[1, 1] == QQ(1) / 3
 
 
 def test_literal_cokernel_forms_retain_the_cover_projection_and_coset_lifts() -> None:

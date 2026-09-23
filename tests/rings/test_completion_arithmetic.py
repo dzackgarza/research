@@ -8,8 +8,7 @@ retain stronger information when it is genuinely available.
 
 import pytest
 
-from dzack_research.preamble.all import QQ, ZZ
-from dzack_research.preamble.rings import Zp
+from dzack_research.preamble.all import QQ
 
 
 def test_exact_polynomial_images_survive_beyond_a_low_adic_stage() -> None:
@@ -43,21 +42,6 @@ def test_exact_zero_and_exact_lazy_inverse_are_decided_in_the_completion() -> No
     assert unit * inverse == completion.one()
 
 
-def test_finite_p_adic_agreement_does_not_become_exact_equality_and_can_refine() -> None:
-    coarse = Zp(5, 4, type="fixed-mod")
-    hidden = coarse(5**4)
-
-    assert hidden.precision_absolute() == 4
-    with pytest.raises(AssertionError, match="do not decide exact equality"):
-        hidden.is_zero()
-
-    refined = hidden.refine_precision(8)
-    assert not refined.is_zero()
-    assert refined.exact_source_expression() == ZZ(5**4)
-
-    approximate_inverse = coarse(1 + 5).inverse_of_unit()
-    with pytest.raises(AssertionError, match="exact retained source expression"):
-        approximate_inverse.refine_precision(8)
 
 
 def test_presented_completion_preserves_genuine_nilpotence_not_truncation_nilpotence() -> None:

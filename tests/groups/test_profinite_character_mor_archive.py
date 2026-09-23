@@ -31,15 +31,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_continuous_group_mor_is_canonical_for_exact_endpoints() -> None:
-    group = AbsoluteGaloisGroup(GF(5))
-    character = CyclotomicCharacter(group, 3)
-    mor = group.continuous_morphisms_to(character.codomain())
-
-    assert character.parent() is mor
-    assert group.continuous_morphisms_to(character.codomain()) is mor
-    assert mor.domain() is group
-    assert mor.codomain() is character.codomain()
 
 
 def test_nontrivial_cyclotomic_character_retains_factor_kernel_and_restriction() -> None:

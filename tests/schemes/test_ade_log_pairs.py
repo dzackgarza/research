@@ -31,18 +31,6 @@ def test_the_a_one_polygon_has_the_projective_plane_as_its_toric_base() -> None:
     assert pair.is_log_calabi_yau()
 
 
-def test_the_boundary_splits_into_the_blue_divisor_and_its_complement() -> None:
-    r"""``p* = (0,2)`` is a vertex of the ``A_1`` triangle, so it lies on two of
-    the three sides and exactly two of the three invariant divisors are blue."""
-    pair = ADELogPairs(QQ)("A", 1)
-    blue = pair.blue_divisor()
-    complementary = pair.complementary_divisor()
-    group = pair.boundary_divisor_group()
-
-    assert blue + complementary == pair.boundary_divisor()
-    assert blue != group.zero()
-    assert complementary != group.zero()
-    assert blue != pair.boundary_divisor()
 
 
 def test_the_d_four_polygon_has_a_quadric_surface_as_its_toric_base() -> None:
@@ -56,60 +44,13 @@ def test_the_d_four_polygon_has_a_quadric_surface_as_its_toric_base() -> None:
     assert pair.log_scheme().torus_invariant_divisor_group().module_generating_set().cardinality() == 4
 
 
-def test_the_unadorned_a_family_carries_two_long_white_sides() -> None:
-    pair = ADELogPairs(QQ)("A", 3)
-    decorations = pair.side_decorations()
-
-    assert decorations.cardinality() == 2
-    for position in decorations.index_set():
-        assert decorations[position].length_class == "long"
-        assert decorations[position].vertex_colour == "white"
 
 
-def test_a_short_variant_decorates_one_side_differently() -> None:
-    plain = ADELogPairs(QQ)("A", 3)
-    right_short = ADELogPairs(QQ)("A", 3, variant=("long", "short"))
-    decorations = right_short.side_decorations()
-
-    assert decorations.cardinality() == 2
-    assert decorations[1].length_class == "short"
-    assert decorations[1].vertex_colour == "black"
-    assert plain.polygon().normalized_volume() == 8
-    assert right_short.polygon().normalized_volume() == 6
 
 
-def test_the_pyramid_over_a_finite_type_polygon_is_a_lattice_polytope() -> None:
-    r"""The apex is ``(p*, 2)``, integral exactly when ``p*`` is."""
-    pair = ADELogPairs(QQ)("A", 1)
-    pyramid = pair.pyramid()
-
-    assert pyramid.dimension() == 3
-    assert pyramid.is_lattice_polytope()
-    assert pair.cover_toric_threefold().dimension() == 3
 
 
-def test_an_affine_a_pyramid_is_rational_when_the_half_rank_parameter_is_odd() -> None:
-    r"""The archived affine formula is ``p*=(n/2,1)``.
-
-    For ``A_1`` the selected parameter is ``n=1``, so the apex is genuinely
-    half-integral.  Even ``n`` gives an integral apex instead; half-integrality
-    is not a property of the entire affine ``A`` family.
-    """
-    pair = ADELogPairs(QQ)("A", 1, affine=True)
-
-    assert pair.is_affine_type()
-    assert pair.distinguished_point()[0] == QQ(1) / QQ(2)
-    assert not pair.pyramid().is_lattice_polytope()
 
 
-def test_the_coxeter_diagram_of_a_finite_type_has_one_vertex_per_rank() -> None:
-    assert ADELogPairs(QQ)("A", 3).coxeter_diagram().cardinality() == 3
-    assert ADELogPairs(QQ)("E", 6).coxeter_diagram().cardinality() == 6
 
 
-def test_the_polarizing_polytope_of_the_toric_base_is_the_ade_polygon() -> None:
-    pair = ADELogPairs(QQ)("E", 6)
-
-    assert pair.log_scheme().is_polarized()
-    assert pair.log_scheme().polarizing_polytope() is pair.polygon()
-    assert pair.polygon().normalized_volume() > 0

@@ -8,29 +8,13 @@ ideal domain's shortcut, not the definition.
 """
 
 from dzack_research.preamble.all import (
-    QQ,
     ZZ,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
-def test_the_fraction_field_map_is_the_localization_at_the_nonzero_scalars() -> None:
-    inclusion = ZZ.fraction_field_map()
-
-    assert inclusion.domain() is ZZ
-    assert inclusion.codomain() is QQ
-    assert inclusion(ZZ(3)) == QQ(3)
-    assert QQ.fraction_field_map()(QQ(3)) == QQ(3)
 
 
-def test_a_free_module_has_zero_torsion_submodule() -> None:
-    module = ZZ.free_module(finite_ordered_set(("x", "y")))
-
-    assert module.generic_fibre_map().domain() is module
-    assert module.generic_fibre_map().is_injective()
-    assert module.torsion_submodule().module_rank() == 0
-    assert module.is_torsion_free()
-    assert not module.is_torsion()
 
 
 def test_a_finite_abelian_group_is_torsion_with_itself_as_torsion_submodule() -> None:

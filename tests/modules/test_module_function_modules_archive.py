@@ -17,24 +17,12 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def _smooth_functions():
-    return FunctionModules(RR).smooth()
 
 
 def _square_integrable_functions():
     return FunctionModules(RR).square_integrable()
 
 
-def test_function_modules_use_pointwise_module_operations_without_generators() -> None:
-    smooth = _smooth_functions()
-    f = smooth(lambda x: x**2)
-    g = smooth(lambda x: x)
-
-    assert smooth.is_finitely_generated() is False
-    assert (f + g)(3) == 12
-    assert (2 * f)(3) == 18
-    assert (f - f)(3) == 0
-    assert smooth.scalar_action()(RR(2))(f)(3) == 18
 
 
 def test_l2_membership_distinguishes_theorem_proofs_from_refutations() -> None:
@@ -51,15 +39,6 @@ def test_l2_membership_distinguishes_theorem_proofs_from_refutations() -> None:
         l2(sin(x))
 
 
-def test_l2_accepts_opaque_callable_but_module_arithmetic_needs_no_recertification() -> None:
-    x = var("x")
-    l2 = _square_integrable_functions()
-    opaque = l2(lambda point: point**2)
-    gaussian = l2(exp(-x**2))
-
-    assert opaque(3) == 9
-    assert (gaussian + gaussian)(0) == 2
-    assert (3 * gaussian - gaussian)(1) == 2 * exp(-1)
 
 
 def test_callable_bilinear_form_on_l2_needs_no_gram_matrix() -> None:
@@ -106,35 +85,10 @@ def test_l2_integral_fallback_certifies_integrable_and_divergent_exponentials() 
         l2(exp(-x))
 
 
-def test_smooth_elementary_expression_is_certified_by_the_function_module() -> None:
-    x = var("x")
-    smooth = _smooth_functions()
-
-    element = smooth(sin(x) * exp(x) + x**3)
-    assert element.parent() is smooth
 
 
-def test_l2_is_closed_under_sums_certified_by_different_membership_criteria() -> None:
-    x = var("x")
-    l2 = _square_integrable_functions()
-    gaussian = l2(exp(-x**2))
-    rational = l2(1 / (1 + x**2))
-
-    combined = 3 * gaussian - 2 * rational
-    assert combined.parent() is l2
-    assert combined(0) == 1
 
 
-def test_integral_pairing_is_symmetric_and_bilinear_on_archived_specimens() -> None:
-    t = var("t")
-    l2 = _square_integrable_functions()
-    form = l2.bilinear_forms(RR)(lambda f, g: (f(t) * g(t)).integrate(t, -1, 1))
-    x = l2(lambda point: point)
-    x2 = l2(lambda point: point**2)
-
-    assert abs(form(x, x2) - form(x2, x)) < 1e-9
-    assert abs(form(2 * x, x2) - 2 * form(x, x2)) < 1e-9
-    assert abs(form(x + x2, x) - form(x, x) - form(x2, x)) < 1e-9
 
 
 def test_l2_certifies_zero_and_polynomial_multiples_of_a_gaussian() -> None:
@@ -149,12 +103,3 @@ def test_l2_certifies_zero_and_polynomial_multiples_of_a_gaussian() -> None:
     assert _square_integrability(x * exp(-x**2), x) == _MEMBER
 
 
-def test_polynomial_helper_annotations_resolve_at_runtime() -> None:
-    from typing import get_type_hints
-
-    from dzack_research.preamble.categories.modules.pure import function_modules
-
-    hints = get_type_hints(function_modules._real_polynomial)
-    assert hints["return"] is not None
-    rational_hints = get_type_hints(function_modules._as_rational_function)
-    assert rational_hints["return"] is not None

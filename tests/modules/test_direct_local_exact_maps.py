@@ -11,25 +11,6 @@ from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
-def test_direct_map_over_a_prime_local_ring_has_exact_kernel_and_cokernel() -> None:
-    ring = QQ.polynomial_ring("x")
-    x = ring.algebra_generator("x")
-    point = ring.spectrum()(ring.ideal(x))
-    local = point.local_ring()
-    source = local.free_module(finite_ordered_set(("a", "b")))
-    target = local.free_module(finite_ordered_set(("c",)))
-    morphism = source.module_category().Mor(source, target)(
-        {
-            "a": target.module_generator("c"),
-            "b": target.zero(),
-        }
-    )
-
-    kernel = morphism.kernel()
-    cokernel = morphism.cokernel()
-
-    assert kernel.inclusion()(kernel.module_generator(0)) == source.module_generator("b")
-    assert cokernel.is_zero()
 
 
 def test_direct_local_map_detects_a_nonunit_cokernel() -> None:

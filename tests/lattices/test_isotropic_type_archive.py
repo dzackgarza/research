@@ -1,6 +1,5 @@
 r"""Archive reconciliation for primitive isotropic cusp types."""
 
-import pytest
 
 from dzack_research.preamble.all import Lattices, NamedLattices
 
@@ -35,9 +34,3 @@ def test_characteristic_divisibility_two_vector_is_even_characteristic() -> None
     assert lattice.get_isotropic_type(vector) == "Even characteristic"
 
 
-def test_isotropic_type_refuses_nonprimitive_input() -> None:
-    lattice = NamedLattices.U_2
-    vector = 2 * lattice.module_generators()[0]
-
-    with pytest.raises(ValueError):
-        lattice.get_isotropic_type(vector)

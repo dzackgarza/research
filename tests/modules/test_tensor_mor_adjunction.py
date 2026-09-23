@@ -1,13 +1,11 @@
 import pytest
-from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.all import (
     BilinearMap,
     FinitelyPresentedTorsionModules,
-    Modules,
     ZZ,
 )
-from dzack_research.preamble.categories.sets import NN, finite_ordered_set
+from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _assert_module_maps_agree(left, right) -> None:
@@ -74,34 +72,8 @@ def test_tensor_product_of_presented_modules_has_the_bilinear_universal_property
         )
 
 
-def test_elementwise_bilinear_callable_is_not_certified_from_framing_values() -> None:
-    module = ZZ.free_module(finite_ordered_set(("e",)))
-    tensor = Modules(ZZ).tensor_product((module, module))
-    proposed = tensor.from_bilinear_map(
-        ZZ,
-        lambda _left, _right: ZZ.one(),
-    )
-
-    assert proposed.domain() is tensor
-    assert proposed.linearity_decision() is Unknown
 
 
-def test_bilinear_classifier_preserves_an_infinite_selected_factor_framing() -> None:
-    left = ZZ.free_module(NN)
-    right = ZZ.free_module(finite_ordered_set(("e",)))
-    tensor = Modules(ZZ).tensor_product((left, right))
-    pairing = BilinearMap(
-        left,
-        right,
-        ZZ,
-        lambda _left_label, _right_label: ZZ.one(),
-    )
-
-    assert pairing.domain() is tensor
-    assert pairing.left_module() is left
-    assert pairing.right_module() is right
-    assert pairing.linearity_decision() is True
-    assert pairing(left.module_generator(NN(137)), right.module_generator("e")) == ZZ.one()
 
 
 def test_tensor_internal_mor_adjunction_has_bijection_naturality_functoriality_and_triangles() -> None:

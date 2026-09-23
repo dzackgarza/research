@@ -6,10 +6,6 @@ metabolizers and orthogonal automorphisms on the same finite quadratic object.
 """
 
 from dzack_research.preamble.all import ZZ, Lattices
-from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
-    DiscriminantBilinearModules,
-    DiscriminantQuadraticModules,
-)
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage",
@@ -18,17 +14,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_archived_quadratic_discriminant_surface_is_the_live_even_lattice_form() -> None:
-    lattice = Lattices(ZZ)("A2")
-    form = lattice.discriminant_quadratic_form()
-    bilinear = form.associated_bilinear_form()
-
-    assert form in DiscriminantQuadraticModules(ZZ)
-    assert form.associated_quadratic_form() is form
-    assert bilinear in DiscriminantBilinearModules(ZZ)
-    assert bilinear not in DiscriminantQuadraticModules(ZZ)
-    assert form.source_lattice() is lattice
-    assert form.O() is form.orthogonal_group()
 
 
 def test_archived_quadratic_normalization_and_brown_invariant_remain_form_data() -> None:

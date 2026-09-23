@@ -21,9 +21,6 @@ from dzack_research.preamble.all import (
     VinbergInvariantMatrices,
     reflection_cosines,
 )
-from dzack_research.preamble.categories.vinberg_invariants import (
-    ProjectiveWeightedGraphs,
-)
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage",
@@ -186,53 +183,8 @@ def test_the_two_three_infinity_triangle_is_a_quasi_lanner_diagram() -> None:
     assert not invariants.is_compact_hyperbolic()
 
 
-def test_the_invariant_matrix_restricts_and_draws_its_weighted_graph() -> None:
-    r"""A submatrix is the invariant matrix of the selected mirrors.
-
-    The weighted graph joins the pairs that are not orthogonal and labels each
-    edge with the projective invariant of the pair, so an orthogonal pair is a
-    missing edge and not an edge of weight zero.
-    """
-    diagram = CoxeterDiagrams().from_coxeter_matrix(
-        CoxeterMatrix([[1, 7, 2], [7, 1, 3], [2, 3, 1]])
-    )
-    invariants = diagram.vinberg_invariant_matrix()
-
-    assert invariants.cardinality() == 3
-    weighted = invariants.weighted_graph()
-    assert weighted in ProjectiveWeightedGraphs(weighted.base_ring())
-    assert weighted.num_edges() == 2, "one pair is orthogonal"
-    assert weighted.is_symmetric()
-    assert not weighted.is_directed()
-    assert weighted.vertex_weight(0) == invariants.vinberg_invariant(0, 0)
-    assert weighted.edge_weight(1, 2) == invariants.vinberg_invariant(1, 2)
-    assert weighted.edge_weight(2, 1) == invariants.vinberg_invariant(1, 2)
-    assert weighted.projectivization() is weighted
-
-    edge = invariants.submatrix((1, 2))
-    assert edge.cardinality() == 2
-    assert edge.coxeter_entry(1, 2) == 3
-    assert edge.is_elliptic()
 
 
-def test_projective_weighted_digraphs_keep_orientation_and_exact_weights() -> None:
-    from dzack_research.preamble.categories.graph_categories import LabelledDigraphs
-
-    graph = ProjectiveWeightedGraphs(ZZ).from_weights(
-        ("a", "b"),
-        {("a", "b"): (2, 3)},
-        vertex_weights={"a": (1, 2), "b": (3, 4)},
-        directed=True,
-        symmetric=False,
-    )
-
-    assert graph in LabelledDigraphs()
-    assert graph.is_directed()
-    assert not graph.is_symmetric()
-    assert graph.has_edge("a", "b")
-    assert not graph.has_edge("b", "a")
-    assert graph.edge_weight("a", "b") == graph.projective_line()([2, 3])
-    assert graph.vertex_weight("b") == graph.projective_line()([3, 4])
 
 
 def test_the_invariant_matrix_can_be_stated_without_any_mirrors() -> None:

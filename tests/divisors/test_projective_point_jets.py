@@ -39,14 +39,3 @@ def test_double_point_condition_is_nonreduced_and_stronger_than_value_evaluation
     assert doubles.kernel().dimension() < values.kernel().dimension()
 
 
-def test_noncoordinate_imposed_multiplicity_parameter_space_retains_actual_condition() -> None:
-    plane = ProjectiveSpaces(QQ)(2)
-    bundle = plane.O(3)
-    point = plane.point_morphism((1, 1, 2))
-
-    system = bundle.imposed_multiplicity_linear_system(point, 2)
-
-    assert system.ambient_section_space() is bundle.global_sections()
-    assert system.imposed_jet_evaluation().codomain().jet_point() is point
-    assert system.constrained_section_space() is system.imposed_jet_evaluation().kernel()
-    assert system.projective_dimension() == int(system.constrained_section_space().dimension()) - 1

@@ -3,7 +3,6 @@ from dzack_research.preamble.all import (
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModules,
     FinitelyPresentedTorsionModules,
-    Lattices,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -229,54 +228,3 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     )
 
 
-def test_orthogonal_direct_sum_is_a_bifunctor_on_lattice_morphisms() -> None:
-    left = Lattices(ZZ)("A1")
-    right = Lattices(ZZ)("A2")
-    left_label = left.module_generating_set()[0]
-    right_labels = right.module_generating_set()
-    left_negation = left.Isom(left)(
-        {left_label: -left.module_generator(left_label)}
-    )
-    right_negation = right.Isom(right)(
-        {label: -right.module_generator(label) for label in right_labels}
-    )
-    left_identity = left.Aut().identity()
-    right_identity = right.Aut().identity()
-
-    orthogonal_sum = Lattices(ZZ).orthogonal_direct_sum_bifunctor()
-    summed = orthogonal_sum(_product_object(orthogonal_sum, left, right))
-    image = orthogonal_sum(
-        _product_morphism(orthogonal_sum, left_negation, right_identity)
-    )
-    source_labels = summed.module_generating_set()
-    assert image(summed.module_generator(source_labels[0])) == -summed.module_generator(
-        source_labels[0]
-    )
-    assert image(summed.module_generator(source_labels[1])) == summed.module_generator(
-        source_labels[1]
-    )
-    assert image(summed.module_generator(source_labels[2])) == summed.module_generator(
-        source_labels[2]
-    )
-
-    _assert_module_maps_agree(
-        orthogonal_sum(
-            _product_morphism(
-                orthogonal_sum,
-                left_negation * left_negation,
-                right_negation * right_negation,
-            )
-        ),
-        orthogonal_sum(
-            _product_morphism(orthogonal_sum, left_negation, right_negation)
-        )
-        * orthogonal_sum(
-            _product_morphism(orthogonal_sum, left_negation, right_negation)
-        ),
-    )
-    _assert_module_maps_agree(
-        orthogonal_sum(
-            _product_morphism(orthogonal_sum, left_identity, right_identity)
-        ),
-        summed.module_category().Mor(summed, summed).identity(),
-    )

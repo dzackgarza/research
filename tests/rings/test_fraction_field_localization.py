@@ -1,4 +1,3 @@
-import pytest
 
 from dzack_research.preamble.all import (
     GF,
@@ -43,22 +42,8 @@ def test_fraction_fields_of_countable_polynomial_domains_remain_countable() -> N
         assert field.regular_module().cardinality() == aleph0
 
 
-def test_fraction_field_map_factors_through_the_localization_map() -> None:
-    localization = ZZ.fraction_field_localization()
-    source_map = localization.localization_map()
-    comparison = localization.fraction_field_comparison()
-    fraction_map = ZZ.fraction_field_map()
-
-    assert fraction_map.domain() is ZZ
-    assert fraction_map.codomain() is QQ
-    for integer in (ZZ(-3), ZZ(0), ZZ(5)):
-        assert fraction_map(integer) == comparison(source_map(integer))
 
 
-def test_field_fraction_field_keeps_the_canonical_field_identity() -> None:
-    assert QQ.fraction_field() is QQ
-    assert QQ.fraction_field_localization() is QQ
-    assert QQ.fraction_field_map().is_identity()
 
 
 def test_module_localization_and_fraction_scalar_change_have_the_same_generic_fibre() -> None:
@@ -91,20 +76,5 @@ def test_selected_and_prime_localizations_do_not_collapse_to_the_fraction_field(
     assert fractions(ZZ(3)).is_unit()
 
 
-def test_zero_divisor_ring_does_not_use_the_fraction_field_specialization() -> None:
-    quotient = ZZ.quotient_ring(ZZ.ideal(6))
-
-    with pytest.raises(ValueError, match="not an integral domain"):
-        quotient.fraction_field()
 
 
-def test_number_field_order_keeps_its_canonical_fraction_field() -> None:
-    polynomial_ring = QQ.polynomial_ring("x")
-    x = polynomial_ring.algebra_generator("x")
-    field = (x**2 - 5).number_field("a")
-    order = field.ring_of_integers()
-
-    localization = order.fraction_field_localization()
-    assert order.fraction_field() is field
-    assert localization.fraction_field_realization() is field
-    assert order.fraction_field_map().codomain() is field

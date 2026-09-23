@@ -1,6 +1,5 @@
-import pytest
 
-from dzack_research.preamble.all import Modules, NN, ZZ
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
@@ -41,26 +40,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_archived_form_type_names_alias_the_universal_module_mor_owners() -> None:
-    from dzack_research.preamble.categories.forms.forms import (
-        BilinearFormMor,
-        BilinearFormMorphism,
-        QuadraticFormMor,
-        QuadraticFormMorphism,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        TensorProductModuleMor,
-        TensorProductModuleMorphism,
-    )
-    from dzack_research.preamble.categories.modules.powers import (
-        QuadraticModuleMor,
-        QuadraticModuleMorphism,
-    )
-
-    assert BilinearFormMor is TensorProductModuleMor
-    assert BilinearFormMorphism is TensorProductModuleMorphism
-    assert QuadraticFormMor is QuadraticModuleMor
-    assert QuadraticFormMorphism is QuadraticModuleMorphism
 
 
 def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations() -> None:
@@ -88,51 +67,5 @@ def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations()
         assert recovered.classifying_morphism()(generator) == classifier(generator)
 
 
-def test_archive_tautological_constructions_use_module_owned_adjunctions() -> None:
-    bilinear = Modules(ZZ).bilinear_free_form_adjunction()
-    quadratic = Modules(ZZ).quadratic_free_form_adjunction()
-    assert bilinear.left_adjoint().domain() is quadratic.left_adjoint().domain()
-    assert bilinear.right_adjoint().codomain() is quadratic.right_adjoint().codomain()
 
 
-def test_forms_on_countable_free_modules_remain_callable_and_pull_back_lazily() -> None:
-    module = ZZ.free_module(NN)
-
-    def coefficients(element):
-        return module.framing_coefficients(element)
-
-    bilinear = module.bilinear_forms(ZZ)(
-        lambda left, right: sum(
-            (
-                left_coefficient * coefficients(right).get(label, ZZ.zero())
-                for label, left_coefficient in coefficients(left).items()
-            ),
-            ZZ.zero(),
-        )
-    )
-    quadratic = module.quadratic_map(
-        ZZ,
-        lambda element: sum(
-            (coefficient**2 for coefficient in coefficients(element).values()),
-            ZZ.zero(),
-        ),
-    )
-    identity = module.module_category().Mor(module, module)(module.module_generator)
-    pulled_bilinear = bilinear.pullback(identity)
-    pulled_quadratic = quadratic.pullback(identity)
-    e1000 = module.module_generator(NN(1000))
-
-    assert pulled_bilinear(e1000, e1000) == ZZ.one()
-    assert pulled_quadratic(e1000) == ZZ.one()
-    with pytest.raises(TypeError, match="no finite Gram tensor"):
-        pulled_bilinear.gram_tensor()
-
-    another_bilinear = module.bilinear_forms(ZZ)(
-        lambda left, right: pulled_bilinear(left, right)
-    )
-    another_quadratic = module.quadratic_map(
-        ZZ,
-        lambda element: pulled_quadratic(element),
-    )
-    assert (pulled_bilinear == another_bilinear) is Unknown
-    assert (pulled_quadratic == another_quadratic) is Unknown

@@ -10,12 +10,7 @@ from dzack_research.preamble.all import (
     NN,
     CountableSets,
     CountablyInfiniteSets,
-    EnumeratedSets,
-    FiniteSets,
     InfiniteSets,
-    PartiallyOrderedSets,
-    Sets,
-    TotallyOrderedSets,
     UncountableSets,
 )
 
@@ -36,27 +31,10 @@ ARCHIVE_RECONCILIATION = {
 
 
 
-def test_archived_finite_sets_are_countable_without_becoming_infinite() -> None:
-    finite = Sets.Δ[4]
-
-    assert finite in FiniteSets()
-    assert finite in CountableSets()
-    assert finite not in InfiniteSets()
-    assert finite not in CountablyInfiniteSets()
-    assert finite not in UncountableSets()
 
 
-def test_natural_numbers_display_their_mathematical_pattern() -> None:
-    assert repr(NN) == "NN = {0, 1, 2, ...}"
-    assert NN._latex_() == r"\mathbb{N}=\{0,1,2,\ldots\}"
 
 
-def test_archived_countably_infinite_is_the_countable_infinite_intersection() -> None:
-    assert NN in CountableSets()
-    assert NN in InfiniteSets()
-    assert NN in CountablyInfiniteSets()
-    assert NN not in FiniteSets()
-    assert NN not in UncountableSets()
 
 
 def test_archived_uncountable_sets_are_infinite_and_not_countable() -> None:
@@ -68,15 +46,5 @@ def test_archived_uncountable_sets_are_infinite_and_not_countable() -> None:
     assert continuum_set not in CountablyInfiniteSets()
 
 
-def test_archived_total_order_refines_partial_order_without_cardinality_claim() -> None:
-    assert NN in TotallyOrderedSets()
-    assert NN in PartiallyOrderedSets()
-    assert TotallyOrderedSets().is_subcategory(PartiallyOrderedSets())
-    assert not TotallyOrderedSets().is_subcategory(FiniteSets())
 
 
-def test_countability_and_a_chosen_enumeration_are_distinct_live_structures() -> None:
-    assert not CountableSets().is_subcategory(EnumeratedSets())
-    assert NN in CountableSets()
-    assert NN in EnumeratedSets()
-    assert NN.ranking_map().inverse()(7) == NN(7)

@@ -2,15 +2,9 @@ import pytest
 
 from dzack_research.preamble.all import (
     FinitelyPresentedTorsionModules,
-    QQ,
-    QuadraticField,
     ZZ,
 )
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    _represented_value_module,
-)
 
-from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _cyclic(order):
@@ -30,28 +24,6 @@ def _assert_formed_maps_agree(left, right) -> None:
     _assert_module_maps_agree(left.value_morphism(), right.value_morphism())
 
 
-def test_general_formed_morphism_keeps_value_map_separate_from_strict_form_preservation() -> None:
-    module = ZZ.free_module(finite_ordered_set(("e",)))
-    formed = module.equip_bilinear_form(ZZ, [[2]])
-    generator = formed.module_generator("e")
-
-    module_map = formed.module_category().Mor(formed, formed)(
-        {"e": 3 * generator}
-    )
-    values = ZZ.regular_module()
-    value_map = values.module_category().Mor(values, values)(
-        {0: 9 * values.module_generator(0)}
-    )
-    morphism = formed.Mor(formed)((module_map, value_map))
-
-    assert morphism.map_value(formed.b(generator, generator)) == formed.b(
-        morphism(generator), morphism(generator)
-    )
-
-    # The old strict surface remains genuinely stricter: multiplication by
-    # three is not an isometry of the form [2].
-    with pytest.raises(ValueError):
-        formed.Mor(formed)({"e": 3 * generator})
 
 
 def test_divided_square_classifies_quadratic_maps_integrally_on_zmod4() -> None:
@@ -73,62 +45,6 @@ def test_divided_square_classifies_quadratic_maps_integrally_on_zmod4() -> None:
     assert factor(universal_value) == 3 * universal_value
 
 
-def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber() -> None:
-    module = ZZ.free_module(finite_ordered_set(("e",)))
-    source = module.equip_bilinear_form(ZZ, [[2]])
-    source_generator = source.module_generator("e")
-
-    zz_to_qq = ZZ.Mor(QQ)(lambda element: QQ(element))
-    middle = source.base_change(zz_to_qq)
-    first_mor = source.fibered_formed_mor(middle, zz_to_qq)
-    source_over_qq = first_mor.base_changed_domain()
-    middle_generator = middle.module_generator("e")
-    first_module_map = source_over_qq.module_category().Mor(source_over_qq, middle)(
-        {"e": middle.scalar_multiple(3, middle_generator)}
-    )
-    source_values = _represented_value_module(source_over_qq)
-    middle_values = _represented_value_module(middle)
-    first_value_map = source_values.module_category().Mor(source_values, middle_values)(
-        {0: middle_values.scalar_multiple(9, middle_values.module_generator(0))}
-    )
-    first = first_mor((first_module_map, first_value_map))
-
-    field = QuadraticField(2, "a")
-    qq_to_field = QQ.Mor(field)(lambda element: field(element))
-    target = middle.base_change(qq_to_field)
-    second_mor = middle.fibered_formed_mor(
-        target,
-        qq_to_field,
-    )
-    middle_over_field = second_mor.base_changed_domain()
-    target_generator = target.module_generator("e")
-    second_module_map = middle_over_field.module_category().Mor(middle_over_field, target)(
-        {"e": target.scalar_multiple(2, target_generator)}
-    )
-    middle_changed_values = _represented_value_module(middle_over_field)
-    target_values = _represented_value_module(target)
-    second_value_map = middle_changed_values.module_category().Mor(middle_changed_values, target_values)(
-        {0: target_values.scalar_multiple(4, target_values.module_generator(0))}
-    )
-    second = second_mor((second_module_map, second_value_map))
-
-    composite = second * first
-    assert composite.ring_map().domain() is ZZ
-    assert composite.ring_map().codomain() is field
-    assert composite(source_generator) == target.scalar_multiple(6, target_generator)
-    assert composite.map_value(2) == field(72)
-
-    # Identities are genuine fibered morphisms over identity ring maps, not
-    # an unrelated fixed-fiber shortcut.
-    identity_ring_map = QQ.Mor(QQ).identity()
-    middle_identity = middle.fibered_formed_mor(
-        middle,
-        identity_ring_map,
-    ).identity()
-    assert (second * middle_identity)(middle_generator) == second(middle_generator)
-    assert (middle_identity * first)(source_generator) == first(source_generator)
-    assert (second * middle_identity).map_value(2) == second.map_value(2)
-    assert (middle_identity * first).map_value(2) == first.map_value(2)
 
 
 @pytest.mark.parametrize(

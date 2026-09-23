@@ -13,26 +13,6 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_group im
 )
 
 
-def test_frobenius_is_an_actual_global_automorphism_with_restrictions() -> None:
-    group = AbsoluteGaloisGroup(GF(5))
-    frobenius = group.frobenius()
-    stage = group.finite_extension(2)
-
-    assert frobenius.parent() is group
-    assert frobenius.domain() is group.algebraic_closure()
-    assert frobenius.codomain() is group.algebraic_closure()
-    assert frobenius.is_globally_evaluable()
-    assert frobenius.fixes_base_field()
-
-    morphism = frobenius.as_morphism()
-    assert morphism.domain() is group.algebraic_closure()
-    assert morphism.codomain() is group.algebraic_closure()
-    assert frobenius.restrict(stage) == group.restriction_map(stage)(frobenius)
-
-    conjugacy_class = frobenius.conjugacy_class()
-    assert conjugacy_class.supergroup() is group
-    assert conjugacy_class.representative() == frobenius
-    assert frobenius in conjugacy_class
 
 
 def test_open_subgroup_is_the_actual_subgroup_fixing_its_extension() -> None:

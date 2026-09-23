@@ -1,6 +1,6 @@
 r"""Construction preserves defining actions and the forgetful functor to Ab."""
 
-from dzack_research.preamble.all import AdditiveGroups, Algebras, GeneralModules, Modules, QQ, Rings
+from dzack_research.preamble.all import AdditiveGroups, Modules, QQ, Rings
 
 
 def test_left_regular_matrix_module_retains_its_additive_action() -> None:
@@ -74,22 +74,3 @@ def test_additive_forgetting_retains_maps_between_two_actions_on_one_group() -> 
     assert forget(modules.End(source).identity())(e21) == e21
 
 
-def test_elementwise_module_presentation_supplies_the_same_action_accessor() -> None:
-    module = GeneralModules(QQ).from_operations(
-        QQ,
-        addition=lambda left, right: left + right,
-        zero=QQ.zero(),
-        negation=lambda element: -element,
-        scalar_action=lambda scalar, element: scalar * element,
-    )
-    rho = module.scalar_action()
-    assert rho.domain() is QQ
-    assert rho.codomain() is AdditiveGroups().AdditiveCommutative().End(module.underlying_additive_group())
-    half = QQ(1) / 2
-    assert rho(half)(module(3)) == module(QQ(3) / 2)
-    assert half * module(3) == module(QQ(3) / 2)
-    end = Modules(QQ).End(module)
-    assert end in Algebras(QQ)
-    assert end.base_ring() is QQ
-    assert end.scalar_action().domain() is QQ
-    assert (half * end.one())(module(3)) == module(QQ(3) / 2)

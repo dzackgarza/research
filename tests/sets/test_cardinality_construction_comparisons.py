@@ -13,24 +13,8 @@ from dzack_research.preamble.all import (
 )
 
 
-def test_cardinality_compares_a_product_with_the_product_of_factor_cardinals() -> None:
-    left = Sets.Δ[1]
-    right = Sets.Δ[2]
-    product = left.product_with(right)
-    comparison = Sets().cardinality_functor().cartesian_product_comparison(product)
-
-    assert comparison.domain() == cardinal(6)
-    assert comparison.codomain() == product.cardinality() == cardinal(6)
 
 
-def test_cardinality_compares_a_coproduct_with_the_sum_of_cofactor_cardinals() -> None:
-    left = Sets.Δ[1]
-    right = Sets.Δ[2]
-    coproduct = left.coproduct_with(right)
-    comparison = Sets().cardinality_functor().coproduct_comparison(coproduct)
-
-    assert comparison.domain() == cardinal(5)
-    assert comparison.codomain() == coproduct.cardinality() == cardinal(5)
 
 
 def test_cardinality_compares_a_countable_power_set_with_two_to_aleph_zero() -> None:

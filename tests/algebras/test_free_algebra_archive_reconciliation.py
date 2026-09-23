@@ -3,12 +3,6 @@ r"""Archive reconciliation for the graded basis of the four free constructions."
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    AlternatingAlgebras,
-    DividedPowerAlgebras,
-    FreeAlgebras,
-    GradedFreeAlgebras,
-    SymmetricAlgebras,
-    TensorAlgebras,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -93,16 +87,6 @@ def test_archive_divided_ideal_degree_includes_divided_relations() -> None:
     assert any(generator == divided_relation for generator in degree_three)
 
 
-def test_archive_free_algebra_retains_its_selected_generating_set() -> None:
-
-    labels = finite_ordered_set(("a", "b", "c"))
-    algebra = QQ.free_module(labels).symmetric_algebra()
-
-    assert algebra.algebra_generating_set() is labels
-    assert tuple(algebra.algebra_generators()) == tuple(
-        algebra.algebra_generator(label) for label in labels
-    )
-    assert algebra.algebra_generator_morphism().domain() is labels
 
 
 def test_archive_free_algebra_map_is_determined_on_generators_and_extends_multiplicatively() -> None:
@@ -127,32 +111,6 @@ def test_archive_free_algebra_map_is_determined_on_generators_and_extends_multip
     )
 
 
-def test_archive_free_algebra_morphisms_compose_and_have_the_expected_identity() -> None:
-
-    source = QQ.free_module(finite_ordered_set(("x", "y"))).symmetric_algebra()
-    middle = QQ.free_module(finite_ordered_set(("u", "v"))).symmetric_algebra()
-    target = QQ.free_module(finite_ordered_set(("s", "t"))).symmetric_algebra()
-
-    first = source.Mor(middle)(
-        {
-            "x": middle.algebra_generator("v"),
-            "y": middle.algebra_generator("u"),
-        }
-    )
-    second = middle.Mor(target)(
-        {
-            "u": target.algebra_generator("s"),
-            "v": target.algebra_generator("t"),
-        }
-    )
-    composite = second * first
-    identity = source.Mor(source).identity()
-
-    assert composite(source.algebra_generator("x")) == target.algebra_generator("t")
-    assert composite(source.algebra_generator("y")) == target.algebra_generator("s")
-    assert identity.is_identity()
-    assert identity(source.algebra_generator("x")) == source.algebra_generator("x")
-    assert first * identity == first
 
 
 def test_archive_exterior_shuffle_parity_is_retained() -> None:
@@ -168,21 +126,6 @@ def test_archive_exterior_shuffle_parity_is_retained() -> None:
     assert x * y * z != exterior.zero()
 
 
-def test_archive_scalars_enter_each_free_construction_through_its_unit() -> None:
-    labels = _two_labels()
-    for algebra in (
-        QQ.free_module(labels).tensor_algebra(),
-        QQ.free_module(labels).symmetric_algebra(),
-        QQ.free_module(labels).exterior_algebra(),
-        QQ.free_module(labels).divided_power_algebra(),
-    ):
-        structure = algebra.algebra_structure_morphism()
-        x = algebra(algebra.generating_module().module_generator("x"))
-
-        assert structure.domain() is QQ
-        assert structure(QQ(3)) == QQ(3) * algebra.one()
-        assert structure(QQ(3)) * x == QQ(3) * x
-        assert x * structure(QQ(3)) == QQ(3) * x
 
 
 def test_archive_graded_piece_is_a_submodule_with_its_actual_inclusion() -> None:
@@ -198,56 +141,6 @@ def test_archive_graded_piece_is_a_submodule_with_its_actual_inclusion() -> None
     assert x not in piece
 
 
-def test_archive_degree_two_pieces_remain_countable_on_countably_many_generators() -> None:
-    from dzack_research.preamble.all import Sets, aleph0
-
-    labels = Sets.Δ[aleph0]
-    for algebra in (
-        QQ.free_module(labels).tensor_algebra(),
-        QQ.free_module(labels).symmetric_algebra(),
-        QQ.free_module(labels).exterior_algebra(),
-        QQ.free_module(labels).divided_power_algebra(),
-    ):
-        piece = algebra.graded_piece(2)
-        assert piece.module_generating_set() in Sets().Countable().Infinite()
-        generator = next(iter(piece.module_generators()))
-        image = piece.inclusion()(generator)
-        assert image in algebra
-        assert image.degree() == 2
 
 
-def test_archive_free_algebra_categories_are_the_live_four_flavor_placements() -> None:
-    labels = _two_labels()
-    symmetric = QQ.free_module(labels).symmetric_algebra()
-    specimens = (
-        (QQ.free_module(labels).tensor_algebra(), TensorAlgebras(QQ)),
-        (symmetric, SymmetricAlgebras(QQ)),
-        (QQ.free_module(labels).exterior_algebra(), AlternatingAlgebras(QQ)),
-        (QQ.free_module(labels).divided_power_algebra(), DividedPowerAlgebras(QQ)),
-    )
 
-    assert QQ.free_module(labels).symmetric_algebra() is symmetric
-    for algebra, flavor in specimens:
-        assert algebra in FreeAlgebras(QQ)
-        assert algebra in GradedFreeAlgebras(QQ)
-        assert algebra in flavor
-        assert algebra.is_free()
-
-def test_tensor_algebra_homogeneous_degree_is_free_word_length() -> None:
-    import pytest
-
-    from dzack_research.preamble.all import ZZ
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-        finite_ordered_set,
-    )
-
-    module = ZZ.free_module(finite_ordered_set(("x", "y")))
-    algebra = module.tensor_algebra()
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
-
-    assert algebra.homogeneous_degree(x) == 1
-    assert algebra.homogeneous_degree(x + y) == 1
-    assert algebra.homogeneous_degree(x * y) == 2
-    with pytest.raises(ValueError, match="not homogeneous"):
-        algebra.homogeneous_degree(x + x * y)

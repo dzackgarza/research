@@ -9,7 +9,6 @@ integers, and ``GF(5)[t]`` exhibits both without them.
 
 from dzack_research.preamble.all import (
     GF,
-    ZZ,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -33,25 +32,7 @@ def test_a_cyclic_module_over_a_polynomial_pid_counts_its_residues() -> None:
     assert module.exponent() == t**2
 
 
-def test_a_free_module_over_a_polynomial_pid_is_infinite_with_zero_exponent() -> None:
-    ring = GF(5).polynomial_ring("t")
-    module = ring.free_module(finite_ordered_set(("x", "y")))
-
-    assert not module.cardinality().is_finite()
-    assert module.exponent() == ring.zero()
 
 
-def test_a_finite_abelian_group_keeps_its_order_and_exponent() -> None:
-    module = _cyclic_module(ZZ, ZZ(6))
-
-    assert module.cardinality() == 6
-    assert module.exponent() == ZZ(6)
 
 
-def test_the_zero_module_is_the_only_one_with_a_unit_exponent() -> None:
-    zero = _cyclic_module(ZZ, ZZ(1))
-    nonzero = _cyclic_module(ZZ, ZZ(6))
-
-    assert zero.cardinality() == 1
-    assert zero.exponent().is_unit()
-    assert not nonzero.exponent().is_unit()

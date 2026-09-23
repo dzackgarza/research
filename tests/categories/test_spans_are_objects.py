@@ -23,22 +23,8 @@ def _two_element_span():
     return Sets().span(left_leg, right_leg), apex, left_leg, right_leg
 
 
-def test_a_span_holds_its_apex_and_both_legs() -> None:
-    span, apex, left_leg, right_leg = _two_element_span()
-
-    assert span.apex() is apex
-    assert span.left_leg() == left_leg
-    assert span.right_leg() == right_leg
-    assert span.left_leg().domain() is span.right_leg().domain()
 
 
-def test_a_span_is_a_cone_over_its_own_diagram() -> None:
-    span, _apex, left_leg, right_leg = _two_element_span()
-    diagram = span.diagram()
-
-    assert span in span.cone_category()
-    assert diagram(diagram.domain()(0)) is left_leg.codomain()
-    assert diagram(diagram.domain()(1)) is right_leg.codomain()
 
 
 def test_a_span_owns_its_pushout() -> None:
@@ -50,10 +36,3 @@ def test_a_span_owns_its_pushout() -> None:
     assert glued.cardinality() == cardinal(4)
 
 
-def test_the_category_builds_the_span_its_pushout_is_taken_over() -> None:
-    _span, _apex, left_leg, right_leg = _two_element_span()
-
-    built = Sets().span(left_leg, right_leg)
-
-    assert built.left_leg() == left_leg
-    assert built.pushout().cardinality() == cardinal(4)

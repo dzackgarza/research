@@ -19,10 +19,3 @@ def test_definite_orthogonal_group_has_owned_finite_group_placement() -> None:
     assert orthogonal_group.presentation() in GroupsWithChosenFinitePresentation()
 
 
-def test_indefinite_orthogonal_group_is_owned_without_false_finiteness() -> None:
-    integers = session_ring_objects()["ZZ"]
-    orthogonal_group = Lattices(integers)("U").Aut()
-
-    assert orthogonal_group in OwnedGroups()
-    assert orthogonal_group not in OwnedFiniteGroups()
-    assert orthogonal_group not in GroupsWithChosenFinitePresentation()

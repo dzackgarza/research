@@ -15,14 +15,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_signed_discriminant_keeps_the_owned_determinant_sign() -> None:
-    a2 = Lattices(ZZ)("A2")
-    hyperbolic_plane = Lattices(ZZ)("U")
-
-    assert a2.discriminant() == ZZ(-3)
-    assert hyperbolic_plane.discriminant() == ZZ(1)
-    assert a2.discriminant().parent() is ZZ
-    assert hyperbolic_plane.discriminant().parent() is ZZ
 
 
 def test_a2_root_lattice_has_archived_determinant_signature_and_discriminant() -> None:

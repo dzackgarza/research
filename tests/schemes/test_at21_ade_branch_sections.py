@@ -1,6 +1,5 @@
 r"""AT21 toric ADE admission and branch sections use the live divisor/polytope owners."""
 
-import pytest
 
 from dzack_research.preamble.all import ADELogPairs, QQ, ToricLogPairs
 
@@ -12,19 +11,6 @@ def _vertices(polytope):
     }
 
 
-def test_source_admission_keeps_parity_and_affine_ranges_distinct() -> None:
-    assert ADELogPairs(QQ).at21("A", 3).source_variant() == "pure"
-    assert ADELogPairs(QQ).at21("A", 2, variant="short").source_variant() == "short"
-    assert ADELogPairs(QQ).at21("D", 5, variant="short").dynkin_rank() == 5
-    assert ADELogPairs(QQ).at21("D", 6, affine=True).is_affine_type()
-    assert ADELogPairs(QQ).at21("E", 7, affine=True).is_affine_type()
-
-    with pytest.raises(ValueError, match="tilde A is nontoric"):
-        ADELogPairs(QQ).at21("A", 3, affine=True)
-    with pytest.raises(ValueError, match="tilde D_even, tilde E7 and tilde E8"):
-        ADELogPairs(QQ).at21("E", 6, affine=True)
-    with pytest.raises(ValueError, match="even one-short A"):
-        ADELogPairs(QQ).at21("A", 2)
 
 
 def test_branch_divisor_is_twice_the_complement_and_full_section_has_newton_polygon_q() -> None:

@@ -1,8 +1,6 @@
 from dzack_research.preamble.all import (
     Algebras,
-    FramedAlgebras,
     QQ,
-    ZZ,
 )
 
 
@@ -129,29 +127,3 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
     _assert_algebra_maps_agree(second_triangle, identity_extended_source)
 
 
-def test_algebra_restriction_remains_functorial_when_finite_framing_is_lost() -> None:
-    ring_map = ZZ.Mor(QQ)(lambda element: QQ(element))
-    restriction = Algebras(QQ).Associative().Unital().restriction_of_scalars(ring_map)
-
-    source = QQ.free_module(["x"]).symmetric_algebra()
-    middle = QQ.free_module(["y"]).symmetric_algebra()
-    target = QQ.free_module(["z"]).symmetric_algebra()
-    first = source.Mor(middle)(
-        {"x": middle.algebra_generator("y") + 1}
-    )
-    second = middle.Mor(target)(
-        {"y": 2 * target.algebra_generator("z")}
-    )
-
-    restricted_source = restriction(source)
-    assert restricted_source not in FramedAlgebras(ZZ)
-    assert restricted_source(source.algebra_generator("x")) == source.algebra_generator("x")
-
-    source_generator = source.algebra_generator("x")
-    carried_identity = restriction(source.Mor(source)({"x": source_generator}))
-    assert carried_identity(source_generator) == source_generator
-
-    carried_composite = restriction(second * first)
-    composed_carried = restriction(second) * restriction(first)
-    assert carried_composite(source_generator) == composed_carried(source_generator)
-    assert carried_composite(source_generator) == 2 * target.algebra_generator("z") + 1

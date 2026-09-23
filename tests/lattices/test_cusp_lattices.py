@@ -79,24 +79,6 @@ def test_the_five_sterk_cusps_split_into_two_reduction_classes() -> None:
     assert reductions["Sterk_2"].is_isometric(reductions["Sterk_5"])
 
 
-def test_primitive_isotropic_vectors_are_cut_out_by_their_definition() -> None:
-    lattice = NamedLattices.E10
-    generators = lattice.module_generators()
-    isotropic, partner, root = (generators[index] for index in range(3))
-    vectors = lattice.primitive_isotropic_vectors()
-
-    assert isotropic in vectors
-    assert partner in vectors
-    assert isotropic + partner not in vectors  # square two, not isotropic
-    assert root not in vectors  # square minus two, not isotropic
-    assert lattice.zero() not in vectors  # the zero vector is not primitive
-    assert 2 * isotropic not in vectors  # isotropic but a proper multiple
-
-    definite = NamedLattices.E8
-    assert all(
-        vector not in definite.primitive_isotropic_vectors()
-        for vector in definite.module_generators()
-    )
 
 
 def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:

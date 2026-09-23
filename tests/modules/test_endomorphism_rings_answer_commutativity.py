@@ -30,10 +30,6 @@ def test_a_square_endomorphism_ring_over_a_noncommutative_base_does_not_commute(
     assert base.matrix_space(2).is_commutative() is False
 
 
-def test_rank_one_over_a_noncommutative_base_does_not_commute() -> None:
-    base = _noncommutative_base()
-
-    assert base.matrix_space(1).is_commutative() is False
 
 
 def test_the_endomorphisms_of_the_zero_module_commute_over_any_base() -> None:

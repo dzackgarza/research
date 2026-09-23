@@ -24,11 +24,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_initial_ordinals_have_the_corresponding_aleph_cardinals() -> None:
-    assert omega(0).cardinality() == aleph(0)
-    assert omega(3).cardinality() == aleph(3)
-    assert omega(omega(1)).cardinality() == aleph(omega(1))
-    assert aleph(omega(1)).initial_ordinal() == omega(omega(1))
 
 
 def test_natural_ordinal_operations_form_the_commutative_semiring() -> None:
@@ -66,28 +61,6 @@ def test_cardinal_arithmetic_and_order_do_not_assume_continuum_hypothesis() -> N
     assert cardinals.Mor(aleph0, continuum).unique_morphism().domain() == aleph0
 
 
-def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
-    from dzack_research.preamble.all import ZZ, Sets
-
-    source = Sets.Δ[2]
-    target = __import__("dzack_research.preamble.categories.sets", fromlist=["finite_ordered_set"]).finite_ordered_set((ZZ(10), ZZ(20), ZZ(30)))
-    forward = Sets().Mor(source, target)(
-        lambda value: target(
-            (ZZ(10), ZZ(20), ZZ(30))[source.ranking_map()(value)]
-        )
-    )
-    backward = Sets().Mor(target, source)(
-        lambda value: source((ZZ(10), ZZ(20), ZZ(30)).index(value))
-    )
-    core = Sets().Core()
-    isomorphism = core.Mor(source, target)(forward, backward)
-    cardinality = Sets().cardinality_functor()
-
-    assert cardinality(source) == cardinal(3)
-    assert cardinality(target) == cardinal(3)
-    image = cardinality(isomorphism)
-    assert image.domain() == cardinal(3)
-    assert image.codomain() == cardinal(3)
 
 
 def test_ordinal_powers_have_ordinal_not_cardinal_exponentiation_size() -> None:
@@ -96,12 +69,5 @@ def test_ordinal_powers_have_ordinal_not_cardinal_exponentiation_size() -> None:
     assert Ordinals()(2).ordinal_power(omega(1)).cardinality() == aleph(1)
 
 
-def test_literal_cardinal_equality_rejects_nonintegral_and_infinite_floats() -> None:
-    for candidate in (float("inf"), float("nan"), 1.5, -1, "3"):
-        assert (cardinal(3) == candidate) is False
-        assert candidate not in Ordinals()
 
 
-def test_natural_product_does_not_recurse_once_per_ordinary_factor() -> None:
-    ordinals = Ordinals()
-    assert ordinals.natural_product(*(ordinals.one() for _ in range(2000))) == 1

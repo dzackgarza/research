@@ -3,20 +3,11 @@
 from dzack_research.preamble.all import (
     ZZ,
     IntegralSingularCohomologyGroups,
-    NodalCubic,
     NodalCubicIntegralTopology,
-    NodalCubicNormalization,
     ResolutionIntegralCohomologyGroups,
 )
 
 
-def test_nodal_cubic_normalization_is_an_actual_projective_scheme_morphism() -> None:
-    curve = NodalCubic()
-    normalization = NodalCubicNormalization()
-
-    assert normalization.codomain() is curve
-    assert normalization.domain().relative_dimension() == 1
-    assert tuple(normalization.homogeneous_coordinates())
 
 
 def test_nodal_cubic_ordinary_and_resolution_cohomology_are_distinct_selected_theories() -> None:

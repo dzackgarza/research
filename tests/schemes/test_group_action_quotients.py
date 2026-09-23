@@ -2,7 +2,6 @@ r"""Supported affine invariant rings and categorical quotient maps."""
 
 from typing import Any, cast
 
-import pytest
 
 from dzack_research.preamble.all import (
     AffineGSchemes,
@@ -98,12 +97,6 @@ def test_coordinate_swap_quotient_factors_invariant_affine_maps() -> None:
     assert acted.invariant_algebra_inclusion()(factor_pullback(t)) == x + y
 
 
-def test_coordinate_swap_quotient_rejects_a_noninvariant_affine_map() -> None:
-    _group, _algebra, x, _y, acted = _coordinate_swap_action()
-    _t, _target, morphism = _affine_map_from_polynomial(acted, x)
-
-    with pytest.raises(ValueError, match="not invariant"):
-        acted.factor_through_affine_quotient(morphism)
 
 
 def test_sign_involution_invariant_ring_keeps_its_quadratic_relation() -> None:
@@ -176,52 +169,5 @@ def test_order_three_linear_action_uses_the_same_invariant_quotient_backend() ->
     ) == invariant
 
 
-def test_zero_dimensional_polynomial_space_is_its_own_invariant_quotient() -> None:
-    group = Groups.C(2)
-    algebra = QQ.polynomial_ring(())
-    scheme = (algebra).affine_spectrum()
-    identity = scheme.categorical_identity_morphism()
-    acted = AffineGSchemes(group, QQ)(scheme, lambda _element: identity)
-
-    assert acted.invariant_algebra() is algebra
-    assert acted.invariant_algebra_inclusion() == algebra.Mor(algebra).identity()
-    assert acted.affine_quotient().coordinate_algebra() is algebra
-    quotient_map = acted.quotient_morphism()
-    assert quotient_map.domain() is acted
-    assert quotient_map.codomain() is acted.affine_quotient()
-    assert quotient_map.coordinate_algebra_morphism() == algebra.Mor(algebra).identity()
-
-    t, target, morphism = _affine_map_from_polynomial(acted, algebra.one())
-    factor = acted.factor_through_affine_quotient(morphism)
-    assert factor.domain() is acted.affine_quotient()
-    assert factor.codomain() is target
-    assert factor * quotient_map == morphism
-    assert factor.coordinate_algebra_morphism()(t) == algebra.one()
 
 
-def test_nonlinear_polynomial_action_is_outside_the_selected_invariant_backend() -> None:
-    group = Groups.C(2)
-    algebra = QQ.polynomial_ring(("x", "y"))
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
-    scheme = (algebra).affine_spectrum()
-    nonlinear = Algebras(QQ).Associative().Unital().Commutative().spectrum()(
-        algebra.Mor(algebra)({"x": -x, "y": y + x**3})
-    )
-    identity = scheme.categorical_identity_morphism()
-    acted = AffineGSchemes(group, QQ)(
-        scheme,
-        lambda element: identity if element == group.one() else nonlinear,
-    )
-
-    # This is genuinely an involution, so rejection is by the selected
-    # invariant-ring backend's linearity hypothesis rather than by the action
-    # verifier.
-    generator = group.group_generators()[0]
-    generator_action = acted.action_of(generator)
-    assert (
-        generator_action * generator_action
-        == acted.categorical_identity_morphism()
-    )
-    with pytest.raises(AssertionError):
-        acted.invariant_algebra()

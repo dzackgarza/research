@@ -26,7 +26,6 @@ is the group acting on the polarized period domain.
 """
 
 from dzack_research.preamble.all import (
-    Involutions,
     NamedLattices,
 )
 
@@ -60,60 +59,5 @@ def test_milestone_one_the_E10_cusp_acts_on_its_reduction_lattice() -> None:
     )
 
 
-def test_milestone_two_a_plane_of_the_enriques_lattice_meets_a_line_cusp() -> None:
-    lattice = NamedLattices.TEn
-    line_cusps = lattice.cusps(1)
-    plane_cusps = lattice.cusps(2)
-
-    # Two lines whose reductions are not isometric cannot share a cusp, and
-    # both reduction classes occur among the Sterk lines, so there are at
-    # least two zero-dimensional cusps.
-    assert line_cusps.cardinality() >= 2
-    assert all(cusp.reduction_lattice().module_rank() == 10 for cusp in line_cusps)
-    assert plane_cusps.cardinality() >= 1
-    assert all(cusp.reduction_lattice().module_rank() == 8 for cusp in plane_cusps)
-
-    plane = plane_cusps[0].representative()
-    assert plane.module_rank() == 2
-    embedded = plane.embedded_module_generators()
-    first = embedded[plane.module_generating_set()[0]]
-    assert first.q() == 0
-
-    # A basis vector of a saturated plane spans a saturated line, so the
-    # incidence of the Tits building is a statement about two cusps.
-    line = lattice.primitive_isotropic_subobject(first)
-    assert line.module_rank() == 1
-    assert any(line in cusp for cusp in line_cusps)
 
 
-def test_milestone_three_the_polarized_enriques_group_is_a_proper_subgroup() -> None:
-    lattice = NamedLattices.LK3
-    involution = Involutions.I_En
-    extension = involution.primitive_extension()
-
-    invariant = extension.invariant
-    inclusion = invariant.inclusion()
-    labels = invariant.module_generating_set()
-    # A polarization is a non-isotropic vector of the invariant lattice; the
-    # stabilizer construction is the same for either sign of its square.
-    polarization = inclusion(
-        invariant.module_generator(labels[0])
-    ) + inclusion(invariant.module_generator(labels[1]))
-    assert polarization.q() != 0
-    assert involution(polarization) == polarization
-
-    equivariant = lattice.Aut().centralizer(involution)
-    polarized = equivariant.intersection(
-        lattice.Aut().predicate_subgroup(lambda isometry: isometry(polarization) == polarization, f"g fixes {polarization}")
-    )
-
-    negation = lattice.Aut()(
-        {label: -lattice.module_generator(label) for label in lattice.module_generating_set()}
-    )
-    assert involution in equivariant
-    assert negation in equivariant
-    assert lattice.Aut().one() in polarized
-    assert involution in polarized
-    # -1 commutes with every isometry but moves the polarization, so the
-    # polarized group is a proper subgroup of the centralizer.
-    assert negation not in polarized

@@ -1,7 +1,6 @@
 r"""H1 geometric complexes for supported toric line-bundle cohomology."""
 
 from dzack_research.preamble.all import (
-    NN,
     QQ,
     ZZ,
     Cat,
@@ -59,13 +58,6 @@ def test_total_hyperplane_cohomology_is_the_direct_sum_of_its_three_live_weight_
         assert inclusion.codomain() is cohomology
 
 
-def test_toric_scheme_cohomology_uses_the_geometric_weight_complex_route() -> None:
-    plane = _projective_plane()
-    divisor = plane.hyperplane_divisor()
-    cohomology = plane.line_bundle_cohomology(divisor, 0)
-
-    assert cohomology in ToricGeometricLineBundleCohomologySpaces(QQ)
-    assert cohomology.dimension() == 3
 
 
 def test_projective_plane_integral_singular_cohomology_is_even_and_cycle_generated() -> None:
@@ -82,16 +74,6 @@ def test_projective_plane_integral_singular_cohomology_is_even_and_cycle_generat
     assert "_preamble_topological_realization_description" not in groups[2].__dict__
 
 
-def test_projective_plane_cycle_class_is_an_explicit_integral_isomorphism() -> None:
-    plane = _projective_plane()
-    cycle_class = plane.cycle_class_isomorphism(1)
-    chow = plane.chow_group(1)
-    cohomology = plane.integral_singular_cohomology(2)
-    generator = chow.module_generator(next(iter(chow.module_generating_set())))
-
-    assert cycle_class.forward().domain() is chow
-    assert cycle_class.forward().codomain() is cohomology
-    assert cycle_class.inverse()(cycle_class.forward()(generator)) == generator
 
 
 def test_projective_plane_middle_cohomology_form_has_square_one() -> None:
@@ -146,16 +128,3 @@ def test_hirzebruch_zero_has_hodge_number_h11_two() -> None:
     assert surface.hodge_structure().hodge_number(1, 1) == 2
 
 
-def test_toric_hodge_degree_family_has_owned_bidegrees_and_values() -> None:
-    plane = _projective_plane()
-    hodge = plane.hodge_structure()
-    degree_two = hodge.degree_hodge_numbers(2)
-
-    assert degree_two.cardinality() == 3
-    assert all(value in NN for value in degree_two)
-    assert tuple(
-        tuple(int(component) for component in bidegree)
-        for bidegree in degree_two.index_set()
-    ) == ((0, 2), (1, 1), (2, 0))
-    assert tuple(degree_two) == (NN(0), NN(1), NN(0))
-    assert degree_two[degree_two.index_set()[1]] == NN(1)

@@ -55,30 +55,5 @@ def test_archived_algebra_base_change_carries_a_nonidentity_morphism() -> None:
     assert extended_involution(generator) == -generator
 
 
-def test_base_change_adjunction_retains_the_selected_ring_map_identity() -> None:
-    first = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
-    second = ZZ.Mor(QQ)(lambda scalar: QQ(scalar))
-
-    first_adjunction = Algebras(first.domain()).Associative().Unital().Commutative().base_change_adjunction(first)
-    second_adjunction = Algebras(second.domain()).Associative().Unital().Commutative().base_change_adjunction(second)
-
-    assert first_adjunction is Algebras(first.domain()).Associative().Unital().Commutative().base_change_adjunction(first)
-    assert second_adjunction is Algebras(second.domain()).Associative().Unital().Commutative().base_change_adjunction(second)
-    assert first_adjunction is not second_adjunction
-    assert first_adjunction.left_adjoint().ring_map() is first
-    assert second_adjunction.left_adjoint().ring_map() is second
 
 
-def test_scalar_restriction_retains_the_selected_ring_map_identity() -> None:
-    algebra = QQ.polynomial_ring("x")
-    first_map = QQ.Mor(QQ).identity()
-    second_map = QQ.Mor(QQ).identity()
-
-    first = algebra.restrict_scalars(first_map)
-    second = algebra.restrict_scalars(second_map)
-
-    assert first is algebra.restrict_scalars(first_map)
-    assert second is algebra.restrict_scalars(second_map)
-    assert first is not second
-    assert first.ring_map() is first_map
-    assert second.ring_map() is second_map

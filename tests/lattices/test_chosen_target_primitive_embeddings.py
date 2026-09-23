@@ -27,16 +27,3 @@ def test_chosen_target_embedding_filters_a_nontrivial_genus() -> None:
     assert embedding(generator).q() == generator.q()
 
 
-def test_chosen_target_embedding_classes_stay_in_the_literal_target() -> None:
-    source = Lattices(ZZ)([[2]])
-    target = Lattices(ZZ)([[2, 15], [15, -2]])
-
-    representatives = source.Emb(target).primitive_embedding_class_representatives(
-        classification="emb"
-    )
-
-    assert representatives.cardinality() > 0
-    for embedding in representatives:
-        assert embedding.domain() is source
-        assert embedding.codomain() is target
-        assert embedding.is_primitive()

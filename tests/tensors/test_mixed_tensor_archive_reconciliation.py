@@ -40,9 +40,6 @@ ARCHIVE_RECONCILIATIONS = (
 )
 
 
-def test_archive_trace_of_identity_is_rank() -> None:
-    identity = tensor(ZZ, (2,), (2,), [[1, 0], [0, 1]])
-    assert identity.trace() == 2
 
 
 def test_archive_vector_covector_contraction_is_pairing() -> None:

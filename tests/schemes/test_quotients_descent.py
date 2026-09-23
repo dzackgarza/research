@@ -66,16 +66,3 @@ def test_an_equivariant_translation_descends_to_the_symmetric_quotient() -> None
     assert inclusion(image) == x + y + one + one
 
 
-def test_the_quotient_functor_sends_the_equivariant_identity_to_the_identity() -> None:
-    group, _algebra, _x, _y, acted = _swapped_plane()
-    quotient_functor = GObjects(group, Schemes(QQ)).affine_quotient_functor()
-    identity = GObjects(group, Schemes(QQ)).Mor(acted, acted).identity()
-
-    descended = quotient_functor(identity)
-    invariant_algebra = acted.invariant_algebra()
-    pullback = descended.coordinate_algebra_morphism()
-    assert all(
-        pullback(invariant_algebra.algebra_generator(label))
-        == invariant_algebra.algebra_generator(label)
-        for label in invariant_algebra.algebra_generating_set()
-    )

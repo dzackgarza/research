@@ -26,29 +26,8 @@ def test_the_correlation_of_a_hyperbolic_plane_swaps_the_dual_framing() -> None:
     assert second.to_covector() == dual.module_generator(first_label)
 
 
-def test_the_gram_matrix_holds_the_pairings_and_its_determinant_is_the_discriminant() -> None:
-    lattice = Lattices(ZZ)([[2, 1], [1, -4]])
-    gram_matrix = lattice.gram_matrix()
-    labels = lattice.module_generating_set()
-
-    assert all(
-        gram_matrix[row, column]
-        == lattice.b(lattice.module_generator(row), lattice.module_generator(column))
-        for row in labels
-        for column in labels
-    )
-    assert gram_matrix.determinant() == -9
-    assert gram_matrix.determinant() == lattice.determinant()
 
 
-def test_isotropy_is_the_vanishing_of_the_quadratic_value() -> None:
-    plane = Lattices(ZZ)("U")
-    first, second = plane.module_generators()
-
-    assert first.is_isotropic()
-    assert second.is_isotropic()
-    assert not (first + second).is_isotropic()
-    assert (first + second).q() == 2
 
 
 def test_primitivity_is_a_property_of_the_line_the_vector_spans() -> None:

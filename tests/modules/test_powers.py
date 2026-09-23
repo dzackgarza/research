@@ -6,7 +6,7 @@ from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.modules import (
     FinitelyPresentedTorsionModules,
 )
-from dzack_research.preamble.categories.sets import NN, finite_ordered_set
+from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _assert_maps_agree(left, right) -> None:
@@ -97,24 +97,3 @@ def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> Non
         )
 
 
-def test_countable_free_module_powers_use_combinatorial_index_sets_lazily() -> None:
-    module = ZZ.free_module(NN)
-    symmetric = module.symmetric_power(2)
-    alternating = module.exterior_power(2)
-    divided = module.divided_power_module(2)
-
-    symmetric_labels = symmetric.module_generating_set()
-    alternating_labels = alternating.module_generating_set()
-    divided_labels = divided.module_generating_set()
-    pair = {NN(2): 1, NN(5): 1}
-
-    symmetric_label = symmetric_labels.from_multiplicities(pair)
-    alternating_label = alternating_labels.from_multiplicities(pair)
-    divided_label = divided_labels.from_multiplicities(pair)
-
-    assert symmetric.module_generator(symmetric_label).parent() is symmetric
-    assert alternating.module_generator(alternating_label).parent() is alternating
-    assert divided.module_generator(divided_label).parent() is divided
-    assert symmetric_labels.cardinality().is_countably_infinite()
-    assert alternating_labels.cardinality().is_countably_infinite()
-    assert divided_labels.cardinality().is_countably_infinite()

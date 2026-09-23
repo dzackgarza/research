@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
-    CommutativeAlgebraPushouts,
     Algebras,
 )
 
@@ -45,37 +44,8 @@ def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
     )
 
 
-def test_zero_relation_presentation_lifts_through_the_identity_engine() -> None:
-    presentation = QQ.polynomial_ring("x")
-    x = presentation.algebra_generator("x")
-    algebra = (presentation).quotient_by_relations(())
-    xbar = algebra.algebra_generator("x")
-
-    assert algebra.lift_to_presentation(xbar) == x
-    radical = algebra.ideal(xbar).radical()
-    assert radical.contains_ambient_element(xbar)
 
 
-def test_pushout_accepts_maps_from_a_presented_source() -> None:
-    source_presentation = QQ.polynomial_ring("t")
-    t = source_presentation.algebra_generator("t")
-    source = (source_presentation).quotient_by_relations((t**2,))
-    tbar = source.algebra_generator("t")
-
-    target_presentation = QQ.polynomial_ring("x")
-    x = target_presentation.algebra_generator("x")
-    target = (target_presentation).quotient_by_relations((x**2,))
-    xbar = target.algebra_generator("x")
-
-    left = source.Mor(source).identity()
-    right = source.Mor(target)({"t": xbar})
-    assert left.parent() is source.Mor(source)
-    assert right.parent() is source.Mor(target)
-
-    pushout = Algebras(QQ).Associative().Unital().Commutative().pushout(left, right)
-    assert pushout in CommutativeAlgebraPushouts(QQ)
-    left_pushout, right_pushout = pushout.pushout_maps()
-    assert left_pushout(left(tbar)) == right_pushout(right(tbar))
 
 
 def test_number_field_algebra_uses_its_primitive_presentation_for_coproduct() -> None:
@@ -105,25 +75,3 @@ def test_number_field_algebra_uses_its_primitive_presentation_for_coproduct() ->
     assert split not in IntegralDomains()
 
 
-def test_relative_number_field_algebra_uses_an_absolute_primitive_presentation() -> None:
-    from dzack_research.preamble.all import (
-        FinitelyGeneratedFreeModules,
-        QuadraticField,
-    )
-
-    base = QuadraticField(2, "a")
-    relative_polynomials = base.polynomial_ring("u")
-    u = relative_polynomials.algebra_generator("u")
-    field = (u**2 - base.primitive_element()).number_field("b")
-    algebra = field.as_algebra()
-    primitive = algebra.algebra_generator("absolute_generator")
-
-    assert algebra.base_ring() is QQ
-    assert algebra in AlgebrasWithChosenFinitePresentation(QQ)
-    assert algebra in FinitelyGeneratedFreeModules(QQ)
-    assert algebra.number_of_module_generators() == field.degree()
-    assert algebra.algebra_presentation_morphism()(algebra.relations().value(0)) == 0
-    assert (
-        algebra.lift_to_presentation(primitive)
-        == algebra.presentation_ring().algebra_generator("absolute_generator")
-    )

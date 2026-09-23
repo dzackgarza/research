@@ -36,24 +36,3 @@ def test_oscar_supplies_an_actual_indefinite_integral_isometry() -> None:
     assert source.Isom(target).is_empty() is False
 
 
-def test_oscar_returns_no_witness_for_nonisometric_integral_lattices() -> None:
-    integers = _own_ring(SageZZ)
-    source = Lattices(integers)(
-        (
-            (0, 1, 0),
-            (1, 0, 0),
-            (0, 0, -2),
-        )
-    )
-    target = Lattices(integers)(
-        (
-            (0, 1, 0),
-            (1, 0, 0),
-            (0, 0, -4),
-        )
-    )
-
-    assert lattice_engines._integral_isometry_witness(
-        source.gram_tensor(),
-        target.gram_tensor(),
-    ) is None

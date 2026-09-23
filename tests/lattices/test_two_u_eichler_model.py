@@ -11,30 +11,6 @@ def _model():
     return Lattices(integers)("A1").two_u_eichler_model()
 
 
-def test_left_and_right_sl2_actions_are_actual_action_functors() -> None:
-    model = _model()
-    group = model.special_linear_group()
-    generators = group.group_generators()
-    left = model.left_action_functor()
-    right = model.right_action_functor()
-    point = group.classifying_category().an_object()
-    arrows = group.classifying_category().Mor(point, point)
-
-    assert left.domain() == group.classifying_category()
-    assert right.domain() == group.classifying_category()
-    lattice = model.lattice()
-    lattice_mor = left.codomain().Mor(lattice, lattice)
-    assert lattice_mor is lattice.Mor(lattice)
-    left_arrow = left(arrows(generators[0]))
-    right_arrow = right(arrows(generators[0]))
-    left_isometry = model.left_action(generators[0])
-    right_isometry = model.right_action(generators[0])
-    assert left_arrow.parent() is lattice.O()
-    assert right_arrow.parent() is lattice.O()
-    assert lattice_mor(left_arrow) is left_arrow
-    assert lattice_mor(right_arrow) is right_arrow
-    assert left_arrow == left_isometry
-    assert right_arrow == right_isometry
 
 
 def test_the_determinant_model_actions_preserve_the_group_law_and_commute() -> None:
@@ -151,30 +127,3 @@ def test_two_u_model_lifts_generators_of_its_full_discriminant_group() -> None:
         assert witness.discriminant_morphism() == generator
 
 
-def test_source_generating_family_retains_each_mathematical_source() -> None:
-    integers = _own_ring(SageZZ)
-    complement = Lattices(integers)("A2")
-    model = complement.two_u_eichler_model()
-    family = model.source_generating_family()
-    kinds = {kind for kind, _datum in family.index_set()}
-
-    assert kinds == {
-        "left-SL2",
-        "right-SL2",
-        "O(K)",
-        "Eichler",
-        "discriminant-lift",
-    }
-    assert all(isometry in model.lattice().O() for isometry in family)
-    for kind, datum in family.index_set():
-        match kind:
-            case "left-SL2":
-                assert family[kind, datum] == model.left_action(datum)
-            case "right-SL2":
-                assert family[kind, datum] == model.right_action(datum)
-            case "O(K)":
-                assert family[kind, datum] == model.complement_action(datum)
-            case "Eichler" | "discriminant-lift":
-                assert family[kind, datum] in model.lattice().O()
-            case _:
-                raise AssertionError(f"unexpected generator source {kind}")

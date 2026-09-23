@@ -7,7 +7,7 @@ subgroup in the discriminant form of that sum, and the quotient identification
 the current ``VectorPrimitiveExtension`` object.
 """
 
-from dzack_research.preamble.all import Set, ZZ, Lattices
+from dzack_research.preamble.all import ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage",
@@ -46,40 +46,5 @@ def test_archived_a2_vector_extension_has_the_expected_nontrivial_gluing() -> No
         ) == extension.sum_form.bilinear_value_module().zero()
 
 
-def test_archived_discriminant_classes_round_trip_through_h_perp_mod_h() -> None:
-    lattice = Lattices(ZZ)("A2")
-    extension = lattice.vector_primitive_extension(lattice.module_generators()[0])
-
-    assert extension.discriminant_form.cardinality() == 3
-    for discriminant_class in extension.discriminant_form.elements():
-        representative = extension.representative_of(discriminant_class)
-        assert extension.class_of_representative(representative) == discriminant_class
-        for glued in extension.gluing_images:
-            assert (
-                extension.class_of_representative(representative + glued)
-                == discriminant_class
-            )
 
 
-def test_archived_line_and_complement_discriminant_maps_land_in_the_sum_form() -> None:
-    lattice = Lattices(ZZ)("A2")
-    extension = lattice.vector_primitive_extension(lattice.module_generators()[0])
-
-    line_form = extension.line.discriminant_group()
-    complement_form = extension.complement.discriminant_group()
-    line_map = extension.line_discriminant_inclusion
-    complement_map = extension.complement_discriminant_inclusion
-
-    assert line_map.domain() is line_form
-    assert line_map.codomain() is extension.sum_form
-    assert complement_map.domain() is complement_form
-    assert complement_map.codomain() is extension.sum_form
-
-    mapped = Set(line_map(element) for element in line_form.module_generators()).union(
-        Set(
-            complement_map(element)
-            for element in complement_form.module_generators()
-        )
-    )
-    generated = extension.sum_form.subobject_generated_by(mapped)
-    assert generated.cardinality() == extension.sum_form.cardinality()

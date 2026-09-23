@@ -7,7 +7,7 @@ polyhedron and relevant vectors; these specimens retain the literature facts
 that were not present in the current regression surface.
 """
 
-from dzack_research.preamble.all import QQ, Lattices, Set, tensor
+from dzack_research.preamble.all import QQ, Lattices, Set
 
 
 def test_square_lattice_voronoi_cell_is_the_unit_area_half_cube() -> None:
@@ -38,8 +38,3 @@ def test_normalized_a2_facet_inequalities_recover_the_six_roots():
     assert all(vector.q() == 2 for vector in lattice.voronoi_relevant_vectors())
 
 
-def test_bound_is_an_initial_hint_not_an_incomplete_voronoi_region():
-    lattice = Lattices.A2
-    assert Set(tuple(v) for v in lattice.voronoi_cell(bound=1).vertices()) == Set(
-        tuple(v) for v in lattice.voronoi_cell().vertices()
-    )

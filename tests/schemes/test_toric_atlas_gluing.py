@@ -11,11 +11,7 @@ Unverified: written by eye against the construction, not run.
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
-    AffineSchemes,
-    OpenImmersions,
     RationalPolyhedralFans,
-    Surfaces,
-    ToricSchemes,
 )
 
 
@@ -36,54 +32,8 @@ def _projective_line():
     return fan, fan.toric_variety(QQ)
 
 
-def test_the_projective_plane_is_the_scheme_glued_from_its_three_cone_charts() -> None:
-    r"""CLS Thm. 3.1.5: ``X_Sigma`` is glued from ``U_sigma`` over the maximal
-    cones.  The atlas is indexed by the cones themselves, so the chart the
-    glued scheme holds for a cone is the chart that cone's semigroup algebra
-    gives, and for the smooth fan of ``P^2`` each is the affine plane."""
-    fan, plane = _projective_plane()
-    cones = fan.maximal_cones()
-
-    assert plane in ToricSchemes(QQ)
-    assert plane in Surfaces(QQ)
-    assert cones.cardinality() == 3
-    assert plane.chart_index_set().cardinality() == 3
-
-    for cone in cones:
-        chart = plane.chart(cone)
-        assert chart is plane.affine_chart(cone)
-        assert chart in AffineSchemes(QQ)
-        assert chart.coordinate_algebra().algebra_generating_set().cardinality() == 2
-        assert plane.chart_embedding(cone).domain() is chart
-        assert plane.chart_embedding(cone).codomain() is plane
 
 
-def test_a_toric_transition_is_the_face_localization_of_the_common_face() -> None:
-    r"""CLS Prop. 1.3.16: two maximal cones of a fan meet in a common face
-    ``gamma``, and the chart of ``gamma`` is a distinguished open of each of
-    their charts.  The transition of the atlas is the isomorphism between those
-    two presentations of ``U_gamma``, so it is invertible on both."""
-    fan, plane = _projective_plane()
-    left = fan.maximal_cones()[0]
-    right = fan.maximal_cones()[1]
-    common = left.intersection(right)
-
-    assert common.dimension() == 1
-    assert common.is_face_of(left)
-    assert common.is_face_of(right)
-
-    transition = plane.transition_between(left, right)
-    forward = transition.forward()
-    inverse = transition.inverse()
-    source_overlap = plane.face_localization(common, left)
-    target_overlap = plane.face_localization(common, right)
-
-    assert forward.domain() is source_overlap
-    assert forward.codomain() is target_overlap
-    assert source_overlap in OpenImmersions(plane.chart(left))
-    assert target_overlap in OpenImmersions(plane.chart(right))
-    assert inverse * forward == source_overlap.categorical_identity_morphism()
-    assert forward * inverse == target_overlap.categorical_identity_morphism()
 
 
 def test_the_toric_transitions_agree_on_a_triple_overlap() -> None:

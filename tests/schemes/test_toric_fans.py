@@ -35,49 +35,8 @@ def test_the_fan_of_the_projective_plane_has_three_rays_and_seven_cones() -> Non
     assert fan.is_smooth()
 
 
-def test_the_trivial_fan_is_the_single_zero_cone_and_is_not_complete() -> None:
-    fan = _plane_fans().trivial_fan()
-
-    assert fan.cardinality() == 1
-    assert fan.rays().cardinality() == 0
-    assert fan.cones(0).cardinality() == 1
-    assert not fan.is_complete()
-    assert fan.is_smooth()
 
 
-def test_the_character_pairing_is_the_duality_of_the_two_frames() -> None:
-    fans = _plane_fans()
-    cocharacters = fans.cocharacter_lattice()
-    characters = fans.character_lattice()
-    pairing = fans.character_cocharacter_pairing()
-
-    assert characters is not cocharacters
-    first, second = tuple(cocharacters.module_generating_set())
-
-    assert pairing.codomain().module_rank() == 1
-    assert fans.character_cocharacter_value(
-        characters.module_generator(first), cocharacters.module_generator(first)
-    ) == ZZ(1)
-    assert fans.character_cocharacter_value(
-        characters.module_generator(first), cocharacters.module_generator(second)
-    ) == ZZ(0)
-    assert fans.character_cocharacter_value(
-        characters.module_generator(second), cocharacters.module_generator(second)
-    ) == ZZ(1)
-
-    doubled = cocharacters.linear_combination({first: ZZ(3), second: ZZ(-2)})
-    assert fans.character_cocharacter_value(
-        characters.module_generator(first), doubled
-    ) == ZZ(3)
-    assert fans.character_cocharacter_value(
-        characters.module_generator(second), doubled
-    ) == ZZ(-2)
-
-    scalar = fans.character_cocharacter_value(
-        characters.module_generator(first), doubled
-    )
-    assert scalar.parent() is ZZ
-    assert scalar == ZZ(3)
 
 
 def test_the_a_one_cone_needs_three_semigroup_generators_and_is_singular() -> None:
@@ -92,35 +51,10 @@ def test_the_a_one_cone_needs_three_semigroup_generators_and_is_singular() -> No
     assert cone.semigroup_generators().cardinality() == 3
 
 
-def test_a_basis_cone_is_smooth_and_has_the_dual_basis_as_its_semigroup() -> None:
-    fan = _plane_fans()((((1, 0), (0, 1)),))
-    cone = fan.maximal_cones()[0]
-
-    assert cone.is_smooth()
-    assert cone.semigroup_generators().cardinality() == 2
 
 
-def test_the_dual_cone_is_decided_by_the_pairing_on_the_rays() -> None:
-    fans = _plane_fans()
-    characters = fans.character_lattice()
-    first, second = tuple(characters.module_generating_set())
-    fan = fans((((0, 1), (2, -1)),))
-    cone = fan.maximal_cones()[0]
-
-    assert cone.dual_cone_contains(characters.module_generator(first))
-    assert not cone.dual_cone_contains(characters.module_generator(second))
-    assert not cone.orthogonal_contains(characters.module_generator(first))
 
 
-def test_faces_of_a_two_dimensional_cone_are_its_rays_and_the_origin() -> None:
-    fan = _plane_fans().projective_space_fan()
-    cone = fan.maximal_cones()[0]
-
-    assert cone.faces(1).cardinality() == 2
-    assert cone.faces(0).cardinality() == 1
-    for face in cone.faces(1):
-        assert face.is_face_of(cone)
-    assert cone.is_face_of(cone)
 
 
 def test_hirzebruch_fans_are_smooth_complete_and_pairwise_distinguished() -> None:

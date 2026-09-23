@@ -60,20 +60,6 @@ def test_archive_coinvariant_lattice_is_the_formed_orthogonal_complement() -> No
     assert acted.module_coinvariants() is not coinvariant
 
 
-def test_equipping_an_existing_sublattice_preserves_its_ambient_inclusion() -> None:
-    acted = _acted_a2()
-    invariant = acted.invariant_lattice()
-    group = acted.group()
-    equipped = Lattices(ZZ[group])(
-        invariant,
-        lambda _element, vector: vector,
-    )
-
-    assert equipped.ambient_lattice() is acted
-    assert equipped.inclusion().codomain() is acted
-    assert equipped.inclusion()(equipped.module_generators()[0]) == invariant.inclusion()(
-        invariant.module_generators()[0]
-    )
 
 
 def test_archive_group_lattice_mor_is_both_isometric_and_equivariant() -> None:

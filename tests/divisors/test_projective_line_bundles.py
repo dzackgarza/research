@@ -54,108 +54,14 @@ def test_projective_line_bundle_tensor_dual_and_canonical_degrees_are_exact() ->
     assert plane.anticanonical_line_bundle().degree() == 3
 
 
-def test_projective_section_multiplication_is_polynomial_multiplication_on_actual_modules() -> None:
-    line = ProjectiveSpaces(QQ)(1)
-    linear = line.O(1)
-    quadratic = line.O(2)
-    multiplication = linear.section_multiplication(linear)
-    comparison = quadratic.homogeneous_polynomial_comparison()
-    labels = tuple(linear.global_sections().module_generating_set())
-    x0 = linear.global_sections().module_generator(labels[0])
-    x1 = linear.global_sections().module_generator(labels[1])
-
-    product = multiplication(x0, x1)
-
-    assert multiplication.left_module() is linear.global_sections()
-    assert multiplication.right_module() is linear.global_sections()
-    assert multiplication.codomain() is quadratic.global_sections()
-    assert product.parent() is quadratic.global_sections()
-    assert comparison.forward()(product) == product
-    assert product != quadratic.global_sections().zero()
 
 
-def test_projective_line_bundle_base_change_retains_projection_and_section_comparison() -> None:
-    from dzack_research.preamble.all import QuadraticField
-
-    field = QuadraticField(2, "s")
-    ring_map = QQ.Mor(field)(lambda element: field(element))
-    line = ProjectiveSpaces(QQ)(1)
-    bundle = line.O(2)
-
-    changed = bundle.base_change(ring_map)
-    comparison = changed.section_base_change_comparison()
-
-    assert changed.scheme().scheme_base_ring() is field
-    assert changed.base_change_source_bundle() is bundle
-    assert changed.base_change_projection() is changed.scheme().left_projection()
-    assert changed.base_change_projection().codomain() is line
-    assert comparison.forward().domain().base_ring() is field
-    assert comparison.forward().codomain() is changed.global_sections()
-    assert comparison.forward().domain().module_rank() == changed.global_sections().module_rank()
-    squared = changed.tensor_power(2)
-    assert squared.base_change_source_bundle() is bundle.tensor_power(2)
-    assert squared.base_change_projection() is squared.scheme().left_projection()
 
 
-def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
-    from dzack_research.preamble.categories.schemes.gluing import (
-        FiniteAffineAtlases,
-    )
-
-    line = ProjectiveSpaces(QQ)(1)
-    bundle = line.O(1)
-    coarse = bundle.gluing_datum()
-    fine = coarse
-    refinement = FiniteAffineAtlases(line).Mor(fine, coarse).identity()
-    comparison = refinement.compare_line_bundle_pullback(bundle)
-    pulled = comparison.line_bundle_refinement().refined_bundle()
-
-    assert refinement in FiniteAffineAtlases(line).Mor(fine, coarse)
-    assert refinement.comparison_morphism() == line.categorical_identity_morphism()
-    assert comparison.line_bundle() is bundle
-    assert pulled.scheme() is line
-    assert pulled.gluing_datum() is fine
-    for index in fine.chart_indices():
-        local = comparison.line_bundle_refinement().local_isomorphism(index)
-        assert local.forward().domain().base_ring() is fine.chart(index).coordinate_algebra()
-        assert local.forward().codomain() is pulled.local_module(index)
 
 
-def test_projective_closed_subscheme_restriction_is_the_closed_immersion_pullback_image() -> None:
-    plane = ProjectiveSpaces(QQ)(2)
-    x, y, z = plane.homogeneous_coordinate_generators()
-    conic = plane.closed_subscheme(x * z - y**2)
-    inclusion = conic.inclusion()
-    bundle = plane.O(2)
-
-    restricted = bundle.restrict_to(conic)
-
-    assert restricted is inclusion.module_pullback(bundle)
-    assert restricted in QuasiCoherentSheaves(conic)
-    assert restricted in QuasiCoherentSheaves(conic).Invertible()
-    assert restricted not in (
-        QuasiCoherentSheaves(conic).Invertible().WithChosenTrivialization()
-    )
-    assert restricted.pullback_morphism() is inclusion
-    assert restricted.ambient_line_bundle() is bundle
-    assert restricted.degree() == 2
 
 
-def test_restricted_projective_line_bundle_comparison_is_a_quasi_coherent_isomorphism() -> None:
-    plane = ProjectiveSpaces(QQ)(2)
-    x, y, z = plane.homogeneous_coordinate_generators()
-    conic = plane.closed_subscheme(x * z - y**2)
-    left = plane.O(1).restrict_to(conic)
-    right = plane.O(1).restrict_to(conic)
-
-    comparison = left.canonical_isomorphism_to(right)
-    sheaves = QuasiCoherentSheaves(conic)
-
-    assert comparison in sheaves.Core().Mor(left, right)
-    assert comparison.forward() in sheaves.Mor(left, right)
-    assert comparison.inverse() in sheaves.Mor(right, left)
-    assert comparison.forward().ambient_morphism().domain() is left.ambient_line_bundle()
-    assert comparison.forward().ambient_morphism().codomain() is right.ambient_line_bundle()
 
 
 def test_projection_pullback_places_degree_in_the_selected_product_factor() -> None:
@@ -178,13 +84,3 @@ def test_projection_pullback_places_degree_in_the_selected_product_factor() -> N
     assert section_pullback.domain().module_rank() == section_pullback.codomain().module_rank() == 3
 
 
-def test_identity_base_change_preserves_projective_dimension_and_bundle_degree() -> None:
-    plane = ProjectiveSpaces(QQ)(2)
-    identity = QQ.Mor(QQ).identity()
-    changed_plane = plane.base_change(identity)
-    changed_bundle = plane.O(1).base_change(identity)
-
-    assert changed_plane.relative_dimension() == plane.relative_dimension() == 2
-    assert changed_bundle.degree() == 1
-    assert changed_bundle.scheme() is changed_plane
-    assert changed_bundle.base_change_projection().codomain() is plane

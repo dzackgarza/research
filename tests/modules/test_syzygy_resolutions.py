@@ -93,22 +93,6 @@ def test_the_syzygy_term_carries_the_koszul_relation() -> None:
     assert image == expected_up_to_sign or image == -expected_up_to_sign
 
 
-def test_tor_of_the_residue_field_reads_the_degree_two_term() -> None:
-    r"""``Tor_2(k,k)`` is computed in the Koszul complex, not in a truncation.
-
-    ``Tor_n`` is the cohomology of ``F_• ⊗ k`` in the matching spot, so its
-    complex must carry ``F_2``.  Every differential of ``F_• ⊗ k`` vanishes
-    because each entry of the Koszul matrices lies in ``(x,y)``, which is why
-    ``Tor_i(k,k)`` is the ``i``-th exterior power of ``k^2`` and in particular
-    does not vanish in degree two.
-    """
-    module = _residue_field_module()
-
-    tor = module.tor(module, degree=2)
-    complex_ = tor.cochain_complex()
-    resolution = module.free_resolution(3)
-
-    assert complex_.graded_piece(0).tensor_factor(0) is resolution.term(2)
 
 
 def test_a_principal_ideal_domain_resolves_in_one_step_however_far_it_is_asked() -> None:

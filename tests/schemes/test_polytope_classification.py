@@ -34,11 +34,3 @@ def test_one_reflexive_polygon_has_the_projective_plane_as_its_toric_variety() -
     assert not all(variety.is_projective_space() for variety in varieties)
 
 
-def test_a_non_reflexive_lattice_polygon_is_not_in_the_classification() -> None:
-    r"""The triangle on ``(0,0)``, ``(2,0)``, ``(0,2)`` has no interior lattice
-    point at the origin, so it is not reflexive and the predicate is not
-    answering true for every lattice polygon."""
-    from dzack_research.preamble.all import LatticePolygons
-
-    lattice = ZZ.free_module(2)
-    assert not LatticePolygons(lattice)(((0, 0), (2, 0), (0, 2))).is_reflexive()

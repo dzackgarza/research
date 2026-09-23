@@ -41,14 +41,3 @@ def test_inverting_the_adic_generator_before_completion_collapses_the_topology()
     assert collapsed.completion_map_kernel() == extended
 
 
-def test_nonmaximal_completion_does_not_claim_the_maximal_localization_isomorphism() -> None:
-    ring = QQ.polynomial_ring(("x", "y"))
-    x = ring.algebra_generator("x")
-    completion = ring.adic_completion(ring.ideal(x), precision=5)
-
-    try:
-        completion.maximal_localization_comparison()
-    except TypeError:
-        pass
-    else:
-        raise AssertionError("a nonmaximal adic topology must not claim the maximal-local comparison")

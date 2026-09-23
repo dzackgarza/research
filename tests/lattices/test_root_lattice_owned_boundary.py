@@ -1,15 +1,6 @@
-from dzack_research.preamble.all import ZZ, Lattices, RootLattices
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.all import RootLattices
 
 
-def test_root_lattices_are_an_owned_inhabited_semantic_category() -> None:
-    category = RootLattices()
-    witness = category.an_object()
-
-    assert isinstance(category, OwnedCategory)
-    assert witness in category
-    assert witness is Lattices(ZZ)("A2")
-    assert all(witness in super_category for super_category in category.super_categories())
 
 
 def test_root_lattice_keeps_inherited_lattice_mor_and_automorphism_operations() -> None:

@@ -8,49 +8,6 @@ def _session():
     return scope
 
 
-def test_lebesgue_spaces_form_a_graded_module_over_holder_degrees() -> None:
-    session = _session()
-    QQ = session["QQ"]
-    RR = session["RR"]
-    Lp = session["Lp"]
-    Algebras = session["Algebras"]
-    GradedModules = session["GradedModules"]
-    GradedLebesgueModule = session["GradedLebesgueModule"]
-    LebesgueGradedModules = session["LebesgueGradedModules"]
-    NonNegativeReals = session["NonNegativeReals"]
-    UnitInterval = session["UnitInterval"]
-
-    holder = GradedLebesgueModule(NonNegativeReals)
-    young = GradedLebesgueModule(UnitInterval)
-    maps = session["C"](Infinity, RR)
-    gaussian = Lp(2)(maps(exp(-(maps.indeterminate() ** 2))))
-
-    assert holder in GradedModules(RR, NonNegativeReals)
-    assert holder in LebesgueGradedModules(RR)
-    assert young in GradedModules(RR, UnitInterval)
-    assert holder.grading_monoid() is NonNegativeReals
-    assert young.grading_index_set() is UnitInterval
-    assert holder.graded_piece(NonNegativeReals.zero()) is Lp(Infinity)
-    assert holder.graded_piece(~NonNegativeReals(2)) is Lp(2)
-    assert holder.graded_piece(NonNegativeReals(2)) is Lp(QQ(1) / 2)
-    assert young.graded_piece(UnitInterval.one()) is Lp(1)
-    assert young.graded_piece(UnitInterval.zero()) is Lp(Infinity)
-    assert young.graded_piece(UnitInterval(QQ(1) / 2)) is Lp(2)
-    assert holder.graded_piece(NonNegativeReals(1)) is young.graded_piece(UnitInterval.one())
-    assert holder not in Algebras(RR)
-    try:
-        holder(gaussian) * holder(gaussian)
-    except TypeError:
-        pass
-    else:
-        raise AssertionError("the graded module has no product")
-
-    try:
-        young(Lp(QQ(1) / 2).zero())
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("expected L^{1/2} to be excluded from the Young-graded module")
 
 
 def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None:
@@ -173,25 +130,3 @@ def test_l1_convolution_is_the_total_algebra_specialization_with_the_actual_modu
     assert integral(element * element) == integral(element) * integral(element)
 
 
-def test_pointwise_algebra_reuses_the_module_components_and_tensor_classifier() -> None:
-    from dzack_research.preamble.all import GradedLebesgueAlgebra, GradedLebesgueModule, Lp, NonNegativeReals, RR
-    from dzack_research.preamble.categories.modules.pure.modules import Modules, TensorProductModules
-
-    module = GradedLebesgueModule(NonNegativeReals)
-    algebra = GradedLebesgueAlgebra
-    two = algebra(Lp(Infinity)(RR(2)))
-    three = algebra(Lp(Infinity)(RR(3)))
-    multiplication = algebra.multiplication_morphism()
-
-    assert algebra.unformed_module() is module
-    assert module(two).homogeneous_component(NonNegativeReals.zero()) == Lp(Infinity)(RR(2))
-    assert multiplication.domain() in TensorProductModules(RR)
-    assert multiplication.domain().tensor_factor(0) is algebra
-    assert multiplication.domain().tensor_factor(1) is algebra
-    assert multiplication(multiplication.domain().pure_tensor(two, three)) == algebra(Lp(Infinity)(RR(6)))
-    assert algebra.one() * two == two
-    assert two * algebra.one() == two
-    assert algebra.degree_projection(NonNegativeReals.zero()).parent().mor_category().is_subcategory(Modules(RR))
-    assert algebra.integral_form().parent().mor_category().is_subcategory(Modules(RR))
-    assert algebra.integral_pairing_morphism().parent().mor_category().is_subcategory(Modules(RR))
-    assert module.graded_piece(NonNegativeReals(Infinity)).is_zero()

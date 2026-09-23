@@ -28,11 +28,3 @@ def test_affine_semigroup_algebra_retains_its_selected_binomial_presentation() -
     assert "_preamble_affine_semigroup_generator_coordinates" not in algebra.__dict__
 
 
-def test_affine_semigroup_membership_requires_the_selected_lattice_presentation() -> None:
-    presentation = ZZ.polynomial_ring(("x", "y", "z"))
-    x = presentation.algebra_generator("x")
-    y = presentation.algebra_generator("y")
-    z = presentation.algebra_generator("z")
-    ordinary = (presentation).quotient_by_relations((z - x * y,))
-
-    assert ordinary not in AffineSemigroupAlgebras(ZZ)

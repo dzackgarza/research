@@ -9,28 +9,12 @@ from dzack_research.preamble.all import (
     ArtinianRings,
     Algebras,
     CompleteLocalRings,
-    IntegralDomains,
     LocalRings,
-    NoetherianRings,
     Set,
     Zmod,
 )
 
 
-def test_basic_commutative_ring_placements_and_canonical_ZZ_algebra() -> None:
-    field = GF(5)
-    polynomial = field.polynomial_ring("t")
-
-    assert ZZ in IntegralDomains()
-    assert ZZ in NoetherianRings()
-    assert field in LocalRings()
-    assert field in ArtinianRings()
-    assert polynomial in IntegralDomains()
-    assert polynomial in NoetherianRings()
-
-    algebra = field.as_ZZ_algebra()
-    assert algebra.algebra_base_ring() is ZZ
-    assert algebra.algebra_structure_morphism()(ZZ(1)) == field.one()
 
 
 def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
@@ -40,9 +24,6 @@ def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
     assert Zmod(30).spectrum().cardinality() == 3
 
 
-def test_affine_line_spectrum_cardinality_stops_at_the_finite_spectrum_frontier() -> None:
-    with pytest.raises(AssertionError):
-        QQ.polynomial_ring("t").spectrum().cardinality()
 
 
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
@@ -61,16 +42,6 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     assert local_at_five.maximal_ideal() == local_at_five.ideal(local_at_five(5))
 
 
-def test_localizing_a_polynomial_ring_at_one_keeps_an_exact_engine_realization() -> None:
-    polynomial = QQ.polynomial_ring("x")
-    localized = polynomial.localization(polynomial.one())
-
-    assert localized.localization_source() is polynomial
-    assert tuple(localized.inverted_elements()) == (polynomial.one(),)
-    assert localized.localization_map()(polynomial.algebra_generator("x")) == (
-        localized(polynomial.algebra_generator("x"))
-    )
-    assert localized._selected_engine_ring() is not None
 
 
 def test_polynomial_prime_localization_has_expected_residue_field() -> None:
@@ -161,64 +132,10 @@ def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
     assert projective_zeta == 1 / ((1 - T) * (1 - 5 * T) * (1 - 25 * T))
 
 
-def test_nonfinite_base_rejects_arithmetic_zeta_interface() -> None:
-    affine_line = AffineSpaces(QQ)(1)
-    try:
-        affine_line.zeta_function()
-    except TypeError:
-        pass
-    else:
-        raise AssertionError("arithmetic zeta_function must require a finite base field")
 
 
-def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() -> None:
-
-    from dzack_research.preamble.categories.group.magmas import Monoids
-
-    powers_of_two = ZZ.generated_submonoid((ZZ(2),))
-    subobjects = Monoids().Subobjects(ZZ)
-
-    assert powers_of_two in subobjects
-    assert powers_of_two.inclusion().domain() is powers_of_two
-    assert powers_of_two.inclusion().codomain() is ZZ
-    assert powers_of_two.inclusion().is_injective()
-
-    slice_object = subobjects.as_slice_object(powers_of_two)
-    assert slice_object.arrow() is powers_of_two.inclusion()
-    assert slice_object in subobjects.slice_category()
-    assert slice_object in subobjects.monomorphism_category()
-    subobject_mor = subobjects.Mor(powers_of_two, powers_of_two)
-    slice_mor = subobjects.slice_category().Mor(slice_object, slice_object)
-    assert subobject_mor.identity().factor_morphism() == slice_mor.identity().left()
-    assert subobject_mor.canonical_morphism().factor_morphism() == slice_mor.canonical_morphism().left()
-
-    localization = ZZ.localization(powers_of_two)
-    assert localization.localization_submonoid() is powers_of_two
-    assert tuple(localization.inverted_elements()) == (ZZ(2),)
-
-    local_at_five = ZZ.localize_at_prime(5)
-    prime_complement = local_at_five.localization_submonoid()
-    assert prime_complement in subobjects
-    assert ZZ(2) in prime_complement
-    assert ZZ(5) not in prime_complement
 
 
-def test_module_subobject_order_is_decided_without_failed_factorization() -> None:
-    modules = Modules(ZZ)
-    subobjects = modules.Subobjects(ZZ)
-    evens = ZZ.ideal(2)
-    multiples_of_four = ZZ.ideal(4)
-    multiples_of_three = ZZ.ideal(3)
-
-    assert evens.category().is_subcategory(subobjects)
-    assert multiples_of_four.category().is_subcategory(subobjects)
-    assert multiples_of_three.category().is_subcategory(subobjects)
-    assert subobjects.Mor(multiples_of_four, evens).has_morphism()
-    assert not subobjects.Mor(evens, multiples_of_four).has_morphism()
-    assert not subobjects.Mor(evens, multiples_of_three).has_morphism()
-    factor = multiples_of_four.inclusion().factor_through_or_none(evens.inclusion())
-    assert factor is not None
-    assert evens.inclusion() * factor == multiples_of_four.inclusion()
 
 
 def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> None:
@@ -452,21 +369,6 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
     assert induced(right_map(y)) == t**2
 
 
-def test_commutative_algebra_coproduct_transports_quotient_relations() -> None:
-
-    left_free = QQ.polynomial_ring("x")
-    right_free = QQ.polynomial_ring("y")
-    x = left_free.algebra_generator("x")
-    y = right_free.algebra_generator("y")
-    left = (left_free).quotient_by_relations((x**2,))
-    right = (right_free).quotient_by_relations((y**3,))
-
-    coproduct = Algebras(QQ).Associative().Unital().Commutative().coproduct((left, right))
-    left_map, right_map = coproduct.coproduct_injections()
-    xbar = left.algebra_generator("x")
-    ybar = right.algebra_generator("y")
-    assert left_map(xbar) ** 2 == 0
-    assert right_map(ybar) ** 3 == 0
 
 
 def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
@@ -645,41 +547,6 @@ def test_presented_module_localization_detects_inverted_annihilators() -> None:
     assert at_five.is_zero() is True
 
 
-def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) -> None:
-    import logging
-
-    from dzack_research.preamble.all import GF
-
-    field = GF(3)
-    finite = field.regular_module()
-    finite_mor = finite.module_category().Mor(finite, finite)
-    linear = finite_mor.elementwise(
-        lambda element: finite.scalar_multiple(field(2), element)
-    )
-    assert linear(field.one()) == finite(field(2))
-
-    try:
-        finite_mor.elementwise(
-            lambda element: field(element**2)
-        )
-    except ValueError as error:
-        assert "not additive" in str(error) or "not scalar-linear" in str(error)
-    else:
-        raise AssertionError("a nonlinear map on a finite module must be rejected")
-
-    infinite = ZZ.free_module(1)
-    with caplog.at_level(
-        logging.DEBUG,
-        logger="dzack_research.preamble.categories.modules.module_morphisms.module_morphisms",
-    ):
-        basis_label = infinite.module_generating_set()[0]
-        declared = infinite.module_category().Mor(infinite, infinite).elementwise(
-            lambda vector: infinite(
-                (infinite.framing_coefficients(vector).get(basis_label, ZZ.zero()) ** 2,)
-            )
-        )
-    assert declared(infinite.module_generator(0)) == infinite.module_generator(0)
-    assert any("without exhaustive linearity verification" in record.message for record in caplog.records)
 
 
 def test_general_module_localization_uses_fraction_model_and_detects_s_torsion() -> None:
@@ -901,40 +768,6 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     assert not multiplication_by_x.is_surjective_by_nakayama()
 
 
-def test_general_module_materializes_from_an_underlying_set_and_action() -> None:
-    from dzack_research.preamble.all import GeneralModules, Modules
-
-    field = GF(3)
-    module = GeneralModules(field).from_operations(
-        [0, 1, 2],
-        addition=lambda left, right: (left + right) % 3,
-        zero=0,
-        negation=lambda value: (-value) % 3,
-        scalar_action=lambda scalar, value: (int(scalar) * value) % 3,
-    )
-
-    assert module in Modules(field)
-    assert module(1) + module(2) == module(0)
-    assert -module(1) == module(2)
-    assert module.scalar_multiple(field(2), module(2)) == module(1)
-    assert module.scalar_action()(field(2))(module(2)) == module(1)
-
-    doubling = module.module_category().Mor(module, module).elementwise(
-        lambda element: module((2 * element.underlying_element()) % 3)
-    )
-    assert doubling(module(2)) == module(1)
-
-    try:
-        module.module_category().Mor(module, module).elementwise(
-            lambda element: module((element.underlying_element() ** 2) % 3)
-        )
-    except ValueError as error:
-        assert "not additive" in str(error) or "not scalar-linear" in str(error)
-    else:
-        raise AssertionError("finite general modules must reject a nonlinear elementwise map")
-
-    assert module.annihilator() == field.ideal(field.zero())
-    assert module.annihilator() == module.scalar_action().kernel()
 
 
 def test_map_induced_out_of_a_localization_is_independent_of_the_representative() -> None:

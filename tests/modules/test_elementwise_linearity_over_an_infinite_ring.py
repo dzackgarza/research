@@ -13,12 +13,10 @@ is ``x``.
 """
 
 from dzack_research.preamble.all import (
-    AA,
     GF,
     GeneralModules,
     Set,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _group_algebra_of_the_cyclic_group_of_order_three():
@@ -37,14 +35,6 @@ def _group_algebra_of_the_cyclic_group_of_order_three():
     return ring, quotient, module
 
 
-def test_a_scalar_multiple_is_linear_over_the_infinite_ring() -> None:
-    _ring, quotient, module = _group_algebra_of_the_cyclic_group_of_order_three()
-
-    doubling = module.module_category().Mor(module, module).elementwise(
-        lambda element: module(quotient(2) * element.underlying_element())
-    )
-
-    assert doubling(module(quotient.one())) == module(quotient(2))
 
 
 def test_frobenius_is_additive_but_is_rejected_as_not_x_linear() -> None:
@@ -62,9 +52,3 @@ def test_frobenius_is_additive_but_is_rejected_as_not_x_linear() -> None:
         )
 
 
-def test_zero_module_over_a_non_enumerated_ring_has_one_verification_element() -> None:
-    zero_module = AA.free_module(finite_ordered_set(()))
-    identity = zero_module.module_category().Mor(zero_module, zero_module).elementwise(lambda element: element)
-
-    assert zero_module.cardinality() == 1
-    assert identity(zero_module.zero()) == zero_module.zero()

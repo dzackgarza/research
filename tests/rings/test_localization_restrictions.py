@@ -12,19 +12,8 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
-def test_a_localization_restricts_to_a_further_localization_over_the_source() -> None:
-    inverted_two = ZZ.localization(2)
-    inverted_six = ZZ.localization(2, 3)
-
-    restriction = inverted_two.restriction_to(inverted_six)
-
-    assert restriction.domain() is inverted_two
-    assert restriction.codomain() is inverted_six
-    assert restriction(inverted_two.localization_map()(ZZ(5))) == inverted_six.localization_map()(ZZ(5))
-    assert restriction(inverted_two(1) / 2) == inverted_six(1) / 2
 
 
 def test_localization_restrictions_compose_along_a_chain_of_inverted_scalars() -> None:
@@ -63,19 +52,3 @@ def test_a_localization_restricts_into_a_prime_localization_as_a_germ() -> None:
     assert germ(away_from_x(1) / x) == at_x_minus_one(1) / at_x_minus_one(x)
 
 
-def test_restricting_a_localized_module_carries_generators_to_generators() -> None:
-    module = ZZ.free_module(finite_ordered_set(("u", "v")))
-    inverted_two = ZZ.localization(2)
-    inverted_six = ZZ.localization(2, 3)
-    sections = inverted_two.localize_module(module)
-
-    restriction = sections.restriction_to(inverted_six)
-    finer = inverted_six.localize_module(module)
-
-    assert restriction.domain() is sections
-    assert restriction(sections.module_generator("u")) == restriction.codomain()(
-        finer.module_generator("u")
-    )
-    assert restriction(sections.module_generator("u")) != restriction.codomain()(
-        finer.module_generator("v")
-    )

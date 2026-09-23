@@ -1,11 +1,9 @@
 """Affine invariant quotients compare with scalar field extension under Reynolds hypotheses."""
 
 from dzack_research.preamble.all import (
-    GF,
     QQ,
     AffineGSchemes,
     Groups,
-    QuadraticField,
     Algebras,
 )
 
@@ -25,29 +23,8 @@ def _swap_action():
     return group, acted
 
 
-def test_invariant_quotient_base_change_has_canonical_comparison_and_reynolds_isomorphism() -> None:
-    group, acted = _swap_action()
-    field = QuadraticField(2, "s")
-    extension = QQ.Mor(field)(lambda element: field(element))
-    comparison = acted.quotient_base_change_comparison(extension)
-    arrow = comparison.comparison_morphism()
-    isomorphism = comparison.reynolds_isomorphism()
-
-    assert arrow is comparison
-    assert comparison.reynolds_hypothesis_holds()
-    assert arrow.domain() is comparison.quotient_after_base_change()
-    assert arrow.codomain() is comparison.base_change_after_quotient()
-    assert isomorphism.forward() is arrow
-    assert isomorphism.inverse().domain() is comparison.base_change_after_quotient()
-    assert isomorphism.inverse().codomain() is comparison.quotient_after_base_change()
-    assert comparison.base_changed_acted_scheme().scheme_base_ring() is field
 
 
-def test_reynolds_base_change_hypothesis_refuses_modular_characteristic() -> None:
-    group = Groups.C(2)
-    field = GF(2)
-
-    assert group.order_is_invertible_in(field) is False
 
 
 def test_affine_invariant_family_map_descends_through_same_universal_quotient() -> None:

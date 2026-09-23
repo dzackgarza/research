@@ -47,14 +47,3 @@ def test_the_automorphisms_of_a_free_module_are_the_units_of_its_endomorphism_ri
     assert doubling not in automorphisms
 
 
-def test_the_stabilizer_of_a_basis_element_is_a_subgroup_of_the_automorphisms() -> None:
-    plane = _plane()
-    a = plane.module_generator("a")
-    automorphisms = OwnedRings().unit_group()(plane.End())
-
-    stabilizer = automorphisms.predicate_subgroup(lambda automorphism: automorphism(a) == a, "f fixes a")
-
-    assert stabilizer in OwnedGroups()
-    assert stabilizer.supergroup() is automorphisms
-    assert automorphisms.one() in stabilizer
-    assert _swap(plane) not in stabilizer

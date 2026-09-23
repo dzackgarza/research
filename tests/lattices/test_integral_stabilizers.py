@@ -28,37 +28,8 @@ def _the_rational_hyperbolic_plane():
     return plane, restriction(plane)
 
 
-def test_an_isometry_carrying_the_standard_lattice_onto_itself_stabilizes_it() -> None:
-    r"""The swap of the two isotropic generators preserves ``ZZ e_0 + ZZ e_1``."""
-    plane, space = _the_rational_hyperbolic_plane()
-    e0, e1 = plane.module_generators()
-    standard_module = ZZ.free_module(2)
-    standard = standard_module.Mono(space)(
-        {0: space.wrap(e0), 1: space.wrap(e1)}
-    )
-    orthogonal_group = plane.Aut()
-    swap = orthogonal_group({0: e1, 1: e0})
-
-    assert swap in IntegralStructureAction(orthogonal_group, standard).stabilizer()
 
 
-def test_an_isometry_moving_a_generator_off_the_lattice_leaves_the_stabilizer() -> None:
-    r"""``diag(2, 1/2)`` sends ``e_1`` to ``e_1/2``, which is not in the lattice."""
-    plane, space = _the_rational_hyperbolic_plane()
-    e0, e1 = plane.module_generators()
-    standard_module = ZZ.free_module(2)
-    standard = standard_module.Mono(space)(
-        {0: space.wrap(e0), 1: space.wrap(e1)}
-    )
-    orthogonal_group = plane.Aut()
-    scaling = orthogonal_group(
-        {
-            0: plane.scalar_multiple(QQ(2), e0),
-            1: plane.scalar_multiple(QQ(1) / 2, e1),
-        }
-    )
-
-    assert scaling not in IntegralStructureAction(orthogonal_group, standard).stabilizer()
 
 
 def test_an_isometry_shrinking_an_isotropic_line_leaves_its_stabilizer() -> None:

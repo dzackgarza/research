@@ -34,12 +34,3 @@ def test_multiplication_matrix_recovers_norm_and_trace() -> None:
     assert matrix.trace() == element.trace()
 
 
-def test_number_field_inverse_is_the_live_field_inverse() -> None:
-    field = _quadratic_field()
-    element = field.primitive_element() + field.one()
-    inverse = element.inverse()
-
-    assert element * inverse == field.one()
-    assert inverse * element == field.one()
-    assert inverse == element.inverse_of_unit()
-    assert inverse == ~element

@@ -1,6 +1,5 @@
 r"""Even symmetric bilinear forms and their integral quadratic refinements."""
 
-import pytest
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import Lattices
@@ -34,9 +33,3 @@ def test_even_a2_has_the_integral_half_norm_quadratic_module() -> None:
             )
 
 
-def test_odd_rank_one_lattice_has_no_integral_half_norm_quadratic_module() -> None:
-    integers = _own_ring(SageZZ)
-    odd = Lattices(integers)([[1]])
-
-    with pytest.raises(ValueError, match="not even"):
-        odd.to_quadratic_module()

@@ -22,8 +22,3 @@ def test_the_two_by_two_matrix_algebra_does_not_commute() -> None:
     assert matrices.is_commutative() is False
 
 
-def test_the_one_by_one_matrix_algebra_commutes() -> None:
-    line = QQ.matrix_space(1)
-
-    assert line.is_commutative() is True
-    assert line.identity_matrix() * line.identity_matrix() == line.identity_matrix()

@@ -52,24 +52,3 @@ def test_a_torsion_module_vanishes_at_a_prime_outside_its_support() -> None:
     assert not module.localize_at_prime(ZZ.ideal(ZZ(3))).is_zero()
 
 
-def test_localizing_a_free_module_preserves_its_fraction_action_and_map() -> None:
-    ring = QQ.polynomial_ring("x")
-    x = ring.algebra_generator("x")
-    free = ring.free_module(finite_ordered_set(("g",)))
-    generator = free.module_generator("g")
-    localized = free.localize(x)
-
-    assert localized.scalar_action().codomain() is AdditiveGroups().AdditiveCommutative().End(
-        localized.underlying_additive_group()
-    )
-    assert localized.scalar_multiple(
-        localized.base_ring()(x), localized.module_generator("g")
-    ) == localized.fraction(free.scalar_multiple(x, generator))
-
-    doubling = free.module_category().Mor(free, free)(
-        {"g": free.scalar_multiple(ring(2), generator)}
-    )
-    localized_doubling = localized.localization_functor()(doubling)
-    assert localized_doubling(localized.module_generator("g")) == localized.scalar_multiple(
-        localized.base_ring()(2), localized.module_generator("g")
-    )

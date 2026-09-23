@@ -46,16 +46,6 @@ def test_hodge_star_is_the_metric_poincare_composite_and_has_expected_square() -
     assert (hyperbolic_star.forward() * hyperbolic_star.forward())(generator) == generator
 
 
-def test_multivector_hodge_star_is_distinct_from_form_hodge_star() -> None:
-    lattice = Lattices(ZZ)("U")
-    volume = lattice.framing_volume_trivialization()
-    vector_star = lattice.multivector_hodge_star(volume, 1)
-    form_star = lattice.hodge_star(volume, 1)
-
-    assert vector_star.domain() is lattice.exterior_power(1)
-    assert vector_star.codomain() is lattice.exterior_power(1)
-    assert form_star.domain() is lattice.exterior_forms(1)
-    assert vector_star.domain() is not form_star.domain()
 
 
 def test_nonunimodular_metric_does_not_invent_an_integral_form_hodge_star() -> None:

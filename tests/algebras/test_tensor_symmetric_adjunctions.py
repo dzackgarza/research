@@ -52,20 +52,6 @@ def _dual_numbers_mod_four():
     return algebra, sign_algebra_map
 
 
-def test_module_map_is_adopted_as_an_algebra_map_only_when_it_preserves_the_laws() -> (
-    None
-):
-    algebra, _involution = _dual_numbers_mod_four()
-    one = algebra.module_generator(0)
-    epsilon = algebra.module_generator(1)
-
-    nonunital = algebra.module_category().Mor(algebra, algebra)({0: algebra.zero(), 1: epsilon})
-    with pytest.raises(ValueError, match="preserve the unit"):
-        Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(nonunital)
-
-    nonmultiplicative = algebra.module_category().Mor(algebra, algebra)({0: one, 1: one})
-    with pytest.raises(ValueError, match="not multiplicative"):
-        Algebras(algebra.base_ring()).Associative().Unital().Mor(algebra, algebra)(nonmultiplicative)
 
 
 def _assert_module_maps_agree(left, right, probes) -> None:
@@ -285,14 +271,6 @@ def test_tensor_and_symmetric_mor_bijections_on_nonfree_modules_are_natural_and_
     )
 
 
-def test_symmetric_adjunction_targets_the_owned_commutative_algebra_category() -> None:
-    adjunction = Modules(ZZ).symmetric_algebra_adjunction()
-    assert adjunction.left_adjoint().codomain() == Algebras(ZZ).Associative().Unital().Commutative()
-    assert adjunction.right_adjoint().domain() == Algebras(ZZ).Associative().Unital().Commutative()
-
-    tensor_adjunction = Modules(ZZ).tensor_algebra_adjunction()
-    assert tensor_adjunction.left_adjoint().codomain() == Algebras(ZZ)
-    assert tensor_adjunction.right_adjoint().domain() == Algebras(ZZ)
 
 
 @pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))

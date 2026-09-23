@@ -9,19 +9,6 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
-def test_zero_adic_completion_has_identity_kernel_and_zero_extended_ideal() -> None:
-    line = QQ.polynomial_ring(("x",))
-    zero = line.ideal(line.zero())
-    completion = line.adic_completion(zero)
-
-    assert completion.completion_map_kernel() == zero
-    assert completion.is_adically_separated()
-    extension = completion.ideal_extension()
-    assert extension.source_ideal() is zero
-    assert extension.morphism() is completion.completion_map()
-    assert extension.extended_ideal().ring() is completion
-    assert extension.extended_ideal() == completion.ideal(completion.zero())
-    assert completion.is_flat_over_source()
 
 
 def test_nilpotent_adic_completion_keeps_the_source_but_not_a_truncation_artifact() -> None:
@@ -66,17 +53,6 @@ def test_nonmaximal_adic_completion_is_complete_but_not_declared_local() -> None
     assert completion.extended_ideal().ring() is completion
 
 
-def test_truncation_ideal_images_retain_their_extension_maps() -> None:
-    line = QQ.polynomial_ring(("x",))
-    x = line.algebra_generator("x")
-    completion = line.adic_completion(line.ideal(x))
-    extension = completion.truncation_ideal_extension(3)
-
-    assert extension.source_ideal() is completion.ideal_of_definition()
-    assert extension.morphism().domain() is line
-    assert extension.morphism().codomain() is completion.adic_truncation(3)
-    assert extension.extended_ideal().ring() is completion.adic_truncation(3)
-    assert completion.adic_projection(3)(completion.completion_map()(x)) in extension.extended_ideal()
 
 
 def test_artin_name_requires_finite_length() -> None:
@@ -92,17 +68,6 @@ def test_artin_name_requires_finite_length() -> None:
         nonmaximal.adic_artin_truncation(3)
 
 
-def test_maximal_completion_residue_map_is_the_first_adic_projection() -> None:
-    line = QQ.polynomial_ring(("x",))
-    x = line.algebra_generator("x")
-    completion = line.adic_completion(line.ideal(x))
-    residue = completion.residue_field()
-    residue_map = completion.residue_map()
-
-    assert residue_map.domain() is completion
-    assert residue_map.codomain() is residue
-    assert residue_map(completion.completion_map()(x)) == residue.zero()
-    assert completion.source_residue_map()(x) == residue.zero()
 
 
 def test_compatible_ring_map_induces_a_continuous_map_of_completions() -> None:

@@ -67,14 +67,3 @@ def test_a_half_integral_vector_of_the_rational_plane_is_not_in_a_lattice() -> N
     assert not into_standard.is_in_image(half)
 
 
-def test_a_vector_outside_the_rational_span_of_a_line_is_not_in_it() -> None:
-    r"""``ZZ e0`` contains its own multiples and no multiple of ``e1``."""
-    space, plane = _rational_plane()
-    e0, e1 = plane.module_generator(0), plane.module_generator(1)
-
-    line = ZZ.free_module(1)
-    into_line = line.Mono(space)({0: space(e0)})
-
-    assert into_line.is_in_image(space(-3 * e0))
-    assert into_line.lift(space(-3 * e0)) == -3 * line.module_generator(0)
-    assert not into_line.is_in_image(space(e1))

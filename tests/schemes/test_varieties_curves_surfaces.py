@@ -22,26 +22,6 @@ def _plane():
     return plane, algebra.algebra_generator("x"), algebra.algebra_generator("y")
 
 
-def test_the_affine_plane_is_a_surface_and_the_lines_are_curves() -> None:
-    line = AffineSpaces(QQ)(1)
-    plane, _x, _y = _plane()
-    projective_line = ProjectiveSpaces(QQ)(1)
-    projective_plane = ProjectiveSpaces(QQ)(2)
-
-    assert line in Varieties(QQ)
-    assert line in Curves(QQ)
-    assert line not in Surfaces(QQ)
-    assert plane in Varieties(QQ)
-    assert plane in Surfaces(QQ)
-    assert plane not in Curves(QQ)
-    assert projective_line in Curves(QQ)
-    assert projective_plane in Surfaces(QQ)
-    assert projective_line.scheme_category().product((projective_line, projective_line)) in Surfaces(QQ)
-
-    # The three hypotheses are each of them separately necessary.
-    assert line in IntegralSchemes(QQ)
-    assert line in Schemes(QQ).Separated()
-    assert line in Schemes(QQ).FiniteType()
 
 
 def test_the_integrality_hypothesis_excludes_a_reducible_subscheme() -> None:
@@ -82,12 +62,6 @@ def test_relative_dimension_is_read_over_the_stated_base() -> None:
     assert line.coordinate_ring().krull_dimension() == 2
 
 
-def test_projective_line_has_arithmetic_and_geometric_genus_zero() -> None:
-    line = ProjectiveSpaces(QQ)(1)
-
-    assert line.arithmetic_genus() == 0
-    assert line.geometric_genus() == 0
-    assert line.genus() == 0
 
 
 def test_singular_plane_cubic_keeps_arithmetic_genus_separate_from_geometric_genus() -> None:

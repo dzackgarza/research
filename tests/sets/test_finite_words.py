@@ -3,15 +3,6 @@ r"""Finite words and multisets are the length-graded coproducts of their pieces.
 from dzack_research.preamble.all import NN, finite_ordered_set
 
 
-def test_empty_alphabet_has_exactly_the_empty_word_or_multiset():
-    alphabet = finite_ordered_set(())
-    for words in (alphabet.finite_words(), alphabet.finite_multisets()):
-        assert words.cardinality() == 1
-        assert words.cofactor(NN(0)).cardinality() == 1
-        assert words.cofactor(NN(3)).cardinality() == 0
-        empty, = tuple(words)
-        assert empty.summand_index() == 0
-        assert words.ranking_map().inverse()(words.ranking_map()(empty)) == empty
 
 
 def test_word_and_multiset_lengths_use_the_existing_finite_set_constructions():

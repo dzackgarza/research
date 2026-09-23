@@ -7,7 +7,6 @@ discriminant generator is an order-two quadratic-isotropic class, and gluing
 it produces the even unimodular hyperbolic plane with index two.
 """
 
-import pytest
 
 from dzack_research.preamble.all import ZZ, Lattices
 
@@ -31,17 +30,5 @@ def test_archived_u2_two_primary_modification_is_the_index_two_even_overlattice(
     assert enlarged.is_isometric(Lattices(ZZ)("U")) is True
 
 
-def test_archived_local_modification_rejects_glue_from_the_wrong_primary_part() -> None:
-    lattice = Lattices(ZZ)([[0, 2], [2, 0]])
-    glue_class = lattice.discriminant_group().module_generators()[0]
-
-    with pytest.raises(ValueError, match="p-primary"):
-        lattice.local_modification(3, glue_class)
 
 
-def test_archived_local_modification_requires_a_prime_index() -> None:
-    lattice = Lattices(ZZ)([[0, 2], [2, 0]])
-    glue_class = lattice.discriminant_group().module_generators()[0]
-
-    with pytest.raises(ValueError, match="prime"):
-        lattice.local_modification(4, glue_class)

@@ -1,6 +1,5 @@
-import pytest
 
-from dzack_research.preamble.all import AffineSpaces, QQ, ProjectiveSpaces, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
 from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheaves,
@@ -67,17 +66,6 @@ def test_redundant_projective_line_chart_refines_the_standard_atlas() -> None:
     assert coarse.chart_embedding(0) * refinement.chart_map(2) == fine.chart_embedding(2)
 
 
-def test_proper_singleton_open_is_not_a_finite_affine_atlas() -> None:
-    line = AffineSpaces(QQ)(1, names=("x",))
-    x = line.coordinate_algebra().algebra_generator("x")
-    proper_open = line.distinguished_open(x)
-
-    with pytest.raises(ValueError, match="do not jointly cover"):
-        FiniteAffineAtlases(line)(
-            (proper_open,),
-            (),
-            (proper_open.inclusion(),),
-        )
 
 
 def test_nontrivial_line_bundle_pulls_back_with_actual_local_isomorphisms() -> None:

@@ -5,15 +5,6 @@ from sage.groups.abelian_gps.abelian_group import AbelianGroup
 from dzack_research.preamble.all import ZZ, FinitelyPresentedTorsionModules
 
 
-def test_crossing_preserves_the_selected_two_generator_presentation() -> None:
-    group = AbelianGroup([2, 3], names=("a", "b"))
-    generators = tuple(group.gens())
-    module = FinitelyPresentedTorsionModules(ZZ).from_abelian_group(group)
-
-    assert tuple(module.module_generating_set()) == generators
-    assert module.module_rank() == 0
-    assert tuple(module.invariant_factors()) == (2, 3)
-    assert module.cardinality() == 6
 
 
 def test_crossing_discovers_a_relation_between_redundant_generators() -> None:

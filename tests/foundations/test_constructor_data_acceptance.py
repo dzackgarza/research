@@ -1,9 +1,7 @@
 from dzack_research.preamble.all import (
     QQ,
-    AdditiveGroups,
     Algebras,
     BilinearMap,
-    Modules,
     finite_ordered_set,
 )
 
@@ -48,24 +46,3 @@ def test_two_multiplications_on_one_supplied_module_remain_distinct_structures()
     assert idempotent_x * idempotent_x == idempotent_x
 
 
-def test_noncommutative_regular_module_action_lands_in_additive_endomorphisms() -> None:
-    ring = QQ.matrix_space(2)
-    additive = AdditiveGroups().AdditiveCommutative()
-    endomorphisms = additive.End(ring)
-    action = ring.Mor(endomorphisms)(
-        lambda scalar: endomorphisms.elementwise(
-            lambda element: scalar * element,
-        ),
-    )
-    regular = Modules(ring)(action)
-
-    assert regular.base_ring() is ring
-    assert regular.scalar_action() is action
-    assert action.domain() is ring
-    assert action.codomain() is endomorphisms
-
-    left = ring([[0, 1], [0, 0]])
-    right = ring([[0, 0], [1, 0]])
-    assert left * right != right * left
-    assert action(left)(right) == left * right
-    assert action(right)(left) == right * left

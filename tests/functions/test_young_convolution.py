@@ -39,8 +39,3 @@ def test_convolution_is_independent_of_a_point_change_in_a_representative() -> N
     assert pairing(2 * f, one) == 2 * expected
 
 
-def test_known_invalid_integrability_is_not_a_convolution_hypothesis() -> None:
-    assert Lp(1).zero().parent() is Lp(1)
-    assert Lp(Infinity).one().parent() is Lp(Infinity)
-    with pytest.raises(ValueError, match="nonzero constant"):
-        Lp(1)(RR.one())

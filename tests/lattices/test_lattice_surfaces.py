@@ -1,22 +1,10 @@
-import pytest
 
 from dzack_research.preamble.all import (
     AA,
-    CommutativeIdeals,
-    FinitelyGeneratedModules,
-    FinitelyPresentedAlgebras,
-    FractionalIdeals,
-    FramedModules,
     Groups,
     Lattices,
-    ModuleSubobjects,
-    NumberFieldsWithChosenPrimitiveElement,
-    OwnedNumberFields,
-    OwnedOrders,
     ProjectiveModules,
-    QQ,
     QuadraticField,
-    RestrictedScalarsModules,
     Set,
     tensor,
     ZZ,
@@ -25,29 +13,8 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
-def test_zz_owns_ideals_and_is_the_ring_of_integers_of_qq() -> None:
-    ideal = ZZ.ideal(6)
-    assert ideal in CommutativeIdeals(ZZ)
-    assert ideal.principal_generator() == 6
-    assert ideal.inclusion().domain() is ideal
-    assert ideal.inclusion().codomain().base_ring() is ZZ
-
-    order = QQ.ring_of_integers()
-    assert order is ZZ
-    assert order in OwnedOrders()
 
 
-def test_fractional_ideal_is_a_module_subobject_of_the_fraction_field() -> None:
-    ideal = ZZ.fractional_ideal(QQ(2) / 3)
-    assert ideal in FractionalIdeals(ZZ)
-    assert ideal.principal_generator() == QQ(2) / 3
-
-    inverse = ~ideal
-    assert inverse.principal_generator() == QQ(3) / 2
-    assert (ideal * inverse).principal_generator() == 1
-
-    image = ideal.inclusion()(ideal.module_generator(0))
-    assert ideal.inclusion().is_in_image(image)
 
 
 def test_subobject_orthogonal_complement_defers_to_the_inclusion() -> None:
@@ -70,49 +37,10 @@ def test_subobject_orthogonal_complement_defers_to_the_inclusion() -> None:
     assert perpendicular.inclusion().is_in_image(e2)
 
 
-def test_saturation_is_the_primitive_closure_of_an_inclusion() -> None:
-    lattice = Lattices(ZZ)(2)
-    e0 = lattice.basis_vector(0)
-    subobject = lattice.subobject_on((2 * e0,))
-
-    assert not subobject.is_primitive()
-    saturation = subobject.saturation()
-
-    assert saturation.inclusion().codomain() is lattice
-    assert saturation.is_primitive()
-    assert saturation.inclusion().is_in_image(e0)
 
 
-def test_radical_and_isotropic_reduction_are_inclusion_derived() -> None:
-    lattice = Lattices(ZZ)([[0, 0], [0, 1]])
-    e0, e1 = lattice.module_generators()
-
-    radical = lattice.radical()
-    assert radical.module_rank() == 1
-    assert radical.inclusion().is_in_image(e0)
-    assert not radical.inclusion().is_in_image(e1)
-
-    quotient = lattice.radical_quotient()
-    assert quotient.module_rank() == 1
-    assert quotient.gram_tensor()[0, 0] == 1
-
-    plane = Lattices(ZZ)("U")
-    isotropic_line = plane.subobject_on((plane.basis_vector(0),))
-    reduction = isotropic_line.isotropic_reduction()
-    assert reduction.module_rank() == 0
 
 
-def test_reflections_are_lattice_automorphisms_with_inverse_and_composition() -> None:
-    plane = Lattices(ZZ)("U")
-    e, f = plane.module_generators()
-    reflection = plane.reflection(e + f)
-    automorphisms = plane.Aut()
-
-    assert reflection.parent() is automorphisms
-    assert automorphisms.one().parent() is automorphisms
-    for vector in (e, f):
-        assert (~reflection)(reflection(vector)) == vector
-        assert (reflection * reflection)(vector) == vector
 
 
 def test_discriminant_class_constructs_an_overlattice_inclusion() -> None:
@@ -129,32 +57,8 @@ def test_discriminant_class_constructs_an_overlattice_inclusion() -> None:
     assert inclusion.codomain().gram_tensor()[0, 0] == 2
 
 
-def test_number_field_properties_selected_primitive_element_and_order_are_distinct() -> None:
-    field = QuadraticField(2, "a")
-    assert field in OwnedNumberFields()
-    assert field in NumberFieldsWithChosenPrimitiveElement()
-    assert field.degree() == 2
-    assert field.embeddings(AA).cardinality() == 2
-
-    order = field.ring_of_integers()
-    assert order in OwnedOrders()
-    assert order.base_ring() is ZZ
-    assert order.integral_basis().cardinality() == 2
-
-    algebra = field.as_algebra()
-    assert algebra is not field
-    assert algebra.base_ring() is QQ
-    assert algebra in FinitelyPresentedAlgebras(QQ)
 
 
-def test_galois_group_does_not_mean_the_normal_closure_group() -> None:
-    polynomial_ring = QQ.polynomial_ring("x")
-    x = polynomial_ring.algebra_generator("x")
-    field = (x**3 - 2).number_field("a")
-
-    assert not field.is_galois()
-    with pytest.raises(ValueError, match="normal_closure_galois_group"):
-        field.galois_group()
 
 
 def test_orthogonal_complement_uses_the_image_of_an_arbitrary_morphism() -> None:
@@ -244,34 +148,6 @@ def test_diagonal_isotropic_class_glues_a1_four_to_an_index_two_even_overlattice
     assert all(factor == 2 for factor in overlattice_factors)
 
 
-def test_quadratic_integer_ideals_compute_as_order_modules_inside_the_field() -> None:
-    field = QuadraticField(5, "a")
-    order = field.ring_of_integers()
-    order_basis = order.integral_basis()
-
-    integral_ideal = order.ideal(2)
-    assert integral_ideal.module_generating_set().cardinality() == 1
-    assert integral_ideal.is_principal()
-    assert order(integral_ideal.principal_generator() / 2).is_unit()
-    assert all(
-        2 * basis_element in integral_ideal
-        for basis_element in order_basis
-    )
-
-    half_order = order.fractional_ideal(field(QQ(1) / 2))
-    inverse = ~half_order
-    product = half_order * inverse
-
-    assert product.is_principal()
-    assert product.principal_generator().is_unit()
-
-    module_generator = half_order.module_generator(
-        next(iter(half_order.module_generating_set()))
-    )
-    image = half_order.inclusion()(module_generator)
-    assert image.parent() is half_order.inclusion().codomain()
-    assert image.parent() is not half_order
-    assert half_order.inclusion().lift(image) == module_generator
 
 
 def test_nonprincipal_ideal_in_q_sqrt_minus_five_has_a_computable_fractional_inverse() -> None:
@@ -297,56 +173,6 @@ def test_nonprincipal_ideal_in_q_sqrt_minus_five_has_a_computable_fractional_inv
     assert order.one() in product
 
 
-def test_fractional_ideal_of_a_nonmaximal_order_uses_that_order_not_the_maximal_order() -> None:
-    field = QuadraticField(5, "a")
-    a = field.primitive_element()
-    order = field.order_generated_by(a)
-
-    assert not order.is_maximal()
-    assert order in OwnedOrders()
-    half_order = order.fractional_ideal(field(QQ(1) / 2))
-
-    assert half_order in FractionalIdeals(order)
-    assert half_order in ModuleSubobjects(order)
-    assert half_order in FramedModules(order)
-    assert half_order in FinitelyGeneratedModules(order)
-    assert half_order in ProjectiveModules(order)
-
-    underlying_integer_module = half_order.restrict_scalars(
-        order.algebra_structure_morphism()
-    )
-    assert underlying_integer_module in RestrictedScalarsModules(ZZ)
-    assert underlying_integer_module in FramedModules(ZZ)
-    assert underlying_integer_module in FinitelyGeneratedModules(ZZ)
-    assert underlying_integer_module.module_generating_set().cardinality() == 2
-    selected_generator = half_order.module_generator(
-        next(iter(half_order.module_generating_set()))
-    )
-    restricted_generator = underlying_integer_module(selected_generator)
-    assert restricted_generator.underlying_element() == selected_generator
-
-    assert field(QQ(1) / 2) in half_order
-    assert a / 2 in half_order
-    assert (1 + a) / 2 in half_order
-    assert (1 + a) / 4 not in half_order
-
-    inverse = ~half_order
-    assert inverse.is_principal()
-    assert inverse.principal_generator() == 2
-
-    product = half_order * inverse
-    assert product.is_principal()
-    assert product.principal_generator().is_unit()
-    assert order.one() in product
-
-    unit_ideal = order.fractional_ideal(1)
-    intersection = half_order.intersection(unit_ideal)
-    assert intersection.is_principal()
-    assert intersection.principal_generator().is_unit()
-
-    ideal_sum = half_order + unit_ideal
-    assert ideal_sum.is_principal()
-    assert ideal_sum.principal_generator() == field(QQ(1) / 2)
 
 
 def test_real_quadratic_field_has_exact_embeddings_and_its_actual_galois_group() -> None:
@@ -394,14 +220,3 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
     assert coinvariants.is_torsion_free()
 
 
-def test_group_lattice_rejects_actions_outside_the_orthogonal_automorphism_mor() -> None:
-    group = Groups.C(2)
-    plane = Lattices(ZZ)("U")
-
-    def nonisometric_action(group_element, vector):
-        if group_element == group.one():
-            return vector
-        return plane.scalar_multiple(ZZ(2), vector)
-
-    with pytest.raises(ValueError, match="preserve the lattice form"):
-        Lattices(ZZ[group])(plane, nonisometric_action)

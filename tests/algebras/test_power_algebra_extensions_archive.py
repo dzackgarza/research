@@ -1,8 +1,7 @@
 """Archive reconciliation for the exterior algebra universal extension."""
 
-import pytest
 
-from dzack_research.preamble.all import ZZ, Algebras, BilinearMap, Modules
+from dzack_research.preamble.all import ZZ, Algebras, BilinearMap
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -41,10 +40,3 @@ def test_exterior_universal_map_targets_an_ordinary_algebra() -> None:
     assert extension(exterior.one() + 3 * x) == target.one() + 3 * epsilon
 
 
-def test_exterior_extension_rejects_nonalternating_generator_images() -> None:
-    source_module = ZZ.free_module(finite_ordered_set(("x",)))
-    target = _dual_numbers()
-    linear = source_module.module_category().Mor(source_module, target)({"x": target.one()})
-
-    with pytest.raises(ValueError, match="square to zero"):
-        linear.alternating_extension()

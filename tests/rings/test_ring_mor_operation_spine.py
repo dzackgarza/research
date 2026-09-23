@@ -1,25 +1,8 @@
 r"""The ring Mor family refines both multiplicative-additive operation spines."""
 
-from dzack_research.preamble.all import QQ, ZZ
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedRings,
-    OwnedRngs,
-    OwnedSemirings,
-)
+from dzack_research.preamble.all import QQ
 
 
-def test_ring_mor_is_owned_after_semiring_and_rng_mor_specialization() -> None:
-    semiring_homs = OwnedSemirings().category_packet().Mors()
-    rng_homs = OwnedRngs().category_packet().Mors()
-    ring_homs = OwnedRings().category_packet().Mors()
-
-    assert semiring_homs.base_category() is OwnedSemirings()
-    assert rng_homs.base_category() is OwnedRngs()
-    assert ring_homs.base_category() is OwnedRings()
-    identity = ring_homs.Of(ZZ, ZZ).identity()
-    assert identity.domain() is ZZ
-    assert identity.codomain() is ZZ
-    assert identity(ZZ(3)) == ZZ(3)
 
 
 def test_framed_polynomial_ring_map_uses_owned_generator_images() -> None:

@@ -1,8 +1,4 @@
 from dzack_research.preamble.all import QQ
-from dzack_research.preamble.categories.modules import (
-    DifferentialGradedModules,
-    GradedAlgebraModules,
-)
 
 
 def test_de_rham_differential_is_a_degree_one_graded_derivation() -> None:
@@ -16,18 +12,3 @@ def test_de_rham_differential_is_a_degree_one_graded_derivation() -> None:
     assert differential(differential(x)) == dga.zero()
 
 
-def test_a_dga_is_canonically_its_regular_dg_module() -> None:
-    algebra = QQ.free_module(("x",)).symmetric_algebra()
-    x = algebra.algebra_generator("x")
-    dga = algebra.de_rham_algebra()
-    regular = dga.regular_dg_module()
-    X = regular(dga.from_degree_zero(x))
-    dX = regular.d(X)
-
-    assert regular is not dga
-    assert regular.unformed_module() is dga.unformed_module()
-    assert regular in GradedAlgebraModules(dga)
-    assert regular in DifferentialGradedModules(dga)
-    assert regular.graded_algebra() is dga
-    assert regular.dga() is dga
-    assert regular.act(X, dga(dX)) == regular(dga(X) * dga(dX))

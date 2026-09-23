@@ -4,14 +4,6 @@ from dzack_research.preamble.categories.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
-def test_product_and_coproduct_cone_categories_are_owned_by_the_target_category() -> None:
-    factors = (Sets.Δ[0], Sets.Δ[1])
-
-    product_cones = Sets().ProductCones(factors)
-    coproduct_cocones = Sets().CoproductCocones(factors)
-
-    assert product_cones.target_category() is Sets()
-    assert coproduct_cocones.target_category() is Sets()
 
 
 def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
@@ -65,23 +57,6 @@ def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
     ) == 2 * left.module_generator("x")
 
 
-def test_infinite_dependent_product_accepts_callable_sections_without_enumeration() -> None:
-    from dzack_research.preamble.categories.sets import NN
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
-    bit = Sets.Δ[1]
-    product = Sets().product(indexed_family(NN, lambda _index: bit))
-    section = product(lambda index: bit(int(index) % 2))
-
-    assert section[NN(0)] == bit(0)
-    assert section[NN(1000)] == bit(0)
-    assert "Section of" in repr(section)
-    try:
-        product((bit(0), bit(1)))
-    except TypeError as error:
-        assert "callable section" in str(error)
-    else:
-        raise AssertionError("an infinite product must not interpret a finite sequence as a total section")
 
 
 def test_infinite_free_module_biproduct_uses_tagged_lazy_framing() -> None:

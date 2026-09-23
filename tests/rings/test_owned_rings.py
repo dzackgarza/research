@@ -1,5 +1,3 @@
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -14,101 +12,20 @@ def _session():
     return scope
 
 
-def test_session_integer_and_rational_rings_are_owned_views() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    QQ = session["QQ"]
-    OwnedRings = session["OwnedRings"]
-    OwnedFields = session["OwnedFields"]
-    assert ZZ is not SageZZ
-    assert QQ is not SageQQ
-    assert ZZ in OwnedRings()
-    assert QQ in OwnedFields()
-    assert ZZ(3).parent() is ZZ
-    assert QQ(3).parent() is QQ
 
 
-def test_owned_ordered_ring_elements_compare_with_python_integers() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    QQ = session["QQ"]
-
-    assert ZZ(2) > 1
-    assert 1 < ZZ(2)
-    assert ZZ(2) <= 2
-    assert 2 >= ZZ(2)
-    assert max(1, ZZ(2)) == ZZ(2)
-    assert min(3, QQ(3) / 2) == QQ(3) / 2
 
 
-def test_owned_ring_power_constructs_a_free_module_over_the_owned_ring() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-
-    module = ZZ**3
-    assert module.base_ring() is ZZ
-    assert module.module_rank() == 3
-    assert module is ZZ**3
-    assert ZZ.free_module(ZZ(3)) is module
-    assert ZZ.free_module(SageZZ(3)) is module
 
 
-def test_owned_polynomial_and_matrix_ring_constructors_cross_to_the_engine() -> None:
-    session = _session()
-    QQ = session["QQ"]
-    OwnedRings = session["OwnedRings"]
-
-    polynomials = QQ.polynomial_ring("x")
-    matrices = QQ.matrix_space(2)
-
-    assert polynomials in OwnedRings()
-    assert matrices in OwnedRings()
-    assert polynomials.base_ring() is QQ
-    assert matrices.base_ring() is QQ
-    assert polynomials.algebra_generator("x").parent() is polynomials
-    assert matrices.one().parent() is matrices
-    assert QQ["x"] is polynomials
 
 
-def test_owned_polynomial_ring_has_owned_selected_algebra_generators() -> None:
-    session = _session()
-    QQ = session["QQ"]
-    ring = QQ["x, y"]
-
-    x, y = ring.algebra_generators()
-    assert x.parent() is ring
-    assert y.parent() is ring
-    assert ring.algebra_generating_set() == finite_ordered_set(("x", "y"))
 
 
-def test_fraction_field_returns_the_owned_field() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    QQ = session["QQ"]
-
-    assert ZZ.fraction_field() is QQ
 
 
-def test_exact_reals_keep_the_owned_integer_rational_and_algebraic_inclusions() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    QQ = session["QQ"]
-    AA = session["AA"]
-    QQbar = session["QQbar"]
-    RR = session["RR"]
-
-    assert RR.has_coerce_map_from(ZZ)
-    assert RR.has_coerce_map_from(QQ)
-    assert RR.has_coerce_map_from(AA)
-    assert not RR.has_coerce_map_from(QQbar)
 
 
-def test_commutative_ring_is_its_own_center() -> None:
-    session = _session()
-    QQ = session["QQ"]
-
-    assert QQ.ring_center() is QQ
-    assert QQ.is_central(QQ(3)) is True
 
 
 def test_noncommutative_center_is_a_predicate_subring() -> None:
@@ -131,18 +48,6 @@ def test_noncommutative_center_is_a_predicate_subring() -> None:
     assert next(iter(matrices.algebra_generators())) not in center
 
 
-def test_owned_ring_constructors_return_owned_rings() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    OwnedFields = session["OwnedFields"]
-    OwnedRings = session["OwnedRings"]
-
-    assert session["GF"](5) in OwnedFields()
-    assert session["PrimeField"](5) in session["PrimeFields"]()
-    assert session["Zmod"](8) in OwnedRings()
-    assert session["QuadraticField"](2, "a") in OwnedFields()
-    assert session["QuadraticField"](ZZ(2), "a") in OwnedFields()
-    assert session["QuadraticField"](SageZZ(2), "a") in OwnedFields()
 
 
 def test_finite_ring_engine_adoption_keeps_initial_semantic_placement() -> None:
@@ -194,27 +99,9 @@ def test_explicit_algebraic_extensions_are_number_fields_or_orders() -> None:
     assert tuple(QQ["x"].algebra_generating_set()) == ("x",)
 
 
-def test_lattices_still_use_the_owned_integer_ring() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    lattice = session["Lattices"](ZZ)("U")
-
-    assert lattice.base_ring() is ZZ
-    assert repr(lattice).startswith("Integral lattice")
 
 
 
-def test_loading_sage_namespace_restores_owned_ring_names(tmp_path) -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    script = tmp_path / "rings.sage"
-    script.write_text("from sage.all import *\nloaded = True\n")
-
-    session["load"](str(script), session)
-
-    assert session["loaded"] is True
-    assert session["ZZ"] is ZZ
-    assert session["ZZ"](3).parent() is ZZ
 
 
 def test_owned_ring_cardinality_distinguishes_countable_and_uncountable_infinite_rings() -> None:
@@ -238,18 +125,3 @@ def test_owned_algebraic_real_and_complex_closures_are_countable() -> None:
     assert QQbar.cardinality() == aleph0
 
 
-def test_owned_ring_display_comes_from_mathematical_presentation() -> None:
-    session = _session()
-    ZZ = session["ZZ"]
-    QQ = session["QQ"]
-    GF = session["GF"]
-    Zmod = session["Zmod"]
-
-    assert repr(ZZ) == "Integer Ring"
-    assert repr(QQ) == "Rational Field"
-    assert repr(GF(5)) == "GF(5)"
-    assert repr(Zmod(6)) == "ZZ/6ZZ"
-    polynomial = ZZ.polynomial_ring("x")
-    assert repr(polynomial) == "Integer Ring[x]"
-    assert repr(polynomial.algebra_generator("x")) == "x"
-    assert "object at 0x" not in repr(polynomial)

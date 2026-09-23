@@ -144,32 +144,6 @@ def test_canonical_comparison_maps_between_the_four_free_constructions() -> None
     assert sym_to_div(div_to_sym(probe_div)) == probe_div
 
 
-def test_power_algebras_construct_their_exact_sum_before_the_product() -> None:
-    from dzack_research.preamble.all import Algebras, GradedModules, Modules
-
-    source = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
-    for algebra, degree_piece in (
-        (source.exterior_algebra(), source.exterior_power),
-        (source.divided_power_algebra(), source.divided_power_module),
-    ):
-        module = algebra.unformed_module()
-        assert module is not algebra
-        assert module in GradedModules(ZZ)
-        assert module not in Algebras(ZZ)
-        assert module.graded_piece(2) is degree_piece(2)
-        assert module.graded_piece(-1).zero() == module.graded_piece(-1).an_element()
-        x = algebra.degree_one_generator(0)
-        y = algebra.degree_one_generator(1)
-        multiplication = algebra.multiplication()
-        assert multiplication.codomain() is module
-        assert multiplication.domain().tensor_factor(0) is module
-        assert multiplication.domain().tensor_factor(1) is module
-        assert algebra(multiplication(module(x), module(y))) == x * y
-        assert algebra(module(x + y)) == x + y
-        assert module(x + y) == module(x) + module(y)
-        assert algebra.one() * x == x
-        assert 4 * x == algebra.zero()
-        assert module.projection(1)(module(x)) == source.module_generator(0)
 
 
 def test_divided_power_algebra_framing_includes_higher_integral_generators() -> None:

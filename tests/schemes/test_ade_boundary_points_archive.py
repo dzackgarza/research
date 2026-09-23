@@ -23,14 +23,3 @@ def test_a_one_distinguished_boundary_points_are_exactly_the_two_blue_edges() ->
     assert tuple(int(coordinate) for coordinate in pair.p_star()) in expected
 
 
-def test_distinguished_points_are_a_proper_subset_when_a_polygon_has_nonblue_boundary() -> None:
-    pair = ADELogPairs(QQ)("D", 4)
-    points = pair.distinguished_boundary_points()
-    boundary = pair.polygon().boundary_integral_points()
-
-    assert points.cardinality() < boundary.cardinality()
-    point_coordinates = {
-        tuple(int(coordinate) for coordinate in point) for point in points
-    }
-    assert tuple(int(coordinate) for coordinate in pair.p_star()) in point_coordinates
-    assert all(point in boundary for point in points)

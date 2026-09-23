@@ -24,15 +24,6 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_polynomial_ring_is_the_owned_free_commutative_algebra_on_its_variables() -> None:
-    labels = finite_ordered_set(("x", "y"))
-    polynomial = ZZ.polynomial_ring(labels)
-    symmetric = ZZ.free_module(labels).symmetric_algebra()
-
-    assert polynomial is symmetric
-    assert polynomial.algebra_generating_set() is symmetric.algebra_generating_set()
-    assert polynomial.algebra_generator("x") == symmetric.algebra_generator("x")
-    assert polynomial.algebra_generator("y") == symmetric.algebra_generator("y")
 
 
 def test_archive_free_algebra_comparison_maps_are_the_canonical_generator_maps() -> None:

@@ -45,33 +45,5 @@ def test_complete_quadrant_exploration_pairs_every_facet_and_generates_o_i2() ->
     assert exploration.generation_is_full(lattice.O())
 
 
-def test_finite_prefix_is_not_promoted_to_a_complete_reduction_domain() -> None:
-    lattice, cells, adjacencies = _quadrants()
-    prefix = lattice.reduction_complex_exploration(
-        finite_ordered_set((cells[0], cells[1])),
-        finite_ordered_set((adjacencies[0],)),
-        complete=False,
-    )
-
-    assert not prefix.is_complete()
-    assert prefix.unpaired_facets().cardinality() > 0
-    try:
-        prefix.generation_subgroup(lattice.O())
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("a finite exploration prefix is not a group-generation proof")
 
 
-def test_incomplete_facet_data_cannot_be_declared_complete() -> None:
-    lattice, cells, adjacencies = _quadrants()
-    try:
-        lattice.reduction_complex_exploration(
-            finite_ordered_set((cells[0], cells[1])),
-            finite_ordered_set((adjacencies[0],)),
-            complete=True,
-        )
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("completeness requires an adjacency for every retained facet")

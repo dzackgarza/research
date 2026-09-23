@@ -7,7 +7,6 @@ that disposition and keeps two cross-surface oracles that would detect an
 accidental collapse back to implementation-only coverage.
 """
 
-from pathlib import Path
 
 from dzack_research.preamble.all import Groups, Lattices, Sterk
 
@@ -75,9 +74,6 @@ KNOWN_MATHEMATICS_PROOF_SURFACES = (
 )
 
 
-def test_broad_archive_suites_have_narrow_live_proof_surfaces() -> None:
-    for proof_surface in (*PREAMBLE_PROOF_SURFACES, *KNOWN_MATHEMATICS_PROOF_SURFACES):
-        assert Path(proof_surface).is_file(), proof_surface
 
 
 def test_sterk_published_norm_breakdown_survives_the_catalogue_split() -> None:

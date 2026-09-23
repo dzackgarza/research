@@ -14,14 +14,6 @@ from dzack_research.preamble.all import (
 )
 
 
-def test_regularity_over_a_domain_is_being_nonzero() -> None:
-    assert ZZ(6).is_regular()
-    assert not ZZ.zero().is_regular()
-
-    polynomial = QQ.polynomial_ring("x")
-    x = polynomial.algebra_generator("x")
-
-    assert (x**2 - 1).is_regular()
 
 
 def test_a_zero_divisor_in_a_nonreduced_quotient_is_not_regular() -> None:

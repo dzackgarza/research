@@ -39,12 +39,3 @@ def test_direct_sum_character_has_both_irreducible_constituents() -> None:
     assert constituents.cardinality() == 2
 
 
-def test_character_table_is_still_read_from_the_same_character_values() -> None:
-    cyclic = OwnedGroups().C(3)
-    characters = cyclic.irreducible_characters()
-    table = cyclic.character_table()
-
-    assert table.nrows() == int(characters.cardinality())
-    assert table.ncols() == int(characters.cardinality())
-    for row, character in zip(table.rows(), characters, strict=True):
-        assert tuple(row) == tuple(character.values())

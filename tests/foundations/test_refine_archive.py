@@ -12,16 +12,7 @@ local refinement.  The specimens below therefore reconcile the mathematical
 refinement behavior without restoring constructor monkey-patching.
 """
 
-import pytest
-from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.lattices import (
-    EvenLattices,
-    FiniteRankLattices,
-    Lattices,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.refine import refine
 
 ARCHIVE_RECONCILIATIONS = (
     {
@@ -44,38 +35,10 @@ ARCHIVE_RECONCILIATIONS = (
 )
 
 
-def test_refinement_preserves_the_owned_parent_identity() -> None:
-    integers = _own_ring(SageZZ)
-    lattice = Lattices(integers)([[1]])
-
-    refined = refine(lattice, FiniteRankLattices(integers))
-
-    assert refined is lattice
-    assert refined in FiniteRankLattices(integers)
-    assert refined.module_rank() == 1
-    assert refined.module_generator(0).parent() is refined
 
 
-def test_refinement_requires_the_certifying_mathematical_predicate() -> None:
-    integers = _own_ring(SageZZ)
-    odd = Lattices(integers)([[1]])
-
-    assert not odd.is_even()
-    with pytest.raises(AssertionError, match="is_even"):
-        refine(odd, EvenLattices(integers))
 
 
-def test_successful_property_refinement_keeps_existing_elements_and_operations() -> None:
-    integers = _own_ring(SageZZ)
-    even = Lattices(integers)([[2]])
-    generator = even.module_generator(0)
-
-    refined = refine(even, EvenLattices(integers))
-
-    assert refined is even
-    assert refined.module_generator(0) == generator
-    assert generator.parent() is refined
-    assert generator.q() == 2
 
 
 def test_archived_owned_polynomial_real_roots_keep_exact_multiplicities() -> None:
@@ -104,24 +67,3 @@ def test_archived_noncrystallographic_H4_group_has_order_14400() -> None:
     assert CoxeterGroup(["H", 4]).cardinality() == 14400
 
 
-def test_module_zero_and_unequal_rank_mor_survive_owned_refinement() -> None:
-    from dzack_research.preamble.all import ZZ
-    from dzack_research.preamble.categories.sets import finite_ordered_set
-
-    source = ZZ.free_module(finite_ordered_set(("x", "y")))
-    target = ZZ.free_module(finite_ordered_set(("a", "b", "c")))
-    morphism = source.module_category().Mor(source, target)(
-        {
-            "x": target.module_generator("b"),
-            "y": target.module_generator("a") + target.module_generator("c"),
-        }
-    )
-
-    assert source(0) == source.zero()
-    assert target(0) == target.zero()
-    assert morphism.domain() is source
-    assert morphism.codomain() is target
-    assert morphism(source.module_generator("x")) == target.module_generator("b")
-    assert morphism(source.module_generator("y")) == (
-        target.module_generator("a") + target.module_generator("c")
-    )

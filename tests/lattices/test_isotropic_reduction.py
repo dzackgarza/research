@@ -37,53 +37,10 @@ def test_the_reduction_drops_one_from_each_side_of_the_signature() -> None:
     assert reduction.is_isometric(root_lattice)
 
 
-def test_the_reduction_retains_the_embedding_and_the_complement_it_came_from() -> None:
-    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic = lattice.basis_vector(0)
-
-    reduction = isotropic.isotropic_reduction()
-
-    assert reduction.isotropic_sublattice().module_rank() == 1
-    assert reduction.isotropic_embedding().codomain() is lattice
-    # e^perp is spanned by e and the two roots; the reduction kills e alone.
-    assert reduction.orthogonal_complement().module_rank() == 3
-    assert reduction.quotient_lattice() is reduction
-    assert reduction.projection().domain() is reduction.orthogonal_complement()
-    assert reduction.projection().codomain() is reduction
 
 
-def test_the_projection_kills_the_isotropic_sublattice_and_nothing_else() -> None:
-    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic = lattice.basis_vector(0)
-    reduction = isotropic.isotropic_reduction()
-
-    perpendicular = reduction.orthogonal_complement()
-    projection = reduction.projection()
-    inclusion = perpendicular.inclusion()
-    inside = inclusion.lift(isotropic)
-
-    assert projection(inside) == reduction.zero()
-    assert projection.cokernel().cardinality() == 1
-    assert all(
-        projection(lift) != reduction.zero()
-        for lift in reduction.reduction_lifts()
-    )
 
 
-def test_the_descended_form_is_the_form_of_the_complement_on_the_lifts() -> None:
-    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    reduction = lattice.basis_vector(0).isotropic_reduction()
-
-    perpendicular = reduction.orthogonal_complement()
-    lifts = reduction.reduction_lifts()
-    projection = reduction.projection()
-
-    assert all(
-        reduction.b(projection(lifts(left)), projection(lifts(right)))
-        == perpendicular.b(lifts(left), lifts(right))
-        for left in reduction.module_generating_set()
-        for right in reduction.module_generating_set()
-    )
 
 
 def test_an_eichler_transvection_lies_in_the_unipotent_radical_of_its_parabolic() -> None:

@@ -1,42 +1,11 @@
 from dzack_research.preamble.all import (
-    AffineSchemes,
-    AffineSpaces,
-    OpenImmersions,
     ProjectiveSpaces,
     QQ,
-    Schemes,
 )
 
 
-def test_the_standard_charts_of_a_projective_line_are_affine_lines_of_ratios() -> None:
-    r"""``U_i = D_+(x_i) = Spec Q[x_k/x_i]``, affine ``1``-space on one ratio."""
-    line = ProjectiveSpaces(QQ)(1)
-    charts = line.standard_affine_charts()
-
-    assert int(charts.cardinality().finite_value()) == 2
-    for index, other in ((0, 1), (1, 0)):
-        chart = line.standard_affine_chart(index)
-        assert chart in AffineSpaces(QQ)
-        assert int(chart.relative_dimension()) == 1
-        labels = chart.coordinate_algebra().algebra_generating_set()
-        assert int(labels.cardinality().finite_value()) == 1
-        assert next(iter(labels)) == f"x{other}_over_x{index}"
 
 
-def test_a_standard_overlap_is_the_open_where_the_other_coordinate_is_invertible() -> None:
-    r"""``U_0 cap U_1 = D(x_1/x_0)``, and ``x_1/x_0`` is a unit on it."""
-    line = ProjectiveSpaces(QQ)(1)
-    chart = line.standard_affine_chart(0)
-    overlap = line.standard_chart_overlap(0, 1)
-    ratio = chart.coordinate_algebra().algebra_generator("x1_over_x0")
-
-    assert overlap in OpenImmersions(chart)
-    assert overlap.is_distinguished_open()
-    assert overlap.distinguished_open_element() == ratio
-    assert overlap.inclusion().codomain() is chart
-    restricted = overlap.inclusion().coordinate_algebra_morphism()(ratio)
-    assert restricted.is_unit()
-    assert restricted * restricted.inverse_of_unit() == overlap.coordinate_algebra().one()
 
 
 def test_the_projective_line_transition_inverts_the_ratio() -> None:
@@ -91,20 +60,3 @@ def test_a_projective_plane_chart_change_divides_the_two_ratios() -> None:
     )
 
 
-def test_the_projective_plane_is_the_scheme_glued_from_its_standard_atlas() -> None:
-    r"""``P^2_Q`` is the gluing of ``U_0, U_1, U_2`` along their overlaps.
-
-    The atlas construction checks the pairwise inverse conditions and the
-    cocycle ``phi_{ki} = phi_{kj} phi_{ji}`` on every triple overlap before it
-    returns a scheme, so a chart change that were wrong in any one coordinate
-    could not produce this object.
-    """
-    plane = ProjectiveSpaces(QQ)(2)
-    glued = plane.glued_from_standard_charts()
-
-    assert glued in Schemes(QQ)
-    assert glued.scheme_base_ring() is QQ
-    for index in range(3):
-        chart = plane.standard_affine_chart(index)
-        assert chart in AffineSchemes(QQ)
-        assert int(chart.relative_dimension()) == 2

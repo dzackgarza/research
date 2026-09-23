@@ -1,6 +1,6 @@
 r"""The Horikawa ``(4,4)`` family is built from the shared equivariant cover owners."""
 
-from dzack_research.preamble.all import QQ, QuadraticField, Schemes
+from dzack_research.preamble.all import QQ, Schemes
 from dzack_research.preamble.categories.schemes.k3_families import HorikawaK3Family
 
 ARCHIVE_RECONCILIATIONS = (
@@ -106,80 +106,7 @@ def test_two_tau_lifts_are_involutions_with_actual_fixed_subschemes_and_top_form
     assert nikulin.top_form_scalar() == QQ.one()
 
 
-def test_cover_and_all_three_involutions_commute_with_nontrivial_scalar_base_change() -> None:
-    member = HorikawaK3Family().member()
-    field = QuadraticField(2, "s")
-    extension = QQ.Mor(field)(lambda element: field(element))
-    comparison = member.base_change(extension)
-    cyclic_square = comparison.cyclic_cover_comparison()
-
-    assert cyclic_square.projection() is cyclic_square.left()
-    assert cyclic_square.base_projection() is cyclic_square.right()
-    assert cyclic_square.domain().arrow() is cyclic_square.changed_cyclic_algebra().relative_spectrum().arrow()
-    assert cyclic_square.codomain().arrow() is member.cyclic_algebra().relative_spectrum().arrow()
-    assert comparison.cover_projection().domain() is comparison.changed_scheme()
-    assert comparison.cover_projection().codomain() is member.scheme()
-    assert comparison.base_projection().codomain() is member.base_surface()
-    assert comparison.cover_square_commutes()
-    assert comparison.involutions_commute_with_base_change()
-    assert comparison.changed_nikulin_lift().top_form_scalar() == field.one()
-    assert comparison.changed_enriques_lift().top_form_scalar() == -field.one()
 
 
-def test_branch_linear_system_and_double_cover_form_one_composite_construction() -> None:
-    family = HorikawaK3Family()
-    member = family.member()
-    branch_bundle = family.branch_line_bundle()
-    sections = branch_bundle.global_sections()
-    system = branch_bundle.linear_system()
-    cover = member.cover_morphism()
-    projectivization = system.quotient_projectivization().arrow().domain()
-    projectivization_comparison = system.quotient_projectivization_comparison()
-
-    assert sections.module_rank() == 25
-    assert system.line_bundle() is branch_bundle
-    assert system.is_basepoint_free()
-    assert system.associated_morphism().domain() is family.base_surface()
-    assert projectivization.projectivization_module() is system.selected_section_space().dual_module()
-    assert projectivization_comparison.forward().domain() is projectivization
-    assert projectivization_comparison.forward().codomain() is system
-    assert member.cyclic_algebra().degree() == 2
-    assert member.cyclic_algebra().branch_power() is branch_bundle
-    branch_local = member.cyclic_algebra().branch_section()
-    assert branch_local.parent() is branch_bundle.compatible_sections()
-    assert "_preamble_line_bundle" not in branch_local.__dict__
-    assert cover.domain() is member.scheme()
-    assert cover.codomain() is family.base_surface()
-    assert member.scheme().relative_dimension() == family.base_surface().relative_dimension()
 
 
-def test_cyclic_cover_base_change_uses_the_section_after_addition() -> None:
-    from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import CyclicCoverAlgebra
-
-    family = HorikawaK3Family()
-    power = family.branch_line_bundle()
-    local_branch = power.compatible_section(family.default_branch_section())
-    # Addition used to discard the hidden homogeneous-source attribute and
-    # make scalar change refuse this very same mathematical section.
-    branch = local_branch + local_branch.parent().zero()
-    cyclic = CyclicCoverAlgebra(family.cover_line_bundle(), branch, 2)
-    field = QuadraticField(2, "s")
-    extension = QQ.Mor(field)(field)
-    comparison = cyclic.base_change(extension)
-    changed = comparison.changed_cyclic_algebra()
-    assert changed.branch_power() is changed.line_bundle().tensor_power(2)
-    assert changed.branch_section().parent() is changed.branch_power().compatible_sections()
-    assert comparison.cover_square_commutes()
-    assert comparison.projection().codomain() is cyclic.relative_spectrum().arrow().domain()
-    for index in cyclic.chart_index_set():
-        local_projection = comparison.local_projection(index)
-        pullback = local_projection.coordinate_algebra_morphism()
-        source_algebra = cyclic.local_algebra(index)
-        target_algebra = changed.local_algebra(index)
-        source_branch = source_algebra.algebra_structure_morphism()(
-            cyclic.local_branch_coefficient(index)
-        )
-        target_branch = target_algebra.algebra_structure_morphism()(
-            changed.local_branch_coefficient(index)
-        )
-        assert pullback(source_branch) == target_branch

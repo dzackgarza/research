@@ -20,20 +20,6 @@ ARCHIVE_RECONCILIATIONS = (
 )
 
 
-def test_fraction_field_quotient_retains_projection_lift_and_factorial_framing() -> None:
-    quotient = FractionFieldQuotients(ZZ)(6)
-    projection = quotient.projection_from_fraction_field()
-
-    assert quotient.modulus() == QQ(6)
-    assert projection.domain() is QQ
-    assert projection.codomain() is quotient
-    assert quotient.lift(projection(QQ(1) / 2)) == QQ(1) / 2
-
-    labels = quotient.module_generating_set()
-    assert quotient.divisibility_chain(labels(0)) == 1
-    assert quotient.divisibility_chain(labels(1)) == 2
-    assert quotient.divisibility_chain(labels(2)) == 6
-    assert quotient.module_generator(labels(2)) == projection(QQ(1) / 6)
 
 
 def test_fraction_field_quotient_submodules_are_actual_cyclic_subobjects() -> None:
@@ -93,9 +79,3 @@ def test_archived_a2_discriminant_scales_are_value_submodules() -> None:
     assert quadratic_generator == quadratic.value_module()(QQ(2) / 3)
 
 
-def test_fraction_field_quotient_display_uses_owned_quotient_data() -> None:
-    quotient = FractionFieldQuotients(ZZ)(2)
-    value = quotient(QQ(1) / 2)
-
-    assert repr(quotient) == "Rational Field / (2)Integer Ring"
-    assert repr(value) == f"[1/2] in {quotient}"

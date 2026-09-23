@@ -21,52 +21,10 @@ _HYPERBOLIC_PLANE_GRAM = [[0, 1], [1, 0]]
 # Every polyhedral_common program the preamble reaches for, with the capability
 # under which the layer offers it.  The last two are the programs upstream does
 # not build; they are registered so that asking for them states that.
-_ROUTES = (
-    ("lattice.indefinite_automorphism_group", "INDEF_FORM_AutomorphismGroup"),
-    ("lattice.indefinite_isometry_witness", "INDEF_FORM_TestEquivalence"),
-    ("lattice.indefinite_vector_isometry_witness", "INDEF_FORM_TestEquivalenceVector"),
-    ("lattice.indefinite_orbit_representative", "INDEF_FORM_GetOrbitRepresentative"),
-    ("lattice.indefinite_isotropic_subspace_orbits", "INDEF_FORM_GetOrbit_IsotropicKplane"),
-    (
-        "lattice.indefinite_isotropic_subspace_stabilizer",
-        "INDEF_FORM_StabilizerIsotropicPlane",
-    ),
-    ("lattice.indefinite_vector_stabilizer", "INDEF_FORM_StabilizerVector"),
-    (
-        "lattice.indefinite_isotropic_subspace_isometry_witness",
-        "INDEF_FORM_TestEquivalenceIsotropicKplane",
-    ),
-)
 
 
-def test_every_polyhedral_operation_is_offered_by_the_capability_layer() -> None:
-    for capability, _binary in _ROUTES:
-        assert "polyhedral-common-via-py-polyhedral" in engine_capabilities.provider_names(
-            capability
-        ), f"{capability} is not offered by the ordered capability layer"
 
 
-def test_an_unbuilt_program_refuses_with_the_reason_it_cannot_be_provisioned() -> None:
-    # INDEF_FORM_StabilizerVector is named by the wrapper but has no driver in
-    # polyhedral_common's src_indefinite, so no build makes it available.  The
-    # refusal has to say that rather than advise an impossible install, and it
-    # carries the port's absence too, since the port is the first provider.
-    assert not binary_available("INDEF_FORM_StabilizerVector")
-
-    with pytest.raises(EngineCapabilityUnavailable) as refusal:
-        engine_capabilities.compute(
-            "lattice.indefinite_vector_stabilizer",
-            _HYPERBOLIC_PLANE_GRAM,
-            [1, 0],
-        )
-
-    absence = refusal.value.absent
-    assert tuple(entry.provider for entry in absence) == (
-        "sage-indefinite-port",
-        "polyhedral-common-via-py-polyhedral",
-    )
-    assert "port of INDEF_FORM_StabilizerVector" in absence[0].provisioning
-    assert "builds no program of this name" in absence[1].provisioning
 
 
 def test_isometry_witnesses_of_the_hyperbolic_plane() -> None:

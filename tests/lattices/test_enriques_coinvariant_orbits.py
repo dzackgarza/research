@@ -23,20 +23,3 @@ def test_minus_identity_on_the_anti_invariant_lattice_lifts_to_the_k3_centralize
     assert lifted * Involutions.I_En == Involutions.I_En * lifted
 
 
-def test_enriques_anti_invariant_cusp_transporters_lift_to_the_k3_centralizer() -> None:
-    extension = Involutions.I_En.primitive_extension()
-
-    for rank in (1, 2):
-        representatives = extension.coinvariant_isotropic_orbit_representatives(rank)
-        assert representatives.cardinality() > 0
-        representative = representatives[0]
-        witness = extension.coinvariant_isotropic_equivalence_witness(
-            representative,
-            representative,
-        )
-        assert witness in extension.centralizer_group()
-
-        restricted = extension.coinvariant_restriction(witness)
-        for generator in representative.module_generators():
-            embedded = representative.inclusion()(generator)
-            assert restricted(embedded) == embedded

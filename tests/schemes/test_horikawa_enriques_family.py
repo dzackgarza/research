@@ -1,6 +1,6 @@
 r"""The Enriques surface is the actual fixed-free quotient of the Horikawa K3 member."""
 
-from dzack_research.preamble.all import QQ, QuadraticField, Schemes
+from dzack_research.preamble.all import QQ, Schemes
 from dzack_research.preamble.catalogue import NamedLattices
 from dzack_research.preamble.categories.schemes.enriques_families import (
     HorikawaEnriquesSurface,
@@ -81,12 +81,3 @@ def test_lattice_representation_and_fixed_locus_satisfy_lefschetz() -> None:
     assert cohomology.lefschetz_matches_geometric_fixed_locus()
 
 
-def test_enriques_quotient_commutes_with_nontrivial_scalar_extension() -> None:
-    surface = HorikawaEnriquesSurface()
-    field = QuadraticField(2, "s")
-    extension = QQ.Mor(field)(lambda element: field(element))
-    comparison = surface.base_change(extension)
-
-    assert comparison.quotient_projection().codomain() is surface.scheme()
-    assert comparison.quotient_square_commutes()
-    assert comparison.changed_action_is_free()

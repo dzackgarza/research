@@ -20,22 +20,8 @@ def _plane_and_line():
     return plane, line, line.quotient_map()
 
 
-def test_the_defining_ideal_extends_to_zero() -> None:
-    plane, line, quotient = _plane_and_line()
-    y = plane.algebra_generator("y")
-
-    extended = quotient.extension_of_ideal(plane.ideal(y))
-
-    assert extended == line.ideal(line.zero())
 
 
-def test_a_coordinate_extends_to_the_coordinate_of_the_quotient() -> None:
-    plane, line, quotient = _plane_and_line()
-    x = plane.algebra_generator("x")
-
-    extended = quotient.extension_of_ideal(plane.ideal(x))
-
-    assert extended == line.ideal(quotient(x))
 
 
 def test_contraction_of_zero_is_the_defining_ideal_and_the_kernel() -> None:

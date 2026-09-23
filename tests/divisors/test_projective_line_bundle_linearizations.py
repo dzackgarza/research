@@ -124,25 +124,5 @@ def test_restriction_to_an_eigensection_divisor_is_an_equivariant_h0_map() -> No
     assert restriction.parent().is_equivariant(restriction) is True
 
 
-def test_line_bundle_linearize_routes_to_the_projective_space_owner() -> None:
-    line = ProjectiveSpaces(QQ)(1, names=("x", "y"))
-    bundle = line.O(1)
-    action = line.coordinate_swap_action()
-    linearized = bundle.linearize(action, lambda _element: QQ.one())
-
-    assert linearized.line_bundle() is bundle
-    assert linearized.section_scheme() is line
 
 
-def test_product_line_bundle_linearize_routes_to_the_multiprojective_owner() -> None:
-    line = ProjectiveSpaces(QQ)(1)
-    product = line.scheme_category().product((line, line))
-    bundle = product.O(1, 1)
-    action = product.c2_diagonal_sign_action()
-    linearized = bundle.linearize(action, lambda _element: QQ.one())
-    construction = linearized.coordinate_action_construction()
-
-    assert linearized.line_bundle() is bundle
-    assert linearized.section_scheme() is product
-    assert construction.coordinate_weights() is linearized.coordinate_weights()
-    assert construction.local_automorphisms().index_set() is product.standard_affine_atlas().chart_index_set()

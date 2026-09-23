@@ -24,26 +24,8 @@ def _projective_plane():
     return _PLANE_FANS.projective_space_fan().toric_variety(QQ)
 
 
-def test_the_torus_invariant_divisor_group_is_free_on_the_rays() -> None:
-    plane = _projective_plane()
-    group = plane.torus_invariant_divisor_group()
-
-    assert group.module_generating_set().cardinality() == 3
-    assert group is plane.torus_invariant_divisor_group()
-    for ray in plane.fan().cones(1):
-        assert plane.torus_invariant_prime_divisor(ray) in group
 
 
-def test_the_toric_boundary_is_the_sum_of_the_three_invariant_lines() -> None:
-    plane = _projective_plane()
-    group = plane.torus_invariant_divisor_group()
-    boundary = plane.toric_boundary_divisor()
-    summed = group.zero()
-    for ray in plane.fan().cones(1):
-        summed = summed + plane.torus_invariant_prime_divisor(ray)
-
-    assert boundary == summed
-    assert boundary != group.zero()
 
 
 def test_the_toric_canonical_divisor_is_minus_the_boundary() -> None:

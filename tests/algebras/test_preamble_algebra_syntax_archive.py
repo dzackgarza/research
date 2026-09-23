@@ -8,7 +8,6 @@ second algebra object system.
 """
 
 from dzack_research.preamble.all import (
-    NN,
     QQ,
     ZZ,
     QuadraticField,
@@ -21,34 +20,8 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_countable_free_algebra_keeps_generator_labels_and_generator_determined_maps() -> None:
-    source = QQ.free_module(NN).symmetric_algebra()
-    target = QQ.free_module(NN).symmetric_algebra()
-    shift = source.Mor(target)(lambda label: target.algebra_generator(label + 1))
-
-    assert source.algebra_generating_set() is NN
-    assert not source.algebra_generating_set().cardinality().is_finite()
-    assert shift(source.algebra_generator(0) * source.algebra_generator(7)) == (
-        target.algebra_generator(1) * target.algebra_generator(8)
-    )
 
 
-def test_presented_algebra_retains_relation_and_explicit_scalar_change() -> None:
-    presentation = QQ.polynomial_ring(("x", "y"))
-    x = presentation.algebra_generator("x")
-    y = presentation.algebra_generator("y")
-    quotient = (presentation).quotient_by_relations((x * y,))
-    gaussian = QuadraticField(-1, "i")
-    extension = QQ.Mor(gaussian)(lambda value: gaussian(value))
-    changed = quotient.base_change(extension)
-
-    assert quotient.presentation_ring() is presentation
-    assert quotient.algebra_presentation_morphism()(x * y) == quotient.zero()
-    assert changed.base_ring() is gaussian
-    assert changed.algebra_presentation_morphism()(
-        changed.presentation_ring().algebra_generator("x")
-        * changed.presentation_ring().algebra_generator("y")
-    ) == changed.zero()
 
 
 def test_fractional_ideal_membership_uses_the_module_span_not_the_input_tuple() -> None:

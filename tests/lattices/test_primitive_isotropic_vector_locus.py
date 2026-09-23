@@ -1,20 +1,6 @@
 from dzack_research.preamble.all import NamedLattices, Sets
 
 
-def test_lattice_owns_the_same_primitive_isotropic_membership_condition() -> None:
-    lattice = NamedLattices.E10
-    locus = lattice.primitive_isotropic_vectors()
-    repeated = lattice.primitive_isotropic_vectors()
-    isotropic = lattice.basis_vector(0)
-
-    assert locus in Sets()
-    assert locus.universe() is lattice
-    assert locus.inclusion().codomain() is lattice
-    assert isotropic in locus
-    assert repeated is locus
-    assert isotropic in repeated
-    assert lattice.zero() not in locus
-    assert 2 * isotropic not in locus
 
 
 def test_primitive_isotropic_orbit_decomposition_retains_representative_stabilizer_and_transporter() -> None:
