@@ -2878,7 +2878,10 @@ class _OwnedRingElement(RingElement):
         return _owned_engine_element(self.parent(), ~self._backend())
 
     def __truediv__(self, other):
-        other = self.parent()(other)
+        try:
+            other = self.parent()(other)
+        except (TypeError, ValueError):
+            return NotImplemented
         value = self._backend() / other._backend()
         value_parent = getattr(value, "parent", lambda: None)()
         if value_parent is self.parent()._engine:

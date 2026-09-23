@@ -1,7 +1,7 @@
 """Owned ordered enumerated sets, with the finite ones as a refinement."""
 
 from collections.abc import Callable, Iterable
-from itertools import islice
+from itertools import chain, islice
 from typing import TypeVar
 
 from sage.categories.category import Category
@@ -305,6 +305,32 @@ class FiniteOrderedSets(OwnedCategory):
         def filtered(self, predicate, *, name=None):
             r"""Return the ordered subset of this set cut out by ``predicate``."""
             return _FilteredOrderedSet(self, predicate, name=name)
+
+        def union(self, other):
+            r"""The finite set of the points of this set and of the finite set ``other``.
+
+            Ordered as this set, followed by the points of ``other`` not
+            already present, in the order of ``other``.
+            """
+            assert other in FiniteSets(), "the union is taken with a finite set"
+            return FiniteOrderedSets()(chain(self, other))
+
+        def intersection(self, other):
+            r"""The points of this set that lie in ``other``, in this set's order."""
+            return self.filtered(lambda point: point in other)
+
+        def difference(self, other):
+            r"""The points of this set that do not lie in ``other``, in this set's order."""
+            return self.filtered(lambda point: point not in other)
+
+        def __or__(self, other):
+            return self.union(other)
+
+        def __and__(self, other):
+            return self.intersection(other)
+
+        def __sub__(self, other):
+            return self.difference(other)
 
         def __eq__(self, other) -> bool:
             r"""Equal to a finite set with the same points; two finite ordered sets also agree in order."""
