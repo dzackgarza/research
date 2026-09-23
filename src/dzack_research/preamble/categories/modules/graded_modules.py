@@ -125,23 +125,13 @@ def _concentrated_graded_module(base_ring, grading_monoid=None):
 
 
 def _represented_homogeneous_degree_or_none(element):
-    r"""Return a represented homogeneous degree, or ``None`` when no degree view is selected."""
-    parent = element.parent()
-    selected = parent.__dict__.get("_preamble_concentrated_degree")
-    if selected is not None:
-        if element == parent.zero():
-            raise ValueError("zero has no selected homogeneous degree here")
-        return selected
-    homogeneous_function = getattr(element, "is_homogeneous", None)
-    degree_function = getattr(element, "degree", None)
-    match callable(homogeneous_function) and callable(degree_function):
-        case False:
-            return None
-        case True:
-            pass
-    if not homogeneous_function():
+    r"""Return the represented homogeneous degree, or ``None`` for the zero element."""
+    components = tuple(element.homogeneous_components().items())
+    if not components:
+        return None
+    if len(components) != 1:
         raise ValueError("the graded-module element is not homogeneous")
-    return degree_function()
+    return components[0][0]
 
 
 def _selected_homogeneous_degree(element):
@@ -340,26 +330,24 @@ class GradedModules(OwnedCategoryOverBaseRing):
         def is_graded(self) -> bool:
             return True
 
-        def grading_index_set(self):
+        def _graded_module_placement(self):
+            r"""Return the declared graded-module placement carrying the grading datum."""
             for category in self.category().all_super_categories(proper=False):
-                try:
-                    return category.grading_index_set()
-                except AttributeError:
-                    continue
-            raise TypeError(f"{self} has no selected grading index set")
+                # Sage realizes a category instance in a dynamic subclass; the
+                # declared placement is therefore recognized by its category class.
+                if isinstance(category, GradedModules):
+                    return category
+            raise AssertionError(f"{self} has no declared graded-module placement")
+
+        def grading_index_set(self):
+            return self._graded_module_placement().grading_index_set()
 
         def grading_monoid(self):
             return _require_grading_monoid(self.grading_index_set())
 
         def parity_homomorphism(self):
             r"""Return the parity ``M -> ZZ/2`` stated with this module's grading."""
-            for cat in self.category().all_super_categories(proper=False):
-                try:
-                    parity = cat.parity_homomorphism
-                except AttributeError:
-                    continue
-                return parity()
-            raise TypeError(f"{self} is not in a graded module category")
+            return self._graded_module_placement().parity_homomorphism()
 
         def combine_degrees(self, left, right):
             r"""The monoid product of two degrees.

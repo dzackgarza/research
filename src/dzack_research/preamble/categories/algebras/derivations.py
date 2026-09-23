@@ -21,7 +21,10 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _RestrictedMorCategoryOf,
     RestrictedMorCategoryParent,
 )
-from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    FramedAlgebras,
+)
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -702,11 +705,10 @@ class GradedDerivation(ModuleElement):
         """
         algebra = self.algebra()
         target = self.target()
-        try:
-            labels = algebra.algebra_generating_set()
-            finite = labels.cardinality().is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        if algebra not in FramedAlgebras(algebra.base_ring()):
             return Unknown
+        labels = algebra.algebra_generating_set()
+        finite = labels.cardinality().is_finite()
         match finite:
             case True:
                 pass
@@ -723,7 +725,7 @@ class GradedDerivation(ModuleElement):
                     pass
             try:
                 generator_degree = algebra.homogeneous_degree(generator)
-            except (ValueError, NotImplementedError):
+            except ValueError:
                 return Unknown
             image = self(generator)
             match image == target.zero():
@@ -735,8 +737,8 @@ class GradedDerivation(ModuleElement):
                     pass
             try:
                 image_degree = target.homogeneous_degree(image)
-            except (ValueError, NotImplementedError):
-                return Unknown
+            except ValueError:
+                return False
             match image_degree == generator_degree + self.degree_shift():
                 case True:
                     pass
@@ -755,7 +757,7 @@ class GradedDerivation(ModuleElement):
                     pass
             try:
                 left_degree = algebra.homogeneous_degree(left)
-            except (ValueError, NotImplementedError):
+            except ValueError:
                 return Unknown
             for right_label in labels:
                 right = algebra.algebra_generator(right_label)
