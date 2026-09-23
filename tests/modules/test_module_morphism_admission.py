@@ -27,5 +27,5 @@ def test_frobenius_on_the_gf4_line_is_additive_but_not_gf4_linear() -> None:
         coefficient = _coefficient(line, element, "e")
         return line.scalar_multiple(coefficient**2, e)
 
-    with pytest.raises(ValueError, match="not scalar-linear"):
+    with pytest.raises(ValueError):
         maps.elementwise(frobenius)

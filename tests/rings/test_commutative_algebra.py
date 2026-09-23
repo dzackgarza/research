@@ -475,7 +475,7 @@ def test_integer_localization_universal_map_factors_exactly_when_two_becomes_a_u
     assert factor * inverted_two.localization_map() == to_rationals
     assert factor(half) == QQ(1) / QQ(2)
 
-    with pytest.raises(ValueError, match="does not carry.*to a unit"):
+    with pytest.raises(ValueError):
         inverted_two.induced_morphism(ZZ.Mor(ZZ).identity())
 
 

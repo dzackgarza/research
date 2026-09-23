@@ -14,10 +14,9 @@ def test_u_plus_minus_two_is_isometric_to_its_skewed_presentation() -> None:
     assert not source.is_definite()
     assert source.is_isometric_to(target)
     isometry = source.isometry_to(target)
-    generators = source.module_generators()
     assert all(
         target.b(isometry(left), isometry(right)) == source.b(left, right)
-        for left in generators
-        for right in generators
+        for left in source.module_generators()
+        for right in source.module_generators()
     )
     assert (~isometry) * isometry == source.identity_morphism()

@@ -85,8 +85,7 @@ def test_the_primitive_isotropic_vectors_of_U_are_plus_or_minus_e_and_f() -> Non
     r"""In U, q(ae + bf) = 2ab vanishes iff a = 0 or b = 0; primitivity then
     forces the nonzero coefficient to be a unit, leaving exactly +-e, +-f."""
     plane = NamedLattices.U
-    generators = plane.module_generators()
-    e, f = generators[0], generators[1]
+    e, f = plane.module_generator(0), plane.module_generator(1)
     vectors = plane.primitive_isotropic_vectors()
 
     assert vectors.cardinality() == 4
@@ -116,16 +115,14 @@ def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
     assert reduction.discriminant_group().cardinality() == 1
     assert reduction.is_isometric(NamedLattices.E8)
 
-    generators = lattice.module_generators()
-    for index in (0, 1):
-        line = lattice.primitive_isotropic_subobject(generators[index])
+    for label in (0, 1):
+        line = lattice.primitive_isotropic_subobject(lattice.module_generator(label))
         assert line in cusp
 
 
 def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
     lattice = NamedLattices.E10
-    generators = lattice.module_generators()
-    isotropic, partner, root = (generators[index] for index in range(3))
+    isotropic, partner, root = (lattice.module_generator(label) for label in (0, 1, 2))
     # b(e, f) = 1 and q(r) = -2, so q(e + f + r) = 2 + (-2) = 0, and the
     # coefficient one on e makes the vector primitive.
     vector = isotropic + partner + root
@@ -135,7 +132,6 @@ def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
 
     cusp = lattice.cusps()[0]
     witness = cusp.transporter_witness(line)
-    assert witness is not None
     assert witness.domain() is lattice
     assert witness.codomain() is lattice
 
@@ -168,9 +164,8 @@ def test_the_reduction_lattice_separates_two_sterk_cusps() -> None:
 def test_minus_one_and_the_cone_character_split_a_lorentzian_group() -> None:
     lattice = NamedLattices.E10
     assert lattice.signature_pair().first() == 1
-    generators = lattice.module_generators()
-    line = lattice.primitive_isotropic_subobject(generators[0])
-    transvection = line.eichler_transvection(generators[2])
+    line = lattice.primitive_isotropic_subobject(lattice.module_generator(0))
+    transvection = line.eichler_transvection(lattice.module_generator(2))
 
     minus_identity = lattice.Aut()(
         {

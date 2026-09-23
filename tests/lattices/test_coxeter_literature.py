@@ -33,10 +33,10 @@ def coxeter_matrix(rank: int, bonds: dict) -> list[list[int]]:
 
 
 def bracket(*bonds: int):
-    r"""The diagram of the bracket symbol \([p_1,\dots,p_k]\)."""
-    return CoxeterDiagrams()(
-        coxeter_matrix(len(bonds) + 1, {(i, i + 1): bond for i, bond in enumerate(bonds)})
-    )
+    r"""The diagram of the bracket symbol \([p_1,\dots,p_k]\): the path on the nodes \(0,\dots,k\)."""
+    path = {(i, i + 1): bond for i, bond in enumerate(bonds)}
+    last_node = max(right for _left, right in path)
+    return CoxeterDiagrams()(coxeter_matrix(last_node + 1, path))
 
 
 def type_d(rank: int):

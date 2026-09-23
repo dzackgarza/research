@@ -31,12 +31,7 @@ from dzack_research.preamble.all import (
 def _cubic_lattice_split():
     r"""Return ``I_3`` with its diagonal ``<3>`` and the ``A_2`` orthogonal to it."""
     lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    generators = lattice.module_generators()
-    first, second, third = (
-        generators[0],
-        generators[1],
-        generators[2],
-    )
+    first, second, third = (lattice.module_generator(label) for label in (0, 1, 2))
     diagonal = lattice.subobject_on((first + second + third,))
     complement = lattice.subobject_on((first - second, second - third))
     return lattice, diagonal, complement
@@ -88,8 +83,7 @@ def test_the_glue_of_an_odd_lattice_is_an_anti_isometry_of_bilinear_forms() -> N
 
 def test_an_even_lattice_glues_through_its_quadratic_discriminant_forms() -> None:
     lattice = Lattices(ZZ)("U")
-    generators = lattice.module_generators()
-    first, second = generators[0], generators[1]
+    first, second = lattice.module_generator(0), lattice.module_generator(1)
     invariant = lattice.subobject_on((first + second,))
     coinvariant = lattice.subobject_on((first - second,))
     values = FractionFieldQuotients(ZZ)(2)
@@ -128,8 +122,9 @@ def test_a_bilinear_isotropic_class_of_u2_gives_the_odd_overlattice() -> None:
     # U(2) up to the odd unimodular lattice ZZ e + ZZ f.
     lattice = Lattices(ZZ)([[0, 2], [2, 0]])
     discriminant = lattice.discriminant_module()
-    generators = discriminant.module_generators()
-    odd_class = generators[0] + generators[1]
+    e, f = lattice.module_generator(0), lattice.module_generator(1)
+    # e + f has divisibility 2 in U(2), so its divided class is the class of (e + f)/2.
+    odd_class = (e + f).divided_discriminant_class()
 
     assert discriminant.cardinality() == 4
     assert discriminant.b(odd_class, odd_class) == FractionFieldQuotients(ZZ)(1).zero()
@@ -149,8 +144,10 @@ def test_an_odd_orthogonal_sum_glues_up_to_a_unimodular_lattice() -> None:
     # class of order three recovers a unimodular odd lattice of index three.
     summands = Lattices(ZZ)([[3, 0, 0], [0, 2, -1], [0, -1, 2]])
     discriminant = summands.discriminant_module()
-    generators = discriminant.module_generators()
-    glue_class = generators[0] + generators[1]
+    # w = e_1 + 2 e_2 + e_3 pairs to (3, 3, 0) with the basis, so it has divisibility 3
+    # and its divided class is the class of w/3, of order three.
+    e_1, e_2, e_3 = (summands.module_generator(label) for label in (0, 1, 2))
+    glue_class = (e_1 + 2 * e_2 + e_3).divided_discriminant_class()
 
     assert not summands.is_even()
     assert discriminant in TorsionBilinearFormModules(ZZ)

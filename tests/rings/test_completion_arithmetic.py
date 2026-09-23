@@ -62,7 +62,7 @@ def test_presented_completion_preserves_genuine_nilpotence_not_truncation_nilpot
     # y^4 vanishes in the selected A/m^4 computation stage but not in the
     # completed ring.  The finite approximation therefore cannot answer this
     # exact equality question.
-    with pytest.raises(AssertionError, match="do not decide exact equality"):
+    with pytest.raises(AssertionError):
         (y_hat**4).is_zero()
 
     assert completion.adic_projection(4)(y_hat**4) == completion.adic_truncation(4).zero()

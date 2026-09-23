@@ -17,7 +17,11 @@ def test_square_voronoi_cell_retains_facets_incidence_and_stabilizers() -> None:
     for isometry in lattice.O():
         images = [lattice.framing_coefficients(isometry(lattice.module_generator(label))) for label in labels]
         for vertex in vertices:
-            assert tuple(sum(vertex[column] * images[column].get(label, 0) for column in range(len(labels))) for label in labels) in vertices
+            image = tuple(
+                sum(coordinate * column.get(label, 0) for coordinate, column in zip(vertex, images))
+                for label in labels
+            )
+            assert image in vertices
 
     for normal in facets.index_set():
         facet = facets[normal]

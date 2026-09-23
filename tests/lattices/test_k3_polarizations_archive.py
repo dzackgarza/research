@@ -17,8 +17,7 @@ def _polarization_complement(vector):
 
 def test_degree_two_polarization_has_order_two_transcendental_discriminant() -> None:
     k3 = Lattices.LK3
-    generators = k3.module_generators()
-    e, f = generators[0], generators[1]
+    e, f = k3.module_generator("e1"), k3.module_generator("f1")
     polarization, transcendental = _polarization_complement(e + f)
 
     assert polarization.is_primitive()
@@ -34,8 +33,7 @@ def test_degree_two_polarization_has_order_two_transcendental_discriminant() -> 
 
 def test_degree_four_polarization_has_distinct_order_four_discriminant() -> None:
     k3 = Lattices.LK3
-    generators = k3.module_generators()
-    e, f = generators[0], generators[1]
+    e, f = k3.module_generator("e1"), k3.module_generator("f1")
     degree_two, transcendental_two = _polarization_complement(e + f)
     degree_four, transcendental_four = _polarization_complement(2 * e + f)
 

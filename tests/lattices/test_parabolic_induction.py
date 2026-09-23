@@ -13,8 +13,7 @@ from dzack_research.preamble.all import (
 
 def _lorentzian_line():
     lattice = NamedLattices.E10
-    generators = lattice.module_generators()
-    return lattice, generators, lattice.primitive_isotropic_subobject(generators[0])
+    return lattice, lattice.primitive_isotropic_subobject(lattice.module_generator(0))
 
 
 def _acts_as_identity(restriction, module) -> bool:
@@ -24,7 +23,7 @@ def _acts_as_identity(restriction, module) -> bool:
 
 
 def test_the_isotropic_line_of_E10_reduces_to_E8() -> None:
-    lattice, _generators, line = _lorentzian_line()
+    lattice, line = _lorentzian_line()
 
     assert line.is_totally_isotropic()
     assert line.is_primitive()
@@ -39,9 +38,9 @@ def test_the_isotropic_line_of_E10_reduces_to_E8() -> None:
 
 
 def test_eichler_transvections_lie_in_the_unipotent_radical() -> None:
-    lattice, generators, line = _lorentzian_line()
-    isotropic, hyperbolic_partner = generators[0], generators[1]
-    root = generators[2]
+    lattice, line = _lorentzian_line()
+    isotropic, hyperbolic_partner = lattice.module_generator(0), lattice.module_generator(1)
+    root = lattice.module_generator(2)
     assert lattice.b(isotropic, root) == 0
     assert root.q() == -2
 
@@ -60,9 +59,9 @@ def test_eichler_transvections_lie_in_the_unipotent_radical() -> None:
 
 
 def test_the_eichler_transvections_of_a_line_form_an_abelian_group() -> None:
-    lattice, generators, line = _lorentzian_line()
-    isotropic = generators[0]
-    first, second = generators[2], generators[3]
+    lattice, line = _lorentzian_line()
+    isotropic = lattice.module_generator(0)
+    first, second = lattice.module_generator(2), lattice.module_generator(3)
 
     left = line.eichler_transvection(first)
     right = line.eichler_transvection(second)
@@ -79,16 +78,14 @@ def test_the_eichler_transvections_of_a_line_form_an_abelian_group() -> None:
 
 def test_the_two_isotropic_lines_of_two_hyperbolic_planes_are_one_orbit() -> None:
     lattice = NamedLattices.U + NamedLattices.U
-    generators = lattice.module_generators()
-    first = lattice.primitive_isotropic_subobject(generators[0])
-    second = lattice.primitive_isotropic_subobject(generators[2])
+    first = lattice.primitive_isotropic_subobject(lattice.module_generator(0))
+    second = lattice.primitive_isotropic_subobject(lattice.module_generator(2))
 
     assert first.isotropic_reduction().is_isometric(NamedLattices.U)
     assert second.isotropic_reduction().is_isometric(NamedLattices.U)
 
     witness = first.transporter_witness_to(second)
-    assert witness is not None
-    assert second.inclusion().is_in_image(witness(generators[0]))
+    assert second.inclusion().is_in_image(witness(lattice.module_generator(0)))
     assert first.is_equivalent_to(second)
 
 

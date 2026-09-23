@@ -19,7 +19,13 @@ def test_archived_a2_selected_simple_system_and_highest_root_are_live() -> None:
     first, second = lattice.simple_roots()
     highest = lattice.highest_root()
 
-    assert str(lattice.cartan_type()) == "['A', 2]"
+    cartan_type = lattice.cartan_type()
+    # The irreducible finite Cartan types of rank two are A2, B2 and G2, and
+    # only A2 is simply laced.
+    assert cartan_type.is_irreducible()
+    assert cartan_type.is_finite()
+    assert cartan_type.is_simply_laced()
+    assert cartan_type.rank() == 2
     assert lattice.coxeter_number() == 3
     assert highest == first + second
     assert highest.is_root()

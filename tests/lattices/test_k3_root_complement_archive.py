@@ -13,8 +13,7 @@ from dzack_research.preamble.all import Lattices
 
 def test_primitive_k3_root_has_the_nikulin_complement_discriminant_form() -> None:
     k3 = Lattices.LK3
-    generators = k3.module_generators()
-    e, f = generators[0], generators[1]
+    e, f = k3.module_generator("e1"), k3.module_generator("f1")
     root = k3.subobject_on((e - f,))
     complement = root.orthogonal_complement()
     root_signature = root.signature_pair()

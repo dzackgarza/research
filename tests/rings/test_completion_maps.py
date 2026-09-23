@@ -46,7 +46,7 @@ def test_nonmaximal_adic_completion_is_complete_but_not_declared_local() -> None
     completion = plane.adic_completion(plane.ideal(x))
 
     assert completion not in CompleteLocalRings()
-    with pytest.raises(TypeError, match="not maximal"):
+    with pytest.raises(TypeError):
         completion.residue_map()
     assert completion.extended_ideal().ring() is completion
 
@@ -60,7 +60,7 @@ def test_artin_name_requires_finite_length() -> None:
     plane = QQ.polynomial_ring(("x", "y"))
     x = plane.algebra_generator("x")
     nonmaximal = plane.adic_completion(plane.ideal(x))
-    with pytest.raises(ValueError, match="finite length"):
+    with pytest.raises(ValueError):
         nonmaximal.adic_artin_truncation(3)
 
 

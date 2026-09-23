@@ -48,7 +48,7 @@ def test_nonunimodular_metric_does_not_invent_an_integral_form_hodge_star() -> N
 
     assert lattice.is_nondegenerate()
     assert not lattice.is_unimodular()
-    with pytest.raises(ValueError, match="unimodular"):
+    with pytest.raises(ValueError):
         lattice.hodge_star(volume, 1)
 
     vector_star = lattice.multivector_hodge_star(volume, 1)

@@ -42,10 +42,10 @@ def test_named_embedding_chain_is_form_preserving_and_injective() -> None:
 
 
 def test_named_k3_automorphisms_are_nontrivial_involutions() -> None:
-    generators = NamedLattices.LK3.module_generators()
+    k3 = NamedLattices.LK3
     for involution in (Involutions.I_dP, Involutions.I_En, Involutions.I_Nik):
-        assert all(involution(involution(generator)) == generator for generator in generators)
-        assert any(involution(generator) != generator for generator in generators)
+        assert all(involution(involution(generator)) == generator for generator in k3.module_generators())
+        assert any(involution(generator) != generator for generator in k3.module_generators())
 
 
 def test_catalogue_coinvariant_embeddings_are_formed_orthogonal_complements() -> None:
