@@ -242,6 +242,103 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** all substantive claims are executable assertions or displayed witnesses using the final owned session API. Preserve the existing useful research content; replace raw constructors, global Hom, ambiguous generators and coordinate workarounds with their mathematical owners. Clear stale failure output without representing unexecuted replacements as passed.
   **Closure specimens:** actual algebra substitutions, a nonidentity morphism, group/lattice constructions and the notebook's geometric claims have falsifiable expected results. Source authoring closes here; clean-kernel execution and visual inspection of every relevant rendered output remain required in `terminal-session`.
 
+## Runtime triage
+
+The first full execution of the suite since the tree stopped importing (2026-09-07), run once as a triage catalogue on 2026-09-23 with `--no-time-gates --timeout=1 -o timeout_func_only=true` (16,311 tests collected): 11,874 failed, 4,335 passed. Failures are grouped here by the site that raises them; paths are relative to `src/dzack_research/preamble/` unless a different root is given. A node's cause is the defect behind its site, which the node establishes; the site and example are where to start. Each node closes when its example passes and a re-run of the catalogue shows no failure raised at its site. Regenerate the catalogue with the same command; the time gates are on by default.
+
+- [ ] **`triage-native-module-additive-group`**. **Needs:** none.
+  **Site:** `categories/modules/native_modules.py:102` and `:103`, `_RingModulePresentation.construct`: "the action is on the supplied owned additive group" (1,924) and "native scalar structure cannot overwrite another chosen base" (185).
+  **Example:** `tests/algebras/test_module_structure.py::test_forgetful_functor_sends_an_algebra_to_its_underlying_module`; `tests/rings/test_local_base_maximal_ideals.py::test_dual_numbers_over_a_field_are_local_at_the_nilpotent_alone`.
+
+- [ ] **`triage-framing-source-base-ring`**. **Needs:** none.
+  **Site:** `categories/modules/pure/modules.py:3051`, `_fix_selected_module_framing`: "the selected framing source is a free module over this module's base ring" (1,571).
+  **Example:** `tests/divisors/test_divisor_node_specimens.py::test_normal_singular_surface_has_a_noncartier_weil_class`.
+
+- [ ] **`triage-subobject-base-placement`**. **Needs:** none.
+  **Site:** `categories/abstract_categories/arrow_categories.py:1087`, `SubobjectCategory.__init__`: "the subobject base must lie in its base category" (1,538). Reached from `_commutative_ideal` (`categories/rings/commutative_ideals.py:966`) through `Modules(R).Subobjects(R.regular_module())`; for `QQ['x,y']` the regular module is placed in `Modules(R)`, so the failing rings are the ones the Kähler-differential and cohomology constructions build.
+  **Example:** `tests/algebras/test_cohomology.py::test_dga_cohomology_is_a_graded_algebra_with_descended_product`.
+
+- [ ] **`triage-an-object-contracts`**. **Needs:** none.
+  **Site:** `sage/misc/abstract_method.py:218`: `NotImplementedError: <abstract method an_object>` (850): categories reached by the inhabitation specifications that do not exhibit an object.
+  **Example:** `tests/algebras/test_native_free_algebra_module_factor.py::test_free_algebra_on_the_zero_module_has_only_the_empty_word`.
+
+- [ ] **`triage-owned-ring-custom-name`**. **Needs:** none.
+  **Site:** `sage/cpython/getattr.pyx:362`: `'_OwnedRingParent_with_category' object has no attribute '_SageObject__custom_name'` (584): an owned ring reaches Sage's `rename`/repr machinery without `SageObject` initialization of that field.
+  **Example:** `tests/algebras/test_center_corestriction_archive.py::test_central_algebra_map_corestricts_through_the_actual_center`.
+
+- [ ] **`triage-ring-cardinality-frontier`**. **Needs:** none.
+  **Site:** `categories/rings/ring_foundation.py:2163`, `OwnedRings.ParentMethods.cardinality`: the exact computation covers only finite, countably infinite and uncountable placements (348).
+  **Example:** `tests/algebras/test_affine_semigroup_algebras.py::test_affine_semigroup_algebra_retains_its_selected_binomial_presentation`.
+
+- [ ] **`triage-module-mor-endpoints`**. **Needs:** none.
+  **Site:** `categories/modules/pure/modules.py:904`, `Modules.Mor`: "an R-module Mor requires two R-modules" (338).
+  **Example:** `tests/algebras/test_de_rham.py::test_relative_conormal_and_tangent_comparison_for_xy_equals_t`.
+
+- [ ] **`triage-parent-init-keywords`**. **Needs:** none.
+  **Site:** `sage/structure/parent.pyx:238`: construction data reaching `Parent.__init__` unconsumed: `power_source` (195) and `concentrated_degree` (83); the level that declares each datum is not in the constructed object's chain.
+  **Example:** `tests/algebras/test_engine_backed_homogeneous_degree.py::test_engine_backed_polynomial_degree_survives_unrepresented_module_coordinates`.
+
+- [ ] **`triage-subring-base`**. **Needs:** none.
+  **Site:** `sage/categories/rings.py:1705`: "base must be a subring of this ring" (177), raised by Sage when an owned construction passes a base that Sage does not recognize as a subring.
+  **Example:** `tests/sets/test_standard_cardinals_archive.py::test_matrix_ring_cardinality_tracks_the_coefficient_ring`.
+
+- [ ] **`triage-an-element`**. **Needs:** none.
+  **Site:** `sage/structure/parent.pyx:2847`: `please implement _an_element_` for join-category, product and coproduct parents (158 + 37 + 23).
+  **Example:** `tests/functions/test_lebesgue_quotient.py::test_quotient_keeps_a_nonzero_function_and_does_not_sample_callable_equality`.
+
+- [ ] **`triage-subobject-generators`**. **Needs:** none.
+  **Site:** `categories/modules/framed/framed_free_modules.py:653`: "subobject generators are a finite owned set or an explicit finite family" (150).
+  **Example:** `tests/algebras/test_algebra_preservation.py::test_center_of_unital_associative_algebra_retains_its_unit`.
+
+- [ ] **`triage-category-c3-keys`**. **Needs:** none.
+  **Site:** `sage/misc/c3_controlled.pyx:945`: `KeyError` on a category sort key while Sage linearizes super categories (143 + 49); a category is joined whose comparison key is not registered.
+  **Example:** `tests/algebras/test_cartan_calculus.py::test_vector_fields_are_derivations_and_have_the_expected_lie_bracket`.
+
+- [ ] **`triage-construction-contract`**. **Needs:** none.
+  **Site:** `owned_category.py:802`, the construction-contract check: invertible-sheaf categories on join-category schemes (138).
+  **Example:** `tests/divisors/test_homogeneous_section_polynomial_parsing.py::test_projective_line_section_parses_multivariate_exponent_tuples`.
+
+- [ ] **`triage-augmentation-retained`**. **Needs:** none.
+  **Site:** `categories/algebras/augmented_algebras.py:84`: "an augmented algebra retains its selected augmentation morphism" (136).
+  **Example:** `tests/algebras/test_group_algebra_functor_archive.py::test_underlying_module_of_group_algebra_is_the_literal_functor_composite`.
+
+- [ ] **`triage-selected-framing-at-construction`**. **Needs:** none.
+  **Site:** `categories/abstract_categories/objects.py:264`: polynomial rings "constructed without" their selected framing (126).
+  **Example:** `tests/algebras/test_relative_presentations.py::test_zero_relation_presentation_lifts_through_the_identity_engine`.
+
+- [ ] **`triage-indexed-cardinal-finiteness`**. **Needs:** none.
+  **Site:** `categories/sets/cardinals.py:478`: "finiteness is not selected for an arbitrary indexed cardinal family" (108).
+  **Example:** `tests/algebras/test_center_corestriction_archive.py::test_exterior_algebra_center_is_the_archived_predicate_subring`.
+
+- [ ] **`triage-discriminant-over-general-rings`**. **Needs:** none.
+  **Site:** `categories/lattices.py:2222`: "discriminant_group is the ZZ specialization; use discriminant_module" (106), reached by `DiscriminantBilinearModules` over rings other than `ZZ`.
+  **Example:** `tests/constructions/test_categories_inhabited.py::test_a_category_over_a_ring_is_inhabited_over_every_ring[AA-DiscriminantBilinearModules]`.
+
+- [ ] **`triage-toric-charts-over-fields`**. **Needs:** none.
+  **Site:** `categories/schemes/toric/toric_schemes.py:1907`: "the semigroup algebras of the charts are algebras over a field" (100), reached by toric categories over non-fields.
+  **Example:** `tests/constructions/test_categories_inhabited.py::test_a_category_over_a_ring_is_inhabited_over_every_ring[GF(5)[t]-ADELogPairs]`.
+
+- [ ] **`triage-missing-owned-operations`**. **Needs:** none.
+  **Site:** `sage/cpython/getattr.pyx:357`/`:362`: `AttributeError` for operations the owned objects do not have: on module Mor elements (99 + 37), sparse free module object types (83), `DistinguishedAffineCovers.subcategory_class` (92), and the `mor`, `point_mor`, `nilradical`, `free_bilinear_form_adjunction` and `cardinality` names that the specifications call.
+  **Example:** `tests/algebras/test_algebra_base_change_archive.py::test_scalar_restriction_retains_the_selected_ring_map_identity`.
+
+- [ ] **`triage-signature-over-ordered-fields`**. **Needs:** none.
+  **Site:** `categories/_lattice.py:1296`: the signature pair asserted for quadratic spaces whose base is not a subfield of the reals (78).
+  **Example:** `tests/constructions/test_categories_inhabited.py::test_a_category_over_a_ring_is_inhabited_over_every_ring[AA-HyperbolicLattices]`.
+
+- [ ] **`triage-kahler-backend`**. **Needs:** none.
+  **Site:** `categories/algebras/derivations.py:61`: "the represented Kähler-calculus backend requires a symmetric algebra or a chosen finite commutative presentation" (74).
+  **Example:** `tests/constructions/test_algebras_construct.py::test_kahler_differentials_of_a_ring_over_itself_vanish[AA]`.
+
+- [ ] **`triage-long-tail`**. **Needs:** none.
+  **Site:** the remaining 699 sites of the catalogue, together about 2,200 failures, among them `categories/rings/commutative_ideals.py:946` (59), `categories/group/g_sets.py:167` (54), `categories/modules/pure/modules.py:4681` (53), `categories/modules/framed/fraction_field_quotients.py:123` (50), `sage/matrix/matrix_gfpn_dense.pyx:429` (`GF(27)` in MeatAxe, 36), and 27 specification tests calling `Hom`, which the session does not export under `Mor` as its only spelling. The three modules that fail at collection: `tests/divisors/test_cycle_chow_comparison.py` imports `AffineCodimensionOneChowComparison`, removed in `92d68311`; `tests/lattices/test_ported_integral_structures.py` imports `sage_indefinite_port.groups`, which the research Sage does not provide; `tests/rings/test_rings_are_algebras_over_themselves.py` fails at module level at `native_modules.py:102`.
+  **Closure:** a re-run of the catalogue with no failure at these sites; split any site whose cause is shared by others into its own node first.
+
+- [ ] **`suite-within-time-gates`**. **Needs:** none.
+  **Owner and delta:** the suite passes its gates in `dzack_research.utilities.suite_budget`: star import 2 s after `sage.all`, collection 30 s, execution 100 ms per selected test, no test over its per-test limit.
+  **Observed:** the catalogue executed in about 6.5 minutes, 24 ms per test; with tracebacks on, formatting failure reports dominates because owned `_repr_` methods compute (a ring's repr computes its cardinality). 16 tests exceeded 1 s, among them `tests/engineering/test_preamble_import_order.py` (5) and the Julia-bridge tests, which block on a subprocess read. pytest-timeout's `SIGALRM` inside Cython code is caught by cysignals as `AlarmInterrupt`, which stops the run.
+  **Closure:** the default suite run is green on all four gates, with no gate raised.
+
 ## Source convergence and terminal proof
 
 - [ ] **`architecture-remediation`**. **Needs:** `probe-and-exception-residue`, `canonical-notebook-contract`.
@@ -255,7 +352,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
   **Invariants:** establish the currently selected executable, interpreter, version and declared dependencies before diagnosing an environment failure. The old failed source-checkout launcher is not evidence that the current `.venv/bin/sage` fails. Repair a reproduced defect at the intended installation; no temporary Sage distribution or filesystem dependency replacement.
   **Closure evidence:** the tracked environment launches the intended Sage, preparses the repository's `.sage` inputs by the normal route and reaches the fresh star import. If it already does so, no environment edit is required. Keep mathematical failures distinct from launcher/provisioning failures.
 
-- [ ] **`terminal-session`**. **Needs:** `research-sage-runtime`.
+- [ ] **`terminal-session`**. **Needs:** `research-sage-runtime`, `triage-native-module-additive-group`, `triage-framing-source-base-ring`, `triage-subobject-base-placement`, `triage-an-object-contracts`, `triage-owned-ring-custom-name`, `triage-ring-cardinality-frontier`, `triage-module-mor-endpoints`, `triage-parent-init-keywords`, `triage-subring-base`, `triage-an-element`, `triage-subobject-generators`, `triage-category-c3-keys`, `triage-construction-contract`, `triage-augmentation-retained`, `triage-selected-framing-at-construction`, `triage-indexed-cardinal-finiteness`, `triage-discriminant-over-general-rings`, `triage-toric-charts-over-fields`, `triage-missing-owned-operations`, `triage-signature-over-ordered-fields`, `triage-kahler-backend`, `triage-long-tail`, `suite-within-time-gates`.
   **Owner and delta:** execute the integrated mathematical proof burden on the final owned session and research notebook; `DEV-58` governs this transition.
   **Invariants:** a fresh process imports `from dzack_research.preamble.all import *` and exposes Cat and Lattices. This is a prerequisite, not mathematical acceptance. Regenerate `docs/preamble-megadoc.md` and the graph through `just preamble-megadoc`; inspect their agreement with live categories, operations, domains and codomains. Preamble warnings and order-dependent imports require repair.
   **Closure evidence:** execute all required banked construction specimens and the protected expectation/user-simulation obligations through the prescribed project recipes, classify actual failures at their owners and repair them without weakening expectations. Cover direct, convenience, functor, catalogue and engine-raised routes; free/nonfree, finite/infinite and changed-base regimes where claimed. A previous run certifies only the source it exercised.

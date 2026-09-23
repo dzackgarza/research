@@ -114,3 +114,32 @@ in `O(n + m)` (its docstring and body). The longest chain is
 `len(level_sets()) - 1`, and the longest chain *from* each vertex to a sink is
 its level in `reverse().level_sets()`. Verified on a seven-vertex DAG with a
 shortcut edge; used by the `shape` view.
+
+### `==` between symbolic variables is a proof attempt, and costs a coercion search
+
+`SR.var("e_0") == SR.var("e_1")` is a symbolic equation, not a boolean.
+Asking its truth (`bool`, `any`, `in` over a list of symbols) makes Sage try to
+prove it, and one route evaluates the difference at random points of
+`ComplexIntervalField` (`complex_interval_field.py`, `random_element`). A
+membership test that scanned a list of symbolic labels with `==` made each
+Gram entry of a lattice cost milliseconds and the star import take 460 s on
+2026-09-23 (rank 4: 0.44 s, rank 8: 3.3 s per lattice, cubic).
+
+Route chosen: decide membership of hashable points by hashing
+(`sage.sets.set.Set`, a `frozenset`), never by comparing a candidate with every
+point. Symbols hash consistently with identity of name.
+
+### pytest-timeout's `SIGALRM` inside Cython code stops the whole run
+
+With `--timeout-method=signal`, the alarm that pytest-timeout raises can land
+inside a Sage `sig_on()` block. cysignals then raises
+`cysignals.signals.AlarmInterrupt`, which pytest treats as an interrupt: the
+run stops with "!!! cysignals.signals.AlarmInterrupt !!!" and the remaining
+tests never execute. Observed on the 2026-09-23 triage run with
+`--timeout=1`, at 84% of 16,311 tests. With the default per-test timeout
+(`func_only` false) the alarm can also fire while pytest builds a failure
+report, and pytest aborts with `INTERNALERROR ... Failed: Timeout`;
+`-o timeout_func_only=true` confines the alarm to the test function.
+
+Route chosen: a triage catalogue run resumes after the interrupted file; the
+gated default run treats any test at its time limit as a failed run anyway.
