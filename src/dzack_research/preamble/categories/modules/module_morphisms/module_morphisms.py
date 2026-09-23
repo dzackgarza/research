@@ -1875,10 +1875,7 @@ class ModuleEmbedding(ModuleMorphism):
             raise ValueError("linearity is not established for this proposed module embedding")
         decision = self._injectivity_derivation()
         if decision is None:
-            try:
-                decision = ModuleMorphism.is_injective(self)
-            except (AssertionError, AttributeError, TypeError, ValueError):
-                decision = Unknown
+            decision = ModuleMorphism.is_injective(self)
         if decision is False:
             raise ValueError("the supplied module morphism is not injective")
         if decision is not True:
