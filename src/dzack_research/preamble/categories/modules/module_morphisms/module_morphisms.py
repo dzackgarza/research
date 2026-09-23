@@ -2754,13 +2754,16 @@ class TensorProductModuleMor(ModuleMor):
                 raise TypeError("coordinate-array pairing syntax requires finite framings")
             if len(images) != int(left_size.finite_value()) or any(len(row) != int(right_size.finite_value()) for row in images):
                 raise ValueError("the pairing coordinate array has the wrong shape")
-            by_position = {(i, j): images[i][j] for i in range(len(images)) for j in range(len(images[i]))}
+            # The array is read in the two framings' enumerations once, keyed
+            # by the pair of labels it belongs to.
+            by_labels = {
+                (left_label, right_label): images[i][j]
+                for i, left_label in enumerate(left_labels)
+                for j, right_label in enumerate(right_labels)
+            }
 
             def generator_image(pair):
-                value = by_position[
-                    int(left_labels.ranking_map()(pair.component(0))),
-                    int(right_labels.ranking_map()(pair.component(1))),
-                ]
+                value = by_labels[pair.component(0), pair.component(1)]
                 return value if element_parent(value) is self.codomain() else self.codomain()(value)
 
             images = generator_image

@@ -267,12 +267,16 @@ def _form_of_gram(module, gram):
     match rank.is_finite():
         case True:
             size = int(rank)
-            return forms(
+            form = forms(
                 tuple(
                     tuple(ring(gram[row, column]) for column in range(size))
                     for row in range(size)
                 )
             )
+            # The form was built so that its Gram tensor in this framing is
+            # ``gram``; record it rather than re-reading every entry.
+            form.gram_tensor.set_cache(gram)
+            return form
         case False:
             return forms(lambda left, right: gram(left, right))
 
