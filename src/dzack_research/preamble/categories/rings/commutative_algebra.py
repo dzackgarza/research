@@ -169,12 +169,7 @@ class PrimeSpectra(OwnedCategory):
             point_engine = _engine_ideal(ring, self.ideal())
             if ring in QuotientRings():
                 point_engine = _engine_quotient_cover_ideal(ring, point_engine)
-            try:
-                degree = int(point_engine.vector_space_dimension())
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise AssertionError(
-                    "the represented affine closed-point computation must compute the finite residue-field degree"
-                ) from error
+            degree = int(point_engine.vector_space_dimension())
             return _own_ring(SageZZ)(degree)
 
         @cached_method
@@ -511,7 +506,12 @@ def _engine_ring_value(ring, value):
 
 
 def _engine_ideal(ring, ideal):
-    r"""Return the computation-ring ideal represented by ``ideal``."""
+    r"""Return the computation-ring ideal represented by ``ideal``.
+
+    Protected commutative-algebra adapter under OWN-06. Representation
+    dispatch is confined here; after a representation is selected, a failure
+    in that route propagates rather than selecting another route by exception.
+    """
     source = _own_ring(ring)
     engine = _engine_ring(source)
     if getattr(ideal, "ring", lambda: None)() is engine:
@@ -530,10 +530,9 @@ def _engine_ideal(ring, ideal):
         )
     generators = getattr(ideal, "gens", None)
     if generators is not None and not isinstance(ideal, (tuple, list)):
-        try:
-            return engine.ideal(tuple(_engine_ring_value(ring, value) for value in generators()))
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+        return engine.ideal(
+            tuple(_engine_ring_value(ring, value) for value in generators())
+        )
     if isinstance(ideal, (tuple, list)):
         return engine.ideal(tuple(_engine_ring_value(ring, value) for value in ideal))
     return engine.ideal(_engine_ring_value(ring, ideal))
@@ -546,13 +545,14 @@ def _engine_coefficient_ring(engine):
 
 
 def _owned_ideal(ring, ideal):
-    r"""Return the live ideal subobject represented by ``ideal`` when available."""
+    r"""Return an owned ideal unchanged, or raise represented input into one."""
     source = _own_ring(ring)
-    try:
-        if ideal.ring() is source and ideal.inclusion().codomain() is not None:
-            return ideal
-    except (AttributeError, TypeError):
-        pass
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        CommutativeIdeals,
+    )
+
+    if ideal in CommutativeIdeals(source):
+        return ideal
     backend = _engine_ideal(source, ideal)
     engine = _engine_ring(source)
     return source.ideal(
@@ -764,10 +764,7 @@ class QuotientRings(OwnedCategory):
                     )
                 value = _owned_engine_element(source, source_engine(lift()))
             elif value_parent in OwnedRings():
-                try:
-                    value_engine = _engine_ring(value_parent)
-                except (TypeError, ValueError, AttributeError):
-                    value_engine = None
+                value_engine = _engine_ring(value_parent)
                 if value_parent is source or value_engine is source_engine:
                     value = _owned_engine_element(source,
                         source_engine(_engine_element(value_parent, value))
@@ -802,13 +799,10 @@ class QuotientRings(OwnedCategory):
             )
             element = self(value)
             source_value = _engine_element(self.quotient_source(), element.lift())
-            try:
-                return engine(source_value)
-            except (TypeError, ValueError):
-                quotient_map = engine.coerce_map_from(_engine_ring(self.quotient_source()))
-                if quotient_map is None:
-                    raise
+            quotient_map = engine.coerce_map_from(_engine_ring(self.quotient_source()))
+            if quotient_map is not None:
                 return quotient_map(source_value)
+            return engine(source_value)
 
         def zero(self):
             return self(self.quotient_source().zero())
@@ -873,12 +867,7 @@ class QuotientRings(OwnedCategory):
             if self._preamble_engine_ring is not None:
                 return _engine_krull_dimension(self)
             backend = _engine_ideal(self.quotient_source(), self.defining_ideal())
-            try:
-                return _owned_engine_element(SageZZ, SageZZ(backend.dimension()))
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise AssertionError(
-                    "Krull dimension of this represented quotient requires an exact ideal-dimension computation"
-                ) from error
+            return _owned_engine_element(SageZZ, SageZZ(backend.dimension()))
 
         def _repr_(self):
             return f"{self.quotient_source()} / {self.defining_ideal()}"
