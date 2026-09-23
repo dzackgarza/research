@@ -16,7 +16,7 @@ def test_leibniz_rule_and_curvature_of_a_rank_one_connection() -> None:
     rank-one connection is d omega).
     """
     A = QQ["x,y"]
-    x, y = A.gens()
+    x, y = A.algebra_generator("x"), A.algebra_generator("y")
     M = A**1
     e = M.module_generator(0)
     omega = A.kahler_differentials()

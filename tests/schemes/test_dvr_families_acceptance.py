@@ -14,7 +14,7 @@ def test_the_family_xy_equals_t_is_flat_with_torus_generic_fibre_and_nodal_speci
     t = P.gen()
     A = P.localize_at_prime(P.ideal(t))
     B = A['x,y']
-    x, y = B.gens()
+    x, y = B.algebra_generator("x"), B.algebra_generator("y")
     family = B.quotient(B.ideal(x * y - t)).affine_spectrum()
     generic = family.generic_fiber()
     special = family.special_fiber()

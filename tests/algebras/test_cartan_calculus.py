@@ -5,7 +5,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def _plane():
     algebra = QQ["x,y"]
-    x, y = algebra.gens()
+    x, y = algebra.algebra_generator("x"), algebra.algebra_generator("y")
     vector_fields = algebra.vector_fields()
     d_dx = vector_fields({x: algebra.one(), y: algebra.zero()})
     x_d_dy = vector_fields({x: algebra.zero(), y: x})

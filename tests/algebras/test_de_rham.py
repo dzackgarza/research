@@ -6,7 +6,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 def _axes():
     r"""The coordinate axes ``A = QQ[x, y]/(xy)``."""
     plane = QQ["x,y"]
-    x, y = plane.gens()
+    x, y = plane.algebra_generator("x"), plane.algebra_generator("y")
     axes = plane.quotient(plane.ideal([x * y]))
     return axes, axes(x), axes(y)
 
@@ -54,7 +54,7 @@ def test_relative_differentials_of_the_node_degeneration_xy_equals_t() -> None:
     base = QQ["t"]
     t = base.gen()
     presentation = base["x,y"]
-    x, y = presentation.gens()
+    x, y = presentation.algebra_generator("x"), presentation.algebra_generator("y")
     algebra = presentation.quotient(presentation.ideal([x * y - t]))
     xbar, ybar = algebra(x), algebra(y)
     omega = algebra.kahler_differentials()
@@ -76,7 +76,7 @@ def test_de_rham_complex_of_the_plane_has_square_zero_leibniz_differential() -> 
     r"""On ``Ω^•(QQ[x,y])``: ``d^2 = 0``, ``d(XY) = dX Y + X dY``, ``dX ∧ dX = 0``,
     ``dX ∧ dY ≠ 0``, and ``d(x^2 y) = 2xy dx + x^2 dy``."""
     algebra = QQ["x,y"]
-    x, y = algebra.gens()
+    x, y = algebra.algebra_generator("x"), algebra.algebra_generator("y")
     de_rham = algebra.de_rham_algebra()
     d = de_rham.differential()
     X, Y = de_rham(x), de_rham(y)

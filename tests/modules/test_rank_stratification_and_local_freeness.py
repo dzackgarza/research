@@ -57,7 +57,7 @@ def test_the_annihilator_of_q_x_y_mod_x_plus_q_x_y_mod_y_is_xy() -> None:
     Source: by hand; x and y are coprime in the UFD QQ[x,y].
     """
     R = QQ["x,y"]
-    x, y = R.gens()
+    x, y = R.algebra_generator("x"), R.algebra_generator("y")
     F = R**2
     M = F / F.submodule([x * F.module_generator(0), y * F.module_generator(1)])
     assert M.annihilator() == R.ideal(x * y)

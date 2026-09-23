@@ -13,7 +13,7 @@ def test_the_swap_on_p1_has_two_fixed_points_and_quotient_p1_by_a_degree_two_map
     ``D_+(x^2 + y^2)``, which cover ``P^1``.
     """
     P1 = Schemes(QQ).projective_space(1, names=("x", "y"))
-    x, y = P1.coordinate_ring().gens()
+    x, y = P1.coordinate_ring().algebra_generator("x"), P1.coordinate_ring().algebra_generator("y")
     swap = P1.projective_morphism_from_coordinates(P1, (y, x))
     G = Groups.C(2)
     acted = GObjects(G, Schemes(QQ))(P1, G.Mor(P1.automorphism_group())({G.gen(): swap}))

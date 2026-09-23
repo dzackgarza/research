@@ -11,7 +11,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def coordinate_axes():
     R = QQ["x,y"]
-    x, y = R.gens()
+    x, y = R.algebra_generator("x"), R.algebra_generator("y")
     M = Modules(R)(R.quotient_ring(R.ideal(x * y)))
     return R, x, y, M
 

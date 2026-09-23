@@ -39,7 +39,7 @@ def test_an_empty_common_fixed_locus_does_not_make_the_klein_four_action_free() 
     ``x = 0`` and ``x = 1`` of each vertical line; the translation's is ``(1)``.
     """
     A = GF(2)['x,y']
-    x, y = A.gens()
+    x, y = A.algebra_generator("x"), A.algebra_generator("y")
     X, translation = _automorphism(A, {x: x + 1, y: y})
     X, shear = _automorphism(A, {x: x, y: y + x**2 + x})
     G = Groups.C(2).direct_product(Groups.C(2))
@@ -61,8 +61,8 @@ def test_the_scheme_theoretic_fixed_locus_of_x_to_x_plus_e_squared_is_nonreduced
     ``Spec GF(2)[x, e]/(e^2)``, in which ``e != 0`` and ``e^2 = 0``.
     """
     P = GF(2)['x,e']
-    A = P.quotient(P.ideal(P.gen(1) ** 3))
-    x, e = A.gens()
+    A = P.quotient(P.ideal(P.algebra_generator("e") ** 3))
+    x, e = A(P.algebra_generator("x")), A(P.algebra_generator("e"))
     X, sigma = _automorphism(A, {x: x + e**2, e: e})
     fixed = X.fixed_locus(sigma)
     e_fixed = fixed.coordinate_ring()(e)

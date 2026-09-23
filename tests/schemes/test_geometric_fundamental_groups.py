@@ -10,7 +10,10 @@ def test_the_fundamental_group_of_pgl2_of_the_complex_numbers_has_order_two() ->
     ``SU(2) = S^3``, which is simply connected.  ``PGL_2 = D_+(ad - bc) ⊂ P^3``.
     """
     P3 = Schemes(QQ).projective_space(3, names=("a", "b", "c", "d"))
-    a, b, c, d = P3.coordinate_ring().gens()
+    a = P3.coordinate_ring().algebra_generator("a")
+    b = P3.coordinate_ring().algebra_generator("b")
+    c = P3.coordinate_ring().algebra_generator("c")
+    d = P3.coordinate_ring().algebra_generator("d")
     PGL2 = P3.basic_open(a * d - b * c)
     identity = PGL2.point((1, 0, 0, 1))
     pi1 = PGL2.analytic_fundamental_group(identity)
@@ -28,7 +31,9 @@ def test_normalizing_the_nodal_cubic_induces_the_trivial_map_into_infinite_cycli
     injective, not surjective.  Base point: the smooth point ``[0:1:0]``.
     """
     P2 = Schemes(QQ).projective_space(2, names=("x", "y", "z"))
-    x, y, z = P2.coordinate_ring().gens()
+    x = P2.coordinate_ring().algebra_generator("x")
+    y = P2.coordinate_ring().algebra_generator("y")
+    z = P2.coordinate_ring().algebra_generator("z")
     C = P2.closed_subscheme(y**2 * z - x**3 - x**2 * z)
     p = C.point((0, 1, 0))
     induced = C.normalization_morphism().induced_map_on_fundamental_groups(p)

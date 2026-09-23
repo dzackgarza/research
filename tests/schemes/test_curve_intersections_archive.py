@@ -12,7 +12,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 def test_two_cusps_meet_with_multiplicity_four_at_the_origin_and_one_at_1_1() -> None:
     r"""``I_0(y^2 - x^3, x^2 - y^3) = 4`` and ``I_{(1,1)} = 1`` (Gathmann Ex. 2.13, Prop. 2.17)."""
     R = QQ['x,y']
-    x, y = R.gens()
+    x, y = R.algebra_generator("x"), R.algebra_generator("y")
     plane = R.affine_spectrum()
     first = plane.closed_subscheme(y**2 - x**3)
     second = plane.closed_subscheme(x**2 - y**3)

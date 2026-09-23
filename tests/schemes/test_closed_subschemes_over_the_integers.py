@@ -11,7 +11,7 @@ def test_the_point_x_zero_on_the_parabola_over_the_integers_is_the_origin() -> N
     Derivation: \(y = (y - x^2) + x\cdot x \in (y - x^2, x)\).
     """
     plane = Schemes(ZZ)(ZZ["x,y"])
-    x, y = ZZ["x,y"].gens()
+    x, y = ZZ["x,y"].algebra_generator("x"), ZZ["x,y"].algebra_generator("y")
     parabola = plane.closed_subscheme(y - x**2)
     on_parabola = parabola.inclusion().coordinate_algebra_morphism()
 

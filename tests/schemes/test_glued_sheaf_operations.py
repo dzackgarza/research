@@ -13,7 +13,7 @@ def test_the_kernel_of_x_y_from_o_squared_to_o_1_on_p1_is_o_minus_1() -> None:
     ``O_{V(x)}(1)`` of length 1.
     """
     P1 = Schemes(QQ).projective_space(1, names=("x", "y"))
-    x, y = P1.coordinate_ring().gens()
+    x, y = P1.coordinate_ring().algebra_generator("x"), P1.coordinate_ring().algebra_generator("y")
     O = P1.structure_sheaf()
     E = O.direct_sum(O)
     euler = E.Mor(P1.O(1))((x, y))

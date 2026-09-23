@@ -6,7 +6,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 def test_the_fixed_locus_of_the_coordinate_swap_on_a2_is_the_diagonal() -> None:
     r"""The swap ``x <-> y`` on ``A^2_QQ`` has fixed ideal ``(x - y, y - x) = (x - y)``: the diagonal line."""
     A = QQ['x,y']
-    x, y = A.gens()
+    x, y = A.algebra_generator("x"), A.algebra_generator("y")
     X = A.affine_spectrum()
     swap = X.Mor(X)(A.Mor(A)({x: y, y: x}))
     G = Groups.C(2)
@@ -26,7 +26,8 @@ def test_on_p1_times_p1_the_diagonal_sign_has_four_fixed_points_and_the_factor_s
     Derivation: ``[x_0 : x_1] = [x_0 : -x_1]`` iff ``x_0 x_1 = 0`` (characteristic 0).
     """
     P1 = Schemes(QQ).projective_space(1, names=("x0", "x1"))
-    x0, x1 = P1.coordinate_ring().gens()
+    x0 = P1.coordinate_ring().algebra_generator("x0")
+    x1 = P1.coordinate_ring().algebra_generator("x1")
     s = P1.projective_morphism_from_coordinates(P1, (x0, -x1))
     Q = P1.product(P1)
     p, q = Q.projection(0), Q.projection(1)

@@ -11,7 +11,9 @@ def test_the_cuspidal_cubic_has_arithmetic_genus_one_and_geometric_genus_zero() 
     by ``t -> (t^2 : t^3 : 1)``.
     """
     P2 = Schemes(QQ).projective_space(2, names=("x", "y", "z"))
-    x, y, z = P2.coordinate_ring().gens()
+    x = P2.coordinate_ring().algebra_generator("x")
+    y = P2.coordinate_ring().algebra_generator("y")
+    z = P2.coordinate_ring().algebra_generator("z")
     cubic = P2.closed_subscheme(y**2 * z - x**3)
 
     assert cubic.dimension() == 1
@@ -26,7 +28,7 @@ def test_the_coordinate_cross_xy_is_reducible_with_two_components() -> None:
     Derivation: the minimal primes of ``(xy)`` in ``QQ[x, y]`` are ``(x)`` and ``(y)``.
     """
     R = QQ['x,y']
-    x, y = R.gens()
+    x, y = R.algebra_generator("x"), R.algebra_generator("y")
     cross = R.affine_spectrum().closed_subscheme(x * y)
 
     assert cross.dimension() == 1

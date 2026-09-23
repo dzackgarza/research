@@ -19,7 +19,9 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 def test_quintic_with_two_rational_nodes_and_an_e8_point_has_genus_zero_and_arithmetic_genus_six() -> None:
     r"""``p_a = 6 = 0 + 1 + 1 + 4`` for ``Y^2 Z^3 = X (X - Z)^2 (X - 4Z)^2``."""
     P2 = Schemes(QQ).projective_space(2, names=("X", "Y", "Z"))
-    X, Y, Z = P2.coordinate_ring().gens()
+    X = P2.coordinate_ring().algebra_generator("X")
+    Y = P2.coordinate_ring().algebra_generator("Y")
+    Z = P2.coordinate_ring().algebra_generator("Z")
     C = P2.closed_subscheme(Y**2 * Z**3 - X * (X - Z) ** 2 * (X - 4 * Z) ** 2)
     singular = C.singular_locus().closed_points()
 
@@ -34,7 +36,9 @@ def test_quintic_with_two_rational_nodes_and_an_e8_point_has_genus_zero_and_arit
 def test_a_node_at_a_degree_two_closed_point_contributes_two_to_the_delta_sum() -> None:
     r"""``p_a = 6 = 0 + 2 * 1 + 4`` for ``Y^2 Z^3 = X (X^2 + Z^2)^2`` over ``QQ``."""
     P2 = Schemes(QQ).projective_space(2, names=("X", "Y", "Z"))
-    X, Y, Z = P2.coordinate_ring().gens()
+    X = P2.coordinate_ring().algebra_generator("X")
+    Y = P2.coordinate_ring().algebra_generator("Y")
+    Z = P2.coordinate_ring().algebra_generator("Z")
     C = P2.closed_subscheme(Y**2 * Z**3 - X * (X**2 + Z**2) ** 2)
     singular = C.singular_locus().closed_points()
 

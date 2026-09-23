@@ -86,7 +86,7 @@ def test_the_special_fiber_of_xy_equals_t_over_t_zero_is_the_node_xy_equals_zero
     parameter = QQ["t"]
     t = parameter.gen()
     family_ring = parameter["x,y"]
-    x, y = family_ring.gens()
+    x, y = family_ring.algebra_generator("x"), family_ring.algebra_generator("y")
     family = Schemes(parameter)(family_ring.quotient(family_ring.ideal(x * y - t)))
     zero = Schemes(parameter)(parameter.quotient(parameter.ideal(t)))
 

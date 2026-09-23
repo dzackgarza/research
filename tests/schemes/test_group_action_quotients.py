@@ -6,7 +6,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 def _acted_plane(G, images_of_generator):
     A = QQ['x,y']
     X = A.affine_spectrum()
-    sigma = X.Mor(X)(A.Mor(A)(images_of_generator(*A.gens())))
+    sigma = X.Mor(X)(A.Mor(A)(images_of_generator(A.algebra_generator("x"), A.algebra_generator("y"))))
     return A, X, GObjects(G, Schemes(QQ))(X, G.Mor(X.automorphism_group())({G.gen(): sigma}))
 
 
@@ -17,7 +17,7 @@ def test_the_invariants_of_the_coordinate_swap_are_the_symmetric_polynomials() -
     ``xy = ((x + y)^2 - (x^2 + y^2))/2`` (Chevalley--Shephard--Todd for the reflection).
     """
     A, X, acted = _acted_plane(Groups.C(2), lambda x, y: {x: y, y: x})
-    x, y = A.gens()
+    x, y = A.algebra_generator("x"), A.algebra_generator("y")
     invariants = acted.invariant_ring()
 
     assert x + y in invariants
@@ -33,7 +33,7 @@ def test_the_invariants_of_the_coordinate_swap_are_the_symmetric_polynomials() -
 def test_the_invariant_map_x_plus_y_factors_uniquely_through_the_swap_quotient() -> None:
     r"""``(x, y) -> x + y`` is ``S_2``-invariant, so it factors through ``A^2 -> A^2/S_2`` (universal property)."""
     A, X, acted = _acted_plane(Groups.C(2), lambda x, y: {x: y, y: x})
-    x, y = A.gens()
+    x, y = A.algebra_generator("x"), A.algebra_generator("y")
     T = QQ['t']
     line = T.affine_spectrum()
     f = X.Mor(line)(T.Mor(A)({T.gen(): x + y}))
@@ -51,10 +51,10 @@ def test_the_invariants_of_minus_one_on_the_plane_form_the_a1_cone() -> None:
     quadratic monomials with the single relation ``x^2 · y^2 = (xy)^2``.
     """
     A, X, acted = _acted_plane(Groups.C(2), lambda x, y: {x: -x, y: -y})
-    x, y = A.gens()
+    x, y = A.algebra_generator("x"), A.algebra_generator("y")
     invariants = acted.invariant_ring()
     B = QQ['u,v,w']
-    u, v, w = B.gens()
+    u, v, w = B.algebra_generator("u"), B.algebra_generator("v"), B.algebra_generator("w")
 
     assert x**2 in invariants and x * y in invariants and y**2 in invariants
     assert x not in invariants
@@ -71,7 +71,7 @@ def test_x2_minus_xy_plus_y2_is_invariant_under_the_order_three_rotation_and_des
     ``y^2 + y(x - y) + (x - y)^2 = x^2 - xy + y^2``.
     """
     A, X, acted = _acted_plane(Groups.C(3), lambda x, y: {x: -y, y: x - y})
-    x, y = A.gens()
+    x, y = A.algebra_generator("x"), A.algebra_generator("y")
     q2 = x**2 - x * y + y**2
     T = QQ['t']
     line = T.affine_spectrum()
