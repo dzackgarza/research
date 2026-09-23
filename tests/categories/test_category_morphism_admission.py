@@ -313,3 +313,100 @@ def test_functor_construction_does_not_identify_equal_but_distinct_mor_domains()
         selected.MorCategory().Of(wrong_identity, identity)
     with pytest.raises(TypeError):
         selected.MorCategory().Of(wrong_object, stated)
+
+
+def test_module_automorphism_groups_retain_their_categorical_arrow_objects() -> None:
+    from dzack_research.preamble.all import QQ, ZZ
+
+    for ring in (ZZ, QQ):
+        module = ring.free_module(finite_ordered_set(("a", "b")))
+        maps = module.module_category().Mor(module, module)
+        automorphisms = module.module_category().Aut(module)
+        swap = automorphisms(maps({
+            "a": module.module_generator("b"),
+            "b": module.module_generator("a"),
+        }))
+        stated = automorphisms.object(swap)
+        ordinary = maps.object(swap)
+
+        assert swap in automorphisms
+        assert stated in automorphisms
+        assert ordinary in maps
+        assert ordinary not in automorphisms
+        assert stated.arrow() is ordinary.arrow() is swap
+        assert automorphisms.object(ordinary) is stated
+        assert automorphisms.object(stated) is stated
+        assert swap * swap == automorphisms.one()
+
+        two_mor = automorphisms.MorCategory().Of(swap, stated)
+        assert automorphisms.Mor(stated, swap) is two_mor
+        assert automorphisms.MorCategory().Between(stated, stated) is two_mor
+        assert two_mor.domain() is stated and two_mor.codomain() is stated
+        identity = two_mor.identity()
+        assert identity * identity == identity
+        assert IdentityFunctor(automorphisms)(stated) is stated
+        assert IdentityFunctor(automorphisms)(identity) is identity
+
+        other = ring.free_module(finite_ordered_set(("c",)))
+        other_group = other.module_category().Aut(other)
+        wrong_object = other_group.object(other_group.one())
+        assert wrong_object not in automorphisms
+        with pytest.raises((TypeError, ValueError)):
+            automorphisms.MorCategory().Of(wrong_object, stated)
+
+
+def test_finite_form_group_predicates_do_not_replace_category_placement() -> None:
+    from dzack_research.preamble.all import (
+        QQ, ZZ, FractionFieldQuotients,
+        TorsionBilinearFormModules, TorsionQuadraticFormModules,
+    )
+
+    for category, modulus in (
+        (TorsionBilinearFormModules(ZZ), 1),
+        (TorsionQuadraticFormModules(ZZ), 2),
+    ):
+        values = FractionFieldQuotients(ZZ)(modulus)
+        form = category.from_relations_and_gram([[3]], [[QQ(2) / 3]], values)
+        group = form.orthogonal_group()
+        generator = next(iter(form.module_generators()))
+        negative = next(arrow for arrow in group if arrow(generator) == -generator)
+        stated = group.object(negative)
+        ordinary = category.Mor(form, form).object(negative)
+
+        assert negative in group
+        assert group.accepts(negative)
+        assert negative * negative == group.one()
+        assert stated in group
+        assert stated.arrow() is ordinary.arrow() is negative
+        assert ordinary not in group
+        assert group.object(ordinary) is stated
+        assert group.object(stated) is stated
+
+        two_mor = group.MorCategory().Of(negative, stated)
+        assert group.Mor(stated, negative) is two_mor
+        assert group.MorCategory().Between(stated, stated) is two_mor
+        assert two_mor.domain() is stated and two_mor.codomain() is stated
+        identity = two_mor.identity()
+        assert identity * identity == identity
+        assert IdentityFunctor(group)(stated) is stated
+        assert IdentityFunctor(group)(identity) is identity
+
+        trivial = group.subgroup_on(())
+        assert group.one() in trivial
+        assert trivial.accepts(group.one())
+        assert negative not in trivial
+        assert not trivial.accepts(negative)
+        assert stated not in trivial
+        with pytest.raises((TypeError, ValueError)):
+            trivial.object(negative)
+
+        other_form = category.from_relations_and_gram([[3]], [[QQ(2) / 3]], values)
+        assert other_form is not form
+        other_group = other_form.orthogonal_group()
+        wrong_arrow = other_group.one()
+        wrong_object = other_group.object(wrong_arrow)
+        assert wrong_arrow not in group
+        assert wrong_object not in group
+        assert not group.accepts(wrong_arrow)
+        with pytest.raises((TypeError, ValueError)):
+            group.MorCategory().Of(wrong_object, stated)

@@ -947,7 +947,12 @@ class TorsionFormAutomorphism(TorsionFormIsometry):
         self._engine_element = _engine_element
 
     def _engine(self):
-        r"""Return the private Sage representative used for computation."""
+        r"""Return the private Sage representative used by this form-group owner.
+
+        Orthogonal-group admission and subgroup construction in this module
+        may read it to ask the maintained engine about a raw group element.
+        It is not a category-membership datum and does not leave this owner.
+        """
         return self._engine_element
 
     def inverse(self):
@@ -1112,7 +1117,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             coordinates = cover.coordinates(image.lift())
             images[label] = self._normalized_form.linear_combination(
                 {
-                    target_label: self._owned_engine_element(_normalized_form.base_ring(), SageZZ(coefficient))
+                    target_label: _owned_engine_element(self._normalized_form.base_ring(), SageZZ(coefficient))
                     for target_label, coefficient in zip(
                         labels,
                         coordinates,
@@ -1219,17 +1224,22 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             return self.from_morphism(datum)
         return self._from_engine(datum)
 
-    def __contains__(self, candidate) -> bool:
-        if not isinstance(candidate, TorsionFormAutomorphism):
-            return False
-        if candidate.parent() is self:
-            return True
-        if candidate.parent().domain() is not self.domain():
-            return False
-        try:
-            return candidate._engine() in self._engine_group_parent
-        except (TypeError, ValueError):
-            return False
+    def accepts(self, candidate) -> bool:
+        r"""Admit a raw form automorphism to this finite group of maps.
+
+        Membership of a subgroup can require the maintained engine's exact
+        element predicate. This is raw-arrow admission, also used before
+        constructing a fixed-Mor object, not category containment. The
+        inherited containment reads placement for the constructed objects and
+        delegates only raw morphisms to this operation.
+        """
+        match candidate:
+            case TorsionFormAutomorphism() if candidate.parent() is self:
+                return True
+            case TorsionFormAutomorphism() if candidate.domain() is self.domain():
+                return candidate._engine() in self._engine_group_parent
+            case _:
+                return False
 
     @cached_method
     def one(self):
