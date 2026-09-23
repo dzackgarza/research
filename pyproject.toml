@@ -33,6 +33,10 @@ dzack_research = ["py.typed", "static_types/*.pyi"]
 sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
 tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
 
+# The category packages sage-mypy-category-plugin projects for the Sage QC
+# tier's mypy run: the preamble's categories, built through Sage's runtime.
+[tool.sage-mypy-category-plugin]
+packages = ["dzack_research.preamble"]
 
 [tool.pytest.ini_options]
 # The archived preamble is source evidence, not an executable test tree.
