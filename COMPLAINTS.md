@@ -47,11 +47,71 @@ under `membership-by-placement`. This is a source finding, not an executed
 failure; changing the family record to the subgroup would instead erase the
 ambient fixed category and is not a repair.
 
+### Set-theoretic behaviour is re-implemented instead of wired to a set engine
+
+A set is determined by its membership condition. A finite set of listed points
+decides membership by the points' identity; a set given by a predicate decides
+it by the predicate; the image of a map decides it by an inverse or an inverse
+image. An enumeration is a further chosen datum -- a bijection from an ordinal
+onto the set -- which supplies order and rank and never decides membership.
+Maintained engines already implement each of these: Sage's `Set` (a hashed
+`frozenset`), `ConditionSet`, `ImageSubobject`, `cartesian_product`,
+`DisjointUnionEnumeratedSets`, `Subsets`, `FiniteSetMaps`, `IntegerRange`,
+`NonNegativeIntegers`; SymPy's `FiniteSet`, `ConditionSet`, `ImageSet`; GAP's
+collections.
+
+The preamble's set layer (`categories/sets/set_categories.py`,
+`categories/sets/finite_ordered_sets.py`) instead builds every finite set as an
+index set plus position/point lambdas and derived membership by comparing a
+candidate with every point. Observed on 2026-09-23: framing labels are SR
+symbols, each comparison is a symbolic proof attempt, and the star import took
+460 s (a rank-8 lattice took 3.3 s, growing cubically). `from_indexed` now
+defaults to Sage's hashed `Set` and a hash map for positions (`77b05adb`), and
+product points keep their components (`cfc27a51`); the rest of the layer still
+hand-rolls what the engines above compute:
+
+| Owned construction | Membership now | Engine that computes it |
+| --- | --- | --- |
+| `_ImageSet` | inverse, or `Set` of the values for a finite source | `ImageSubobject(map, domain, inverse=...)` |
+| `CartesianProductsOfSets` | category default; points rebuilt through factor constructors | `cartesian_product` |
+| `CoproductsOfSets` | parent identity | `DisjointUnionEnumeratedSets` |
+| `PowerSets`, `FixedCardinalitySubsetSets`, `FinitePowerSets` | hand-written through subobject placement (iteration already uses `Subsets`) | `Subsets(X)`, `Subsets(X, k)` |
+| `FunctionSets` | membership in the owned Mor | `FiniteSetMaps(X, Y)` |
+| `_ConditionSet` | the predicate (correct in shape) | `ConditionSet(universe, predicate)` |
+| `FiniteOrdinalSets`, `NN` | bounds checks (correct in shape) | `IntegerRange(n)`, `NonNegativeIntegers()` |
+
+The set layer is one instance. The same afternoon found an owned matrix
+algebra, with its tensor-algebra framing, built for every lattice in order to
+take one determinant (now Sage's matrix determinant, `_gram_determinant`), a
+real-number relation decided by Maxima's `simplify_full` before `AA` or Arb
+were tried (`rings/real.py`), and each Gram entry re-derived by building and
+expanding a pure tensor. The general need is that owned objects keep public
+mathematics owned and route computation through a maintained engine
+privately (`OWN-06`); where the preamble re-rolls an engine's behaviour, the
+owned code is a second, slower, less correct implementation.
+
+**Consumers:** every framed module (framing labels), tensor products (pair
+labels), lattices and forms (Gram entries), catalogues, and every membership
+test in construction admission.
+**Coverage boundary:** the set layer's constructions were read; other layers
+were found only where profiling of the star import led. The audit of the
+whole preamble for engine behaviour re-implemented locally is the TODO node
+`engine-wiring-audit`.
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
+### The test suite collapses under refactoring instead of stating mathematical facts
+
+- **User action:** run the suite after a refactor of the preamble's internals.
+- **Expected:** tests outside the protected specification subtrees are independently verifiable mathematical facts: about a tenth construct an object through its public mathematical entry, and the rest assert what can be done with it and what it computes. An internal refactor that keeps the mathematics leaves them green.
+- **Actual:** the 2026-09-23 triage run (TODO section *Runtime triage*) failed 11,874 of 16,309 executed tests. Where the failures are raised: 96% inside preamble or Sage code while objects are built or used, 3,680 of them in fixture setup; 496 (4%) at an assertion in the test file. The failure rate barely depends on coupling to internals (tests importing private names or reaching engine internals: 78%; public API only: 70%; specification subtrees: 73%), so the collapse is mostly construction failing, concentrated in a few raising sites. The suite nevertheless couples to internals where it should not: of the 668 test files outside `tests/constructions/` and `tests/user_simulations/`, 151 import underscored preamble names (165 imports), 32 read private attributes (61), 45 assert through `repr`/`str` (114), 52 check classes or types (127), 23 reach engine objects (51) and 16 compare a `category()` by identity (24). Each such line tests a representation or a wiring pattern rather than a mathematical claim, and breaks when the representation changes while the mathematics stays.
+- **Owning boundary:** the non-protected tests under `tests/`; `test-guidelines` and the expectation-subtree rule in `AGENTS.md`.
+- **Example:** `rg -l -U 'from dzack_research[^ ]* import \(?[^)]*\b_[a-z]' tests` outside the protected subtrees.
+- **Work:** TODO node `test-suite-mathematical-assertions`.
+
 
 ### Intended research Sage runtime needs terminal verification
 
