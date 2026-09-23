@@ -34,18 +34,15 @@ class _SelectedFraming:
         target,
         source,
         generating_set,
-        generator_morphism,
+        generator_morphism_factory,
         framing_morphism_factory,
     ) -> None:
-        if generator_morphism.domain() is not generating_set:
-            raise ValueError("a framing generator morphism starts at its selected generating set")
-        if generator_morphism.codomain() is not target:
-            raise ValueError("a framing generator morphism lands in the framed object")
+        self._generator_morphism_factory = generator_morphism_factory
+        self._generator_morphism = None
         self._owner = owner
         self._target = target
         self._source = source
         self._generating_set = generating_set
-        self._generator_morphism = generator_morphism
         self._framing_morphism_factory = framing_morphism_factory
         self._framing_morphism = None
 
@@ -59,7 +56,20 @@ class _SelectedFraming:
         return self._generating_set
 
     def generator_morphism(self):
-        return self._generator_morphism
+        r"""The chosen map from the generating set into the framed object.
+
+        Realized on first use: a framing is fixed before its object finishes
+        construction, when the object is not yet a set that a map can land in.
+        """
+        selected = self._generator_morphism
+        if selected is None:
+            selected = self._generator_morphism_factory()
+            if selected.domain() is not self._generating_set:
+                raise ValueError("a framing generator morphism starts at its selected generating set")
+            if selected.codomain() is not self._target:
+                raise ValueError("a framing generator morphism lands in the framed object")
+            self._generator_morphism = selected
+        return selected
 
     def framing_morphism(self):
         selected = self._framing_morphism
@@ -76,7 +86,7 @@ def _fix_selected_framing(
     owner,
     source,
     generating_set,
-    generator_morphism,
+    generator_morphism_factory,
     framing_morphism_factory,
 ):
     r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
@@ -88,7 +98,7 @@ def _fix_selected_framing(
         target,
         source,
         generating_set,
-        generator_morphism,
+        generator_morphism_factory,
         framing_morphism_factory,
     )
     selected_by_owner[owner] = selected

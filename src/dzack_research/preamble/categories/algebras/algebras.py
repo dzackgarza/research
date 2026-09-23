@@ -1265,7 +1265,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                             owner,
                             source,
                             labels,
-                            generator_morphism,
+                            lambda: generator_morphism,
                             lambda: source.Mor(self)(generator_morphism),
                         )
 
@@ -1744,7 +1744,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
                 owner,
                 source,
                 labels,
-                generator_morphism,
+                lambda: generator_morphism,
                 lambda: source.Mor(self)(generator_morphism),
             )
 
@@ -2817,7 +2817,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             framing_owner,
             source,
             selected_labels,
-            generator_morphism,
+            lambda: generator_morphism,
             framing_morphism,
         )
 

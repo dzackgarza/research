@@ -3057,15 +3057,12 @@ def _fix_selected_module_framing(module, base_ring, labels, generator_function, 
         )
     if not callable(generator_function):
         raise TypeError("a selected framing supplies the image of every free generator")
-    generator_morphism = Sets().Mor(labels, module)(
-        lambda label: module(generator_function(label))
-    )
     _fix_selected_framing(
         module,
         Modules(base_ring),
         source,
         labels,
-        generator_morphism,
+        lambda: Sets().Mor(labels, module)(lambda label: module(generator_function(label))),
         lambda: _framing_morphism(module),
     )
 

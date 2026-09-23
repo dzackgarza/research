@@ -1396,6 +1396,10 @@ class _WideSubcategory(OwnedCategoryBase):
     def super_categories(self):
         return [self.base_category()]
 
+    def __contains__(self, candidate: Any) -> bool:
+        r"""A wide subcategory has exactly the objects of its base category."""
+        return candidate in self.base_category()
+
     def admits(self, arrow: Morphism) -> bool:
         r"""Whether ``arrow`` is one of the selected arrows."""
         return self.arrow_category().admits_arrow(arrow)
@@ -1504,6 +1508,10 @@ class _CoreCategory(OwnedCategoryBase):
 
     def super_categories(self):
         return [self.base_category()]
+
+    def __contains__(self, candidate: Any) -> bool:
+        r"""The core is a wide subcategory: its objects are exactly those of the base."""
+        return candidate in self.base_category()
 
     def Mor(self, domain: Parent, codomain: Parent) -> CoreMor:
         if domain not in self.base_category() or codomain not in self.base_category():

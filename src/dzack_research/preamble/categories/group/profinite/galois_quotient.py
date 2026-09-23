@@ -430,7 +430,7 @@ def FiniteExtensionAutomorphismGroup(extension):
         OwnedGroups(),
         source,
         generators,
-        generator_morphism,
+        lambda: generator_morphism,
         lambda: _group_framing_morphism(
             group, source, generators, generator_morphism
         ),
