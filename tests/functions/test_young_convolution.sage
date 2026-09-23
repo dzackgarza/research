@@ -21,8 +21,8 @@ def test_convolution_of_lp_and_lq_lands_in_lr(p, q, r) -> None:
 
     Source: Lieb–Loss, *Analysis*, Theorem 4.2.
     """
-    left = Lp(p).quotient_by_null_functions()
-    right = Lp(q).quotient_by_null_functions()
+    left = Lp(p, RR, RR).quotient_by_null_functions()
+    right = Lp(q, RR, RR).quotient_by_null_functions()
     pairing = left.convolution_pairing(right)
 
     assert pairing.codomain().integrability_exponent() == r
@@ -30,8 +30,8 @@ def test_convolution_of_lp_and_lq_lands_in_lr(p, q, r) -> None:
 
 def test_the_gaussian_convolved_with_one_is_root_pi_on_every_representative() -> None:
     r"""$(e^{-x^2} * 1)(y) = \int e^{-x^2}\,dx = \sqrt\pi$, and changing $1$ at $0$ does not change it."""
-    first = Lp(1)
-    bounded = Lp(oo)
+    first = Lp(1, RR, RR)
+    bounded = Lp(oo, RR, RR)
     g(t) = exp(-t^2)
     s(u) = sgn(u)^2
     f = first.quotient_by_null_functions()(first(g))

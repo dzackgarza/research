@@ -9,7 +9,7 @@ def test_rational_functions_in_l2_are_those_with_no_real_pole_and_decay() -> Non
     A rational function is square-integrable on $\mathbb{R}$ iff it has no
     real pole and its degree is at most $-1$ at infinity.
     """
-    space = Lp(2)
+    space = Lp(2, RR, RR)
     lorentzian(t) = 1 / (1 + t^2)
     odd(u) = u / (1 + u^2)
     square(v) = v^2
@@ -26,7 +26,7 @@ def test_rational_functions_in_l2_are_those_with_no_real_pole_and_decay() -> Non
 
 def test_decaying_and_bounded_products_are_in_l2_but_sine_is_not() -> None:
     r"""$x e^{-x^2}$, $3e^{-x^2} - 2/(1+x^2)$ and $\sin(x)/(1+x^2)$ are in $L^2(\mathbb{R})$; $\sin x$ is not."""
-    space = Lp(2)
+    space = Lp(2, RR, RR)
     moment(t) = t * exp(-t^2)
     difference(u) = 3 * exp(-u^2) - 2 / (1 + u^2)
     damped(v) = sin(v) / (1 + v^2)
@@ -41,7 +41,7 @@ def test_decaying_and_bounded_products_are_in_l2_but_sine_is_not() -> None:
 
 def test_two_sided_exponential_decay_is_in_l2_but_one_sided_is_not() -> None:
     r"""$\int_{\mathbb{R}} e^{-2|x|}\,dx = 1$, while $e^{-2x}$ is not integrable on $(-\infty, 0]$."""
-    space = Lp(2)
+    space = Lp(2, RR, RR)
     decay(t) = exp(-abs(t))
     one_sided(u) = exp(-u)
     two_sided = space(decay)

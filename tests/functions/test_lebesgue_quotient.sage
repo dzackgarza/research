@@ -5,7 +5,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def test_changing_a_function_at_one_point_does_not_change_its_class() -> None:
     r"""$\operatorname{sgn}(x)^2$ differs from $1$ only at $0$, a null set, so both have one class in $L^\infty$."""
-    maps = Lp(oo)
+    maps = Lp(oo, RR, RR)
     s(t) = sgn(t)^2
     g(u) = exp(-u^2)
     punctured_one = maps(s)

@@ -2,7 +2,7 @@ from dzack_research.preamble.all import *
 
 
 def smooth():
-    return C(Infinity, RR)
+    return C(Infinity, RR, RR)
 
 
 def test_the_constructions_of_smooth_functions_agree() -> None:

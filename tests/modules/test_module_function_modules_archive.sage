@@ -11,8 +11,8 @@ def test_the_gaussian_is_square_integrable_and_x_squared_and_sine_are_not() -> N
 
     Source: the Gaussian integral; by hand.
     """
-    maps = C(Infinity, RR)
-    L = Lp(2)
+    maps = C(Infinity, RR, RR)
+    L = Lp(2, RR, RR)
     g(t) = exp(-t^2)
     square(u) = u^2
     sine(v) = sin(v)
@@ -29,7 +29,7 @@ def test_the_integral_pairing_on_minus_one_one_gives_x_x_two_thirds_and_x_x2_zer
 
     Source: by hand.
     """
-    maps = C(Infinity, RR)
+    maps = C(Infinity, RR, RR)
     square(t) = t^2
     cube(u) = u^3
     xx = maps.integral(maps(square), 0)
@@ -44,7 +44,7 @@ def test_rational_functions_in_l2_are_those_of_degree_at_most_minus_one_without_
 
     Source: comparison with $\int |x|^{-2k}$; by hand.
     """
-    L = Lp(2)
+    L = Lp(2, RR, RR)
     lorentzian(t) = 1 / (1 + t^2)
     odd(u) = u / (1 + u^2)
     reciprocal(v) = 1 / v
@@ -61,7 +61,7 @@ def test_bounded_multiples_and_decaying_tails_are_in_l2_and_tanh_is_not() -> Non
 
     Source: comparison test; by hand.
     """
-    L = Lp(2)
+    L = Lp(2, RR, RR)
     damped(t) = sin(t) / (1 + t^2)
     secant(u) = sech(u^2)
     tail(v) = exp(-cosh(v))
@@ -74,7 +74,7 @@ def test_bounded_multiples_and_decaying_tails_are_in_l2_and_tanh_is_not() -> Non
 
 def test_exp_minus_abs_x_is_in_l2_and_exp_minus_x_is_not() -> None:
     r"""$\int e^{-2|x|} = 1$; $\int_{-\infty}^0 e^{-2x} = \infty$. Source: by hand."""
-    L = Lp(2)
+    L = Lp(2, RR, RR)
     decay(t) = exp(-abs(t))
     one_sided(u) = exp(-u)
     assert decay in L
@@ -83,8 +83,8 @@ def test_exp_minus_abs_x_is_in_l2_and_exp_minus_x_is_not() -> None:
 
 def test_zero_and_x_times_the_gaussian_are_in_l2() -> None:
     r"""$\int x^2 e^{-2x^2}\,dx = \sqrt{\pi/2}/4$. Source: Gaussian moments; by hand."""
-    maps = C(Infinity, RR)
-    L = Lp(2)
+    maps = C(Infinity, RR, RR)
+    L = Lp(2, RR, RR)
     assert L.zero() in L
     moment(t) = t * exp(-t^2)
     weighted = L(maps(moment))

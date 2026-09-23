@@ -144,31 +144,31 @@ def test_a_rooted_diagram_from_a_root_lattice() -> None:
 
 
 def test_smooth_functions_on_the_real_line() -> None:
-    smooth = C(Infinity, RR)
-    x = smooth.coordinate()
-    f = x**2 + 1
+    smooth = C(Infinity, RR, RR)
+    x = RR.coordinate()
+    f = smooth(x**2 + 1)
     assert smooth in Algebras(RR)
     assert smooth in Modules(RR)
     assert f.evaluate_at(RR(2)) == RR(5)
-    assert f.derivative() == 2 * x
+    assert f.derivative() == smooth(2 * x)
     assert f.derivative().derivative() == smooth(2)
-    assert smooth.integral(f, RR(0)) == x**3 / 3 + x
-    assert f.compose(x + 1) == (x + 1) ** 2 + 1
+    assert smooth.integral(f, RR(0)) == smooth(x**3 / 3 + x)
+    assert f.compose(smooth(x + 1)) == smooth((x + 1) ** 2 + 1)
     assert f.maclaurin_series().coefficient(2) == 1
     assert smooth.cardinality() > aleph0
     assert smooth.one() * f == f
 
 
 def test_lebesgue_and_sequence_spaces() -> None:
-    square_integrable = Lp(2)
-    cubic = Lp(3)
-    sequences = ell(2)
+    square_integrable = Lp(2, RR, RR)
+    cubic = Lp(3, RR, RR)
+    sequences = ell(2, NN, RR)
     assert square_integrable in Modules(RR)
     assert square_integrable.conjugate_lebesgue_space() is square_integrable
     assert cubic.conjugate_lebesgue_space().integrability_exponent() == QQ(3) / 2
     assert square_integrable.integrability_exponent() == 2
     assert sequences.conjugate_sequence_space() is sequences
-    assert ell(1).conjugate_sequence_space().integrability_exponent() == Infinity
+    assert ell(1, NN, RR).conjugate_sequence_space().integrability_exponent() == Infinity
 
 
 def test_indexed_families_of_special_functions() -> None:
