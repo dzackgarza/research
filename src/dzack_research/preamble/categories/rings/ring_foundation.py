@@ -82,7 +82,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     UncountableSets,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.refine import realize_owned_category
 
 if "Noetherian" not in all_axioms:
     all_axioms.add("Noetherian")
@@ -2431,8 +2431,9 @@ def _unit_group(ring):
     units = ring.predicate_submonoid(
         lambda element: element.is_unit(),
         f"{ring}^×",
+        placements=(OwnedGroups(),),
     )
-    return refine(units, OwnedGroups())
+    return units
 
 
 class UnitGroupFunctor(Functor):

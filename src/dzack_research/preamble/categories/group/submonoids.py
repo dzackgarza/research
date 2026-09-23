@@ -1,5 +1,6 @@
 """Submonoids represented as monomorphism subobjects of an ambient monoid."""
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.group.magmas import (
@@ -151,9 +152,10 @@ def _predicate_submonoid(
     predicate,
     description,
     *,
+    placements=(),
     structure_data=None,
 ):
-    category = Monoids().Subobjects(ambient)
+    category = Category.join((Monoids().Subobjects(ambient), *placements))
     return _object_of(
         category,
         _engine=(category, _SubmonoidEngine, None),

@@ -67,9 +67,14 @@ class Monoids(OwnedCategory):
             )
 
         def predicate_submonoid(
-            self, predicate, description, *, structure_data=None
+            self, predicate, description, *, placements=(), structure_data=None
         ):
-            r"""Return the represented submonoid cut out by ``predicate``."""
+            r"""Return the represented submonoid cut out by ``predicate``.
+
+            A specialized construction may supply theorem-backed stronger
+            ``placements``; they are part of the object's category at
+            construction rather than a later refinement.
+            """
             from dzack_research.preamble.categories.group.submonoids import (
                 _predicate_submonoid,
             )
@@ -78,6 +83,7 @@ class Monoids(OwnedCategory):
                 self,
                 predicate,
                 description,
+                placements=placements,
                 structure_data=structure_data,
             )
 
