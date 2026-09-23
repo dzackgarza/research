@@ -11,12 +11,12 @@ from sage.all import (
 from sage.all import (
     Zp as _SageZp,
 )
-from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
+from sage.rings.fraction_field import FractionField_generic as SageFractionField
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import CommutativeRingElement, Element
@@ -2439,14 +2439,6 @@ def _quotient_ring(source, defining_ideal):
             pass
         if quotient_is_domain and dimension == 0:
             quotient_is_field = True
-        if quotient_is_domain or quotient_is_field:
-            # Sage builds every quotient in its quotient-ring category and
-            # never refines it, so the realization refuses to build a fraction
-            # field over an ideal it has just proved prime.  The residue field
-            # at a point that is not closed is exactly that fraction field, so
-            # the realization is told the fact it computed.
-            quotient_engine._refine_category_(SageIntegralDomains())
-
     placements = []
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
@@ -2794,7 +2786,16 @@ def _fraction_field_localization(source, submonoid):
     assert engine is not source, (
         f"{source} has no selected computation realization for its fraction field"
     )
-    fraction_engine = engine.fraction_field()
+    if source in QuotientRings():
+        # Sage's IntegralDomains.ParentMethods.fraction_field is precisely
+        # FractionField_generic(self).  A represented quotient carries the
+        # domain theorem in its owned construction, while its private Sage
+        # realization remains in Sage's quotient-ring category.  Use that
+        # maintained constructor directly instead of mutating the realization
+        # merely to make the category method appear.
+        fraction_engine = SageFractionField(engine)
+    else:
+        fraction_engine = engine.fraction_field()
     field = _own_ring(fraction_engine)
     placements = [OwnedRings().Commutative().NoZeroDivisors(), OwnedRings().Division().Commutative()]
     if source in OwnedRings().Noetherian():
