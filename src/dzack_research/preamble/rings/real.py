@@ -194,17 +194,20 @@ def _decide_relation(
     *,
     precision: int | None,
 ):
-    r"""Decide a real relation by exact normalization/algebra, then Arb."""
-    difference = _simplified_difference(left, right)
-    if difference.is_zero() is True:
-        return _relation_from_sign(0, relation)
+    r"""Decide a real relation: exact algebra, then Arb, then symbolic normalization.
 
-    sign = _sign_from_algebraic(difference)
-    if sign is not None:
-        return _relation_from_sign(sign, relation)
-
-    if precision is not None:
-        sign = _sign_from_ball(difference, precision)
+    ``AA`` decides every algebraic difference exactly and an Arb enclosure
+    certifies any nonzero sign, both without Maxima; ``simplify_full`` is
+    reached only for a difference neither decides, and its result is then
+    decided the same way.
+    """
+    for difference_of in (operator.sub, _simplified_difference):
+        difference = difference_of(left, right)
+        if difference.is_zero() is True:
+            return _relation_from_sign(0, relation)
+        sign = _sign_from_algebraic(difference)
+        if sign is None and precision is not None:
+            sign = _sign_from_ball(difference, precision)
         if sign is not None:
             return _relation_from_sign(sign, relation)
     return None
