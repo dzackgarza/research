@@ -63,10 +63,10 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 2
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {sterk cusp=2};
-\scoped[on background layer] \draw[parabolic] (A0.center) -- (A2.center) -- (A9.center) -- (A2.center) -- (A7.center);
-\pic[root labels] (B) at (4,0) {sterk cusp=2};
-\scoped[on background layer] \draw[parabolic] (B1.center) -- (B2.center) -- (B9.center) -- (B2.center) -- (B8.center);
+\pic (A) at (0,0) {vinberg 10 8 0};
+\coxeterparabolic[A]{vinberg 10 8 0/E8}
+\pic (B) at (0,-2.5) {vinberg 10 8 0};
+\coxeterparabolic[B]{vinberg 10 8 0/B8}
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$ of $\fen$; $\Gamma(\mcz_0) = \DD^2$.
