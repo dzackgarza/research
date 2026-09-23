@@ -81,7 +81,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import refine
 
 
 class _StructuredAlgebraModuleTransportMorphism(ModuleMorphism):
@@ -1641,11 +1640,11 @@ def _algebra_on_module(
         )
         if unit is not None:
             Algebras.Unital.ParentMethods._retain_unit(module, module(unit))
-        match module in selected_category:
-            case True:
-                return module
-            case False:
-                return refine(module, selected_category)
+        assert module in selected_category, (
+            "a native algebra realization must receive its algebra placement "
+            "from the constructing parent"
+        )
+        return module
     return module._module_with_structure(categories, data)
 
 

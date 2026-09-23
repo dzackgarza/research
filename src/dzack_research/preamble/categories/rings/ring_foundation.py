@@ -726,24 +726,20 @@ class LocalizationRings(OwnedCategory):
             self._preamble_engine_ring = _engine_ring
             from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-            category = rest["category"]
-            match category.is_subcategory(Algebras(self.algebra_base_ring()).Associative().Unital()):
-                case True:
-                    super().__init__(
-                        base_ring=self.algebra_base_ring(),
-                        _engine_product=lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
-                        _engine_scalar_action=lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)),
-                        _engine_unit=lambda algebra: LocalizationRings.ParentMethods.one(algebra),
-                        **rest,
-                    )
-                case False:
-                    super().__init__(base=source.base_ring(), **rest)
-                    from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
-
-                    _algebra_from_native_ring(self,
-                        lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
-                        LocalizationRings.ParentMethods.one(self),
-                        lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)))
+            algebra = (
+                Algebras(self.algebra_base_ring())
+                .Associative()
+                .Unital()
+                .Commutative()
+            )
+            rest["category"] = Category.join((rest["category"], algebra))
+            super().__init__(
+                base_ring=self.algebra_base_ring(),
+                _engine_product=lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
+                _engine_scalar_action=lambda scalar, element: LocalizationRings.ElementMethods._mul_(self(scalar), self(element)),
+                _engine_unit=lambda algebra: LocalizationRings.ParentMethods.one(algebra),
+                **rest,
+            )
 
         def algebra_base_ring(self):
             algebra_source = self._localization_algebra_source

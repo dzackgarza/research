@@ -467,12 +467,26 @@ class ExactRealField(UniqueRepresentation, Field):
     r"""The exact field of real numbers represented by closed exact expressions."""
 
     Element = ExactRealNumber
+    _preamble_owned_ring_parent = True
 
     def __init__(self) -> None:
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            FinitelyGeneratedFreeModules,
+        )
+
+        regular_algebra = Algebras(self).Associative().Unital().Commutative()
         Field.__init__(
             self,
             base=self,
-            category=Cat().meet((OwnedFields(), UncountableSets())),
+            category=Cat().meet(
+                (
+                    OwnedFields(),
+                    UncountableSets(),
+                    regular_algebra,
+                    FinitelyGeneratedFreeModules(self),
+                )
+            ),
         )
         realize_owned_category(self)
         from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
