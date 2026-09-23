@@ -215,7 +215,7 @@ def _asserting_functions(tree: ast.Module) -> set[str]:
 
 
 def lint_file(path: Path, session_names: frozenset[str], axioms: frozenset[str]) -> list[Finding]:
-    source = path.read_text()
+    source = _python_source(path)
     tree = ast.parse(source, filename=str(path))
     shown = str(path)
     findings: list[Finding] = []
@@ -302,9 +302,20 @@ def lint_file(path: Path, session_names: frozenset[str], axioms: frozenset[str])
 
 
 def _session_names() -> frozenset[str]:
-    session = __import__(SESSION_MODULE, fromlist=["*"])
-    exported = getattr(session, "__all__", None)
-    return frozenset(exported if exported is not None else (name for name in vars(session) if not name.startswith("_")))
+    r"""The names a test resolves: those of the namespace ``sage_tests`` runs it in."""
+    from dzack_research.utilities.sage_tests import _session_namespace
+
+    return frozenset(_session_namespace())
+
+
+def _python_source(path: Path) -> str:
+    r"""The file as Python: a ``.sage`` test lowered as its collector lowers it, line for line."""
+    source = path.read_text()
+    if path.suffix != ".sage":
+        return source
+    from sageparse import lower
+
+    return lower(source).python
 
 
 def _unprotected(path: Path) -> bool:
@@ -321,9 +332,9 @@ def lint(paths: list[Path]) -> list[Finding]:
 def main(arguments: list[str]) -> int:
     named = [Path(argument) for argument in arguments]
     if named:
-        files = [file for path in named for file in (sorted(path.rglob("test_*.py")) if path.is_dir() else [path])]
+        files = [file for path in named for file in (sorted([*path.rglob("test_*.py"), *path.rglob("test_*.sage")]) if path.is_dir() else [path])]
     else:
-        files = [file for file in sorted(Path("tests").rglob("test_*.py")) if _unprotected(file)]
+        files = [file for file in sorted([*Path("tests").rglob("test_*.py"), *Path("tests").rglob("test_*.sage")]) if _unprotected(file)]
     findings = lint(files)
     for finding in findings:
         print(finding)
@@ -347,7 +358,7 @@ def pytest_collection_finish(session: pytest.Session) -> None:
     files = sorted({
         Path(item.path).relative_to(session.config.rootpath)
         for item in session.items
-        if Path(item.path).suffix == ".py"
+        if Path(item.path).suffix in {".py", ".sage"}
     })
     findings = lint([file for file in files if _unprotected(file)])
     if findings:
