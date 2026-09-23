@@ -218,6 +218,11 @@ class Objects(OwnedCategory):
             """
             return self._element_constructor_(*arguments, **options)
 
+    class SubcategoryMethods:
+        def Framed(self):
+            r"""The subcategory of objects carrying a chosen framing (the ``Framed`` axiom)."""
+            return self._with_axiom("Framed")
+
     class Framed(CategoryWithAxiom):
         r"""Objects carrying one chosen generating epimorphism from a free object.
 

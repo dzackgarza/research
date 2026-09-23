@@ -32,7 +32,9 @@ from sage.categories.integral_domains import IntegralDomains as SageIntegralDoma
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.number_fields import NumberFields as SageNumberFields
-from sage.categories.principal_ideal_domains import PrincipalIdealDomains as SagePrincipalIdealDomains
+from sage.categories.principal_ideal_domains import (
+    PrincipalIdealDomains as SagePrincipalIdealDomains,
+)
 from sage.categories.quotient_fields import QuotientFields as SageQuotientFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
@@ -62,19 +64,22 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.group.magmas import (
-    AdditiveGroups,
-    AdditiveMonoids,
-    Monoids,
-    Semigroups,
+from dzack_research.preamble.categories.rings.semirings import (
+    OwnedRngs,
+    OwnedSemirings,
+    RingMorCategoryConstruction,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     aleph0,
     cardinal,
     continuum,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import (
     CountablyInfiniteSets,
     FiniteSets,
@@ -385,13 +390,6 @@ class RingMor(CategoricalMor):
         return f"Mor_Ring({self.domain()}, {self.codomain()})"
 
 
-class RingMorCategoryConstruction(MorCategoryConstruction):
-    r"""The owned family ``(A,B) |-> Hom_Ring(A,B)``."""
-
-    def fixed_category_class(self):
-        return RingMor
-
-
 def _ring_mor_category(domain, codomain) -> RingMor:
     r"""Build ``Mor_Ring(domain, codomain)`` from its owned Mor family."""
     return RingMorCategoryConstruction(OwnedRings()).Of(domain, codomain)
@@ -422,7 +420,9 @@ def _ring_morphisms_equal(left, right):
         source_map = domain.localization_map()
         return _ring_morphisms_equal(left * source_map, right * source_map)
 
-    from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRings
+    from dzack_research.preamble.categories.rings.commutative_algebra import (
+        QuotientRings,
+    )
 
     if domain in QuotientRings():
         quotient_map = domain.quotient_map()
@@ -497,6 +497,7 @@ class PredicateSubrings(OwnedCategory):
 
         def _element_constructor_(self, element):
             from sage.structure.element import parent as element_parent
+
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
             source = element_parent(element)
@@ -692,7 +693,10 @@ class LocalizationRings(OwnedCategory):
             a sufficiently large power of f, and f itself belongs to S.
             """
             from sage.misc.misc_c import prod
-            from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalizations
+
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                PrimeLocalizations,
+            )
 
             ring = self.localization_source()
             match self:
@@ -738,7 +742,9 @@ class LocalizationRings(OwnedCategory):
                     )
                 case False:
                     super().__init__(base=source.base_ring(), **rest)
-                    from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
+                    from dzack_research.preamble.categories.algebras.algebras import (
+                        _algebra_from_native_ring,
+                    )
 
                     _algebra_from_native_ring(self,
                         lambda left, right: LocalizationRings.ElementMethods._mul_(left, right),
@@ -817,6 +823,7 @@ class LocalizationRings(OwnedCategory):
 
         def _element_constructor_(self, value):
             from sage.structure.element import parent as element_parent
+
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
             source = element_parent(value)
@@ -1358,7 +1365,9 @@ class _PredicateSubringParent(Parent):
         assert predicate(self._one) is not False and predicate(self._zero) is not False, "a unital subring contains zero and one"
         self._one = self.element_class(self, _engine_element(ambient_ring, self._one))
         self._zero = self.element_class(self, _engine_element(ambient_ring, self._zero))
-        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
+        from dzack_research.preamble.categories.algebras.algebras import (
+            _algebra_from_native_ring,
+        )
 
         _algebra_from_native_ring(self, lambda left, right: self(left * right), self._one,
             lambda scalar, element: self(self(scalar) * self(element)))
@@ -1412,32 +1421,6 @@ def _predicate_subring(ambient_ring, predicate, description, category=None):
         description,
         placement,
     )
-
-
-class OwnedSemirings(OwnedCategory):
-    """Semirings on the owned operation spine."""
-
-    _MorCategory = RingMorCategoryConstruction
-
-    def an_object(self):
-        r"""The integers, which are in particular a semiring."""
-        return _own_ring(SageZZ)
-
-    def super_categories(self):
-        return [Monoids(), AdditiveMonoids()]
-
-
-class OwnedRngs(OwnedCategory):
-    """Rngs on the owned operation spine."""
-
-    _MorCategory = RingMorCategoryConstruction
-
-    def an_object(self):
-        r"""The integers, which happen to be unital."""
-        return _own_ring(SageZZ)
-
-    def super_categories(self):
-        return [Semigroups(), AdditiveGroups()]
 
 
 class LocalRingConstruction:
@@ -1839,7 +1822,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             def as_algebra_over(self, base_ring):
                 base = _own_ring(base_ring)
-                from dzack_research.preamble.categories.algebras.algebras import Algebras
+                from dzack_research.preamble.categories.algebras.algebras import (
+                    Algebras,
+                )
 
                 selected = Algebras(base).Associative().Unital().Commutative()
                 match (self.base_ring() is base, self in selected):
@@ -2113,7 +2098,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def __getitem__(self, names):
             r"""Use standard polynomial/algebraic adjunction syntax on an owned ring."""
-            from dzack_research.preamble.categories.algebras.group_algebras import _group_algebra
+            from dzack_research.preamble.categories.algebras.group_algebras import (
+                _group_algebra,
+            )
             from dzack_research.preamble.categories.group.groups import OwnedGroups
 
             match names:
@@ -3124,7 +3111,6 @@ class _PredicateSubringElement(_OwnedRingElement):
         return repr(self.parent().inclusion()(self))
 
     def _latex_(self):
-        from sage.misc.latex import latex
 
         return latex(self.parent().inclusion()(self))
 
@@ -3239,7 +3225,9 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
             _install_engine_selected_ring_data(self, engine)
 
-            from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
+            from dzack_research.preamble.categories.algebras.algebras import (
+                _algebra_from_native_ring,
+            )
 
             _algebra_from_native_ring(self, lambda left, right: left * right,
                 self._from_engine_element(engine.one()), self._native_scalar_action,
@@ -3702,7 +3690,9 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             flavor = "tensor"
         case _:
             return _OwnedRingParent(engine)
-    from dzack_research.preamble.categories.algebras.free_algebras import _native_free_algebra
+    from dzack_research.preamble.categories.algebras.free_algebras import (
+        _native_free_algebra,
+    )
 
     base = _own_ring(engine.base_ring())
     return _native_free_algebra(

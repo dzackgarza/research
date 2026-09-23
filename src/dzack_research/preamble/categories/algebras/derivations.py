@@ -714,10 +714,11 @@ class GradedDerivation(ModuleElement):
                 return Unknown
         for label in labels:
             generator = algebra.algebra_generator(label)
-            match generator == algebra.zero():
+            is_zero = generator == algebra.zero()
+            match is_zero:
                 case True:
                     continue
-                case Unknown:
+                case _ if is_zero is Unknown:
                     return Unknown
                 case False:
                     pass
@@ -726,10 +727,11 @@ class GradedDerivation(ModuleElement):
             except (ValueError, NotImplementedError):
                 return Unknown
             image = self(generator)
-            match image == target.zero():
+            image_is_zero = image == target.zero()
+            match image_is_zero:
                 case True:
                     continue
-                case Unknown:
+                case _ if image_is_zero is Unknown:
                     return Unknown
                 case False:
                     pass
@@ -746,10 +748,11 @@ class GradedDerivation(ModuleElement):
                     return Unknown
         for left_label in labels:
             left = algebra.algebra_generator(left_label)
-            match left == algebra.zero():
+            left_is_zero = left == algebra.zero()
+            match left_is_zero:
                 case True:
                     continue
-                case Unknown:
+                case _ if left_is_zero is Unknown:
                     return Unknown
                 case False:
                     pass

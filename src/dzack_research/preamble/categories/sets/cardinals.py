@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
 )
+from dzack_research.preamble.categories.rings.semirings import OwnedSemirings
 from dzack_research.preamble.owned_category import _object_of
 
 IndexT = TypeVar("IndexT")
@@ -1148,16 +1149,12 @@ class OrdinalSemirings(OwnedCategory):
     _MorCategory = OrdinalSemiringMorCategoryConstruction
 
     def __init__(self) -> None:
-        from dzack_research.preamble.categories.rings.ring_foundation import OwnedSemirings
-
         # Sage semiring classes provide Python arithmetic plumbing only; they
         # are not mathematical ancestors in the owned graph.
         self._super_categories_for_classes = [OwnedSemirings(), Semirings().Commutative()]
         super().__init__()
 
     def super_categories(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import OwnedSemirings
-
         return [OwnedSemirings()]
 
     def Mor(

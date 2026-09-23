@@ -23,26 +23,24 @@ from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 
+import dzack_research.preamble.categories.sets.cardinals as cardinals
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-    CategoricalMor,
     CategoricalIsomorphism,
+    CategoricalMor,
     EpiCategoryConstruction,
-    MorCategoryConstruction,
     MonoCategoryConstruction,
+    MorCategoryConstruction,
     _category_mor,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.sets.cardinals import (
-    Cardinalities,
-    CardinalityMorphism,
-    Ordinal,
-    aleph,
-    aleph0,
-    cardinal,
-    ordinal,
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
 )
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
+from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    indexed_family,
+)
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -144,7 +142,7 @@ class FiniteOrdinalSets(OwnedCategory):
             assert self._size >= 0 and size == self._size, "a finite ordinal cardinality is a nonnegative integer"
             super().__init__(facade=True, **rest)
 
-        def order_type(self) -> Ordinal:
+        def order_type(self) -> cardinals.Ordinal:
             r"""The ordinal ``n`` this well-ordered set is isomorphic to: itself.
 
             The finite ordinal ``{0, ..., n-1}`` is the von Neumann ordinal
@@ -152,7 +150,7 @@ class FiniteOrdinalSets(OwnedCategory):
             cardinality of the set is the cardinality of that ordinal, which
             is how ``Sets`` answers it.
             """
-            return ordinal(self._size)
+            return cardinals.ordinal(self._size)
 
         def __iter__(self):
             return (NN(index) for index in range(self._size))
@@ -244,8 +242,8 @@ class _Delta:
         A finite cardinal \(n\) names \(\Delta[n]\) as an integer does.
         """
         match dimension:
-            case _ if dimension in Cardinalities():
-                if dimension == aleph0:
+            case _ if dimension in cardinals.Cardinalities():
+                if dimension == cardinals.aleph0:
                     return NN
                 assert dimension.is_finite(), (
                     "the represented simplex index is finite or countably infinite"
@@ -263,7 +261,7 @@ class _Delta:
 
 class _Aleph:
     def __getitem__(self, index):
-        return aleph(index)
+        return cardinals.aleph(index)
 
     def __repr__(self) -> str:
         return "ℵ"
@@ -795,8 +793,8 @@ class Sets(OwnedCategory):
             if source not in self or target not in self:
                 raise TypeError("a set coequalizer requires set-valued endpoints")
             assert (
-                cardinal(source.cardinality()).is_finite()
-                and cardinal(target.cardinality()).is_finite()
+                cardinals.cardinal(source.cardinality()).is_finite()
+                and cardinals.cardinal(target.cardinality()).is_finite()
             ), "the represented set coequalizer requires finite sets"
 
             # The coequalizer of finite sets is the quotient of the target by
@@ -996,7 +994,7 @@ class Sets(OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
-        def cardinality(self) -> Cardinalities.ObjectType:
+        def cardinality(self) -> cardinals.Cardinalities.ObjectType:
             r"""The cardinality ``|X|``, an object of ``Card``.
 
             Cardinality is total on sets (`CAT-01`), and this is its one
@@ -1036,47 +1034,47 @@ class Sets(OwnedCategory):
                 case _ if self in FiniteOrdinalSets():
                     return self.order_type().cardinality()
                 case _ if self in OrderedEnumeratedSets():
-                    return cardinal(self.index_set().cardinality())
+                    return cardinals.cardinal(self.index_set().cardinality())
                 case _ if self in PowerSets():
-                    return cardinal(2) ** cardinal(self.base_set().cardinality())
+                    return cardinals.cardinal(2) ** cardinals.cardinal(self.base_set().cardinality())
                 case _ if self in FunctionSets():
-                    return cardinal(self.base().cardinality()) ** cardinal(
+                    return cardinals.cardinal(self.base().cardinality()) ** cardinals.cardinal(
                         self.exponent().cardinality()
                     )
                 case _ if self in FixedCardinalitySubsetSets() and self.subset_cardinality() == 0:
-                    return cardinal(1)
-                case _ if self in FixedCardinalitySubsetSets() and cardinal(self.source().cardinality()).is_finite():
-                    return cardinal(
+                    return cardinals.cardinal(1)
+                case _ if self in FixedCardinalitySubsetSets() and cardinals.cardinal(self.source().cardinality()).is_finite():
+                    return cardinals.cardinal(
                         comb(
-                            cardinal(self.source().cardinality()).finite_value(),
+                            cardinals.cardinal(self.source().cardinality()).finite_value(),
                             self.subset_cardinality(),
                         )
                     )
                 case _ if self in FixedCardinalitySubsetSets():
-                    return cardinal(self.source().cardinality())
-                case _ if self in FinitePowerSets() and cardinal(self.source().cardinality()).is_finite():
-                    return cardinal(2) ** cardinal(self.source().cardinality())
+                    return cardinals.cardinal(self.source().cardinality())
+                case _ if self in FinitePowerSets() and cardinals.cardinal(self.source().cardinality()).is_finite():
+                    return cardinals.cardinal(2) ** cardinals.cardinal(self.source().cardinality())
                 case _ if self in FinitePowerSets():
-                    return cardinal(self.source().cardinality())
+                    return cardinals.cardinal(self.source().cardinality())
                 case _ if self in CartesianProductsOfSets():
-                    return Cardinalities().indexed_product(
+                    return cardinals.Cardinalities().indexed_product(
                         self.index_set(),
-                        lambda index: cardinal(self.factor(index).cardinality()),
+                        lambda index: cardinals.cardinal(self.factor(index).cardinality()),
                     )
                 case _ if self in CoproductsOfSets():
-                    return Cardinalities().indexed_sum(
+                    return cardinals.Cardinalities().indexed_sum(
                         self.index_set(),
-                        lambda index: cardinal(self.cofactor(index).cardinality()),
+                        lambda index: cardinals.cardinal(self.cofactor(index).cardinality()),
                     )
                 case _ if self in Sets().Finite():
-                    return cardinal(sum(1 for _point in self))
+                    return cardinals.cardinal(sum(1 for _point in self))
                 case _:
                     assert self in Sets().Countable() and self in Sets().Infinite(), (
                         f"{self} has a cardinality, but its construction is none "
                         "whose cardinality is represented here, and it is placed "
                         "neither as a finite set nor as a countably infinite set"
                     )
-                    return aleph0
+                    return cardinals.aleph0
 
         def finite_words(self):
             r"""All finite words in this alphabet, including the empty word."""
@@ -1088,7 +1086,7 @@ class Sets(OwnedCategory):
 
         def counting_ordinal(self):
             r"""Return the represented ordinal that counts this set when it is countable."""
-            size = cardinal(self.cardinality())
+            size = cardinals.cardinal(self.cardinality())
             if size.is_finite():
                 return finite_ordinal_set(size.finite_value())
             assert size.is_countably_infinite(), (
@@ -1174,13 +1172,17 @@ class Sets(OwnedCategory):
 
         def trivial_action(self, group: Parent) -> Functor:
             r"""``Triv_G : FinSet -> FinGSet_G``, every point fixed."""
-            from dzack_research.preamble.categories.functors.g_sets import TrivialGSetFunctor
+            from dzack_research.preamble.categories.functors.g_sets import (
+                TrivialGSetFunctor,
+            )
 
             return TrivialGSetFunctor(group)
 
         def free_action(self, group: Parent) -> Functor:
             r"""``G x - : FinSet -> FinGSet_G``, the free ``G``-set on a set."""
-            from dzack_research.preamble.categories.functors.g_sets import FreeGSetFunctor
+            from dzack_research.preamble.categories.functors.g_sets import (
+                FreeGSetFunctor,
+            )
 
             return FreeGSetFunctor(group)
 
@@ -1543,13 +1545,13 @@ class SetInclusion(OwnedSetMorphism):
     def __iter__(self):
         return iter(self.domain())
 
-    def cardinality(self) -> Cardinalities.ObjectType:
+    def cardinality(self) -> cardinals.Cardinalities.ObjectType:
         r"""The cardinality of the subset \(A\subseteq X\) this inclusion presents as an element of \(P(X)\).
 
         An element of the power set is a subset, a set with a cardinality;
         here it is presented by its inclusion, whose domain is \(A\).
         """
-        return cardinal(self.domain().cardinality())
+        return cardinals.cardinal(self.domain().cardinality())
 
     def _check_common_base(self, other) -> None:
         if self.codomain() is not other.codomain():
@@ -1771,9 +1773,9 @@ class PowerSets(OwnedCategory):
             )
             return (self(subset) for subset in SageSubsets(base))
 
-        def cardinality_comparison(self) -> CardinalityMorphism:
+        def cardinality_comparison(self) -> cardinals.CardinalityMorphism:
             size = self.cardinality()
-            return Cardinalities().Mor(size, size).identity()
+            return cardinals.Cardinalities().Mor(size, size).identity()
 
         def _repr_(self) -> str:
             return f"Power set of {self.base_set()}"
@@ -1891,14 +1893,14 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
         def _element_constructor_(self, members):
             subset = self.power_set()(members)
-            if subset.domain().cardinality() != cardinal(self.subset_cardinality()):
+            if subset.domain().cardinality() != cardinals.cardinal(self.subset_cardinality()):
                 raise ValueError(f"a member of {self} has cardinality {self.subset_cardinality()}")
             return subset
 
         def __contains__(self, candidate) -> bool:
             if candidate not in self.power_set():
                 return False
-            return self.power_set()(candidate).domain().cardinality() == cardinal(self.subset_cardinality())
+            return self.power_set()(candidate).domain().cardinality() == cardinals.cardinal(self.subset_cardinality())
 
         def __iter__(self):
             r"""Enumerate the ``k``-subsets of a finite enumerated source.
@@ -2094,13 +2096,13 @@ class _ImageSet(Sets().ObjectType):
             case _ if self._image_inverse is not None:
                 return True
             case source if source in FiniteSets():
-                return cardinal(sum(1 for _value in self._distinct_values())) == cardinal(
+                return cardinals.cardinal(sum(1 for _value in self._distinct_values())) == cardinals.cardinal(
                     source.cardinality()
                 )
             case _:
                 return Unknown
 
-    def cardinality(self) -> Cardinalities.ObjectType:
+    def cardinality(self) -> cardinals.Cardinalities.ObjectType:
         r"""The cardinality of \(f(A)\).
 
         An inverse on the image makes \(f\) a bijection \(A\to f(A)\), so
@@ -2109,7 +2111,7 @@ class _ImageSet(Sets().ObjectType):
         """
         match self.source_set():
             case source if self._image_inverse is not None:
-                return cardinal(source.cardinality())
+                return cardinals.cardinal(source.cardinality())
             case source:
                 assert source in FiniteSets(), (
                     "the cardinality of an image is represented here through an "
@@ -2181,9 +2183,9 @@ def _cartesian_product_of(family: IndexedFamily) -> Parent:
         if all(family(index) in AdditiveMonoids() for index in index_set):
             placements.append(CartesianProductsOfAdditiveMonoids())
         factor_cardinalities = tuple(
-            cardinal(family(index).cardinality()) for index in index_set
+            cardinals.cardinal(family(index).cardinality()) for index in index_set
         )
-        product_cardinality = Cardinalities().product(*factor_cardinalities)
+        product_cardinality = cardinals.Cardinalities().product(*factor_cardinalities)
         if product_cardinality.is_finite():
             if all(
                 family(index) in FiniteSets() and family(index) in EnumeratedSets()
@@ -2392,13 +2394,13 @@ class CartesianProductsOfSets(OwnedCategory):
             )
 
             ranking = self.index_set().ranking_map()
-            index_count = int(cardinal(self.index_set().cardinality()).finite_value())
+            index_count = int(cardinals.cardinal(self.index_set().cardinality()).finite_value())
             factors = tuple(
                 self.factor(ranking.inverse()(position))
                 for position in range(index_count)
             )
             factor_cardinalities = tuple(
-                cardinal(factor.cardinality()) for factor in factors
+                cardinals.cardinal(factor.cardinality()) for factor in factors
             )
 
             if all(size.is_finite() for size in factor_cardinalities):
@@ -2505,7 +2507,7 @@ def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
     assert product.index_set() in EnumeratedSets(), (
         "the mixed-radix enumeration reads its index order off the index set"
     )
-    index_count = int(cardinal(product.index_set().cardinality()).finite_value())
+    index_count = int(cardinals.cardinal(product.index_set().cardinality()).finite_value())
     index_ranking = product.index_set().ranking_map()
     index_at = index_ranking.inverse()
     for index in product.index_set():
@@ -2513,10 +2515,10 @@ def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
         assert factor in EnumeratedSets(), (
             f"the factor at {index} states no enumeration of its own"
         )
-        assert cardinal(factor.cardinality()).is_finite(), (
+        assert cardinals.cardinal(factor.cardinality()).is_finite(), (
             f"the factor at {index} is infinite, so the product's mixed-radix enumeration is not represented here"
         )
-    total_size = int(cardinal(product.cardinality()).finite_value())
+    total_size = int(cardinals.cardinal(product.cardinality()).finite_value())
 
     def point_at(position):
         position = int(position)
@@ -2527,7 +2529,7 @@ def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
         for offset in range(index_count - 1, -1, -1):
             index = index_at(offset)
             factor = product.factor(index)
-            radix = int(cardinal(factor.cardinality()).finite_value())
+            radix = int(cardinals.cardinal(factor.cardinality()).finite_value())
             quotient, digit = divmod(quotient, radix)
             assignment[offset] = factor.ranking_map().inverse()(digit)
         return product(tuple(assignment[offset] for offset in range(index_count)))
@@ -2537,7 +2539,7 @@ def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
         position = 0
         for index in product.index_set():
             factor = product.factor(index)
-            radix = int(cardinal(factor.cardinality()).finite_value())
+            radix = int(cardinals.cardinal(factor.cardinality()).finite_value())
             digit = int(factor.ranking_map()(section.component(index)))
             position = position * radix + digit
         return position
@@ -2654,7 +2656,7 @@ class CoproductsOfSets(OwnedCategory):
 
         def _finite_index_count(self):
             r"""The number of summands as an ``int`` when the index set is finite, else ``None``."""
-            size = cardinal(self.index_set().cardinality())
+            size = cardinals.cardinal(self.index_set().cardinality())
             return int(size.finite_value()) if size.is_finite() else None
 
         @staticmethod
@@ -2680,14 +2682,14 @@ class CoproductsOfSets(OwnedCategory):
 
         def _factor_has_position(self, factor, position) -> bool:
             r"""Whether the summand ``factor`` has a point at rank ``position``."""
-            size = cardinal(factor.cardinality())
+            size = cardinals.cardinal(factor.cardinality())
             if size.is_finite():
                 return position < int(size.finite_value())
             return True
 
         def _known_finite_size(self):
             r"""This coproduct's size as an ``int`` when finite, else ``None``."""
-            size = cardinal(self.cardinality())
+            size = cardinals.cardinal(self.cardinality())
             return int(size.finite_value()) if size.is_finite() else None
 
         def _enumeration_pairs(self):
@@ -2806,9 +2808,9 @@ class _FiniteWordSet:
     def cardinality(self):
         match self._alphabet.cardinality() == 0:
             case True:
-                return cardinal(1)
+                return cardinals.cardinal(1)
             case False:
-                return aleph0
+                return cardinals.aleph0
 
 
 @cached_function

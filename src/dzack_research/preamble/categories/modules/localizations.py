@@ -110,7 +110,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 return NotImplemented
             status = self.equality_status(other)
             match status:
-                case Unknown:
+                case _ if status is Unknown:
                     return Unknown
                 case _:
                     return bool(status) if op == op_EQ else not bool(status)

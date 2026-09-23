@@ -48,7 +48,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import UncountableSets
-from dzack_research.preamble.logic import Propositions, ask
+from dzack_research.preamble.logic import Predicate, Propositions, ask
 from dzack_research.preamble.refine import realize_owned_category
 
 
@@ -467,12 +467,27 @@ class ExactRealField(UniqueRepresentation, Field):
     r"""The exact field of real numbers represented by closed exact expressions."""
 
     Element = ExactRealNumber
+    _preamble_owned_ring_parent = True
 
     def __init__(self) -> None:
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            FinitelyGeneratedFreeModules,
+        )
+
+        # A field is a commutative unital algebra and a rank-one free module
+        # over itself, the placement _owned_ring_category gives every owned ring.
         Field.__init__(
             self,
             base=self,
-            category=Cat().meet((OwnedFields(), UncountableSets())),
+            category=Cat().meet(
+                (
+                    OwnedFields(),
+                    UncountableSets(),
+                    Algebras(self).Associative().Unital().Commutative(),
+                    FinitelyGeneratedFreeModules(self),
+                )
+            ),
         )
         realize_owned_category(self)
         from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
@@ -480,6 +495,10 @@ class ExactRealField(UniqueRepresentation, Field):
         _algebra_from_native_ring(self, lambda left, right: ExactRealNumber._mul_(left, right),
             ExactRealField.one(self), lambda scalar, element: ExactRealNumber._mul_(self(scalar), self(element)))
 
+
+    def is_commutative(self) -> bool:
+        r"""A field is commutative; answered by the class so ``Modules(RR)`` can place itself during construction."""
+        return True
 
     def _repr_(self) -> str:
         return "Real Field"
