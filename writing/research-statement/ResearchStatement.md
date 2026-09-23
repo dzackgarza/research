@@ -111,14 +111,14 @@ Application of the mirror move algorithm to $S_{\Co} = (11, 11, 1)_1$.
 Using this, I have constructed the incidence diagram that represents \( \partial \overline{ F_{\Co} }^{\operatorname{BB}} \), which is shown in @fig:coble-cusp-diagram-detailed. Using lattice theoretic techniques, and in particular an invariant called the *divisibility*, I have determined that \( \eta \) induces the correspondence \( \partial \overline{ F_{\Co} }^{\operatorname{BB}}\to \partial \overline{ F_{\operatorname{En}} }^{\operatorname{BB}} \) depicted in @fig:enriques-coble-correspondence, which has allowed me to determine that Coble degenerations are *\( \mathbf{D}^2 \)-type*, as opposed to *\( {\mathbf{RP}}^2 \)-type*, an essential ingredient for later constructing the correct divisorial log terminal (dlt) models of KSBA degenerations.
 
 ::: {#fig:coble-cusp-diagram-detailed .figure}
-\input{tikz/coble-cusp-diagram-detailed.tikz}
+\input{tikz/fig_Cusp_Diagram_Co.tex}
 
 The boundary of the Baily-Borel compactification of $F_{\Co}$. Rounded nodes indicate points added in the boundary of the compactification $\overline{ F_{\Co} }^{\operatorname{BB}}$, and rectangles indicate modular curves. Solid arrows $A\to B$ indicate that a point $A$ is contained in the closure of a curve $B$.
 :::
 
 
 ::: {#fig:enriques-coble-correspondence .figure}
-\input{tikz/coble-enriques-cusp-correspondence.tikz}
+\input{tikz/fig_Cusp_Correspondence_Co_En.tex}
 
 The cusp correspondence $\eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{\operatorname{En}}  }^{\operatorname{BB}}$. Dotted arrows indicate the boundary correspondence under $\eta$.
 :::
@@ -134,7 +134,7 @@ Toward this end, I have been working on adapting the techniques of [@Ste91] and 
 Ultimately, this chain of correspondences will allow me to leverage [@AEGS25], [@AT17], and [@AE22] to construct integral affine structures and dlt models of KSBA-stable Coble surfaces in terms of those for K3 and Enriques surfaces. From these data, in an in-progress paper which will comprise the majority of my dissertation, I am working on constructing the KSBA stable limits of Coble surfaces as special cases of limits of Enriques surfaces satisfying a certain linear relation, yielding a geometrically meaningful, explicit, combinatorial description of the KSBA stable pair compactification \( \overline{F_{\Co}} \) and its boundary \( \partial \overline{F_{\Co}} \).
 
 ::: {#fig:220-cusps-diagram .figure}
-\input{tikz/220-cusp-diagram.tikz}
+\input{tikz/fig_Cusp_Diagram_220.tex}
 
 The boundary cusp diagram of $F_{(2,2,0)}$, the moduli space of quartic hyperelliptic K3 surfaces.
 :::

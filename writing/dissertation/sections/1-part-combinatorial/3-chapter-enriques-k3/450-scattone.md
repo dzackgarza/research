@@ -68,24 +68,8 @@ We assemble this data into the following **cusp diagram**:
 
 :::{#fig:f2-cusp-diagram .figure}
 
-\begin{tikzpicture}[
-    square/.style={rectangle, draw, minimum width=3cm, minimum height=0.8cm},
-    circ/.style={circle, draw, minimum size=0.8cm}
-]
-
-% Define nodes
-\node[circ] (eta) at (0,0) {$\eta$};
-\node[square] (A1) at (4,3) {$A_1 \oplus E_8^{\oplus 2}$};
-\node[square] (E7) at (4,1) {$E_7 \oplus D_{10}$};
-\node[square] (D16) at (4,-1) {$A_1 \oplus D_{16}$};
-\node[square] (A17) at (4,-3) {$A_{17}$};
-
-% Draw arrows
-\draw[->] (eta.east) -- (A1.west);
-\draw[->] (eta.east) -- (E7.west);
-\draw[->] (eta.east) -- (D16.west);
-\draw[->] (eta.east) -- (A17.west);
-
+\begin{tikzpicture}
+\pic[cusp labels=eta] {bb f2};
 \end{tikzpicture}
 The cusp diagram of $F_2$, the moduli space of degree 2 polarized K3 surfaces, which contains one 0-cusp $\eta$ adjacent to four 1-cusps.
 
@@ -194,20 +178,8 @@ Its Baily–Borel boundary contains a unique 0-cusp and two 1-cusps. The latter 
 
 :::{#fig:fell-cusp-diagram .figure}
 
-\begin{tikzpicture}[
-    square/.style={rectangle, draw, minimum width=3cm, minimum height=0.8cm},
-    circ/.style={circle, draw, minimum size=0.8cm}
-]
-
-% Define nodes
-\node[circ] (eta) at (0,0) {$\eta$};
-\node[square] (E8) at (4,1) {$E_8^2$};
-\node[square] (D16) at (4,-1) {$D_{16}$};
-
-% Draw arrows
-\draw[->] (eta.east) -- (E8.west);
-\draw[->] (eta.east) -- (D16.west);
-
+\begin{tikzpicture}
+\pic[cusp labels=eta] {bb fell};
 \end{tikzpicture}
 The cusp diagram of $\fell$, the moduli space of elliptic K3 surfaces, which contains one 0-cusp $\eta$ adjacent to two 1-cusps.
 
@@ -227,25 +199,12 @@ Explicit representatives can be given as follows. The 0-cusps correspond to the 
 
 :::{#fig:fen-unpolarized-cusp-diagram .figure}
 
-\begin{tikzpicture}[
-    square/.style={rectangle, draw, minimum width=3cm, minimum height=1cm},
-    circ/.style={circle, draw, minimum size=1cm}
-]
-
-% Define nodes
-\node[square] (I1) at (0,0) {$I_1 = \gens{e', f' + \alpha}$};
-\node[circ] (eta1) at (4,0) {$\eta_1 = e$};
-\node[square] (I12) at (8,0) {$I_{1,2} = \gens{\eta_1, \eta_2}$};
-\node[circ] (eta2) at (12,0) {$\eta_2 = e'$};
-
-% Draw arrows
-\draw[->] (eta1.west) -- (I1.east);
-\draw[->] (eta1.east) -- (I12.west);
-\draw[->] (eta2.west) -- (I12.east);
-
-% Add the constraint below
-\node[below=0.5cm of I1] {$\alpha \in E_8, \alpha^2 = -4$};
-
+\begin{tikzpicture}
+\pic[cusp labels=none] (E) {bb fen};
+% The isotropic vectors spanning each cusp.
+\foreach \c/\v in {E10/{\eta_1 = e}, E8/{I_{1,2} = \gens{e, e'}}, UE8/{\eta_2 = e'},
+    D8/{I_2 = \gens{e', 2e + 2f + \alpha_1 + \alpha_2}}}
+  {\node[below=2mm] at (E\c.south) {$\v$};}
 \end{tikzpicture}
 The cusp diagram of $\fen$, the moduli space of unpolarized Enriques surfaces.
 
@@ -330,24 +289,10 @@ A concise summary of the mirror move algorithm applied to $\EnriquesInvariants_1
 
 :::{#fig:fen-cusp-diagram-summary .figure}
 
-\begin{tikzpicture}[
-    square/.style={rectangle, draw, minimum size=1cm},
-    circ/.style={circle, draw, minimum size=0.8cm}
-]
-
-% Define nodes
-\node[square] (I1) at (0,0) {$I_1$};
-\node[circ] (eta1) at (2,0) {$\eta_1$};
-\node[square] (I12) at (4,0) {$I_{1,2}$};
-\node[circ] (eta2) at (6,0) {$\eta_2$};
-
-% Draw arrows
-\draw[->] (eta1) -- (I1);
-\draw[->] (eta1) -- (I12);
-\draw[->] (I12) -- (eta2);
-
+\begin{tikzpicture}
+\pic[cusp labels=eta] {bb fen};
 \end{tikzpicture}
-The cusp diagram of $\fen$, indicating two 0-cusps $\eta_{1}, \eta_2$ and two 1-cusps $I_{1}, I_{12}$. We note that this recovers the known cusp diagram shown in @sec:fen-unpolarized-cusps.
+The cusp diagram of $\fen$, indicating two 0-cusps $\eta_{1}, \eta_2$ and two 1-cusps $I_{1,2}, I_2$. We note that this recovers the known cusp diagram shown in @sec:fen-unpolarized-cusps.
 
 :::
 

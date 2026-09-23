@@ -237,65 +237,23 @@ Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consi
 
 :::{#fig:fent-boundary-cusp-maps .figure}
 
-\begin{tikzpicture}
-% F_En: 0-cusps (rounded) and 1-cusps (boxes); the eta_1 column is highlighted.
-\node[cusp1, fill=dzg highlight] (I1new) at (0,5.5) {$I_1$};
-\node[cusp0, fill=dzg highlight] (eta1new) at (0,4) {$\eta_1$};
-\node[cusp1] (I12new) at (0,2.5) {$I_{12}$};
-\node[cusp0] (eta2new) at (0,1) {$\eta_2$};
-\draw[incidence] (eta1new) -- (I1new);
-\draw[incidence] (eta1new) -- (I12new);
-\draw[incidence] (I12new) -- (eta2new);
-
-% F_{En,2}
-\node[cusp0, label={[cusp label]above:$U \oplus E_8(2)$}] (eta2top) at (2.5,2) {$\eta_2$};
-\node[cusp1, fill=dzg highlight] (L1top) at (5.5,2.5) {$I_{1,2}: E_8^2$};
-\node[cusp1] (L2top) at (5.5,1.5) {$I_{2,4,5}: D_{16}^+$};
-\node[cusp0, fill=dzg highlight, label={[cusp label]above:$U(2) \oplus E_8(2)$}] (eta1top) at (8.5,4) {$\eta_1$};
-\node[cusp0] (eta3top) at (8.5,2.7) {$\eta_3$};
-\node[cusp0] (eta4top) at (8.5,1.3) {$\eta_4$};
-\node[cusp0] (eta5top) at (8.5,0) {$\eta_5$};
-\foreach \name/\y/\lattice in {R1top/5/{I_{1,3}: E_7^2 C_2}, R2top/4/{I_{1,4}: D_8^2},
-    R3top/3/{I_{1,5}: A_{15} A_1(2)}}
-  \node[cusp1, fill=dzg highlight] (\name) at (11.5,\y) {$\lattice$};
-\foreach \name/\y/\lattice in {R4top/2/{I_{3,4}: A_{15} A_1(2)}, R5top/1/{I_{3,5}: D_{12} D_4},
-    R6top/0/{I_{4,5}: D_8^2}, R7top/-1/{I_{5}: E_7^2 C_2}}
-  \node[cusp1] (\name) at (11.5,\y) {$\lattice$};
-\foreach \a/\b in {eta2top.east/L1top.west, eta2top.east/L2top.west,
-    eta4top.west/L2top.east, eta5top.west/L2top.east,
-    eta3top.east/R1top.west, eta3top.east/R4top.west, eta3top.east/R5top.west,
-    eta4top.east/R2top.west, eta4top.east/R4top.west, eta4top.east/R6top.west,
-    eta5top.east/R3top.west, eta5top.east/R5top.west, eta5top.east/R6top.west,
-    eta5top.east/R7top.west}
-  \draw[incidence] (\a) -- (\b);
-\foreach \a/\b in {eta1top.west/L1top.east, eta1top.east/R1top.west,
-    eta1top.east/R2top.west, eta1top.east/R3top.west}
-  \draw[incidence, draw=dzg accent] (\a) -- (\b);
-
-% F_{(2,2,0)}
-\node[cusp0, label={[cusp label]below:$U \oplus E_8^2$}] (eta1bot) at (2.5,-5) {$\eta_1$};
-\node[cusp1] (L1bot) at (5.5,-4.5) {$I_{1,2}: E_8^2$};
-\node[cusp1] (L2bot) at (5.5,-5.5) {$I_{1,2}: D_{16}$};
-\node[cusp0, label={[cusp label]below:$U(2) \oplus E_8^2$}] (eta2bot) at (8.5,-5) {$\eta_2$};
-\foreach \name/\y/\lattice in {R1bot/-2.5/{D_5^2}, R2bot/-3.5/{E_7^2 C_2}, R3bot/-4.5/{E_8 D_8},
-    R4bot/-5.5/{D_{12} D_4}, R5bot/-6.5/{D_{16}}, R6bot/-7.5/{A_{15} A_1(2)}}
-  \node[cusp1] (\name) at (11.5,\y) {$I_2: \lattice$};
-\foreach \a/\b in {eta1bot.east/L1bot.west, eta1bot.east/L2bot.west,
-    eta2bot.west/L1bot.east, eta2bot.west/L2bot.east}
-  \draw[incidence] (\a) -- (\b);
-\foreach \k in {1,...,6}
-  \draw[incidence] (eta2bot.east) -- (R\k bot.west);
-
-% Separators, and the images of cusps under F_En <- F_{En,2} -> F_{(2,2,0)}
-\draw[draw=dzg muted, dotted] (-1,-1.75) -- (14,-1.75);
-\draw[draw=dzg muted, dotted] (1.25,7) -- (1.25,-8);
-\foreach \a/\b in {eta5top.south/eta2bot.north, eta2top.south/eta1bot.north,
-    eta1top.west/eta1new.east}
-  \draw[incidence, dashed, draw=dzg accent] (\a) -- (\b);
-
-\node[above=8em of eta2top, xshift=5em] {\Huge $F_{\En, 2}$};
-\node[below=4em of eta1bot, xshift=5em] {\Huge $F_{(2,2,0)}$};
-\node[below=2em of eta2new] {\Huge $F_{\En}$};
+\begin{tikzpicture}[cusp labels=eta]
+% F_En (top), F_{En,2} (middle), F_{(2,2,0)} (bottom). The 0-cusp eta_1 of
+% F_{En,2}, its 1-cusps, and their images in F_En are highlighted; the dashed
+% arrows are cusp maps.
+\pic (E) at (0.5,6.5) {bb fen};
+\pic (S) at (0,0) {bb fen2};
+\pic (K) at (0.6,-8) {bb f220};
+\begin{scope}[on background layer]
+  \foreach \c in {12, 13, 14, 15} {\draw[cusp image] (S1.center) -- (S\c.center);}
+  \draw[cusp image] (EE10.center) -- (EE8.center);
+\end{scope}
+\draw[cusp map] (S1) -- (EE10);
+\draw[cusp map] (S2) -- ([yshift=6mm]KUE8E8.north);
+\draw[cusp map] (S5) -- ([yshift=6mm]KU2E8E8.north);
+\node[anchor=east] at (-1.3,6.5) {$F_{\En}$};
+\node[anchor=east] at (-1.3,0) {$F_{\En, 2}$};
+\node[anchor=east] at (-1.3,-8) {$F_{(2,2,0)}$};
 \end{tikzpicture}
 Mappings of boundary cusps under $\fen \from \fent \to \fttz$.
 
