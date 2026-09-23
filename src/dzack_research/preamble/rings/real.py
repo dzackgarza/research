@@ -637,7 +637,7 @@ e = RR.e()
 
 
 # The elementary functions of a session.  On a real number each is the
-# operation of the real field.  Any other argument -- a power series, a
+# matrix, a symbolic expression -- goes to Sage's
 # matrix, the symbolic indeterminate of a function space -- goes to Sage's
 # function of the same name, which applies the argument's own method where it
 # has one.
