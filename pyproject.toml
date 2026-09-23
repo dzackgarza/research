@@ -39,6 +39,9 @@ tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
 # Bare pytest invocations collect the live suite only; an archive path may still
 # be named explicitly when inspecting historical material.
 testpaths = ["tests"]
+# The specification helpers beside tests/constructions are imported from
+# other test directories as well.
+pythonpath = ["tests/constructions"]
 # Every run says where its wall time went and leaves a machine-readable record.
 #
 # The suite budget is a gate: 100 ms per selected test, set as the session
@@ -59,7 +62,6 @@ testpaths = ["tests"]
 addopts = """
   -p dzack_research.utilities.suite_budget
   -p dzack_research.utilities.test_lint
-  -p dzack_research.utilities.sage_tests
   --timeout=60 --timeout-method=signal
   --durations=0 --durations-min=0
   --junit-xml=tests/.report/junit.xml

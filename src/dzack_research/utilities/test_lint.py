@@ -302,20 +302,33 @@ def lint_file(path: Path, session_names: frozenset[str], axioms: frozenset[str])
 
 
 def _session_names() -> frozenset[str]:
-    r"""The names a test resolves: those of the namespace ``sage_tests`` runs it in."""
-    from dzack_research.utilities.sage_tests import _session_namespace
+    r"""The names a test resolves: Sage's script namespace, then the session star import.
 
-    return frozenset(_session_namespace())
+    The global QC's collector (``qc_sage_session`` in ``ai-review-ci``) runs a
+    ``.sage`` test with ``sage.all_cmdline`` in scope; the file's first line
+    imports the preamble session.
+    """
+    import sage.all_cmdline
+
+    session = __import__(SESSION_MODULE, fromlist=["*"])
+    return frozenset(
+        name for namespace in (vars(sage.all_cmdline), vars(session)) for name in namespace if not name.startswith("_")
+    )
 
 
 def _python_source(path: Path) -> str:
-    r"""The file as Python: a ``.sage`` test lowered as its collector lowers it, line for line."""
+    r"""The file as Python: a ``.sage`` test lowered as the QC collector lowers it.
+
+    That is ``sage.repl.preparse.preparse_file`` after the session is imported,
+    which installs the research dialect in its place.
+    """
     source = path.read_text()
     if path.suffix != ".sage":
         return source
-    from sageparse import lower
+    __import__(SESSION_MODULE)
+    from sage.repl import preparse
 
-    return lower(source).python
+    return preparse.preparse_file(source)
 
 
 def _unprotected(path: Path) -> bool:
