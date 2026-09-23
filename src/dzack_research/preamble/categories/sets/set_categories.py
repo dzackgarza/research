@@ -2123,14 +2123,15 @@ class _ImageSet(Sets().ObjectType):
                 )
                 return super().cardinality()
 
+    @cached_method
     def _distinct_values(self):
         r"""The values of \(f\) over a finite source, each once, in the order of the source."""
-        seen = []
-        for point in self.source_set():
-            value = self.image_map()(point)
-            if not any(value == known for known in seen):
-                seen.append(value)
-                yield value
+        return tuple(dict.fromkeys(self.image_map()(point) for point in self.source_set()))
+
+    @cached_method
+    def _finite_image(self):
+        r"""Sage's enumerated set on the values: membership by hashing, not by search."""
+        return SageSet(self._distinct_values())
 
     def __iter__(self):
         assert self.source_set() in FiniteSets(), (
@@ -2139,14 +2140,14 @@ class _ImageSet(Sets().ObjectType):
             "enumerated source, which Sets().image_set builds as an ordered "
             "enumerated set"
         )
-        return self._distinct_values()
+        return iter(self._distinct_values())
 
     def __contains__(self, element) -> bool:
         r"""Whether ``element`` is a value \(f(a)\) for a point \(a\) of the source."""
         source = self.source_set()
         match source:
             case _ if source in FiniteSets():
-                return any(element == value for value in self._distinct_values())
+                return element in self._finite_image()
             case _ if self._image_inverse is not None:
                 preimage = self._image_inverse(element)
                 return preimage in source and self.image_map()(source(preimage)) == element

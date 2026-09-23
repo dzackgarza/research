@@ -6,6 +6,7 @@ from typing import TypeVar
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
+from sage.sets.set import Set as SageSet
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -257,10 +258,8 @@ class FiniteOrderedSets(OwnedCategory):
 
         Literal ingress: the points are read once, in order.
         """
-        distinct: list[PointT] = []
-        for point in points:
-            if not any(point == known for known in distinct):
-                distinct.append(point)
+        # ``dict.fromkeys`` keeps the first occurrence of each point, in order.
+        distinct = tuple(dict.fromkeys(points))
         return self.from_indexed(
             finite_ordinal_set(len(distinct)),
             lambda position: distinct[int(position)],
@@ -277,23 +276,22 @@ class FiniteOrderedSets(OwnedCategory):
     ) -> Parent:
         r"""Construct the finite ordered set enumerated by ``element_at`` on ``index_set``.
 
-        When the caller states no inverse or no membership decision, both are
-        decided by searching the finite index set, which is what finiteness
-        permits.
+        When the caller states no membership decision, membership is Sage's
+        enumerated set on the points (``Set``, a hashed ``frozenset``); when it
+        states no inverse, the position of a point is read from a hash map of
+        the points.  Neither searches the enumeration.
         """
         assert cardinal(index_set.cardinality()).is_finite(), (
             "a finite ordered set requires a finite index set"
         )
         assert index_set in EnumeratedSets(), "the finite index set has a chosen enumeration"
+        if index_of is None or contains is None:
+            indices = tuple(index_set)
+            points = tuple(element_at(index) for index in indices)
         if index_of is None:
-            def index_of(element):
-                return next(
-                    (index for index in index_set if element_at(index) == element),
-                    None,
-                )
+            index_of = dict(zip(points, indices, strict=True)).get
         if contains is None:
-            def contains(element):
-                return any(element_at(index) == element for index in index_set)
+            contains = SageSet(points).__contains__
         return _object_of(
             self,
             index_set=index_set,
