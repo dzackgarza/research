@@ -355,6 +355,7 @@ class _CallableFormMethods:
             lambda left, right: self._lift_evaluation(left, right)
         )
 
+    @cached_method
     def gram_tensor(self):
 
         if self.codomain() not in OwnedRings():
