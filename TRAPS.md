@@ -159,5 +159,12 @@ coercion model's `bin_op` does not reach the element's `_symbolic_`, so
 `1/2 + pi` and `binomial(5, 2)` fail the same way. Observed with Sage 10.9
 (`sage-dev-allopts`) on 2026-09-23.
 
-Route chosen: none yet; `TODO.md` node `triage-owned-rings-sage-coercion`
-holds the decision.
+Route chosen: owned numbers never enter `SR`. The preamble owns `pi`, `e` and
+the elementary functions over its exact real field (`rings/real.py`), and the
+owned rings declare their coercions among themselves (`_coerce_map_from_`).
+
+A related fact: under the `sage` command a script runs in `sage.all`'s own
+namespace (`globals() is vars(sage.all)`), so a star import rebinds the
+attributes of `sage.all`. Owned code that falls back to a Sage function takes
+it from its defining module (`sage.functions.trig`, `sage.misc.functional`),
+never through `sage.all`.
