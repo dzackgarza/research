@@ -80,82 +80,24 @@ corresponding to $\tau$-invariant monomials.
 Thus $Q$ and $W$ share the same polytope, but for the two distinct lattices $M_Y \da \ZZ^2$ and $M_W \da \ZZ^2_{\ev}$. We note that $Q_Z$ has 16 boundary lattice points and 9 interior points, yielding 25 total sections of $\OO_Y(4,4)$, while $Q_W$ has 8 boundary points and 5 interior points, yielding 13 $\tau$-invariant sections:
 
 \begin{tikzpicture}[scale=1.2]
-    % Define colors using a harmonious palette inspired by Material Design
-    % Base: Cool grays for structure
-    \definecolor{gridcolor}{RGB}{226, 232, 240}      % slate-200
-    \definecolor{axiscolor}{RGB}{71, 85, 105}        % slate-600
-    
-    % Lattice points: Dark blue-gray and teal accent
-    \definecolor{fulllatticept}{RGB}{100, 116, 139}  % slate-500
-    \definecolor{evenlatticept}{RGB}{20, 184, 166}   % teal-500
-    
-    % Polytope: Indigo primary with complementary coral edges
-    \definecolor{polytopefill}{RGB}{99, 102, 241}    % indigo-500
-    \definecolor{polytopeedge}{RGB}{79, 70, 229}     % indigo-600
-    \definecolor{polytopevertex}{RGB}{251, 113, 133} % rose-400
-    
-    % Set up the viewing window
-    \clip(-1.5,-1.5) rectangle (5.5,5.5);
-    
-    % Draw background grid
-    \draw[gridcolor] (-2,-2) grid (7,7);
-    
-    % Draw coordinate axes
-    \draw[axiscolor, thick, ->] (-1.2,0) -- (6.2,0);
-    \draw[axiscolor, thick, ->] (0,-1.2) -- (0,6.2);
-    
-    % Add monomial axis labels for x-axis
-    \node[below right, axiscolor, font=\small] at (0,-0.1) {$x_0^4$};
-    \node[below, axiscolor, font=\small] at (1,-0.1) {$x_0^3x_1$};
-    \node[below, axiscolor, font=\small] at (2,-0.1) {$x_0^2x_1^2$};
-    \node[below, axiscolor, font=\small] at (3,-0.1) {$x_0x_1^3$};
-    \node[below, axiscolor, font=\small] at (4,-0.1) {$x_1^4$};
-    
-    % Add monomial axis labels for y-axis
-    \node[above left, axiscolor, font=\small] at (-0.1,0) {$y_0^4$};
-    \node[left, axiscolor, font=\small] at (-0.1,1) {$y_0^3y_1$};
-    \node[left, axiscolor, font=\small] at (-0.1,2) {$y_0^2y_1^2$};
-    \node[left, axiscolor, font=\small] at (-0.1,3) {$y_0y_1^3$};
-    \node[left, axiscolor, font=\small] at (-0.1,4) {$y_1^4$};
-    
-    % Define the polytope Q as a 4x4 square
-    % Vertices: (0,0), (4,0), (4,4), (0,4)
-    \coordinate (v1) at (0,0);
-    \coordinate (v2) at (4,0);
-    \coordinate (v3) at (4,4);
-    \coordinate (v4) at (0,4);
-    
-    % Fill the polytope with subtle color
-    \fill[polytopefill, opacity=0.25] (v1) -- (v2) -- (v3) -- (v4) -- cycle;
-    
-    % Draw polytope edges
-    \draw[polytopeedge, line width=2pt] (v1) -- (v2) -- (v3) -- (v4) -- cycle;
-    
-    % Draw all lattice points in the viewing window
-    \foreach \x in {-1,0,1,2,3,4,5,6} {
-        \foreach \y in {-1,0,1,2,3,4,5,6} {
-            \fill[fulllatticept, opacity=0.3] (\x,\y) circle (0.08);
-        }
+  % Q = [0,4]^2, the polygon of (P^1 x P^1, O(4,4)); the lattice points of
+  % Z^2_ev (i + j even) are the tau-invariant monomials, the polygon Q_W.
+  \draw[lattice grid] (-0.5,-0.5) grid (4.5,4.5);
+  \fill[polygon region] (0,0) rectangle (4,4);
+  \draw[polytope edge] (0,0) rectangle (4,4);
+  \draw[coordinate axis] (-0.5,0) -- (4.8,0);
+  \draw[coordinate axis] (0,-0.5) -- (0,4.8);
+  \foreach \x in {0,...,4}
+    \foreach \y in {0,...,4} {
+      \pgfmathtruncatemacro\parity{mod(\x+\y,2)}
+      \ifnum\parity=0 \node[distinguished point] at (\x,\y) {};
+      \else \node[lattice point] at (\x,\y) {};\fi
     }
-    
-    % Highlight the even sublattice points (where i+j is even)
-    \foreach \x in {-1,0,1,2,3,4,5,6} {
-        \foreach \y in {-1,0,1,2,3,4,5,6} {
-            \pgfmathparse{int(mod(\x+\y,2))}
-            \ifnum\pgfmathresult=0
-                \fill[evenlatticept, opacity=0.25] (\x,\y) circle (0.14);
-            \fi
-        }
-    }
-    
-    % Highlight polytope vertices with rose accent
-    \foreach \v in {v1,v2,v3,v4} {
-
-    }
-    
-    % Add labels for the polytope
-    \node[polytopeedge, font=\bfseries] at (1.5,4.4) {$Q_Y, Q_W$};
-    
+  \foreach \i/\m in {0/x_0^4, 1/x_0^3x_1, 2/x_0^2x_1^2, 3/x_0x_1^3, 4/x_1^4}
+    \node[monomial, below] at (\i,-0.1) {$\m$};
+  \foreach \j/\m in {1/y_0^3y_1, 2/y_0^2y_1^2, 3/y_0y_1^3, 4/y_1^4}
+    \node[monomial, left] at (-0.1,\j) {$\m$};
+  \node at (2,5) {$Q_Y, Q_W$};
 \end{tikzpicture}
 
 ##### The K3 Double Cover
