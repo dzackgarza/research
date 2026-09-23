@@ -12,6 +12,9 @@ Loaded as a pytest plugin (``-p dzack_research.utilities.suite_budget`` in
   ``PER_TEST_BUDGET`` times the number of selected tests, counted from the end
   of collection; pytest-timeout checks it after every test.
 
+One test over its own time limit (``--timeout``) ends the run red at once.
+``--no-time-gates`` lifts all four for a one-off triage run.
+
 A run over any limit is a defect in the code or the tests, never a wait:
 find the cost, do not raise the limit.
 """
@@ -29,6 +32,21 @@ _STAR_IMPORT_SECONDS = pytest.StashKey[float]()
 _COLLECTION_START = pytest.StashKey[float]()
 
 
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--no-time-gates",
+        action="store_true",
+        help=(
+            "one-off triage run: report every test instead of stopping at the "
+            "first time limit; the per-test --timeout still ends a hung test"
+        ),
+    )
+
+
+def _gated(config: pytest.Config) -> bool:
+    return not config.getoption("no_time_gates")
+
+
 @pytest.hookimpl(tryfirst=True)
 def pytest_load_initial_conftests(early_config: pytest.Config) -> None:
     import sage.all  # noqa: F401  (Sage's own load, which the ceiling excludes)
@@ -41,7 +59,7 @@ def pytest_load_initial_conftests(early_config: pytest.Config) -> None:
 
 def pytest_sessionstart(session: pytest.Session) -> None:
     star_import = session.config.stash[_STAR_IMPORT_SECONDS]
-    if star_import > STAR_IMPORT_CEILING:
+    if _gated(session.config) and star_import > STAR_IMPORT_CEILING:
         pytest.exit(
             f"preamble star import took {star_import:.2f} s; the ceiling is {STAR_IMPORT_CEILING:.0f} s",
             returncode=pytest.ExitCode.TESTS_FAILED,
@@ -51,6 +69,8 @@ def pytest_sessionstart(session: pytest.Session) -> None:
 
 @pytest.hookimpl(trylast=True)
 def pytest_collection_finish(session: pytest.Session) -> None:
+    if not _gated(session.config):
+        return
     collection = time.perf_counter() - session.config.stash[_COLLECTION_START]
     if collection > COLLECTION_CEILING:
         pytest.exit(
@@ -62,9 +82,22 @@ def pytest_collection_finish(session: pytest.Session) -> None:
     session.config.stash[SESSION_EXPIRE_KEY] = time.time() + budget
 
 
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item: pytest.Item, call: pytest.CallInfo):
+    r"""One test over its time limit fails the whole run, at once."""
+    yield
+    if not _gated(item.config):
+        return
+    if call.excinfo is not None and call.excinfo.errisinstance(pytest.fail.Exception):
+        message = str(call.excinfo.value)
+        if message.startswith("Timeout (>") and message.endswith("from pytest-timeout."):
+            pytest.exit(f"{item.nodeid}: {message}", returncode=pytest.ExitCode.TESTS_FAILED)
+
+
 def pytest_report_header(config: pytest.Config) -> str:
+    gates = "on" if _gated(config) else "OFF (--no-time-gates)"
     return (
-        f"time gates: star import {config.stash[_STAR_IMPORT_SECONDS]:.2f} s "
+        f"time gates {gates}: star import {config.stash[_STAR_IMPORT_SECONDS]:.2f} s "
         f"(ceiling {STAR_IMPORT_CEILING:.0f} s), collection ceiling {COLLECTION_CEILING:.0f} s, "
         f"{PER_TEST_BUDGET * 1000:.0f} ms per selected test"
     )
