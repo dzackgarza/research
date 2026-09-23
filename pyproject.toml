@@ -41,14 +41,19 @@ tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
 testpaths = ["tests"]
 # Every run says where its wall time went and leaves a machine-readable record.
 #
-# --timeout is the important one: a suite that blocks -- on a subprocess, a
-# lock, a network call -- burns wall clock at low CPU and reports nothing at
-# all when it is killed.  On timeout pytest-timeout dumps the stack of every
-# thread, which names the blocking call instead of leaving it to bisection.
+# --session-timeout is a gate: the whole suite has one minute.  A run that
+# needs longer is red, because a slow suite is a defect in the code or the
+# tests, never a wait.  Do not raise it; find the cost.
+#
+# --timeout bounds one test: a test that blocks -- on a subprocess, a lock, a
+# network call -- burns wall clock at low CPU and reports nothing at all when
+# it is killed.  On timeout pytest-timeout dumps the stack of every thread,
+# which names the blocking call instead of leaving it to bisection.
 # --durations ranks test phases, pytest-durations aggregates them by file, and
 # the report log plus JUnit xml make runs comparable to each other.
 addopts = """
-  --timeout=90 --timeout-method=signal
+  --session-timeout=60
+  --timeout=60 --timeout-method=signal
   --durations=0 --durations-min=0
   --junit-xml=tests/.report/junit.xml
   --report-log=tests/.report/run.jsonl
