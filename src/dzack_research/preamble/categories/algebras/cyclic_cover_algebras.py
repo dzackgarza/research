@@ -106,12 +106,11 @@ class CyclicCoverAlgebra(SageObject):
         if degree < 2:
             raise ValueError("a cyclic cover has degree at least two")
 
-        try:
-            supplied_parent = branch_section.parent()
-        except AttributeError as error:
+        if not isinstance(branch_section, Element):
             raise TypeError(
                 "the branch section must be a represented compatible section of L^n"
-            ) from error
+            )
+        supplied_parent = branch_section.parent()
 
         branch_power = line_bundle.tensor_power(int(degree))
         match line_bundle.cover() in DistinguishedAffineCovers():

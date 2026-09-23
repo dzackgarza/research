@@ -181,6 +181,13 @@ def _augmentation_codomain_is_allowed(domain, base, codomain) -> bool:
     return codomain is base
 
 
+def _declared_graded_algebra_category(domain):
+    for category in domain.category().all_super_categories(proper=False):
+        if isinstance(category, GradedAlgebras):
+            return category
+    return None
+
+
 def _graded_algebra_placement(domain, base):
 
     placement = []
@@ -195,12 +202,12 @@ def _graded_algebra_placement(domain, base):
             placement.append(FramedAlgebras(base))
         case False:
             pass
-    try:
-        monoid = domain.grading_monoid()
-        placement.append(GradedAlgebras(base, monoid))
-        placement.append(GradedAugmentedAlgebras(base, monoid))
-    except AttributeError:
+    graded = _declared_graded_algebra_category(domain)
+    if graded is None:
         return placement
+    monoid = graded.grading_monoid()
+    placement.append(GradedAlgebras(base, monoid))
+    placement.append(GradedAugmentedAlgebras(base, monoid))
     if domain in FreeAlgebras(base):
         placement.append(FreeAlgebras(base))
     if domain in GradedFreeAlgebras(base):
@@ -244,10 +251,8 @@ def _augmented_algebra(augmentation):
     selected = algebras.Mor(domain, aug_codomain)(augmentation)
     placement = _graded_algebra_placement(domain, base)
     law_decisions = _root_algebra_law_decisions(domain)
-    try:
+    if _declared_graded_algebra_category(domain) is not None:
         law_decisions["grading"] = domain.grading_compatibility_decision()
-    except AttributeError:
-        pass
     data = {"selected_augmentation": selected}
     if domain in FramedAlgebras(base):
         framing_owner = domain.algebra_framing_owner()

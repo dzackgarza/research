@@ -1566,15 +1566,14 @@ def _quotient_by_algebra_elements_backend(
 
 @cached_function
 def _commutative_algebra_pushout_backend(left_map, right_map):
-    try:
-        common = left_map.domain()
-        left = left_map.codomain()
-        right_common = right_map.domain()
-        right = right_map.codomain()
-    except AttributeError as error:
+    if not isinstance(left_map, Morphism) or not isinstance(right_map, Morphism):
         raise TypeError(
             "a commutative-algebra pushout is specified by represented algebra morphisms"
-        ) from error
+        )
+    common = left_map.domain()
+    left = left_map.codomain()
+    right_common = right_map.domain()
+    right = right_map.codomain()
     if common is not right_common:
         raise ValueError("pushout maps require one common domain")
     base = common.base_ring()
