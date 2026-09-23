@@ -2,7 +2,7 @@ r"""Archive reconciliation for automorphism groups of standard finite groups."""
 
 import pytest
 
-from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.group.groups import OwnedGroups, Subgroups
 
 
 @pytest.mark.parametrize(
@@ -42,16 +42,31 @@ def test_aut_v4_is_nonabelian_of_order_six() -> None:
 def test_conjugation_realizes_all_automorphisms_of_s3() -> None:
     group = OwnedGroups().S(3)
     conjugation = group.conjugation_morphism()
+    automorphisms = group.Aut()
+    inner = conjugation.image()
 
     assert conjugation.is_injective()
     assert conjugation.kernel().order() == 1
-    assert conjugation.image().order() == group.Aut().order() == 6
+    assert inner.order() == automorphisms.order() == 6
+    assert inner in Subgroups(automorphisms)
+    assert inner.supergroup() is automorphisms
+    assert inner.inclusion().domain() is inner
+    assert inner.inclusion().codomain() is automorphisms
+    assert inner not in automorphisms
+    assert all(element.parent() is automorphisms for element in inner)
 
 
 def test_s6_inner_automorphisms_have_index_two() -> None:
     group = OwnedGroups().S(6)
     conjugation = group.conjugation_morphism()
+    automorphisms = group.Aut()
+    inner = conjugation.image()
 
     assert conjugation.kernel().order() == 1
-    assert conjugation.image().order() == 720
-    assert group.Aut().order() == 1440
+    assert inner.order() == 720
+    assert automorphisms.order() == 1440
+    assert inner in Subgroups(automorphisms)
+    assert inner.supergroup() is automorphisms
+    assert inner.inclusion().codomain() is automorphisms
+    assert inner not in automorphisms
+    assert all(element.parent() is automorphisms for element in inner)

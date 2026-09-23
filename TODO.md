@@ -213,19 +213,12 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`membership-by-placement`**. **Needs:** none.
-  **Owner and delta:** category containment throughout the preamble, including abstract functor, arrow, product, morphism and sheaf categories and predicates hidden in helpers.
-  **Concrete residue:** reconcile `GroupAutomorphismGroup._subgroup_from_engine` with the fixed-Mor family contract. A subgroup must retain its group inclusion and action without claiming to be the ambient family's selected fixed Iso category. Trace its construction, category role, inherited arrows and inclusion together; do not broaden membership by runtime class recognition or replace the ambient family's cached object.
-  **Coverage boundary:** enumerate category declarations and follow their inherited/overridden containment and helper calls, then compare every route with the original "each category" requirement. Distinguish genuine element membership at set owners explicitly. A scan of `__contains__` bodies or the original scheme complaint alone is incomplete. Earlier producer repairs must already establish their placements; this node reconciles the untouched remainder.
-  **Invariants:** category membership follows construction placement or the specified functor, not engine class, duck typing, cardinality, or an implicit walk up a base-ring tower. Distinguish category membership from genuine element membership in a mathematical set; the latter may require an exact predicate at its owner.
-  **Closure specimens:** a correctly placed object is accepted, a similarly represented object with the wrong structure is not. A QQ-scheme is not silently treated as a ZZ-scheme without the specified base passage. Check discrete categories and arrow helpers as well as the original scheme example; inspect every category containment body before closure.
-
 - [ ] **`refinement-convergence`**. **Needs:** none.
   **Owner and delta:** every remaining `refine`/placement mutation in ring, scheme, module and functor-image construction after the bootstrap repair.
   **Invariants:** defining or selected structure exists at construction; later refinement only records a genuinely newly established mathematical fact. No accessor, engine query, import order or first arithmetic operation completes initialization retroactively.
   **Closure specimens:** request categories and inherited operations in different orders for ring, scheme, module and functor-image objects and obtain the same mathematical data. Each surviving refinement identifies the later theorem and its evidence. Moving mutation behind a helper or converting it into a category flag cannot close the node.
 
-- [ ] **`probe-and-exception-residue`**. **Needs:** `membership-by-placement`, `refinement-convergence`.
+- [ ] **`probe-and-exception-residue`**. **Needs:** `refinement-convergence`.
   **Owner and delta:** all remaining `isinstance`, `getattr`, `hasattr`, `__dict__` probes and exception branches across preamble mathematics.
   **Invariants:** owned operations use the category's declared contract. Any sanctioned ingress/equality/containment or adapter probe is reviewed against its declaration; the method name alone grants no exemption from `CAT-23` or `OWN-05`. Runtime exceptions do not select an alternative mathematical algorithm; declared boundary rendering preserves the real failure.
   **Closure specimens:** supported input takes its owned route; a nearby unsupported representation fails at the stated frontier; an engine defect is not converted into a false value or another algorithm. Inspect each residual site and called helper. Search completeness is coverage evidence; replacing syntax without repairing data flow fails `DEV-68`.

@@ -32,21 +32,6 @@ The generated megadoc predates some source changes. Its placement diagnostics
 require regeneration at T before they can establish additional current findings.
 Execution ordering and closure live only in [TODO.md](TODO.md).
 
-### Group-automorphism subgroups reuse the ambient fixed-Mor family
-
-For a subgroup `H <= Aut_C(X)`, its group inclusion and action on `X` must
-retain the subgroup restriction without changing the selected `Iso_C(X,X)`.
-Source inspection finds that `GroupAutomorphismGroup._subgroup_from_engine`
-(`categories/group/groups.py`) constructs another mixed Mor/category parent with the ambient parent's
-`mor_family()` and endpoints. That family's canonical record still selects
-the full automorphism group. `MorCategories.__contains__` correctly reads the
-record, so the new parent's category role is not placed there; its independent
-group enrichment does not provide a placement in `Cat` either. Reconcile the
-subgroup representation, inclusion, inherited arrows and construction owner
-under `membership-by-placement`. This is a source finding, not an executed
-failure; changing the family record to the subgroup would instead erase the
-ambient fixed category and is not a repair.
-
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.

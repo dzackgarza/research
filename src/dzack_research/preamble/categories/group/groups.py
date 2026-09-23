@@ -24,6 +24,7 @@ from sage.groups.abelian_gps.abelian_group import (
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
 from sage.groups.indexed_free_group import IndexedFreeGroup
+from sage.groups.libgap_group import GroupLibGAP
 from sage.groups.libgap_wrapper import ParentLibGAP
 from sage.groups.matrix_gps.coxeter_group import CoxeterMatrixGroup
 from sage.groups.matrix_gps.finitely_generated import (
@@ -114,8 +115,8 @@ if "FinitelyPresentedAsGroup" not in all_axioms:
 # ``_to_subgroup_engine(element, engine_subgroup)`` and
 # ``_from_subgroup_engine(engine_element)``.  Implementers:
 # :class:`_GroupEngine`, selected privately at ``OwnedGroups``, and the
-# lattice orthogonal group and torsion-form orthogonal group on their Mor
-# parents.  Callers: the adapters in this section and the class-function,
+# group-automorphism, lattice orthogonal-group and torsion-form
+# orthogonal-group Mor parents.  Callers: the adapters in this section and the class-function,
 # character and ``G``-set adapters of this package.  Inputs and outputs are
 # owned elements on one side and the engine's elements on the other; a
 # crossing and its inverse compose to the identity on owned elements.  The
@@ -247,16 +248,12 @@ def _subgroup_from_gap(group, gap_subgroup):
     subgroup of a GAP subgroup without re-reading its generators; no public
     Sage operation constructs a subgroup from a GAP subgroup object.
     """
-    match group:
-        case _ if group in GroupAutomorphismGroups():
-            return group._subgroup_from_engine(gap_subgroup)
+    engine = _engine_group(group)
+    match engine:
+        case PermutationGroup_generic() | ParentLibGAP():
+            return _transported_subgroup(group, engine._subgroup_constructor(gap_subgroup))
         case _:
-            engine = _engine_group(group)
-            match engine:
-                case PermutationGroup_generic() | ParentLibGAP():
-                    return _transported_subgroup(group, engine._subgroup_constructor(gap_subgroup))
-                case _:
-                    assert False, f"{group} does not construct subgroups from GAP data in this engine"
+            assert False, f"{group} does not construct subgroups from GAP data in this engine"
 
 
 def _finite_order(group):
@@ -1850,11 +1847,11 @@ class GroupAutomorphism(GroupMorphism):
 
 
 class GroupAutomorphismGroups(OwnedCategory):
-    r"""Automorphism groups ``Aut(G)`` computed by GAP, and their subgroups.
+    r"""Canonical automorphism groups ``Aut(G)`` computed by GAP.
 
-    The datum is the group ``G`` whose automorphisms are the elements, held by
-    the Mor object, together with the GAP subgroup of ``Aut(G)`` when the
-    object is a proper subgroup.
+    The datum is the group ``G`` whose automorphisms are the elements. A
+    proper subgroup is instead an object of ``Subgroups(Aut(G))``, so it
+    retains its inclusion without becoming another fixed ``Iso(G,G)``.
     """
 
     def super_categories(self):
@@ -1863,9 +1860,34 @@ class GroupAutomorphismGroups(OwnedCategory):
     class ParentMethods:
         @cached_method
         def _libgap_(self):
-            if self._engine_subgroup is not None:
-                return self._engine_subgroup
             return _automorphism_gap_model(self.domain())
+
+        @cached_method
+        def _engine_group(self):
+            r"""Return the private Sage wrapper of GAP's automorphism group."""
+            return GroupLibGAP(self._libgap_())
+
+        def _to_engine(self, automorphism):
+            r"""Lower an owned automorphism through the group-engine contract."""
+            if not self.accepts(automorphism):
+                raise ValueError("the engine crossing requires an automorphism of this group")
+            return self._engine_group()(automorphism._gap_morphism_crossing())
+
+        def _from_engine(self, engine_automorphism):
+            r"""Raise one private engine element as an ambient automorphism."""
+            return self(engine_automorphism.gap(), check=False)
+
+        def _engine_subgroup_from_generators(self, generators):
+            return _engine_generated_subgroup(
+                self._engine_group(),
+                [self._to_engine(generator) for generator in generators],
+            )
+
+        def _to_subgroup_engine(self, automorphism, engine_subgroup):
+            return engine_subgroup(self._to_engine(automorphism))
+
+        def _from_subgroup_engine(self, engine_automorphism):
+            return self(engine_automorphism.gap(), check=False)
 
         def one(self):
             return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
@@ -1881,7 +1903,7 @@ class GroupAutomorphismGroups(OwnedCategory):
             )
 
         def supergroup(self):
-            return self._supergroup
+            return self
 
         def cardinality(self):
             r"""``|Aut(G)|``: from GAP for finite ``G``, from the rank for a free ``G``.
@@ -1904,8 +1926,6 @@ class GroupAutomorphismGroups(OwnedCategory):
             return super().cardinality()
 
         def _repr_(self):
-            if self._engine_subgroup is not None:
-                return f"Subgroup of Aut({self.domain()})"
             return f"Aut({self.domain()})"
 
     class ElementMethods:
@@ -1927,12 +1947,10 @@ class GroupAutomorphismGroup(GroupMor):
     Element = GroupAutomorphism
 
     @staticmethod
-    def __classcall__(cls, mor_family, group, engine_subgroup=None, supergroup=None):
-        return typecall(cls, mor_family, group, engine_subgroup=engine_subgroup, supergroup=supergroup)
+    def __classcall__(cls, mor_family, group):
+        return typecall(cls, mor_family, group)
 
-    def __init__(self, mor_family, group, engine_subgroup=None, supergroup=None):
-        self._engine_subgroup = engine_subgroup
-        self._supergroup = self if supergroup is None else supergroup
+    def __init__(self, mor_family, group):
         categories = [GroupAutomorphismGroups()]
         if group.is_finite() is True:
             categories.extend((OwnedFiniteGroups(), OwnedGroups().Framed()))
@@ -1992,15 +2010,6 @@ class GroupAutomorphismGroup(GroupMor):
         ):
             raise ValueError("the endomorphism is not invertible")
         return automorphism
-
-    def _subgroup_from_engine(self, engine_subgroup):
-        return GroupAutomorphismGroup(
-            self.mor_family(),
-            self.domain(),
-            engine_subgroup=engine_subgroup,
-            supergroup=self,
-        )
-
 
 class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
     r"""The owned group Mor for endpoints without a selected GAP realization.

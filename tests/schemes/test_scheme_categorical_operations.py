@@ -44,26 +44,24 @@ def _cusp_parametrization():
     return plane, x, y, line, t, Algebras(QQ).Associative().Unital().Commutative().spectrum()(algebra.Mor(line)({"x": t**2, "y": t**3}))
 
 
-def test_a_scheme_over_a_ring_is_a_scheme_over_every_scalar_base_of_that_ring() -> None:
+def test_scheme_membership_keeps_its_stated_scalar_base() -> None:
     plane, _algebra, _x, _y = _plane()
 
     assert plane in Schemes(QQ)
-    assert plane in Schemes(ZZ)
-    assert Schemes(ZZ) in Schemes(QQ).all_super_categories()
-    assert plane in AffineSchemes(ZZ)
-    assert plane in IntegralSchemes(ZZ)
+    assert plane not in Schemes(ZZ)
+    assert Schemes(ZZ) not in Schemes(QQ).all_super_categories()
+    assert plane not in AffineSchemes(ZZ)
+    assert plane not in IntegralSchemes(ZZ)
     assert plane in NormalSchemes(QQ)
-    # Smoothness and affine-space structure are stated relative to the base.
     assert plane in SmoothSchemes(QQ)
     assert plane not in SmoothSchemes(ZZ)
-    assert (QQ).affine_spectrum() in Schemes(ZZ)
-    assert (QQ).affine_spectrum() not in SmoothSchemes(ZZ)
 
-    structure = (QQ).affine_spectrum().structure_morphism()
-    to_integers = Schemes(ZZ).Mor((QQ).affine_spectrum(), (ZZ).affine_spectrum())
-    assert structure.domain() is (QQ).affine_spectrum()
-    assert to_integers.domain() is (QQ).affine_spectrum()
-    assert to_integers.codomain() is (ZZ).affine_spectrum()
+    rational_point = (QQ).affine_spectrum()
+    assert rational_point in Schemes(QQ)
+    assert rational_point not in Schemes(ZZ)
+    assert rational_point not in SmoothSchemes(ZZ)
+    with pytest.raises(TypeError):
+        Schemes(ZZ).Mor(rational_point, (ZZ).affine_spectrum())
 
 
 def test_a_closed_subscheme_is_placed_with_its_dimension_and_ideal_sheaf() -> None:
@@ -72,7 +70,7 @@ def test_a_closed_subscheme_is_placed_with_its_dimension_and_ideal_sheaf() -> No
     origin_on_cusp = cusp.closed_subscheme(cusp.coordinate_algebra().algebra_generator("x"))
 
     assert cusp in ClosedSubschemes(QQ)
-    assert cusp in ClosedSubschemes(ZZ)
+    assert cusp not in ClosedSubschemes(ZZ)
     assert cusp in ClosedEmbeddings(plane)
     assert plane not in ClosedSubschemes(QQ)
     assert cusp.relative_dimension() == 1
