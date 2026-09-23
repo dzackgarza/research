@@ -343,7 +343,7 @@ The first full execution of the suite since the tree stopped importing (2026-09-
 - [ ] **`test-suite-mathematical-assertions`**. **Needs:** none.
   **Owner and delta:** every test outside the protected specifications (`tests/constructions/`, `tests/user_simulations/`, `tests/conftest.py`), rewritten to the standard those specifications already follow ([`tests/constructions/CONTRIBUTING.md`](tests/constructions/CONTRIBUTING.md)).
   **Invariants:** a test is evidence that a mathematician's session works. It contains only mathematics: it takes every name from `from dzack_research.preamble.all import *`, constructs its objects through the canonical constructors -- the category applied to its data, the general category delegating to the specialized one (`Sets()` to finite, ordered or countable sets; `Modules(R)` to free, framed, finitely generated modules, modules over a PID, vector spaces) -- and asserts the invariants, objects, maps and values a source states. A test found otherwise is replaced by the mathematical claim it was reaching for, per `test-guidelines`.
-  **Observed:** 657 of the 668 files import beyond the session (internal preamble modules, Sage, SymPy); see [COMPLAINTS.md](COMPLAINTS.md#the-tests-are-written-against-internals-not-as-mathematical-sessions).
+  **Observed:** 364 of the 668 files import internal preamble modules (344) or Sage and SymPy directly (100); see [COMPLAINTS.md](COMPLAINTS.md#the-tests-are-written-against-internals-not-as-mathematical-sessions).
   **Closure:** every non-protected test file's only preamble import is the session star import, it imports no engine, and each test reads as a session: canonical construction, then mathematical assertions.
 
 - [ ] **`suite-within-time-gates`**. **Needs:** none.
