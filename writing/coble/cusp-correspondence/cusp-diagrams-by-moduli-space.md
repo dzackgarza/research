@@ -76,7 +76,7 @@ This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_
 We recall Sterk's cusp diagram for $\fent$:
 
 ::: {#fig-sterk-cusp-diagram .figure}
-\input{tikz/sterk_cusp_diagram.tex}
+\input{tikz/dissertation/cusp_diagrams/FEn2-cusp-diagram.tikz}
 
 Sterk's cusp diagram for $\fent$.
 :::

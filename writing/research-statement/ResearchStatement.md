@@ -140,7 +140,7 @@ The boundary cusp diagram of $F_{(2,2,0)}$, the moduli space of quartic hyperell
 :::
 
 ::: {#fig:sterk-cusp-diagram .figure}
-\input{tikz/sterk-cusp-diagram.tikz}
+\input{tikz/dissertation/cusp_diagrams/FEn2-cusp-diagram.tikz}
  
 The boundary cusp diagram of $F_{\operatorname{En}, 2}$, the moduli space of degree 2 numerically polarized Enriques surfaces.
 :::
