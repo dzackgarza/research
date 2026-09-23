@@ -6730,3 +6730,20 @@ Operationalize as the validated-transport specialization of the Gauss–Manin / 
 
 **Status and next specimen.** Proposed. First on-the-nose specimen is the paper's Theorem 1.3 matrices $M_{\Sigma_i}$ ($i=1..6$) — certify they equal the lattice-theoretic matrices of [5] and generate $\mathrm{Mon}\le\mathrm{O}(L)$ for the K3 lattice $L$ of this family. Second specimen is transport of the same connection along a different generating set of $\pi_1$ (e.g. a braid of $\Sigma_i$) and verification of the expected braid relations in $\mathrm{Mon}$. Subsequent specimens are any other K3 PF Pfaffian (e.g. Doran–Malmendier $L_{3,N}$) run through the same `ValidatedMonodromy` without new code.
 
+# Tamagawa Numbers
+
+Availability of $\tau(G)$ for smooth affine group schemes, computability in some cases.
+The Tamagawa measure. Smith-Minkowski-Siegel mass formula.
+$O_q(RR)$ as a compact real Lie group for $q$ definite.
+Groups $GU$, $GSp$, etc.
+Semantic double cosets.
+Orientations of R-modules (generator of $\det(R)$).
+Whitehead product and graded lie algebra structure on $\pi_*(X,x)$.
+Selmer group.
+Tate dual.
+Cyclotomic characters.
+Factorization homology.
+Recursive formulas for Weil-Petersson volumes from https://www.math.stonybrook.edu/~mlyubich/Archive/Geometry/Teichmuller%20Space/Mirz3.pdf, moduli spaces $M_{g,n}(\vec{L})$.
+$L_\infty$ algebras, formal moduli problems, $MC(\mathfrak{g})$.
+Checking prestability, semistability, stability of marked nodal curves.
+Dual graphs of pointed prestable nodal curves.
