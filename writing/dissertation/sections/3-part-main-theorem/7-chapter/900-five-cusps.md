@@ -29,22 +29,22 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 1
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {k3 cusp=1};
-\scoped[on background layer] \draw[parabolic] (A0.center) -- (A1.center) -- (A2.center) -- (A3.center) -- (A4.center) -- (A11.center);
-\scoped[on background layer] \draw[parabolic] (A6.center) -- (A7.center) -- (A0.center);
-\scoped[on background layer] \draw[parabolic] (A0.center) -- (A8.center);
-\pic[root labels] (B) at (6,0) {k3 cusp=1};
-\scoped[on background layer] \draw[parabolic] (B0.center) -- (B1.center) -- (B2.center) -- (B3.center);
-\scoped[on background layer] \draw[parabolic] (B5.center) -- (B6.center) -- (B7.center) -- (B0.center);
-\scoped[on background layer] \draw[parabolic] (B0.center) -- (B8.center);
+\pic[root labels] (A) at (0,0) {sterk cusp=1};
+\scoped[on background layer] \draw[parabolic] (A6.center) -- (A7.center) -- (A0.center) -- (A1.center) -- (A2.center) -- (A11.center);
+\scoped[on background layer] \draw[parabolic] (A4.center) -- (A5.center) -- (A6.center);
+\scoped[on background layer] \draw[parabolic] (A6.center) -- (A8.center);
+\pic[root labels] (B) at (6,0) {sterk cusp=1};
+\scoped[on background layer] \draw[parabolic] (B6.center) -- (B7.center) -- (B0.center) -- (B1.center);
+\scoped[on background layer] \draw[parabolic] (B3.center) -- (B4.center) -- (B5.center) -- (B6.center);
+\scoped[on background layer] \draw[parabolic] (B6.center) -- (B8.center);
 \scoped[on background layer] \draw[parabolic] (B10.center) -- (B11.center);
-\pic[root labels] (C) at (0,6) {k3 cusp=1};
-\scoped[on background layer] \draw[parabolic] (C0.center) -- (C1.center) -- (C2.center) -- (C3.center) -- (C4.center) -- (C5.center);
-\scoped[on background layer] \draw[parabolic] (C7.center) -- (C0.center);
-\scoped[on background layer] \draw[parabolic] (C0.center) -- (C8.center);
-\scoped[on background layer] \draw[parabolic] (C11.center) -- (C4.center);
-\pic[root labels] (D) at (6,6) {k3 cusp=1};
-\scoped[on background layer] \draw[parabolic] (D0.center) -- (D1.center) -- (D2.center) -- (D3.center) -- (D4.center) -- (D5.center) -- (D6.center) -- (D7.center) -- (D0.center);
+\pic[root labels] (C) at (0,6) {sterk cusp=1};
+\scoped[on background layer] \draw[parabolic] (C6.center) -- (C7.center) -- (C0.center) -- (C1.center) -- (C2.center) -- (C3.center);
+\scoped[on background layer] \draw[parabolic] (C5.center) -- (C6.center);
+\scoped[on background layer] \draw[parabolic] (C6.center) -- (C8.center);
+\scoped[on background layer] \draw[parabolic] (C11.center) -- (C2.center);
+\pic[root labels] (D) at (6,6) {sterk cusp=1};
+\scoped[on background layer] \draw[parabolic] (D6.center) -- (D7.center) -- (D0.center) -- (D1.center) -- (D2.center) -- (D3.center) -- (D4.center) -- (D5.center) -- (D6.center);
 \scoped[on background layer] \draw[parabolic] (D9.center) -- (D10.center);
 \end{tikzpicture}
 
@@ -63,10 +63,10 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 2
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {k3 cusp=2};
-\scoped[on background layer] \draw[parabolic] (A8.center) -- (A6.center) -- (A9.center) -- (A6.center) -- (A1.center);
-\pic[root labels] (B) at (4,0) {k3 cusp=2};
-\scoped[on background layer] \draw[parabolic] (B7.center) -- (B6.center) -- (B9.center) -- (B6.center) -- (B0.center);
+\pic[root labels] (A) at (0,0) {sterk cusp=2};
+\scoped[on background layer] \draw[parabolic] (A0.center) -- (A2.center) -- (A9.center) -- (A2.center) -- (A7.center);
+\pic[root labels] (B) at (4,0) {sterk cusp=2};
+\scoped[on background layer] \draw[parabolic] (B1.center) -- (B2.center) -- (B9.center) -- (B2.center) -- (B8.center);
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$ of $\fen$; $\Gamma(\mcz_0) = \DD^2$.
@@ -84,19 +84,19 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 3
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {k3 cusp=3};
-\scoped[on background layer] \draw[parabolic] (A2.center) -- (A3.center) -- (A4.center) -- (A5.center) -- (A6.center) -- (A7.center) -- (A8.center);
-\scoped[on background layer] \draw[parabolic] (A5.center) -- (A9.center);
+\pic[root labels] (A) at (0,0) {sterk cusp=3};
+\scoped[on background layer] \draw[parabolic] (A1.center) -- (A2.center) -- (A3.center) -- (A4.center) -- (A5.center) -- (A6.center) -- (A7.center);
+\scoped[on background layer] \draw[parabolic] (A4.center) -- (A9.center);
 \scoped[on background layer] \draw[parabolic] (A10.center) -- (A11.center);
-\pic[root labels] (B) at (5,0) {k3 cusp=3};
-\scoped[on background layer] \draw[parabolic] (B2.center) -- (B3.center) -- (B4.center) -- (B5.center) -- (B6.center) -- (B7.center) -- (B8.center);
-\scoped[on background layer] \draw[parabolic] (B5.center) -- (B9.center);
-\scoped[on background layer] \draw[parabolic] (B8.center) -- (B1.center);
-\scoped[on background layer] \draw[parabolic] (B2.center) -- (B0.center);
-\pic[root labels] (C) at (10,0) {k3 cusp=3};
-\scoped[on background layer] \draw[parabolic] (C9.center) -- (C5.center) -- (C6.center) -- (C5.center) -- (C4.center) -- (C0.center);
-\scoped[on background layer] \draw[parabolic] (C8.center) -- (C1.center);
-\scoped[on background layer] \draw[parabolic] (C11.center) -- (C1.center);
+\pic[root labels] (B) at (6.5,0) {sterk cusp=3};
+\scoped[on background layer] \draw[parabolic] (B1.center) -- (B2.center) -- (B3.center) -- (B4.center) -- (B5.center) -- (B6.center) -- (B7.center);
+\scoped[on background layer] \draw[parabolic] (B4.center) -- (B9.center);
+\scoped[on background layer] \draw[parabolic] (B7.center) -- (B8.center);
+\scoped[on background layer] \draw[parabolic] (B1.center) -- (B0.center);
+\pic[root labels] (C) at (13,0) {sterk cusp=3};
+\scoped[on background layer] \draw[parabolic] (C9.center) -- (C4.center) -- (C5.center) -- (C4.center) -- (C3.center) -- (C0.center);
+\scoped[on background layer] \draw[parabolic] (C7.center) -- (C8.center);
+\scoped[on background layer] \draw[parabolic] (C11.center) -- (C8.center);
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
@@ -114,18 +114,18 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 4
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {k3 cusp=4};
+\pic[root labels] (A) at (0,0) {sterk cusp=4};
 \scoped[on background layer] \draw[parabolic] (A1.center) -- (A2.center) -- (A3.center) -- (A4.center) -- (A5.center) -- (A6.center) -- (A7.center);
 \scoped[on background layer] \draw[parabolic] (A2.center) -- (A9.center);
 \scoped[on background layer] \draw[parabolic] (A6.center) -- (A10.center);
-\pic[root labels] (B) at (6,0) {k3 cusp=4};
+\pic[root labels] (B) at (6,0) {sterk cusp=4};
 \scoped[on background layer] \draw[parabolic] (B1.center) -- (B0.center);
 \scoped[on background layer] \draw[parabolic] (B1.center) -- (B2.center) -- (B3.center) -- (B4.center) -- (B5.center) -- (B6.center) -- (B7.center);
 \scoped[on background layer] \draw[parabolic] (B6.center) -- (B10.center);
-\pic[root labels] (C) at (0,6) {k3 cusp=4};
+\pic[root labels] (C) at (0,6) {sterk cusp=4};
 \scoped[on background layer] \draw[parabolic] (C1.center) -- (C0.center);
 \scoped[on background layer] \draw[parabolic] (C1.center) -- (C2.center) -- (C3.center) -- (C4.center) -- (C5.center) -- (C6.center) -- (C7.center) -- (C8.center);
-\pic[root labels] (D) at (6,6) {k3 cusp=4};
+\pic[root labels] (D) at (6,6) {sterk cusp=4};
 \scoped[on background layer] \draw[parabolic] (D1.center) -- (D0.center);
 \scoped[on background layer] \draw[parabolic] (D1.center) -- (D2.center) -- (D3.center);
 \scoped[on background layer] \draw[parabolic] (D5.center) -- (D6.center) -- (D7.center) -- (D8.center);
@@ -148,37 +148,37 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 5
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {k3 cusp=5};
+\pic[root labels] (A) at (0,0) {sterk cusp=5};
 \scoped[on background layer] \draw[parabolic] (A0.center) -- (A1.center) -- (A2.center) -- (A3.center) -- (A4.center) -- (A5.center) -- (A6.center) -- (A7.center) -- (A0.center);
-\scoped[on background layer] \draw[parabolic] (A12.center) -- (A13.center);
-\pic[root labels] (B) at (6,0) {k3 cusp=5};
+\scoped[on background layer] \draw[parabolic] (A13.center) -- (A12.center);
+\pic[root labels] (B) at (6,0) {sterk cusp=5};
 \scoped[on background layer] \draw[parabolic] (B0.center) -- (B1.center) -- (B2.center) -- (B3.center) -- (B4.center) -- (B5.center) -- (B6.center) -- (B7.center) -- (B0.center);
 \scoped[on background layer] \draw[parabolic] (B2.center) -- (B9.center);
 \scoped[on background layer] \draw[parabolic] (B4.center) -- (B10.center);
-\pic[root labels] (C) at (12,0) {k3 cusp=5};
+\pic[root labels] (C) at (12,0) {sterk cusp=5};
 \scoped[on background layer] \draw[parabolic] (C0.center) -- (C1.center) -- (C2.center);
 \scoped[on background layer] \draw[parabolic] (C4.center) -- (C10.center);
 \scoped[on background layer] \draw[parabolic] (C6.center) -- (C7.center) -- (C0.center);
 \scoped[on background layer] \draw[parabolic] (C2.center) -- (C9.center);
 \scoped[on background layer] \draw[parabolic] (C6.center) -- (C11.center);
-\scoped[on background layer] \draw[parabolic] (C12.center) -- (C13.center);
-\scoped[on background layer] \draw[parabolic] (C9.center) -- (C12.center);
-\scoped[on background layer] \draw[parabolic] (C11.center) -- (C12.center);
-\scoped[on background layer] \draw[parabolic] (C10.center) -- (C13.center);
-\pic[root labels] (D) at (4,6) {k3 cusp=5};
+\scoped[on background layer] \draw[parabolic] (C13.center) -- (C12.center);
+\scoped[on background layer] \draw[parabolic] (C9.center) -- (C13.center);
+\scoped[on background layer] \draw[parabolic] (C11.center) -- (C13.center);
+\scoped[on background layer] \draw[parabolic] (C10.center) -- (C12.center);
+\pic[root labels] (D) at (4,6) {sterk cusp=5};
 \scoped[on background layer] \draw[parabolic] (D2.center) -- (D3.center) -- (D4.center);
 \scoped[on background layer] \draw[parabolic] (D6.center) -- (D7.center) -- (D0.center);
 \scoped[on background layer] \draw[parabolic] (D0.center) -- (D8.center);
 \scoped[on background layer] \draw[parabolic] (D2.center) -- (D9.center);
 \scoped[on background layer] \draw[parabolic] (D4.center) -- (D10.center);
 \scoped[on background layer] \draw[parabolic] (D6.center) -- (D11.center);
-\pic[root labels] (E) at (10,6) {k3 cusp=5};
+\pic[root labels] (E) at (10,6) {sterk cusp=5};
 \scoped[on background layer] \draw[parabolic] (E1.center) -- (E2.center) -- (E3.center);
 \scoped[on background layer] \draw[parabolic] (E5.center) -- (E6.center) -- (E7.center);
 \scoped[on background layer] \draw[parabolic] (E2.center) -- (E9.center);
 \scoped[on background layer] \draw[parabolic] (E6.center) -- (E11.center);
-\scoped[on background layer] \draw[parabolic] (E8.center) -- (E13.center);
-\scoped[on background layer] \draw[parabolic] (E10.center) -- (E13.center);
+\scoped[on background layer] \draw[parabolic] (E8.center) -- (E12.center);
+\scoped[on background layer] \draw[parabolic] (E10.center) -- (E12.center);
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.

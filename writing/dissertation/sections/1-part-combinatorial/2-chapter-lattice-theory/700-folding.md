@@ -45,68 +45,25 @@ In the study of $\fent$, the folding procedure must be carried out more carefull
 In order to make this theory concrete, we now show how to explicitly carry out the types of folding calculations that occur for $\fent$, as well as for some of the exceptional types that do not occur in this specific case, noting the slightly new features that arise (like tracking twists) arise, causing some slight differences in conventions from the presentations of folding given in classical literature.
 ::: {#fig-classical-dynkin-foldings .figure}
 \begin{tikzpicture}
-  % Grid 1 - Top Left Quadrant
-  \begin{scope}[shift={(0,10)}]
-    % A3
-    \begin{scope}[shift={(0,4)}]
-      \dynkin[scale=4, involutions={13}, mark=o, labels*={1,2,3}, label macro*/.code={\alpha_{#1}}, label distance=8pt]A3
-      \node at (-0.3,0) {\Large $A_3$};
-    \end{scope}
-
-    % D4 (first variant)
-    \begin{scope}[shift={(6,4)}]
-      \dynkin[scale=4, involutions={43}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4}, label directions={above,above left,above right,below right,}, label distance=4pt]D4
-      \node at (-0.3,0) {\Large $D_4$};
-    \end{scope}
-
-    % Arrows
-    \draw[quotient map] (1.4,3) -- (1.4,0.5);
-    \draw[quotient map] (7.4,3) -- (7.4,0.5);
-
-    % C2
-    \begin{scope}[shift={(0,0)}]
-      \dynkin[scale=4, arrows=false, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt] C{o*}
-      \node at (-0.3,0) {\Large $C_2$};
-    \end{scope}
-
-    % B3
-    \begin{scope}[shift={(6,0)}]
-      \dynkin[scale=4, arrows=false, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt] B{oo*}
-      \node at (-0.3,0) {\Large $B_3$};
-    \end{scope}
-  \end{scope}
-
-  % Grid 2 - Bottom Left Quadrant
-  \begin{scope}[shift={(0,0)}]
-    % D4 (second variant)
-    \begin{scope}[shift={(0,4)}]
-      \dynkin[scale=4, involutions={[out=-30,in=-150,relative, -stealth]14;[out=30,in=150,stealth-,relative]13;[out=60, in=120,stealth-,relative]34}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4}, label directions={left,above left,above right,below right,}, label distance=8pt]D4
-      \node at (-0.3,0) {\Large $D_4$};
-    \end{scope}
-
-    % E6
-    \begin{scope}[shift={(6,4)}]
-      \dynkin[scale=4, involutions={[out=-60,in=-120,relative]16;[out=-70,in=-110,relative]35}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6}, label directions={above,above,above,below,above,above}, label distance=8pt]E6
-      \node at (-0.3,0) {\Large $E_6$};
-    \end{scope}
-
-    % Arrows
-    \draw[quotient map] (1.4,3) -- (1.4,0.5);
-    \draw[quotient map] (8.75,3) -- (8.75,0.5);
-
-    % G2
-    \begin{scope}[shift={(0,0)}]
-      \dynkin[scale=4, arrows=false, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt] G{*o}
-      \node at (-0.3,0) {\Large $G_2$};
-    \end{scope}
-
-    % F4
-    \begin{scope}[shift={(6,0)}]
-      \dynkin[scale=4, arrows=false, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt] F{oo**}
-      \node at (-0.3,0) {\Large $F_4$};
-    \end{scope}
-  \end{scope}
-
+  \pic (P) at (0,0) {dynkin folding={involutions={13}, mark=o,
+    labels={\alpha_1,\alpha_2,\alpha_3}, label distance=8pt}{A3}{mark=*,
+    labels={\beta_{[\alpha_1]},\beta_{[\alpha_2]}}, label distance=8pt}{C{o*}}};
+  \pic (Q) at (7,0) {dynkin folding={involutions={43}, mark=o,
+    labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4},
+    label directions={above,above left,above right,below right}, label distance=4pt}{D4}{mark=*,
+    labels={\beta_{[\alpha_1]},\beta_{[\alpha_2]},\beta_{[\alpha_3]}}, label distance=8pt}{B{oo*}}};
+  \pic (R) at (0,-6) {dynkin folding={involutions={[out=-30,in=-150,relative,-stealth]14;[out=30,in=150,stealth-,relative]13;[out=60,in=120,stealth-,relative]34},
+    mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4},
+    label directions={left,above left,above right,below right}, label distance=8pt}{D4}{mark=*,
+    labels={\beta_{[\alpha_1]},\beta_{[\alpha_2]}}, label distance=8pt}{G{*o}}};
+  \pic (S) at (7,-6) {dynkin folding={involutions={[out=-60,in=-120,relative]16;[out=-70,in=-110,relative]35},
+    mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6},
+    label directions={above,above,above,below,above,above}, label distance=8pt}{E6}{mark=*,
+    labels={\beta_{[\alpha_1]},\beta_{[\alpha_2]},\beta_{[\alpha_3]},\beta_{[\alpha_4]}}, label distance=8pt}{F{oo**}}};
+  \foreach \p/\a/\b in {P/A_3/C_2, Q/D_4/B_3, R/D_4/G_2, S/E_6/F_4} {
+    \node[left] at (\p unfolded.west) {\Large $\a$};
+    \node[left] at (\p folded.west) {\Large $\b$};
+  }
 \end{tikzpicture}
 
 Classical foldings of simply-laced Dynkin diagrams to the corresponding non-simply-laced diagrams.
@@ -201,57 +158,17 @@ One can see the equivalence of these root systems by noting that the Coxeter dia
 
 ::: {#fig-a5-fold-c3 .figure}
 \begin{tikzpicture}
-
-% Left half: A5^G
-\begin{scope}[shift={(0,0)}]
-\node[circle, draw, fill=blue!30, minimum size=8mm] (n0) at (0.00, 0.00) {};
-\node at (0.00, 0.80) {$\beta_{ [\alpha_1] }^2 = 4$};
-\node[circle, draw, fill=blue!30, minimum size=8mm] (n1) at (2.00, 0.00) {};
-\node at (2.00, 0.80) {$\beta_{ [\alpha_2] }^2 = 4$};
-\node[circle, draw, fill=white, minimum size=8mm] (n2) at (4.00, 0.00) {};
-\node at (4.00, 0.80) {$\beta_{ [\alpha_3] }^2 = 2$};
-\draw (n0) -- (n1);
-\draw[transform canvas={yshift=1.5pt}] (n0) -- (n1);
-\node at ($(n0)!0.5!(n1)$) [above=0.2cm] {4};
-\draw (n1) -- (n2);
-\draw[transform canvas={yshift=1.5pt}] (n1) -- (n2);
-\node at ($(n1)!0.5!(n2)$) [above=0.2cm] {4};
-\node at (2.00, 2.0) {\Large \textbf{$A_5^G$}};
-\end{scope}
-
-% Right half
-\begin{scope}[shift={(8,0)}]
-  % Top: C3
-  \begin{scope}[shift={(0,2.5)}]
-  \node[circle, draw, fill=white, minimum size=8mm] (m0) at (0.00, 0.00) {};
-  \node at (0.00, 0.80) {$\alpha_{1}^2 = 2$};
-  \node[circle, draw, fill=white, minimum size=8mm] (m1) at (2.00, 0.00) {};
-  \node at (2.00, 0.80) {$\alpha_{2}^2 = 2$};
-  \node[circle, draw, fill=red!30, minimum size=8mm] (m2) at (4.00, 0.00) {};
-  \node at (4.00, 0.80) {$\alpha_{3}^2 = 1$};
-  \draw (m0) -- (m1) node[midway, above] {3};
-  \draw (m1) -- (m2) node[midway, above] {3};
-  \node at (2.00, 2.0) {\Large \textbf{$C_3$}};
-  \end{scope}
-
-  % Bottom: C3(2)
-  \begin{scope}[shift={(0,-2.5)}]
-  \node[circle, draw, fill=blue!30, minimum size=8mm] (p0) at (0.00, 0.00) {};
-  \node at (0.00, 0.80) {$\alpha_{1}^2 = 4$};
-  \node[circle, draw, fill=blue!30, minimum size=8mm] (p1) at (2.00, 0.00) {};
-  \node at (2.00, 0.80) {$\alpha_{2}^2 = 4$};
-  \node[circle, draw, fill=white, minimum size=8mm] (p2) at (4.00, 0.00) {};
-  \node at (4.00, 0.80) {$\alpha_{3}^2 = 2$};
-  \draw (p0) -- (p1);
-  \draw[transform canvas={yshift=1.5pt}] (p0) -- (p1);
-  \node at ($(p0)!0.5!(p1)$) [above=0.2cm] {4};
-  \draw (p1) -- (p2);
-  \draw[transform canvas={yshift=1.5pt}] (p1) -- (p2);
-  \node at ($(p1)!0.5!(p2)$) [above=0.2cm] {4};
-  \node at (2.00, 2.0) {\Large \textbf{$C_3(2)$}};
-  \end{scope}
-\end{scope}
-
+% Edge weights from the Gram matrices above: beta_1 beta_2 has cos^2 = 1/4 (m = 3)
+% and beta_2 beta_3 has cos^2 = 1/2 (m = 4) in all three diagrams.
+\pic (G) at (0,0) {root chain={black/\beta_{[\alpha_1]}^2 = 4/3, black/\beta_{[\alpha_2]}^2 = 4/4,
+  white/\beta_{[\alpha_3]}^2 = 2/}};
+\node at (1.5,1.2) {\Large $A_5^G$};
+\pic (C) at (6,2) {root chain={white/\alpha_1^2 = 2/3, white/\alpha_2^2 = 2/4,
+  white/\alpha_3^2 = 1/}};
+\node at (7.5,3.2) {\Large $C_3$};
+\pic (D) at (6,-2) {root chain={black/\alpha_1^2 = 4/3, black/\alpha_2^2 = 4/4,
+  white/\alpha_3^2 = 2/}};
+\node at (7.5,-0.8) {\Large $C_3(2)$};
 \end{tikzpicture}
 
 The folded root system $A_5^G$ compared with $C_3$ and its scaled form $C_3(2)$.
@@ -336,37 +253,12 @@ One can again see the equivalence by noting the isomorphism of Coxeter diagrams:
 
 ::: {#fig-d4-fold-c3 .figure}
 \begin{tikzpicture}
-
-% First diagram: D4^G
-\begin{scope}[shift={(0,0)}]
-\node[circle, draw, fill=white, minimum size=8mm] (n0) at (0.00, 0.00) {};
-\node at (0.00, 0.80) {$\beta_{[\alpha_1]}^2=2$};
-\node[circle, draw, fill=white, minimum size=8mm] (n1) at (2.00, 0.00) {};
-\node at (2.00, 0.80) {$ \beta_{[\alpha_2]}^2 = 2$};
-\node[circle, draw, fill=blue!30, minimum size=8mm] (n2) at (4.00, 0.00) {};
-\node at (4.00, 0.80) {$\beta_{[\alpha_3]}^2 = 4$};
-\draw (n0) -- (n1) node[midway, above] {3};
-\draw (n1) -- (n2);
-\draw[transform canvas={yshift=1.5pt}] (n1) -- (n2);
-\node at ($(n1)!0.5!(n2)$) [above=0.2cm] {4};
-\node at (2.00, 2.0) {\Large \textbf{$D_4^G$}};
-\end{scope}
-
-% Second diagram: C3
-\begin{scope}[shift={(6,0)}]
-\node[circle, draw, fill=white, minimum size=8mm] (m0) at (0.00, 0.00) {};
-\node at (0.00, 0.80) {$\alpha_{1}^2 = 2$};
-\node[circle, draw, fill=white, minimum size=8mm] (m1) at (2.00, 0.00) {};
-\node at (2.00, 0.80) {$\alpha_{2}^2 = 2$};
-\node[circle, draw, fill=blue!30, minimum size=8mm] (m2) at (4.00, 0.00) {};
-\node at (4.00, 0.80) {$\alpha_{3}^2 = 4$};
-\draw (m0) -- (m1) node[midway, above] {3};
-\draw (m1) -- (m2);
-\draw[transform canvas={yshift=1.5pt}] (m1) -- (m2);
-\node at ($(m1)!0.5!(m2)$) [above=0.2cm] {4};
-\node at (2.00, 2.0) {\Large \textbf{$C_3$}};
-\end{scope}
-
+\pic (G) at (0,0) {root chain={white/\beta_{[\alpha_1]}^2 = 2/3, white/\beta_{[\alpha_2]}^2 = 2/4,
+  black/\beta_{[\alpha_3]}^2 = 4/}};
+\node at (1.5,1.2) {\Large $D_4^G$};
+\pic (C) at (6,0) {root chain={white/\alpha_1^2 = 2/3, white/\alpha_2^2 = 2/4,
+  black/\alpha_3^2 = 4/}};
+\node at (7.5,1.2) {\Large $C_3$};
 \end{tikzpicture}
 
 The folded root system $D_4^G$ compared with the Coxeter diagram of $C_3$.

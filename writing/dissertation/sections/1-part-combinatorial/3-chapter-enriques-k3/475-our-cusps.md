@@ -436,39 +436,15 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
 :::{#fig:fent-five-cusp-coverings .figure}
 
 \begin{tikzpicture}
-% First row: the five cusps. Second row: their K3 covers with the involution.
-\foreach \n in {1,...,5}
-  \pic at ({5*(\n-1)},0) {k3 cusp=\n};
-
-% Cover 1: rotation by 180 degrees
-\pic[root labels=index] at (0,6) {k3 cusp=6};
-\draw[fold, ->] (2,8) ++(-0.9,0) arc[start angle=-180, end angle=0, radius=0.9];
-\draw[fold, ->] (2,8) ++(0.9,0) arc[start angle=0, end angle=180, radius=0.9];
-
-% Cover 2: vertical reflection
-\pic[root labels=index] at (5,6) {k3 cusp=2 cover};
-\draw[fold axis] (7,5.5) -- (7,10.2);
-\draw[fold] (6.4,8) -- (7.6,8);
-
-% Cover 3: diagonal reflection composed with the reflection in root 20
-\pic[root labels=index] (R) at (10,6) {k3 cusp=6};
-\draw[fold axis] (9.8,5.8) -- (14.2,10.2);
-\draw[fold] (11.5,9.5) -- (13.5,7.5);
-\node[reflected root] at (R20) {};
-
-% Cover 4: horizontal reflection
-\pic[root labels=index] at (15,6) {k3 cusp=6};
-\draw[fold axis] (15,8) -- (19,8);
-\draw[fold] (17.5,6.75) -- (17.5,9.25);
-
-% Cover 5: reflections in the eight odd perimeter roots
-\pic[root labels=index] (T) at (20,6) {k3 cusp=6};
-\foreach \k in {1,3,...,15}
-  \node[reflected root] at (T\k) {};
-
-\foreach \i/\name in {0/1,5/2,10/3,15/4,20/5} {
-  \node[below] at (\i+2,-0.5) {Cusp \name};
-  \node[above] at (\i+2,10.5) {Cover \name};
+% First row: the five cusps. Second row: their K3 covers with the involution J_k.
+\foreach \n/\x/\pos in {1/0/{(0,4)}, 2/8.5/{(13.1,0)}, 3/17/{(17,1)}, 4/25.5/{(25.5,0)},
+    5/34/{(34,4)}} {
+  \pic[root labels=none] at \pos {sterk cusp=\n};
+  \pic[root labels=index] at (\x,7) {sterk cusp cover=\n};
+}
+\foreach \x/\c/\name in {0/2/1, 8.5/3.6/2, 17/2.5/3, 25.5/2/4, 34/2/5} {
+  \node[below] at (\x+\c,-0.7) {Cusp \name};
+  \node[above] at (\x+\c,14) {Cover \name};
 }
 \end{tikzpicture}
 The five 0-cusps $\eta_i$ in $\fent$, along with the five "covering" relations: each corresponds to one of the two 0-cusps of $\fttz$, along with an involution specific to each $\eta_i$.
