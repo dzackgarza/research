@@ -48,55 +48,7 @@ The resulting polygon is as follows:
 The full polygon $B(\lambda)$ is then obtained by gluing together two copies of this polygon along the blue equator, where a representation of the doubled polygon is depicted in [@AEGS25, Fig. 13]. Taking the star at each vertex yields a semitoric surface.
 :::
 
-\begin{tikzpicture}
-\coordinate (d1) at (0, 0);
-\coordinate (d2) at (3, -3);   % (0,0) + (3,-3)
-\coordinate (d3) at (5, -1);   % (3,-3) + (2,2)
-\coordinate (d4) at (2, 2);    % (5,-1) + (-3,3)
-% Back to start: (2,2) + (-2,-2) = (0,0) ✓
-\fill[teal!30!white] (d1) -- ++(1,-1) -- ++(1,0) -- ++(0, -1) -- (d2) -- ++(0,2) -- ++(-1, 0) -- ++(0, 1) -- cycle;
-% \draw (0,0) -- ++(1,1) -- ++(1,-1) -- ++(1,1);
-\draw[red, dashed, line width=1.5pt] (d1) -- ++(2,0) -- (d4);
-\draw[red, dashed, line width=1.5pt] (d2) -- ++(0, 2) -- ++(2, 0);
-\draw (d1) -- ++(4,0);
-\draw ($(d1) + (1,1)$) -- ++ (2,0);
-\draw ($(d1) + (1,-1)$) -- ++ (4,0);
-\draw ($(d1) + (2,-2)$) -- ++ (2,0);
-\draw ($(d1) + (1,1)$) -- ++ (3,-3);
-\draw ($(d1) + (1,1)$) -- ++ (0,-2);
-\draw (d4) -- ++(0, -4);
-\draw ( $(d4) + (1,-1)$ ) -- ++(0, -4);
-\draw ( $(d4) + (2,-2)$ ) -- ++(0, -2);
-\draw[red, dashed, line width=1.5pt] (d4) -- ++(0, -3) -- (d3);
-% Four greenish shaded squares
-%\fill[green!30!gray, opacity=0.3] (2,-1) rectangle (2.5,-0.5);
-%\fill[green!30!gray, opacity=0.3] (2.5,-1) rectangle (3,-0.5);
-%\fill[green!30!gray, opacity=0.3] (2,-0.5) rectangle (2.5,0);
-%\fill[green!30!gray, opacity=0.3] (2.5,-0.5) rectangle (3,0);
-\coordinate (d11) at (1,-1);
-\coordinate (d12) at (2, -2);
-% Orange dashed diagonal lines  
-\draw[orange, dotted, line width=1pt] (0, -3) -- (5, 2);
-% Black dashed diamond frame
-\draw[blue, thick, dashed] (d1) -- (d2) -- (d3) -- (d4) -- cycle;
-% Main black nodes (inner square vertices and center)
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at (d1) {};
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at ($(d1) + (1,-1)$) {};
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at ($(d1) + (1,0)$) {};
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at ($(d1) + (2,0)$) {};
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at ($(d1) + (2,-1)$) {};
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at (d2) {};
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at ($(d2) + (0,1)$) {};
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at ($(d2) + (0,2)$) {};
-\node[circle, fill=black!80, inner sep=1.5pt] (nbl) at ($(d2) + (-1,1)$) {};
-% Labels for red triangles
-\node[red, font=\small] at ($(d1) + (2.2,0.2)$) {2};
-\node[regular polygon, regular polygon sides=3, fill=red, inner sep=1.5pt] (r1) at ($(d1) + (2.0,0.0)$) {};
-\node[red, font=\small] at ($(d2) + (0.2,2.2)$) {2};
-\node[regular polygon, regular polygon sides=3, fill=red, inner sep=1.5pt] (r1) at ($(d2) + (0.0,2.0)$) {};
-\node[red, font=\small] at ($(d2) + (0.4,0.2)$) {8};
-\node[regular polygon, regular polygon sides=3, fill=red, inner sep=1.5pt] (r1) at ($(d2) + (0,0)$) {};
-\end{tikzpicture}
+\input{tikz/ias_eta3_polygon.tex}
 
 The integral-affine polygon associated to the third cusp $\eta_3$ after the indicated Symington surgeries.
 

@@ -96,7 +96,7 @@ The figures below were drawn for this construction but their accompanying text h
 ::: {#fig-sterk2-ias .figure}
 \input{tikz/sterk2_ias_singularities.tex}
 
-An integral affine structure for Sterk 2 drawn in the plane: five integral affine singularities are marked $\times$, solid segments carry the triangulation and dashed segments the boundary of the region.
+An integral affine structure for Sterk 2 drawn in the plane: five integral affine singularities are marked with their multiplicities, solid segments carry the triangulation of the shaded region and dashed segments the lattice lines outside it.
 :::
 
 ::: {#fig-ias2-disc-slice .figure}
@@ -118,7 +118,7 @@ A triangulated integral affine polytope with its charge distribution, in the dir
 :::
 
 ::: {#fig-symington-16gon .figure}
-\input{tikz/fig_symington_16gon.tex}
+\input{tikz/ias_eta3_polygon.tex}
 
 The same polytope after Symington surgeries, marked in red along the boundary.
 :::
