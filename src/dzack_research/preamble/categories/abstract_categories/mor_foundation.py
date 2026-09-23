@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from sage.categories.category import Category
-from sage.categories.mor import Mor as SageMor
+from sage.categories.homset import Homset as SageHomset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
 
-class OwnedMor(SageMor):
+class OwnedMor(SageHomset):
     r"""A Mor object whose elements enter through its owned constructor directly.
 
     Sage's ``Mor`` remains the runtime parent required by ``Morphism``.
@@ -35,7 +35,7 @@ class UnderlyingSetMor(OwnedMor):
     Element = SetMorphism
 
     def __init__(self, domain: Parent, codomain: Parent) -> None:
-        SageMor.__init__(self, domain, codomain, category=SageSets())
+        SageHomset.__init__(self, domain, codomain, category=SageSets())
 
     def _element_constructor_(self, datum):
         if isinstance(datum, SetMorphism):

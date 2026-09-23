@@ -31,7 +31,7 @@ from __future__ import annotations
 from typing import Any
 
 from sage.categories.category import Category
-from sage.categories.mor import Hom as SageHom, Mor as SageMor
+from sage.categories.homset import Hom as SageHom, Homset as SageHomset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects as SageObjects
 from sage.categories.sets_cat import Sets as SageSets
@@ -51,7 +51,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
     _underlying_set_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
-from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 from dzack_research.preamble.owned_category import _object_of
@@ -67,7 +66,7 @@ def _category_mor(
     category: Category | None,
     domain: Parent,
     codomain: Parent,
-) -> FixedMorObject | SageMor:
+) -> FixedMorObject | SageHomset:
     r"""The complete selected Mor, including any defining arrow predicate.
 
     Mathematical admission uses this object's ``accepts`` operation via
@@ -131,7 +130,7 @@ def _category_mor_parent(
     category: Category | None,
     domain: Parent,
     codomain: Parent,
-) -> SageMor:
+) -> SageHomset:
     r"""Return the declared Mor object for an explicitly selected category.
 
     Selecting ``C`` must not forget its structure: linear, algebra and equivariant maps are
@@ -322,7 +321,7 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
         # explicitly, so the runtime method spine stays at Objects().
         self._super_categories_for_classes = [SageObjects()]
         Category.__init__(self)
-        SageMor.__init__(
+        SageHomset.__init__(
             self,
             domain,
             codomain,
@@ -1132,6 +1131,8 @@ class CategoryPacket:
         return self._auts
 
     def super_packets(self):
+        from dzack_research.preamble.categories.sets.finite_families import finite_family
+
         return finite_family(
             (
                 _category_packet(category)

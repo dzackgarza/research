@@ -13,7 +13,7 @@ adjunction supplies the actual Mor bijection, unit, and counit on that
 executable subdomain.
 """
 
-from sage.categories.mor import Hom as _SageHom
+from sage.categories.homset import Hom as _SageHom
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function

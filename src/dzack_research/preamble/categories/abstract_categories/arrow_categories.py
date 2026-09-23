@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import Any
 
 from sage.categories.category import Category
-from sage.categories.mor import Mor as SageMor
+from sage.categories.homset import Homset as SageHomset
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
@@ -1276,7 +1276,7 @@ class CoveredObjectCategory(CosliceCategory):
 class FixedWideMorCategory(FixedRestrictedMorCategory):
     r"""The selected arrows in one existing Mor of the underlying category."""
 
-    def arrow_set(self) -> SageMor:
+    def arrow_set(self) -> SageHomset:
         return _category_mor_parent(
             self.base_category().base_category(),
             self.domain_object(),

@@ -1,7 +1,7 @@
 import pytest
 
 from sage.misc.unknown import Unknown
-from sage.categories.mor import Mor
+from sage.categories.homset import Homset
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
 from dzack_research.preamble.all import GF, QQ, QuadraticField
@@ -94,7 +94,7 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
 
     field_endomorphisms = group.arrow_set()
     assert field_endomorphisms is group.field_automorphism_mor()
-    assert not isinstance(group, Mor)
+    assert not isinstance(group, Homset)
     assert frobenius.as_morphism().parent() is field_endomorphisms
     assert frobenius.as_morphism() is frobenius.as_morphism()
     assert "_preamble_underlying_field_morphism" not in frobenius.__dict__

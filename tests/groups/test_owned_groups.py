@@ -1,7 +1,7 @@
 from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.all import GF, ZZ, Groups
-from dzack_research.preamble.categories.group import (
+from dzack_research.preamble.groups import (
     Groups,
     GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,

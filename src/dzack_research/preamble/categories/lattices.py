@@ -1119,7 +1119,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             lattices = Lattices(self.base_ring())
             if category is None or category.is_subcategory(lattices):
                 return _lattice_mor(self, codomain)
-            from sage.categories.mor import Hom as SageHom
+            from sage.categories.homset import Hom as SageHom
 
             return SageHom(self, codomain, category)
 

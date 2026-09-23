@@ -86,9 +86,9 @@ from sage.categories.filtered_modules import (
 from sage.categories.graded_modules import (
     GradedModulesCategory as SageGradedModulesCategory,
 )
-from sage.categories.mors import Mors as SageMors
-from sage.categories.mors import MorsCategory as SageMorsCategory
-from sage.categories.mors import MorsOf as SageMorsOf
+from sage.categories.homsets import Homsets as SageHomsets
+from sage.categories.homsets import HomsetsCategory as SageHomsetsCategory
+from sage.categories.homsets import HomsetsOf as SageHomsetsOf
 from sage.categories.isomorphic_objects import (
     IsomorphicObjectsCategory as SageIsomorphicObjectsCategory,
 )
@@ -335,7 +335,7 @@ class Category_ideal(
 
 
 class MorCategoryConstruction(
-    OwnedCategoryMixin, OwnedCategoryObject, SageMorsCategory, Parent
+    OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsCategory, Parent
 ):
     r"""Sage-Mor backend for a category's ``MorCategory``.
 
@@ -345,7 +345,7 @@ class MorCategoryConstruction(
 
     def __init__(self, category: SageCategory) -> None:
         self._init_cat_object()
-        SageMorsCategory.__init__(self, category)
+        SageHomsetsCategory.__init__(self, category)
 
     def extra_super_categories(self) -> list:
         r"""A set-valued Mor object inherits the owned set Mor implementation.
@@ -385,27 +385,27 @@ class MorCategoryConstruction(
 
 
 class _SageMorCategoryOf(
-    OwnedCategoryMixin, OwnedCategoryObject, SageMorsOf, Parent
+    OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsOf, Parent
 ):
     r"""Owned base over Sage's category-specific mors base."""
 
     def __init__(self, category: SageCategory) -> None:
         self._init_cat_object()
-        SageMorsOf.__init__(self, category)
+        SageHomsetsOf.__init__(self, category)
 
 
 class _SageMorCategoryRoot(
     _SingletonClasscallMixin,
     OwnedCategoryMixin,
     OwnedCategoryObject,
-    SageMors,
+    SageHomsets,
     Parent,
 ):
     r"""Owned base over Sage's singleton mors category."""
 
     def __init__(self) -> None:
         self._init_cat_object()
-        SageMors.__init__(self)
+        SageHomsets.__init__(self)
 
     def Endset(self) -> SageCategory:
         r"""Return Sage's root category of endomorphism sets.
@@ -419,7 +419,7 @@ class _SageMorCategoryRoot(
         A subcategory that owns the ``Endset`` axiom declares it as its own
         nested class, which replaces this method outright.
         """
-        return SageMors().Endset()
+        return SageHomsets().Endset()
 
 
 class FunctorialConstructionCategory(
