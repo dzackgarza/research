@@ -11,22 +11,20 @@ from dzack_research.preamble.categories.sets import finite_ordered_set
 
 def _lie_algebra(labels, brackets):
     module = QQ.free_module(finite_ordered_set(labels))
-    multiplication = Modules(QQ).tensor_product((module, module)).from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                (left, right): module.linear_combination(
-                    {
-                        label: QQ(coefficient)
-                        for label, coefficient in brackets.get((left, right), {}).items()
-                    }
-                )
-                for left in labels
-                for right in labels
-            },
-        )
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        {
+            (left, right): module.linear_combination(
+                {
+                    label: QQ(coefficient)
+                    for label, coefficient in brackets.get((left, right), {}).items()
+                }
+            )
+            for left in labels
+            for right in labels
+        },
     )
     return Algebras(QQ).Lie()(module, multiplication)
 

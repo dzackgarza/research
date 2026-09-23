@@ -19,7 +19,7 @@ def _finite_graded_module():
     degrees = {"a": 0, "b": 1, "c": 1}
 
     def selected_degree(generator):
-        coefficient_labels = tuple(generator.monomial_coefficients())
+        coefficient_labels = tuple(generator.monomial_coefficients().index_set())
         if len(coefficient_labels) != 1:
             raise ValueError("a selected module generator has singleton support")
         return degrees[coefficient_labels[0]]
@@ -45,7 +45,7 @@ def test_archive_generic_degree_and_homogeneous_components_live_on_graded_module
     assert not mixed.is_homogeneous()
 
     components = mixed.homogeneous_components()
-    assert set(components) == {1, 2}
+    assert set(components.index_set()) == {1, 2}
     assert components[1] == x
     assert components[2] == y * y
     assert mixed.truncate(2) == x
@@ -68,5 +68,5 @@ def test_archive_zero_is_homogeneous_of_degree_minus_infinity() -> None:
 
     assert zero.is_homogeneous()
     assert str(zero.degree()) == "-Infinity"
-    assert zero.homogeneous_components() == {}
+    assert zero.homogeneous_components().cardinality() == 0
     assert zero.truncate(3) == zero

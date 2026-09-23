@@ -1,6 +1,7 @@
 r"""Supported singularity equivalences and the regular/smooth boundary."""
 
 from dzack_research.preamble.all import (
+    Algebras,
     GF,
     QQ,
 )
@@ -24,6 +25,8 @@ def test_a_sheared_A2_is_classified_by_its_actual_coordinate_change() -> None:
     )
 
     assert equivalence is not None
+    assert equivalence.parent() is Algebras(QQ).Associative().Unital().Core().Mor(plane, plane)
+    assert equivalence.coordinate_change() is equivalence.forward()
     assert equivalence.ade_type() == ("A", 2)
     assert equivalence.forward()(sheared.equation()) == equivalence.target().equation()
     for generator in plane.algebra_generators():

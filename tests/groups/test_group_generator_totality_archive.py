@@ -1,14 +1,12 @@
-r"""Archive reconciliation for total group generator-count queries."""
-
-from sage.misc.unknown import Unknown
+r"""Archive reconciliation for chosen group-generator count queries."""
 
 from dzack_research.preamble.all import QQ, Groups
 
 
-def test_group_without_chosen_generators_answers_unknown_instead_of_raising() -> None:
+def test_group_without_chosen_generators_has_no_chosen_generator_count() -> None:
     group = Groups.GL(2, QQ)
 
-    assert group.number_of_group_generators() is Unknown
+    assert not hasattr(group, "number_of_group_generators")
 
 
 def test_group_with_chosen_generators_keeps_the_exact_count() -> None:

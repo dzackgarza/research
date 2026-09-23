@@ -27,6 +27,9 @@ def _acted_a2():
 
 def test_archive_isotypic_lattice_retains_form_action_and_embedding() -> None:
     acted = _acted_a2()
+    assert acted.group_module() is acted
+    assert acted.unformed_module() is acted.source_group_module().unformed_module()
+    assert acted.action_functor() is acted.source_group_module().action_functor()
     characters = acted.group_module().isotypic_characters()
     nontrivial = next(character for character in characters if not character.is_trivial())
 
@@ -73,7 +76,7 @@ def test_equipping_an_existing_sublattice_preserves_its_ambient_inclusion() -> N
     )
 
 
-def test_archive_group_lattice_hom_is_both_isometric_and_equivariant() -> None:
+def test_archive_group_lattice_mor_is_both_isometric_and_equivariant() -> None:
     acted = _acted_a2()
     group_generator = acted.group().group_generators()[0]
     action = acted.action_of(group_generator)
@@ -103,7 +106,7 @@ def test_archive_group_lattice_hom_is_both_isometric_and_equivariant() -> None:
         assert square(generator) == generator
 
 
-def test_archive_group_lattice_hom_rejects_a_nonequivariant_isometry() -> None:
+def test_archive_group_lattice_mor_rejects_a_nonequivariant_isometry() -> None:
     acted = _acted_a2()
     labels = acted.module_generating_set()
     root = acted.module_generator(labels[0])

@@ -28,6 +28,7 @@ import pytest
 
 from dzack_research.preamble.all import (
     Set,
+    Sets,
     NamedLattices,
     Sterk,
     nikulin_invariants,
@@ -110,6 +111,7 @@ def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
     cusp_set = lattice.cusps()
     assert cusp_set.cardinality() == 1
     cusp = cusp_set[0]
+    assert cusp in Sets()
     assert cusp.module_rank() == 1
 
     reduction = cusp.reduction_lattice()

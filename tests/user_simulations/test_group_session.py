@@ -37,7 +37,9 @@ def test_a_finite_group_session(name) -> None:
     assert group in FiniteGroups()
     assert group.order() == order
     assert group.cardinality() == order
-    assert group in GroupsWithChosenFinitePresentation()
+    assert group in FinitelyPresentedGroups()
+    assert group not in GroupsWithChosenFinitePresentation()
+    assert group.presentation() in GroupsWithChosenFinitePresentation()
     assert group.group_generators().cardinality() >= 1
     assert group.conjugacy_classes_representatives().cardinality() == classes
     assert (group in AbelianGroups()) == (classes == order)

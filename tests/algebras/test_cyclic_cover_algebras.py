@@ -10,8 +10,10 @@ def _generator(module: Any) -> Any:
 def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
     from sage.rings.rational_field import QQ as SageQQ
 
-    from dzack_research.preamble.all import InvertibleSheaf
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        QuasiCoherentSheaves,
+    )
 
     QQ = _own_ring(SageQQ)
     algebra = QQ.polynomial_ring("x")
@@ -47,8 +49,8 @@ def _line_bundle_with_x_transition() -> tuple[Any, Any, Any]:
         forward,
         inverse,
     )
-    line = InvertibleSheaf(
-        cover.glue_modules(local_modules, {(0, 1): transition})
+    line = QuasiCoherentSheaves(scheme).Invertible().WithChosenTrivialization()(
+        cover.glue_modules(local_modules, {(0, 1): transition}).gluing_datum()
     )
     return line, x, overlap_x
 
@@ -59,7 +61,7 @@ def _branch_section(line: Any, x: Any, degree: int) -> Any:
         line.scheme(),
         line.cover().open(1),
     )(x)
-    return power.global_sections()(
+    return power.gluing_datum().compatible_section(
         (
             _generator(power.local_module(0)),
             power.local_module(1).scalar_multiple(
@@ -98,6 +100,9 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
         assert cyclic.local_underlying_module(index) is local
         assert local in FinitelyGeneratedFreeModules(local.base_ring())
         assert local in AlgebrasWithChosenFinitePresentation(local.base_ring())
+        assert local.associativity_decision() is True
+        assert local.unit_laws_decision() is True
+        assert local.commutativity_decision() is True
         assert int(local.module_rank()) == 2
         multiplication = cyclic.local_multiplication(index)
         assert multiplication.codomain() is local
@@ -111,8 +116,10 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
             multiplication.domain().pure_tensor(one_basis, z_basis)
         ) == z_basis
         assert z**2 == local(cyclic.local_branch_coefficient(index))
+        presentation = cyclic.local_presentation(index)
+        assert tuple(presentation.index_set()) == ("presentation_ring", "relations")
         assert cyclic.local_equation(index) == (
-            cyclic.local_presentation(index)[0].algebra_generator("z") ** 2
+            presentation["presentation_ring"].algebra_generator("z") ** 2
             - cyclic.local_branch_coefficient(index)
         )
 
@@ -133,11 +140,18 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
 def test_cyclic_cover_rejects_branch_section_with_wrong_line_power_descent() -> None:
     from pytest import raises
 
-    from dzack_research.preamble.all import CyclicCoverAlgebra, InvertibleSheaf
+    from dzack_research.preamble.all import CyclicCoverAlgebra
+    from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 
     line, _x, _overlap_x = _line_bundle_with_x_transition()
-    trivial_power = InvertibleSheaf.trivial(line.cover()).tensor_power(2)
-    wrong_branch = trivial_power.global_sections()(
+    trivial_power = (
+        QuasiCoherentSheaves(line.scheme())
+        .Invertible()
+        .WithChosenTrivialization()
+        .trivial(line.cover())
+        .tensor_power(2)
+    )
+    wrong_branch = trivial_power.gluing_datum().compatible_section(
         tuple(_generator(trivial_power.local_module(index)) for index in range(2))
     )
 

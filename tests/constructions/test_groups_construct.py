@@ -164,6 +164,10 @@ def test_presentations() -> None:
     assert not symmetric.is_abelian()
     assert symmetric.presenting_free_group() is free
     assert symmetric.defining_relations().cardinality() == 3
+    native_symmetric = Groups.S(3)
+    assert native_symmetric in FinitelyPresentedGroups()
+    assert native_symmetric not in GroupsWithChosenFinitePresentation()
+    assert native_symmetric.presentation() in GroupsWithChosenFinitePresentation()
     assert Groups.S(3).is_isomorphic_to(Groups.D(3))
     assert not Groups.Q().is_isomorphic_to(Groups.D(4))
 

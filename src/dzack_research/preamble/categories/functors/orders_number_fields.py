@@ -33,9 +33,7 @@ class _FractionFieldFunctor(Functor):
     def _apply_morphism(self, embedding: OrderEmbedding):
         source = self(embedding.domain())
         target = self(embedding.codomain())
-        return source.Mor(target)(
-            embedding.field_embedding()._engine_morphism_crossing()
-        )
+        return source.Mor(target)(embedding.field_embedding())
 
     def _repr_(self):
         return "Fraction-field functor"
@@ -65,21 +63,21 @@ class _OrderNumberFieldAdjunction(Adjunction):
     def __init__(self) -> None:
         super().__init__(_FractionFieldFunctor(), _RingOfIntegersFunctor())
 
-    def unit(self, order):
+    def _unit_component(self, order):
         field = self.left_adjoint()(order)
         maximal_order = self.right_adjoint()(field)
         return order.Mor(maximal_order)(
             field.Mor(field).identity()
         )
 
-    def counit(self, field):
+    def _counit_component(self, field):
         source = self.left_adjoint()(self.right_adjoint()(field))
         if _engine_ring(source) is _engine_ring(field):
             if source is field:
                 return field.Mor(field).identity()
             if _engine_ring(source).degree() == 1:
                 return source.Mor(field)(
-                    _engine_ring(source).hom(_engine_ring(field))
+                    _engine_ring(source).mor(_engine_ring(field))
                 )
             return source.Mor(field)(field.primitive_element())
         embeddings = source.Mor(field).embeddings()

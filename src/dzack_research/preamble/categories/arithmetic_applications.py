@@ -111,7 +111,7 @@ class EnriquesHigherWittApplication(SageObject):
         return Involutions.I_En.primitive_extension()
 
     def lattice(self):
-        return self.primitive_extension().coinvariant.inclusion().domain()
+        return self.primitive_extension().orthogonal_complement_inclusion().domain()
 
     @cached_method
     def arithmetic_group(self):
@@ -157,7 +157,7 @@ class EnriquesEquivariantK3Application(SageObject):
         return self.primitive_extension().invariant
 
     def anti_invariant_lattice(self):
-        return self.primitive_extension().coinvariant
+        return self.primitive_extension().orthogonal_complement
 
     def centralizer_group(self):
         return self.primitive_extension().centralizer_group()
@@ -179,9 +179,7 @@ class EnriquesEquivariantK3Application(SageObject):
 
     @cached_method
     def polarized_equivariant_lattice(self):
-        return self.lattice().with_isometry(self.involution()).polarized(
-            self.polarization()
-        )
+        return self.involution().polarized(self.polarization())
 
     def polarization_stabilizer(self):
         return self.polarized_equivariant_lattice().polarization_stabilizer()

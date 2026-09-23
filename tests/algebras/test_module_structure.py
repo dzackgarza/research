@@ -1,5 +1,4 @@
 import pytest
-from sage.categories.homset import Hom
 
 from dzack_research.preamble.all import (
     QQ,
@@ -24,9 +23,7 @@ def _gaussian_integers():
 
 
 def _multiplication_from_structure_constants(module, images):
-    return Modules(module.base_ring()).tensor_product([module, module]).from_bilinear(
-        BilinearMap(module, module, module, images)
-    )
+    return BilinearMap(module, module, module, images)
 
 
 def test_algebra_structure_morphism_lands_in_the_center() -> None:
@@ -39,7 +36,7 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
     assert eta.domain() is ZZ
     assert eta.codomain() is order.ring_center()
     assert eta.codomain() is order
-    assert eta.parent().homset_category().is_subcategory(OwnedRings())
+    assert eta.parent().mor_category().is_subcategory(OwnedRings())
     assert eta(ZZ(1)) == order.one()
     assert eta(ZZ(2)) * imag == imag * eta(ZZ(2))
     assert eta(ZZ(2)) * eta(ZZ(3)) == eta(ZZ(6))
@@ -73,7 +70,7 @@ def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
     assert underlying(order) is order
     assert order in Modules(ZZ)
 
-    identity = Hom(order, order).identity()
+    identity = order.Mor(order).identity()
     module_identity = underlying(identity)
     assert module_identity.domain() is order
     assert module_identity.codomain() is order
@@ -142,10 +139,16 @@ def test_multiplication_morphism_is_the_module_map_out_of_the_tensor_product() -
     )
 
 
-def test_unframed_algebra_has_no_constructed_tensor_multiplication() -> None:
+def test_unframed_algebra_multiplication_uses_its_owned_tensor_square() -> None:
     polynomials = QQ.free_module(["x"]).symmetric_algebra()
-    with pytest.raises(TypeError, match="finitely presented"):
-        polynomials.multiplication_morphism()
+    multiplication = polynomials.multiplication_morphism()
+    tensor = multiplication.domain()
+    x = polynomials.algebra_generator("x")
+
+    assert tensor.tensor_factor(0) is polynomials
+    assert tensor.tensor_factor(1) is polynomials
+    assert multiplication.codomain() is polynomials
+    assert multiplication(tensor.pure_tensor(x, x)) == x * x
 
 
 def test_algebras_intern_a_module_from_its_multiplication_morphism() -> None:
@@ -162,7 +165,7 @@ def test_algebras_intern_a_module_from_its_multiplication_morphism() -> None:
         },
     )
 
-    algebra = module.algebra_from_multiplication(multiplication)
+    algebra = Algebras(ZZ).Associative().Unital()(module, multiplication, one)
     unit = algebra.module_generator(0)
     generator = algebra.module_generator(1)
     eta = algebra.algebra_structure_morphism()

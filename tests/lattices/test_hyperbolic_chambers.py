@@ -58,7 +58,7 @@ def test_hyperbolic_containment_uses_rays_and_lineality_not_the_origin() -> None
     first, second = dual.module_generators()
 
     future = lattice.rational_polyhedral_cone((first - second, first + second))
-    timelike = lattice.module_generator(0)
+    timelike = lattice.basis_vector(0)
     assert future.is_pointed()
     assert future.lies_in_closed_positive_cone(timelike)
     assert future.ideal_rays().cardinality() == 2
@@ -68,7 +68,7 @@ def test_hyperbolic_containment_uses_rays_and_lineality_not_the_origin() -> None
 def test_root_defined_chamber_owns_its_reflection_group_and_diagram(monkeypatch) -> None:
     integers = _own_ring(SageZZ)
     lattice = HyperbolicLattices(integers)(Lattices(integers)([[2, 0], [0, -2]]))
-    root = lattice.module_generator(1)
+    root = lattice.basis_vector(1)
     monkeypatch.setattr(lattice, "_vinberg_search", lambda *_args, **_kw: (True, (root,)))
 
     chamber = lattice.fundamental_chamber()

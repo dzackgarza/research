@@ -21,6 +21,9 @@ class _CochainUnderlyingGradedModuleFunctor(Functor):
     def _apply_morphism(self, morphism):
         return morphism
 
+    def _repr_(self):
+        return f"Underlying graded module of cochain complexes over {self._base_ring}"
+
 
 @cached_function
 def _cochain_underlying_graded_module_functor(base_ring):

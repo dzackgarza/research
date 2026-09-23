@@ -32,7 +32,6 @@ group-scheme geometry.
 """
 
 from sage.misc.cachefunc import cached_method
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_objects import GObjects
@@ -46,6 +45,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
     Schemes,
+    _RepresentedAffineSchemeMorphism,
     _affine_morphism_from_pullback,
     _evaluate_polynomial_in_algebra,
 )
@@ -53,7 +53,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
 
 
 
-class AffineInvariantQuotientBaseChangeComparison(SageObject):
+class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphism):
     r"""Compare ``(X/G)_{k'}`` with ``X_{k'}/G`` for a scalar field extension.
 
     The comparison map
@@ -72,44 +72,21 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
     used by the affine quotient universal property.
     """
 
-    def __init__(self, acted_scheme, ring_map) -> None:
-        source = acted_scheme.scheme_base_ring()
-        target = _own_ring(ring_map.codomain())
-        if ring_map.domain() is not source:
-            raise ValueError("quotient base change starts at the acted scheme's scalar field")
-        assert source in OwnedFields() and target in OwnedFields(), (
-            "the represented invariant-quotient base-change comparison requires a field extension"
-        )
-        if acted_scheme not in AffineGSchemes(acted_scheme.acting_group(), source):
-            raise TypeError("the represented quotient base-change comparison requires an affine G-scheme")
-
-        group = acted_scheme.acting_group()
-        change = acted_scheme.scheme_category().base_change_functor(ring_map)
-        changed_carrier = change(acted_scheme)
-        changed_actions = {
-            group_element: change(acted_scheme.action_of(group_element))
-            for group_element in group
-        }
-        changed_acted = AffineGSchemes(group, target)(
-            changed_carrier,
-            lambda group_element: changed_actions[group(group_element)],
-        )
-        changed_old_quotient = change(acted_scheme.affine_quotient())
-        changed_old_quotient_map = change(acted_scheme.quotient_morphism())
-        transported_quotient_map = _affine_morphism_from_pullback(
-            changed_acted,
-            changed_old_quotient,
-            changed_old_quotient_map.coordinate_algebra_morphism(),
-        )
-        comparison = changed_acted.factor_through_affine_quotient(
-            transported_quotient_map
-        )
-
+    def __init__(
+        self,
+        mor,
+        pullback,
+        *,
+        acted_scheme,
+        ring_map,
+        changed_acted_scheme,
+        base_changed_old_quotient,
+    ) -> None:
         self._acted_scheme = acted_scheme
         self._ring_map = ring_map
-        self._changed_acted_scheme = changed_acted
-        self._base_changed_old_quotient = changed_old_quotient
-        self._comparison_morphism = comparison
+        self._changed_acted_scheme = changed_acted_scheme
+        self._base_changed_old_quotient = base_changed_old_quotient
+        super().__init__(mor, pullback)
 
     def source_acted_scheme(self):
         return self._acted_scheme
@@ -127,7 +104,8 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
         return self._base_changed_old_quotient
 
     def comparison_morphism(self):
-        return self._comparison_morphism
+        r"""Return this canonical comparison morphism itself."""
+        return self
 
     def reynolds_hypothesis_holds(self) -> bool:
         source = _own_ring(self.ring_map().domain())
@@ -190,7 +168,7 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
             )
             if certificate is None:
                 raise ArithmeticError(
-                    "Reynolds base-change theorem applies but the invariant backend failed to express a new invariant in the base-changed old generators"
+                    "Reynolds base-change theorem applies but the exact invariant-algebra computation failed to express a new invariant in the base-changed old generators"
                 )
             inverse_images[label] = _evaluate_polynomial_in_algebra(
                 certificate,
@@ -210,7 +188,54 @@ class AffineInvariantQuotientBaseChangeComparison(SageObject):
         )(forward, inverse)
 
     def _repr_(self) -> str:
-        return f"Invariant-quotient base change along {self.ring_map()} for {self.source_acted_scheme()}"
+        return f"Invariant-quotient base-change morphism along {self.ring_map()} for {self.source_acted_scheme()}"
+
+
+def AffineInvariantQuotientBaseChangeComparison(acted_scheme, ring_map):
+    r"""Return the canonical morphism ``X_{k'}/G -> (X/G)_{k'}``."""
+    source = acted_scheme.scheme_base_ring()
+    target = _own_ring(ring_map.codomain())
+    if ring_map.domain() is not source:
+        raise ValueError("quotient base change starts at the acted scheme's scalar field")
+    assert source in OwnedFields() and target in OwnedFields(), (
+        "the represented invariant-quotient base-change comparison requires a field extension"
+    )
+    if acted_scheme not in AffineGSchemes(acted_scheme.acting_group(), source):
+        raise TypeError("the represented quotient base-change comparison requires an affine G-scheme")
+
+    group = acted_scheme.acting_group()
+    change = acted_scheme.scheme_category().base_change_functor(ring_map)
+    changed_carrier = change(acted_scheme)
+    changed_actions = {
+        group_element: change(acted_scheme.action_of(group_element))
+        for group_element in group
+    }
+    changed_acted = AffineGSchemes(group, target)(
+        changed_carrier,
+        lambda group_element: changed_actions[group(group_element)],
+    )
+    changed_old_quotient = change(acted_scheme.affine_quotient())
+    changed_old_quotient_map = change(acted_scheme.quotient_morphism())
+    transported_quotient_map = _affine_morphism_from_pullback(
+        changed_acted,
+        changed_old_quotient,
+        changed_old_quotient_map.coordinate_algebra_morphism(),
+    )
+    comparison = changed_acted.factor_through_affine_quotient(
+        transported_quotient_map
+    )
+    mor = comparison.parent()
+    pullback = comparison.coordinate_algebra_morphism()
+    return mor(
+        lambda selected_mor: _AffineInvariantQuotientBaseChangeMorphism(
+            selected_mor,
+            pullback,
+            acted_scheme=acted_scheme,
+            ring_map=ring_map,
+            changed_acted_scheme=changed_acted,
+            base_changed_old_quotient=changed_old_quotient,
+        )
+    )
 
 
 

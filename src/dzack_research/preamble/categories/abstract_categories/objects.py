@@ -3,37 +3,96 @@
 from typing import Any
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
+from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
 # The marker every owned category base carries, axiom categories included.
-# Re-exported so the Hom packet can recognize one without reaching past this
+# Re-exported so the Mor packet can recognize one without reaching past this
 # module into the bases it is built from.
 from dzack_research.preamble.owned_category import (  # noqa: F401
     OwnedCategoryMixin,
     OwnedParent,
 )
-from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from dzack_research.preamble.owned_category_bases import (
+    Category as OwnedCategoryBase,
+    CategoryWithAxiom,
+)
 
 
-def _membership_by_definition(category: Category, candidate: Parent) -> bool:
-    r"""Whether ``category``'s own definition puts ``candidate`` in it.
+if "Framed" not in all_axioms:
+    all_axioms.add("Framed")
 
-    ``False`` unless the category states, through ``additional_condition``,
-    that it imposes no condition over its supercategories.  When it does, its
-    objects are exactly the objects lying in every one of them, and that is
-    the whole question.
 
-    A free function because an owned category that replaces
-    ``OwnedCategory.__contains__`` -- ``OwnedCategoryOverBaseRing`` does, and
-    every category over a ring reaches membership through it -- has to reach
-    the same statement.  One spelling, read wherever the question is asked.
-    """
-    if category.additional_condition() is not None:
-        return False
-    return all(
-        candidate in super_category for super_category in category.super_categories()
+class _SelectedFraming:
+    r"""One category-relative chosen epimorphism from a selected free source."""
+
+    def __init__(
+        self,
+        owner,
+        target,
+        source,
+        generating_set,
+        generator_morphism,
+        framing_morphism_factory,
+    ) -> None:
+        if generator_morphism.domain() is not generating_set:
+            raise ValueError("a framing generator morphism starts at its selected generating set")
+        if generator_morphism.codomain() is not target:
+            raise ValueError("a framing generator morphism lands in the framed object")
+        self._owner = owner
+        self._target = target
+        self._source = source
+        self._generating_set = generating_set
+        self._generator_morphism = generator_morphism
+        self._framing_morphism_factory = framing_morphism_factory
+        self._framing_morphism = None
+
+    def owner(self):
+        return self._owner
+
+    def source(self):
+        return self._source
+
+    def framing_generating_set(self):
+        return self._generating_set
+
+    def generator_morphism(self):
+        return self._generator_morphism
+
+    def framing_morphism(self):
+        selected = self._framing_morphism
+        if selected is None:
+            selected = self._framing_morphism_factory()
+            if selected.domain() is not self.source() or selected.codomain() is not self._target:
+                raise ValueError("the selected framing epimorphism has the wrong endpoints")
+            self._framing_morphism = selected
+        return selected
+
+
+def _fix_selected_framing(
+    target,
+    owner,
+    source,
+    generating_set,
+    generator_morphism,
+    framing_morphism_factory,
+):
+    r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
+    selected_by_owner = target.__dict__.setdefault("_selected_framings", {})
+    if owner in selected_by_owner:
+        raise ValueError(f"{target} already has a selected framing in {owner}")
+    selected = _SelectedFraming(
+        owner,
+        target,
+        source,
+        generating_set,
+        generator_morphism,
+        framing_morphism_factory,
     )
+    selected_by_owner[owner] = selected
+    return selected
 
 
 class OwnedCategory(OwnedCategoryBase):
@@ -70,49 +129,6 @@ class OwnedCategory(OwnedCategoryBase):
         is per-category mathematics, and a category that cannot is a gap in that
         category.
         """
-
-    def additional_condition(self):
-        r"""Return the condition this category imposes over its supercategories.
-
-        ``self`` when it imposes one and ``None`` when it does not, which is
-        the shape of Sage's ``Category.additional_structure`` and is read the
-        same way.  ``None`` is a mathematical statement, not an omission: the
-        category is the intersection of its supercategories, so its objects
-        are exactly the objects lying in every one of them, and what it adds
-        is operations and theorems rather than a further requirement.
-
-        ``FreeFormModules(R)`` is the model case.  A free form module is
-        exactly a module that is both a form module and framed free, and
-        those two are its declared supercategories, so nothing further is
-        being asked of an object and the two memberships decide it.
-        ``VectorSpaces(K)`` is the degenerate case of the same statement: its
-        one supercategory is ``Modules(K)`` and over a field there is no
-        further condition at all.
-
-        The default is ``self``, because a category normally does state
-        something of its own -- a chosen datum, an axiom, a property -- and a
-        category that has not said otherwise has not been examined.
-        """
-        return self
-
-    def __contains__(self, candidate: Any) -> bool:
-        r"""Whether ``candidate`` is an object of this category.
-
-        Placement decides it, which is Sage's rule and the one every category
-        with a condition of its own needs: an object acquires a chosen datum
-        or an axiom by being built or refined into the category that states
-        it, and no examination of the object afterwards can recover a choice
-        nobody made.
-
-        A category that imposes no condition of its own is not decided that
-        way.  Nothing has to be *placed* in the intersection of two categories
-        to be in it, and requiring that is what left ``U`` outside
-        ``FreeFormModules(R)`` while it was in both ``FormModules(R)`` and
-        ``FramedFreeModules(R)``, and left a free module over a field outside
-        ``VectorSpaces(K)``.  Such a category answers by its definition.
-        """
-        return super().__contains__(candidate) or _membership_by_definition(self, candidate)
-
 
 class OwnedParameterizedCategory(OwnedCategory):
     r"""An owned category parameterized by one object of a stated category.
@@ -195,12 +211,83 @@ class Objects(OwnedCategory):
 
             The values an owned object accepts are themselves owned, and Sage's
             coercion graph has never heard of them: asked for a conversion map
-            it tries to build a Hom in its own ``Sets``, finds the domain absent
+            it tries to build a Mor in its own ``Sets``, finds the domain absent
             and raises, before this object's own constructor is ever reached.
             The crossing into owned data happens in ``_element_constructor_``,
             which is the one boundary that admits foreign values.
             """
             return self._element_constructor_(*arguments, **options)
+
+    class Framed(CategoryWithAxiom):
+        r"""Objects carrying one chosen generating epimorphism from a free object.
+
+        This is the single data contract for selected 1-framings.  A framing is
+        relative to an ambient category: the same represented parent may carry
+        its module framing and a different algebra framing.  Both are instances
+        of this one contract, keyed by the category whose free functor supplies
+        the source; neither specialization owns a second framing data model.
+        """
+
+        def an_object(self):
+            r"""A rank-one free integer module with its canonical framing."""
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _own_ring,
+            )
+
+            return _own_ring(SageZZ).free_module(1)
+
+        class ParentMethods:
+            def selected_framing(self, owner):
+                r"""Return the constructor-owned 1-framing in ``owner``."""
+                selected = self.__dict__.get("_selected_framings", {}).get(owner)
+                assert selected is not None, (
+                    f"{self} was constructed without selected framing data in {owner}"
+                )
+                return selected
+
+            def selected_framing_source(self, owner):
+                r"""Return the exact selected free source in ``owner``."""
+                return self.selected_framing(owner).source()
+
+            def selected_framing_generating_set(self, owner):
+                r"""Return the set indexing the selected free source in ``owner``."""
+                return self.selected_framing(owner).framing_generating_set()
+
+            def selected_framing_generator_morphism(self, owner):
+                r"""Return the selected map from framing labels into this object."""
+                return self.selected_framing(owner).generator_morphism()
+
+            def selected_framing_generator(self, owner, label):
+                r"""Return the image of one selected free generator."""
+                labels = self.selected_framing_generating_set(owner)
+                if label not in labels:
+                    raise ValueError(f"{label!r} is not a framing-generator label")
+                return self.selected_framing_generator_morphism(owner)(labels(label))
+
+            @cached_method
+            def selected_framing_generators(self, owner, *, name):
+                r"""Return the selected generator family ``s |-> x_s``."""
+                from dzack_research.preamble.categories.sets.indexed_families import (
+                    indexed_family,
+                )
+
+                return indexed_family(
+                    self.selected_framing_generating_set(owner),
+                    lambda label: self.selected_framing_generator(owner, label),
+                    name=name,
+                )
+
+            def selected_framing_generator_count(self, owner):
+                return self.selected_framing_generating_set(owner).cardinality()
+
+            def selected_framing_morphism(self, owner):
+                r"""Return the selected generating epimorphism in ``owner``."""
+                return self.selected_framing(owner).framing_morphism()
+
+            def is_framed(self) -> bool:
+                return True
 
     def super_categories(self):
         return []
@@ -214,4 +301,5 @@ __all__ = [
     "Objects",
     "OwnedCategory",
     "OwnedParameterizedCategory",
+    "_fix_selected_framing",
 ]

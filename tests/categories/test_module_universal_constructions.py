@@ -1,4 +1,5 @@
 import pytest
+from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -14,6 +15,7 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.sets import NN, Sets, finite_ordered_set
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -119,6 +121,11 @@ def test_nonidentity_natural_transformation_induces_maps_on_selected_constructio
         diagram,
         lambda index: twice_plane if index is shape.source() else twice_line,
     )
+    transformation_morphism = transformation.morphism()
+    functor_category = diagram.functor_category()
+    assert transformation not in functor_category.Mor(diagram, diagram)
+    assert transformation_morphism in functor_category.Mor(diagram, diagram)
+    assert transformation_morphism.transformation() is transformation
     induced_equalizer = equalizer.induced_map(transformation, equalizer)
     inclusion = equalizer.structure_morphism(shape.source())
     assert inclusion * induced_equalizer == twice_plane * inclusion
@@ -195,6 +202,12 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     assert product.structure_morphism(product_shape(0)) * into_product == to_left
     assert product.structure_morphism(product_shape(1)) * into_product == to_right
 
+    with pytest.raises(ValueError):
+        (product.diagram()).Cones().cone(
+            probe,
+            lambda _index: to_left,
+        )
+
     coproduct = Modules(ZZ).coproduct_construction((left, right))
     assert Modules(ZZ).coproduct((left, right)) is coproduct.object()
     coproduct_shape = coproduct.diagram().domain()
@@ -207,6 +220,195 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     from_coproduct = coproduct.factor(cocone).apex_map()
     assert from_coproduct * coproduct.costructure_morphism(coproduct_shape(0)) == from_left
     assert from_coproduct * coproduct.costructure_morphism(coproduct_shape(1)) == from_right
+
+
+def _general_integer_module():
+    return GeneralModules(ZZ).from_operations(
+        ZZ,
+        addition=lambda left, right: ZZ(left + right),
+        zero=ZZ.zero(),
+        negation=lambda value: ZZ(-value),
+        scalar_action=lambda scalar, value: ZZ(scalar * value),
+    )
+
+
+def test_general_module_product_is_created_by_the_underlying_set_product() -> None:
+    line = _general_integer_module()
+    factors = indexed_family(NN, lambda _index: line, name="Countable module factors")
+    selected = Modules(ZZ).product_construction(factors)
+    product = selected.object()
+    shape = selected.diagram().domain()
+
+    assert product in GeneralModules(ZZ)
+    assert product.underlying_set().index_set() is NN
+    section = product(
+        product.underlying_set()(
+            lambda index: line(ZZ(int(index) + 1))
+        )
+    )
+    projection_zero = selected.structure_morphism(shape(NN(0)))
+    projection_thousand = selected.structure_morphism(shape(NN(1000)))
+    assert projection_zero.linearity_decision() is True
+    assert projection_thousand.linearity_decision() is True
+    assert projection_zero(section) == line(ZZ(1))
+    assert projection_thousand(section) == line(ZZ(1001))
+
+    probe = line
+    endomorphisms = line.module_category().Mor(line, line)
+    legs = indexed_family(
+        NN,
+        lambda index: endomorphisms.scalar_multiple(
+            ZZ(int(index) + 1),
+            endomorphisms.identity(),
+        ),
+        name="Cone legs into the countable product",
+    )
+    cone = selected.diagram().Cones().cone(
+        probe,
+        lambda index: legs.value(index.value()),
+    )
+    factor = selected.factor(cone).apex_map()
+    assert factor.linearity_decision() is Unknown
+    probe_element = probe(ZZ(2))
+    assert selected.structure_morphism(shape(NN(0)))(factor(probe_element)) == line(ZZ(2))
+    assert selected.structure_morphism(shape(NN(10)))(factor(probe_element)) == line(ZZ(22))
+
+    undecided_leg = endomorphisms.elementwise(
+        lambda element: line(element.underlying_element()),
+    )
+    undecided_cone = selected.diagram().Cones().cone(
+        line,
+        lambda _index: undecided_leg,
+    )
+    assert selected.factor(undecided_cone).apex_map().linearity_decision() is Unknown
+
+
+def test_general_module_product_admits_an_infinite_factor_family_lazily() -> None:
+    line = _general_integer_module()
+    not_a_module = finite_ordered_set(("x",))
+
+    def factor_at(index):
+        match int(index):
+            case 1000:
+                return not_a_module
+            case _:
+                return line
+
+    factors = indexed_family(
+        NN,
+        factor_at,
+        name="Almost-module factors",
+    )
+    selected = Modules(ZZ).product_construction(factors)
+    shape = selected.diagram().domain()
+
+    assert selected.diagram()(shape(NN(0))) is line
+    with pytest.raises(TypeError, match="modules over one ring"):
+        selected.diagram()(shape(NN(1000)))
+
+
+def test_general_module_equalizer_is_created_by_the_underlying_set_equalizer() -> None:
+    source = _general_integer_module()
+    target = source
+    endomorphisms = source.module_category().Mor(source, target)
+    zero = endomorphisms.zero()
+    twice = endomorphisms.scalar_multiple(
+        ZZ(2),
+        endomorphisms.identity(),
+    )
+    assert zero.linearity_decision() is True
+    assert twice.linearity_decision() is True
+    selected = Modules(ZZ).equalizer_construction(zero, twice)
+    equalizer = selected.object()
+    shape = selected.diagram().domain()
+    inclusion = selected.structure_morphism(shape.source())
+
+    assert equalizer in GeneralModules(ZZ)
+    assert inclusion.linearity_decision() is True
+    assert source.zero() in equalizer.underlying_set()
+    assert source(ZZ(1)) not in equalizer.underlying_set()
+    assert inclusion(equalizer.zero()) == source.zero()
+    assert zero(inclusion(equalizer.zero())) == twice(inclusion(equalizer.zero()))
+
+    probe = source
+    to_source = endomorphisms.zero()
+
+    def cone_leg(index):
+        match index:
+            case _ if index is shape.source():
+                return to_source
+            case _:
+                return zero * to_source
+
+    cone = selected.diagram().Cones().cone(
+        probe,
+        cone_leg,
+    )
+    factor = selected.factor(cone).apex_map()
+    assert factor.linearity_decision() is True
+    assert factor.domain() is probe
+    assert factor.codomain() is equalizer
+    assert inclusion(factor(probe.zero())) == to_source(probe.zero())
+
+    undecided_zero = endomorphisms.elementwise(
+        lambda _element: source.zero(),
+    )
+
+    def undecided_cone_leg(index):
+        match index:
+            case _ if index is shape.source():
+                return undecided_zero
+            case _:
+                return zero * undecided_zero
+
+    undecided_cone = selected.diagram().Cones().cone(
+        source,
+        undecided_cone_leg,
+    )
+    assert selected.factor(undecided_cone).apex_map().linearity_decision() is Unknown
+
+    nonlinear = endomorphisms.elementwise(
+        lambda element: source(ZZ(element.underlying_element() ** 2)),
+    )
+    conditional_equalizer = Modules(ZZ).equalizer_construction(nonlinear, zero)
+    conditional_shape = conditional_equalizer.diagram().domain()
+    assert (
+        conditional_equalizer.structure_morphism(
+            conditional_shape.source()
+        ).linearity_decision()
+        is Unknown
+    )
+
+
+def test_module_equalizer_rejects_parallel_set_maps_that_are_not_module_arrows() -> None:
+    source = _general_integer_module()
+    set_identity = Sets().Mor(source, source)(lambda element: element)
+
+    with pytest.raises(ValueError, match="admitted R-linear maps"):
+        Modules(ZZ).equalizer_construction(set_identity, set_identity)
+
+
+def test_twice_and_zero_on_Zmod4_have_the_order_two_equalizer_submodule() -> None:
+    cover = ZZ.free_module(finite_ordered_set(("e",)))
+    relations = ZZ.free_module(finite_ordered_set(("r",)))
+    cyclic_four = relations.module_category().Mor(relations, cover)(
+        {"r": 4 * cover.module_generator("e")}
+    ).cokernel()
+    generator = cyclic_four.module_generator("e")
+    endomorphisms = cyclic_four.module_category().Mor(cyclic_four, cyclic_four)
+    twice = endomorphisms({"e": 2 * generator})
+    zero = endomorphisms.zero()
+
+    selected = Modules(ZZ).equalizer_construction(twice, zero)
+    equalizer = selected.object()
+    shape = selected.diagram().domain()
+    inclusion = selected.structure_morphism(shape.source())
+    order_two = Modules(ZZ).equalizer_element(selected, 2 * generator)
+
+    assert order_two != equalizer.zero()
+    assert inclusion(order_two) == 2 * generator
+    assert equalizer.scalar_multiple(ZZ(2), order_two) == equalizer.zero()
+    assert twice * inclusion == zero * inclusion
 
 
 def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> None:
@@ -393,6 +595,88 @@ def test_colimit_functor_maps_nonidentity_stagewise_transformation_on_representa
         assert induced(representative) == expected
 
 
+def test_branching_finite_diagram_limit_imposes_compatibility_not_sequence_order() -> None:
+    points = finite_ordered_set(("left", "right", "target"))
+    shape = PosetCategory(
+        points,
+        le=lambda source, target: (
+            source == target
+            or target == "target" and source in ("left", "right")
+        ),
+    )
+    line = ZZ.free_module(finite_ordered_set(("e",)))
+    e = line.module_generator("e")
+    twice = line.module_category().Mor(line, line)({"e": 2 * e})
+    thrice = line.module_category().Mor(line, line)({"e": 3 * e})
+    identity = line.module_category().Mor(line, line).identity()
+
+    class BranchingDiagram(Functor):
+        def __init__(self):
+            super().__init__(shape, line.category())
+
+        def _apply_object(self, _obj):
+            return line
+
+        def _apply_morphism(self, morphism):
+            source = morphism.domain().value()
+            target = morphism.codomain().value()
+            match source, target:
+                case left, right if left == right:
+                    return identity
+                case "left", "target":
+                    return twice
+                case "right", "target":
+                    return thrice
+                case _:
+                    raise ValueError("unexpected arrow in the branching index category")
+
+    diagram = BranchingDiagram()
+    construction = line.category().Limits(shape).construction(diagram)
+    assert shape.Mor(shape("left"), shape("right")).cardinality() == cardinal(0)
+    assert shape.Mor(shape("right"), shape("left")).cardinality() == cardinal(0)
+    assert construction.object().module_rank() == 1
+
+    probe = ZZ.free_module(finite_ordered_set(("t",)))
+    t = probe.module_generator("t")
+    to_left = probe.module_category().Mor(probe, line)({"t": 3 * e})
+    to_right = probe.module_category().Mor(probe, line)({"t": 2 * e})
+    to_target = probe.module_category().Mor(probe, line)({"t": 6 * e})
+    cone = diagram.Cones().cone(
+        probe,
+        lambda index: {
+            "left": to_left,
+            "right": to_right,
+            "target": to_target,
+        }[index.value()],
+    )
+    factor = construction.factor(cone).apex_map()
+    assert construction.structure_morphism(shape("left")) * factor == to_left
+    assert construction.structure_morphism(shape("right")) * factor == to_right
+    assert twice * to_left == thrice * to_right == to_target
+
+
+def test_disconnected_finite_diagram_limit_is_product_not_a_sequence() -> None:
+    labels = finite_ordered_set(("left", "right"))
+    shape = DiscreteCategory(labels)
+    line = ZZ.free_module(finite_ordered_set(("e",)))
+
+    class DisconnectedDiagram(Functor):
+        def __init__(self):
+            super().__init__(shape, line.category())
+
+        def _apply_object(self, _obj):
+            return line
+
+        def _apply_morphism(self, morphism):
+            return line.module_category().Mor(line, line).identity()
+
+    diagram = DisconnectedDiagram()
+    construction = line.category().Limits(shape).construction(diagram)
+    assert shape.Mor(shape("left"), shape("right")).cardinality() == cardinal(0)
+    assert shape.Mor(shape("right"), shape("left")).cardinality() == cardinal(0)
+    assert construction.object().module_rank() == 2
+
+
 def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_rectangles() -> None:
     grid = Sets().product((NN, NN))
     index = PosetCategory(
@@ -418,9 +702,12 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
             )
             return line.module_category().Mor(line, line)({"e": (2**exponent) * e})
 
-    system = GridSystem()
+    diagram = GridSystem()
     systems = DirectedSystem(index, line.category())
-    assert systems(system) in systems
+    system = systems.object(diagram)
+    assert system in systems
+    assert system.functor() is diagram
+    assert system.base_index_category() is index
     northeast = index(grid((0, 1)))
     southeast = index(grid((1, 0)))
     assert index.Mor(northeast, southeast).cardinality() == cardinal(0)
@@ -443,13 +730,17 @@ def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_re
                 self(morphism.domain()), self(morphism.codomain())
             ).unique()
 
-    restricted = system.restrict(RectangleInclusion())
-    construction = line.category().Limits(rectangle).construction(restricted)
-    assert construction.diagram() is restricted
+    indexing = RectangleInclusion()
+    restricted = system.restrict(indexing)
+    restricted_diagram = restricted.functor()
+    assert restricted_diagram.original_diagram() is diagram
+    assert restricted_diagram.indexing_functor() is indexing
+    construction = line.category().Limits(rectangle).construction(restricted_diagram)
+    assert construction.diagram() is restricted_diagram
     assert construction.structure_morphism(rectangle(grid((1, 1)))).codomain() is line
 
-    with pytest.raises(NotImplementedError, match="finite represented shape"):
-        line.category().Limits(index).construction(system)
+    with pytest.raises(AssertionError):
+        line.category().Limits(index).construction(diagram)
 
 
 def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limit() -> None:
@@ -472,14 +763,16 @@ def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limi
             target = int(underlying.codomain().value())
             return line.module_category().Mor(line, line)({"e": (2 ** (target - source)) * e})
 
-    tower = DoublingTower()
+    diagram = DoublingTower()
+    tower = inverse_systems.object(diagram)
     base_arrow = base_index.Mor(base_index(0), base_index(2)).unique()
     tower_arrow = opposite.Mor(opposite(base_index(2)), opposite(base_index(0)))(
         base_arrow
     )
-    assert tower(tower_arrow)(e) == 4 * e
-    with pytest.raises(NotImplementedError):
-        line.category().Limits(opposite).construction(tower)
+    assert tower.base_index_category() is base_index
+    assert tower.transition(tower_arrow)(e) == 4 * e
+    with pytest.raises(AssertionError):
+        line.category().Limits(opposite).construction(diagram)
 
 
 def test_direct_sequence_coprojection_can_fail_to_be_injective() -> None:

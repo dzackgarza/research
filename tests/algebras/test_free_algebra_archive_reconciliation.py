@@ -74,7 +74,7 @@ def test_archive_divided_and_symmetric_bases_agree_but_products_do_not() -> None
     for degree in range(4):
         assert divided.graded_piece_monomials(degree).cardinality() == symmetric.graded_piece_monomials(degree).cardinality()
 
-    divided_x = divided.algebra_generator("x")
+    divided_x = divided.degree_one_generator("x")
     symmetric_x = symmetric.algebra_generator("x")
     gamma_two = divided.divided_power(divided_x, 2)
     divided_basis = tuple(divided.graded_piece_monomials(2))
@@ -86,7 +86,7 @@ def test_archive_divided_and_symmetric_bases_agree_but_products_do_not() -> None
 
 def test_archive_divided_ideal_degree_includes_divided_relations() -> None:
     divided = ZZ.free_module(finite_ordered_set(("x",))).divided_power_algebra()
-    x = divided.algebra_generator("x")
+    x = divided.degree_one_generator("x")
     degree_three = divided.ideal_generators_in_degree((2 * x,), 3)
 
     divided_relation = divided.divided_power(2 * x, 3)
@@ -176,8 +176,8 @@ def test_archive_scalars_enter_each_free_construction_through_its_unit() -> None
         QQ.free_module(labels).exterior_algebra(),
         QQ.free_module(labels).divided_power_algebra(),
     ):
-        structure = algebra._ring_morphism_defining_algebra_structure()
-        x = algebra.algebra_generator("x")
+        structure = algebra.algebra_structure_morphism()
+        x = algebra(algebra.generating_module().module_generator("x"))
 
         assert structure.domain() is QQ
         assert structure(QQ(3)) == QQ(3) * algebra.one()

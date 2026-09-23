@@ -78,19 +78,32 @@ def test_trivial_quotient_has_empty_generating_set_but_two_presentation_letters(
 def test_chosen_presentations_are_exposed_on_native_group_objects() -> None:
     free = Groups.Free(1)
     c2 = free.quotient_by_relators([free.group_generators()[0] ** 2])
-    for group in (c2, Groups.C(2), Groups.S(2), Groups.Abelian([2])):
+    native = (Groups.C(2), Groups.S(2), Groups.Abelian([2]))
+    assert all(group not in GroupsWithChosenFinitePresentation() for group in native)
+    assert c2.presentation_source_group() is c2
+    assert c2.presentation_isomorphism().forward() is c2.Mor(c2).identity()
+    for group in (c2, *(candidate.presentation() for candidate in native)):
         assert group in OwnedFinitelyPresentedGroups()
         assert group in GroupsWithChosenFinitePresentation()
-        relators = tuple(relation.Tietze() for relation in group.defining_relations())
-        assert relators == ((1, 1),)
+        presenting = group.presenting_free_group()
+        generator = next(iter(presenting.group_generators()))
+        relators = tuple(
+            tuple(relation.parent().reduced_word(relation))
+            for relation in group.defining_relations()
+        )
+        assert relators == ((generator, generator),)
+    assert all(group not in GroupsWithChosenFinitePresentation() for group in native)
 
 
 def test_subgroup_inclusion_is_a_real_morphism() -> None:
     group = Groups.S(4)
-    subgroup = group.subgroup([group.group_generators()[0]])
+    generators = group.group_generators()
+    subgroup = group.subgroup([generators[0]])
     inclusion = subgroup.inclusion()
 
     assert subgroup.supergroup() is group
+    assert generators[0] in subgroup
+    assert generators[1] not in subgroup
     assert inclusion.domain() is subgroup
     assert inclusion.codomain() is group
     assert inclusion.is_injective()

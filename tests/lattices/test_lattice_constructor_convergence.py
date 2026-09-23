@@ -11,7 +11,7 @@ def test_structured_lattice_specializations_retain_their_defining_data() -> None
     assert str(root_span.cartan_type()) == "['A', 2]"
 
     hyperbolic = Lattices(ZZ)("U") + root
-    reduction = hyperbolic.module_generator(0).isotropic_reduction()
+    reduction = hyperbolic.basis_vector(0).isotropic_reduction()
     assert reduction.isotropic_embedding().codomain() is hyperbolic
     assert reduction.orthogonal_complement().inclusion().codomain() is hyperbolic
     assert reduction.quotient_lattice() is reduction
@@ -28,6 +28,26 @@ def test_structured_lattice_specializations_retain_their_defining_data() -> None
         return swap_isometry(vector)
 
     acted = Lattices(ZZ[group])(plane, swap)
-    assert acted.source_group_module().unacted_module() is plane
+    assert acted.source_group_module().unformed_module() is plane
     assert acted.action().domain() is group
     assert acted.gram_tensor() == plane.gram_tensor()
+
+
+def test_group_lattice_form_and_action_share_the_supplied_lattice() -> None:
+    group = Groups.C(2)
+    plane = Lattices(ZZ)("U")
+    left, right = plane.module_generators()
+    swap = plane.Aut()({label: image for label, image in zip(
+        plane.module_generating_set(), (right, left), strict=True
+    )})
+    acted = Lattices(ZZ[group])(
+        plane, lambda g, vector: vector if g == group.one() else swap(vector)
+    )
+    assert acted.unformed_module() is plane
+    assert acted.form().module() is plane
+    assert acted.source_group_module().unformed_module() is plane
+    for vector in (plane.zero(), left, right, left + 2 * right):
+        assert plane(acted(vector)) == vector
+        assert acted(plane(acted(vector))) == acted(vector)
+    assert acted(left).b(acted(right)) == plane.b(left, right)
+    assert acted.act(group.group_generators()[0], acted(left)) == acted(right)

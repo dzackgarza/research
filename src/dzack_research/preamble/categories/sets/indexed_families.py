@@ -2,16 +2,18 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Hashable, Iterator, Mapping
 from itertools import islice
 from typing import Any
 
 from sage.misc.unknown import Unknown
 from sage.structure.parent import Parent
-from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.owned_category import _object_of
 
 
-class IndexedFamily[IndexT, ValueT](SageObject):
+class IndexedFamily[IndexT, ValueT]:
     r"""A family ``(x_i)_{i in I}`` retaining its indexing set.
 
     A family is not the set of its values: different indices may have equal
@@ -26,6 +28,7 @@ class IndexedFamily[IndexT, ValueT](SageObject):
         value: Callable[[IndexT], ValueT],
         *,
         name: str | None = None,
+        **rest,
     ) -> None:
         if not callable(value):
             raise TypeError("an indexed family requires a value map")
@@ -34,6 +37,7 @@ class IndexedFamily[IndexT, ValueT](SageObject):
         self._value_cache: dict[IndexT, ValueT] = {}
         self._unhashable_value_cache: list[tuple[IndexT, ValueT]] = []
         self._name = name
+        super().__init__(**rest)
 
     def index_set(self) -> Parent:
         return self._index_set
@@ -56,37 +60,59 @@ class IndexedFamily[IndexT, ValueT](SageObject):
             True
         """
         normalized = self.index_set()(index)
-        try:
-            return self._value_cache[normalized]
-        except TypeError:
-            # Hashing is an implementation property, not a hypothesis on an
-            # indexing set. Only labels actually requested are retained.
-            for known, value in self._unhashable_value_cache:
-                if (normalized == known) is True:
-                    return value
-            value = self._value_function(normalized)
-            self._unhashable_value_cache.append((normalized, value))
-            return value
-        except KeyError:
-            value = self._value_function(normalized)
-            self._value_cache[normalized] = value
-            return value
+        match normalized:
+            case Hashable():
+                missing = object()
+                cached = self._value_cache.get(normalized, missing)
+                if cached is not missing:
+                    return cached
+                value = self._value_function(normalized)
+                self._value_cache[normalized] = value
+                return value
+            case _:
+                # Hashability is representation data, not a hypothesis on an
+                # indexing set. Only unhashable labels actually requested are
+                # retained on this exact fallback path.
+                for known, value in self._unhashable_value_cache:
+                    if (normalized == known) is True:
+                        return value
+                value = self._value_function(normalized)
+                self._unhashable_value_cache.append((normalized, value))
+                return value
 
     __call__ = value
 
     def __getitem__(self, index: IndexT) -> ValueT:
-        r"""The value at ``index``, or -- failing that -- at that position."""
-        try:
-            normalized = self.index_set()(index)
-        except (TypeError, ValueError):
-            return self.value(self.index_set().ranking_map().inverse()(index))
-        return self.value(normalized)
+        r"""The value at a label, otherwise at a position in the index set's enumeration."""
+        match index in self.index_set():
+            case True:
+                return self.value(index)
+            case False:
+                return self.value(self.index_set().ranking_map().inverse()(index))
 
     def items(self) -> Iterator[tuple[IndexT, ValueT]]:
         return ((index, self.value(index)) for index in self.index_set())
 
+    def keys(self) -> Parent:
+        r"""Return the mathematical index set of this family."""
+        return self.index_set()
+
+    def values(self) -> Iterator[ValueT]:
+        return iter(self)
+
+    def get(self, index: IndexT, default=None):
+        r"""Return the value at ``index`` when indexed here, otherwise ``default``."""
+        return self.value(index) if index in self.index_set() else default
+
     def __iter__(self) -> Iterator[ValueT]:
         return (self.value(index) for index in self.index_set())
+
+    def __len__(self) -> int:
+        r"""Return the Python length when the mathematical index set is finite."""
+        size = self.cardinality()
+        if not size.is_finite():
+            raise TypeError("an infinite indexed family has no Python length")
+        return int(size.finite_value())
 
     def map[MappedValueT](
         self,
@@ -96,7 +122,7 @@ class IndexedFamily[IndexT, ValueT](SageObject):
     ) -> IndexedFamily[IndexT, MappedValueT]:
         if not callable(function):
             raise TypeError("a family map must be callable")
-        return IndexedFamily(
+        return indexed_family(
             self.index_set(),
             lambda index: function(self.value(index)),
             name=name,
@@ -172,15 +198,98 @@ def indexed_family[IndexT, ValueT](
     *,
     name: str | None = None,
 ) -> IndexedFamily[IndexT, ValueT]:
-    r"""Return the family ``index |-> value(index)`` over ``index_set``."""
-    return IndexedFamily(index_set, value, name=name)
+    r"""Return the family ``index |-> value(index)`` as an owned mathematical object.
+
+    A family is not the set of its values: repeated values at distinct indices
+    remain distinct family slots.  Until a consumer supplies a more specific
+    codomain/category (for example a discrete diagram in ``[I,C]``), the family
+    therefore lives at the existing root ``Objects()`` rather than being
+    misdeclared as a set.
+    """
+    return _object_of(
+        Objects(),
+        _engine=(Objects(), IndexedFamily, None),
+        index_set=index_set,
+        value=value,
+        name=name,
+    )
 
 
 finite_indexed_family = indexed_family
 
 
+def finite_indexed_family_from_values(
+    index_set,
+    values,
+    *,
+    name: str | None = None,
+) -> IndexedFamily:
+    r"""Read finite literal data as an indexed family, preserving its labels.
+
+    ``values`` may already be an indexed family, a mapping keyed by labels, or
+    an ordinary finite iterable.  When ``index_set`` is omitted, those three
+    cases use the family's own labels, the mapping keys, or the ordinal of the
+    iterable positions respectively.  Literal-container interpretation belongs
+    here, at the indexed-family owner; mathematical consumers only state the
+    index set they require.
+    """
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+        finite_ordered_set,
+    )
+
+    match values:
+        case IndexedFamily():
+            match index_set:
+                case None:
+                    labels = finite_ordered_set(tuple(values.index_set()))
+                case _:
+                    labels = index_set
+            family = indexed_family(labels, values.value, name=name)
+            supplied_cardinality = values.cardinality()
+            match supplied_cardinality.is_finite():
+                case True:
+                    pass
+                case _:
+                    raise TypeError("finite indexed-family literal ingress requires finite data")
+            supplied_size = int(supplied_cardinality.finite_value())
+        case Mapping():
+            match index_set:
+                case None:
+                    labels = finite_ordered_set(tuple(values))
+                case _:
+                    labels = index_set
+            family = indexed_family(labels, values.__getitem__, name=name)
+            supplied_size = len(values)
+        case _:
+            entries = tuple(values)
+            match index_set:
+                case None:
+                    labels = finite_ordered_set(range(len(entries)))
+                case _:
+                    labels = index_set
+            family = indexed_family(
+                labels,
+                lambda label: entries[int(labels.ranking_map()(label))],
+                name=name,
+            )
+            supplied_size = len(entries)
+
+    match family.cardinality().is_finite():
+        case True:
+            pass
+        case _:
+            raise TypeError("finite indexed-family literal ingress requires a finite index set")
+    match int(family.cardinality().finite_value()) == supplied_size:
+        case True:
+            pass
+        case False:
+            raise ValueError("finite indexed-family literal data has the wrong number of entries")
+    return family
+
+
 __all__ = [
     "IndexedFamily",
     "finite_indexed_family",
+    "finite_indexed_family_from_values",
     "indexed_family",
 ]

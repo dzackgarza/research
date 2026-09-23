@@ -35,8 +35,8 @@ def test_veronese_section_ring_uses_actual_section_modules_and_component_maps() 
     assert degree_one is bundle.global_sections()
     assert degree_one.module_rank() == 3
     assert degree_two.module_rank() == 5
-    assert multiplication.left_factor() is degree_one
-    assert multiplication.right_factor() is degree_one
+    assert multiplication.left_module() is degree_one
+    assert multiplication.right_module() is degree_one
     assert multiplication.codomain() is degree_two
     left_in_ring = ring.homogeneous_component_element(1, polynomial_left)
     right_in_ring = ring.homogeneous_component_element(1, polynomial_right)
@@ -80,16 +80,15 @@ def test_multiprojective_section_ring_is_segre_veronese_with_exact_factor_roles(
     assert ring.homogeneous_degree(product_in_ring) == NN(2)
 
 
-def test_section_spaces_consume_their_owned_construction_data() -> None:
+def test_section_spaces_consume_their_owned_data() -> None:
     line = ProjectiveSpaces(QQ)(1)
     homogeneous = line.O(2).global_sections()
 
     assert homogeneous.section_scheme() is line
-    assert homogeneous.section_space_construction().scheme() is line
     assert homogeneous.homogeneous_degree() == 2
     assert homogeneous.homogeneous_coordinate_ring() is not None
     first_homogeneous_label = next(iter(homogeneous.module_generating_set()))
-    assert homogeneous.section_space_construction().exponents_of(first_homogeneous_label)
+    assert homogeneous.monomial_exponents(first_homogeneous_label)
     assert "_preamble_section_scheme" not in homogeneous.__dict__
     assert "_preamble_homogeneous_degree" not in homogeneous.__dict__
     assert "_preamble_homogeneous_coordinate_ring" not in homogeneous.__dict__
@@ -101,16 +100,13 @@ def test_section_spaces_consume_their_owned_construction_data() -> None:
     multihomogeneous = quadric.O(1, 2).global_sections()
 
     assert multihomogeneous.section_scheme() is quadric
-    assert multihomogeneous.section_space_construction().scheme() is quadric
     assert multihomogeneous.multidegree().index_set() is factor_labels
     assert tuple(multihomogeneous.multidegree()[label] for label in factor_labels) == (1, 2)
     assert multihomogeneous.homogeneous_coordinate_ring() is not None
     first_multihomogeneous_label = next(iter(multihomogeneous.module_generating_set()))
-    assert multihomogeneous.section_space_construction().exponents_of(
-        first_multihomogeneous_label
-    )
-    assert multihomogeneous.section_space_construction().coordinate_block(0) == (0, 2)
-    assert multihomogeneous.section_space_construction().coordinate_block(1) == (2, 4)
+    assert multihomogeneous.monomial_exponents(first_multihomogeneous_label)
+    assert multihomogeneous.coordinate_block(0) == (0, 2)
+    assert multihomogeneous.coordinate_block(1) == (2, 4)
     assert "_preamble_section_scheme" not in multihomogeneous.__dict__
     assert "_preamble_multihomogeneous_degree" not in multihomogeneous.__dict__
     assert "_preamble_homogeneous_coordinate_ring" not in multihomogeneous.__dict__

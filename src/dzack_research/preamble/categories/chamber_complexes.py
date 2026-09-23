@@ -3,8 +3,8 @@ r"""Lazy Weyl chamber complexes generated from exact root half-space cones."""
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.chamber_systems import ChamberSystems
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class ChamberAdjacency(SageObject):
@@ -55,7 +55,7 @@ class WeylChamberComplexes(OwnedCategory):
         return "Weyl chamber complexes"
 
     def super_categories(self):
-        return [Sets()]
+        return [ChamberSystems()]
 
     class ParentMethods:
         def __init__(self, fundamental_chamber, **rest) -> None:
@@ -72,6 +72,10 @@ class WeylChamberComplexes(OwnedCategory):
 
         def wall_roots(self):
             return self._fundamental_chamber.wall_roots()
+
+        def type_set(self):
+            r"""Return the chamber-system types, indexed by the simple walls."""
+            return self.wall_roots()
 
         def weyl_group(self):
             return self._fundamental_chamber.weyl_group()

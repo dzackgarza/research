@@ -36,7 +36,8 @@ def test_fan_defined_toric_scheme_retains_its_mathematical_data() -> None:
 
 
 def test_polytope_construction_retains_the_selected_polarization() -> None:
-    triangle = LatticePolygons()(((0, 0), (1, 0), (0, 1)))
+    lattice = ZZ.free_module(2)
+    triangle = LatticePolygons(lattice)(((0, 0), (1, 0), (0, 1)))
     plane = triangle.toric_variety(QQ)
 
     assert plane in ToricSchemes(QQ)

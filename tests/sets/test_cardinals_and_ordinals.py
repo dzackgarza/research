@@ -1,3 +1,6 @@
+import pytest
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.all import (
     CardinalComparison,
     Cardinalities,
@@ -52,10 +55,14 @@ def test_cardinal_arithmetic_and_order_do_not_assume_continuum_hypothesis() -> N
 
     assert cardinals.compare(aleph(1), continuum) is CardinalComparison.LESS_OR_EQUAL
     assert cardinals.Mor(aleph(1), continuum).cardinality() == 1
-    assert cardinals.Mor(continuum, aleph(1)).cardinality() == 0
+    assert cardinals.Mor(continuum, aleph(1)).is_empty() is Unknown
     assert cardinals.compare(aleph(2), continuum) is CardinalComparison.INCOMPARABLE
-    assert cardinals.Mor(aleph(2), continuum).cardinality() == 0
-    assert cardinals.Mor(continuum, aleph(2)).cardinality() == 0
+    assert cardinals.Mor(aleph(2), continuum).is_empty() is Unknown
+    assert cardinals.Mor(continuum, aleph(2)).is_empty() is Unknown
+    with pytest.raises(AssertionError, match="does not decide"):
+        cardinals.Mor(continuum, aleph(1)).cardinality()
+    assert cardinals.Mor(continuum, aleph0).is_empty() is True
+    assert cardinals.Mor(continuum, aleph0).cardinality() == 0
     assert cardinals.Mor(aleph0, continuum).unique_morphism().domain() == aleph0
 
 
@@ -81,3 +88,20 @@ def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
     image = cardinality(isomorphism)
     assert image.domain() == cardinal(3)
     assert image.codomain() == cardinal(3)
+
+
+def test_ordinal_powers_have_ordinal_not_cardinal_exponentiation_size() -> None:
+    assert Ordinals()(2).ordinal_power(omega(0)).cardinality() == aleph0
+    assert omega(0).ordinal_power(omega(0)).cardinality() == aleph0
+    assert Ordinals()(2).ordinal_power(omega(1)).cardinality() == aleph(1)
+
+
+def test_literal_cardinal_equality_rejects_nonintegral_and_infinite_floats() -> None:
+    for candidate in (float("inf"), float("nan"), 1.5, -1, "3"):
+        assert (cardinal(3) == candidate) is False
+        assert candidate not in Ordinals()
+
+
+def test_natural_product_does_not_recurse_once_per_ordinary_factor() -> None:
+    ordinals = Ordinals()
+    assert ordinals.natural_product(*(ordinals.one() for _ in range(2000))) == 1

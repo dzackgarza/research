@@ -1,12 +1,14 @@
 r"""AT21 double covers are live toric-pyramid hypersurfaces with their boundary data."""
 
-from dzack_research.preamble.all import ADELogPairs, QQ
+from dzack_research.preamble.all import ADELogPairs, QQ, Schemes
 
 
 def test_d4_cover_is_the_pyramid_hypersurface_with_projection_and_deck_involution() -> None:
     pair = ADELogPairs(QQ).at21("D", 4)
     cover = pair.double_cover(pair.source_normal_form_section(constant=1))
 
+    assert cover.scheme() is cover
+    assert cover in Schemes(QQ)
     assert cover.scheme().inclusion().codomain() is cover.ambient_toric_threefold()
     assert cover.cover_morphism().domain() is cover.scheme()
     assert cover.cover_morphism().codomain() is pair.scheme()

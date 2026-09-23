@@ -55,7 +55,7 @@ def test_the_absolute_galois_group_of_the_rationals_and_its_open_subgroups() -> 
     assert galois in ProfiniteGroups()
     assert not galois.is_abelian()
     assert not galois.is_finite()
-    assert open_subgroup in OpenAbsoluteGaloisSubgroups()
+    assert open_subgroup in OpenAbsoluteGaloisSubgroups(galois)
     assert open_subgroup.index() == 2
     assert open_subgroup.supergroup() is galois
     assert open_subgroup.fixed_field() is gaussian

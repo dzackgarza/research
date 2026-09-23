@@ -1,7 +1,5 @@
 r"""Archive reconciliation for formed-object constructor obligations."""
 
-from sage.rings.integer_ring import ZZ as SageZZ
-
 from dzack_research.preamble.all import ZZ, Lattices, Modules
 
 
@@ -30,6 +28,10 @@ def test_archived_torsion_discriminant_form_retains_its_quotient_value_module() 
 
 def test_archived_scale_submodule_is_the_ideal_generated_by_pairing_values() -> None:
     lattice = Lattices(ZZ)("A2")
+    scale = lattice.scale_submodule()
+    twisted_scale = lattice.twist(3).scale_submodule()
 
-    assert lattice.scale_submodule() == SageZZ.ideal(1)
-    assert lattice.twist(3).scale_submodule() == SageZZ.ideal(3)
+    assert scale.ring() is ZZ
+    assert twisted_scale.ring() is ZZ
+    assert scale == ZZ.ideal(1)
+    assert twisted_scale == ZZ.ideal(3)

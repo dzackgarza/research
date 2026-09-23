@@ -43,12 +43,16 @@ from sage.rings.qqbar import AA, QQbar
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+from dzack_research.preamble.categories.graph_categories import (
+    LabelledDigraphs,
+    LabelledGraphs,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     OrderedEnumeratedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -60,7 +64,12 @@ def _projective_line_over(base_ring):
 
 
 class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
-    r"""Finite graphs or digraphs with exact projective vertex and edge weights."""
+    r"""Finite graphs or digraphs with exact projective vertex and edge weights.
+
+    Every undirected instance is read through its symmetric directed adjacency,
+    so the common immediate owner of the mixed directed/undirected category is
+    ``LabelledDigraphs``.
+    """
 
     @classmethod
     def _repr_object_names(cls):
@@ -72,7 +81,7 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
         ).weighted_graph()
 
     def super_categories(self):
-        return [Sets()]
+        return [LabelledDigraphs()]
 
     def from_weights(
         self,
@@ -86,13 +95,14 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
         r"""Return the represented projectively weighted graph on ``vertices``."""
         base_ring = self.base_ring()
         vertices = finite_ordered_set(vertices)
+        edge_space = vertices**2
         projective_line = _projective_line_over(base_ring)
         normalized_edges = {
-            tuple(edge): projective_line(weight)
+            edge_space(edge): projective_line(weight)
             for edge, weight in dict(edge_weights).items()
         }
         if any(
-            len(edge) != 2 or edge[0] not in vertices or edge[1] not in vertices
+            edge[0] not in vertices or edge[1] not in vertices
             for edge in normalized_edges
         ):
             raise ValueError("a projectively weighted edge has two endpoints in the vertex set")
@@ -109,8 +119,9 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             raise ValueError("a projectively weighted graph requires one vertex weight per vertex")
         if symmetric:
             for left, right in normalized_edges:
-                if (right, left) in normalized_edges:
-                    if normalized_edges[left, right] != normalized_edges[right, left]:
+                reverse = edge_space((right, left))
+                if reverse in normalized_edges:
+                    if normalized_edges[edge_space((left, right))] != normalized_edges[reverse]:
                         raise ValueError(
                             "a symmetric projective weighting has equal reverse edge weights"
                         )
@@ -137,6 +148,7 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
         ) -> None:
             self._base_ring = base_ring
             self._vertices = finite_ordered_set(vertices)
+            self._edge_space = self._vertices**2
             self._edge_weights = dict(edge_weights)
             self._vertex_weights = dict(vertex_weights)
             self._directed = bool(directed)
@@ -149,6 +161,17 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
 
         def vertices(self):
             return self._vertices
+
+        def __contains__(self, vertex) -> bool:
+            return vertex in self.vertices()
+
+        is_parent_of = __contains__
+
+        def _element_constructor_(self, vertex):
+            return self.vertices()(vertex)
+
+        def __iter__(self):
+            return iter(self.vertices())
 
         def cardinality(self):
             return self._vertices.cardinality()
@@ -167,25 +190,33 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
                 raise ValueError("a vertex weight is indexed by a vertex of the graph")
             return self._vertex_weights[vertex]
 
+        vertex_label = vertex_weight
+
         def has_edge(self, left, right) -> bool:
-            if (left, right) in self._edge_weights:
+            edge = self._edge_space((left, right))
+            reverse = self._edge_space((right, left))
+            if edge in self._edge_weights:
                 return True
-            if self._symmetric and (right, left) in self._edge_weights:
+            if self._symmetric and reverse in self._edge_weights:
                 return True
             return False
 
         def edge_weight(self, left, right):
-            if (left, right) in self._edge_weights:
-                return self._edge_weights[left, right]
-            if self._symmetric and (right, left) in self._edge_weights:
-                return self._edge_weights[right, left]
+            edge = self._edge_space((left, right))
+            reverse = self._edge_space((right, left))
+            if edge in self._edge_weights:
+                return self._edge_weights[edge]
+            if self._symmetric and reverse in self._edge_weights:
+                return self._edge_weights[reverse]
             raise ValueError("the selected vertices are not joined by an edge")
+
+        edge_label = edge_weight
 
         def edges(self):
             return finite_ordered_set(tuple(self._edge_weights))
 
         def num_edges(self):
-            return int(self.edges().cardinality())
+            return self.edges().cardinality()
 
         def induced_subgraph(self, vertices):
             r"""Return the projectively weighted subgraph on ``vertices``.
@@ -199,8 +230,9 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             if any(vertex not in self._vertices for vertex in selected):
                 raise ValueError("an induced weighted subgraph uses vertices of the ambient graph")
             edge_weights = {
-                (left, right): weight
-                for (left, right), weight in self._edge_weights.items()
+                tuple(edge): weight
+                for edge, weight in self._edge_weights.items()
+                for left, right in (tuple(edge),)
                 if left in selected and right in selected
             }
             vertex_weights = {
@@ -357,7 +389,14 @@ def _coxeter_bond(invariant):
 
 
 class VinbergInvariantMatrices(OwnedCategory):
-    r"""Symmetric matrices of Vinberg invariants on a finite set of mirrors."""
+    r"""Symmetric matrices of Vinberg invariants on a finite set of mirrors.
+
+    The entries are points ``[4 b(r,s)^2 : q(r)q(s)]`` of a projective line,
+    not scalars of the coefficient ring, so this is not an object of
+    ``MatrixSpaces(R)``.  The same data is exactly the symmetric labelled graph
+    whose non-orthogonal pairs are edges and whose projective invariants are
+    vertex and edge labels; that is the immediate owned placement used here.
+    """
 
     def an_object(self):
         r"""The invariant matrix of the \(A_2\) diagram."""
@@ -368,7 +407,7 @@ class VinbergInvariantMatrices(OwnedCategory):
         return "Vinberg invariant matrices"
 
     def super_categories(self):
-        return [Sets()]
+        return [LabelledGraphs()]
 
     class ParentMethods:
         def __init__(self, base_ring, index_set, numerators, denominators, **rest) -> None:
@@ -385,6 +424,47 @@ class VinbergInvariantMatrices(OwnedCategory):
         def index_set(self):
             r"""Return the ordered set of mirrors this matrix is indexed by."""
             return self._index_set
+
+        def vertices(self):
+            return self.index_set()
+
+        def __contains__(self, mirror) -> bool:
+            return mirror in self.index_set()
+
+        is_parent_of = __contains__
+
+        def _element_constructor_(self, mirror):
+            return self.index_set()(mirror)
+
+        def __iter__(self):
+            return iter(self.index_set())
+
+        def has_edge(self, left, right) -> bool:
+            return left != right and self.vinberg_ratio(left, right) != 0
+
+        def edges(self):
+            edge_space = self.index_set()**2
+            return finite_ordered_set(
+                tuple(
+                    edge_space((left, right))
+                    for left, right in combinations(tuple(self.index_set()), 2)
+                    if self.has_edge(left, right)
+                )
+            )
+
+        def is_directed(self) -> bool:
+            return False
+
+        def is_symmetric(self) -> bool:
+            return True
+
+        def vertex_label(self, vertex):
+            return self.vinberg_invariant(vertex, vertex)
+
+        def edge_label(self, left, right):
+            if not self.has_edge(left, right):
+                raise ValueError("the selected mirrors are not joined by a Vinberg edge")
+            return self.vinberg_invariant(left, right)
 
         def cardinality(self):
             return self._index_set.cardinality()

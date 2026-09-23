@@ -10,13 +10,14 @@ whenever ``S`` is a group algebra; the constructor is
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.g_objects import GObjects
+from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.lattice_morphisms import (
-    LatticeHomset,
+    LatticeMor,
     LatticeMorphism,
 )
 from dzack_research.preamble.categories.lattices import (
@@ -46,21 +47,21 @@ class GroupLatticeMorphism(LatticeMorphism):
         )
 
 
-class GroupLatticeHomset(LatticeHomset):
+class GroupLatticeMor(LatticeMor):
     r"""Form-preserving maps commuting with one selected group action."""
 
     Element = GroupLatticeMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         if domain.group() != codomain.group():
-            raise ValueError("a group-lattice Hom has one acting group")
+            raise ValueError("a group-lattice Mor has one acting group")
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("a group-lattice Hom has one coefficient ring")
-        super().__init__(hom_family, domain, codomain)
+            raise ValueError("a group-lattice Mor has one coefficient ring")
+        super().__init__(mor_family, domain, codomain)
 
     def _check_equivariance(self, morphism) -> None:
         group = self.domain().group()
-        assert group.is_finitely_generated() is True, (
+        assert group in OwnedGroups().Framed(), (
             "verifying a group-lattice morphism requires a represented finite generating set of the acting group"
         )
         domain = self.domain()
@@ -78,15 +79,15 @@ class GroupLatticeHomset(LatticeHomset):
         self._check_equivariance(morphism)
         return morphism
 
-    def elementwise(self, function, *, verify_linearity=True):
-        morphism = super().elementwise(function, verify_linearity=verify_linearity)
+    def elementwise(self, function):
+        morphism = super().elementwise(function)
         self._check_equivariance(morphism)
         return morphism
 
 
-class GroupLatticeHomCategoryConstruction(HomCategoryConstruction):
+class GroupLatticeMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return GroupLatticeHomset
+        return GroupLatticeMor
 
 
 class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
@@ -108,7 +109,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         r"""``Modules(R[G])`` alone; ``G``-objects in ``Lattices(R)`` are reached by :meth:`restriction_along_group_inclusion`."""
         return [ModulesOverGroupAlgebra(self.base_ring())]
 
-    _HomCategory = GroupLatticeHomCategoryConstruction
+    _MorCategory = GroupLatticeMorCategoryConstruction
 
     # The equivalence ``Lattices(R[G]) ~ GObjects(G, Lattices(R))``, in the
     # same two directions as for modules over the group algebra.
@@ -143,6 +144,28 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         return _group_lattice(lattice, self.acting_group(), action)
 
     class ParentMethods:
+        _derived_construction_parameters = ("unformed_module", "source_action_functor")
+
+        def __init__(self, source_group_module, source_form, **rest) -> None:
+            r"""Thread the same lattice through its form and its linearized action.
+
+            The action was linearized on the lattice on which the form is
+            stated.  The group-module level receives that exact module and
+            action; the form level receives the form, which determines its
+            module.  Neither level consumes or overwrites the other's datum.
+            """
+            module = source_group_module.unformed_module()
+            assert source_form.module() is module, (
+                "a group lattice's action and form are stated on one lattice"
+            )
+            self._preamble_source_group_module = source_group_module
+            super().__init__(
+                source_form=source_form,
+                unformed_module=module,
+                source_action_functor=source_group_module.action_functor(),
+                **rest,
+            )
+
         def source_group_module(self):
             r"""The ``R[G]``-module built on the lattice this action was stated on."""
             return self._preamble_source_group_module
@@ -212,14 +235,15 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                     lambda label: transported_image(group_element, label)
                 ),
             )
-            assert group.is_finitely_generated() is True
+            assert group in OwnedGroups().Framed()
             for group_generator in group.group_generators():
                 action(group_generator)
             return action
 
         @cached_method
         def group_module(self):
-            return Modules(self.group_algebra())(self, self.action())
+            r"""Return this lattice itself as its inherited ``R[G]``-module."""
+            return self
 
         def act(self, group_element, vector):
 
@@ -232,12 +256,12 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def is_invariant(self, vector) -> bool:
             group = self.group()
-            assert group.is_finitely_generated() is True
+            assert group in OwnedGroups().Framed()
             return all(self.act(group_generator, vector) == vector for group_generator in group.group_generators())
 
         def module_invariants(self):
             r"""Return the native fixed submodule of the underlying group module."""
-            return self.group_module().module_invariants()
+            return super().module_invariants()
 
         def invariant_lattice(self):
             r"""Return ``L^G`` as a formed subobject of this lattice.
@@ -247,7 +271,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             codomain is the unformed underlying module.
             """
             group = self.group()
-            assert group.is_finitely_generated() is True, (
+            assert group in OwnedGroups().Framed(), (
                 "constructing an invariant lattice requires a chosen finite group generating set"
             )
             generators = tuple(group.group_generators())
@@ -260,7 +284,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def module_coinvariants(self):
             r"""Return the underlying module quotient by ``(g-1)M``."""
-            return self.group_module().module_coinvariants()
+            return super().module_coinvariants()
 
         @cached_method
         def coinvariant_lattice(self):
@@ -286,12 +310,12 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             component = self.group_module().isotypic_component(character)
             module_inclusion = component.inclusion()
             component_module = module_inclusion.domain()
-            if module_inclusion.codomain() is not self:
+            if module_inclusion.codomain() is not self.unformed_module():
                 raise ArithmeticError(
-                    "the isotypic module component is not embedded in the group lattice"
+                    "the isotypic module component is not embedded in the retained lattice module"
                 )
             embedded_basis = tuple(
-                module_inclusion(component_module.module_generator(label))
+                self(module_inclusion(component_module.module_generator(label)))
                 for label in component_module.module_generating_set()
             )
             formed = self.subobject_on(embedded_basis)
@@ -305,7 +329,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             return Lattices(self.group_algebra())(formed, restricted_action)
 
         def character(self):
-            return self.group_module().character()
+            return super().character()
 
 
 def _group_lattice(lattice, group, action):
@@ -327,7 +351,7 @@ def _group_lattice(lattice, group, action):
         construction_data=tuple(construction_data),
         unformed_module=lattice,
     )
-    assert group.is_finitely_generated() is True
+    assert group in OwnedGroups().Framed()
     for group_generator in group.group_generators():
         result.action()(group_generator)
     return result
@@ -436,7 +460,7 @@ class _LatticeLinearizationEquivalence(Adjunction):
             _RestrictionAlongGroupInclusionLatticeFunctor(group_algebra),
         )
 
-    def unit(self, acted):
+    def _unit_component(self, acted):
         from dzack_research.preamble.categories.functors.group_actions import (
             _action_functor_of,
         )
@@ -450,7 +474,7 @@ class _LatticeLinearizationEquivalence(Adjunction):
             lambda _obj: component
         )
 
-    def counit(self, lattice):
+    def _counit_component(self, lattice):
         relinearized = self.left_adjoint()(self.right_adjoint()(lattice))
         return self.right_adjoint().domain().Mor(relinearized, lattice)(lattice.module_generator)
 
@@ -459,8 +483,8 @@ class _LatticeLinearizationEquivalence(Adjunction):
 
 
 __all__ = [
-    "GroupLatticeHomCategoryConstruction",
-    "GroupLatticeHomset",
+    "GroupLatticeMorCategoryConstruction",
+    "GroupLatticeMor",
     "GroupLatticeMorphism",
     "LatticesOverGroupAlgebra",
 ]

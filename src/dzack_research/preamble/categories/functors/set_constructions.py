@@ -1,16 +1,14 @@
 r"""Functorial Set constructions: exponentials and finite/power subsets."""
 
-from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 
 
 class _ExponentialFunctor(Functor):
-    r"""The internal-Hom functor ``Set^op x Set -> Set``."""
+    r"""The internal-Mor functor ``Set^op x Set -> Set``."""
 
     def __init__(self) -> None:
         self._opposite_sets = Sets().opposite()
@@ -31,8 +29,7 @@ class _ExponentialFunctor(Functor):
         target = self(pair_morphism.codomain())
         precompose = pair_morphism.first().underlying_arrow()
         postcompose = pair_morphism.second()
-        return SetMorphism(
-            _OwnedSets().Mor(source, target),
+        return Sets().Mor(source, target)(
             lambda function: target(
                 lambda element: postcompose(function(precompose(element)))
             ),
@@ -44,6 +41,9 @@ class _ExponentialFunctor(Functor):
         target = self.pair(precompose.domain(), postcompose.codomain())
         opposite = self.opposite_sets().Mor(source.first(), target.first())(precompose)
         return self.domain().Mor(source, target)(opposite, postcompose)
+
+    def _repr_(self):
+        return "Exponential bifunctor (X, Y) |-> Y^X"
 
 
 class _InverseImagePowerSetFunctor(Functor):
@@ -69,6 +69,9 @@ class _InverseImagePowerSetFunctor(Functor):
             self.domain()(morphism.domain()),
         )(morphism)
 
+    def _repr_(self):
+        return "Contravariant power-set functor (inverse image)"
+
 
 class _FinitePowerSetFunctor(Functor):
     r"""The covariant finite-power-set functor under direct image."""
@@ -82,21 +85,21 @@ class _FinitePowerSetFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return SetMorphism(
-            _OwnedSets().Mor(source, target),
+        return Sets().Mor(source, target)(
             lambda subset: target(tuple(morphism(member) for member in subset)),
         )
+
+    def _repr_(self):
+        return "Finite power-set functor (direct image)"
 
 
 class _FixedCardinalitySubsetFunctor(Functor):
     r"""Direct image on ``k``-element subsets, defined on injective set maps."""
 
     def __init__(self, subset_cardinality) -> None:
-        from sage.rings.integer_ring import ZZ
-
-        self._subset_cardinality = ZZ(subset_cardinality)
-        if self._subset_cardinality < 0:
-            raise ValueError("a subset cardinality is nonnegative")
+        # The size of a subset is a natural number; NN's element constructor
+        # admits exactly those.
+        self._subset_cardinality = NN(subset_cardinality)
         injections = Sets().MonomorphismArrowCategory()
         super().__init__(Sets().WideSubcategory(injections), Sets())
 
@@ -104,17 +107,19 @@ class _FixedCardinalitySubsetFunctor(Functor):
         return self._subset_cardinality
 
     def _apply_object(self, source):
-        return source.subsets_of_size(self.subset_cardinality())
+        return source.subsets_of_size(int(self.subset_cardinality()))
 
     def _apply_morphism(self, morphism):
         if not self.domain().admits(morphism):
             raise TypeError("fixed-cardinality direct image requires an injective set map")
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return SetMorphism(
-            _OwnedSets().Mor(source, target),
+        return Sets().Mor(source, target)(
             lambda subset: target(tuple(morphism(member) for member in subset)),
         )
+
+    def _repr_(self):
+        return f"Direct image on subsets of cardinality {self.subset_cardinality()}"
 
 
 @cached_function

@@ -29,7 +29,7 @@ def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -
 
     assert character.domain() is group
     for group_element in group:
-        assert character(group_element) == acted.action_of(group_element).matrix().trace()
+        assert character(group_element) == acted.action_of(group_element).trace()
 
     transposition = next(element for element in group if element.order() == 2)
     three_cycle = next(element for element in group if element.order() == 3)
@@ -69,7 +69,7 @@ def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
     )
     assert brauer_character.cardinality() == 3 < representatives.cardinality()
     order_three_element = generator**2
-    assert acted.action_of(order_three_element).matrix().trace() == GF(2).one()
+    assert acted.action_of(order_three_element).trace() == GF(2).one()
     order_three_index = regular_representatives.index(order_three_element)
     assert brauer_character[order_three_index] == -1
 

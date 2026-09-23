@@ -81,7 +81,6 @@ def test_graded_scalar_restriction_is_owned_by_the_graded_algebra() -> None:
     restricted = algebra.restrict_scalars(identity)
 
     assert restricted.extension_algebra() is algebra
-    assert restricted.restricted_scalars_construction().algebra_over_extension() is algebra
     assert restricted.ring_map() is identity
     assert "_preamble_extension_algebra" not in restricted.__dict__
     assert "_preamble_ring_map" not in restricted.__dict__
@@ -118,13 +117,13 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     x = source.algebra_generator("x")
     t = target.algebra_generator("t")
 
-    ordinary_homset = source.Mor(target)
-    assert ordinary_homset is Algebras(QQ).Mor(source, target)
-    homset = GradedAlgebras(QQ).Mor(source, target)
-    assert Algebras(QQ).Mor(source, target) in homset.super_categories()
-    assert GradedModules(QQ).Mor(source, target) in homset.super_categories()
-    graded = homset({"x": t})
-    assert graded in homset
+    ordinary_mor = source.Mor(target)
+    assert ordinary_mor is Algebras(QQ).Mor(source, target)
+    mor = GradedAlgebras(QQ).Mor(source, target)
+    assert Algebras(QQ).Mor(source, target) in mor.super_categories()
+    assert GradedModules(QQ).Mor(source, target) in mor.super_categories()
+    graded = mor({"x": t})
+    assert graded in mor
     assert graded(x) == t
     assert graded(x * x) == t * t
 

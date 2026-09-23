@@ -1,5 +1,9 @@
+import pytest
+
 from dzack_research.preamble.all import (
+    AffineSpaces,
     GF,
+    ProjectiveSpaces,
     QQ,
     ZZ,
     ArtinianRings,
@@ -34,6 +38,11 @@ def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
     assert Zmod(8).spectrum().cardinality() == 1
     assert Zmod(12).spectrum().cardinality() == 2
     assert Zmod(30).spectrum().cardinality() == 3
+
+
+def test_affine_line_spectrum_cardinality_stops_at_the_finite_spectrum_frontier() -> None:
+    with pytest.raises(AssertionError):
+        QQ.polynomial_ring("t").spectrum().cardinality()
 
 
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
@@ -83,6 +92,8 @@ def test_quotient_residue_field_dual_numbers_and_adic_completion() -> None:
 
     quotient = polynomial.quotient_ring(t**2)
     tbar = quotient.quotient_map()(t)
+    assert quotient.characteristic().parent() is ZZ
+    assert quotient.characteristic() == 5
     assert tbar != 0
     assert tbar**2 == 0
 
@@ -120,17 +131,23 @@ def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
     affine_plane = AffineSpaces(field)(2)
     projective_plane = ProjectiveSpaces(field)(2)
 
+    assert affine_plane.dimension().parent() is ZZ
+    assert projective_plane.dimension().parent() is ZZ
+
     _values = affine_plane.point_counts(3)
 
     assert _values.cardinality() == 3
+    assert all(value.parent() is ZZ for value in _values)
 
     assert _values[0] == 25
+    assert (_values[0] + ZZ.one()).parent() is ZZ
 
     assert _values[1] == 625
 
     assert _values[2] == 15625
     _values = projective_plane.point_counts(3)
     assert _values.cardinality() == 3
+    assert all(value.parent() is ZZ for value in _values)
     assert _values[0] == 31
     assert _values[1] == 651
     assert _values[2] == 15751
@@ -170,6 +187,10 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
     assert slice_object.arrow() is powers_of_two.inclusion()
     assert slice_object in subobjects.slice_category()
     assert slice_object in subobjects.monomorphism_category()
+    subobject_mor = subobjects.Mor(powers_of_two, powers_of_two)
+    slice_mor = subobjects.slice_category().Mor(slice_object, slice_object)
+    assert subobject_mor.identity().factor_morphism() == slice_mor.identity().left()
+    assert subobject_mor.canonical_morphism().factor_morphism() == slice_mor.canonical_morphism().left()
 
     localization = ZZ.localization(powers_of_two)
     assert localization.localization_submonoid() is powers_of_two
@@ -180,6 +201,24 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
     assert prime_complement in subobjects
     assert ZZ(2) in prime_complement
     assert ZZ(5) not in prime_complement
+
+
+def test_module_subobject_order_is_decided_without_failed_factorization() -> None:
+    modules = Modules(ZZ)
+    subobjects = modules.Subobjects(ZZ)
+    evens = ZZ.ideal(2)
+    multiples_of_four = ZZ.ideal(4)
+    multiples_of_three = ZZ.ideal(3)
+
+    assert evens.category().is_subcategory(subobjects)
+    assert multiples_of_four.category().is_subcategory(subobjects)
+    assert multiples_of_three.category().is_subcategory(subobjects)
+    assert subobjects.Mor(multiples_of_four, evens).has_morphism()
+    assert not subobjects.Mor(evens, multiples_of_four).has_morphism()
+    assert not subobjects.Mor(evens, multiples_of_three).has_morphism()
+    factor = multiples_of_four.inclusion().factor_through_or_none(evens.inclusion())
+    assert factor is not None
+    assert evens.inclusion() * factor == multiples_of_four.inclusion()
 
 
 def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> None:
@@ -202,16 +241,49 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
     assert spectrum.generic_point() == generic
 
     closed_origin = spectrum.V(x)
+    assert closed_origin in ZariskiClosedSubobjects(spectrum)
+    assert closed_origin in Sets().Subobjects(spectrum)
+    assert closed_origin.inclusion().codomain() is spectrum
     assert closed_origin.defining_ideal() in Modules(spectrum.ring()).Subobjects(
         spectrum.ring().regular_module()
     )
     punctured_line = spectrum.D(x)
+    assert punctured_line in DistinguishedOpenSubobjects(spectrum)
+    assert punctured_line in Sets().Subobjects(spectrum)
+    assert punctured_line.inclusion().codomain() is spectrum
     assert generic not in closed_origin
     assert origin in closed_origin
     assert generic in punctured_line
     assert origin not in punctured_line
 
     sheaf = affine_line.structure_sheaf()
+    presheaf = sheaf.presheaf()
+    site = presheaf.site_category()
+    whole = site.object(affine_line.categorical_identity_morphism())
+    punctured_open = affine_line.distinguished_open(x)
+    open_object = site.object(punctured_open.inclusion())
+    opposite = site.opposite()
+    global_module = presheaf(opposite(whole))
+    open_module = presheaf(opposite(open_object))
+    restriction_triangle = site.Mor(open_object, whole)(punctured_open.inclusion())
+    restriction = presheaf(
+        opposite.Mor(opposite(whole), opposite(open_object))(restriction_triangle)
+    )
+    assert global_module is spectrum.ring().regular_module()
+    assert open_module.base_ring() is spectrum.ring()
+    assert restriction.domain() is global_module
+    assert restriction.codomain() is open_module
+    assert restriction(global_module(x)).underlying_element() == punctured_open.inclusion().coordinate_algebra_morphism()(x)
+    cover = affine_line.distinguished_open_cover(x, spectrum.ring().one() - x)
+    assert sheaf in cover.coverage().sheaves(Modules(spectrum.ring()))
+    assert sheaf.presheaf() is sheaf.functor()
+    assert sheaf.descent_data().coverage() is cover.coverage()
+    assert sheaf.descent_data().presheaf() is sheaf.presheaf()
+    cech_structure = sheaf.cech_sheaf(cover)
+    structure_datum = sheaf.module_descent_datum(cover)
+    assert cech_structure in cover.cech_coverage().sheaves(Modules(spectrum.ring()))
+    assert cech_structure.gluing_datum() is structure_datum
+    assert structure_datum.cover() is cover
     principal_sections = sheaf.sections_on_distinguished_open(punctured_line)
     assert principal_sections.localization_source() is spectrum.ring()
     assert principal_sections.inverted_elements() == Set((spectrum.ring()(x),))
@@ -260,8 +332,10 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
     principal = family.ideal(x_family)
     assert principal.inclusion().is_injective()
     assert family.krull_dimension() == 2
-    assert principal.syzygy_matrix().ncols() == 1
-    assert principal.syzygy_matrix().nrows() == 0
+    principal_syzygies = principal.syzygy_matrix()
+    assert principal_syzygies.parent().base_ring() is family
+    assert principal_syzygies.ncols() == 1
+    assert principal_syzygies.nrows() == 0
 
     special_fiber, _family_to_fiber = family._quotient_by_algebra_elements(
         (family.algebra_structure_morphism()(t),)
@@ -274,8 +348,10 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
     assert x0 * y0 == special_fiber.zero()
     assert origin.is_prime()
     assert origin.is_maximal()
-    assert origin.syzygy_matrix().ncols() == 2
-    assert origin.syzygy_matrix().nrows() == 2
+    origin_syzygies = origin.syzygy_matrix()
+    assert origin_syzygies.parent().base_ring() is special_fiber
+    assert origin_syzygies.ncols() == 2
+    assert origin_syzygies.nrows() == 2
 
     origin_point = special_fiber.spectrum()(origin)
     assert origin_point.ideal() is origin
@@ -576,14 +652,14 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
 
     field = GF(3)
     finite = field.regular_module()
-    finite_hom = finite.module_category().Mor(finite, finite)
-    linear = finite_hom.elementwise(
+    finite_mor = finite.module_category().Mor(finite, finite)
+    linear = finite_mor.elementwise(
         lambda element: finite.scalar_multiple(field(2), element)
     )
     assert linear(field.one()) == finite(field(2))
 
     try:
-        finite_hom.elementwise(
+        finite_mor.elementwise(
             lambda element: field(element**2)
         )
     except ValueError as error:
@@ -628,6 +704,9 @@ def test_general_module_localization_uses_fraction_model_and_detects_s_torsion()
     assert half.equality_status(localized.fraction(module(2))) is True
     assert localized.fraction(module(3)).equality_status(localized.zero()) is True
     assert localized.fraction(module(1)).equality_status(localized.zero()) is False
+
+    with pytest.raises(ValueError, match="does not become invertible"):
+        localized.fraction(module(1), 3)
 
     assert (localization(3) / localization(2)) * half == localized.fraction(module(3), 4)
 
@@ -766,12 +845,9 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
 
     kernel_comparison = functor.kernel_comparison(morphism)
     assert functor.is_exact()
+    assert kernel_comparison.domain() is kernel_comparison.codomain()
     assert (
-        kernel_comparison.localized_kernel()
-        is kernel_comparison.kernel_of_localized_morphism()
-    )
-    assert (
-        kernel_comparison.localized_kernel().inclusion().codomain()
+        kernel_comparison.domain().inclusion().codomain()
         is functor(source)
     )
 
@@ -781,8 +857,8 @@ def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None
         {0: 6 * generator}
     )
     cokernel_comparison = functor.cokernel_comparison(multiplication_by_six)
-    left = cokernel_comparison.localized_cokernel()
-    right = cokernel_comparison.cokernel_of_localized_morphism()
+    left = cokernel_comparison.domain()
+    right = cokernel_comparison.codomain()
     left_generator = left.module_generator(0)
     right_generator = right.module_generator(0)
     assert cokernel_comparison.inverse()(
@@ -896,3 +972,18 @@ def test_map_induced_out_of_a_localization_is_independent_of_the_representative(
     assert plane_induced(inverse_product) * plane_to_fractions(x_plane * y_plane) == (
         plane_to_fractions(plane.one())
     )
+
+
+def test_integer_localization_universal_map_factors_exactly_when_two_becomes_a_unit() -> None:
+    inverted_two = ZZ.localization(2)
+    to_rationals = ZZ.Mor(QQ)(lambda integer: QQ(integer))
+    factor = inverted_two.induced_morphism(to_rationals)
+    half = inverted_two.fraction(ZZ.one(), ZZ(2))
+
+    assert factor.domain() is inverted_two
+    assert factor.codomain() is QQ
+    assert factor * inverted_two.localization_map() == to_rationals
+    assert factor(half) == QQ(1) / QQ(2)
+
+    with pytest.raises(ValueError, match="does not carry.*to a unit"):
+        inverted_two.induced_morphism(ZZ.Mor(ZZ).identity())

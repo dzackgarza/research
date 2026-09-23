@@ -90,7 +90,7 @@ def test_functor_image_homs_wrap_nonidentity_codomain_arrows_and_forget_them_fai
     assert inclusion(presented_arrow) is arrow
 
 
-def test_functor_image_hom_exposes_codomain_hom_and_composes_through_it() -> None:
+def test_functor_image_mor_exposes_codomain_mor_and_composes_through_it() -> None:
     functor = _IdentitySetsFunctor()
     image = ImageOfFunctor(functor)
     source = finite_ordered_set((0, 1))
@@ -106,11 +106,11 @@ def test_functor_image_hom_exposes_codomain_hom_and_composes_through_it() -> Non
     second_underlying = Sets().Mor(middle, target)(lambda value: value == "b")
     first = image.Mor(presented_source, presented_middle)(first_underlying)
     second = image.Mor(presented_middle, presented_target)(second_underlying)
-    outer_hom = image.Mor(presented_source, presented_target)
-    composite = outer_hom.compose(second, first)
+    outer_mor = image.Mor(presented_source, presented_target)
+    composite = outer_mor.compose(second, first)
     inclusion = image.inclusion()
 
-    assert first.parent().codomain_hom_category() is Sets().Mor(source, middle)
+    assert first.parent().codomain_mor_category() is Sets().Mor(source, middle)
     assert composite.domain() is presented_source
     assert composite.codomain() is presented_target
     assert inclusion(composite) == second_underlying * first_underlying

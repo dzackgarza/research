@@ -82,13 +82,14 @@ def _action_functor_of(acted, group, category):
 def _underlying_equivariant_arrow(arrow, group, category):
     r"""Forget equivariance from either a natural transformation or a concrete arrow."""
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
-    from dzack_research.preamble.categories.group.g_objects import EquivariantMorphism
+    from dzack_research.preamble.categories.group.g_objects import GObjects
 
     functor_category = Cat().Mor(group.classifying_category(), category)
     if arrow.domain() in functor_category and arrow.codomain() in functor_category:
         point = group.classifying_category().an_object()
         return arrow.component(point)
-    if isinstance(arrow, EquivariantMorphism):
+    acted = GObjects(group, category)
+    if arrow in acted.Mor(arrow.domain(), arrow.codomain()):
         return arrow.underlying_arrow()
     return category.Mor(arrow.domain(), arrow.codomain())(arrow)
 
@@ -177,18 +178,15 @@ class TransportGroupActionFunctor(Functor):
 def _is_augmentation_of_group_algebra(ring_map) -> bool:
     r"""Decide whether ``ring_map`` is the augmentation ``R[G] -> R``.
 
-    The domain must be a group algebra over the codomain, and the map must
-    send the chosen generators of ``G`` to ``1``; an algebra morphism out of
-    ``R[G]`` is determined by its values on those generators.
+    The augmentation is a canonical construction of the group algebra and is
+    cached by that owner.  Recognize that exact selected map rather than
+    manufacturing a chosen generating family of ``G`` merely to inspect it.
     """
     source = _owned_ring(ring_map.domain())
     target = _owned_ring(ring_map.codomain())
     if source not in GroupAlgebras(target):
         return False
-    return all(
-        ring_map(source.module_generator(generator)) == target.one()
-        for generator in source.group().group_generators()
-    )
+    return ring_map is source.augmentation()
 
 
 def _augmentation_data(ring_map):
@@ -242,7 +240,6 @@ class _TrivialActionFunctor(_RestrictionOfScalarsFunctor):
         target = self(morphism.codomain())
         return source.Mor(target)._from_equivariant_images(
             morphism,
-            verify_linearity=False,
         )
 
     def _repr_(self):
@@ -321,13 +318,13 @@ class _TrivialInvariantsAdjunction(_RestrictionCoextensionAdjunction):
     _restriction_functor = _TrivialActionFunctor
     _coextension_functor = _InvariantsFunctor
 
-    def unit(self, module):
+    def _unit_component(self, module):
         invariants = self.right_adjoint()(self.left_adjoint()(module))
         return module.module_category().Mor(module, invariants)(
             lambda label: invariants.module_generator(label)
         )
 
-    def counit(self, group_module):
+    def _counit_component(self, group_module):
         invariants = self.right_adjoint()(group_module)
         trivial = self.left_adjoint()(invariants)
         return trivial.Mor(group_module)(
@@ -348,7 +345,7 @@ class _CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
     _extension_functor = _CoinvariantsFunctor
     _restriction_functor = _TrivialActionFunctor
 
-    def unit(self, group_module):
+    def _unit_component(self, group_module):
         coinvariants = self.left_adjoint()(group_module)
         trivial = self.right_adjoint()(coinvariants)
         return group_module.Mor(trivial)(
@@ -361,7 +358,7 @@ class _CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
             )
         )
 
-    def counit(self, module):
+    def _counit_component(self, module):
         coinvariants = self.left_adjoint()(self.right_adjoint()(module))
         if coinvariants is not module:
             raise ValueError("coinvariants of the trivial action must be the original module")
@@ -406,7 +403,7 @@ class RestrictionOfGroupActionFunctor(Functor):
         morphism = self.group_morphism()
         category = self._underlying_category
 
-        # Preserve the represented concrete carrier when that owner already
+        # Preserve the represented underlying object when that owner already
         # knows how to equip the restricted action.  The generic fallback is
         # literally precomposition BH -> BG -> C.
         from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -420,7 +417,7 @@ class RestrictionOfGroupActionFunctor(Functor):
                     lambda group_element, point: acted.act(morphism(group_element), point),
                 )
 
-        # The affine-scheme specialization still owns a concrete carrier and
+        # The affine-scheme specialization still owns a concrete underlying object and
         # its fixed-locus operations; retain that owner until the scheme stream
         # moves its two-argument compatibility constructor.
         from dzack_research.preamble.categories.schemes.schemes import Schemes
@@ -433,8 +430,6 @@ class RestrictionOfGroupActionFunctor(Functor):
                         acted,
                         lambda group_element: acted.action_of(morphism(group_element)),
                     )
-            case _:
-                pass
 
         action = _action_functor_of(acted, morphism.codomain(), category)
         from dzack_research.preamble.categories.group.classifying_categories import (

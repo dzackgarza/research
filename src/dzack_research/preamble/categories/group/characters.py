@@ -15,11 +15,10 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.group.class_functions import (
     FiniteGroupClassFunction,
-    _finite_group_class_function,
 )
 from dzack_research.preamble.categories.group.groups import (
     FiniteGroups,
-    _engine_group,
+    _conjugacy_class_size,
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -30,7 +29,14 @@ from dzack_research.preamble.owned_category import _object_of
 
 
 class CharacterSets(OwnedParameterizedCategory):
-    r"""The owned sets ``Char(G)`` of ordinary characters of finite ``G``."""
+    r"""The owned sets ``Char(G)`` of genuine ordinary characters of finite ``G``.
+
+    These are characters of actual finite-dimensional representations, not
+    virtual characters.  Direct sum and tensor product make genuine characters
+    a commutative semiring; additive inverses appear only after Grothendieck
+    completion to the virtual-character/representation ring.  This owner keeps
+    the genuine character set, so its immediate placement remains ``Sets()``.
+    """
 
     @staticmethod
     def __classcall__(cls, group):
@@ -53,14 +59,14 @@ class CharacterSets(OwnedParameterizedCategory):
 
     class ParentMethods:
         def __init__(self, group, **rest) -> None:
-            self._preamble_character_group = group
+            self._group = group
             super().__init__(**rest)
 
         def group(self):
-            return self._preamble_character_group
+            return self._group
 
         def _element_constructor_(self, class_function):
-            if getattr(class_function, "parent", lambda: None)() is self:
+            if class_function in self:
                 return class_function
             if not isinstance(class_function, FiniteGroupClassFunction):
                 raise TypeError("a character is represented by an owned finite-group class function")
@@ -69,21 +75,21 @@ class CharacterSets(OwnedParameterizedCategory):
             return self.element_class(self, class_function)
 
         def __contains__(self, candidate) -> bool:
-            return getattr(candidate, "parent", lambda: None)() is self
+            return isinstance(candidate, Element) and candidate.parent() is self
 
         def _repr_(self):
             return f"Characters of {self.group()}"
 
     class ElementMethods(Element):
         def __init__(self, parent, class_function) -> None:
-            self._preamble_class_function = class_function
+            self._class_function = class_function
             Element.__init__(self, parent)
 
         def group(self):
             return self.parent().group()
 
         def class_function(self):
-            return self._preamble_class_function
+            return self._class_function
 
         def codomain(self):
             return self.class_function().codomain()
@@ -96,7 +102,7 @@ class CharacterSets(OwnedParameterizedCategory):
 
             This is the mathematical value family of the character.  Engine
             arguments used to evaluate the underlying class function remain
-            private to the class-function adapter.
+            private to the class-function construction.
             """
             return self.values()
 
@@ -110,7 +116,7 @@ class CharacterSets(OwnedParameterizedCategory):
             return self.class_function().degree()
 
         def __add__(self, other):
-            if getattr(other, "parent", lambda: None)() is not self.parent():
+            if other not in self.parent():
                 return NotImplemented
             representatives = self.conjugacy_class_representatives()
             summed = self.group().class_function(
@@ -121,31 +127,25 @@ class CharacterSets(OwnedParameterizedCategory):
             return self.parent()(summed)
 
         def _inner_product(self, other):
-            if getattr(other, "parent", lambda: None)() is not self.parent():
-                raise ValueError("character inner products use one finite group")
+            r"""``<chi, psi> = |G|^-1 sum_g chi(g) psi(g^-1)``, summed class by class."""
+            assert other in self.parent(), "character inner products use one finite group"
             group = self.group()
-            engine = _engine_group(group)
             representatives = self.conjugacy_class_representatives()
             class_sizes = tuple(
-                sum(
-                    1
-                    for _element in engine.conjugacy_class(
-                        group._to_engine(rep)
-                    )
-                )
-                for rep in representatives
+                _conjugacy_class_size(group, representative)
+                for representative in representatives
             )
-            total = self.codomain().zero()
-            for size, representative in zip(class_sizes, representatives, strict=True):
-                # For an ordinary finite-group character,
-                # conjugate(chi(g)) = chi(g^{-1}).  Read the involution through
-                # the character and the group rather than asking every owned
-                # cyclotomic scalar for a separate complex-conjugation API.
-                total += (
-                    size
-                    * self(representative)
-                    * other(representative.inverse())
-                )
+            # For an ordinary finite-group character,
+            # conjugate(chi(g)) = chi(g^{-1}).  Read the involution through
+            # the character and the group rather than asking every owned
+            # cyclotomic scalar for a separate complex-conjugation API.
+            total = sum(
+                (
+                    size * self(representative) * other(representative.inverse())
+                    for size, representative in zip(class_sizes, representatives, strict=True)
+                ),
+                self.codomain().zero(),
+            )
             return total / int(group.order())
 
         def irreducible_constituents(self):

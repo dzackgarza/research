@@ -149,9 +149,9 @@ def test_composition_along_a_base_morphism_is_left_adjoint_to_pullback() -> None
 
     # The Hom-set bijection round-trips the identity of the pulled-back family.
     identity = over_point.Mor(special_fibre, special_fibre).identity()
-    transposed = adjunction.hom_set_isomorphism_inverse(identity, codomain=family_object)
+    transposed = adjunction.mor_set_isomorphism_inverse(identity, codomain=family_object)
     assert transposed == counit
-    back = adjunction.hom_set_isomorphism_forward(transposed, source=special_fibre)
+    back = adjunction.mor_set_isomorphism_forward(transposed, source=special_fibre)
     assert back == identity
 
 

@@ -15,7 +15,7 @@ def test_lattice_isometry_owns_its_primitive_extension_and_centralizer() -> None
     assert extension.isometry is swap
     assert extension.lattice is lattice
     assert extension.invariant is swap.invariant_lattice()
-    assert extension.coinvariant is swap.formed_coinvariants()
+    assert extension.orthogonal_complement is swap.formed_coinvariants()
     assert swap in swap.centralizer_group()
     assert lattice.O().one() in swap.centralizer_group()
 

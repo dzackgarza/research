@@ -38,7 +38,7 @@ def _two_chart_sign_datum():
     left_overlap = cover.restrict_algebra(local_algebras[0], 0, 1)
     right_overlap = cover.restrict_algebra(local_algebras[1], 1, 0)
     transition = _sign_transition(left_overlap, right_overlap, -1)
-    datum = cover.glue_algebras(local_algebras, {(0, 1): transition})
+    datum = cover.glue_algebras(local_algebras, {(0, 1): transition}).gluing_datum()
     return algebra, cover, local_algebras, datum
 
 
@@ -46,15 +46,27 @@ def test_two_chart_algebra_descent_has_algebra_sections_and_algebra_restrictions
     from dzack_research.preamble.categories.algebras.algebras import (
         Algebras,
     )
+    from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
 
-    algebra, _cover, local_algebras, datum = _two_chart_sign_datum()
+    algebra, cover, local_algebras, datum = _two_chart_sign_datum()
     sections = datum.compatible_sections()
     sheaf = datum.sheaf()
 
+    assert sheaf in cover.cech_coverage().sheaves(
+        Algebras(algebra).Associative().Unital()
+    )
     assert sections in Algebras(algebra)
     assert sections in Algebras(algebra).Associative().Unital().Commutative()
     assert sections.algebra_base_ring() is algebra
     assert not sections.is_framed_module()
+    module_sections = datum.underlying_module_datum().compatible_sections()
+    multiplication = sections.multiplication()
+    tensor_square = multiplication.domain()
+    assert sections.unformed_module() is module_sections
+    assert tensor_square in TensorProductModules(algebra)
+    assert tensor_square.tensor_factor(0) is module_sections
+    assert tensor_square.tensor_factor(1) is module_sections
+    assert multiplication.codomain() is module_sections
     assert sheaf.global_sections() is sections
     assert sheaf.underlying_module_sheaf() is datum.underlying_module_datum().sheaf()
     assert sheaf.sections_on_chart(0) is local_algebras[0]
@@ -62,11 +74,16 @@ def test_two_chart_algebra_descent_has_algebra_sections_and_algebra_restrictions
 
     left_z = local_algebras[0].algebra_generator("z")
     right_z = local_algebras[1].algebra_generator("z")
-    twisted_generator = sections((left_z, -right_z))
+    twisted_generator = datum.compatible_section((left_z, -right_z))
     assert twisted_generator * twisted_generator == sections.one()
-    assert sections.one().components() == tuple(
-        local_algebra.one() for local_algebra in local_algebras
-    )
+    assert tuple(
+        datum.compatible_section_component(sections.one(), index)
+        for index in cover.atlas()
+    ) == tuple(local_algebra.one() for local_algebra in local_algebras)
+    module_generator = module_sections(twisted_generator)
+    assert multiplication(
+        tensor_square.pure_tensor(module_generator, module_generator)
+    ) == module_sections(sections.one())
 
     restriction = sheaf.restriction_map(0, 0, 1)
     assert restriction.domain() is local_algebras[0]
@@ -120,7 +137,7 @@ def test_three_chart_algebra_descent_checks_the_algebra_cocycle() -> None:
             sign,
         )
 
-    datum = cover.glue_algebras(local_algebras, transitions)
+    datum = cover.glue_algebras(local_algebras, transitions).gluing_datum()
     triple_left = datum.transition_on_intersection(0, 1, 0, 1, 2)
     triple_right = datum.transition_on_intersection(1, 2, 0, 1, 2)
     triple_direct = datum.transition_on_intersection(0, 2, 0, 1, 2)
@@ -167,8 +184,8 @@ def test_algebra_descent_morphisms_use_endpoint_homs_and_compose() -> None:
 
     algebra, cover, local_algebras, source = _two_chart_sign_datum()
     transition = source.transition(0, 1)
-    middle = cover.glue_algebras(local_algebras, {(0, 1): transition})
-    target = cover.glue_algebras(local_algebras, {(0, 1): transition})
+    middle = cover.glue_algebras(local_algebras, {(0, 1): transition}).gluing_datum()
+    target = cover.glue_algebras(local_algebras, {(0, 1): transition}).gluing_datum()
 
     sign_maps = tuple(
         local_algebra.Mor(local_algebra)(
@@ -196,7 +213,7 @@ def test_algebra_descent_morphisms_use_endpoint_homs_and_compose() -> None:
     sections = source.compatible_sections()
     left_z = local_algebras[0].algebra_generator("z")
     right_z = local_algebras[1].algebra_generator("z")
-    section = sections((left_z, -right_z))
+    section = source.compatible_section((left_z, -right_z))
     global_map = first.global_sections_map()
     assert global_map.domain() is sections
     assert global_map.codomain() is middle.compatible_sections()
@@ -211,7 +228,7 @@ def test_algebra_descent_morphisms_use_endpoint_homs_and_compose() -> None:
     incompatible_target = cover.glue_algebras(
         local_algebras,
         {(0, 1): identity_transition},
-    )
+    ).gluing_datum()
     local_identities = tuple(
         local_algebra.Mor(local_algebra).identity()
         for local_algebra in local_algebras

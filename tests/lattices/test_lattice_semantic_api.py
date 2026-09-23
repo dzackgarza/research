@@ -1,4 +1,6 @@
-from dzack_research.preamble.all import ZZ, Lattices
+import pytest
+
+from dzack_research.preamble.all import NN, QQ, ZZ, Lattices
 
 
 def test_metric_map_and_linear_dual_are_the_live_correlation_data() -> None:
@@ -10,6 +12,48 @@ def test_metric_map_and_linear_dual_are_the_live_correlation_data() -> None:
     assert lattice.metric_map().codomain() is lattice.linear_dual()
     assert lattice.metric_map()(e) == e.to_covector()
     assert lattice.metric_map()(f) == f.to_covector()
+
+
+def test_infinite_metric_map_targets_the_full_algebraic_dual() -> None:
+    lattice = Lattices(QQ)(QQ**NN)
+    dual = lattice.linear_dual()
+    correlation = lattice.metric_map()
+    e0 = lattice.basis_vector(0)
+    e1 = lattice.basis_vector(1)
+    e3 = lattice.basis_vector(3)
+
+    assert dual is lattice.module_category().Mor(lattice, QQ.regular_module())
+    assert correlation.domain() is lattice
+    assert correlation.codomain() is dual
+
+    first_covector = correlation(e0)
+    assert first_covector.parent() is dual
+    assert first_covector(e0) == 1
+    assert first_covector(e1) == 0
+
+    all_ones = dual(lambda _label: QQ.regular_module()(1))
+    assert all_ones.parent() is dual
+    assert all_ones(e0) == all_ones(e1) == all_ones(e3) == 1
+    # Every vector of QQ^(NN) has finite support, whereas all_ones does not.
+    # Thus the represented diagonal correlation is injective but not onto the
+    # full algebraic dual.
+    assert lattice.is_nondegenerate() is True
+    assert lattice.gram_tensor().is_unimodular() is False
+    with pytest.raises(AssertionError, match="cokernel construction"):
+        lattice.is_unimodular()
+
+
+def test_nondegenerate_and_unimodular_are_distinct_and_perfectness_retains_an_inverse() -> None:
+    doubled_line = Lattices(ZZ)([[2]])
+    assert doubled_line.is_nondegenerate() is True
+    assert doubled_line.is_unimodular() is False
+
+    plane = Lattices(ZZ)("U")
+    correlation = plane.correlation_isomorphism()
+    for generator in plane.module_generators():
+        assert correlation.inverse()(correlation.forward()(generator)) == generator
+    for functional in correlation.forward().codomain().module_generators():
+        assert correlation.forward()(correlation.inverse()(functional)) == functional
 
 
 def test_signature_and_selected_basis_gram_matrix_are_owner_level_operations() -> None:
@@ -50,8 +94,8 @@ def test_perp_is_the_same_owned_orthogonal_subobject_from_both_endpoints() -> No
     assert from_ambient.inclusion().codomain() is lattice
     assert from_line.module_rank() == from_ambient.module_rank() == 1
     assert lattice.b(
-        line.inclusion()(line.module_generator(0)),
-        from_ambient.inclusion()(from_ambient.module_generator(0)),
+        line.inclusion()(line.basis_vector(0)),
+        from_ambient.inclusion()(from_ambient.basis_vector(0)),
     ) == 0
 
 
@@ -90,7 +134,7 @@ def test_sublattice_semantic_accessors_retain_the_actual_embedding_and_form() ->
 
 def test_isotropic_reduction_exposes_its_defining_inclusion_and_live_reduction_data() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("U")
-    e = lattice.module_generator(0)
+    e = lattice.basis_vector(0)
     isotropic = lattice.primitive_sublattice_from((e,))
     reduction = isotropic.isotropic_reduction()
 

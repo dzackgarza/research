@@ -104,7 +104,7 @@ def test_archived_noncrystallographic_H4_group_has_order_14400() -> None:
     assert CoxeterGroup(["H", 4]).cardinality() == 14400
 
 
-def test_module_zero_and_unequal_rank_hom_survive_owned_refinement() -> None:
+def test_module_zero_and_unequal_rank_mor_survive_owned_refinement() -> None:
     from dzack_research.preamble.all import ZZ
     from dzack_research.preamble.categories.sets import finite_ordered_set
 

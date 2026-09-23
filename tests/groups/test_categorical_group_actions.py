@@ -1,6 +1,8 @@
 r"""Classifying categories and categorical group actions ``BG -> C``."""
 
 from dzack_research.preamble.all import (
+    Cat,
+    FiniteGSets,
     QQ,
     GObjects,
     Groups,
@@ -22,6 +24,12 @@ def test_classifying_category_and_the_quotient_from_c4_to_c2() -> None:
     arrows = category.Mor(point, point)
     arrow = arrows(generator)
 
+    assert point is category.an_object()
+    assert point in category
+    assert category in Cat()
+    assert point not in Cat()
+    assert point is not group
+    assert category.group() is group
     assert (arrow * arrow).group_element() == generator * generator
     assert (arrow * arrow).group_element().order() == 2
     assert arrows.identity().group_element() == group.one()
@@ -91,6 +99,7 @@ def test_restriction_is_precomposition_by_the_classifying_functor() -> None:
     classifying = group.classifying_category()
     arrow = classifying.Mor(classifying.an_object(), classifying.an_object())(generator)
 
+    assert restricted in GObjects(group, Sets())
     assert action.domain() is classifying
     assert action(arrow)(Sets.Δ[1](0)) == Sets.Δ[1](1)
     assert action.factors()[0].group_morphism() is phi
@@ -109,7 +118,8 @@ def test_transport_is_postcomposition_on_objects_and_nonidentity_arrows() -> Non
     module = GObjects(group, free_module.codomain()).forgetful_functor()(transported)
     classifying = group.classifying_category()
 
-    assert transported.arrow().functor().factors()[-1] is free_module
+    factors = transported.arrow().functor().factors()
+    assert tuple(factors)[-1] is free_module
     assert transported_arrow.component(classifying.an_object())(
         module.module_generator(Sets.Δ[1](0))
     ) == module.module_generator(Sets.Δ[1](1))
@@ -133,7 +143,7 @@ def test_sign_module_uses_the_same_action_functor_and_equivariant_map_semantics(
     arrow = classifying.Mor(classifying.an_object(), classifying.an_object())(generator)
 
     assert representation in Modules(QQ[group])
-    assert representation.unacted_module() is line
+    assert representation.unformed_module() is line
     assert representation.action_functor().domain() is classifying
     assert representation.action_functor()(arrow) == representation.action_of(generator)
     assert transformation.naturality_square(arrow)[0] == transformation.naturality_square(arrow)[1]
@@ -186,3 +196,35 @@ def test_transitive_action_with_nontrivial_stabilizer_is_not_a_torsor() -> None:
     orbit_stabilizers = natural.orbit_stabilizers()
     assert orbit_stabilizers.index_set() is natural.orbits()
     assert group.one() in orbit_stabilizers[orbit]
+
+
+def test_finite_predicate_centralizer_action_uses_owned_orbits_and_stabilizers() -> None:
+    group = Groups.S(3)
+    identity = group.one()
+    transposition = next(
+        element
+        for element in group
+        if element != identity and element * element == identity
+    )
+    centralizer = group.centralizer(transposition)
+    regular_points = tuple(group)
+    action = FiniteGSets(centralizer)(
+        regular_points,
+        lambda centralizing_element, point: centralizing_element * point,
+    )
+    orbits = action.orbits()
+
+    assert int(action.cardinality()) == len(regular_points)
+    assert orbits.cardinality() == 3
+    assert centralizer.cardinality() == 2
+    for orbit in orbits:
+        representative = orbit.representative()
+        stabilizer = action.stabilizer(representative)
+        assert (
+            int(orbit.points().cardinality()) * int(stabilizer.cardinality())
+            == int(centralizer.cardinality())
+        )
+        target = orbit.points()[-1]
+        transporter = action.transporter_witness(representative, target)
+        assert transporter in centralizer
+        assert action.act(transporter, representative) == target

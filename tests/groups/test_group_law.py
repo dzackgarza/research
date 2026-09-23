@@ -12,6 +12,7 @@ from dzack_research.preamble.all import (
     Groups,
     Subgroups,
 )
+from dzack_research.preamble.categories.group.groups import OwnedGroups
 
 
 def _natural_permutation_module(ring, group, degree):
@@ -47,13 +48,13 @@ def test_the_natural_permutation_representation_is_a_left_action() -> None:
 
 
 def test_chosen_relators_multiply_to_the_identity_in_the_owned_order() -> None:
-    for group in (Groups.S(3), Groups.D(4), Groups.A(4)):
-        generators = tuple(group.group_generators())
+    for native in (Groups.S(3), Groups.D(4), Groups.A(4)):
+        group = native.presentation()
+        projection = group.selected_framing_morphism(OwnedGroups())
         for relator in group.defining_relations():
             product = group.one()
-            for letter in relator.Tietze():
-                generator = generators[abs(letter) - 1]
-                product = product * (generator if letter > 0 else ~generator)
+            for letter in relator.parent().reduced_word(relator):
+                product = product * projection(letter)
             assert product.is_one()
 
 
@@ -67,4 +68,11 @@ def test_orbits_and_stabilizers_of_the_natural_action() -> None:
     assert stabilizer in Subgroups(symmetric)
     assert stabilizer.order() == 6
     assert symmetric.left_cosets(stabilizer).cardinality() == 4
-    assert Groups.C(2).action_on((1, 2, 3, 4)).orbits().cardinality() == 3
+    action = Groups.C(2).action_on((1, 2, 3, 4))
+    orbits = action.orbits()
+    assert orbits.cardinality() == 3
+    assert tuple(int(orbit.representative()) for orbit in orbits) == (1, 3, 4)
+    assert tuple(
+        int(point_stabilizer.order())
+        for point_stabilizer in action.orbit_stabilizers()
+    ) == (1, 2, 2)

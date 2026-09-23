@@ -63,7 +63,7 @@ def test_matrix_tensor_is_component_data_not_a_module_morphism() -> None:
     assert tensor.from_matrix(morphism) == components
 
 
-def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
+def test_a_matrix_mor_is_taken_between_framed_free_modules() -> None:
     r"""M_{m x n}(R) = Hom_R(F_R(S), F_R(T)) for chosen finite sets S and T.
 
     The free-module functor takes a *set*, not an integer: there is no
@@ -74,7 +74,7 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
     what the matrix entries are indexed by.
 
     So a free module on a different set of the same cardinality is isomorphic
-    to F_R(Delta[n-1]) and is not equal to it, and its Hom is a different
+    to F_R(Delta[n-1]) and is not equal to it, and its Mor is a different
     object.  That is why fresh free-module construction does not intern its parents.
     """
     with pytest.raises(TypeError):
@@ -283,11 +283,11 @@ def test_tensor_pullback_requires_an_actual_linear_morphism() -> None:
 
 
 def test_matrix_space_is_the_actual_linear_map_parent() -> None:
-    hom = ZZ.matrix_space(2, 3)
-    morphism = hom.from_rows([[1, 0, 2], [0, 1, 3]])
+    mor = ZZ.matrix_space(2, 3)
+    morphism = mor.from_rows([[1, 0, 2], [0, 1, 3]])
     vector = tensor.vector(ZZ, [1, 1, 1])
 
-    assert morphism.parent() is hom
+    assert morphism.parent() is mor
     _shape = tensor.from_matrix(morphism).tensor_shape()
     assert _shape.cardinality() == 2
     assert _shape[0] == 2

@@ -57,7 +57,9 @@ def test_symmetric_algebra_of_a_free_module(commutative_ring) -> None:
     module = ring.free_module(3)
     symmetric = module.symmetric_algebra()
     assert symmetric in Algebras(ring).Associative().Unital().Commutative()
-    assert symmetric.free_source_module() is module
+    assert symmetric.generating_module() is module
+    assert symmetric.graded_piece(1) is module
+    assert symmetric.unformed_module() is not module
     assert symmetric.graded_piece(1).module_rank() == 3
     assert symmetric.graded_piece(2).module_rank() == 6
 

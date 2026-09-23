@@ -9,7 +9,7 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
-def test_finite_g_set_owns_its_equivariant_hom() -> None:
+def test_finite_g_set_owns_its_equivariant_mor() -> None:
     group = Groups.C(3)
     category = FiniteGSets(group)
     regular = category(tuple(group), lambda left, right: left * right)

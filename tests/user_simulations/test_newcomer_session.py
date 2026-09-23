@@ -134,7 +134,7 @@ def test_a_newcomer_does_linear_algebra_over_a_pid(rank) -> None:
     rendered(Q)
     assert Q.order() == abs(A.determinant())
     assert Q.invariants() == A.elementary_divisors()
-    assert A.smith_form()[0].diagonal() == A.elementary_divisors()
+    assert A.smith_form()["diagonal"].diagonal() == A.elementary_divisors()
     N = M.submodule([M.gen(0) * 2, M.gen(1)])
     assert N.module_rank() == 2
     assert (M / N).torsion_subgroup().order() == 2

@@ -19,6 +19,9 @@ class _DualizationFunctor(Functor):
         category = FinitelyGeneratedFreeModules(_owned_ring(base_ring))
         super().__init__(category.opposite(), category)
 
+    def _repr_(self):
+        return "Dual-module functor (-)^*"
+
     def _apply_object(self, opposite_module):
         return opposite_module.underlying_object().dual_module()
 
@@ -59,6 +62,9 @@ class _BiproductBifunctor(Functor):
         category = FinitelyPresentedModules(_owned_ring(base_ring))
         super().__init__(Cat().product((category, category)), category)
 
+    def _repr_(self):
+        return "Direct-sum bifunctor"
+
     def _apply_object(self, pair):
         return self.codomain().biproduct((pair.first(), pair.second()))
 
@@ -87,6 +93,9 @@ class _KernelArrowFunctor(_ArrowConstructionFunctor):
         finite_free = FinitelyGeneratedFreeModules(ring)
         super().__init__(finite_free, finite_free)
 
+    def _repr_(self):
+        return "Kernel functor"
+
     def _apply_object(self, arrow_object):
         return arrow_object.arrow().kernel()
 
@@ -112,6 +121,9 @@ class _CokernelArrowFunctor(_ArrowConstructionFunctor):
         ring = _owned_ring(base_ring)
         category = FinitelyPresentedModules(ring)
         super().__init__(category, category)
+
+    def _repr_(self):
+        return "Cokernel functor"
 
     def _apply_object(self, arrow_object):
         return arrow_object.arrow().cokernel()
@@ -140,10 +152,16 @@ class _OrthogonalDirectSumBifunctor(Functor):
         category = Lattices(_owned_ring(base_ring))
         super().__init__(Cat().product((category, category)), category)
 
+    def _repr_(self):
+        return "Orthogonal direct-sum bifunctor"
+
     def _apply_object(self, pair):
         left, right = pair.first(), pair.second()
-        if not left.module_rank().is_finite() or not right.module_rank().is_finite():
-            raise NotImplementedError("the active orthogonal-sum functor uses finite concatenated bases")
+        assert left.module_rank().is_finite() and right.module_rank().is_finite(), (
+            "the orthogonal direct sum of arbitrary lattices exists; its morphism action is "
+            "represented here by concatenating finite framings, so both summands must have "
+            "finite rank"
+        )
         return left + right
 
     @staticmethod

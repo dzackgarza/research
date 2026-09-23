@@ -1,6 +1,6 @@
 r"""Finite-index splitting of the isotropic Tits building with live transporters."""
 
-from dzack_research.preamble.all import NamedLattices
+from dzack_research.preamble.all import NamedLattices, Sets
 
 
 def _same_subobject(left, right) -> bool:
@@ -39,6 +39,7 @@ def test_stable_orthogonal_group_has_owned_line_plane_and_flag_orbits() -> None:
 
     for cusp_family in (line_cusps, plane_cusps):
         for cusp in cusp_family:
+            assert cusp in Sets()
             assert cusp.subgroup() is subgroup
             assert cusp.representative() in cusp
             stabilizer = cusp.stabilizer()

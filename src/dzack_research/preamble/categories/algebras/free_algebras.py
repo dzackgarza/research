@@ -1,5 +1,6 @@
 """Free symmetric, tensor, alternating, and divided-power algebra categories."""
 
+from math import prod
 from typing import Any, cast
 
 from sage.algebras.free_algebra import FreeAlgebra as _SageFreeAlgebra
@@ -16,9 +17,9 @@ from sage.rings.ideal import Ideal_generic
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebraMorphism,
@@ -28,15 +29,17 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebraPushouts,
     FinitelyPresentedAlgebras,
     FramedAlgebras,
-    _AlgebraHomsetCommonMethods,
+    _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
     _SelectedFiniteAlgebraPresentation,
     _refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
@@ -44,27 +47,181 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_ring,
+    _set_owned_ring_display,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 
 
-class _FreeAlgebraConstruction:
-    r"""The selected source module of a free-algebra construction."""
+class _NativeMonomialEvaluation:
+    r"""Native word evaluation shared by free algebras and their linear quotients."""
 
-    def __init__(self, source_module) -> None:
-        self._source_module = source_module
+    def _native_word_representative(self, element):
+        return self._engine_element(element)
 
-    def source_module(self):
-        return self._source_module
+    def _native_word_generator(self, position):
+        return self._engine.gen(position)
+
+    def _native_basis_image(self, label):
+        r"""Evaluate one canonical graded framing label in the native algebra."""
+        inner = label.summand_element()
+        labels = self._generating_module.module_generating_set()
+        ranking = labels.ranking_map()
+        match self._native_free_flavor:
+            case "tensor":
+                native = prod(
+                    (self._native_word_generator(int(ranking(inner.component(position))))
+                     for position in inner.parent().index_set()),
+                    start=self._engine.one(),
+                )
+            case "symmetric":
+                native = prod(
+                    (self._native_word_generator(int(ranking(item))) ** int(inner.multiplicity(item))
+                     for item in inner.support()),
+                    start=self._engine.one(),
+                )
+        return self._from_engine_element(native)
+
+    def _native_basis_coefficients(self, element):
+        r"""Decode finite native support in the selected word-module frame.
+
+        Univariate polynomial keys are exponents, multivariate keys are
+        exponent tuples, and free-algebra keys are free-monoid words.  A
+        linear quotient supplies its lift into that native free algebra.
+        """
+        generating = self._generating_module
+        base = generating.base_ring()
+        labels = generating.module_generating_set()
+        module_labels = self._native_module_basis.source().module_generating_set()
+        representative = self._native_word_representative(element)
+        engine = representative.parent()
+        coefficients = {}
+        for monomial, coefficient in representative.monomial_coefficients().items():
+            match self._native_free_flavor:
+                case "tensor":
+                    native_labels = dict(zip(engine.monoid().gens(), labels, strict=True))
+                    word = tuple(
+                        native_labels[generator]
+                        for generator, exponent in monomial
+                        for _ in range(int(exponent))
+                    )
+                    degree = len(word)
+                    inner = module_labels.cofactor(NN(degree))(
+                        lambda position, word=word: word[int(position)]
+                    )
+                case "symmetric":
+                    match engine:
+                        case PolynomialRing_generic():
+                            exponents = (int(monomial),)
+                        case _:
+                            exponents = tuple(int(exponent) for exponent in monomial)
+                    degree = sum(exponents)
+                    powers = dict(zip(labels, exponents, strict=True))
+                    inner = module_labels.cofactor(NN(degree)).from_multiplicities(powers)
+            coefficients[module_labels(NN(degree), inner)] = _owned_engine_element(base,
+                _engine_ring(base)(coefficient)
+            )
+        return coefficients
+
+
+class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
+    r"""Native polynomial/word arithmetic on the canonical free module.
+
+    For a free module M, T(M) = direct_sum_d T^d(M) and
+    Sym(M) = direct_sum_d Sym^d(M) (Stacks, Tag 00DM).  The module
+    construction supplies these exact pieces.  The free module on the
+    disjoint union of their word bases supplies their summed framing.
+    Its free source is the basis of all words or monomials, not the
+    degree-one generating module M.  Native coefficient extraction is the
+    inverse of monomial evaluation in that basis.
+
+    This engine adapter supplies that correspondence before the common
+    native ring constructor classifies multiplication.  It introduces no
+    module arithmetic, framing accessor, or alternative algebra entry.
+    """
+
+    def __init__(self, engine, generating_module, flavor, *, categories=(), construction_data=()) -> None:
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+        from dzack_research.preamble.categories.modules.native_modules import _NativeModuleBasis
+
+        base = generating_module.base_ring()
+        assert generating_module in FramedFreeModules(base), (
+            "a native free algebra is presented on a free generating module"
+        )
+        self._generating_module = generating_module
+        self._native_free_flavor = flavor
+        labels = generating_module.module_generating_set()
+        match flavor:
+            case "tensor":
+                basis = labels.finite_words()
+                algebra_category = TensorAlgebras(base)
+            case "symmetric":
+                basis = labels.finite_multisets()
+                algebra_category = SymmetricAlgebras(base)
+            case _:
+                raise ValueError("the native free algebra is tensor or symmetric")
+        self._native_module_basis = _NativeModuleBasis(
+            base.free_module(basis),
+            self._native_basis_image,
+            self._native_basis_coefficients,
+        )
+        super().__init__(
+            engine, base, generating_module.module_generating_set(),
+            categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category, *categories),
+            construction_data=construction_data,
+            law_decisions=(("grading", True),),
+        )
+
+    def _refined_specialized_algebra(
+        self,
+        base_ring,
+        labels,
+        categories,
+        construction_data,
+    ):
+        r"""Preserve this native free-algebra realization under common refinement."""
+        if self.base_ring() is not base_ring:
+            return None
+        selected_labels = (
+            self.algebra_generating_set()
+            if labels is None
+            else finite_ordered_set(labels)
+        )
+        generating = self.generating_module()
+        if selected_labels == self.algebra_generating_set():
+            if (
+                not construction_data
+                and all(self in category for category in categories)
+            ):
+                return self
+        else:
+            generating = base_ring.free_module(selected_labels)
+        return _native_free_algebra(
+            _engine_ring(self),
+            generating,
+            self._native_free_flavor,
+            categories=categories,
+            construction_data=construction_data,
+        )
+
+@cached_function(key=lambda engine, generating_module, flavor, categories=(), construction_data=(): (
+    engine, id(generating_module), flavor, categories, construction_data,
+))
+def _native_free_algebra(engine, generating_module, flavor, *, categories=(), construction_data=()):
+    r"""The native realization of the free functor on this exact module."""
+    return _NativeFreeAlgebraParent(
+        engine, generating_module, flavor,
+        categories=categories, construction_data=construction_data,
+    )
 
 
 def _finite_labels(labels):
@@ -91,18 +248,12 @@ def _variable_names(labels) -> tuple[str, ...]:
 
 def _polynomial_ring(base_ring, *args, **kwargs):
     base = _owned_ring(base_ring)
-    result = _own_ring(_SagePolynomialRing(_engine_ring(base), *args, **kwargs))
-    labels = tuple(_engine_ring(result).variable_names())
-    algebra = _refine_algebra(
-        result,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        SymmetricAlgebras(base),
+    engine = _SagePolynomialRing(_engine_ring(base), *args, **kwargs)
+    labels = tuple(engine.variable_names())
+    algebra = _native_free_algebra(engine, base.free_module(labels), "symmetric")
+    _set_owned_ring_display(
+        algebra, f"{base}[{', '.join(labels)}]", kind="polynomial"
     )
-    algebra._preamble_ring_display = f"{base}[{', '.join(labels)}]"
-    algebra._preamble_ring_display_kind = "polynomial"
 
     return algebra
 
@@ -114,8 +265,11 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
     )
     labels = tuple(_engine_ring(result).variable_names())
     algebra = _refine_algebra(result, base, labels)
-    algebra._preamble_ring_display = f"{base}[{', '.join(labels)}^±1]"
-    algebra._preamble_ring_display_kind = "laurent_polynomial"
+    _set_owned_ring_display(
+        algebra,
+        f"{base}[{', '.join(labels)}^±1]",
+        kind="laurent_polynomial",
+    )
 
     return algebra
 
@@ -131,23 +285,13 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=No
         )
 
         return _sparse_symmetric_algebra_of(
-            base.free_module(algebra_generating_set)
+            base.free_module(algebra_generating_set) if source_module is None else source_module
         )
     labels = _finite_labels(algebra_generating_set)
-    algebra = base.polynomial_ring(_variable_names(labels))
-
-    return _refine_algebra(
-        algebra,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        SymmetricAlgebras(base),
-        construction_data=(
-            (("_free_algebra_construction", _FreeAlgebraConstruction(source_module)),)
-            if source_module is not None
-            else ()
-        ),
+    generating = base.free_module(labels) if source_module is None else source_module
+    return _native_free_algebra(
+        _SagePolynomialRing(_engine_ring(base), _variable_names(labels)),
+        generating, "symmetric",
     )
 
 
@@ -162,24 +306,13 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
         )
 
         return _sparse_tensor_algebra_of(
-            base.free_module(algebra_generating_set)
+            base.free_module(algebra_generating_set) if source_module is None else source_module
         )
     labels = _finite_labels(algebra_generating_set)
     names = _variable_names(labels)
     algebra = _SageFreeAlgebra(_engine_ring(base), len(labels), names=names)
-    return _refine_algebra(
-        algebra,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        TensorAlgebras(base),
-        construction_data=(
-            (("_free_algebra_construction", _FreeAlgebraConstruction(source_module)),)
-            if source_module is not None
-            else ()
-        ),
-    )
+    generating = base.free_module(labels) if source_module is None else source_module
+    return _native_free_algebra(algebra, generating, "tensor")
 
 
 def _relations_to_ideal(presentation_ring, relations):
@@ -194,7 +327,7 @@ def _relations_to_ideal(presentation_ring, relations):
         indices = Sets.Δ[len(backend_by_position) - 1]
         selected_relations = indexed_family(
             indices,
-            lambda index: presentation_ring._from_engine_element(
+            lambda index: _owned_engine_element(presentation_ring,
                 backend_by_position[int(index)]
             ),
             name="Defining relation family",
@@ -233,7 +366,7 @@ def _relations_to_ideal(presentation_ring, relations):
         )
 
     backend_relations = [
-        presentation_ring._engine_element(selected_relations.value(index))
+        _engine_element(presentation_ring, selected_relations.value(index))
         for index in selected_relations.index_set()
     ]
     return engine.ideal(backend_relations), selected_relations
@@ -254,7 +387,7 @@ def _base_change_commutative_presentation(algebra, ring_map):
     target_engine = _engine_ring(target_presentation_ring)
 
     def map_backend_scalar(scalar):
-        owned_scalar = source_base._from_engine_element(source_engine(scalar))
+        owned_scalar = _owned_engine_element(source_base, source_engine(scalar))
         return _engine_element(target_base, ring_map(owned_scalar))
 
     backend_base_map = SetMorphism(
@@ -263,7 +396,7 @@ def _base_change_commutative_presentation(algebra, ring_map):
     )
     source_presentation = algebra.presentation_ring()
     mapped_relations = tuple(
-        target_presentation_ring._from_engine_element(
+        _owned_engine_element(target_presentation_ring,
             target_engine(
                 _engine_element(source_presentation, relation).map_coefficients(
                     backend_base_map,
@@ -290,7 +423,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         *,
         extra_categories=(),
         extra_construction_data=None,
-        free_source_module=None,
+        generating_module=None,
         commutative_backend=False,
         finite_free_degree=None,
         presentation_flattening=None,
@@ -315,50 +448,55 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             )
             if unflatten is not None:
                 representative = unflatten(representative)
-            return presentation_ring._from_engine_element(representative)
+            return _owned_engine_element(presentation_ring, representative)
+
+        def presentation_morphism():
+            return Algebras(
+                presentation_ring.base_ring()
+            ).Associative().Unital().Mor(presentation_ring, self)(
+                lambda label: self.algebra_generator(label)
+            )
 
         self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
             presentation_ring,
             selected_relations,
             presentation_ideal,
             lift_to_presentation,
+            presentation_morphism,
         )
-        if free_source_module is not None:
-            self._free_algebra_construction = _FreeAlgebraConstruction(free_source_module)
+        if generating_module is not None:
+            self._generating_module = generating_module
 
+        extra_categories = tuple(extra_categories)
         placement = [
             FinitelyPresentedAlgebras(base),
             AlgebrasWithChosenFinitePresentation(base),
-            Algebras(base).Associative().Unital().Commutative(),
-            *tuple(extra_categories),
+            Algebras(base).Associative().Unital(),
+            *extra_categories,
         ]
+        match commutative_backend:
+            case True:
+                placement.append(Algebras(base).Commutative())
         if finite_free_degree is not None:
+            from dzack_research.preamble.categories.modules.native_modules import _NativeModuleBasis
+
             module_labels = Sets.Δ[finite_free_degree - 1]
-            self._preamble_module_generating_set = module_labels
-            module_primitive = (
-                quotient_engine.gen()
-                if finite_free_generator is None
-                else finite_free_generator
-            )
-            self._preamble_module_generator_values = indexed_family(
-                module_labels,
-                lambda exponent: self._from_engine_element(module_primitive) ** int(exponent),
-                name="Quotient module generator values",
-            )
+            source = base.free_module(module_labels)
+            module_primitive = quotient_engine.gen() if finite_free_generator is None else finite_free_generator
 
-            def module_coordinates(element):
-                backend = quotient_engine(self._engine_element(self(element)))
-                coordinates = (
-                    backend
-                    if finite_free_coordinates is None
-                    else finite_free_coordinates(backend)
-                )
-                return (
-                    base._from_engine_element(coefficient)
-                    for coefficient in coordinates
-                )
+            def basis_image(exponent):
+                return self._from_engine_element(module_primitive) ** int(exponent)
 
-            self._preamble_module_coordinate_function = module_coordinates
+            def basis_coordinates(element):
+                backend = self._engine_element(self(element))
+                coordinates = backend if finite_free_coordinates is None else finite_free_coordinates(backend)
+                return {
+                    label: _owned_engine_element(base, coefficient)
+                    for label, coefficient in zip(module_labels, coordinates, strict=True)
+                    if coefficient != 0
+                }
+
+            self._native_module_basis = _NativeModuleBasis(source, basis_image, basis_coordinates)
             placement.append(FinitelyGeneratedFreeModules(base))
 
         selected_generator_values = generator_values
@@ -376,6 +514,15 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
                 for position in range(presentation_engine.ngens())
             )
 
+        law_decisions = ()
+        match any(
+            category.is_subcategory(GradedAlgebras(base))
+            for category in extra_categories
+        ):
+            case True:
+                law_decisions = (("grading", True),)
+            case False:
+                pass
         _OwnedAlgebraParent.__init__(
             self,
             quotient_engine,
@@ -383,11 +530,8 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             labels,
             generator_values=selected_generator_values,
             categories=tuple(placement),
+            law_decisions=law_decisions,
         )
-        presentation_morphism = Algebras(presentation_ring.base_ring()).Associative().Unital().Mor(presentation_ring, self)(
-            lambda label: self.algebra_generator(label)
-        )
-        self.selected_algebra_presentation().set_presentation_morphism(presentation_morphism)
         if commutative_backend:
             self._preamble_commutative_algebra_coproduct_backend = lambda left, right: (
                 _commutative_algebra_coproduct_backend(left, right)
@@ -395,6 +539,61 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             self._preamble_commutative_algebra_pushout_backend = lambda left_map, right_map: (
                 _commutative_algebra_pushout_backend(left_map, right_map)
             )
+
+
+
+
+class _NativeLinearRelationAlgebra(_NativeMonomialEvaluation, _PresentedAlgebraParent):
+    r"""A native tensor/symmetric quotient on its actual module of words.
+
+    If M = F/N, maps from T(F)/(N) to any associative algebra are exactly
+    linear maps from F that vanish on N, hence maps from M.  Thus its
+    degree-d module is M tensor ... tensor M.  The same argument with
+    commutative targets gives Sym^d(M).  The word-module owner constructs
+    these quotients; native multiplication only realizes that same module.
+    """
+
+    def __init__(self, engine, base, labels, presentation_ring, relations,
+                 presentation_ideal, *, generating_module, **options):
+        from dzack_research.preamble.categories.modules.native_modules import _NativeModuleFrame
+        from dzack_research.preamble.categories.modules.word_modules import _module_on_word_quotient
+
+        self._generating_module = generating_module
+        match presentation_ring:
+            case _ if presentation_ring in TensorAlgebras(base):
+                self._native_free_flavor = "tensor"
+            case _:
+                assert presentation_ring in SymmetricAlgebras(base), (
+                    "a linear-relation free algebra is tensor or symmetric"
+                )
+                self._native_free_flavor = "symmetric"
+        # Fix the native images before any lower constructor can evaluate a
+        # word. Flattened coefficient variables are not algebra generators.
+        match options.get("generator_values"), options.get("presentation_flattening"):
+            case (None, None):
+                self._native_word_generators = tuple(engine.gen(i) for i in range(int(labels.cardinality())))
+            case (None, flattening):
+                free_engine = _engine_ring(presentation_ring)
+                self._native_word_generators = tuple(
+                    engine(flattening(free_engine.gen(i))) for i in range(int(labels.cardinality()))
+                )
+            case (values, _):
+                self._native_word_generators = tuple(values)
+        word_module = _module_on_word_quotient(generating_module, self._native_free_flavor)
+        self._native_module_basis = _NativeModuleFrame(
+            word_module, self._native_basis_image, self._native_basis_coefficients,
+        )
+        super().__init__(
+            engine, base, labels, presentation_ring, relations, presentation_ideal,
+            generating_module=generating_module, **options,
+        )
+
+    def _native_word_generator(self, position):
+        return self._native_word_generators[position]
+
+    def _native_word_representative(self, element):
+        presentation = self.presentation_ring()
+        return _engine_element(presentation, self.lift_to_presentation(self(element)))
 
 
 def _presented_algebra_on_engine(
@@ -507,7 +706,7 @@ def _localized_coefficient_presentation_backend(
     engine_generators = tuple(engine_presentation.gens())
     flattened_generators = engine_generators[: flattened.ngens()]
     inverse_generators = engine_generators[flattened.ngens() :]
-    flattened_to_engine = flattened.hom(
+    flattened_to_engine = flattened.mor(
         flattened_generators,
         engine_presentation,
     )
@@ -577,7 +776,7 @@ def _localized_coefficient_presentation_backend(
             )
             for generator in coefficient_generators
         ]
-        engine_scalar_map = base_engine.hom(
+        engine_scalar_map = base_engine.mor(
             scalar_images,
             quotient_engine,
         )
@@ -608,7 +807,7 @@ def _localized_coefficient_presentation_backend(
         )
         for inverted_element in inverted
     )
-    engine_to_presentation = engine_presentation.hom(
+    engine_to_presentation = engine_presentation.mor(
         reverse_images,
         presentation_engine,
     )
@@ -625,10 +824,16 @@ def _finitely_presented_algebra_from_data(
     *,
     _extra_categories=(),
     _extra_construction_data=None,
-    _free_source_module=None,
+    _generating_module=None,
 ):
     r"""Return the selected quotient ``R[S] / (relations)``."""
     base = presentation_ring.base_ring()
+    assert (
+        presentation_ring in AlgebrasWithChosenFinitePresentation(base)
+        or presentation_ring in SymmetricAlgebras(base)
+    ), (
+        "a selected finite commutative-algebra presentation is represented by a polynomial algebra or an algebra already carrying such a presentation"
+    )
     if presentation_ring in AlgebrasWithChosenFinitePresentation(base):
         # A quotient of a quotient is one quotient of the same polynomial
         # presentation: for A = P/I, the algebra A/(J) is P/(I + J~) where J~
@@ -649,13 +854,8 @@ def _finitely_presented_algebra_from_data(
             ),
             _extra_categories=_extra_categories,
             _extra_construction_data=_extra_construction_data,
-            _free_source_module=_free_source_module,
+            _generating_module=_generating_module,
         )
-    if presentation_ring not in SymmetricAlgebras(base):
-        raise NotImplementedError(
-            "the active native finite-presentation adapter currently handles commutative polynomial presentations"
-        )
-
     presentation_ideal, selected_relations = _relations_to_ideal(
         presentation_ring, relations
     )
@@ -680,7 +880,8 @@ def _finitely_presented_algebra_from_data(
         quotient_ideal = quotient_presentation_engine.ideal(
             [
                 presentation_flattening(
-                    presentation_ring._engine_element(
+                    _engine_element(
+                        presentation_ring,
                         selected_relations.value(index)
                     )
                 )
@@ -718,7 +919,12 @@ def _finitely_presented_algebra_from_data(
         if degree > 0:
             finite_free_degree = degree
 
-    return _PresentedAlgebraParent(
+    match _generating_module, finite_free_degree:
+        case (None, _) | (_, int()):
+            constructor = _PresentedAlgebraParent
+        case _:
+            constructor = _NativeLinearRelationAlgebra
+    return constructor(
         quotient_engine,
         base,
         labels,
@@ -731,7 +937,7 @@ def _finitely_presented_algebra_from_data(
             if _extra_construction_data is None
             else tuple(_extra_construction_data)
         ),
-        free_source_module=_free_source_module,
+        generating_module=_generating_module,
         commutative_backend=True,
         finite_free_degree=finite_free_degree,
         presentation_flattening=presentation_flattening,
@@ -759,11 +965,11 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         def is_free(self) -> bool:
             return True
 
-        def _algebra_homset_class(self):
-            return FramedFreeAlgebraHomset
+        def _algebra_mor_class(self):
+            return FramedFreeAlgebraMor
 
         def Mor(self, codomain, category=None):
-            r"""Use the free-algebra universal Hom before the inherited ring Hom."""
+            r"""Use the free-algebra universal Mor before the inherited ring Mor."""
             ordinary = Algebras(self.base_ring()).Associative().Unital()
             if category is None:
                 return ordinary.Mor(self, codomain)
@@ -803,17 +1009,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 return self.algebra_generator(label)
 
             piece = self.graded_piece(degree)
-            from dzack_research.preamble.categories.algebras.power_algebras import (
-                PowerAlgebra,
-            )
-            from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-                SparseFreeAlgebra,
-            )
 
-            if isinstance(self, PowerAlgebra):
+            if self in AlternatingAlgebras(self.base_ring()) or self in DividedPowerAlgebras(self.base_ring()):
                 return self.from_component(degree, piece.module_generator(label))
-            if isinstance(self, SparseFreeAlgebra):
-                return self.module_generator(self.basis_label(degree, label))
 
             ring = self.algebra_base_ring()
             result = self.one()
@@ -892,7 +1090,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             if any(self.homogeneous_degree(relation) != 1 for relation in selected):
                 raise ValueError("these graded-ideal generators must lie in degree one")
             if degree == 0:
-                return ()
+                return finite_family((), name=f"Degree-{degree} ideal generators")
 
             generators = []
             for relation in selected:
@@ -916,7 +1114,10 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                         )
                         for label in complementary.index_set():
                             generators.append(divided * complementary[label])
-            return tuple(generators)
+            return finite_family(
+                generators,
+                name=f"Degree-{degree} ideal generators",
+            )
 
         def graded_piece(self, degree):
             r"""Return the canonical degree piece of this free construction.
@@ -936,25 +1137,25 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 # including zero; do not let this generic free-algebra method
                 # replace their degree-zero power module with the scalar ring.
                 case _ if self in AlternatingAlgebras(ring):
-                    return self.free_source_module().exterior_power(degree)
+                    return self.generating_module().exterior_power(degree)
                 case _ if self in DividedPowerAlgebras(ring):
-                    return self.free_source_module().divided_power_module(degree)
+                    return self.generating_module().divided_power_module(degree)
                 # Every flavor uses its authoritative module-power owner in
                 # every degree.  In degree zero this is the rank-one scalar
                 # module, not the ring parent viewed through an unrelated API.
                 case _ if self in TensorAlgebras(ring):
-                    return self.free_source_module().tensor_power(degree)
+                    return self.generating_module().tensor_power(degree)
                 case _ if self in SymmetricAlgebras(ring):
-                    return self.free_source_module().symmetric_power(degree)
+                    return self.generating_module().symmetric_power(degree)
             raise TypeError(
                 f"the graded free-algebra flavor of {self} is not represented"
             )
 
 
-class PowerAlgebraHomCategoryConstruction(HomCategoryConstruction):
+class PowerAlgebraMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class_for(self, domain, codomain):
         _ = codomain
-        return domain._power_algebra_homset_class()
+        return domain._power_algebra_mor_class()
 
 
 class TensorAlgebras(OwnedCategoryOverBaseRing):
@@ -1024,7 +1225,7 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             engine_ring = _engine_ring(ring)
             return piece.linear_combination(
                 {
-                    word_to_label[word]: ring._from_engine_element(engine_ring(coefficient))
+                    word_to_label[word]: _owned_engine_element(ring, engine_ring(coefficient))
                     for word, coefficient in coefficients.items()
                     if coefficient and len(word) == degree
                 }
@@ -1045,25 +1246,15 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
                 for degree in degrees
             }
 
-        # The module a construction selected to build this algebra on.
-        # Declared here so a reader of this category sees the field, and so an
-        # algebra reached by a route that selected none answers below.
-        _free_algebra_construction = None
+        def generating_module(self):
+            r"""The exact input M of this chosen tensor-algebra construction.
 
-        def free_source_module(self):
-            r"""Return the module whose tensor algebra this object represents.
-
-            \(T_R(M)\) is the tensor algebra of a module, so a construction
-            that started from one states it.  Reached instead through variable
-            names, the algebra generating set is the datum that route supplies,
-            and \(T_R(F_R(S))\) is the algebra it built: the free module on
-            \(S\) is the degree-one piece either way.  So the source module is
-            a fact about the algebra, not about which constructor was called.
+            This is the degree-one module, not U(T(M)), the direct sum of
+            all tensor powers.  The native and relationful entries supply M
+            before constructing the algebra; this accessor never reconstructs
+            it from generator labels.
             """
-            construction = self._free_algebra_construction
-            if construction is not None:
-                return construction.source_module()
-            return self.algebra_base_ring().free_module(self.algebra_generating_set())
+            return self._generating_module
 
         @cached_method
         def ring_center(self):
@@ -1116,22 +1307,14 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         return [GradedAlgebras(self.base_ring()).Commutative()]
 
     class ParentMethods:
-        # The module a construction selected to build this algebra on, as on
-        # tensor algebras above.
-        _free_algebra_construction = None
+        def generating_module(self):
+            r"""The exact input M of this chosen symmetric-algebra construction.
 
-        def free_source_module(self):
-            r"""Return the module whose symmetric algebra this object represents.
-
-            A polynomial ring over \(R\) in the variables \(S\) is
-            \(\operatorname{Sym}_R(F_R(S))\).  So an algebra built from
-            variable names has a source module just as one built from a module
-            does, and it is the free module on its own algebra generating set.
+            For polynomial syntax the constructor supplies F_R(S) on its
+            variables.  For Sym_R(M) it supplies M itself, including its
+            relations.  Neither is the full underlying module U(Sym_R(M)).
             """
-            construction = self._free_algebra_construction
-            if construction is not None:
-                return construction.source_module()
-            return self.algebra_base_ring().free_module(self.algebra_generating_set())
+            return self._generating_module
 
         def from_component(self, degree, component):
             r"""Embed ``Sym^degree(M)`` through the shared graded-piece inclusion."""
@@ -1166,7 +1349,7 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             engine_ring = _engine_ring(ring)
             return piece.linear_combination(
                 {
-                    exponent_to_label[exponent]: ring._from_engine_element(
+                    exponent_to_label[exponent]: _owned_engine_element(ring,
                         engine_ring(coefficient)
                     )
                     for exponent, coefficient in coefficients.items()
@@ -1197,9 +1380,22 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             }
 
         def _commutative_algebra_coproduct(self, left, right):
+            r"""Supply the symmetric-algebra coproduct to the generic algebra owner.
+
+            Protected construction contract: the sole external caller role is
+            ``Algebras._categorical_coproduct``. The backend implementation is
+            selected here by the symmetric-algebra owner and returns only the
+            owned coproduct object and owned maps.
+            """
             return _commutative_algebra_coproduct_backend(left, right)
 
         def _commutative_algebra_pushout(self, left_map, right_map):
+            r"""Supply the symmetric-algebra pushout to the generic algebra owner.
+
+            Protected construction contract: the sole external caller role is
+            ``Algebras._categorical_pushout``. The specialized computation
+            remains in this owner and returns an owned pushout.
+            """
             return _commutative_algebra_pushout_backend(left_map, right_map)
 
     class ElementMethods:
@@ -1235,40 +1431,45 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
 
-    _HomCategory = PowerAlgebraHomCategoryConstruction
+    _MorCategory = PowerAlgebraMorCategoryConstruction
 
-    class ParentMethods:
-        def free_source_module(self):
-            construction = getattr(self, "_free_algebra_construction", None)
-            assert construction is not None, (
-                "an alternating free-algebra realization must retain its selected source module"
-            )
-            return construction.source_module()
+    def _call_(self, module):
+        from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
 
+        assert module.base_ring() is self.base_ring(), "the power construction uses its module's scalars"
+        return _power_algebra_of(module, "alternating")
+
+    class ParentMethods(_PowerAlgebra):
         def Mor(self, codomain, category=None):
             alternating = AlternatingAlgebras(self.base_ring())
             if category is None and codomain in alternating:
                 return alternating.Mor(self, codomain)
             return super().Mor(codomain, category=category)
 
-        def graded_piece(self, degree):
-
-            return self.free_source_module().exterior_power(degree)
 
 
 def _presentation_data(algebra):
     base = algebra.base_ring()
-    if hasattr(algebra, "presentation_ring") and hasattr(algebra, "relations"):
-        return algebra.presentation_ring(), tuple(algebra.relations())
-    if algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base):
-        return algebra, ()
-    if hasattr(algebra, "quotient_source") and hasattr(algebra, "defining_ideal"):
-        source = algebra.quotient_source()
-        if source in SymmetricAlgebras(base):
-            return source, tuple(algebra.defining_ideal().gens())
-    raise NotImplementedError(
+    has_selected_presentation = hasattr(algebra, "presentation_ring") and hasattr(
+        algebra, "relations"
+    )
+    is_free_polynomial = algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base)
+    has_quotient_presentation = hasattr(algebra, "quotient_source") and hasattr(
+        algebra, "defining_ideal"
+    )
+    quotient_source = algebra.quotient_source() if has_quotient_presentation else None
+    assert (
+        has_selected_presentation
+        or is_free_polynomial
+        or (has_quotient_presentation and quotient_source in SymmetricAlgebras(base))
+    ), (
         "the active commutative-algebra backend requires a free polynomial or selected finite presentation"
     )
+    if has_selected_presentation:
+        return algebra.presentation_ring(), tuple(algebra.relations())
+    if is_free_polynomial:
+        return algebra, ()
+    return quotient_source, tuple(algebra.defining_ideal().gens())
 
 
 def _transport_relations(presentation_ring, relations, target, tag):
@@ -1291,10 +1492,9 @@ def _commutative_algebra_coproduct_backend(left, right):
     category = Algebras(base).Associative().Unital().Commutative()
     if left not in category or right not in category:
         raise TypeError("both factors must be commutative algebras over the common base")
-    if left not in FramedAlgebras(base) or right not in FramedAlgebras(base):
-        raise NotImplementedError(
-            "the active finite-presentation coproduct backend requires finite algebra framings"
-        )
+    assert left in FramedAlgebras(base) and right in FramedAlgebras(base), (
+        "the active finite-presentation coproduct backend requires finite algebra framings"
+    )
 
     left_presentation, left_relations = _presentation_data(left)
     right_presentation, right_relations = _presentation_data(right)
@@ -1337,7 +1537,13 @@ def _quotient_by_algebra_elements_backend(
     if not selected:
         identity = Algebras(base).Associative().Unital().Commutative().Mor(algebra, algebra).identity()
         return algebra, identity
-    if hasattr(algebra, "presentation_ring") and hasattr(algebra, "relations"):
+    has_selected_presentation = hasattr(algebra, "presentation_ring") and hasattr(
+        algebra, "relations"
+    )
+    assert has_selected_presentation or algebra in SymmetricAlgebras(base), (
+        "quotienting by represented algebra elements requires a selected polynomial presentation"
+    )
+    if has_selected_presentation:
         presentation = algebra.presentation_ring()
         relations = tuple(algebra.relations()) + tuple(
             algebra.lift_to_presentation(element) for element in selected
@@ -1345,10 +1551,6 @@ def _quotient_by_algebra_elements_backend(
     elif algebra in SymmetricAlgebras(base):
         presentation = algebra
         relations = selected
-    else:
-        raise NotImplementedError(
-            "quotienting a commutative algebra requires a selected polynomial presentation"
-        )
     quotient = (presentation).quotient_by_relations(relations,
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
@@ -1382,13 +1584,12 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         right
     ):
         raise TypeError(
-            "the pushout span maps must belong to the represented algebra Homs "
+            "the pushout span maps must belong to the represented algebra Mors "
             "of their endpoints"
         )
-    if common not in FramedAlgebras(base):
-        raise NotImplementedError(
-            "the active pushout backend requires a finite algebra framing on the common source"
-        )
+    assert common in FramedAlgebras(base), (
+        "the active pushout backend requires a finite algebra framing on the common source"
+    )
 
     tensor = _commutative_algebra_coproduct_backend(left, right)
     left_injection, right_injection = tensor.coproduct_injections()
@@ -1418,32 +1619,21 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Commutative()]
 
-    _HomCategory = PowerAlgebraHomCategoryConstruction
+    _MorCategory = PowerAlgebraMorCategoryConstruction
 
-    class ParentMethods:
-        def free_source_module(self):
-            construction = getattr(self, "_free_algebra_construction", None)
-            assert construction is not None, (
-                "a divided-power free-algebra realization must retain its selected source module"
-            )
-            return construction.source_module()
+    def _call_(self, module):
+        from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
 
+        assert module.base_ring() is self.base_ring(), "the power construction uses its module's scalars"
+        return _power_algebra_of(module, "divided")
+
+    class ParentMethods(_PowerAlgebra):
         def Mor(self, codomain, category=None):
             divided = DividedPowerAlgebras(self.base_ring())
             if category is None and codomain in divided:
                 return divided.Mor(self, codomain)
             return super().Mor(codomain, category=category)
 
-        def graded_piece(self, degree):
-
-            return self.free_source_module().divided_power_module(degree)
-
-
-def _multiply_in_target(target, factors):
-    result = target.one()
-    for factor in factors:
-        result *= factor
-    return result
 
 
 class FramedFreeAlgebraMorphism(AlgebraMorphism):
@@ -1505,12 +1695,10 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         self._engine_morphism = None
         self._element_function = None
         self._preamble_is_identity = False
-        try:
-            source_module = domain.free_source_module()
-        except (AttributeError, ValueError):
-            source_module = None
-        if source_module is not None:
-            source_module.module_category().Mor(source_module, self.codomain().underlying_module())(self._images.value)
+        generating = domain.generating_module()
+        generating.module_category().Mor(
+            generating, self.codomain().underlying_module()
+        )(self._images.value)
 
     def _tensor_terms(self, element):
         domain = self.domain()
@@ -1536,7 +1724,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
                 for _ in range(int(exponent))
             )
             base = domain.base_ring()
-            yield word, base._from_engine_element(_engine_ring(base)(coefficient))
+            yield word, _owned_engine_element(base, _engine_ring(base)(coefficient))
 
     def _symmetric_terms(self, element):
         domain = self.domain()
@@ -1567,14 +1755,13 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
                 for _ in range(int(exponent))
             )
             base = domain.base_ring()
-            yield factors, base._from_engine_element(_engine_ring(base)(coefficient))
+            yield factors, _owned_engine_element(base, _engine_ring(base)(coefficient))
 
     def _finite_engine_generator_labels(self):
         labels = self.domain().algebra_generating_set()
-        if not labels.cardinality().is_finite():
-            raise NotImplementedError(
-                "the private free-algebra engine realization requires a finite generator framing"
-            )
+        assert labels.cardinality().is_finite(), (
+            "the private free-algebra engine realization requires a finite generator framing"
+        )
         return tuple(labels)
 
     def _call_(self, element):
@@ -1587,8 +1774,9 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         return sum(
             (
                 coefficient
-                * _multiply_in_target(
-                    self.codomain(), (self._images[label] for label in factors)
+                * prod(
+                    (self._images[label] for label in factors),
+                    start=self.codomain().one(),
                 )
                 for factors, coefficient in terms
             ),
@@ -1611,13 +1799,13 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         return super().__mul__(other)
 
 
-class FramedFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
+class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
     Element = FramedFreeAlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -1627,7 +1815,7 @@ class FramedFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Hom-set")
+            raise ValueError("identity belongs to an endomorphism Mor object")
         identity = self(lambda label: self.domain().algebra_generator(label))
         identity._preamble_is_identity = True
         return identity

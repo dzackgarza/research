@@ -7,6 +7,7 @@ file records that mathematical migration without reviving an archive parent.
 """
 
 from dzack_research.preamble.all import (
+    ZZ,
     ConvexPolygons,
     ConvexPolytopes,
     LatticePolygons,
@@ -21,12 +22,13 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_archived_lattice_polygon_invariants_live_on_the_current_object() -> None:
-    triangle = LatticePolygons()(((0, 0), (0, 3), (6, 0)))
+    lattice = ZZ.free_module(2)
+    triangle = LatticePolygons(lattice)(((0, 0), (0, 3), (6, 0)))
 
-    assert triangle in ConvexPolytopes()
-    assert triangle in ConvexPolygons()
-    assert triangle in LatticePolytopes()
-    assert triangle in LatticePolygons()
+    assert triangle in ConvexPolytopes(lattice)
+    assert triangle in ConvexPolygons(lattice)
+    assert triangle in LatticePolytopes(lattice)
+    assert triangle in LatticePolygons(lattice)
     assert triangle.dimension() == 2
     assert triangle.volume() == 9
     assert triangle.normalized_volume() == 18
@@ -39,7 +41,8 @@ def test_archived_lattice_polygon_invariants_live_on_the_current_object() -> Non
 
 
 def test_archived_ehrhart_h_star_and_polar_duality_are_live_lattice_operations() -> None:
-    square = LatticePolygons()(((-1, -1), (-1, 1), (1, 1), (1, -1)))
+    lattice = ZZ.free_module(2)
+    square = LatticePolygons(lattice)(((-1, -1), (-1, 1), (1, 1), (1, -1)))
     polynomial = square.ehrhart_polynomial()
     t = polynomial.parent().algebra_generator("t")
     h_star = square.h_star_vector()
@@ -49,6 +52,8 @@ def test_archived_ehrhart_h_star_and_polar_duality_are_live_lattice_operations()
     assert square.is_reflexive()
 
     polar = square.polar_dual()
-    assert polar in LatticePolygons()
+    assert polar in LatticePolygons(polar.ambient_lattice())
     assert polar.is_reflexive()
-    assert polar.polar_dual().vertices() == square.vertices()
+    assert tuple(point.to_tuple() for point in polar.polar_dual().vertices()) == tuple(
+        point.to_tuple() for point in square.vertices()
+    )

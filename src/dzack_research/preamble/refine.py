@@ -227,10 +227,10 @@ def refine[SageObjectT: SageObject](
     target = category if isinstance(category, Category) else Category.join(tuple(category))
     _assert_certifying_predicates_hold(obj, target)
     if isinstance(obj, Morphism):
-        # A morphism's mathematical membership is determined by its Hom
+        # A morphism's mathematical membership is determined by its Mor
         # parent.  There is no independent Sage category slot to mutate here;
         # the target only supplies the owned morphism-method surface selected
-        # by that already-constructed Hom theory.
+        # by that already-constructed Mor theory.
         _rebuild_morphism_class(obj, target)
         return obj
     with construction_scope(obj) as reached:

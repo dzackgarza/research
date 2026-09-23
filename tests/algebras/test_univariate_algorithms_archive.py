@@ -9,14 +9,21 @@ def test_archive_euclidean_algorithms_return_owned_polynomial_elements() -> None
     cubic = x**3 - 6 * x**2 + 11 * x - 6
     quadratic = x**2 - 3 * x + 2
 
-    quotient, remainder = cubic.quo_rem(quadratic)
+    quotient_remainder = cubic.quo_rem(quadratic)
+    quotient, remainder = quotient_remainder
+    assert quotient_remainder.parent().factor(0) is polynomials
+    assert quotient_remainder.parent().factor(1) is polynomials
+    assert quotient_remainder.parent().projection(0)(quotient_remainder) == quotient
+    assert quotient_remainder.parent().projection(1)(quotient_remainder) == remainder
     assert quotient.parent() is polynomials
     assert remainder.parent() is polynomials
     assert quotient * quadratic + remainder == cubic
     assert remainder == polynomials.zero()
     assert cubic.gcd(quadratic) == quadratic
 
-    common, left, right = cubic.xgcd(quadratic)
+    bezout = cubic.xgcd(quadratic)
+    common, left, right = bezout
+    assert all(bezout.parent().factor(index) is polynomials for index in bezout.parent().index_set())
     assert common.parent() is polynomials
     assert left.parent() is polynomials
     assert right.parent() is polynomials

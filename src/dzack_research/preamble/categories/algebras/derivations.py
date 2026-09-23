@@ -13,12 +13,13 @@ from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
+from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    _RestrictedHomCategoryOf,
-    RestrictedHomCategoryParent,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    _RestrictedMorCategoryOf,
+    RestrictedMorCategoryParent,
 )
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
@@ -27,11 +28,18 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
+    _fix_selected_module_framing,
     _restricted_scalars_view,
+)
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    _fix_selected_module_presentation,
+    _presentation_from_relation_rows,
+    _presentation_matrix,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     _engine_element,
@@ -49,6 +57,12 @@ def _commutative_presentation_data(algebra):
     base = algebra.base_ring()
     if algebra not in Algebras(base).Associative().Unital().Commutative():
         raise TypeError("Kähler calculus requires a commutative algebra")
+    assert (
+        algebra in AlgebrasWithChosenFinitePresentation(base)
+        or algebra in SymmetricAlgebras(base)
+    ), (
+        "the represented Kähler-calculus backend requires a symmetric algebra or a chosen finite commutative polynomial presentation"
+    )
 
     if algebra in AlgebrasWithChosenFinitePresentation(base):
         presentation = algebra.presentation_ring()
@@ -58,10 +72,6 @@ def _commutative_presentation_data(algebra):
         presentation = algebra
         relations = finite_ordered_set(())
         lift = presentation
-    else:
-        raise NotImplementedError(
-            "the live derivation backend requires a symmetric algebra or a chosen finite commutative polynomial presentation"
-        )
 
     labels = presentation.algebra_generating_set()
     variables = FiniteOrderedSets().from_indexed(
@@ -79,8 +89,8 @@ def _differentiate_representative(algebra, representative, variables):
     target = _engine_ring(algebra)
 
     def derivative(variable):
-        engine_variable = presentation._engine_element(variable)
-        return algebra._from_engine_element(
+        engine_variable = _engine_element(presentation, variable)
+        return _owned_engine_element(algebra,
             target(source.derivative(engine_variable))
         )
 
@@ -206,7 +216,6 @@ class Derivation(ModuleElement):
             denominator_inverse = algebra.fraction(
                 source.one(),
                 denominator,
-                _trusted_denominator=True,
             )
             target = self.codomain()
             first = target.scalar_multiple(
@@ -323,6 +332,9 @@ class DerivationUnderlyingLinearMorphism(ModuleMorphism):
     def derivation(self):
         return self._derivation
 
+    def _elementwise_linearity_derivation(self):
+        return True
+
     def __rmul__(self, scalar):
         return self.parent().algebra_multiple(scalar, self)
 
@@ -345,13 +357,13 @@ class _DerivationAlgebraAction(Action):
         return self._derivations.algebra_multiple(scalar, derivation)
 
 
-class DerivationSpace(RestrictedHomCategoryParent):
-    r"""The ``A``-module ``Der_R(A,M)`` with its restricted Hom inclusion.
+class DerivationSpace(RestrictedMorCategoryParent):
+    r"""The ``A``-module ``Der_R(A,M)`` with its restricted Mor inclusion.
 
     The actual subobject of ``Hom_R(A,Res_R M)`` is
     ``Res_R Der_R(A,M)``.  Keeping these two scalar structures distinct is
     essential: the derivation module is canonically an ``A``-module, whereas
-    its inclusion into the existing ``R``-linear Hom is only ``R``-linear.
+    its inclusion into the existing ``R``-linear Mor is only ``R``-linear.
     """
 
     Element = Derivation
@@ -395,22 +407,46 @@ class DerivationSpace(RestrictedHomCategoryParent):
         # Der_R(A,M) is the subcategory of Hom_R(A,Res_R M) carved out by the
         # Leibniz rule, so the existing R-linear Mor category is the base.
         self._preamble_base_ring = algebra
-        RestrictedHomCategoryParent.__init__(
+        RestrictedMorCategoryParent.__init__(
             self,
             family,
             algebra,
             restricted_target,
             category=category,
         )
+        if classifiers in ModulesWithChosenFinitePresentation(algebra):
+            framing_labels = classifiers.module_generating_set()
+            relation_matrix = _presentation_matrix(classifiers)
+            classifier_presentation = classifiers.presentation()
+            presentation = _presentation_from_relation_rows(
+                algebra,
+                framing_labels,
+                classifier_presentation.domain().module_generating_set(),
+                relation_matrix,
+            )
+            _fix_selected_module_framing(
+                self,
+                algebra,
+                framing_labels,
+                lambda label: self._from_kahler_classifier(
+                    classifiers.module_generator(label)
+                ),
+                presentation.codomain(),
+            )
+            _fix_selected_module_presentation(
+                self,
+                algebra,
+                relation_matrix,
+                presentation,
+            )
         self.register_action(_DerivationAlgebraAction(algebra, self, True))
         self.register_action(_DerivationAlgebraAction(algebra, self, False))
 
         def restricted_inclusion(restricted_module):
-            return restricted_module.Mono(self.arrow_set())(
+            return restricted_module.Mono(self.arrow_set())._subobject_inclusion(
                 lambda restricted_derivation: (
                     restricted_derivation.underlying_element().underlying_linear_morphism()
                 ),
-                verify_linearity=False,
             )
 
         self._restricted_module = _restricted_scalars_view(
@@ -458,22 +494,6 @@ class DerivationSpace(RestrictedHomCategoryParent):
         derivation = self(derivation)
         return self._kahler_classifier_module().domain().from_derivation(derivation)
 
-    def module_generating_set(self):
-        return self._kahler_classifier_module().module_generating_set()
-
-    def module_generator(self, label):
-        classifier = self._kahler_classifier_module()
-        return self._from_kahler_classifier(classifier.module_generator(label))
-
-    def presentation_matrix(self):
-        return self._kahler_classifier_module().presentation_matrix()
-
-    def presentation(self):
-        return self._kahler_classifier_module().presentation()
-
-    def _selected_presentation_rows(self):
-        return self._kahler_classifier_module()._selected_presentation_rows()
-
     def _selected_module_coefficients(self, derivation):
         classifiers = self._kahler_classifier_module()
         return classifiers.framing_coefficients(self._to_kahler_classifier(derivation))
@@ -493,7 +513,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
                 raise ValueError("the linear map has the wrong derivation endpoints")
             if not isinstance(generator_images, DerivationUnderlyingLinearMorphism):
                 raise ValueError(
-                    "an arbitrary R-linear map cannot be certified as a derivation by this backend"
+                    "an arbitrary R-linear map alone does not supply the Leibniz rule required of a derivation"
                 )
             selected = generator_images.derivation()
             if selected.parent() is self:
@@ -538,7 +558,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
         return f"Der_{self.algebra().base_ring()}({self.algebra()}, {self.target_module()})"
 
 
-class DerivationCategoryConstruction(_RestrictedHomCategoryOf):
+class DerivationCategoryConstruction(_RestrictedMorCategoryOf):
     _declaration_name = "_DerivationCategory"
 
     def fixed_category_class(self):
@@ -576,10 +596,39 @@ class GradedDerivation(ModuleElement):
             raise TypeError("a graded derivation is specified by an element map")
         ModuleElement.__init__(self, parent)
         self._function = function
-        if not self.check_on_generators():
-            raise ValueError(
-                f"the proposed map is not a degree-{self.degree_shift()} graded derivation"
-            )
+        observed = self.check_on_generators()
+        match observed:
+            case False:
+                raise ValueError(
+                    f"the proposed map is not a degree-{self.degree_shift()} graded derivation"
+                )
+            case _:
+                pass
+        derived = self._graded_derivation_derivation()
+        match derived:
+            case None:
+                self._linearity_decision = Unknown
+                self._degree_preservation_decision = Unknown
+                self._graded_leibniz_decision = Unknown
+            case decision if decision is True or decision is Unknown:
+                self._linearity_decision = decision
+                self._degree_preservation_decision = decision
+                self._graded_leibniz_decision = decision
+            case _:
+                raise ValueError("a graded-derivation construction premise is True or Unknown")
+
+    def _graded_derivation_derivation(self):
+        r"""Return a construction-derived graded-derivation premise, or ``None`` for a stated map."""
+        return None
+
+    def linearity_decision(self):
+        return self._linearity_decision
+
+    def degree_preservation_decision(self):
+        return self._degree_preservation_decision
+
+    def graded_leibniz_decision(self):
+        return self._graded_leibniz_decision
 
     def __call__(self, element):
         return self.target()(self._function(self.algebra()(element)))
@@ -621,10 +670,17 @@ class GradedDerivation(ModuleElement):
     def __add__(self, other):
         if not isinstance(other, GradedDerivation) or other.parent() is not self.parent():
             return NotImplemented
-        return self.parent().elementwise(lambda element: self(element) + other(element))
+        return self.parent()._from_derived_elementwise(
+            lambda element: self(element) + other(element),
+            self,
+            other,
+        )
 
     def __neg__(self):
-        return self.parent().elementwise(lambda element: -self(element))
+        return self.parent()._from_derived_elementwise(
+            lambda element: -self(element),
+            self,
+        )
 
     def __sub__(self, other):
         return self + (-other)
@@ -637,42 +693,118 @@ class GradedDerivation(ModuleElement):
     def __rmul__(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
 
-    def check_on_generators(self) -> bool:
-        r"""Check degree and graded Leibniz on a selected finite algebra framing."""
+    def check_on_generators(self):
+        r"""Refute degree/Leibniz on finite selected generators when decidable.
+
+        Passing this finite observation does not prove that an arbitrary
+        element map is linear or satisfies Leibniz on all elements; those laws
+        remain ``Unknown`` unless the construction supplies their theorem.
+        """
         algebra = self.algebra()
         target = self.target()
-        labels = algebra.algebra_generating_set()
+        try:
+            labels = algebra.algebra_generating_set()
+            finite = labels.cardinality().is_finite()
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return Unknown
+        match finite:
+            case True:
+                pass
+            case False:
+                return Unknown
         for label in labels:
             generator = algebra.algebra_generator(label)
-            if generator == algebra.zero():
-                continue
+            match generator == algebra.zero():
+                case True:
+                    continue
+                case Unknown:
+                    return Unknown
+                case False:
+                    pass
             try:
                 generator_degree = algebra.homogeneous_degree(generator)
             except (ValueError, NotImplementedError):
-                return False
+                return Unknown
             image = self(generator)
-            if image != target.zero():
-                try:
-                    image_degree = target.homogeneous_degree(image)
-                except (ValueError, NotImplementedError):
+            match image == target.zero():
+                case True:
+                    continue
+                case Unknown:
+                    return Unknown
+                case False:
+                    pass
+            try:
+                image_degree = target.homogeneous_degree(image)
+            except (ValueError, NotImplementedError):
+                return Unknown
+            match image_degree == generator_degree + self.degree_shift():
+                case True:
+                    pass
+                case False:
                     return False
-                if image_degree != generator_degree + self.degree_shift():
-                    return False
+                case _:
+                    return Unknown
         for left_label in labels:
             left = algebra.algebra_generator(left_label)
-            if left == algebra.zero():
-                continue
+            match left == algebra.zero():
+                case True:
+                    continue
+                case Unknown:
+                    return Unknown
+                case False:
+                    pass
             try:
                 left_degree = algebra.homogeneous_degree(left)
             except (ValueError, NotImplementedError):
-                return False
+                return Unknown
             for right_label in labels:
                 right = algebra.algebra_generator(right_label)
                 signed_second = left * self(right)
                 if (self.degree_shift() * left_degree) % 2:
                     signed_second = -signed_second
-                if self(left * right) != self(left) * right + signed_second:
-                    return False
+                match self(left * right) == self(left) * right + signed_second:
+                    case True:
+                        pass
+                    case False:
+                        return False
+                    case _:
+                        return Unknown
+        return True
+
+
+def _combined_graded_derivation_decision(derivations):
+    r"""Transfer the graded-derivation theorem through an operation on actual derivations."""
+    decisions = tuple(
+        decision
+        for derivation in derivations
+        for decision in (
+            derivation.linearity_decision(),
+            derivation.degree_preservation_decision(),
+            derivation.graded_leibniz_decision(),
+        )
+    )
+    match all(decision is True for decision in decisions):
+        case True:
+            return True
+        case False:
+            return Unknown
+
+
+class _DerivedGradedDerivation(GradedDerivation):
+    r"""A graded derivation whose law premise is transferred from its operands."""
+
+    def __init__(self, parent, function, premise) -> None:
+        self._derived_graded_derivation_premise = premise
+        super().__init__(parent, function)
+
+    def _graded_derivation_derivation(self):
+        return self._derived_graded_derivation_premise
+
+
+class _ConstructedGradedDerivation(GradedDerivation):
+    r"""A graded derivation whose defining construction proves its laws."""
+
+    def _graded_derivation_derivation(self):
         return True
 
 
@@ -685,8 +817,10 @@ class GradedDerivationUnderlyingLinearMorphism(ModuleMorphism):
             parent,
             function,
             elementwise=True,
-            verify_linearity=False,
         )
+
+    def _elementwise_linearity_derivation(self):
+        return self.derivation().linearity_decision()
 
     def derivation(self):
         return self._derivation
@@ -695,7 +829,7 @@ class GradedDerivationUnderlyingLinearMorphism(ModuleMorphism):
         return self.derivation().degree_shift()
 
 
-class GradedDerivationSpace(RestrictedHomCategoryParent):
+class GradedDerivationSpace(RestrictedMorCategoryParent):
     r"""The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``."""
 
     Element = GradedDerivation
@@ -723,7 +857,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
 
         ring = algebra.base_ring()
         self._preamble_base_ring = ring
-        RestrictedHomCategoryParent.__init__(
+        RestrictedMorCategoryParent.__init__(
             self,
             family,
             algebra,
@@ -733,10 +867,9 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
 
     @cached_method
     def inclusion(self):
-        r"""Return the canonical inclusion into the underlying graded linear Hom."""
-        return self.Mono(self.arrow_set())(
+        r"""Return the canonical inclusion into the underlying graded linear Mor."""
+        return self.Mono(self.arrow_set())._subobject_inclusion(
             lambda derivation: derivation.underlying_linear_morphism(),
-            verify_linearity=False,
         )
 
     def base_ring(self):
@@ -766,29 +899,47 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
                 or function.degree_shift() != self.degree_shift()
             ):
                 raise ValueError(
-                    "an arbitrary R-linear map cannot be certified as a graded derivation by this backend"
+                    "an arbitrary R-linear map alone does not supply the graded Leibniz rule required of a graded derivation"
                 )
             derivation = function.derivation()
             if derivation.parent() is self:
                 return derivation
-            return GradedDerivation(self, lambda element: derivation(element))
+            return self._from_derived_elementwise(
+                lambda element: derivation(element),
+                derivation,
+            )
         return GradedDerivation(self, function)
 
     def zero(self):
-        return self.elementwise(lambda _element: self.target().zero())
+        return self._from_constructed_elementwise(
+            lambda _element: self.target().zero()
+        )
 
     def elementwise(self, function):
         if not callable(function):
             raise TypeError("a graded derivation is specified by an element map")
         return GradedDerivation(self, function)
 
+    def _from_constructed_elementwise(self, function):
+        r"""Construct from a formula whose owner proves linearity, degree and Leibniz."""
+        return _ConstructedGradedDerivation(self, function)
+
+    def _from_derived_elementwise(self, function, *derivations):
+        r"""Construct by a theorem-preserving operation on represented derivations."""
+        return _DerivedGradedDerivation(
+            self,
+            function,
+            _combined_graded_derivation_decision(derivations),
+        )
+
     def scalar_multiple(self, scalar, derivation):
         if derivation.parent() is not self:
             derivation = self(derivation)
         scalar = self.base_ring()(scalar)
         target = self.target()
-        return self.elementwise(
-            lambda element: target.scalar_multiple(scalar, derivation(element))
+        return self._from_derived_elementwise(
+            lambda element: target.scalar_multiple(scalar, derivation(element)),
+            derivation,
         )
 
     def _repr_(self):
@@ -798,7 +949,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
         )
 
 
-class GradedDerivationCategoryConstruction(_RestrictedHomCategoryOf):
+class GradedDerivationCategoryConstruction(_RestrictedMorCategoryOf):
     _declaration_name = "_GradedDerivationCategory"
 
     @staticmethod

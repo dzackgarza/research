@@ -30,13 +30,13 @@ class ProfiniteGroups(OwnedCategory):
             return True
 
         def continuous_morphisms_to(self, codomain):
-            r"""Return the represented continuous-group Hom from this profinite group."""
-            from dzack_research.preamble.categories.group.profinite.galois_quotient import (
-                _continuous_group_homset,
-            )
+            r"""Return the owned group Mor used by represented continuous morphisms.
 
-            return _continuous_group_homset(self, codomain)
+            Continuity is structure on the selected arrows, not a second Mor.
+            """
+            return self.Mor(codomain)
 
         @abstract_method(optional=True)
         def topological_group_generators(self):
-            pass
+            r"""Return a family of elements generating a dense subgroup."""
+            ...

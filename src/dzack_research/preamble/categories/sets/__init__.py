@@ -2,7 +2,11 @@
 
 The defining modules must remain independently importable. Python executes a
 package ``__init__`` before any submodule, so eager re-exports here create
-artificial defining-module cycles. Public names are resolved lazily instead.
+defining-module cycles: ``abstract_categories.mor_categories`` imports
+``sets.indexed_families`` at module level, which runs this file first, and
+every set module imports ``mor_categories`` back while it is only partly
+initialized.  Public names are resolved lazily until that module-level edge is
+removed at its owner.
 """
 
 from importlib import import_module as _import_module
@@ -66,8 +70,6 @@ _EXPORTS = {'CountableSets': ('dzack_research.preamble.categories.sets.set_categ
  'finite_indexed_family': ('dzack_research.preamble.categories.sets.indexed_families',
                            'finite_indexed_family'),
  'indexed_family': ('dzack_research.preamble.categories.sets.indexed_families', 'indexed_family'),
- 'FiniteFilteredOrderedSets': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
-                               'FiniteFilteredOrderedSets'),
  'FiniteOrderedSets': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
                        'FiniteOrderedSets'),
  'OrderedEnumeratedSets': ('dzack_research.preamble.categories.sets.finite_ordered_sets',
@@ -112,7 +114,6 @@ __all__ = [ 'PowerSets',
  'EnumeratedByIntegers',
  'EnumeratedByNaturals',
  'EnumeratedSets',
- 'FiniteFilteredOrderedSets',
  'FiniteOrderedSets',
  'OrderedEnumeratedSets',
  'FourierCharacters',
@@ -126,10 +127,9 @@ __all__ = [ 'PowerSets',
  'indexed_family']
 
 def __getattr__(name):
-    try:
-        module_name, attribute = _EXPORTS[name]
-    except KeyError as error:
-        raise AttributeError(name) from error
+    if name not in _EXPORTS:
+        raise AttributeError(name)
+    module_name, attribute = _EXPORTS[name]
     value = getattr(_import_module(module_name), attribute)
     globals()[name] = value
     return value

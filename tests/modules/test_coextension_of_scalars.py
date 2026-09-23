@@ -16,7 +16,7 @@ def _gaussian_rationals():
     polynomials = QQ.free_module(["x"]).symmetric_algebra()
     x = next(iter(polynomials.algebra_generators()))
     scalars = (polynomials).quotient_by_relations([x**2 + 1])
-    return scalars, scalars(x), scalars._ring_morphism_defining_algebra_structure()
+    return scalars, scalars(x), scalars.algebra_structure_morphism()
 
 
 def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> None:
@@ -26,6 +26,7 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
     endomorphisms = Modules(QQ).End(plane)
     e0, e1 = plane.module_generator(0), plane.module_generator(1)
     quarter_turn = endomorphisms({0: e1, 1: -e0})
+    identity = endomorphisms.identity()
 
     labels = scalars.module_generating_set()
     one_label, i_label = labels[0], labels[1]
@@ -34,9 +35,12 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
         coefficients = scalars.framing_coefficients(scalar)
         constant = coefficients.get(one_label, QQ.zero())
         imaginary = coefficients.get(i_label, QQ.zero())
-        return endomorphisms.elementwise(
-            lambda vector: constant * vector + imaginary * quarter_turn(vector),
-            verify_linearity=False,
+        return endomorphisms.scalar_multiple(
+            constant,
+            identity,
+        ) + endomorphisms.scalar_multiple(
+            imaginary,
+            quarter_turn,
         )
 
     gaussian_plane = Modules(scalars)(plane, scalars.Mor(endomorphisms)(action))
@@ -95,9 +99,9 @@ def test_restriction_is_left_adjoint_to_coextension() -> None:
     weights = restricted.module_category().Mor(restricted, target)(
         {label: (1 + int(labels.ranking_map()(label))) * target.module_generator(0) for label in labels}
     )
-    transposed = adjunction.hom_set_isomorphism_forward(weights, free_line)
+    transposed = adjunction.mor_set_isomorphism_forward(weights, free_line)
     assert transposed.domain() is free_line
-    recovered = adjunction.hom_set_isomorphism_inverse(transposed, target)
+    recovered = adjunction.mor_set_isomorphism_inverse(transposed, target)
     for label in labels:
         element = restricted.module_generator(label)
         assert recovered(element) == weights(element)
@@ -136,9 +140,9 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     weights = forgotten.module_category().Mor(forgotten, target)(
         {0: target.module_generator(0), 1: 3 * target.module_generator(0)}
     )
-    transposed = adjunction.hom_set_isomorphism_forward(weights, swapped)
+    transposed = adjunction.mor_set_isomorphism_forward(weights, swapped)
     assert transposed.domain() is swapped
-    recovered = adjunction.hom_set_isomorphism_inverse(transposed, target)
+    recovered = adjunction.mor_set_isomorphism_inverse(transposed, target)
     for label in forgotten.module_generating_set():
         element = forgotten.module_generator(label)
         assert recovered(element) == weights(element)

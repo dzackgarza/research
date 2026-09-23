@@ -1,9 +1,11 @@
-from sage.categories.homset import Homset
+from sage.categories.mor import Mor
+from sage.misc.unknown import Unknown
 
 import pytest
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import QQ, ZZ
 from dzack_research.preamble.categories.modules import (
+    CochainComplexes,
     DifferentialGradedModules,
     Modules,
     ModulesWithFlatConnection,
@@ -31,7 +33,7 @@ def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> No
     module_morphisms = Modules(QQ).Mor(
         space.restricted_source_module(), space.restricted_target_module()
     )
-    assert not isinstance(space, Homset)
+    assert not isinstance(space, Mor)
     assert space.arrow_set() is module_morphisms
     assert module_morphisms in space.super_categories()
     assert trivial.as_morphism().parent() is module_morphisms
@@ -61,17 +63,18 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
 
     assert structured is not module
     assert structured in ModulesWithConnection(algebra)
-    assert structured.connection_construction().source_connection() is zero_connection
+    assert structured.unformed_module() is module
     underlying_connection = zero_connection.underlying_linear_morphism()
     assert underlying_connection.connection() is zero_connection
     assert zero_space(underlying_connection) is zero_connection
-    assert structured.connection().parent() is structured.connections()
+    assert structured.connection() is zero_connection
+    assert structured.connection().module() is module
     assert structured in ModulesWithFlatConnection(algebra)
     assert structured.connection().is_flat()
     horizontal_maps = structured.Mor(structured)
     module_morphisms = Modules(algebra).Mor(structured, structured)
     identity = horizontal_maps.identity()
-    assert not isinstance(horizontal_maps, Homset)
+    assert not isinstance(horizontal_maps, Mor)
     assert horizontal_maps.arrow_set() is module_morphisms
     assert module_morphisms in horizontal_maps.super_categories()
     assert identity.as_morphism().parent() is module_morphisms
@@ -79,6 +82,7 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
     assert horizontal_maps(identity.as_morphism()) is identity
     assert identity.as_morphism() in horizontal_maps
     assert identity(structured.module_generator("e")) == structured.module_generator("e")
+    assert (identity * identity)(structured.module_generator("e")) == structured.module_generator("e")
 
     nonzero_source = algebra.free_module(finite_ordered_set(("e",)))
     nonzero_space = nonzero_source.connections()
@@ -120,6 +124,9 @@ def test_flat_connection_builds_the_de_rham_dg_module() -> None:
     X = dga.from_degree_zero(x)
 
     assert dg_module in DifferentialGradedModules(dga)
+    assert dg_module in CochainComplexes(QQ)
+    assert dg_module.connection() is connection
+    assert dg_module.degree_index_set() is ZZ
     assert dg_module.d(dg_module.d(e)) == dg_module.zero()
     assert dg_module.d(dg_module.act(e, X)) == (
         dg_module.act(dg_module.d(e), X)
@@ -144,5 +151,7 @@ def test_connection_on_countable_free_module_keeps_callable_generator_family_laz
     e1000 = module.module_generator(NN(1000))
     assert connection.generator_image(NN(1000)) == connection_space.target_module().zero()
     assert connection(e1000) == connection_space.target_module().zero()
-    with pytest.raises(AssertionError, match="finite framing"):
-        connection.is_flat()
+    assert connection.is_flat() is Unknown
+    structured = ModulesWithConnection(algebra)(connection)
+    assert structured.unformed_module() is module
+    assert structured not in ModulesWithFlatConnection(algebra)

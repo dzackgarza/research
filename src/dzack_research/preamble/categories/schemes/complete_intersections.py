@@ -1,7 +1,21 @@
-r"""Projective complete intersections with their selected defining multidegree."""
+r"""Projective complete intersections with their selected regular sequence.
+
+A complete intersection ``X = V_+(f_1, ..., f_r) <= P^n_R`` is a closed
+subscheme of projective space together with the homogeneous equations cutting
+it out, where ``f_1, ..., f_r`` is a regular sequence.  It is constructed by
+the closed-subscheme construction of ``P^n_R`` with the placement
+``ProjectiveCompleteIntersections(R)``; the category adds no datum of its own:
+its codimension, multidegree and ambient are read off the equations and the
+inclusion.
+
+The base change ``X_{R'} = X x_{Spec R} Spec R'`` along ``g: R -> R'`` is the
+closed subscheme of ``P^n_{R'}`` cut out by the base-changed equations, and it
+is constructed as an object of ``FiberProductSchemes(R')``: its left projection
+is ``X_{R'} -> X`` and its right projection is the structure morphism.
+"""
 
 from sage.misc.cachefunc import cached_method
-from sage.structure.sage_object import SageObject
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -9,172 +23,126 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
     _engine_ring,
+    _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
+    FiberProductSchemes,
     ProjectiveSpaces,
+    SchemeFiberProductConstruction,
+    SchemeMorphism,
     Schemes,
-    _categorical_scheme_morphism,
-    _refine_scheme,
+    _engine_projective_subscheme,
+    _projective_closed_subscheme,
+    _projective_equation_family,
+    _engine_scheme,
+    _equation_family,
+    _native_scheme_mor,
+    _scheme_mor_category,
+    _structure_morphism_rule,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 
 
 def _complete_intersection_base_supported(base) -> bool:
-    r"""Return whether the selected regular base regime justifies the CI criterion."""
-    if base in OwnedFields():
-        return True
-    if base in LocalizationRings():
-        return _complete_intersection_base_supported(base.localization_source())
-    try:
-        coefficient_base = base.algebra_base_ring()
-    except AttributeError:
-        return False
-    return (
-        coefficient_base in OwnedFields()
-        and base in SymmetricAlgebras(coefficient_base)
+    r"""Whether the base is a field, a localization of one, or a polynomial algebra over one.
+
+    Over these bases the homogeneous coordinate ring is regular.  The selected
+    sequence is checked by successive nonzerodivisors, not just final height.
+    """
+    match base:
+        case _ if base in OwnedFields():
+            return True
+        case _ if base in LocalizationRings():
+            return _complete_intersection_base_supported(base.localization_source())
+        case _ if base.base_ring() in OwnedFields():
+            return base in SymmetricAlgebras(base.base_ring())
+        case _:
+            return False
+
+
+def _projective_complete_intersection(ambient, equations, placements=(), **level_data):
+    r"""``V_+(f_1, ..., f_r) <= P^n_R`` as a complete intersection.
+
+    The equations are the selected regular sequence.  The closed subscheme is
+    constructed once, with its complete-intersection placement and any further
+    placement a construction states (the fibre-product placement of a base
+    change); the regular-sequence criterion is checked on the native ideal
+    before the object is constructed.
+    """
+    base = ambient.scheme_base_ring()
+    assert ambient in ProjectiveSpaces(base), (
+        "the represented complete-intersection criterion requires a projective-space ambient"
+    )
+    assert _complete_intersection_base_supported(base), (
+        "the represented complete-intersection criterion requires a field, a localization of a "
+        "represented base, or a polynomial parameter algebra over a field"
+    )
+    family = _projective_equation_family(_equation_family(equations))
+    assert family.cardinality() > 0, "a selected regular sequence is nonempty"
+    engine = _engine_projective_subscheme(_engine_scheme(ambient), family)
+    assert _is_regular_sequence(engine), (
+        "the selected homogeneous equations do not form a regular sequence"
+    )
+    return _projective_closed_subscheme(
+        ambient, family, placements=(ProjectiveCompleteIntersections(base), *placements),
+        _engine=engine, **level_data,
     )
 
 
-class _CompleteIntersectionBaseChange(SageObject):
-    r"""The selected source and scalar map defining one scalar base change."""
+def _is_regular_sequence(engine):
+    r"""Decide regularity of the selected equations before allocating the scheme.
 
-    def __init__(self, source, ring_map) -> None:
-        self._source = source
-        self._ring_map = ring_map
-        if ring_map.domain() is not source.scheme_base_ring():
-            raise ValueError(
-                "a complete-intersection base-change datum starts at the source scalar base"
-            )
+    Engine adapter (``OWN-06``): flatten a polynomial coefficient tower by
+    Sage's polynomial-ring isomorphism, then use its ideal-quotient engine.
+    No parameter is inverted: this tests the sequence over the stated base,
+    not over its fraction field.
 
-    def source(self):
-        return self._source
-
-    def ring_map(self):
-        return self._ring_map
-
-    def projection(self, changed):
-        r"""Return the projection from the selected base change to its source."""
-        if changed.scheme_base_ring() is not self.ring_map().codomain():
-            raise ValueError(
-                "the changed complete intersection has the wrong scalar base for this datum"
-            )
-        changed_ambient = changed.complete_intersection_ambient()
-        ambient_projection = changed_ambient.left_projection()
-        into_source_ambient = ambient_projection * changed.inclusion()
-        return _categorical_scheme_morphism(
-            into_source_ambient.native_morphism(),
-            domain=changed,
-            codomain=self.source(),
-        )
-
-
-class _CompleteIntersectionAdjunctionComparison(SageObject):
-    r"""The adjunction comparison ``omega_X ~= (omega_P tensor det N)_X``.
-
-    Every line bundle in the comparison is an actual pullback ``O_X(d)``.
-    The determinant of the normal bundle is ``O_X(sum d_i)`` for the selected
-    regular sequence, while ``omega_P=O_P(-n-1)``.
+    If ``I`` is generated by the preceding equations, multiplication by
+    ``f`` on ``S/I`` has kernel ``(I : (f))/I``.  It is injective exactly when
+    ``I : (f) = I``.  The final quotient must also be nonzero (Stacks, 00LF).
+    Final height alone does not suffice for a chosen global sequence:
+    ``t*x, t*y, 1-t`` has height three, but ``x`` annihilates ``t*y`` modulo
+    ``(t*x)``.  Sage's maintained ``MPolynomialIdeal.quotient`` computes each
+    colon ideal; no local Groebner or regular-sequence algorithm is copied.
     """
-
-    def __init__(self, complete_intersection) -> None:
-        self._scheme = complete_intersection
-        ambient = complete_intersection.complete_intersection_ambient()
-        normal_degree = sum(int(value) for value in complete_intersection.defining_degrees())
-        canonical = complete_intersection.O(
-            complete_intersection.adjunction_twist_degree()
-        )
-        ambient_canonical = ambient.canonical_line_bundle().restrict_to(
-            complete_intersection
-        )
-        normal_determinant = complete_intersection.O(normal_degree)
-        adjunction_target = ambient_canonical.tensor_product(normal_determinant)
-        self._canonical = canonical
-        self._ambient_canonical = ambient_canonical
-        self._normal_determinant = normal_determinant
-        self._target = adjunction_target
-        self._isomorphism = canonical.canonical_isomorphism_to(adjunction_target)
-
-    def scheme(self):
-        return self._scheme
-
-    def canonical_line_bundle(self):
-        return self._canonical
-
-    def restricted_ambient_canonical_bundle(self):
-        return self._ambient_canonical
-
-    def normal_determinant_line_bundle(self):
-        return self._normal_determinant
-
-    def adjunction_target(self):
-        return self._target
-
-    def isomorphism(self):
-        return self._isomorphism
-
-    def _repr_(self) -> str:
-        return f"Adjunction comparison for {self.scheme()}: {self.canonical_line_bundle()} ~= {self.adjunction_target()}"
-
+    original = engine.ambient_space().coordinate_ring()
+    flatten = original.flattening_morphism()
+    ring = flatten.codomain()
+    prefix = ring.ideal(ring.zero())
+    for equation in engine.defining_polynomials():
+        principal = ring.ideal(flatten(equation))
+        match prefix.quotient(principal) == prefix:
+            case False:
+                return False
+            case True:
+                prefix = prefix + principal
+    return ring.one() not in prefix
 
 
 class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
-    r"""Closed complete intersections over a field or polynomial parameter base.
+    r"""Closed complete intersections in projective space over a regular base.
 
-    The selected homogeneous equations are part of the construction.  Over a
-    field, and over a polynomial parameter algebra over a field, the homogeneous
-    coordinate ring is regular.  There a family of
-    ``r`` generators whose ideal has height ``r`` is a regular sequence, hence
-    cuts out a complete intersection.  The represented criterion is therefore
-    exactly ``number of selected equations == codimension``.
+    Over a field, a localization, and a polynomial parameter algebra over a
+    field, the homogeneous coordinate ring is regular.  Each selected equation
+    must be a nonzerodivisor modulo its predecessors, and the final quotient
+    must be nonzero; the engine checks those exact conditions before placement.
     """
 
     def an_object(self):
         plane = ProjectiveSpaces(self.base_ring())(2)
         x, y, z = plane.homogeneous_coordinate_generators()
-        return self(plane.closed_subscheme(x * z - y**2))
+        return self(plane, x * z - y**2)
 
-    def _call_(self, subscheme, *, base_change_datum=None):
-        r"""Place a projective closed subscheme with its selected regular sequence."""
-        base = subscheme.scheme_base_ring()
-        if base is not self.base_ring():
-            raise ValueError("a complete intersection is placed over this category's base ring")
-        if not _complete_intersection_base_supported(base):
-            raise TypeError(
-                "the represented complete-intersection criterion requires a field or a polynomial parameter algebra over a field"
-            )
-        if subscheme not in ClosedSubschemes(base):
-            raise TypeError(
-                "a projective complete intersection starts from a represented closed subscheme"
-            )
-        ambient = subscheme.inclusion().codomain()
-        if ambient not in ProjectiveSpaces(base):
-            raise TypeError(
-                "the represented complete-intersection criterion requires projective-space ambient"
-            )
-        equations = tuple(subscheme.defining_equations())
-        if not equations:
-            raise ValueError(
-                "select at least one homogeneous equation for this complete-intersection construction"
-            )
-        codimension = int(subscheme.codimension())
-        if codimension != len(equations):
-            raise ValueError(
-                f"the selected {len(equations)} equations have codimension {codimension}, so they are not a regular sequence"
-            )
-        subscheme._preamble_complete_intersection_ambient = ambient
-        subscheme._preamble_complete_intersection_degrees = tuple(
-            int(equation.degree()) for equation in equations
+    def _call_(self, ambient, *equations):
+        r"""``V_+(f_1, ..., f_r) <= P^n_R`` for a regular sequence of homogeneous equations.
+
+        The equations are given one by one or as one finite family.
+        """
+        assert ambient.scheme_base_ring() is self.base_ring(), (
+            "a complete intersection is constructed in a projective space over this category's base ring"
         )
-        if (
-            base_change_datum is not None
-            and base_change_datum.ring_map().codomain() is not base
-        ):
-            raise ValueError(
-                "the complete-intersection base-change datum has the wrong target scalar base"
-            )
-        subscheme._complete_intersection_base_change_datum = base_change_datum
-        return _refine_scheme(subscheme, base, [self])
+        return _projective_complete_intersection(ambient, equations)
 
     def _repr_object_names(self):
         return f"projective complete intersections over {self.base_ring()}"
@@ -182,32 +150,28 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Schemes(self.base_ring()).Projective(), ClosedSubschemes(self.base_ring())]
 
-    def __contains__(self, candidate) -> bool:
-        base = self.base_ring()
-        return (
-            candidate in ClosedSubschemes(base)
-            and getattr(candidate, "_preamble_complete_intersection_ambient", None)
-            in ProjectiveSpaces(base)
-        )
-
     class ParentMethods:
         def is_complete_intersection(self) -> bool:
             return True
 
         def complete_intersection_ambient(self):
-            return self._preamble_complete_intersection_ambient
+            r"""The projective space ``P^n_R`` this complete intersection is cut out of."""
+            return self.inclusion().codomain()
 
         def defining_degrees(self):
+            r"""The degrees ``d_1, ..., d_r`` of the selected regular sequence."""
             return finite_family(
-                self._preamble_complete_intersection_degrees,
+                tuple(int(equation.degree()) for equation in self.defining_equations()),
                 name="Complete-intersection defining degrees",
             )
 
         def complete_intersection_codimension(self):
-            return len(self._preamble_complete_intersection_degrees)
+            return self.defining_equations().cardinality()
 
         def expected_dimension(self):
-            return int(self.complete_intersection_ambient().relative_dimension()) - self.complete_intersection_codimension()
+            return self.complete_intersection_ambient().relative_dimension() - _own_ring(
+                SageZZ
+            )(int(self.complete_intersection_codimension()))
 
         def family_base_scheme(self):
             return self.base_scheme()
@@ -216,67 +180,40 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             r"""Return the relative projective complete-intersection morphism to its base."""
             return self.structure_morphism()
 
-        def base_change_datum(self):
-            datum = self._complete_intersection_base_change_datum
-            if datum is None:
-                raise ValueError("this complete intersection was not selected as a scalar base change")
-            return datum
-
         def base_change_source_complete_intersection(self):
-            return self.base_change_datum().source()
+            r"""``X`` for ``X_{R'} = X x_{Spec R} Spec R'``: the domain of the left cospan leg."""
+            assert self in FiberProductSchemes(self.scheme_base_ring()), (
+                "this complete intersection was not constructed as a scalar base change"
+            )
+            return self.fiber_product_cospan()[0].domain()
 
         def base_change_projection(self):
-            return self.base_change_datum().projection(self)
+            r"""The projection ``X_{R'} -> X`` of the scalar base-change pullback."""
+            assert self in FiberProductSchemes(self.scheme_base_ring()), (
+                "this complete intersection was not constructed as a scalar base change"
+            )
+            return self.left_projection()
 
         def base_change(self, ring_map):
-            r"""Base-change this complete-intersection family through its defining sections."""
-            base = self.scheme_base_ring()
-            if ring_map.domain() is not base:
-                raise ValueError("a complete-intersection base change starts at its scalar base")
-            ambient = self.complete_intersection_ambient()
-            changed_ambient = ambient.base_change(ring_map)
-            changed_equations = []
-            defining_equations = tuple(self.defining_equations())
-            for equation_position, equation in enumerate(defining_equations):
-                degree = int(equation.degree())
-                source_bundle = ambient.O(degree)
-                source_sections = source_bundle.global_sections()
-                source_ring = source_sections.homogeneous_coordinate_ring()
-                raised = tuple(
-                    self.homogeneous_defining_equations(source_ring)
-                )[equation_position]
-                source_section = source_sections.section_from_homogeneous_polynomial(raised)
-                changed_bundle = source_bundle.base_change(ring_map)
-                comparison = changed_bundle.section_base_change_comparison()
-                changed_source = comparison.domain()
-                target_ring = changed_source.base_ring()
-                changed_source_section = changed_source.linear_combination(
-                    {
-                        label: target_ring(ring_map(coefficient))
-                        for label, coefficient in source_sections.framing_coefficients(source_section).items()
-                    }
-                )
-                target_section = comparison(changed_source_section)
-                changed_equations.append(
-                    changed_bundle.global_sections().homogeneous_polynomial(target_section)
-                )
+            r"""Base change through the scheme owner; the new equations decide regularity.
 
-            datum = _CompleteIntersectionBaseChange(self, ring_map)
-            return ProjectiveCompleteIntersections(ring_map.codomain())(
-                changed_ambient.closed_subscheme(tuple(changed_equations)),
-                base_change_datum=datum,
-            )
+            A regular sequence need not stay regular under nonflat base
+            change.  The scheme owner always constructs the base-changed
+            closed subscheme, and keeps complete-intersection placement only
+            when the new homogeneous ideal satisfies the criterion.
+            """
+            return self.scheme_category().base_change_functor(ring_map)(self)
 
         def adjunction_twist_degree(self):
             r"""Return ``sum(d_i) - n - 1`` in ``K_X = O_X(sum d_i-n-1)``.
 
             This is the integer in the projective complete-intersection
-            adjunction formula.  The actual canonical bundle and comparison
-            map are returned separately by :meth:`canonical_line_bundle` and
+            adjunction formula.  The canonical bundle and the adjunction
+            isomorphism are returned by :meth:`canonical_line_bundle` and
             :meth:`adjunction_isomorphism`.
             """
             ambient_dimension = int(self.complete_intersection_ambient().relative_dimension())
-            return sum(self._preamble_complete_intersection_degrees) - ambient_dimension - 1
+            return sum(self.defining_degrees()) - ambient_dimension - 1
 
         def is_gorenstein(self) -> bool:
             r"""Return ``True``: a quotient of a regular ring by a regular sequence is Gorenstein."""
@@ -304,13 +241,13 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             dimension = int(self.expected_dimension())
             if dimension == 0:
                 return bool(self.is_smooth())
-            singular_cone_dimension = int(self.Jacobian().dimension())
+            singular_cone_dimension = int(_engine_scheme(self).Jacobian().dimension())
             return singular_cone_dimension <= dimension - 1
 
         def projective_degree(self):
             r"""Return the complete-intersection degree ``prod d_i``."""
             degree = 1
-            for value in self._preamble_complete_intersection_degrees:
+            for value in self.defining_degrees():
                 degree *= int(value)
             return degree
 
@@ -319,15 +256,35 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return -self.adjunction_twist_degree()
 
         @cached_method
-        def adjunction_comparison(self):
-            return _CompleteIntersectionAdjunctionComparison(self)
-
-        def adjunction_isomorphism(self):
-            return self.adjunction_comparison().isomorphism()
+        def restricted_ambient_canonical_bundle(self):
+            r"""``omega_P|_X = O_X(-n-1)``, the restricted canonical bundle of the ambient."""
+            return self.complete_intersection_ambient().canonical_line_bundle().restrict_to(self)
 
         @cached_method
+        def normal_determinant_line_bundle(self):
+            r"""``det N_{X/P} = O_X(sum d_i)`` for the selected regular sequence."""
+            return self.O(sum(self.defining_degrees()))
+
+        @cached_method
+        def adjunction_isomorphism(self):
+            r"""The adjunction isomorphism ``omega_X ~= omega_P|_X tensor det N_{X/P}``.
+
+            Its domain is the canonical bundle ``O_X(sum d_i - n - 1)`` and its
+            codomain is the tensor product of the restricted ambient canonical
+            bundle with the determinant of the normal bundle.
+            """
+            canonical = self.O(self.adjunction_twist_degree())
+            target = self.restricted_ambient_canonical_bundle().tensor_product(
+                self.normal_determinant_line_bundle()
+            )
+            return canonical.canonical_isomorphism_to(target)
+
+        def adjunction_target(self):
+            r"""``omega_P|_X tensor det N_{X/P}``, the codomain of the adjunction isomorphism."""
+            return self.adjunction_isomorphism().codomain()
+
         def canonical_line_bundle(self):
-            return self.adjunction_comparison().canonical_line_bundle()
+            return self.adjunction_isomorphism().domain()
 
         canonical_bundle = canonical_line_bundle
 
@@ -345,8 +302,9 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             by Sage's exact projective-subscheme Jacobian calculation and the
             ampleness question is delegated to that line-bundle object.
             """
-            if self.scheme_base_ring() not in OwnedFields():
-                raise TypeError("the del Pezzo predicate is a fibrewise projective-surface question over a field")
+            assert self.scheme_base_ring() in OwnedFields(), (
+                "the del Pezzo predicate is a fibrewise projective-surface question over a field"
+            )
             if int(self.expected_dimension()) != 2:
                 return False
             if not bool(self.is_smooth()):
@@ -373,9 +331,8 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return _QuarticK3HodgeData(self)
 
         def del_pezzo_degree(self):
-            r"""Return ``(-K_X)^2`` for a represented del Pezzo complete intersection."""
-            if not self.is_del_pezzo():
-                raise ValueError("the represented complete intersection is not a del Pezzo surface")
+            r"""Return ``(-K_X)^2 = (n + 1 - sum d_i)^2 prod d_i`` for a del Pezzo complete intersection."""
+            assert self.is_del_pezzo(), "the represented complete intersection is not a del Pezzo surface"
             coefficient = self.anticanonical_twist_degree()
             return coefficient**2 * self.projective_degree()
 

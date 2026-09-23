@@ -1,103 +1,148 @@
 r"""Enumerated sets of functions, indexed by \(\mathbb N\) or by \(\mathbb Z\)."""
 
-from operator import index as integer_index
 from typing import SupportsIndex
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.cardinals import aleph0
-from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
-    EnumeratedSets,
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _own_ring,
+    _owned_engine_element,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets
+from dzack_research.preamble.owned_category import _object_of
 
 
-def _nonnegative_integer(value, *, error_type):
-    try:
-        value = integer_index(value)
-    except (TypeError, ValueError) as error:
-        raise error_type(value) from error
-    if value < 0:
-        raise error_type(value)
-    return ZZ(value)
+def _integers():
+    return _own_ring(SageZZ)
 
 
-def integer_from_natural(n: SupportsIndex) -> Integer:
+def _symbolic_ring():
+    return _own_ring(SR)
+
+
+def _natural_position(value, *, error_type: type[LookupError] | type[ValueError]) -> int:
+    r"""The natural number ``value`` names as a position, as ``NN`` or a Sage integer names it.
+
+    The ingress of an enumeration position or a natural index: it is called by
+    ``__getitem__`` and ``function`` on these sets and by
+    :func:`integer_from_natural`, and it raises ``error_type`` for a value
+    that names no natural number.
+    """
+    match value:
+        case _ if value in NN:
+            return int(NN(value))
+        case _ if value in _integers() and _integers()(value) >= _integers().zero():
+            return int(_integers()(value))
+        case _ if value in SageZZ and SageZZ(value) >= 0:
+            return int(SageZZ(value))
+        case _:
+            raise error_type(value)
+
+
+def integer_from_natural(n: SupportsIndex):
     r"""The bijection \(\mathbb N\to\mathbb Z\) sending \(0,1,2,3,4,\ldots\) to \(0,1,-1,2,-2,\ldots\)."""
-    n = _nonnegative_integer(n, error_type=IndexError)
+    n = SageZZ(_natural_position(n, error_type=IndexError))
     if n == 0:
-        return ZZ(0)
-    if n % 2 == 1:
-        return (n + 1) // 2
-    return -n // 2
+        result = SageZZ.zero()
+    elif n % 2 == 1:
+        result = (n + 1) // 2
+    else:
+        result = -n // 2
+    return _owned_engine_element(_integers(), result)
 
 
-def natural_from_integer(k: SupportsIndex) -> int:
+def natural_from_integer(k: SupportsIndex):
     r"""The inverse of :func:`integer_from_natural`."""
-    k = ZZ(k)
+    k = SageZZ(int(_integers()(k))) if k in _integers() else SageZZ(k)
     if k == 0:
-        return 0
+        return NN(0)
     if k > 0:
-        return int(2 * k - 1)
-    return int(-2 * k)
+        return NN(int(2 * k - 1))
+    return NN(int(-2 * k))
 
 
 def indexed_symbol(
     prefix: str,
     index: SupportsIndex,
     latex_prefix: str,
-) -> Expression:
+) :
     r"""The symbol in \(\mathrm{SR}\) for this prefix and integer index."""
-    index = ZZ(index)
+    index = SageZZ(int(_integers()(index))) if index in _integers() else SageZZ(index)
     if index >= 0:
         name = f"{prefix}_{index}"
     else:
         name = f"{prefix}_m{-index}"
-    return SR.var(name, latex_name=rf"{latex_prefix}_{{{index}}}")
+    return _owned_engine_element(
+        _symbolic_ring(),
+        SR.var(name, latex_name=rf"{latex_prefix}_{{{index}}}"),
+    )
+
+
+def _symbol_index(
+    elt,
+    prefix: str,
+    latex_prefix: str | None,
+) -> int | None:
+    r"""The integer \(n\) when ``elt`` is the indexed symbol of this prefix, and ``None`` otherwise."""
+    parent = getattr(elt, "parent", lambda: None)()
+    if parent is _symbolic_ring():
+        symbol = SR(_engine_element(_symbolic_ring(), elt))
+    elif elt in SR:
+        symbol = SR(elt)
+    else:
+        return None
+    if not symbol.is_symbol():
+        return None
+    text = str(symbol)
+    head = f"{prefix}_"
+    if not text.startswith(head):
+        return None
+    rest = text[len(head) :]
+    match rest:
+        case _ if rest.startswith("m") and rest[1:].isdigit():
+            index = -int(rest[1:])
+        case _ if rest.isdigit():
+            index = int(rest)
+        case _:
+            return None
+    latex = prefix if latex_prefix is None else latex_prefix
+    expected = _engine_element(_symbolic_ring(), indexed_symbol(prefix, index, latex))
+    if symbol != expected:
+        return None
+    return index
 
 
 def index_of_symbol(
     elt: Expression,
     prefix: str,
     latex_prefix: str | None = None,
-) -> Integer:
+):
     r"""Return \(n\) when ``elt`` is the indexed symbol of this prefix."""
-    if elt not in SR:
+    index = _symbol_index(elt, prefix, latex_prefix)
+    if index is None:
         raise ValueError(elt)
-    symbol = SR(elt)
-    if not symbol.is_symbol():
-        raise ValueError(elt)
-    text = str(symbol)
-    head = f"{prefix}_"
-    if not text.startswith(head):
-        raise ValueError(elt)
-    rest = text[len(head) :]
-    if rest.startswith("m") and rest[1:].isdigit():
-        index = -ZZ(rest[1:])
-    elif rest.isdigit():
-        index = ZZ(rest)
-    else:
-        raise ValueError(elt)
-    latex = prefix if latex_prefix is None else latex_prefix
-    if symbol != indexed_symbol(prefix, index, latex):
-        raise ValueError(elt)
-    return index
+    return _integers()(index)
 
 
 class FunctionEnumeratedSets(OwnedCategory):
-    r"""Enumerated sets whose elements stand for functions."""
+    r"""Enumerated sets whose elements stand for functions.
 
-    def an_object(self):
+    The formal-symbol presentation is a private engine of this existing
+    category.  Prefixes and print names do not define a new category of sets.
+    """
+
+    def an_object(self) -> Parent:
         from dzack_research.preamble.categories.sets.enumerated.hermite_polynomials import (
             HermitePolynomials,
         )
@@ -106,6 +151,92 @@ class FunctionEnumeratedSets(OwnedCategory):
 
     def super_categories(self):
         return [EnumeratedSets()]
+
+    def _call_(
+        self,
+        symbol_prefix: str,
+        latex_symbol_prefix: str,
+        description: str,
+        *,
+        indexing: Category,
+    ) -> Parent:
+        r"""Construct the set of symbols with this prefix, indexed as ``indexing`` states."""
+        return _object_of(
+            Category.join([self, indexing]),
+            _engine=(self, IndexedSymbolicFunctionSet, None),
+            symbol_prefix=symbol_prefix,
+            latex_symbol_prefix=latex_symbol_prefix,
+            description=description,
+        )
+
+
+class IndexedSymbolicFunctionSet:
+    r"""Private formal-symbol realization of the function-set enumeration.
+
+    This engine retains the symbol syntax.  Cardinality, order comparison
+    and the ranking-isomorphism construction remain the set owners'.
+    """
+
+    def __init__(
+        self,
+        symbol_prefix: str,
+        latex_symbol_prefix: str,
+        description: str,
+        **rest,
+    ) -> None:
+        self._symbol_prefix = symbol_prefix
+        self._latex_symbol_prefix = latex_symbol_prefix
+        self._description = description
+        super().__init__(facade=_symbolic_ring(), **rest)
+
+    def _an_element_(self):
+        r"""Return the rank-zero function symbol."""
+        return self[0]
+
+    def __getitem__(self, position):
+        r"""Return the function at a nonnegative enumeration position."""
+        rank = _natural_position(position, error_type=IndexError)
+        return self.ranking_map().inverse()(rank)
+
+    def _symbol_at_index(self, index):
+        return indexed_symbol(self._symbol_prefix, index, self._latex_symbol_prefix)
+
+    def _index_of_element(self, element) -> int | None:
+        return _symbol_index(element, self._symbol_prefix, self._latex_symbol_prefix)
+
+    @cached_method
+    def ranking_map(self) -> CategoricalIsomorphism:
+        r"""The enumeration by index, read through this set's own indexing."""
+
+        def position_of(element):
+            if element not in self:
+                raise ValueError(element)
+            return self._rank_from_index(self._index_of_element(element))
+
+        return self._ranking_isomorphism(
+            position_of,
+            lambda position: self._symbol_at_index(self._index_from_rank(position)),
+        )
+
+    def __contains__(self, element) -> bool:
+        r"""Whether ``element`` is the symbol of this prefix at an index of this set."""
+        index = self._index_of_element(element)
+        return index is not None and index in self.index_set()
+
+    def _element_constructor_(self, element):
+        if element not in self:
+            raise ValueError(f"{element!r} is not in {self}")
+        return _symbolic_ring()(element)
+
+    def __iter__(self):
+        symbol_at = self.ranking_map().inverse()
+        position = 0
+        while True:
+            yield symbol_at(position)
+            position += 1
+
+    def _repr_(self) -> str:
+        return self._description
 
 
 class EnumeratedByNaturals(OwnedCategory):
@@ -126,12 +257,12 @@ class EnumeratedByNaturals(OwnedCategory):
             return NN
 
         def _index_from_rank(self, position):
-            return _nonnegative_integer(position, error_type=IndexError)
+            return _integers()(_natural_position(position, error_type=IndexError))
 
         def _rank_from_index(self, index):
-            return int(_nonnegative_integer(index, error_type=ValueError))
+            return _natural_position(index, error_type=ValueError)
 
-        def function(self, index: SupportsIndex) -> Expression:
+        def function(self, index: SupportsIndex):
             return self[self._rank_from_index(index)]
 
 
@@ -154,7 +285,7 @@ class EnumeratedByIntegers(OwnedCategory):
 
     class ParentMethods:
         def index_set(self) -> Parent:
-            return ZZ
+            return _integers()
 
         def _index_from_rank(self, position):
             return integer_from_natural(position)
@@ -162,71 +293,5 @@ class EnumeratedByIntegers(OwnedCategory):
         def _rank_from_index(self, index):
             return natural_from_integer(index)
 
-        def function(self, index: SupportsIndex) -> Expression:
+        def function(self, index: SupportsIndex):
             return self[self._rank_from_index(index)]
-
-
-class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
-    r"""An infinite function set represented by one formal symbol per index."""
-
-    _indexing_category = None
-    _symbol_prefix = None
-    _latex_symbol_prefix = None
-
-    def __init__(self) -> None:
-        assert self._indexing_category is not None
-        assert self._symbol_prefix is not None
-        Parent.__init__(
-            self,
-            facade=SR,
-            category=(FunctionEnumeratedSets(), self._indexing_category()),
-        )
-
-    def cardinality(self) -> Parent:
-        return aleph0
-
-    def _an_element_(self):
-        r"""Return the rank-zero function symbol."""
-        return self[0]
-
-    def __getitem__(self, position):
-        r"""Return the function at a nonnegative enumeration position."""
-        rank = int(_nonnegative_integer(position, error_type=IndexError))
-        return self.ranking_map().inverse()(rank)
-
-    def _symbol_at_index(self, index):
-        latex_prefix = (
-            self._symbol_prefix
-            if self._latex_symbol_prefix is None
-            else self._latex_symbol_prefix
-        )
-        return indexed_symbol(self._symbol_prefix, index, latex_prefix)
-
-    def _index_of_element(self, element):
-        return index_of_symbol(
-            element,
-            self._symbol_prefix,
-            self._latex_symbol_prefix,
-        )
-
-    @cached_method
-    def ranking_map(self) -> CategoricalIsomorphism:
-        r"""The enumeration by index, read through this set's own indexing."""
-        return self._ranking_isomorphism(
-            lambda element: self._rank_from_index(self._index_of_element(element)),
-            lambda position: self._symbol_at_index(self._index_from_rank(position)),
-        )
-
-    def __contains__(self, element):
-        try:
-            self.ranking_map()(element)
-        except (IndexError, TypeError, ValueError):
-            return False
-        return True
-
-    def __iter__(self):
-        symbol_at = self.ranking_map().inverse()
-        position = 0
-        while True:
-            yield symbol_at(position)
-            position += 1

@@ -40,3 +40,19 @@ def test_dga_cohomology_is_a_graded_algebra_with_descended_product() -> None:
     assert alpha * cohomology.one() == alpha
     assert cohomology.one() * changed_alpha == cohomology.one() * alpha
     assert alpha * alpha == cohomology.zero()
+
+    # The product descends from the already constructed direct sum of the
+    # cycle quotients; those pieces and their exact quotient maps are kept.
+    module = cohomology.unformed_module()
+    assert module is not cohomology
+    assert module.base_ring() is field
+    assert module.graded_piece(1) is dga.cohomology(1)
+    assert module(alpha).homogeneous_component(1) == alpha_class
+    assert cohomology(module(alpha)) == alpha
+    multiplication = cohomology.multiplication()
+    assert multiplication.codomain() is module
+    assert multiplication.domain().tensor_factor(0) is module
+    assert multiplication.domain().tensor_factor(1) is module
+    assert multiplication(module(cohomology.one()), module(alpha)) == module(alpha)
+    assert module.projection(1)(module(alpha)) == alpha_class
+    assert module.injection(1)(alpha_class) == module(alpha)

@@ -18,7 +18,6 @@ from dzack_research.preamble.all import (
     ClassGroups,
     CompleteLinearSystems,
     CoxRings,
-    FiniteAtlasInvertibleSheaf,
     HomogeneousPolynomialSectionSpaces,
     ImposedMultiplicityLinearSystems,
     LineBundleCohomologySpaces,
@@ -29,6 +28,7 @@ from dzack_research.preamble.all import (
     TorusInvariantCycleGroups,
     WeilDivisorGroups,
 )
+from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two
@@ -177,6 +177,7 @@ def test_the_smooth_toric_divisor_comparison_square_is_explicit() -> None:
     plane = _projective_plane()
     weil = plane.weil_divisor_group()
     cartier = plane.cartier_divisor_group()
+    invariant_cartier = plane.torus_invariant_cartier_divisor_group()
     classes = plane.class_group()
     picard = plane.picard_group()
 
@@ -185,16 +186,17 @@ def test_the_smooth_toric_divisor_comparison_square_is_explicit() -> None:
     assert classes in ClassGroups()
     assert picard in PicardGroups()
     assert cartier is not weil
+    assert invariant_cartier is weil
     assert picard is not classes
 
-    cartier_to_weil = plane.cartier_to_weil_morphism()
-    to_picard = plane.cartier_class_projection()
+    cartier_to_weil = plane.torus_invariant_cartier_to_weil_morphism()
+    to_picard = plane.torus_invariant_cartier_class_projection()
     to_class = plane.class_group_projection()
     picard_to_class = plane.picard_to_class_group_morphism().forward()
 
-    assert cartier_to_weil.domain() is cartier
+    assert cartier_to_weil.domain() is invariant_cartier
     assert cartier_to_weil.codomain() is weil
-    assert to_picard.domain() is cartier
+    assert to_picard.domain() is invariant_cartier
     assert to_picard.codomain() is picard
     assert picard_to_class.domain() is picard
     assert picard_to_class.codomain() is classes
@@ -232,13 +234,31 @@ def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> N
 
     assert system in CompleteLinearSystems(QQ)
     assert system.linear_system_scheme() is plane
-    assert system.complete_linear_system_construction().scheme() is plane
     assert system.linear_system_divisor() == line
     assert system.section_space() is sections
     assert "_preamble_linear_system_scheme" not in system.__dict__
     assert "_preamble_linear_system_divisor" not in system.__dict__
     assert "_preamble_linear_system_section_space" not in system.__dict__
     assert system.projective_dimension() == 2
+
+
+def test_complete_linear_system_records_the_quotient_projectivization_of_the_dual() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    system = plane.complete_linear_system(line)
+    sections = system.section_space()
+    dual = sections.dual_module()
+    quotient_family = system.quotient_projectivization()
+    quotient_total = quotient_family.arrow().domain()
+    comparison = system.quotient_projectivization_comparison()
+
+    assert quotient_total.projectivization_module() is dual
+    assert quotient_total.projectivization_source_sheaf().module() is dual
+    assert dual is not sections
+    assert comparison.forward().domain() is quotient_total
+    assert comparison.forward().codomain() is system
+    assert comparison.inverse().domain() is system
+    assert comparison.inverse().codomain() is quotient_total
 
 
 def test_hyperplane_linear_system_defines_the_projective_plane_identity_coordinates() -> None:
@@ -250,7 +270,14 @@ def test_hyperplane_linear_system_defines_the_projective_plane_identity_coordina
     assert morphism.domain() is plane
     assert morphism.codomain() is system
     assert morphism.codomain().linear_system_divisor() == line
-    assert len(morphism.native_morphism().defining_polynomials()) == 3
+    for index in morphism.parent().gluing_datum().chart_indices():
+        local_map = morphism.local_map(index)
+        coordinates = local_map.homogeneous_coordinates()
+        assert coordinates.cardinality() == 3
+        assert all(
+            coordinate.parent() is local_map.coefficient_map().codomain()
+            for coordinate in coordinates
+        )
 
 
 def test_non_basepoint_free_divisor_has_no_everywhere_defined_associated_morphism() -> None:
@@ -268,7 +295,7 @@ def test_a_cartier_divisor_constructs_its_line_bundle_on_the_toric_atlas() -> No
     bundle = plane.invertible_sheaf_of_divisor(line)
     square = plane.invertible_sheaf_of_divisor(ZZ(2) * line)
 
-    assert isinstance(bundle, FiniteAtlasInvertibleSheaf)
+    assert bundle in QuasiCoherentSheaves(plane).Invertible()
     assert bundle.scheme() is plane
     assert bundle.associated_divisor() == line
     assert bundle.global_sections() is plane.divisor_section_space(line)
@@ -335,7 +362,7 @@ def test_hirzebruch_zero_picard_pairing_is_the_hyperbolic_plane() -> None:
         for ray in surface.fan().cones(1)
     )
     pairing = surface.picard_intersection_pairing()
-    projection = surface.cartier_class_projection()
+    projection = surface.torus_invariant_cartier_class_projection()
     classes = tuple(projection(divisor) for divisor in divisors)
 
     isotropic_pair = None
@@ -404,7 +431,7 @@ def test_projective_plane_cox_ring_is_class_group_graded() -> None:
     labels = tuple(cox.algebra_generating_set())
 
     assert cox in CoxRings(plane)
-    assert cox.cox_ring_construction().scheme() is plane
+    assert cox.cox_scheme() is plane
     assert "_preamble_cox_scheme" not in cox.__dict__
     assert "_preamble_cox_rays" not in cox.__dict__
     assert cox.grading_monoid() is plane.class_group()
@@ -480,10 +507,16 @@ def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> N
 
     assert h0_line in LineBundleCohomologySpaces(QQ)
     assert h0_line.cohomology_scheme() is plane
-    assert h0_line.line_bundle_cohomology_construction().scheme() is plane
-    assert h0_line.toric_line_bundle_cohomology_construction().scheme() is plane
     assert h0_line.cohomology_divisor() == line
     assert h0_line.cohomological_degree() == 0
+    for weight in h0_line.cohomology_weight_support():
+        piece = h0_line.cohomology_weight_piece(weight)
+        inclusion = h0_line.cohomology_weight_inclusion(weight)
+        projection = h0_line.cohomology_weight_projection(weight)
+        assert inclusion.domain() is piece
+        assert inclusion.codomain() is h0_line
+        assert projection.domain() is h0_line
+        assert projection.codomain() is piece
     assert "_preamble_cohomology_scheme" not in h0_line.__dict__
     assert "_preamble_cohomology_divisor" not in h0_line.__dict__
     assert "_preamble_cohomological_degree" not in h0_line.__dict__

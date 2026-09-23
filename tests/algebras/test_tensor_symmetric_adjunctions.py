@@ -33,18 +33,16 @@ def _dual_numbers_mod_four():
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
     one = module.module_generator(0)
     epsilon = module.module_generator(1)
-    multiplication = Modules(module.base_ring()).tensor_product([module, module]).from_bilinear(
-        BilinearMap(
-            module,
-            module,
-            module,
-            {
-                (0, 0): one,
-                (0, 1): epsilon,
-                (1, 0): epsilon,
-                (1, 1): module.zero(),
-            },
-        )
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        {
+            (0, 0): one,
+            (0, 1): epsilon,
+            (1, 0): epsilon,
+            (1, 1): module.zero(),
+        },
     )
     algebra = Algebras(ZZ)(multiplication)
     one = algebra.module_generator(0)
@@ -139,9 +137,16 @@ def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_present
         algebra = constructor(module)
         x = algebra.algebra_generator("x")
         y = algebra.algebra_generator("y")
+        assert algebra.generating_module() is module
+        assert algebra.unformed_module() is algebra
+        assert algebra.graded_piece(1) is module
+        assert algebra.framing_source() is not module
         assert 2 * x + 4 * y == algebra.zero()
         assert (2 * x + 4 * y) * x == algebra.zero()
         assert y * (2 * x + 4 * y) == algebra.zero()
+        assert algebra.framing_coefficients((2 * x + 4 * y) * x) == {}
+        element = x * x + y * x
+        assert algebra.linear_combination(algebra.framing_coefficients(element)) == element
         for relation in algebra.relations():
             assert algebra.algebra_presentation_morphism()(relation) == algebra.zero()
 
@@ -184,8 +189,24 @@ def test_presented_algebra_functors_act_on_nonfree_module_morphisms_and_preserve
     )
 
 
+def test_tensor_algebra_universal_extension_preserves_word_order() -> None:
+    source_module = ZZ.free_module(finite_ordered_set(("x", "y")))
+    target_module = ZZ.free_module(finite_ordered_set(("a", "b")))
+    source = source_module.tensor_algebra()
+    target = target_module.tensor_algebra()
+    x = source.algebra_generator("x")
+    y = source.algebra_generator("y")
+    a = target.algebra_generator("a")
+    b = target.algebra_generator("b")
+
+    extension = source.Mor(target)({"x": a, "y": b})
+
+    assert extension(x * y) == a * b
+    assert extension(x * y) != b * a
+
+
 @pytest.mark.parametrize("adjunction_flavor", ("tensor", "symmetric"))
-def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_satisfy_the_triangle_law(
+def test_tensor_and_symmetric_mor_bijections_on_nonfree_modules_are_natural_and_satisfy_the_triangle_law(
     adjunction_flavor,
 ) -> None:
     adjunction = _algebra_adjunction(adjunction_flavor)
@@ -201,8 +222,8 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
     linear = source.module_category().Mor(source, target_underlying)(
         {0: target_underlying(2 * target_generator)}
     )
-    extension = adjunction.hom_set_isomorphism_inverse(linear, target_algebra)
-    recovered = adjunction.hom_set_isomorphism_forward(extension, source)
+    extension = adjunction.mor_set_isomorphism_inverse(linear, target_algebra)
+    recovered = adjunction.mor_set_isomorphism_forward(extension, source)
     source_generator = source.module_generator(0)
     _assert_module_maps_agree(
         recovered,
@@ -212,7 +233,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
 
     free_source = free(source)
     x = free_source.algebra_generator(0)
-    reextended = adjunction.hom_set_isomorphism_inverse(recovered, target_algebra)
+    reextended = adjunction.mor_set_isomorphism_inverse(recovered, target_algebra)
     _assert_algebra_maps_agree(
         reextended,
         extension,
@@ -255,7 +276,7 @@ def test_tensor_and_symmetric_hom_bijections_on_nonfree_modules_are_natural_and_
             {0: smaller_module.module_generator(0)}
         )
     )
-    postcomposed = adjunction.hom_set_isomorphism_forward(algebra_map * extension, source)
+    postcomposed = adjunction.mor_set_isomorphism_forward(algebra_map * extension, source)
     transported = underlying(algebra_map) * recovered
     _assert_module_maps_agree(
         postcomposed,
@@ -352,18 +373,16 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     dual_module = ZZ.free_module(finite_ordered_set(("one", "epsilon")))
     dual_one = dual_module.module_generator("one")
     dual_epsilon = dual_module.module_generator("epsilon")
-    dual_multiplication = Modules(dual_module.base_ring()).tensor_product([dual_module, dual_module]).from_bilinear(
-        BilinearMap(
-            dual_module,
-            dual_module,
-            dual_module,
-            {
-                ("one", "one"): dual_one,
-                ("one", "epsilon"): dual_epsilon,
-                ("epsilon", "one"): dual_epsilon,
-                ("epsilon", "epsilon"): dual_module.zero(),
-            },
-        )
+    dual_multiplication = BilinearMap(
+        dual_module,
+        dual_module,
+        dual_module,
+        {
+            ("one", "one"): dual_one,
+            ("one", "epsilon"): dual_epsilon,
+            ("epsilon", "one"): dual_epsilon,
+            ("epsilon", "epsilon"): dual_module.zero(),
+        },
     )
     dual_numbers = Algebras(ZZ)(dual_multiplication)
     module_map_to_sparse = dual_numbers.module_category().Mor(dual_numbers, iterated_free)(

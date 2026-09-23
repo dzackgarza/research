@@ -1,16 +1,16 @@
 from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    FiniteAtlasInvertibleSheaf,
-)
 from dzack_research.preamble.categories.schemes.gluing import (
-    FiniteAtlasModuleGluingDatum,
-    FiniteAtlasRefinement,
+    FiniteAffineAtlases,
+    FiniteAtlasModuleGluingData,
+)
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    QuasiCoherentSheaves,
 )
 
 
 def _projective_line_refinement():
     line = ProjectiveSpaces(QQ)(1)
-    coarse = line.glued_from_standard_charts().gluing_datum()
+    coarse = line.standard_affine_atlas()
     left = coarse.chart(0)
     right = coarse.chart(1)
     overlap = coarse.overlap(0, 1)
@@ -27,17 +27,20 @@ def _projective_line_refinement():
     right_to_overlap = Schemes(QQ).Core().Mor(
         right_forward.domain(), right_forward.codomain()
     )(right_forward, right_inverse)
-    fine = Schemes(QQ).glue_affine_atlas(
+    fine = FiniteAffineAtlases(line)(
         (left, right, overlap),
         (
             coarse.transition_between(0, 1),
             left_to_overlap,
             right_to_overlap,
         ),
-    ).gluing_datum()
-    refinement = FiniteAtlasRefinement(
-        coarse,
-        fine,
+        (
+            coarse.chart_embedding(0),
+            coarse.chart_embedding(1),
+            coarse.chart_embedding(0) * overlap.inclusion(),
+        ),
+    )
+    refinement = FiniteAffineAtlases(line).Mor(fine, coarse)(
         (0, 1, 0),
         (
             left.categorical_identity_morphism(),
@@ -63,7 +66,7 @@ def _rank_one_sheaf(datum):
         pair: (_identity_transition, _identity_transition)
         for pair in datum.transition_index_set()
     }
-    return FiniteAtlasModuleGluingDatum(datum, local_modules, transitions).sheaf()
+    return FiniteAtlasModuleGluingData(datum)(local_modules, transitions).sheaf()
 
 
 def _scalar_morphism(source, target, scalar):
@@ -82,16 +85,22 @@ def _scalar_morphism(source, target, scalar):
                 )
             }
         )
-    return source.morphism_to(target, local_maps)
+    return QuasiCoherentSheaves(source.scheme()).Mor(source, target)(local_maps)
 
 
 def test_inverse_image_and_module_pullback_keep_the_structural_map_distinct() -> None:
     coarse, fine, refinement = _projective_line_refinement()
     source = _rank_one_sheaf(coarse)
+    inverse_image_functor = refinement.inverse_image_functor()
+    scalar_extension = refinement.inverse_image_scalar_extension_functor()
     pullback = refinement.module_pullback_functor()
-    inverse_image = pullback.inverse_image(source)
+    inverse_image = inverse_image_functor(source)
     pulled = inverse_image.module_pullback()
 
+    assert tuple(pullback.factors()) == (inverse_image_functor, scalar_extension)
+    assert inverse_image.category() is inverse_image_functor.codomain()
+    assert pulled is scalar_extension(inverse_image)
+    assert pulled is pullback(source)
     assert inverse_image.scheme_morphism() is refinement.comparison_morphism()
     assert inverse_image.scheme() is fine.scheme()
     for fine_index in fine.chart_indices():
@@ -120,6 +129,9 @@ def test_module_pullback_preserves_nonidentity_maps_identity_and_composition() -
     composite = times_three * times_two
     pullback = refinement.module_pullback_functor()
 
+    assert times_two.parent() is QuasiCoherentSheaves(coarse.scheme()).Mor(source, middle)
+    assert times_three.parent() is QuasiCoherentSheaves(coarse.scheme()).Mor(middle, target)
+
     pulled_two = pullback.on_morphism(times_two)
     pulled_three = pullback.on_morphism(times_three)
     pulled_composite = pullback.on_morphism(composite)
@@ -130,11 +142,20 @@ def test_module_pullback_preserves_nonidentity_maps_identity_and_composition() -
     assert pulled_identity == pullback.on_object(source).gluing_datum().identity_morphism()
 
     for fine_index in fine.chart_indices():
-        module = pulled_composite.source().local_module(fine_index)
+        module = pulled_composite.domain().gluing_datum().local_module(fine_index)
         label = module.module_generating_set()[0]
-        image = pulled_composite.local_map(fine_index)(module.module_generator(label))
-        codomain = pulled_composite.target().local_module(fine_index)
+        local_map = pulled_composite.local_maps()[
+            pulled_composite.cover().chart_label(fine_index)
+        ]
+        assert local_map is pulled_composite.local_map(fine_index)
+        image = local_map(module.module_generator(label))
+        codomain = pulled_composite.codomain().gluing_datum().local_module(fine_index)
         target_label = codomain.module_generating_set()[0]
+        coefficient = codomain.framing_coefficients(image)[target_label]
+        shifted_coefficient = coefficient + codomain.base_ring().one()
+        assert coefficient.parent() is codomain.base_ring()
+        assert shifted_coefficient.parent() is codomain.base_ring()
+        assert shifted_coefficient == codomain.base_ring()(7)
         assert image == codomain.scalar_multiple(
             codomain.base_ring()(6), codomain.module_generator(target_label)
         )
@@ -147,13 +168,17 @@ def test_inverse_image_functor_preserves_composition_before_scalar_extension() -
     target = _rank_one_sheaf(coarse)
     times_two = _scalar_morphism(source, middle, 2)
     times_three = _scalar_morphism(middle, target, 3)
-    pullback = refinement.module_pullback_functor()
+    inverse_image = refinement.inverse_image_functor()
 
-    inverse_two = pullback.inverse_image_morphism(times_two)
-    inverse_three = pullback.inverse_image_morphism(times_three)
-    inverse_composite = pullback.inverse_image_morphism(times_three * times_two)
+    inverse_two = inverse_image(times_two)
+    inverse_three = inverse_image(times_three)
+    inverse_composite = inverse_image(times_three * times_two)
     composed = inverse_three * inverse_two
 
+    assert inverse_two.parent() is inverse_image.codomain().Mor(
+        inverse_two.domain(),
+        inverse_two.codomain(),
+    )
     for fine_index in refinement.fine_datum().chart_indices():
         assert composed.local_map(fine_index) == inverse_composite.local_map(fine_index)
 
@@ -164,7 +189,10 @@ def test_generic_module_pullback_agrees_with_transition_unit_line_bundle_pullbac
     ratio = source_overlap.inclusion().coordinate_algebra_morphism()(
         coarse.chart(0).coordinate_algebra().algebra_generator("x1_over_x0")
     )
-    bundle = FiniteAtlasInvertibleSheaf(coarse, {(0, 1): ratio})
+    bundle = QuasiCoherentSheaves(coarse.scheme()).Invertible().WithChosenTrivialization()(
+        coarse,
+        {(0, 1): ratio},
+    )
     comparison = refinement.compare_line_bundle_pullback(bundle)
     generic = comparison.generic_pullback().gluing_datum()
     specialized = comparison.specialized_module_sheaf().gluing_datum()
@@ -205,10 +233,15 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
     pullback = morphism.module_pullback_functor()
     direct = morphism.direct_image_functor()
 
+    assert pullback.functor_category().domain_category() is pullback.domain()
+    assert pullback.functor_category().codomain_category() is pullback.codomain()
+    assert direct.functor_category().domain_category() is direct.domain()
+    assert direct.functor_category().codomain_category() is direct.codomain()
+
     target_module = plane.coordinate_algebra().free_module(1)
     target_sheaf = plane.associated_module_sheaf(target_module)
     target_label = target_module.module_generating_set()[0]
-    times_two = target_module.module_category().Mor(target_module, target_module)(
+    times_two_module = target_module.module_category().Mor(target_module, target_module)(
         {
             target_label: target_module.scalar_multiple(
                 plane.coordinate_algebra()(2),
@@ -216,19 +249,29 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
             )
         }
     )
-    target_identity = target_module.module_category().Mor(target_module, target_module).identity()
+    target_sheaf_mor = QuasiCoherentSheaves(plane).Mor(target_sheaf, target_sheaf)
+    times_two = target_sheaf_mor(times_two_module)
+    target_identity = target_sheaf_mor.identity()
 
     pulled = pullback.on_object(target_sheaf)
+    assert pullback(target_sheaf) is pulled
     assert morphism.module_pullback(target_sheaf) is pulled
     pulled_two = pullback.on_morphism(times_two)
     pulled_identity = pullback.on_morphism(target_identity)
     assert pulled_two * pulled_identity == pulled_two
     assert pulled_identity * pulled_two == pulled_two
 
+    target_identity_iso = QuasiCoherentSheaves(plane).Core().Mor(
+        target_sheaf,
+        target_sheaf,
+    )(target_identity, target_identity)
+    pulled_identity_iso = pullback.on_morphism(target_identity_iso)
+    assert pulled_identity_iso in QuasiCoherentSheaves(line).Core().Mor(pulled, pulled)
+
     source_module = line.coordinate_algebra().free_module(1)
     source_sheaf = line.associated_module_sheaf(source_module)
     source_label = source_module.module_generating_set()[0]
-    times_three = source_module.module_category().Mor(source_module, source_module)(
+    times_three_module = source_module.module_category().Mor(source_module, source_module)(
         {
             source_label: source_module.scalar_multiple(
                 line.coordinate_algebra()(3),
@@ -236,7 +279,9 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
             )
         }
     )
-    source_identity = source_module.module_category().Mor(source_module, source_module).identity()
+    source_sheaf_mor = QuasiCoherentSheaves(line).Mor(source_sheaf, source_sheaf)
+    times_three = source_sheaf_mor(times_three_module)
+    source_identity = source_sheaf_mor.identity()
 
     pushed = direct.on_object(source_sheaf)
     assert morphism.direct_image(source_sheaf) is pushed
@@ -247,28 +292,37 @@ def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> Non
 
 
 def test_affine_quasi_coherent_pullback_is_left_adjoint_to_direct_image() -> None:
+    from dzack_research.preamble.categories.functors.core import Adjunction
+
     plane, line, morphism = _cusp_parametrization()
     adjunction = morphism.quasi_coherent_adjunction()
+    assert isinstance(adjunction, Adjunction)
 
     target_module = plane.coordinate_algebra().free_module(1)
     target_sheaf = plane.associated_module_sheaf(target_module)
     pulled = adjunction.left_adjoint().on_object(target_sheaf)
     pushed_back = adjunction.right_adjoint().on_object(pulled)
     unit = adjunction.unit(target_sheaf)
-    assert unit.domain() is target_module
-    assert unit.codomain() is pushed_back.module()
+    assert unit.domain() is target_sheaf
+    assert unit.codomain() is pushed_back
+    assert unit in QuasiCoherentSheaves(plane).Mor(target_sheaf, pushed_back)
+    assert unit.underlying_module_morphism().domain() is target_module
+    assert unit.underlying_module_morphism().codomain() is pushed_back.module()
 
     source_module = line.coordinate_algebra().free_module(1)
     source_sheaf = line.associated_module_sheaf(source_module)
     pushed = adjunction.right_adjoint().on_object(source_sheaf)
     pulled_back = adjunction.left_adjoint().on_object(pushed)
     counit = adjunction.counit(source_sheaf)
-    assert counit.domain() is pulled_back.module()
-    assert counit.codomain() is source_module
+    assert counit.domain() is pulled_back
+    assert counit.codomain() is source_sheaf
+    assert counit in QuasiCoherentSheaves(line).Mor(pulled_back, source_sheaf)
+    assert counit.underlying_module_morphism().domain() is pulled_back.module()
+    assert counit.underlying_module_morphism().codomain() is source_module
 
     source_label = source_module.module_generating_set()[0]
     source_generator = source_module.module_generator(source_label)
-    assert counit(
+    assert counit.underlying_module_morphism()(
         pulled_back.module_generator(
             pulled_back.module_generating_set()[0]
         )

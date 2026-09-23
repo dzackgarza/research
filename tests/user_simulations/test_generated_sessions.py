@@ -75,7 +75,7 @@ def test_a_generated_lattice_session(gram) -> None:
     rendered(lattice.discriminant_bilinear_form())
     if lattice.is_even():
         rendered(lattice.discriminant_quadratic_form())
-    line = lattice.subobject_on([lattice.module_generator(0)])
+    line = lattice.subobject_on([lattice.basis_vector(0)])
     rendered(line)
     rendered(line.orthogonal_complement())
     assert line.module_rank() + line.orthogonal_complement().module_rank() == 2

@@ -8,59 +8,44 @@ capability and what would provision it, which is the owned behaviour until a
 provider arrives.
 """
 
+from sage.structure.element import parent as element_parent
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+from dzack_research.preamble.owned_category import _object_of
 
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 
 def _held(lattice, element):
-    return element if getattr(element, "parent", lambda: None)() is lattice else lattice(element)
+    return element if element_parent(element) is lattice else lattice(element)
 
 
-class PrimitiveIsotropicVectorLocus(SageObject):
-    r"""The exact locus of nonzero primitive isotropic vectors in one lattice."""
-
-    def __init__(self, lattice) -> None:
-        self._lattice = lattice
-        zero = lattice.zero()
-        value_zero = lattice.base_ring().zero()
-
-        def is_primitive_isotropic(vector) -> bool:
-            if vector == zero:
-                return False
-            if lattice.q(vector) != value_zero:
-                return False
-            return bool(lattice.subobject_on((vector,)).is_primitive())
-
-        self._condition_set = lattice.condition_set(is_primitive_isotropic)
-
-    def lattice(self):
-        return self._lattice
-
-    def universe(self):
-        return self.lattice()
-
-    def condition_set(self):
-        return self._condition_set
-
-    def __contains__(self, vector) -> bool:
-        return vector in self.condition_set()
-
-    def __repr__(self) -> str:
-        return f"Primitive isotropic vectors of {self.lattice()}"
+def _is_lattice_subobject_of_rank(sublattice, lattice, rank) -> bool:
+    r"""Whether ``sublattice`` is a module subobject of ``lattice`` of module rank ``rank``."""
+    return (
+        sublattice in ModuleSubobjects(lattice.base_ring())
+        and sublattice.inclusion().codomain() is lattice
+        and int(sublattice.module_rank()) == int(rank)
+    )
 
 
-class PrimitiveIsotropicVectorOrbit(SageObject):
-    r"""One ``O(L)``-orbit inside the primitive isotropic vector locus."""
+class _PrimitiveIsotropicVectorOrbitEngine:
+    r"""Private set realization of one primitive-isotropic vector orbit."""
 
-    def __init__(self, group, representative) -> None:
+    def __init__(self, group, locus, representative, **rest) -> None:
         self._group = group
+        self._locus = locus
         self._representative = representative
+        super().__init__(facade=True, **rest)
 
     def group(self):
         return self._group
+
+    def universe(self):
+        return self._locus
 
     def representative(self):
         return self._representative
@@ -75,10 +60,50 @@ class PrimitiveIsotropicVectorOrbit(SageObject):
         )
 
     def __contains__(self, vector) -> bool:
-        return self.transporter_from(vector) is not None
+        return vector in self.universe() and self.transporter_from(vector) is not None
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, vector):
+        if vector not in self:
+            raise ValueError(f"{vector} is not in {self}")
+        return self.universe()(vector)
+
+    def _repr_(self) -> str:
+        return f"Primitive-isotropic orbit of {self.representative()} under {self.group()}"
 
 
-class PrimitiveIsotropicVectorOrbitDecomposition(SageObject):
+def _primitive_isotropic_vector_orbit(group, locus, representative):
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _PrimitiveIsotropicVectorOrbitEngine, None),
+        group=group,
+        locus=locus,
+        representative=representative,
+    )
+
+
+class _FiniteOrbitDecompositionSetEngine:
+    r"""Private finite-set realization shared by represented orbit decompositions."""
+
+    def __iter__(self):
+        return iter(self._orbits)
+
+    def __contains__(self, orbit) -> bool:
+        return orbit in self._orbits
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, orbit):
+        if orbit not in self:
+            raise ValueError(f"{orbit} is not an orbit of {self}")
+        return orbit
+
+    def orbits(self):
+        return self
+
+
+class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositionSetEngine):
     r"""The finite ``O(L)``-orbit decomposition of primitive isotropic vectors.
 
     Rank-one primitive isotropic sublattice orbits and primitive isotropic
@@ -89,10 +114,8 @@ class PrimitiveIsotropicVectorOrbitDecomposition(SageObject):
     remain the already-owned group operations.
     """
 
-    def __init__(self, group, locus) -> None:
-        if not isinstance(locus, PrimitiveIsotropicVectorLocus):
-            raise TypeError("this decomposition requires the primitive isotropic vector locus")
-        if group.lattice() is not locus.lattice():
+    def __init__(self, group, locus, **rest) -> None:
+        if group.lattice() is not locus.universe():
             raise ValueError("the orbit group and primitive-isotropic locus require one lattice")
         self._group = group
         self._locus = locus
@@ -102,10 +125,11 @@ class PrimitiveIsotropicVectorOrbitDecomposition(SageObject):
             representatives.append(line.inclusion()(generator))
         self._orbits = finite_ordered_set(
             tuple(
-                PrimitiveIsotropicVectorOrbit(group, representative)
+                _primitive_isotropic_vector_orbit(group, locus, representative)
                 for representative in representatives
             )
         )
+        super().__init__(facade=True, **rest)
 
     def group(self):
         return self._group
@@ -113,18 +137,15 @@ class PrimitiveIsotropicVectorOrbitDecomposition(SageObject):
     def locus(self):
         return self._locus
 
-    def orbits(self):
-        return self._orbits
-
     def representatives(self):
         return finite_ordered_set(
-            tuple(orbit.representative() for orbit in self.orbits())
+            tuple(orbit.representative() for orbit in self)
         )
 
     def orbit_of(self, vector):
         if vector not in self.locus():
             raise ValueError("orbit_of expects a primitive isotropic vector of this lattice")
-        for orbit in self.orbits():
+        for orbit in self:
             if vector in orbit:
                 return orbit
         raise ArithmeticError("the exact isotropic orbit list did not cover the primitive isotropic locus")
@@ -138,15 +159,26 @@ class PrimitiveIsotropicVectorOrbitDecomposition(SageObject):
         return self.group().vector_equivalence_witness(source, target)
 
 
-class PrimitiveIsotropicSublatticeLocus(SageObject):
-    r"""Primitive totally isotropic rank-``k`` lattice subobjects of ``L``."""
+def _primitive_isotropic_vector_orbit_decomposition(group, locus):
+    return _object_of(
+        Sets().Finite(),
+        _engine=(Sets(), _PrimitiveIsotropicVectorOrbitDecompositionEngine, None),
+        group=group,
+        locus=locus,
+    )
 
-    def __init__(self, lattice, rank) -> None:
+
+class _IsotropicSublatticeLocusEngine:
+    r"""Private set realization of isotropic sublattices of one fixed rank."""
+
+    def __init__(self, lattice, rank, *, primitive=False, **rest) -> None:
         rank = int(rank)
         if rank <= 0:
-            raise ValueError("a primitive isotropic sublattice rank must be positive")
+            raise ValueError("an isotropic sublattice rank must be positive")
         self._lattice = lattice
-        self._rank = rank
+        self._rank = NN(rank)
+        self._primitive = bool(primitive)
+        super().__init__(facade=True, **rest)
 
     def lattice(self):
         return self._lattice
@@ -154,44 +186,49 @@ class PrimitiveIsotropicSublatticeLocus(SageObject):
     def rank(self):
         return self._rank
 
+    def requires_primitive(self) -> bool:
+        return self._primitive
+
     def __contains__(self, sublattice) -> bool:
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            ModuleSubobjects,
-        )
-
-        if not callable(getattr(sublattice, "inclusion", None)):
-            return False
-        if sublattice not in ModuleSubobjects(self.lattice().base_ring()):
-            return False
-        try:
-            if sublattice.ambient_lattice() is not self.lattice():
-                return False
-        except (AttributeError, TypeError):
-            return False
         return (
-            int(sublattice.module_rank()) == self.rank()
-            and sublattice.is_primitive()
+            _is_lattice_subobject_of_rank(sublattice, self.lattice(), self.rank())
             and sublattice.is_totally_isotropic()
+            and (not self.requires_primitive() or sublattice.is_primitive())
         )
 
-    def __repr__(self) -> str:
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, sublattice):
+        if sublattice not in self:
+            raise ValueError(f"{sublattice} is not in {self}")
+        return sublattice
+
+    def _repr_(self) -> str:
+        qualifier = "primitive " if self.requires_primitive() else ""
         return (
-            f"Primitive totally isotropic rank-{self.rank()} sublattices "
+            f"{qualifier}totally isotropic rank-{self.rank()} sublattices "
             f"of {self.lattice()}"
         )
 
 
-class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
+class _PrimitiveIsotropicSublatticeLocusEngine(_IsotropicSublatticeLocusEngine):
+    r"""The primitive locus, with its arithmetic-group orbit construction."""
+
+    def orbit_decomposition(self, group):
+        r"""Return the decomposition of this locus into ``group``-orbits, its cusps."""
+        return _primitive_isotropic_sublattice_orbit_decomposition(group, self)
+
+
+class _PrimitiveIsotropicSublatticeOrbitDecompositionEngine(_FiniteOrbitDecompositionSetEngine):
     r"""The finite cusp decomposition of one primitive isotropic sublattice locus."""
 
-    def __init__(self, group, locus) -> None:
-        if not isinstance(locus, PrimitiveIsotropicSublatticeLocus):
-            raise TypeError("this decomposition requires a primitive isotropic sublattice locus")
-        if group.lattice() is not locus.lattice():
+    def __init__(self, group, locus, **rest) -> None:
+        if group.supergroup().domain() is not locus.lattice():
             raise ValueError("the orbit group and isotropic-sublattice locus require one lattice")
         self._group = group
         self._locus = locus
-        self._orbits = locus.lattice().cusps(rank=locus.rank())
+        self._orbits = group.cusps(rank=locus.rank())
+        super().__init__(facade=True, **rest)
 
     def group(self):
         return self._group
@@ -199,24 +236,21 @@ class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
     def locus(self):
         return self._locus
 
-    def orbits(self):
-        return self._orbits
-
     def representatives(self):
         return finite_ordered_set(
-            tuple(cusp.representative() for cusp in self.orbits())
+            tuple(cusp.representative() for cusp in self)
         )
 
     def orbit_of(self, sublattice):
         if sublattice not in self.locus():
             raise ValueError("orbit_of expects a primitive isotropic sublattice in this locus")
-        for cusp in self.orbits():
+        for cusp in self:
             if sublattice in cusp:
                 return cusp
         raise ArithmeticError("the exact cusp list did not cover the isotropic-sublattice locus")
 
     def stabilizer(self, sublattice):
-        return self.group().stabilizer(sublattice, action="setwise")
+        return self.orbit_of(sublattice).stabilizer()
 
     def transporter(self, source, target):
         if source not in self.locus() or target not in self.locus():
@@ -224,73 +258,19 @@ class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
         return self.group().isotropic_equivalence_witness(source, target)
 
 
-class VectorLocus(SageObject):
-    r"""Vectors of one lattice cut out by square and optional primitivity."""
-
-    def __init__(self, lattice, norm, *, primitive=False) -> None:
-        self._lattice = lattice
-        self._norm = lattice.base_ring()(norm)
-        self._primitive = bool(primitive)
-
-    def lattice(self):
-        return self._lattice
-
-    def norm(self):
-        return self._norm
-
-    def requires_primitive(self) -> bool:
-        return self._primitive
-
-    def __contains__(self, vector) -> bool:
-        if getattr(vector, "parent", lambda: None)() is not self.lattice():
-            return False
-        if vector.q() != self.norm():
-            return False
-        return not self.requires_primitive() or vector.is_primitive()
-
-    def __repr__(self) -> str:
-        primitive = ""
-        if self.requires_primitive():
-            primitive = "primitive "
-        return f"{primitive}vectors of norm {self.norm()} in {self.lattice()}"
+def _primitive_isotropic_sublattice_orbit_decomposition(group, locus):
+    return _object_of(
+        Sets().Finite(),
+        _engine=(Sets(), _PrimitiveIsotropicSublatticeOrbitDecompositionEngine, None),
+        group=group,
+        locus=locus,
+    )
 
 
-class IsotropicSublatticeLocus(SageObject):
-    r"""Represented totally isotropic rank-``k`` sublattices of one lattice."""
-
-    def __init__(self, lattice, rank) -> None:
-        rank = int(rank)
-        if rank <= 0:
-            raise ValueError("an isotropic sublattice rank must be positive")
-        self._lattice = lattice
-        self._rank = rank
-
-    def lattice(self):
-        return self._lattice
-
-    def rank(self):
-        return self._rank
-
-    def __contains__(self, sublattice) -> bool:
-        if not callable(getattr(sublattice, "inclusion", None)):
-            return False
-        try:
-            return (
-                sublattice.ambient_lattice() is self.lattice()
-                and int(sublattice.module_rank()) == self.rank()
-                and sublattice.is_totally_isotropic()
-            )
-        except (AttributeError, TypeError):
-            return False
-
-    def __repr__(self) -> str:
-        return f"Totally isotropic rank-{self.rank()} sublattices of {self.lattice()}"
-
-
-class IsotropicFlagLocus(SageObject):
+class _IsotropicFlagLocusEngine:
     r"""Nested represented isotropic sublattices with prescribed ranks."""
 
-    def __init__(self, lattice, ranks) -> None:
+    def __init__(self, lattice, ranks, **rest) -> None:
         ranks = tuple(int(rank) for rank in ranks)
         if not ranks or any(rank <= 0 for rank in ranks):
             raise ValueError("an isotropic flag requires positive term ranks")
@@ -298,6 +278,7 @@ class IsotropicFlagLocus(SageObject):
             raise ValueError("isotropic flag ranks must be strictly increasing")
         self._lattice = lattice
         self._ranks = ranks
+        super().__init__(facade=True, **rest)
 
     def lattice(self):
         return self._lattice
@@ -305,32 +286,64 @@ class IsotropicFlagLocus(SageObject):
     def ranks(self):
         return self._ranks
 
-    def _terms_of(self, flag):
-        if isinstance(flag, IsotropicFlag):
-            return tuple(flag.terms())
-        if isinstance(flag, (tuple, list)):
-            return tuple(flag)
-        terms = getattr(flag, "terms", None)
-        return tuple(terms()) if callable(terms) else ()
-
     def __contains__(self, flag) -> bool:
-        terms = self._terms_of(flag)
+        match flag:
+            case IsotropicFlag():
+                terms = tuple(flag.terms())
+            case tuple() | list():
+                terms = tuple(flag)
+            case _:
+                return False
         if len(terms) != len(self.ranks()):
             return False
         if any(
-            term not in IsotropicSublatticeLocus(self.lattice(), rank)
+            term not in _isotropic_sublattice_locus(self.lattice(), rank)
             for term, rank in zip(terms, self.ranks(), strict=True)
         ):
             return False
-        for smaller, larger in zip(terms, terms[1:]):
-            try:
-                smaller.inclusion().factor_through(larger.inclusion())
-            except (AttributeError, TypeError, ValueError):
-                return False
-        return True
+        return all(
+            _factors_through(smaller.inclusion(), larger.inclusion())
+            for smaller, larger in zip(terms, terms[1:])
+        )
 
-    def __repr__(self) -> str:
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, flag):
+        if flag not in self:
+            raise ValueError(f"{flag} is not in {self}")
+        return flag
+
+    def _repr_(self) -> str:
         return f"Totally isotropic flags of ranks {self.ranks()} in {self.lattice()}"
+
+
+def _primitive_isotropic_sublattice_locus(lattice, rank):
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _PrimitiveIsotropicSublatticeLocusEngine, None),
+        lattice=lattice,
+        rank=rank,
+        primitive=True,
+    )
+
+
+def _isotropic_sublattice_locus(lattice, rank):
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _IsotropicSublatticeLocusEngine, None),
+        lattice=lattice,
+        rank=rank,
+        primitive=False,
+    )
+
+
+def _isotropic_flag_locus(lattice, ranks):
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _IsotropicFlagLocusEngine, None),
+        lattice=lattice,
+        ranks=tuple(ranks),
+    )
 
 
 class IsotropicFlag:
@@ -374,7 +387,7 @@ class IsotropicFlag:
         )
 
 
-class Cusp:
+class _CuspEngine:
     r"""One ``O(L)``-orbit of primitive totally isotropic subobjects of a rank.
 
     A cusp is the orbit itself, so membership is its primary operation:
@@ -396,8 +409,15 @@ class Cusp:
     that component's reflection group acts.
     """
 
-    def __init__(self, representative) -> None:
+    def __init__(self, representative, **rest) -> None:
         self._representative = representative
+        super().__init__(facade=True, **rest)
+
+    def universe(self):
+        return _primitive_isotropic_sublattice_locus(
+            self.lattice(),
+            self.module_rank(),
+        )
 
     def lattice(self):
         return self._representative.ambient_lattice()
@@ -406,15 +426,17 @@ class Cusp:
         return self._representative.module_rank()
 
     def representative(self):
-        r"""Return the member of this orbit the backend chose."""
+        r"""Return the selected representative of this orbit."""
         return self._representative
 
     def parabolic_subgroup(self):
         r"""Return ``Gamma = Stab_{O(L)}(I)`` of the representative."""
         return self._representative.parabolic_subgroup()
 
+    stabilizer = parabolic_subgroup
+
     def stabilizer_generators(self):
-        r"""Return backend generators of the representative's stabilizer."""
+        r"""Return generators of the representative's stabilizer."""
         return self.lattice().Aut().isotropic_stabilizer_generators(
             self._representative
         )
@@ -433,18 +455,22 @@ class Cusp:
         return subobject.transporter_witness_to(self._representative)
 
     def __contains__(self, subobject) -> bool:
-        assert subobject.ambient_lattice() is self.lattice(), (
-            "a cusp decides membership for isotropic subobjects of its own lattice"
-        )
-        if subobject.module_rank() != self.module_rank():
+        if subobject not in self.universe():
             return False
         return self.transporter_witness(subobject) is not None
 
-    def __repr__(self) -> str:
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, subobject):
+        if subobject not in self:
+            raise ValueError(f"{subobject} is not in {self}")
+        return subobject
+
+    def _repr_(self) -> str:
         return f"Cusp of rank {self.module_rank()} in {self.lattice()}"
 
 
-class ArithmeticCusp(SageObject):
+class _ArithmeticCuspEngine:
     r"""One orbit of primitive isotropic subobjects under an arithmetic subgroup.
 
     The subgroup is part of the object.  Its stabilizer is therefore the
@@ -452,13 +478,20 @@ class ArithmeticCusp(SageObject):
     ``O(L)``.  Membership retains an explicit transporter lying in ``Gamma``.
     """
 
-    def __init__(self, subgroup, representative) -> None:
+    def __init__(self, subgroup, representative, **rest) -> None:
         if subgroup.supergroup().domain() is not representative.ambient_lattice():
             raise ValueError(
                 "an arithmetic cusp subgroup and representative must belong to the same lattice"
             )
         self._subgroup = subgroup
         self._representative = representative
+        super().__init__(facade=True, **rest)
+
+    def universe(self):
+        return _primitive_isotropic_sublattice_locus(
+            self.lattice(),
+            self.module_rank(),
+        )
 
     def subgroup(self):
         return self._subgroup
@@ -498,17 +531,39 @@ class ArithmeticCusp(SageObject):
         )
 
     def __contains__(self, subobject) -> bool:
-        if subobject.ambient_lattice() is not self.lattice():
-            return False
-        if subobject.module_rank() != self.module_rank():
+        if subobject not in self.universe():
             return False
         return self.transporter_witness(subobject) is not None
 
-    def __repr__(self) -> str:
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, subobject):
+        if subobject not in self:
+            raise ValueError(f"{subobject} is not in {self}")
+        return subobject
+
+    def _repr_(self) -> str:
         return (
             f"Rank-{self.module_rank()} cusp of {self.subgroup()} "
             f"in {self.lattice()}"
         )
+
+
+def _cusp(representative):
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _CuspEngine, None),
+        representative=representative,
+    )
+
+
+def _arithmetic_cusp(subgroup, representative):
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _ArithmeticCuspEngine, None),
+        subgroup=subgroup,
+        representative=representative,
+    )
 
 
 class CuspIncidence(SageObject):
@@ -670,24 +725,48 @@ def _embedded_basis(subobject):
     return tuple(inclusion(generator) for generator in subobject.module_generators())
 
 
-def _basis_rows(obj):
-    basis = obj.isotropic_basis() if isinstance(obj, IsotropicFlag) else _embedded_basis(obj)
-    return [[int(entry) for entry in element.to_list()] for element in basis]
+def _basis_rows(obj, flag):
+    match flag:
+        case True:
+            basis = obj.isotropic_basis()
+        case False:
+            basis = _embedded_basis(obj)
+    rows = []
+    for element in basis:
+        parent = element.parent()
+        coefficients = parent.framing_coefficients(element)
+        rows.append(
+            [
+                int(coefficients.get(label, parent.base_ring().zero()))
+                for label in parent.module_generating_set()
+            ]
+        )
+    return rows
 
 
-def _terms(obj):
-    return obj.terms() if isinstance(obj, IsotropicFlag) else (obj,)
+def _terms(obj, flag):
+    match flag:
+        case True:
+            return tuple(obj.terms())
+        case False:
+            return (obj,)
+
+
+def _factors_through(inclusion, target_inclusion) -> bool:
+    r"""Whether the image of ``inclusion`` lies in the image of ``target_inclusion``."""
+    source = inclusion.domain()
+    return all(
+        target_inclusion.is_in_image(inclusion(source.module_generator(label)))
+        for label in source.module_generating_set()
+    )
 
 
 def _same_subobject(left, right) -> bool:
-    if left.inclusion().codomain() is not right.inclusion().codomain():
-        return False
-    try:
-        left.inclusion().factor_through(right.inclusion())
-        right.inclusion().factor_through(left.inclusion())
-    except ValueError:
-        return False
-    return True
+    return (
+        left.inclusion().codomain() is right.inclusion().codomain()
+        and _factors_through(left.inclusion(), right.inclusion())
+        and _factors_through(right.inclusion(), left.inclusion())
+    )
 
 
 def _gram_rows(lattice):
@@ -738,8 +817,8 @@ def _isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False)
     r"""Return an isometry carrying one primitive isotropic subobject/flag to another."""
     lattice = orthogonal_group.domain()
     if flag:
-        left_terms = _terms(left)
-        right_terms = _terms(right)
+        left_terms = _terms(left, flag)
+        right_terms = _terms(right, flag)
         if len(left_terms) != len(right_terms):
             return None
         if all(
@@ -749,8 +828,8 @@ def _isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False)
             return orthogonal_group.one()
     elif _same_subobject(left, right):
         return orthogonal_group.one()
-    left_rows = _basis_rows(left)
-    right_rows = _basis_rows(right)
+    left_rows = _basis_rows(left, flag)
+    right_rows = _basis_rows(right, flag)
     if len(left_rows) != len(right_rows):
         return None
     nature = "flag" if flag else "plane"
@@ -763,9 +842,9 @@ def _isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False)
     )
     if witness is None:
         return None
-    isometry = orthogonal_group._from_backend_row_action(witness)
-    left_terms = _terms(left)
-    right_terms = _terms(right)
+    isometry = orthogonal_group(tuple(lattice(tuple(row)) for row in witness))
+    left_terms = _terms(left, flag)
+    right_terms = _terms(right, flag)
     checked_left = left_terms if flag else left_terms[-1:]
     checked_right = right_terms if flag else right_terms[-1:]
     if any(
@@ -782,16 +861,16 @@ def _isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
     nature = "flag" if flag else "plane"
     isometries = finite_ordered_set(
         tuple(
-            orthogonal_group._from_backend_row_action(rows)
+            orthogonal_group(tuple(lattice(tuple(row)) for row in rows))
             for rows in engine_capabilities.compute(
                 "lattice.indefinite_isotropic_subspace_stabilizer",
                 _gram_rows(lattice),
-                _basis_rows(obj),
+                _basis_rows(obj, flag),
                 choice=nature,
             )
         )
     )
-    terms = _terms(obj)
+    terms = _terms(obj, flag)
     checked = terms if flag else terms[-1:]
     if any(
         not _same_subobject(isometry.transport_isotropic_object(term), term)
@@ -803,17 +882,7 @@ def _isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
 
 
 __all__ = [
-    "ArithmeticCusp",
     "ArithmeticCuspIncidence",
-    "Cusp",
     "CuspIncidence",
-    "IsotropicFlagLocus",
-    "IsotropicSublatticeLocus",
     "IsotropicFlag",
-    "PrimitiveIsotropicSublatticeLocus",
-    "PrimitiveIsotropicSublatticeOrbitDecomposition",
-    "PrimitiveIsotropicVectorLocus",
-    "PrimitiveIsotropicVectorOrbit",
-    "PrimitiveIsotropicVectorOrbitDecomposition",
-    "VectorLocus",
 ]

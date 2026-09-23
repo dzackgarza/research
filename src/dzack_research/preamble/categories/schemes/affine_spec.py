@@ -1,4 +1,10 @@
-"""The contravariant affine spectrum functor on commutative algebras."""
+r"""The contravariant affine spectrum functor on commutative algebras.
+
+``Spec_R : CAlg_R^op -> AffSch_R`` sends an algebra ``A`` to the object
+``Schemes(R).Affine()(A)``, the one entry of the affine schemes over ``R``, and
+an algebra morphism ``phi : A -> B`` to the scheme morphism
+``Spec B -> Spec A`` whose coordinate pullback is ``phi``.
+"""
 
 from sage.misc.cachefunc import cached_function
 
@@ -18,14 +24,13 @@ class _AffineSpecFunctor(Functor):
         base = _owned_ring(base_ring)
         self._base_ring = base
         algebras = Algebras(base).Associative().Unital().Commutative()
-        Functor.__init__(self, algebras.opposite(), Schemes(base).Affine())
+        super().__init__(algebras.opposite(), Schemes(base).Affine())
 
     def base_ring(self):
         return self._base_ring
 
     def _apply_object(self, opposite_algebra):
-        algebra = opposite_algebra.underlying_object()
-        return algebra.affine_spectrum(base_ring=self.base_ring())
+        return self.codomain()(opposite_algebra.underlying_object())
 
     def _apply_morphism(self, opposite_morphism):
         return _affine_spec_morphism(opposite_morphism.underlying_arrow())

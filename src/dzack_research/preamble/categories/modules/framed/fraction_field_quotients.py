@@ -5,6 +5,9 @@ The owned quotient is a parent built through the owned module chain; Sage's
 shape of the owned ring views.
 """
 
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.arith.functions import lcm
 from sage.arith.misc import gcd
 from sage.categories.category import Category
@@ -18,15 +21,12 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _presented_module_from_morphism,
-)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
-    _refine_finitely_presented_torsion_module,
     _torsion_module_presented_by_matrix,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -63,13 +63,13 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return self._backend_element
 
         def _add_(self, other):
-            return self.parent()._from_engine_element(self._backend() + other._backend())
+            return _owned_engine_element(self.parent(), self._backend() + other._backend())
 
         def _neg_(self):
-            return self.parent()._from_engine_element(-self._backend())
+            return _owned_engine_element(self.parent(), -self._backend())
 
         def _lmul_(self, scalar):
-            return self.parent()._from_engine_element(
+            return _owned_engine_element(self.parent(),
                 _engine_element(self.parent().base_ring(), scalar) * self._backend()
             )
 
@@ -104,13 +104,13 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             a discriminant value uses that one.
             """
             fraction_field = self.parent().base_ring().fraction_field()
-            return fraction_field._from_engine_element(
+            return _owned_engine_element(fraction_field,
                 _engine_ring(fraction_field)(self._backend().lift())
             )
 
         def additive_order(self):
             order = SageZZ(self._backend().additive_order())
-            return self.parent().base_ring()._from_engine_element(order)
+            return _owned_engine_element(self.parent().base_ring(), order)
 
         def _repr_(self):
             return f"[{self.lift()}] in {self.parent()}"
@@ -147,16 +147,15 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             self._engine = engine
             base_ring = _own_ring(SageZZ)
             field = base_ring.fraction_field()
-            self._fraction_field_modulus = field._from_engine_element(SageQQ(engine.n))
+            self._fraction_field_modulus = _owned_engine_element(field, SageQQ(engine.n))
             super().__init__(
                 base_ring=base_ring,
                 module_generating_set=Sets.Δ[aleph0],
                 module_generator_function=self._divisibility_chain_generator,
                 **rest,
             )
-            self._preamble_module_coefficient_function = self._framing_coefficients
 
-        def _framing_coefficients(self, element):
+        def _selected_module_coefficients(self, element):
             r"""Return finite support in the chosen factorial divisibility framing."""
             element = self(element)
             if element == self.zero():
@@ -189,11 +188,11 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                     return self._from_engine_element(_engine_element(parent, value))
                 if isinstance(value, SageObject):
                     raise TypeError(
-                        "raw backend elements are not accepted by the public fraction-field quotient"
+                        "foreign implementation elements are not accepted by the public fraction-field quotient"
                     )
             if isinstance(value, SageObject):
                 raise TypeError(
-                    "raw backend objects are not accepted by the public fraction-field quotient"
+                    "foreign implementation objects are not accepted by the public fraction-field quotient"
                 )
             return self._from_engine_element(value)
 
@@ -234,7 +233,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             r"""Return the selected representative of ``element`` in the fraction field."""
             element = self(element)
             representative = element._backend().lift()
-            return self.fraction_field()._from_engine_element(representative)
+            return _owned_engine_element(self.fraction_field(), representative)
 
         def divisibility_chain(self, index):
             r"""Return the chosen cofinal divisibility chain element ``d_index``."""
@@ -295,16 +294,15 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 for value in values
             )
             generator_numerator = abs(gcd(numerators))
-            generator = field._from_engine_element(
+            generator = _owned_engine_element(field,
                 SageQQ(generator_numerator) / SageQQ(denominator)
             )
+            # ``g`` divides every lift and the modulus, so ``n/g`` is integral.
             order_in_field = self.modulus() / generator
-            try:
-                order = self.base_ring()(order_in_field)
-            except (TypeError, ValueError) as error:
-                raise ArithmeticError(
-                    "the generated fractional subgroup does not divide the selected modulus"
-                ) from error
+            assert int(order_in_field.denominator()) == 1, (
+                "the generated fractional subgroup divides the selected modulus"
+            )
+            order = self.base_ring()(order_in_field)
             cyclic = _torsion_module_presented_by_matrix(
                 ((order,),),
                 base_ring=self.base_ring(),
@@ -313,26 +311,28 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             image = self(generator)
 
             def lift_from_ambient(subobject, element):
+                # ``[x]`` lies in ``gZ/nZ`` exactly when the lift ``x`` lies in
+                # ``gZ + nZ = gZ``, that is when ``x/g`` is integral.
                 element = self(element)
                 quotient = self.lift(element) / generator
-                try:
-                    coefficient = self.base_ring()(quotient)
-                except (TypeError, ValueError) as error:
-                    raise ValueError(
-                        "the selected class does not lie in this cyclic submodule"
-                    ) from error
+                if int(quotient.denominator()) != 1:
+                    return None
                 return subobject.scalar_multiple(
-                    coefficient,
+                    self.base_ring()(quotient),
                     subobject.module_generator(label),
                 )
 
-            subobject = _presented_module_from_morphism(
+            subobject = ModulesWithChosenFinitePresentation(self.base_ring())(
                 cyclic.presentation(),
-                _subobject_ambient=self,
-                _subobject_generator_images=lambda _label: image,
-                _subobject_lift=lift_from_ambient,
+                category=Category.join((
+                    ModuleSubobjects(self.base_ring()),
+                    Modules(self.base_ring()).FinitelyPresented().Torsion(),
+                )),
+                subobject_ambient=self,
+                subobject_generator_images=lambda _label: image,
+                subobject_lift=lift_from_ambient,
             )
-            return _refine_finitely_presented_torsion_module(subobject)
+            return subobject
 
 
 

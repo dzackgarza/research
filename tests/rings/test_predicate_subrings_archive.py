@@ -54,3 +54,41 @@ def test_undecided_predicate_membership_is_not_guessed() -> None:
     assert QQ.zero() in unresolved
     with pytest.raises(AssertionError, match="selected predicate"):
         QQ.one() in unresolved
+
+
+def test_predicate_subring_initializes_its_scalar_action_product_and_unit() -> None:
+    subring = QQ.predicate_subring(
+        lambda value: value.denominator() == 1,
+        "the denominator is one",
+    )
+    three = subring(3)
+    four = subring(4)
+
+    assert subring.base_ring() is subring
+    assert subring.unformed_module() is subring
+    assert subring.multiplication()(three, four) == subring(12)
+    assert subring.scalar_multiple(three, four) == subring(12)
+    assert subring.multiplication()(subring.one(), four) == four
+    assert subring.algebra_structure_morphism() is subring.Mor(subring).identity()
+    assert subring.inclusion()(subring.multiplication()(three, four)) == QQ(12)
+
+
+def test_predicate_subring_elements_and_regular_coefficients_keep_the_subring_parent() -> None:
+    subring = QQ.predicate_subring(lambda value: value.denominator() == 1, "z is integral")
+    three, four = subring(3), subring(4)
+    assert three.parent() is subring
+    assert subring.one().parent() is subring
+    assert subring.zero().parent() is subring
+    assert (three + four).parent() is subring
+    assert (three * four).parent() is subring
+    assert all(value.parent() is subring for value in subring.framing_coefficients(three).values())
+    assert subring.inclusion()(three).parent() is QQ
+    assert subring.inclusion()(three * four) == QQ(12)
+    assert subring.one().is_unit() is True
+    assert subring(-1).is_unit() is True
+    assert three.is_unit() is False
+    assert QQ(3).is_unit() is True
+    product = subring.multiplication()
+    assert product.domain().tensor_factor(0) is subring
+    assert product.domain().tensor_factor(1) is subring
+    assert product(three, four).parent() is subring

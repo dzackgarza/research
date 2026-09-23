@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.group.groups import (
 
 def test_generated_lattice_isometry_subgroup_keeps_the_actual_orthogonal_group() -> None:
     lattice = Lattices(ZZ)("A1")
-    root = lattice.module_generator(0)
+    root = lattice.basis_vector(0)
     reflection = lattice.reflection(root)
     orthogonal = lattice.O()
 
@@ -32,7 +32,7 @@ def test_generated_lattice_isometry_subgroup_keeps_the_actual_orthogonal_group()
 
 def test_subgroup_elements_remain_actual_lattice_isometries_not_detached_matrices() -> None:
     lattice = Lattices(ZZ)("A1")
-    root = lattice.module_generator(0)
+    root = lattice.basis_vector(0)
     reflection = lattice.reflection(root)
     subgroup = lattice.O().subgroup((reflection,))
 

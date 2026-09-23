@@ -1,155 +1,206 @@
 r"""Finite coordinates and restriction maps of an absolute Galois group."""
 
-from typing import cast
-
-from sage.categories.groups import Groups as SageGroups
-from sage.categories.homset import Homset
+from sage.categories.finite_fields import FiniteFields as SageFiniteFields
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
-from sage.structure.parent import Parent
-from sage.structure.sage_object import SageObject
+from sage.structure.richcmp import richcmp
 
-from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
-from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    _fix_selected_framing,
+)
+from dzack_research.preamble.categories.group.groups import (
+    Groups,
+    OwnedGroups,
+    _group_framing_morphism,
+)
+from dzack_research.preamble.categories.rings.field_morphisms import (
     ExactFieldMorphism,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
+    _engine_ring,
+    _own_ring,
+    _owned_engine_element,
+)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _relative_degree(base_field, extension_field):
+    r"""Return ``[L:K] = [L:F] / [K:F]`` over the common prime field ``F``.
+
+    Engine adapter: Sage's number fields, the rational field and finite
+    fields all answer ``absolute_degree()``, the degree over the prime field.
+    """
     base = _engine_ring(base_field)
     extension = _engine_ring(extension_field)
-    if base.characteristic() != extension.characteristic():
-        raise ValueError(
-            "a finite extension must have the same characteristic as its base"
-        )
-
-    try:
-        defining_base = extension.base_field()
-    except AttributeError:
-        defining_base = None
-    if defining_base is base:
-        for method_name in ("relative_degree", "degree"):
-            method = getattr(extension, method_name, None)
-            if method is None:
-                continue
-            try:
-                return ZZ(method())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                continue
-
-    def absolute_degree(field):
-        for method_name in ("absolute_degree", "degree"):
-            method = getattr(field, method_name, None)
-            if method is None:
-                continue
-            try:
-                return ZZ(method())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                continue
-        raise TypeError(f"the absolute degree of {field} is unavailable")
-
-    base_degree = absolute_degree(base)
-    extension_degree = absolute_degree(extension)
-    if extension_degree % base_degree:
-        raise ValueError("the stated field cannot be finite over the base field")
-    return extension_degree // base_degree
+    assert base.characteristic() == extension.characteristic(), (
+        "a finite extension has the same characteristic as its base"
+    )
+    base_degree = ZZ(base.absolute_degree())
+    extension_degree = ZZ(extension.absolute_degree())
+    assert extension_degree % base_degree == 0, (
+        "the stated field cannot be finite over the base field"
+    )
+    return _owned_engine_element(ZZ, extension_degree // base_degree)
 
 
-class FiniteGaloisExtension(SageObject):
-    r"""A finite Galois field (L/K\subset\bar K) with both exact embeddings."""
+class _FiniteGaloisExtensionEngine:
+    r"""Computational vocabulary on a finite stage ``K -> L -> Kbar``.
 
-    def __init__(
-        self,
-        base_field,
-        field,
-        base_embedding: ExactFieldMorphism,
-        closure,
-        closure_embedding: ExactFieldMorphism,
-    ) -> None:
-        self._base_field = _own_ring(base_field)
-        self._field = _own_ring(field)
-        self._closure = _own_ring(closure)
-        if not isinstance(base_embedding, ExactFieldMorphism):
-            raise TypeError("the base inclusion K -> L must be an exact field morphism")
-        if not isinstance(closure_embedding, ExactFieldMorphism):
-            raise TypeError("the realization L -> Kbar must be an exact field morphism")
-        if (
-            base_embedding.domain() is not self._base_field
-            or base_embedding.codomain() is not self._field
-        ):
-            raise ValueError("the base inclusion has the wrong endpoints")
-        if (
-            closure_embedding.domain() is not self._field
-            or closure_embedding.codomain() is not self._closure
-        ):
-            raise ValueError("the closure inclusion has the wrong endpoints")
-        self._base_embedding = base_embedding
-        self._closure_embedding = closure_embedding
-        compatible_embeddings = [
-            candidate
-            for candidate in self._field.exact_embeddings(self._closure)
-            if all(
-                candidate(self._base_embedding(generator))
-                == self._closure_embedding(self._base_embedding(generator))
-                for generator in self._base_field.field_generators()
-            )
-        ]
-        if len(compatible_embeddings) != self.degree():
-            raise ValueError(
-                "a represented finite extension must be separable over its base field"
-            )
-        self._automorphisms = None
+    The stage itself is not this engine.  It is the factorization object in
+    ``(K / Fields) / (K -> Kbar)``.  Consequently all four fields/maps below
+    are read from that slice object and no copy of the construction datum is
+    retained by the realization.
+    """
 
     def base_field(self):
-        return self._base_field
+        return self.source_object().source_object()
 
     def field(self):
-        return self._field
+        return self.source_object().target_object()
 
     def algebraic_closure(self):
-        return self._closure
+        return self.target_object().target_object()
 
     def base_embedding(self) -> ExactFieldMorphism:
-        return self._base_embedding
+        return self.source_object().arrow()
 
     def embedding(self) -> ExactFieldMorphism:
-        return self._closure_embedding
+        return self.arrow().right()
 
     def degree(self):
         return _relative_degree(self.base_field(), self.field())
 
-    def automorphisms(self):
-        if self._automorphisms is None:
-            automorphisms = []
-            base_generators = self.base_field().field_generators()
-            for candidate in self.field().exact_embeddings(self.field()):
+    @cached_method
+    def automorphisms_over_base_field(self):
+        r"""The exact ``K``-automorphisms of ``L``: the self-embeddings of ``L`` fixing ``K``."""
+        base_generators = self.base_field().field_generators()
+        return finite_ordered_set(
+            tuple(
+                candidate
+                for candidate in self.field().exact_embeddings(self.field())
                 if all(
                     candidate(self.base_embedding()(generator))
                     == self.base_embedding()(generator)
                     for generator in base_generators
-                ):
-                    automorphisms.append(candidate)
-            if len(automorphisms) != self.degree():
-                raise ValueError(
-                    f"{self.field()} is not represented as a finite Galois extension "
-                    f"of {self.base_field()}"
                 )
-            self._automorphisms = finite_ordered_set(tuple(automorphisms))
-        return self._automorphisms
+            )
+        )
+
+    def automorphisms(self):
+        r"""The elements of ``Gal(L/K)``, as exact field maps; ``L/K`` is Galois."""
+        assert self.is_galois(), (
+            f"{self.field()} is not represented as a finite Galois extension of {self.base_field()}"
+        )
+        return self.automorphisms_over_base_field()
 
     def is_galois(self) -> bool:
-        try:
-            self.automorphisms()
-        except ValueError:
-            return False
-        return True
+        r"""Whether ``L/K`` is Galois: ``|Aut_K(L)| = [L:K]`` (Stacks, Lemma 9.21.2)."""
+        return self.automorphisms_over_base_field().cardinality() == cardinal(self.degree())
+
+    def __eq__(self, other) -> bool:
+        r"""Equal when the defining data ``K -> L -> Kbar`` agree.
+
+        The fields and the closure are compared by identity and the two exact
+        embeddings by their values on field generators.
+        """
+        return (
+            isinstance(other, _FiniteGaloisExtensionEngine)
+            and other.base_field() is self.base_field()
+            and other.field() is self.field()
+            and other.algebraic_closure() is self.algebraic_closure()
+            and other.base_embedding() == self.base_embedding()
+            and other.embedding() == self.embedding()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                id(self.base_field()),
+                id(self.field()),
+                id(self.algebraic_closure()),
+                self.base_embedding(),
+                self.embedding(),
+            )
+        )
 
     def _repr_(self) -> str:
-        return f"Finite Galois extension {self.field()} / {self.base_field()} in {self.algebraic_closure()}"
+        return f"Finite separable extension {self.field()} / {self.base_field()} in {self.algebraic_closure()}"
+
+
+def FiniteGaloisExtension(
+    base_field,
+    field,
+    base_embedding: ExactFieldMorphism,
+    closure,
+    closure_embedding: ExactFieldMorphism,
+    *,
+    extension_object=None,
+):
+    r"""Construct the finite stage ``K -> L -> Kbar`` as a factorization.
+
+    For the fixed geometric point ``e: K -> Kbar``, a finite stage is exactly
+    an object of the slice ``(K / Fields) / e``: its source object is
+    ``K -> L`` and its arrow to ``e`` has right edge ``L -> Kbar``.  The
+    optional ``extension_object`` is the already-constructed object ``e`` of
+    ``K / Fields``; absolute Galois groups supply it so every stage is visibly
+    a factorization of that very geometric point.
+    """
+    base_field = _own_ring(base_field)
+    field = _own_ring(field)
+    closure = _own_ring(closure)
+    assert base_embedding.parent() is base_field.exact_morphisms_to(field), (
+        "the base inclusion K -> L is an exact field morphism from the base field to the field"
+    )
+    assert closure_embedding.parent() is field.exact_morphisms_to(closure), (
+        "the realization L -> Kbar is an exact field morphism from the field to the closure"
+    )
+
+    coslice = OwnedFields().CosliceUnder(base_field)
+    source_object = coslice(base_embedding)
+    composite = closure_embedding * base_embedding
+    if extension_object is None:
+        extension_object = coslice(composite)
+    else:
+        assert extension_object in coslice, (
+            "the fixed geometric point is an object of the same field coslice"
+        )
+        assert extension_object.target_object() is closure, (
+            "the fixed geometric point has the stated algebraic closure as target"
+        )
+        assert extension_object.arrow() == composite, (
+            "the finite stage factors the fixed geometric point K -> Kbar"
+        )
+
+    factorization = coslice.Mor(source_object, extension_object)(closure_embedding)
+    stage = coslice.SliceOver(extension_object).object(
+        factorization,
+        _engine=_FiniteGaloisExtensionEngine,
+    )
+    compatible_embeddings = finite_ordered_set(
+        tuple(
+            candidate
+            for candidate in field.exact_embeddings(closure)
+            if all(
+                candidate(base_embedding(generator))
+                == closure_embedding(base_embedding(generator))
+                for generator in base_field.field_generators()
+            )
+        )
+    )
+    assert compatible_embeddings.cardinality() == cardinal(stage.degree()), (
+        "a represented finite extension is separable over its base field: it has [L:K] K-embeddings into Kbar"
+    )
+    return stage
 
 
 def _morphism_signature(morphism: ExactFieldMorphism) -> tuple:
@@ -159,27 +210,27 @@ def _morphism_signature(morphism: ExactFieldMorphism) -> tuple:
 
 
 class FiniteGaloisAutomorphism(Element):
-    r"""An exact (K)-automorphism of a represented finite extension (L/K)."""
+    r"""An exact ``K``-automorphism of a represented finite extension ``L/K``.
+
+    The element implementation of the finite field-automorphism engine:
+    an element is its position in the group's enumeration of the
+    ``K``-automorphisms of ``L``.
+    """
 
     def __init__(self, parent, index: int) -> None:
         Element.__init__(self, parent)
         self._index = int(index)
 
     def action(self) -> ExactFieldMorphism:
-        parent = cast("FiniteGaloisQuotient", self.parent())
-        return parent.automorphisms()[self._index]
+        return self.parent().automorphisms()[self._index]
 
     as_morphism = action
 
     def __call__(self, element):
         return self.action()(element)
 
-    def __mul__(self, other):
-        if (
-            not isinstance(other, FiniteGaloisAutomorphism)
-            or other.parent() is not self.parent()
-        ):
-            return NotImplemented
+    def _mul_(self, other):
+        r"""``self ∘ other``; Sage's arithmetic calls this with one parent."""
         return self.parent().compose(self, other)
 
     def __invert__(self):
@@ -189,11 +240,12 @@ class FiniteGaloisAutomorphism(Element):
         return self.parent().inverse(self)
 
     def multiplicative_order(self):
-        value = self.parent().one()
+        identity = self.parent().one()
+        value = identity
         for order in range(1, int(self.parent().order()) + 1):
             value = value * self
-            if value == self.parent().one():
-                return ZZ(order)
+            if value == identity:
+                return _owned_engine_element(ZZ, ZZ(order))
         raise ArithmeticError(
             "the represented finite group element has no finite order"
         )
@@ -211,15 +263,9 @@ class FiniteGaloisAutomorphism(Element):
             exponent >>= 1
         return result
 
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, FiniteGaloisAutomorphism)
-            and other.parent() is self.parent()
-            and other._index == self._index
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
+    def _richcmp_(self, other, op):
+        r"""Compare by position in the enumeration; Sage calls this with one parent."""
+        return richcmp(self._index, other._index, op)
 
     def __hash__(self) -> int:
         return hash((id(self.parent()), self._index))
@@ -228,30 +274,18 @@ class FiniteGaloisAutomorphism(Element):
         return repr(self.action())
 
 
-class FiniteGaloisQuotient(Parent):
-    r"""The finite quotient (\operatorname{Gal}(L/K)) as exact field maps."""
+class _FiniteFieldAutomorphismEngine:
+    r"""The exact finite group Aut_K(L), realized at OwnedGroups().Finite().
 
-    Element = FiniteGaloisAutomorphism
+    The extension determines the self-embeddings fixing K, their composition
+    and inverses.  It is a realization of a finite group, not another
+    category of engine outputs.  Normality is required only by the quotient
+    entry Gal(L/K), not by Aut_K(L).
+    """
 
-    def __init__(self, extension: FiniteGaloisExtension) -> None:
-        if not isinstance(extension, FiniteGaloisExtension):
-            raise TypeError(
-                "a finite Galois quotient requires represented extension data"
-            )
+    def __init__(self, extension, **rest) -> None:
         self._extension = extension
-        self._automorphisms = extension.automorphisms()
-        self._signatures = {
-            _morphism_signature(automorphism): index
-            for index, automorphism in enumerate(self._automorphisms)
-        }
-        identity_signature = tuple(extension.field().field_generators())
-        try:
-            self._identity_index = self._signatures[identity_signature]
-        except KeyError as error:
-            raise ValueError(
-                "the enumerated automorphisms omit the identity"
-            ) from error
-        Parent.__init__(self, category=OwnedFiniteGroups())
+        super().__init__(**rest)
 
     def extension_data(self) -> FiniteGaloisExtension:
         return self._extension
@@ -263,10 +297,15 @@ class FiniteGaloisQuotient(Parent):
         return self._extension.base_field()
 
     def automorphisms(self):
-        return self._automorphisms
+        return self._extension.automorphisms_over_base_field()
 
-    def __call__(self, datum):
-        return self._element_constructor_(datum)
+    @cached_method
+    def _signature_positions(self):
+        r"""The position of each automorphism, keyed by its values on the generators of ``L``."""
+        return {
+            _morphism_signature(automorphism): position
+            for position, automorphism in enumerate(self.automorphisms())
+        }
 
     def _element_constructor_(self, datum):
         if isinstance(datum, FiniteGaloisAutomorphism):
@@ -274,51 +313,52 @@ class FiniteGaloisQuotient(Parent):
                 return datum
             datum = datum.action()
         if isinstance(datum, ExactFieldMorphism):
-            try:
-                return self.element_class(
-                    self, self._signatures[_morphism_signature(datum)]
-                )
-            except KeyError as error:
-                raise ValueError(
-                    "the map is not an automorphism in this quotient"
-                ) from error
-        index = int(datum)
-        if index < 0 or index >= len(self._automorphisms):
-            raise ValueError("the automorphism index is outside this finite quotient")
+            if datum.domain() is not self.top_field() or datum.codomain() is not self.top_field():
+                raise ValueError("an automorphism has this top field as both endpoints")
+            position = self._signature_positions().get(_morphism_signature(datum))
+            if position is None:
+                raise ValueError("the map is not an automorphism in this group")
+            return self.element_class(self, position)
+        index = int(ZZ(datum))
+        if not 0 <= index < int(self.order()):
+            raise ValueError("the automorphism index is outside this finite group")
         return self.element_class(self, index)
 
     def __iter__(self):
-        return iter(
-            tuple(
-                self.element_class(self, index)
-                for index in range(len(self._automorphisms))
-            )
-        )
+        return (self.element_class(self, index) for index in range(int(self.order())))
 
     def one(self):
-        return self.element_class(self, self._identity_index)
+        identity_signature = tuple(self.top_field().field_generators())
+        assert identity_signature in self._signature_positions(), (
+            "the enumerated automorphisms contain the identity"
+        )
+        return self.element_class(self, self._signature_positions()[identity_signature])
 
     def order(self):
-        return ZZ(len(self._automorphisms))
+        return _owned_engine_element(
+            ZZ,
+            ZZ(int(self.automorphisms().cardinality())),
+        )
 
-    cardinality = order
+    def cardinality(self):
+        return cardinal(self.order())
 
     def compose(self, left, right):
         images = tuple(
             left(right(generator)) for generator in self.top_field().field_generators()
         )
-        try:
-            return self.element_class(self, self._signatures[images])
-        except KeyError as error:
-            raise ArithmeticError(
-                "the finite automorphism list is not closed under composition"
-            ) from error
+        assert images in self._signature_positions(), (
+            "the finite automorphism list is closed under composition"
+        )
+        return self.element_class(self, self._signature_positions()[images])
 
     def inverse(self, element):
-        for candidate in self:
-            if element * candidate == self.one() and candidate * element == self.one():
-                return candidate
-        raise ArithmeticError("the represented finite automorphism has no inverse")
+        identity = self.one()
+        return next(
+            candidate
+            for candidate in self
+            if element * candidate == identity and candidate * element == identity
+        )
 
     def decomposition_group(self, prime_above):
         r"""Return the decomposition subgroup at ``prime_above``."""
@@ -344,118 +384,105 @@ class FiniteGaloisQuotient(Parent):
 
         return _finite_frobenius_class(self, base_prime, prime_above)
 
-    def group_generators(self):
-
-        nonidentity = tuple(element for element in self if element != self.one())
-        if self._is_relative_finite_field():
-            generators = tuple(
-                element
-                for element in nonidentity
-                if element.multiplicative_order() == self.order()
-            )
-            if self.order() > 1 and not generators:
-                raise ArithmeticError(
-                    "the relative finite-field Galois group is not procyclic"
-                )
-            return finite_ordered_set(generators[:1])
-        return finite_ordered_set(nonidentity)
-
-    def _is_relative_finite_field(self) -> bool:
-        from sage.categories.finite_fields import FiniteFields
-
-        return _engine_ring(self.top_field()) in FiniteFields()
+    def _computed_group_generators(self):
+        r"""A generating set: the Frobenius power of order ``[L:K]`` over a finite field, else the nonidentity elements."""
+        identity = self.one()
+        nonidentity = tuple(element for element in self if element != identity)
+        if _engine_ring(self.top_field()) not in SageFiniteFields():
+            return finite_ordered_set(nonidentity)
+        generators = tuple(
+            element
+            for element in nonidentity
+            if element.multiplicative_order() == self.order()
+        )
+        assert self.order() == 1 or generators, (
+            "the Galois group of a finite extension of finite fields is cyclic"
+        )
+        return finite_ordered_set(generators[:1])
 
     def is_abelian(self) -> bool:
         return all(left * right == right * left for left in self for right in self)
 
     def _repr_(self) -> str:
-        return f"Gal({self.top_field()} / {self.base_field()})"
-
-
-class FiniteExtensionAutomorphismGroup(FiniteGaloisQuotient):
-    r"""The finite group ``Aut_K(E)`` of one represented separable extension.
-
-    Unlike :class:`FiniteGaloisQuotient`, this group does not require
-    ``E/K`` to be Galois.  It enumerates all exact self-embeddings of ``E``
-    fixing ``K`` and reuses the same owned finite-group operations on those
-    exact field maps.
-    """
-
-    def __init__(self, extension: FiniteGaloisExtension) -> None:
-        if not isinstance(extension, FiniteGaloisExtension):
-            raise TypeError(
-                "a finite extension automorphism group requires represented extension data"
-            )
-        self._extension = extension
-        base_generators = extension.base_field().field_generators()
-        self._automorphisms = finite_ordered_set(
-            tuple(
-                candidate
-                for candidate in extension.field().exact_embeddings(extension.field())
-                if all(
-                    candidate(extension.base_embedding()(generator))
-                    == extension.base_embedding()(generator)
-                    for generator in base_generators
-                )
-            )
-        )
-        self._signatures = {
-            _morphism_signature(automorphism): index
-            for index, automorphism in enumerate(self._automorphisms)
-        }
-        identity_signature = tuple(extension.field().field_generators())
-        try:
-            self._identity_index = self._signatures[identity_signature]
-        except KeyError as error:
-            raise ValueError(
-                "the exact K-automorphisms omit the identity"
-            ) from error
-        Parent.__init__(self, category=OwnedFiniteGroups())
-
-    def _repr_(self) -> str:
+        if self._extension.is_galois():
+            return f"Gal({self.top_field()} / {self.base_field()})"
         return f"Aut_{self.base_field()}({self.top_field()})"
+    def __call__(self, datum):
+        return self._element_constructor_(datum)
+
+    def __contains__(self, datum):
+        return isinstance(datum, FiniteGaloisAutomorphism) and datum.parent() is self
 
 
-class _ContinuousGroupHomset(Homset):
-    def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=SageGroups())
+@cached_function
+def FiniteExtensionAutomorphismGroup(extension):
+    r"""Aut_K(L) for the exact extension diagram, using the finite-group entry."""
+    group = _object_of(
+        Cat().meet((OwnedGroups().Finite(), OwnedGroups().Framed())),
+        _engine=(OwnedGroups(), _FiniteFieldAutomorphismEngine, FiniteGaloisAutomorphism),
+        extension=extension,
+    )
+    generators = group._computed_group_generators()
+    source = Groups.Free(index_set=generators)
+    generator_morphism = Sets().Mor(generators, group)(lambda generator: generator)
+    _fix_selected_framing(
+        group,
+        OwnedGroups(),
+        source,
+        generators,
+        generator_morphism,
+        lambda: _group_framing_morphism(
+            group, source, generators, generator_morphism
+        ),
+    )
+    return group
 
 
-@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
-def _continuous_group_homset(domain, codomain):
-    r"""Return the canonical continuous-group Hom for these exact endpoints."""
-    return _ContinuousGroupHomset(domain, codomain)
+def FiniteGaloisQuotient(extension):
+    r"""Gal(L/K): Aut_K(L) when the finite separable extension is normal."""
+    assert extension.is_galois(), f"{extension} is not Galois, so it has no Galois group quotient of G_K"
+    return FiniteExtensionAutomorphismGroup(extension)
+
+
 
 
 class GaloisRestrictionMap(Morphism):
     r"""The continuous quotient map (G_K\to\operatorname{Gal}(L/K))."""
 
-    def __init__(self, domain, codomain: FiniteGaloisQuotient) -> None:
-        extension = domain.extension_data(codomain.extension_data())
-        Morphism.__init__(self, domain.continuous_morphisms_to(codomain))
-        self._extension = extension
+    def __init__(self, parent, extension) -> None:
+        Morphism.__init__(self, parent)
+        self._extension = self.domain().extension_data(extension)
+        assert self.codomain() is self.domain().finite_quotient(self._extension), (
+            "a Galois restriction map lands in the quotient of its represented finite stage"
+        )
 
     def extension(self) -> FiniteGaloisExtension:
         return self._extension
 
     def _call_(self, element):
-        coordinate = getattr(element, "restriction_coordinate", lambda _stage: None)(
-            self.extension()
-        )
+        r"""``sigma |-> sigma|_L``: a realized finite coordinate, else the automorphism of ``L`` agreeing with ``sigma`` on its generators."""
+        element = self.domain()(element)
+        coordinate = element.restriction_coordinate(self.extension())
         if coordinate is not None:
             return self.codomain()(coordinate)
         embedding = self.extension().embedding()
         generators = self.extension().field().field_generators()
         images = tuple(element(embedding(generator)) for generator in generators)
-        for candidate in self.codomain():
-            if all(
-                image == embedding(candidate(generator))
-                for generator, image in zip(generators, images, strict=True)
-            ):
-                return candidate
-        raise ValueError(
-            "the represented automorphism does not preserve this finite stage"
+        restriction = next(
+            (
+                candidate
+                for candidate in self.codomain()
+                if all(
+                    image == embedding(candidate(generator))
+                    for generator, image in zip(generators, images, strict=True)
+                )
+            ),
+            None,
         )
+        assert restriction is not None, (
+            "the represented automorphism preserves this Galois stage"
+        )
+        return restriction
 
     def kernel(self):
         return self.domain().open_subgroup(self.extension())
@@ -470,15 +497,21 @@ class GaloisRestrictionMap(Morphism):
         return f"Restriction {self.domain()} -> {self.codomain()}"
 
 
-class LiftCoset(SageObject):
-    r"""The coset of all global extensions of one finite-level automorphism."""
+def _galois_restriction_rule(extension):
+    r"""The group-Mor realization rule for restriction to one finite Galois stage."""
+    return lambda mor: GaloisRestrictionMap(mor, extension)
 
-    def __init__(self, restriction_map: GaloisRestrictionMap, element) -> None:
+
+class _LiftCosetEngine:
+    r"""Private realization of the fiber of a finite Galois restriction map."""
+
+    def __init__(self, restriction_map, element, **rest) -> None:
         self._restriction_map = restriction_map
         self._element = restriction_map.codomain()(element)
+        super().__init__(**rest)
 
     def supergroup(self):
-        return self._restriction_map.domain()
+        return self.codomain()
 
     def ambient(self):
         r"""Return the ambient absolute Galois group containing this coset."""
@@ -490,14 +523,11 @@ class LiftCoset(SageObject):
     def extension(self) -> FiniteGaloisExtension:
         return self._restriction_map.extension()
 
+    def restriction_map(self):
+        return self._restriction_map
+
     def kernel(self):
         return self._restriction_map.kernel()
-
-    def __contains__(self, candidate) -> bool:
-        try:
-            return self._restriction_map(candidate) == self._element
-        except (TypeError, ValueError, NotImplementedError):
-            return False
 
     def representative(self, candidate=None):
         r"""Return a supplied representative, or the canonical finite-field one.
@@ -520,12 +550,28 @@ class LiftCoset(SageObject):
         return f"Lift coset of {self._element} in {self.supergroup()}"
 
 
+def LiftCoset(restriction_map: GaloisRestrictionMap, element):
+    r"""The actual fiber ``{sigma in G_K : sigma|_L = element}`` as a subset of ``G_K``."""
+    target = restriction_map.codomain()(element)
+    ambient = restriction_map.domain()
+    inclusion = ambient.condition_set(
+        lambda candidate: restriction_map(candidate) == target
+    ).inclusion()
+    return Sets().Subobjects(ambient).object(
+        inclusion,
+        _engine=_LiftCosetEngine,
+        construction_data={
+            "restriction_map": restriction_map,
+            "element": target,
+        },
+    )
+
+
 
 __all__ = [
+    "FiniteExtensionAutomorphismGroup",
     "FiniteGaloisAutomorphism",
     "FiniteGaloisExtension",
     "FiniteGaloisQuotient",
-    "FiniteExtensionAutomorphismGroup",
-    "GaloisRestrictionMap",
     "LiftCoset",
 ]

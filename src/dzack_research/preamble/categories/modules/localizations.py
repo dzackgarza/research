@@ -2,7 +2,7 @@ r"""Modules equipped as localizations of modules over the source ring."""
 
 from sage.categories.category import Category
 from sage.misc.unknown import Unknown
-from sage.structure.element import ModuleElement
+from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -17,9 +17,14 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    IntegralDomains,
+    OwnedCategoryOverBaseRing,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
+
+
 
 
 class LocalizedModules(OwnedCategoryOverBaseRing):
@@ -31,10 +36,14 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         localization_ring = self.base_ring()
-        assert localization_ring in LocalizationRings(), (
-            f"{localization_ring} is not a represented localization, so no module "
-            "over it is a localization of a module over its source"
-        )
+        match localization_ring in LocalizationRings():
+            case True:
+                pass
+            case False:
+                raise TypeError(
+                    f"{localization_ring} is not a represented localization, so no module "
+                    "over it is a localization of a module over its source"
+                )
         source = localization_ring.localization_source().free_module(finite_ordinal_set(2))
         return localization_ring.localize_module(source)
 
@@ -57,24 +66,23 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return self._denominator
 
         def _add_(self, other):
+            # ``m/s + m'/s' = (s'm + sm')/(ss')``; ``ss'`` lies in ``S`` because
+            # ``S`` is multiplicatively closed.
             parent = self.parent()
             source = parent.numerator_module()
             numerator = (
                 source.scalar_multiple(other.denominator(), self.numerator())
                 + source.scalar_multiple(self.denominator(), other.numerator())
             )
-            return parent.fraction(
+            return parent.element_class(
+                parent,
                 numerator,
                 self.denominator() * other.denominator(),
-                _trusted_denominator=True,
             )
 
         def _neg_(self):
-            return self.parent().fraction(
-                -self.numerator(),
-                self.denominator(),
-                _trusted_denominator=True,
-            )
+            parent = self.parent()
+            return parent.element_class(parent, -self.numerator(), self.denominator())
 
         def _lmul_(self, scalar):
             return self.parent().scalar_multiple(scalar, self)
@@ -83,11 +91,13 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
         def _acted_upon_(self, actor, self_on_left):
-            try:
-                scalar = self.parent().base_ring()(actor)
-            except (TypeError, ValueError):
-                return None
-            return self.parent().scalar_multiple(scalar, self)
+            _ = self_on_left
+            parent = self.parent()
+            match actor:
+                case _ if actor in parent.base_ring():
+                    return parent.scalar_multiple(actor, self)
+                case _:
+                    return None
 
         def equality_status(self, other):
             r"""Return ``True``, ``False``, or ``Unknown`` for fraction equality."""
@@ -99,11 +109,11 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             if op not in (op_EQ, op_NE):
                 return NotImplemented
             status = self.equality_status(other)
-            if status is Unknown:
-                raise NotImplementedError(
-                    "equality of these localization fractions is not decidable from the represented data"
-                )
-            return bool(status) if op == op_EQ else not bool(status)
+            match status:
+                case Unknown:
+                    return Unknown
+                case _:
+                    return bool(status) if op == op_EQ else not bool(status)
 
         def _repr_(self):
             if self.denominator() == self.parent().source_ring().one():
@@ -111,54 +121,44 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return f"({self.numerator()})/({self.denominator()})"
 
     class ParentMethods:
-        _derived_construction_parameters = frozenset({"base_ring"})
+        _derived_construction_parameters = frozenset(
+            {"base_ring", "module_generating_set", "module_generator_function"}
+        )
 
         def __init__(
             self,
             numerator_module,
             localization_ring,
             localization_functor,
+            framing_source=None,
             **rest,
         ) -> None:
-            self._preamble_numerator_module = numerator_module
-            self._preamble_localization_ring = localization_ring
-            self._preamble_localization_submonoid = localization_ring.localization_submonoid()
-            self._preamble_localization_functor = localization_functor
-            source_ring = localization_ring.localization_source()
-            framed_source = numerator_module in FramedModules(source_ring)
-            if framed_source:
-                # Localization chooses no new framing: it carries the source
-                # generators to their images in S^{-1}M.  This specialization
-                # owns that derived framing, so retain it here instead of
-                # depending on a particular ParentMethods MRO for the joined
-                # refinement categories.
-                self._preamble_module_generating_set = (
-                    numerator_module.module_generating_set()
-                )
-                self._preamble_module_generator_function = (
-                    lambda label: self.fraction(numerator_module.module_generator(label))
-                )
-                self._preamble_module_coefficient_function = self._framing_coefficients
-            super().__init__(base_ring=localization_ring, **rest)
-            if framed_source:
-                # The transported framing is part of the localized module's
-                # construction, not something framing_morphism() reconstructs.
-                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                    _framing_morphism,
-                )
+            r"""Construct ``S^{-1}M`` from ``M``, ``S^{-1}R`` and the localization functor.
 
-                framing_source = localization_ring.free_module(
-                    self._preamble_module_generating_set
+            When ``M`` is framed, localization chooses no new framing: it
+            carries the framing of ``M`` to its images ``m_s/1``, so the
+            framed localization installs that framing once the fractions of
+            this module exist.
+            """
+            self._numerator_module = numerator_module
+            self._localization_ring = localization_ring
+            self._localization_functor = localization_functor
+            framing = {}
+            if framing_source is not None:
+                framing.update(
+                    module_generating_set=framing_source.module_generating_set(),
+                    module_generator_function=lambda label: self.fraction(
+                        numerator_module.module_generator(label)
+                    ),
+                    framing_source=framing_source,
                 )
-                self._preamble_framing_morphism = _framing_morphism(
-                    framing_source,
-                    self,
-                    self._preamble_module_generator_function,
-                )
+            super().__init__(base_ring=localization_ring, **framing, **rest)
 
-        def _framing_coefficients(self, element):
-            r"""Return coefficients of a localization fraction in the source framing."""
+        def _selected_module_coefficients(self, element):
+            r"""Return the coefficients of ``m/s`` in the framing carried from ``M``.
 
+            ``m = sum_s c_s m_s`` in ``M`` gives ``m/s = sum_s (c_s/s) (m_s/1)``.
+            """
             element = self(element)
             source_coefficients = self.numerator_module().framing_coefficients(element.numerator())
             localization_map = self.localization_ring().localization_map()
@@ -179,104 +179,69 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
         def source_ring(self):
             return self.localization_ring().localization_source()
 
-        def _valid_denominator(self, denominator) -> bool:
-            source = self.source_ring()
-            denominator = source(denominator)
-            try:
-                image = self.localization_ring().localization_map()(denominator)
-                return bool(image.is_unit())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                try:
-                    return denominator in self.localization_submonoid()
-                except NotImplementedError:
-                    return False
+        def fraction(self, numerator, denominator=None):
+            r"""Return the fraction ``m/s`` of ``m`` in ``M`` and ``s`` in ``S``.
 
-        def fraction(self, numerator, denominator=None, *, _trusted_denominator=False):
+            ``s`` names a denominator exactly when its image in ``S^{-1}R`` is
+            a unit, that is when it lies in the saturation of ``S``, whose
+            fractions are the fractions of ``S^{-1}R``.
+            """
             source_module = self.numerator_module()
             numerator = source_module(numerator)
             source = self.source_ring()
             denominator = source.one() if denominator is None else source(denominator)
-            if not _trusted_denominator and not self._valid_denominator(denominator):
-                raise ValueError(
-                    f"{denominator} is not represented as invertible in {self.localization_ring()}"
-                )
+            status = self.localization_ring().localization_map()(denominator).is_unit()
+            match status:
+                case True:
+                    pass
+                case False:
+                    raise ValueError(
+                        f"{denominator} does not become invertible in {self.localization_ring()}"
+                    )
+                case _:
+                    raise ValueError(
+                        f"invertibility of {denominator} in {self.localization_ring()} is unresolved"
+                    )
             return self.element_class(self, numerator, denominator)
 
         def _element_constructor_(self, value):
-            if value.parent() is self:
-                return value
-            if isinstance(value, tuple) and len(value) == 2:
-                return self.fraction(value[0], value[1])
-            return self.fraction(value)
+            match value:
+                case _ if element_parent(value) is self:
+                    return value
+                case (numerator, denominator):
+                    return self.fraction(numerator, denominator)
+                case _:
+                    return self.fraction(value)
 
         def zero(self):
             return self.fraction(self.numerator_module().zero())
 
         def _fraction_equality_status(self, left, right):
+            r"""Decide ``m/s = m'/s'``: some ``u`` in ``S`` kills ``d = s'm - sm'``.
+
+            That holds exactly when ``Ann_R(d)`` meets ``S``.  A module with a
+            chosen finite presentation computes ``Ann_R(d)`` as a kernel, so
+            the question is decided there.  A finite module has a finite orbit
+            of ``d`` under the chosen generators of ``S``, searched for zero.
+            A torsion-free module over a domain has ``Ann_R(d) = 0`` for ``d``
+            nonzero, which meets no submonoid of nonzero elements.  Otherwise
+            the answer is ``Unknown``.
+            """
             source = self.numerator_module()
+            source_ring = self.source_ring()
             cross_difference = (
                 source.scalar_multiple(right.denominator(), left.numerator())
                 - source.scalar_multiple(left.denominator(), right.numerator())
             )
             if cross_difference == source.zero():
                 return True
-
-            torsion_free = getattr(source, "is_torsion_free", None)
-            if torsion_free is not None:
-                try:
-                    if torsion_free() is True:
-                        return False
-                except (NotImplementedError, TypeError, ValueError):
-                    pass
-
-            # For a presented module, d/1 vanishes after localization exactly
-            # when Ann_R(d) meets the localization submonoid.  On a chosen
-            # presentation that annihilator is the transporter (Im(A) :_R v)
-            # carrying the coordinates of d into the relations, which the
-            # module computes from its own presentation, so this is the exact
-            # relation-membership question and not a search.
-            try:
-                if source in _SelectedFinitePresentationModules(self.source_ring()):
-                    annihilator = source.annihilator_of(cross_difference)
-                    structure = self.localization_submonoid().structure_data()
-
-                    if structure.get("kind") == "prime_complement":
-                        prime = structure.get("prime_ideal")
-                        if prime is not None:
-                            return any(
-                                not prime.contains_ambient_element(generator)
-                                for generator in annihilator.ideal_generators()
-                            )
-
-                    generators = tuple(
-                        self.localization_submonoid().monoid_generators()
+            match source:
+                case _ if source in _SelectedFinitePresentationModules(source_ring):
+                    return self.localization_ring().inverted_submonoid_meets(
+                        source.annihilator_of(cross_difference)
                     )
-                    if not generators:
-                        return False
-                    product = self.source_ring().one()
-                    for generator in generators:
-                        product *= generator
-
-                    # If S=<s_1,...,s_r> and p=prod s_i, then
-                    # Ann(d) meets S iff p lies in radical(Ann(d)): an
-                    # annihilating monomial divides a sufficiently large
-                    # power of p, and p^N itself is an S-witness conversely.
-                    try:
-                        return annihilator.radical().contains_ambient_element(product)
-                    except (AttributeError, NotImplementedError, TypeError, ValueError):
-                        # A direct annihilator witness is still exact even when
-                        # the represented ideal backend has no radical operation.
-                        if annihilator.contains_ambient_element(product):
-                            return True
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
-
-            # If M is finite and S has finitely many selected generators, the
-            # orbit of the cross-difference under S is finite.  Search that orbit
-            # exactly for an element killed by some denominator witness.
-            try:
-                if source.is_finite() is True:
-                    generators = tuple(self.localization_submonoid().monoid_generators())
+                case _ if source.is_finite() is True:
+                    generators = tuple(self.inverted_elements())
                     pending = [cross_difference]
                     seen = []
                     while pending:
@@ -286,134 +251,85 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                         if any(current == old for old in seen):
                             continue
                         seen.append(current)
-                        for generator in generators:
-                            pending.append(source.scalar_multiple(generator, current))
+                        pending.extend(
+                            source.scalar_multiple(generator, current)
+                            for generator in generators
+                        )
                     return False
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
-            return Unknown
+                case _ if source_ring in IntegralDomains() and source.is_torsion_free():
+                    return self.localization_ring().inverted_submonoid_meets(source_ring.ideal(source_ring.zero()))
+                case _:
+                    return Unknown
 
-        def _raw_localized_scalar_multiple(self, scalar, element):
+        def inverted_elements(self):
+            r"""Return the chosen generators of the submonoid ``S`` inverted here."""
+            return self.localization_ring().inverted_elements()
+
+        def _owned_scalar_multiple(self, scalar, element):
+            r"""Apply the fraction action ``(a/t)(m/s) = (am)/(ts)`` defining this module."""
             element = self(element)
             numerator, denominator = self.localization_ring().localization_fraction_data(scalar)
             source = self.numerator_module()
-            return self.fraction(
+            return self.element_class(
+                self,
                 source.scalar_multiple(numerator, element.numerator()),
                 denominator * element.denominator(),
-                _trusted_denominator=True,
             )
 
-        def _owned_scalar_multiple(self, scalar, element):
-            r"""Apply the fraction action that defines this localized module."""
-            return self._raw_localized_scalar_multiple(scalar, element)
-
         def is_finite(self):
-            answer = self.numerator_module().is_finite()
-            return answer if answer is Unknown else bool(answer)
+            r"""Finite numerator modules have finite localizations.
 
-        def _vanishes_by_annihilator(self):
-            r"""Decide vanishing from ``Ann(M)`` against the inverted submonoid.
-
-            A finitely generated ``M`` localizes to zero exactly when some
-            element of ``S`` kills all of it, that is when ``Ann(M)`` meets
-            ``S``.  For ``S`` generated by ``f_1, ..., f_r`` that says a power
-            of their product lies in ``Ann(M)``, which the saturation
-            ``Ann(M) : (f_1 ... f_r)^infinity`` reports by being the unit
-            ideal.  For ``S`` the complement of a prime ``p`` it says
-            ``Ann(M)`` is not inside ``p``.
-
-            Both are ideal computations, so ``QQ[x]/(x)`` localized at ``x``
-            is decided to be zero without the infinite underlying set entering
-            the question.  Returns ``Unknown`` when the annihilator or the
-            saturation has no backend.
+            Localizing a finite module is a quotient of its finite underlying
+            set.  An infinite numerator may become zero, so its infinitude
+            alone does not imply infinitude after localization.
             """
-
-            ring = self.source_ring()
-            source = self.numerator_module()
-            if source not in FinitelyGeneratedModules(ring):
-                return Unknown
-            try:
-                annihilator = source.annihilator()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return Unknown
-
-            structure = self.localization_submonoid().structure_data()
-            if structure.get("kind") == "prime_complement":
-                prime = structure.get("prime_ideal")
-                if prime is None:
-                    return Unknown
-                return any(
-                    not prime.contains_ambient_element(generator)
-                    for generator in annihilator.ideal_generators()
-                )
-
-            try:
-                inverted = tuple(self.localization_ring().inverted_elements())
-                product = ring.one()
-                for element in inverted:
-                    product = product * element
-                saturated = annihilator.saturation(ring.ideal(product))
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return Unknown
-            return saturated == ring.ideal(ring.one())
+            if self.numerator_module().is_finite() is True:
+                return True
+            if self.is_zero() is True:
+                return True
+            return Unknown
 
         def is_zero(self):
-            r"""Decide whether this localization is zero from finite generators or a finite source."""
+            r"""Decide whether ``S^{-1}M = 0``.
+
+            A finitely generated ``M`` localizes to zero exactly when some
+            element of ``S`` kills all of it, that is when ``Ann_R(M)`` meets
+            ``S``, which is an ideal computation.  A finite ``M`` localizes to
+            zero exactly when each of its elements does.
+            """
             source = self.numerator_module()
-
-            vanishing = self._vanishes_by_annihilator()
-            if vanishing is not Unknown:
-                return bool(vanishing)
-
-            # A finitely generated module localizes to zero exactly when its
-            # chosen finite generating family does.  Fraction equality carries
-            # the denominator witness, so this also covers infinite presented
-            # modules such as R/(f) localized at f.
-            try:
-                if source in FinitelyGeneratedModules(self.source_ring()):
+            match source:
+                case _ if source in FinitelyGeneratedModules(self.source_ring()):
+                    return self.localization_ring().inverted_submonoid_meets(source.annihilator())
+                case _ if source.is_finite() is True:
                     statuses = tuple(
-                        self.fraction(source.module_generator(label)).equality_status(
-                            self.zero()
-                        )
-                        for label in source.module_generating_set()
+                        self.fraction(element).equality_status(self.zero())
+                        for element in source
                     )
-                    if any(status is False for status in statuses):
-                        return False
-                    if all(status is True for status in statuses):
-                        return True
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
-
-            if self.is_finite() is not True:
-                return Unknown
-            try:
-                for element in source:
-                    status = self.fraction(element).equality_status(self.zero())
-                    if status is Unknown:
+                    if any(status is Unknown for status in statuses):
                         return Unknown
-                    if status is False:
-                        return False
-                return True
-            except (NotImplementedError, TypeError, ValueError):
-                return Unknown
+                    return all(status is True for status in statuses)
+                case _:
+                    return Unknown
 
         def _repr_(self):
             return (
                 f"{self.numerator_module()} localized along "
                 f"{self.localization_ring().localization_map()}"
             )
+
         def numerator_module(self):
             r"""The module the numerators of these fractions lie in: the ``M`` this is ``S^{-1}M`` of."""
-            return self._preamble_numerator_module
+            return self._numerator_module
 
         def localization_ring(self):
-            return self._preamble_localization_ring
+            return self._localization_ring
 
         def localization_submonoid(self):
-            return self._preamble_localization_submonoid
+            return self.localization_ring().localization_submonoid()
 
         def localization_functor(self):
-            return self._preamble_localization_functor
+            return self._localization_functor
 
         def localization_unit(self):
             return self.localization_functor().unit(
@@ -454,15 +370,15 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             )
 
             localization_ring = self.localization_ring()
-            assert localization_ring in PrimeLocalizations(), (
-                f"{localization_ring} does not invert the complement of a prime, so "
-                f"{self} is not the localization of a module at a point of a spectrum"
-            )
+            match localization_ring in PrimeLocalizations():
+                case True:
+                    pass
+                case False:
+                    raise TypeError(
+                        f"{localization_ring} does not invert the complement of a prime, so "
+                        f"{self} is not the localization of a module at a point of a spectrum"
+                    )
             return self.source_ring().spectrum()(localization_ring.localized_prime())
-
-
-
-
 
 
 __all__ = [
@@ -479,7 +395,6 @@ def _localized_module(
     subobject_generator_images=None,
     subobject_lift=None,
     subobject_inclusion_factory=None,
-    subobject_verify_linearity=True,
     extra_categories=(),
     extra_construction_data=None,
     selected_presentation_data=None,
@@ -504,25 +419,29 @@ def _localized_module(
         subobject_ambient is not None and subobject_generator_images is not None
     ):
         placement.append(ModuleSubobjects(localization_ring))
+        if subobject_ambient is not None:
+            placement.append(Modules(localization_ring).Subobjects(subobject_ambient))
         data.update(
             subobject_ambient=subobject_ambient,
             subobject_generator_images=subobject_generator_images,
             subobject_lift=subobject_lift,
             subobject_inclusion_factory=subobject_inclusion_factory,
-            subobject_verify_linearity=subobject_verify_linearity,
         )
 
     source_ring = localization_ring.localization_source()
     if numerator_module in FramedModules(source_ring):
         placement.append(FramedModules(localization_ring))
+        framing_source = localization_ring.free_module(
+            numerator_module.module_generating_set()
+        )
         if numerator_module in FinitelyGeneratedModules(source_ring):
             placement.append(FinitelyGeneratedModules(localization_ring))
         if numerator_module in ModulesWithChosenFinitePresentation(source_ring):
-            data.update(
-                _transported_presentation(numerator_module, localization_ring)
-            )
+            transported = _transported_presentation(numerator_module, localization_ring)
+            data.update(transported)
             if selected_presentation_data is not None:
                 data.update(selected_presentation_data)
+            framing_source = data["presentation"].codomain()
             placement.extend(
                 [
                     FinitelyPresentedModules(localization_ring),
@@ -530,6 +449,7 @@ def _localized_module(
                     _SelectedFinitePresentationModules(localization_ring),
                 ]
             )
+        data["framing_source"] = framing_source
 
     return _object_of(Category.join(placement), **data)
 

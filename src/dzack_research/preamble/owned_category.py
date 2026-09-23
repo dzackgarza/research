@@ -3,7 +3,7 @@ r"""Category-owned implementation types.
 The public protocol is ``ObjectType`` and ``ElementType``.  A category's
 ``ObjectType`` is its complete object implementation, and that type's
 ``ElementType`` is the complete implementation of its elements.  The same
-protocol applied to the Hom, End, and Aut categories gives the arrow types.
+protocol applied to the Mor, End, and Aut categories gives the arrow types.
 
 Sage's ``ParentMethods`` / ``ElementMethods`` / ``MorphismMethods`` names are
 an internal input format for its named-class builder.  The adapter in this
@@ -68,6 +68,7 @@ from inspect import Parameter, signature
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
+from sage.misc.cachefunc import cached_function
 from sage.misc.classcall_metaclass import ClasscallMetaclass
 from sage.misc.constant_function import ConstantFunction
 from sage.misc.inherit_comparison import InheritComparisonMetaclass
@@ -254,7 +255,7 @@ def _category_parameter_signature(category: Category):
 
     Named implementation classes may legitimately be shared by categories with
     the same method graph, but C3 category merging still needs a strict order
-    on distinct semantic parameters.  Hom families are parameterized by their
+    on distinct semantic parameters.  Mor families are parameterized by their
     base category, while categories over scalars expose ``base``.  Record those
     parameters structurally without using object identity or ``repr``.
     """
@@ -535,7 +536,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         r"""Return the object type carried by this category's object type.
 
         Most objects are not categories, so the default has no second object
-        type.  Categories of hom categories override this: a hom category is
+        type.  Categories of Mor categories override this: a Mor category is
         itself a category, and its objects are the arrows.
         """
         return None
@@ -772,7 +773,7 @@ def _construction_contract_from_type(
     of the Python module where a concrete owned category is declared.  This is
     what makes the contract a property of the mathematical owner rather than a
     package-layout convention.  Other callers retain the narrower preamble
-    module boundary used for fixed Hom parents.
+    module boundary used for fixed Mor parents.
     """
     parameters: list[ConstructionParameter] = []
     variadic: list[type] = []
@@ -850,23 +851,91 @@ def _construction_contract(category: Category) -> ConstructionContract:
     )
 
 
-def _hom_construction_contract(
+def _mor_construction_contract(
     category: Category,
     domain: Parent,
     codomain: Parent,
 ) -> ConstructionContract:
-    r"""Discover how the fixed Hom parent ``Hom_category(domain,codomain)`` is built.
+    r"""Discover how the fixed Mor parent ``Hom_category(domain,codomain)`` is built.
 
-    This is the contract of the selected Hom object itself: its Hom family and
+    This is the contract of the selected Mor object itself: its Mor family and
     endpoints.  It is deliberately distinct from :func:`_construction_contract`
-    on the fixed Hom category, which describes construction of an arrow *in*
-    that Hom.
+    on the fixed Mor category, which describes construction of an arrow *in*
+    that Mor.
     """
-    hom = category.Mor(domain, codomain)
-    return _construction_contract_from_type(hom, type(hom))
+    mor = category.Mor(domain, codomain)
+    return _construction_contract_from_type(mor, type(mor))
 
 
-def _object_of(category: Category, **data: ConstructionData) -> Parent:
+@cached_function
+def _implementation_with_engine(implementation: type, owner: type, engine: type) -> type:
+    r"""Insert a private engine immediately before its owner's implementation.
+
+    This is the same native implementation-class mechanism as
+    ``OwnedCategoryMixin._make_named_class``, not a category declaration.
+    The bases ``(implementation, (engine, owner))`` force every stronger
+    provider already preceding ``owner`` to remain before the engine, while
+    the engine precedes the owner's defaults.  In particular an algebra's
+    multiplication cannot be shadowed by its sparse-module realization.
+
+    Types, not category parameters or object identities, index the cache:
+    parameterized categories may share an implementation type.  Defining
+    data are passed to the resulting object, never stored on this type.
+    """
+    assert issubclass(implementation, owner), (
+        "an object engine realizes a declared owner in the selected category"
+    )
+    match implementation is owner:
+        case True:
+            bases = (engine, owner)
+        case False:
+            bases = (implementation, _implementation_with_engine(owner, owner, engine))
+    return _abc_metaclass_for(bases)(
+        f"{implementation.__name__}[{engine.__name__}]",
+        bases,
+        {
+            "_reduction": (_implementation_with_engine, (implementation, owner, engine)),
+            "_doccls": (engine,),
+            "__doc__": engine.__doc__,
+            "__module__": engine.__module__,
+        },
+    )
+
+
+@cached_function
+def _engine_object_type(object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine):
+    r"""The native parent/element realization, without a second category node."""
+    realized = _implementation_with_engine(object_type, owner_object_type, object_engine)
+    elements = (
+        element_type
+        if element_engine is None
+        else _implementation_with_engine(element_type, owner_element_type, element_engine)
+    )
+    return type(realized)(
+        f"{realized.__name__}.ObjectType",
+        (realized,),
+        {
+            # Sage Parent.element_class consumes Element; the owned public
+            # type protocol exposes the identical complete implementation.
+            "Element": elements,
+            "ElementType": elements,
+            "_reduction": (
+                _engine_object_type,
+                (object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine),
+            ),
+            "_doccls": (object_engine,),
+            "__doc__": object_engine.__doc__,
+            "__module__": object_engine.__module__,
+        },
+    )
+
+
+def _object_of(
+    category: Category,
+    *,
+    _engine: tuple[Category, type, type | None] | None = None,
+    **data: ConstructionData,
+) -> Parent:
     r"""The object of ``category`` built from the data its levels declare.
 
     The instantiable class is ``category.parent_class``; this is the one line
@@ -882,11 +951,24 @@ def _object_of(category: Category, **data: ConstructionData) -> Parent:
 
     The base ring is not supplied here.  A level that sits over a ring states
     its own ``base`` when it calls ``super().__init__``, the way the module
-    homset does, because a level may name a base its category does not -- and
+    Mor does, because a level may name a base its category does not -- and
     injecting one here would arrive twice at the levels that already do.
     """
-    _construction_contract(category).validate(data)
-    return category.ObjectType(category=category, **data)
+    match _engine:
+        case None:
+            implementation = category.ObjectType
+        case (owner, object_engine, element_engine):
+            assert category.is_subcategory(owner), (
+                "the object's mathematical category contains the engine's owner"
+            )
+            implementation = _engine_object_type(
+                category.ObjectType, owner.ObjectType, object_engine,
+                category.ElementType, owner.ElementType, element_engine,
+            )
+    _construction_contract_from_type(
+        category, implementation, owned_object_chain=True
+    ).validate(data)
+    return implementation(category=category, **data)
 
 
 def _cat() -> Category:
@@ -1012,7 +1094,7 @@ class OwnedCategoryObject:
     computation.  Two justifications for it have been measured and falsified:
     the \(\mathbf{Cat}\) constructions do *not* reach a category this way --
     they arrive through ``subcategory_class``, which is what covers the joins
-    and axiom categories most owned categories actually are -- and ``Hom(C, D)``
+    and axiom categories most owned categories actually are -- and ``Mor(C, D)``
     does *not* route to the functor space by parenthood either; that follows
     the domain being an owned category, again through ``subcategory_class``.
     It is kept because a category **is** an object of \(\mathbf{Cat}\), which

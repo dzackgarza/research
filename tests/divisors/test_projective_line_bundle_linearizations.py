@@ -4,6 +4,9 @@ from dzack_research.preamble.all import (
     QQ,
     ProjectiveSpaces,
 )
+from dzack_research.preamble.categories.group.g_objects import GObjects
+from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
+from dzack_research.preamble.categories.schemes.schemes import ClosedSubschemes
 
 
 def _linearizations():
@@ -27,6 +30,8 @@ def test_two_character_twists_keep_same_bundle_but_swap_section_eigenspaces() ->
 
     assert trivial.line_bundle() is bundle
     assert sign.line_bundle() is bundle
+    assert trivial in GObjects(group, QuasiCoherentSheaves(bundle.scheme()))
+    assert sign in GObjects(group, QuasiCoherentSheaves(bundle.scheme()))
     assert trivial.scheme_action_functor() is sign.scheme_action_functor()
     assert trivial.character_value(generator) == 1
     assert sign.character_value(generator) == -1
@@ -73,12 +78,16 @@ def test_sign_eigensection_has_invariant_zero_divisor_and_isotypic_piece() -> No
     divisor = trivial.eigensection_divisor(alternating, sign_character)
     decomposition = trivial.isotypic_decomposition()
     construction = trivial.eigensection_divisor_construction(divisor)
+    lift = trivial.linearization_isomorphism(generator)
 
     assert divisor.inclusion().codomain() is trivial.projective_space()
+    assert divisor in ClosedSubschemes(QQ)
     assert trivial.is_eigensection_divisor(divisor)
+    assert construction is divisor
     assert construction.linearization() is trivial
     assert construction.section() == alternating
     assert construction.character() is sign_character
+    assert lift in QuasiCoherentSheaves(bundle.scheme()).Core().Mor(bundle, bundle)
     assert trivial.is_eigensection(alternating, sign_character)
     assert decomposition.nontrivial_components()
     assert trivial.section_group_module().act(

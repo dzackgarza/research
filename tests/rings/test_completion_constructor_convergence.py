@@ -28,8 +28,12 @@ def test_adic_completion_routes_share_one_owned_parent_and_maps() -> None:
     assert declared in category
     assert declared.completion_source() is ring
     assert declared.ideal_of_definition() == ideal
-    assert declared.completion_map().domain() is ring
-    assert declared.completion_map().codomain() is declared
+    completion_map = declared.completion_map()
+    assert completion_map is declared.completion_map()
+    assert completion_map.domain() is ring
+    assert completion_map.codomain() is declared
+    assert declared.algebra_structure_morphism() is completion_map
+    assert completion_map(ring.zero()) == declared.zero()
 
 
 def test_completion_precision_is_part_of_the_computational_constructor_key() -> None:
@@ -63,6 +67,11 @@ def test_power_series_notation_is_the_same_selected_completion() -> None:
     assert completion.completion_source() is polynomial
     assert completion.completion_map().domain() is polynomial
     assert completion.completion_map().codomain() is completion
+    assert completion.algebra_structure_morphism().domain() is QQ
+    assert completion.algebra_structure_morphism() is not completion.completion_map()
+    projection = completion.adic_projection(2)
+    assert projection.domain() is completion
+    assert projection.codomain() is completion.adic_truncation(2)
 
 
 def test_power_series_over_integers_does_not_require_a_maximal_ideal_decision() -> None:

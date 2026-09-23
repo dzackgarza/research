@@ -52,7 +52,7 @@ def matrix_hom():
     )
     e0, e1 = source.module_generators()
     return {
-        "hom_category": category_key(morphism.parent()),
+        "mor_category": category_key(morphism.parent()),
         "source_category": category_key(source),
         "target_category": category_key(target),
         "e0_image": [
@@ -96,7 +96,7 @@ def isotropic_overlattice():
     return {
         "source_category": category_key(lattice),
         "target_category": category_key(overlattice),
-        "hom_category": category_key(inclusion.parent()),
+        "mor_category": category_key(inclusion.parent()),
         "index": int(inclusion.index()),
         "rank": int(overlattice.module_rank()),
         "determinant": int(overlattice.determinant()),

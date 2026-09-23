@@ -1,4 +1,4 @@
-r"""Graded derivations use the owned category meet for restricted-Hom placement."""
+r"""Graded derivations use the owned category meet for restricted-Mor placement."""
 
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects
@@ -30,6 +30,12 @@ def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> 
     underlying = derivation.underlying_linear_morphism()
     assert underlying.derivation() is derivation
     assert derivations(underlying) is derivation
+    doubled = derivation + derivation
+    assert doubled(xbar) == derivation(xbar) + derivation(xbar)
+    assert derivation(xbar * ybar) == (
+        values.scalar_multiple(xbar, derivation(ybar))
+        + values.scalar_multiple(ybar, derivation(xbar))
+    )
 
     omega = algebra.kahler_differentials()
     classifier = omega.from_derivation(derivation)

@@ -1,7 +1,8 @@
 r"""Localization of modules as scalar extension along a ring localization."""
 
-from sage.structure.sage_object import SageObject
-
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    _isomorphism_from_known_inverse_pair,
+)
 from dzack_research.preamble.categories.functors.scalar_change import (
     _ScalarExtensionFunctor,
 )
@@ -11,7 +12,7 @@ from dzack_research.preamble.categories.modules.localizations import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
-    ModuleLocalizationMorphismConstruction,
+    ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
@@ -19,14 +20,71 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 
 
+class _LocalizedModuleMorphism(ModuleMorphism):
+    r"""Localization of an admitted module map along one ring localization."""
+
+    def __init__(self, parent, source_morphism, functor, action, *, elementwise) -> None:
+        self._source_morphism = source_morphism
+        self._localization_functor = functor
+        super().__init__(
+            parent,
+            action,
+            elementwise=elementwise,
+            scalar_extension_of=source_morphism,
+            scalar_extension_functor=functor,
+        )
+        self._linearity_decision = source_morphism.linearity_decision()
+
+    def _elementwise_linearity_derivation(self):
+        return self._source_morphism.linearity_decision()
+
+
+class _LocalizedModuleEmbedding(ModuleEmbedding):
+    r"""Localization of a monomorphism; flatness preserves injectivity."""
+
+    def __init__(self, parent, source_embedding, functor, action, *, elementwise) -> None:
+        self._source_embedding = source_embedding
+        self._localization_functor = functor
+        super().__init__(
+            parent,
+            action,
+            elementwise=elementwise,
+            scalar_extension_of=source_embedding,
+            scalar_extension_functor=functor,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return self._source_embedding.linearity_decision()
+
+    def _injectivity_derivation(self):
+        return True
+
+
+class _LocalizationUnitMorphism(ModuleMorphism):
+    r"""The canonical linear map ``M -> Res(S^{-1}M)``."""
+
+    def __init__(self, parent, localized, restricted) -> None:
+        super().__init__(
+            parent,
+            lambda element: restricted.wrap(localized.fraction(element)),
+            elementwise=True,
+        )
+
+    def _elementwise_linearity_derivation(self):
+        return True
+
+
 class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
     r"""The functor ``S^{-1}R tensor_R - : Mod_R -> Mod_{S^{-1}R}``."""
 
     def __init__(self, localization_ring) -> None:
-        if not hasattr(localization_ring, "localization_source") or not hasattr(
-            localization_ring, "localization_map"
-        ):
-            raise TypeError("module localization requires a represented ring localization")
+        from dzack_research.preamble.categories.rings.ring_foundation import LocalizationRings
+
+        match localization_ring in LocalizationRings():
+            case True:
+                pass
+            case False:
+                raise TypeError("module localization is induced by a ring localization")
         self._localization_ring = localization_ring
         super().__init__(localization_ring.localization_map())
 
@@ -49,13 +107,19 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
         ):
             source_inclusion = module.inclusion()
             localized_ambient = self(source_inclusion.codomain())
-            subobject_data = {
-                "subobject_ambient": localized_ambient,
-                "subobject_generator_images": lambda label: localized_ambient.fraction(
-                    source_inclusion(module.module_generator(label))
-                ),
-                "subobject_verify_linearity": False,
-            }
+            def inclusion(localized_subobject):
+                mor = localized_subobject.Mono(localized_ambient)
+                return _LocalizedModuleEmbedding(
+                    mor,
+                    source_inclusion,
+                    self,
+                    lambda element: localized_ambient.fraction(
+                        source_inclusion(element.numerator()), element.denominator(),
+                    ),
+                    elementwise=True,
+                )
+
+            subobject_data = {"subobject_inclusion_factory": inclusion}
         return _localized_module(
             module,
             self.localization_ring(),
@@ -66,76 +130,68 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-
         if source in ModuleSubobjects(source.base_ring()):
-            if (
-                morphism is morphism.domain().inclusion()
-                and source.inclusion().codomain() is target
-            ):
-                embedded = source.inclusion()
-                return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
+            if morphism is morphism.domain().inclusion():
+                inclusion = source.inclusion()
+                assert inclusion.codomain() is target
+                assert inclusion.scalar_extension_of() is morphism
+                return inclusion
 
-        if source in LocalizedModules(source.base_ring()):
-            if target in LocalizedModules(target.base_ring()):
-                def on_fraction(fraction):
-                    return target.fraction(
-                        morphism(fraction.numerator()),
-                        fraction.denominator(),
-                        _trusted_denominator=True,
-                    )
-            else:
-                target_unit = self.unit(morphism.codomain(), localized=target)
+        match source:
+            case _ if source in LocalizedModules(source.base_ring()):
+                match target:
+                    case _ if target in LocalizedModules(target.base_ring()):
+                        def action(fraction):
+                            return target.fraction(
+                                morphism(fraction.numerator()), fraction.denominator(),
+                            )
+                    case _:
+                        target_unit = self.unit(morphism.codomain(), localized=target)
 
-                def on_fraction(fraction):
-                    represented = target_unit(morphism(fraction.numerator()))
-                    target_element = represented.underlying_element()
-                    denominator = self.localization_ring().localization_map()(
-                        fraction.denominator()
-                    )
-                    return target.scalar_multiple(denominator.inverse_of_unit(), target_element)
-
-            image = source.module_category().Mor(source, target).elementwise(
-                on_fraction,
-                verify_linearity=False,
-            )
-        elif target in LocalizedModules(target.base_ring()):
-
-            if source not in FramedModules(source.base_ring()):
-                raise NotImplementedError(
-                    "this mixed scalar-extension morphism has neither a fraction source nor a represented source framing"
-                )
-            image = source.module_category().Mor(source, target)(
-                {
-                    label: target.fraction(
-                        morphism(
-                            morphism.domain().module_generator(label)
+                        def action(fraction):
+                            numerator = target_unit(morphism(fraction.numerator())).underlying_element()
+                            denominator = self.localization_ring().localization_map()(fraction.denominator())
+                            return target.scalar_multiple(denominator.inverse_of_unit(), numerator)
+                elementwise = True
+            case _ if target in LocalizedModules(target.base_ring()):
+                match source in FramedModules(source.base_ring()):
+                    case True:
+                        pass
+                    case False:
+                        raise TypeError(
+                            "the mixed localization image uses its selected source framing"
                         )
-                    )
-                    for label in source.module_generating_set()
-                }
-            )
-        else:
-            image = super()._apply_morphism(morphism)
 
-        if not isinstance(morphism, ModuleEmbedding):
-            return ModuleLocalizationMorphismConstruction(morphism, self).image_of(image)
+                def action(label):
+                    return target.fraction(morphism(morphism.domain().module_generator(label)))
 
+                elementwise = False
+            case _:
+                return super()._apply_morphism(morphism)
 
-        if source in FramedModules(source.base_ring()):
-            embedded = source.Mono(target)(
-                {
-                    label: image(source.module_generator(label))
-                    for label in source.module_generating_set()
-                }
-            )
-            return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
-        embedded = ModuleEmbedding(
-            source.module_category().Mor(source, target),
-            lambda element: image(element),
-            elementwise=True,
-            verify_linearity=False,
+        # Flatness preserves a selected monomorphism.  Read its mathematical
+        # Mor placement, not its concrete morphism implementation.
+        source_mor = morphism.parent().mor_category()
+        monomorphisms = morphism.domain().module_category().Mono()
+        match source_mor.is_subcategory(monomorphisms):
+            case True:
+                mor = source.Mono(target)
+                return _LocalizedModuleEmbedding(
+                    mor,
+                    morphism,
+                    self,
+                    action,
+                    elementwise=elementwise,
+                )
+            case False:
+                mor = source.module_category().Mor(source, target)
+        return _LocalizedModuleMorphism(
+            mor,
+            morphism,
+            self,
+            action,
+            elementwise=elementwise,
         )
-        return ModuleLocalizationMorphismConstruction(morphism, self).image_of(embedded)
 
     def unit(self, module, *, localized=None):
         r"""Return ``M -> Res_R(S^{-1}M)``, the localization unit."""
@@ -143,9 +199,10 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
         image = self(module) if localized is None else localized
         restricted = image.restrict_scalars(self.ring_map())
         if image in LocalizedModules(image.base_ring()):
-            return module.module_category().Mor(module, restricted).elementwise(
-                lambda element: restricted.wrap(image.fraction(element)),
-                verify_linearity=False,
+            return _LocalizationUnitMorphism(
+                module.module_category().Mor(module, restricted),
+                image,
+                restricted,
             )
         return module.module_category().Mor(module, restricted)(
             lambda label: restricted.wrap(image.module_generator(label))
@@ -153,155 +210,82 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
 
     def cokernel_comparison(self, morphism):
         r"""Return ``S^{-1}coker(f) ~= coker(S^{-1}f)`` in represented regimes."""
-        return LocalizationCokernelComparison(self, morphism)
+        return _localization_cokernel_comparison(self, morphism)
 
     def kernel_comparison(self, morphism):
         r"""Return ``S^{-1}ker(f) ~= ker(S^{-1}f)``."""
-        return LocalizationKernelComparison(self, morphism)
+        return _localization_kernel_comparison(self, morphism)
 
     def _repr_(self):
         return f"Module localization along {self.localization_ring().localization_map()}"
 
 
-class LocalizationCokernelComparison(SageObject):
-    r"""The canonical right-exactness comparison for module localization."""
+def _localization_cokernel_comparison(functor, morphism):
+    r"""The canonical represented isomorphism ``S^-1 coker(f) ~= coker(S^-1 f)``.
 
-    def __init__(self, functor, morphism) -> None:
+    The comparison is an arrow in the core of the module category, not a
+    separate record carrying two arrows.  The current explicit construction
+    uses the selected finite framings of the two represented cokernels.
+    """
 
-        self._functor = functor
-        self._morphism = morphism
-        self._localized_morphism = functor(morphism)
-        self._source_cokernel = morphism.cokernel()
-        self._localized_source_cokernel = functor(self._source_cokernel)
-        self._target_cokernel = self._localized_morphism.cokernel()
+    localized_morphism = functor(morphism)
+    source_cokernel = morphism.cokernel()
+    localized_source_cokernel = functor(source_cokernel)
+    target_cokernel = localized_morphism.cokernel()
+    localized_codomain = localized_morphism.codomain()
+    assert (
+        localized_source_cokernel in FramedModules(functor.localization_ring())
+        and target_cokernel in FramedModules(functor.localization_ring())
+        and localized_codomain in FramedModules(functor.localization_ring())
+    ), "the represented cokernel comparison requires selected finite framings"
 
-        localized_codomain = self._localized_morphism.codomain()
-        if (
-            self._localized_source_cokernel
-            not in FramedModules(functor.localization_ring())
-            or self._target_cokernel not in FramedModules(functor.localization_ring())
-            or localized_codomain not in FramedModules(functor.localization_ring())
-        ):
-            raise NotImplementedError(
-                "the represented cokernel comparison currently requires selected finite framings"
+    source_projection = source_cokernel.cokernel_projection()
+    localized_source_projection = functor(source_projection)
+    target_projection = target_cokernel.cokernel_projection()
+    left_labels = tuple(localized_source_cokernel.module_generating_set())
+    right_labels = tuple(target_cokernel.module_generating_set())
+    codomain_labels = tuple(localized_codomain.module_generating_set())
+    assert left_labels == codomain_labels and right_labels == codomain_labels, (
+        "localized cokernel framings agree with the selected codomain framing"
+    )
+
+    forward = localized_source_cokernel.module_category().Mor(
+        localized_source_cokernel,
+        target_cokernel,
+    )(
+        {
+            label: target_projection(localized_codomain.module_generator(label))
+            for label in codomain_labels
+        }
+    )
+    inverse = target_cokernel.module_category().Mor(
+        target_cokernel,
+        localized_source_cokernel,
+    )(
+        {
+            label: localized_source_projection(
+                localized_codomain.module_generator(label)
             )
-
-        source_projection = self._source_cokernel.cokernel_projection()
-        localized_source_projection = functor(source_projection)
-        target_projection = self._target_cokernel.cokernel_projection()
-
-        left_labels = tuple(self._localized_source_cokernel.module_generating_set())
-        right_labels = tuple(self._target_cokernel.module_generating_set())
-        codomain_labels = tuple(localized_codomain.module_generating_set())
-        if left_labels != codomain_labels or right_labels != codomain_labels:
-            raise ArithmeticError(
-                "localized cokernel framings no longer match the selected codomain framing"
-            )
-
-        self._forward = self._localized_source_cokernel.module_category().Mor(
-            self._localized_source_cokernel,
-            self._target_cokernel,
-        )(
-            {
-                label: target_projection(localized_codomain.module_generator(label))
-                for label in codomain_labels
-            }
-        )
-        self._inverse = self._target_cokernel.module_category().Mor(
-            self._target_cokernel,
-            self._localized_source_cokernel,
-        )(
-            {
-                label: localized_source_projection(
-                    localized_codomain.module_generator(label)
-                )
-                for label in codomain_labels
-            }
-        )
-
-    def functor(self):
-        return self._functor
-
-    def morphism(self):
-        return self._morphism
-
-    def localized_morphism(self):
-        return self._localized_morphism
-
-    def localized_cokernel(self):
-        return self._localized_source_cokernel
-
-    def cokernel_of_localized_morphism(self):
-        return self._target_cokernel
-
-    def forward(self):
-        return self._forward
-
-    isomorphism = forward
-
-    def inverse(self):
-        return self._inverse
-
-    def _repr_(self):
-        return (
-            f"{self.localized_cokernel()} ~= "
-            f"{self.cokernel_of_localized_morphism()}"
-        )
+            for label in codomain_labels
+        }
+    )
+    return _isomorphism_from_known_inverse_pair(forward, inverse)
 
 
-class LocalizationKernelComparison(SageObject):
-    r"""The canonical left-exactness comparison for module localization."""
+def _localization_kernel_comparison(functor, morphism):
+    r"""The canonical represented isomorphism ``S^-1 ker(f) ~= ker(S^-1 f)``."""
 
-    def __init__(self, functor, morphism) -> None:
-
-        self._functor = functor
-        self._morphism = morphism
-        self._localized_morphism = functor(morphism)
-        self._source_kernel = morphism.kernel()
-        self._localized_source_kernel = functor(self._source_kernel)
-        self._target_kernel = self._localized_morphism.kernel()
-        if self._target_kernel is not self._localized_source_kernel:
-            raise ArithmeticError(
-                "the image of the localized kernel inclusion is not the selected kernel of the localized morphism"
-            )
-        identity = self._localized_source_kernel.module_category().Mor(
-            self._localized_source_kernel,
-            self._target_kernel,
-        ).identity()
-        self._forward = identity
-        self._inverse = identity
-
-    def functor(self):
-        return self._functor
-
-    def morphism(self):
-        return self._morphism
-
-    def localized_morphism(self):
-        return self._localized_morphism
-
-    def localized_kernel(self):
-        return self._localized_source_kernel
-
-    def kernel_of_localized_morphism(self):
-        return self._target_kernel
-
-    def forward(self):
-        return self._forward
-
-    isomorphism = forward
-
-    def inverse(self):
-        return self._inverse
-
-    def _repr_(self):
-        return (
-            f"{self.localized_kernel()} ~= "
-            f"{self.kernel_of_localized_morphism()}"
-        )
+    localized_morphism = functor(morphism)
+    localized_source_kernel = functor(morphism.kernel())
+    target_kernel = localized_morphism.kernel()
+    assert target_kernel is localized_source_kernel, (
+        "localization preserves the selected kernel object in the represented regime"
+    )
+    identity = localized_source_kernel.module_category().Mor(
+        localized_source_kernel,
+        target_kernel,
+    ).identity()
+    return _isomorphism_from_known_inverse_pair(identity, identity)
 
 
-__all__ = [
-    "LocalizationCokernelComparison",
-    "LocalizationKernelComparison",
-]
+__all__ = []

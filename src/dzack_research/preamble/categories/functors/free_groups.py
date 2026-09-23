@@ -1,12 +1,11 @@
 r"""The free-group/underlying-set adjunction ``F ⊣ U``.
 
 The free group on an arbitrary set is an owned group carrying its chosen free
-basis.  The corresponding Hom-set is supplied by the owned group morphism
+basis.  The corresponding Mor object is supplied by the owned group morphism
 layer, so this functor does not choose names, enumerate the source, or pass
 through a finite-rank GAP presentation.
 """
 
-from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
@@ -30,8 +29,7 @@ class _FreeGroupFunctor(Functor):
         source = self(set_morphism.domain())
         target = self(set_morphism.codomain())
         return source.Mor(target)(
-            SetMorphism(
-                Sets().Mor(source.free_basis(), target),
+            Sets().Mor(source.free_basis(), target)(
                 lambda index: target.free_generator(set_morphism(index)),
             )
         )
@@ -67,19 +65,20 @@ class _FreeGroupUnderlyingSetAdjunction(Adjunction):
     def __init__(self) -> None:
         super().__init__(_FreeGroupFunctor(), _GroupUnderlyingSetFunctor())
 
-    def unit(self, set_object):
+    def _unit_component(self, set_object):
         free_group = self.left_adjoint()(set_object)
         return Sets().Mor(set_object, free_group)(free_group.free_generator)
 
-    def counit(self, group):
+    def _counit_component(self, group):
         free_group = self.left_adjoint()(self.right_adjoint()(group))
         return free_group.Mor(group)(
-            SetMorphism(
-                Sets().Mor(free_group.free_basis(), group),
+            Sets().Mor(free_group.free_basis(), group)(
                 lambda group_element: group_element,
             )
         )
 
+    def _repr_(self):
+        return "Free-group/underlying-set adjunction F ⊣ U"
 
 
 @cached_function

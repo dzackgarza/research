@@ -12,8 +12,6 @@ _EXPORTS = {
     "FunctorImageMorphism": ("dzack_research.preamble.categories.abstract_categories.functor_images", "FunctorImageMorphism"),
     "ImageOfFunctor": ("dzack_research.preamble.categories.abstract_categories.functor_images", "ImageOfFunctor"),
     "DirectSumObjects": ("dzack_research.preamble.categories.abstract_categories.direct_sum_objects", "DirectSumObjects"),
-    "BiproductCategory": ("dzack_research.preamble.categories.abstract_categories.products", "BiproductCategory"),
-    "DirectSumCategory": ("dzack_research.preamble.categories.abstract_categories.products", "DirectSumCategory"),
     "DirectedSystem": ("dzack_research.preamble.categories.abstract_categories.products", "DirectedSystem"),
     "FiniteOrdinalCategory": ("dzack_research.preamble.categories.abstract_categories.products", "FiniteOrdinalCategory"),
     "FiniteSequenceDiagram": ("dzack_research.preamble.categories.abstract_categories.products", "FiniteSequenceDiagram"),
@@ -24,29 +22,25 @@ _EXPORTS = {
     "RestrictedDiagram": ("dzack_research.preamble.categories.abstract_categories.products", "RestrictedDiagram"),
     "SelectedColimitConstruction": ("dzack_research.preamble.categories.abstract_categories.products", "SelectedColimitConstruction"),
     "SelectedLimitConstruction": ("dzack_research.preamble.categories.abstract_categories.products", "SelectedLimitConstruction"),
-    "TensorProductCategory": ("dzack_research.preamble.categories.abstract_categories.products", "TensorProductCategory"),
     "Cat": ("dzack_research.preamble.categories.abstract_categories.cat", "Cat"),
     "CategoryFunctorMorphism": ("dzack_research.preamble.categories.abstract_categories.cat", "CategoryFunctorMorphism"),
     "CategoryObject": ("dzack_research.preamble.categories.abstract_categories.cat", "CategoryObject"),
     "NaturalTransformationMorphism": ("dzack_research.preamble.categories.abstract_categories.cat", "NaturalTransformationMorphism"),
-    "CategoricalHomset": ("dzack_research.preamble.categories.abstract_categories.hom_categories", "CategoricalHomset"),
-    "CategoryPacketMethods": ("dzack_research.preamble.categories.abstract_categories.hom_categories", "CategoryPacketMethods"),
-    "HomCategories": ("dzack_research.preamble.categories.abstract_categories.hom_categories", "HomCategories"),
+    "CategoricalMor": ("dzack_research.preamble.categories.abstract_categories.mor_categories", "CategoricalMor"),
+    "CategoryPacketMethods": ("dzack_research.preamble.categories.abstract_categories.mor_categories", "CategoryPacketMethods"),
+    "MorCategories": ("dzack_research.preamble.categories.abstract_categories.mor_categories", "MorCategories"),
     "OppositeMorphism": ("dzack_research.preamble.categories.abstract_categories.category_constructions", "OppositeMorphism"),
     "ProductMorphism": ("dzack_research.preamble.categories.abstract_categories.category_constructions", "ProductMorphism"),
-    "CategoricalIsomorphism": ("dzack_research.preamble.categories.abstract_categories.hom_categories", "CategoricalIsomorphism"),
+    "CategoricalIsomorphism": ("dzack_research.preamble.categories.abstract_categories.mor_categories", "CategoricalIsomorphism"),
     "CommutativeSquare": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "CommutativeSquare"),
-    "SubobjectHomset": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SubobjectHomset"),
+    "SubobjectMor": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SubobjectMor"),
     "SubobjectMorphism": ("dzack_research.preamble.categories.abstract_categories.arrow_categories", "SubobjectMorphism"),
     "Coverage": ("dzack_research.preamble.categories.abstract_categories.presheaves", "Coverage"),
     "CoveringFamilies": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringFamilies"),
-    "CoveringFamily": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringFamily"),
-    "CoveringOverlap": ("dzack_research.preamble.categories.abstract_categories.presheaves", "CoveringOverlap"),
     "DescentData": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentData"),
     "DescentDataOnCover": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentDataOnCover"),
     "DescentEqualizer": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentEqualizer"),
     "DescentEqualizerComparison": ("dzack_research.preamble.categories.abstract_categories.presheaves", "DescentEqualizerComparison"),
-    "SheafObject": ("dzack_research.preamble.categories.abstract_categories.presheaves", "SheafObject"),
     "Sheaves": ("dzack_research.preamble.categories.abstract_categories.presheaves", "Sheaves"),
     "TrivialCoveringFamilies": ("dzack_research.preamble.categories.abstract_categories.presheaves", "TrivialCoveringFamilies"),
     "trivial_coverage": ("dzack_research.preamble.categories.abstract_categories.presheaves", "trivial_coverage"),
@@ -57,8 +51,6 @@ __all__ = [
     "FunctorImageMorphism",
     "ImageOfFunctor",
     "DirectSumObjects",
-    "BiproductCategory",
-    "DirectSumCategory",
     "DirectedSystem",
     "FiniteOrdinalCategory",
     "FiniteSequenceDiagram",
@@ -69,29 +61,25 @@ __all__ = [
     "RestrictedDiagram",
     "SelectedColimitConstruction",
     "SelectedLimitConstruction",
-    "TensorProductCategory",
     "Cat",
     "CategoryFunctorMorphism",
     "CategoryObject",
     "NaturalTransformationMorphism",
-    "CategoricalHomset",
+    "CategoricalMor",
     "CategoryPacketMethods",
-    "HomCategories",
+    "MorCategories",
     "OppositeMorphism",
     "ProductMorphism",
     "CategoricalIsomorphism",
     "CommutativeSquare",
-    "SubobjectHomset",
+    "SubobjectMor",
     "SubobjectMorphism",
     "Coverage",
     "CoveringFamilies",
-    "CoveringFamily",
-    "CoveringOverlap",
     "DescentData",
     "DescentDataOnCover",
     "DescentEqualizer",
     "DescentEqualizerComparison",
-    "SheafObject",
     "Sheaves",
     "TrivialCoveringFamilies",
     "trivial_coverage",
@@ -99,10 +87,11 @@ __all__ = [
 
 
 def __getattr__(name):
-    try:
-        module_name, attribute = _EXPORTS[name]
-    except KeyError as error:
-        raise AttributeError(name) from error
+    # Python's module attribute protocol: a name this package does not
+    # export is an AttributeError.
+    if name not in _EXPORTS:
+        raise AttributeError(name)
+    module_name, attribute = _EXPORTS[name]
     value = getattr(_import_module(module_name), attribute)
     globals()[name] = value
     return value

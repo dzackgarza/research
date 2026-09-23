@@ -15,8 +15,7 @@ log Calabi--Yau -- a statement this layer computes rather than asserts.
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.schemes.schemes import Schemes, _scheme_with_structure
 
 
 class LogPairs(OwnedCategoryOverBaseRing):
@@ -37,25 +36,39 @@ class LogPairs(OwnedCategoryOverBaseRing):
         )
         return plane.log_pair()
 
+    def _call_(self, log_scheme, boundary_divisor):
+        r"""The log pair ``(X, Delta)`` of a scheme over this base and a divisor on it."""
+        assert log_scheme.scheme_base_ring() == self.base_ring(), (
+            f"the scheme of an object of {self} lies over {self.base_ring()}"
+        )
+        return _scheme_with_structure(
+            log_scheme,
+            self,
+            construction_data={
+                "log_scheme": log_scheme,
+                "boundary_divisor": boundary_divisor,
+            },
+        )
+
     def _repr_object_names(self):
         return f"log pairs over {self.base_ring()}"
 
     def super_categories(self):
-        return [Sets()]
+        return [Schemes(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, log_scheme, boundary_divisor, **rest) -> None:
-            self._preamble_log_scheme = log_scheme
-            self._preamble_boundary_divisor = boundary_divisor
+            self._log_scheme = log_scheme
+            self._boundary_divisor = boundary_divisor
             super().__init__(**rest)
 
         def log_scheme(self):
             r"""The variety ``X`` of the pair."""
-            return self._preamble_log_scheme
+            return self._log_scheme
 
         def boundary_divisor(self):
             r"""The boundary ``Delta``."""
-            return self._preamble_boundary_divisor
+            return self._boundary_divisor
 
         def boundary_divisor_group(self):
             r"""The divisor group ``Delta`` is an element of."""
@@ -87,6 +100,33 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
         r"""The projective plane with the sum of its three invariant lines."""
         return LogPairs(self.base_ring()).an_object()
 
+    def _call_(
+        self,
+        toric_variety,
+        boundary_divisor,
+        *,
+        _engine=None,
+        construction_data=None,
+    ):
+        r"""The toric log pair of a toric variety and a torus-invariant boundary."""
+        assert toric_variety.scheme_base_ring() == self.base_ring(), (
+            f"the variety of an object of {self} lies over {self.base_ring()}"
+        )
+        assert boundary_divisor.parent() is toric_variety.torus_invariant_divisor_group(), (
+            "the boundary of a toric log pair is a torus-invariant divisor"
+        )
+        data = {
+            "log_scheme": toric_variety,
+            "boundary_divisor": boundary_divisor,
+            **dict(construction_data or {}),
+        }
+        return _scheme_with_structure(
+            toric_variety,
+            self,
+            _engine=_engine,
+            construction_data=data,
+        )
+
     def _repr_object_names(self):
         return f"toric log pairs over {self.base_ring()}"
 
@@ -105,25 +145,12 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
 
 def _log_pair(log_scheme, boundary_divisor):
     r"""The log pair of a variety and a chosen boundary divisor on it."""
-    base = log_scheme.scheme_base_ring()
-    return _object_of(
-        LogPairs(base),
-        log_scheme=log_scheme,
-        boundary_divisor=boundary_divisor,
-    )
+    return LogPairs(log_scheme.scheme_base_ring())(log_scheme, boundary_divisor)
 
 
 def _toric_log_pair(toric_variety, boundary_divisor):
     r"""The toric log pair of a toric variety and a torus-invariant boundary."""
-    base = toric_variety.scheme_base_ring()
-    assert boundary_divisor.parent() is toric_variety.torus_invariant_divisor_group(), (
-        "the boundary of a toric log pair is a torus-invariant divisor"
-    )
-    return _object_of(
-        ToricLogPairs(base),
-        log_scheme=toric_variety,
-        boundary_divisor=boundary_divisor,
-    )
+    return ToricLogPairs(toric_variety.scheme_base_ring())(toric_variety, boundary_divisor)
 
 
 __all__ = ["LogPairs", "ToricLogPairs"]

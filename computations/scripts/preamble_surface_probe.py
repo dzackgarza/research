@@ -156,10 +156,8 @@ def _coerce_literal(parent):
     return parent(SageZZ.zero())
 
 
-def _hom(parent):
-    from sage.categories.homset import Hom
-
-    return Hom(parent, parent)
+def _mor(parent):
+    return parent.Mor(parent)
 
 
 def _placement(parent):
@@ -194,7 +192,7 @@ PROTOCOL = OrderedDict(
         ("coerce 0", _coerce_literal),
         ("equality with self", lambda p: p == p),
         ("hash", lambda p: hash(p)),
-        ("Hom(P, P)", _hom),
+        ("Mor(P, P)", _mor),
         ("placement_of", _placement),
     ]
 )

@@ -7,13 +7,15 @@ cutting out ``p``.  The Rees construction is the graph closure
 ``Bl_p(P^2) <= P^2 x P^1``
 
 cut out by ``f V - g U``.  This is the codimension-two regular-center blowup,
-not a toric specialization.  The product projections retain the blowdown and
-the second projective coordinate records the exceptional direction.
+not a toric specialization.  The blowup is constructed by the closed-subscheme
+construction of ``P^2 x P^1`` with the placement ``ProjectivePointBlowups(R)``,
+whose level data are the point ``p``, the center ``V(f, g) <= P^2`` and the
+bihomogeneous coordinate datum the graph relation is written in.  The blowdown
+is the first product projection restricted along the inclusion.
 """
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.divisors.picard_groups import (
     PicardGroups,
@@ -28,11 +30,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
     ProjectiveSpaces,
     Schemes,
-    _categorical_scheme_morphism,
-    _install_scheme_subobject_construction,
-    _native_projective_closed_subscheme,
-    _refine_closed_subscheme,
-    _refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
@@ -43,101 +40,8 @@ def _integers():
     return _own_ring(SageZZ)
 
 
-class _ProjectivePointBlowupConstruction(SageObject):
-    r"""The selected Rees/graph data defining one represented point blowup."""
-
-    def __init__(
-        self,
-        source,
-        center,
-        point,
-        blowdown,
-        graph_ambient,
-        graph_relation,
-        graph_section_space,
-        source_coordinate_embedding,
-        center_equations_in_graph_ring,
-    ) -> None:
-        self._source = source
-        self._center = center
-        self._point = point
-        self._blowdown = blowdown
-        self._graph_ambient = graph_ambient
-        self._graph_relation = graph_relation
-        self._graph_section_space = graph_section_space
-        self._source_coordinate_embedding = source_coordinate_embedding
-        self._center_equations_in_graph_ring = center_equations_in_graph_ring
-
-    def source(self):
-        return self._source
-
-    def center(self):
-        return self._center
-
-    def point(self):
-        return self._point
-
-    def blowdown(self):
-        return self._blowdown
-
-    def graph_ambient(self):
-        return self._graph_ambient
-
-    def graph_relation(self):
-        return self._graph_relation
-
-    def graph_section_space(self):
-        return self._graph_section_space
-
-    def source_coordinate_embedding(self):
-        return self._source_coordinate_embedding
-
-    def center_equations_in_graph_ring(self):
-        return self._center_equations_in_graph_ring
-
-
-class _ProjectivePointBlowupCanonicalComparison(SageObject):
-    r"""The line-bundle comparison ``omega_B ~= pi^*omega_P tensor O_B(E)``."""
-
-    def __init__(self, blowup) -> None:
-        canonical = blowup.graph_ambient_product().O(-2, -1).restrict_to(blowup)
-        pulled = blowup.pullback_line_bundle(
-            blowup.blowup_source().canonical_line_bundle()
-        )
-        exceptional = blowup.exceptional_line_bundle()
-        target = pulled.tensor_product(exceptional)
-        self._blowup = blowup
-        self._canonical = canonical
-        self._pulled = pulled
-        self._exceptional = exceptional
-        self._target = target
-        self._isomorphism = canonical.canonical_isomorphism_to(target)
-
-    def blowup(self):
-        return self._blowup
-
-    def canonical_line_bundle(self):
-        return self._canonical
-
-    def pulled_back_source_canonical_bundle(self):
-        return self._pulled
-
-    def exceptional_line_bundle(self):
-        return self._exceptional
-
-    def target_line_bundle(self):
-        return self._target
-
-    def isomorphism(self):
-        return self._isomorphism
-
-    def _repr_(self) -> str:
-        return f"Canonical-bundle comparison for {self.blowup()}: {self.canonical_line_bundle()} ~= {self.target_line_bundle()}"
-
-
-
 class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
-    r"""Blowups of ``P^2`` at one represented rational point."""
+    r"""Blowups ``Bl_p(P^2)`` of the projective plane at one rational point ``p``."""
 
     def _repr_object_names(self):
         return f"projective-plane point blowups over {self.base_ring()}"
@@ -147,129 +51,105 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         plane = ProjectiveSpaces(self.base_ring())(2)
-        return plane.point_blowup(
-            plane.point_morphism((1, 1, 1))
+        return self(plane.point_morphism((1, 1, 1)))
+
+    def _call_(self, point):
+        r"""``Bl_p(P^2)`` for a rational point ``p: Spec R -> P^2_R``."""
+        assert point.codomain().scheme_base_ring() is self.base_ring(), (
+            "the blown-up plane lies over this category's base ring"
         )
+        return _projective_point_blowup(point.codomain(), point)
 
     class ParentMethods:
-        def blowup_construction(self):
-            r"""Return the selected Rees/graph datum defining this blowup."""
-            return self._preamble_blowup_construction
-
-        def blowup_source(self):
-            return self.blowup_construction().source()
-
-        def blowup_center(self):
-            return self.blowup_construction().center()
+        def __init__(self, blowup_point, blowup_center, graph_section_space, **rest) -> None:
+            self._blowup_point = blowup_point
+            self._blowup_center = blowup_center
+            self._graph_section_space = graph_section_space
+            super().__init__(**rest)
 
         def blowup_point(self):
-            return self.blowup_construction().point()
+            r"""The rational point ``p: Spec R -> P^2`` that is blown up."""
+            return self._blowup_point
 
+        def blowup_source(self):
+            r"""The projective plane ``P^2`` that is blown up."""
+            return self.blowup_point().codomain()
+
+        def blowup_center(self):
+            r"""The center ``V(f, g) <= P^2`` cut out by the selected regular sequence."""
+            return self._blowup_center
+
+        def graph_ambient_product(self):
+            r"""``P^2 x P^1``, the codomain of the graph inclusion."""
+            return self.inclusion().codomain()
+
+        @cached_method
         def blowup_morphism(self):
-            return self.blowup_construction().blowdown()
+            r"""The blowdown ``Bl_p(P^2) -> P^2``: the first projection along the inclusion."""
+            return self.graph_ambient_product().projection(0) * self.inclusion()
 
         blowdown = blowup_morphism
 
-        def graph_ambient_product(self):
-            return self.blowup_construction().graph_ambient()
-
         def graph_relation(self):
-            return self.blowup_construction().graph_relation()
+            r"""The bihomogeneous equation ``f V - g U`` cutting the blowup out."""
+            return next(iter(self.defining_equations()))
 
         def graph_section_space(self):
-            return self.blowup_construction().graph_section_space()
+            r"""The sections of ``O(1, 1)`` whose coordinate ring the graph relation is written in."""
+            return self._graph_section_space
 
         def source_coordinate_embedding(self):
-            return self.blowup_construction().source_coordinate_embedding()
+            r"""The homogeneous coordinate ring of ``P^2`` inside the bihomogeneous one."""
+            return self.graph_section_space().factor_coordinate_embedding(0)
 
         def center_equations_in_graph_ring(self):
-            return self.blowup_construction().center_equations_in_graph_ring()
+            r"""The center equations ``f, g`` written in the bihomogeneous coordinate ring."""
+            embedding = self.source_coordinate_embedding()
+            return tuple(embedding(equation) for equation in self.blowup_center().defining_equations())
 
         def _source_hypersurface_equation_in_graph_ring(self, hypersurface):
-            if hypersurface not in ClosedSubschemes(self.scheme_base_ring()):
-                raise TypeError("a transform starts from a represented closed hypersurface")
-            if hypersurface.inclusion().codomain() is not self.blowup_source():
-                raise ValueError("the transformed hypersurface belongs to a different source")
-            equations = tuple(hypersurface.defining_equations())
-            if len(equations) != 1:
-                raise ValueError("the represented divisor transform currently requires one hypersurface equation")
+            assert hypersurface in ClosedSubschemes(self.scheme_base_ring()), (
+                "a transform starts from a represented closed hypersurface"
+            )
+            assert hypersurface.inclusion().codomain() is self.blowup_source(), (
+                "the transformed hypersurface belongs to a different source"
+            )
+            equations = hypersurface.defining_equations()
+            assert int(equations.cardinality()) == 1, (
+                "the represented divisor transform requires one hypersurface equation"
+            )
             source_ring = self.source_coordinate_embedding().domain()
             raised = hypersurface.homogeneous_defining_equations(source_ring)
             return self.source_coordinate_embedding()(next(iter(raised)))
 
-        def _closed_subscheme_from_graph_equations(self, equations, *, kind):
-            r"""Cut a closed subobject of the blowup by equations in its graph ambient.
-
-            The blowup itself is already the graph hypersurface inside the
-            multiprojective ambient.  Adding equations there and retargeting
-            the resulting closed immersion to the blowup gives the iterated
-            closed subobject without pretending that the graph hypersurface is
-            itself an ambient projective space.
-            """
-            equations = tuple(equations)
-            ambient = self.graph_ambient_product()
-            combined = (self.graph_relation(), *equations)
-            nested, _retained = _native_projective_closed_subscheme(
-                ambient,
-                combined,
-            )
-            nested = _refine_scheme(nested, self.scheme_base_ring())
-            _install_scheme_subobject_construction(
-                nested,
-                _categorical_scheme_morphism(
-                    nested.embedding_morphism(),
-                    domain=nested,
-                    codomain=self,
-                ),
-            )
-            nested = _refine_closed_subscheme(
-                nested,
-                self,
-                defining_equations=equations,
-            )
-            nested._preamble_blowup_transform_kind = kind
-            nested._preamble_blowup = self
-            return nested
-
         @cached_method
         def exceptional_divisor(self):
-            return self._closed_subscheme_from_graph_equations(
-                self.center_equations_in_graph_ring(),
-                kind="exceptional",
-            )
+            r"""``E = pi^{-1}(p)``, cut out in the blowup by the center equations."""
+            return self.closed_subscheme(self.center_equations_in_graph_ring())
 
         def scheme_theoretic_inverse_image(self, hypersurface):
-            equation = self._source_hypersurface_equation_in_graph_ring(hypersurface)
-            return self._closed_subscheme_from_graph_equations(
-                (equation,),
-                kind="inverse-image",
-            )
+            r"""``pi^{-1}(C)``, cut out in the blowup by the pulled-back equation of ``C``."""
+            return self.closed_subscheme(self._source_hypersurface_equation_in_graph_ring(hypersurface))
 
         def total_transform(self, hypersurface):
-            equation = self._source_hypersurface_equation_in_graph_ring(hypersurface)
-            return self._closed_subscheme_from_graph_equations(
-                (equation,),
-                kind="total",
-            )
+            r"""The total transform ``pi^*C``, cut out by the pulled-back equation of ``C``."""
+            return self.closed_subscheme(self._source_hypersurface_equation_in_graph_ring(hypersurface))
 
         def strict_transform(self, hypersurface):
+            r"""The strict transform: the saturation of ``(f V - g U, pi^* h)`` by the center ideal."""
             ring = self.graph_relation().parent()
             equation = self._source_hypersurface_equation_in_graph_ring(hypersurface)
             total_ideal = ring.ideal(self.graph_relation(), equation)
-            exceptional_ideal = ring.ideal(*tuple(self.center_equations_in_graph_ring()))
+            exceptional_ideal = ring.ideal(*self.center_equations_in_graph_ring())
             saturated = total_ideal.saturation(exceptional_ideal)
-            transform = self._closed_subscheme_from_graph_equations(
-                tuple(saturated.ideal_generators()),
-                kind="strict",
-            )
-            transform._preamble_blowup_saturated_ideal = saturated
-            return transform
+            return self.closed_subscheme(tuple(saturated.ideal_generators()))
 
         def curve_multiplicity_at_center(self, curve):
-            equations = tuple(curve.defining_equations())
-            if len(equations) != 1:
-                raise ValueError("curve multiplicity here requires one plane hypersurface equation")
-            degree = int(equations[0].degree())
+            equations = curve.defining_equations()
+            assert int(equations.cardinality()) == 1, (
+                "curve multiplicity here requires one plane hypersurface equation"
+            )
+            degree = int(next(iter(equations)).degree())
             bundle = self.blowup_source().O(degree)
             sections = bundle.global_sections()
             polynomial = next(
@@ -311,11 +191,10 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         @cached_method
         def picard_pullback_morphism(self):
             source = self.source_picard_group()
-            labels = tuple(source.module_generating_set())
-            if len(labels) != 1:
-                raise ArithmeticError("Pic(P^2) over a field must have one selected generator")
+            labels = source.module_generating_set()
+            assert int(labels.cardinality()) == 1, "Pic(P^2) over a field has one selected generator"
             return source.module_category().Mor(source, self.picard_group())(
-                {labels[0]: self.hyperplane_picard_class()}
+                {next(iter(labels)): self.hyperplane_picard_class()}
             )
 
         @cached_method
@@ -333,10 +212,11 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return BilinearMap(picard, picard, values, value)
 
         def curve_degree(self, curve):
-            equations = tuple(curve.defining_equations())
-            if len(equations) != 1:
-                raise ValueError("the represented plane divisor class requires one equation")
-            return _integers()(int(equations[0].degree()))
+            equations = curve.defining_equations()
+            assert int(equations.cardinality()) == 1, (
+                "the represented plane divisor class requires one equation"
+            )
+            return _integers()(int(next(iter(equations)).degree()))
 
         def total_transform_picard_class(self, curve):
             return self.curve_degree(curve) * self.hyperplane_picard_class()
@@ -349,14 +229,10 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             )
 
         def pullback_line_bundle(self, source_bundle):
-            from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-                ProjectiveSpaceLineBundle,
+            r"""``pi^* O_{P^2}(d) = O_{P^2 x P^1}(d, 0)|_B``."""
+            assert source_bundle.projective_space() is self.blowup_source(), (
+                "the pulled-back line bundle is O(d) on the blown-up plane"
             )
-
-            if not isinstance(source_bundle, ProjectiveSpaceLineBundle):
-                raise TypeError("the represented blowup pullback currently starts from O(d) on P^2")
-            if source_bundle.projective_space() is not self.blowup_source():
-                raise ValueError("the line bundle belongs to a different blowup source")
             return self.graph_ambient_product().O(
                 source_bundle.degree(),
                 0,
@@ -368,12 +244,26 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return self.graph_ambient_product().O(1, -1).restrict_to(self)
 
         @cached_method
-        def canonical_comparison(self):
-            return _ProjectivePointBlowupCanonicalComparison(self)
+        def pulled_back_source_canonical_bundle(self):
+            r"""``pi^* omega_{P^2} = O_{P^2 x P^1}(-3, 0)|_B``."""
+            return self.pullback_line_bundle(self.blowup_source().canonical_line_bundle())
 
         @cached_method
+        def canonical_comparison(self):
+            r"""The isomorphism ``omega_B ~= pi^* omega_{P^2} tensor O_B(E)``.
+
+            Its domain is ``omega_B = O_{P^2 x P^1}(-2, -1)|_B`` and its codomain
+            is the tensor product of the pulled-back canonical bundle with the
+            exceptional line bundle.
+            """
+            canonical = self.graph_ambient_product().O(-2, -1).restrict_to(self)
+            target = self.pulled_back_source_canonical_bundle().tensor_product(
+                self.exceptional_line_bundle()
+            )
+            return canonical.canonical_isomorphism_to(target)
+
         def canonical_line_bundle(self):
-            return self.canonical_comparison().canonical_line_bundle()
+            return self.canonical_comparison().domain()
 
         canonical_bundle = canonical_line_bundle
 
@@ -387,8 +277,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             return bool(self.anticanonical_line_bundle().is_ample())
 
         def del_pezzo_degree(self):
-            if not self.is_del_pezzo():
-                raise ValueError("the represented blowup is not del Pezzo")
+            r"""``(-K_B)^2 = (3H - E)^2``."""
+            assert self.is_del_pezzo(), "the represented blowup is not del Pezzo"
             anticanonical = (
                 3 * self.hyperplane_picard_class()
                 - self.exceptional_picard_class()
@@ -402,12 +292,13 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 def _projective_point_blowup(projective_plane, point):
     r"""Return ``Bl_point(P^2)`` from its regular-center Rees graph in ``P^2 x P^1``."""
     base = projective_plane.scheme_base_ring()
-    if base not in OwnedFields():
-        raise TypeError("the represented projective point blowup requires a field base")
-    if projective_plane not in ProjectiveSpaces(base) or int(projective_plane.relative_dimension()) != 2:
-        raise TypeError("the represented projective point blowup requires P^2")
-    if point.codomain() is not projective_plane or point.domain() is not projective_plane.base_scheme():
-        raise ValueError("the blowup center must be a represented rational point of this P^2")
+    assert base in OwnedFields(), "the represented projective point blowup requires a field base"
+    assert projective_plane in ProjectiveSpaces(base) and int(projective_plane.relative_dimension()) == 2, (
+        "the represented projective point blowup requires P^2"
+    )
+    assert point.codomain() is projective_plane and point.domain() is projective_plane.base_scheme(), (
+        "the blowup center must be a represented rational point of this P^2"
+    )
 
     direction = ProjectiveSpaces(base)(1, names=("U", "V"))
     product = projective_plane.scheme_category().product((projective_plane, direction))
@@ -417,12 +308,9 @@ def _projective_point_blowup(projective_plane, point):
     source_ring = source_embedding.domain()
     source_labels = tuple(source_ring.algebra_generating_set())
     coordinates = tuple(point.point_coordinates())
-    pivot = next(
-        (index for index, coordinate in enumerate(coordinates) if coordinate != base.zero()),
-        None,
-    )
-    if pivot is None:
-        raise ValueError("projective point coordinates cannot all vanish")
+    nonzero = tuple(index for index, coordinate in enumerate(coordinates) if coordinate != base.zero())
+    assert nonzero, "projective point coordinates cannot all vanish"
+    pivot = nonzero[0]
     scalar_map = source_ring.algebra_structure_morphism()
     pivot_variable = source_ring.algebra_generator(source_labels[pivot])
     center_equations = tuple(
@@ -442,24 +330,12 @@ def _projective_point_blowup(projective_plane, point):
         source_embedding(f) * direction_embedding(V)
         - source_embedding(g) * direction_embedding(U)
     )
-    blowup = product.closed_subscheme(graph_relation)
-    blowdown = product.projection(0) * blowup.inclusion()
-
-    blowup._preamble_blowup_construction = _ProjectivePointBlowupConstruction(
-        projective_plane,
-        center,
-        point,
-        blowdown,
-        product,
+    return product.closed_subscheme(
         graph_relation,
-        graph_sections,
-        source_embedding,
-        tuple(source_embedding(equation) for equation in center_equations),
-    )
-    return _refine_scheme(
-        blowup,
-        base,
-        [ProjectivePointBlowups(base)],
+        placements=(ProjectivePointBlowups(base),),
+        blowup_point=point,
+        blowup_center=center,
+        graph_section_space=graph_sections,
     )
 
 

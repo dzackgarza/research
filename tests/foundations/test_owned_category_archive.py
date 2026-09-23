@@ -21,7 +21,7 @@ from dzack_research.preamble.owned_category_bases import (
     Category as OwnedCategoryBase,
 )
 from dzack_research.preamble.owned_category_bases import (
-    HomCategoryConstruction,
+    MorCategoryConstruction,
 )
 
 ARCHIVE_RECONCILIATIONS = (
@@ -91,9 +91,9 @@ def test_object_of_constructs_the_category_object_type_with_literal_identity() -
 
 def test_owned_category_base_shapes_remain_in_the_owned_cat_graph() -> None:
     sets = Sets()
-    hom_category = sets.HomCategory()
+    mor_category = sets.MorCategory()
 
     assert isinstance(sets, OwnedCategoryBase)
-    assert isinstance(hom_category, HomCategoryConstruction)
+    assert isinstance(mor_category, MorCategoryConstruction)
     assert sets.category() is Cat()
-    assert hom_category.category() is Cat()
+    assert mor_category.category() is Cat()

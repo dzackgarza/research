@@ -9,24 +9,23 @@ from sage.all import (
 from sage.all import (
     QuadraticField as _SageQuadraticField,
 )
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories._lattice import signature_pair
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
-    Modules,
 )
-from dzack_research.preamble.categories.rings.embeddings import NumberFieldHomset
+from dzack_research.preamble.categories.rings.embeddings import NumberFieldMor
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     OwnedRings,
@@ -35,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_engine_ring,
+    _set_owned_ring_display,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -42,19 +42,15 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.refine import refine
-
-
 def _own_number_field(engine):
-
-    return _refine_number_field_view(_own_ring(engine))
+    return _owned_engine_ring(engine)
 
 
 def CyclotomicField(order, *args, **kwargs):
     field = _own_number_field(
         _SageCyclotomicField(_engine_numeral(SageZZ, order), *args, **kwargs)
     )
-    field._preamble_ring_display = f"Cyclotomic field Q(zeta_{order})"
+    _set_owned_ring_display(field, f"Cyclotomic field Q(zeta_{order})")
     return field
 
 
@@ -62,7 +58,7 @@ def QuadraticField(discriminant, *args, **kwargs):
     field = _own_number_field(
         _SageQuadraticField(_engine_numeral(SageQQ, discriminant), *args, **kwargs)
     )
-    field._preamble_ring_display = f"Quadratic field of discriminant {discriminant}"
+    _set_owned_ring_display(field, f"Quadratic field of discriminant {discriminant}")
     return field
 
 
@@ -72,19 +68,19 @@ def _number_field(polynomial, *args, **kwargs):
         raise TypeError("number-field construction expects a polynomial in an owned polynomial ring")
     backend_polynomial = _engine_element(parent, polynomial)
     field = _own_number_field(_SageNumberField(backend_polynomial, *args, **kwargs))
-    field._preamble_ring_display = f"Number field defined by {polynomial}"
+    _set_owned_ring_display(field, f"Number field defined by {polynomial}")
     return field
 
 
-class NumberFieldHomCategoryConstruction(HomCategoryConstruction):
+class NumberFieldMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return NumberFieldHomset
+        return NumberFieldMor
 
 
 class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
     r"""Finite extensions of ``QQ``."""
 
-    _HomCategory = NumberFieldHomCategoryConstruction
+    _MorCategory = NumberFieldMorCategoryConstruction
 
     def an_object(self):
         r"""The rational field as the degree-one number field."""
@@ -101,7 +97,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a number-field embedding requires two number fields")
-        return self.HomCategory().Of(domain, codomain)
+        return self.MorCategory().Of(domain, codomain)
 
     class ParentMethods:
         def Mor(self, codomain, category=None):
@@ -124,7 +120,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                     else engine.absolute_degree()
                 )
             )
-            return integers._from_engine_element(value)
+            return _owned_engine_element(integers, value)
 
         def discriminant(self):
             r"""Return the discriminant of the ring of integers of ``K``."""
@@ -132,7 +128,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
             value = SageZZ.one() if engine is SageQQ else SageZZ(engine.discriminant())
-            return integers._from_engine_element(value)
+            return _owned_engine_element(integers, value)
 
         def signature(self):
             r"""Return the signature pair ``(r_1,r_2)`` with ``r_1+2r_2=[K:QQ]``."""
@@ -149,7 +145,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
             value = SageZZ.one() if engine is SageQQ else SageZZ(engine.class_number())
-            return integers._from_engine_element(value)
+            return _owned_engine_element(integers, value)
 
         def extension(self, polynomial, name="a"):
             r"""Return the finite extension defined by an owned polynomial over ``self``."""
@@ -173,7 +169,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             ideals = []
             for backend_ideal in _engine_ring(self).primes_above(backend_prime):
                 generators = tuple(
-                    order._from_engine_element(order_engine(generator))
+                    _owned_engine_element(order, order_engine(generator))
                     for generator in backend_ideal.gens()
                 )
                 ideals.append(order.ideal(*generators))
@@ -183,9 +179,11 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             r"""Return the maximal order ``O_K`` as an owned ring."""
 
             engine = _engine_ring(self)
-            if engine is SageQQ:
-                return _refine_order_view(_own_ring(SageZZ))
-            return _refine_order_view(_own_ring(engine.ring_of_integers()))
+            match engine is SageQQ:
+                case True:
+                    return _owned_engine_ring(SageZZ)
+                case False:
+                    return _owned_engine_ring(engine.ring_of_integers())
 
         maximal_order = ring_of_integers
 
@@ -203,7 +201,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 if len(backend_generators) == 1
                 else list(backend_generators)
             )
-            return _refine_order_view(_own_ring(engine.order(datum)))
+            return _owned_engine_ring(engine.order(datum))
 
         def ramified_primes(self):
             r"""Return the rational primes ramified in ``K``."""
@@ -215,7 +213,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             r"""Return the owned field embeddings ``K -> target``.
 
             If the target is again a number field, the arrows live in the
-            specialized number-field Hom.  Embeddings into a larger owned
+            specialized number-field Mor.  Embeddings into a larger owned
             field such as ``AA``, ``RR`` or ``CC`` are ring morphisms in the
             ambient field category; the codomain is not falsely promoted to a
             finite extension of ``QQ``.
@@ -397,11 +395,11 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             else:
                 primitive = engine.gen()
                 polynomial = engine.defining_polynomial()
-                labels = self.algebra_generating_set()
+                labels = finite_ordered_set(engine.variable_names())
                 degree = int(engine.degree())
 
             presentation = rationals.free_module(labels).symmetric_algebra()
-            relation = presentation._from_engine_element(
+            relation = _owned_engine_element(presentation,
                 _engine_ring(presentation)(polynomial)
             )
             return _presented_algebra_on_engine(
@@ -428,14 +426,14 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             A number field element is canonically a ``QQ``-linear endomorphism
             of its field.  The live field object keeps its ring identity, while
             :meth:`as_algebra` supplies the selected finite-free presentation
-            used to represent this linear map.  No separate backend matrix is
+            used to represent this linear map.  No separate matrix representation is
             exposed: the matrix below is the matrix of this owned module
             morphism in that selected basis.
             """
 
             field = self.parent()
             algebra = field.as_algebra()
-            multiplier = algebra._from_engine_element(
+            multiplier = _owned_engine_element(algebra,
                 _engine_element(field, self)
             )
             return algebra.module_category().Mor(algebra, algebra)(
@@ -447,7 +445,6 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
             return self.multiplication_morphism().matrix()
 
-        matrix = multiplication_matrix
 
         def norm(self):
             r"""Return the field norm ``N_{K/QQ}(self)``.
@@ -456,7 +453,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             multiplication endomorphism ``m_self : K -> K``.  This keeps the
             archived definition on the same mathematical map already exposed
             by :meth:`multiplication_morphism` instead of asking the private
-            number-field backend for a second value.
+            number-field computation for a second value.
             """
 
             return self.multiplication_morphism().determinant()
@@ -479,7 +476,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             generate the whole number field.
             """
             polynomial = self._backend().charpoly()
-            return _own_ring(polynomial.parent())._from_engine_element(polynomial)
+            return _owned_engine_element(polynomial.parent(), polynomial)
 
         def minimal_polynomial(self):
             r"""Return the minimal polynomial of ``self`` over ``QQ``."""
@@ -523,24 +520,16 @@ class NumberFieldsWithChosenPrimitiveElement(OwnedCategory):
         return [OwnedNumberFields()]
 
     class ParentMethods:
-        def algebra_generating_set(self):
-            return finite_ordered_set(_engine_ring(self).variable_names())
-
         def primitive_element(self):
             r"""Return the selected primitive element ``alpha``."""
             return self._from_engine_element(_engine_ring(self).gen())
-
-        def algebra_generator(self, label):
-            if label not in self.algebra_generating_set():
-                raise ValueError(f"{label!r} is not the selected algebra-generator label")
-            return self.primitive_element()
 
         def defining_polynomial(self):
             r"""Return the owned defining polynomial of the selected primitive element."""
 
             polynomial = _engine_ring(self).defining_polynomial()
             parent = _own_ring(polynomial.parent())
-            return parent._from_engine_element(polynomial)
+            return _owned_engine_element(parent, polynomial)
 
         def embedding_images(self, target):
             r"""Return the images of the selected primitive element under ``K -> target``."""
@@ -618,73 +607,6 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
         def module_rank(self):
             engine = _engine_ring(self)
             return cardinal(1 if engine is SageZZ else engine.rank())
-
-
-def _refine_order_view(order):
-    r"""Return the constructor-owned order view with its selected integral basis."""
-    return _owned_order_view(_engine_ring(order))
-
-
-def _refine_number_field_view(field):
-    r"""Return the constructor-owned number-field view of an engine field."""
-    if field not in OwnedRings():
-        raise TypeError("number-field construction expects an owned ring view")
-    return _owned_number_field_view(_engine_ring(field))
-
-
-def _order_basis_labels(engine):
-    r"""Return the selected integral-basis labels of one order engine."""
-    if engine is SageZZ:
-        return finite_ordered_set((0,))
-    return finite_ordered_set(range(int(engine.rank())))
-
-
-def _order_basis_element(order, labels, label):
-    r"""Return one selected integral-basis element through the owned order view."""
-    if label not in labels:
-        raise ValueError(f"{label!r} is not an integral-basis label")
-    engine = _engine_ring(order)
-    if engine is SageZZ:
-        return order._from_engine_element(SageZZ.one())
-    return order._from_engine_element(engine.basis()[labels.ranking_map()(label)])
-
-
-@cached_function
-def _owned_order_view(engine):
-    r"""The selected-integral-basis view of one engine order.
-
-    One engine has one owned ring, so the view refines that ring in place
-    rather than constructing a second parent on the same engine.  The selected
-    integral basis is installed once as the generic framing epimorphism
-    ``F_Z(S) -> O``; public module generators are projections of that arrow.
-    """
-    if not (engine is SageZZ or isinstance(engine, SageNumberFieldOrder)):
-        raise TypeError("the selected integral-basis view requires a number-field order")
-    order = refine(_owned_engine_ring(engine), OrdersWithChosenIntegralBasis())
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        _framing_morphism,
-    )
-
-    integers = _own_ring(SageZZ)
-    labels = _order_basis_labels(engine)
-    source = integers.free_module(labels)
-    order._preamble_framing_morphism = _framing_morphism(
-        source,
-        order,
-        lambda label: _order_basis_element(order, labels, label),
-    )
-    return order
-
-
-@cached_function
-def _owned_number_field_view(engine):
-    r"""The strongest number-field view determined by ``engine``, refined in place."""
-    rationals = _own_ring(SageQQ)
-    categories = [OwnedNumberFields(), Modules(rationals)]
-    if engine is not SageQQ:
-        categories.append(NumberFieldsWithChosenPrimitiveElement())
-    return refine(_owned_engine_ring(engine), Cat().meet(tuple(categories)))
-
 
 
 __all__ = [

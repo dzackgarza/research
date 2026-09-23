@@ -5,7 +5,7 @@ from dzack_research.preamble.all import ZZ, Lattices
 
 def test_identity_and_root_reflection_are_involutions() -> None:
     lattice = Lattices(ZZ)("A2")
-    first_root = lattice.module_generator(0)
+    first_root = lattice.basis_vector(0)
 
     assert lattice.O().one().is_involution()
     assert lattice.reflection(first_root).is_involution()

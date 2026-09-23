@@ -16,7 +16,7 @@ def _quadric_surface():
 
 def _hyperbolic_picard_pair(surface):
     pairing = surface.picard_intersection_pairing()
-    projection = surface.cartier_class_projection()
+    projection = surface.torus_invariant_cartier_class_projection()
     divisors = tuple(
         surface.torus_invariant_prime_divisor(ray)
         for ray in surface.fan().cones(1)

@@ -17,12 +17,12 @@ invariants and isotypic components are those of the common group-module owner.
 """
 
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _affine_morphism_from_pullback,
@@ -36,8 +36,148 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 
 
-class _ProjectiveLineBundleLinearizationIsomorphism(SageObject):
-    r"""One selected ``lambda_g : g^*L -> L`` in the standard ``O(d)`` model."""
+class _ProjectiveActionEngine:
+    r"""Private realization data for one represented projective ``G``-action."""
+
+    def __init__(
+        self,
+        acting_group,
+        *,
+        coordinate_weights=None,
+        local_automorphisms=None,
+        **rest,
+    ) -> None:
+        self._acting_group = acting_group
+        self._coordinate_weights = coordinate_weights
+        self._local_automorphisms = local_automorphisms
+        super().__init__(**rest)
+
+    def acting_group(self):
+        return self._acting_group
+
+    def action_functor(self):
+        return self.functor()
+
+    def coordinate_weights(self):
+        assert self._coordinate_weights is not None, (
+            "this represented projective action carries no coordinate-weight datum"
+        )
+        return self._coordinate_weights
+
+    def local_automorphisms(self):
+        assert self._local_automorphisms is not None, (
+            "this represented projective action carries no affine-chart automorphism datum"
+        )
+        return self._local_automorphisms
+
+    def local_automorphism(self, chart_index):
+        return self.local_automorphisms()[chart_index]
+
+
+def _projective_action_object(
+    functor,
+    group,
+    *,
+    coordinate_weights=None,
+    local_automorphisms=None,
+):
+    r"""Place a concrete ``BG -> Sch`` action in its actual functor category."""
+    category = functor.functor_category()
+    return category.object(
+        functor,
+        _engine=_ProjectiveActionEngine,
+        construction_data={
+            "acting_group": group,
+            "coordinate_weights": coordinate_weights,
+            "local_automorphisms": local_automorphisms,
+        },
+    )
+
+
+def _line_bundle_scalar_morphism(line_bundle, scalar):
+    r"""The QCoh endomorphism of ``line_bundle`` multiplying every local basis by ``scalar``."""
+
+    sheaves = QuasiCoherentSheaves(line_bundle.scheme())
+    local_maps = {}
+    for index in line_bundle.gluing_datum().chart_index_set():
+        module = line_bundle.local_module(index)
+        label = next(iter(module.module_generating_set()))
+        coefficient = module.base_ring()(scalar)
+        local_maps[index] = module.module_category().Mor(module, module)(
+            {
+                label: module.scalar_multiple(
+                    coefficient,
+                    module.module_generator(label),
+                )
+            }
+        )
+    return sheaves.Mor(line_bundle, line_bundle)(local_maps)
+
+
+def _line_bundle_scalar_isomorphism(line_bundle, scalar):
+    r"""The scalar automorphism of a represented trivialized line bundle."""
+
+    scalar = line_bundle.scheme().scheme_base_ring()(scalar)
+    assert scalar.is_unit(), "a line-bundle linearization scalar is a unit"
+    sheaves = QuasiCoherentSheaves(line_bundle.scheme())
+    forward = _line_bundle_scalar_morphism(line_bundle, scalar)
+    inverse = _line_bundle_scalar_morphism(line_bundle, scalar.inverse_of_unit())
+    return sheaves.Core().Mor(line_bundle, line_bundle)(forward, inverse)
+
+
+def _line_bundle_linearization(line_bundle, scheme_action, character):
+    r"""Construct a standard projective linearization as a ``G``-object in ``QCoh(X)``.
+
+    The private linearization class realizes the functor object; it does not
+    define a category of all outputs of this construction.
+    """
+
+    from dzack_research.preamble.categories.schemes.schemes import (
+        ProductProjectiveSpaces,
+        ProjectiveSpaces,
+    )
+
+    group = scheme_action.acting_group()
+    scheme = scheme_action.action_functor().underlying_object()
+    base = scheme.scheme_base_ring()
+    assert scheme_action in GObjects(group, Schemes(base)), (
+        "a line-bundle linearization requires an owned G-scheme"
+    )
+    match scheme:
+        case _ if scheme in ProjectiveSpaces(base):
+            assert line_bundle.projective_space() is scheme, (
+                "a projective linearization belongs to a line bundle on the acted projective space"
+            )
+            engine = _ProjectiveLineBundleLinearization
+        case _ if scheme in ProductProjectiveSpaces(base):
+            assert line_bundle.projective_product() is scheme, (
+                "a multiprojective linearization belongs to a line bundle on the acted product"
+            )
+            engine = _ProductProjectiveLineBundleLinearization
+        case _:
+            assert False, f"the represented linearization engines do not cover {scheme}"
+
+    sheaves = QuasiCoherentSheaves(scheme)
+
+    def lift(group_element):
+        scalar = base(character(group(group_element)))
+        assert scalar.is_unit(), "a linearization character takes values in scalar units"
+        return _line_bundle_scalar_morphism(line_bundle, scalar)
+
+    action = GroupActionFunctor(group, sheaves, line_bundle, lift)
+    return GObjects(group, sheaves).functor_category().object(
+        action,
+        _engine=engine,
+        construction_data={
+            "line_bundle": line_bundle,
+            "scheme_action": scheme_action,
+            "character": character,
+        },
+    )
+
+
+class _ProjectiveLineBundleLinearizationIsomorphism:
+    r"""Private computation of one selected ``lambda_g : g^*L -> L``."""
 
     def __init__(self, linearization, group_element) -> None:
         self._linearization = linearization
@@ -53,7 +193,6 @@ class _ProjectiveLineBundleLinearizationIsomorphism(SageObject):
         return self.linearization().scheme_action_of(self.group_element())
 
     def domain(self):
-        r"""The canonically identified pullback ``g^*L``."""
         return self.linearization().line_bundle()
 
     def codomain(self):
@@ -62,10 +201,14 @@ class _ProjectiveLineBundleLinearizationIsomorphism(SageObject):
     def scalar(self):
         return self.linearization().character_value(self.group_element())
 
+    def morphism(self):
+        return _line_bundle_scalar_isomorphism(self.domain(), self.scalar())
+
     def inverse(self):
-        return self.linearization().linearization_isomorphism(
-            self.group_element().inverse()
-        )
+        return _ProjectiveLineBundleLinearizationIsomorphism(
+            self.linearization(),
+            self.group_element().inverse(),
+        ).morphism()
 
     def _repr_(self):
         return (
@@ -74,69 +217,54 @@ class _ProjectiveLineBundleLinearizationIsomorphism(SageObject):
         )
 
 
-class _EigensectionDivisorConstruction(SageObject):
-    r"""The selected eigensection datum defining one invariant zero divisor."""
+class _EigensectionDivisorEngine:
+    r"""Private realization data on a closed subscheme cut out by an eigensection."""
 
-    def __init__(self, linearization, section, character) -> None:
-        self._linearization = linearization
-        self._section = section
-        self._character = character
+    def __init__(
+        self,
+        eigensection_linearization,
+        eigensection_section,
+        eigensection_character,
+        **rest,
+    ) -> None:
+        self._eigensection_linearization = eigensection_linearization
+        self._eigensection_section = eigensection_section
+        self._eigensection_character = eigensection_character
+        super().__init__(**rest)
 
     def linearization(self):
-        return self._linearization
+        return self._eigensection_linearization
 
     def section(self):
-        return self._section
+        return self._eigensection_section
 
     def character(self):
-        return self._character
+        return self._eigensection_character
 
 
-class _ProductProjectiveCoordinateActionConstruction(SageObject):
-    r"""The coordinate weights and affine-chart arrows defining one product action."""
-
-    def __init__(self, coordinate_weights, local_automorphisms) -> None:
-        self._coordinate_weights = coordinate_weights
-        self._local_automorphisms = local_automorphisms
-
-    def coordinate_weights(self):
-        return self._coordinate_weights
-
-    def local_automorphisms(self):
-        return self._local_automorphisms
-
-    def local_automorphism(self, chart_index):
-        return self.local_automorphisms()[chart_index]
-
-
-class _ProjectiveLineBundleLinearization(SageObject):
+class _ProjectiveLineBundleLinearization:
     r"""A character-twisted linearization of ``O(d)`` under a projective action."""
 
-    def __init__(self, line_bundle, scheme_action_functor, character) -> None:
-        from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-            ProjectiveSpaceLineBundle,
-        )
-
-        if not isinstance(line_bundle, ProjectiveSpaceLineBundle):
-            raise TypeError("this linearization owner currently represents projective-space O(d)")
-        scheme = line_bundle.projective_space()
+    def __init__(self, line_bundle, scheme_action, character, **rest) -> None:
+        self._line_bundle = line_bundle
+        self._scheme_action = scheme_action
+        scheme = self.section_scheme()
         base = scheme.scheme_base_ring()
-        if not isinstance(scheme_action_functor, GroupActionFunctor):
-            raise TypeError("a projective linearization requires an actual BG -> Schemes action functor")
-        group = scheme_action_functor.group()
-        if scheme_action_functor.codomain() != Schemes(base):
-            raise ValueError("the projective action functor has the wrong scheme category")
-        if scheme_action_functor.underlying_object() is not scheme:
-            raise ValueError("the projective action functor acts on a different scheme")
+        scheme_action_functor = scheme_action.action_functor()
+        group = scheme_action.acting_group()
+        assert scheme_action in GObjects(group, Schemes(base)), (
+            "a projective linearization requires an owned G-scheme"
+        )
+        assert scheme_action_functor.underlying_object() is scheme, (
+            "the projective action acts on the line bundle's scheme"
+        )
         assert group.is_finite() is True, (
             "character-twist validation is represented here for a finite acting group"
         )
-
-        self._line_bundle = line_bundle
-        self._scheme_action_functor = scheme_action_functor
         self._group = group
         self._character = character
         self._validate_character()
+        super().__init__(**rest)
 
     def line_bundle(self):
         return self._line_bundle
@@ -153,33 +281,34 @@ class _ProjectiveLineBundleLinearization(SageObject):
         return self._group
 
     def scheme_action_functor(self):
-        return self._scheme_action_functor
+        return self._scheme_action.action_functor()
+
+    def scheme_action(self):
+        return self._scheme_action
 
     @cached_method
     def acted_scheme(self):
-        r"""Return the generic ``G``-object represented by the scheme action functor."""
-        return GObjects(
-            self.acting_group(),
-            Schemes(self.section_scheme().scheme_base_ring()),
-        )(self.scheme_action_functor())
+        r"""Return the owned ``G``-scheme carrying this linearization."""
+        return self.scheme_action()
 
     def character_value(self, group_element):
         base = self.section_scheme().scheme_base_ring()
         value = base(self._character(self.acting_group()(group_element)))
-        if not value.is_unit():
-            raise ValueError("a linearization character takes values in scalar units")
+        assert value.is_unit(), "a linearization character takes values in scalar units"
         return value
 
     def _validate_character(self) -> None:
         group = self.acting_group()
         base = self.section_scheme().scheme_base_ring()
-        if self.character_value(group.one()) != base.one():
-            raise ValueError("a linearization character sends the identity to one")
+        assert self.character_value(group.one()) == base.one(), (
+            "a linearization character sends the identity to one"
+        )
         elements = tuple(group)
         for left in elements:
             for right in elements:
-                if self.character_value(left * right) != self.character_value(left) * self.character_value(right):
-                    raise ValueError("the selected linearization twist is not a character")
+                assert self.character_value(left * right) == (
+                    self.character_value(left) * self.character_value(right)
+                ), "the selected linearization twist is not a character"
 
     def scheme_action_of(self, group_element):
         group_element = self.acting_group()(group_element)
@@ -190,7 +319,10 @@ class _ProjectiveLineBundleLinearization(SageObject):
 
     @cached_method
     def linearization_isomorphism(self, group_element):
-        return _ProjectiveLineBundleLinearizationIsomorphism(self, group_element)
+        return _ProjectiveLineBundleLinearizationIsomorphism(
+            self,
+            group_element,
+        ).morphism()
 
     def cocycle_holds(self, left, right) -> bool:
         r"""Check the character part of ``lambda_{gh}=lambda_g o g^*lambda_h``.
@@ -213,10 +345,7 @@ class _ProjectiveLineBundleLinearization(SageObject):
         inverse_action = self.scheme_action_of(group_element.inverse())
         pullback = sections.pullback_by_projective_automorphism(inverse_action)
         scalar = self.character_value(group_element)
-        return sections.Mor(sections).elementwise(
-            lambda section: sections.scalar_multiple(scalar, pullback(section)),
-            verify_linearity=False,
-        )
+        return sections.Mor(sections).scalar_multiple(scalar, pullback)
 
     @cached_method
     def section_group_module(self):
@@ -307,38 +436,37 @@ class _ProjectiveLineBundleLinearization(SageObject):
         r"""Return the invariant zero divisor of a selected eigensection."""
         sections = self.line_bundle().global_sections()
         section = sections(section)
-        if not self.is_eigensection(section, character):
-            raise ValueError("the selected section does not transform through this character")
-        polynomial = sections.homogeneous_polynomial(section)
-        divisor = self.projective_space().closed_subscheme(polynomial)
-        divisor._preamble_eigensection_divisor_construction = (
-            _EigensectionDivisorConstruction(self, section, character)
+        assert self.is_eigensection(section, character), (
+            "the selected section does not transform through this character"
         )
-        return divisor
+        polynomial = sections.homogeneous_polynomial(section)
+        return self.projective_space().closed_subscheme(
+            polynomial,
+            _object_engine=_EigensectionDivisorEngine,
+            construction_data={
+                "eigensection_linearization": self,
+                "eigensection_section": section,
+                "eigensection_character": character,
+            },
+        )
 
     def eigensection_divisor_construction(self, divisor):
         r"""Return the selected eigensection datum defining ``divisor`` for this lift."""
-        construction = getattr(
-            divisor,
-            "_preamble_eigensection_divisor_construction",
-            None,
-        )
-        if (
-            not isinstance(construction, _EigensectionDivisorConstruction)
-            or construction.linearization() is not self
-        ):
-            raise ValueError(
-                "this divisor was not constructed from an eigensection of this linearization"
-            )
-        return construction
+        match divisor:
+            case _EigensectionDivisorEngine() if divisor.linearization() is self:
+                return divisor
+            case _:
+                assert False, (
+                    "this divisor was not constructed from an eigensection of this linearization"
+                )
 
     def is_eigensection_divisor(self, divisor) -> bool:
         r"""Return whether ``divisor`` was constructed from an eigensection of this lift."""
-        try:
-            self.eigensection_divisor_construction(divisor)
-        except ValueError:
-            return False
-        return True
+        match divisor:
+            case _EigensectionDivisorEngine() if divisor.linearization() is self:
+                return True
+            case _:
+                return False
 
     @staticmethod
     def _normalized_projective_coordinates(point):
@@ -387,9 +515,9 @@ class _ProjectiveLineBundleLinearization(SageObject):
         return source.Mor(target)(images)
 
     def twist(self, character):
-        return type(self)(
+        return _line_bundle_linearization(
             self.line_bundle(),
-            self.scheme_action_functor(),
+            self.scheme_action(),
             lambda group_element: self.character_value(group_element)
             * self.section_scheme().scheme_base_ring()(character(group_element)),
         )
@@ -409,41 +537,17 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
     common group-module owner rather than from a dimension formula.
     """
 
-    def __init__(self, line_bundle, scheme_action_functor, character) -> None:
-        from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-            ProductProjectiveLineBundle,
-        )
-
-        if not isinstance(line_bundle, ProductProjectiveLineBundle):
-            raise TypeError("this linearization requires multiprojective O(d_1,...,d_r)")
-        scheme = line_bundle.projective_product()
-        base = scheme.scheme_base_ring()
-        if not isinstance(scheme_action_functor, GroupActionFunctor):
-            raise TypeError("a multiprojective linearization requires an actual BG -> Schemes action functor")
-        group = scheme_action_functor.group()
-        if scheme_action_functor.codomain() != Schemes(base):
-            raise ValueError("the multiprojective action functor has the wrong scheme category")
-        if scheme_action_functor.underlying_object() is not scheme:
-            raise ValueError("the multiprojective action functor acts on a different scheme")
-        assert int(group.order()) == 2, (
+    def __init__(self, line_bundle, scheme_action, character, **rest) -> None:
+        super().__init__(line_bundle, scheme_action, character, **rest)
+        scheme = self.projective_product()
+        assert int(self.acting_group().order()) == 2, (
             "the represented coordinate-weight specialization is the C2 action"
         )
-        construction = getattr(
-            scheme_action_functor,
-            "_preamble_product_projective_coordinate_action_construction",
-            None,
+        weights = scheme_action.coordinate_weights()
+        assert weights.index_set() is scheme.factors().index_set(), (
+            "the product action retains coordinate weights on the exact factor index set"
         )
-        if not isinstance(construction, _ProductProjectiveCoordinateActionConstruction):
-            raise ValueError("the product action must retain its coordinate construction data")
-        weights = construction.coordinate_weights()
-        if weights is None or weights.index_set() is not scheme.factors().index_set():
-            raise ValueError("the product action must retain coordinate weights on the exact factor index set")
-        self._line_bundle = line_bundle
-        self._scheme_action_functor = scheme_action_functor
-        self._coordinate_action_construction = construction
-        self._group = group
-        self._character = character
-        self._validate_character()
+        self._coordinate_action = scheme_action
 
     def projective_product(self):
         return self.line_bundle().projective_product()
@@ -452,7 +556,7 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
         return self.projective_product()
 
     def coordinate_action_construction(self):
-        return self._coordinate_action_construction
+        return self._coordinate_action
 
     def coordinate_weights(self):
         return self.coordinate_action_construction().coordinate_weights()
@@ -491,9 +595,10 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
         base = sections.base_ring()
         scalar_twist = self.character_value(group_element)
         if group_element == self.acting_group().one():
-            return sections.Mor(sections).elementwise(
-                lambda section: sections.scalar_multiple(scalar_twist, section),
-                verify_linearity=False,
+            endomorphisms = sections.Mor(sections)
+            return endomorphisms.scalar_multiple(
+                scalar_twist,
+                endomorphisms.identity(),
             )
         factor_labels = tuple(self.projective_product().factors().index_set())
         weights = self.coordinate_weights()
@@ -603,17 +708,16 @@ def _c2_diagonal_product_projective_action(projective_product, group=None):
         projective_product,
         lambda element: identity if element == group.one() else nontrivial,
     )
-    action._preamble_product_projective_coordinate_action_construction = (
-        _ProductProjectiveCoordinateActionConstruction(
-            weights,
-            finite_indexed_family(
-                atlas.chart_index_set(),
-                lambda index: local_automorphisms[index],
-                name="Affine-chart automorphisms of the diagonal sign action",
-            ),
-        )
+    return _projective_action_object(
+        action,
+        group,
+        coordinate_weights=weights,
+        local_automorphisms=finite_indexed_family(
+            atlas.chart_index_set(),
+            lambda index: local_automorphisms[index],
+            name="Affine-chart automorphisms of the diagonal sign action",
+        ),
     )
-    return action
 
 
 
@@ -640,11 +744,14 @@ def _projective_line_coordinate_swap_action(projective_line, group=None):
         projective_line,
         (right, left),
     )
-    return GroupActionFunctor(
+    return _projective_action_object(
+        GroupActionFunctor(
+            group,
+            Schemes(base),
+            projective_line,
+            lambda group_element: identity if group_element == group.one() else swap,
+        ),
         group,
-        Schemes(base),
-        projective_line,
-        lambda group_element: identity if group_element == group.one() else swap,
     )
 
 

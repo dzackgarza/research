@@ -37,7 +37,7 @@ class _AbelianizationFunctor(Functor):
     def _apply_object(self, group):
         model = _gap_model(group)
         derived = libgap.DerivedSubgroup(model)
-        projection = libgap.NaturalHomomorphismByNormalSubgroup(model, derived)
+        projection = libgap.NaturalMorphismByNormalSubgroup(model, derived)
         quotient = _own_group(GroupLibGAP(projection.Range()))
         # A quotient of a finite group is finite.
         placement = (
@@ -69,24 +69,24 @@ class _AbelianizationFunctor(Functor):
     def _apply_morphism(self, morphism):
         source_abelianization = self(morphism.domain())
         target_abelianization = self(morphism.codomain())
-        source_projection = self.quotient_projection(morphism.domain()).gap()
-        target_projection = self.quotient_projection(morphism.codomain()).gap()
+        source_projection = self.quotient_projection(morphism.domain())
+        target_projection = self.quotient_projection(morphism.codomain())
         source_model = _gap_model(source_abelianization)
         target_model = _gap_model(target_abelianization)
-        source_group = morphism.domain()
-        target_group = morphism.codomain()
         generators = tuple(source_model.GeneratorsOfGroup())
         images = tuple(
-            target_projection.Image(
-                _element_to_engine(
-                    target_group,
+            _element_to_engine(
+                target_abelianization,
+                target_projection(
                     morphism(
-                        _element_from_engine(
-                            source_group,
-                            source_projection.PreImagesRepresentative(generator),
+                        source_projection.lift(
+                            _element_from_engine(
+                                source_abelianization,
+                                generator,
+                            )
                         )
-                    ),
-                )
+                    )
+                ),
             )
             for generator in generators
         )
@@ -126,17 +126,25 @@ class _AbelianizationAdjunction(Adjunction):
     def __init__(self) -> None:
         super().__init__(_AbelianizationFunctor(), _AbelianGroupInclusionFunctor())
 
-    def unit(self, group):
+    def _unit_component(self, group):
         return self.left_adjoint().quotient_projection(group)
 
-    def counit(self, abelian_group):
+    def _counit_component(self, abelian_group):
         abelianization = self.left_adjoint()(abelian_group)
-        projection = self.left_adjoint().quotient_projection(abelian_group).gap()
+        projection = self.left_adjoint().quotient_projection(abelian_group)
         quotient_model = _gap_model(abelianization)
         target_model = _gap_model(abelian_group)
         generators = tuple(quotient_model.GeneratorsOfGroup())
         images = tuple(
-            projection.PreImagesRepresentative(generator)
+            _element_to_engine(
+                abelian_group,
+                projection.lift(
+                    _element_from_engine(
+                        abelianization,
+                        generator,
+                    )
+                ),
+            )
             for generator in generators
         )
         engine = libgap.GroupHomomorphismByImages(

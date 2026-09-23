@@ -74,7 +74,6 @@ def test_zero_support_and_boundary_degree_keep_the_geometric_complex() -> None:
     assert zero_piece.dimension() == 0
     complex_ = zero_piece.cochain_complex()
     assert complex_.cohomology_scheme() is plane
-    assert complex_.toric_weight_cohomology_construction().scheme() is plane
     assert complex_.cohomology_divisor() == divisor
     assert complex_.cohomology_weight() == outside
     assert "_preamble_geometric_cohomology_scheme" not in complex_.__dict__

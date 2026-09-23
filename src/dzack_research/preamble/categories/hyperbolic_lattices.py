@@ -37,6 +37,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories._lattice import signature_pair
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -172,6 +173,17 @@ def _rational_pair(value):
     return (int(value.numerator()), int(value.denominator()))
 
 
+def _framing_coordinates(element):
+    r"""Return ordered framing coefficients at a private engine boundary."""
+    parent = element.parent()
+    coefficients = parent.framing_coefficients(element)
+    zero = parent.base_ring().zero()
+    return tuple(
+        coefficients.get(label, zero)
+        for label in parent.module_generating_set()
+    )
+
+
 def _number_field_coefficients(field_engine, value):
     value = field_engine(value)
     degree = int(field_engine.degree())
@@ -205,8 +217,6 @@ def _vinberg_nf_roots(polynomial, gram, selected_primitive_approximation, count)
         selected_primitive_approximation,
         int(count),
     )
-    if not isinstance(result, list) or len(result) != 2:
-        raise RuntimeError("VinbergsAlgorithmNF returned malformed root data")
     complete, roots = result
     return bool(complete), tuple(tuple(entry for entry in row) for row in roots)
 
@@ -223,17 +233,14 @@ engine_capabilities.register(
 def _signature_at_real_embedding(lattice, embedding):
     order = lattice.base_ring()
     field = order.fraction_field()
-    field_engine = _engine_ring(field)
-    order_engine = _engine_ring(order)
-    embedding_engine = embedding._engine_morphism_crossing()
     rank = int(lattice.module_rank())
     rows = []
     for i in range(rank):
         row = []
         for j in range(rank):
-            entry = _engine_element(order, lattice.gram_tensor()[i, j])
-            image = embedding_engine(field_engine(order_engine(entry)))
-            row.append(SageAA(image))
+            entry = field(lattice.gram_tensor()[i, j])
+            image = embedding(entry)
+            row.append(SageAA(_engine_element(embedding.codomain(), image)))
         rows.append(row)
     eigenvalues = engine_matrix(SageAA, rows).eigenvalues()
     positive = sum(value > 0 for value in eigenvalues)
@@ -259,17 +266,19 @@ class NumberFieldVinbergLattice(SageObject):
         order = lattice.base_ring()
         field = order.fraction_field()
         real_algebraics = _own_ring(SageAA)
-        if int(field.degree()) != 2:
-            raise NotImplementedError(
-                "the represented VinbergsAlgorithmNF crossing currently supports real quadratic fields"
-            )
+        assert int(field.degree()) == 2, (
+            "Vinberg's algorithm is stated over any totally real field; the "
+            "registered VinbergsAlgorithmNF crossing realizes it for real "
+            "quadratic fields only"
+        )
         signature = field.signature()
         if int(signature.second()) != 0:
             raise ValueError("VinbergsAlgorithmNF requires a totally real number field")
-        if int(field.class_number()) != 1:
-            raise NotImplementedError(
-                "the pinned VinbergsAlgorithmNF realization uses principal-ideal element gcds"
-            )
+        assert int(field.class_number()) == 1, (
+            "the pinned VinbergsAlgorithmNF realization takes gcds of "
+            "elements, which is correct when O_K is a principal ideal domain; "
+            "over a field of class number greater than one it needs ideal gcds"
+        )
         if _engine_ring(order) != _engine_ring(field).ring_of_integers():
             raise ValueError("the Vinberg lattice must be defined over the maximal order O_K")
         if real_embedding.domain() is not field or real_embedding.codomain() is not real_algebraics:
@@ -374,7 +383,7 @@ class NumberFieldVinbergLattice(SageObject):
                 numerator, denominator = pair
                 value += SageQQ(numerator) / SageQQ(denominator) * generator**exponent
             integral = order_engine(value)
-            coefficients.append(order._from_engine_element(integral))
+            coefficients.append(_owned_engine_element(order, integral))
         root = lattice(tuple(coefficients))
         if root.q() <= 0:
             raise ArithmeticError("VinbergsAlgorithmNF returned a non-positive root")
@@ -514,35 +523,14 @@ engine_capabilities.register(
 )
 
 
-class AllcockFundamentalVertex(SageObject):
-    r"""One vertex orbit representative of an Allcock fundamental polyhedron."""
-
-    def __init__(self, lattice, generator, incident_roots) -> None:
-        self._lattice = lattice
-        self._generator = generator
-        self._incident_roots = finite_ordered_set(tuple(incident_roots))
-
-    def lattice(self):
-        return self._lattice
-
-    def generator(self):
-        return self._generator
-
-    def incident_roots(self):
-        return self._incident_roots
-
-    def square(self):
-        return self.generator().q()
-
-    def is_ideal(self) -> bool:
-        return self.square() == self.lattice().base_ring().zero()
-
-    def __repr__(self) -> str:
-        return f"Allcock fundamental vertex generated by {self.generator()}"
-
-
 class AllcockEdgewalkReport(SageObject):
-    r"""Owned fundamental-domain data returned by Allcock's edgewalk."""
+    r"""Owned fundamental-domain data returned by Allcock's edgewalk.
+
+    Each vertex orbit representative of the fundamental polyhedron is the
+    ray of ``L tensor QQ`` it spans, a rational polyhedral cone whose wall
+    roots are the roots of the walls through the vertex.  The vertex is
+    ideal exactly when that ray is isotropic.
+    """
 
     def __init__(
         self,
@@ -686,7 +674,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             )
             gram, negated = self._engine_gram_of_signature_n_1()
             coordinates = (
-                None if controlling_vector is None else list(controlling_vector.to_vector())
+                None if controlling_vector is None else list(_framing_coordinates(controlling_vector))
             )
             complete, rows = engine_capabilities.compute(
                 "vinberg_root_enumeration",
@@ -842,7 +830,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             _complete, roots = self._vinberg_search(
                 controlling_vector, max_roots, max_decompositions
             )
-            wall_normals = [engine_vector(root.to_vector()) * gram for root in roots]
+            wall_normals = [engine_vector(_framing_coordinates(root)) * gram for root in roots]
             chamber = Cone(wall_normals).dual()
             return tuple(
                 (engine_matrix(ray) * gram * engine_matrix(ray).transpose())[0][0]
@@ -994,7 +982,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                         shell = complement.vectors_of_square(target_square)
                 for perpendicular in shell:
                     numerator = inclusion(perpendicular) + pairing * timelike
-                    coordinates = numerator.to_tuple()
+                    coordinates = _framing_coordinates(numerator)
                     if not all(square.divides(coordinate) for coordinate in coordinates):
                         continue
                     candidate = self(
@@ -1042,9 +1030,12 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 case False:
                     pass
 
+            from dzack_research.preamble.categories.polyhedral_cones import (
+                RationalPolyhedralCones,
+            )
+
             vertices = []
             for generator_row, incident_rows in record["vertices"]:
-                generator = self(tuple(generator_row))
                 incident = tuple(self(tuple(row)) for row in incident_rows)
                 match negated:
                     case True:
@@ -1052,12 +1043,14 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                     case False:
                         pass
                 vertices.append(
-                    AllcockFundamentalVertex(self, generator, incident)
+                    RationalPolyhedralCones(self).from_rays(
+                        (self(tuple(generator_row)),), wall_roots=incident
+                    )
                 )
 
             automorphisms = self.O()
             isometry_generators = tuple(
-                automorphisms._from_backend_row_action(rows)
+                automorphisms(tuple(self(tuple(row)) for row in rows))
                 for rows in record["isometry_generator_rows"]
             )
             return AllcockEdgewalkReport(
@@ -1099,7 +1092,6 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
 
 __all__ = [
     "AllcockEdgewalkReport",
-    "AllcockFundamentalVertex",
     "HyperbolicLattices",
     "NumberFieldVinbergLattice",
 ]

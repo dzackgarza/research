@@ -1,9 +1,10 @@
-from dzack_research.preamble.all import ZZ, Schemes
+from dzack_research.preamble.all import QQ, ZZ, ProjectiveSpaces, Schemes
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     RingedSpaces,
 )
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 
 
 def test_ringed_space_hierarchy_is_owned_and_inhabited_by_actual_schemes() -> None:
@@ -29,3 +30,12 @@ def test_ringed_space_parent_methods_survive_the_owned_category_boundary() -> No
     assert sheaf.ringed_space() is affine
     assert sheaf.global_sections() is ZZ
     assert space.ringed_space() is affine
+    assert space in TopologicalSpaces()
+
+
+def test_nonaffine_scheme_underlying_space_is_an_owned_topological_space() -> None:
+    line = ProjectiveSpaces(QQ)(1)
+    space = line.underlying_space()
+
+    assert space in TopologicalSpaces()
+    assert space.scheme() is line

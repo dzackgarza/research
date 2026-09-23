@@ -19,6 +19,9 @@ def test_discrete_category_family_is_owned_and_retains_a_nonidentity_functor() -
     assert isinstance(DiscreteCategories(), OwnedCategory)
     assert source in DiscreteCategories()
     assert target in DiscreteCategories()
+    assert source in Cat()
+    assert source(0) in source
+    assert source(0) not in Cat()
 
     functor = Cat().Mor(source, target).from_object_map(
         lambda value: "b" if value == 0 else "a",
@@ -37,3 +40,89 @@ def test_object_set_functor_consumes_the_same_owned_discrete_category() -> None:
     object_set = ObjectSetFunctor()
 
     assert object_set(category) is points
+
+
+def test_discrete_functor_endpoints_retain_placement_and_the_object_map() -> None:
+    """The object-set functor applies to Cat arrows as well as raw categories."""
+    source_points = finite_ordered_set((0, 1))
+    target_points = finite_ordered_set(("a", "b"))
+    source = DiscreteCategory(source_points)
+    target = DiscreteCategory(target_points)
+    functor = Cat().Mor(source, target).from_object_map(
+        lambda value: "b" if value == 0 else "a",
+    )
+    arrow = Cat().arrow(functor)
+    object_set = ObjectSetFunctor()
+
+    assert arrow.domain() is Cat().object(source)
+    assert arrow.codomain() is Cat().object(target)
+    assert arrow.domain().category() is DiscreteCategories()
+    assert arrow.codomain().category() is DiscreteCategories()
+    assert arrow.domain() in DiscreteCategories()
+    assert arrow.codomain() in DiscreteCategories()
+    assert object_set(arrow.domain()) is source_points
+    assert object_set(arrow.codomain()) is target_points
+
+    image = object_set(arrow)
+    assert image.domain() is source_points
+    assert image.codomain() is target_points
+    assert image(source_points(0)) == target_points("b")
+    assert image(source_points(1)) == target_points("a")
+
+
+def test_category_endpoints_do_not_infer_discreteness_or_set_enrichment() -> None:
+    from dzack_research.preamble.categories.abstract_categories.products import (
+        FiniteOrdinalCategory,
+    )
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+    walking_arrow = Cat().object(FiniteOrdinalCategory(2))
+    assert walking_arrow in Cat()
+    assert walking_arrow not in DiscreteCategories()
+
+    points = finite_ordered_set((0, 1))
+    set_mor = Sets().Mor(points, points)
+    endpoint = Cat().object(set_mor)
+    assert endpoint.represented_category() is set_mor
+    assert endpoint in Cat()
+    assert endpoint not in Sets()
+
+
+def test_a_mor_category_endpoint_retains_its_family_without_its_element_enrichment() -> None:
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+    points = finite_ordered_set(("s", "t"))
+    other = finite_ordered_set(("u", "v", "w"))
+    family = Sets().MorCategory()
+    maps = family.Of(points, other)
+    endpoint = Cat().object(maps)
+
+    assert maps in family
+    assert endpoint.represented_category() is maps
+    assert endpoint.category() is MorCategories()
+    assert endpoint in MorCategories()
+    assert endpoint in family
+    assert endpoint not in Sets()
+    assert endpoint not in Sets().EndCategory()
+    assert endpoint not in Sets().MonoCategory()
+    identity = Cat().identity(maps)
+    assert identity.domain() is endpoint
+    assert identity.codomain() is endpoint
+    assert identity * identity == identity
+
+
+def test_a_functor_category_endpoint_retains_the_selected_fixed_category() -> None:
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+
+    source = DiscreteCategory(finite_ordered_set((0, 1)))
+    target = DiscreteCategory(finite_ordered_set(("x", "y", "z")))
+    functors = Cat().Mor(source, target)
+    endpoint = Cat().object(functors)
+
+    assert endpoint.category() is MorCategories()
+    assert endpoint.represented_category() is functors
+    assert endpoint in Cat().MorCategory()
+    assert endpoint not in Cat().EndCategory()
+    assert endpoint not in DiscreteCategories()
+    assert Cat().object(functors) is endpoint

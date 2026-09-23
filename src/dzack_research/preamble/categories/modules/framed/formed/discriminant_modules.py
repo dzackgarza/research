@@ -1,9 +1,12 @@
 r"""Discriminant modules and their quotient-valued forms."""
 
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from sage.categories.category import Category
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormModules,
     TorsionBilinearFormModules,
@@ -19,6 +22,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotients
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     Zmod,
@@ -36,20 +40,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class _DiscriminantModuleConstruction:
-    r"""The lattice and metric dual defining the discriminant quotient ``L^#/L``."""
-
-    def __init__(self, source_lattice, dual_lattice) -> None:
-        self._source_lattice = source_lattice
-        self._dual_lattice = dual_lattice
-
-    def source_lattice(self):
-        return self._source_lattice
-
-    def dual_lattice(self):
-        return self._dual_lattice
-
-
 class DiscriminantModules(OwnedCategoryOverBaseRing):
     r"""Cokernels ``A_L = coker(L -> L^#)`` of nondegenerate finite lattices."""
 
@@ -64,22 +54,20 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         return "discriminant modules"
 
     def super_categories(self):
-        return [Modules(self.base_ring()).FinitelyPresented().Torsion()]
+        return [Modules(self.base_ring()).FinitelyPresented().Torsion(), ModuleSubobjects(self.base_ring())]
 
     class ParentMethods:
         def __init__(self, source_lattice, dual_lattice, **rest) -> None:
-            self._discriminant_module_construction = _DiscriminantModuleConstruction(
-                source_lattice,
-                dual_lattice,
-            )
+            self._source_lattice = source_lattice
+            self._dual_lattice = dual_lattice
             super().__init__(**rest)
 
         def source_lattice(self):
-            return self._discriminant_module_construction.source_lattice()
+            return self._source_lattice
 
         def dual_lattice(self):
             r"""Return the selected metric dual ``L^#`` covering this quotient."""
-            return self._discriminant_module_construction.dual_lattice()
+            return self._dual_lattice
 
         def cover(self):
             r"""Return the metric dual lattice whose quotient gives this discriminant module."""
@@ -794,13 +782,6 @@ def _through_formed_copy(module, formed, normalization):
     return forward, inverse
 
 
-def _element_key(module, element):
-    r"""A hashable key deciding equality of classes via the private Smith engine."""
-    if module._smith_engine() is None:
-        raise NotImplementedError("finite discriminant-class keys require the Smith engine")
-    return tuple(module._to_smith_engine_element(module(element)).vector())
-
-
 def _subquotient_module(subgroup, larger):
     r"""Return the literal cokernel of ``subgroup -> larger`` inside one ambient module."""
     if subgroup.ambient_discriminant_module() is not larger.ambient_discriminant_module():
@@ -829,7 +810,7 @@ def _discriminant_subgroup(ambient, generators):
     )
     ring = ambient.base_ring()
     invariants = tuple(
-        ring._from_engine_element(invariant)
+        _owned_engine_element(ring, invariant)
         for invariant in engine_subgroup.invariants()
         if invariant > 1
     )
@@ -853,64 +834,50 @@ def _discriminant_subgroup(ambient, generators):
                 prototype.module_generating_set(), ambient_generators, strict=True
             )
         }
-        source = _presented_module_from_morphism(
+        source = ModulesWithChosenFinitePresentation(ring)(
             prototype.presentation(),
-            _subobject_ambient=ambient,
-            _subobject_generator_images=images,
-            _extra_categories=categories,
-            _extra_construction_data=construction_data,
+            subobject_ambient=ambient,
+            subobject_generator_images=images,
+            category=Category.join(categories),
+            **construction_data,
         )
     else:
         # The zero finite module is presented by the identity on one generator.
 
         free = ambient.base_ring().free_module(finite_ordered_set((0,)))
-        source = _presented_module_from_morphism(
+        source = ModulesWithChosenFinitePresentation(ambient.base_ring())(
             free.module_category().Mor(free, free).identity(),
-            _subobject_ambient=ambient,
-            _subobject_generator_images={0: ambient.zero()},
-            _extra_categories=categories,
-            _extra_construction_data=construction_data,
+            subobject_ambient=ambient,
+            subobject_generator_images={0: ambient.zero()},
+            category=Category.join(categories),
+            **construction_data,
         )
     return source
 
 
 def _all_discriminant_subgroups(ambient):
+    r"""Return the subgroup lattice through GAP's finite-abelian routine."""
+    from sage.groups.abelian_gps.abelian_group_gap import AbelianGroupGap
 
-    elements = ambient.elements()
-    zero_key = frozenset((_element_key(ambient, ambient.zero()),))
-    zero_subgroup = ambient.subgroup_on(())
-    known = {zero_key: zero_subgroup}
-    known_by_position = {0: zero_subgroup}
-    frontier = [zero_subgroup]
-    while frontier:
-        subgroup = frontier.pop()
-        embedded = subgroup.embedded_elements()
-        subgroup_keys = {_element_key(ambient, element) for element in embedded}
-        for element in elements:
-            if _element_key(ambient, element) in subgroup_keys:
-                continue
-            existing_count = int(embedded.cardinality())
-            indices = Sets.Δ[existing_count]
-            candidate_generators = finite_indexed_family(
-                indices,
-                lambda position, embedded=embedded, element=element, existing_count=existing_count: (
-                    embedded[int(position)]
-                    if int(position) < existing_count
-                    else element
-                ),
+    smith_engine = ambient._smith_engine()
+    assert smith_engine is not None, (
+        "discriminant subgroup enumeration requires the integral Smith engine"
+    )
+    additive_group = AbelianGroupGap(smith_engine.invariants())
+    return finite_ordered_set(
+        tuple(
+            ambient.subgroup_on(
+                tuple(
+                    ambient._from_smith_engine_element(
+                        smith_engine.linear_combination_of_smith_form_gens(
+                            additive_group(generator).exponents()
+                        )
+                    )
+                    for generator in subgroup.gens()
+                )
             )
-            candidate = ambient.subgroup_on(candidate_generators)
-            key = frozenset(
-                _element_key(ambient, x) for x in candidate.embedded_elements()
-            )
-            if key not in known:
-                known[key] = candidate
-                known_by_position[len(known_by_position)] = candidate
-                frontier.append(candidate)
-    positions = Sets.Δ[len(known_by_position) - 1]
-    return FiniteOrderedSets().from_indexed(
-        positions,
-        lambda position: known_by_position[int(position)],
+            for subgroup in additive_group.all_subgroups()
+        )
     )
 
 
@@ -987,10 +954,10 @@ def _discriminant_module(lattice):
     # K/R engine currently specializes to QQ/nZZ.  Do not advertise a form over
     # another PID until its fraction-field quotient engine exists.
     if _engine_ring(ring) is not SageZZ:
-        return _presented_module_from_morphism(
+        return ModulesWithChosenFinitePresentation(ring)(
             quotient.presentation(),
-            _extra_categories=tuple(categories),
-            _extra_construction_data=construction_data,
+            category=Category.join(tuple(categories)),
+            **construction_data,
         )
 
     bilinear_values = FractionFieldQuotients(ring)(1)

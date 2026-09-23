@@ -4,26 +4,25 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     AdicCompletions,
-    DistinguishedOpenSubobject,
+    DistinguishedOpenSubobjects,
     FormalPowerSeriesRings,
     GeneratedIdealView,
     PrimeLocalizations,
     PrimeSpectra,
     QuotientRings,
-    ZariskiClosedSubobject,
+    ZariskiClosedSubobjects,
     Zp,
 )
 from dzack_research.preamble.categories.rings.commutative_ideals import (
     CommutativeIdeals,
 )
+from dzack_research.preamble.categories.rings.field_morphisms import ExactFieldMorphism
 from dzack_research.preamble.categories.rings.number_fields import (
     CyclotomicField as _CyclotomicField,
 )
 from dzack_research.preamble.categories.rings.number_fields import (
     NumberFieldsWithChosenPrimitiveElement,
     OwnedNumberFields,
-    _refine_number_field_view,
-    _refine_order_view,
 )
 from dzack_research.preamble.categories.rings.number_fields import (
     QuadraticField as _QuadraticField,
@@ -62,10 +61,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     PredicateSubrings,
     PrimeFields,
     PrincipalIdealDomains,
-    RingHomset,
+    RingMor,
     RingMorphism,
     Rings,
     _own_ring,
+    _set_owned_ring_display,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     ComplexField as _ComplexField,
@@ -146,23 +146,24 @@ def session_ring_objects() -> dict[str, object]:
     from sage.all import ZZ as SageZZ
     from sage.all import QQbar as SageQQbar
 
-    integers = _refine_order_view(_own_ring(SageZZ))
-    rationals = _refine_number_field_view(_own_ring(SageQQ))
-    integers._preamble_ring_display = "Integer Ring"
-    rationals._preamble_ring_display = "Rational Field"
+    integers = _own_ring(SageZZ)
+    rationals = _own_ring(SageQQ)
+    _set_owned_ring_display(integers, "Integer Ring")
+    _set_owned_ring_display(rationals, "Rational Field")
     aa = _public_commutative_ring(_own_ring(SageAA))
-    aa._preamble_ring_display = "Real Algebraic Field"
+    _set_owned_ring_display(aa, "Real Algebraic Field")
     qqbar = _public_commutative_ring(_own_ring(SageQQbar))
-    qqbar._preamble_ring_display = "Algebraic Closure of Rational Field"
+    _set_owned_ring_display(qqbar, "Algebraic Closure of Rational Field")
     rdf = _public_commutative_ring(_own_ring(SageRDF))
-    rdf._preamble_ring_display = "Real double field"
-    rdf._preamble_ring_display_kind = "real"
+    _set_owned_ring_display(rdf, "Real double field", kind="real")
     cdf = _public_commutative_ring(_own_ring(SageCDF))
-    cdf._preamble_ring_display = "Complex double field"
-    cdf._preamble_ring_display_kind = "complex"
+    _set_owned_ring_display(cdf, "Complex double field", kind="complex")
     cc = _public_commutative_ring(_own_ring(SageCC))
-    cc._preamble_ring_display = f"Complex field with {SageCC.precision()} bits precision"
-    cc._preamble_ring_display_kind = "complex"
+    _set_owned_ring_display(
+        cc,
+        f"Complex field with {SageCC.precision()} bits precision",
+        kind="complex",
+    )
     return {
         "ZZ": integers,
         "QQ": rationals,
@@ -213,8 +214,9 @@ __all__ = [
     "CompleteLocalRings",
     "ComplexField",
     "CyclotomicField",
-    "DistinguishedOpenSubobject",
+    "DistinguishedOpenSubobjects",
     "DivisionRings",
+    "ExactFieldMorphism",
     "ExactRealField",
     "ExactRealNumber",
     "Fields",
@@ -260,11 +262,11 @@ __all__ = [
     "RealApproximation",
     "RealField",
     "RealNumber",
-    "RingHomset",
+    "RingMor",
     "RingMorphism",
     "Rings",
     "UnitInterval",
-    "ZariskiClosedSubobject",
+    "ZariskiClosedSubobjects",
     "Zmod",
     "Zp",
     "ring_constructor_surface",

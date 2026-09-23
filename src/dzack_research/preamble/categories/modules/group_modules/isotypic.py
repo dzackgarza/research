@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -150,17 +151,16 @@ def _split_irreducible_characters(module):
     group = module.group()
     if ring in (SageZZ, SageQQ):
         return _galois_orbits_of_irreducible_characters(group)
-    if not ring.is_field() or ring.characteristic() != 0:
-        raise NotImplementedError(
-            "isotypic projectors are currently implemented in characteristic zero"
-        )
+    assert ring.is_field() and ring.characteristic() == 0, (
+        "the represented ordinary-character isotypic projectors require a characteristic-zero field"
+    )
     characters = tuple(group.irreducible_characters())
     for character in characters:
         for value in character.values():
             try:
                 ring(value)
             except (TypeError, ValueError) as error:
-                raise NotImplementedError(
+                raise AssertionError(
                     "the coefficient field is not a splitting field for the represented irreducible characters"
                 ) from error
     return tuple(IsotypicCharacter((character,)) for character in characters)
@@ -187,16 +187,16 @@ def _central_projector(module, character: IsotypicCharacter):
         )
         # A Galois-orbit sum of character values is rational, so it lands in
         # the computation ring through the value field's engine.
-        coefficient = computation_ring._from_engine_element(
+        coefficient = _owned_engine_element(computation_ring,
             computation_engine(
                 _engine_element(backend_coefficient.parent(), backend_coefficient)
             )
         ) / order
-        source = module.action_of(group_element).matrix()
+        source = module.action_of(group_element)
         transported = matrices.from_rows(
             [
                 [
-                    computation_ring._from_engine_element(
+                    _owned_engine_element(computation_ring,
                         computation_engine(
                             _engine_element(base_ring, source[row, column])
                         )
@@ -246,8 +246,11 @@ def _isotypic_component(module, character):
     if _engine_ring(base_ring) is SageZZ:
         integers = base_ring
         denominator = integers.one()
-        for entry in relation.list():
-            denominator = denominator.lcm(entry.denominator())
+        for row_label in relation.parent().row_index_set():
+            for column_label in relation.parent().column_index_set():
+                denominator = denominator.lcm(
+                    relation[row_label, column_label].denominator()
+                )
         cleared = denominator * relation
 
         relation = integers.matrix_space(int(coefficient_module.module_rank())).from_rows(

@@ -126,4 +126,4 @@ def test_affine_and_hyperbolic_coxeter_sessions() -> None:
     hyperbolic_lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
     assert hyperbolic_lattice.signature_pair() == signature_pair(1, 3)
     assert not hyperbolic_lattice.is_definite()
-    assert hyperbolic_lattice.reflection(hyperbolic_lattice.summand(1).inclusion()(hyperbolic_lattice.summand(1).module_generator(0))) in hyperbolic_lattice.O()
+    assert hyperbolic_lattice.reflection(hyperbolic_lattice.summand(1).inclusion()(hyperbolic_lattice.summand(1).basis_vector(0))) in hyperbolic_lattice.O()

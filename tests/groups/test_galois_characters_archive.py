@@ -13,6 +13,7 @@ def test_cyclotomic_character_is_an_actual_continuous_morphism() -> None:
     character = group.cyclotomic_character(3)
     frobenius = group.frobenius()
 
+    assert character.parent() is group.Mor(character.codomain())
     assert character.domain() is group
     assert character.is_continuous()
     assert character.factor_extension().degree() == 2
@@ -33,6 +34,7 @@ def test_character_kernel_and_restriction_are_actual_group_maps() -> None:
     assert frobenius**2 in kernel
 
     restricted = character.restrict(kernel)
+    assert restricted.parent() is kernel.Mor(character.codomain())
     assert restricted.domain() is kernel
     assert restricted.codomain() is character.codomain()
     assert restricted.is_continuous()

@@ -4,18 +4,21 @@ Elements are formal symbols in \(\mathrm{SR}\), not evaluated
 polynomials: \(H_0\) is the symbol, not the scalar \(1\).
 """
 
+from sage.misc.cachefunc import cached_function
+from sage.structure.parent import Parent
+
 from dzack_research.preamble.categories.sets.enumerated.function_sets import (
     EnumeratedByNaturals,
-    IndexedSymbolicFunctionSet,
+    FunctionEnumeratedSets,
 )
 
 
-class HermitePolynomials(IndexedSymbolicFunctionSet):
+@cached_function
+def HermitePolynomials() -> Parent:
     r"""The enumerated set \(\{H_n : n\in\mathbb N\}\subset\mathrm{SR}\)."""
-
-    _indexing_category = EnumeratedByNaturals
-    _symbol_prefix = "H"
-    _latex_symbol_prefix = "H"
-
-    def _repr_(self) -> str:
-        return "{H_n : n in NN}"
+    return FunctionEnumeratedSets()(
+        "H",
+        "H",
+        "{H_n : n in NN}",
+        indexing=EnumeratedByNaturals(),
+    )

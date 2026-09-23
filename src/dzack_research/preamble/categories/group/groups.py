@@ -1,14 +1,15 @@
-"""Owned categories of groups and their standard constructor catalogue.
+r"""Owned groups with private Sage/GAP realizations.
 
-An owned group is a parent built through the owned category chain.  The Sage
-group it computes with is its engine, held privately; every call into that
-engine is one of the crossings in the "engine crossings" section below, and
-nothing public returns a Sage group or a GAP object.  Elements are engine
-elements, as for the owned ring views.
+Catalogue constructors cross their mathematical arguments at the engine
+boundary and construct at OwnedGroups(), with the properties the native
+construction proves.  A free basis belongs to GroupsWithChosenFreeBasis;
+a subgroup retains its ambient group at Subgroups(G).  Engine classes are
+private implementations selected at those owners, not new category nodes.
 """
 
-from functools import wraps
-from weakref import WeakValueDictionary
+from functools import reduce, wraps
+from itertools import combinations
+from operator import mul
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
@@ -23,7 +24,6 @@ from sage.groups.abelian_gps.abelian_group import (
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
 from sage.groups.indexed_free_group import IndexedFreeGroup
-from sage.groups.libgap_morphism import GroupHomset_libgap, GroupMorphism_libgap
 from sage.groups.libgap_wrapper import ParentLibGAP
 from sage.groups.matrix_gps.coxeter_group import CoxeterMatrixGroup
 from sage.groups.matrix_gps.finitely_generated import (
@@ -32,6 +32,7 @@ from sage.groups.matrix_gps.finitely_generated import (
 from sage.groups.matrix_gps.finitely_generated_gap import (
     FinitelyGeneratedMatrixGroup_gap,
 )
+from sage.groups.matrix_gps.matrix_group import MatrixGroup_generic
 from sage.groups.matrix_gps.named_group import NamedMatrixGroup_generic
 from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.perm_gps.permgroup import (
@@ -40,7 +41,7 @@ from sage.groups.perm_gps.permgroup import (
 )
 from sage.libs.gap.element import GapElement
 from sage.libs.gap.libgap import libgap
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
@@ -48,24 +49,24 @@ from sage.rings.infinity import infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.galois_group import GaloisGroup_v2 as SageGaloisGroup
-from sage.structure.category_object import CategoryObject
-from sage.structure.element import MultiplicativeGroupElement, RingElement
+from sage.structure.element import Element, MultiplicativeGroupElement, RingElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoryPacketMethods,
     EndCategoryConstruction,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
     IsoCategoryConstruction,
-    _category_homset,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
+    _fix_selected_framing,
 )
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
@@ -75,6 +76,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     _engine_matrix,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
@@ -91,7 +93,8 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets, finite_ordinal_set
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category, refine
 
@@ -102,32 +105,38 @@ if "FinitelyPresentedAsGroup" not in all_axioms:
     all_axioms.add("FinitelyPresentedAsGroup")
 
 # --------------------------------------------------------------------------
-# Engine crossings.  These are the only sites that read the Sage group behind
-# an owned group; everything above them speaks the owned vocabulary.
+# Engine crossings.
+#
+# Protected contract (``OWN-05``).  A group realized by an engine supplies
+# ``_engine_group()``, ``_to_engine(element)`` and
+# ``_from_engine(engine_element)``; a group whose subgroups are generated in
+# its engine also supplies ``_engine_subgroup_from_generators(generators)``,
+# ``_to_subgroup_engine(element, engine_subgroup)`` and
+# ``_from_subgroup_engine(engine_element)``.  Implementers:
+# :class:`_GroupEngine`, selected privately at ``OwnedGroups``, and the
+# lattice orthogonal group and torsion-form orthogonal group on their Mor
+# parents.  Callers: the adapters in this section and the class-function,
+# character and ``G``-set adapters of this package.  Inputs and outputs are
+# owned elements on one side and the engine's elements on the other; a
+# crossing and its inverse compose to the identity on owned elements.  The
+# contract is invoked through :func:`_engine_group` and the functions below,
+# which are its dispatchers; a group supplying no engine realization fails at
+# the dispatcher, which is the computational frontier of every engine-backed
+# operation.
+#
+# Every function in this section is an engine adapter (``OWN-06``): it is the
+# one site inspecting the engine's representation type for the operation it
+# names.
 # --------------------------------------------------------------------------
 
 
-def _identity(element):
-    return element
-
-
 def _engine_group(group):
-    """Return the Sage group computing for ``group``.
-
-    Protected contract: an owned group that computes through a Sage group
-    supplies ``_engine_group()``, ``_to_engine(element)`` and
-    ``_from_engine(_engine_element)``; :class:`OwnedGroup` and the lattice
-    isometry group are its providers.
-    """
-    try:
-        crossing = group._engine_group
-    except AttributeError:
-        raise NotImplementedError(f"{group} has no Sage group engine") from None
-    return crossing()
+    r"""Return the engine realizing ``group`` (the protected contract's dispatcher)."""
+    return group._engine_group()
 
 
 def _engine_finiteness(engine):
-    """Return True/False when Sage's category already decides finiteness."""
+    r"""Return ``True``/``False`` when Sage's category already decides finiteness, else ``Unknown``."""
     if engine in SageFiniteGroups():
         return True
     if engine.category().is_subcategory(SageGroups().Infinite()):
@@ -136,138 +145,191 @@ def _engine_finiteness(engine):
 
 
 def _gap_model(group):
-    """Return the GAP group modelling ``group``."""
+    r"""Return the GAP group modelling ``group``."""
     match group:
-        case GroupAutomorphismGroup():
+        case _ if group in GroupAutomorphismGroups():
             return group._libgap_()
-    engine = _engine_group(group)
+        case _:
+            return _gap_model_of_engine(_engine_group(group))
+
+
+def _gap_model_of_engine(engine):
+    r"""Return the GAP group modelling one engine group."""
     match engine:
         case PermutationGroup_generic() | FreeGroup_class() | FinitelyPresentedGroup():
             return libgap(engine)
         case ParentLibGAP():
             return engine.gap()
         case AbelianGroup_class():
-            if _engine_finiteness(engine) is not True:
-                raise NotImplementedError("GAP normalization of this abelian group requires finiteness")
+            assert _engine_finiteness(engine) is True, (
+                "GAP normalization of an abelian group given by invariants requires the group finite"
+            )
             return libgap(engine.permutation_group())
         case CoxeterMatrixGroup():
             free, relations = _coxeter_presentation(engine.coxeter_matrix())
             return libgap(free / list(relations))
         case NamedMatrixGroup_generic() | FinitelyGeneratedMatrixGroup_generic():
-            if _engine_finiteness(engine) is not True:
-                raise NotImplementedError("GAP permutation normalization requires finiteness")
+            assert _engine_finiteness(engine) is True, (
+                "GAP permutation normalization of a matrix group requires the group finite"
+            )
             return libgap(engine.as_permutation_group())
         case _:
-            raise NotImplementedError(f"{group} has no GAP model in this engine")
+            assert False, f"{engine} has no GAP model in this engine"
 
 
 def _automorphism_gap_model(group):
-    """Return GAP's automorphism group of ``group`` where the engine computes it."""
-    match group:
-        case OwnedGroup():
-            match group._engine:
-                case FreeGroup_class() | FinitelyPresentedGroup():
-                    raise NotImplementedError(f"Aut({group}) exists, but this engine does not compute it from a bare presentation")
-    if group.is_finite() is not True:
-        raise NotImplementedError(f"the available GAP automorphism algorithm requires {group} finite")
+    r"""Return GAP's automorphism group of ``group``.
+
+    ``Aut(G)`` exists for every group; the available GAP algorithm
+    (``AutomorphismGroup``) computes it for finite groups only.
+    """
+    assert group.is_finite() is True, (
+        f"Aut({group}) exists, but the available GAP automorphism algorithm requires {group} decided finite"
+    )
     return libgap.AutomorphismGroup(_gap_model(group))
 
 
-def _elements_have_gap_models(group) -> bool:
-    """Whether elements of ``group`` are identified elementwise with GAP elements."""
-    try:
-        engine = _engine_group(group)
-    except NotImplementedError:
-        return False
-    return isinstance(
-        engine,
-        (PermutationGroup_generic, ParentLibGAP, FreeGroup_class, FinitelyPresentedGroup),
-    )
+def _encodes_elements_in_gap(engine) -> bool:
+    r"""Whether ``engine`` identifies its elements one by one with GAP elements."""
+    match engine:
+        case PermutationGroup_generic() | ParentLibGAP() | FreeGroup_class() | FinitelyPresentedGroup():
+            return True
+        case _:
+            return False
 
 
-def _transported_subgroup(group, engine_subgroup):
-    """Return the owned subgroup object with its exact ambient endpoint."""
-    return _TransportedGroupSubobject(group, engine_subgroup)
+def _element_to_engine(group, element):
+    r"""Return the GAP element modelling ``element`` of ``group``."""
+    match group:
+        case _ if group in GroupAutomorphismGroups():
+            return element.gap()
+        case _:
+            assert _encodes_elements_in_gap(_engine_group(group)), (
+                f"{group}'s engine does not identify its elements with GAP elements"
+            )
+            return group._to_engine(group(element)).gap()
+
+
+def _element_from_engine(group, gap_element):
+    r"""Return the element of ``group`` modelled by ``gap_element``."""
+    match group:
+        case _ if group in GroupAutomorphismGroups():
+            return group(gap_element, check=False)
+        case _:
+            engine = _engine_group(group)
+            assert _encodes_elements_in_gap(engine), (
+                f"{group}'s engine does not identify its elements with GAP elements"
+            )
+            return group._from_engine(engine(gap_element))
+
+
+def _matrix_group_element_matrix(group, element):
+    r"""Return the private exact matrix of one owned matrix-group element.
+
+    Protected group contract (\`OWN-05\`--\`OWN-07\`).  The permitted
+    external caller is the Eichler determinant-model lattice adapter for its
+    represented \`SL_2(ZZ)\` action.  The group owner validates and lowers the
+    owned element; only the exact matrix required by that adapter crosses, and
+    its entries are immediately raised into the lattice's owned scalar ring.
+    """
+    represented = group._to_engine(group(element))
+    matrix = getattr(represented, "matrix", None)
+    assert callable(matrix), "the selected group realization is not a matrix group"
+    return matrix()
 
 
 def _subgroup_from_gap(group, gap_subgroup):
-    """Return the owned subgroup of ``group`` modelled by the GAP subgroup."""
-    if isinstance(group, GroupAutomorphismGroup):
-        return group._subgroup_from_engine(gap_subgroup)
-    engine = _engine_group(group)
-    match engine:
-        case PermutationGroup_generic() | ParentLibGAP():
-            return _transported_subgroup(group, engine._subgroup_constructor(gap_subgroup))
+    r"""Return the owned subgroup of ``group`` modelled by the GAP subgroup.
+
+    Uses Sage's private ``_subgroup_constructor`` of
+    ``sage.groups.perm_gps.permgroup.PermutationGroup_generic`` and
+    ``sage.groups.libgap_wrapper.ParentLibGAP``, which builds the engine
+    subgroup of a GAP subgroup without re-reading its generators; no public
+    Sage operation constructs a subgroup from a GAP subgroup object.
+    """
+    match group:
+        case _ if group in GroupAutomorphismGroups():
+            return group._subgroup_from_engine(gap_subgroup)
         case _:
-            raise NotImplementedError(f"{group} does not construct subgroups from GAP data")
+            engine = _engine_group(group)
+            match engine:
+                case PermutationGroup_generic() | ParentLibGAP():
+                    return _transported_subgroup(group, engine._subgroup_constructor(gap_subgroup))
+                case _:
+                    assert False, f"{group} does not construct subgroups from GAP data in this engine"
 
 
 def _finite_order(group):
-    r"""Return the finite group order as an owned integer."""
-    from sage.rings.integer_ring import ZZ as SageZZ
-
-    integers = _own_ring(SageZZ)
-    try:
-        backend_order = _engine_group(group).order()
-    except NotImplementedError:
-        backend_order = _gap_model(group).Size().sage()
-    return integers._from_engine_element(SageZZ(backend_order))
-
-
-def _engine_supergroup(group):
-    """Return the group ``group`` was constructed as a subgroup of, else ``group``."""
+    r"""Return the order of a finite group as an owned integer."""
     match group:
-        case OwnedGroup() if group._supergroup is not None:
-            return group._supergroup
-        case OwnedGroup():
-            engine = group._engine
+        case _ if group in GroupAutomorphismGroups():
+            backend_order = _gap_model(group).Size().sage()
         case _:
-            return group
+            backend_order = _engine_group(group).order()
+    return _owned_engine_element(ZZ, ZZ(backend_order))
+
+
+def _finite_group_morphism_kernel_cardinality(morphism):
+    r"""Return the exact kernel order without exporting the GAP morphism."""
+    return cardinal(
+        int(morphism._gap_morphism_crossing().Kernel().Size())
+    )
+
+
+def _finite_group_morphism_kernel_is_abelian(morphism) -> bool:
+    r"""Decide kernel abelianity without exporting the GAP morphism."""
+    return bool(morphism._gap_morphism_crossing().Kernel().IsAbelian())
+
+
+def _conjugacy_class_elements(group, representative):
+    r"""Return the elements of the conjugacy class of ``representative`` in the finite ``group``."""
+    engine = _engine_group(group)
+    return tuple(
+        group._from_engine(engine_element)
+        for engine_element in engine.conjugacy_class(group._to_engine(representative))
+    )
+
+
+def _conjugacy_class_size(group, representative):
+    r"""Return the size |G : C_G(g)| of the conjugacy class of ``representative``, a count used as an integer scalar."""
+    return int(
+        libgap.ConjugacyClass(
+            _gap_model(group),
+            _element_to_engine(group, representative),
+        ).Size()
+    )
+
+
+def _engine_generated_subgroup(engine, engine_generators):
+    r"""Return the engine's subgroup generated by engine elements."""
     match engine:
-        case PermutationGroup_subgroup() | AbelianGroup_subgroup():
-            return _own_group(engine.ambient_group())
-        case ParentLibGAP() if engine.ambient() is not engine:
-            return _own_group(engine.ambient())
+        case PermutationGroup_generic() | MatrixGroup_generic() | AbelianGroup_class() | ParentLibGAP():
+            return engine.subgroup(list(engine_generators))
         case _:
-            return group
+            assert False, f"{engine} does not construct subgroups from generators in this engine"
 
 
-def _engine_subgroup(group, generators):
-    generators = tuple(group(generator) for generator in generators)
-    try:
-        direct = group._engine_subgroup_from_generators
-    except AttributeError:
-        direct = None
+def _engine_subgroup_admits(subgroup, element) -> bool:
+    r"""Whether the engine subgroup computing ``subgroup`` contains ``element``.
 
-    if direct is not None:
-        engine_subgroup = direct(generators)
-    else:
-        engine = _engine_group(group)
-        try:
-            construct = engine.subgroup
-        except AttributeError:
-            raise NotImplementedError(
-                f"{group} does not construct subgroups from generators in this engine"
-            ) from None
-        engine_subgroup = construct(
-            [group._to_engine(generator) for generator in generators]
-        )
-
-    subgroup = _transported_subgroup(group, engine_subgroup)
-    subgroup._preamble_selected_subgroup_generators = finite_ordered_set(generators)
-    return refine(subgroup, GeneratedSubgroups(group))
+    This is the private engine-membership adapter (``OWN-06``): cross the
+    owned element once through its containing group, then ask the represented
+    engine subgroup whether that engine element belongs to it.  Membership is
+    therefore a predicate, not exception-driven control flow.
+    """
+    return subgroup.supergroup()._to_engine(element) in _engine_group(subgroup)
 
 
 def _engine_cosets(group, subgroup, side):
+    r"""Return the cosets of ``subgroup`` on ``side``, each an ordered set of elements."""
     engine = _engine_group(group)
-    try:
-        cosets = engine.cosets
-    except AttributeError:
-        raise NotImplementedError(f"{group} does not enumerate cosets in this engine") from None
-    if _law_reversed(group):
-        # The owned coset gH is {g h} = {h *_engine g}: the engine's coset on the other side.
-        side = "right" if side == "left" else "left"
-    backend_cosets = cosets(_engine_group(subgroup), side=side)
+    assert _encodes_as_permutations(engine), (
+        f"coset enumeration is computed here by Sage's permutation-group engine; {group} is not realized as a permutation group"
+    )
+    # The owned coset gH = {g h} is {h *_engine g} when the engine law is
+    # the owned law reversed: the engine's coset on the other side.
+    engine_side = {"left": "right", "right": "left"}[side] if _law_reversed(group) else side
+    backend_cosets = engine.cosets(_engine_group(subgroup), side=engine_side)
     coset_positions = Sets.Δ[len(backend_cosets) - 1]
 
     def own_coset(backend_members):
@@ -288,16 +350,31 @@ def _engine_cosets(group, subgroup, side):
     )
 
 
-def _unique_nonidentity_generators(group):
-    match group:
-        case OwnedGroup() if group._preamble_selected_group_generators is not None:
-            return group._preamble_selected_group_generators
+def _encodes_as_permutations(engine) -> bool:
+    r"""Whether ``engine`` is a Sage permutation group."""
+    match engine:
+        case PermutationGroup_generic():
+            return True
+        case _:
+            return False
+
+
+def _engine_generators(group):
+    r"""Return the engine's chosen generators of ``group``.
+
+    For a group encoded by words, the chosen generators are the images of
+    the presentation's free basis, one per word position whether or not it
+    is trivial in the group: deciding that a word is trivial is the word
+    problem, and the positions are what a word's letters index.  Any other
+    engine's generators are read without the identity.
+    """
     engine = _engine_group(group)
     backend_generators = tuple(engine.gens())
-    owned_generators = FiniteOrderedSets().from_indexed(
-        Sets.Δ[len(backend_generators) - 1],
-        lambda position: group._from_engine(backend_generators[int(position)]),
-    )
+    if _encodes_as_words(engine):
+        from dzack_research.preamble.categories.sets.finite_families import finite_family
+
+        return finite_family(tuple(group._from_engine(generator) for generator in backend_generators))
+    owned_generators = finite_ordered_set(tuple(group._from_engine(generator) for generator in backend_generators))
     identity = group.one()
     return owned_generators.filtered(
         lambda generator: generator != identity,
@@ -305,72 +382,81 @@ def _unique_nonidentity_generators(group):
     )
 
 
-def _free_basis(group):
-    selected = getattr(group, "_preamble_free_basis", None)
-    if selected is not None:
-        return selected
-    engine = _engine_group(group)
-    match engine:
-        case IndexedFreeGroup():
-            return engine.indices()
+def _engine_basis_label(basis, label):
+    r"""Return the engine's index of a point of an owned free basis.
+
+    A finite basis is encoded by the positions of its enumeration, an owned
+    ring by its engine elements, and any other set by its own points; these
+    are the index sets :func:`_free_group_constructor` hands the engine.
+    """
+    match basis:
+        case _ if basis in FiniteSets():
+            assert label in basis, f"{label!r} is not in the chosen free basis"
+            return next(position for position, candidate in enumerate(basis) if candidate == label)
+        case _ if basis in OwnedRings():
+            return _engine_element(basis, label)
         case _:
-            raise NotImplementedError(f"{group} has no chosen free basis")
+            return label
+
+
+def _owned_basis_label(basis, engine_label):
+    r"""Return the point of an owned free basis indexed by the engine label."""
+    match basis:
+        case _ if basis in FiniteSets():
+            return next(candidate for position, candidate in enumerate(basis) if position == int(engine_label))
+        case _ if basis in OwnedRings():
+            return _owned_engine_element(basis, engine_label)
+        case _:
+            return engine_label
 
 
 def _free_generator(group, index):
-    basis = _free_basis(group)
-    if index not in basis:
-        try:
-            normalized = basis(index)
-        except (TypeError, ValueError, AttributeError):
-            normalized = None
-        if normalized is not None and normalized in basis:
-            index = normalized
-        else:
-            try:
-                size = cardinal(basis.cardinality())
-            except (AttributeError, TypeError, ValueError):
-                size = None
-            if size is None or not size.is_finite():
-                raise ValueError(f"{index!r} is not in the chosen free basis")
-            for candidate in basis:
-                parent = getattr(candidate, "parent", lambda: None)()
-                if parent is None:
-                    continue
-                try:
-                    coerced = parent(index)
-                except (TypeError, ValueError):
-                    continue
-                if coerced == candidate:
-                    index = candidate
-                    break
-            else:
-                raise ValueError(f"{index!r} is not in the chosen free basis")
-    engine_label = getattr(
-        group,
-        "_preamble_free_basis_engine_label",
-        _group_constructor_argument,
-    )
-    return group._from_engine(_engine_group(group).gen(engine_label(index)))
+    r"""Return the free generator of ``group`` indexed by a point of its free basis."""
+    basis = group.free_basis()
+    label = index if index in basis else basis(index)
+    return group._from_engine(_engine_group(group).gen(_engine_basis_label(basis, label)))
 
 
-def _reduced_word(group, element):
-    """Return the reduced word with generator labels in the owned free basis.
+def _reduced_word_data(group, element):
+    r"""Read private reduced-word coordinates in the owned multiplication order.
 
-    Letters are listed in the order they multiply in the owned group, which
-    is the engine's word reversed when the engine multiplies left to right.
+    Sage's finite FreeGroup uses signed positions (Tietze); IndexedFreeGroup
+    uses basis labels with exponents.  Both represent finite words, including
+    when the generating set is infinite.  This coordinate data is private to
+    the free-group owner; public words are families of owned signed generators.
     """
-    owned_label = getattr(
-        group,
-        "_preamble_free_basis_owned_label",
-        lambda label: label,
-    )
-    letters = tuple((owned_label(backend_index), sign) for backend_index, sign in group._to_engine(group(element)).to_word_list())
+    basis = group.free_basis()
+    backend = group._to_engine(group(element))
+    match _engine_group(group):
+        case FreeGroup_class():
+            letters = tuple(
+                (_owned_basis_label(basis, abs(letter) - 1), 1 if letter > 0 else -1)
+                for letter in backend.Tietze()
+            )
+        case IndexedFreeGroup():
+            letters = tuple(
+                (_owned_basis_label(basis, index), exponent)
+                for index, exponent in backend.to_word_list()
+            )
     return letters[::-1] if _law_reversed(group) else letters
 
 
+def _reduced_word(group, element):
+    r"""Return the reduced word as an owned finite family of signed generators."""
+    from dzack_research.preamble.categories.sets.finite_families import finite_family
+
+    letters = []
+    for index, exponent in _reduced_word_data(group, element):
+        exponent = int(exponent)
+        assert exponent != 0, "a reduced-word coordinate has nonzero exponent"
+        generator = _free_generator(group, index)
+        letter = generator if exponent > 0 else ~generator
+        letters.extend(letter for _ in range(abs(exponent)))
+    return finite_family(letters, name="Reduced group word")
+
+
 def _law_reversed(group) -> bool:
-    """Whether the owned product is the engine product reversed.
+    r"""Whether the owned product of ``group`` is its engine's product reversed.
 
     The owned product is composition of the maps a group's elements act as.
     Matrix engines already multiply as such maps on column vectors.  Sage's
@@ -378,74 +464,223 @@ def _law_reversed(group) -> bool:
     to right, ``(g h)(x) = h(g(x))``, so their owned product is reversed.
     """
     match group:
-        case GroupAutomorphismGroup():
+        case _ if group in GroupAutomorphismGroups():
             return True
-    try:
-        engine = _engine_group(group)
-    except NotImplementedError:
-        return False
+        case _:
+            return _engine_law_reversed(_engine_group(group))
+
+
+def _engine_law_reversed(engine) -> bool:
     match engine:
         case CoxeterMatrixGroup() | NamedMatrixGroup_generic() | FinitelyGeneratedMatrixGroup_generic():
             return False
         case PermutationGroup_generic() | FreeGroup_class() | FinitelyPresentedGroup() | IndexedFreeGroup() | AbelianGroup_class() | ParentLibGAP():
             return True
-    return False
+        case _:
+            return False
+
+
+def _integer_engine_point(point):
+    r"""An owned integer as the engine's integer; any other point unchanged."""
+    integers = _own_ring(ZZ)
+    return _engine_element(integers, integers(point)) if point in integers else point
 
 
 def _engine_point(engine, point):
-    """Cross an owned point into the domain of a Sage permutation group.
-
-    An owned integer becomes the engine's integer when the group permutes
-    integers; any other point is already one the engine's domain holds.
-    """
+    r"""Cross an owned point into the domain of a Sage permutation group."""
     engine_point = _integer_engine_point(point)
     return engine_point if engine_point in engine.domain() else point
 
 
-def _integer_engine_point(point):
-    """An owned integer as the engine's integer; any other point unchanged."""
-    integers = _own_ring(ZZ)
-    if not isinstance(point, int) and point in integers:
-        return _engine_element(integers, point)
-    return point
-
-
-def _owned_point(engine, point):
-    """Read a point of a Sage permutation group's domain as an owned point."""
-    _ = engine
+def _owned_point(point):
+    r"""Read a point of a Sage permutation group's domain as an owned point."""
     match point:
         case Integer():
-            return _own_ring(ZZ)._from_engine_element(point)
-    return point
+            return _owned_engine_element(ZZ, point)
+        case _:
+            return point
 
 
-def _presentation_of(group):
+def _engine_element_action(group, backend_element, point):
+    r"""Apply an engine element to a point.
+
+    A Galois group acts on its field by automorphisms; any other permutation
+    group acts on the points it permutes, and fixes every other point.
+    """
     engine = _engine_group(group)
     match engine:
-        case FreeGroup_class():
-            return _own_group(engine), ()
-        case FinitelyPresentedGroup():
-            return _own_group(engine.free_group()), tuple(engine.relations())
+        case SageGaloisGroup():
+            field = _own_ring(engine.number_field())
+            assert point in field, f"{point} is not an element of {field}"
+            return _owned_engine_element(field, backend_element.as_mor()(_engine_element(field, point)))
         case PermutationGroup_generic():
-            presented = engine.as_finitely_presented_group()
-            return _own_group(presented.free_group()), tuple(presented.relations())
-        case AbelianGroup_class():
-            presented = engine.permutation_group().as_finitely_presented_group()
-            return _own_group(presented.free_group()), tuple(presented.relations())
+            engine_point = _engine_point(engine, point)
+            if engine_point not in engine.domain():
+                return point
+            return _owned_point(backend_element(engine_point))
+        case _:
+            assert False, f"{group} is not realized as a permutation group, so its elements do not act on points"
+
+
+def _engine_word(group, backend_element):
+    r"""Return the word of an engine element in the chosen generators, as signed generator positions."""
+    engine = _engine_group(group)
+    assert _encodes_as_words(engine), (
+        f"{group} is not realized by words in its chosen generators, so its engine supplies no word"
+    )
+    word = tuple(int(letter) for letter in backend_element.Tietze())
+    return word[::-1] if _law_reversed(group) else word
+
+
+def _encodes_as_words(engine) -> bool:
+    r"""Whether ``engine`` encodes its elements as words in its chosen generators."""
+    match engine:
+        case FreeGroup_class() | FinitelyPresentedGroup():
+            return True
+        case _:
+            return False
+
+
+def _engine_element_text(group, backend_element) -> str:
+    r"""Return the owned notation for an engine element, or the empty string."""
+    engine = _engine_group(group)
+    match engine:
+        case FreeGroup_class() | FinitelyPresentedGroup():
+            return " ".join(
+                f"g_{abs(letter)}" if letter > 0 else f"g_{abs(letter)}^-1"
+                for letter in _engine_word(group, backend_element)
+            )
+        case PermutationGroup_generic():
+            cycles = tuple(tuple(cycle) for cycle in backend_element.cycle_tuples())
+            return "".join("(" + " ".join(map(str, cycle)) + ")" for cycle in cycles)
+        case _:
+            return ""
+
+
+def _engine_element_latex(group, backend_element) -> str:
+    r"""Return the owned LaTeX for an engine element, or the empty string."""
+    match _engine_group(group):
+        case FreeGroup_class() | FinitelyPresentedGroup():
+            return " ".join(
+                rf"g_{{{abs(letter)}}}" if letter > 0 else rf"g_{{{abs(letter)}}}^{{-1}}"
+                for letter in _engine_word(group, backend_element)
+            )
+        case _:
+            return ""
+
+
+def _chosen_engine_presentation(engine):
+    r"""Return the free source and backend relators already defining ``engine``."""
+    match engine:
+        case FreeGroup_class():
+            return None, ()
+        case FinitelyPresentedGroup():
+            return engine.free_group(), tuple(engine.relations())
         case CoxeterMatrixGroup():
             free, relations = _coxeter_presentation(engine.coxeter_matrix())
-            return _own_group(free), relations
-        case FinitelyGeneratedMatrixGroup_gap() if _engine_finiteness(engine) is True:
-            presented = engine.as_permutation_group().as_finitely_presented_group()
-            return _own_group(presented.free_group()), tuple(presented.relations())
-        case NamedMatrixGroup_generic() | NamedMatrixGroup_gap():
-            presented = engine.as_permutation_group().as_finitely_presented_group()
-            return _own_group(presented.free_group()), tuple(presented.relations())
+            return free, relations
         case _:
-            raise NotImplementedError(f"{group} does not supply chosen finite-presentation data")
+            raise TypeError("this engine does not itself carry a chosen finite presentation")
+
+
+def _computed_finitely_presented_engine(group):
+    r"""Compute one maintained finitely presented model of ``group``."""
+    engine = _engine_group(group)
+    match engine:
+        case PermutationGroup_generic():
+            return engine.as_finitely_presented_group()
+        case AbelianGroup_class():
+            return engine.permutation_group().as_finitely_presented_group()
+        case FinitelyGeneratedMatrixGroup_gap() if _engine_finiteness(engine) is True:
+            return engine.as_permutation_group().as_finitely_presented_group()
+        case NamedMatrixGroup_generic() | NamedMatrixGroup_gap():
+            return engine.as_permutation_group().as_finitely_presented_group()
+        case _:
+            assert False, f"{group} does not supply chosen finite-presentation data"
+
+
+class _SelectedGroupPresentation:
+    r"""The chosen free source and relators defining one presented group."""
+
+    def __init__(self, free_group, relations) -> None:
+        self._free_group = free_group
+        self._relations = relations
+
+    def free_group(self):
+        return self._free_group
+
+    def relations(self):
+        return self._relations
+
+
+def _group_framing_morphism(group, source, labels, generator_morphism):
+    r"""Realize one selected set-of-generators map as the induced group morphism."""
+    assert source.free_basis() is labels, (
+        "the selected group framing source is free on its stated framing labels"
+    )
+    return source.Mor(group)(generator_morphism)
+
+
+def _fix_selected_group_framing(group, *, free_basis=None) -> None:
+    r"""Retain one chosen free-source epimorphism."""
+    if free_basis is not None:
+        source = group
+        labels = free_basis
+        generator_morphism = Sets().Mor(labels, group)(group.free_generator)
+        _fix_selected_framing(
+            group,
+            OwnedGroups(),
+            source,
+            labels,
+            generator_morphism,
+            lambda: _group_framing_morphism(
+                group, source, labels, generator_morphism
+            ),
+        )
+        return
+
+    generators = _engine_generators(group)
+    source = Groups.Free(index_set=generators)
+    generator_morphism = Sets().Mor(generators, group)(lambda generator: group(generator))
+    _fix_selected_framing(
+        group,
+        OwnedGroups(),
+        source,
+        generators,
+        generator_morphism,
+        lambda: _group_framing_morphism(
+            group, source, generators, generator_morphism
+        ),
+    )
+
+
+def _fix_selected_group_presentation(group, source, relations) -> None:
+    r"""Install one constructor-selected presentation and its exact framing."""
+    labels = source.free_basis()
+    generators = _engine_generators(group)
+    assert generators.cardinality() == labels.cardinality(), (
+        "the carried finite presentation has one image for each free generator"
+    )
+    ranking = labels.ranking_map()
+    generator_morphism = Sets().Mor(labels, group)(
+        lambda label: generators[int(ranking(label))]
+    )
+    _fix_selected_framing(
+        group,
+        OwnedGroups(),
+        source,
+        labels,
+        generator_morphism,
+        lambda: _group_framing_morphism(group, source, labels, generator_morphism),
+    )
+    group._selected_group_presentation = _SelectedGroupPresentation(
+        source,
+        finite_ordered_set(tuple(relations)),
+    )
 
 
 def _engine_quotient_by_relators(group, relators):
+    r"""Return ``G / <<relators>>`` computed from the engine's presentation."""
     engine = _engine_group(group)
     match engine:
         case FreeGroup_class():
@@ -456,100 +691,228 @@ def _engine_quotient_by_relators(group, relators):
             relations = list(engine.relations()) + [free(group._to_engine(group(relator)).Tietze()) for relator in relators]
             return _own_group(free.quotient(relations))
         case _:
-            raise NotImplementedError(f"{group} does not form quotients by relators in this engine")
+            assert False, f"{group} does not form quotients by relators in this engine"
+
+
+def _engine_abelianity(engine):
+    r"""Whether the engine's structure decides its group abelian, else ``Unknown``.
+
+    ``F_0`` and ``F_1`` are abelian; ``F_n`` for ``n >= 2`` contains two
+    noncommuting free generators.  This reads the rank of the represented
+    free group and performs no search.
+    """
+    match engine:
+        case FreeGroup_class():
+            return engine.ngens() <= 1
+        case _:
+            return Unknown
+
+
+# Witnesses read off an engine for the placement of the group it realizes.
+# Each is a positive witness: ``False`` means the engine supplied none, never
+# that the property fails.
 
 
 def _is_arithmetic_witness(engine) -> bool:
-    return isinstance(engine, NamedMatrixGroup_generic) and engine.base_ring() is ZZ
+    match engine:
+        case NamedMatrixGroup_generic():
+            return engine.base_ring() is ZZ
+        case _:
+            return False
 
 
-def _is_abelian_witness(engine):
+def _is_abelian_witness(engine) -> bool:
     if engine.category().is_subcategory(SageGroups().Commutative()):
         return True
-    if isinstance(engine, (AbelianGroup_class, AbelianGroup_subgroup)):
-        return True
-    if isinstance(engine, FreeGroup_class):
-        return len(tuple(engine.gens())) <= 1
-    if isinstance(engine, FinitelyPresentedGroup):
-        # A bare finite presentation is not a cheap abelianity certificate.
-        # Sage/GAP may launch a coset-table computation here, while this routine
-        # only decides whether construction already supplied a positive witness.
-        return False
-    try:
-        return bool(engine.is_abelian())
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        return False
+    match engine:
+        case AbelianGroup_class() | AbelianGroup_subgroup():
+            return True
+        case FreeGroup_class():
+            return engine.ngens() <= 1
+        case FinitelyPresentedGroup():
+            # A bare finite presentation is not a cheap abelianity certificate:
+            # Sage/GAP may launch a coset-table computation to decide it.
+            return False
+        case _ if _engine_finiteness(engine) is True:
+            return bool(engine.is_abelian())
+        case _:
+            return False
 
 
-def _has_chosen_generators(engine):
-    return isinstance(
-        engine,
-        (
-            PermutationGroup_generic,
-            AbelianGroup_class,
-            FreeGroup_class,
-            FinitelyPresentedGroup,
-            FinitelyGeneratedMatrixGroup_generic,
-            FinitelyGeneratedMatrixGroup_gap,
-            CoxeterMatrixGroup,
-        ),
-    )
+def _has_chosen_generators(engine) -> bool:
+    match engine:
+        case PermutationGroup_generic() | AbelianGroup_class() | FreeGroup_class() | FinitelyPresentedGroup() | FinitelyGeneratedMatrixGroup_generic() | FinitelyGeneratedMatrixGroup_gap() | CoxeterMatrixGroup():
+            return True
+        case _:
+            return False
 
 
-def _has_chosen_presentation(engine):
-    if isinstance(engine, (FreeGroup_class, FinitelyPresentedGroup, CoxeterMatrixGroup)):
-        return True
-    return _engine_finiteness(engine) is True and isinstance(
-        engine,
-        (
-            PermutationGroup_generic,
-            AbelianGroup_class,
-            FinitelyGeneratedMatrixGroup_gap,
-            NamedMatrixGroup_generic,
-            NamedMatrixGroup_gap,
-        ),
-    )
+def _has_chosen_presentation(engine) -> bool:
+    match engine:
+        case FreeGroup_class() | FinitelyPresentedGroup() | CoxeterMatrixGroup():
+            return True
+        case _:
+            return False
 
 
-def _is_finitely_generated_witness(engine):
+def _is_finitely_generated_witness(engine) -> bool:
     return _engine_finiteness(engine) is True or _has_chosen_generators(engine) or _is_arithmetic_witness(engine)
 
 
-def _is_finitely_presented_witness(engine):
-    return _engine_finiteness(engine) is True or isinstance(engine, (FreeGroup_class, FinitelyPresentedGroup, CoxeterMatrixGroup, AbelianGroup_class))
+def _is_finitely_presented_witness(engine) -> bool:
+    match engine:
+        case FreeGroup_class() | FinitelyPresentedGroup() | CoxeterMatrixGroup() | AbelianGroup_class():
+            return True
+        case _:
+            return _engine_finiteness(engine) is True
 
 
 def _owned_group_category(engine) -> Category:
-    """Return the join of owned group categories witnessed by ``engine``."""
-    categories = [OwnedGroups()]
+    r"""Return the category an engine-realized group is constructed in.
+
+    The placement adapter: the one site reading an engine's representation
+    type to decide which owned categories the group it realizes belongs to.
+    A chosen free basis is a datum its constructor supplies, so that
+    placement is made by :func:`_own_group`, not here.
+    """
     finiteness = _engine_finiteness(engine)
-    finite = finiteness is True
-    abelian = _is_abelian_witness(engine)
-    if finite and abelian:
-        categories.append(OwnedFiniteAbelianGroups())
-    elif finite:
-        categories.append(OwnedFiniteGroups())
-    elif abelian:
-        categories.append(OwnedAbelianGroups())
-    if finiteness is False:
-        categories.append(OwnedInfiniteGroups())
-    if _is_finitely_generated_witness(engine):
-        categories.append(OwnedGroups().FinitelyGeneratedAsMagma())
-    if _is_finitely_presented_witness(engine):
-        categories.append(OwnedGroups().FinitelyPresentedAsGroup())
-    if _has_chosen_generators(engine):
-        categories.append(GroupsWithChosenFiniteGeneratingSet())
-    if _has_chosen_presentation(engine):
-        categories.append(GroupsWithChosenFinitePresentation())
-    if isinstance(engine, IndexedFreeGroup):
-        categories.append(GroupsWithChosenFreeBasis())
-    if isinstance(engine, PermutationGroup_generic):
-        categories.append(PermutationGroups())
-    return Cat().meet(tuple(categories))
+    witnessed = (
+        (True, OwnedGroups()),
+        (finiteness is True, OwnedGroups().Finite()),
+        (finiteness is False, OwnedGroups().Infinite()),
+        (_is_abelian_witness(engine), OwnedGroups().Commutative()),
+        (_is_finitely_generated_witness(engine), OwnedGroups().FinitelyGeneratedAsMagma()),
+        (_is_finitely_presented_witness(engine), OwnedGroups().FinitelyPresentedAsGroup()),
+        (_has_chosen_generators(engine), OwnedGroups().Framed()),
+        (_has_chosen_presentation(engine), GroupsWithChosenFinitePresentation()),
+        (_encodes_as_permutations(engine), PermutationGroups()),
+    )
+    return Cat().meet(tuple(category for holds, category in witnessed if holds))
 
 
-class _OwnedGroupElement(MultiplicativeGroupElement):
-    r"""An element of a preamble group with a private backend representative."""
+# --------------------------------------------------------------------------
+# The private group realization.
+# --------------------------------------------------------------------------
+
+
+class _GroupEngine:
+    r"""Private Sage/GAP realization selected by the OwnedGroups entry.
+
+    The represented group retains its engine, not a second category node.
+    Subgroups retain their containing group at Subgroups(G); the crossing
+    keeps their elements in that containing group.  The native catalogue
+    continues to supply permutation, matrix, word and other group engines.
+    """
+
+    def __init__(self, engine, description=None, **rest) -> None:
+        self._engine = engine
+        self._description = description
+        super().__init__(**rest)
+
+    def _engine_group(self):
+        return self._engine
+
+    def _to_engine(self, element):
+        supergroup = self.supergroup()
+        if supergroup is not self:
+            return supergroup._to_subgroup_engine(element, self._engine)
+        assert element in self, "the engine crossing requires an element of this group"
+        return element._backend()
+
+    def _from_engine(self, engine_element):
+        supergroup = self.supergroup()
+        if supergroup is not self:
+            return supergroup._from_subgroup_engine(engine_element)
+        return self.element_class(self, self._engine(engine_element))
+
+    def _engine_subgroup_from_generators(self, generators):
+        return _engine_generated_subgroup(
+            self._engine,
+            [self._to_engine(generator) for generator in generators],
+        )
+
+    def _to_subgroup_engine(self, element, engine_subgroup):
+        return engine_subgroup(self._to_engine(element))
+
+    def _from_subgroup_engine(self, engine_element):
+        return self._from_engine(engine_element)
+
+    def __call__(self, value):
+        return self._element_constructor_(value)
+
+    def _element_constructor_(self, value):
+        r"""Admit an element of this group, of another owned group, or a literal.
+
+        The boundary admitting foreign values: a raw engine element is
+        refused, an element of another owned group crosses through that
+        group's engine crossing, and a literal is read by the engine.
+        """
+        supergroup = self.supergroup()
+        if supergroup is not self:
+            element = supergroup(value)
+            if element not in self:
+                raise ValueError(f"{element} is not in {self}")
+            return element
+        if value in self:
+            return value
+        if isinstance(value, Element) and value.parent() in OwnedGroups():
+            return self._from_engine(value.parent()._to_engine(value))
+        if isinstance(value, SageObject):
+            raise TypeError("raw backend group elements are not accepted by the public preamble API")
+        return self._from_engine(value)
+
+    def __contains__(self, value) -> bool:
+        supergroup = self.supergroup()
+        if supergroup is not self:
+            return value in supergroup and _engine_subgroup_admits(self, value)
+        return isinstance(value, Element) and value.parent() is self
+
+    def __iter__(self):
+        return (self._from_engine(element) for element in self._engine)
+
+    def one(self):
+        return self._from_engine(self._engine.one())
+
+    def _repr_(self):
+        if self._description is not None:
+            return self._description
+        supergroup = self.supergroup()
+        if supergroup is not self:
+            return f"Subgroup of {supergroup}"
+        match self:
+            case _ if self in GroupsWithChosenFiniteGeneratingSet() and self in OwnedFiniteGroups():
+                return f"Group of order {self.cardinality()} generated by {self.group_generators()}"
+            case _ if self in GroupsWithChosenFiniteGeneratingSet():
+                return f"Group generated by {self.group_generators()}"
+            case _:
+                return f"Group in {self.category()}"
+
+    def _latex_(self):
+        if self._description is not None:
+            escaped = self._description.replace("_", r"\_")
+            return rf"\text{{{escaped}}}"
+        match self:
+            case _ if self in GroupsWithChosenFiniteGeneratingSet():
+                count = self.group_generators().cardinality()
+                return rf"\langle g_1,\ldots,g_{{{count}}}\rangle"
+            case _:
+                return r"\mathrm{Group}"
+
+    def is_abelian(self):
+        match self:
+            case _ if self in OwnedAbelianGroups():
+                return True
+            case _ if self in OwnedFiniteGroups():
+                return bool(_gap_model(self).IsAbelian())
+            case _:
+                return _engine_abelianity(self._engine)
+
+    def is_arithmetic_group(self):
+        return True if _is_arithmetic_witness(self._engine) else Unknown
+
+
+class _GroupElement(MultiplicativeGroupElement):
+    r"""An element represented privately by its Sage/GAP group element."""
 
     def __init__(self, parent, backend_element) -> None:
         MultiplicativeGroupElement.__init__(self, parent)
@@ -561,10 +924,11 @@ class _OwnedGroupElement(MultiplicativeGroupElement):
     def _mul_(self, other):
         r"""``self * other`` is the composition ``self ∘ other``.
 
-        A group acts on the left: ``rho(g h) = rho(g) rho(h)``, the product of
-        the matrices acting on an ordered basis.  Sage's permutation groups and
-        GAP's word groups multiply left to right, ``(g h)(x) = h(g(x))``, so
-        for those engines the owned product is the engine product reversed.
+        A group acts on the left: ``rho(g h) = rho(g) rho(h)``, the product
+        of the matrices acting on an ordered basis.  Sage's permutation
+        groups and GAP's word groups multiply left to right,
+        ``(g h)(x) = h(g(x))``, so for those engines the owned product is
+        the engine product reversed.
         """
         parent = self.parent()
         left, right = self._backend(), other._backend()
@@ -573,29 +937,8 @@ class _OwnedGroupElement(MultiplicativeGroupElement):
         return parent._from_engine(left * right)
 
     def __call__(self, point):
-        r"""Apply this element to a point of the set it acts on.
-
-        A Galois group acts on its field by automorphisms; any other
-        permutation group acts on the points it permutes.
-        """
-        parent = self.parent()
-        engine = _engine_group(parent)
-        match engine:
-            case SageGaloisGroup():
-                field = _own_ring(engine.number_field())
-                assert point in field, f"{point} is not an element of {field}"
-                return field._from_engine_element(self._backend().as_hom()(_engine_element(field, point)))
-        assert isinstance(engine, PermutationGroup_generic), f"{parent} is not realized as a permutation group, so its elements do not act on points"
-        engine_point = _engine_point(engine, point)
-        if engine_point not in engine.domain():
-            # A permutation of a set fixes every point outside that set.
-            return point
-        return _owned_point(engine, self._backend()(engine_point))
-
-    def Tietze(self):
-        r"""The word of this element in the chosen generators, as signed generator positions."""
-        word = tuple(int(letter) for letter in self._backend().Tietze())
-        return word[::-1] if _law_reversed(self.parent()) else word
+        r"""Apply this element to a point of the set it acts on."""
+        return _engine_element_action(self.parent(), self._backend(), point)
 
     def _invert_(self):
         return self.parent()._from_engine(~self._backend())
@@ -609,12 +952,12 @@ class _OwnedGroupElement(MultiplicativeGroupElement):
         return self.parent()._from_engine(self._backend() ** int(exponent))
 
     def _richcmp_(self, other, op):
-        if not isinstance(other, _OwnedGroupElement) or other.parent() is not self.parent():
+        if other not in self.parent():
             return NotImplemented
         return richcmp(self._backend(), other._backend(), op)
 
     def __eq__(self, other):
-        return isinstance(other, _OwnedGroupElement) and other.parent() is self.parent() and self._backend() == other._backend()
+        return other in self.parent() and self._backend() == other._backend()
 
     def __ne__(self, other):
         return not self == other
@@ -623,225 +966,164 @@ class _OwnedGroupElement(MultiplicativeGroupElement):
         return hash((id(self.parent()), self._backend()))
 
     def is_one(self):
-        return bool(self._backend() == self.parent()._engine.one())
+        return bool(self._backend() == _engine_group(self.parent()).one())
 
     def order(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        return _own_ring(SageZZ)._from_engine_element(SageZZ(self._backend().order()))
+        r"""The order of this element: an integer when finite, else the cardinality of ``<g>``."""
+        backend_order = self._backend().order()
+        if backend_order == infinity:
+            return aleph(0)
+        return _owned_engine_element(ZZ, ZZ(backend_order))
 
     multiplicative_order = order
-
-    def sign(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        return _own_ring(SageZZ)._from_engine_element(SageZZ(self._backend().sign()))
 
     def _repr_(self):
         if self.is_one():
             return "1"
-        try:
-            word = self.Tietze()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            word = ()
-        if word:
-            return " ".join(
-                f"g_{abs(letter)}" if letter > 0 else f"g_{abs(letter)}^-1"
-                for letter in word
-            )
-        if isinstance(self.parent()._engine, PermutationGroup_generic):
-            cycles = tuple(tuple(cycle) for cycle in self._backend().cycle_tuples())
-            if cycles:
-                return "".join("(" + " ".join(map(str, cycle)) + ")" for cycle in cycles)
+        text = _engine_element_text(self.parent(), self._backend())
+        if text:
+            return text
         return f"element of {self.parent()} of order {self.order()}"
 
     def _latex_(self):
         if self.is_one():
             return "1"
-        try:
-            word = self.Tietze()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            word = ()
-        if word:
-            return " ".join(
-                rf"g_{{{abs(letter)}}}" if letter > 0 else rf"g_{{{abs(letter)}}}^{{-1}}"
-                for letter in word
-            )
+        text = _engine_element_latex(self.parent(), self._backend())
+        if text:
+            return text
         return rf"\text{{element of }}{latex(self.parent())}"
-
-
-class OwnedGroup(Parent):
-    r"""A preamble group with one private Sage/GAP computational model."""
-
-    Element = _OwnedGroupElement
-
-    def __init__(self, engine) -> None:
-        self._engine = engine
-        self._preamble_selected_group_generators = None
-        Parent.__init__(self, category=_owned_group_category(engine))
-        realize_owned_category(self)
-
-    def _engine_group(self):
-        return self._engine
-
-    def _to_engine(self, element):
-        if getattr(element, "parent", lambda: None)() is not self:
-            raise TypeError("the backend crossing requires an element of this preamble group")
-        backend = getattr(element, "_backend", None)
-        if not callable(backend):
-            raise TypeError("the preamble group element has no represented backend value")
-        return backend()
-
-    def _from_engine(self, element):
-        if getattr(element, "parent", lambda: None)() is not self._engine:
-            element = self._engine(element)
-        return self.element_class(self, element)
-
-    def __call__(self, value):
-        r"""Construct an owned group element without Sage coercion discovery."""
-        return self._element_constructor_(value)
-
-    def _element_constructor_(self, value):
-        parent = getattr(value, "parent", lambda: None)()
-        if parent is self:
-            return value
-        if parent is not None and parent in OwnedGroups():
-            to_engine = getattr(parent, "_to_engine", None)
-            if callable(to_engine):
-                try:
-                    return self._from_engine(self._engine(to_engine(value)))
-                except (TypeError, ValueError):
-                    pass
-        if isinstance(value, SageObject):
-            raise TypeError("raw backend group elements are not accepted by the public preamble API")
-        return self._from_engine(self._engine(value))
-
-    def __contains__(self, value) -> bool:
-        return isinstance(value, _OwnedGroupElement) and value.parent() is self
-
-    def __iter__(self):
-        return (self._from_engine(element) for element in self._engine)
-
-    def one(self):
-        return self._from_engine(self._engine.one())
-
-    def _repr_(self):
-        description = self.__dict__.get("_preamble_group_display")
-        if description is not None:
-            return description
-        try:
-            generators = self.group_generators()
-            size = self.cardinality()
-            return f"Group of order {size} generated by {generators}"
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            try:
-                return f"Group generated by {self.group_generators()}"
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return f"Group in {self.category()}"
-
-    def _latex_(self):
-        description = self.__dict__.get("_preamble_group_display")
-        if description is not None:
-            escaped = description.replace("_", r"\_")
-            return rf"\text{{{escaped}}}"
-        try:
-            count = self.group_generators().cardinality()
-            return rf"\langle g_1,\ldots,g_{{{count}}}\rangle"
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return r"\mathrm{Group}"
-
-
-class _TransportedGroupSubobject(Parent):
-    r"""A subgroup of a preamble group computed by a private backend subgroup."""
-
-    def __init__(self, supergroup, engine_subgroup) -> None:
-        self._supergroup = supergroup
-        self._preamble_supergroup = supergroup
-        self._engine = engine_subgroup
-        Parent.__init__(
-            self,
-            facade=supergroup,
-            category=Cat().meet((_owned_group_category(engine_subgroup), Subgroups(supergroup))),
-        )
-        realize_owned_category(self)
-
-    def _engine_group(self):
-        return self._engine
-
-    def _to_engine(self, element):
-        if element not in self._supergroup:
-            raise TypeError("the subgroup crossing requires an ambient preamble element")
-        try:
-            crossing = self._supergroup._to_subgroup_engine
-        except AttributeError:
-            return self._engine(self._supergroup._to_engine(element))
-        return crossing(element, self._engine)
-
-    def _from_engine(self, element):
-        try:
-            crossing = self._supergroup._from_subgroup_engine
-        except AttributeError:
-            return self._supergroup._from_engine(element)
-        return crossing(element)
-
-    def __call__(self, value):
-        r"""Construct a subgroup element without Sage coercion discovery."""
-        return self._element_constructor_(value)
-
-    def _element_constructor_(self, value):
-        if value not in self._supergroup:
-            raise TypeError("a subgroup element must be an ambient preamble element")
-        try:
-            self._to_engine(value)
-        except (TypeError, ValueError):
-            raise ValueError(f"{value} is not in this subgroup") from None
-        return value
-
-    def __contains__(self, value) -> bool:
-        if value not in self._supergroup:
-            return False
-        try:
-            self._to_engine(value)
-        except (TypeError, ValueError):
-            return False
-        return True
-
-    def __iter__(self):
-        return (self._supergroup._from_engine(element) for element in self._engine)
-
-    def one(self):
-        return self._supergroup.one()
-
-    def supergroup(self):
-        return self._supergroup
-
-    def _repr_(self):
-        return f"Subgroup of {self._supergroup}"
-
-
-_OWNED_GROUPS: WeakValueDictionary = WeakValueDictionary()
 
 
 def _owned_group(group):
     r"""Return ``group`` after asserting that it is already a preamble group."""
-    if group not in OwnedGroups():
-        raise TypeError("this API expects a preamble group")
+    assert group in OwnedGroups(), f"this API expects a preamble group, and {group} is not one"
     return group
 
 
-def _own_group(group):
-    """Return the owned group over the Sage group ``group``, one per engine."""
+@cached_function(
+    key=lambda group, refinements, description, free_basis, presentation_source_group: (
+        id(group),
+        refinements,
+        description,
+        id(free_basis),
+        id(presentation_source_group),
+    )
+)
+def _own_group(
+    group,
+    refinements=(),
+    description=None,
+    free_basis=None,
+    presentation_source_group=None,
+):
+    r"""Return the owned group realized by the Sage group ``group``.
+
+    The engine adapter through which every engine-realized group enters.  It
+    computes the placement the engine witnesses, adds the ``refinements`` a
+    construction has proved about the group and, when a free basis was
+    chosen, the free-basis data subcategory, and calls the one constructor
+    entry of that category.  A Sage subgroup engine enters as a subgroup of
+    the owned group realized by its containing engine group.
+
+    Identity is by construction on the defining data (``OWN-10``): the engine
+    object, the proved refinements, the catalogue notation, the chosen free
+    basis, and—when this is a computed presented model—the exact source group.
+    Its comparison images are derived from that source group's selected
+    framing rather than retained a second time.  Sage groups compare
+    structurally, so the engine enters the key by identity, and the cache keeps
+    the engine alive while its owned group is.
+    """
     if group in OwnedGroups():
         return group
-    if group not in SageGroups():
-        raise TypeError(f"{group} is not a group")
-    # Keyed by identity: Sage groups compare structurally, and a subgroup
-    # equal to a freestanding group must keep its own containing group.
-    owned = _OWNED_GROUPS.get(id(group))
-    if owned is None:
-        owned = OwnedGroup(group)
-        _OWNED_GROUPS[id(group)] = owned
-    return owned
+    assert group in SageGroups(), f"{group} is not a group"
+    if free_basis is None and isinstance(group, FreeGroup_class):
+        free_basis = finite_ordinal_set(int(group.ngens()))
+    match group:
+        case PermutationGroup_subgroup() | AbelianGroup_subgroup():
+            return _transported_subgroup(_own_group(group.ambient_group()), group)
+        case ParentLibGAP() if group.ambient() is not group:
+            return _transported_subgroup(_own_group(group.ambient()), group)
+        case _:
+            placement = (_owned_group_category(group), *refinements)
+            presentation_data = {}
+            if _has_chosen_presentation(group):
+                source_engine, backend_relations = _chosen_engine_presentation(group)
+                presentation_source = None if source_engine is None else _own_group(source_engine)
+                relation_source = presentation_source
+                if relation_source is None:
+                    owned_relations = finite_ordered_set(())
+                else:
+                    owned_relations = finite_ordered_set(
+                        tuple(
+                            relation_source._from_engine(relation)
+                            for relation in backend_relations
+                        )
+                    )
+                presentation_data = {
+                    "group_presentation_source": presentation_source,
+                    "group_presentation_relations": owned_relations,
+                    "presentation_source_group": presentation_source_group,
+                }
+            if free_basis is None:
+                owned = _object_of(
+                    Cat().meet(placement),
+                    _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
+                    engine=group,
+                    description=description,
+                    **presentation_data,
+                )
+            else:
+                owned = _object_of(
+                    Cat().meet(
+                        (*placement, GroupsWithChosenFreeBasis(), OwnedGroups().Framed())
+                    ),
+                    _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
+                    engine=group,
+                    description=description,
+                    free_basis=free_basis,
+                    **presentation_data,
+                )
+            if free_basis is not None and not _has_chosen_presentation(group):
+                _fix_selected_group_framing(owned, free_basis=free_basis)
+            elif not _has_chosen_presentation(group) and _has_chosen_generators(group):
+                _fix_selected_group_framing(owned)
+            return owned
+
+
+def _transported_subgroup(group, engine_subgroup):
+    r"""Return the subgroup of ``group`` computed by ``engine_subgroup``."""
+    return _object_of(
+        Cat().meet((_owned_group_category(engine_subgroup), Subgroups(group))),
+        _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
+        engine=engine_subgroup,
+        supergroup=group,
+    )
+
+
+def _generated_subgroup(group, engine_subgroup, generators):
+    r"""Return the subgroup of ``group`` generated by ``generators``, computed by ``engine_subgroup``."""
+    return _object_of(
+        Cat().meet(
+            (
+                _owned_group_category(engine_subgroup),
+                GeneratedSubgroups(group),
+            )
+        ),
+        _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
+        engine=engine_subgroup,
+        supergroup=group,
+        selected_subgroup_generators=generators,
+    )
+
+
+def _engine_subgroup(group, generators):
+    r"""Return the subgroup of ``group`` generated by ``generators``."""
+    selected = finite_ordered_set(tuple(group(generator) for generator in generators))
+    return _generated_subgroup(
+        group,
+        group._engine_subgroup_from_generators(selected),
+        selected,
+    )
 
 
 # --------------------------------------------------------------------------
@@ -850,47 +1132,40 @@ def _own_group(group):
 
 
 def _group_constructor_argument(value):
-    r"""Cross preamble constructor data into a Sage group-constructor input."""
+    r"""Lower one catalogue argument to the engine constructor's input.
 
-    try:
-        if value in OwnedRings():
+    Literal ingress adapter (``OWN-06``): an owned ring becomes its engine
+    ring, an element of an owned group its GAP element, an element of an
+    owned ring its engine element, an owned matrix its engine matrix; tuples,
+    lists and dictionaries are lowered entrywise, and any other literal is
+    already the engine's input.
+    """
+    match value:
+        case tuple():
+            return tuple(_group_constructor_argument(entry) for entry in value)
+        case list():
+            return [_group_constructor_argument(entry) for entry in value]
+        case dict():
+            return {_group_constructor_argument(key): _group_constructor_argument(entry) for key, entry in value.items()}
+        case Parent() if value in OwnedRings():
             return _engine_ring(value)
-    except (AttributeError, TypeError, ValueError):
-        pass
-
-    parent = getattr(value, "parent", lambda: None)()
-    if parent is not None:
-        try:
-            if parent in OwnedGroups():
-                return _element_to_engine(parent, value)
-        except (AttributeError, NameError, NotImplementedError, TypeError, ValueError):
-            pass
-        try:
-            if parent in OwnedRings():
-                return _engine_element(parent, value)
-        except (AttributeError, TypeError, ValueError):
-            pass
-        try:
-            base_ring = parent.base_ring()
-            if parent in MatrixSpaces(base_ring):
-                return _engine_matrix(value)
-        except (AttributeError, TypeError, ValueError):
-            pass
-
-    if isinstance(value, tuple):
-        return tuple(_group_constructor_argument(entry) for entry in value)
-    if isinstance(value, list):
-        return [_group_constructor_argument(entry) for entry in value]
-    if isinstance(value, dict):
-        return {_group_constructor_argument(key): _group_constructor_argument(entry) for key, entry in value.items()}
-    return value
+        case Element() if value.parent() in OwnedGroups():
+            return _element_to_engine(value.parent(), value)
+        case Element() if value.parent() in OwnedRings():
+            return _engine_element(value.parent(), value)
+        case Morphism() if (
+            hasattr(value.parent(), "base_ring")
+            and value.parent() in MatrixSpaces(value.parent().base_ring())
+        ):
+            return _engine_matrix(value)
+        case _:
+            return value
 
 
 def _catalogue_group_description(constructor, arguments):
     r"""Return owned mathematical notation for standard catalogue constructors."""
-    name = constructor.__name__
     first = arguments[0] if arguments else None
-    match name:
+    match constructor.__name__:
         case "CyclicPermutationGroup" if first is not None:
             return f"Cyclic group C_{first} of order {first}"
         case "SymmetricGroup" if first is not None:
@@ -907,20 +1182,21 @@ def _catalogue_group_description(constructor, arguments):
             return None
 
 
+def _lowered_arguments(args, kwargs):
+    return (
+        tuple(_group_constructor_argument(argument) for argument in args),
+        {name: _group_constructor_argument(argument) for name, argument in kwargs.items()},
+    )
+
 
 def _owned_group_constructor(constructor):
     @wraps(constructor)
     def construct(*args, **kwargs):
-        converted_args = tuple(_group_constructor_argument(argument) for argument in args)
-        converted_kwargs = {
-            name: _group_constructor_argument(argument)
-            for name, argument in kwargs.items()
-        }
-        group = _own_group(constructor(*converted_args, **converted_kwargs))
-        description = _catalogue_group_description(constructor, args)
-        if description is not None:
-            group._preamble_group_display = description
-        return group
+        engine_args, engine_kwargs = _lowered_arguments(args, kwargs)
+        return _own_group(
+            constructor(*engine_args, **engine_kwargs),
+            description=_catalogue_group_description(constructor, args),
+        )
 
     return staticmethod(construct)
 
@@ -928,87 +1204,45 @@ def _owned_group_constructor(constructor):
 def _nilpotent_group_constructor(*args, **kwargs):
     from sage.groups.lie_gps.catalog import Nilpotent as SageNilpotent
 
-    return _own_group(
-        SageNilpotent(
-            *tuple(_group_constructor_argument(argument) for argument in args),
-            **{name: _group_constructor_argument(argument) for name, argument in kwargs.items()},
-        )
-    )
+    engine_args, engine_kwargs = _lowered_arguments(args, kwargs)
+    return _own_group(SageNilpotent(*engine_args, **engine_kwargs))
 
 
 def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **kwds):
+    r"""The free group of rank ``n``, or the free group on the owned set ``index_set``.
+
+    On an owned set the free basis is construction data of the group.  The
+    engine is handed the positions of a finite basis, the engine ring of an
+    owned ring, and any other set as it is; :func:`_engine_basis_label`
+    reads a basis point in the same encoding.
+    """
     from sage.groups.misc_gps.misc_groups_catalog import Free as SageFree
 
-    engine_label = _group_constructor_argument
+    engine_kwds = {name: _group_constructor_argument(value) for name, value in kwds.items()}
+    engine_rank = None if n is None else _group_constructor_argument(n)
+    engine_names = _group_constructor_argument(names)
     if index_set is None:
-        backend_index_set = None
-    else:
-        if index_set not in Sets():
-            raise TypeError("a free-group index set must be an owned set")
-        try:
-            size = cardinal(index_set.cardinality())
-            finite_index_set = size.is_finite()
-        except (AttributeError, TypeError, ValueError):
-            finite_index_set = getattr(index_set, "is_finite", lambda: False)() is True
-        if finite_index_set:
-            owned_labels = tuple(index_set)
-            backend_index_set = tuple(range(len(owned_labels)))
-
-            def engine_label(label):
-                for position, candidate in enumerate(owned_labels):
-                    if candidate == label:
-                        return position
-                raise ValueError(f"{label!r} is not in the chosen free basis")
-
-            def owned_label(backend_label):
-                try:
-                    return owned_labels[int(backend_label)]
-                except (IndexError, TypeError, ValueError) as error:
-                    raise ValueError(
-                        f"{backend_label!r} is not in the backend free basis"
-                    ) from error
-        else:
-            backend_index_set = _group_constructor_argument(index_set)
-            if backend_index_set is index_set:
-
-                def engine_label(label):
-                    return label
-
-                def owned_label(label):
-                    return label
-            else:
-                if index_set in OwnedRings():
-                    owned_label = index_set._from_engine_element
-                else:
-
-                    def owned_label(label):
-                        return label
-
-    owned = _own_group(
-        SageFree(
-            _group_constructor_argument(n) if n is not None else None,
-            _group_constructor_argument(names),
-            index_set=backend_index_set,
-            abelian=abelian,
-            **{name: _group_constructor_argument(value) for name, value in kwds.items()},
-        )
+        return _own_group(SageFree(engine_rank, engine_names, index_set=None, abelian=abelian, **engine_kwds))
+    assert index_set in Sets(), "a free-group index set must be an owned set"
+    match index_set:
+        case _ if index_set in FiniteSets():
+            engine_index_set = tuple(range(int(cardinal(index_set.cardinality()).finite_value())))
+        case _:
+            engine_index_set = _group_constructor_argument(index_set)
+    return _own_group(
+        SageFree(engine_rank, engine_names, index_set=engine_index_set, abelian=abelian, **engine_kwds),
+        free_basis=None if abelian else index_set,
     )
-    if index_set is not None:
-        owned._preamble_free_basis = index_set
-        owned._preamble_free_basis_engine_label = engine_label
-        owned._preamble_free_basis_owned_label = owned_label
-    return owned
 
 
 def _group_over_ring(constructor, degree, ring, *args, **kwargs):
-
-    owned_ring = _owned_ring(ring)
+    engine_args, engine_kwargs = _lowered_arguments(args, kwargs)
     return _own_group(
         constructor(
             _group_constructor_argument(degree),
-            _engine_ring(owned_ring),
-            *tuple(_group_constructor_argument(argument) for argument in args),
-            **{name: _group_constructor_argument(argument) for name, argument in kwargs.items()},
+            _engine_ring(_owned_ring(ring)),
+            *engine_args,
+            **engine_kwargs,
         )
     )
 
@@ -1109,7 +1343,7 @@ def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
 
 
 # --------------------------------------------------------------------------
-# Subgroup inclusions and the Hom packet.
+# Subgroup inclusions and the Mor packet.
 # --------------------------------------------------------------------------
 
 
@@ -1124,7 +1358,7 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
     assert bool(normal_subgroup.IsNormal(group_model)), (
         "a group quotient requires a normal subgroup"
     )
-    gap_projection = libgap.NaturalHomomorphismByNormalSubgroup(
+    gap_projection = libgap.NaturalMorphismByNormalSubgroup(
         group_model,
         normal_subgroup,
     )
@@ -1142,6 +1376,33 @@ class SubgroupInclusion(SetMorphism):
     def is_injective(self):
         return True
 
+    def factor_through_or_none(self, target_inclusion):
+        r"""Return the subgroup factor, or None when represented containment fails."""
+        if target_inclusion.codomain() is not self.codomain():
+            raise ValueError("subgroup factorization requires one ambient group")
+        source = self.domain()
+        target = target_inclusion.domain()
+        if source is target:
+            return source.Mor(target).identity()
+        match source:
+            case _ if source in GeneratedSubgroups(self.codomain()):
+                witnesses = source.selected_subgroup_generators()
+            case _ if source in OwnedFiniteGroups():
+                witnesses = source
+            case _:
+                assert source in GeneratedSubgroups(self.codomain()), (
+                    "subgroup containment is decided here from a chosen generating family or finite enumeration"
+                )
+        if not all(element in target for element in witnesses):
+            return None
+        return source.Mor(target)(lambda element: target(element))
+
+    def factor_through(self, target_inclusion):
+        factor = self.factor_through_or_none(target_inclusion)
+        if factor is None:
+            raise ValueError("the source subgroup is not contained in the target")
+        return factor
+
     @cached_method
     def _cokernel_data(self):
         r"""Return the quotient by the normal closure of this subgroup image."""
@@ -1155,14 +1416,17 @@ class SubgroupInclusion(SetMorphism):
             PredicateSubgroups,
         )
 
-        if subgroup in KernelSubgroups(ambient):
-            subgroup_model = subgroup.kernel_morphism().gap().Kernel()
-        else:
-            assert subgroup not in PredicateSubgroups(ambient), (
-                "the current exact cokernel computation for a predicate subgroup "
-                "requires a represented kernel"
-            )
-            subgroup_model = _gap_model(subgroup)
+        match subgroup:
+            case _ if subgroup in KernelSubgroups(ambient):
+                subgroup_model = (
+                    subgroup.kernel_morphism()._gap_morphism_crossing().Kernel()
+                )
+            case _:
+                assert subgroup not in PredicateSubgroups(ambient), (
+                    "the current exact cokernel computation for a predicate subgroup "
+                    "requires a represented kernel"
+                )
+                subgroup_model = _gap_model(subgroup)
         normal_closure = libgap.NormalClosure(_gap_model(ambient), subgroup_model)
         return _finite_group_quotient_by_gap_normal_subgroup(
             ambient,
@@ -1176,122 +1440,88 @@ class SubgroupInclusion(SetMorphism):
         return self._cokernel_data()[1]
 
 
-def _group_inclusion_image(subgroup, containing_group, element):
-    match subgroup:
-        case OwnedGroup():
-            match subgroup._engine:
-                case AbelianGroup_subgroup() as engine:
-                    image = containing_group.one()
-                    for generator, exponent in zip(engine.gens(), element.exponents(), strict=True):
-                        image *= containing_group(generator) ** exponent
-                    return image
-    return containing_group(element)
-
-
 def _canonical_subgroup_inclusion(subgroup):
+    r"""The inclusion ``H -> G`` of a subgroup whose elements are elements of ``G``."""
     containing_group = subgroup.supergroup()
-    return SubgroupInclusion(
-        subgroup.Mor(containing_group),
-        lambda element: _group_inclusion_image(subgroup, containing_group, element),
+    return subgroup.Mor(containing_group)._from_realization_rule(
+        lambda mor: SubgroupInclusion(mor, containing_group)
     )
 
 
-def _element_to_engine(group, element):
-
-    match group:
-        case GroupAutomorphismGroup():
-            return element.gap()
-        case _ if _elements_have_gap_models(group):
-            return group._to_engine(group(element)).gap()
-        case _:
-            raise NotImplementedError(f"{group}'s GAP model does not retain an elementwise identification")
-
-
-def _element_from_engine(group, _engine_element):
-
-    match group:
-        case GroupAutomorphismGroup():
-            return group(_engine_element, check=False)
-        case _ if _elements_have_gap_models(group):
-            return group._from_engine(_engine_group(group)(_engine_element))
-        case _:
-            raise NotImplementedError(f"{group}'s GAP model does not retain an elementwise identification")
-
-
-class IndexedFreeGroupHomomorphism(Morphism):
+class IndexedFreeGroupMorphism(Morphism):
     r"""A morphism out of the free group on a chosen set.
 
-    The free group on an arbitrary set has no elementwise GAP model.  Its
-    universal morphisms are therefore evaluated directly on reduced words
-    instead of forcing this object through the unrelated libGAP path.
+    The universal property of the free group ``F(S)`` makes a group morphism
+    ``F(S) -> H`` the same datum as a set map ``S -> H``, which is what this
+    morphism stores; it is evaluated on reduced words.  The free group on an
+    arbitrary set has no elementwise GAP model, so no GAP morphism is used.
     """
 
-    def __init__(self, parent, images) -> None:
+    def __init__(self, parent, generator_morphism) -> None:
         Morphism.__init__(self, parent)
-        indices = self.domain().free_basis()
-        set_homset = Sets().Mor(indices, self.codomain())
-        if isinstance(images, SetMorphism):
-            if images.domain() is not indices or images.codomain() is not self.codomain():
-                raise ValueError("the generator map has the wrong source or target")
-            self._generator_morphism = images
-        elif isinstance(images, dict):
-            if indices.cardinality() == infinity:
-                raise ValueError("an infinite indexed free group requires a set morphism on its index set")
-            missing = [index for index in indices if index not in images]
-            if missing:
-                raise ValueError(f"generator assignment omits {missing}")
-            self._generator_morphism = SetMorphism(set_homset, images.__getitem__)
-        elif callable(images):
-            self._generator_morphism = SetMorphism(set_homset, images)
-        else:
-            raise TypeError("an indexed-free-group morphism is specified on its index set")
+        self._generator_morphism = generator_morphism
 
     def generator_morphism(self):
         return self._generator_morphism
 
     def _call_(self, element):
-        value = self.codomain().one()
-        for index, sign in self.domain().reduced_word(element):
-            image = self.generator_morphism()(index)
-            value *= image if sign == 1 else image**-1
-        return value
+        codomain = self.codomain()
+        return reduce(
+            mul,
+            (
+                self.generator_morphism()(index) ** sign
+                for index, sign in _reduced_word_data(self.domain(), element)
+            ),
+            codomain.one(),
+        )
 
     def postcompose(self, morphism):
-        if morphism.domain() is not self.codomain():
-            raise ValueError("group-morphism composition requires matching middle groups")
+        assert morphism.domain() is self.codomain(), (
+            "group-morphism composition requires matching middle groups"
+        )
         indices = self.domain().free_basis()
         return self.domain().Mor(morphism.codomain())(
-            SetMorphism(
-                Sets().Mor(indices, morphism.codomain()),
-                lambda index: morphism(self.generator_morphism()(index)),
+            Sets().Mor(indices, morphism.codomain())(
+                lambda index: morphism(self.generator_morphism()(index))
             )
         )
 
-    def __mul__(self, other):
+    def _composition(self, right):
+        r"""``self ∘ right`` for a group morphism ``right`` out of a free group, read on its basis.
 
-        if other.codomain() is not self.domain():
+        Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
+        morphism's domain.
+        """
+        source = right.domain()
+        if source not in GroupsWithChosenFreeBasis() or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups()):
             return NotImplemented
-        if other.domain() not in GroupsWithChosenFreeBasis():
-            return NotImplemented
-        indices = other.domain().free_basis()
-        return other.domain().Mor(self.codomain())(
-            SetMorphism(
-                Sets().Mor(indices, self.codomain()),
-                lambda index: self(other(other.domain().free_generator(index))),
+        return source.Mor(self.codomain())(
+            Sets().Mor(source.free_basis(), self.codomain())(
+                lambda index: self(right(source.free_generator(index)))
             )
         )
 
 
-class IndexedFreeGroupHomset(CategoricalHomset):
-    """The canonical Hom-set out of the free group on a chosen set."""
+class _GroupMorRealizationMixin:
+    def _from_realization_rule(self, rule):
+        r"""Realize a specialized group arrow through this canonical Mor parent."""
+        morphism = rule(self)
+        assert morphism.parent() is self, (
+            "a group-Mor realization rule must return an arrow parented by this Mor"
+        )
+        return morphism
 
-    Element = IndexedFreeGroupHomomorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
+    """The canonical Mor object out of the free group on a chosen set."""
+
+    Element = IndexedFreeGroupMorphism
+
+    def __init__(self, mor_family, domain, codomain) -> None:
         category = Monoids() if domain is codomain else None
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
             category=category,
@@ -1299,50 +1529,111 @@ class IndexedFreeGroupHomset(CategoricalHomset):
         realize_owned_category(self)
 
     def _element_constructor_(self, images, **_options):
-        return self.element_class(self, images)
+        r"""The morphism ``F(S) -> H`` determined by the images of the basis ``S``.
+
+        The images are a set morphism ``S -> H``, a function on ``S``, or, for
+        a finite ``S``, a dictionary naming every basis point.
+        """
+        indices = self.domain().free_basis()
+        set_mor = Sets().Mor(indices, self.codomain())
+        match images:
+            case SetMorphism():
+                assert images.domain() is indices and images.codomain() is self.codomain(), (
+                    "the generator map has the wrong source or target"
+                )
+                generator_morphism = images
+            case dict():
+                assert indices in FiniteSets(), (
+                    "a free group on a set not known finite is specified by a set morphism on its basis"
+                )
+                assert all(index in images for index in indices), (
+                    "the generator assignment names every point of the free basis"
+                )
+                generator_morphism = set_mor(images.__getitem__)
+            case _ if callable(images):
+                generator_morphism = set_mor(images)
+            case _:
+                raise TypeError("an indexed-free-group morphism is specified on its free basis")
+        return self.element_class(self, generator_morphism)
+
+    def cardinality(self):
+        r"""A homomorphism from F(S) is exactly a function S -> H."""
+        return cardinal(self.codomain().cardinality()) ** cardinal(self.domain().free_basis().cardinality())
 
     def _repr_(self):
-        return f"Hom({self.domain()}, {self.codomain()})"
+        return f"Mor({self.domain()}, {self.codomain()})"
 
 
-class GroupHomomorphism(GroupMorphism_libgap):
-    """A group homomorphism represented by Sage's maintained GAP morphism."""
+class GroupMorphism(Morphism):
+    r"""An owned group morphism computed by a private GAP homomorphism."""
+
+    def __init__(self, parent, gap_homomorphism, check=True) -> None:
+        Morphism.__init__(self, parent)
+        if check:
+            assert gap_homomorphism.Source() == _gap_model(self.domain()), (
+                "the GAP homomorphism has the wrong source"
+            )
+            assert gap_homomorphism.Range() == _gap_model(self.codomain()), (
+                "the GAP homomorphism has the wrong range"
+            )
+        self._gap_homomorphism = gap_homomorphism
+
+    def _gap_morphism_crossing(self):
+        r"""Return the private GAP realization to the group computation owner."""
+        return self._gap_homomorphism
 
     def __eq__(self, other):
-        r"""Decide equality on a finite generating family of the source."""
-        if getattr(other, "parent", lambda: None)() is not self.parent():
+        r"""Decide equality on the generators of the source's GAP model."""
+        if not isinstance(other, Morphism) or other.parent() is not self.parent():
             return False
         if self is other:
             return True
-
-        source = _gap_model(self.domain())
-        return all(self(_element_from_engine(self.domain(), generator)) == other(_element_from_engine(self.domain(), generator)) for generator in source.GeneratorsOfGroup())
+        source = self.domain()
+        return all(
+            self(_element_from_engine(source, generator)) == other(_element_from_engine(source, generator))
+            for generator in _gap_model(source).GeneratorsOfGroup()
+        )
 
     def __ne__(self, other):
         return not self == other
 
-    def __mul__(self, other):
-        if isinstance(other, IndexedFreeGroupHomomorphism):
-            return other.postcompose(self)
-        if not isinstance(other, GroupHomomorphism) or other.codomain() is not self.domain():
+    def _composition(self, right):
+        r"""``self ∘ right`` for a group morphism ``right``, computed on the generators of its source.
+
+        Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
+        morphism's domain; a map outside the group Mor is not composed here.
+        """
+        source = right.domain()
+        if source not in OwnedGroups() or not right.parent().mor_family().base_category().is_subcategory(OwnedGroups()):
             return NotImplemented
-        source = other.domain()
+        if source in GroupsWithChosenFreeBasis():
+            return right.postcompose(self)
         backend_generators = _gap_model(source).GeneratorsOfGroup()
-        return source.Mor(self.codomain())(tuple(self(other(_element_from_engine(source, generator))) for generator in backend_generators))
+        return source.Mor(self.codomain())(
+            tuple(
+                self(right(_element_from_engine(source, generator)))
+                for generator in backend_generators
+            )
+        )
 
     def _call_(self, element):
         model = _element_to_engine(self.domain(), element)
-        if self.parent()._twisted:
+        if self.parent()._is_twisted():
             model = model.Inverse()
-        return _element_from_engine(self.codomain(), self.gap().Image(model))
+        return _element_from_engine(
+            self.codomain(),
+            self._gap_morphism_crossing().Image(model),
+        )
 
     def lift(self, element):
         r"""Return one preimage of ``element``."""
-        _engine_element = _element_to_engine(self.codomain(), element)
-        if _engine_element not in self.gap().Image():
-            raise ValueError(f"{element} is not in the image of {self}")
-        preimage = self.gap().PreImagesRepresentative(_engine_element)
-        if self.parent()._twisted:
+        engine_element = _element_to_engine(self.codomain(), element)
+        gap_morphism = self._gap_morphism_crossing()
+        assert engine_element in gap_morphism.Image(), (
+            f"{element} is not in the image of {self}"
+        )
+        preimage = gap_morphism.PreImagesRepresentative(engine_element)
+        if self.parent()._is_twisted():
             preimage = preimage.Inverse()
         return _element_from_engine(self.domain(), preimage)
 
@@ -1377,8 +1668,10 @@ class GroupHomomorphism(GroupMorphism_libgap):
         return KernelSubgroups(self.domain())(self)
 
     def image(self):
-
-        return _subgroup_from_gap(self.codomain(), self.gap().Image())
+        return _subgroup_from_gap(
+            self.codomain(),
+            self._gap_morphism_crossing().Image(),
+        )
 
     @cached_method
     def _cokernel_data(self):
@@ -1389,7 +1682,7 @@ class GroupHomomorphism(GroupMorphism_libgap):
         )
         normal_closure = libgap.NormalClosure(
             _gap_model(codomain),
-            self.gap().Image(),
+            self._gap_morphism_crossing().Image(),
         )
         return _finite_group_quotient_by_gap_normal_subgroup(
             codomain,
@@ -1403,42 +1696,45 @@ class GroupHomomorphism(GroupMorphism_libgap):
         return self._cokernel_data()[1]
 
     def is_injective(self):
-        return bool(self.gap().IsInjective())
+        return bool(self._gap_morphism_crossing().IsInjective())
 
     def is_surjective(self):
-        return bool(self.gap().IsSurjective())
+        return bool(self._gap_morphism_crossing().IsSurjective())
 
 
-class GroupHomset(GroupHomset_libgap, CategoricalHomset):
-    """The canonical owned homset Hom(G,H)."""
+class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
+    """The canonical owned ``Mor(G,H)``."""
 
-    Element = GroupHomomorphism
+    Element = GroupMorphism
 
     @staticmethod
     def __classcall__(cls, family, domain, codomain):
         return typecall(cls, family, domain, codomain)
 
-    def __init__(self, hom_family, domain, codomain, *, category=None):
-        self._family = hom_family
-        self._end_family = None
-        self._aut_family = None
-        self._domain_object = domain
-        self._codomain_object = codomain
-        # When exactly one endpoint multiplies as its engine reversed, an owned
-        # morphism Phi is an engine anti-morphism; it is represented by the
-        # engine morphism phi(x) = Phi(x^-1), and read back through inverses.
-        self._twisted = _law_reversed(domain) != _law_reversed(codomain)
-        self._super_categories_for_classes = [Objects()]
-        Category.__init__(self)
-        GroupHomset_libgap.__init__(self, domain, codomain, category=SageGroups(), check=False)
+    def __init__(self, mor_family, domain, codomain, *, category=None):
         placement = []
         if domain is codomain:
             placement.append(Monoids())
         if category is not None:
             placement.append(category)
-        if placement:
-            CategoryObject._refine_category_(self, Cat().meet(tuple(placement)))
-            realize_owned_category(self)
+        CategoricalMor.__init__(
+            self,
+            mor_family,
+            domain,
+            codomain,
+            category=Cat().meet(tuple(placement)) if placement else None,
+        )
+
+    @cached_method
+    def _is_twisted(self) -> bool:
+        r"""Whether exactly one endpoint multiplies as its engine reversed.
+
+        Then an owned morphism ``Phi`` is an engine anti-morphism; it is
+        represented by the engine morphism ``phi(x) = Phi(x^-1)``, and read
+        back through inverses.  Asked only where a GAP morphism is evaluated,
+        so both endpoints are engine-realized there.
+        """
+        return _law_reversed(self.domain()) != _law_reversed(self.codomain())
 
     def _element_constructor_(self, images, check=True, **_options):
         match images:
@@ -1452,44 +1748,67 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
                 return self._from_gap_generator_images(images, check=check)
         raise TypeError(f"unable to convert {images!r} to an element of {self}")
 
-    def _from_gap_homomorphism(self, gap_homomorphism, check=True):
+    def _from_finite_elementwise_rule(self, function):
+        r"""Admit an elementwise group map by exhaustive verification on a finite domain.
 
+        This is the finite analogue of specifying a map on chosen generators:
+        when no framing has been selected, the multiplication table itself is
+        a finite determining family.  The resulting arrow is still an element
+        of this Mor object; finite enumeration is only its admission algorithm.
+        """
+        domain = self.domain()
+        assert domain.is_finite() is True, (
+            "an elementwise group-morphism rule is admitted here only by exhaustive finite-domain verification"
+        )
+        morphism = _ElementwiseGroupMorphism(self, function)
+        assert all(
+            morphism(left * right) == morphism(left) * morphism(right)
+            for left in domain
+            for right in domain
+        ), "the stated elementwise rule does not preserve group multiplication"
+        return morphism
+
+    def _from_gap_homomorphism(self, gap_homomorphism, check=True):
         if check:
-            if gap_homomorphism.Source() != _gap_model(self.domain()):
-                raise ValueError("the GAP homomorphism has the wrong source")
-            if gap_homomorphism.Range() != _gap_model(self.codomain()):
-                raise ValueError("the GAP homomorphism has the wrong range")
+            assert gap_homomorphism.Source() == _gap_model(self.domain()), (
+                "the GAP homomorphism has the wrong source"
+            )
+            assert gap_homomorphism.Range() == _gap_model(self.codomain()), (
+                "the GAP homomorphism has the wrong range"
+            )
         return self.element_class(self, gap_homomorphism, check=False)
 
     def _from_engine_generator_images(self, generator_models, image_models, check=True):
-
         source = _gap_model(self.domain())
         target = _gap_model(self.codomain())
-        if self._twisted:
+        if self._is_twisted():
             image_models = [model.Inverse() for model in image_models]
-        if check:
-            engine = libgap.GroupHomomorphismByImages(source, target, generator_models, image_models)
-            if engine.is_bool():
-                raise ValueError("the images do not satisfy the domain relations")
-        else:
+        if not check:
             engine = libgap.GroupHomomorphismByImagesNC(source, target, generator_models, image_models)
+            return self.element_class(self, engine, check=False)
+        engine = libgap.GroupHomomorphismByImages(source, target, generator_models, image_models)
+        if engine.is_bool():
+            raise ValueError("the images do not satisfy the domain relations")
         return self.element_class(self, engine, check=False)
 
     def _from_group_generator_images(self, images, check=True):
         domain = self.domain()
         codomain = self.codomain()
-        generators = tuple(domain.group_generators())
-        if set(images) != set(generators):
+        if domain not in OwnedGroups().Framed():
+            raise TypeError(
+                "a group morphism specified on generators requires a selected domain framing"
+            )
+        generators = domain.group_generators()
+        if not (all(generator in images for generator in generators) and all(key in generators for key in images)):
             raise ValueError("the assignment must name exactly the distinguished group generators")
         return self._from_engine_generator_images(
-            [_element_to_engine(domain, g) for g in generators],
-            [_element_to_engine(codomain, codomain(images[g])) for g in generators],
+            [_element_to_engine(domain, generator) for generator in generators],
+            [_element_to_engine(codomain, codomain(images[generator])) for generator in generators],
             check=check,
         )
 
     def _from_gap_generator_images(self, images, check=True):
         r"""Images listed in the order of the GAP model's own generators."""
-
         codomain = self.codomain()
         return self._from_engine_generator_images(
             list(_gap_model(self.domain()).GeneratorsOfGroup()),
@@ -1499,11 +1818,11 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
 
     @cached_method
     def cardinality(self):
-        r"""Return the exact number of represented homomorphisms for finite endpoints."""
+        r"""Return the exact number of homomorphisms between finite endpoints."""
         domain = self.domain()
         codomain = self.codomain()
         assert domain in OwnedFiniteGroups() and codomain in OwnedFiniteGroups(), (
-            "exact group-Hom cardinality is represented here for finite domain and codomain"
+            "exact group-Mor cardinality is represented here for finite domain and codomain"
         )
         homomorphisms = libgap.AllHomomorphisms(
             _gap_model(domain),
@@ -1512,25 +1831,34 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         return cardinal(int(homomorphisms.Length()))
 
     def _repr_(self):
-        return f"Hom({self.domain()}, {self.codomain()})"
+        return f"Mor({self.domain()}, {self.codomain()})"
 
 
-class GroupAutomorphism(GroupHomomorphism):
-    def __mul__(self, other):
+class GroupAutomorphism(GroupMorphism):
+    def _composition(self, right):
         r"""Compose automorphisms inside their represented automorphism group."""
-        if isinstance(other, GroupAutomorphism) and other.parent() is self.parent():
-            return self.parent()(other.gap() * self.gap(), check=False)
-        return super().__mul__(other)
+        if right.parent() is self.parent():
+            return self.parent()(
+                right._gap_morphism_crossing() * self._gap_morphism_crossing(),
+                check=False,
+            )
+        return super()._composition(right)
 
 
 class GroupAutomorphismGroups(OwnedCategory):
+    r"""Automorphism groups ``Aut(G)`` computed by GAP, and their subgroups.
+
+    The datum is the group ``G`` whose automorphisms are the elements, held by
+    the Mor object, together with the GAP subgroup of ``Aut(G)`` when the
+    object is a proper subgroup.
+    """
+
     def super_categories(self):
-        return [OwnedGroups()]
+        return [OwnedGroups(), OwnedGroups().Subobjects(self.supergroup())]
 
     class ParentMethods:
         @cached_method
         def _libgap_(self):
-
             if self._engine_subgroup is not None:
                 return self._engine_subgroup
             return _automorphism_gap_model(self.domain())
@@ -1540,10 +1868,9 @@ class GroupAutomorphismGroups(OwnedCategory):
 
         def __iter__(self):
             r"""Enumerate automorphisms when the underlying group is finite."""
-            if self.domain().is_finite() is not True:
-                raise TypeError(
-                    "enumerating an automorphism group requires a finite underlying group"
-                )
+            assert self.domain().is_finite() is True, (
+                "enumerating an automorphism group requires a finite underlying group"
+            )
             return (
                 self(backend, check=False)
                 for backend in self._libgap_().Elements()
@@ -1552,36 +1879,25 @@ class GroupAutomorphismGroups(OwnedCategory):
         def supergroup(self):
             return self._supergroup
 
-        @cached_method
-        def group_generators(self):
-            backend_generators = self._libgap_().GeneratorsOfGroup()
-            positions = Sets.Δ[len(backend_generators) - 1]
-            return FiniteOrderedSets().from_indexed(
-                positions,
-                lambda position: self(
-                    backend_generators[int(position)],
-                    check=False,
-                ),
-                name=f"Group generators of {self}",
-            )
-
-        def number_of_group_generators(self):
-            return ZZ(self.group_generators().cardinality())
-
         def cardinality(self):
+            r"""``|Aut(G)|``: from GAP for finite ``G``, from the rank for a free ``G``.
+
+            ``Aut(F_0)`` is trivial, ``Aut(F_1) = C_2``, and ``Aut(F_n)`` for
+            ``2 <= n < infinity`` is countably infinite; the rank of a free
+            group is the cardinality of its chosen basis.
+            """
             domain = self.domain()
             if domain in OwnedFiniteGroups():
                 return cardinal(_finite_order(self))
-            if domain in GroupsWithChosenFreeBasis():
-                basis_cardinality = domain.free_basis().cardinality()
-                if basis_cardinality.is_finite():
-                    rank = int(basis_cardinality.finite_value())
-                    if rank == 0:
+            if domain in GroupsWithChosenFreeBasis() and domain.free_basis().cardinality().is_finite():
+                match int(domain.free_basis().cardinality().finite_value()):
+                    case 0:
                         return cardinal(1)
-                    if rank == 1:
+                    case 1:
                         return cardinal(2)
-                    return aleph(0)
-            return OwnedGroups.ParentMethods.cardinality(self)
+                    case _:
+                        return aleph(0)
+            return super().cardinality()
 
         def _repr_(self):
             if self._engine_subgroup is not None:
@@ -1590,40 +1906,62 @@ class GroupAutomorphismGroups(OwnedCategory):
 
     class ElementMethods:
         def inverse(self):
-            return self.parent()(self.gap().InverseGeneralMapping(), check=False)
+            return self.parent()(
+                self._gap_morphism_crossing().InverseGeneralMapping(),
+                check=False,
+            )
 
-        def _composition_(self, right, homset):
-            if right.parent() is not self.parent():
-                raise ValueError("automorphisms must belong to one automorphism group")
-            return self.parent()(right.gap() * self.gap(), check=False)
+        def _composition_(self, right, mor):
+            assert right.parent() is self.parent(), "automorphisms must belong to one automorphism group"
+            return self.parent()(
+                right._gap_morphism_crossing() * self._gap_morphism_crossing(),
+                check=False,
+            )
 
 
-class GroupAutomorphismGroup(GroupHomset):
+class GroupAutomorphismGroup(GroupMor):
     Element = GroupAutomorphism
 
     @staticmethod
-    def __classcall__(cls, hom_family, group, engine_subgroup=None):
-        return typecall(cls, hom_family, group, engine_subgroup=engine_subgroup)
+    def __classcall__(cls, mor_family, group, engine_subgroup=None, supergroup=None):
+        return typecall(cls, mor_family, group, engine_subgroup=engine_subgroup, supergroup=supergroup)
 
-    def __init__(self, hom_family, group, engine_subgroup=None):
+    def __init__(self, mor_family, group, engine_subgroup=None, supergroup=None):
         self._engine_subgroup = engine_subgroup
-        self._supergroup = self
+        self._supergroup = self if supergroup is None else supergroup
         categories = [GroupAutomorphismGroups()]
         if group.is_finite() is True:
-            categories.append(OwnedFiniteGroups())
-        GroupHomset.__init__(
+            categories.extend((OwnedFiniteGroups(), OwnedGroups().Framed()))
+        GroupMor.__init__(
             self,
-            hom_family,
+            mor_family,
             group,
             group,
             category=Cat().meet(tuple(categories)),
         )
+        if group.is_finite() is True:
+            backend_generators = tuple(self._libgap_().GeneratorsOfGroup())
+            generators = finite_ordered_set(
+                tuple(self(generator, check=False) for generator in backend_generators)
+            )
+            source = Groups.Free(index_set=generators)
+            generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
+            _fix_selected_framing(
+                self,
+                OwnedGroups(),
+                source,
+                generators,
+                generator_morphism,
+                lambda: _group_framing_morphism(
+                    self, source, generators, generator_morphism
+                ),
+            )
 
     def super_categories(self):
         packet = self.base_category().category_packet()
         group = self.domain()
         supers = [
-            packet.Homs().Of(group, group),
+            packet.Mors().Of(group, group),
             packet.Monos().Of(group, group),
             packet.Epis().Of(group, group),
         ]
@@ -1634,53 +1972,106 @@ class GroupAutomorphismGroup(GroupHomset):
         return supers
 
     def identity(self):
-
         return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
 
     one = identity
     identity_automorphism = identity
 
-    def set_supergroup(self, supergroup):
-        self._supergroup = supergroup
-
     def _element_constructor_(self, images, check=True, **options):
-        if isinstance(images, GapElement):
-            automorphism = self.element_class(self, images, check=False)
-        else:
-            automorphism = super()._element_constructor_(images, check=check, **options)
-        if check and not bool(automorphism.gap().IsBijective()):
+        match images:
+            case GapElement():
+                automorphism = self.element_class(self, images, check=False)
+            case _:
+                automorphism = super()._element_constructor_(images, check=check, **options)
+        if check and not bool(
+            automorphism._gap_morphism_crossing().IsBijective()
+        ):
             raise ValueError("the endomorphism is not invertible")
         return automorphism
 
     def _subgroup_from_engine(self, engine_subgroup):
-        subgroup = GroupAutomorphismGroup(
-            self.hom_family(),
+        return GroupAutomorphismGroup(
+            self.mor_family(),
             self.domain(),
             engine_subgroup=engine_subgroup,
+            supergroup=self,
         )
-        subgroup.set_supergroup(self)
-        return subgroup
 
 
-class GroupHomCategoryConstruction(HomCategoryConstruction):
-    r"""The represented Hom categories of owned groups."""
+class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
+    r"""The owned group Mor for endpoints without a selected GAP realization.
+
+    Specialized morphism constructions (for example profinite restriction maps
+    and characters) parent their arrows here directly.  This Mor does not
+    manufacture a group map from arbitrary literals when no representation-
+    specific constructor has been selected.
+    """
+
+    Element = Morphism
+
+    def __init__(self, mor_family, domain, codomain) -> None:
+        category = Monoids() if domain is codomain else None
+        CategoricalMor.__init__(
+            self, mor_family, domain, codomain, category=category
+        )
+
+    def _element_constructor_(self, datum):
+        match datum:
+            case Morphism() if datum.parent() is self:
+                return datum
+            case _:
+                assert False, (
+                    "this group Mor has no generic conversion constructor; use the mathematical "
+                    "specialization that supplies the represented morphism"
+                )
+
+    def identity(self):
+        assert self.domain() is self.codomain(), "identity belongs to a group endomorphism Mor"
+        domain = self.domain()
+        return _ElementwiseGroupMorphism(self, lambda element: domain(element))
+
+
+class _ElementwiseGroupMorphism(Morphism):
+    r"""Private elementwise realization used only when the group law supplies the map."""
+
+    def __init__(self, parent, function) -> None:
+        self._function = function
+        Morphism.__init__(self, parent)
+
+    def _call_(self, element):
+        return self.codomain()(self._function(self.domain()(element)))
+
+    def _in_mor(self, mor):
+        return _ElementwiseGroupMorphism(mor, self._function)
+
+
+class GroupMorCategoryConstruction(MorCategoryConstruction):
+    r"""The represented Mor categories of owned groups."""
 
     def Of(self, domain, codomain=None):
         if codomain is None:
             codomain = domain
         if domain not in self.base_category() or codomain not in self.base_category():
-            raise TypeError("a group Hom requires two owned groups")
+            raise TypeError("a group Mor requires two owned groups")
         cached = self._cached_between(domain, codomain)
         if cached is not None:
             return cached
+        from dzack_research.preamble.categories.group.profinite.profinite_groups import (
+            ProfiniteGroups,
+        )
 
-        fixed_class = IndexedFreeGroupHomset if domain in GroupsWithChosenFreeBasis() else GroupHomset
-        result = fixed_class(self, domain, codomain)
+        match domain:
+            case _ if domain in GroupsWithChosenFreeBasis():
+                result = IndexedFreeGroupMor(self, domain, codomain)
+            case _ if domain in ProfiniteGroups():
+                result = GeneralGroupMor(self, domain, codomain)
+            case _:
+                result = GroupMor(self, domain, codomain)
         return self._remember_between(domain, codomain, result)
 
 
 class GroupEndCategoryConstruction(EndCategoryConstruction):
-    r"""Endomorphism monoids of groups, on the same underlying set as ``Hom(G,G)``."""
+    r"""Endomorphism monoids of groups, on the same underlying set as ``Mor(G,G)``."""
 
     def Of(self, obj, codomain=None):
         if codomain is not None and codomain is not obj:
@@ -1861,8 +2252,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a group Hom requires two owned groups")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("a group Mor requires two owned groups")
+        return self.MorCategory().Of(domain, codomain)
 
     def group_algebra(self, base_ring):
         r"""The functor \(R[-]\colon \mathbf{Grp}\to\mathbf{Alg}_R\)."""
@@ -1872,7 +2263,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         return _GroupAlgebraFunctor(base_ring)
 
-    _HomCategory = GroupHomCategoryConstruction
+    _MorCategory = GroupMorCategoryConstruction
     _EndCategory = GroupEndCategoryConstruction
     _IsoCategory = GroupIsoCategoryConstruction
 
@@ -2010,26 +2401,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 isomorphism.Image() for isomorphism in presentation_isomorphisms
             )
             coproduct_engine = libgap.FreeProduct(*presented_factors)
-            coproduct = _own_group(coproduct_engine.sage())
-            selected_generators = tuple(
-                _element_from_engine(coproduct, generator)
-                for generator in coproduct_engine.GeneratorsOfGroup()
-            )
-            generator_positions = Sets.Δ[len(selected_generators) - 1]
-            coproduct._preamble_selected_group_generators = FiniteOrderedSets().from_indexed(
-                generator_positions,
-                lambda position: selected_generators[int(position)],
-                name=f"Chosen generators of {coproduct}",
-            )
+            # A free product with two nontrivial factors contains an element of
+            # infinite order (a product of nontrivial elements of two factors),
+            # so it is infinite; with at most one it is that factor.  This is
+            # proved here and enters as construction data of the coproduct.
             nontrivial_factors = sum(
                 1 for label in labels if int(family[label].order()) > 1
             )
-            refine(
-                coproduct,
-                OwnedInfiniteGroups()
-                if nontrivial_factors >= 2
-                else OwnedFiniteGroups(),
-            )
+            size = OwnedInfiniteGroups() if nontrivial_factors >= 2 else OwnedFiniteGroups()
+            coproduct = _own_group(coproduct_engine.sage(), refinements=(size,))
 
             embeddings = tuple(
                 libgap.Embedding(coproduct_engine, position)
@@ -2051,10 +2431,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def factorizer(cocone):
                 apex = cocone.apex()
-                assert _elements_have_gap_models(apex), (
-                    "the represented free-product factorization currently requires "
-                    "an apex with elementwise GAP coordinates"
-                )
                 generator_models = []
                 image_models = []
                 for position, label in enumerate(labels):
@@ -2154,60 +2530,37 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
         def Mor(self, codomain, category=None):
             groups = OwnedGroups()
-            if category is None or (isinstance(category, OwnedCategory) and category.is_subcategory(groups)):
+            if category is None or category.is_subcategory(groups):
                 return groups.Mor(self, codomain)
-            return _category_homset(category, self, codomain)
+            return _category_mor_parent(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             groups = OwnedGroups()
             if codomain in groups and (category is None or category.is_subcategory(groups)):
                 return groups.Mor(self, codomain)
-            raise TypeError("the requested Hom category is not a group category")
+            raise TypeError("the requested Mor category is not a group category")
 
         def is_finite(self):
             return Unknown
 
         def is_abelian(self):
-            if self in OwnedAbelianGroups():
-                return True
-            engine = _engine_group(self)
-            if isinstance(engine, FreeGroup_class):
-                # F_0 and F_1 are abelian; F_n for n >= 2 contains the two
-                # noncommuting free generators.  This is structural data of
-                # the represented free group, not an infinite search.
-                return len(tuple(engine.gens())) <= 1
-            if self in OwnedFiniteGroups():
-                try:
-                    return bool(_gap_model(self).IsAbelian())
-                except NotImplementedError:
+            match self:
+                case _ if self in OwnedAbelianGroups():
+                    return True
+                case _ if self in OwnedFiniteGroups():
+                    return all(left * right == right * left for left in self for right in self)
+                case _:
                     return Unknown
-            return Unknown
 
         def is_finitely_generated(self):
             if self in OwnedGroups().FinitelyGeneratedAsMagma():
                 return True
             return Unknown
 
-        def number_of_group_generators(self):
-            r"""Return the size of the chosen generating family, or ``Unknown``.
-
-            A group need not come with a selected finite generating family.
-            The question is nevertheless total at the group owner: the
-            category-specific implementation on
-            :class:`GroupsWithChosenFiniteGeneratingSet` returns the exact
-            cardinality, while every other represented group answers
-            ``Unknown`` rather than forcing callers into attribute/exception
-            probing.
-            """
-            return Unknown
-
         def is_finitely_presented(self):
             return True if self in OwnedGroups().FinitelyPresentedAsGroup() else Unknown
 
         def is_arithmetic_group(self):
-            match self:
-                case OwnedGroup() if _is_arithmetic_witness(self._engine):
-                    return True
             return Unknown
 
         def cardinality(self):
@@ -2223,10 +2576,13 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             assert False, "cardinality is defined for every group, but the current exact computation requires a finite group or a represented infinite finitely generated group"
 
         def order(self):
-            r"""Return the group order as an integer when finite, else its cardinality."""
-            if self in OwnedFiniteGroups():
-                return _finite_order(self)
-            return self.cardinality()
+            r"""The set cardinality, read as an integer when finite."""
+            size = cardinal(self.cardinality())
+            match size.is_finite():
+                case True:
+                    return _own_ring(ZZ)(int(size.finite_value()))
+                case False:
+                    return size
 
         def order_is_invertible_in(self, ring) -> bool:
             r"""Return whether ``|G|`` is a unit in ``ring`` for this finite group."""
@@ -2234,6 +2590,83 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 "invertibility of the group order in a coefficient ring currently requires a finite group"
             )
             return bool(ring(int(self.order())).is_unit())
+
+        def finite_image_lifts(
+            self,
+            image,
+            *,
+            generators=None,
+            multiply=None,
+            image_bound=None,
+        ):
+            r"""Retain one source lift above every element of a finite generated image.
+
+            This is the Cayley-graph image algorithm for a group map whose
+            source generators are represented.  ``image`` may be an owned
+            group morphism or another exact represented homomorphism.  When
+            its codomain is an owned finite group, that cardinality is the
+            termination bound; a finite quotient represented by another
+            exact multiplication law supplies ``multiply`` and
+            ``image_bound`` explicitly.
+
+            Supplying ``generators`` asks for the image of the subgroup they
+            generate, while the retained witnesses remain elements of
+            ``self``.  The consistency check on every newly retained word
+            makes this operation unsuitable for an arbitrary nonhomomorphic
+            callback: it is the owner for finite group images with lifts, not
+            a generic graph traversal.
+            """
+            if generators is None:
+                assert self in OwnedGroups().Framed(), (
+                    "finite image enumeration requires selected group generators or an explicit generating family"
+                )
+                generators = tuple(self.group_generators())
+            else:
+                generators = tuple(generators)
+                assert all(generator in self for generator in generators), (
+                    "finite image generators must lie in the source group"
+                )
+
+            if multiply is None:
+                multiply = lambda left, right: left * right
+            if image_bound is None:
+                codomain = image.codomain()
+                assert codomain in OwnedFiniteGroups(), (
+                    "finite image enumeration requires a finite represented codomain or an explicit image_bound"
+                )
+                image_bound = int(codomain.cardinality())
+            image_bound = int(image_bound)
+            if image_bound < 1:
+                raise ValueError("a group image contains its identity")
+
+            identity = self.one()
+            identity_image = image(identity)
+            witnesses = {identity_image: identity}
+            steps = tuple(
+                (image(word), word)
+                for generator in generators
+                for word in (generator, ~generator)
+            )
+            frontier = [identity_image]
+            while frontier:
+                current_image = frontier.pop()
+                current_witness = witnesses[current_image]
+                for step_image, step_witness in steps:
+                    candidate_image = multiply(step_image, current_image)
+                    if candidate_image in witnesses:
+                        continue
+                    candidate_witness = step_witness * current_witness
+                    if image(candidate_witness) != candidate_image:
+                        raise ArithmeticError(
+                            "the retained source word has the wrong finite image"
+                        )
+                    witnesses[candidate_image] = candidate_witness
+                    frontier.append(candidate_image)
+                    if len(witnesses) > image_bound:
+                        raise ArithmeticError(
+                            "the generated image exceeds its declared finite bound"
+                        )
+            return witnesses
 
         def subgroup(self, generators):
             return _engine_subgroup(self, generators)
@@ -2269,22 +2702,20 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         @cached_method
         def center(self):
             r"""Return the center as an owned subgroup in the represented finite case."""
-            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
-                return _subgroup_from_gap(self, _gap_model(self).Center())
-            assert False, (
+            assert self in OwnedFiniteGroups(), (
                 "the group center is defined generally, but the current exact "
-                "construction requires a represented finite GAP group"
+                "construction requires a finite group realized by a GAP-backed engine"
             )
+            return _subgroup_from_gap(self, _gap_model(self).Center())
 
         @cached_method
         def commutator_subgroup(self):
             r"""Return ``[G,G]`` as the represented derived subgroup when finite."""
-            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
-                return _subgroup_from_gap(self, _gap_model(self).DerivedSubgroup())
-            assert False, (
+            assert self in OwnedFiniteGroups(), (
                 "the commutator subgroup is defined generally, but the current exact "
-                "construction requires a represented finite GAP group"
+                "construction requires a finite group realized by a GAP-backed engine"
             )
+            return _subgroup_from_gap(self, _gap_model(self).DerivedSubgroup())
 
         derived_subgroup = commutator_subgroup
 
@@ -2298,20 +2729,24 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             ambient group and canonical inclusion remain the same owned data used
             by ``subgroup(...)`` and the subgroup categories.
             """
-            if self in OwnedFiniteGroups() and _elements_have_gap_models(self):
-                return finite_ordered_set(
-                    tuple(
-                        _subgroup_from_gap(self, subgroup)
-                        for subgroup in _gap_model(self).AllSubgroups()
-                    )
-                )
-            assert False, (
+            assert self in OwnedFiniteGroups(), (
                 "the subgroup set is defined for every group, but the current exact "
-                "enumeration requires a represented finite GAP group"
+                "enumeration requires a finite group realized by a GAP-backed engine"
+            )
+            return finite_ordered_set(
+                tuple(
+                    _subgroup_from_gap(self, subgroup)
+                    for subgroup in _gap_model(self).AllSubgroups()
+                )
             )
 
         def supergroup(self):
-            return _engine_supergroup(self)
+            r"""The group this one was constructed as a subgroup of; a group that is not is its own.
+
+            ``Subgroups(G)`` and the automorphism-group constructions state
+            the containing group as construction data and answer it there.
+            """
+            return self
 
         def inclusion(self):
             return _canonical_subgroup_inclusion(self)
@@ -2349,7 +2784,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             @cached_method
             def endomorphism_ring(self):
-                return _AbelianEndomorphismRingParent(self)
+                r"""The ring ``End(A)`` of group endomorphisms, under pointwise sum and composition."""
+                return _object_of(AbelianGroupEndomorphismRings(), group=self)
 
             @cached_method
             def scalar_action(self):
@@ -2396,6 +2832,26 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     ),
                     name="Conjugacy-class representatives",
                 )
+
+            @cached_method
+            def conjugation_g_set(self):
+                r"""The finite ``G``-set ``G`` under conjugation."""
+                from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+                points = finite_ordered_set(tuple(self))
+                return FiniteGSets(self)(
+                    points,
+                    lambda group_element, point: group_element * point * group_element.inverse(),
+                )
+
+            @cached_method
+            def conjugacy_classes(self):
+                r"""The orbit set of the conjugation action of this finite group."""
+                return self.conjugation_g_set().orbits()
+
+            def conjugacy_class(self, representative):
+                r"""The actual conjugacy orbit of ``representative``."""
+                return self.conjugacy_classes().orbit_of(self(representative))
 
             def class_function(self, codomain, values, *, representatives=None):
                 r"""Return the class function on this finite group with the stated values."""
@@ -2444,7 +2900,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                             self.class_function(
                                 field,
                                 tuple(
-                                    field._from_engine_element(engine_field(value.sage()))
+                                    _owned_engine_element(field, engine_field(value.sage()))
                                     for value in character.List()
                                 ),
                                 representatives=representatives,
@@ -2459,9 +2915,12 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
                 Values are indexed by this group's selected conjugacy-class
                 representatives and live in the same cyclotomic coefficient
-                field as :meth:`irreducible_characters`.  The public result is
-                the owned character object; the finite class-function carrier
-                remains the existing private representation boundary.
+                field as :meth:`irreducible_characters`.  The values define an
+                ordinary character exactly when every inner product with an
+                irreducible character is a nonnegative integer and the class
+                function is the sum of the irreducibles with those
+                multiplicities.  The result is the owned character, an element
+                of ``Char(G)``, whose value family is a class function on ``G``.
                 """
                 from dzack_research.preamble.categories.rings.number_fields import (
                     CyclotomicField,
@@ -2484,32 +2943,32 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 )
                 integers = _own_ring(ZZ)
                 irreducibles = self.irreducible_characters()
-                multiplicities = []
-                for irreducible in irreducibles:
-                    coefficient = candidate._inner_product(irreducible)
-                    try:
-                        multiplicity = integers(coefficient)
-                    except (TypeError, ValueError) as error:
-                        raise ValueError(
-                            "the supplied class values do not define an ordinary character"
-                        ) from error
-                    if multiplicity < integers.zero():
-                        raise ValueError(
-                            "the supplied class values do not define an ordinary character"
-                        )
-                    multiplicities.append(multiplicity)
-                for representative, expected in zip(
-                    representatives, supplied, strict=True
+                inner_products = tuple(
+                    candidate._inner_product(irreducible) for irreducible in irreducibles
+                )
+                if any(inner_product not in integers for inner_product in inner_products):
+                    raise ValueError(
+                        "the supplied class values do not define an ordinary character"
+                    )
+                multiplicities = tuple(integers(inner_product) for inner_product in inner_products)
+                if any(multiplicity < integers.zero() for multiplicity in multiplicities):
+                    raise ValueError(
+                        "the supplied class values do not define an ordinary character"
+                    )
+                if any(
+                    sum(
+                        (
+                            multiplicity * irreducible(representative)
+                            for multiplicity, irreducible in zip(multiplicities, irreducibles, strict=True)
+                        ),
+                        field.zero(),
+                    )
+                    != field(expected)
+                    for representative, expected in zip(representatives, supplied, strict=True)
                 ):
-                    reconstructed = field.zero()
-                    for multiplicity, irreducible in zip(
-                        multiplicities, irreducibles, strict=True
-                    ):
-                        reconstructed += multiplicity * irreducible(representative)
-                    if reconstructed != field(expected):
-                        raise ValueError(
-                            "the supplied class values do not define an ordinary character"
-                        )
+                    raise ValueError(
+                        "the supplied class values do not define an ordinary character"
+                    )
                 return candidate
 
             @cached_method
@@ -2567,6 +3026,34 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             def is_finite(self):
                 return False
 
+    class Framed(CategoryWithAxiom):
+        r"""Groups carrying the global selected-framing datum in ``Grp``."""
+
+        class ParentMethods:
+            def group_generators(self):
+                return self.selected_framing_generators(
+                    OwnedGroups(),
+                    name="Group generators",
+                )
+
+            def number_of_group_generators(self):
+                return self.selected_framing_generator_count(OwnedGroups())
+
+            def conjugation_morphism(self):
+                r"""The morphism ``G -> Aut(G)`` stated on the selected framing generators."""
+                automorphisms = self.Aut()
+                model = _gap_model(self)
+                images = {
+                    generator: automorphisms(
+                        libgap.ConjugatorAutomorphism(
+                            model,
+                            _element_to_engine(self, generator),
+                        )
+                    )
+                    for generator in self.group_generators()
+                }
+                return self.Mor(automorphisms)(images)
+
     class FinitelyGeneratedAsMagma(CategoryWithAxiom):
         r"""Groups admitting some finite generating set."""
 
@@ -2601,6 +3088,27 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             def is_finitely_presented(self):
                 return True
 
+            @cached_method
+            def presentation(self):
+                r"""Return one selected finite-presentation model of this group.
+
+                Finite presentability is only the existence property.  This is
+                the explicit property-to-data crossing: an object that already
+                carries selected presentation data is returned unchanged;
+                otherwise the maintained presentation algorithm constructs a
+                separate presented group.  That object retains this exact group
+                and the comparison morphism back to it, so selecting a
+                presentation never mutates the source group.
+                """
+                if self in GroupsWithChosenFinitePresentation():
+                    return self
+                presented_engine = _computed_finitely_presented_engine(self)
+                return _own_group(
+                    presented_engine,
+                    presentation_source_group=self,
+                )
+
+
 
 class TopologicalGroups(OwnedCategory):
     r"""Owned groups equipped with a represented compatible topology."""
@@ -2613,48 +3121,36 @@ class TopologicalGroups(OwnedCategory):
             return True
 
 
-class GroupsWithChosenFiniteGeneratingSet(OwnedCategory):
-    """Finitely generated groups with a chosen finite generating set."""
-
-    def an_object(self):
-        r"""The cyclic group of order two, with its chosen generator."""
-        return OwnedGroups().C(2)
-
-    def super_categories(self):
-        return [OwnedGroups().FinitelyGeneratedAsMagma()]
-
-    class ParentMethods:
-        @cached_method
-        def group_generators(self):
-            return _unique_nonidentity_generators(self)
-
-        def number_of_group_generators(self):
-            return ZZ(self.group_generators().cardinality())
-
-        def conjugation_morphism(self):
-            automorphisms = self.Aut()
-            model = _gap_model(self)
-            images = {generator: automorphisms(libgap.ConjugatorAutomorphism(model, _element_to_engine(self, generator))) for generator in self.group_generators()}
-            return self.Mor(automorphisms)(images)
+def GroupsWithChosenFiniteGeneratingSet():
+    r"""The global ``Framed`` axiom specialized to owned groups."""
+    return OwnedGroups().Framed()
 
 
 class GroupsWithChosenFreeBasis(OwnedCategory):
-    """Free groups carrying the chosen set they are free on."""
+    r"""Free groups carrying the chosen set they are free on.
+
+    The datum is the basis ``S``: the group is the free group ``F(S)``, and
+    its morphisms out are determined by set maps out of ``S``.
+    """
 
     def super_categories(self):
         return [OwnedGroups()]
 
     class ParentMethods:
+        def __init__(self, free_basis, **rest) -> None:
+            self._free_basis = free_basis
+            super().__init__(**rest)
+
         def free_basis(self):
             r"""Return the set ``S`` this group is the free group on."""
-            return _free_basis(self)
+            return self._free_basis
 
         def free_generator(self, index):
             r"""Return the free generator indexed by a point of the free basis."""
             return _free_generator(self, index)
 
         def reduced_word(self, element):
-            r"""Return the reduced word of ``element`` as ``(index, sign)`` pairs."""
+            r"""Return the reduced word as an owned finite family of signed generators."""
             return _reduced_word(self, element)
 
 
@@ -2677,11 +3173,15 @@ class PermutationGroups(OwnedCategory):
     def super_categories(self):
         return [OwnedGroups()]
 
+    class ElementMethods:
+        def sign(self):
+            r"""The sign of this element as a permutation of the natural points."""
+            return _owned_engine_element(ZZ, ZZ(self.parent()._to_engine(self).sign()))
+
     class ParentMethods:
         def natural_points(self):
             r"""The finite set the group permutes."""
-            engine = _engine_group(self)
-            return finite_ordered_set(tuple(_owned_point(engine, point) for point in engine.domain()))
+            return finite_ordered_set(tuple(_owned_point(point) for point in _engine_group(self).domain()))
 
         def action_on(self, points):
             r"""The ``G``-set on ``points`` with the natural action ``g . x = g(x)``."""
@@ -2696,7 +3196,7 @@ class PermutationGroups(OwnedCategory):
         def orbit(self, point):
             r"""The orbit ``G . point`` of the natural action."""
             engine = _engine_group(self)
-            return finite_ordered_set(tuple(_owned_point(engine, image) for image in engine.orbit(_engine_point(engine, point))))
+            return finite_ordered_set(tuple(_owned_point(image) for image in engine.orbit(_engine_point(engine, point))))
 
         def orbits(self, points=None):
             r"""The orbit set of the natural action on ``points`` (all natural points by default)."""
@@ -2722,46 +3222,157 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
 
     def an_object(self):
         r"""The cyclic group of order two, with its chosen presentation."""
-        return OwnedGroups().C(2)
+        free = Groups.Free(1)
+        generator = next(iter(free.group_generators()))
+        return free.quotient_by_relators((generator * generator,))
 
     def super_categories(self):
         return [
             OwnedGroups().FinitelyPresentedAsGroup(),
-            GroupsWithChosenFiniteGeneratingSet(),
+            OwnedGroups().Framed(),
         ]
 
     class ParentMethods:
-        def presenting_free_group(self):
-            free, _ = _presentation_of(self)
-            return free
+        def __init__(
+            self,
+            group_presentation_source=None,
+            group_presentation_relations=None,
+            presentation_source_group=None,
+            **rest,
+        ) -> None:
+            super().__init__(**rest)
+            if group_presentation_relations is None:
+                raise ValueError("a group with chosen finite presentation requires its relation family at construction")
+            source = self if group_presentation_source is None else group_presentation_source
+            _fix_selected_group_presentation(
+                self,
+                source,
+                group_presentation_relations,
+            )
+            selected_source_group = self if presentation_source_group is None else presentation_source_group
+            if selected_source_group is self:
+                pass
+            else:
+                if selected_source_group not in OwnedGroups().Framed():
+                    raise ValueError(
+                        "a computed presentation requires the retained source group's selected framing"
+                    )
+                presented_generators = tuple(self.group_generators())
+                source_generators = tuple(selected_source_group.group_generators())
+                if len(source_generators) != len(presented_generators):
+                    raise ValueError(
+                        "the maintained presentation must have one generator for each retained source generator"
+                    )
+            self._presentation_source_group = selected_source_group
 
-        @cached_method
+        def presenting_free_group(self):
+            selected = self.__dict__.get("_selected_group_presentation")
+            assert selected is not None, (
+                f"{self} was constructed without chosen finite-presentation data"
+            )
+            assert selected.free_group() is self.selected_framing_source(OwnedGroups()), (
+                "the chosen presentation extends the object's selected framing"
+            )
+            return selected.free_group()
+
         def defining_relations(self):
             r"""The chosen relators, as elements of the presenting free group."""
-            free, relations = _presentation_of(self)
-            return finite_ordered_set(tuple(free._from_engine(relation) for relation in relations))
+            selected = self.__dict__.get("_selected_group_presentation")
+            assert selected is not None, (
+                f"{self} was constructed without chosen finite-presentation data"
+            )
+            return selected.relations()
+
+        def presentation_source_group(self):
+            r"""Return the exact group for which this presentation was selected."""
+            return self._presentation_source_group
+
+        @cached_method
+        def presentation_isomorphism(self):
+            r"""Return the canonical isomorphism from this presented model to its source group."""
+            source = self.presentation_source_group()
+            if source is self:
+                return OwnedGroups().Core().Mor(self, self).identity()
+            source_generators = tuple(source.group_generators())
+            forward = self.Mor(source)(source_generators)
+            inverse = source.Mor(self)(
+                dict(
+                    zip(
+                        source_generators,
+                        (forward.lift(generator) for generator in source_generators),
+                        strict=True,
+                    )
+                )
+            )
+            return OwnedGroups().Core().Mor(self, source)(forward, inverse)
 
         def quotient_by_relators(self, relators):
             r"""Return ``G / <<relators>>``, the quotient by the normal closure of ``relators``."""
             return _engine_quotient_by_relators(self, relators)
 
 
-class _AbelianEndomorphismElement(RingElement):
-    """Storage for one endomorphism; the operations live on its category."""
-
-    def __init__(self, parent, mapping):
-        self._mapping = mapping
-        RingElement.__init__(self, parent)
-
-
 class AbelianGroupEndomorphismRings(OwnedCategory):
-    """Endomorphism rings of abelian groups."""
+    r"""The rings ``End(A)`` of endomorphisms of an abelian group ``A``.
+
+    The datum is the group ``A``.  Addition is pointwise, in the group law of
+    ``A`` written additively or multiplicatively, and multiplication is
+    composition.
+    """
 
     def super_categories(self):
-
         return [OwnedRings()]
 
-    class ElementMethods:
+    class ParentMethods:
+        def __init__(self, group, **rest) -> None:
+            self._group = group
+            super().__init__(**rest)
+
+        def domain(self):
+            return self._group
+
+        def codomain(self):
+            return self._group
+
+        def _is_additive(self) -> bool:
+            return self._group.category().is_subcategory(AdditiveGroups().AdditiveCommutative())
+
+        def _sum_values(self, left, right):
+            return left + right if self._is_additive() else left * right
+
+        def _negative_value(self, value):
+            return -value if self._is_additive() else value**-1
+
+        def _identity_value(self):
+            return self._group.zero() if self._is_additive() else self._group.one()
+
+        def _element_constructor_(self, mapping):
+            return self.element_class(self, mapping)
+
+        def one(self):
+            return self(lambda element: element)
+
+        def zero(self):
+            return self(lambda element: self._identity_value())
+
+        def is_commutative(self):
+            r"""``End(A)`` commutes when ``A`` is cyclic; a group on one generator is, and otherwise this is not decided here."""
+            if self._group not in OwnedGroups().Framed():
+                return Unknown
+            generators = self._group.group_generators().cardinality()
+            if generators.is_finite() and int(generators.finite_value()) <= 1:
+                return True
+            return Unknown
+
+        def _repr_(self):
+            return f"Endomorphism ring of {self._group}"
+
+    class ElementMethods(RingElement):
+        r"""One endomorphism, given by its map on the elements of ``A``."""
+
+        def __init__(self, parent, mapping) -> None:
+            RingElement.__init__(self, parent)
+            self._mapping = mapping
+
         def __call__(self, element):
             return self._mapping(element)
 
@@ -2774,58 +3385,13 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
         def _mul_(self, other):
             return self.parent()(lambda element: self(other(element)))
 
-    class ParentMethods:
-        def domain(self):
-            return self._group
-
-        def codomain(self):
-            return self._group
-
-        def _sum_values(self, left, right):
-            return left + right if self._additive else left * right
-
-        def _negative_value(self, value):
-            return -value if self._additive else value**-1
-
-        def _identity_value(self):
-            return self._group.zero() if self._additive else self._group.one()
-
-        def _element_constructor_(self, mapping):
-            return self.element_class(self, mapping)
-
-        def one(self):
-            return self(lambda element: element)
-
-        def zero(self):
-            return self(lambda element: self._identity_value())
-
-        def _repr_(self):
-            return f"Endomorphism ring of {self._group}"
-
-
-class _AbelianEndomorphismRingParent(Parent):
-    Element = _AbelianEndomorphismElement
-
-    def __call__(self, mapping):
-        r"""Construct an endomorphism without Sage coercion discovery."""
-        return self._element_constructor_(mapping)
-
-    def __init__(self, group):
-        self._group = group
-        self._additive = group.category().is_subcategory(AdditiveGroups().AdditiveCommutative())
-        Parent.__init__(self, category=AbelianGroupEndomorphismRings())
-        realize_owned_category(self)
-
-    def is_commutative(self):
-        r"""``End(A)`` commutes when ``A`` is cyclic; a group on one generator is, and otherwise this is not decided here."""
-        generators = self._group.group_generators().cardinality()
-        if generators.is_finite() and int(generators.finite_value()) <= 1:
-            return True
-        return Unknown
-
 
 class Subgroups(OwnedParameterizedCategory):
-    r"""Groups represented as a specified subgroup of one ambient owned group."""
+    r"""Groups represented as a specified subgroup of one ambient owned group.
+
+    The datum is the containing group ``G``; the subgroup's elements are
+    elements of ``G``, so the inclusion is the identity on elements.
+    """
 
     @staticmethod
     def __classcall__(cls, supergroup):
@@ -2851,11 +3417,11 @@ class Subgroups(OwnedParameterizedCategory):
 
     class ParentMethods:
         def __init__(self, supergroup, **rest) -> None:
-            self._preamble_supergroup = supergroup
+            self._supergroup = supergroup
             super().__init__(facade=supergroup, **rest)
 
         def supergroup(self):
-            return self._preamble_supergroup
+            return self._supergroup
 
         @cached_method
         def inclusion(self):
@@ -2883,24 +3449,35 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
         return "generated subgroups"
 
     class ParentMethods:
+        def __init__(self, selected_subgroup_generators, **rest) -> None:
+            self._selected_subgroup_generators = selected_subgroup_generators
+            super().__init__(**rest)
+
         def selected_subgroup_generators(self):
-            return self._preamble_selected_subgroup_generators
+            return self._selected_subgroup_generators
 
 
 def _coxeter_presentation(coxeter_matrix, names=None):
+    r"""The Coxeter presentation ``<s_i | (s_i s_j)^{m_ij} = 1>`` of a Coxeter matrix.
+
+    A pair with ``m_ij = infinity`` (encoded ``-1`` by Sage) imposes no relation.
+    """
     from sage.groups.free_group import FreeGroup
 
     indices = tuple(coxeter_matrix.index_set())
     free = FreeGroup(len(indices) if names is None else names)
     generators = free.gens()
-    relations = [generator**2 for generator in generators]
-    for i in range(len(indices)):
-        for j in range(i + 1, len(indices)):
-            bond = coxeter_matrix[indices[i], indices[j]]
-            if bond is infinity or bond == -1:
-                continue
-            relations.append((generators[i] * generators[j]) ** ZZ(bond))
-    return free, tuple(relations)
+    squares = tuple(generator**2 for generator in generators)
+    bonds = (
+        (i, j, coxeter_matrix[indices[i], indices[j]])
+        for i, j in combinations(range(len(indices)), 2)
+    )
+    braids = tuple(
+        (generators[i] * generators[j]) ** ZZ(bond)
+        for i, j, bond in bonds
+        if bond is not infinity and bond != -1
+    )
+    return free, squares + braids
 
 
 Groups = groups = OwnedGroups

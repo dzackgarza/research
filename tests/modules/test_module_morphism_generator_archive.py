@@ -18,12 +18,12 @@ def test_generator_assignment_is_retained_as_the_defining_set_morphism() -> None
     module = _zmod2()
     label = module.module_generating_set()[0]
     generator = module.module_generator(label)
-    homset = module.module_category().Mor(module, module)
-    morphism = homset({label: generator})
+    mor = module.module_category().Mor(module, module)
+    morphism = mor({label: generator})
     defining = morphism.module_generator_morphism()
 
-    assert module.module_category().Mor(module, module) is homset
-    assert morphism.parent() is homset
+    assert module.module_category().Mor(module, module) is mor
+    assert morphism.parent() is mor
     assert defining.domain() is module.module_generating_set()
     assert defining.codomain() is module
     assert defining(label) == generator

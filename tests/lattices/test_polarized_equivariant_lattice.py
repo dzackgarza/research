@@ -9,8 +9,7 @@ from dzack_research.preamble.categories.lattice_centralizers import (
 def test_enriques_polarization_retains_invariant_lift_and_group_maps() -> None:
     lattice = NamedLattices.LK3
     involution = Involutions.I_En
-    decorated = lattice.with_isometry(involution)
-    extension = decorated.primitive_extension()
+    extension = involution.primitive_extension()
     invariant = extension.invariant
     inclusion = invariant.inclusion()
     labels = invariant.module_generating_set()
@@ -19,7 +18,7 @@ def test_enriques_polarization_retains_invariant_lift_and_group_maps() -> None:
         + inclusion(invariant.module_generator(labels[1]))
     )
 
-    polarized = decorated.polarized(polarization)
+    polarized = involution.polarized(polarization)
     assert isinstance(polarized, PolarizedEquivariantLattice)
     assert polarized.lattice() is lattice
     assert polarized.isometry() == involution

@@ -36,7 +36,7 @@ def test_archived_similarity_predicate_does_not_conflate_similarity_with_isometr
     assert abs(target.determinant()) == 4
 
 
-def test_archived_wrong_similarity_scale_is_rejected_by_the_form_homset() -> None:
+def test_archived_wrong_similarity_scale_is_rejected_by_the_form_mor() -> None:
     source = Lattices(ZZ)("U")
     target = source.twist(2)
 

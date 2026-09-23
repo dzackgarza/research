@@ -4,6 +4,12 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     Modules,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FramedFreeModules,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleEmbedding,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
 
@@ -190,33 +196,66 @@ def _poincare_duality(module, volume, degree):
     return result
 
 
-def _algebraic_correlation_morphism(metric):
+class _ConstructedCorrelationEmbedding(ModuleEmbedding):
+    r"""A correlation whose injectivity is already part of the formed object's construction."""
+
+    def _injectivity_derivation(self):
+        return True
+
+
+def _algebraic_correlation_morphism(metric, *, injective=False):
     r"""Return ``g^flat : M -> M^vee`` for a scalar-valued bilinear metric."""
 
-    _require_finite_free(metric)
     if metric.value_module() is not metric.base_ring():
         raise TypeError("the algebraic correlation requires a scalar-valued form")
-    dual = metric.dual_module()
-    source_labels = tuple(metric.module_generating_set())
-    dual_labels = tuple(dual.module_generating_set())
-    images = {}
-    for source_label in source_labels:
-        source_generator = metric.module_generator(source_label)
-        images[source_label] = dual.linear_combination(
-            {
-                dual_label: metric.b(
-                    source_generator,
-                    metric.module_generator(dual_label),
-                )
-                for dual_label in dual_labels
-                if metric.b(
-                    source_generator,
-                    metric.module_generator(dual_label),
-                )
-                != metric.base_ring().zero()
-            }
+    ring = metric.base_ring()
+    if metric not in FramedFreeModules(ring):
+        raise TypeError(
+            "the represented algebraic correlation currently requires a framed free module"
         )
-    return metric.module_category().Mor(metric, dual)(images)
+    dual = metric.dual_module()
+    source_labels = metric.module_generating_set()
+
+    def correlation_from_generator_images(images):
+        if injective:
+            return _ConstructedCorrelationEmbedding(
+                Modules(ring).Mono(metric, dual),
+                images,
+            )
+        return metric.module_category().Mor(metric, dual)(images)
+
+    match source_labels.cardinality().is_finite():
+        case True:
+            dual_labels = tuple(dual.module_generating_set())
+
+            def finite_generator_image(source_label):
+                source_generator = metric.module_generator(source_label)
+                coefficients = {}
+                for dual_label in dual_labels:
+                    coefficient = metric.b(
+                        source_generator,
+                        metric.module_generator(dual_label),
+                    )
+                    if coefficient != ring.zero():
+                        coefficients[dual_label] = coefficient
+                return dual.linear_combination(coefficients)
+
+            return correlation_from_generator_images(finite_generator_image)
+        case False:
+            regular = ring.regular_module()
+
+            def infinite_generator_image(source_label):
+                source_generator = metric.module_generator(source_label)
+                return dual(
+                    lambda target_label: regular(
+                        metric.b(
+                            source_generator,
+                            metric.module_generator(source_labels(target_label)),
+                        )
+                    )
+                )
+
+            return correlation_from_generator_images(infinite_generator_image)
 
 
 def _correlation_isomorphism(metric):

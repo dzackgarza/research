@@ -38,7 +38,7 @@ def test_the_indefinite_vector_stabilizer_states_its_absence_through_the_layer()
     assert not plane.is_definite()
 
     with pytest.raises(EngineCapabilityUnavailable) as refusal:
-        plane.O().vector_stabilizer_generators(plane.module_generator(0))
+        plane.O().vector_stabilizer_generators(plane.basis_vector(0))
 
     assert refusal.value.capability == _CAPABILITY
     assert _POLYHEDRAL_PROVIDER in tuple(

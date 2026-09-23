@@ -2,9 +2,9 @@
 
 from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
@@ -27,11 +27,11 @@ class Magmas(OwnedCategory):
             return self._with_axiom("Commutative")
 
 
-class MonoidHomCategoryConstruction(HomCategoryConstruction):
-    r"""The fixed-endpoint Hom categories of owned monoids."""
+class MonoidMorCategoryConstruction(MorCategoryConstruction):
+    r"""The fixed-endpoint Mor categories of owned monoids."""
 
     def fixed_category_class(self):
-        return MonoidHomset
+        return MonoidMor
 
 
 class Semigroups(OwnedCategory):
@@ -81,12 +81,12 @@ class Monoids(OwnedCategory):
                 structure_data=structure_data,
             )
 
-    _HomCategory = MonoidHomCategoryConstruction
+    _MorCategory = MonoidMorCategoryConstruction
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a monoid Hom requires two monoids")
-        return self.HomCategory().Of(domain, codomain)
+            raise TypeError("a monoid Mor requires two monoids")
+        return self.MorCategory().Of(domain, codomain)
 
 
 
@@ -131,13 +131,13 @@ class AdditiveGroups(OwnedCategory):
     class AdditiveCommutative(CategoryWithAxiom):
         """Additive groups whose addition is commutative."""
 
-        class _HomCategory(HomCategoryConstruction):
+        class _MorCategory(MorCategoryConstruction):
             def fixed_category_class(self):
-                from dzack_research.preamble.categories.group.additive_homsets import (
-                    AdditiveHomset,
+                from dzack_research.preamble.categories.group.additive_mors import (
+                    AdditiveMor,
                 )
 
-                return AdditiveHomset
+                return AdditiveMor
 
         @classmethod
         def _repr_object_names(cls):
@@ -159,22 +159,27 @@ class MonoidMorphism(Morphism):
     def _call_(self, element):
         return self.codomain()(self._function(self.domain()(element)))
 
-    def __mul__(self, other):
-        if not isinstance(other, MonoidMorphism) or other.codomain() is not self.domain():
+    def _composition(self, right):
+        r"""``self ∘ right`` for a monoid morphism ``right``.
+
+        Sage's ``Map.__mul__`` has checked that ``right`` is a map into this
+        morphism's domain; a map outside the monoid Mor is not composed here.
+        """
+        if right.domain() not in Monoids() or not right.parent().mor_family().base_category().is_subcategory(Monoids()):
             return NotImplemented
-        hom = self.parent().hom_family().Of(other.domain(), self.codomain())
-        return hom(lambda element: self(other(element)))
+        mor = self.parent().mor_family().Of(right.domain(), self.codomain())
+        return mor(lambda element: self(right(element)))
 
 
-class MonoidHomset(CategoricalHomset):
-    r"""The owned fixed Hom category ``Mor_Mon(A,B)``."""
+class MonoidMor(CategoricalMor):
+    r"""The owned fixed Mor category ``Mor_Mon(A,B)``."""
 
     Element = MonoidMorphism
 
     def __init__(self, family, domain, codomain) -> None:
         super().__init__(family, domain, codomain)
 
-    def __call__(self, function):
+    def _element_constructor_(self, function):
         if isinstance(function, MonoidMorphism):
             if function.domain() is not self.domain() or function.codomain() is not self.codomain():
                 raise ValueError("the monoid morphism has the wrong source or target")
@@ -183,9 +188,7 @@ class MonoidHomset(CategoricalHomset):
             function = function.__call__
         return self.element_class(self, function)
 
-    _element_constructor_ = __call__
-
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on a monoid endomorphism Hom-set")
+            raise ValueError("identity is defined only on a monoid endomorphism Mor object")
         return self(lambda element: element)

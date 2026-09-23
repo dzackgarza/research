@@ -11,8 +11,8 @@ def test_marked_cell_transport_preserves_labels_and_repeated_vectors() -> None:
     lattice = Lattices(ZZ)(ZZ**2)
     cell = lattice.reduction_cell(((1, 0), (0, 1)))
     labels = finite_ordered_set(("first", "repeat", "second"))
-    e0 = lattice.module_generator(0)
-    e1 = lattice.module_generator(1)
+    e0 = lattice.basis_vector(0)
+    e1 = lattice.basis_vector(1)
     selected = {"first": e0, "repeat": e0, "second": e1}
     marks = finite_indexed_family(
         labels,
@@ -46,7 +46,7 @@ def test_zero_norm_vector_is_not_a_mark_for_nonisotropic_reduction() -> None:
     labels = finite_ordered_set(("isotropic",))
     marks = finite_indexed_family(
         labels,
-        lambda _label: lattice.module_generator(0),
+        lambda _label: lattice.basis_vector(0),
     )
 
     try:

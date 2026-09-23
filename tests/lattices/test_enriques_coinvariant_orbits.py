@@ -5,7 +5,7 @@ from dzack_research.preamble.all import Involutions, NamedLattices
 
 def test_minus_identity_on_the_anti_invariant_lattice_lifts_to_the_k3_centralizer() -> None:
     extension = Involutions.I_En.primitive_extension()
-    anti = extension.coinvariant
+    anti = extension.orthogonal_complement
     anti_group = extension.coinvariant_extension_subgroup()
     minus_identity = anti.O()(
         {

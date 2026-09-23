@@ -1,19 +1,21 @@
-"""Owned ordered enumerated sets with finite sets as a refinement."""
+"""Owned ordered enumerated sets, with the finite ones as a refinement."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from itertools import islice
 from typing import TypeVar
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
+    FiniteSets,
     Sets,
     TotallyOrderedSets,
     finite_ordinal_set,
@@ -24,129 +26,15 @@ IndexT = TypeVar("IndexT")
 PointT = TypeVar("PointT")
 
 
-class _IndexedFiniteOrderedPresentation:
-    r"""Private constructor data for a finite ordered image.
-
-    ``FiniteOrderedSets`` is the specialization ``OrderedEnumeratedSets`` plus
-    finiteness.  Constructing an indexed image through the general category and
-    refining afterward can replay the specialization constructor with the index
-    set as its ``elements`` datum, silently replacing the intended value map by
-    the index enumeration.  Carry the indexed presentation as the one datum of
-    the specialized constructor instead.
-    """
-
-    def __init__(self, index_set, element_at, index_of, contains, *, image_source=None, image_map=None, image_inverse=None) -> None:
-        self.index_set = index_set
-        self.element_at = element_at
-        self.index_of = index_of
-        self.contains = contains
-        self.image_source = image_source
-        self.image_map = image_map
-        self.image_inverse = image_inverse
-
-
-class _SetImageConstruction:
-    r"""A selected source set, image map, and inverse on its represented image."""
-
-    def __init__(self, source, image_map, inverse) -> None:
-        self._source = source
-        self._image_map = image_map
-        self._inverse = inverse
-
-    def source(self):
-        return self._source
-
-    def image_map(self):
-        return self._image_map
-
-    def inverse(self):
-        return self._inverse
-
-
-def _finite_ordered_presentation(elements):
-    r"""Return the enumeration data of one known-finite ordered source."""
-
-    if isinstance(elements, _IndexedFiniteOrderedPresentation):
-        return (
-            elements.index_set,
-            elements.element_at,
-            elements.index_of,
-            elements.contains,
-        )
-
-    if elements in FiniteOrderedSets():
-        return (
-            elements.index_set(),
-            elements._element_at_function,
-            elements._index_of_function,
-            elements._contains_function,
-        )
-
-    # Python sequence/range input is syntactic ingress.  Parse it once into the
-    # owned set without retaining the sequence as mathematical storage.
-    if isinstance(elements, (tuple, list, range)):
-        by_position = {}
-        for element in elements:
-            if any(element == known for known in by_position.values()):
-                continue
-            by_position[len(by_position)] = element
-        index_set = finite_ordinal_set(len(by_position))
-
-        def index_of(element):
-            for position in index_set:
-                if by_position[int(position)] == element:
-                    return position
-            raise ValueError(element)
-
-        return (
-            index_set,
-            lambda position: by_position[int(position)],
-            index_of,
-            lambda element: any(element == known for known in by_position.values()),
-        )
-
-    if elements not in Sets():
-        raise TypeError(
-            "finite_ordered_set requires a known finite set or explicit finite literal; "
-            "use FiniteOrderedSets().from_indexed(index_set, map) for a computed family"
-        )
-
-    size = cardinal(elements.cardinality())
-    if not size.is_finite():
-        raise TypeError("finite_ordered_set requires a finite source set")
-    finite_size = int(size.finite_value())
-    index_set = finite_ordinal_set(finite_size)
-
-    if elements in EnumeratedSets():
-        # The source states its own enumeration, so this reads it off rather
-        # than searching: both directions come from that one isomorphism.
-        source_ranking = elements.ranking_map()
-
-        def element_at(position):
-            return source_ranking.inverse()(int(position))
-
-        def index_of(element):
-            return source_ranking(element)
-    else:
-        def element_at(position):
-            try:
-                return next(islice(iter(elements), int(position), int(position) + 1))
-            except StopIteration as error:
-                raise IndexError(position) from error
-
-        def index_of(element):
-            for position, candidate in enumerate(elements):
-                if candidate == element:
-                    return position
-            raise ValueError(element)
-
-    return index_set, element_at, index_of, lambda element: element in elements
-
-
-
-
 class OrderedEnumeratedSets(OwnedCategory):
-    r"""Ordered sets presented by an index set and a bijection out of it."""
+    r"""Sets presented by a chosen enumeration from an index set.
+
+    The defining datum is the enumeration: an index set \(I\), the bijection
+    ``element_at`` from \(I\) onto the set, its inverse ``index_of``, which
+    answers ``None`` for a candidate that is not a point, and optionally a
+    membership decision ``contains``.  The total order is the one the
+    enumeration transports from \(I\), which ``EnumeratedSets`` answers.
+    """
 
     def an_object(self) -> Parent:
         r"""The ordinal on three points."""
@@ -155,20 +43,31 @@ class OrderedEnumeratedSets(OwnedCategory):
     def super_categories(self):
         return [EnumeratedSets(), TotallyOrderedSets()]
 
+    def __call__(self, index_set, element_at, **datum):
+        r"""Construct from an enumeration even when ``index_set`` is itself in this category.
+
+        Sage's generic category call returns its first argument whenever that
+        argument is already an object of the category.  The index set of an
+        enumeration may be one, and the enumeration is further data, so the
+        call always constructs.
+        """
+        return self._call_(index_set, element_at, **datum)
+
     def _call_(
         self,
-        index_set,
-        element_at,
+        index_set: Parent,
+        element_at: Callable[[IndexT], PointT],
         *,
-        index_of,
-        contains=None,
-        name=None,
-        finite=False,
-        image_source=None,
-        image_map=None,
-        image_inverse=None,
-    ):
+        index_of: Callable[[PointT], IndexT | None],
+        contains: Callable[[PointT], bool] | None = None,
+        name: str | None = None,
+    ) -> Parent:
         r"""Construct an ordered enumerated set from its chosen enumeration."""
+        assert index_set in EnumeratedSets(), "an enumeration is indexed by an enumerated set"
+        if index_set in FiniteSets():
+            return FiniteOrderedSets().from_indexed(
+                index_set, element_at, index_of=index_of, contains=contains, name=name
+            )
         return _object_of(
             self,
             index_set=index_set,
@@ -176,10 +75,6 @@ class OrderedEnumeratedSets(OwnedCategory):
             index_of=index_of,
             contains=contains,
             name=name,
-            finite=finite,
-            image_source=image_source,
-            image_map=image_map,
-            image_inverse=image_inverse,
         )
 
     class ParentMethods:
@@ -191,10 +86,7 @@ class OrderedEnumeratedSets(OwnedCategory):
             index_of: Callable[[PointT], IndexT | None],
             contains: Callable[[PointT], bool] | None = None,
             name: str | None = None,
-            finite: bool = False,
-            image_source=None,
-            image_map=None,
-            image_inverse=None,
+            category=None,
             **rest,
         ) -> None:
             assert callable(element_at), (
@@ -210,47 +102,32 @@ class OrderedEnumeratedSets(OwnedCategory):
             self._index_of_function = index_of
             self._contains_function = contains
             self._name = name
-            self._image_construction = (
-                None
-                if image_source is None and image_map is None and image_inverse is None
-                else _SetImageConstruction(image_source, image_map, image_inverse)
-            )
-            super().__init__(facade=True, **rest)
-            if finite:
-                from dzack_research.preamble.categories.sets.set_categories import FiniteSets
-                from dzack_research.preamble.refine import refine
-
-                refine(self, FiniteSets())
+            placement = category if category is not None else OrderedEnumeratedSets()
+            match index_set:
+                case _ if index_set in FiniteSets():
+                    placement = Category.join((placement, FiniteSets()))
+                case _ if index_set in Sets().Infinite():
+                    placement = Category.join((placement, Sets().Infinite()))
+            super().__init__(category=placement, facade=True, **rest)
 
         def index_set(self) -> Parent:
             return self._index_set
 
-        def source_set(self):
-            if self._image_construction is None or self._image_construction.source() is None:
-                raise TypeError(f"{self} is not represented as an image construction")
-            return self._image_construction.source()
+        def enumeration(self) -> Callable[[IndexT], PointT]:
+            r"""The chosen bijection from the index set onto this set."""
+            return self._element_at_function
 
-        def image_map(self):
-            if self._image_construction is None or self._image_construction.image_map() is None:
-                raise TypeError(f"{self} is not represented as an image construction")
-            return self._image_construction.image_map()
-
-        def inverse_on_image(self):
-            assert self._image_construction is not None and self._image_construction.inverse() is not None, (
-                "inverse_on_image requires a selected inverse for this image construction"
-            )
-            return self._image_construction.inverse()
-
-        def cardinality(self) -> Parent:
-            return cardinal(self.index_set().cardinality())
+        def enumeration_inverse(self) -> Callable[[PointT], IndexT | None]:
+            r"""The chosen inverse on this set, with ``None`` allowed off it."""
+            return self._index_of_function
 
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
-            r"""The chosen enumeration of this image, as one isomorphism.
+            r"""The chosen enumeration of this set, as one isomorphism.
 
             The presentation gives a bijection from the index set, and the
             index set already knows its own ordinal, so this composes the two
-            rather than counting the image a second time.
+            rather than counting the set a second time.
             """
             index_ranking = self.index_set().ranking_map()
 
@@ -284,28 +161,25 @@ class OrderedEnumeratedSets(OwnedCategory):
             return self._element_constructor_(element)
 
         def _element_constructor_(self, element):
-            r"""Return the member of this image that ``element`` names.
+            r"""Return the member of this set that ``element`` names.
 
             This is the element constructor, the one boundary that admits
             foreign data, so it reads the presentation directly.  It cannot
             ask the ranking map: applying an arrow coerces its argument into
             the domain, and the domain is this parent.
             """
+            if self._contains_function is not None and not self._contains_function(element):
+                raise ValueError(f"{element!r} is not in {self}")
             index = self._index_of_function(element)
             if index is None:
                 raise ValueError(f"{element!r} is not in {self}")
             return self._element_at_function(index)
 
-        def le(self, left: PointT, right: PointT) -> bool:
-            ranking = self.ranking_map()
-            return ranking(left) <= ranking(right)
-
         def _an_element_(self):
-            r"""Return the first point of a nonempty selected enumeration."""
-            try:
-                return next(iter(self))
-            except StopIteration as error:
-                raise ValueError("the empty ordered enumerated set has no element") from error
+            r"""Return the first point of a nonempty enumeration."""
+            for point in self:
+                return point
+            raise ValueError("the empty ordered enumerated set has no element")
 
         def _repr_(self) -> str:
             size = cardinal(self.cardinality())
@@ -320,115 +194,135 @@ class OrderedEnumeratedSets(OwnedCategory):
             data = "{" + ", ".join(repr(element) for element in shown) + ", ...}"
             return f"{prefix}{data} (cardinality {size})"
 
+
 class FiniteOrderedSets(OwnedCategory):
-    r"""Finite ordered sets, without sequence-valued storage."""
+    r"""Ordered enumerated sets over a finite index set, without sequence-valued storage.
+
+    The datum is that of :class:`OrderedEnumeratedSets`; this category adds
+    finiteness and the operations it permits.  Every other route -- a finite
+    set, finitely many points, an indexed presentation -- computes that datum
+    and enters through it.
+    """
 
     def an_object(self) -> Parent:
         r"""The three-point ordered set."""
         return finite_ordered_set((0, 1, 2))
 
     def super_categories(self):
-        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
-
         # The owned finiteness, not Sage's: Sage's
         # ``FiniteEnumeratedSets`` supplies a ``cardinality`` returning an
         # integer, and a cardinality here is a cardinal.
         return [OrderedEnumeratedSets(), FiniteSets()]
 
-    def _call_(self, elements):
-        r"""Construct a finite ordered set from a known finite enumeration."""
-        if elements in self:
-            return elements
-        return _object_of(self, elements=elements)
+    def _call_(self, elements: Parent | Iterable[PointT]) -> Parent:
+        r"""Construct the finite ordered set a finite set or finitely many points present.
+
+        The category call returns ``elements`` itself when it already is one.
+        A finite set is read through its own enumeration when it states one,
+        and in iteration order otherwise; finitely many points are taken in
+        order, with equal points identified.
+        """
+        match elements:
+            case _ if elements in Sets():
+                return self._on_finite_set(elements)
+            case _:
+                return self._on_points(elements)
+
+    def _on_finite_set(self, source: Parent) -> Parent:
+        r"""The finite ordered set on the points of the finite set ``source``."""
+        size = cardinal(source.cardinality())
+        assert size.is_finite(), "a finite ordered set requires a finite source set"
+        index_set = finite_ordinal_set(size.finite_value())
+        match source:
+            case _ if source in EnumeratedSets():
+                # The source states its own enumeration, so both directions
+                # come from that one isomorphism.
+                ranking = source.ranking_map()
+                return _object_of(
+                    self,
+                    index_set=index_set,
+                    element_at=lambda position: ranking.inverse()(int(position)),
+                    index_of=lambda element: ranking(element) if element in source else None,
+                    contains=lambda element: element in source,
+                )
+            case _:
+                return self.from_indexed(
+                    index_set,
+                    lambda position: next(islice(iter(source), int(position), None)),
+                    contains=lambda element: element in source,
+                )
+
+    def _on_points(self, points: Iterable[PointT]) -> Parent:
+        r"""The finite ordered set on finitely many points, repeated points identified.
+
+        Literal ingress: the points are read once, in order.
+        """
+        distinct: list[PointT] = []
+        for point in points:
+            if not any(point == known for known in distinct):
+                distinct.append(point)
+        return self.from_indexed(
+            finite_ordinal_set(len(distinct)),
+            lambda position: distinct[int(position)],
+        )
 
     def from_indexed(
         self,
-        index_set,
-        element_at,
+        index_set: Parent,
+        element_at: Callable[[IndexT], PointT],
         *,
-        index_of=None,
-        contains=None,
-        name=None,
-        image_source=None,
-        image_map=None,
-        image_inverse=None,
-    ):
-        r"""Construct a finite ordered image from its chosen indexed presentation."""
+        index_of: Callable[[PointT], IndexT | None] | None = None,
+        contains: Callable[[PointT], bool] | None = None,
+        name: str | None = None,
+    ) -> Parent:
+        r"""Construct the finite ordered set enumerated by ``element_at`` on ``index_set``.
+
+        When the caller states no inverse or no membership decision, both are
+        decided by searching the finite index set, which is what finiteness
+        permits.
+        """
         assert cardinal(index_set.cardinality()).is_finite(), (
             "a finite ordered set requires a finite index set"
         )
+        assert index_set in EnumeratedSets(), "the finite index set has a chosen enumeration"
         if index_of is None:
             def index_of(element):
-                for index in index_set:
-                    if element_at(index) == element:
-                        return index
-                raise ValueError(element)
+                return next(
+                    (index for index in index_set if element_at(index) == element),
+                    None,
+                )
         if contains is None:
             def contains(element):
-                try:
-                    index_of(element)
-                except (TypeError, ValueError):
-                    return False
-                return True
+                return any(element_at(index) == element for index in index_set)
         return _object_of(
             self,
-            elements=_IndexedFiniteOrderedPresentation(
-                index_set,
-                element_at,
-                index_of,
-                contains,
-                image_source=image_source,
-                image_map=image_map,
-                image_inverse=image_inverse,
-            ),
+            index_set=index_set,
+            element_at=element_at,
+            index_of=index_of,
+            contains=contains,
             name=name,
         )
 
     class ParentMethods:
-        _derived_construction_parameters = frozenset(
-            {"index_set", "element_at", "index_of"}
-        )
-
         def filtered(self, predicate, *, name=None):
-            r"""Return the ordered subset of this set cut out lazily by ``predicate``."""
-            return FiniteFilteredOrderedSets()(self, predicate, name=name)
-
-        def __init__(
-            self,
-            elements: Parent | tuple[PointT, ...] | list[PointT] | range,
-            **rest,
-        ) -> None:
-            image_source = elements.image_source if isinstance(elements, _IndexedFiniteOrderedPresentation) else None
-            image_map = elements.image_map if isinstance(elements, _IndexedFiniteOrderedPresentation) else None
-            image_inverse = elements.image_inverse if isinstance(elements, _IndexedFiniteOrderedPresentation) else None
-            index_set, element_at, index_of, contains = _finite_ordered_presentation(elements)
-            super().__init__(
-                index_set,
-                element_at,
-                index_of=index_of,
-                contains=contains,
-                finite=True,
-                image_source=image_source,
-                image_map=image_map,
-                image_inverse=image_inverse,
-                **rest,
-            )
-
+            r"""Return the ordered subset of this set cut out by ``predicate``."""
+            return _FilteredOrderedSet(self, predicate, name=name)
 
         def __eq__(self, other) -> bool:
-            if self is other:
-                return True
-            try:
-                if int(self.cardinality()) != int(other.cardinality()):
+            r"""Equal to a finite set with the same points; two finite ordered sets also agree in order."""
+            match other:
+                case _ if other is self:
+                    return True
+                case _ if other in FiniteOrderedSets():
+                    return self.cardinality() == other.cardinality() and all(
+                        left == right for left, right in zip(self, other, strict=True)
+                    )
+                case _ if other in Sets() and other in FiniteSets():
+                    return self.cardinality() == cardinal(other.cardinality()) and all(
+                        point in other for point in self
+                    )
+                case _:
                     return False
-            except (AttributeError, TypeError, ValueError):
-                return False
-            if other in FiniteOrderedSets():
-                return all(left == right for left, right in zip(self, other, strict=True))
-            try:
-                return all(element in other for element in self)
-            except (TypeError, ValueError):
-                return False
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -443,136 +337,133 @@ class FiniteOrderedSets(OwnedCategory):
         def _repr_(self) -> str:
             return "{" + ", ".join(repr(element) for element in self) + "}"
 
-class FiniteFilteredOrderedSets(OwnedCategory):
-    r"""A finite ordered subset selected lazily by a predicate."""
 
-    def an_object(self) -> Parent:
-        r"""The even points of a three-point ordinal."""
-        return finite_ordered_set((0, 1, 2)).filtered(lambda x: True)
+class _FilteredOrderedSet(FiniteOrderedSets().ObjectType):
+    r"""The subset \(\{x\in S : P(x)\}\) of a finite enumerated set \(S\), in the order of \(S\).
 
-    def super_categories(self):
-        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+    A finite ordered set, enumerated over the ordinal counting the points
+    satisfying \(P\), the \(k\)-th point being the \(k\)-th such point of
+    \(S\).  The datum this level introduces is \((S, P)\); the enumeration
+    is computed from it when the object is constructed, and the inclusion
+    into \(S\) is the subobject the set is.
+    """
 
-        # The owned finiteness, not Sage's: Sage's
-        # ``FiniteEnumeratedSets`` supplies a ``cardinality`` returning an
-        # integer, and a cardinality here is a cardinal.
-        return [OrderedEnumeratedSets(), FiniteSets()]
+    def __init__(
+        self,
+        universe: Parent,
+        predicate: Callable[[PointT], bool],
+        *,
+        name: str | None = None,
+    ) -> None:
+        assert universe in FiniteSets() and universe in EnumeratedSets(), (
+            "a finite ordered filter requires a finite enumerated source set"
+        )
+        self._universe = universe
+        self._predicate = predicate
 
-    def __call__(self, source, predicate, *, name=None):
-        r"""Construct the subset even when ``source`` is already filtered.
+        def survivors():
+            return (point for point in universe if predicate(point))
 
-        Sage's generic category call is a coercion first: it returns its first
-        argument unchanged whenever that object is already in the category.
-        Here the predicate is additional defining data, so filtering a filtered
-        finite set must construct the intersection rather than discard the new
-        predicate.
-        """
-        return self._call_(source, predicate, name=name)
+        def element_at(index):
+            return next(islice(survivors(), int(index), None))
 
-    def _call_(self, source, predicate, *, name=None):
-        r"""Construct the finite ordered subset cut out by ``predicate``."""
-        return _object_of(self, source=source, predicate=predicate, name=name)
+        def index_of(element):
+            if element not in universe or not predicate(universe(element)):
+                return None
+            return next(
+                position
+                for position, point in enumerate(survivors())
+                if point == element
+            )
 
-    class ParentMethods:
-        _derived_construction_parameters = frozenset(
-            {"index_set", "element_at", "index_of"}
+        super().__init__(
+            index_set=finite_ordinal_set(sum(1 for _point in survivors())),
+            element_at=element_at,
+            index_of=index_of,
+            contains=lambda element: element in universe and bool(predicate(universe(element))),
+            name=name,
+            category=FiniteOrderedSets(),
         )
 
-        def __init__(
-            self,
-            source: Parent,
-            predicate: Callable[[PointT], bool],
-            *,
-            name: str | None = None,
-            **rest,
-        ) -> None:
+    def universe(self) -> Parent:
+        r"""The set \(S\) this subset is cut out of."""
+        return self._universe
 
-            assert cardinal(source.cardinality()).is_finite(), (
-                "a finite ordered filter requires a finite source set"
-            )
-            self._source = source
-            self._predicate = predicate
-            self._filtered_name = name
-            # This level supplies its own ranking map and cardinality, so the
-            # base takes the source as index set and this level's enumeration.
-            super().__init__(
-                source,
-                lambda position: self.ranking_map().inverse()(position),
-                index_of=lambda element: self.ranking_map()(element),
-                contains=lambda element: predicate(element),
-                name=name,
-                finite=True,
-                **rest,
-            )
+    def predicate(self) -> Callable[[PointT], bool]:
+        r"""The predicate \(P\) cutting this subset out of \(S\)."""
+        return self._predicate
 
-        def source(self) -> Parent:
-            return self._source
+    @cached_method
+    def inclusion(self):
+        r"""The inclusion \(\{x\in S : P(x)\}\hookrightarrow S\)."""
+        from dzack_research.preamble.categories.sets.set_categories import SetInclusion
 
-        def predicate(self) -> Callable[[PointT], bool]:
-            return self._predicate
+        return SetInclusion(self, self.universe())
 
-        def __iter__(self):
-            return (element for element in self.source() if self.predicate()(element))
+    def __iter__(self):
+        return (point for point in self.universe() if self.predicate()(point))
 
-        def __getitem__(self, position):
-            r"""Return the surviving member at ``position`` in inherited order."""
-            return self.ranking_map().inverse()(position)
+    def _repr_(self):
+        return self._name or f"Ordered subset of {self.universe()}"
 
-        def cardinality(self) -> Parent:
-            return cardinal(sum(1 for _element in self))
 
-        @cached_method
-        def ranking_map(self) -> CategoricalIsomorphism:
-            r"""The enumeration the surviving members inherit from the source order."""
+class _EnumeratedImageSet(OrderedEnumeratedSets().ObjectType):
+    r"""An injective image realized by the ordered-enumeration engine.
 
-            def point_at(position):
-                try:
-                    return next(islice(iter(self), int(position), int(position) + 1))
-                except StopIteration as error:
-                    raise IndexError(position) from error
+    No category of images is introduced.  The source, map and inverse are
+    exactly the index set and the two directions of the enumeration, stored
+    by that owner.  In the infinite case the supplied inverse is a decision
+    extension: it returns ``None`` on candidates for which no preimage is
+    represented.  Membership also checks the forward equation, so a total
+    extension of an inverse cannot admit values outside the image.
+    """
 
-            def position_of(element):
-                for position, candidate in enumerate(self):
-                    if candidate == element:
-                        return position
-                raise ValueError(f"{element!r} is not in {self}")
+    def __init__(
+        self,
+        source: Sets().ObjectType,
+        map_: Callable[[IndexT], PointT],
+        inverse: Callable[[PointT], IndexT | None],
+    ) -> None:
+        match source:
+            case _ if source in FiniteSets():
+                placement = FiniteOrderedSets()
 
-            return self._ranking_isomorphism(position_of, point_at)
+                def contains(value):
+                    return any(map_(point) == value for point in source)
+            case _:
+                placement = OrderedEnumeratedSets()
 
-        def __contains__(self, element) -> bool:
-            return element in self.source() and bool(self.predicate()(element))
+                def contains(value):
+                    preimage = inverse(value)
+                    return preimage in source and map_(source(preimage)) == value
 
-        is_parent_of = __contains__
+        super().__init__(
+            index_set=source,
+            element_at=map_,
+            index_of=inverse,
+            contains=contains,
+            category=placement,
+        )
 
-        def __call__(self, element):
-            if element not in self:
-                raise ValueError(f"{element!r} is not in {self}")
-            return self.source()(element)
+    def source_set(self) -> Sets().ObjectType:
+        r"""The source of the injective map presenting this image."""
+        return self.index_set()
 
-        def le(self, left: PointT, right: PointT) -> bool:
-            ranking = self.ranking_map()
-            return ranking(left) <= ranking(right)
+    def image_map(self) -> Callable[[IndexT], PointT]:
+        r"""The map presenting this image, which is its enumeration."""
+        return self.enumeration()
 
-        def __len__(self):
-            return int(self.cardinality())
+    def inverse_on_image(self) -> Callable[[PointT], IndexT | None]:
+        r"""The selected inverse of the image map."""
+        return self.enumeration_inverse()
 
-        def __eq__(self, other) -> bool:
-            if self is other:
-                return True
-            if other not in FiniteOrderedSets():
-                return False
-            if self.cardinality() != other.cardinality():
-                return False
-            return all(left == right for left, right in zip(self, other, strict=True))
+    def is_injective_image(self) -> bool:
+        r"""The supplied inverse satisfies ``g(f(a)) = a`` on the source."""
+        return True
 
-        def __hash__(self):
-            return hash(int(self.cardinality()))
-
-        def _repr_(self):
-            return self._filtered_name or f"Ordered subset of {self.source()}"
 
 def finite_ordered_set[PointT](
-    elements: Parent | tuple[PointT, ...] | list[PointT] | range,
+    elements: Parent | Iterable[PointT],
 ) -> Parent:
-    r"""Transport one known finite ordered enumeration to an owned set."""
+    r"""The finite ordered set a finite set or finitely many points present."""
     return FiniteOrderedSets()(elements)

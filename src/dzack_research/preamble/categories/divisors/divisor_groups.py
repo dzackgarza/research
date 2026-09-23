@@ -6,6 +6,8 @@ category level stores only the datum it adds and threads the rest to the module
 levels through ``super().__init__``.
 """
 
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -16,6 +18,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.owned_category_bases import Category
 
 
@@ -30,15 +33,10 @@ def _cokernel_in_category(presentation, category, **data):
     ``cokernel_projection()`` is the quotient map \(G \to \operatorname{coker}\rho\).
     The levels of ``category`` consume ``data`` in their constructors.
     """
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presented_module_from_morphism,
-    )
-
-    return _presented_module_from_morphism(
+    return ModulesWithChosenFinitePresentation(presentation.codomain().base_ring())(
         presentation,
-        _cokernel_morphism=presentation,
-        _extra_categories=(category,),
-        _extra_construction_data=data,
+        category=Category.join((category,)),
+        **data,
     )
 
 
@@ -139,28 +137,31 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
         # A formal divisor is an element of the free module's engine, so the
         # group, not the element, answers questions about its terms.
         def terms(self, divisor):
-            return finite_ordered_set(
-                tuple(
-                    (coefficient, prime_divisor)
-                    for prime_divisor, coefficient in self.framing_coefficients(divisor).items()
-                )
+            coefficients = self.framing_coefficients(divisor)
+            support = finite_ordered_set(tuple(coefficients))
+            return finite_indexed_family(
+                support,
+                coefficients.__getitem__,
+                name="Divisor coefficients on the finite support",
             )
 
         def components(self, divisor):
-            return tuple(prime_divisor for _, prime_divisor in self.terms(divisor))
+            return self.terms(divisor).index_set()
 
         def divisor_repr(self, divisor) -> str:
             terms = self.terms(divisor)
-            if not terms:
+            if terms.cardinality() == 0:
                 return "0"
             return " + ".join(
-                f"{coefficient}*{prime_divisor}" for coefficient, prime_divisor in terms
+                f"{coefficient}*{prime_divisor}"
+                for prime_divisor, coefficient in terms.items()
             ).replace("+ -", "- ")
 
         def divisor_latex(self, divisor) -> str:
             terms = self.terms(divisor)
-            if not terms:
+            if terms.cardinality() == 0:
                 return "0"
             return " + ".join(
-                rf"{latex(coefficient)}\,{latex(prime_divisor)}" for coefficient, prime_divisor in terms
+                rf"{latex(coefficient)}\,{latex(prime_divisor)}"
+                for prime_divisor, coefficient in terms.items()
             ).replace("+ -", "- ")

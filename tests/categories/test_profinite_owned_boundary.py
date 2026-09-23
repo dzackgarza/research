@@ -6,10 +6,15 @@ its canonical degree-two finite stage supplies a genuine open subgroup.
 """
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.group.groups import (
     OwnedAbelianGroups,
     OwnedGroups,
+    Subgroups,
     TopologicalGroups,
+)
+from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+    AbsoluteGaloisGroup,
 )
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     AbsoluteGaloisGroups,
@@ -25,7 +30,8 @@ def test_profinite_hierarchy_is_part_of_the_owned_category_graph() -> None:
     profinite = ProfiniteGroups()
     absolute = AbsoluteGaloisGroups()
     finite_field_absolute = AbsoluteGaloisGroupsOfFiniteFields()
-    open_absolute = OpenAbsoluteGaloisSubgroups()
+    ambient = AbsoluteGaloisGroup(GF(2))
+    open_absolute = OpenAbsoluteGaloisSubgroups(ambient)
 
     assert isinstance(profinite, OwnedCategory)
     assert isinstance(absolute, OwnedCategory)
@@ -35,14 +41,15 @@ def test_profinite_hierarchy_is_part_of_the_owned_category_graph() -> None:
     assert profinite.super_categories() == [TopologicalGroups()]
     assert absolute.super_categories() == [profinite]
     assert finite_field_absolute.super_categories() == [absolute, OwnedAbelianGroups()]
-    assert open_absolute.super_categories() == [absolute]
+    assert open_absolute.super_categories() == [absolute, Subgroups(ambient)]
 
 
 def test_each_profinite_category_exhibits_a_real_mathematical_object() -> None:
     profinite = ProfiniteGroups()
     absolute = AbsoluteGaloisGroups()
     finite_field_absolute = AbsoluteGaloisGroupsOfFiniteFields()
-    open_absolute = OpenAbsoluteGaloisSubgroups()
+    ambient = AbsoluteGaloisGroup(GF(2))
+    open_absolute = OpenAbsoluteGaloisSubgroups(ambient)
 
     profinite_group = profinite.an_object()
     absolute_group = absolute.an_object()

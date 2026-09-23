@@ -1,13 +1,16 @@
-from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    FiniteAtlasInvertibleSheaf,
+import pytest
+
+from dzack_research.preamble.all import AffineSpaces, QQ, ProjectiveSpaces, Schemes
+from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    QuasiCoherentSheaves,
+    zariski_coverage,
 )
-from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasRefinement
 
 
 def _projective_line_with_redundant_overlap_chart():
     line = ProjectiveSpaces(QQ)(1)
-    coarse = line.glued_from_standard_charts().gluing_datum()
+    coarse = line.standard_affine_atlas()
     left = coarse.chart(0)
     right = coarse.chart(1)
     overlap = coarse.overlap(0, 1)
@@ -25,18 +28,20 @@ def _projective_line_with_redundant_overlap_chart():
     right_to_overlap = Schemes(QQ).Core().Mor(
         right_forward.domain(), right_forward.codomain()
     )(right_forward, right_inverse)
-    fine_scheme = Schemes(QQ).glue_affine_atlas(
+    fine = FiniteAffineAtlases(line)(
         (left, right, overlap),
         (
             coarse.transition_between(0, 1),
             left_to_overlap,
             right_to_overlap,
         ),
+        (
+            coarse.chart_embedding(0),
+            coarse.chart_embedding(1),
+            coarse.chart_embedding(0) * overlap.inclusion(),
+        ),
     )
-    fine = fine_scheme.gluing_datum()
-    refinement = FiniteAtlasRefinement(
-        coarse,
-        fine,
+    refinement = FiniteAffineAtlases(line).Mor(fine, coarse)(
         (0, 1, 0),
         (
             left.categorical_identity_morphism(),
@@ -48,28 +53,31 @@ def _projective_line_with_redundant_overlap_chart():
 
 
 def test_redundant_projective_line_chart_refines_the_standard_atlas() -> None:
-    _line, coarse, fine, refinement = _projective_line_with_redundant_overlap_chart()
+    line, coarse, fine, refinement = _projective_line_with_redundant_overlap_chart()
     comparison = refinement.comparison_morphism()
 
-    assert comparison.domain() is fine.scheme()
-    assert comparison.codomain() is coarse.scheme()
+    assert refinement in FiniteAffineAtlases(line).Mor(fine, coarse)
+    assert coarse in zariski_coverage(line)
+    assert coarse.coverage() is zariski_coverage(line)
+    assert comparison == line.categorical_identity_morphism()
     assert refinement.coarse_index(0) == 0
     assert refinement.coarse_index(1) == 1
     assert refinement.coarse_index(2) == 0
-    assert comparison.local_map(2) == coarse.chart_embedding(0) * fine.chart(2).inclusion()
+    assert refinement.chart_map(2) == coarse.overlap(0, 1).inclusion()
+    assert coarse.chart_embedding(0) * refinement.chart_map(2) == fine.chart_embedding(2)
 
-    # The two original coarse charts give a section of the comparison.  On
-    # them the composite is literally the identity chart embedding; the third
-    # fine chart is the represented overlap already contained in chart zero.
-    section = coarse.scheme().Mor(fine.scheme())(
-        (fine.chart_embedding(0), fine.chart_embedding(1))
-    )
-    for index in (0, 1):
-        assert comparison * section.local_map(index) == coarse.chart_embedding(index)
-    assert (
-        section.local_map(0) * fine.chart(2).inclusion()
-        == fine.chart_embedding(2)
-    )
+
+def test_proper_singleton_open_is_not_a_finite_affine_atlas() -> None:
+    line = AffineSpaces(QQ)(1, names=("x",))
+    x = line.coordinate_algebra().algebra_generator("x")
+    proper_open = line.distinguished_open(x)
+
+    with pytest.raises(ValueError, match="do not jointly cover"):
+        FiniteAffineAtlases(line)(
+            (proper_open,),
+            (),
+            (proper_open.inclusion(),),
+        )
 
 
 def test_nontrivial_line_bundle_pulls_back_with_actual_local_isomorphisms() -> None:
@@ -80,7 +88,10 @@ def test_nontrivial_line_bundle_pulls_back_with_actual_local_isomorphisms() -> N
             "x1_over_x0"
         )
     )
-    bundle = FiniteAtlasInvertibleSheaf(coarse, {(0, 1): ratio})
+    bundle = QuasiCoherentSheaves(coarse.scheme()).Invertible().WithChosenTrivialization()(
+        coarse,
+        {(0, 1): ratio},
+    )
     comparison = refinement.pullback_invertible_sheaf(bundle)
     refined = comparison.refined_bundle()
 

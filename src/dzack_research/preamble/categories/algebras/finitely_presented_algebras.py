@@ -10,7 +10,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     TensorAlgebras,
-    _PresentedAlgebraParent,
+    _NativeLinearRelationAlgebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.modules.tensor_products import (
     _flatten_tensor_label,
     _nested_tensor_label,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -27,39 +28,6 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def _canonical_smith_representative(module, element):
-    r"""Choose the Smith-coordinate representative used by quotient reduction.
-
-    The module itself remains the mathematical quotient.  This function only
-    chooses a deterministic computation representative of one element, using
-    the invariant-factor quotients already computed by the live finitely
-    presented module implementation.
-    """
-
-    smith_engine = module._smith_engine()
-    if smith_engine is None:
-        raise NotImplementedError(
-            "a canonical representative is currently chosen from a PID Smith engine"
-        )
-    coordinates = tuple(
-        smith_engine.coordinate_vector(
-            module._to_smith_engine_element(element),
-            reduce=False,
-        )
-    )
-    invariants = tuple(smith_engine.invariants())
-    engine = _engine_ring(module.base_ring())
-    reduced = [
-        coordinate
-        if invariant == 0
-        else engine.ideal(invariant).reduce(coordinate)
-        for coordinate, invariant in zip(coordinates, invariants, strict=True)
-    ]
-    if not reduced:
-        return module.zero()
-    return module._from_smith_engine_element(
-        smith_engine.linear_combination_of_smith_form_gens(reduced)
-    )
 
 
 class _LinearPresentationTensorIdeal(Ideal_nc):
@@ -76,11 +44,9 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
     def __init__(self, presentation_ring, module, relations) -> None:
         engine = _engine_ring(presentation_ring)
         Ideal_nc.__init__(self, engine, relations, side="twosided")
+        self._presentation_ring = presentation_ring
         self._module = module
         self._labels = module.module_generating_set()
-        self._monoid_generator_labels = dict(
-            zip(engine.monoid().gens(), self._labels, strict=True)
-        )
         self._tensor_powers = {1: module}
 
     def _tensor_power(self, degree):
@@ -94,13 +60,6 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         self._tensor_powers[degree] = power
         return power
 
-    def _word_labels(self, monomial):
-        return tuple(
-            self._monoid_generator_labels[generator]
-            for generator, exponent in monomial
-            for _ in range(int(exponent))
-        )
-
     def _free_word(self, word):
         engine = self.ring()
         result = engine.one()
@@ -110,40 +69,38 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         return result
 
     def reduce(self, element):
-
         engine = self.ring()
-        homogeneous_terms = {}
-        for monomial, coefficient in engine(element).monomial_coefficients().items():
-            word = self._word_labels(monomial)
-            homogeneous_terms.setdefault(len(word), []).append((word, coefficient))
+        represented = _owned_engine_element(self._presentation_ring, engine(element))
+        homogeneous_components = self._presentation_ring.homogeneous_components(
+            represented
+        )
 
         result = engine.zero()
-        for degree, terms in homogeneous_terms.items():
+        for degree, component in homogeneous_components.items():
+            degree = int(degree)
             if degree == 0:
-                result += sum(
-                    (coefficient for _word, coefficient in terms),
-                    engine.base_ring().zero(),
+                coefficients = component.parent().framing_coefficients(component)
+                scalar = next(
+                    iter(coefficients.values()),
+                    self._module.base_ring().zero(),
                 )
+                result += _engine_element(self._module.base_ring(), scalar)
                 continue
 
             tensor_power = self._tensor_power(degree)
-            tensor_ring = tensor_power.base_ring()
-            tensor_element = sum(
-                (
-                    tensor_ring._from_engine_element(
-                        _engine_ring(tensor_ring)(coefficient)
-                    )
-                    * tensor_power.module_generator(
-                        _nested_tensor_label(self._module, word)
-                    )
-                    for word, coefficient in terms
-                ),
-                tensor_power.zero(),
+            source_power = component.parent()
+            tensor_element = tensor_power.linear_combination(
+                {
+                    _nested_tensor_label(
+                        self._module,
+                        _flatten_tensor_label(source_label, degree),
+                    ): coefficient
+                    for source_label, coefficient in source_power.framing_coefficients(
+                        component
+                    ).items()
+                }
             )
-            representative = _canonical_smith_representative(
-                tensor_power,
-                tensor_element,
-            )
+            representative = tensor_power._smith_representative(tensor_element)
             for tensor_label, coefficient in tensor_power.framing_coefficients(representative).items():
                 result += _engine_element(
                     tensor_power.base_ring(), coefficient
@@ -175,7 +132,7 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
 
     selected_relations = indexed_family(
         relation_indices,
-        lambda index: presentation_ring._from_engine_element(
+        lambda index: _owned_engine_element(presentation_ring,
             backend_relation(index)
         ),
         name="Tensor-algebra defining relations",
@@ -195,7 +152,7 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
     )
     quotient_engine = engine.quotient(presentation_ideal)
     labels = presentation_ring.algebra_generating_set()
-    presented = _PresentedAlgebraParent(
+    presented = _NativeLinearRelationAlgebra(
         quotient_engine,
         base,
         labels,
@@ -207,7 +164,7 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
             TensorAlgebras(base),
             GradedAlgebras(base),
         ),
-        free_source_module=module,
+        generating_module=module,
     )
     return presented
 

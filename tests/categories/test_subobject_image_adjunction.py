@@ -71,8 +71,8 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
     assert source_subobjects.leq(not_a, preimage_b) is False
 
     forward_witness = target_subobjects.Mor(image_a, b).canonical_morphism()
-    transpose = adjunction.hom_set_isomorphism_forward(forward_witness, a)
-    recovered = adjunction.hom_set_isomorphism_inverse(transpose, b)
+    transpose = adjunction.mor_set_isomorphism_forward(forward_witness, a)
+    recovered = adjunction.mor_set_isomorphism_inverse(transpose, b)
     assert transpose.domain() is a
     assert transpose.codomain() is preimage_b
     assert recovered.domain() is image_a

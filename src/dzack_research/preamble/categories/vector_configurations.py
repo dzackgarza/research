@@ -27,7 +27,6 @@ of order six, and ``E8`` gives the trivial group.
 """
 
 from sage.graphs.graph import Graph
-from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
@@ -98,7 +97,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         def configuration_automorphism_group(self, algorithm=None):
             r"""Return framing permutations preserving every pairing.
 
-            ``algorithm`` is the private graph-canonization backend selector
+            ``algorithm`` is the graph-canonization algorithm selector
             accepted by Sage (notably ``None``, ``"bliss"`` and ``"sage"``).
             The returned object is still the owned permutation group.
             """
@@ -218,7 +217,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             r"""Lift one owned pairing-graph automorphism through libGAP.
 
             The graph automorphism group is an owned permutation group.  Its
-            backend permutation crosses into GAP only long enough to evaluate
+            private permutation representation crosses into GAP only long enough to evaluate
             the action on the canonical point set ``1..m``; the resulting map
             on the configuration's own framing positions is then lifted by
             :meth:`configuration_isometry`, which verifies every pairing.
@@ -229,14 +228,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                     "the permutation to lift must lie in this configuration's automorphism group"
                 )
             positions = self.configuration_positions()
-            backend = automorphisms._to_engine(automorphism)
-            gap_permutation = libgap(backend)
-
             def position_map(label):
                 source = int(positions.ranking_map()(label)) + 1
-                target = int(
-                    libgap.OnPoints(libgap(source), gap_permutation).sage()
-                )
+                target = int(automorphism(source))
                 return positions[target - 1]
 
             return self.configuration_isometry(position_map)
@@ -249,14 +243,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                     "the permutation to lift must lie in this configuration's automorphism group"
                 )
             positions = self.configuration_positions()
-            backend = automorphisms._to_engine(automorphism)
-            gap_permutation = libgap(backend)
-
             def position_map(label):
                 source = int(positions.ranking_map()(label)) + 1
-                target = int(
-                    libgap.OnPoints(libgap(source), gap_permutation).sage()
-                )
+                target = int(automorphism(source))
                 return positions[target - 1]
 
             return self.ambient_isometry(position_map)

@@ -36,10 +36,13 @@ def test_archived_invariant_factor_form_uses_a_minimal_framing_isometrically() -
 
 def test_archived_correlation_matrix_is_the_gram_matrix_and_dual_form_is_inverse() -> None:
     for lattice in (Lattices.A2, Lattices.D4, Lattices.U_2):
-        correlation = lattice.correlation_morphism().matrix()
+        correlation = lattice.correlation_morphism()
+        linear = correlation.domain().module_category().Mor(
+            correlation.domain(), correlation.codomain()
+        )(correlation)
         gram = lattice.gram_matrix()
 
-        assert correlation.list() == gram.list()
+        assert linear.matrix() == gram
         assert lattice.dual_lattice().gram_matrix() == gram.inverse()
 
 

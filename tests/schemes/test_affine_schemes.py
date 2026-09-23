@@ -369,7 +369,7 @@ def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
     nonflat_algebra = (killed_presentation).quotient_by_relations((t,))
     nonflat = (nonflat_algebra).affine_spectrum(base_ring=parameter)
     assert not nonflat.is_flat()
-    with raises(NotImplementedError, match="requires represented flatness"):
+    with raises(AssertionError):
         nonflat.relative_nonsmooth_subscheme()
 
 

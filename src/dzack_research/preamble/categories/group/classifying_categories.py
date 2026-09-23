@@ -1,8 +1,8 @@
 r"""The one-object category ``BG`` and the functor induced by a group map.
 
-The represented group names the unique object. Its elements name the
-arrows, and its multiplication is composition. Sage's ``Morphism`` and
-the existing owned Hom construction supply the runtime representation;
+The category constructs one formal object. The represented group's elements
+name its endomorphisms, and group multiplication is composition. Sage's ``Morphism`` and
+the existing owned Mor construction supply the runtime representation;
 the group owner supplies multiplication, inverses and equality.
 """
 
@@ -10,10 +10,10 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.structure.richcmp import richcmp
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     CategoryPacketMethods,
-    HomCategoryConstruction,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -21,22 +21,24 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import OwnedGroups, _owned_group
+from dzack_research.preamble.owned_category import _object_of
 
 
 class ClassifyingMorphism(Morphism):
     r"""An arrow of ``BG``, named by its group element."""
 
     def __init__(self, parent, group_element) -> None:
-        self._group_element = parent.homset_category().group()(group_element)
+        self._group_element = parent.mor_category().group()(group_element)
         Morphism.__init__(self, parent)
 
     def group_element(self):
         return self._group_element
 
-    def __mul__(self, other):
-        if not isinstance(other, ClassifyingMorphism) or other.parent() is not self.parent():
+    def _composition(self, right):
+        r"""Composition in ``BG`` is the group law; Sage's ``Map.__mul__`` has checked ``right`` is a map into the one object."""
+        if right.parent() is not self.parent():
             return NotImplemented
-        return self.parent()(self.group_element() * other.group_element())
+        return self.parent()(self.group_element() * right.group_element())
 
     def inverse(self):
         return self.parent()(~self.group_element())
@@ -44,16 +46,15 @@ class ClassifyingMorphism(Morphism):
     __invert__ = inverse
 
     def _richcmp_(self, other, op):
-        if not isinstance(other, ClassifyingMorphism) or other.parent() is not self.parent():
-            return NotImplemented
+        r"""Compare two arrows of ``BG`` by their group elements; Sage calls this with one parent."""
         return richcmp(self.group_element(), other.group_element(), op)
 
     def _repr_(self):
-        return f"{self.group_element()} in B({self.parent().homset_category().group()})"
+        return f"{self.group_element()} in B({self.parent().mor_category().group()})"
 
 
-class ClassifyingHomset(CategoricalHomset):
-    r"""The single Hom object of ``BG``."""
+class ClassifyingMor(CategoricalMor):
+    r"""The single Mor object of ``BG``."""
 
     Element = ClassifyingMorphism
 
@@ -65,12 +66,12 @@ class ClassifyingHomset(CategoricalHomset):
 
     @cached_method
     def identity(self):
-        return self(self.homset_category().group().one())
+        return self(self.mor_category().group().one())
 
 
-class ClassifyingHomCategory(HomCategoryConstruction):
+class ClassifyingMorCategory(MorCategoryConstruction):
     def fixed_category_class(self):
-        return ClassifyingHomset
+        return ClassifyingMor
 
 
 class ClassifyingCategory(CategoryPacketMethods, OwnedParameterizedCategory):
@@ -86,16 +87,26 @@ class ClassifyingCategory(CategoryPacketMethods, OwnedParameterizedCategory):
     def group(self):
         return self.parameter()
 
-    def an_object(self):
-        return self.group()
+    class ParentMethods:
+        r"""The unique formal object of ``BG``; ``G`` lives in its endomorphisms."""
 
-    def __contains__(self, candidate) -> bool:
-        return candidate is self.an_object()
+        def classifying_category(self):
+            return self.category()
+
+        def _repr_(self):
+            return f"* in B({self.classifying_category().group()})"
+
+    @cached_method
+    def object(self):
+        return _object_of(self)
+
+    def an_object(self):
+        return self.object()
 
     def super_categories(self):
         return [Objects()]
 
-    _HomCategory = ClassifyingHomCategory
+    _MorCategory = ClassifyingMorCategory
 
     def _repr_object_names(self):
         return f"the unique object of B({self.group()})"

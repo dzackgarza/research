@@ -1,13 +1,14 @@
 r"""Every owned ring is a ``ZZ``-algebra, and every commutative one an algebra over itself.
 
 The placement is made once, at construction, for every route that builds an
-owned ring; what it buys is the algebra homsets into the ring itself, such as
+owned ring; what it buys is the algebra mors into the ring itself, such as
 the augmentation ``R[G] -> R`` for a number field ``R``.
 """
 
 from typing import Any, cast
 
 import pytest
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.all import (
     RR,
@@ -16,12 +17,14 @@ from dzack_research.preamble.all import (
     FinitelyGeneratedFreeModules,
     Groups,
     Modules,
+    OwnedOrders,
     OwnedRings,
 )
 from dzack_research.preamble.rings import (
     ring_constructor_surface,
     session_ring_objects,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 _RINGS = session_ring_objects()
 _CONSTRUCTORS = ring_constructor_surface()
@@ -101,7 +104,7 @@ def test_the_augmentation_of_a_group_algebra_over_a_number_field_is_an_algebra_m
     assert permutation.module_invariants().module_rank() == 2
 
 
-def test_a_self_algebra_keeps_the_ring_morphism_homset_as_its_default_mor() -> None:
+def test_a_self_algebra_keeps_the_ring_morphism_mor_as_its_default_mor() -> None:
     real_ring = cast(Any, RR)
     assert real_ring.Mor(real_ring) is OwnedRings().Mor(real_ring, real_ring)
     identity = real_ring.Mor(real_ring)(lambda element: real_ring(element))
@@ -157,6 +160,66 @@ def test_the_integers_are_an_algebra_over_themselves() -> None:
     assert ZZ.base_ring() is ZZ
     assert ZZ in Algebras(ZZ).Associative().Unital().Commutative()
     assert ZZ in Modules(ZZ)
+
+
+def test_the_integers_bootstrap_order_and_algebra_on_one_object() -> None:
+    orders = OwnedOrders()
+    finite_integer_algebras = (
+        Algebras(ZZ)
+        .Associative()
+        .Unital()
+        .Commutative()
+        .FinitelyGenerated()
+    )
+
+    assert _own_ring(SageZZ) is ZZ
+    assert orders.an_object() is ZZ
+    assert orders.super_categories()[0].base_ring() is ZZ
+    assert ZZ in orders
+    assert ZZ in finite_integer_algebras
+    assert ZZ.base_ring() is ZZ
+    assert ZZ.algebra_base_ring() is ZZ
+    assert ZZ.regular_module() is ZZ
+
+
+def test_number_field_orders_keep_the_integer_base_in_both_access_orders() -> None:
+    finite_integer_algebras = (
+        Algebras(ZZ)
+        .Associative()
+        .Unital()
+        .Commutative()
+        .FinitelyGenerated()
+    )
+    finite_integer_modules = Modules(ZZ).FinitelyGenerated()
+
+    category_first = QuadraticField(5, "a_bootstrap").ring_of_integers()
+    assert category_first in OwnedOrders()
+    assert category_first in finite_integer_algebras
+    assert category_first in finite_integer_modules
+    assert category_first.base_ring() is ZZ
+    assert category_first.as_algebra_over(ZZ) is category_first
+    assert category_first.module_rank() == 2
+
+    field = QuadraticField(2, "b_bootstrap")
+    base_first = field.order_generated_by(field.primitive_element())
+    assert base_first.base_ring() is ZZ
+    assert base_first.as_algebra_over(ZZ) is base_first
+    assert base_first.module_rank() == 2
+    assert base_first in finite_integer_algebras
+    assert base_first in finite_integer_modules
+    assert base_first in OwnedOrders()
+
+
+def test_an_infinite_rank_integer_algebra_is_not_an_order() -> None:
+    polynomial = ZZ.polynomial_ring("x_bootstrap")
+    commutative_integer_algebras = Algebras(ZZ).Associative().Unital().Commutative()
+    finite_integer_algebras = commutative_integer_algebras.FinitelyGenerated()
+    finite_integer_modules = Modules(ZZ).FinitelyGenerated()
+
+    assert polynomial in commutative_integer_algebras
+    assert polynomial not in finite_integer_algebras
+    assert polynomial not in finite_integer_modules
+    assert polynomial not in OwnedOrders()
 
 
 def test_a_ring_is_the_rank_one_free_module_over_itself(promoted_ring: Any) -> None:

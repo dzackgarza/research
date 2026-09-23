@@ -6,6 +6,7 @@ from dzack_research.preamble.categories.manifolds import (
     SmoothManifolds,
     TopologicalManifolds,
 )
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 
 
 def _two_chart_translation(manifold, shift):
@@ -22,14 +23,20 @@ def test_topological_atlas_retains_labels_and_nonidentity_transition() -> None:
     source, target, transition = _two_chart_translation(manifold, 1)
 
     assert manifold in TopologicalManifolds()
+    assert manifold in TopologicalSpaces()
     assert manifold.regularity() == "topological"
     assert tuple(manifold.chart_labels()) == ("x", "y")
     assert manifold.atlas()["x"] is source
     assert manifold.atlas()["y"] is target
     assert transition.source() is source
     assert transition.target() is target
-    assert transition.forward_expressions() == (source.coordinate(0) + 1,)
-    assert transition.inverse_expressions() == (target.coordinate(0) - 1,)
+    assert tuple(transition.forward_expressions()) == (source.coordinate(0) + 1,)
+    assert tuple(transition.inverse_expressions()) == (target.coordinate(0) - 1,)
+    assert source.coordinate(0).parent() is target.coordinate(0).parent()
+    assert all(
+        expression.parent() is source.coordinate(0).parent()
+        for expression in transition.forward_expressions()
+    )
     assert transition.inverse().inverse() is transition
     assert manifold.transition("y", "x") is transition.inverse()
 
@@ -40,12 +47,13 @@ def test_finite_Ck_atlas_retains_exact_differentiability_degree() -> None:
 
     assert manifold in DifferentiableManifolds()
     assert manifold in TopologicalManifolds()
+    assert manifold in TopologicalSpaces()
     assert manifold.differentiability_degree() == 2
     assert manifold.regularity() == "C^2"
     assert not manifold.is_smooth()
     assert transition.regularity() == "C^2"
-    assert transition.forward_expressions() == (source.coordinate(0) + 2,)
-    assert transition.inverse_expressions() == (target.coordinate(0) - 2,)
+    assert tuple(transition.forward_expressions()) == (source.coordinate(0) + 2,)
+    assert tuple(transition.inverse_expressions()) == (target.coordinate(0) - 2,)
 
 
 def test_smooth_atlas_is_a_differentiable_and_topological_atlas() -> None:
@@ -55,12 +63,13 @@ def test_smooth_atlas_is_a_differentiable_and_topological_atlas() -> None:
     assert manifold in SmoothManifolds()
     assert manifold in DifferentiableManifolds()
     assert manifold in TopologicalManifolds()
+    assert manifold in TopologicalSpaces()
     assert manifold.differentiability_degree() == Infinity
     assert manifold.regularity() == "smooth"
     assert manifold.is_smooth()
     assert transition.regularity() == "smooth"
-    assert transition.forward_expressions() == (source.coordinate(0) + 3,)
-    assert transition.inverse_expressions() == (target.coordinate(0) - 3,)
+    assert tuple(transition.forward_expressions()) == (source.coordinate(0) + 3,)
+    assert tuple(transition.inverse_expressions()) == (target.coordinate(0) - 3,)
 
 
 def test_holomorphic_map_retains_its_selected_chart_presentation() -> None:
@@ -71,7 +80,8 @@ def test_holomorphic_map_retains_its_selected_chart_presentation() -> None:
     square = line.holomorphic_polynomial_map(line, (z**2,))
     presentation = square.presentation()
 
-    assert presentation.coordinate_expressions() == (z**2,)
+    assert tuple(presentation.coordinate_expressions()) == (z**2,)
+    assert presentation.coordinate_expressions()[0].parent() is z.parent()
     assert presentation.source_chart_label() == "standard"
     assert presentation.target_chart_label() == "standard"
     assert square.source_chart() is chart

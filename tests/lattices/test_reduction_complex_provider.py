@@ -42,8 +42,8 @@ def test_full_adjacency_records_cross_to_cells_stabilizers_and_transporters() ->
     stabilizers = traversal.cell_stabilizer_generators(cell)
     assert stabilizers.cardinality() == 1
     swap = stabilizers[0]
-    e0 = lattice.module_generator(0)
-    e1 = lattice.module_generator(1)
+    e0 = lattice.basis_vector(0)
+    e1 = lattice.basis_vector(1)
     assert swap(e0) == e1
     assert swap(e1) == e0
     assert cell.transported_by(swap).is_equal_to(cell)

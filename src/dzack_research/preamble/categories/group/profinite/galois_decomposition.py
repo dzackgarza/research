@@ -1,24 +1,34 @@
 r"""Decomposition, inertia, and Frobenius projections of (G_K)."""
 
-from sage.structure.parent import Parent
-from sage.structure.sage_object import SageObject
+from sage.rings.integer import Integer
+from sage.rings.integer_ring import ZZ
 
-from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.group.groups import OwnedGroups, Subgroups
+from dzack_research.preamble.categories.group.predicate_subgroups import (
+    PredicateSubgroups,
+    StabilizerSubgroups,
 )
-from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.categories.group.profinite.profinite_groups import (
+    ProfiniteGroups,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.set_categories import Set, Sets
+from dzack_research.preamble.owned_category import _object_of
 
 
-class PrimeProlongation(SageObject):
+class _PrimeProlongationEngine:
     r"""A coherent finite-stage oracle for a chosen prolongation (\bar v)."""
 
-    def __init__(self, base_prime, at_stage) -> None:
+    def __init__(self, base_prime, at_stage, **rest) -> None:
         if not callable(at_stage):
             raise TypeError("a prolongation must supply a finite-stage prime function")
         self._base_prime = base_prime
         self._at_stage = at_stage
+        super().__init__(**rest)
 
     def base_prime(self):
         return self._base_prime
@@ -33,230 +43,128 @@ class PrimeProlongation(SageObject):
         return f"Chosen prolongation of {self._base_prime}"
 
 
-def _engine_prime(prime):
-    r"""Return the private number-field prime ideal represented by ``prime``."""
-    crossing = getattr(prime, "_engine_ideal", None)
-    backend = crossing() if crossing is not None else prime
-    ring = getattr(backend, "ring", lambda: None)()
-    number_field = getattr(ring, "number_field", None)
-    if number_field is not None:
-        field = number_field()
-        try:
-            return field.ideal(tuple(backend.gens()))
-        except (AttributeError, TypeError, ValueError):
-            pass
-    return backend
+def PrimeProlongation(base_prime, at_stage):
+    r"""Construct a chosen prime prolongation as represented mathematical data."""
+    return _object_of(
+        Objects(),
+        _engine=(Objects(), _PrimeProlongationEngine, None),
+        base_prime=base_prime,
+        at_stage=at_stage,
+    )
 
 
 def _image_prime(prime, automorphism):
-    prime = _engine_prime(prime)
-    backend = automorphism.action()._engine_morphism_crossing()
-    try:
-        return prime.apply_morphism(backend)
-    except AttributeError:
-        field = _engine_ring(automorphism.parent().top_field())
-        return field.ideal([backend(generator) for generator in prime.gens()])
+    r"""``sigma(P)``, the image of a number-field prime under an exact automorphism."""
+    return prime.image_under_fraction_field_automorphism(automorphism.action())
 
 
 def _fixes_residue_field(prime, automorphism) -> bool:
-    prime = _engine_prime(prime)
-    residue = prime.residue_field()
+    r"""Whether ``sigma`` acts trivially on ``O_L / P``, read on a basis of ``O_L``."""
     owned_field = automorphism.parent().top_field()
-    field = _engine_ring(owned_field)
-    order = field.maximal_order()
-    for basis_element in order.basis():
-        owned_basis = owned_field._from_engine_element(field(basis_element))
-        image = automorphism(owned_basis)
-        if residue(_engine_element(owned_field, image)) != residue(basis_element):
-            return False
-    return True
+    order = owned_field.ring_of_integers()
+    return all(
+        prime.congruent(
+            order(automorphism(owned_field(basis_element))),
+            basis_element,
+        )
+        for basis_element in order.integral_basis()
+    )
 
 
 def _residue_field_order(base_prime):
-    from sage.rings.integer_ring import ZZ
+    r"""``|O_K / p|``: the prime itself for a rational prime, else the absolute norm.
 
-    base_prime = _engine_prime(base_prime)
-    if base_prime in ZZ:
-        return abs(ZZ(base_prime))
-    try:
-        norm = base_prime.norm()
-        if norm in ZZ:
-            return abs(ZZ(norm))
-    except (AttributeError, TypeError, ValueError):
-        pass
-    try:
-        generators = tuple(base_prime.gens_reduced())
-    except (AttributeError, NotImplementedError):
-        generators = tuple(base_prime.gens())
-    if len(generators) == 1 and generators[0] in ZZ:
-        return abs(ZZ(generators[0]))
-    raise TypeError(
-        "the absolute residue-field cardinality of the base prime is unavailable"
+    Engine adapter: a rational prime is written as a Python or Sage integer
+    or as an owned integer; a prime ideal of ``O_K`` has absolute norm
+    ``|O_K / p|``.
+    """
+    integers = _own_ring(ZZ)
+    match base_prime:
+        case int() | Integer():
+            return abs(ZZ(base_prime))
+        case _ if base_prime in integers:
+            return abs(ZZ(int(base_prime)))
+        case _:
+            return abs(ZZ(int(base_prime.residue_cardinality())))
+
+
+def FiniteGaloisSubgroup(supergroup, elements, description):
+    r"""The subgroup of the finite group ``supergroup`` whose elements are ``elements``.
+
+    The element set is checked to contain the identity and to be closed under
+    the law, which makes it a subgroup of a finite group; the subgroup is the
+    predicate subgroup cut out by membership in that set.
+    """
+    element_set = frozenset(elements)
+    assert all(element in supergroup for element in element_set), (
+        "the selected subgroup elements belong to the containing group"
+    )
+    assert supergroup.one() in element_set, "a represented subgroup contains the identity"
+    assert all(left * right in element_set for left in element_set for right in element_set), (
+        "the selected finite elements are closed under multiplication"
+    )
+    return PredicateSubgroups(supergroup)(lambda element: element in element_set, description)
+
+
+def FiniteElementConjugacyClass(supergroup, representative):
+    r"""Return the actual conjugacy orbit of ``representative`` in a finite group."""
+    return supergroup.conjugacy_class(representative)
+
+
+
+def _finite_decomposition_group(quotient, prime_above):
+    r"""``D_P = {sigma in Gal(L/K) : sigma(P) = P}``, the stabilizer of ``P``."""
+    return StabilizerSubgroups(quotient)(
+        prime_above,
+        "prime ideal",
+        lambda automorphism: _image_prime(prime_above, automorphism) == prime_above,
+        description=f"Decomposition group at {prime_above}",
     )
 
 
-class FiniteGaloisSubgroup(Parent):
-    r"""A literal finite subgroup represented by selected quotient elements."""
-
-    def __init__(self, supergroup, elements, description) -> None:
-        self._supergroup = supergroup
-        self._elements = tuple(elements)
-        self._element_set = frozenset(self._elements)
-        self._description = description
-        if supergroup.one() not in self._element_set:
-            raise ValueError("a represented subgroup must contain the identity")
-        if any(
-            left * right not in self._element_set
-            for left in self._elements
-            for right in self._elements
-        ):
-            raise ValueError(
-                "the selected finite elements are not closed under multiplication"
-            )
-        Parent.__init__(self, facade=supergroup, category=OwnedFiniteGroups())
-
-    def supergroup(self):
-        return self._supergroup
-
-    def __contains__(self, element) -> bool:
-        return element in self._element_set
-
-    def _element_constructor_(self, element):
-        element = self._supergroup(element)
-        if element not in self:
-            raise ValueError("the element is outside this finite subgroup")
-        return element
-
-    def __iter__(self):
-        return iter(self._elements)
-
-    def one(self):
-        return self._supergroup.one()
-
-    def order(self):
-        from sage.rings.integer_ring import ZZ
-
-        return ZZ(len(self._elements))
-
-    cardinality = order
-
-    def group_generators(self):
-
-        return finite_ordered_set(self).filtered(
-            lambda element: element != self.one(),
-        )
-
-    def _repr_(self) -> str:
-        return f"{self._description} in {self._supergroup}"
-
-
-class FiniteElementConjugacyClass(SageObject):
-    r"""The actual conjugacy orbit of an element in a finite quotient."""
-
-    def __init__(self, supergroup, representative) -> None:
-        self._supergroup = supergroup
-        self._representative = supergroup(representative)
-        self._elements = frozenset(
-            element * self._representative * element.inverse() for element in supergroup
-        )
-
-    def supergroup(self):
-        return self._supergroup
-
-    def representative(self):
-        return self._representative
-
-    def __contains__(self, element) -> bool:
-        return element in self._elements
-
-    def elements(self):
-        return Set(self._elements)
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, FiniteElementConjugacyClass)
-            and other._supergroup is self._supergroup
-            and other._elements == self._elements
-        )
-
-    def __hash__(self) -> int:
-        return hash((id(self._supergroup), self._elements))
-
-    def _repr_(self) -> str:
-        return f"Conjugacy class of {self._representative} in {self._supergroup}"
-
-
-def _finite_decomposition_group(quotient, prime_above) -> FiniteGaloisSubgroup:
-    backend_prime = _engine_prime(prime_above)
-    elements = tuple(
-        automorphism
-        for automorphism in quotient
-        if _image_prime(backend_prime, automorphism) == backend_prime
-    )
-    return FiniteGaloisSubgroup(
-        quotient,
-        elements,
-        f"Decomposition group at {prime_above}",
-    )
-
-
-def _finite_inertia_group(quotient, prime_above) -> FiniteGaloisSubgroup:
+def _finite_inertia_group(quotient, prime_above):
+    r"""``I_P``: the elements of ``D_P`` acting trivially on the residue field ``O_L / P``."""
     decomposition = quotient.decomposition_group(prime_above)
-    elements = tuple(
-        automorphism
-        for automorphism in decomposition
-        if _fixes_residue_field(prime_above, automorphism)
-    )
-    return FiniteGaloisSubgroup(
-        quotient,
-        elements,
+    return PredicateSubgroups(quotient)(
+        lambda automorphism: automorphism in decomposition and _fixes_residue_field(prime_above, automorphism),
         f"Inertia group at {prime_above}",
     )
 
 
-def _finite_frobenius_class(
-    quotient, base_prime, prime_above
-) -> FiniteElementConjugacyClass:
-    prime_above = _engine_prime(prime_above)
-    if prime_above.ramification_index() != 1:
-        raise ValueError("Frobenius is defined here only at an unramified prime")
-    decomposition = quotient.decomposition_group(prime_above)
-    residue = prime_above.residue_field()
+def _finite_frobenius_class(quotient, base_prime, prime_above):
+    r"""The Frobenius class at an unramified ``P``: the ``sigma in D_P`` with ``sigma(x) = x^q`` mod ``P``."""
+    assert quotient.inertia_group(prime_above).cardinality() == 1, "Frobenius is defined here only at a relatively unramified prime"
     residue_order = _residue_field_order(base_prime)
-    field = _engine_ring(quotient.top_field())
     owned_field = quotient.top_field()
-    candidates = []
-    for automorphism in decomposition:
-        matches = True
-        for basis_element in field.maximal_order().basis():
-            owned_basis = owned_field._from_engine_element(field(basis_element))
-            image = automorphism(owned_basis)
-            if residue(_engine_element(owned_field, image)) != residue(basis_element) ** residue_order:
-                matches = False
-                break
-        if matches:
-            candidates.append(automorphism)
-    if len(candidates) != 1:
-        raise ValueError(
-            "the finite quotient does not determine a unique unramified Frobenius element"
+    order = owned_field.ring_of_integers()
+
+    def acts_as_frobenius(automorphism) -> bool:
+        return all(
+            prime_above.congruent(
+                order(automorphism(owned_field(basis_element))),
+                order(owned_field(basis_element) ** int(residue_order)),
+            )
+            for basis_element in order.integral_basis()
         )
+
+    candidates = tuple(
+        automorphism for automorphism in quotient.decomposition_group(prime_above) if acts_as_frobenius(automorphism)
+    )
+    assert len(candidates) == 1, (
+        "at an unramified prime the finite quotient has exactly one Frobenius element"
+    )
     return FiniteElementConjugacyClass(quotient, candidates[0])
 
 
-class AbsoluteDecompositionGroup(SageObject):
-    def __init__(self, supergroup, prime, prolongation: PrimeProlongation) -> None:
-        if not isinstance(prolongation, PrimeProlongation):
-            raise TypeError(
-                "an actual decomposition group requires a chosen prime prolongation"
-            )
+class _AbsoluteDecompositionGroupEngine:
+    r"""Finite-quotient realization of the decomposition subgroup at ``prolongation``."""
+
+    def __init__(self, prime, prolongation, **rest) -> None:
         if prolongation.base_prime() != prime:
             raise ValueError("the prolongation lies over a different base prime")
-        self._supergroup = supergroup
         self._prime = prime
         self._prolongation = prolongation
-
-    def supergroup(self):
-        return self._supergroup
+        super().__init__(**rest)
 
     def ambient(self):
         r"""Return the ambient absolute Galois group."""
@@ -274,26 +182,57 @@ class AbsoluteDecompositionGroup(SageObject):
         )
 
     def conjugacy_class(self):
-        return DecompositionGroupConjugacyClass(self._supergroup, self._prime)
+        return DecompositionGroupConjugacyClass(self.supergroup(), self._prime)
+
+    def one(self):
+        return self.supergroup().one()
+
+    def __contains__(self, element) -> bool:
+        ambient = self.supergroup()
+        if element not in ambient:
+            return False
+        if element == ambient.one():
+            return True
+        assert False, (
+            "membership in an absolute decomposition subgroup is the compatible "
+            "stabilizer condition over every finite quotient; finitely many realized "
+            "coordinates do not decide it"
+        )
+
+    def _element_constructor_(self, datum):
+        ambient = self.supergroup()
+        element = datum if datum in ambient else ambient(datum)
+        if element == ambient.one():
+            return element
+        assert False, (
+            "constructing a nonidentity element of an absolute decomposition subgroup "
+            "requires a complete compatible prolongation-stabilizer witness"
+        )
 
     def _repr_(self) -> str:
-        return f"Decomposition group at {self._prolongation} in {self._supergroup}"
+        return f"Decomposition group at {self._prolongation} in {self.supergroup()}"
 
 
-class AbsoluteInertiaGroup(SageObject):
-    def __init__(self, supergroup, prime, prolongation: PrimeProlongation) -> None:
-        if not isinstance(prolongation, PrimeProlongation):
-            raise TypeError(
-                "an actual inertia group requires a chosen prime prolongation"
-            )
+def AbsoluteDecompositionGroup(supergroup, prime, prolongation):
+    r"""Construct the profinite subgroup ``D_pbar <= G_K`` from its finite images."""
+    return _object_of(
+        Cat().meet((ProfiniteGroups(), Subgroups(supergroup))),
+        _engine=(OwnedGroups(), _AbsoluteDecompositionGroupEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+        prolongation=prolongation,
+    )
+
+
+class _AbsoluteInertiaGroupEngine:
+    r"""Finite-quotient realization of the inertia subgroup at ``prolongation``."""
+
+    def __init__(self, prime, prolongation, **rest) -> None:
         if prolongation.base_prime() != prime:
             raise ValueError("the prolongation lies over a different base prime")
-        self._supergroup = supergroup
         self._prime = prime
         self._prolongation = prolongation
-
-    def supergroup(self):
-        return self._supergroup
+        super().__init__(**rest)
 
     def ambient(self):
         r"""Return the ambient absolute Galois group."""
@@ -311,16 +250,53 @@ class AbsoluteInertiaGroup(SageObject):
         )
 
     def conjugacy_class(self):
-        return InertiaGroupConjugacyClass(self._supergroup, self._prime)
+        return InertiaGroupConjugacyClass(self.supergroup(), self._prime)
+
+    def one(self):
+        return self.supergroup().one()
+
+    def __contains__(self, element) -> bool:
+        ambient = self.supergroup()
+        if element not in ambient:
+            return False
+        if element == ambient.one():
+            return True
+        assert False, (
+            "membership in an absolute inertia subgroup is the compatible residue-"
+            "triviality condition over every finite quotient; finitely many realized "
+            "coordinates do not decide it"
+        )
+
+    def _element_constructor_(self, datum):
+        ambient = self.supergroup()
+        element = datum if datum in ambient else ambient(datum)
+        if element == ambient.one():
+            return element
+        assert False, (
+            "constructing a nonidentity element of an absolute inertia subgroup "
+            "requires a complete compatible inertia witness"
+        )
 
     def _repr_(self) -> str:
-        return f"Inertia group at {self._prolongation} in {self._supergroup}"
+        return f"Inertia group at {self._prolongation} in {self.supergroup()}"
 
 
-class DecompositionGroupConjugacyClass(SageObject):
-    def __init__(self, supergroup, prime) -> None:
+def AbsoluteInertiaGroup(supergroup, prime, prolongation):
+    r"""Construct the profinite subgroup ``I_pbar <= G_K`` from its finite images."""
+    return _object_of(
+        Cat().meet((ProfiniteGroups(), Subgroups(supergroup))),
+        _engine=(OwnedGroups(), _AbsoluteInertiaGroupEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+        prolongation=prolongation,
+    )
+
+
+class _DecompositionGroupConjugacyClassEngine:
+    def __init__(self, supergroup, prime, **rest) -> None:
         self._supergroup = supergroup
         self._prime = prime
+        super().__init__(**rest)
 
     def supergroup(self):
         return self._supergroup
@@ -338,9 +314,23 @@ class DecompositionGroupConjugacyClass(SageObject):
             prolongation=prolongation,
         )
 
+    def __contains__(self, candidate) -> bool:
+        return (
+            isinstance(candidate, _AbsoluteDecompositionGroupEngine)
+            and candidate.supergroup() is self._supergroup
+            and candidate.prime() == self._prime
+        )
+
+    def _element_constructor_(self, candidate):
+        if candidate not in self:
+            raise ValueError(
+                "the subgroup is not in this decomposition-group conjugacy class"
+            )
+        return candidate
+
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, DecompositionGroupConjugacyClass)
+            isinstance(other, _DecompositionGroupConjugacyClassEngine)
             and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
@@ -352,10 +342,21 @@ class DecompositionGroupConjugacyClass(SageObject):
         return f"Conjugacy class of decomposition groups at {self._prime} in {self._supergroup}"
 
 
-class InertiaGroupConjugacyClass(SageObject):
-    def __init__(self, supergroup, prime) -> None:
+def DecompositionGroupConjugacyClass(supergroup, prime):
+    r"""Construct the conjugacy class of decomposition subgroups as a set."""
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _DecompositionGroupConjugacyClassEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+    )
+
+
+class _InertiaGroupConjugacyClassEngine:
+    def __init__(self, supergroup, prime, **rest) -> None:
         self._supergroup = supergroup
         self._prime = prime
+        super().__init__(**rest)
 
     def supergroup(self):
         return self._supergroup
@@ -373,9 +374,23 @@ class InertiaGroupConjugacyClass(SageObject):
             prolongation=prolongation,
         )
 
+    def __contains__(self, candidate) -> bool:
+        return (
+            isinstance(candidate, _AbsoluteInertiaGroupEngine)
+            and candidate.supergroup() is self._supergroup
+            and candidate.prime() == self._prime
+        )
+
+    def _element_constructor_(self, candidate):
+        if candidate not in self:
+            raise ValueError(
+                "the subgroup is not in this inertia-group conjugacy class"
+            )
+        return candidate
+
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, InertiaGroupConjugacyClass)
+            isinstance(other, _InertiaGroupConjugacyClassEngine)
             and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
@@ -387,12 +402,23 @@ class InertiaGroupConjugacyClass(SageObject):
         return f"Conjugacy class of inertia groups at {self._prime} in {self._supergroup}"
 
 
-class FrobeniusConjugacyClass(SageObject):
+def InertiaGroupConjugacyClass(supergroup, prime):
+    r"""Construct the conjugacy class of inertia subgroups as a set."""
+    return _object_of(
+        Sets(),
+        _engine=(Sets(), _InertiaGroupConjugacyClassEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+    )
+
+
+class _FrobeniusConjugacyClassEngine:
     r"""The canonical global Frobenius class at an unramified base prime."""
 
-    def __init__(self, supergroup, prime) -> None:
+    def __init__(self, supergroup, prime, **rest) -> None:
         self._supergroup = supergroup
         self._prime = prime
+        super().__init__(**rest)
 
     def supergroup(self):
         return self._supergroup
@@ -412,7 +438,7 @@ class FrobeniusConjugacyClass(SageObject):
 
     def __eq__(self, other) -> bool:
         return (
-            isinstance(other, FrobeniusConjugacyClass)
+            isinstance(other, _FrobeniusConjugacyClassEngine)
             and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
@@ -422,6 +448,16 @@ class FrobeniusConjugacyClass(SageObject):
 
     def _repr_(self) -> str:
         return f"Frobenius conjugacy class at {self._prime} in {self._supergroup}"
+
+
+def FrobeniusConjugacyClass(supergroup, prime):
+    r"""Construct the choice-independent global Frobenius datum."""
+    return _object_of(
+        Objects(),
+        _engine=(Objects(), _FrobeniusConjugacyClassEngine, None),
+        supergroup=supergroup,
+        prime=prime,
+    )
 
 
 __all__ = [

@@ -1,8 +1,14 @@
-from dzack_research.preamble.all import QQ, AffineSpaces
+import pytest
+
+from dzack_research.preamble.all import GF, QQ, AffineSpaces, Modules
+from dzack_research.preamble.categories.abstract_categories.presheaves import DescentDataOnCover
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.schemes.gluing import (
-    FiniteAtlasModuleGluingDatum,
-    FiniteAtlasModuleGluingMorphism,
+    FiniteAtlasModuleGluingData,
     FiniteAtlasModuleTransition,
+)
+from dzack_research.preamble.categories.modules.fibered_modules import (
+    ModulesOverCommutativeRings,
     SemilinearModuleMorphism,
 )
 from dzack_research.preamble.categories.schemes.schemes import Schemes
@@ -99,6 +105,59 @@ def _renaming_overlap_isomorphism(source, source_coordinate, target, target_coor
     return Schemes(QQ).Core().Mor(source_overlap, target_overlap)(forward, reverse)
 
 
+def test_varying_ring_module_fibre_and_two_nonidentity_semilinear_maps_compose() -> None:
+    field = GF(5)
+    ring = field.polynomial_ring("x")
+    x = ring.algebra_generator("x")
+    first_scalar = ring.Mor(ring)({"x": -x})
+    second_scalar = ring.Mor(ring)({"x": x + ring.one()})
+    source = ring.free_module(finite_ordered_set(("source",)))
+    middle = ring.free_module(finite_ordered_set(("middle",)))
+    target = ring.free_module(finite_ordered_set(("target",)))
+    fibered = ModulesOverCommutativeRings()
+
+    assert fibered.fiber(ring) is Modules(ring)
+    assert fibered.cocartesian_transport(first_scalar).ring_map() is first_scalar
+    assert fibered.cartesian_transport(first_scalar).ring_map() is first_scalar
+
+    first = fibered.Mor(source, middle)(
+        first_scalar,
+        {"source": middle.module_generator("middle")},
+    )
+    second = fibered.Mor(middle, target)(
+        second_scalar,
+        {"middle": target.module_generator("target")},
+    )
+    composite = second * first
+    composite_scalar = second_scalar * first_scalar
+    generator = source.module_generator("source")
+
+    assert composite.scalar_map() == composite_scalar
+    assert first.additive_map()(generator) == middle.module_generator("middle")
+    assert first.linearization().domain() is first.extended_source()
+    assert first.linearization().codomain() is middle
+    assert composite(generator) == target.module_generator("target")
+    assert composite(source.scalar_multiple(x, generator)) == target.scalar_multiple(
+        composite_scalar(x),
+        composite(generator),
+    )
+
+
+def test_varying_ring_module_rejects_additive_map_incompatible_with_scalar_map() -> None:
+    field = GF(3)
+    ring = field.polynomial_ring("x")
+    x = ring.algebra_generator("x")
+    scalar_map = ring.Mor(ring)({"x": -x})
+    module = ring.free_module(finite_ordered_set(("e",)))
+    additive = AdditiveGroups().AdditiveCommutative().MorCategory().Of(
+        module,
+        module,
+    ).elementwise(lambda element: element)
+
+    with pytest.raises(ValueError, match="not scalar-linear"):
+        ModulesOverCommutativeRings().Mor(module, module)(scalar_map, additive)
+
+
 def test_semilinear_module_transition_keeps_distinct_overlap_rings() -> None:
     left, right, scheme_transition = _distinct_punctured_lines()
     glued = Schemes(QQ).glue_affine_charts(left, right, scheme_transition)
@@ -113,15 +172,12 @@ def test_semilinear_module_transition_keeps_distinct_overlap_rings() -> None:
     target_label = next(iter(target.module_generating_set()))
     forward_scalar = scheme_transition.forward().coordinate_algebra_morphism()
     reverse_scalar = scheme_transition.inverse().coordinate_algebra_morphism()
-    pullback = SemilinearModuleMorphism(
-        target,
-        source,
+    fibered_modules = ModulesOverCommutativeRings()
+    pullback = fibered_modules.Mor(target, source)(
         forward_scalar,
         {target_label: source.module_generator(source_label)},
     )
-    inverse_pullback = SemilinearModuleMorphism(
-        source,
-        target,
+    inverse_pullback = fibered_modules.Mor(source, target)(
         reverse_scalar,
         {source_label: target.module_generator(target_label)},
     )
@@ -135,7 +191,13 @@ def test_semilinear_module_transition_keeps_distinct_overlap_rings() -> None:
 
     assert transition.pullback().scalar_map().domain() is right_overlap.coordinate_algebra()
     assert transition.pullback().scalar_map().codomain() is left_overlap.coordinate_algebra()
-    assert transition.pullback() * transition.inverse_pullback() == SemilinearModuleMorphism.identity(source)
+    assert target in fibered_modules and source in fibered_modules
+    assert transition.pullback() in fibered_modules.Mor(target, source)
+    assert fibered_modules.projection()(transition.pullback()) is forward_scalar
+    assert fibered_modules.projection()(target) is target.base_ring()
+    left_identity = transition.pullback() * transition.inverse_pullback()
+    assert fibered_modules.projection()(left_identity) == forward_scalar * reverse_scalar
+    assert left_identity == SemilinearModuleMorphism.identity(source)
     assert transition.inverse_pullback() * transition.pullback() == SemilinearModuleMorphism.identity(target)
 
 
@@ -156,7 +218,7 @@ def test_three_chart_module_descent_composes_after_overlap_transport() -> None:
         ("middle", "right"): _renaming_overlap_isomorphism(middle, y, right, z),
     }
     glued = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions)
-    datum = glued.gluing_datum()
+    datum = glued.finite_affine_atlas()
     local_modules = {
         label: datum.chart(label).coordinate_algebra().free_module(1)
         for label in labels
@@ -174,11 +236,12 @@ def test_three_chart_module_descent_composes_after_overlap_transport() -> None:
             {source_generator: {target_generator: 1}},
         )
 
-    descent = FiniteAtlasModuleGluingDatum(
-        datum,
+    descent = FiniteAtlasModuleGluingData(datum)(
         local_modules,
         module_transitions,
     )
+    assert descent in FiniteAtlasModuleGluingData(datum)
+    assert descent in DescentDataOnCover(datum.coverage(), datum)
 
     left_middle = descent.transition_on_triple("left", "middle", "right")
     middle_right = descent.transition_on_triple("middle", "right", "left")
@@ -188,6 +251,24 @@ def test_three_chart_module_descent_composes_after_overlap_transport() -> None:
         descent.pair_module("left", "middle").base_ring()
         is not descent.pair_module("middle", "left").base_ring()
     )
+
+    construction = descent.compatible_sections_construction()
+    shape = construction.diagram().domain()
+    assert construction.object() is descent.compatible_sections()
+    assert construction.diagram()(shape.source()) is descent.local_section_product_construction().object()
+    assert (
+        construction.diagram()(shape.target())
+        is descent.matching_section_product_construction().object()
+    )
+    components = {
+        label: local_modules[label].module_generator(
+            next(iter(local_modules[label].module_generating_set()))
+        )
+        for label in labels
+    }
+    section = descent.compatible_section(components)
+    for label in labels:
+        assert descent.compatible_section_component(section, label) == components[label]
 
 
 def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> None:
@@ -206,7 +287,7 @@ def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> 
         ("left", "right"): _renaming_overlap_isomorphism(left, x, right, z),
         ("middle", "right"): _renaming_overlap_isomorphism(middle, y, right, z),
     }
-    datum = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions).gluing_datum()
+    datum = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions).finite_affine_atlas()
     local_modules = {
         label: datum.chart(label).coordinate_algebra().free_module(1)
         for label in labels
@@ -219,8 +300,8 @@ def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> 
             {target_generator: {source_generator: 1}},
             {source_generator: {target_generator: 1}},
         )
-    source = FiniteAtlasModuleGluingDatum(datum, local_modules, transition_data)
-    target = FiniteAtlasModuleGluingDatum(datum, local_modules, transition_data)
+    source = FiniteAtlasModuleGluingData(datum)(local_modules, transition_data)
+    target = FiniteAtlasModuleGluingData(datum)(local_modules, transition_data)
     local_maps = {}
     for label in labels:
         module = local_modules[label]
@@ -231,7 +312,7 @@ def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> 
 
     morphism = source.morphism_to(target, local_maps)
 
-    assert isinstance(morphism, FiniteAtlasModuleGluingMorphism)
+    assert morphism in FiniteAtlasModuleGluingData(datum).Mor(source, target)
     for label in labels:
         module = local_modules[label]
         generator = next(iter(module.module_generating_set()))

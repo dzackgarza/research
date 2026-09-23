@@ -20,11 +20,20 @@ ARCHIVE_RECONCILIATION = {
 
 
 def test_finite_presentability_and_chosen_presentation_are_distinct_properties() -> None:
-    group = Groups.Free(2)
+    group = Groups.S(3)
 
     assert group in OwnedFinitelyPresentedGroups()
-    assert group in GroupsWithChosenFinitePresentation()
+    assert group not in GroupsWithChosenFinitePresentation()
     assert group.is_finitely_presented() is True
+    assert not hasattr(group, "presenting_free_group")
+
+    presented = group.presentation()
+    assert presented is not group
+    assert group not in GroupsWithChosenFinitePresentation()
+    assert presented in GroupsWithChosenFinitePresentation()
+    assert presented.presentation() is presented
+    assert presented.presentation_source_group() is group
+    assert presented.presentation_isomorphism().codomain() is group
 
 
 def test_chosen_presentation_retains_presenting_free_group_and_relators() -> None:
@@ -45,6 +54,15 @@ def test_native_finite_group_can_retain_a_chosen_finite_presentation() -> None:
     cyclic = Groups.C(2)
 
     assert cyclic in OwnedFinitelyPresentedGroups()
-    assert cyclic in GroupsWithChosenFinitePresentation()
-    assert cyclic.presenting_free_group().group_generators().cardinality() == 1
-    assert tuple(relation.Tietze() for relation in cyclic.defining_relations()) == ((1, 1),)
+    assert cyclic not in GroupsWithChosenFinitePresentation()
+    presented = cyclic.presentation()
+    assert cyclic not in GroupsWithChosenFinitePresentation()
+    assert presented.presentation_source_group() is cyclic
+    assert presented in GroupsWithChosenFinitePresentation()
+    presenting = presented.presenting_free_group()
+    generator = next(iter(presenting.group_generators()))
+    assert presenting.group_generators().cardinality() == 1
+    assert tuple(
+        tuple(relation.parent().reduced_word(relation))
+        for relation in presented.defining_relations()
+    ) == ((generator, generator),)

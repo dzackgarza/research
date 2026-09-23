@@ -7,6 +7,7 @@ the functions below and every backend value is crossed back before return.
 
 from __future__ import annotations
 
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _own_ring,
@@ -47,11 +48,11 @@ def ComplexNumber(real, imag=None):
         else create_ComplexNumber(real, imag)
     )
     parent = _own_ring(backend.parent())
-    return parent._from_engine_element(backend)
+    return _owned_engine_element(parent, backend)
 
 
 def matrix(rows):
-    r"""Construct the owned matrix-Hom represented by a rectangular row family."""
+    r"""Construct the owned matrix-Mor represented by a rectangular row family."""
     rows = tuple(tuple(row) for row in rows)
     if rows:
         width = len(rows[0])

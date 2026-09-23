@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the category of realized absolute Galois groups."""
 
-from dzack_research.preamble.all import GF
+from dzack_research.preamble.all import GF, ZZ
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
@@ -86,7 +86,7 @@ def test_absolute_galois_element_is_the_automorphism_square_of_the_slice_object(
 
     assert square.domain() is group.extension_object()
     assert square.codomain() is group.extension_object()
-    left, right = square.components()
+    left, right = square.forward().components()
     assert left.domain() is group.base_field()
     assert left.codomain() is group.base_field()
     assert right == frobenius.as_morphism()
@@ -109,6 +109,9 @@ def test_finite_field_frobenius_uses_the_full_field_order() -> None:
     frobenius = group.frobenius()
 
     q = group.base_field_order()
+    assert q.parent() is ZZ
+    assert (q + ZZ.one()).parent() is ZZ
+    assert frobenius.frobenius_exponent().parent() is ZZ
     assert q == 25
     assert frobenius(generator) == generator**q
     assert frobenius(generator) != generator ** field.characteristic()

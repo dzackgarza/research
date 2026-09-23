@@ -57,21 +57,21 @@ def test_two_affine_charts_glue_to_an_owned_scheme_with_distinct_chart_maps() ->
     chart, punctured, glued = _doubled_origin_gluing()
 
     assert glued in Schemes(QQ)
-    assert glued.chart(0) is chart
-    assert glued.chart(1) is chart
+    assert glued.gluing_datum().chart(0) is chart
+    assert glued.gluing_datum().chart(1) is chart
     assert glued.gluing_datum().left_overlap() is punctured
     assert glued.gluing_datum().right_overlap() is punctured
 
-    left_embedding = glued.chart_embedding(0)
-    right_embedding = glued.chart_embedding(1)
+    left_embedding = glued.gluing_datum().chart_embedding(0)
+    right_embedding = glued.gluing_datum().chart_embedding(1)
     assert left_embedding.domain() is chart
     assert right_embedding.domain() is chart
     assert left_embedding.codomain() is glued
     assert right_embedding.codomain() is glued
     assert left_embedding != right_embedding
 
-    left_image = glued.chart_image(0)
-    right_image = glued.chart_image(1)
+    left_image = glued.gluing_datum().chart_image(0)
+    right_image = glued.gluing_datum().chart_image(1)
     assert left_image is not right_image
     assert left_image in OpenImmersions(glued)
     assert right_image in OpenImmersions(glued)
@@ -103,19 +103,19 @@ def test_maps_out_of_a_glued_scheme_are_exactly_compatible_chart_maps() -> None:
     )
 
     collapse = glued.Mor(chart)((identity, identity))
-    assert collapse * glued.chart_embedding(0) == identity
-    assert collapse * glued.chart_embedding(1) == identity
+    assert collapse * glued.gluing_datum().chart_embedding(0) == identity
+    assert collapse * glued.gluing_datum().chart_embedding(1) == identity
     assert collapse == glued.Mor(chart)((identity, identity))
 
     zero_map = glued.Mor(chart)((zero, zero))
     assert zero_map != collapse
-    assert zero_map * glued.chart_embedding(0) == zero
-    assert zero_map * glued.chart_embedding(1) == zero
+    assert zero_map * glued.gluing_datum().chart_embedding(0) == zero
+    assert zero_map * glued.gluing_datum().chart_embedding(1) == zero
 
     postcomposed = zero * collapse
     assert postcomposed.parent() is glued.Mor(chart)
-    assert postcomposed * glued.chart_embedding(0) == zero
-    assert postcomposed * glued.chart_embedding(1) == zero
+    assert postcomposed * glued.gluing_datum().chart_embedding(0) == zero
+    assert postcomposed * glued.gluing_datum().chart_embedding(1) == zero
 
     try:
         glued.Mor(chart)((identity, zero))
@@ -180,27 +180,27 @@ def test_finite_affine_atlas_retains_indexed_transition_data_and_maps_out() -> N
     datum = glued.gluing_datum()
 
     assert glued in Schemes(QQ)
-    assert tuple(glued.chart_indices()) == ("left", "middle", "right")
-    assert glued.number_of_charts() == 3
-    assert glued.chart("middle") is chart
+    assert tuple(glued.gluing_datum().chart_indices()) == ("left", "middle", "right")
+    assert glued.gluing_datum().number_of_charts() == 3
+    assert glued.gluing_datum().chart("middle") is chart
     assert datum.transitions()["left", "right"] is transitions["left", "right"]
     assert (
         datum.transition_between("right", "left").forward()
         is transitions["left", "right"].inverse()
     )
 
-    triple = glued.triple_overlap("left", "middle", "right")
+    triple = glued.gluing_datum().triple_overlap("left", "middle", "right")
     assert triple in OpenImmersions(chart)
-    restricted = glued.transition_on_triple("left", "middle", "right")
+    restricted = glued.gluing_datum().transition_on_triple("left", "middle", "right")
     assert restricted.domain() is triple
-    assert restricted.codomain() is glued.triple_overlap(
+    assert restricted.codomain() is glued.gluing_datum().triple_overlap(
         "middle",
         "left",
         "right",
     )
 
-    assert glued.chart_embedding("left") != glued.chart_embedding("middle")
-    assert glued.chart_image("left") is not glued.chart_image("right")
+    assert glued.gluing_datum().chart_embedding("left") != glued.gluing_datum().chart_embedding("middle")
+    assert glued.gluing_datum().chart_image("left") is not glued.gluing_datum().chart_image("right")
     identity = chart.categorical_identity_morphism()
     collapse = glued.Mor(chart)(
         {
@@ -210,16 +210,16 @@ def test_finite_affine_atlas_retains_indexed_transition_data_and_maps_out() -> N
         }
     )
     for label in labels:
-        assert collapse * glued.chart_embedding(label) == identity
+        assert collapse * glued.gluing_datum().chart_embedding(label) == identity
         assert (
-            glued.categorical_identity_morphism() * glued.chart_embedding(label)
-            == glued.chart_embedding(label)
+            glued.categorical_identity_morphism() * glued.gluing_datum().chart_embedding(label)
+            == glued.gluing_datum().chart_embedding(label)
         )
 
 
 def test_finite_affine_atlas_verifies_inverse_and_nontrivial_triple_cocycle() -> None:
     from dzack_research.preamble.all import QQ, AffineSpaces
-    from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    from dzack_research.preamble.categories.abstract_categories.mor_categories import (
         CategoricalIsomorphism,
     )
     from dzack_research.preamble.categories.schemes.schemes import Schemes
@@ -239,11 +239,11 @@ def test_finite_affine_atlas_verifies_inverse_and_nontrivial_triple_cocycle() ->
             (1, 2): scale_three,
         },
     )
-    assert glued.number_of_charts() == 3
+    assert glued.gluing_datum().number_of_charts() == 3
     assert (
-        glued.transition_on_triple(1, 2, 0)
-        * glued.transition_on_triple(0, 1, 2)
-        == glued.transition_on_triple(0, 2, 1)
+        glued.gluing_datum().transition_on_triple(1, 2, 0)
+        * glued.gluing_datum().transition_on_triple(0, 1, 2)
+        == glued.gluing_datum().transition_on_triple(0, 2, 1)
     )
 
     scale_five = _scaled_punctured_line_isomorphism(chart, punctured, 5)

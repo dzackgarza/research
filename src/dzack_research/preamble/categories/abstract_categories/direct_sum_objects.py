@@ -58,37 +58,35 @@ class DirectSumObjects(OwnedCategory):
         summand_index_set: Parent | None = None,
     ) -> Parent:
         r"""Verify the constructor-owned decomposition ``underlying_object = ⊕ M_i``."""
-        if isinstance(summands, IndexedFamily):
-            if summand_index_set is not None and summands.index_set() is not summand_index_set:
-                raise ValueError("an indexed summand family already owns its index set")
-            family = summands
-            labels = family.index_set()
-        else:
-            values = tuple(summands)
-            labels = (
-                Sets.Δ[len(values) - 1]
-                if summand_index_set is None
-                else finite_ordered_set(summand_index_set)
-            )
-            if labels.cardinality() != cardinal(len(values)):
-                raise ValueError("the summand family and its index set have different cardinalities")
-            family = indexed_family(
-                labels,
-                lambda label: values[int(labels.ranking_map()(label))],
-                name=f"Direct summands of {underlying_object}",
-            )
+        match summands:
+            case IndexedFamily():
+                if summand_index_set is not None and summands.index_set() is not summand_index_set:
+                    raise ValueError("an indexed summand family already owns its index set")
+                family = summands
+                labels = family.index_set()
+            case _:
+                values = tuple(summands)
+                labels = (
+                    Sets.Δ[len(values) - 1]
+                    if summand_index_set is None
+                    else finite_ordered_set(summand_index_set)
+                )
+                if labels.cardinality() != cardinal(len(values)):
+                    raise ValueError("the summand family and its index set have different cardinalities")
+                family = indexed_family(
+                    labels,
+                    lambda label: values[int(labels.ranking_map()(label))],
+                    name=f"Direct summands of {underlying_object}",
+                )
 
         if underlying_object not in self:
             raise ValueError(
                 "direct-sum decomposition data must be supplied by the object's constructor"
             )
-        try:
-            selected = underlying_object._preamble_direct_sum_summands
-            selected_labels = underlying_object._preamble_direct_sum_index_set
-        except AttributeError as error:
-            raise ValueError(
-                "direct-sum placement is missing its constructor-owned summand data"
-            ) from error
+        # An object placed here answers its decomposition by this category's
+        # own accessors; the decomposition is its constructor datum.
+        selected = underlying_object.summands()
+        selected_labels = underlying_object.summand_index_set()
         if labels != selected_labels:
             raise ValueError("the stated summand labels differ from the constructor-owned labels")
         if any(selected[label] is not family[label] for label in labels):
@@ -97,17 +95,19 @@ class DirectSumObjects(OwnedCategory):
 
     class ParentMethods:
         def __init__(self, summands: IndexedFamily, **rest) -> None:
-            if not isinstance(summands, IndexedFamily):
-                raise TypeError("a selected direct-sum decomposition is an indexed family")
-            self._preamble_direct_sum_summands = summands
-            self._preamble_direct_sum_index_set = summands.index_set()
+            match summands:
+                case IndexedFamily():
+                    pass
+                case _:
+                    raise TypeError("a selected direct-sum decomposition is an indexed family")
+            self._summands = summands
             super().__init__(**rest)
 
         def summands(self) -> IndexedFamily:
-            return self._preamble_direct_sum_summands
+            return self._summands
 
         def summand_index_set(self) -> Parent:
-            return self._preamble_direct_sum_index_set
+            return self.summands().index_set()
 
         def summand(self, label: LabelT) -> Parent:
             labels = self.summand_index_set()

@@ -39,6 +39,9 @@ def test_the_gaussian_algebra_is_free_of_rank_two_on_one_and_i() -> None:
     gaussian = _gaussian_algebra()
     primitive = gaussian.algebra_generator("i")
 
+    assert gaussian.associativity_decision() is True
+    assert gaussian.unit_laws_decision() is True
+    assert gaussian.commutativity_decision() is True
     assert gaussian.number_of_module_generators() == cardinal(2)
     assert tuple(gaussian.module_generators()) == (gaussian.one(), primitive)
     assert primitive * primitive == -gaussian.one()

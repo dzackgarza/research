@@ -1,8 +1,10 @@
 r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."""
 from sage.libs.gap.libgap import libgap
 
+from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Set, Sets
 
 
 class OrthogonalCharacterQuotient:
@@ -21,9 +23,12 @@ class OrthogonalCharacterQuotient:
             raise ValueError(
                 "the retained finite characters do not define this whole subgroup"
             )
-        self.supergroup = subgroup.supergroup()
+        # This finite-image algorithm is explicitly generator-driven.  Selecting
+        # the exact represented O(L) framing is therefore part of constructing
+        # this quotient; merely knowing O(L) is finitely generated would not be.
+        self.supergroup = subgroup.supergroup().framing()
         self.lattice = self.supergroup.domain()
-        data = subgroup.character_data()
+        data = subgroup._character_data_snapshot()
         self.discriminant_preimages = tuple(data.get("discriminant_preimages", ()))
         self.determinant_kernel = bool(data.get("determinant_kernel", False))
         self.spinor_kernel = bool(data.get("spinor_kernel", False))
@@ -36,8 +41,12 @@ class OrthogonalCharacterQuotient:
                 "a finite orthogonal-character quotient requires discriminant, determinant, or spinor data"
             )
         self._has_discriminant = bool(self.discriminant_preimages)
+        factors = {}
+        labels = []
         if self._has_discriminant:
             self._discriminant_group = self.lattice.discriminant_group().O()
+            labels.append("discriminant")
+            factors["discriminant"] = self._discriminant_group
             for target in self.discriminant_preimages:
                 ambient = (
                     target
@@ -46,43 +55,50 @@ class OrthogonalCharacterQuotient:
                 )
                 if ambient is not self._discriminant_group:
                     raise ValueError("a discriminant preimage must lie in O(A_L)")
+        signs = finite_ordered_set(
+            (self.lattice.base_ring()(-1), self.lattice.base_ring()(1))
+        )
+        if self.determinant_kernel:
+            labels.append("determinant")
+            factors["determinant"] = signs
+        if self.spinor_kernel:
+            labels.append("spinor")
+            factors["spinor"] = signs
+        self._image_labels = finite_ordered_set(tuple(labels))
+        self._image_space = Sets().product(
+            finite_indexed_family(
+                self._image_labels,
+                factors.__getitem__,
+                name="Orthogonal character quotient factors",
+            )
+        )
         self._witnesses = self._enumerate_image()
 
+    def image_space(self):
+        r"""Return the owned product in which all character images live."""
+        return self._image_space
+
     def image(self, isometry):
-        components = []
+        components = {}
         if self._has_discriminant:
-            components.append(isometry.discriminant_morphism())
+            components["discriminant"] = isometry.discriminant_morphism()
         if self.determinant_kernel:
-            components.append(int(isometry.determinant()))
+            components["determinant"] = self.lattice.base_ring()(isometry.determinant())
         if self.spinor_kernel:
-            components.append(int(isometry.real_spinor_norm_sign()))
-        return tuple(components)
+            components["spinor"] = self.lattice.base_ring()(
+                isometry.real_spinor_norm_sign()
+            )
+        return self.image_space()(components.__getitem__)
 
     def _multiply(self, left, right):
-        result = []
-        position = 0
+        result = {}
         if self._has_discriminant:
-            result.append(left[position] * right[position])
-            position += 1
+            result["discriminant"] = left["discriminant"] * right["discriminant"]
         if self.determinant_kernel:
-            result.append(left[position] * right[position])
-            position += 1
+            result["determinant"] = left["determinant"] * right["determinant"]
         if self.spinor_kernel:
-            result.append(left[position] * right[position])
-        return tuple(result)
-
-    def _inverse(self, value):
-        result = []
-        position = 0
-        if self._has_discriminant:
-            result.append(~value[position])
-            position += 1
-        if self.determinant_kernel:
-            result.append(value[position])
-            position += 1
-        if self.spinor_kernel:
-            result.append(value[position])
-        return tuple(result)
+            result["spinor"] = left["spinor"] * right["spinor"]
+        return self.image_space()(result.__getitem__)
 
     def _ambient_bound(self):
         bound = 1
@@ -95,45 +111,24 @@ class OrthogonalCharacterQuotient:
         return bound
 
     def _enumerate_image(self):
-        identity = self.supergroup.one()
-        identity_key = self.image(identity)
-        witnesses = {identity_key: identity}
-        steps = []
-        for generator in self.supergroup.group_generators():
-            steps.append((self.image(generator), generator))
-            inverse = ~generator
-            steps.append((self.image(inverse), inverse))
-        frontier = [identity_key]
-        while frontier:
-            current_key = frontier.pop()
-            current_witness = witnesses[current_key]
-            for step_key, step_witness in steps:
-                candidate_key = self._multiply(step_key, current_key)
-                if candidate_key in witnesses:
-                    continue
-                witnesses[candidate_key] = step_witness * current_witness
-                frontier.append(candidate_key)
-                if len(witnesses) > self._ambient_bound():
-                    raise ArithmeticError(
-                        "the generated character image exceeds its finite ambient product"
-                    )
-        return witnesses
+        return self.supergroup.finite_image_lifts(
+            self.image,
+            multiply=self._multiply,
+            image_bound=self._ambient_bound(),
+        )
 
     def _allowed(self, key) -> bool:
-        position = 0
         if self._has_discriminant:
-            discriminant_image = key[position]
-            position += 1
+            discriminant_image = key["discriminant"]
             if any(
                 discriminant_image not in target
                 for target in self.discriminant_preimages
             ):
                 return False
         if self.determinant_kernel:
-            if key[position] != 1:
+            if key["determinant"] != 1:
                 return False
-            position += 1
-        if self.spinor_kernel and key[position] != 1:
+        if self.spinor_kernel and key["spinor"] != 1:
             return False
         return True
 
@@ -145,47 +140,17 @@ class OrthogonalCharacterQuotient:
             tuple(key for key in self._witnesses if self._allowed(key))
         )
 
-    def _generated_keys(self, generators):
-        identity = self.image(self.supergroup.one())
-        supplied = tuple(generators)
-        steps = supplied + tuple(self._inverse(generator) for generator in supplied)
-        known = {identity}
-        frontier = [identity]
-        while frontier:
-            current = frontier.pop()
-            for step in steps:
-                candidate = self._multiply(step, current)
-                if candidate not in known:
-                    known.add(candidate)
-                    frontier.append(candidate)
-        return frozenset(known)
-
     def stabilizer_image_keys(self, stabilizer_generators):
-        return self._generated_keys(
-            tuple(self.image(generator) for generator in stabilizer_generators)
-        )
+        return frozenset(self.stabilizer_image_witnesses(stabilizer_generators))
 
     def stabilizer_image_witnesses(self, stabilizer_generators):
         r"""Return one live stabilizer element above every generated character image."""
-        identity = self.supergroup.one()
-        identity_key = self.image(identity)
-        witnesses = {identity_key: identity}
-        steps = []
-        for generator in stabilizer_generators:
-            steps.append((self.image(generator), generator))
-            inverse = ~generator
-            steps.append((self.image(inverse), inverse))
-        frontier = [identity_key]
-        while frontier:
-            current_key = frontier.pop()
-            current_witness = witnesses[current_key]
-            for step_key, step_witness in steps:
-                candidate_key = self._multiply(step_key, current_key)
-                if candidate_key in witnesses:
-                    continue
-                witnesses[candidate_key] = step_witness * current_witness
-                frontier.append(candidate_key)
-        return witnesses
+        return self.supergroup.finite_image_lifts(
+            self.image,
+            generators=tuple(stabilizer_generators),
+            multiply=self._multiply,
+            image_bound=self._ambient_bound(),
+        )
 
     def _gap_regular_model(self):
         r"""Return the right-regular libGAP model of the finite character image.
@@ -360,19 +325,14 @@ def _finite_supergroup_elements(subgroup):
 
 def _finite_subgroup_vector_orbit_representatives(subgroup, square):
     r"""Return one representative of each orbit of a listable subgroup."""
-    elements = _finite_supergroup_elements(subgroup)
     lattice = subgroup.supergroup().domain()
-    remaining = {
-        tuple(vector.to_tuple()): vector
-        for vector in lattice.vectors_of_square(square)
-    }
-    representatives = []
-    while remaining:
-        _coordinates, representative = next(iter(remaining.items()))
-        representatives.append(representative)
-        for automorphism in elements:
-            remaining.pop(tuple(automorphism(representative).to_tuple()), None)
-    return finite_ordered_set(tuple(representatives))
+    action = FiniteGSets(subgroup)(
+        lattice.vectors_of_square(square),
+        lambda automorphism, vector: automorphism(vector),
+    )
+    return finite_ordered_set(
+        tuple(orbit.representative() for orbit in action.orbits())
+    )
 
 
 def _subgroup_vector_orbit_representatives(subgroup, square):
@@ -380,17 +340,13 @@ def _subgroup_vector_orbit_representatives(subgroup, square):
         return _finite_subgroup_vector_orbit_representatives(subgroup, square)
     quotient = OrthogonalCharacterQuotient(subgroup)
     orthogonal_group = subgroup.supergroup()
-    representatives = []
-    seen = set()
-    for representative in orthogonal_group.vector_orbit_representatives(square):
-        stabilizer = orthogonal_group.vector_stabilizer_generators(representative)
-        for splitting in quotient.splitting_isometries(stabilizer):
-            image = splitting(representative)
-            key = tuple(image.to_tuple())
-            if key not in seen:
-                seen.add(key)
-                representatives.append(image)
-    return finite_ordered_set(tuple(representatives))
+    def split_representatives():
+        for representative in orthogonal_group.vector_orbit_representatives(square):
+            stabilizer = orthogonal_group.vector_stabilizer_generators(representative)
+            for splitting in quotient.splitting_isometries(stabilizer):
+                yield splitting(representative)
+
+    return finite_ordered_set(split_representatives())
 
 
 def _subgroup_vector_equivalence_witness(subgroup, left, right):

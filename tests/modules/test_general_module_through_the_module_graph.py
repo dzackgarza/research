@@ -7,10 +7,14 @@ kernel of the action morphism, and a second ring can act on the same abelian
 group by naming a second morphism into the same endomorphisms.
 """
 
+import pytest
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.all import (
     GF,
     GeneralModules,
     Modules,
+    QQ,
     Set,
     ZZ,
 )
@@ -37,6 +41,44 @@ def test_a_general_module_is_placed_by_the_module_graph() -> None:
     assert module.base_ring() is ZZ
 
 
+def test_a_decidably_invalid_elementwise_action_is_rejected() -> None:
+    field = GF(2)
+
+    with pytest.raises(AssertionError, match="1 does not act as the identity"):
+        GeneralModules(field).from_operations(
+            Set([0, 1]),
+            addition=lambda left, right: (left + right) % 2,
+            zero=0,
+            negation=lambda value: value,
+            scalar_action=lambda _scalar, _value: 0,
+        )
+
+
+def test_a_decidable_operation_presentation_records_established_module_laws() -> None:
+    field = GF(2)
+    module = GeneralModules(field).from_operations(
+        Set([0, 1]),
+        addition=lambda left, right: (left + right) % 2,
+        zero=0,
+        negation=lambda value: value,
+        scalar_action=lambda scalar, value: (int(scalar) * value) % 2,
+    )
+
+    assert module.module_laws_decision() is True
+
+
+def test_an_undecidable_operation_presentation_retains_its_module_law_hypothesis() -> None:
+    module = GeneralModules(QQ).from_operations(
+        Set(QQ),
+        addition=lambda left, right: left + right,
+        zero=QQ.zero(),
+        negation=lambda value: -value,
+        scalar_action=lambda scalar, value: scalar * value,
+    )
+
+    assert module.module_laws_decision() is Unknown
+
+
 def test_the_count_of_a_general_module_is_its_underlying_sets() -> None:
     module = _integers_mod(6)
 
@@ -59,7 +101,6 @@ def test_a_second_ring_acts_through_a_second_morphism_into_the_endomorphisms() -
     action = field.Mor(endomorphisms)(
         lambda scalar: endomorphisms.elementwise(
             lambda element: group(int(scalar) * element.underlying_element() % 3),
-            verify_linearity=False,
         ),
     )
 
@@ -67,6 +108,7 @@ def test_a_second_ring_acts_through_a_second_morphism_into_the_endomorphisms() -
 
     assert over_the_field in Modules(field)
     assert over_the_field.base_ring() is field
+    assert over_the_field.module_laws_decision() is True
     assert over_the_field.cardinality() == group.cardinality()
     assert over_the_field.scalar_multiple(
         field(2), over_the_field(group(2))

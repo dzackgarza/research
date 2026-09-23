@@ -16,10 +16,14 @@ not satisfy.
 from sage.all import CC as SageCC
 from sage.all import QQ as SageQQ
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.manifolds import ComplexManifolds
+from dzack_research.preamble.categories.manifolds import (
+    ComplexManifolds,
+    _engine_manifold_expression,
+    _raise_manifold_expression,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -28,30 +32,36 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpaces,
     Schemes,
+    _polynomial_exponents,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def _polynomial_chart_expression(algebra, polynomial, chart, scalar_embedding):
-    r"""Raise one algebra polynomial to the corresponding complex chart formula."""
+    r"""Raise one algebra polynomial to the corresponding complex chart formula.
+
+    Engine adapter (``OWN-06``): read the private Sage polynomial of an owned
+    algebra element and write the Sage symbolic chart expression.
+    """
     backend = _engine_element(algebra, algebra(polynomial))
     source_ring = algebra.base_ring()
     target_ring = scalar_embedding.codomain()
     engine_source = _engine_ring(source_ring)
     engine_target = _engine_ring(target_ring)
-    variables = tuple(chart.coordinates())
+    variables = tuple(
+        _engine_manifold_expression(variable)
+        for variable in chart.coordinates()
+    )
     result = 0
     for exponent, coefficient in backend.monomial_coefficients().items():
-        try:
-            powers = tuple(int(value) for value in exponent)
-        except TypeError:
-            powers = (int(exponent),)
-        owned_coefficient = source_ring._from_engine_element(engine_source(coefficient))
+        powers = _polynomial_exponents(exponent, len(variables))
+        owned_coefficient = _owned_engine_element(source_ring, engine_source(coefficient))
         term = engine_target(_engine_element(target_ring, scalar_embedding(owned_coefficient)))
         for variable, power in zip(variables, powers, strict=True):
             if power:
                 term *= variable**power
         result += term
-    return result
+    return _raise_manifold_expression(result)
 
 
 class _AffineSpaceAnalytificationFunctor(Functor):
@@ -80,8 +90,9 @@ class _AffineSpaceAnalytificationFunctor(Functor):
 
     @cached_method
     def _apply_morphism(self, morphism):
-        if morphism.domain() not in self.domain() or morphism.codomain() not in self.domain():
-            raise TypeError("affine analytification currently maps polynomial morphisms of affine spaces")
+        assert morphism.domain() in self.domain() and morphism.codomain() in self.domain(), (
+            "affine analytification maps morphisms between affine spaces over the embedding source"
+        )
         analytic_source = self.object_image(morphism.domain())
         analytic_target = self.object_image(morphism.codomain())
         source_chart = analytic_source.atlas()["standard"]
@@ -110,70 +121,28 @@ def _affine_space_analytification_functor(scalar_embedding):
     return _AffineSpaceAnalytificationFunctor(scalar_embedding)
 
 
-class AnalyticDiscFamily(SageObject):
-    r"""The analytic family ``Delta x C -> Delta`` from algebraic projection.
+class _AnalyticDiscFamilyEngine:
+    r"""Private realization of one selected object of ``ComplexManifolds()/Delta``.
 
-    The algebraic source is ``A^2_QQ -> A^1_QQ``, ``(x,t) |-> t``.  Under the
-    selected embedding ``QQ -> CC`` its analytification is ``C^2 -> C``.
-    Restricting the base to ``Delta={|t|<r}`` and the total space to its inverse
-    image gives a holomorphic family over an actual analytic disc.
+    The slice object itself retains the analytic family morphism.  This engine
+    adds only the chosen algebraic family, analytification, and comparison
+    morphism used to exhibit the analytic family as a restriction.
     """
 
-    def __init__(self, radius=1) -> None:
-        qq = _own_ring(SageQQ)
-        cc = _own_ring(SageCC)
-        embedding = qq.Mor(cc)(lambda scalar: cc(scalar))
-        algebraic_total = AffineSpaces(qq)(2, names=("x", "t"))
-        algebraic_base = AffineSpaces(qq)(1, names=("t",))
-        total_algebra = algebraic_total.coordinate_algebra()
-        base_algebra = algebraic_base.coordinate_algebra()
-        projection_pullback = base_algebra.Mor(total_algebra)(
-            {"t": total_algebra.algebra_generator("t")}
-        )
-        algebraic_family = algebraic_total.Mor(algebraic_base)(projection_pullback)
-
-        analytification = AffineSpaces(qq).analytification(embedding)
-        analytic_total_ambient = analytification(algebraic_total)
-        analytic_base_ambient = analytification(algebraic_base)
-        analytified_family = analytification(algebraic_family)
-
-        base_chart = analytic_base_ambient.atlas()["standard"]
-        base_coordinate = base_chart.coordinate(0)
-        analytic_base = ComplexManifolds().open_submanifold(
-            analytic_base_ambient,
-            "Delta",
-            abs(base_coordinate) < float(radius),
-        )
-        analytic_base._preamble_disc_radius = float(radius)
-
-        total_chart = analytic_total_ambient.atlas()["standard"]
-        total_parameter = total_chart.coordinate(1)
-        analytic_total = ComplexManifolds().open_submanifold(
-            analytic_total_ambient,
-            "X_Delta",
-            abs(total_parameter) < float(radius),
-        )
-        restricted_parameter = analytic_total.atlas()["standard"].coordinate(1)
-        analytic_family = analytic_total.holomorphic_polynomial_map(
-            analytic_base,
-            (restricted_parameter,),
-        )
-
-        if analytic_base.open_inclusion() * analytic_family != analytified_family * analytic_total.open_inclusion():
-            raise ArithmeticError("the analytic disc family does not commute with its algebraic analytification square")
-
-        self._scalar_embedding = embedding
-        self._algebraic_total = algebraic_total
-        self._algebraic_base = algebraic_base
+    def __init__(
+        self,
+        *,
+        scalar_embedding,
+        algebraic_family,
+        analytification,
+        analytified_family,
+        **rest,
+    ) -> None:
+        self._scalar_embedding = scalar_embedding
         self._algebraic_family = algebraic_family
         self._analytification = analytification
-        self._analytic_total_ambient = analytic_total_ambient
-        self._analytic_base_ambient = analytic_base_ambient
         self._analytified_family = analytified_family
-        self._analytic_total = analytic_total
-        self._analytic_base = analytic_base
-        self._analytic_family = analytic_family
-        self._slice_object = ComplexManifolds().SliceOver(analytic_base)(analytic_family)
+        super().__init__(**rest)
 
     def scalar_embedding(self):
         return self._scalar_embedding
@@ -188,22 +157,22 @@ class AnalyticDiscFamily(SageObject):
         return self._analytified_family
 
     def analytic_base(self):
-        return self._analytic_base
+        return self.target_object()
 
     def analytic_total_space(self):
-        return self._analytic_total
+        return self.source_object()
 
     def analytic_family_morphism(self):
-        return self._analytic_family
+        return self.arrow()
 
     def analytic_family_object(self):
-        return self._slice_object
+        return self
 
     def comparison_maps(self):
-        return (
-            self.analytic_total_space().open_inclusion(),
-            self.analytic_base().open_inclusion(),
-        )
+        total_inclusion = self.analytic_total_space().open_inclusion()
+        base_inclusion = self.analytic_base().open_inclusion()
+        product = Sets().product((total_inclusion.parent(), base_inclusion.parent()))
+        return product((total_inclusion, base_inclusion))
 
     def comparison_square_commutes(self) -> bool:
         total_inclusion, base_inclusion = self.comparison_maps()
@@ -213,13 +182,72 @@ class AnalyticDiscFamily(SageObject):
         )
 
     def coherent_gaga_applies(self) -> bool:
-        r"""Return whether this selected family satisfies the proper GAGA hypothesis."""
-        return self._algebraic_total in Schemes(
-            self._algebraic_total.scheme_base_ring()
+        r"""Whether the selected algebraic family satisfies the proper GAGA hypothesis."""
+        algebraic_total = self.algebraic_family_morphism().domain()
+        return algebraic_total in Schemes(
+            algebraic_total.scheme_base_ring()
         ).Projective()
 
     def _repr_(self) -> str:
         return f"Analytic family {self.analytic_total_space()} -> {self.analytic_base()}"
+
+
+def AnalyticDiscFamily(radius=1):
+    r"""Return the selected holomorphic family as an object of ``ComplexManifolds()/Delta``.
+
+    The algebraic source is ``A^2_QQ -> A^1_QQ``, ``(x,t) |-> t``.  Under the
+    selected embedding ``QQ -> CC`` its analytification is ``C^2 -> C``.
+    Restricting the base to ``Delta={|t|<r}`` and the total space to its inverse
+    image gives the represented slice object.
+    """
+    qq = _own_ring(SageQQ)
+    cc = _own_ring(SageCC)
+    embedding = qq.Mor(cc)(lambda scalar: cc(scalar))
+    algebraic_total = AffineSpaces(qq)(2, names=("x", "t"))
+    algebraic_base = AffineSpaces(qq)(1, names=("t",))
+    total_algebra = algebraic_total.coordinate_algebra()
+    base_algebra = algebraic_base.coordinate_algebra()
+    projection_pullback = base_algebra.Mor(total_algebra)(
+        {"t": total_algebra.algebra_generator("t")}
+    )
+    algebraic_family = algebraic_total.Mor(algebraic_base)(projection_pullback)
+
+    analytification = AffineSpaces(qq).analytification(embedding)
+    analytic_total_ambient = analytification(algebraic_total)
+    analytic_base_ambient = analytification(algebraic_base)
+    analytified_family = analytification(algebraic_family)
+
+    analytic_base = ComplexManifolds().disc(
+        radius, "Delta", containing_manifold=analytic_base_ambient,
+    )
+    total_chart = analytic_total_ambient.atlas()["standard"]
+    total_parameter = total_chart.coordinate(1)
+    engine_total_parameter = _engine_manifold_expression(total_parameter)
+    analytic_total = ComplexManifolds().open_submanifold(
+        analytic_total_ambient,
+        "X_Delta",
+        abs(engine_total_parameter) < float(radius),
+    )
+    restricted_parameter = analytic_total.atlas()["standard"].coordinate(1)
+    analytic_family = analytic_total.holomorphic_polynomial_map(
+        analytic_base,
+        (restricted_parameter,),
+    )
+
+    assert analytic_base.open_inclusion() * analytic_family == analytified_family * analytic_total.open_inclusion(), (
+        "the analytic disc family does not commute with its algebraic analytification square"
+    )
+
+    return ComplexManifolds().SliceOver(analytic_base).object(
+        analytic_family,
+        _engine=_AnalyticDiscFamilyEngine,
+        construction_data={
+            "scalar_embedding": embedding,
+            "algebraic_family": algebraic_family,
+            "analytification": analytification,
+            "analytified_family": analytified_family,
+        },
+    )
 
 
 

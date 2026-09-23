@@ -1,5 +1,7 @@
 r"""Local dimension and embedding dimension determine regularity."""
 
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.all import QQ
 
 
@@ -24,10 +26,4 @@ def test_cusp_origin_has_embedding_dimension_two_but_local_dimension_one() -> No
     assert origin.height() == 1
     assert origin.embedding_dimension() == 2
     assert not origin.is_regular()
-
-    try:
-        origin.is_locally_factorial()
-    except NotImplementedError:
-        pass
-    else:
-        raise AssertionError("singularity alone does not decide local factoriality")
+    assert origin.is_locally_factorial() is Unknown

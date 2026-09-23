@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     Algebras,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
@@ -40,16 +41,6 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "affine semigroup algebras"
-
-    def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Algebras(self.base_ring()).Associative().Unital().Commutative()
-            and candidate in AlgebrasWithChosenFinitePresentation(self.base_ring())
-            and isinstance(
-                candidate.__dict__.get("_affine_semigroup_presentation"),
-                _AffineSemigroupPresentation,
-            )
-        )
 
     class ParentMethods:
         def affine_semigroup_generator_coordinates(self):
@@ -104,7 +95,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             base_ring=_engine_ring(base),
         )
         relations = tuple(
-            presentation._from_engine_element(engine_presentation(relation))
+            _owned_engine_element(presentation, engine_presentation(relation))
             for relation in engine_ideal.gens()
         )
         construction_data = (
@@ -112,7 +103,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             *tuple(extra_construction_data),
         )
         return (presentation).quotient_by_relations(relations,
-            _extra_categories=tuple(extra_categories),
+            _extra_categories=(self, *tuple(extra_categories)),
             _extra_construction_data=construction_data,
         )
 

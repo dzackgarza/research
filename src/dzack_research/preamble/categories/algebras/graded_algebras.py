@@ -3,22 +3,26 @@
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    _algebra_on_module,
+    _assert_not_refuted,
+    _associativity,
+    _decide_on_module_generators,
+    _two_sided_unit,
     _unit_from_multiplication,
-    _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.modules.graded_modules import (
     GradedModules,
     _concentrated_graded_module,
-    _grading_identity,
     _require_grading_monoid,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, Modules
@@ -31,12 +35,66 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import refine
 
 # Bourbaki, Algebra III §4.9: an alternating graded algebra is one satisfying
 # the Koszul sign rule in which every odd-degree element squares to zero.
 if "Alternating" not in all_axioms:
     all_axioms.add("Alternating")
+
+
+def _graded_multiplication_from_components(module, component_product):
+    r"""Classify the bilinear product specified on homogeneous summands.
+
+    Protected graded-algebra constructor operation: callers supply maps
+    M_s x M_t -> M_(st), bilinear over the fixed scalar ring.  The finite
+    distributive extension is the unique product on the direct sum with those
+    restrictions (Mathlib Algebra/DirectSum/Ring, mulHom_of_of).
+    """
+    tensor = Modules(module.base_ring()).tensor_product((module, module))
+
+    def product(left, right):
+        return sum((
+            module.from_component(
+                module.combine_degrees(s, t), component_product(s, x, t, y),
+            )
+            for s, x in module(left).homogeneous_components().items()
+            for t, y in module(right).homogeneous_components().items()
+        ), module.zero())
+
+    return tensor.from_bilinear_map(module, product)
+
+
+def _rank_one_unit_algebra(category):
+    r"""``R e`` with ``e e = e``, concentrated in the identity degree of the grading of ``category``.
+
+    Through the one construction: a rank-one module whose generator squares to
+    itself is a commutative associative unital algebra with unit ``e``, and a
+    module concentrated in the identity degree is graded by it, so the sign
+    rule and the odd-square condition hold vacuously.  That is the placement
+    ``category`` states.
+    """
+    ring = category.base_ring()
+    module = _concentrated_graded_module(ring, category.grading_monoid())
+    label = module.module_generating_set()[0]
+    generator = module.module_generator(label)
+    multiplication = BilinearMap(
+        module,
+        module,
+        module,
+        {(label, label): generator},
+    )
+    return _algebra_on_module(
+        module,
+        multiplication,
+        placement=(category, Algebras(ring).Commutative()),
+        unit=generator,
+        law_decisions={
+            "associativity": True,
+            "unit": True,
+            "commutativity": True,
+            "grading": True,
+        },
+    )
 
 
 def _homogeneous_degree(element):
@@ -45,7 +103,7 @@ def _homogeneous_degree(element):
     try:
         return parent.homogeneous_degree(element)
     except AttributeError as error:
-        raise NotImplementedError(
+        raise AssertionError(
             "this graded object does not expose homogeneous element degrees"
         ) from error
 
@@ -53,46 +111,59 @@ def _homogeneous_degree(element):
 class GradedAlgebraMorphism(Morphism):
     r"""An algebra morphism preserving the selected grading."""
 
-    def __init__(self, parent, images, *, check_degrees=True) -> None:
+    def __init__(self, parent, images) -> None:
         Morphism.__init__(self, parent)
 
         self._underlying = Algebras(self.domain().base_ring()).Associative().Unital().Mor(self.domain(), self.codomain())(images)
-        if check_degrees:
-            self._check_degrees()
+        derived = self._degree_preservation_derivation()
+        self._degree_preservation_decision = (
+            self._decide_degree_preservation() if derived is None else derived
+        )
+        assert self._degree_preservation_decision is not False, (
+            "a graded algebra morphism must preserve degree"
+        )
 
     def underlying_algebra_morphism(self):
         return self._underlying
 
-    def _check_degrees(self) -> None:
+    def degree_preservation_decision(self):
+        r"""Return ``True`` when degree preservation is established, else its ``Unknown`` hypothesis."""
+        return self._degree_preservation_decision
+
+    def _degree_preservation_derivation(self):
+        r"""Return a construction-derived decision, or ``None`` to inspect represented data."""
+        return None
+
+    def _decide_degree_preservation(self):
+        r"""Decide degree preservation on finite selected generators, else retain ``Unknown``."""
         domain = self.domain()
         codomain = self.codomain()
         try:
             labels = domain.algebra_generating_set()
-        except AttributeError as error:
-            raise NotImplementedError(
-                "a represented graded morphism currently requires a selected algebra framing"
-            ) from error
+        except AttributeError:
+            return Unknown
         try:
             finite = labels.cardinality().is_finite()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             finite = False
         if not finite:
-            raise NotImplementedError(
-                "an arbitrary graded generator map on an infinite framing cannot be "
-                "verified by exhaustive evaluation"
-            )
+            return Unknown
         for label in labels:
             generator = domain.algebra_generator(label)
             source_degree = _homogeneous_degree(generator)
             image = self._underlying(generator)
-            if image == codomain.zero():
+            zero_decision = image == codomain.zero()
+            if zero_decision is True:
                 continue
+            if zero_decision is Unknown:
+                return Unknown
             target_degree = _homogeneous_degree(image)
-            if target_degree != source_degree:
-                raise ValueError(
-                    f"a graded algebra morphism must preserve degree: generator {label!r} "
-                    f"has degree {source_degree}, but its image has degree {target_degree}"
-                )
+            degree_equal = target_degree == source_degree
+            if degree_equal is False:
+                return False
+            if degree_equal is not True:
+                return Unknown
+        return True
 
     def _call_(self, element):
         return self._underlying(element)
@@ -106,31 +177,37 @@ class GradedAlgebraMorphism(Morphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         source = other.domain()
-        homset = GradedAlgebras(
+        mor = GradedAlgebras(
             source.base_ring(),
             _require_grading_monoid(source.grading_monoid()),
         ).Mor(source, self.codomain())
-        return homset._from_degree_preserving_generator_map(
-            lambda label: self(
-                other(other.domain().algebra_generator(label))
-            )
+        return mor._from_degree_preserving_underlying_morphism(
+            self.underlying_algebra_morphism()
+            * other.underlying_algebra_morphism()
         )
 
 
-class GradedAlgebraHomset(CategoricalHomset):
+class _ConstructedDegreePreservingGradedAlgebraMorphism(GradedAlgebraMorphism):
+    r"""A graded map whose construction supplies degree preservation."""
+
+    def _degree_preservation_derivation(self):
+        return True
+
+
+class GradedAlgebraMor(CategoricalMor):
     Element = GradedAlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        self._grading_monoid = hom_family.base_category().grading_monoid()
+    def __init__(self, mor_family, domain, codomain) -> None:
+        self._grading_monoid = mor_family.base_category().grading_monoid()
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("graded algebra morphisms require one common base ring")
         if _require_grading_monoid(domain.grading_monoid()) != self._grading_monoid:
             raise ValueError("the source has the wrong grading monoid")
         if _require_grading_monoid(codomain.grading_monoid()) != self._grading_monoid:
             raise ValueError("the target has the wrong grading monoid")
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -142,20 +219,25 @@ class GradedAlgebraHomset(CategoricalHomset):
         return self.element_class(self, images)
 
     def _from_degree_preserving_generator_map(self, images):
-        r"""Construct a graded map whose degree preservation is structural."""
-        return self.element_class(self, images, check_degrees=False)
+        r"""Construct a graded map whose generator construction preserves degree."""
+        return _ConstructedDegreePreservingGradedAlgebraMorphism(self, images)
+
+    def _from_degree_preserving_underlying_morphism(self, morphism):
+        r"""Lift an actual weaker algebra morphism whose construction preserves degree."""
+        return _ConstructedDegreePreservingGradedAlgebraMorphism(self, morphism)
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a graded algebra endomorphism homset")
-        return self._from_degree_preserving_generator_map(
-            lambda label: self.domain().algebra_generator(label)
+            raise ValueError("identity belongs to a graded algebra endomorphism Mor")
+        ordinary = Algebras(self.domain().base_ring()).Associative().Unital().Mor(
+            self.domain(), self.codomain()
         )
+        return self._from_degree_preserving_underlying_morphism(ordinary.identity())
 
 
-class GradedAlgebraHomCategoryConstruction(HomCategoryConstruction):
+class GradedAlgebraMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return GradedAlgebraHomset
+        return GradedAlgebraMor
 
 
 class GradedAlgebras(OwnedCategoryOverBaseRing):
@@ -174,29 +256,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""A rank-one unital algebra concentrated in the identity degree."""
-        ring = self.base_ring()
-        monoid = self.grading_monoid()
-        module = _concentrated_graded_module(ring, monoid)
-        labels = module.module_generating_set()
-        label = labels[0]
-        generator = module.module_generator(label)
-        multiplication = Modules(ring).tensor_product((module, module)).from_bilinear(
-            BilinearMap(
-                module,
-                module,
-                module,
-                {(label, label): generator},
-            )
-        )
-        unit = _unit_morphism_from_element(module, generator, ring)
-        algebra = Algebras(ring).Associative().Unital()(
-            module,
-            multiplication,
-            unit,
-        )
-        algebra._preamble_concentrated_degree = _grading_identity(monoid)
-        refine(algebra, self)
-        return algebra
+        return _rank_one_unit_algebra(self)
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
@@ -257,10 +317,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
         def an_object(self):
             r"""The identity-degree rank-one algebra, where the sign rule is vacuous."""
-            algebra = self._base_category.an_object()
-            refine(algebra, Algebras(self.base_ring()).Commutative())
-            refine(algebra, self)
-            return algebra
+            return _rank_one_unit_algebra(self)
 
         class SubcategoryMethods:
             def Alternating(self):
@@ -285,11 +342,13 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
             def an_object(self):
                 r"""The identity-degree rank-one algebra, where odd-square conditions are vacuous."""
-                algebra = self._base_category.an_object()
-                refine(algebra, self)
-                return algebra
+                return _rank_one_unit_algebra(self)
 
     class ParentMethods:
+        def grading_compatibility_decision(self):
+            r"""Return the retained decision that multiplication respects the selected grading."""
+            return self._preamble_algebra_law_decisions.get("grading", Unknown)
+
         def restrict_scalars(self, ring_map):
             r"""Restrict scalars while retaining this algebra's grading."""
             from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
@@ -432,7 +491,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             )
 
         def _Hom_(self, codomain, category=None):
-            # Object-level Hom defaults to the underlying algebra category.
+            # Object-level Mor defaults to the underlying algebra category.
             # Degree-preserving maps are selected explicitly through
             # ``GradedAlgebras(...).Mor``.
             return super()._Hom_(codomain, category=category)
@@ -450,42 +509,55 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a graded-algebra Hom requires two objects of this category")
+            raise TypeError("a graded-algebra Mor requires two objects of this category")
         if domain.base_ring() is not self.base_ring() or codomain.base_ring() is not self.base_ring():
             raise ValueError("graded algebra morphisms require one common base ring")
         if _require_grading_monoid(domain.grading_monoid()) != self.grading_monoid():
             raise ValueError("the source has the wrong grading monoid")
         if _require_grading_monoid(codomain.grading_monoid()) != self.grading_monoid():
             raise ValueError("the target has the wrong grading monoid")
-        return self.HomCategory().Of(domain, codomain)
+        return self.MorCategory().Of(domain, codomain)
 
-    _HomCategory = GradedAlgebraHomCategoryConstruction
+    _MorCategory = GradedAlgebraMorCategoryConstruction
 
     def _call_(self, multiplication):
+        r"""The graded algebra on the graded module ``M`` with multiplication ``m``.
+
+        The unit is recovered from ``m``, and associativity and the unit
+        equations are decided on module generators of ``M``.  That ``m``
+        sends ``M_p (x) M_q`` into ``M_{pq}`` is the hypothesis this entry
+        takes with ``m``: the module layer represents no homogeneous degree on
+        which to decide it.
+        """
         module = multiplication.codomain()
-        graded = GradedModules(self.base_ring(), self.grading_monoid())
-        if module not in graded:
-            raise TypeError(
-                f"{module} is not a module graded by {self.grading_monoid()}"
-            )
-        unit = _unit_from_multiplication(multiplication)
-        eta = _unit_morphism_from_element(
-            module,
-            unit,
-            self.base_ring(),
+        assert module in GradedModules(self.base_ring(), self.grading_monoid()), (
+            f"{module} is not a module graded by {self.grading_monoid()}"
         )
-        algebra = Algebras(self.base_ring()).Associative().Unital()(
+        unit = _unit_from_multiplication(multiplication)
+        associativity = _decide_on_module_generators(
+            module, _associativity(multiplication), 3
+        )
+        unit_laws = _decide_on_module_generators(
+            module, _two_sided_unit(multiplication, unit), 1
+        )
+        _assert_not_refuted(associativity, "associativity", module)
+        _assert_not_refuted(unit_laws, "the two unit equations", module)
+        return _algebra_on_module(
             module,
             multiplication,
-            eta,
+            placement=(self,),
+            unit=unit,
+            law_decisions={
+                "associativity": associativity,
+                "unit": unit_laws,
+                "grading": Unknown,
+            },
         )
-        refine(algebra, self)
-        return algebra
 
 
 __all__ = [
-    "GradedAlgebraHomCategoryConstruction",
-    "GradedAlgebraHomset",
+    "GradedAlgebraMorCategoryConstruction",
+    "GradedAlgebraMor",
     "GradedAlgebraMorphism",
     "GradedAlgebras",
 ]

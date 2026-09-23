@@ -1,7 +1,12 @@
 r"""Presheaves are objects of the functor category ``[C^op, D]``; Yoneda is a functor into it."""
 
 from dzack_research.preamble.all import ZZ, Cat, Modules, Sets
-from dzack_research.preamble.categories.abstract_categories import FiniteOrdinalCategory
+from dzack_research.preamble.categories.abstract_categories import (
+    CoveringFamilies,
+    DescentData,
+    FiniteOrdinalCategory,
+    Sheaves,
+)
 from dzack_research.preamble.categories.functors.core import IdentityFunctor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -25,11 +30,11 @@ def test_presheaves_with_different_values_over_one_site_are_distinct_objects_of_
     points = finite_ordered_set(("a", "b"))
     constant_set = set_valued(set_valued.constant_functor(points))
     constant_module = module_valued(module_valued.constant_functor(ZZ.free_module(points)))
-    set_hom = set_valued.Mor(constant_set, constant_set)
-    module_hom = module_valued.Mor(constant_module, constant_module)
+    set_mor = set_valued.Mor(constant_set, constant_set)
+    module_mor = module_valued.Mor(constant_module, constant_module)
 
-    assert set_hom is not module_hom
-    assert set_hom.identity() * set_hom.identity() == set_hom.identity()
+    assert set_mor is not module_mor
+    assert set_mor.identity() * set_mor.identity() == set_mor.identity()
 
 
 def test_yoneda_sends_an_object_to_its_representable_presheaf() -> None:
@@ -100,3 +105,40 @@ def test_presheaf_transport_acts_on_objects_and_natural_transformations() -> Non
     transported_swap = transport(yoneda(swap))
     assert transported_swap.domain() is transported
     assert transported_swap.codomain() is transported
+
+
+def test_cover_overlap_reverses_its_two_legs_without_changing_the_overlap() -> None:
+    site = FiniteOrdinalCategory(3)
+    small, large = site(1), site(2)
+    inclusion = site.Mor(small, large).unique()
+    identity_small = site.Mor(small, small).identity()
+    identity_large = site.Mor(large, large).identity()
+    families = CoveringFamilies(site)
+    cover = families.family(
+        large,
+        (inclusion, identity_large),
+        {(0, 1): (small, identity_small, inclusion)},
+    )
+    overlap = cover.overlap_span(0, 1)
+    reverse = cover.overlap_span(1, 0)
+
+    assert overlap.apex() is small and reverse.apex() is small
+    assert reverse.left_leg() is overlap.right_leg()
+    assert reverse.right_leg() is overlap.left_leg()
+    assert cover in families.presentation_category()
+    assert cover.presentation().codomain() is site
+
+
+def test_sheaf_entry_retains_the_functor_and_its_descent_datum() -> None:
+    site = FiniteOrdinalCategory(2)
+    points = finite_ordered_set(("a", "b"))
+    presheaf = site.presheaves(Sets()).constant_functor(points)
+    descent = DescentData.trivial(presheaf)
+    sheaves = Sheaves(descent.coverage(), Sets())
+    sheaf = sheaves.object(presheaf, descent)
+
+    assert sheaf in sheaves
+    assert sheaf in site.presheaves(Sets())
+    assert sheaf.functor() is presheaf
+    assert sheaf.descent_data() is descent
+    assert sheaves.object(presheaf, descent) is sheaf

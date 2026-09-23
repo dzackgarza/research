@@ -3,31 +3,8 @@ r"""Toric blowups of smooth surfaces at torus-fixed points."""
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
-from dzack_research.preamble.categories.schemes.schemes import _refine_scheme
 from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
-
-
-class _ToricFixedPointBlowupConstruction:
-    r"""The selected star-subdivision datum defining one toric point blowup."""
-
-    def __init__(self, source, blowdown, center_cone, exceptional_ray) -> None:
-        self._source = source
-        self._blowdown = blowdown
-        self._center_cone = center_cone
-        self._exceptional_ray = exceptional_ray
-
-    def source(self):
-        return self._source
-
-    def blowdown(self):
-        return self._blowdown
-
-    def center_cone(self):
-        return self._center_cone
-
-    def exceptional_ray(self):
-        return self._exceptional_ray
 
 
 class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
@@ -36,8 +13,12 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
     A torus-fixed point of a smooth toric surface is indexed by a maximal
     two-dimensional cone ``sigma = <u,v>``.  Its blowup is the star subdivision
     introducing the primitive ray ``u+v`` and replacing ``sigma`` by
-    ``<u,u+v>`` and ``<u+v,v>``.  The identity lattice map from the subdivided
-    fan to the original fan is the blowdown morphism.
+    ``<u,u+v>`` and ``<u+v,v>`` (CLS Prop. 3.3.15).  The identity lattice map
+    from the subdivided fan to the original fan is the blowdown morphism.
+
+    The level datum is the blown-up surface, the center cone and the
+    exceptional ray; an object is the toric variety of the subdivided fan,
+    constructed in this category by :func:`_toric_fixed_point_blowup`.
     """
 
     def an_object(self):
@@ -50,34 +31,42 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
     def _repr_object_names(self):
         return f"toric fixed-point blowups over {self.base_ring()}"
 
-    def __contains__(self, candidate) -> bool:
-        return (
-            candidate in ToricSchemes(self.base_ring())
-            and getattr(candidate, "_preamble_blowup_construction", None) is not None
-        )
-
     class ParentMethods:
+        def __init__(self, blowup_source, blowup_center_cone, exceptional_ray, **rest) -> None:
+            self._blowup_source = blowup_source
+            self._blowup_center_cone = blowup_center_cone
+            self._exceptional_ray = exceptional_ray
+            super().__init__(**rest)
+
         def is_toric_fixed_point_blowup(self) -> bool:
             return True
 
-        def blowup_construction(self):
-            r"""Return the selected star-subdivision datum defining this blowup."""
-            return self._preamble_blowup_construction
-
         def blowup_source(self):
-            return self.blowup_construction().source()
+            r"""The smooth toric surface whose fixed point was blown up."""
+            return self._blowup_source
 
+        @cached_method
         def blowup_morphism(self):
-            return self.blowup_construction().blowdown()
+            r"""The blowdown ``Bl_p X -> X``, induced by the identity of ``N``.
+
+            The star subdivision refines the fan of ``X``, so the identity
+            lattice map is compatible and induces the toric morphism
+            (CLS Thm. 3.3.4).
+            """
+            source = self.blowup_source()
+            lattice = source.cocharacter_lattice()
+            identity = lattice.module_category().Mor(lattice, lattice).identity()
+            return self.toric_morphism(identity, source)
 
         blowdown = blowup_morphism
 
         def blowup_center_cone(self):
             r"""Return the maximal source-fan cone indexing the blown-up fixed point."""
-            return self.blowup_construction().center_cone()
+            return self._blowup_center_cone
 
         def exceptional_ray(self):
-            return self.blowup_construction().exceptional_ray()
+            r"""The ray ``u+v`` of the subdivided fan, whose divisor is exceptional."""
+            return self._exceptional_ray
 
         def exceptional_divisor(self):
             return self.torus_invariant_prime_divisor(self.exceptional_ray())
@@ -88,13 +77,19 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
 
         def _refined_ray_for_source_ray(self, source_ray):
             (source_vector,) = tuple(source_ray.rays())
-            for target_ray in self.fan().cones(1):
-                if target_ray == self.exceptional_ray():
-                    continue
-                (target_vector,) = tuple(target_ray.rays())
-                if _same_ray_vector(source_vector, target_vector):
-                    return target_ray
-            raise ArithmeticError("a source ray disappeared from the star subdivision")
+            refined = next(
+                (
+                    target_ray
+                    for target_ray in self.fan().cones(1)
+                    if target_ray != self.exceptional_ray()
+                    and tuple(target_ray.rays()) == (source_vector,)
+                ),
+                None,
+            )
+            assert refined is not None, (
+                "star subdivision keeps every ray of the source fan"
+            )
+            return refined
 
         def strict_transform_divisor(self, divisor):
             r"""Return the strict transform of a torus-invariant divisor.
@@ -151,70 +146,76 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
 
         def del_pezzo_degree(self):
             r"""Return ``(-K)^2`` for a represented toric del Pezzo blowup."""
-            if not self.is_del_pezzo():
-                raise ValueError("the represented toric blowup is not a del Pezzo surface")
+            assert self.is_del_pezzo(), (
+                "the degree (-K)^2 is taken of a del Pezzo surface"
+            )
             anticanonical = -self.canonical_divisor()
             return self.divisor_intersection(anticanonical, anticanonical)
 
 
-def _same_ray_vector(left, right) -> bool:
-    return bool(left == right)
-
-
 def _toric_fixed_point_blowup(surface, center_cone):
-    r"""Blow up the torus-fixed point indexed by ``center_cone`` on a smooth toric surface."""
-    base = surface.scheme_base_ring()
-    if surface not in ToricSchemes(base):
-        raise TypeError("the represented fixed-point blowup requires a toric surface")
-    fan = surface.fan()
-    if int(fan.dimension()) != 2:
-        raise ValueError("the represented toric fixed-point blowup is for surfaces")
-    if not fan.is_smooth():
-        raise ValueError("the represented toric fixed-point blowup requires a smooth source fan")
-    if center_cone not in fan.maximal_cones():
-        raise ValueError("the blowup center is a maximal cone of the source fan")
+    r"""Blow up the torus-fixed point indexed by ``center_cone`` on a smooth toric surface.
 
-    center_rays = tuple(center_cone.rays())
-    if len(center_rays) != 2:
-        raise ValueError("a torus-fixed point on a smooth toric surface is indexed by a two-ray cone")
-    first, second = center_rays
+    The star subdivision of the fan at ``center_cone`` is computed first; its
+    toric variety is then constructed in ``ToricFixedPointBlowups(k)`` with the
+    surface, the center cone and the new ray as that level's data.
+    """
+    base = surface.scheme_base_ring()
+    assert surface in ToricSchemes(base), (
+        "a torus-fixed point blowup is taken of a toric surface"
+    )
+    fan = surface.fan()
+    assert int(fan.dimension()) == 2, (
+        "the torus-fixed point blowup is constructed for surfaces"
+    )
+    assert fan.is_smooth(), (
+        "the torus-fixed point blowup is constructed on a smooth source fan"
+    )
+    assert center_cone in fan.maximal_cones(), (
+        "the blowup center is a maximal cone of the source fan"
+    )
+    assert center_cone.rays().cardinality() == 2, (
+        "a torus-fixed point of a smooth toric surface is indexed by a two-ray cone"
+    )
+    first, second = tuple(center_cone.rays())
     new_ray_vector = first + second
 
-    refined_maximal_cones = []
-    for cone in fan.maximal_cones():
-        if cone == center_cone:
-            refined_maximal_cones.extend(((first, new_ray_vector), (new_ray_vector, second)))
-        else:
-            refined_maximal_cones.append(tuple(cone.rays()))
-
     fans = RationalPolyhedralFans(fan.cocharacter_lattice())
-    refined_fan = fans(tuple(refined_maximal_cones))
-    if not refined_fan.is_smooth():
-        raise ArithmeticError("star subdivision of a smooth surface cone did not remain smooth")
-    if fan.is_complete() and not refined_fan.is_complete():
-        raise ArithmeticError("star subdivision of a complete fan did not remain complete")
-
-    blowup = refined_fan.toric_variety(base)
-    lattice = fan.cocharacter_lattice()
-    identity = lattice.module_category().Mor(lattice, lattice).identity()
-    blowdown = blowup.toric_morphism(identity, surface)
-
-    exceptional = None
-    for ray_cone in refined_fan.cones(1):
-        (primitive,) = tuple(ray_cone.rays())
-        if _same_ray_vector(primitive, new_ray_vector):
-            exceptional = ray_cone
-            break
-    if exceptional is None:
-        raise ArithmeticError("the star-subdivision ray is absent from the refined fan")
-
-    blowup._preamble_blowup_construction = _ToricFixedPointBlowupConstruction(
-        surface,
-        blowdown,
-        center_cone,
-        exceptional,
+    refined_fan = fans(
+        tuple(
+            subdivided
+            for cone in fan.maximal_cones()
+            for subdivided in (
+                ((first, new_ray_vector), (new_ray_vector, second))
+                if cone == center_cone
+                else (tuple(cone.rays()),)
+            )
+        )
     )
-    return _refine_scheme(blowup, base, [ToricFixedPointBlowups(base)])
+    assert refined_fan.is_smooth(), (
+        "the star subdivision of a smooth surface cone is smooth"
+    )
+    assert refined_fan.is_complete() or not fan.is_complete(), (
+        "the star subdivision of a complete fan is complete"
+    )
+    exceptional = next(
+        (
+            ray_cone
+            for ray_cone in refined_fan.cones(1)
+            if tuple(ray_cone.rays()) == (new_ray_vector,)
+        ),
+        None,
+    )
+    assert exceptional is not None, (
+        "the star subdivision contains the ray u+v"
+    )
+    return refined_fan.toric_variety(
+        base,
+        placements=(ToricFixedPointBlowups(base),),
+        blowup_source=surface,
+        blowup_center_cone=center_cone,
+        exceptional_ray=exceptional,
+    )
 
 
 __all__ = ["ToricFixedPointBlowups"]

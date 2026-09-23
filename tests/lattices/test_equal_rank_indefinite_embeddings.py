@@ -21,7 +21,7 @@ def test_equal_rank_indefinite_embedding_reuses_exact_isometry_witness() -> None
             assert target.b(embedding(left), embedding(right)) == source.b(left, right)
 
 
-def test_equal_rank_indefinite_nonisometry_is_an_empty_embedding_homset() -> None:
+def test_equal_rank_indefinite_nonisometry_is_an_empty_embedding_mor() -> None:
     source = Lattices(ZZ)([[0, 2], [2, 0]])
     target = Lattices(ZZ)([[0, 3], [3, 0]])
 

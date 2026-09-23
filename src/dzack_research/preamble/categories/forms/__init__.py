@@ -1,35 +1,18 @@
-'Forms and their coordinate presentations.'
+"""Forms and their coordinate presentations."""
 
-from importlib import import_module as _import_module
-
-_EXPORTS = {'BilinearFormHomset': ('dzack_research.preamble.categories.forms.forms', 'BilinearFormHomset'),
- 'BilinearFormMorphism': ('dzack_research.preamble.categories.forms.forms', 'BilinearFormMorphism'),
- 'PairingMorphism': ('dzack_research.preamble.categories.forms.forms', 'PairingMorphism'),
- 'QuadraticFormHomset': ('dzack_research.preamble.categories.forms.forms', 'QuadraticFormHomset'),
- 'QuadraticMapMorphism': ('dzack_research.preamble.categories.forms.forms', 'QuadraticMapMorphism'),
- 'QuadraticFormMorphism': ('dzack_research.preamble.categories.forms.forms',
-                           'QuadraticFormMorphism'),
- 'GramTensorGraph': ('dzack_research.preamble.categories.forms.gram_matrices',
-                     'GramTensorGraph'),
-}
-
-__all__ = ['BilinearFormMorphism',
- 'BilinearFormHomset',
- 'PairingMorphism',
- 'QuadraticFormHomset',
- 'QuadraticMapMorphism',
- 'QuadraticFormMorphism',
- 'GramTensorGraph',
+from dzack_research.preamble.categories.forms.forms import (
+    BilinearFormMor,
+    BilinearFormMorphism,
+    PairingMorphism,
+    QuadraticFormMor,
+    QuadraticFormMorphism,
+    QuadraticMapMorphism,
+)
+__all__ = [
+    "BilinearFormMor",
+    "BilinearFormMorphism",
+    "PairingMorphism",
+    "QuadraticFormMor",
+    "QuadraticFormMorphism",
+    "QuadraticMapMorphism",
 ]
-
-def __getattr__(name):
-    try:
-        module_name, attribute = _EXPORTS[name]
-    except KeyError as error:
-        raise AttributeError(name) from error
-    value = getattr(_import_module(module_name), attribute)
-    globals()[name] = value
-    return value
-
-def __dir__():
-    return sorted((*globals(), *__all__))

@@ -309,8 +309,8 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         def is_equivalent_to(self, other) -> bool:
             r"""Return whether ``O(L)`` carries this isotropic subobject to ``other``.
 
-            The decision is the exact indefinite backend's; where its
-            hypotheses do not hold, that backend states the absence rather
+            The decision comes from the exact indefinite computation; where its
+            hypotheses do not hold, that computation states the absence rather
             than searching the group.
             """
             return self.transporter_witness_to(other) is not None

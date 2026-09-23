@@ -16,7 +16,8 @@ def test_legendre_family_retains_singular_fiber_and_smooth_punctured_stratum() -
     assert smooth.base_change_source_complete_intersection() is family
     assert data.smooth_stratum().disc_radius() == 0.75
     assert data.base_point().manifold() is data.smooth_stratum()
-    assert data.base_point().coordinates() == (0.5,)
+    assert tuple(data.base_point().coordinates()) == (0.5,)
+    assert data.base_point().coordinates()[0].parent() is data.base_point().chart().coordinate(0).parent()
 
     singular_ring = singular.complete_intersection_ambient().O(3).global_sections().homogeneous_coordinate_ring()
     singular_equation = tuple(singular.homogeneous_defining_equations(singular_ring))[0]
@@ -28,16 +29,15 @@ def test_legendre_family_retains_singular_fiber_and_smooth_punctured_stratum() -
 
 def test_R1_is_a_local_system_with_actual_stalk_to_fiber_comparison() -> None:
     data = LegendreMonodromyFamily()
-    direct_image = data.higher_direct_image()
-    local_system = direct_image.restriction_to_smooth_stratum()
+    local_system = data.higher_direct_image()
     point = data.base_point()
-    comparison = direct_image.stalk_to_fiber_comparison(point)
+    comparison = data.stalk_to_fiber_comparison()
 
-    assert direct_image.cohomological_degree() == 1
-    assert direct_image.smooth_stratum() is data.smooth_stratum()
-    assert local_system.base_space() is data.smooth_stratum()
-    assert local_system.stalk(point) is data.fiber_cohomology(point)
-    assert comparison.domain() is local_system.stalk(point)
+    assert data.cohomological_degree() == 1
+    representation = local_system.functor()
+    assert local_system in representation.functor_category()
+    assert representation(representation.domain().an_object()) is data.fiber_cohomology(point)
+    assert comparison.domain() is data.fiber_cohomology(point)
     assert comparison.codomain() is data.fiber_cohomology(point)
 
 
@@ -47,7 +47,9 @@ def test_positive_loop_has_nonidentity_picard_lefschetz_monodromy_preserving_pai
     alpha_dual, beta_dual = tuple(cohomology.module_generators())
     pi_one = data.pointed_fundamental_group()
     generator = pi_one.positive_loop_generator()
-    action = data.local_system().monodromy_of(generator)
+    representation = data.monodromy_representation()
+    point = representation.domain().an_object()
+    action = representation(representation.domain().Mor(point, point)(generator))
 
     assert action(alpha_dual) == alpha_dual
     assert action(beta_dual) == 2 * alpha_dual + beta_dual

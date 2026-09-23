@@ -43,7 +43,7 @@ class HesseBertiniFamily(SageObject):
         z = relative_ring.algebra_generator("z")
         scalar = relative_ring.algebra_structure_morphism()
         equation = x**3 + y**3 + z**3 - scalar(parameter(3) * t) * x * y * z
-        family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane.closed_subscheme(equation))
+        family = ProjectiveCompleteIntersections(plane.scheme_base_ring())(plane, equation)
 
         reference_plane = ProjectiveSpaces(base)(2, names=("x", "y", "z"))
         bundle = reference_plane.O(3)
@@ -59,11 +59,10 @@ class HesseBertiniFamily(SageObject):
         base_locus_point = linear_system.base_locus().corestriction(basepoint)
         value_evaluation = bundle.jet_evaluation(basepoint, 1)
         first_jet_evaluation = bundle.jet_evaluation(basepoint, 2)
-        if any(
-            value_evaluation(section) != value_evaluation.codomain().zero()
+        assert all(
+            value_evaluation(section) == value_evaluation.codomain().zero()
             for section in (fermat, product)
-        ):
-            raise ArithmeticError("the selected Hesse point is not a base point of the pencil")
+        ), "the selected Hesse point [1:-1:0] is not a base point of the pencil"
 
         discriminant = t**3 - parameter.one()
         parameter_scheme = family.base_scheme()
@@ -177,9 +176,4 @@ class HesseBertiniFamily(SageObject):
         return f"Hesse-Bertini family over {self.parameter_ring()} with good locus {self.good_parameter_locus()}"
 
 
-
-def hesse_bertini_family():
-    return HesseBertiniFamily()
-
-
-__all__ = ["HesseBertiniFamily", "hesse_bertini_family"]
+__all__ = ["HesseBertiniFamily"]

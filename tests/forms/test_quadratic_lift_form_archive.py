@@ -20,9 +20,26 @@ def test_coordinate_quadratic_form_retains_its_bilinear_lift_as_a_form() -> None
     assert polar(generator, generator) == 2 * lift(generator, generator)
 
 
+def test_quadratic_pullback_retains_its_own_selected_lift_without_mutating_the_source() -> None:
+    module = ZZ.regular_module()
+    generator = module.module_generator(module.module_generating_set()[0])
+    quadratic = module.quadratic_map(ZZ, [[ZZ.one()]])
+    identity = module.Mor(module).identity()
+
+    pulled = quadratic.pullback(identity)
+
+    assert pulled is not quadratic
+    assert pulled.lift_pairing(generator, generator) == ZZ.one()
+    assert pulled(generator) == quadratic(generator)
+
+
 def test_callable_quadratic_form_does_not_fabricate_a_chosen_lift() -> None:
     module = ZZ.regular_module()
-    quadratic = module.quadratic_map(ZZ, lambda element: element.to_tuple()[0] ** 2)
+    label = module.module_generating_set()[0]
+    quadratic = module.quadratic_map(
+        ZZ,
+        lambda element: module.framing_coefficients(element).get(label, ZZ.zero()) ** 2,
+    )
 
     with pytest.raises(TypeError, match="no chosen bilinear lift"):
         quadratic.lift_form()

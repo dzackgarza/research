@@ -1,7 +1,7 @@
 """The T2 rational-integral provider reached through the research arithmetic API.
 
 Unverified: these specimens are executed only in terminal T.  The port object is
-used as the prescribed finitely generated rational-group carrier; every result
+used as the prescribed finitely generated underlying finitely generated rational group; every result
 that crosses back retains live preamble lattice embeddings and isometries.
 """
 

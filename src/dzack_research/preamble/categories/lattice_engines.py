@@ -12,6 +12,7 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.tensors.tensor import (
@@ -61,7 +62,7 @@ def _rational_positive_vector(gram):
     rationals = gram.base_ring().fraction_field()
     return tensor.vector(
         rationals,
-        tuple(rationals._from_engine_element(entry) for entry in column),
+        tuple(_owned_engine_element(rationals, entry) for entry in column),
     )
 
 
@@ -337,17 +338,17 @@ class _OscarLatticeAdapter:
             (),
             target_shape,
             tuple(
-                tuple(ring._from_engine_element(entry) for entry in row)
+                tuple(_owned_engine_element(ring, entry) for entry in row)
                 for row in target_engine.rows()
             ),
         )
 
-        # OSCAR emits source basis images as rows.  The live Hom matrix acts on
+        # OSCAR emits source basis images as rows.  The live Mor matrix acts on
         # coordinate columns, so transpose those rows into target-by-source shape.
         embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
             tuple(
                 tuple(
-                    ring._from_engine_element(embedding_engine[source, target])
+                    _owned_engine_element(ring, embedding_engine[source, target])
                     for source in range(embedding_engine.nrows())
                 )
                 for target in range(embedding_engine.ncols())
@@ -388,7 +389,7 @@ class _OscarLatticeAdapter:
                 (),
                 (engine.nrows(), engine.ncols()),
                 tuple(
-                    tuple(ring._from_engine_element(entry) for entry in row)
+                    tuple(_owned_engine_element(ring, entry) for entry in row)
                     for row in engine.rows()
                 ),
             )
@@ -398,7 +399,7 @@ class _OscarLatticeAdapter:
         embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
             tuple(
                 tuple(
-                    ring._from_engine_element(embedding_engine[source, target])
+                    _owned_engine_element(ring, embedding_engine[source, target])
                     for source in range(embedding_engine.nrows())
                 )
                 for target in range(embedding_engine.ncols())
@@ -443,7 +444,7 @@ class _OscarLatticeAdapter:
                     (),
                     (engine.nrows(), engine.ncols()),
                     tuple(
-                        tuple(ring._from_engine_element(entry) for entry in row)
+                        tuple(_owned_engine_element(ring, entry) for entry in row)
                         for row in engine.rows()
                     ),
                 )
@@ -453,7 +454,7 @@ class _OscarLatticeAdapter:
             embedding = ring.matrix_space(embedding_engine.ncols(), embedding_engine.nrows()).from_rows(
                 tuple(
                     tuple(
-                        ring._from_engine_element(embedding_engine[source, target])
+                        _owned_engine_element(ring, embedding_engine[source, target])
                         for source in range(embedding_engine.nrows())
                     )
                     for target in range(embedding_engine.ncols())

@@ -2,12 +2,8 @@ r"""Pure abstract category objects use the owned runtime category boundary."""
 
 from dzack_research.preamble.all import Cat, Sets
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    HomCategories,
-)
-from dzack_research.preamble.categories.abstract_categories.products import (
-    BiproductCategory,
-    TensorProductCategory,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    MorCategories,
 )
 from dzack_research.preamble.categories.functors.core import IdentityFunctor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -16,12 +12,12 @@ ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/abstract_categories/cat.sage",
     "live_owner": "src/dzack_research/preamble/categories/abstract_categories/cat.py",
     "owner_overrides": {
-        "Cat.ParentMethods.HomCategory": "src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py",
-        "Cat.ParentMethods.EndCategory": "src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py",
-        "Cat.ParentMethods.AutCategory": "src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py",
-        "Cat.ParentMethods.IsoCategory": "src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py",
-        "Cat.ParentMethods.MonoCategory": "src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py",
-        "Cat.ParentMethods.EpiCategory": "src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py",
+        "Cat.ParentMethods.MorCategory": "src/dzack_research/preamble/categories/abstract_categories/mor_foundation.py",
+        "Cat.ParentMethods.EndCategory": "src/dzack_research/preamble/categories/abstract_categories/mor_foundation.py",
+        "Cat.ParentMethods.AutCategory": "src/dzack_research/preamble/categories/abstract_categories/mor_foundation.py",
+        "Cat.ParentMethods.IsoCategory": "src/dzack_research/preamble/categories/abstract_categories/mor_foundation.py",
+        "Cat.ParentMethods.MonoCategory": "src/dzack_research/preamble/categories/abstract_categories/mor_foundation.py",
+        "Cat.ParentMethods.EpiCategory": "src/dzack_research/preamble/categories/abstract_categories/mor_foundation.py",
         "Cat.ParentMethods.ArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
         "Cat.ParentMethods.EndArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
         "Cat.ParentMethods.IsoArrowCategory": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
@@ -63,11 +59,9 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
         Sets().Subobjects(points),
         Sets().WideSubcategory(Sets().MonomorphismArrowCategory()),
         IdentityFunctor(Sets()).algebras(),
-        HomCategories(),
-        Sets().HomCategory(),
+        MorCategories(),
+        Sets().MorCategory(),
         Sets().Limits(discrete),
-        BiproductCategory((points, points)),
-        TensorProductCategory((points, points)),
         Cat().Mor(Sets(), Sets()),
     )
 
@@ -76,14 +70,14 @@ def test_pure_abstract_category_constructions_are_objects_of_cat() -> None:
         assert category.category() is Cat()
 
 
-def test_fixed_homset_keeps_its_enrichment_parent_role() -> None:
+def test_fixed_mor_keeps_its_enrichment_parent_role() -> None:
     points = finite_ordered_set(("a", "b"))
-    homset = Sets().Mor(points, points)
+    mor = Sets().Mor(points, points)
 
-    assert homset in Cat()
-    assert homset.category() is not Cat()
-    assert homset.domain() is points
-    assert homset.codomain() is points
+    assert mor in Cat()
+    assert mor.category() is not Cat()
+    assert mor.domain() is points
+    assert mor.codomain() is points
 
 
 def test_archived_category_constructions_use_the_current_singletons() -> None:
@@ -101,19 +95,19 @@ def test_archived_category_constructions_use_the_current_singletons() -> None:
     assert sets.Subobjects(points) is sets.Subobjects(points)
 
 
-def test_cat_parent_method_provider_is_plain_and_reuses_the_hom_packet_owner() -> None:
+def test_cat_parent_method_provider_is_plain_and_reuses_the_mor_packet_owner() -> None:
     from dzack_research.preamble.categories.abstract_categories.cat import Cat as CatClass
-    from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
+    from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
         CategoryPacketMethods,
     )
 
     assert CatClass.ParentMethods.__bases__ == (object,)
-    assert CatClass.ParentMethods.HomCategory is CategoryPacketMethods.HomCategory
+    assert CatClass.ParentMethods.MorCategory is CategoryPacketMethods.MorCategory
     assert CatClass.ParentMethods.Mor is CategoryPacketMethods.Mor
     points = finite_ordered_set(("x", "y"))
-    homset = Sets().Mor(points, points)
-    assert homset.domain() is points
-    assert homset.codomain() is points
+    mor = Sets().Mor(points, points)
+    assert mor.domain() is points
+    assert mor.codomain() is points
 
 
 def test_fresh_public_import_does_not_warn_about_cat_parent_methods() -> None:

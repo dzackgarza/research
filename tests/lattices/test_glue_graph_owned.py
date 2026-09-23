@@ -5,8 +5,8 @@ def test_glue_graph_is_an_owned_finite_set_of_actual_discriminant_elements() -> 
     lattice = Lattices(ZZ)([[2, 0], [0, -2]])
     involution = lattice.Aut()(
         {
-            lattice.module_generating_set()[0]: lattice.module_generator(0),
-            lattice.module_generating_set()[1]: -lattice.module_generator(1),
+            lattice.module_generating_set()[0]: lattice.basis_vector(0),
+            lattice.module_generating_set()[1]: -lattice.basis_vector(1),
         }
     )
     extension = involution.primitive_extension()

@@ -1,7 +1,9 @@
 r"""Archive reconciliation for the five divisor-group role categories."""
 
 from dzack_research.preamble.all import (
+    QQ,
     ZZ,
+    AffineSpaces,
     CartierDivisorGroups,
     Cat,
     ClassGroups,
@@ -20,7 +22,7 @@ ARCHIVE_RECONCILIATIONS = (
     },
     {
         "archive_module": "preamble/categories/divisors/cartier_divisor_groups.sage",
-        "live_owner": "src/dzack_research/preamble/categories/divisors/divisor_groups.py",
+        "live_owner": "src/dzack_research/preamble/categories/divisors/cartier_divisor_groups.py",
         "disposition": "reconciled-live-owner",
     },
     {
@@ -47,7 +49,8 @@ def test_divisor_roles_preserve_the_archived_module_distinctions() -> None:
 
     divisors = DivisorGroups()(free)
     weil = WeilDivisorGroups()(free)
-    cartier = CartierDivisorGroups()(free)
+    line = AffineSpaces(QQ)(1)
+    cartier = CartierDivisorGroups().of_scheme(line)
     picard = PicardGroups()(free)
     classes = ClassGroups()(free)
 
@@ -68,7 +71,8 @@ def test_divisor_roles_preserve_the_archived_module_distinctions() -> None:
         assert category.category() is Cat()
     assert divisors.module_generating_set() == free.module_generating_set()
     assert weil.module_generating_set() == free.module_generating_set()
-    assert cartier.module_generating_set() == free.module_generating_set()
+    assert cartier.divisor_scheme() is line
+    assert cartier.quotient_sheaf() is line.cartier_divisor_sheaf()
     assert picard.module_generating_set() == free.module_generating_set()
     assert classes.module_generating_set() == free.module_generating_set()
 
@@ -80,7 +84,7 @@ def test_formal_divisor_keeps_support_and_combines_repeated_terms() -> None:
     group = divisor.parent()
 
     assert group in FormalDivisorGroups(ZZ)
-    assert group.components(divisor) == ("D0", "D1")
-    terms = tuple(group.terms(divisor))
-    assert terms == ((ZZ(5), "D0"), (ZZ(-1), "D1"))
+    assert tuple(group.components(divisor)) == ("D0", "D1")
+    terms = tuple(group.terms(divisor).items())
+    assert terms == (("D0", ZZ(5)), ("D1", ZZ(-1)))
     assert group.divisor_repr(divisor) == "5*D0 - 1*D1"

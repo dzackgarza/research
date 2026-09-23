@@ -38,6 +38,7 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedRings,
@@ -47,7 +48,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import UncountableSets
-from dzack_research.preamble.logic import Predicate, ask
+from dzack_research.preamble.logic import Propositions, ask
 from dzack_research.preamble.refine import realize_owned_category
 
 
@@ -56,7 +57,7 @@ def RealApproximation(value):
     backend = _create_real_approximation(value)
 
     parent = _own_ring(backend.parent())
-    return parent._from_engine_element(backend)
+    return _owned_engine_element(parent, backend)
 
 
 _RELATION_SYMBOL = {
@@ -218,6 +219,7 @@ class RealRelation(Predicate):
         self._left = left
         self._right = right
         self._relation = relation
+        super().__init__()
 
     def left(self) -> ExactRealNumber:
         return self._left
@@ -324,10 +326,32 @@ class ExactRealNumber(FieldElement):
     def _mul_(self, other):
         return self.parent()(self._expression * other._expression)
 
+    def __mul__(self, other):
+        r"""Use the exact scalar engine, or the action on an owned module.
+
+        The coefficient product cannot call the algebra tensor classifier
+        whose own linear evaluation uses these coefficients.
+        """
+        ring = self.parent()
+        source = parent(other)
+        if source is ring:
+            return ExactRealNumber._mul_(self, other)
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        if source in Modules(ring):
+            return source.scalar_multiple(self, other)
+        try:
+            return ExactRealNumber._mul_(self, ring(other))
+        except (TypeError, ValueError):
+            return NotImplemented
+
+    def __rmul__(self, other):
+        return ExactRealNumber.__mul__(self, other)
+
     def _div_(self, other):
         nonzero = self.parent().relation(other, self.parent().zero(), operator.ne)
 
-        decision = ask(nonzero) if isinstance(nonzero, Predicate) else nonzero
+        decision = ask(nonzero) if nonzero in Propositions else nonzero
         if decision is False:
             raise ZeroDivisionError("division by zero")
         if decision is Unknown:
@@ -451,6 +475,11 @@ class ExactRealField(UniqueRepresentation, Field):
             category=Cat().meet((OwnedFields(), UncountableSets())),
         )
         realize_owned_category(self)
+        from dzack_research.preamble.categories.algebras.algebras import _algebra_from_native_ring
+
+        _algebra_from_native_ring(self, lambda left, right: ExactRealNumber._mul_(left, right),
+            ExactRealField.one(self), lambda scalar, element: ExactRealNumber._mul_(self(scalar), self(element)))
+
 
     def _repr_(self) -> str:
         return "Real Field"
@@ -461,10 +490,15 @@ class ExactRealField(UniqueRepresentation, Field):
     def _element_constructor_(self, value) -> ExactRealNumber:
         if isinstance(value, ExactRealNumber) and value.parent() is self:
             return value
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        source = parent(value)
+        if source in Modules(self) and source.unformed_module() is self:
+            return source._element_of_unformed_module(value)
         return self.element_class(self, _closed_exact_real_expression(value))
 
     def _from_engine_expression(self, value) -> ExactRealNumber:
-        r"""Cross a private exact backend expression into the owned real field."""
+        r"""Cross a private exact expression; implementation endpoint for the protected dispatcher."""
         return self.element_class(self, _closed_exact_real_expression(value))
 
     def __contains__(self, value) -> bool:
@@ -540,6 +574,18 @@ class ExactRealField(UniqueRepresentation, Field):
 
 
 RR = ExactRealField()
+
+
+def _owned_real_from_engine_expression(value) -> ExactRealNumber:
+    r"""Raise a private exact symbolic expression into the owned real field.
+
+    Protected exact-real contract (\`OWN-05\`--\`OWN-07\`).  Permitted
+    callers are exact symbolic computation adapters for definite-lattice
+    invariants and convolution evaluation.  They produce a closed exact
+    expression and immediately raise it here; the symbolic engine value never
+    becomes public mathematical storage.
+    """
+    return RR._from_engine_expression(value)
 
 
 def _restore_exact_real(expression: Expression) -> ExactRealNumber:

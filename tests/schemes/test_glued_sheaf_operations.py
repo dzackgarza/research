@@ -1,14 +1,15 @@
 from dzack_research.preamble.all import QQ, ProjectiveSpaces, Schemes
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.schemes.gluing import (
-    FiniteAtlasGluedModuleSheaf,
-    FiniteAtlasModuleGluingDatum,
-    FiniteAtlasRefinement,
+    FiniteAffineAtlases,
+    FiniteAtlasModuleGluingData,
 )
+from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 
 
 def _projective_line_with_redundant_overlap_chart():
     line = ProjectiveSpaces(QQ)(1)
-    coarse = line.glued_from_standard_charts().gluing_datum()
+    coarse = line.standard_affine_atlas()
     left = coarse.chart(0)
     right = coarse.chart(1)
     overlap = coarse.overlap(0, 1)
@@ -25,17 +26,20 @@ def _projective_line_with_redundant_overlap_chart():
     right_to_overlap = Schemes(QQ).Core().Mor(
         right_forward.domain(), right_forward.codomain()
     )(right_forward, right_inverse)
-    fine = Schemes(QQ).glue_affine_atlas(
+    fine = FiniteAffineAtlases(line)(
         (left, right, overlap),
         (
             coarse.transition_between(0, 1),
             left_to_overlap,
             right_to_overlap,
         ),
-    ).gluing_datum()
-    refinement = FiniteAtlasRefinement(
-        coarse,
-        fine,
+        (
+            coarse.chart_embedding(0),
+            coarse.chart_embedding(1),
+            coarse.chart_embedding(0) * overlap.inclusion(),
+        ),
+    )
+    refinement = FiniteAffineAtlases(line).Mor(fine, coarse)(
         (0, 1, 0),
         (
             left.categorical_identity_morphism(),
@@ -61,7 +65,7 @@ def _rank_two_descent(datum):
         pair: (_identity_transition, _identity_transition)
         for pair in datum.transition_index_set()
     }
-    return FiniteAtlasModuleGluingDatum(datum, local_modules, transitions)
+    return FiniteAtlasModuleGluingData(datum)(local_modules, transitions)
 
 
 def test_finite_atlas_sheaf_kernel_cokernel_tensor_and_stalk_map_are_chartwise() -> None:
@@ -70,7 +74,21 @@ def test_finite_atlas_sheaf_kernel_cokernel_tensor_and_stalk_map_are_chartwise()
     target_datum = _rank_two_descent(datum)
     source = source_datum.sheaf()
     target = target_datum.sheaf()
-    assert isinstance(source, FiniteAtlasGluedModuleSheaf)
+    global_functions = datum.global_function_algebra()
+    concrete_sheaves = datum.cech_coverage().sheaves(
+        Modules(global_functions)
+    )
+    assert source in QuasiCoherentSheaves(datum.scheme())
+    assert source.category().is_subcategory(concrete_sheaves)
+    assert target.category().is_subcategory(concrete_sheaves)
+    assert source.global_sections().base_ring() is global_functions
+    assert source.descent_data().coverage() is datum.cech_coverage()
+    assert source.descent_data().presheaf() is source.functor()
+    assert source.gluing_datum() is source_datum
+    for index in datum.chart_indices():
+        restriction = datum.global_function_restriction(index)
+        assert restriction.domain() is global_functions
+        assert restriction.codomain() is datum.chart(index).coordinate_algebra()
 
     local_maps = {}
     for index in datum.chart_indices():
@@ -83,6 +101,7 @@ def test_finite_atlas_sheaf_kernel_cokernel_tensor_and_stalk_map_are_chartwise()
             }
         )
     morphism = source.morphism_to(target, local_maps)
+    assert morphism.parent() is QuasiCoherentSheaves(datum.scheme()).Mor(source, target)
     kernel = morphism.kernel_sheaf()
     cokernel = morphism.cokernel_sheaf()
 

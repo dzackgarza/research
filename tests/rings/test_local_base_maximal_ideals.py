@@ -18,14 +18,14 @@ def test_a_fields_maximal_ideal_is_the_owned_zero_ideal() -> None:
     ideal = QQ.maximal_ideal()
 
     assert ideal in CommutativeIdeals(QQ)
-    assert ideal.ideal_generators() == (QQ.zero(),)
+    assert tuple(ideal.ideal_generators()) == (QQ.zero(),)
     assert QQ.residue_field() is QQ
 
 
 def test_power_series_in_two_variables_are_local_at_both_variables() -> None:
     ring = QQ.power_series_ring("x,y")
 
-    assert ring.maximal_ideal().ideal_generators() == (
+    assert tuple(ring.maximal_ideal().ideal_generators()) == (
         ring.algebra_generator("x"),
         ring.algebra_generator("y"),
     )
@@ -36,7 +36,7 @@ def test_power_series_over_a_local_base_retain_the_base_maximal_ideal() -> None:
     (base_uniformizer,) = base.maximal_ideal().ideal_generators()
     ring = base.power_series_ring("t")
 
-    assert ring.maximal_ideal().ideal_generators() == (
+    assert tuple(ring.maximal_ideal().ideal_generators()) == (
         ring(base_uniformizer),
         ring.algebra_generator("t"),
     )
@@ -51,14 +51,14 @@ def test_dual_numbers_over_a_local_base_retain_the_base_maximal_ideal() -> None:
 
     generators = ring.maximal_ideal().ideal_generators()
 
-    assert generators == (ring(base_uniformizer), ring.algebra_generator("epsilon"))
+    assert tuple(generators) == (ring(base_uniformizer), ring.algebra_generator("epsilon"))
     assert ring.residue_field() is base.residue_field()
 
 
 def test_dual_numbers_over_a_field_are_local_at_the_nilpotent_alone() -> None:
     ring = GF(7).dual_numbers()
 
-    assert ring.maximal_ideal().ideal_generators() == (ring.algebra_generator("epsilon"),)
+    assert tuple(ring.maximal_ideal().ideal_generators()) == (ring.algebra_generator("epsilon"),)
 
 
 def test_padic_principal_quotient_cardinality_is_residue_size_to_valuation() -> None:

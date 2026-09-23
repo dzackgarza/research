@@ -16,15 +16,21 @@ from sage.rings.rational_field import QQ as SageQQ
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CategoricalIsomorphism,
 )
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
     IsoCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    _fix_selected_framing,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import (
+    Groups,
     OwnedFiniteGroups,
+    OwnedGroups,
     Subgroups,
+    _group_framing_morphism,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _matrix_coordinate_rows,
@@ -40,6 +46,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     _torsion_module_presented_by_matrix,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -78,8 +85,10 @@ def _gram_rows(gram, rank):
                 for row in range(parent.nrows())
             )
         else:
+            shape = gram.tensor_shape()
             rows = tuple(
-                tuple(row) for row in gram.components()
+                tuple(gram[row, column] for column in range(int(shape[1])))
+                for row in range(int(shape[0]))
             )
     else:
         rows = tuple(tuple(row) for row in gram)
@@ -240,7 +249,7 @@ def _engine_torsion_form(normalized_form, *, quadratic: bool):
         )
     )
     if int(engine.cardinality()) != int(normalized_form.cardinality()):
-        raise NotImplementedError(
+        raise ArithmeticError(
             "the available finite-form engine does not retain the whole presented module"
         )
     if not quadratic:
@@ -305,7 +314,11 @@ def _relations_among_generators(form, generators):
     relations = (
         combined.codomain().left_projection() * kernel.inclusion()
     ).image()
-    return relations.inclusion().matrix().transpose()
+    inclusion = relations.inclusion()
+    linear_inclusion = inclusion.domain().module_category().Mor(
+        inclusion.domain(), inclusion.codomain()
+    )(inclusion)
+    return linear_inclusion.transpose()
 
 
 def _quadratic_gram_on(form, generators):
@@ -406,37 +419,15 @@ def _embedded_elements(subobject):
 
 def _torsion_form_isotropic_subobjects(form, *, quadratic: bool):
     r"""Return all form-bearing subobjects on which the selected form vanishes."""
-
-    zero = form.zero()
-    zero_subobject = _torsion_form_subobject_on(form, (), quadratic=quadratic)
-    zero_elements = _embedded_elements(zero_subobject)
-    seen = {zero_elements}
-    frontier = [zero_subobject]
-    isotropic = [zero_subobject]
-    candidates = tuple(
-        element
-        for element in form.elements()
-        if element != zero and form.form_vanishes_on((element,))
-    )
-    while frontier:
-        current = frontier.pop()
-        selected_generators = tuple(current.embedded_module_generators())
-        current_elements = _embedded_elements(current)
-        for element in candidates:
-            if element in current_elements:
-                continue
-            candidate = _torsion_form_subobject_on(
-                form,
-                selected_generators + (element,),
-                quadratic=quadratic,
+    return finite_ordered_set(
+        tuple(
+            subobject
+            for subobject in _torsion_form_all_subobjects(
+                form, quadratic=quadratic
             )
-            elements = _embedded_elements(candidate)
-            if elements in seen or not form.form_vanishes_on(elements):
-                continue
-            seen.add(elements)
-            frontier.append(candidate)
-            isotropic.append(candidate)
-    return finite_ordered_set(tuple(isotropic))
+            if form.form_vanishes_on(_embedded_elements(subobject))
+        )
+    )
 
 
 def _torsion_form_maximal_isotropic_subobjects(form, *, quadratic: bool):
@@ -452,31 +443,50 @@ def _torsion_form_maximal_isotropic_subobjects(form, *, quadratic: bool):
 
 
 def _torsion_form_all_subobjects(form, *, quadratic: bool):
-    r"""Return every finite form-bearing subobject of ``form`` exactly once."""
-    zero_subobject = _torsion_form_subobject_on(form, (), quadratic=quadratic)
-    seen = {_embedded_elements(zero_subobject)}
-    frontier = [zero_subobject]
-    subobjects = [zero_subobject]
-    elements = tuple(form.elements())
-    while frontier:
-        current = frontier.pop()
-        current_elements = _embedded_elements(current)
-        selected = tuple(current.embedded_module_generators())
-        for element in elements:
-            if element in current_elements:
-                continue
-            candidate = _torsion_form_subobject_on(
+    r"""Return every finite form-bearing subobject of ``form`` exactly once.
+
+    The owned finite-torsion enumeration itself is the ``ZZ`` Smith
+    specialization.  On that exact frontier Sage's finite-quadratic-module
+    backend owns the complete subgroup enumeration: ``ZZ``-submodules are
+    additive subgroups, and ``all_submodules()`` delegates the finite abelian
+    subgroup lattice to GAP.  We cross only its returned generators through
+    the invariant-factor normalization.
+    """
+    integers = _own_ring(SageZZ)
+    assert form.base_ring() is integers, (
+        "finite torsion-form subobject enumeration uses the represented ZZ Smith specialization"
+    )
+    normalization = form.invariant_factor_form()
+    normalized = normalization.codomain()
+    engine = _engine_torsion_form(normalized, quadratic=quadratic)
+    cover = engine.V()
+    labels = tuple(normalized.module_generating_set())
+    ring = normalized.base_ring()
+
+    def owned_engine_generator(engine_generator):
+        coordinates = cover.coordinates(engine(engine_generator).lift())
+        normalized_element = normalized.linear_combination(
+            {
+                label: _owned_engine_element(ring, SageZZ(coefficient))
+                for label, coefficient in zip(labels, coordinates, strict=True)
+                if coefficient
+            }
+        )
+        return normalization.inverse()(normalized_element)
+
+    return finite_ordered_set(
+        tuple(
+            _torsion_form_subobject_on(
                 form,
-                selected + (element,),
+                tuple(
+                    owned_engine_generator(generator)
+                    for generator in engine_submodule.gens()
+                ),
                 quadratic=quadratic,
             )
-            embedded = _embedded_elements(candidate)
-            if embedded in seen:
-                continue
-            seen.add(embedded)
-            frontier.append(candidate)
-            subobjects.append(candidate)
-    return finite_ordered_set(tuple(subobjects))
+            for engine_submodule in engine.all_submodules()
+        )
+    )
 
 
 def _torsion_form_orthogonal_subobject(form, subobject, *, quadratic: bool):
@@ -632,7 +642,7 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     selected_relations = _presentation_matrix(module)
     known = ring.matrix_space(selected_relations.nrows(), selected_relations.ncols()).from_rows(_matrix_coordinate_rows(selected_relations))
     # Keep the actual biproduct codomain: the integral solver works on every
-    # finite framed free Hom, and its solution therefore lands in the same
+    # finite framed free Mor, and its solution therefore lands in the same
     # biproduct whose left projection selects the coefficients of the new
     # generators.  Passing through ``matrix()`` would replace that endpoint by
     # a rank-only coordinate module and discard the projection.
@@ -707,13 +717,13 @@ def _p_adic_jordan_decomposition(form, *, quadratic: bool):
             ring = normalized.base_ring()
             normalized_element = normalized.linear_combination(
                 {
-                    label: ring._from_engine_element(SageZZ(coefficient))
+                    label: _owned_engine_element(ring, SageZZ(coefficient))
                     for label, coefficient in zip(labels, coordinates, strict=True)
                     if coefficient
                 }
             )
             generators.append(normalization.inverse()(normalized_element))
-        result[normalized.base_ring()._from_engine_element(SageZZ(prime))] = tuple(generators)
+        result[_owned_engine_element(normalized.base_ring(), SageZZ(prime))] = tuple(generators)
     return _prime_indexed_generators(result)
 
 
@@ -806,7 +816,7 @@ def _bilinear_p_adic_jordan_decomposition(form):
             normalized_element = sum(
                 (
                     normalized.scalar_multiple(
-                        ring._from_engine_element(SageZZ(coefficient)), generator
+                        _owned_engine_element(ring, SageZZ(coefficient)), generator
                     )
                     for coefficient, generator in zip(
                         row, primary_generators, strict=True
@@ -980,18 +990,18 @@ class TorsionFormAutomorphism(TorsionFormIsometry):
         return f"Form automorphism of {self.domain()}"
 
 
-class TorsionFormOrthogonalGroup(CategoricalHomset):
+class TorsionFormOrthogonalGroup(CategoricalMor):
     r"""The finite group of live automorphisms preserving one finite form."""
 
     Element = TorsionFormAutomorphism
 
     @staticmethod
-    def __classcall__(cls, hom_family, form, **options):
-        return typecall(cls, hom_family, form, **options)
+    def __classcall__(cls, mor_family, form, **options):
+        return typecall(cls, mor_family, form, **options)
 
     def __init__(
         self,
-        hom_family,
+        mor_family,
         form,
         *,
         quadratic: bool,
@@ -1022,18 +1032,34 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             else engine_group
         )
         self._supergroup = self if supergroup is None else supergroup
-        categories = [OwnedFiniteGroups()]
+        categories = [OwnedFiniteGroups(), OwnedGroups().Framed()]
         if supergroup is not None:
             self._preamble_supergroup = supergroup
             categories.append(Subgroups(supergroup))
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             form,
             form,
             category=Category.join(tuple(categories)),
         )
         realize_owned_category(self)
+        engine_generators = tuple(self._engine_group_parent.gens())
+        generators = finite_ordered_set(
+            tuple(self._from_engine(generator) for generator in engine_generators)
+        )
+        source = Groups.Free(index_set=generators)
+        generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
+        _fix_selected_framing(
+            self,
+            OwnedGroups(),
+            source,
+            generators,
+            generator_morphism,
+            lambda: _group_framing_morphism(
+                self, source, generators, generator_morphism
+            ),
+        )
 
     def is_quadratic(self) -> bool:
         return self._quadratic
@@ -1044,7 +1070,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         packet = self.base_category().category_packet()
         form = self.domain()
         supers = [
-            packet.Homs().Of(form, form),
+            packet.Mors().Of(form, form),
             packet.Monos().Of(form, form),
             packet.Epis().Of(form, form),
         ]
@@ -1086,7 +1112,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             coordinates = cover.coordinates(image.lift())
             images[label] = self._normalized_form.linear_combination(
                 {
-                    target_label: self._normalized_form.base_ring()._from_engine_element(SageZZ(coefficient))
+                    target_label: self._owned_engine_element(_normalized_form.base_ring(), SageZZ(coefficient))
                     for target_label, coefficient in zip(
                         labels,
                         coordinates,
@@ -1100,9 +1126,9 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
     def _from_engine_matrix(self, engine_matrix):
         r"""Cross one private engine matrix to an owned form automorphism.
 
-        Protected contract for exact backend consumers: no engine-group parent
-        escapes this object; callers hand the engine matrix in and receive the
-        owned automorphism back.
+        Implementation endpoint of
+        :func:\`_torsion_form_automorphism_from_engine_matrix\`.  No
+        engine-group parent escapes this object.
         """
         return self._from_engine(self._engine_group_parent(engine_matrix))
 
@@ -1212,21 +1238,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
     identity = one
     identity_automorphism = one
 
-    @cached_method
-    def group_generators(self):
-
-        engine_generators = self._engine_group_parent.gens()
-        positions = Sets.Δ[len(engine_generators) - 1]
-        return FiniteOrderedSets().from_indexed(
-            positions,
-            lambda position: self._from_engine(engine_generators[int(position)]),
-            name="Torsion-form automorphism generators",
-        )
-
-    def number_of_group_generators(self):
-
-        return _own_ring(SageZZ)(self.group_generators().cardinality())
-
     def order(self):
         return self.domain().base_ring()(int(self._engine_group_parent.order()))
 
@@ -1255,7 +1266,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             [generator._engine() for generator in supplied]
         )
         subgroup = TorsionFormOrthogonalGroup(
-            self.hom_family(),
+            self.mor_family(),
             self.domain(),
             quadratic=self.is_quadratic(),
             normalization=self._normalization,
@@ -1310,6 +1321,21 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         if self.supergroup() is self:
             return f"Orthogonal group of {self.domain()}"
         return f"Subgroup of the orthogonal group of {self.domain()}"
+
+
+def _torsion_form_automorphism_from_engine_matrix(orthogonal_group, engine_matrix):
+    r"""Raise one exact backend matrix to an owned torsion-form automorphism.
+
+    Protected torsion-form contract (\`OWN-05\`--\`OWN-07\`).  The
+    permitted caller is the lattice centralizer-image adapter, which receives
+    exact matrices from OSCAR in the common Smith-generator row convention.
+    The matrix is consumed by this torsion-form owner and the returned value is
+    an owned automorphism; neither the private orthogonal-group parent nor an
+    engine element leaves this dispatcher.
+    """
+    if not isinstance(orthogonal_group, TorsionFormOrthogonalGroup):
+        raise TypeError("an engine matrix is raised only by a torsion-form orthogonal group")
+    return orthogonal_group._from_engine_matrix(engine_matrix)
 
 
 def _torsion_form_automorphism_group(form, *, quadratic: bool):
@@ -1434,13 +1460,13 @@ class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
             r"""Return the selected lift of this class to the cokernel cover."""
             formed = self.parent()
             unformed = formed.unformed_module()
-            coordinates = unformed._framing_coordinates(unformed(self))
+            coordinates = unformed.framing_coefficients(unformed(self))
             cover = formed.cover()
             return cover.linear_combination(
                 {
                     label: coordinates[label]
                     for label in cover.module_generating_set()
-                    if coordinates[label] != cover.base_ring().zero()
+                    if label in coordinates
                 }
             )
 

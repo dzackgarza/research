@@ -31,17 +31,17 @@ def test_power_algebra_module_owner_and_nonidentity_functor_share_one_constructi
 
         assert induced.domain() is source_algebra
         assert induced.codomain() is target_algebra
-        assert induced(source_algebra.algebra_generator("x")) == (
-            2 * target_algebra.algebra_generator("a")
+        assert induced(source_algebra.degree_one_generator("x")) == (
+            2 * target_algebra.degree_one_generator("a")
         )
-        assert induced(source_algebra.algebra_generator("y")) == (
-            target_algebra.algebra_generator("b")
+        assert induced(source_algebra.degree_one_generator("y")) == (
+            target_algebra.degree_one_generator("b")
         )
         source_product = (
-            source_algebra.algebra_generator("x")
-            * source_algebra.algebra_generator("y")
+            source_algebra.degree_one_generator("x")
+            * source_algebra.degree_one_generator("y")
         )
         assert induced(source_product) == (
-            induced(source_algebra.algebra_generator("x"))
-            * induced(source_algebra.algebra_generator("y"))
+            induced(source_algebra.degree_one_generator("x"))
+            * induced(source_algebra.degree_one_generator("y"))
         )

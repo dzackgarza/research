@@ -3,7 +3,7 @@ from dzack_research.preamble.all import ZZ, HyperbolicLattices, Lattices
 
 def test_height_one_isotropic_vectors_in_u_plus_a1_are_exactly_zero_and_four_rays() -> None:
     lattice = HyperbolicLattices(ZZ)(Lattices(ZZ)("U") + Lattices(ZZ)("A1"))
-    e, f = lattice.module_generator(0), lattice.module_generator(1)
+    e, f = lattice.basis_vector(0), lattice.basis_vector(1)
     timelike = e + f
 
     vectors = lattice.isotropic_elements_below_height(timelike, 1)
@@ -17,7 +17,7 @@ def test_height_one_isotropic_vectors_in_u_plus_a1_are_exactly_zero_and_four_ray
 
 def test_a_nontimelike_height_vector_is_refused_before_shell_enumeration() -> None:
     lattice = HyperbolicLattices(ZZ)(Lattices(ZZ)("U") + Lattices(ZZ)("A1"))
-    isotropic = lattice.module_generator(0)
+    isotropic = lattice.basis_vector(0)
 
     try:
         lattice.isotropic_elements_below_height(isotropic, 1)

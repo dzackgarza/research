@@ -1,18 +1,16 @@
 r"""The forgetful functor \(U\colon R\text{-}\mathbf{Alg}\to R\text{-}\mathbf{Mod}\).
 
 An algebra is a module equipped with a multiplication, so \(U\) is the
-identity on objects and on the maps between them: it changes which
-operations an object answers to, never the object.  An algebra built by
-``Algebras(R)(M, m)`` is a module constructed through ``Modules(R)`` on the
-generating set of \(M\), and its module operations are inherited from there.
+identity on objects: it changes which operations an object answers to, never
+the object.  An algebra built by ``Algebras(R)(M, m)`` is a module constructed
+through ``Modules(R)`` on the data of \(M\), and its module operations are
+inherited from that construction.  On a morphism \(U\) is the underlying
+linear map.
 """
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras.algebras import (
-    Algebras,
-    AlgebrasWithChosenMultiplication,
-)
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -36,26 +34,21 @@ class UnderlyingAlgebraModuleMorphism(ModuleMorphism):
     from state a bare ``Morphism`` never established.
 
     Linearity is not re-established here.  An \(R\)-algebra morphism is
-    \(R\)-linear by definition of the structure map, so the module level is
-    told the theorem rather than asked to test it.
+    \(R\)-linear by definition, so the module level is told the theorem rather
+    than asked to test it.
     """
 
     def __init__(self, parent, algebra_morphism) -> None:
         self._algebra_morphism = algebra_morphism
-        domain = parent.domain()
-        if domain.is_framed_module():
-            super().__init__(
-                parent,
-                lambda label: self._underlying_image(domain.module_generator(label)),
-                verify_linearity=False,
-            )
-            return
         super().__init__(
             parent,
             self._underlying_image,
             elementwise=True,
-            verify_linearity=False,
         )
+
+    def _elementwise_linearity_derivation(self):
+        # R-linearity is part of the defining datum of an R-algebra morphism.
+        return True
 
     def _underlying_image(self, element):
         r"""Return the image of one element under the algebra morphism."""
@@ -86,24 +79,13 @@ class _AlgebraUnderlyingModuleFunctor(Functor):
         return algebra
 
     def _apply_morphism(self, morphism):
-        r"""Return the algebra morphism read as a module morphism.
-
-        A morphism into or out of an algebra with a chosen multiplication is
-        stated as its underlying module morphism, and that map is the answer.
-        Any other algebra morphism is read as a module morphism on the framing
-        of its domain, or elementwise when the domain states none.
-        """
-        chosen = AlgebrasWithChosenMultiplication(self.base_ring())
-        match morphism:
-            case _ if morphism.domain() in chosen or morphism.codomain() in chosen:
-                return morphism.underlying_morphism()
-            case _:
-                source = self(morphism.domain())
-                target = self(morphism.codomain())
-                return UnderlyingAlgebraModuleMorphism(
-                    source.module_category().Mor(source, target),
-                    morphism,
-                )
+        r"""Return the algebra morphism read as a module morphism between the same objects."""
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        return UnderlyingAlgebraModuleMorphism(
+            source.module_category().Mor(source, target),
+            morphism,
+        )
 
     def _repr_(self):
         return f"Underlying-module functor on {self.base_ring()}-algebras"

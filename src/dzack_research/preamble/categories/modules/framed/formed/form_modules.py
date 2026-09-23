@@ -4,11 +4,11 @@ from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
     MonoCategoryConstruction,
-    _category_homset,
+    _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
@@ -19,11 +19,12 @@ from dzack_research.preamble.categories.forms.forms import (
 )
 from dzack_research.preamble.categories.modules.base_change import (
     _base_change_codomain,
+    _base_change_element,
     _base_change_scalar,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
-    _module_subobject_constructor_data,
+    _module_subobject_spanning,
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.hodge import (
@@ -39,7 +40,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _presentation_matrix,
-    _presented_module_from_morphism,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     CokernelTorsionFormModules,
@@ -76,7 +76,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
     VectorSpaces,
-    _refine_finitely_presented_torsion_module,
     _torsion_module_presented_by_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -209,7 +208,7 @@ class FormedModuleMorphism(Morphism):
         values = value_morphism.domain()
         if value_morphism.codomain() is not values:
             return False
-        # A Hom object has one identity, so this is object identity. Comparing
+        # A Mor object has one identity, so this is object identity. Comparing
         # morphisms extensionally would require extra finite-presentation data.
         return value_morphism is values.module_category().Mor(values, values).identity()
 
@@ -379,17 +378,17 @@ class FormEmbedding(FormedModuleMorphism):
         )
 
 
-class FormEmbeddingHomset(CategoricalHomset):
+class FormEmbeddingMor(CategoricalMor):
     r"""The form-preserving monomorphisms between two formed modules."""
 
     Element = FormEmbedding
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         ring = domain.base_ring()
         formed = FormModules(ring)
         if codomain.base_ring() is not ring or domain not in formed or codomain not in formed:
             raise TypeError("a form embedding requires two formed modules over one scalar ring")
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images, *, quadratic: bool | None = None):
         if isinstance(images, FormEmbedding):
@@ -428,21 +427,21 @@ class FormEmbeddingHomset(CategoricalHomset):
             for superpacket in packet.super_packets()
             if source in superpacket.C() and target in superpacket.C()
         ]
-        return [packet.Homs().Of(source, target), *inherited]
+        return [packet.Mors().Of(source, target), *inherited]
 
     def _repr_(self):
         return f"Emb_Form({self.domain()}, {self.codomain()})"
 
 
-class FormedModuleHomset(CategoricalHomset):
+class FormedModuleMor(CategoricalMor):
     Element = FormedModuleMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() != codomain.base_ring():
             raise ValueError("fixed-fiber formed morphisms require one base ring")
-        CategoricalHomset.__init__(
+        CategoricalMor.__init__(
             self,
-            hom_family,
+            mor_family,
             domain,
             codomain,
         )
@@ -495,34 +494,16 @@ class FormedModuleHomset(CategoricalHomset):
             )
         )
 
-class FormedModuleHomCategoryConstruction(HomCategoryConstruction):
+class FormedModuleMorCategoryConstruction(MorCategoryConstruction):
     def fixed_category_class(self):
-        return FormedModuleHomset
+        return FormedModuleMor
 
 
 class FormedModuleMonoCategoryConstruction(MonoCategoryConstruction):
     r"""The form-preserving monomorphisms of formed modules."""
 
     def fixed_category_class(self):
-        return FormEmbeddingHomset
-
-
-def _base_change_element(module, changed_module, ring_map, element):
-    r"""Transport one represented framed-module element along ``ring_map``.
-
-    This is the elementwise form of the scalar-extension unit on the selected
-    presentation.  It is used only to compose morphisms in different scalar
-    fibers; the public scalar-extension object remains ``changed_module``.
-    """
-
-    coefficients = module.framing_coefficients(element)
-    target_ring = changed_module.base_ring()
-    return changed_module.linear_combination(
-        {
-            label: target_ring(ring_map(coefficient))
-            for label, coefficient in coefficients.items()
-        }
-    )
+        return FormEmbeddingMor
 
 
 class FiberedFormedModuleMorphism(Morphism):
@@ -534,7 +515,7 @@ class FiberedFormedModuleMorphism(Morphism):
     ``module_morphism : S2 tensor_S1 L1 -> L2`` and
     ``value_morphism  : S2 tensor_S1 W1 -> W2``.
 
-    The active scalar-extension backend currently materializes this for the
+    The represented scalar-extension computation currently materializes this for the
     scalar-valued finite-free formed objects supported by ``FormModules(R)``'s
     ``base_change`` method.  Unsupported scalar extensions fail at object
     construction rather than being represented by a semilinear fiction.
@@ -555,6 +536,10 @@ class FiberedFormedModuleMorphism(Morphism):
             raise ValueError("the value map has the wrong target value module")
         self._module_morphism = module_morphism
         self._value_morphism = value_morphism
+        self._underlying_semilinear_morphism = parent.module_mor()._from_linearization(
+            self.ring_map(),
+            module_morphism,
+        )
         self._check_form_square()
 
     def ring_map(self):
@@ -565,6 +550,10 @@ class FiberedFormedModuleMorphism(Morphism):
 
     def module_morphism(self):
         return self._module_morphism
+
+    def underlying_semilinear_morphism(self):
+        r"""Forget the form and retain the arrow in the varying-ring module category."""
+        return self._underlying_semilinear_morphism
 
     def value_morphism(self):
         return self._value_morphism
@@ -612,13 +601,7 @@ class FiberedFormedModuleMorphism(Morphism):
 
     def _call_(self, element):
         r"""Apply the equivalent semilinear map to an element of the original source."""
-        changed_element = _base_change_element(
-            self.domain(),
-            self.base_changed_domain(),
-            self.ring_map(),
-            element,
-        )
-        return self.module_morphism()(changed_element)
+        return self.underlying_semilinear_morphism()(element)
 
     def __call__(self, element):
         return self._call_(element)
@@ -629,22 +612,19 @@ class FiberedFormedModuleMorphism(Morphism):
         if other.codomain() is not self.domain():
             raise ValueError("fibered formed morphisms are not composable")
         composite_ring_map = self.ring_map() * other.ring_map()
-        homset = other.domain().fibered_formed_homset(
+        mor = other.domain().fibered_formed_mor(
             self.codomain(), composite_ring_map
         )
 
-        direct_changed = homset.base_changed_domain()
+        direct_changed = mor.base_changed_domain()
         middle_changed = self.base_changed_domain()
-
-        module_images = {}
-        for label in other.domain().module_generating_set():
-            other_source_generator = other.base_changed_domain().module_generator(label)
-            middle_element = other.module_morphism()(other_source_generator)
-            lifted_middle = _base_change_element(
-                self.domain(), middle_changed, self.ring_map(), middle_element
-            )
-            module_images[label] = self.module_morphism()(lifted_middle)
-        module_map = direct_changed.module_category().Mor(direct_changed, self.codomain())(module_images)
+        module_semilinear = (
+            self.underlying_semilinear_morphism()
+            * other.underlying_semilinear_morphism()
+        )
+        module_map = module_semilinear.linearization()
+        if module_map.domain() is not direct_changed:
+            raise ValueError("formed scalar extension disagrees with its module owner")
 
         other_values = _represented_value_module(other.base_changed_domain())
         middle_values = _represented_value_module(self.domain())
@@ -665,10 +645,10 @@ class FiberedFormedModuleMorphism(Morphism):
             )
             value_images[label] = self.value_morphism()(lifted_value)
         value_map = direct_values.module_category().Mor(direct_values, target_values)(value_images)
-        return homset((module_map, value_map))
+        return mor((module_map, value_map))
 
 
-class FiberedFormedModuleHomset(CategoricalHomset):
+class FiberedFormedModuleMor(CategoricalMor):
     Element = FiberedFormedModuleMorphism
 
     def __init__(self, domain, codomain, ring_map) -> None:
@@ -676,13 +656,18 @@ class FiberedFormedModuleHomset(CategoricalHomset):
         target_ring = _base_change_codomain(domain, ring_map)
         if target_ring != codomain.base_ring():
             raise ValueError("the coefficient map does not land at the target base ring")
+        from dzack_research.preamble.categories.modules.fibered_modules import (
+            ModulesOverCommutativeRings,
+        )
+
         self._ring_map = ring_map
-        self._base_changed_domain = domain.base_change(ring_map)
-        # The endpoints sit over different base rings; the Hom is filed under
-        # the Hom category of the source fibre.
-        CategoricalHomset.__init__(
+        self._module_mor = ModulesOverCommutativeRings().Mor(domain, codomain)
+        self._base_changed_domain = self._module_mor.extended_domain(ring_map)
+        # The endpoints sit over different base rings; the Mor is filed under
+        # the Mor category of the source fibre.
+        CategoricalMor.__init__(
             self,
-            FormModules(domain.base_ring()).HomCategory(),
+            FormModules(domain.base_ring()).MorCategory(),
             domain,
             codomain,
         )
@@ -693,23 +678,24 @@ class FiberedFormedModuleHomset(CategoricalHomset):
     def base_changed_domain(self):
         return self._base_changed_domain
 
+    def module_mor(self):
+        r"""Return the underlying Mor in the varying-ring module category."""
+        return self._module_mor
+
     def _element_constructor_(self, datum):
         module_morphism, value_morphism = datum
         return self.element_class(self, module_morphism, value_morphism)
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism homset")
+            raise ValueError("identity is defined on an endomorphism Mor")
         if not self.ring_map().is_identity():
             raise ValueError("the fibered identity must lie over the identity ring map")
 
         changed = self.base_changed_domain()
-        module_map = changed.module_category().Mor(changed, self.domain())(
-            {
-                label: self.domain().module_generator(label)
-                for label in self.domain().module_generating_set()
-            }
-        )
+        module_map = self.module_mor().identity().linearization()
+        if module_map.domain() is not changed:
+            raise ValueError("formed identity scalar extension disagrees with its module owner")
         source_values = _represented_value_module(changed)
         target_values = _represented_value_module(self.domain())
         value_map = source_values.module_category().Mor(source_values, target_values)(
@@ -786,7 +772,7 @@ class PairedModules(OwnedParameterizedCategory):
                     (pairing(left.module_generator(pair.component(0)), right.module_generator(pair.component(1))),)
                 )
             )
-        assert pairing.parent().homset_category().is_subcategory(Modules(ring)), (
+        assert pairing.parent().mor_category().is_subcategory(Modules(ring)), (
             f"a pairing in {self} is a morphism of {Modules(ring)}; {pairing} is not one, "
             "so its tensor-product domain is not represented"
         )
@@ -938,7 +924,6 @@ class FormModules(OwnedCategoryOverBaseRing):
         _subobject_generator_images=None,
         _subobject_lift=None,
         _subobject_inclusion_factory=None,
-        _subobject_verify_linearity=True,
     ):
         r"""Equip the module classified by ``form`` with that selected form."""
         module = form.module()
@@ -952,16 +937,15 @@ class FormModules(OwnedCategoryOverBaseRing):
             _subobject_generator_images=_subobject_generator_images,
             _subobject_lift=_subobject_lift,
             _subobject_inclusion_factory=_subobject_inclusion_factory,
-            _subobject_verify_linearity=_subobject_verify_linearity,
         )
 
-    _HomCategory = FormedModuleHomCategoryConstruction
+    _MorCategory = FormedModuleMorCategoryConstruction
     _MonoCategory = FormedModuleMonoCategoryConstruction
 
     class ParentMethods:
-        def __init__(self, source_form, unformed_module, **rest) -> None:
+        def __init__(self, source_form, **rest) -> None:
+            r"""The form determines its module; the two are not independent data."""
             self._preamble_form = source_form
-            self._preamble_unformed_module = unformed_module
             super().__init__(**rest)
 
         def form(self):
@@ -986,7 +970,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def unformed_module(self):
             r"""Return the module the form was stated on: the datum this module is built on."""
-            return self._preamble_unformed_module
+            return self.form().module()
 
         def _element_of_unformed_module(self, element):
             r"""The element of :meth:`unformed_module` with the coefficients ``element`` has here.
@@ -1021,25 +1005,25 @@ class FormModules(OwnedCategoryOverBaseRing):
         def Mor(self, codomain, category=None):
             if category is None and codomain in FormModules(self.base_ring()):
                 return FormModules(self.base_ring()).Mor(self, codomain)
-            return _category_homset(category, self, codomain)
+            return _category_mor_parent(category, self, codomain)
 
         def Mono(self, codomain):
             r"""Return the form-preserving monomorphisms into ``codomain``."""
             return FormModules(self.base_ring()).Mono(self, codomain)
 
-        def formed_hom(self, module_morphism, value_morphism):
+        def formed_mor(self, module_morphism, value_morphism):
             r"""Construct the general fixed-fiber formed morphism ``(f,h)``."""
             return self.Mor(module_morphism.codomain())(
                 (module_morphism, value_morphism)
             )
 
-        def fibered_formed_homset(self, codomain, ring_map):
+        def fibered_formed_mor(self, codomain, ring_map):
             r"""Return formed morphisms from this module to ``codomain`` over ``ring_map``."""
-            return FiberedFormedModuleHomset(self, codomain, ring_map)
+            return FiberedFormedModuleMor(self, codomain, ring_map)
 
-        def fibered_formed_hom(self, codomain, ring_map, module_morphism, value_morphism):
+        def fibered_formed_mor(self, codomain, ring_map, module_morphism, value_morphism):
             r"""Construct a formed morphism over a coefficient-ring map."""
-            return self.fibered_formed_homset(codomain, ring_map)(
+            return self.fibered_formed_mor(codomain, ring_map)(
                 (module_morphism, value_morphism)
             )
 
@@ -1228,9 +1212,14 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [FormModules(self.base_ring())]
 
-    _HomCategory = FormedModuleHomCategoryConstruction
+    _MorCategory = FormedModuleMorCategoryConstruction
 
     class ParentMethods:
+        def algebraic_correlation_morphism(self):
+            r"""Return ``b^flat : M -> Hom_R(M,R)`` for this scalar-valued bilinear form."""
+            injective = self in FormModules(self.base_ring()).Nondegenerate()
+            return _algebraic_correlation_morphism(self, injective=injective)
+
         def q(self, vector):
             r"""Return the quadratic form \(q(v)=b(v,v)\) of the bilinear form.
 
@@ -1300,10 +1289,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
 
                 return unformed.equip_quadratic_form(ring, half_norm)
 
-            def algebraic_correlation_morphism(self):
-
-                return _algebraic_correlation_morphism(self)
-
             def correlation_isomorphism(self):
 
                 return _correlation_isomorphism(self)
@@ -1365,7 +1350,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 _subobject_generator_images=None,
                 _subobject_lift=None,
                 _subobject_inclusion_factory=None,
-                _subobject_verify_linearity=True,
                 _extra_categories=(),
             ):
                 r"""Equip ``module`` with the bilinear form represented by ``gram``.
@@ -1374,7 +1358,9 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 every chosen relation must pair to zero with every chosen generator.
                 """
                 if module not in Modules(self.base_ring()).FinitelyPresented().Torsion():
-                    module = _refine_finitely_presented_torsion_module(module)
+                    raise ValueError(
+                        "a torsion form is stated on a finitely presented module constructed in the torsion category"
+                    )
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)
@@ -1388,7 +1374,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     _subobject_generator_images=_subobject_generator_images,
                     _subobject_lift=_subobject_lift,
                     _subobject_inclusion_factory=_subobject_inclusion_factory,
-                    _subobject_verify_linearity=_subobject_verify_linearity,
                 )
                 return formed
 
@@ -1665,7 +1650,7 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [FormModules(self.base_ring())]
 
-    _HomCategory = FormedModuleHomCategoryConstruction
+    _MorCategory = FormedModuleMorCategoryConstruction
 
     class ParentMethods:
         def q(self, element):
@@ -1731,7 +1716,6 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 _subobject_generator_images=None,
                 _subobject_lift=None,
                 _subobject_inclusion_factory=None,
-                _subobject_verify_linearity=True,
                 _extra_categories=(),
             ):
                 r"""Equip ``module`` with ``q(x)=x^T gram x`` valued in ``value_module``.
@@ -1741,7 +1725,9 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 exactly the conditions for the quadratic map to descend to the quotient.
                 """
                 if module not in Modules(self.base_ring()).FinitelyPresented().Torsion():
-                    module = _refine_finitely_presented_torsion_module(module)
+                    raise ValueError(
+                        "a torsion quadratic form is stated on a finitely presented module constructed in the torsion category"
+                    )
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)
@@ -1757,7 +1743,6 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     _subobject_generator_images=_subobject_generator_images,
                     _subobject_lift=_subobject_lift,
                     _subobject_inclusion_factory=_subobject_inclusion_factory,
-                    _subobject_verify_linearity=_subobject_verify_linearity,
                 )
                 return formed
 
@@ -2031,10 +2016,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U")
 
-    def additional_condition(self):
-        r"""None: a free form module is exactly a form module that is framed free."""
-        return None
-
     @classmethod
     def _repr_object_names(cls):
         return "free form modules"
@@ -2045,6 +2026,27 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         base_change = _formed_module_base_change
+
+        @cached_method
+        def correlation_morphism(self):
+            r"""Return the algebraic correlation ``M -> Hom_R(M,R)``."""
+            injective = self in FormModules(self.base_ring()).Nondegenerate()
+            return _algebraic_correlation_morphism(self, injective=injective)
+
+        def is_nondegenerate(self) -> bool:
+            r"""Return whether the algebraic correlation is injective."""
+            injective = self in FormModules(self.base_ring()).Nondegenerate()
+            return _algebraic_correlation_morphism(
+                self, injective=injective
+            ).is_injective()
+
+        def is_unimodular(self) -> bool:
+            r"""Return whether the algebraic correlation is an isomorphism."""
+            injective = self in FormModules(self.base_ring()).Nondegenerate()
+            correlation = _algebraic_correlation_morphism(
+                self, injective=injective
+            )
+            return correlation.is_injective() and correlation.is_surjective()
 
         def subobject_on(self, module_generating_set):
             r"""Return the span equipped with the pulled-back form."""
@@ -2080,29 +2082,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 return self.base_ring().free_module(self.module_generating_set())
 
             @cached_method
-            def correlation_morphism(self):
-                if self.value_module() is not self.base_ring():
-                    raise TypeError("the correlation morphism to the dual requires a scalar-valued form")
-                dual = self.dual_module()
-                images = {}
-                for label in self.module_generating_set():
-                    source_generator = self.module_generator(label)
-                    images[label] = dual.linear_combination(
-                        {
-                            dual_label: coefficient
-                            for dual_label in dual.module_generating_set()
-                            if (
-                                coefficient := self.b(
-                                    source_generator,
-                                    self.module_generator(dual_label),
-                                )
-                            )
-                        }
-                    )
-
-                return self.module_category().Mor(self, dual)(images)
-
-            @cached_method
             def radical(self):
                 r"""Return ``rad(M)=ker(M -> M^vee)`` as an actual module subobject.
 
@@ -2113,7 +2092,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 """
                 if self.value_module() is not self.base_ring():
                     raise TypeError("the radical via correlation requires a scalar-valued form")
-                return self.correlation_morphism().kernel()
+                injective = self in FormModules(self.base_ring()).Nondegenerate()
+                return _algebraic_correlation_morphism(
+                    self, injective=injective
+                ).kernel()
 
             @cached_method
             def radical_quotient(self):
@@ -2139,23 +2121,18 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 )
                 return self.gram_matrix().determinant()
 
-            def is_nondegenerate(self) -> bool:
-                r"""Whether the Gram determinant is nonzero, for values in an integral domain."""
-                value = self.value_module()
-                assert value in OwnedRings() and _engine_ring(value).is_integral_domain(), (
-                    "nondegeneracy by the Gram determinant needs values in an integral domain"
-                )
-                return self.determinant() != 0
-
-            def is_unimodular(self) -> bool:
-                r"""Return whether the correlation morphism is an isomorphism."""
-                assert self.value_module() is self.base_ring()
-                return bool(self.determinant().is_unit())
-
             def scale_submodule(self):
                 assert self.value_module() is self.base_ring()
 
-                return _engine_ring(self.base_ring()).ideal(self.gram_tensor().list())
+                gram = self.gram_tensor()
+                rank = int(self.module_rank())
+                return self.base_ring().ideal(
+                    *(
+                        gram[row, column]
+                        for row in range(rank)
+                        for column in range(rank)
+                    )
+                )
 
 
 def _form_module(
@@ -2167,21 +2144,20 @@ def _form_module(
     _subobject_generator_images=None,
     _subobject_lift=None,
     _subobject_inclusion_factory=None,
-    _subobject_verify_linearity=True,
 ):
-    r"""Return the same represented module construction equipped with ``form``.
+    r"""Equip the exact represented module carrying ``form`` with that form.
 
-    The result remains a module object; it is not a wrapper around an
-    ``underlying`` module.  A distinct represented parent is used so that two
-    different selected forms on isomorphic modules remain distinct structured
-    objects.
+    The module owner chooses the realization of the stronger object.  The
+    formed layer supplies only its selected form and, for a subobject, the
+    retained inclusion datum.  A distinct structured parent still represents
+    each choice of form, but this owner does not rebuild the module's framing
+    or presentation.
     """
 
     if not (_is_bilinear_form(form) or _is_quadratic_form(form)):
         raise TypeError("a formed module is classified by a bilinear or quadratic form")
     module = form.module()
     base_ring = module.base_ring()
-    labels = module.module_generating_set()
     categories = [FormModules(base_ring)]
     if module in VectorSpaces(base_ring):
         categories.append(VectorSpaces(base_ring))
@@ -2205,45 +2181,42 @@ def _form_module(
         categories.append(QuadraticFormModules(base_ring))
     categories.extend(tuple(_extra_categories))
     construction_data = dict(_extra_construction_data or {})
-    construction_data.update({
-        "source_form": form,
-        "unformed_module": module,
-    })
-    common = {
-        "_subobject_ambient": _subobject_ambient,
-        "_subobject_generator_images": _subobject_generator_images,
-        "_subobject_lift": _subobject_lift,
-        "_subobject_inclusion_factory": _subobject_inclusion_factory,
-        "_subobject_verify_linearity": _subobject_verify_linearity,
-        "_extra_categories": tuple(categories),
-        "_extra_construction_data": construction_data,
-    }
-    if is_free:
-        return base_ring._fresh_free_module_on(labels, **common)
-    if is_presented:
-        return _presented_module_from_morphism(module.presentation(), **common)
-    raise TypeError(
-        "the active formed-module constructor requires a framed free or chosen finitely presented module"
-    )
+    construction_data["source_form"] = form
+    match (_subobject_ambient, _subobject_inclusion_factory):
+        case (None, None):
+            pass
+        case _:
+            from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+
+            categories.append(ModuleSubobjects(base_ring))
+            match _subobject_ambient:
+                case None:
+                    pass
+                case ambient:
+                    categories.append(Modules(base_ring).Subobjects(ambient))
+            construction_data.update(
+                subobject_ambient=_subobject_ambient,
+                subobject_generator_images=_subobject_generator_images,
+                subobject_lift=_subobject_lift,
+                subobject_inclusion_factory=_subobject_inclusion_factory,
+            )
+    return module._module_with_structure(tuple(categories), construction_data)
 
 
 @cached_function(key=lambda module, basis: (id(module), basis))
 def _form_subobject_spanning(module, basis):
     r"""Return the canonical formed subobject on a finite span basis."""
 
-    labels, embedded, lift = _module_subobject_constructor_data(module, basis)
-    free_source = module.base_ring().free_module(labels)
-    preliminary = free_source.Mono(module)(embedded)
-
-    def inclusion_factory(source):
-        return source.Mono(module)(embedded)
+    subobject = _module_subobject_spanning(module, basis)
+    construction = subobject.module_subobject_construction()
+    restricted = module._formed_form().pullback(subobject.inclusion())
 
     return FormModules(module.base_ring())(
-        module._formed_form().pullback(preliminary),
-        _subobject_ambient=module,
-        _subobject_generator_images=embedded,
-        _subobject_lift=lift,
-        _subobject_inclusion_factory=inclusion_factory,
+        restricted,
+        _subobject_ambient=construction.ambient_module(),
+        _subobject_generator_images=construction.generator_images(),
+        _subobject_lift=construction.selected_lift(),
+        _subobject_inclusion_factory=construction.inclusion_factory(),
     )
 
 
@@ -2272,5 +2245,3 @@ def _quadratic_form(module, value_module, datum):
         else module.quadratic_map(value_module, datum)
     )
     return FormModules(module.base_ring())(form)
-
-

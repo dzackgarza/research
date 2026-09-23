@@ -19,7 +19,7 @@ def _polynomial_algebra_descent(variable):
     datum = cover.glue_algebras(
         local_algebras,
         {(0, 1): transition},
-    )
+    ).gluing_datum()
     return scheme, cover, datum
 
 
@@ -31,12 +31,12 @@ def test_noncyclic_polynomial_algebra_descent_has_one_general_relative_spectrum(
     assert relative.arrow().codomain() is scheme
     assert datum.sheaf().relative_spectrum() is relative
     for index in cover.atlas():
-        assert glued.chart(index).coordinate_algebra() is datum.local_algebra(index)
+        assert glued.gluing_datum().chart(index).coordinate_algebra() is datum.local_algebra(index)
         algebra_map = datum.local_algebra(index).algebra_structure_morphism()
         expected = cover.open(index).inclusion() * Algebras(
             algebra_map.domain().base_ring()
         ).Associative().Unital().Commutative().spectrum()(algebra_map)
-        assert relative.arrow() * glued.chart_embedding(index) == expected
+        assert relative.arrow() * glued.gluing_datum().chart_embedding(index) == expected
 
 
 def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -> None:
@@ -44,7 +44,7 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
     _same_scheme, target_cover, target = _polynomial_algebra_descent("w")
     assert source_cover.ambient_scheme().coordinate_algebra() is target_cover.ambient_scheme().coordinate_algebra()
 
-    # Rebuild the target datum on the source cover so the algebra-descent Hom
+    # Rebuild the target datum on the source cover so the algebra-descent Mor
     # has one literal cover owner, while retaining a genuinely different local algebra.
     target_local = tuple(
         source_cover.open(index).coordinate_algebra().polynomial_ring("w")
@@ -65,7 +65,7 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
     target = source_cover.glue_algebras(
         target_local,
         {(0, 1): target_transition},
-    )
+    ).gluing_datum()
     local_maps = tuple(
         source.local_algebra(index).Mor(target.local_algebra(index))(
             {"z": target.local_algebra(index).algebra_generator("w") ** 2}
@@ -92,12 +92,13 @@ def test_relative_spec_is_contravariant_on_a_nonidentity_algebra_descent_map() -
 
 
 def test_relative_spectrum_atlas_refinement_keeps_the_same_map_to_the_base() -> None:
-    from dzack_research.preamble.categories.schemes.gluing import FiniteAtlasRefinement
+    from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
     from dzack_research.preamble.categories.schemes.schemes import Schemes
 
     scheme, _cover, datum = _polynomial_algebra_descent("z")
     relative = datum.relative_spectrum()
-    coarse = relative.arrow().domain().gluing_datum()
+    total_space = relative.arrow().domain()
+    coarse = total_space.finite_affine_atlas()
     left = coarse.chart(0)
     right = coarse.chart(1)
     overlap = coarse.overlap(0, 1)
@@ -121,17 +122,20 @@ def test_relative_spectrum_atlas_refinement_keeps_the_same_map_to_the_base() -> 
         right_forward,
         right_inverse,
     )
-    fine = schemes.glue_affine_atlas(
+    fine = FiniteAffineAtlases(total_space)(
         (left, right, overlap),
         (
             coarse.transition_between(0, 1),
             left_to_overlap,
             right_to_overlap,
         ),
-    ).gluing_datum()
-    refinement = FiniteAtlasRefinement(
-        coarse,
-        fine,
+        (
+            coarse.chart_embedding(0),
+            coarse.chart_embedding(1),
+            coarse.chart_embedding(0) * overlap.inclusion(),
+        ),
+    )
+    refinement = FiniteAffineAtlases(total_space).Mor(fine, coarse)(
         (0, 1, 0),
         (
             left.categorical_identity_morphism(),
@@ -142,8 +146,7 @@ def test_relative_spectrum_atlas_refinement_keeps_the_same_map_to_the_base() -> 
 
     comparison = refinement.comparison_morphism()
     refined_structure = relative.arrow() * comparison
-    assert comparison.domain() is fine.scheme()
-    assert comparison.codomain() is coarse.scheme()
+    assert comparison == total_space.categorical_identity_morphism()
     assert refined_structure.codomain() is scheme
     for fine_index in fine.chart_indices():
         coarse_index = refinement.coarse_index(fine_index)

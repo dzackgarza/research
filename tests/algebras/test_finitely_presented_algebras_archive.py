@@ -28,6 +28,7 @@ def test_archived_finite_presentation_retains_ring_relations_and_generators() ->
     assert relations.value(relations.index_set()[0]) == x * y
 
     projection = algebra.algebra_presentation_morphism()
+    assert projection is algebra.algebra_presentation_morphism()
     assert projection.domain() is presentation
     assert projection.codomain() is algebra
     assert projection(x * y) == algebra.zero()

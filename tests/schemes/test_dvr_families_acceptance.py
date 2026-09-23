@@ -11,28 +11,28 @@ def _nodal_dvr_family():
         y = relative.algebra_generator("y")
         return (x * y - relative.base_ring().localization_map()(t),)
 
-    return local.affine_equation_family(("x", "y"), equation).as_dvr_family()
+    return local.affine_equation_family(("x", "y"), equation)
 
 
 def test_xy_equals_t_has_generic_special_and_completed_fibres_from_one_parameter_map() -> None:
     family = _nodal_dvr_family()
     generic = family.generic_fiber()
     special = family.special_fiber()
-    completed = family.completed_total_space()
+    completed = family.base_change_to_completion()
 
-    assert generic.left_projection().codomain() is family.family().total_space()
-    assert special.left_projection().codomain() is family.family().total_space()
-    assert completed.left_projection().codomain() is family.family().total_space()
-    assert family.completion_parameter_map().domain() is family.parameter_algebra()
-    assert family.special_parameter_map().domain() is family.parameter_algebra()
-    assert family.generic_parameter_map().domain() is family.parameter_algebra()
+    assert generic.left_projection().codomain() is family
+    assert special.left_projection().codomain() is family
+    assert completed.left_projection().codomain() is family
+    assert family.scheme_base_ring().adic_completion(family.scheme_base_ring().maximal_ideal()).completion_map().domain() is family.scheme_base_ring()
+    assert family.scheme_base_ring().residue_map().domain() is family.scheme_base_ring()
+    assert family.scheme_base_ring().fraction_field_map().domain() is family.scheme_base_ring()
 
 
 def test_direct_and_completion_first_special_fibres_are_compared_by_actual_maps() -> None:
     family = _nodal_dvr_family()
     comparison = family.special_fiber_comparison()
-    direct = comparison.direct_special_fiber()
-    completed = comparison.completed_special_fiber()
+    direct = comparison.codomain()
+    completed = comparison.domain()
 
     assert comparison.forward().domain() is completed
     assert comparison.forward().codomain() is direct
@@ -44,8 +44,8 @@ def test_direct_and_completion_first_special_fibres_are_compared_by_actual_maps(
 
 def test_completion_precision_does_not_enter_the_exact_special_parameter_map() -> None:
     family = _nodal_dvr_family()
-    residue = family.special_parameter_map()
-    completion = family.completion()
+    residue = family.scheme_base_ring().residue_map()
+    completion = family.scheme_base_ring().adic_completion(family.scheme_base_ring().maximal_ideal())
 
     assert completion.source_residue_map() == residue
     assert completion.computation_precision() > 0
@@ -59,6 +59,6 @@ def test_scalar_killed_family_detects_nonflatness_over_the_same_dvr() -> None:
     def killed_parameter(relative):
         return (relative.base_ring().localization_map()(t),)
 
-    nonflat = local.affine_equation_family(("z",), killed_parameter).as_dvr_family()
-    assert not nonflat.family().is_flat()
-    assert nonflat.special_parameter_map().domain() is local
+    nonflat = local.affine_equation_family(("z",), killed_parameter)
+    assert not nonflat.is_flat()
+    assert nonflat.scheme_base_ring().residue_map().domain() is local

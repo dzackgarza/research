@@ -58,7 +58,6 @@ def test_presented_and_direct_action_zmod6_have_an_explicit_intertwining_isomorp
         lambda element: presented.scalar_multiple(
             ZZ(element.underlying_element()), generator
         ),
-        verify_linearity=False,
     )
     comparison = Modules(ZZ).Core().Mor(presented, acted)(forward, inverse)
 
@@ -101,7 +100,9 @@ def test_infinite_free_module_keeps_finite_support_and_the_same_action_morphism(
     assert module.scalar_action()(ZZ(4))(element) == module.scalar_multiple(
         ZZ(4), element
     )
-    assert module.scalar_multiple(ZZ(4), element).monomial_coefficients() == {
+    assert dict(
+        module.scalar_multiple(ZZ(4), element).monomial_coefficients().items()
+    ) == {
         NN(2): ZZ(12),
         NN(100): ZZ(-4),
     }
@@ -272,7 +273,7 @@ def test_free_duality_retains_the_selected_framing_and_action() -> None:
     )
 
 
-def test_presented_duality_is_the_internal_hom_into_the_regular_module() -> None:
+def test_presented_duality_is_the_internal_mor_into_the_regular_module() -> None:
     module = _cyclic_six_from_presentation()
     dual = module.dual_module()
 
@@ -283,7 +284,7 @@ def test_presented_duality_is_the_internal_hom_into_the_regular_module() -> None
     assert dual.presentation_object().arrow() is dual.presentation()
 
 
-def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
+def test_mor_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
     ring = QQ.matrix_space(2)
     additive = AdditiveGroups().AdditiveCommutative()
     endomorphisms = additive.End(ring)

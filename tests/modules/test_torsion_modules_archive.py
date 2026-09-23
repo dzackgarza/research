@@ -1,5 +1,7 @@
 r"""Archive reconciliation for the torsion-module category."""
 
+import pytest
+
 from dzack_research.preamble.all import (
     CC,
     QQ,
@@ -38,6 +40,15 @@ def test_archive_torsion_category_does_not_reclassify_a_free_module() -> None:
 
     assert not free.is_torsion()
     assert free not in TorsionModules(ZZ)
+
+
+def test_explicit_torsion_constructor_rejects_a_presentation_with_a_free_summand() -> None:
+    relations = ZZ.free_module(0)
+    generators = ZZ.free_module(1)
+    presentation = relations.module_category().Mor(relations, generators).zero()
+
+    with pytest.raises(ValueError, match="nonzero free summand"):
+        FinitelyPresentedTorsionModules(ZZ)(presentation)
 
 
 def test_cyclic_torsion_construction_uses_the_same_diagonal_presentation_over_a_field() -> None:

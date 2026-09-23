@@ -29,7 +29,7 @@ def test_the_setwise_stabilizer_of_an_isotropic_line_holds_maps_the_pointwise_on
     so a test that confused the two would fail here.
     """
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
-    isotropic = lattice.module_generator(0)
+    isotropic = lattice.basis_vector(0)
     line = isotropic.sublattice()
     embedding = line.inclusion()
     orthogonal_group = lattice.O()
@@ -82,7 +82,7 @@ def test_the_stabilizer_of_a_root_holds_exactly_the_expected_involution() -> Non
     admit all three.
     """
     root_lattice = Lattices(ZZ)("A2")
-    root = root_lattice.module_generator(0)
+    root = root_lattice.basis_vector(0)
     orthogonal_group = root_lattice.O()
     stabilizer = orthogonal_group.stabilizer(root)
 

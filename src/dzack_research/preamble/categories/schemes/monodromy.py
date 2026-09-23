@@ -22,7 +22,6 @@ created without its own comparison theorem.
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
-from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
@@ -35,7 +34,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.complete_intersections import (
     ProjectiveCompleteIntersections,
 )
-from dzack_research.preamble.categories.schemes.ringed_spaces import SheafObjects
 from dzack_research.preamble.categories.schemes.schemes import (
     ProjectiveSpaces,
     Schemes,
@@ -46,10 +44,8 @@ class PointedAnalyticFundamentalGroup(SageObject):
     r"""A represented pointed ``pi_1`` with its actual group and base point."""
 
     def __init__(self, space, base_point, group, generator) -> None:
-        if base_point.manifold() is not space:
-            raise ValueError("a pointed fundamental group requires a point of its space")
-        if generator.parent() is not group:
-            raise ValueError("the loop generator belongs to the selected fundamental group")
+        assert base_point.manifold() is space, "a pointed fundamental group requires a point of its space"
+        assert generator.parent() is group, "the loop generator belongs to the selected fundamental group"
         self._space = space
         self._base_point = base_point
         self._group = group
@@ -72,126 +68,7 @@ class PointedAnalyticFundamentalGroup(SageObject):
 
 
 
-class IntegralLocalSystem(Parent):
-    r"""A pointed integral local system represented by a ``pi_1`` action.
 
-    On a connected pointed space, local systems of finitely generated modules
-    are equivalent to representations of the pointed fundamental group.  This
-    object retains both sides of that equivalence: the actual stalk module and
-    the actual action functor ``B pi_1 -> FormMod_ZZ``.
-    """
-
-    def __init__(self, base, pointed_fundamental_group, stalk_module, action_functor) -> None:
-        if pointed_fundamental_group.space() is not base:
-            raise ValueError("the local system fundamental group belongs to a different base")
-        if action_functor.group() is not pointed_fundamental_group.group():
-            raise ValueError("the monodromy action has the wrong fundamental group")
-        if action_functor.underlying_object() is not stalk_module:
-            raise ValueError("the monodromy action must select the local-system stalk")
-        self._base = base
-        self._pointed_fundamental_group = pointed_fundamental_group
-        self._stalk_module = stalk_module
-        self._action_functor = action_functor
-        Parent.__init__(self, category=SheafObjects(base))
-
-    def base_space(self):
-        return self._base
-
-    def base_point(self):
-        return self._pointed_fundamental_group.base_point()
-
-    def pointed_fundamental_group(self):
-        return self._pointed_fundamental_group
-
-    def stalk(self, point):
-        assert point is self.base_point(), (
-            "this selected local-system model materializes the stalk at its chosen base point"
-        )
-        return self._stalk_module
-
-    def monodromy_representation(self):
-        return self._action_functor
-
-    def is_locally_constant(self) -> bool:
-        return True
-
-    def rank(self):
-        return self._stalk_module.module_rank()
-
-    def monodromy_of(self, loop):
-        group = self.pointed_fundamental_group().group()
-        loop = group(loop)
-        classifying = self.monodromy_representation().domain()
-        point = classifying.an_object()
-        return self.monodromy_representation()(classifying.Mor(point, point)(loop))
-
-    def _repr_(self) -> str:
-        return f"Integral local system of rank {self.rank()} on {self.base_space()} with stalk {self.stalk()}"
-
-
-
-class HigherDirectImageSheaf(Parent):
-    r"""A selected ``R^i pi_* ZZ`` with its smooth-stratum local system."""
-
-    def __init__(self, family_data, degree, smooth_stratum, local_system) -> None:
-        self._family_data = family_data
-        self._degree = int(degree)
-        self._smooth_stratum = smooth_stratum
-        self._local_system = local_system
-        if local_system.base_space() is not smooth_stratum:
-            raise ValueError("the higher-direct-image restriction lives on the selected smooth stratum")
-        Parent.__init__(self, category=SheafObjects(smooth_stratum))
-
-    def family_data(self):
-        return self._family_data
-
-    def family_morphism(self):
-        return self.family_data().family_morphism()
-
-    def cohomological_degree(self):
-        return self._degree
-
-    def coefficients(self):
-        return _own_ring(SageZZ)
-
-    def smooth_stratum(self):
-        return self._smooth_stratum
-
-    def restriction_to_smooth_stratum(self):
-        return self._local_system
-
-    def stalk(self, point):
-        return self.restriction_to_smooth_stratum().stalk(point)
-
-    def stalk_to_fiber_comparison(self, point):
-        r"""Topological proper-base-change comparison at the selected smooth point."""
-        assert point is self.restriction_to_smooth_stratum().base_point(), (
-            "the selected proper-base-change comparison is materialized at the chosen smooth base point"
-        )
-        if not self.family_data().proper_base_change_hypotheses_hold(point):
-            raise ValueError("topological proper base change hypotheses do not hold at this point")
-        stalk = self.stalk(point)
-        fiber = self.family_data().fiber_cohomology(point)
-        forward = stalk.Mor(fiber).identity() if stalk is fiber else stalk.Mor(fiber)(
-            stalk.module_category().Mor(stalk, fiber)(
-                {
-                    label: fiber.module_generator(label)
-                    for label in stalk.module_generating_set()
-                }
-            )
-        )
-        inverse = fiber.Mor(stalk).identity() if stalk is fiber else fiber.Mor(stalk)(
-            fiber.module_category().Mor(fiber, stalk)(
-                {
-                    label: stalk.module_generator(label)
-                    for label in fiber.module_generating_set()
-                }
-            )
-        )
-        return stalk.module_category().Core().Mor(stalk, fiber)(forward, inverse)
-
-    def _repr_(self) -> str:
-        return f"R^{self.cohomological_degree()} of {self.family_morphism()} on {self.smooth_stratum()}"
 
 
 
@@ -210,7 +87,7 @@ class LegendreMonodromyFamily(SageObject):
         z = section_ring.algebra_generator("z")
         scalar_t = section_ring.algebra_structure_morphism()(t)
         equation = y**2 * z - x * (x - z) * (x - scalar_t * z)
-        family = ProjectiveCompleteIntersections(ambient.scheme_base_ring())(ambient.closed_subscheme(equation))
+        family = ProjectiveCompleteIntersections(ambient.scheme_base_ring())(ambient, equation)
 
         at_zero = parameter.Mor(rationals)({"t": rationals.zero()})
         at_half = parameter.Mor(rationals)({"t": rationals(1) / rationals(2)})
@@ -222,13 +99,10 @@ class LegendreMonodromyFamily(SageObject):
             name="Legendre_parameter_line",
             coordinate_names=("t",),
         )
-        analytic_t = analytic_line.atlas()["standard"].coordinate(0)
-        smooth_stratum = ComplexManifolds().open_submanifold(
-            analytic_line,
-            "Legendre_punctured_disc",
-            (abs(analytic_t) < 0.75, analytic_t != 0),
+        smooth_stratum = ComplexManifolds().disc(
+            0.75, "Legendre_punctured_disc", containing_manifold=analytic_line,
+            punctured=True,
         )
-        smooth_stratum._preamble_disc_radius = 0.75
         base_point = smooth_stratum.point((0.5,))
 
         pi_one = OwnedGroups().Free(1, names="gamma0")
@@ -258,17 +132,16 @@ class LegendreMonodromyFamily(SageObject):
         )
         forward = cohomology.Mor(cohomology)(forward_linear)
         inverse = cohomology.Mor(cohomology)(inverse_linear)
+        generator = next(iter(pi_one.group_generators()))
 
         def loop_action(loop):
             loop = pi_one(loop)
             result = cohomology.Mor(cohomology).identity()
-            for letter in loop.Tietze():
-                if letter == 1:
-                    result = forward * result
-                elif letter == -1:
-                    result = inverse * result
-                else:
-                    raise ArithmeticError("the punctured-disc fundamental group has one signed generator")
+            for letter in pi_one.reduced_word(loop):
+                assert letter == generator or letter == ~generator, (
+                    "the punctured-disc fundamental group has one signed generator"
+                )
+                result = (forward if letter == generator else inverse) * result
             return result
 
         action_functor = GroupActionFunctor(
@@ -277,19 +150,12 @@ class LegendreMonodromyFamily(SageObject):
             cohomology,
             loop_action,
         )
-        local_system = IntegralLocalSystem(
-            smooth_stratum,
-            pointed_pi_one,
-            cohomology,
-            action_functor,
-        )
-        higher_direct_image = HigherDirectImageSheaf(
-            self,
-            1,
-            smooth_stratum,
-            local_system,
-        )
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
+        local_system = Cat().Mor(
+            action_functor.domain(),
+            action_functor.codomain(),
+        ).object(action_functor)
         self._parameter_algebra = parameter
         self._family = family
         self._singular_fiber = singular_fiber
@@ -301,7 +167,6 @@ class LegendreMonodromyFamily(SageObject):
         self._positive_monodromy = forward
         self._negative_monodromy = inverse
         self._local_system = local_system
-        self._higher_direct_image = higher_direct_image
 
     def parameter_algebra(self):
         return self._parameter_algebra
@@ -337,13 +202,17 @@ class LegendreMonodromyFamily(SageObject):
         return self._fiber_h1
 
     def higher_direct_image(self):
-        return self._higher_direct_image
+        r"""The represented restriction of ``R^1 pi_* ZZ`` to the smooth stratum."""
+        return self.local_system()
+
+    def cohomological_degree(self):
+        return _own_ring(SageZZ).one()
 
     def local_system(self):
         return self._local_system
 
     def monodromy_representation(self):
-        return self.local_system().monodromy_representation()
+        return self.local_system().functor()
 
     def positive_monodromy(self):
         return self._positive_monodromy
@@ -365,21 +234,38 @@ class LegendreMonodromyFamily(SageObject):
         )
 
     def stalk_to_fiber_comparison(self):
-        return self.higher_direct_image().stalk_to_fiber_comparison(self.base_point())
+        r"""Topological proper-base-change comparison at the selected smooth point."""
+        point = self.base_point()
+        assert self.proper_base_change_hypotheses_hold(point), (
+            "topological proper base change requires a proper family over the selected smooth point"
+        )
+        representation = self.monodromy_representation()
+        stalk = representation(representation.domain().an_object())
+        fiber = self.fiber_cohomology(point)
+        forward = stalk.Mor(fiber).identity() if stalk is fiber else stalk.Mor(fiber)(
+            stalk.module_category().Mor(stalk, fiber)(
+                {
+                    label: fiber.module_generator(label)
+                    for label in stalk.module_generating_set()
+                }
+            )
+        )
+        inverse = fiber.Mor(stalk).identity() if stalk is fiber else fiber.Mor(stalk)(
+            fiber.module_category().Mor(fiber, stalk)(
+                {
+                    label: stalk.module_generator(label)
+                    for label in fiber.module_generating_set()
+                }
+            )
+        )
+        return stalk.module_category().Core().Mor(stalk, fiber)(forward, inverse)
 
     def _repr_(self) -> str:
         return f"Legendre monodromy family over {self.parameter_algebra()} with smooth stratum {self.smooth_stratum()}"
 
 
 
-def legendre_monodromy_family():
-    return LegendreMonodromyFamily()
-
-
 __all__ = [
-    "HigherDirectImageSheaf",
-    "IntegralLocalSystem",
     "LegendreMonodromyFamily",
     "PointedAnalyticFundamentalGroup",
-    "legendre_monodromy_family",
 ]

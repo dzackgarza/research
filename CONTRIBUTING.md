@@ -452,7 +452,7 @@ Reuse a universal construction through a structural functor only with the corres
 Adding a leaf should ordinarily require changes to that leaf and its immediate mathematical dependencies.
 A generic owner importing the new descendant indicates a missing construction interface.
 Read the [construction and inheritance proposal](references/preamble-architecture.md) for current examples and the proposed repair.
-The [architecture prerequisite](TODO.md#architecture-before-dependent-implementation) sets their implementation order.
+The [architecture prerequisite](TODO.md#constructor-and-admission-foundations) sets their implementation order.
 
 For review, follow one public constructor through its defining datum, one nonidentity structural-functor image, and one inherited operation.
 Include the resulting objects, morphism endpoints, and defining equations in the mathematical example.
@@ -1126,8 +1126,8 @@ from the breadth of this specification.
   existing owned object, construct the weaker object first and retain that exact
   object as part of the stronger object's defining data.  The stronger object
   is then the weaker object together with additional selected datum and the
-  canonical structural maps.  An accessor such as `underlying_set()`,
-  `unformed_module()`, `base_scheme()`, `source_object()`, or `forget_*()` exposes
+  structural maps required by the mathematics. An accessor such as `underlying_set()`,
+  `unformed_module()`, `base_scheme()`, or `source_object()` exposes
   that already-constructed object/map; it does not synthesize a fresh isomorphic
   object from dimensions, labels, coordinates, category membership, or other
   metadata.
@@ -1153,41 +1153,40 @@ from the breadth of this specification.
   existed but was bypassed by the public surface.
 - **Correct Example:** construct `M = FreeModuleOn(R,S)` once; construct the
   lattice from `(M,b)`; `unformed_module()` returns `M`; every generic module
-  operation is delegated or transported through that same `M` and the canonical
-  comparison maps.
+  operation uses the module structure established from that same `M` by the
+  category construction chain. `CON-16` forbids a second module implementation
+  connected back to `M` by invented identification maps.
 
-### `OWN-16`: Forgetting or adding structure is represented by actual structural maps
+### `OWN-16`: Thread added structure through the retained datum
 
-- **Rule:** If a stronger object is represented by a distinct parent from its
-  weaker object, forgetting and re-equipping structure are real owned morphisms
-  between those parents.  Their endpoints are the actual stored objects from
-  `OWN-15`, and when the construction is carrier-preserving the maps are the
-  canonical mutually inverse identifications of those represented carriers.
-  Do not replace them by an identity endomorphism of the stronger parent merely
-  because the elements use the same coordinates internally.
+- **Rule:** `CON-16` governs every structure-adding constructor. Construct
+  `X=(M,d)` through the immediate category owner on the data of the exact owned
+  `M`. Inherited module operations act on `X` through that construction chain;
+  they do not forward to a separately implemented module. An accessor explicitly
+  required by the mathematical contract, such as `unformed_module()`, returns
+  the received `M`. Distinct choices of `d` remain distinct structured objects.
 
-  Returning `self` from an underlying-object accessor is correct only when the
-  mathematical construction intentionally uses the same owned parent as both
-  objects and no distinct choice of added structure must remain observable.
-  A category refinement alone does not prove this.  If two different forms,
-  actions, gradings, framings, or presentations on the same weaker object must
-  be distinguishable, then the stronger objects cannot both forget to themselves.
+  Element coercion is established by the same owner and respects addition,
+  scalar action and the selected structure. Do not create a public
+  `equip_*`/`forget_*` or `from_*`/`to_*` identification pair to connect a
+  duplicated realization to the input. Renaming that pair or hiding it behind
+  a construction record does not repair the duplication.
 
-  Generic algorithms on the weaker theory compose with these structural maps;
-  they do not duplicate the algorithm on the stronger parent.  Specialized
-  algorithms may improve computation but must agree with the transported generic
-  operation.
-- **Rationale:** Treating forgetful structure as an identity of the wrong parent
-  erases the construction history and makes it impossible to state correctly
-  which object a generic map or theorem acts on.
-- **Observed defect:** lattice `forget_form_morphism()` and
-  `equip_form_morphism()` were both implemented as the identity on the lattice,
-  even though the constructor retained a separate free module and the generic
-  `FormedModules` implementation already models the two canonical maps correctly.
-- **Correct Example:** a formed copy `L` of `M` stores `M`; `forget : L -> M`
-  and `equip : M -> L` transport the selected generators/elements and are inverse
-  module isomorphisms.  The form lives on `L`; generic module operations may be
-  computed on `M` and transported through these maps.
+  This rule does not remove actual mathematical arrows: kernel inclusions,
+  quotient projections, framing epimorphisms, localization maps, scalar-change
+  units/counits and a genuinely selected isomorphism remain owned morphisms with
+  their exact endpoints. A forgetful functor is supplied by its category; the
+  retained-input accessor is not a second implementation of that functor.
+- **Rationale:** The input datum and inherited structure have one authority.
+  Wrapper-identification machinery introduces another authority without adding
+  mathematics; erasing genuine universal maps loses mathematics instead.
+- **Violation Example:** build a copy of `M`, give it a form, and recover `M`
+  through `equip_form_morphism` and `forget_form_morphism`; or replace a kernel
+  inclusion by element coercion because both objects admit the same coordinates.
+- **Correct Example:** construct two formed modules `(M,b)` and `(M,c)` through
+  `FormedModules`; both retain `M`, each inherits its module operations, and
+  each evaluates its own form. For a submodule `i:N -> M`, the induced form is
+  `b` composed with `i` tensor `i`; the actual inclusion `i` is retained.
 
 ### `OWN-17`: Accessors expose established structure; they never complete construction retroactively
 
@@ -1355,6 +1354,80 @@ from the breadth of this specification.
   its source and target when no closed formula is represented; a free object may
   display `Free_R(S)` together with a useful view of `S`.
 
+### `OWN-22`: Admission has one authority and no disabling switch
+
+- **Rule:** Every object and morphism reaches its category's canonical admission
+  boundary. Admission checks endpoints, base maps and defining equations at
+  their owning mathematical level. Known false data are rejected. Decidable
+  obligations are decided; genuinely undecidable obligations remain explicit
+  `Unknown` hypotheses under `CON-16`, rather than being claimed as theorems.
+  Finiteness alone does not imply decidability without an effective decision
+  procedure. A theorem-backed construction supplies the actual defining data
+  and the hypotheses under which its laws follow through the same owner.
+
+  For each required law, distinguish a decision, a derivation from the supplied
+  construction, and an unresolved hypothesis. A decision names an applicable
+  procedure; a derivation names the construction, its actual endpoints and the
+  premises that imply the equation. A caller-supplied label such as "linear",
+  "assumed" or "theorem-backed" establishes none of these. Conditional data may
+  remain meaningful under explicit hypotheses, but every dependent conclusion
+  retains those hypotheses. A consumer requiring an established law must obtain
+  its evidence or fail at that frontier; placement alone cannot discharge it.
+  Composition, scalar change and lazy realization preserve the dependencies of
+  the laws they use. Refuted premises are rejected, never changed to `Unknown`.
+
+  `verify_linearity=False`, `check=False`, a trusted constructor, a direct
+  concrete-class allocation, or a renamed internal equivalent may not turn off
+  admission. Moving the switch into a private helper is the same bypass.
+  Conversely, replacing every bypass with exhaustive enumeration is not a
+  repair: unframed and infinite inputs retain their mathematical domain.
+- **Observed defect:** `ModuleMorphism` and its public elementwise construction
+  accept `verify_linearity=False`; product/equalizer maps propagate that switch.
+  A universal formula can justify those maps, but a boolean cannot carry that
+  justification or establish endpoint compatibility.
+- **Correct Example:** projections from a module product are admitted through
+  the product's universal construction and the module morphism owner. On a
+  one-dimensional module over GF(3), the constant nonzero function is rejected
+  as nonlinear by every route; the zero map is admitted. No construction flag
+  makes the former a linear map.
+  On Z, the function n -> n^2 preserves zero but is not additive. Over GF(4),
+  Frobenius is additive but not GF(4)-linear. An infinite product projection is
+  linear by its componentwise construction, without enumeration. These require
+  different admission evidence; passing the finite-field specimen alone cannot
+  establish the general contract.
+
+### `OWN-23`: Lazy realization fixes all defining choices before exposure
+
+- **Rule:** Distinguish a mathematical datum from its evaluated representation.
+  Construction must fix the selected objects, endpoints, base morphisms,
+  equations and law hypotheses. A lazy realization may evaluate exactly that
+  datum later, with its codomain already fixed. Access order cannot select a
+  new framing, a new presentation, a different source, or different placement.
+
+  A selected framing is the epimorphism `Free_R(S) -> M`, including its
+  specified source and generator images and its spanning obligation. A stored
+  callable without those contracts is not a framing. A delayed realization
+  of those fixed data is allowed when constructing its enriched morphism
+  eagerly would recursively demand another framed morphism space. Admission
+  of the module's datum and realization of that morphism must be stratified at
+  their common owner; `_install_*` helpers and post-allocation refinement are
+  not alternative public constructors.
+
+  Settle mutually recursive constructor obligations together before their
+  consumers rely on either one. Follow actual initialization and accessor calls
+  and identify the already-fixed datum on which each step depends. The chain
+  must terminate without demanding its own enriched framing or proving a law
+  from the very placement that law is needed to admit. Preserve this argument
+  when adding a new realization; a cache or delayed callback alone does not
+  establish well-founded construction.
+- **Rationale:** Requiring eager evaluation of every enriched map produces a
+  constructor cycle; accepting arbitrary delayed choices produces invalid
+  objects. Neither follows from the mathematical definition.
+- **Correct Example:** a framed module and a morphism space retain their selected
+  framing sources; requesting generators, the framing arrow and a nested morphism
+  space in different orders yields the same sources, maps and operations.
+  A nonsurjective map is not a framing merely because it supplies some elements.
+
 ### Construction-chain review protocol
 
 For any constructor that adds structure, review the construction chain before
@@ -1375,12 +1448,13 @@ new static checker, certificate, registry, or generated compliance report.
    grading, form, action, inclusion/projection, and source/codomain data should
    be created once and thereafter referenced or transported.  Search for parallel
    fields and parallel constructor calls that can drift.
-5. **Inspect the forgetful direction.** `underlying_*`, `unformed_*`, `forget_*`,
+5. **Inspect the forgetful direction.** `underlying_*`, `unformed_*`, category-owned forgetful functors,
    restrictions, and generic inherited operations must land in/use the actual
    weaker object.  Returning `self` requires a mathematical reason, not shared
    coordinates or class ancestry.
-6. **Inspect the structure-adding direction.** The unit/equip/inclusion/comparison
-   map must have the actual weaker and stronger objects as endpoints.  Test a
+6. **Inspect the structure-adding direction.** Each required unit, inclusion, projection or comparison
+   map must have the endpoints specified by its universal property. Do not
+   invent an identification pair for structure added through `CON-16`.  Test a
    nontrivial element/map, not only identities or dimensions.
 7. **Inspect generic methods at the weakest owner.** A descendant should normally
    inherit/delegate module/set/group/etc. operations.  An override needs genuinely
@@ -4485,11 +4559,11 @@ When a mathematical object is defined by applying an existing construction and t
 
 **Bad:** construct a lattice from ad hoc coordinate/index fields, then have `module_generating_set()`, `module_generators()`, or `unformed_module()` manufacture module-like views post hoc.  This duplicates `Free_R(S)`, permits the synthetic view to drift from the object that should define it, and hides whether the stronger object really lies over the claimed weaker one.
 
-**Preferred:** construct `M = Free_R(S)` first, then construct the lattice/form/module refinement from the actual object `M` and the additional form datum.  Store `M` (or the canonical forgetful image/morphism supplied by the categorical construction) as part of the structured object's defining data.  Every generic module operation delegates to or transports along that same object/map.  `module_generating_set()` returns `M.module_generating_set()`; forgetting structure returns `M`; the structure/forgetful morphisms identify the two represented carriers.  Do not keep a second indexing set, generator family, presentation, or coordinate parent merely to make inherited methods appear to work.
+**Preferred:** construct `M = Free_R(S)` first, then construct the lattice/form/module refinement from the actual object `M` and the additional form datum.  Retain `M` as defining data and establish inherited module operations through the immediate category constructor. `unformed_module()` exposes `M`; generator operations use the same selected module datum. `OWN-16` and `CON-16` prohibit constructing a second module connected by public identification maps.  Do not keep a second indexing set, generator family, presentation, or coordinate parent merely to make inherited methods appear to work.
 
-The same rule applies to free objects, quotients, localizations, scalar restriction/extension, formed objects, group actions, graded objects, subobjects, and functor images: if `X` is mathematically constructed as `G(Y, datum)`, then `Y` and the canonical structural map(s) are first-class construction data.  An accessor exposes those data; it does not recreate an isomorphic substitute from metadata.
+The same rule applies to free objects, quotients, localizations, scalar restriction/extension, formed objects, group actions, graded objects, subobjects, and functor images: if `X` is mathematically constructed as `G(Y, datum)`, then `Y` and the structural maps required by that construction are first-class data.  An accessor exposes those data; it does not recreate an isomorphic substitute from metadata.
 
-A stronger object may of course use a distinct parent so that two choices of added structure remain distinct.  That does not make its underlying object fictitious: the distinct structured parent must still retain and reuse the actual weaker object and the canonical comparison maps.
+A stronger object may of course use a distinct parent so that two choices of added structure remain distinct.  That does not make its underlying object fictitious: the distinct structured parent must still retain the actual weaker datum and inherit its operations through the construction chain (`OWN-16`).
 
 #### `STY-191`: Comment or docstring teaches standard mathematics -> state the convention, cite the source, delete the lesson
 
@@ -4917,7 +4991,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `API-02`: Coordinates Are Framing Data; Coordinate Objects Keep Their Mathematical Type
 
-- **Rule**: Coordinates of an element are exposed through the chosen framing as the owned `module_coefficients` map.
+- **Rule**: Coordinates of an element are exposed through the chosen framing as the owning module's `framing_coefficients(element)` map.
   When an algorithm genuinely requires an ordered coordinate array, use the owned object whose mathematics describes that array.
   A coordinate vector may be a typed tensor when only variance/index data is intended.  A matrix of a linear map between finitely generated framed free modules is the corresponding Hom element
   `Hom_R(F_R(S), F_R(T))`, framed by the matrix units indexed by `T × S`; it is not replaced by a tensor or backend matrix.
@@ -4929,7 +5003,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: `M.coordinate_vector(x)` returning `M_engine.V().coordinate_vector(...)`; representing `Hom_R(R^n,R^m)` by `tensor.matrix(...)`; passing a raw Sage matrix downstream to reconstruct a morphism later.
 
-- **Correct Example**: Use `module_coefficients(x, M)` for the finite support of an element.  Use a typed tensor for a genuine tensor coordinate array.  For finite framed free modules, `MatrixSpace(R,m,n)` is literally `Hom_R(F_R([n]),F_R([m]))`, and a matrix element is that module morphism itself.
+- **Correct Example**: Use `M.framing_coefficients(x)` for the finite support of an element.  Use a typed tensor for a genuine tensor coordinate array.  For finite framed free modules, `MatrixSpace(R,m,n)` is literally `Hom_R(F_R([n]),F_R([m]))`, and a matrix element is that module morphism itself.
 
 #### `API-06`: The Session Namespace and Literal Constructors Are Owned
 
@@ -4972,7 +5046,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: A lattice element prints as `[1, 2]`; a quotient element prints only its Smith-coordinate vector; a generic module printer applies integer sign tricks that assume an ordered coefficient ring.
 
-- **Correct Example**: An element of `Free_R(S)` renders as its finite formal `R`-linear combination of the actual symbols in `S`, using each coefficient/symbol's own representation.  Explicit `module_coefficients(...)` exposes coordinates when the researcher asks for them.
+- **Correct Example**: An element of `Free_R(S)` renders as its finite formal `R`-linear combination of the actual symbols in `S`, using each coefficient/symbol's own representation.  Explicit `M.framing_coefficients(x)` exposes coordinates when the researcher asks for them.
 
 #### `API-10`: Public Mathematical Signatures Are Closed and Precise
 
@@ -5015,7 +5089,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Adding `M.gen(i)` to an owned free module because one lattice invariant still calls Sage's free-module API; adding `M.submodule(vectors)` because a discriminant-form routine expects Sage submodules.
 
-- **Correct Example**: Rewrite the consumers to use `module_generator`, `module_generating_set`, `framing_morphism`, `subobject_on`, `module_coefficients`, `presentation_matrix`, `invariant_factors`, `smith_form_module_generators`, and `invariant_factor_form` as the mathematics requires.
+- **Correct Example**: Rewrite the consumers to use `module_generator`, `module_generating_set`, `framing_morphism`, `subobject_on`, `framing_coefficients`, `presentation_matrix`, `invariant_factors`, `smith_form_module_generators`, and `invariant_factor_form` as the mathematics requires.
 
 #### `API-04`: Chosen Presentations Survive Engine Normalization
 
@@ -5200,14 +5274,14 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `CON-16`: One Constructor Entry per Category; Every Other Route Computes Its Datum
 
-- **Rule**: A category has one constructor, and it takes the datum that defines its objects (`CON-01`).  Every other way of building an object -- a convenience on presented data, a functor image, an object adopted from the engine, a universal construction -- computes that datum from its own inputs and calls the one constructor.  An input object a convenience received (the module a multiplication was stated on, the module a form or a group action equips) may be retained as data and returned by the accessor the specification names, `unformed_module()`; the object never exposes an identification map back to it.  `equip_*` and `forget_*` morphisms, `*_source_module` accessors and `from_*`/`to_*` identifications are the tell that construction was duplicated rather than routed.  A data subcategory `XWithChosenY` is admissible only when `Y` is a choice beyond the defining datum of `X` -- a presentation of a module, a basis of a free object; the defining datum itself never names a subcategory.  A constructor's admission check decides on finitary data and otherwise records `Unknown` as the hypothesis the object carries; it never asserts a finite framing as the only route.
+- **Rule**: A category has one constructor, and it takes the datum that defines its objects (`CON-01`).  Every other way of building an object -- a convenience on presented data, a functor image, an object adopted from the engine, a universal construction -- computes that datum from its own inputs and calls the one constructor.  An input object that is defining data (the module a multiplication was stated on, the module a form or a group action equips) is retained as that exact datum and returned by the accessor the specification names, `unformed_module()`. No identification map is introduced merely to connect a separately implemented copy back to that input. `equip_*` and `forget_*` morphisms, `*_source_module` accessors and `from_*`/`to_*` identifications used for that purpose are the tell that construction was duplicated rather than routed. A free functor's generating module remains distinct from its full underlying module; its genuine source datum and unit are required, as are the actual universal maps and chosen isomorphisms of `OWN-16` and `OWN-20`.  A data subcategory `XWithChosenY` is admissible only when `Y` is a choice beyond the defining datum of `X` -- a presentation of a module, a basis of a free object; the defining datum itself never names a subcategory.  A constructor's admission check decides when the represented data supply an effective decision procedure and otherwise records `Unknown` as the hypothesis the object carries; it never asserts a finite framing as the only route.
   An \(R\)-algebra is the instance that fixed this rule: its datum is an additive group \(A\) with a biadditive multiplication together with \(\rho\in\operatorname{Hom}_{\mathbf{Rings}}(R, Z(A))\), \(Z(A)\) the centroid of \(A\) (the additive endomorphisms commuting with left and right multiplication, Mathlib `CentroidHom`), which is the centre when \(A\) is unital associative.  No unit, associativity or commutativity is assumed; those are axioms above the node, and a Lie bracket is the multiplication of its algebra.  Over commutative \(R\), which is the case this tree works in, this is nothing more than an \(R\)-module \(M\) with an \(R\)-bilinear \(m\colon M\otimes_R M\to M\): the datum \((M, m)\) already is the structure, \(\rho\) is the scalar action of \(M\), and the textbook definition of a Lie algebra over a field carries over unchanged.  The centroid is only the name of where \(\rho\) lands; it is not machinery the construction needs.
 
 - **Rationale**: Two constructors for one category produce two kinds of object with different capabilities, and consumers start routing by which one they hold.  A copy of the input needs a map back to the input, and that map needs a name, and the name names nothing in mathematics.  The specification writes `form.unformed_module() is module` and `Modules(R[G])(M, action)`: the retained input is data, the structured object is built on that data, and elements pass between them by coercion.
 
 - **Violation Example**: `Algebras(R)(M, m)` building a second module and retaining `M` as a "multiplication source" with `from_multiplication_source`/`to_multiplication_source`; `AlgebrasWithChosenMultiplication` as a subcategory of `Algebras(R)`, with the algebra Hom, `product` and the unit routing on membership in it; `forget_form_morphism`/`equip_form_morphism` on formed modules and lattices and `forget_action_morphism`/`equip_action_morphism` on group modules; a structure-map constructor (`_own_algebra`) that exists only for engine-adopted rings; a multiplicativity check that asserts a finite module framing.
 
-- **Correct Example**: `Algebras(R)(A, m)` as the one entry, with \(A\) an \(R\)-module and \(m\) an \(R\)-bilinear multiplication, producing \(\rho\colon R\to Z(A)\) from \(m\) (for \(R\) over itself, \(A=R\) as the free rank-one module with its multiplication, so \(\rho=\mathrm{id}_R\)); `M.algebra_from_multiplication(m)` calling that entry; `M.equip_bilinear_form(R, b)` calling the form-module entry with `(M, b)`, whose result answers `unformed_module()` with `M`; a Sage polynomial ring constructed as its module with its own multiplication through the same entry; a Hom admitting a linear map by asking the module Hom whether `f m_A = m_B (f (x) f)`, and carrying `Unknown` as its hypothesis when that is not decidable.
+- **Correct Example**: `Algebras(R)(A, m)` as the one entry, with \(A\) an \(R\)-module and \(m\) an \(R\)-bilinear multiplication, producing \(\rho\colon R\to Z(A)\) from the scalar action of \(A\) (for \(R\) over itself, \(A=R\) as the free rank-one module with its multiplication, so \(\rho=\mathrm{id}_R\)); `M.algebra_from_multiplication(m)` calling that entry; `M.equip_bilinear_form(R, b)` calling the form-module entry with `(M, b)`, whose result answers `unformed_module()` with `M`; a Sage polynomial ring constructed as its module with its own multiplication through the same entry; an algebra Mor admitting a linear map by asking the module Mor whether `f composed with m_A = m_B composed with (f tensor f)`, and carrying `Unknown` as its hypothesis when that is not decidable.
 
 * * *
 
@@ -6159,13 +6233,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
 - **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its unfinished constructions, input contracts, priorities, dependencies, acceptance criteria, and active file reservations.
-  Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; if the generated document may be stale, run `just preamble-megadoc` and then read the generated output.
+  Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; when `DEV-58` permits execution, regenerate a stale document with `just preamble-megadoc` and read it. While execution is suspended, read the existing reference as an index, inspect the affected live source, and retain regeneration under terminal T.
   Always reuse existing constructions when they are mathematically correct and principled.
   When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.
 
 - **Rationale**: Prevents duplicate definitions, competing APIs, already-recorded remediation from being reintroduced, and siloed mathematical implementations while ensuring global functorial coherence.
 
-- **Violation Example**: Implementing an ad-hoc direct sum or orthogonal quotient exclusively for lattices without checking the megadoc for the general construction; adding a new tuple-valued framing helper while `TODO.md` already records the owned-family remediation; recreating a known architecture problem already catalogued in [the organization findings](TODO.md#organization-findings).
+- **Violation Example**: Implementing an ad-hoc direct sum or orthogonal quotient exclusively for lattices without checking the megadoc for the general construction; adding a new tuple-valued framing helper while `TODO.md` already records the owned-family remediation; recreating a known architecture problem already catalogued in [the organization findings](TODO.md#common-categorical-authority-and-public-boundaries).
 
 - **Correct Example**: Read the generated construction inventory and active remediation queues first; reuse the existing tensor product, Hom, subobject, or functor when it already expresses the mathematics, and add a missing operation at the category where its definition belongs rather than at the first concrete consumer that needs it.
 
@@ -6200,7 +6274,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: Asserting `M.coordinate_vector(x) == M._engine.coordinate_vector(x)`, `hasattr(M, "gen")`, or that an owned subobject is a Sage submodule.
 
-- **Correct Example**: Assert that `module_coefficients(x, M)` gives the coefficients in the selected framing, that a presentation matrix is the expected tensor, that a computed kernel comes with the correct owned inclusion, or that an invariant-factor normalization is connected to the original module by the claimed isomorphism.
+- **Correct Example**: Assert that `M.framing_coefficients(x)` gives the coefficients in the selected framing, that a presentation matrix is the expected tensor, that a computed kernel comes with the correct owned inclusion, or that an invariant-factor normalization is connected to the original module by the claimed isomorphism.
 
 #### `DEV-07`: Ownership Migrations Rewrite Their Consumers; They Do Not Preserve the Leak
 
@@ -6212,7 +6286,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: After replacing a reclassed or backend-element free module by a genuinely owned module, keep `.gen()`, `.basis_matrix()`, and `.coordinate_vector()` because Internal Hom, free resolutions, and lattice invariants still use those names.
 
-- **Correct Example**: Rewrite those consumers to `module_generator`, `module_coefficients`, morphism tensors, `presentation_matrix`, `subobject_on`, and the documented private engine crossing where a specialized Smith computation is genuinely irreducible; then delete the old engine spellings from the public surface.
+- **Correct Example**: Rewrite those consumers to `module_generator`, `framing_coefficients`, morphism tensors, `presentation_matrix`, `subobject_on`, and the documented private engine crossing where a specialized Smith computation is genuinely irreducible; then delete the old engine spellings from the public surface.
 
 #### `DEV-08`: Promote Durable Repository Memory into Concrete Policy Codes
 
@@ -6814,9 +6888,12 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   concluding the suspension applies. A worker that treats the suspension as permanent has no
   way to reach T, and the repository accumulates unexecuted constructions for as long as that
   lasts; on 2026-09-13 it had banked sixty of them after the condition was already satisfied.
-  Closing a node does not reopen the condition, and neither does discovering a further repair.
+  The current required source nodes decide whether the suspension applies.
+  A new source-remediation workstream explicitly placed before T suspends execution
+  until that workstream closes. Failures discovered while executing T stay in its
+  repair phase and are re-executed there; they do not restart the pre-T programme.
 
-- **Rule**: Terminal T is the final verification phase of the preamble programme, after the required architecture, mathematical implementation, integration, and transfer work in `TODO.md`. While that work remains open, run no preamble tests, QC gates, Sage executions, or notebooks. Write and commit the construction and the mathematical specimens that would falsify it, explicitly unverified. References in other contribution policies to testing a work unit do not override this phase rule.
+- **Rule**: Terminal T is the final verification phase of the preamble programme, after the required pre-T architecture, mathematical implementation, integration, and transfer nodes in `TODO.md`. While those source nodes remain open, run no preamble tests, QC gates, Sage executions, or notebooks. The explicitly post-T audit and typing nodes do not suspend terminal execution. Write and commit the construction and the mathematical specimens that would falsify it, explicitly unverified. References in other contribution policies to testing a work unit do not override this phase rule.
 
   Retain the two narrow operational exceptions: one short import check of a merged tree, and provisioning a tool required by a selected task. Neither is mathematical verification or permission to run a suite. Source review and checking a prose diff remain applicable. At T, execute the required mathematical evidence on the integrated architecture, diagnose actual failures, and establish the failed propositions at their owners. Do not restart repeated verification cycles against intermediate architectures.
 
@@ -6878,8 +6955,8 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   complaint without copying their live status or surrendering the owned API's
   obligation. Filing or recording a complaint never completes its repair.
 
-  **Maintenance:** use the shared-checkout transaction mutex for edits and commits
-  of COMPLAINTS, as for TODO. Preserve concurrent entries. On delivery, compare
+  **Maintenance:** follow the single-worker transaction rule in `DEV-61` for
+  COMPLAINTS and TODO. Reread before editing and preserve other changes. On delivery, compare
   the fix with the complaint's full mathematical requirement and its affected
   paths, then remove the resolved entry in that commit or an immediate companion.
   For partial delivery, retain only the unresolved need, evidence and links.
@@ -6924,30 +7001,31 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   starting new authoring elsewhere.
 
 - **Correct Example**: select the next unblocked `TODO.md` node, complete and
-  commit it to its stated acceptance, release it, and only then claim the
+  commit it with the queue reconciliation, and then select the
   following node; when a prior front is already open, finish the one closest
   to acceptance first.
 
-#### `DEV-61`: Author Only Under a Live TODO Claim
+#### `DEV-61`: Reconcile the Single-Worker Queue with Delivery
 
-- **Rule**: All authoring requires a live claim in the `TODO.md` claim ledger.
-  Before claiming, reconcile the ledger against actual repository state so the
-  claim reflects work already delivered or in flight; reconcile again at
-  release. Batch-committing a body of work authored without a claim is
-  prohibited.
+- **Rule:** The current repository workflow has one worker and no claim ledger.
+  Select a ready TODO node, reread its owners and acceptance, and deliver its
+  remaining delta. Reconcile that node and its complaint in the implementation
+  commit. Selection, claiming and release do not merit separate commits.
+  Before changing TODO or COMPLAINTS, reread the live file and preserve edits
+  not made in the current task. A clean `HEAD` is the target's checkpoint;
+  conflicting uncommitted work must be resolved with its owner.
 
-- **Rationale**: The claim ledger is the only surface by which concurrent
-  workers avoid duplicate or colliding construction. Unclaimed authoring is
-  invisible until it lands as an unreviewable batch, and a stale ledger routes
-  the next worker into work that is already done or already owned.
-
-- **Violation Example**: author a many-file change with no ledger entry and
-  commit it as one batch; claim a node from a ledger last reconciled before
-  another worker's release landed.
-
-- **Correct Example**: reconcile the ledger against the repository, record the
-  claim for the selected node, author and commit under that claim, then
-  release the claim with the delivered state reflected in the ledger.
+  A coordination mutex is required only if concurrent work is explicitly
+  introduced with an agreed shared-checkout protocol. Do not invent a lock or
+  reservation system for this single-worker queue. Existing foreign reservations
+  or changes are preserved until their ownership is resolved.
+- **Rationale:** A queue selects mathematical work. In a single-worker stream,
+  a claim ledger adds a competing state transition without protecting a handoff.
+- **Violation Example:** commit a claim, perform no construction, then commit its
+  release; reject authorized work because a removed claim ledger has no entry.
+- **Correct Example:** deliver a constructor and its falsifying specimens,
+  remove only its discharged TODO obligations in the same commit, and leave
+  execution evidence owed under terminal T.
 
 #### `DEV-62`: An Empirical Claim About an Engine Has Its Measurement or Is Written as a Hypothesis
 
@@ -6991,8 +7069,102 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: the schemes agent's report naming the axiom-descent mechanism with its source line, which became a ruling in `AGENTS.md`, a row in `TRAPS.md`, and the removal of every base-restriction edge; a placement left abstract with its missing construction recorded in `COMPLAINTS.md` and scheduled in `TODO.md`.
 
+#### `DEV-66`: Keep Bulk Scratch Repository-Local
+
+- **Rule**: Repository work does not create full-tree reproductions, worktrees,
+  virtual environments, build trees, or bulk caches under global `/tmp` or
+  `~/.cache`. Use the ignored repository `.tmp/` surface for genuinely
+  necessary scratch and prefer a minimal specimen to a repository copy. Redirect
+  tools whose default temp/cache roots are host-global before executing them.
+
+- **Rationale**: External scratch outlives the worker that created it and makes
+  unrelated repositories pay the disk cost. Multiple 270 MB reproduction trees
+  accumulated under `/tmp` on a nearly full host even though the active
+  mathematical unit did not need duplicate repositories.
+
+- **Violation Example**: create `/tmp/research-owner-iso-tests` as a full
+  checkout just to obtain a clean test surface; leave a package/build cache under
+  `~/.cache` because the tool chose that default.
+
+- **Correct Example**: reproduce the failure with the smallest specimen in
+  `.tmp/repro-name/`, point `TMPDIR` or the tool cache there, and delete that
+  disposable state when the unit is done.
+
 
 * * *
+
+#### `DEV-67`: Closure Preserves the Entire Mathematical Burden
+
+- **Rule:** A source node closes only after its complete stated family has been
+  inspected, the required construction and affected consumers are delivered,
+  and distinguishing mathematical specimens are committed. The commit names
+  the owner, entry routes, coefficient/hypothesis regimes and unexecuted proof.
+  Before T this is source delivery, not a claim that the specimens pass.
+
+  Derive that family from the original requirement and source declarations,
+  constructors, overrides, exports and consuming calls before comparing the
+  delivered routes. Search hits and the changed-file list do not define it.
+  Match each requirement clause to the route and regime that discharge it;
+  distinguish definition, representation and effective computation. A few
+  positive and negative specimens separate particular wrong constructions but
+  do not prove an "every" claim. Record coverage in the delivery commit, with
+  concrete residue in the existing open row rather than a new compliance ledger.
+
+  The producer and the consumers of its changed contract close together.
+  Admission, private access, placement, inherited operations and ownership
+  defects on that route block its delivery even when a later sweep has the
+  same topic. Those sweeps own only independently untouched residue. A later
+  consumer must preserve the producer's established contract and its separating
+  specimens. If a counterexample defeats a shared repair, reopen the affected
+  obligation and inspect the other uses of that repair method before proceeding;
+  do not reopen unrelated work or patch only the reported spelling.
+
+  Required residue stays in the DAG with its full objects, maps and hypotheses.
+  An aggregate cannot close while any required descendant remains open. A split
+  transfers every obligation and redirects the affected edges before delivery;
+  recording a new child is not satisfying it. At T, execute the banked specimens
+  against the repaired source, including inherited operations and alternative
+  construction routes. A previous green run cannot certify a later revision.
+
+  For a finite audit, fix its source population and obligations at entry, cover
+  them once, then review each repair and its affected uses. Completed coverage
+  remains valid for unchanged, unaffected routes. New relevant findings remain
+  required repairs; neither a repair nor a newly consulted skill restarts the
+  whole-repository pass or adds an unrelated audit lens. Close when the stated
+  coverage is complete, its findings are repaired, and affected proof has been
+  re-established under the current verification phase. Repeated rediscovery of
+  the same cause requires a repair at its shared owner, not another broad scan.
+- **Violation Example:** close category membership after changing only schemes
+  while functor/arrow categories retain the same predicate; close provenance
+  after renaming fields; close an aggregate because its repairs have new names.
+- **Correct Example:** review every affected membership owner, preserve genuine
+  element-of-set predicates, construct category placement at admission, and
+  bank both a placed object and a similarly represented wrongly placed object.
+  Retain the runtime obligation until terminal execution distinguishes them.
+
+#### `DEV-68`: Repair the Semantic Operation, Not Its Search Signature
+
+- **Rule:** A search result is an inspection boundary, not an acceptance test.
+  Follow each implicated operation through helpers, inherited methods, adapters
+  and its next consumer. A repair changes the authority, data flow or
+  mathematical behavior that caused the defect. Moving code, renaming a field,
+  replacing `try` with `match`, deleting an API, or adding a category label is
+  insufficient unless that semantic obligation is discharged.
+
+  Preserve supported mathematics and engine realizations. A removed operation's
+  required behavior must have a usable owner and migrated consumers. A genuine
+  abstract declaration is not implementation of a concrete promised operation.
+  Retain specialization algorithms when their theorem supplies genuinely stronger
+  computation; reuse the highest suitable maintained operation for standard
+  algorithms (`OWN-08`, `ENG-06`). Policy does not ban iteration needed to adapt
+  representations, nor does one low-level engine call constitute delegation of
+  an algorithm still implemented locally.
+- **Correct Example:** replace local kernel orchestration with the maintained
+  kernel/presentation operation and recover its inclusion and factorization;
+  an owned free module of the right rank is not a kernel over a ring with torsion.
+  Replace a placement probe by correct construction, and demonstrate that the
+  inherited operation works on that object rather than just disappearing from
+  the search results.
 
 ### 13. Notebook, REPL & Mathematical Example Style (`NB-*`)
 

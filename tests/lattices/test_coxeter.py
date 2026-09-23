@@ -1,6 +1,7 @@
 from sage.all import Infinity
 
 from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices, finite_ordered_set
+from dzack_research.preamble.categories.graph_categories import LabelledGraphs
 
 ARCHIVE_RECONCILIATIONS = (
     {
@@ -28,6 +29,7 @@ def test_a2_root_realization_gives_single_bond_and_elliptic_diagram() -> None:
     diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
     vertices = diagram.index_set()
 
+    assert diagram in LabelledGraphs()
     assert diagram.is_rooted()
     assert diagram.coxeter_matrix()[vertices[0], vertices[1]] == 3
     assert diagram.graph().num_edges() == 1

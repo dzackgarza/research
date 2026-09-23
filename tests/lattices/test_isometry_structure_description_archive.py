@@ -15,5 +15,5 @@ def test_rank_one_root_lattice_has_cyclic_order_two_orthogonal_group() -> None:
 def test_indefinite_orthogonal_group_does_not_claim_a_finite_gap_description() -> None:
     lattice = Lattices(ZZ)("U")
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         lattice.O().structure_description()

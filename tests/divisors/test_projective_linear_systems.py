@@ -29,7 +29,6 @@ def test_selected_linear_system_with_base_point_retains_actual_open_domain() -> 
     morphism = system.associated_morphism()
 
     assert system.line_bundle() is bundle
-    assert system.projective_linear_system_construction().line_bundle() is bundle
     assert system.selected_section_space().dimension() == 2
     assert system.selected_section_space() is system.section_embedding().domain()
     for old_name in (
@@ -40,6 +39,7 @@ def test_selected_linear_system_with_base_point_retains_actual_open_domain() -> 
     ):
         assert old_name not in system.__dict__
     assert system.projective_dimension() == 1
+    assert system.variable_names() == ProjectiveSpaces(QQ)(1).variable_names()
     assert base_locus.inclusion().codomain() is plane
     assert not base_locus.is_empty()
     assert not system.is_basepoint_free()
@@ -47,6 +47,26 @@ def test_selected_linear_system_with_base_point_retains_actual_open_domain() -> 
     assert domain is not plane
     assert morphism.domain() is domain
     assert morphism.codomain() is system
+
+
+def test_selected_linear_system_is_lines_via_dual_quotient_projectivization() -> None:
+    plane = ProjectiveSpaces(QQ)(2)
+    bundle = plane.O(1)
+    x0, x1, _x2 = _coordinate_sections(bundle)
+    system = bundle.linear_system((x0, x1))
+    selected = system.selected_section_space()
+    dual = selected.dual_module()
+    quotient_family = system.quotient_projectivization()
+    quotient_total = quotient_family.arrow().domain()
+    comparison = system.quotient_projectivization_comparison()
+
+    assert quotient_total.projectivization_module() is dual
+    assert quotient_total.projectivization_source_sheaf().module() is dual
+    assert dual is not selected
+    assert comparison.forward().domain() is quotient_total
+    assert comparison.forward().codomain() is system
+    assert comparison.inverse().domain() is system
+    assert comparison.inverse().codomain() is quotient_total
 
 
 def test_complete_hyperplane_system_has_empty_base_locus_and_everywhere_defined_map() -> None:

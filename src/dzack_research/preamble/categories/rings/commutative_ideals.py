@@ -1,6 +1,8 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
-from sage.matrix.constructor import matrix
+from sage.categories.category import Category
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -8,7 +10,6 @@ from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_bas
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presented_module_from_morphism
 from dzack_research.preamble.categories.modules.localizations import (
     _localized_module,
 )
@@ -16,6 +17,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
@@ -26,33 +28,20 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class _CommutativeIdealConstruction:
-    r"""The selected generators, engine realization, and localization source of an ideal."""
+def _engine_commutative_ideal(ideal):
+    r"""Lower one owned commutative ideal to its selected computation model.
 
-    def __init__(
-        self,
-        *,
-        ideal_generators=None,
-        engine_ideal=None,
-        localization_source_ideal=None,
-    ) -> None:
-        self._ideal_generators = (
-            None if ideal_generators is None else tuple(ideal_generators)
-        )
-        self._engine_ideal = engine_ideal
-        self._localization_source_ideal = localization_source_ideal
-
-    def ideal_generators(self):
-        return self._ideal_generators
-
-    def engine_ideal(self):
-        return self._engine_ideal
-
-    def localization_source_ideal(self):
-        return self._localization_source_ideal
+    Protected commutative-ideal contract under OWN-05--07. The permitted
+    external caller role is the commutative-algebra construction adapter when
+    an engine operation literally takes an ideal of the selected computation
+    ring. The input remains the owned ideal; the raw ideal must not escape that
+    adapter, and ordinary ideal mathematics uses public ideal operations.
+    """
+    return ideal._engine_ideal()
 
 
 @cached_function
@@ -119,14 +108,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         ring = self.base_ring()
         return Modules(ring).Subobjects(ring.regular_module())
 
-    def __contains__(self, candidate) -> bool:
-        try:
-            if candidate.base_ring() is not self.base_ring():
-                return False
-        except (AttributeError, TypeError):
-            return False
-        return candidate in self.subobject_category()
-
     @cached_method
     def extension_to_fraction_field(self):
         r"""The functor ``CommutativeIdeals(R) -> FractionalIdeals(R)``, ``I |-> I`` inside ``Frac(R)``."""
@@ -144,18 +125,20 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             localization_source_ideal=None,
             **rest,
         ) -> None:
-            self._ideal_construction = _CommutativeIdealConstruction(
-                ideal_generators=ideal_generators,
-                engine_ideal=engine_ideal,
-                localization_source_ideal=localization_source_ideal,
+            self._ideal_generators = (
+                None
+                if ideal_generators is None
+                else finite_family(ideal_generators, name="Selected ideal generators")
             )
+            self._selected_engine_ideal = engine_ideal
+            self._localization_source_ideal = localization_source_ideal
             super().__init__(**rest)
 
         def ring(self):
             return self.base_ring()
 
         def ideal_generators(self):
-            generators = self._ideal_construction.ideal_generators()
+            generators = self._ideal_generators
             assert generators is not None, "a represented commutative ideal must retain its selected generators"
             return generators
 
@@ -208,7 +191,14 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return equal if op == op_EQ else not equal
 
         def _engine_ideal(self):
-            represented = self._ideal_construction.engine_ideal()
+            r"""Return this ideal's private selected computation realization.
+
+            This is the implementation endpoint of
+            :func:\`_engine_commutative_ideal\`.  Ordinary mathematical
+            consumers do not call it directly; the only external crossing is
+            the declared commutative-algebra construction adapter.
+            """
+            represented = self._selected_engine_ideal
             if represented is not None:
                 return represented
             engine = _engine_ring(self.ring())
@@ -251,7 +241,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     ValueError,
                 ) as quotient_error:
                     raise AssertionError(
-                        "primality of this ideal requires an active exact ideal or quotient-cover backend"
+                        "primality of this ideal requires an exact represented ideal or quotient-cover computation"
                     ) from quotient_error
 
         def is_maximal(self):
@@ -278,7 +268,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     ValueError,
                 ) as error:
                     raise AssertionError(
-                        "maximality of this ideal requires an active exact ideal or quotient-cover backend"
+                        "maximality of this ideal requires an exact represented ideal or quotient-cover computation"
                     ) from error
                 try:
                     return bool(lifted.is_maximal())
@@ -291,7 +281,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         return bool(lifted.is_prime() and lifted.dimension() == 0)
                     except NotImplementedError as fallback_error:
                         raise AssertionError(
-                            "the selected quotient-cover backend must decide primality and dimension for maximality"
+                            "the selected quotient-cover computation must decide primality and dimension for maximality"
                         ) from fallback_error
 
         def radical(self):
@@ -436,7 +426,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def contraction_from_localization(self):
             r"""Contract this selected localized extension back to its source ring."""
-            source_ideal = self._ideal_construction.localization_source_ideal()
+            source_ideal = self._localization_source_ideal
             assert source_ideal is not None, (
                 "ideal contraction here requires an ideal selected as a localization extension"
             )
@@ -530,7 +520,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         if gcd != 0 and not gcd.is_unit():
                             generator = engine(generator / gcd)
                             changed = True
-                return source_ring.ideal(source_ring._from_engine_element(engine(generator)))
+                return source_ring.ideal(_owned_engine_element(source_ring, engine(generator)))
 
             assert engine in PrincipalIdealDomains(), (
                 "localization-ideal contraction requires either engine saturation or the supported PID fallback"
@@ -542,10 +532,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
-            source_ideal = self._ideal_construction.localization_source_ideal()
+            source_ideal = self._localization_source_ideal
             if ring in LocalizationRings() and source_ideal is not None:
                 numerator, _denominator = ring.localization_fraction_data(value)
-                structure = ring.localization_submonoid().structure_data()
+                structure = ring.localization_submonoid()._structure_data()
                 if structure.get("kind") == "prime_complement":
                     # ``a/s`` lies in ``I R_p`` exactly when some element
                     # outside ``p`` carries ``a`` into ``I``, and the elements
@@ -557,10 +547,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     # ask instead.
                     prime = structure["prime_ideal"]
                     source = source_ideal.ring()
-                    carriers = source_ideal.colon(source.ideal(numerator))
+                    colon_ideal = source_ideal.colon(source.ideal(numerator))
                     return any(
                         not prime.contains_ambient_element(generator)
-                        for generator in carriers.ideal_generators()
+                        for generator in colon_ideal.ideal_generators()
                     )
                 contracted = self.contraction_from_localization()
                 return _engine_ring_value(contracted.ring(), numerator) in contracted._engine_ideal()
@@ -601,6 +591,33 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def quotient_ring(self):
             return self.ring().quotient_ring(self)
 
+        def image_under_fraction_field_automorphism(self, morphism):
+            r"""Return the conjugate ideal under an automorphism of the fraction field.
+
+            The ideal is transported from its owned generators.  No
+            number-field ideal realization crosses to the caller.
+            """
+            ring = self.ring()
+            field = ring.fraction_field()
+            if morphism.domain() is not field or morphism.codomain() is not field:
+                raise ValueError(
+                    "ideal conjugation requires an automorphism of the ambient fraction field"
+                )
+            images = tuple(
+                ring(morphism(field(generator)))
+                for generator in self.ideal_generators()
+            )
+            return ring.ideal(*images)
+
+        def congruent(self, left, right) -> bool:
+            r"""Return whether left and right have the same image in the quotient ring."""
+            ring = self.ring()
+            return ring(left) - ring(right) in self
+
+        def residue_cardinality(self):
+            r"""Return the cardinality of the quotient ring when it is finite."""
+            return self.quotient_ring().cardinality()
+
         def syzygy_matrix(self):
 
             backend = self._engine_ideal()
@@ -609,10 +626,18 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             assert rows is not None, (
                 "syzygy_matrix requires a selected exact ideal module-presentation backend"
             )
-            engine = _engine_ring(self.ring())
-            if rows:
-                return matrix(engine, rows)
-            return matrix(engine, 0, len(selected))
+            ring = self.ring()
+            owned_rows = tuple(
+                tuple(
+                    _owned_engine_element(ring, coefficient)
+                    for coefficient in row
+                )
+                for row in rows
+            )
+            return ring.matrix_space(
+                len(owned_rows),
+                len(selected),
+            ).from_rows(owned_rows)
 
         def primary_decomposition(self):
             method = _engine_ideal_method(
@@ -620,7 +645,27 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 "primary_decomposition",
                 "this ideal backend has no primary decomposition",
             )
-            return tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+            return finite_ordered_set(
+                tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+            )
+
+        def hilbert_polynomial_value(self, argument):
+            r"""Return the value at \`argument\` of the Hilbert polynomial of \`R/I\`.
+
+            The maintained ideal engine computes the polynomial, but the
+            engine polynomial itself does not cross the ideal boundary.  Only
+            its exact scalar value is raised into the owned coefficient ring.
+            """
+            method = _engine_ideal_method(
+                self,
+                "hilbert_polynomial",
+                "this ideal backend has no Hilbert-polynomial computation",
+            )
+            value = method()(SageZZ(argument))
+            parent = getattr(value, "parent", lambda: None)()
+            if parent is None:
+                return _owned_engine_element(SageZZ, SageZZ(value))
+            return _owned_engine_element(parent, value)
 
         def associated_primes(self):
             method = _engine_ideal_method(
@@ -628,7 +673,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 "associated_primes",
                 "this ideal backend has no associated-prime computation",
             )
-            return tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+            return finite_ordered_set(
+                tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+            )
 
         def _repr_(self):
             listed = ", ".join(str(generator) for generator in self.ideal_generators())
@@ -818,10 +865,10 @@ def _owned_engine_value(ring, value):
     r"""Cross one private engine value back into the owned ring."""
     source = _own_ring(ring)
     engine_value = _engine_ring(source)(value)
-    ambient = getattr(source, "_ambient_ring", None)
-    if ambient is not None:
-        return source(ambient._from_engine_element(engine_value))
-    return source._from_engine_element(engine_value)
+    ambient_ring = getattr(source, "ambient_ring", None)
+    if callable(ambient_ring):
+        return source(_owned_engine_element(ambient_ring(), engine_value))
+    return _owned_engine_element(source, engine_value)
 
 
 def _flat_extension_commutative_ideal(source_ideal, morphism):
@@ -868,12 +915,12 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
             _extra_categories=(CommutativeIdeals(target),),
             _extra_construction_data=construction_data,
         )
-    return _presented_module_from_morphism(
+    return ModulesWithChosenFinitePresentation(target)(
         presentation(),
-        _subobject_ambient=ambient_module,
-        _subobject_generator_images=generator_images,
-        _extra_categories=(CommutativeIdeals(target),),
-        _extra_construction_data=construction_data,
+        subobject_ambient=ambient_module,
+        subobject_generator_images=generator_images,
+        category=Category.join((CommutativeIdeals(target),)),
+        **construction_data,
     )
 
 
@@ -947,15 +994,15 @@ def _commutative_ideal(source, generators):
         }
     )
     ambient_module = source.regular_module()
-    ideal = _presented_module_from_morphism(
+    ideal = ModulesWithChosenFinitePresentation(source)(
         presentation,
-        _subobject_ambient=ambient_module,
-        _subobject_generator_images={
+        subobject_ambient=ambient_module,
+        subobject_generator_images={
             label: ambient_module((_owned_engine_value(source, selected[position]),))
             for position, label in enumerate(labels)
         },
-        _extra_categories=(CommutativeIdeals(source),),
-        _extra_construction_data={
+        category=Category.join((CommutativeIdeals(source),)),
+        **{
             "engine_ideal": backend,
             "ideal_generators": tuple(
                 _owned_engine_value(source, generator)

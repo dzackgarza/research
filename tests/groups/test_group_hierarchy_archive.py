@@ -44,16 +44,21 @@ def test_four_realizations_of_c2_retain_the_one_generator_square_relation() -> N
     generator = tuple(free.group_generators())[0]
     realizations = (
         free.quotient_by_relators((generator * generator,)),
-        Groups.C(2),
-        Groups.S(2),
-        Groups.Abelian([2]),
+        Groups.C(2).presentation(),
+        Groups.S(2).presentation(),
+        Groups.Abelian([2]).presentation(),
     )
 
     for group in realizations:
         assert group in OwnedFinitelyPresentedGroups()
-        assert group.presenting_free_group().group_generators().cardinality() == 1
-        relators = tuple(relation.Tietze() for relation in group.defining_relations())
-        assert relators == ((1, 1),)
+        presenting = group.presenting_free_group()
+        generator = next(iter(presenting.group_generators()))
+        assert presenting.group_generators().cardinality() == 1
+        relators = tuple(
+            tuple(relation.parent().reduced_word(relation))
+            for relation in group.defining_relations()
+        )
+        assert relators == ((generator, generator),)
 
 
 def test_flat_group_catalogue_constructs_standard_finite_and_infinite_families() -> None:

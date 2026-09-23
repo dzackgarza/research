@@ -12,7 +12,7 @@ def test_root_lattices_are_an_owned_inhabited_semantic_category() -> None:
     assert all(witness in super_category for super_category in category.super_categories())
 
 
-def test_root_lattice_keeps_inherited_lattice_hom_and_automorphism_operations() -> None:
+def test_root_lattice_keeps_inherited_lattice_mor_and_automorphism_operations() -> None:
     lattice = RootLattices().an_object()
     identity = lattice.Aut().one()
     first, second = lattice.simple_roots()

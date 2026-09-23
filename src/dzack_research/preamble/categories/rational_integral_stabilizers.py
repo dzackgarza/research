@@ -90,9 +90,13 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.lattice_engines import _integral_isometry_witness
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    Modules,
+    RestrictedScalarsModules,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 
@@ -106,13 +110,12 @@ _ABSENCE = (
 
 
 def _ported_rational_group(rational_group):
-    r"""Return the T2 rational-group carrier, or ``None`` for a preamble group."""
-    try:
-        rational_group.rational_lattice()
-        rational_group.generators()
-    except AttributeError:
-        return None
-    return rational_group
+    r"""Return the rational group supplied by the T2 provider, or ``None`` for an owned group."""
+    match rational_group:
+        case _ if rational_group in OwnedGroups():
+            return None
+        case _:
+            return rational_group
 
 
 def _ported_integral_structure(rational_group, lattice_inclusion):
@@ -161,10 +164,6 @@ class IntegralStructureAction(SageObject):
                     lattice_inclusion,
                 ).lattice_stabilizer()
 
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            RestrictedScalarsModules,
-        )
-
         lattice = lattice_inclusion.domain()
         space = lattice_inclusion.codomain()
         ring = lattice.base_ring()
@@ -199,18 +198,20 @@ class IntegralStructureAction(SageObject):
         r"""Return one ``g in G`` with ``g(L_1)=L_2``, or ``None``."""
         rational_group = self.rational_group()
         source_inclusion = self.lattice_inclusion()
-        if source_inclusion.codomain() is target_inclusion.codomain():
-            space = source_inclusion.codomain()
-            try:
-                ambient = space.module_over_extension()
-            except AttributeError:
-                ambient = None
-            if ambient is not None and rational_group is ambient.Aut():
+        space = source_inclusion.codomain()
+        match space:
+            case _ if (
+                target_inclusion.codomain() is space
+                and space in RestrictedScalarsModules(space.base_ring())
+                and rational_group is space.module_over_extension().Aut()
+            ):
                 return _full_orthogonal_integral_transporter(
                     rational_group,
                     source_inclusion,
                     target_inclusion,
                 )
+            case _:
+                pass
         return _ported_integral_structure(
             rational_group,
             source_inclusion,
@@ -230,13 +231,7 @@ class IntegralStructureAction(SageObject):
             rational_group,
             self.lattice_inclusion(),
         )
-        try:
-            supergroup = subgroup.supergroup()
-        except AttributeError as error:
-            raise TypeError(
-                "the left double-coset factor must be a represented subgroup"
-            ) from error
-        if supergroup is not rational_group:
+        if subgroup.supergroup() is not rational_group:
             raise ValueError(
                 "the left subgroup must have the selected rational group as supergroup"
             )
@@ -398,10 +393,6 @@ def _full_orthogonal_integral_transporter(
     assert target.base_ring() is ring and ring is _own_ring(SageZZ), (
         "the maintained OSCAR integral-isometry transporter is represented for ZZ-lattices"
     )
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        RestrictedScalarsModules,
-    )
-
     if space not in RestrictedScalarsModules(ring):
         raise TypeError("the two lattices must lie in a restriction of a rational quadratic space")
     ambient = space.module_over_extension()

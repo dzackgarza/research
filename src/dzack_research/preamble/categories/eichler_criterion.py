@@ -27,6 +27,8 @@ and that is a statement about the presentation rather than about the lattice.
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.group.groups import _matrix_group_element_matrix
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 
 class EichlerCoveringOrbitDatum(SageObject):
     r"""One explicit covering vector together with its recursive orbit data.
@@ -34,7 +36,7 @@ class EichlerCoveringOrbitDatum(SageObject):
     A covering discriminant class need not be a distinct full ``O(L)`` orbit.
     This object therefore retains both the vector constructed from that class
     and the actual full-orbit representative selected by the indefinite
-    backend, together with a transporter between them and generators of the
+    exact orbit computation, together with a transporter between them and generators of the
     covering vector's stabilizer ``P_v``.
     """
 
@@ -296,10 +298,10 @@ class TwoUEichlerModel(SageObject):
 
     def _sl2_entries(self, element):
         r"""Return the exact entries of an owned ``SL_2(ZZ)`` element."""
-        matrix = element._backend().matrix()
+        matrix = _matrix_group_element_matrix(element.parent(), element)
         ring = self.lattice().base_ring()
         return tuple(
-            ring._from_engine_element(matrix[row, column])
+            _owned_engine_element(ring, matrix[row, column])
             for row in range(2)
             for column in range(2)
         )
@@ -678,9 +680,9 @@ class TwoUEichlerModel(SageObject):
         r"""Return exact stabilizer/transporter data for every covering class.
 
         The finite discriminant list indexes explicitly constructed primitive
-        vectors.  For each one, the exact indefinite backend supplies
+        vectors.  For each one, the exact indefinite orthogonal-group computation supplies
         generators of its full-orthogonal stabilizer and a transporter to one
-        of the backend's full ``O(L)`` orbit representatives.  Several covering
+        of the computed full ``O(L)`` orbit representatives.  Several covering
         classes are allowed to land in the same full orbit; this method records
         that fact instead of quotienting the covering list prematurely.
         """
@@ -713,7 +715,7 @@ class TwoUEichlerModel(SageObject):
                             transporter,
                         )
             raise ArithmeticError(
-                "an explicit covering vector did not belong to any full orthogonal-group orbit returned by the backend"
+                "an explicit covering vector did not belong to any full orthogonal-group orbit represented by the exact orbit computation"
             )
 
         return finite_indexed_family(
@@ -726,7 +728,7 @@ class TwoUEichlerModel(SageObject):
         r"""Return the exact rank-one-smaller stabilizer actions for the covering vectors.
 
         The full orthogonal stabilizer generators are supplied by the existing
-        exact lattice backend.  Each generator fixes the selected covering
+        exact lattice computation.  Each generator fixes the selected covering
         vector and therefore preserves its embedded orthogonal complement.
         Restricting through that embedding gives a live isometry of the
         rank-one-smaller lattice.  This is the recursive stabilizer step; it

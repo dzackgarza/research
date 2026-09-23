@@ -1,10 +1,11 @@
 r"""A chosen lattice polytope owns its toric polarization and zero divisors."""
 
-from dzack_research.preamble.all import QQ, LatticePolygons
+from dzack_research.preamble.all import QQ, ZZ, LatticePolygons
 
 
 def test_polytope_reconstructs_its_polarizing_divisor_and_character_section_zero_scheme() -> None:
-    polygon = LatticePolygons()(((0, 0), (2, 0), (0, 2)))
+    lattice = ZZ.free_module(2)
+    polygon = LatticePolygons(lattice)(((0, 0), (2, 0), (0, 2)))
     surface = polygon.toric_variety(QQ)
     divisor = surface.polarizing_divisor()
     recovered = surface.divisor_polytope(divisor)
@@ -33,7 +34,16 @@ def test_polytope_reconstructs_its_polarizing_divisor_and_character_section_zero
         line_bundle=line_bundle,
     )
 
-    assert compatible.global_source_section() == section
+    assert compatible.parent() is line_bundle.compatible_sections()
+    assert compatible == sum(
+        (
+            surface.compatible_divisor_section(
+                divisor, sections.module_generator(label), line_bundle=line_bundle
+            )
+            for label in sections.module_generating_set()
+        ),
+        line_bundle.compatible_sections().zero(),
+    )
     assert zero.inclusion().codomain() is surface
     assert zero._preamble_defining_toric_section == section
     assert zero._preamble_defining_toric_divisor == divisor

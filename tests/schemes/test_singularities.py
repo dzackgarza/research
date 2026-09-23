@@ -14,7 +14,11 @@ def test_cusp_milnor_tjurina_and_completion_share_the_hypersurface_equation() ->
     plane = QQ.polynomial_ring(("x", "y"))
     x, y = plane.algebra_generators()
     cusp = IsolatedHypersurfaceSingularity(plane, y**2 - x**3)
+    jacobian = cusp.jacobian_generators()
 
+    assert tuple(jacobian.index_set()) == tuple(plane.algebra_generating_set())
+    assert jacobian["x"] == -3 * x**2
+    assert jacobian["y"] == 2 * y
     assert cusp.milnor_number() == 2
     assert cusp.tjurina_number() == 2
     assert cusp.milnor_algebra().relations().cardinality() == 2
@@ -42,15 +46,16 @@ def test_a_smooth_hypersurface_origin_has_the_jacobian_tangent_hyperplane() -> N
 
     tangent = smooth.zariski_tangent_space()
     embedding = smooth.zariski_tangent_embedding()
-    construction = smooth.zariski_tangent_construction()
+    differential = smooth.differential_at_origin()
 
     assert tangent.module_rank() == 1
     assert smooth.is_regular_at_origin()
     assert not smooth.is_singular_at_origin()
-    assert construction.singularity() is smooth
-    assert construction.tangent_space() is tangent
-    assert construction.ambient_tangent_space() is smooth.ambient_tangent_space()
-    assert construction.embedding() is embedding
+    assert differential.kernel() is tangent
+    assert differential.domain() is smooth.ambient_tangent_space()
+    assert tangent.inclusion() is embedding
+    assert all(differential(embedding(vector)) == differential.codomain().zero()
+               for vector in tangent.module_generators())
     assert "_preamble_ambient_coordinate_vectors" not in tangent.__dict__
     assert "_preamble_source_singularity" not in tangent.__dict__
     assert embedding.domain() is tangent

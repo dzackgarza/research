@@ -14,38 +14,65 @@ both commutative and noncommutative source DGAs.
 
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
+from sage.structure.element import parent as element_parent
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
 )
-from dzack_research.preamble.categories.algebras.algebras import AlgebraStructureConstruction
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+    DGAMorphism,
     DifferentialGradedAlgebras,
 )
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.modules.graded_direct_sums import (
-    GradedDirectSumElement,
-    GradedDirectSumModule,
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    _algebra_on_module,
+    _root_algebra_law_decisions,
 )
+from dzack_research.preamble.categories.algebras.graded_algebras import (
+    GradedAlgebras,
+    _graded_multiplication_from_components,
+)
+from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 
 
-class _CohomologyAlgebraConstruction:
-    r"""The selected differential graded algebra defining one cohomology algebra."""
+class CohomologyAlgebraMorCategoryConstruction(MorCategoryConstruction):
+    def fixed_category_class(self):
+        return CohomologyAlgebraMor
 
-    def __init__(self, source_dga) -> None:
+
+class _CohomologyAlgebra:
+    r"""The source DGA and scalar ingress of its cohomology algebra.
+
+    The graded module and multiplication are supplied to their owners before
+    this level is constructed.  Cycle quotients remain the actual summands.
+    """
+
+    def __init__(self, source_dga, **rest) -> None:
         self._source_dga = source_dga
+        super().__init__(**rest)
 
     def source_dga(self):
         return self._source_dga
 
+    def _element_constructor_(self, value):
+        match value:
+            case _ if element_parent(value) is self:
+                return value
+            case dict():
+                return super()._element_constructor_(value)
+            case _ if value in self.base_ring():
+                return self.scalar_multiple(self.base_ring()(value), self.one())
+            case _:
+                return super()._element_constructor_(value)
 
-class CohomologyAlgebraHomCategoryConstruction(HomCategoryConstruction):
-    def fixed_category_class(self):
-        return CohomologyAlgebraHomset
+    def _repr_(self):
+        return f"H^*({self.source_dga()})"
 
 
 class CohomologyAlgebras(OwnedCategoryOverBaseRing):
@@ -79,92 +106,15 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [GradedAlgebras(self.base_ring())]
 
-    _HomCategory = CohomologyAlgebraHomCategoryConstruction
+    _MorCategory = CohomologyAlgebraMorCategoryConstruction
 
-    class ParentMethods:
-        def cohomology_construction(self):
-            return self._cohomology_construction
-
-        def source_dga(self):
-            return self.cohomology_construction().source_dga()
+    ParentMethods = _CohomologyAlgebra
 
 
-class CohomologyAlgebraElement(GradedDirectSumElement):
-    def _mul_(self, other):
-        return self.parent().multiply(self, other)
+def CohomologyAlgebraElement(parent, components):
+    r"""Read homogeneous cohomology classes in their constructed algebra."""
+    return parent.from_components(components)
 
-
-class _CohomologyAlgebra(GradedDirectSumModule):
-    Element = CohomologyAlgebraElement
-
-    def __init__(self, dga) -> None:
-        self._cohomology_construction = _CohomologyAlgebraConstruction(dga)
-        self._algebra_structure_construction = AlgebraStructureConstruction(dga.base_ring())
-        extra_categories = [CohomologyAlgebras(dga.base_ring())]
-        if dga in DifferentialGradedAlgebras(dga.base_ring()).Supercommutative():
-            extra_categories.append(GradedAlgebras(dga.base_ring()).Supercommutative())
-        if dga in DifferentialGradedAlgebras(dga.base_ring()).Supercommutative().Alternating():
-            extra_categories.append(GradedAlgebras(dga.base_ring()).Supercommutative().Alternating())
-        GradedDirectSumModule.__init__(
-            self,
-            dga.base_ring(),
-            lambda degree: dga.cohomology(degree),
-            name=f"H^*({dga})",
-            extra_categories=tuple(extra_categories),
-        )
-
-    def source_dga(self):
-        return self._cohomology_construction.source_dga()
-
-    def algebra_base_ring(self):
-        return self.base_ring()
-
-    def multiply(self, left, right):
-        left = self(left)
-        right = self(right)
-        dga = self.source_dga()
-        result = self.zero()
-        for left_degree, left_class in left.homogeneous_components().items():
-            left_piece = self.graded_piece(left_degree)
-            left_cycle = left_piece.cycle_representative(left_class)
-            left_element = dga.from_component(left_degree, left_cycle)
-            for right_degree, right_class in right.homogeneous_components().items():
-                right_piece = self.graded_piece(right_degree)
-                right_cycle = right_piece.cycle_representative(right_class)
-                right_element = dga.from_component(right_degree, right_cycle)
-                product = left_element * right_element
-                target_degree = left_degree + right_degree
-                target_piece = self.graded_piece(target_degree)
-                product_class = target_piece.class_of_cycle(
-                    product.homogeneous_component(target_degree)
-                )
-                if product_class != target_piece.zero():
-                    result += self.from_component(target_degree, product_class)
-        return result
-
-    def one(self):
-        dga = self.source_dga()
-        degree_zero = self.graded_piece(0)
-        unit_class = degree_zero.class_of_cycle(
-            dga.one().homogeneous_component(0)
-        )
-        return self.from_component(0, unit_class)
-
-    def _element_constructor_(self, value):
-        if isinstance(value, GradedDirectSumElement):
-            return GradedDirectSumModule._element_constructor_(self, value)
-        if isinstance(value, dict):
-            return self.linear_combination(value)
-        try:
-            scalar = self.base_ring()(value)
-        except (TypeError, ValueError):
-            raise TypeError(f"{value!r} does not define a cohomology-algebra element") from None
-        return self.scalar_multiple(scalar, self.one())
-
-    def algebra_structure_morphism(self):
-        return self.base_ring().Mor(self)(
-            lambda scalar: self(scalar),
-        )
 
 
 class CohomologyAlgebraMorphism(Morphism):
@@ -172,6 +122,8 @@ class CohomologyAlgebraMorphism(Morphism):
 
     def __init__(self, parent, dga_morphism) -> None:
         Morphism.__init__(self, parent)
+        if not isinstance(dga_morphism, DGAMorphism):
+            raise TypeError("a cohomology-algebra morphism is induced by an actual DGA morphism")
         if dga_morphism.domain() is not self.domain().source_dga():
             raise ValueError("the DGA morphism has the wrong cohomology source")
         if dga_morphism.codomain() is not self.codomain().source_dga():
@@ -210,18 +162,18 @@ class CohomologyAlgebraMorphism(Morphism):
         )
 
 
-class CohomologyAlgebraHomset(CategoricalHomset):
+class CohomologyAlgebraMor(CategoricalMor):
     Element = CohomologyAlgebraMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, dga_morphism):
         return self.element_class(self, dga_morphism)
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a cohomology-algebra endomorphism homset")
+            raise ValueError("identity belongs to a cohomology-algebra endomorphism Mor")
 
         source_dga = self.domain().source_dga()
         return self(
@@ -233,12 +185,56 @@ class CohomologyAlgebraHomset(CategoricalHomset):
 
 @cached_function(key=lambda dga: id(dga))
 def _cohomology_algebra_from_dga(dga):
-    return _CohomologyAlgebra(dga)
+    r"""Construct the graded cycle quotient, then its descended product.
+
+    For cycles x,y, Leibniz gives d(xy)=0.  Replacing x by x+d(a)
+    changes xy by d(ay); replacing y by y+d(b) changes xy by
+    (-1)^deg(x) d(xb).  Thus the product is independent of representatives,
+    bilinear, associative and unital.  See Stacks, Tag 061U, Definition 22.3.1.
+    """
+    ring = dga.base_ring()
+    graded = GradedModules(ring)
+    pieces = indexed_family(graded.grading_monoid(), dga.cohomology)
+    module = graded(pieces, placements=(FramedModules(ring),))
+
+    def component_product(s, x, t, y):
+        left_cycle = module.graded_piece(s).cycle_representative(x)
+        right_cycle = module.graded_piece(t).cycle_representative(y)
+        product = dga.from_component(s, left_cycle) * dga.from_component(t, right_cycle)
+        degree = module.combine_degrees(s, t)
+        return module.graded_piece(degree).class_of_cycle(product.homogeneous_component(degree))
+
+    multiplication = _graded_multiplication_from_components(module, component_product)
+    law_decisions = _root_algebra_law_decisions(dga)
+    law_decisions["grading"] = dga.grading_compatibility_decision()
+    placements = (CohomologyAlgebras(ring), *(
+        target
+        for source, target in (
+            (DifferentialGradedAlgebras(ring).Supercommutative(), GradedAlgebras(ring).Supercommutative()),
+            (DifferentialGradedAlgebras(ring).Supercommutative().Alternating(), GradedAlgebras(ring).Supercommutative().Alternating()),
+        )
+        if dga in source
+    ))
+    match dga.is_commutative():
+        case True:
+            placements = (*placements, Algebras(ring).Commutative())
+            law_decisions["commutativity"] = True
+        case _:
+            pass
+    zero_degree = graded.grading_monoid().zero()
+    unit = module.from_component(zero_degree, module.graded_piece(zero_degree).class_of_cycle(
+        dga.one().homogeneous_component(zero_degree),
+    ))
+    return _algebra_on_module(
+        module, multiplication, placement=placements, unit=unit,
+        construction_data={"source_dga": dga},
+        law_decisions=law_decisions,
+    )
 
 
 __all__ = [
     "CohomologyAlgebraElement",
-    "CohomologyAlgebraHomset",
+    "CohomologyAlgebraMor",
     "CohomologyAlgebraMorphism",
     "CohomologyAlgebras",
 ]

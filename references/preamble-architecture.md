@@ -2,7 +2,7 @@
 
 Architectural assessment and proposed design, 2026-09-07.
 Source revision: `84c8f978`.
-The [architecture work queue](../TODO.md#architecture-before-dependent-implementation) owns implementation and completion state.
+The [architecture work queue](../TODO.md#constructor-and-admission-foundations) owns implementation and completion state.
 
 The principal defect is a separation between category membership, construction of defining data, and the meaning of inherited operations.
 Class inheritance now supplies methods, but several constructors still reconstruct their mathematical structure afterward.
@@ -292,7 +292,7 @@ Place specialization constructors and example factories at their own owners so t
 An import check cannot decide whether a functor preserves a cokernel or whether a category declaration is mathematically correct.
 The semantic source review follows the defining datum through construction, a structural functor, and a dependent operation.
 
-The current [verification policy](../TODO.md#testing-is-deferred-until-every-other-item-is-done-always-on)
+The current [verification policy](../CONTRIBUTING.md#dev-58-observe-the-current-verification-phase)
 defers execution until the final phase.
 Construction contracts and their falsifying examples can be implemented together, with the examples recorded as unverified.
 Automated feedback on their coverage starts when that policy permits execution.
@@ -321,4 +321,4 @@ Higher or derived settings additionally require their own coherent categorical s
 The present design therefore exposes the categorical parameters and maps on which those later extensions depend.
 
 The [contribution procedure](../CONTRIBUTING.md#preamble-design-philosophy) directs a writer to the immediate owner and its constructor.
-The [work queue](../TODO.md#architecture-before-dependent-implementation) orders the repair by those dependencies.
+The [work queue](../TODO.md#constructor-and-admission-foundations) orders the repair by those dependencies.

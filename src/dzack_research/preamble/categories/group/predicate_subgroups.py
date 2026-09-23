@@ -1,11 +1,15 @@
 """Subgroups specified by a membership predicate rather than generators."""
 
+from sage.misc.unknown import Unknown
+
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     Subgroups,
+    _finite_group_morphism_kernel_cardinality,
+    _finite_group_morphism_kernel_is_abelian,
     _owned_group,
 )
 from dzack_research.preamble.categories.orthogonal_quotients import (
@@ -16,64 +20,6 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import Set
 from dzack_research.preamble.owned_category import _object_of
-
-
-class _KernelSubgroupDatum:
-    r"""The morphism whose kernel is the represented subgroup."""
-
-    def __init__(self, morphism) -> None:
-        self._morphism = morphism
-
-    def morphism(self):
-        return self._morphism
-
-
-class _PreimageSubgroupDatum:
-    r"""The morphism and target subgroup defining an inverse-image subgroup."""
-
-    def __init__(self, morphism, target_subgroup) -> None:
-        self._morphism = morphism
-        self._target_subgroup = target_subgroup
-
-    def morphism(self):
-        return self._morphism
-
-    def target_subgroup(self):
-        return self._target_subgroup
-
-
-class _StabilizerSubgroupDatum:
-    r"""The object and selected action defining a stabilizer subgroup."""
-
-    def __init__(self, stabilized_object, action) -> None:
-        self._stabilized_object = stabilized_object
-        self._action = action
-
-    def stabilized_object(self):
-        return self._stabilized_object
-
-    def action(self):
-        return self._action
-
-
-class _CentralizerSubgroupDatum:
-    r"""The group element whose centralizer is represented."""
-
-    def __init__(self, element) -> None:
-        self._element = element
-
-    def element(self):
-        return self._element
-
-
-class _IntersectionSubgroupDatum:
-    r"""The selected family of subgroups defining an intersection."""
-
-    def __init__(self, subgroups) -> None:
-        self._subgroups = Set(tuple(subgroups))
-
-    def subgroups(self):
-        return self._subgroups
 
 
 class PredicateSubgroups(OwnedParameterizedCategory):
@@ -128,7 +74,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             character_data_complete=None,
             **rest,
         ) -> None:
-            self._containing_group = supergroup
             self._predicate = predicate
             self._description = description
             self._character_data = dict(character_data or {})
@@ -139,13 +84,11 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             )
             super().__init__(supergroup=supergroup, **rest)
 
-        def supergroup(self):
-            return self._containing_group
-
         def defining_predicate(self):
             return self._predicate
 
-        def character_data(self):
+        def _character_data_snapshot(self):
+            r"""Return private finite-character representation metadata."""
             return dict(self._character_data)
 
         def character_data_is_complete(self) -> bool:
@@ -153,14 +96,32 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             return self._character_data_complete
 
         def contains_character_kernel(self) -> bool:
-            data = self.character_data()
+            data = self._character_data_snapshot()
             return self.character_data_is_complete() and bool(
                 data.get("determinant_kernel", False)
                 or data.get("spinor_kernel", False)
                 or data.get("discriminant_preimages", ())
             )
 
+        def is_finite(self):
+            r"""A subgroup of a finite group is finite; finite-index character preimages inherit infinitude."""
+            ambient = self.supergroup().is_finite()
+            if ambient is True:
+                return True
+            if ambient is False and self.contains_character_kernel():
+                return False
+            return Unknown
+
         def cardinality(self):
+            r"""``|H|``: from the retained character data, else by counting a finite supergroup.
+
+            With complete finite-character data ``H`` is the preimage of a
+            subgroup of a finite quotient, so ``|H| = |G| |image of H| /
+            |image of G|``.  Otherwise, in a finite ``G``, ``H`` is the set of
+            elements satisfying the predicate, counted exactly in one pass over
+            ``G``, at a cost linear in ``|G|``: the predicate is a Python
+            function, which GAP's subgroup search by a property cannot evaluate.
+            """
             supergroup_cardinality = self.supergroup().cardinality()
             if self.contains_character_kernel():
                 quotient = self.finite_character_quotient()
@@ -171,30 +132,34 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                     return cardinal(order * subgroup_image_size // image_size)
                 if supergroup_cardinality.is_countably_infinite():
                     return supergroup_cardinality
-            assert False, (
+            assert supergroup_cardinality.is_finite(), (
                 "cardinality is defined for every predicate subgroup, but the current "
-                "exact computation requires represented finite-character data over a "
-                "finite or countably infinite supergroup"
+                "exact computation requires represented finite-character data or a "
+                "finite supergroup"
             )
+            return cardinal(sum(1 for _element in self))
+
+        def __iter__(self):
+            r"""The elements of the finite supergroup satisfying the predicate."""
+            supergroup = self.supergroup()
+            assert supergroup.is_finite() is True, (
+                "listing a predicate subgroup reads the elements of its supergroup, "
+                "which is not decided finite"
+            )
+            return (element for element in supergroup if self._predicate(element))
 
         def __contains__(self, element):
-            parent = getattr(element, "parent", lambda: None)()
-            if parent is not self._containing_group and element not in self._containing_group:
-                return False
-            return bool(self._predicate(element))
+            return element in self.supergroup() and bool(self._predicate(element))
 
         def _element_constructor_(self, datum):
-            element = (
-                datum
-                if datum in self._containing_group
-                else self._containing_group(datum)
-            )
+            supergroup = self.supergroup()
+            element = datum if datum in supergroup else supergroup(datum)
             if element not in self:
                 raise ValueError(f"{element} does not satisfy {self._description}")
             return element
 
         def one(self):
-            identity = self._containing_group.one()
+            identity = self.supergroup().one()
             if identity not in self:
                 raise ValueError(
                     f"{self._description} does not contain the identity; this is not a subgroup"
@@ -204,8 +169,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def intersection(self, other):
             if other.supergroup() is not self.supergroup():
                 raise ValueError("predicate-subgroup intersections require one ambient group")
-            left = self.character_data()
-            right = other.character_data()
+            left = self._character_data_snapshot()
+            right = other._character_data_snapshot()
             data = {
                 "determinant_kernel": bool(left.get("determinant_kernel", False))
                 or bool(right.get("determinant_kernel", False)),
@@ -266,14 +231,14 @@ class PredicateSubgroups(OwnedParameterizedCategory):
 
         def cusps(self, rank=1):
             r"""Return this arithmetic subgroup's primitive-isotropic cusp orbits."""
-            from dzack_research.preamble.categories.isotropic_orbits import ArithmeticCusp
+            from dzack_research.preamble.categories.isotropic_orbits import _arithmetic_cusp
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
                 finite_ordered_set,
             )
 
             return finite_ordered_set(
                 tuple(
-                    ArithmeticCusp(self, representative)
+                    _arithmetic_cusp(self, representative)
                     for representative in self.isotropic_orbit_representatives(rank)
                 )
             )
@@ -330,7 +295,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             return finite_ordered_set(tuple(incidences))
 
         def _repr_(self):
-            return f"{{g in {self._containing_group} : {self._description}}}"
+            return f"{{g in {self.supergroup()} : {self._description}}}"
 
 
 class _PredicateSubgroupConstruction(OwnedParameterizedCategory):
@@ -361,7 +326,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             supergroup=group,
             predicate=lambda element: morphism(element) == identity,
             description=f"{morphism}(g)=1",
-            kernel_datum=_KernelSubgroupDatum(morphism),
+            kernel_morphism=morphism,
         )
 
     @classmethod
@@ -369,23 +334,27 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         return "kernel subgroups"
 
     class ParentMethods:
-        def __init__(self, kernel_datum, **rest) -> None:
-            self._kernel_datum = kernel_datum
+        def __init__(self, kernel_morphism, **rest) -> None:
+            self._kernel_morphism = kernel_morphism
             super().__init__(**rest)
 
         def kernel_morphism(self):
-            return self._kernel_datum.morphism()
+            return self._kernel_morphism
 
         def cardinality(self):
             r"""Return the exact kernel order when the ambient group is finite."""
             if self.supergroup().is_finite() is True:
-                return cardinal(int(self.kernel_morphism().gap().Kernel().Size()))
+                return _finite_group_morphism_kernel_cardinality(
+                    self.kernel_morphism()
+                )
             return super().cardinality()
 
         def is_abelian(self):
             r"""Decide abelianity from the represented exact kernel when finite."""
             if self.supergroup().is_finite() is True:
-                return bool(self.kernel_morphism().gap().Kernel().IsAbelian())
+                return _finite_group_morphism_kernel_is_abelian(
+                    self.kernel_morphism()
+                )
             assert False, (
                 "kernel abelianity is mathematically defined generally, but the current "
                 "exact computation requires a finite ambient group with a GAP-backed morphism"
@@ -425,7 +394,8 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             description=description,
             character_data=character_data,
             character_data_complete=character_data_complete,
-            preimage_datum=_PreimageSubgroupDatum(morphism, subgroup),
+            preimage_morphism=morphism,
+            target_subgroup=subgroup,
         )
 
     @classmethod
@@ -433,15 +403,16 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         return "preimage subgroups"
 
     class ParentMethods:
-        def __init__(self, preimage_datum, **rest) -> None:
-            self._preimage_datum = preimage_datum
+        def __init__(self, preimage_morphism, target_subgroup, **rest) -> None:
+            self._preimage_morphism = preimage_morphism
+            self._target_subgroup = target_subgroup
             super().__init__(**rest)
 
         def preimage_morphism(self):
-            return self._preimage_datum.morphism()
+            return self._preimage_morphism
 
         def target_subgroup(self):
-            return self._preimage_datum.target_subgroup()
+            return self._target_subgroup
 
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
@@ -471,7 +442,8 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
             supergroup=group,
             predicate=predicate,
             description=description,
-            stabilizer_datum=_StabilizerSubgroupDatum(stabilized_object, action),
+            stabilized_object=stabilized_object,
+            stabilizer_action=action,
         )
 
     @classmethod
@@ -479,15 +451,16 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
         return "stabilizer subgroups"
 
     class ParentMethods:
-        def __init__(self, stabilizer_datum, **rest) -> None:
-            self._stabilizer_datum = stabilizer_datum
+        def __init__(self, stabilized_object, stabilizer_action, **rest) -> None:
+            self._stabilized_object = stabilized_object
+            self._stabilizer_action = stabilizer_action
             super().__init__(**rest)
 
         def stabilized_object(self):
-            return self._stabilizer_datum.stabilized_object()
+            return self._stabilized_object
 
         def stabilizer_action(self):
-            return self._stabilizer_datum.action()
+            return self._stabilizer_action
 
 
 class CentralizerSubgroups(_PredicateSubgroupConstruction):
@@ -505,7 +478,7 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
             supergroup=group,
             predicate=lambda candidate: element * candidate == candidate * element,
             description=f"g commutes with {element}",
-            centralizer_datum=_CentralizerSubgroupDatum(element),
+            centralizing_element=element,
         )
 
     @classmethod
@@ -513,12 +486,12 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
         return "centralizer subgroups"
 
     class ParentMethods:
-        def __init__(self, centralizer_datum, **rest) -> None:
-            self._centralizer_datum = centralizer_datum
+        def __init__(self, centralizing_element, **rest) -> None:
+            self._centralizing_element = centralizing_element
             super().__init__(**rest)
 
         def centralizing_element(self):
-            return self._centralizer_datum.element()
+            return self._centralizing_element
 
 
 class IntersectionSubgroups(_PredicateSubgroupConstruction):
@@ -546,7 +519,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             description="g lies in every selected subgroup",
             character_data=character_data,
             character_data_complete=character_data_complete,
-            intersection_datum=_IntersectionSubgroupDatum(subgroups),
+            intersected_subgroups=Set(subgroups),
         )
 
     @classmethod
@@ -554,12 +527,12 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
         return "intersection subgroups"
 
     class ParentMethods:
-        def __init__(self, intersection_datum, **rest) -> None:
-            self._intersection_datum = intersection_datum
+        def __init__(self, intersected_subgroups, **rest) -> None:
+            self._intersected_subgroups = intersected_subgroups
             super().__init__(**rest)
 
         def intersected_subgroups(self):
-            return self._intersection_datum.subgroups()
+            return self._intersected_subgroups
 
 __all__ = [
     "CentralizerSubgroups",

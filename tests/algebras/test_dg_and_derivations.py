@@ -21,13 +21,13 @@ def test_a_dga_is_canonically_its_regular_dg_module() -> None:
     x = algebra.algebra_generator("x")
     dga = algebra.de_rham_algebra()
     regular = dga.regular_dg_module()
-    X = regular.from_degree_zero(x)
+    X = regular(dga.from_degree_zero(x))
     dX = regular.d(X)
 
-    assert regular is dga
+    assert regular is not dga
+    assert regular.unformed_module() is dga.unformed_module()
     assert regular in GradedAlgebraModules(dga)
     assert regular in DifferentialGradedModules(dga)
     assert regular.graded_algebra() is dga
     assert regular.dga() is dga
-    assert regular.act(X, dX) == X * dX
-    assert regular.d(X * dX) == regular.d(X) * dX + X * regular.d(dX)
+    assert regular.act(X, dga(dX)) == regular(dga(X) * dga(dX))

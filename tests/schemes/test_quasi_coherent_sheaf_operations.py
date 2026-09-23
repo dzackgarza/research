@@ -21,7 +21,7 @@ def _line_and_multiplication():
     sheaves = QuasiCoherentSheaves(line)
     structure = sheaves.associated_sheaf(algebra.free_module(1))
     module = sheaves.global_sections(structure)
-    multiply_by_x = sheaves.sheaf_morphisms(structure, structure)(
+    multiply_by_x = sheaves.Mor(structure, structure)(
         {0: module.scalar_multiple(x, module.module_generator(0))}
     )
     return line, algebra, x, sheaves, structure, multiply_by_x
@@ -46,6 +46,12 @@ def test_the_sheaves_on_an_affine_scheme_are_the_category_equivalent_to_its_modu
 
 def test_multiplication_by_a_coordinate_has_zero_kernel_and_a_skyscraper_cokernel() -> None:
     line, algebra, x, sheaves, structure, multiply_by_x = _line_and_multiplication()
+
+    assert multiply_by_x.domain() is structure
+    assert multiply_by_x.codomain() is structure
+    assert multiply_by_x in sheaves.Mor(structure, structure)
+    assert multiply_by_x.underlying_module_morphism().domain() is sheaves.global_sections(structure)
+    assert multiply_by_x.underlying_module_morphism().codomain() is sheaves.global_sections(structure)
 
     kernel = sheaves.kernel(multiply_by_x)
     kernel_sections = sheaves.global_sections(kernel)

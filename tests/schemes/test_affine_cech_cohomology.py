@@ -49,20 +49,21 @@ def test_unit_cover_refinement_has_an_actual_cochain_and_cohomology_comparison()
     one = scheme.coordinate_algebra().one()
     coarse = scheme.distinguished_open_cover(one)
     repeated = scheme.distinguished_open_cover(one, one)
-    refinement = coarse.common_refinement(repeated)
+    refinement = coarse.common_refinement(repeated).left_leg()
+    cochain_map = refinement.geometric_cochain_map(sheaf)
     comparison = refinement.geometric_cohomology_comparison(sheaf, 0)
 
-    assert comparison.source_complex().geometric_cover() is coarse
-    assert comparison.target_complex().geometric_cover() is refinement.fine_cover()
-    assert comparison.cochain_map().domain() is comparison.source_complex()
-    assert comparison.cochain_map().codomain() is comparison.target_complex()
+    assert cochain_map.domain().geometric_cover() is coarse
+    assert cochain_map.codomain().geometric_cover() is refinement.fine_cover()
+    assert comparison.domain() is CochainComplexes(cochain_map.domain().base_ring()).cohomology(0)(cochain_map.domain())
+    assert comparison.codomain() is CochainComplexes(cochain_map.codomain().base_ring()).cohomology(0)(cochain_map.codomain())
 
-    source = comparison.cohomology_map().domain()
+    source = comparison.domain()
     generator = source.module_generator(next(iter(source.module_generating_set())))
-    assert comparison.cohomology_map()(generator) != comparison.cohomology_map().codomain().zero()
+    assert comparison(generator) != comparison.codomain().zero()
 
-    source_complex = comparison.source_complex()
-    target_complex = comparison.target_complex()
+    source_complex = cochain_map.domain()
+    target_complex = cochain_map.codomain()
     source_times_two = CochainComplexes(source_complex.base_ring()).cohomology(0)(
         QQ(2)
         * CochainComplexes(source_complex.base_ring()).Mor(
@@ -76,6 +77,6 @@ def test_unit_cover_refinement_has_an_actual_cochain_and_cohomology_comparison()
         ).identity()
     )
     assert (
-        target_times_two(comparison.cohomology_map()(generator))
-        == comparison.cohomology_map()(source_times_two(generator))
+        target_times_two(comparison(generator))
+        == comparison(source_times_two(generator))
     )

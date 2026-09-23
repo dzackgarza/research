@@ -1,7 +1,12 @@
 from sage.misc.unknown import Unknown
 
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.sets import NN, Sets
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family_from_values,
+    indexed_family,
+)
 
 
 def test_finite_indexed_family_equality_is_extensional() -> None:
@@ -10,10 +15,43 @@ def test_finite_indexed_family_equality_is_extensional() -> None:
     equal = indexed_family(indices, lambda index: int(index) * int(index))
     different = indexed_family(indices, lambda index: int(index))
 
+    assert left in Objects()
+    assert left not in Sets()
     assert left == equal
     assert hash(left) == hash(equal)
     assert left != different
     assert left != indexed_family(Sets.Δ[1], lambda index: int(index) ** 2)
+
+
+def test_equal_values_at_distinct_indices_remain_distinct_family_slots() -> None:
+    indices = Sets.Δ[1]
+    repeated = object()
+    family = indexed_family(indices, lambda _index: repeated)
+
+    assert family.cardinality() == 2
+    assert family[0] is family[1] is repeated
+    assert tuple(family.index_set()) == (0, 1)
+
+
+def test_finite_literal_ingress_is_owned_by_indexed_families_and_preserves_labels() -> None:
+    labels = finite_ordered_set(("left", "right"))
+    mapping = finite_indexed_family_from_values(
+        labels,
+        {"left": 2, "right": 3},
+    )
+    sequence = finite_indexed_family_from_values(labels, (5, 7))
+    inferred = finite_indexed_family_from_values(
+        None,
+        {"right": 11, "left": 13},
+    )
+
+    assert mapping["left"] == 2
+    assert mapping["right"] == 3
+    assert sequence["left"] == 5
+    assert sequence["right"] == 7
+    assert tuple(inferred.index_set()) == ("right", "left")
+    assert inferred["right"] == 11
+    assert inferred["left"] == 13
 
 
 def test_finite_indexed_family_display_exposes_indexed_values() -> None:

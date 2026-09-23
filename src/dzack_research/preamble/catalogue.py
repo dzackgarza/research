@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.lattices import (
     _register_indecomposable,
     signature_pair,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -59,7 +60,7 @@ def _gram_from_engine_matrix(engine_matrix):
         (),
         (rows, columns),
         [
-            [ZZ._from_engine_element(SageZZ(engine_matrix[i, j])) for j in range(columns)]
+            [_owned_engine_element(ZZ, SageZZ(engine_matrix[i, j])) for j in range(columns)]
             for i in range(rows)
         ],
     )

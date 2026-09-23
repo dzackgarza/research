@@ -5,7 +5,7 @@ chosen algebra structure map, from ``S -> B`` to ``R -> S -> B``.  The
 underlying computation ring is therefore retained.  When both ``S/R`` and
 ``B/S`` carry the live commutative polynomial-quotient presentations, this
 module also constructs an exact finite ``R``-presentation of the restricted
-algebra.  That presentation is what makes the represented Hom surface and the
+algebra.  That presentation is what makes the represented Mor surface and the
 scalar-extension/restriction adjunction executable without replacing ``B`` by
 a second authoritative ring implementation.
 """
@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _OwnedAlgebraParent,
     _SelectedFiniteAlgebraPresentation,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -32,34 +33,6 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 _RESTRICTED_SCALAR_ALGEBRAS = {}
-
-
-class _RestrictedScalarsConstruction:
-    r"""The scalar map and selected generator roles defining a restriction."""
-
-    def __init__(
-        self,
-        algebra,
-        ring_map,
-        restricted_scalar_labels,
-        restricted_algebra_labels,
-    ) -> None:
-        self._algebra = algebra
-        self._ring_map = ring_map
-        self._restricted_scalar_labels = restricted_scalar_labels
-        self._restricted_algebra_labels = restricted_algebra_labels
-
-    def algebra_over_extension(self):
-        return self._algebra
-
-    def ring_map(self):
-        return self._ring_map
-
-    def restricted_scalar_generator_labels(self):
-        return self._restricted_scalar_labels
-
-    def restricted_algebra_generator_labels(self):
-        return self._restricted_algebra_labels
 
 
 class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
@@ -88,31 +61,22 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
         return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
-        def restricted_scalars_construction(self):
-            return self._restricted_scalars_construction
-
         def ring_map(self):
             r"""Return the selected scalar map ``R -> S``."""
-            return self.restricted_scalars_construction().ring_map()
+            return self._restricted_scalars_ring_map
 
         def algebra_over_extension(self):
             r"""Return the original ``S``-algebra before scalar restriction."""
-            return self.restricted_scalars_construction().algebra_over_extension()
+            return self._algebra_over_extension
 
         def extension_ring(self):
             return self.algebra_over_extension().base_ring()
 
         def restricted_scalar_generator_labels(self):
-            return (
-                self.restricted_scalars_construction()
-                .restricted_scalar_generator_labels()
-            )
+            return self._restricted_scalar_generator_labels
 
         def restricted_algebra_generator_labels(self):
-            return (
-                self.restricted_scalars_construction()
-                .restricted_algebra_generator_labels()
-            )
+            return self._restricted_algebra_generator_labels
 
 
 class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
@@ -130,12 +94,58 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
         presentation_data=None,
     ) -> None:
         base_ring = _owned_ring(ring_map.domain())
-        self._restricted_scalars_construction = _RestrictedScalarsConstruction(
-            algebra,
-            ring_map,
-            restricted_scalar_labels,
-            restricted_algebra_labels,
-        )
+        self._algebra_over_extension = algebra
+        self._restricted_scalars_ring_map = ring_map
+        self._restricted_scalar_generator_labels = restricted_scalar_labels
+        self._restricted_algebra_generator_labels = restricted_algebra_labels
+        source_structure = algebra.algebra_structure_morphism()
+
+        if presentation_data is not None:
+            (
+                presentation_ring,
+                selected_relations,
+                presentation_ideal,
+                lift_to_presentation,
+            ) = presentation_data
+
+            def presentation_morphism():
+                presentation_engine = _engine_ring(presentation_ring)
+                algebra_engine = _engine_ring(algebra)
+                engine_base = _engine_ring(base_ring)
+
+                def engine_base_image(scalar):
+                    owned_scalar = _owned_engine_element(base_ring, engine_base(scalar))
+                    return _engine_element(
+                        algebra,
+                        source_structure(ring_map(owned_scalar)),
+                    )
+
+                engine_base_map = SetMorphism(
+                    engine_base.Hom(algebra_engine),
+                    engine_base_image,
+                )
+                presentation_engine_map = presentation_engine.mor(
+                    [generator_values(label) for label in labels],
+                    algebra_engine,
+                    base_map=engine_base_map,
+                )
+                return presentation_ring.Mor(self)(
+                    lambda element: self._from_engine_element(
+                        algebra_engine(
+                            presentation_engine_map(
+                                _engine_element(presentation_ring, element)
+                            )
+                        )
+                    ),
+                )
+
+            self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
+                presentation_ring,
+                selected_relations,
+                presentation_ideal,
+                lift_to_presentation,
+                presentation_morphism,
+            )
 
         categories = [RestrictedScalarsAlgebras(base_ring)]
         if presentation_data is not None:
@@ -147,68 +157,17 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
                 )
             )
 
+        # Restriction along f: R -> S makes r act on B as f(r) acts:
+        # r * 1 is the image of f(r) under the structure morphism of B.
         _OwnedAlgebraParent.__init__(
             self,
             _engine_ring(algebra),
             base_ring,
             labels,
+            scalar_structure=lambda scalar: source_structure(ring_map(scalar)),
             generator_values=generator_values,
             categories=tuple(categories),
         )
-
-        source_structure = algebra.algebra_structure_morphism()
-        self.algebra_structure_construction().set_structure_map(
-            base_ring.Mor(self)(
-                lambda scalar: self(source_structure(ring_map(scalar))),
-            )
-        )
-
-        if presentation_data is None:
-            return
-
-        (
-            presentation_ring,
-            selected_relations,
-            presentation_ideal,
-            lift_to_presentation,
-        ) = presentation_data
-        self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
-            presentation_ring,
-            selected_relations,
-            presentation_ideal,
-            lift_to_presentation,
-        )
-
-        presentation_engine = _engine_ring(presentation_ring)
-        algebra_engine = _engine_ring(algebra)
-        engine_base = _engine_ring(base_ring)
-
-        def engine_base_image(scalar):
-            owned_scalar = base_ring._from_engine_element(engine_base(scalar))
-            return _engine_element(
-                algebra,
-                source_structure(ring_map(owned_scalar)),
-            )
-
-        engine_base_map = SetMorphism(
-            engine_base.Hom(algebra_engine),
-            engine_base_image,
-        )
-        presentation_engine_map = presentation_engine.hom(
-            [generator_values(label) for label in labels],
-            algebra_engine,
-            base_map=engine_base_map,
-        )
-        presentation_morphism = presentation_ring.Mor(self)(
-            lambda element: self._from_engine_element(
-                algebra_engine(
-                    presentation_engine_map(
-                        _engine_element(presentation_ring, element)
-                    )
-                )
-            ),
-        )
-        self.selected_algebra_presentation().set_presentation_morphism(presentation_morphism)
 
 
 def _lift_polynomial(relation, coefficient_lift, target_variables, target_ring):
@@ -271,7 +230,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
 
     extension_presentation_engine = _engine_ring(extension_ring.presentation_ring())
     # Private finite backend serialization required by Sage's polynomial-Hom constructor.
-    extension_presentation_map = extension_presentation_engine.hom(
+    extension_presentation_map = extension_presentation_engine.mor(
         list(scalar_variables),
         presentation_engine,
     )
@@ -308,7 +267,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
                 algebra_variables,
                 presentation_engine,
             )
-        return presentation_ring._from_engine_element(presentation_engine(backend))
+        return _owned_engine_element(presentation_ring, presentation_engine(backend))
 
     selected_relations = indexed_family(
         relation_indices,
@@ -317,7 +276,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
     )
     # Private finite backend serialization required by Sage's ideal constructor.
     presentation_ideal = presentation_engine.ideal(
-        [presentation_ring._engine_element(relation) for relation in selected_relations]
+        [_engine_element(presentation_ring, relation) for relation in selected_relations]
     )
 
     structure_map = algebra.algebra_structure_morphism()

@@ -43,5 +43,5 @@ def test_curve_rejects_a_reducible_one_dimensional_closed_subscheme() -> None:
     x = coordinate_ring.algebra_generator("x")
     y = coordinate_ring.algebra_generator("y")
 
-    with pytest.raises(ValueError, match="not an integral curve"):
+    with pytest.raises(AssertionError, match="not an integral curve"):
         Curves(QQ).from_equation(x * y, plane)

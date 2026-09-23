@@ -4,6 +4,7 @@ from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/profinite/absolute_galois_group_element.sage",
@@ -30,6 +31,8 @@ def test_element_conjugacy_class_retains_the_archived_ambient_group() -> None:
     frobenius = group.frobenius()
     conjugacy_class = frobenius.conjugacy_class()
 
+    assert conjugacy_class in Sets().Subobjects(group)
+    assert conjugacy_class.inclusion().codomain() is group
     assert conjugacy_class.ambient() is group
     assert conjugacy_class.supergroup() is group
     assert conjugacy_class.representative() is frobenius

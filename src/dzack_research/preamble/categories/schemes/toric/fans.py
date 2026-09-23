@@ -63,6 +63,31 @@ def _owned_vector(module, coordinates):
     )
 
 
+def _engine_fan(fan):
+    r"""Return a fan's private Sage realization to a toric-engine adapter.
+
+    Protected fan contract (\`OWN-05\`--\`OWN-07\`).  The implementing
+    endpoint is \`RationalPolyhedralFans.ParentMethods._engine_fan\`.
+    Permitted callers are the toric-scheme adapters that must construct a Sage
+    toric variety, Sage fan morphism, or Sage Chow-class computation after the
+    owned fan operation has been selected.  The returned fan remains inside
+    that adapter.
+    """
+    return fan._engine_fan()
+
+
+def _engine_cone(cone):
+    r"""Return a cone's private Sage realization to a toric-engine adapter.
+
+    Protected cone contract paired with :func:\`_engine_fan\`.  The
+    implementing endpoint is \`RationalPolyhedralFans.ElementMethods._engine_cone\`;
+    permitted callers are maintained Sage adapters whose selected operation
+    requires this cone object.  The raw cone does not become mathematical
+    output.
+    """
+    return cone._engine_cone()
+
+
 def _cone_key(engine_cone):
     return frozenset(tuple(int(c) for c in ray) for ray in engine_cone.rays())
 
@@ -119,10 +144,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
                 else integers.zero()
             ),
         )
-        tensor_product = FinitelyGeneratedFreeModules(integers).tensor_product(
-            (characters, cocharacters)
-        )
-        return tensor_product.from_bilinear(dual_frames)
+        return dual_frames
 
     def character_cocharacter_value(self, character, cocharacter):
         r"""Return the scalar integer ``<character, cocharacter>``.
@@ -133,15 +155,15 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         """
         pairing = self.character_cocharacter_pairing()
         values = pairing.codomain()
-        labels = tuple(values.module_generating_set())
-        if len(labels) != 1:
-            raise ArithmeticError(
-                "the character-cocharacter pairing must take values in the rank-one integer module"
-            )
+        labels = values.module_generating_set()
+        assert labels.cardinality() == 1, (
+            "the character-cocharacter pairing takes values in the rank-one integer module"
+        )
+        (label,) = labels
         integers = _integers()
         paired = pairing(character, cocharacter)
         coefficients = values.framing_coefficients(paired)
-        return integers(coefficients.get(labels[0], integers.zero()))
+        return integers(coefficients.get(label, integers.zero()))
 
     def _repr_object_names(self):
         return f"rational polyhedral fans in {self.lattice()}"
@@ -170,7 +192,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             engine_cones = [_SageCone([], lattice=engine_lattice)]
         return _object_of(self, engine_fan=_SageFan(engine_cones, lattice=engine_lattice))
 
-    def from_engine_fan(self, engine_fan):
+    def _from_engine_fan(self, engine_fan):
         r"""Adopt one engine fan whose lattice rank matches ``N``."""
         assert int(engine_fan.lattice_dim()) == int(self.lattice().module_rank()), (
             "the engine fan lives in a lattice of the wrong rank"
@@ -222,7 +244,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         assert homogeneous_weights.cardinality() == int(self.lattice().module_rank()) + 1, (
             "P(q_0,...,q_n) has dimension n, one less than the number of weights"
         )
-        return self.from_engine_fan(
+        return self._from_engine_fan(
             toric_varieties.WP(
                 *(weight for _, weight in homogeneous_weights)
             ).fan()
@@ -249,12 +271,12 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
 
     class ParentMethods:
         def __init__(self, engine_fan, **rest) -> None:
-            self._preamble_engine_fan = engine_fan
+            self._fan_engine = engine_fan
             super().__init__(**rest)
 
         def _engine_fan(self):
-            r"""The private polyhedral computation object."""
-            return self._preamble_engine_fan
+            r"""The private polyhedral computation object; see :func:\`_engine_fan\`."""
+            return self._fan_engine
 
         def lattice(self):
             r"""The cocharacter lattice ``N`` this fan lives in."""
@@ -276,7 +298,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
 
         def dimension(self):
             r"""The rank of ``N``, which is the dimension of the toric variety."""
-            return self.lattice().module_rank()
+            return _integers()(int(self.lattice().module_rank()))
 
         def _cone(self, engine_cone):
             return self.element_class(self, engine_cone)
@@ -342,25 +364,53 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             r"""Whether ``phi`` carries every cone of this fan into a cone of ``codomain_fan``.
 
             This is the compatibility of CLS Def. 3.3.1, the condition under
-            which ``phi: N -> N'`` induces a toric morphism.  The
-            cone-containment search is Sage's ``FanMorphism``, which refuses an
-            incompatible map.
+            which ``phi: N -> N'`` induces a toric morphism.  Every cone of a
+            fan is a face of a maximal cone, and a cone lies in a convex cone
+            exactly when its ray generators do, so ``phi`` is compatible
+            exactly when each maximal cone has a maximal cone of
+            ``codomain_fan`` containing the images of its rays.
             """
-            from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-                _engine_fan_morphism,
+            return all(
+                codomain_fan.maximal_cone_containing_image(lattice_morphism, cone)
+                is not None
+                for cone in self.maximal_cones()
             )
 
-            try:
-                _engine_fan_morphism(lattice_morphism, self, codomain_fan)
-            except ValueError:
-                return False
-            return True
+        def maximal_cone_containing_image(self, lattice_morphism, source_cone):
+            r"""A maximal cone of this fan containing ``phi(sigma)``, or ``None``.
 
-        def toric_variety(self, base_ring, *, polarizing_polytope=None):
+            ``phi(sigma)`` is the cone spanned by the images of the ray
+            generators of ``sigma``, so it lies in a cone ``tau`` exactly when
+            every such image does (CLS Def. 3.3.1).  The first maximal cone of
+            this fan, in its chosen order, containing them is returned.
+            """
+            return next(
+                (
+                    candidate
+                    for candidate in self.maximal_cones()
+                    if all(
+                        candidate.contains(lattice_morphism(ray))
+                        for ray in source_cone.rays()
+                    )
+                ),
+                None,
+            )
+
+        def toric_variety(
+            self,
+            base_ring,
+            *,
+            polarizing_polytope=None,
+            placements=(),
+            **level_data,
+        ):
             r"""Return ``X_Sigma`` over the stated base.
 
             ``polarizing_polytope`` is selected construction data when this fan
             was obtained as the normal fan of a lattice polytope.
+            ``placements`` are further categories the variety is an object of
+            by its construction (a star subdivision is an object of
+            ``ToricFixedPointBlowups(k)``), with the level data they declare.
             """
             from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
                 _toric_variety,
@@ -370,6 +420,8 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
                 self,
                 base_ring,
                 polarizing_polytope=polarizing_polytope,
+                placements=placements,
+                **level_data,
             )
 
         def _repr_(self) -> str:
@@ -382,17 +434,18 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         r"""A cone of the fan."""
 
         def __init__(self, parent, engine_cone) -> None:
-            self._preamble_engine_cone = engine_cone
-            Element.__init__(self, parent)
+            self._cone_engine = engine_cone
+            super().__init__(parent)
 
         def _engine_cone(self):
-            return self._preamble_engine_cone
+            r"""The private cone computation object; see :func:\`_engine_cone\`."""
+            return self._cone_engine
 
         def lattice(self):
             return self.parent().lattice()
 
         def dimension(self):
-            return cardinal(int(self._engine_cone().dim()))
+            return _integers()(int(self._engine_cone().dim()))
 
         def rays(self):
             r"""The primitive ray generators of this cone, as elements of ``N``."""

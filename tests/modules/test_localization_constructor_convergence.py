@@ -18,8 +18,7 @@ def test_localization_ring_owns_the_module_localization_functor_and_object() -> 
     assert through_functor.localization_ring() is localization
     assert through_functor.localization_source_module() is module
     assert through_functor.localization_functor() is functor
-    framing = through_functor.__dict__.get("_preamble_framing_morphism")
-    assert framing is not None
+    framing = through_functor.framing_morphism()
     assert through_functor.framing_source().module_generating_set() is through_functor.module_generating_set()
     assert through_functor.framing_morphism() is framing
     assert framing.domain() is through_functor.framing_source()
@@ -40,10 +39,8 @@ def test_nonidentity_map_uses_the_same_localization_functor_and_endpoints() -> N
 
     assert localized_morphism.domain() is localized
     assert localized_morphism.codomain() is localized
-    construction = localized_morphism.localization_construction()
-    assert construction is not None
-    assert construction.source_morphism() is morphism
-    assert construction.localization_functor() is localization.localization_functor()
+    assert localized_morphism.scalar_extension_of() is morphism
+    assert localized_morphism.scalar_extension_functor() is localization.localization_functor()
     assert localized_morphism(localized.module_generator("e")) == (
         localized.module_generator("e") + localized.module_generator("f")
     )

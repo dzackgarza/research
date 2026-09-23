@@ -16,8 +16,8 @@ def test_square_lattice_voronoi_cell_is_the_unit_area_half_cube() -> None:
 
     assert cell.volume() == 1
     assert cell.n_vertices() == 4
-    assert Set(cell.vertices()) == Set(
-        tensor.vector(QQ, (QQ(a) / 2, QQ(b) / 2))
+    assert Set(tuple(vertex) for vertex in cell.vertices()) == Set(
+        (QQ(a) / 2, QQ(b) / 2)
         for a in (-1, 1)
         for b in (-1, 1)
     )
@@ -27,6 +27,19 @@ def test_a2_voronoi_cell_is_a_hexagon_with_six_relevant_vectors() -> None:
     hexagonal = Lattices.A2
     cell = hexagonal.voronoi_cell()
 
-    assert cell.n_facets() == 6
+    assert cell.facets().cardinality() == 6
     assert cell.n_vertices() == 6
     assert hexagonal.voronoi_relevant_vectors().cardinality() == 6
+
+
+def test_normalized_a2_facet_inequalities_recover_the_six_roots():
+    lattice = Lattices.A2
+    assert lattice.voronoi_relevant_vectors().cardinality() == 6
+    assert all(vector.q() == 2 for vector in lattice.voronoi_relevant_vectors())
+
+
+def test_bound_is_an_initial_hint_not_an_incomplete_voronoi_region():
+    lattice = Lattices.A2
+    assert Set(tuple(v) for v in lattice.voronoi_cell(bound=1).vertices()) == Set(
+        tuple(v) for v in lattice.voronoi_cell().vertices()
+    )

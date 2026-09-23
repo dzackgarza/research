@@ -8,7 +8,7 @@ def test_zero_module_accepts_the_trivial_group_action_without_fake_enumeration()
 
     acted = Modules(QQ).trivial_action(group)(zero)
 
-    assert acted.unacted_module() is zero
+    assert acted.unformed_module() is zero
     assert acted.coefficient_module_rank() == 0
     assert acted.is_trivial_action()
     assert acted.zero() == acted.act(group.group_generators()[0], acted.zero())

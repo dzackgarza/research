@@ -12,7 +12,7 @@ def _fermat_quartic():
     space = ProjectiveSpaces(QQ)(3)
     x0, x1, x2, x3 = space.homogeneous_coordinate_generators()
     return ProjectiveCompleteIntersections(space.scheme_base_ring())(
-        space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
+        space, x0**4 + x1**4 + x2**4 + x3**4
     )
 
 

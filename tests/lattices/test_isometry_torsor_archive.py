@@ -7,12 +7,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 def test_isometry_torsor_transporter_recovers_the_acting_element() -> None:
     integers = _own_ring(SageZZ)
     lattice = Lattices(integers)("A2")
-    homset = lattice.Isom(lattice)
-    witness = homset.an_element()
-    reflection = lattice.reflection(lattice.module_generator(0))
+    mor = lattice.Isom(lattice)
+    witness = mor.an_element()
+    reflection = lattice.reflection(lattice.basis_vector(0))
     moved = reflection * witness
 
-    transporter = homset.transporter(witness, moved)
+    transporter = mor.transporter(witness, moved)
 
     assert transporter == reflection
     assert transporter * witness == moved

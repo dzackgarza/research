@@ -4,6 +4,7 @@ from dzack_research.preamble.all import GF
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/profinite/absolute_galois_group_subgroup.sage",
@@ -29,6 +30,8 @@ def test_open_subgroup_conjugacy_class_retains_the_same_ambient_group() -> None:
     conjugacy_class = group.open_subgroup_class(extension)
     representative = conjugacy_class.representative()
 
+    assert conjugacy_class in Sets()
+    assert representative in conjugacy_class
     assert conjugacy_class.ambient() is group
     assert conjugacy_class.supergroup() is group
     assert representative.ambient() is group

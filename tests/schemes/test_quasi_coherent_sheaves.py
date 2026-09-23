@@ -7,6 +7,19 @@ from dzack_research.preamble.all import (
 )
 
 
+def test_sheaf_objects_are_parameterized_by_ringed_spaces_with_a_genuine_specimen() -> None:
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        RingedSpaces,
+        SheafObjects,
+    )
+
+    line = AffineSpaces(QQ)(1, names=("x",))
+    sheaves = SheafObjects(line)
+    assert sheaves.parameter_category() is RingedSpaces()
+    assert sheaves.an_object() is line.structure_sheaf()
+    assert sheaves.an_object() in sheaves
+
+
 def test_restrictions_compose_along_a_common_refinement_of_two_covers() -> None:
     algebra = QQ.polynomial_ring(("x", "y"))
     x, y = algebra.algebra_generators()
@@ -14,18 +27,19 @@ def test_restrictions_compose_along_a_common_refinement_of_two_covers() -> None:
     sheaf = scheme.structure_sheaf()
     first = scheme.distinguished_open_cover(x, algebra.one() - x)
     second = scheme.distinguished_open_cover(y, algebra.one() - y)
-    refinement = first.common_refinement(second)
-    fine = refinement.fine_cover()
+    common = first.common_refinement(second)
+    fine = common.apex()
+    refinements = (common.left_leg(), common.right_leg())
 
     assert len(fine.opens()) == 4
-    assert refinement.index_map(0, 3) == 1
-    assert refinement.index_map(1, 3) == 1
+    assert refinements[0].index_map(3) == 1
+    assert refinements[1].index_map(3) == 1
     assert fine.open(3).distinguished_open_element() == (algebra.one() - x) * (algebra.one() - y)
 
     for fine_index in range(4):
-        for which in (0, 1):
-            coarse_open = refinement.coarse_cover(which).open(refinement.index_map(which, fine_index))
-            inclusion = refinement.inclusion(which, fine_index)
+        for refinement in refinements:
+            coarse_open = refinement.coarse_cover().open(refinement.index_map(fine_index))
+            inclusion = refinement.inclusion(fine_index)
             fine_open = fine.open(fine_index)
             assert inclusion.domain() is fine_open
             assert inclusion.codomain() is coarse_open

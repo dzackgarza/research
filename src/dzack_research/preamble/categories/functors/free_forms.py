@@ -1,18 +1,15 @@
 r"""Free bilinear/quadratic formed objects and their forgetful adjunctions."""
 
 from sage.misc.cachefunc import cached_function
+from sage.misc.abstract_method import abstract_method
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     BilinearFormModules,
-    FormedModuleMorphism,
     FormModules,
     QuadraticFormModules,
     _represented_value_module,
     _value_as_module_element,
-)
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap, FinitelyPresentedModules, Modules
 
@@ -26,11 +23,8 @@ class _UnderlyingFormModuleFunctor(Functor):
         return formed
 
     def _apply_morphism(self, morphism):
-        if isinstance(morphism, FormedModuleMorphism):
-            return morphism.module_morphism()
-        if isinstance(morphism, ModuleMorphism):
-            return morphism
-        raise TypeError("a formed-module morphism must carry an underlying module map")
+        r"""Forget the form from an arrow of the formed-module domain."""
+        return morphism.module_morphism()
 
 
 class _ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
@@ -151,8 +145,9 @@ class _FreeQuadraticFormFunctor(Functor):
 class _TautologicalFormFunctor(Functor):
     r"""Abstract base for a free form classified by a functorial square."""
 
+    @abstract_method
     def _classifying_square(self, module):
-        raise NotImplementedError("a tautological form functor must supply its classifier")
+        ...
 
 
 def _read_between_free_formed(morphism, source, target):
@@ -165,7 +160,7 @@ def _read_between_free_formed(morphism, source, target):
     """
     domain = morphism.domain()
     return source.module_category().Mor(source, target)(
-        {label: target(morphism(domain.module_generator(label))) for label in source.module_generating_set()}
+        lambda label: target(morphism(domain.module_generator(label)))
     )
 
 
@@ -173,21 +168,22 @@ class _FreeFormAdjunction(Adjunction):
     def _repr_(self):
         return f"{self.left_adjoint()} ⊣ {self.right_adjoint()}"
 
-    def unit(self, module):
+    def _unit_component(self, module):
         r"""``M -> U(F(M))``: the generator of ``M`` labelled ``l`` to the generator of ``F(M)`` labelled ``l``."""
         free_formed = self.left_adjoint()(module)
         return module.module_category().Mor(module, free_formed)(
-            {label: free_formed.module_generator(label) for label in module.module_generating_set()}
+            free_formed.module_generator
         )
 
+    @abstract_method
     def _counit_value_map(self, free_formed, formed):
-        raise NotImplementedError("a free-form adjunction must classify the target form")
+        ...
 
-    def counit(self, formed):
+    def _counit_component(self, formed):
         r"""``F(U(N)) -> N``: the identity of the module ``N`` is built on, read between the two formed objects."""
         free_formed = self.left_adjoint()(self.right_adjoint()(formed))
         module_map = free_formed.module_category().Mor(free_formed, formed)(
-            {label: formed.module_generator(label) for label in free_formed.module_generating_set()}
+            formed.module_generator
         )
         return free_formed.Mor(formed)(
             (
@@ -221,7 +217,7 @@ class _BilinearFreeFormAdjunction(_FreeFormAdjunction):
                 ),
             ),
         )
-        return free_formed.value_module().from_bilinear(bilinear)
+        return bilinear
 
 
 class _QuadraticFreeFormAdjunction(_FreeFormAdjunction):

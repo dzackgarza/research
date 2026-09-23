@@ -1,4 +1,5 @@
 from sage.misc.unknown import Unknown
+import pytest
 
 from dzack_research.preamble.all import ZZ, Lattices
 
@@ -14,7 +15,7 @@ def test_isometry_to_returns_a_live_lattice_isometry_for_an_identical_lattice() 
     assert isometry == lattice.O().one()
 
 
-def test_isometry_to_returns_none_only_when_the_exact_homset_is_proved_empty() -> None:
+def test_isometry_to_returns_none_only_when_the_exact_mor_is_proved_empty() -> None:
     even = Lattices(ZZ)([[2]])
     odd = Lattices(ZZ)([[1]])
 
@@ -28,9 +29,5 @@ def test_is_isometric_to_refuses_when_only_the_three_valued_classifier_is_unknow
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
 
     assert source.is_isometric(target) is Unknown
-    try:
+    with pytest.raises(AssertionError):
         source.is_isometric_to(target)
-    except NotImplementedError:
-        pass
-    else:
-        raise AssertionError("is_isometric_to must not collapse Unknown to a boolean")

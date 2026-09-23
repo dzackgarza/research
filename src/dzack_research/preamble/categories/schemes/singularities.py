@@ -1,37 +1,37 @@
 r"""Local algebra invariants of supported hypersurface singularities."""
 from sage.libs.singular.function import lib as singular_lib
 from sage.libs.singular.function import singular_function
-from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalIsomorphism
 from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebras,
 )
-from dzack_research.preamble.categories.rings.commutative_ideals import (
-    _from_engine_ideal,
-)
+from dzack_research.preamble.categories.rings.commutative_ideals import _from_engine_ideal
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
 
 def _parse_ade_type(ade_type):
-    r"""Return ``(letter, index)`` for a supported ADE label."""
-    if isinstance(ade_type, str):
-        label = ade_type.strip().upper()
-        if len(label) < 2:
-            raise ValueError("an ADE label has a letter and a positive index")
-        return label[0], int(label[1:])
-    letter, index = ade_type
-    return str(letter).upper(), int(index)
+    r"""Return ``(letter, index)`` for a supported ADE label.
+
+    Python-syntax ingress: a pair is read by its sequence pattern, and a label
+    such as ``"E6"`` by its letter and index.
+    """
+    match ade_type:
+        case (letter, index):
+            return str(letter).upper(), int(index)
+        case _:
+            label = str(ade_type).strip().upper()
+            assert label[1:].isdigit(), "an ADE label has a letter and a positive index"
+            return label[0], int(label[1:])
 
 
 def _ade_normal_form_equation(polynomial_ring, ade_type):
@@ -40,12 +40,10 @@ def _ade_normal_form_equation(polynomial_ring, ade_type):
     letter, index = _parse_ade_type(ade_type)
     match letter:
         case "A":
-            if index < 1:
-                raise ValueError("A_n requires n >= 1")
+            assert index >= 1, "A_n requires n >= 1"
             return x**2 + y ** (index + 1)
         case "D":
-            if index < 4:
-                raise ValueError("D_n requires n >= 4")
+            assert index >= 4, "D_n requires n >= 4"
             return x**2 * y + y ** (index - 1)
         case "E":
             match index:
@@ -61,48 +59,22 @@ def _ade_normal_form_equation(polynomial_ring, ade_type):
             raise ValueError("a supported simple plane curve has type A, D or E")
 
 
-class PlaneLinearRightEquivalence(SageObject):
-    r"""An explicit linear right-equivalence between two plane-curve germs.
+class _PlaneLinearRightEquivalence(CategoricalIsomorphism):
+    r"""A polynomial-ring automorphism carrying one selected germ equation to another."""
 
-    This is the supported equivalence notion used here: an automorphism of the
-    selected polynomial ring carrying the source equation to the target
-    equation.  Both directions are retained as owned algebra morphisms.  This
-    does not claim to decide arbitrary formal or analytic right-equivalence.
-    """
-
-    def __init__(self, source, target, forward, inverse) -> None:
-        if source.polynomial_ring() is not target.polynomial_ring():
-            raise ValueError("a represented linear right-equivalence uses one polynomial ring")
-        ring = source.polynomial_ring()
-        if forward.domain() is not ring or forward.codomain() is not ring:
-            raise ValueError("the forward coordinate change is an automorphism of the plane ring")
-        if inverse.domain() is not ring or inverse.codomain() is not ring:
-            raise ValueError("the inverse coordinate change is an automorphism of the plane ring")
-        for generator in ring.algebra_generators():
-            if inverse(forward(generator)) != generator:
-                raise ValueError("the selected coordinate maps are not inverse on the generators")
-            if forward(inverse(generator)) != generator:
-                raise ValueError("the selected coordinate maps are not inverse on the generators")
-        if forward(source.equation()) != target.equation():
-            raise ValueError("the coordinate change does not carry the source equation to the target equation")
-        self._source = source
-        self._target = target
-        self._forward = forward
-        self._inverse = inverse
+    def __init__(self, parent, forward, inverse, *, source, target) -> None:
+        self._source_germ = source
+        self._target_germ = target
+        super().__init__(parent, forward, inverse, verify=False)
 
     def source(self):
-        return self._source
+        return self._source_germ
 
     def target(self):
-        return self._target
+        return self._target_germ
 
-    def forward(self):
-        return self._forward
-
-    coordinate_change = forward
-
-    def inverse(self):
-        return self._inverse
+    def coordinate_change(self):
+        return self.forward()
 
     def ade_type(self):
         r"""Return the target ADE normal-form label, when the target is one."""
@@ -112,26 +84,36 @@ class PlaneLinearRightEquivalence(SageObject):
         return f"Linear right-equivalence {self.source()} -> {self.target()}"
 
 
-class _ZariskiTangentConstruction(SageObject):
-    r"""The selected tangent space together with its ambient embedding."""
-
-    def __init__(self, singularity, tangent_space, ambient_tangent_space, embedding) -> None:
-        self._singularity = singularity
-        self._tangent_space = tangent_space
-        self._ambient_tangent_space = ambient_tangent_space
-        self._embedding = embedding
-
-    def singularity(self):
-        return self._singularity
-
-    def tangent_space(self):
-        return self._tangent_space
-
-    def ambient_tangent_space(self):
-        return self._ambient_tangent_space
-
-    def embedding(self):
-        return self._embedding
+def PlaneLinearRightEquivalence(source, target, forward, inverse):
+    r"""Return the selected linear right-equivalence as an algebra automorphism."""
+    ring = source.polynomial_ring()
+    assert target.polynomial_ring() is ring, (
+        "a represented linear right-equivalence uses one polynomial ring"
+    )
+    assert forward.domain() is ring and forward.codomain() is ring, (
+        "the forward coordinate change is an automorphism of the plane ring"
+    )
+    assert inverse.domain() is ring and inverse.codomain() is ring, (
+        "the inverse coordinate change is an automorphism of the plane ring"
+    )
+    assert all(
+        inverse(forward(generator)) == generator
+        and forward(inverse(generator)) == generator
+        for generator in ring.algebra_generators()
+    ), "the selected coordinate maps are not inverse on the generators"
+    assert forward(source.equation()) == target.equation(), (
+        "the coordinate change does not carry the source equation to the target equation"
+    )
+    algebras = Algebras(ring.base_ring()).Associative().Unital()
+    core_mor = algebras.Core().Mor(ring, ring)
+    core_mor._require_base_morphisms(forward, inverse)
+    return _PlaneLinearRightEquivalence(
+        core_mor,
+        forward,
+        inverse,
+        source=source,
+        target=target,
+    )
 
 
 class IsolatedHypersurfaceSingularity:
@@ -139,8 +121,7 @@ class IsolatedHypersurfaceSingularity:
 
     def __init__(self, polynomial_ring, equation) -> None:
         base = polynomial_ring.base_ring()
-        if polynomial_ring not in SymmetricAlgebras(base):
-            raise TypeError("a hypersurface singularity requires a polynomial algebra")
+        assert polynomial_ring in SymmetricAlgebras(base), "a hypersurface singularity requires a polynomial algebra"
         self._polynomial_ring = polynomial_ring
         self._equation = polynomial_ring(equation)
         engine = _engine_ring(polynomial_ring)
@@ -149,8 +130,7 @@ class IsolatedHypersurfaceSingularity:
         derivatives = tuple(f.derivative(variable) for variable in variables)
         jacobian = engine.ideal(derivatives)
         dimension = jacobian.vector_space_dimension()
-        if dimension not in SageZZ:
-            raise ValueError("the Jacobian algebra is not finite-dimensional at the selected origin")
+        assert dimension in SageZZ, "the Jacobian algebra is not finite-dimensional at the selected origin"
         self._engine_derivatives = derivatives
         self._milnor_number = int(dimension)
 
@@ -204,12 +184,11 @@ class IsolatedHypersurfaceSingularity:
 
         ``forward_images`` and ``inverse_images`` are the images of the chosen
         polynomial generators under mutually inverse linear coordinate
-        changes.  The algebra-Hom owner verifies the maps; this method then
-        verifies the inverse identities and the equation itself.
+        changes.  The algebra-Mor owner verifies the maps; the equivalence
+        then verifies the inverse identities and the equation itself.
         """
         ring = self.polynomial_ring()
-        if target.polynomial_ring() is not ring:
-            raise ValueError("linear right-equivalence currently uses one selected plane ring")
+        assert target.polynomial_ring() is ring, "linear right-equivalence currently uses one selected plane ring"
         forward = Algebras(ring.base_ring()).Associative().Unital().Mor(ring, ring)(forward_images)
         inverse = Algebras(ring.base_ring()).Associative().Unital().Mor(ring, ring)(inverse_images)
         return PlaneLinearRightEquivalence(self, target, forward, inverse)
@@ -239,7 +218,15 @@ class IsolatedHypersurfaceSingularity:
 
     def jacobian_generators(self):
         ring = self.polynomial_ring()
-        return tuple(ring._from_engine_element(value) for value in self._engine_derivatives)
+        labels = ring.algebra_generating_set()
+        derivatives = tuple(
+            _owned_engine_element(ring, value) for value in self._engine_derivatives
+        )
+        return finite_indexed_family(
+            labels,
+            lambda label: derivatives[int(labels.ranking_map()(label))],
+            name="Jacobian generators indexed by coordinate variables",
+        )
 
     def milnor_algebra(self):
         return (self.polynomial_ring()).quotient_by_relations(self.jacobian_generators())
@@ -258,8 +245,7 @@ class IsolatedHypersurfaceSingularity:
             for relation in (self.equation(), *self.jacobian_generators())
         )
         dimension = ideal.vector_space_dimension()
-        if dimension not in SageZZ:
-            raise ValueError("the Tjurina algebra is not finite-dimensional at the selected origin")
+        assert dimension in SageZZ, "the Tjurina algebra is not finite-dimensional at the selected origin"
         return _own_ring(SageZZ)(dimension)
 
     def completed_local_ring(self, *, precision=20):
@@ -274,51 +260,37 @@ class IsolatedHypersurfaceSingularity:
         return ring.base_ring()._fresh_free_module_on(ring.algebra_generating_set())
 
     @cached_method
-    def zariski_tangent_construction(self):
-        r"""Return the selected ``ker(df_0)`` together with its ambient embedding.
+    def differential_at_origin(self):
+        r"""Return the differential ``df_0 : T_0 A^n -> k`` whose kernel is the Zariski tangent space.
 
-        For a hypersurface ``f=0`` at the coordinate origin, the Zariski
-        tangent space is the kernel of the linear form whose coefficients are
-        the constant terms of the partial derivatives of ``f``.  The selected
-        backend basis and its inclusion are retained by this construction,
-        rather than attached to the output module as provenance fields.
+        For a hypersurface ``f=0`` at the coordinate origin, ``df_0`` is the
+        linear form whose coefficients are the constant terms of the partial
+        derivatives of ``f``, and ``T_0 X = ker(df_0)``.
         """
-        ring = self.polynomial_ring()
-        base = ring.base_ring()
-        base_engine = _engine_ring(base)
-        coefficients = tuple(
-            base_engine(derivative.constant_coefficient())
-            for derivative in self._engine_derivatives
-        )
-        differential = matrix(base_engine, 1, len(coefficients), coefficients)
-        kernel_basis = tuple(differential.right_kernel().basis())
-        labels = finite_ordered_set(range(len(kernel_basis)))
-        tangent = base._fresh_free_module_on(labels)
+        base = self.polynomial_ring().base_ring()
         ambient = self.ambient_tangent_space()
-        ambient_labels = tuple(ambient.module_generating_set())
-
-        def image(label):
-            vector = kernel_basis[int(label)]
-            return ambient.linear_combination(
-                {
-                    ambient_label: ambient.base_ring()._from_engine_element(coefficient)
-                    for ambient_label, coefficient in zip(ambient_labels, vector, strict=True)
-                    if coefficient
-                }
+        values = base.free_module(1)
+        value_generator = values.module_generator(next(iter(values.module_generating_set())))
+        coefficients = dict(
+            zip(
+                tuple(ambient.module_generating_set()),
+                (_owned_engine_element(base, derivative.constant_coefficient()) for derivative in self._engine_derivatives),
+                strict=True,
             )
-
-        embedding = tangent.module_category().Mor(tangent, ambient)(image)
-        return _ZariskiTangentConstruction(self, tangent, ambient, embedding)
+        )
+        return ambient.module_category().Mor(ambient, values)(
+            {label: values.scalar_multiple(coefficients[label], value_generator) for label in ambient.module_generating_set()}
+        )
 
     @cached_method
     def zariski_tangent_space(self):
-        r"""Return ``ker(df_0)`` as a finite free vector space over the residue field."""
-        return self.zariski_tangent_construction().tangent_space()
+        r"""Return ``T_0 X = ker(df_0)``, a subobject of the ambient tangent space."""
+        return self.differential_at_origin().kernel()
 
     @cached_method
     def zariski_tangent_embedding(self):
-        r"""Return the represented inclusion ``T_0 X -> T_0 A^n``."""
-        return self.zariski_tangent_construction().embedding()
+        r"""Return the inclusion ``T_0 X -> T_0 A^n`` of the kernel."""
+        return self.zariski_tangent_space().inclusion()
 
     def is_regular_at_origin(self) -> bool:
         r"""Return the hypersurface Jacobian criterion at the selected origin."""
@@ -346,8 +318,7 @@ class IsolatedHypersurfaceSingularity:
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
-        if equation_ideal.radical() != equation_ideal:
-            raise ValueError("delta and conductor require a reduced plane curve")
+        assert equation_ideal.radical() == equation_ideal, "delta and conductor require a reduced plane curve"
         if self.is_regular_at_origin():
             return 0, 0, 1
         origin = engine.ideal(*engine.gens())
@@ -366,8 +337,7 @@ class IsolatedHypersurfaceSingularity:
         contribution over the ground field.
         """
         ring = self.polynomial_ring()
-        if point.parent().ring() is not ring:
-            raise ValueError("the selected local point belongs to a different plane")
+        assert point.parent().ring() is ring, "the selected local point belongs to a different plane"
         generators = tuple(ring.algebra_generators())
         assert len(generators) == 2, (
             "local delta data are represented here for plane curves"
@@ -375,20 +345,26 @@ class IsolatedHypersurfaceSingularity:
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
-        if equation_ideal.radical() != equation_ideal:
-            raise ValueError("delta and conductor require a reduced plane curve")
+        assert equation_ideal.radical() == equation_ideal, "delta and conductor require a reduced plane curve"
         singular_lib("normal.lib")
+        point_ideal = engine.ideal(
+            tuple(
+                _engine_element(ring, generator)
+                for generator in point.ideal().ideal_generators()
+            )
+        )
         local_data = singular_function("deltaLoc")(
             equation,
-            point.ideal()._engine_ideal(),
+            point_ideal,
             ring=engine,
         )
         total_delta, total_tjurina, total_branches = (
             int(value) for value in local_data
         )
         residue_degree = int(point.residue_degree())
-        if residue_degree <= 0 or total_delta % residue_degree:
-            raise ArithmeticError("local delta total is incompatible with the represented residue degree")
+        assert residue_degree > 0 and total_delta % residue_degree == 0, (
+            "local delta total is incompatible with the represented residue degree"
+        )
         return (
             total_delta // residue_degree,
             total_tjurina,
@@ -399,15 +375,13 @@ class IsolatedHypersurfaceSingularity:
     def delta_invariant_at(self, point):
         r"""Return the local delta invariant at a represented closed point."""
         delta, _tjurina, _branches, _degree = self._plane_curve_prime_data(point)
-        if delta < 0:
-            raise ValueError("the selected curve germ has infinite delta invariant")
+        assert delta >= 0, "the selected curve germ has infinite delta invariant"
         return _own_ring(SageZZ)(delta)
 
     def delta_contribution_over_base(self, point):
         r"""Return ``delta_p [kappa(p):k]`` without splitting the closed point."""
         delta, _tjurina, _branches, degree = self._plane_curve_prime_data(point)
-        if delta < 0:
-            raise ValueError("the selected curve germ has infinite delta invariant")
+        assert delta >= 0, "the selected curve germ has infinite delta invariant"
         return _own_ring(SageZZ)(delta * degree)
 
     def delta_invariant(self):
@@ -448,8 +422,7 @@ class IsolatedHypersurfaceSingularity:
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
-        if equation_ideal.radical() != equation_ideal:
-            raise ValueError("delta and conductor require a reduced plane curve")
+        assert equation_ideal.radical() == equation_ideal, "delta and conductor require a reduced plane curve"
         singular_lib("normal.lib")
         conductor_engine = singular_function("normalConductor")(equation_ideal, ring=engine)
         conductor = _from_engine_ideal(ring, conductor_engine)

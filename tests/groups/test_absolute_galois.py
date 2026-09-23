@@ -1,11 +1,11 @@
 import pytest
 
 from sage.misc.unknown import Unknown
-from sage.categories.homset import Homset
+from sage.categories.mor import Mor
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
 from dzack_research.preamble.all import GF, QQ, QuadraticField
-from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.group.groups import OwnedGroups, Subgroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
     OpenAbsoluteGaloisSubgroup,
@@ -15,15 +15,13 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_groups i
     AbsoluteGaloisGroupsOfFiniteFields,
     OpenAbsoluteGaloisSubgroups,
 )
-from dzack_research.preamble.categories.group.profinite.field_morphisms import (
+from dzack_research.preamble.categories.rings.field_morphisms import (
     ExactFieldMorphism,
 )
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
     PrimeProlongation,
 )
-from dzack_research.preamble.categories.group.profinite.galois_quotient import (
-    GaloisRestrictionMap,
-)
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 from dzack_research.preamble.categories.sets import Sets
 
 
@@ -71,6 +69,7 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     alpha = degree_four.embedding()(degree_four.field().field_generators()[0])
     base_generator = field.field_generators()[0]
     square = group.slice_automorphism(frobenius)
+    square_map = square.forward()
 
     assert frobenius.parent() is group
     assert frobenius.domain() is group.algebraic_closure()
@@ -78,27 +77,30 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert frobenius(alpha) == alpha**9
     assert frobenius(alpha) != alpha**3
     assert frobenius(embedding(base_generator)) == embedding(base_generator)
-    assert square.domain() is extension_object
-    assert square.codomain() is extension_object
-    assert square.right() is frobenius.as_morphism()
-    assert square.left()(base_generator) == base_generator
+    assert square.parent() is group.slice_category().Core().Mor(
+        extension_object, extension_object
+    )
+    assert square_map.domain() is extension_object
+    assert square_map.codomain() is extension_object
+    assert square_map.right() is frobenius.as_morphism()
+    assert square_map.left()(base_generator) == base_generator
     assert (~frobenius * frobenius)(alpha) == alpha
     assert square * group.slice_automorphism(frobenius**2) == group.slice_automorphism(
         frobenius**3
     )
-    assert ~square == group.slice_automorphism(~frobenius)
+    assert square.inverse() == group.slice_automorphism(~frobenius).forward()
     assert group.slice_automorphism(group.one()) * square == square
     assert tuple(group.topological_group_generators()) == (frobenius,)
 
     field_endomorphisms = group.arrow_set()
-    assert not isinstance(group, Homset)
-    assert field_endomorphisms in group.super_categories()
+    assert field_endomorphisms is group.field_automorphism_mor()
+    assert not isinstance(group, Mor)
     assert frobenius.as_morphism().parent() is field_endomorphisms
     assert frobenius.as_morphism() is frobenius.as_morphism()
     assert "_preamble_underlying_field_morphism" not in frobenius.__dict__
     assert "_preamble_absolute_galois_element" not in frobenius.as_morphism().__dict__
     assert frobenius in group
-    assert frobenius.as_morphism() in group
+    assert group(frobenius.as_morphism()) == frobenius
 
 
 def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_maps() -> (
@@ -106,12 +108,13 @@ def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_ma
 ):
     group = AbsoluteGaloisGroup(QQ)
     closure = group.algebraic_closure()
-    homset = closure.exact_morphisms_to(closure)
-    identity = homset.identity()
-    same_identity = homset.identity()
+    mor = closure.exact_morphisms_to(closure)
+    identity = mor.identity()
+    same_identity = mor.identity()
     separate_identity = closure.exact_morphisms_to(closure).identity()
 
-    assert closure.exact_morphisms_to(closure) is homset
+    assert closure.exact_morphisms_to(closure) is mor
+    assert mor is OwnedFields().MorCategory().Of(closure, closure)
     assert identity == same_identity
     assert hash(identity) == hash(same_identity)
     assert identity == separate_identity
@@ -160,6 +163,8 @@ def test_finite_coordinates_restriction_maps_and_extension_cosets_obey_their_law
     restriction_two = group.restriction_map(degree_two)
     restriction_four = group.restriction_map(degree_four)
 
+    assert restriction_two.parent() is group.Mor(quotient_two)
+    assert restriction_four.parent() is group.Mor(quotient_four)
     assert quotient_two.order() == 2
     assert quotient_four.order() == 4
     with pytest.raises(ValueError, match="outside this finite quotient"):
@@ -200,6 +205,58 @@ def test_finite_coordinates_restriction_maps_and_extension_cosets_obey_their_law
     assert frobenius**4 in kernel
     assert frobenius**3 in coset
     assert coset.representative() == frobenius**3
+
+
+def test_finite_stages_and_quotients_are_cached_by_the_defining_diagram() -> None:
+    group = AbsoluteGaloisGroup(GF(5))
+    stage = group.finite_extension(2)
+    same_stage = group.extension_data(
+        stage.field(),
+        embedding=stage.embedding(),
+        base_embedding=stage.base_embedding(),
+    )
+    stage_category = group.slice_category().SliceOver(group.extension_object())
+
+    assert stage.category() is stage_category
+    assert stage in stage_category
+    assert stage.target_object() is group.extension_object()
+    assert stage.source_object().arrow() is stage.base_embedding()
+    assert stage.arrow().right() is stage.embedding()
+    assert group.finite_extension(2) is stage
+    assert same_stage is not stage
+    assert same_stage == stage
+    assert hash(same_stage) == hash(stage)
+    assert group.finite_quotient(same_stage) is group.finite_quotient(stage)
+    assert group.finite_quotient(stage.field()) is group.finite_quotient(
+        group.extension_data(stage.field())
+    )
+    assert group.finite_quotient(group.finite_extension(4)) is not group.finite_quotient(stage)
+
+
+def test_cached_finite_extension_rejects_a_nonintegral_degree() -> None:
+    group = AbsoluteGaloisGroup(GF(5))
+    degree_one = group.finite_extension(1)
+
+    with pytest.raises(TypeError):
+        group.finite_extension(1.5)
+
+    assert group.finite_extension(1) is degree_one
+
+
+def test_quotient_cache_does_not_identify_different_closure_embeddings() -> None:
+    group = AbsoluteGaloisGroup(QQ)
+    field = _quadratic_number_field(2)
+    embeddings = tuple(field.exact_embeddings(group.algebraic_closure()))
+    left = group.extension_data(field, embedding=embeddings[0])
+    right = group.extension_data(field, embedding=embeddings[1])
+    left_quotient = group.finite_quotient(left)
+    right_quotient = group.finite_quotient(right)
+
+    assert left != right
+    assert left_quotient is not right_quotient
+    assert left_quotient.extension_data().embedding() == embeddings[0]
+    assert right_quotient.extension_data().embedding() == embeddings[1]
+    assert left_quotient.order() == right_quotient.order() == 2
 
 
 def test_number_field_restriction_fiber_is_a_coset_without_a_false_chosen_lift() -> (
@@ -258,7 +315,7 @@ def test_extension_data_extends_a_nondefault_chosen_base_embedding() -> None:
         lambda: foreign_group.extension_data(stage),
         lambda: foreign_group.open_subgroup(stage),
         lambda: OpenAbsoluteGaloisSubgroup(foreign_group, stage),
-        lambda: GaloisRestrictionMap(foreign_group, quotient),
+        lambda: foreign_group.restriction_map(stage),
         lambda: foreign_group.lift(finite_automorphism),
         lambda: foreign_group.lifts(finite_automorphism),
     ):
@@ -273,13 +330,17 @@ def test_open_subgroups_are_actual_subgroups_and_classes_forget_the_embedding() 
     index_three = group.open_subgroup(group.finite_extension(3))
     intersection = index_two.intersection(index_three)
 
-    assert index_two in OpenAbsoluteGaloisSubgroups()
+    assert index_two in OpenAbsoluteGaloisSubgroups(group)
+    assert index_two in Subgroups(group)
     assert index_two.supergroup() is group
     assert index_two.supergroup() is group
     assert index_two.index() == 2
     assert frobenius not in index_two
     assert frobenius**2 in index_two
-    assert index_two.inclusion()(index_two.frobenius()) == frobenius**2
+    inclusion = index_two.inclusion()
+    assert inclusion.parent() is index_two.Mor(group)
+    assert inclusion.is_continuous()
+    assert inclusion(index_two.frobenius()) == frobenius**2
     assert intersection.index() == 6
     assert intersection <= index_two
     assert intersection <= index_three
@@ -330,6 +391,8 @@ def test_decomposition_inertia_and_frobenius_project_to_exact_finite_objects() -
     inertia_image = inertia.image(quotient)
     frobenius_image = group.frobenius_class(2).image(quotient, prime_above_two)
 
+    assert frobenius_image.parent() is quotient.conjugacy_classes()
+    assert frobenius_image.supergroup() is quotient
     assert tuple(decomposition_image) == tuple(quotient.decomposition_group(prime_above_two))
     assert tuple(inertia_image) == tuple(quotient.inertia_group(prime_above_two))
     assert frobenius_image == quotient.frobenius_class(2, prime_above_two)
@@ -378,3 +441,20 @@ def test_quadratic_kummer_character_does_not_install_a_false_characteristic_two_
     group = AbsoluteGaloisGroup(GF(4, "u"))
     with pytest.raises(ValueError, match="characteristic different from two"):
         group.quadratic_character(group.base_field().field_generators()[0])
+
+
+def test_finite_field_automorphism_constructor_keeps_endpoints_and_exact_indices() -> None:
+    from dzack_research.preamble.categories.group.profinite.galois_quotient import FiniteExtensionAutomorphismGroup
+
+    group = AbsoluteGaloisGroup(GF(2))
+    stage = group.finite_extension(2)
+    quotient = group.finite_quotient(stage)
+    assert quotient is FiniteExtensionAutomorphismGroup(stage)
+    assert quotient in OwnedGroups().Finite()
+    assert quotient.cardinality() == 2
+    for element in quotient:
+        assert element * ~element == quotient.one()
+    with pytest.raises((TypeError, ValueError)):
+        quotient(1.5)
+    with pytest.raises(ValueError):
+        quotient(stage.base_embedding())
