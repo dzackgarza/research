@@ -965,7 +965,9 @@ def _commutative_ideal(source, generators):
                 Sets.Δ[0],
                 _subobject_ambient=ambient_module,
                 _subobject_generator_images={
-                    0: ambient_module((_owned_engine_value(source, generator),))
+                    0: ambient_module.linear_combination({
+                        next(iter(ambient_module.module_generating_set())): _owned_engine_value(source, generator),
+                    })
                 },
                 _extra_categories=(CommutativeIdeals(source),),
                 _extra_construction_data={

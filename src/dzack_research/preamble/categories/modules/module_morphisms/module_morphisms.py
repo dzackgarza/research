@@ -2104,7 +2104,7 @@ def _initialize_module_mor_parent(
         _algebra_from_native_ring(
             parent,
             parent._compose_endomorphisms,
-            _ModuleMorCommonMethods.identity(parent),
+            _ModuleMorCommonMethods.identity.__get__(parent)(),
             lambda scalar, arrow: _ModuleMorCommonMethods._owned_scalar_multiple(parent, scalar, arrow),
         )
 

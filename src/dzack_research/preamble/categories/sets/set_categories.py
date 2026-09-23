@@ -577,15 +577,19 @@ class Sets(OwnedCategory):
             raise TypeError("a set morphism requires two set objects")
         return _set_mor_category(domain, codomain)
 
+    def Subobjects(self, base_object: Parent) -> Category:
+        r"""Return the monomorphism subcategory of the slice over ``base_object``.
+
+        Stated on ``Set`` itself, where a subobject is its inclusion; a
+        category of structured sets keeps the general subobject category.
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            SetSubobjectCategory,
+        )
+
+        return SetSubobjectCategory(self, base_object)
+
     class SubcategoryMethods:
-        def Subobjects(self, base_object: Parent) -> Category:
-            r"""Return the monomorphism subcategory of the slice over ``base_object``."""
-            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-                SetSubobjectCategory,
-            )
-
-            return SetSubobjectCategory(self, base_object)
-
         def Finite(self) -> Category:
             r"""Return this category with the axiom that its objects are finite."""
             return self._with_axiom("Finite")
@@ -2793,6 +2797,8 @@ class _FiniteWordSet:
     countable, and repetition of one letter injects N into the union.
     This determines the cardinality without sampling an infinite family.
     """
+
+    _derived_construction_parameters = frozenset({"family"})
 
     def __init__(self, alphabet, commutative, **rest) -> None:
         self._alphabet = alphabet

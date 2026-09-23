@@ -2158,7 +2158,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return aleph0
             if category.is_subcategory(UncountableSets()):
                 return continuum
-            assert False, f"cardinality is defined for every ring, but the current exact computation does not cover the represented ring {self}"
+            assert False, f"cardinality is defined for every ring, but the current exact computation does not cover the represented ring {_engine_ring(self)}"
 
         def _has_selected_exact_coefficient_presentation(self) -> bool:
             r"""Return whether this ring carries a nontrivial selected exact presentation.
@@ -3334,12 +3334,27 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def is_projective(self) -> bool:
         r"""Projectivity as a module over the base ring.
 
-        A ring is free of rank one over itself, and a number-field order is
-        free of finite rank over the integers (its integral basis).
+        A ring is free of rank one over itself, a number-field order is
+        free of finite rank over the integers (its integral basis), and a
+        ring constructed with a native module basis over its base ring (a
+        free algebra on its words) is free on that basis.  This is asked
+        while the regular module is admitted into its free placement, so it
+        is read from the construction's basis rather than that placement.
         """
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
         if self.base_ring() is self or self._preamble_is_number_field_order():
             return True
-        raise AssertionError(f"projectivity of {self} over {self.base_ring()} is not decided here")
+        presentation = Modules.ParentMethods._native_module_presentation(self)
+        basis = None if presentation is None else presentation.module_basis()
+        if basis is not None and basis.source() in FramedFreeModules(self.base_ring()):
+            return True
+        raise AssertionError(
+            f"projectivity of {self._engine} over {self.base_ring()} is not decided here"
+        )
 
     def _preamble_is_number_field(self):
         return self._engine in SageNumberFields()
