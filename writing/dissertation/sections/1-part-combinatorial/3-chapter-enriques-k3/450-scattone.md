@@ -322,41 +322,8 @@ We record the resulting cusp diagram below as well.
 
 :::{#fig:fen-mirror-move-summary .figure}
 
-\begin{tikzpicture}[scale=1.5, decoration=snake]
+\input{tikz/mirror_moves_enriques_simplified.tex}
 
-\node[vertex=white] (p1) at (0, 0) {};
-\node[vertex=white] (p2) at (2, 0) {};
-\node[vertex=white] (p3) at (4, 2) {};
-\node[vertex=white] (p4) at (4, -2) {};
-\node[vertex=white] (p5) at (6, 0) {};
-\node[vertex=white] (p6) at (6, -2) {};
-
-\draw[-latex, shorten >= 0.4em] (p2) to (p3.west);
-\draw[-latex, shorten >= 0.4em, double] (p2) to (p4.west);
-\draw[-latex, shorten >= 0.4em, double] (p3) to (p5.west);
-\draw[-latex, shorten >= 0.4em] (p4) to (p5.west);
-\draw[-latex, shorten >= 0.4em, double] (p4) to (p6.west);
-\draw[-latex, decorate] (0.2,0) -- (1.8,0);
-
-\node at (3.25, .75) {\Large $U$};
-\node at (4.7, 0.75) {\Large $U(2)$};
-\node at (3.25, -.75) {\Large $U(2)$};
-\node at (4.7, -0.75) {\Large $U$};
-\node at (4.7, -2.25) {\Large $U(2)$};
-
-\node at (0, 3) {\Large $S$};
-\node at (2, 3) {\Large $T$};
-\node at (4, 3) {\Large $\bar{T}$};
-\node at (6, 3) {\Large $\bar{\bar{T}}$};
-
-\node at (-0.5, 0.5) {\large $\EnriquesInvariants_1$};
-\node at (1.5, 0.5) {\large $(12, 10, 0)_2$};
-\node at (3.5, 2.5) {\large $\EnriquesInvariants_1$};
-\node at (3.5, -2.5) {\large $(10, 8, 0)_1$};
-\node at (6.5, 0.5) {\large $(8, 8, 0)_0$};
-\node at (6.5, -1.5) {\large $(8, 6, 0)_0$};
-
-\end{tikzpicture}
 A concise summary of the mirror move algorithm applied to $\EnriquesInvariants_1$, corresponding to $\fen$.
 
 :::
