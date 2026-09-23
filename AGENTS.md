@@ -2017,23 +2017,26 @@ Sage's `abstract_method` is the repository's explicit marker for the rare case w
 method is intentionally a category implementation contract. It is not a TODO mechanism and
 not the default response to an algorithmic frontier.
 
-## Every constructor registers in the obligations sweep (for now)
+## Every object we care about has an exercise file
 
-`tests/test_constructors_meet_their_obligations.sage` runs every way the
-preamble makes an object and asks each result whether any name its
-categories require still resolves to an abstract declaration. Every new
-constructor or construction path must add a specimen row to its
-`_constructions()` table. An object that can enter a category without the
-category's defining datum is exactly the failure class this catches (modules
-with no ring action, form modules with no form).
+`tests/objects/` holds one `test_<object>.sage` file per mathematical object the
+preamble is expected to build: a named lattice, a group, a ring, a module, a
+scheme, a discriminant form. Each file is a session. It builds the object in
+every accepted way, each through the top-level category of its kind applied to
+the object's data (`Sets()`, `Modules(R)`, `Lattices(R)`, `Groups()`,
+`Algebras(R)`, ...). It asserts that the constructions agree. It asserts that the
+object is in the categories it belongs to (`assert L in Lattices(ZZ)`). Then it
+calls each operation expected of the object and asserts the result, one call
+after another. Each expected value is known independently of the
+implementation: computed by hand, cited from a source, or known from the
+mathematics. A new constructor or construction route adds its route to the file
+of the object it builds; a new object adds its own file.
 
-"For now" is load-bearing: the sweep remains an executable audit of construction paths
-while the owned type-protocol migration is incomplete. It is **not** replaced by an
-`ABCMeta` proof/enforcement layer. Genuine abstract category contracts are marked with Sage's
-`abstract_method`; construction-supplied data should disappear from the abstract-obligation
-surface as construction threading makes it unavoidable. Retire or shrink the sweep only by
-an explicit architectural decision after the corresponding owned construction/type path is
-actually in place, never by attrition.
+Nothing in these files inspects the implementation. There is no introspection,
+no table of constructors and no check that a method is implemented: an
+operation whose owner never supplied it fails when it is called, inside the
+test that names it. `just test-lint` enforces the same standard here as for
+every other test.
 
 ## Runtime classes only realize owned constructions
 

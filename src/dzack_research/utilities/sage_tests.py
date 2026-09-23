@@ -73,6 +73,12 @@ class SageSession(pytest.Module):
     r"""A ``test_*.sage`` file, imported through ``SessionLoader``."""
 
     def _getobj(self) -> ModuleType:
+        # As pytest's default ``prepend`` import mode does for a test module
+        # outside a package: its directory goes first on ``sys.path``, so the
+        # helper modules beside it import.
+        directory = str(self.path.parent)
+        if directory not in sys.path:
+            sys.path.insert(0, directory)
         name = ".".join(self.path.relative_to(self.config.rootpath).with_suffix("").parts)
         loader = _session_loader(self.config)(name, str(self.path))
         spec = spec_from_file_location(name, self.path, loader=loader)

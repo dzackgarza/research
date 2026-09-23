@@ -39,7 +39,7 @@ from natural_parameters import (
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
-survey = settings(max_examples=25, deadline=None)
+survey = settings(max_examples=25r, deadline=None)
 
 
 # ---------------------------------------------------------------------------

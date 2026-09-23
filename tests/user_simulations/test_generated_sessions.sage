@@ -16,7 +16,7 @@ from sage.misc.latex import latex
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
-session = settings(max_examples=15, deadline=None)
+session = settings(max_examples=15r, deadline=None)
 
 
 def rendered(obj) -> str:

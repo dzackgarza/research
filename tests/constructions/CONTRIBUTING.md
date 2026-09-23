@@ -176,7 +176,7 @@ Cartan types, and `family(names)` for a catalogue member drawn by name.
 `test_properties_construct.py` is the pattern:
 
 ```python
-@settings(max_examples=25, deadline=None)
+@settings(max_examples=25r, deadline=None)
 @given(gram=nondegenerate_gram_2x2)
 def test_rank_two_lattices_from_gram_matrices(gram) -> None:
     lattice = Lattices(ZZ)(gram)
