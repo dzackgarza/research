@@ -454,10 +454,7 @@ def _ring_morphisms_equal(left, right):
         )
 
     if left._engine_morphism is not None and right._engine_morphism is not None:
-        try:
-            return bool(left._engine_morphism == right._engine_morphism)
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+        return bool(left._engine_morphism == right._engine_morphism)
     return Unknown
 
 
@@ -485,10 +482,9 @@ class PredicateSubrings(OwnedCategory):
 
             if element_parent(element) is self:
                 return True
-            try:
-                candidate = self._ambient_ring(element)
-            except (TypeError, ValueError):
+            if element not in self._ambient_ring:
                 return False
+            candidate = self._ambient_ring(element)
             answer = self._predicate(candidate)
             assert answer is True or answer is False, (
                 f"membership in {self} requires the selected predicate to decide {candidate}"
@@ -504,10 +500,11 @@ class PredicateSubrings(OwnedCategory):
                 return element
             if source is not self and source in Modules(self.base_ring()) and source.unformed_module() is self:
                 return source._element_of_unformed_module(element)
-            try:
-                candidate = self._ambient_ring(element)
-            except (TypeError, ValueError):
-                raise ValueError(f"{element} is not in the ambient ring {self._ambient_ring}") from None
+            if element not in self._ambient_ring:
+                raise ValueError(
+                    f"{element} is not in the ambient ring {self._ambient_ring}"
+                )
+            candidate = self._ambient_ring(element)
             if candidate not in self:
                 raise ValueError(f"{candidate} does not satisfy {self._description}")
             return self.element_class(self, _engine_element(self._ambient_ring, candidate))
@@ -555,17 +552,14 @@ class LocalizationRings(OwnedCategory):
             )
 
         def __mul__(self, other):
-            if other.parent() is self.parent():
-                if other.parent() is not self.parent():
-                    return NotImplemented
+            from sage.structure.element import parent as element_parent
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            other_parent = element_parent(other)
+            if other_parent is self.parent():
                 return LocalizationRings.ElementMethods._mul_(self, other)
-            other_parent = getattr(other, "parent", lambda: None)()
-            if other_parent is not None:
-                try:
-                    if other_parent.base_ring() is self.parent():
-                        return other_parent.scalar_multiple(self, other)
-                except (AttributeError, TypeError, ValueError):
-                    pass
+            if other_parent in Modules(self.parent()):
+                return other_parent.scalar_multiple(self, other)
             return NotImplemented
 
         def inverse_of_unit(self):
