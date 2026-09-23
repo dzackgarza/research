@@ -46,6 +46,10 @@ testpaths = ["tests"]
 # A run over budget is red, because a slow suite is a defect in the code or
 # the tests, never a wait.  Do not raise it; find the cost.
 #
+# The test lint (dzack_research.utilities.test_lint) ends the run red when a
+# collected test breaks the session standard; --no-test-lint lifts it for a
+# one-off triage run, as --no-time-gates lifts the budget.
+#
 # --timeout bounds one test: a test that blocks -- on a subprocess, a lock, a
 # network call -- burns wall clock at low CPU and reports nothing at all when
 # it is killed.  On timeout pytest-timeout dumps the stack of every thread,
@@ -54,6 +58,7 @@ testpaths = ["tests"]
 # the report log plus JUnit xml make runs comparable to each other.
 addopts = """
   -p dzack_research.utilities.suite_budget
+  -p dzack_research.utilities.test_lint
   --timeout=60 --timeout-method=signal
   --durations=0 --durations-min=0
   --junit-xml=tests/.report/junit.xml

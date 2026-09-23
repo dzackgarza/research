@@ -454,3 +454,12 @@ sterk-link workspace=(justfile_directory() / "formalization/prove2me_workspace")
 
 sterk-check workspace=(justfile_directory() / "formalization/prove2me_workspace"):
     @formalization/sterk-enriques/verification/check_axioms.sh {{workspace}}
+
+# Lint the test tree against the session standard (dzack_research.utilities.test_lint).
+# With no paths it lints every test outside the protected specification subtrees.
+test-lint *paths:
+    sage_launcher="${SAGE_BIN:-$(command -v sage)}"; \
+    case "$sage_launcher" in */*) ;; *) sage_launcher="$(command -v "$sage_launcher")" ;; esac; \
+    sage_launcher="$(readlink -f "$sage_launcher")"; \
+    PYTHONPATH=src "$(dirname "$sage_launcher")/python3" \
+        -m dzack_research.utilities.test_lint {{paths}}
