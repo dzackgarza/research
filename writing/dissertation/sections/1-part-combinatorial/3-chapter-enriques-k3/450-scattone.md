@@ -322,29 +322,15 @@ We record the resulting cusp diagram below as well.
 
 :::{#fig:fen-mirror-move-summary .figure}
 
-\begin{tikzpicture}[
-  scale=1.5,
-  decoration=snake,
-  >=stealth,
-  every arrow/.append style={line width=1.2pt},
-  every label/.append style={font=\Large},
-  white node/.style={
-    circle,
-    draw=black,
-    fill=white,
-    inner sep=0pt,
-    minimum size=8pt
-  }
-]
+\begin{tikzpicture}[scale=1.5, decoration=snake]
 
-\node[white node] (p1) at (0, 0) {};
-\node[white node] (p2) at (2, 0) {};
-\node[white node] (p3) at (4, 2) {};
-\node[white node] (p4) at (4, -2) {};
-\node[white node] (p5) at (6, 0) {};
-\node[white node] (p6) at (6, -2) {};
+\node[vertex=white] (p1) at (0, 0) {};
+\node[vertex=white] (p2) at (2, 0) {};
+\node[vertex=white] (p3) at (4, 2) {};
+\node[vertex=white] (p4) at (4, -2) {};
+\node[vertex=white] (p5) at (6, 0) {};
+\node[vertex=white] (p6) at (6, -2) {};
 
-%\draw[shorten >= 0.2em, decorate] (p1) to (p2.west);
 \draw[-latex, shorten >= 0.4em] (p2) to (p3.west);
 \draw[-latex, shorten >= 0.4em, double] (p2) to (p4.west);
 \draw[-latex, shorten >= 0.4em, double] (p3) to (p5.west);

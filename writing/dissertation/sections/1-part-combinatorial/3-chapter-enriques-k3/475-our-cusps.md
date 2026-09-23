@@ -237,128 +237,65 @@ Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consi
 
 :::{#fig:fent-boundary-cusp-maps .figure}
 
-\begin{tikzpicture}[
-    square/.style={rectangle, draw, minimum width=2.5cm, minimum height=0.8cm},
-    highlighted_square/.style={rectangle, draw, minimum width=2.5cm, minimum height=0.8cm, fill=blue!15},
-    circ/.style={circle, draw, minimum size=0.8cm},
-    highlighted_circ/.style={circle, draw, minimum size=0.8cm, fill=blue!15}
-]
+\begin{tikzpicture}
+% F_En: 0-cusps (rounded) and 1-cusps (boxes); the eta_1 column is highlighted.
+\node[cusp1, fill=dzg highlight] (I1new) at (0,5.5) {$I_1$};
+\node[cusp0, fill=dzg highlight] (eta1new) at (0,4) {$\eta_1$};
+\node[cusp1] (I12new) at (0,2.5) {$I_{12}$};
+\node[cusp0] (eta2new) at (0,1) {$\eta_2$};
+\draw[incidence] (eta1new) -- (I1new);
+\draw[incidence] (eta1new) -- (I12new);
+\draw[incidence] (I12new) -- (eta2new);
 
-% === NEW VERTICAL STRUCTURE ===
-% Column 0: Vertical arrangement aligned with colored circle
-\node[highlighted_square] (I1new) at (\colZero,5.5) {$I_1$};
-\node[highlighted_circ] (eta1new) at (\colZero,4) {$\eta_1$};
-\node[square] (I12new) at (\colZero,2.5) {$I_{12}$};
-\node[circ] (eta2new) at (\colZero,1) {$\eta_2$};
+% F_{En,2}
+\node[cusp0, label={[cusp label]above:$U \oplus E_8(2)$}] (eta2top) at (2.5,2) {$\eta_2$};
+\node[cusp1, fill=dzg highlight] (L1top) at (5.5,2.5) {$I_{1,2}: E_8^2$};
+\node[cusp1] (L2top) at (5.5,1.5) {$I_{2,4,5}: D_{16}^+$};
+\node[cusp0, fill=dzg highlight, label={[cusp label]above:$U(2) \oplus E_8(2)$}] (eta1top) at (8.5,4) {$\eta_1$};
+\node[cusp0] (eta3top) at (8.5,2.7) {$\eta_3$};
+\node[cusp0] (eta4top) at (8.5,1.3) {$\eta_4$};
+\node[cusp0] (eta5top) at (8.5,0) {$\eta_5$};
+\foreach \name/\y/\lattice in {R1top/5/{I_{1,3}: E_7^2 C_2}, R2top/4/{I_{1,4}: D_8^2},
+    R3top/3/{I_{1,5}: A_{15} A_1(2)}}
+  \node[cusp1, fill=dzg highlight] (\name) at (11.5,\y) {$\lattice$};
+\foreach \name/\y/\lattice in {R4top/2/{I_{3,4}: A_{15} A_1(2)}, R5top/1/{I_{3,5}: D_{12} D_4},
+    R6top/0/{I_{4,5}: D_8^2}, R7top/-1/{I_{5}: E_7^2 C_2}}
+  \node[cusp1] (\name) at (11.5,\y) {$\lattice$};
+\foreach \a/\b in {eta2top.east/L1top.west, eta2top.east/L2top.west,
+    eta4top.west/L2top.east, eta5top.west/L2top.east,
+    eta3top.east/R1top.west, eta3top.east/R4top.west, eta3top.east/R5top.west,
+    eta4top.east/R2top.west, eta4top.east/R4top.west, eta4top.east/R6top.west,
+    eta5top.east/R3top.west, eta5top.east/R5top.west, eta5top.east/R6top.west,
+    eta5top.east/R7top.west}
+  \draw[incidence] (\a) -- (\b);
+\foreach \a/\b in {eta1top.west/L1top.east, eta1top.east/R1top.west,
+    eta1top.east/R2top.west, eta1top.east/R3top.west}
+  \draw[incidence, draw=dzg accent] (\a) -- (\b);
 
-% Arrows for vertical structure
-\draw[->] (eta1new) -- (I1new);
-\draw[->] (eta1new) -- (I12new);
-\draw[->] (I12new) -- (eta2new);
+% F_{(2,2,0)}
+\node[cusp0, label={[cusp label]below:$U \oplus E_8^2$}] (eta1bot) at (2.5,-5) {$\eta_1$};
+\node[cusp1] (L1bot) at (5.5,-4.5) {$I_{1,2}: E_8^2$};
+\node[cusp1] (L2bot) at (5.5,-5.5) {$I_{1,2}: D_{16}$};
+\node[cusp0, label={[cusp label]below:$U(2) \oplus E_8^2$}] (eta2bot) at (8.5,-5) {$\eta_2$};
+\foreach \name/\y/\lattice in {R1bot/-2.5/{D_5^2}, R2bot/-3.5/{E_7^2 C_2}, R3bot/-4.5/{E_8 D_8},
+    R4bot/-5.5/{D_{12} D_4}, R5bot/-6.5/{D_{16}}, R6bot/-7.5/{A_{15} A_1(2)}}
+  \node[cusp1] (\name) at (11.5,\y) {$I_2: \lattice$};
+\foreach \a/\b in {eta1bot.east/L1bot.west, eta1bot.east/L2bot.west,
+    eta2bot.west/L1bot.east, eta2bot.west/L2bot.east}
+  \draw[incidence] (\a) -- (\b);
+\foreach \k in {1,...,6}
+  \draw[incidence] (eta2bot.east) -- (R\k bot.west);
 
-% === UPPER DIAGRAM ===
-% Column 1: Left circle
-\node[circ] (eta2top) at (\colOne,2) {$\eta_2$};
-\node[above=0.3cm of eta2top] {$U \oplus E_8(2)$};
+% Separators, and the images of cusps under F_En <- F_{En,2} -> F_{(2,2,0)}
+\draw[draw=dzg muted, dotted] (-1,-1.75) -- (14,-1.75);
+\draw[draw=dzg muted, dotted] (1.25,7) -- (1.25,-8);
+\foreach \a/\b in {eta5top.south/eta2bot.north, eta2top.south/eta1bot.north,
+    eta1top.west/eta1new.east}
+  \draw[incidence, dashed, draw=dzg accent] (\a) -- (\b);
 
-% Column 2: Middle squares (connected to left circle)
-\node[highlighted_square] (L1top) at (\colTwo,2.5) {$I_{1,2}: E_8^2$};
-\node[square] (L2top) at (\colTwo,1.5) {$I_{2,4,5}: D_{16}^+$};
-
-% Column 3: Four circles
-\node[highlighted_circ] (eta1top) at (\colThree,4) {$\eta_1$};
-\node[circ] (eta3top) at (\colThree,2.7) {$\eta_3$};
-\node[circ] (eta4top) at (\colThree,1.3) {$\eta_4$};
-\node[circ] (eta5top) at (\colThree,0) {$\eta_5$};
-\node[above=0.3cm of eta1top] {$U(2) \oplus E_8(2)$};
-
-% Column 4: Seven squares
-\node[highlighted_square] (R1top) at (\colFour,5) {$I_{1,3}: E_7^2 C_2$};
-\node[highlighted_square] (R2top) at (\colFour,4) {$I_{1,4}: D_8^2$};
-\node[highlighted_square] (R3top) at (\colFour,3) {$I_{1,5}: A_{15} A_1(2)$};
-\node[square] (R4top) at (\colFour,2) {$I_{3,4}: A_{15} A_1(2)$};
-\node[square] (R5top) at (\colFour,1) {$I_{3,5}: D_{12} D_4$};
-\node[square] (R6top) at (\colFour,0) {$I_{4,5}: D_8^2$};
-\node[square] (R7top) at (\colFour,-1) {$I_{5}: E_7^2 C_2$};
-
-% Arrows for upper diagram
-% From column 1 to column 2
-\draw[->] (eta2top.east) -- (L1top.west);
-\draw[->] (eta2top.east) -- (L2top.west);
-
-% From column 3 to column 2
-\draw[->, blue!50, thick] (eta1top.west) -- (L1top.east);
-\draw[->] (eta4top.west) -- (L2top.east);
-\draw[->] (eta5top.west) -- (L2top.east);
-
-% From column 3 to column 4
-\draw[->, blue!50, thick] (eta1top.east) -- (R1top.west);
-\draw[->, blue!50, thick] (eta1top.east) -- (R2top.west);
-\draw[->, blue!50, thick] (eta1top.east) -- (R3top.west);
-\draw[->] (eta3top.east) -- (R1top.west);
-\draw[->] (eta3top.east) -- (R4top.west);
-\draw[->] (eta3top.east) -- (R5top.west);
-\draw[->] (eta4top.east) -- (R2top.west);
-\draw[->] (eta4top.east) -- (R4top.west);
-\draw[->] (eta4top.east) -- (R6top.west);
-\draw[->] (eta5top.east) -- (R3top.west);
-\draw[->] (eta5top.east) -- (R5top.west);
-\draw[->] (eta5top.east) -- (R6top.west);
-\draw[->] (eta5top.east) -- (R7top.west);
-
-% === LOWER DIAGRAM (shifted down) ===
-
-% Column 1: Left circle
-\node[circ] (eta1bot) at (\colOne,\lowerShift) {$\eta_1$};
-\node[below=0.3cm of eta1bot] {$U \oplus E_8^2$};
-
-% Column 2: Middle squares
-\node[square] (L1bot) at (\colTwo,\lowerShift+0.5) {$I_{1,2}: E_8^2$};
-\node[square] (L2bot) at (\colTwo,\lowerShift-0.5) {$I_{1,2}: D_{16}$};
-
-% Column 3: Right circle
-\node[circ] (eta2bot) at (\colThree,\lowerShift) {$\eta_2$};
-\node[below=0.3cm of eta2bot] {$U(2) \oplus E_8^2$};
-
-% Column 4: Six squares
-\node[square] (R1bot) at (\colFour,\lowerShift+2.5) {$I_2: D_5^2$};
-\node[square] (R2bot) at (\colFour,\lowerShift+1.5) {$I_2: E_7^2 C_2$};
-\node[square] (R3bot) at (\colFour,\lowerShift+0.5) {$I_2: E_8 D_8$};
-\node[square] (R4bot) at (\colFour,\lowerShift-0.5) {$I_2: D_{12} D_4$};
-\node[square] (R5bot) at (\colFour,\lowerShift-1.5) {$I_2: D_{16}$};
-\node[square] (R6bot) at (\colFour,\lowerShift-2.5) {$I_2: A_{15} A_1(2)$};
-
-% Arrows for lower diagram
-% From column 1 to column 2
-\draw[->] (eta1bot.east) -- (L1bot.west);
-\draw[->] (eta1bot.east) -- (L2bot.west);
-
-% From column 3 to column 2
-\draw[->] (eta2bot.west) -- (L1bot.east);
-\draw[->] (eta2bot.west) -- (L2bot.east);
-
-% From column 3 to column 4
-\draw[->] (eta2bot.east) -- (R1bot.west);
-\draw[->] (eta2bot.east) -- (R2bot.west);
-\draw[->] (eta2bot.east) -- (R3bot.west);
-\draw[->] (eta2bot.east) -- (R4bot.west);
-\draw[->] (eta2bot.east) -- (R5bot.west);
-\draw[->] (eta2bot.east) -- (R6bot.west);
-
-% Add horizontal separator line and connecting arrows
-\draw[gray, dotted, thick] (-1,-1.75) -- (14,-1.75);
-\draw[gray, dotted, thick] (1.25,7) -- (1.25,-8);
-
-% Blue dashed arrows with proper spacing from nodes
-\draw[->, dashed, blue, thick, shorten >=0.5em, shorten <=0.5em] (eta5top.south) -- (eta2bot.north);
-\draw[->, dashed, blue, thick, shorten >=0.5em, shorten <=0.5em] (eta2top.south) -- (eta1bot.north);
-\draw[->, dashed, blue, thick, shorten >=0.5em, shorten <=0.5em] (eta1top.west) -- (eta1new.east);
-
-% Main labels
 \node[above=8em of eta2top, xshift=5em] {\Huge $F_{\En, 2}$};
 \node[below=4em of eta1bot, xshift=5em] {\Huge $F_{(2,2,0)}$};
 \node[below=2em of eta2new] {\Huge $F_{\En}$};
-
 \end{tikzpicture}
 Mappings of boundary cusps under $\fen \from \fent \to \fttz$.
 
@@ -499,77 +436,40 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
 :::{#fig:fent-five-cusp-coverings .figure}
 
 \begin{tikzpicture}
+% First row: the five cusps. Second row: their K3 covers with the involution.
+\foreach \n in {1,...,5}
+  \pic at ({5*(\n-1)},0) {k3 cusp=\n};
 
-% Draw first row
-\cuspone{0}{0}
-\cusptwo{5}{0}
-\cuspthree{10}{0}
-\cuspfour{15}{0}
-\cuspfive{20}{0}
+% Cover 1: rotation by 180 degrees
+\pic[root labels=index] at (0,6) {k3 cusp=6};
+\draw[fold, ->] (2,8) ++(-0.9,0) arc[start angle=-180, end angle=0, radius=0.9];
+\draw[fold, ->] (2,8) ++(0.9,0) arc[start angle=0, end angle=180, radius=0.9];
 
-% Cover diagrams with additional visual elements
-% Cover 1: cuspsix with counterclockwise rotation arrows
-\cuspsix{0}{6}
-\begin{scope}[shift={(0,6)}]
-    % Circular arc with arrow indicating 180° counterclockwise rotation
-    \draw[->, blue, line width=0.5pt,dashed] (2,2) ++(-0.9,0) arc[start angle=-180, end angle=-0, radius=0.9];
-    \draw[->, blue, line width=0.5pt, dashed] (2,2) ++(0.9,0) arc[start angle=0, end angle=180, radius=0.9];
-\end{scope}
+% Cover 2: vertical reflection
+\pic[root labels=index] at (5,6) {k3 cusp=2 cover};
+\draw[fold axis] (7,5.5) -- (7,10.2);
+\draw[fold] (6.4,8) -- (7.6,8);
 
-% Cover 2: cusptwocover with vertical reflection line
-\cusptwocover{5}{6}
-\begin{scope}[shift={(5,6)}]
-    % Vertical dotted line through center
-    \draw[dotted, thick, blue] (2,-0.5) -- (2,4.2);
-    % Horizontal double arrow indicating reflection
-    \draw[<->, thick, blue] (1.4,2) -- (2.6,2);
-\end{scope}
+% Cover 3: diagonal reflection composed with the reflection in root 20
+\pic[root labels=index] (R) at (10,6) {k3 cusp=6};
+\draw[fold axis] (9.8,5.8) -- (14.2,10.2);
+\draw[fold] (11.5,9.5) -- (13.5,7.5);
+\node[reflected root] at (R20) {};
 
-% Cover 3: cuspsix with diagonal reflection and red X on node 20
-\cuspsix{10}{6}
-\begin{scope}[shift={(10,6)}]
-    % Diagonal line from bottom-left to top-right
-    \draw[thick,dashed,blue] (-0.2,-0.2) -- (4.2,4.2);
-    % Diagonal double arrow (northwest to southeast)
-    \draw[<->, thick, blue] (1.5,3.5) -- (3.5,1.5);
-    % Red X over node 20 (interior2 at (2,2.4))
-    \draw[red, very thick, line width=1pt] (2,2.4) ++(-0.15,-0.15) -- ++(0.3,0.3);
-    \draw[red, very thick, line width=1pt] (2,2.4) ++(-0.15,0.15) -- ++(0.3,-0.3);
-\end{scope}
+% Cover 4: horizontal reflection
+\pic[root labels=index] at (15,6) {k3 cusp=6};
+\draw[fold axis] (15,8) -- (19,8);
+\draw[fold] (17.5,6.75) -- (17.5,9.25);
 
-% Cover 4: cuspsix with horizontal reflection line  
-\cuspsix{15}{6}
-\begin{scope}[shift={(15,6)}]
-    % Horizontal line cutting diagram in half
-    \draw[thick, blue, dashed] (0,2) -- (4,2);
-    % Vertical double arrow indicating reflection
-    \draw[<->, thick, blue] (2.5,0.75) -- (2.5,3.25);
-\end{scope}
+% Cover 5: reflections in the eight odd perimeter roots
+\pic[root labels=index] (T) at (20,6) {k3 cusp=6};
+\foreach \k in {1,3,...,15}
+  \node[reflected root] at (T\k) {};
 
-% Cover 5: cuspsix with red X over odd-numbered perimeter nodes
-\cuspsix{20}{6}
-\begin{scope}[shift={(20,6)}]
-    % Red X over odd-numbered nodes: 1,3,5,7,9,11,13,15
-    \foreach \x/\y in {1/0,3/0,4/1,4/3,3/4,1/4,0/3,0/1} {
-        \draw[red, very thick, line width=1pt] (\x,\y) ++(-0.15,-0.15) -- ++(0.3,0.3);
-        \draw[red, very thick, line width=1pt] (\x,\y) ++(-0.15,0.15) -- ++(0.3,-0.3);
-    }
-\end{scope}
-
-% Labels for first row (cusps) and second row (covers)
 \foreach \i/\name in {0/1,5/2,10/3,15/4,20/5} {
-    \node[below] at (\i+2,-0.5) {Cusp \name};
-    \node[above] at (\i+2,10.5) {Cover \name};
+  \node[below] at (\i+2,-0.5) {Cusp \name};
+  \node[above] at (\i+2,10.5) {Cover \name};
 }
-
-
-% Labels - only for first row (main/bottom row)
-\node[below] at (2,-0.5) {Cusp 1};
-\node[below] at (7,-0.5) {Cusp 2};
-\node[below] at (12,-0.5) {Cusp 3};
-\node[below] at (17,-0.5) {Cusp 4};
-\node[below] at (22,-0.5) {Cusp 5};
-
 \end{tikzpicture}
 The five 0-cusps $\eta_i$ in $\fent$, along with the five "covering" relations: each corresponds to one of the two 0-cusps of $\fttz$, along with an involution specific to each $\eta_i$.
 

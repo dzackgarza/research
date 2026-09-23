@@ -49,66 +49,62 @@ In order to make this theory concrete, we now show how to explicitly carry out t
   \begin{scope}[shift={(0,10)}]
     % A3
     \begin{scope}[shift={(0,4)}]
-      \dynkin[scale=\dynkinscale, involutions={13}, involution/.style={blue, dashed, stealth-stealth, thick, shorten <=8pt, shorten >=8pt}, mark=o, labels*={1,2,3}, label macro*/.code={\alpha_{#1}}, label distance=\labeldistance, text style/.style={scale=1.1}]A3
+      \dynkin[scale=4, involutions={13}, mark=o, labels*={1,2,3}, label macro*/.code={\alpha_{#1}}, label distance=8pt]A3
       \node at (-0.3,0) {\Large $A_3$};
     \end{scope}
 
     % D4 (first variant)
     \begin{scope}[shift={(6,4)}]
-      \dynkin[scale=\dynkinscale, involutions={43}, involution/.style={blue, dashed, stealth-stealth, thick, shorten <=8pt, shorten >=8pt}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4}, label directions={above,above left,above right,below right,}, label distance=4pt, text style/.style={scale=1.1}]D4
+      \dynkin[scale=4, involutions={43}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4}, label directions={above,above left,above right,below right,}, label distance=4pt]D4
       \node at (-0.3,0) {\Large $D_4$};
     \end{scope}
 
     % Arrows
-    \draw[-{Stealth[scale=1.5]}, dashed, thick] (1.4,3) -- (1.4,0.5);
-    \draw[-{Stealth[scale=1.5]}, dashed, thick] (7.4,3) -- (7.4,0.5);
+    \draw[quotient map] (1.4,3) -- (1.4,0.5);
+    \draw[quotient map] (7.4,3) -- (7.4,0.5);
 
     % C2
     \begin{scope}[shift={(0,0)}]
-      \dynkin[arrows=false, scale=\dynkinscale, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt, text style/.style={scale=1.3}] C{o*}
+      \dynkin[scale=4, arrows=false, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt] C{o*}
       \node at (-0.3,0) {\Large $C_2$};
     \end{scope}
 
     % B3
     \begin{scope}[shift={(6,0)}]
-      \dynkin[arrows=false, scale=\dynkinscale, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt, text style/.style={scale=1.1}] B{oo*}
+      \dynkin[scale=4, arrows=false, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt] B{oo*}
       \node at (-0.3,0) {\Large $B_3$};
     \end{scope}
-
-    % Grid label
   \end{scope}
 
   % Grid 2 - Bottom Left Quadrant
   \begin{scope}[shift={(0,0)}]
     % D4 (second variant)
     \begin{scope}[shift={(0,4)}]
-      \dynkin[scale=\dynkinscale, involutions={[out=-30,in=-150,relative, -stealth]14;[out=30,in=150,stealth-,relative]13;[out=60, in=120,stealth-,relative]34}, involution/.style={blue, dashed, stealth-, thick, shorten <=8pt, shorten >=8pt}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4}, label directions={left,above left,above right,below right,}, label distance=8pt, text style/.style={scale=1}]D4
+      \dynkin[scale=4, involutions={[out=-30,in=-150,relative, -stealth]14;[out=30,in=150,stealth-,relative]13;[out=60, in=120,stealth-,relative]34}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4}, label directions={left,above left,above right,below right,}, label distance=8pt]D4
       \node at (-0.3,0) {\Large $D_4$};
     \end{scope}
 
     % E6
     \begin{scope}[shift={(6,4)}]
-      \dynkin[scale=\dynkinscale, involutions={[out=-60,in=-120,relative]16;[out=-70,in=-110,relative]35}, involution/.style={blue, dashed, stealth-stealth, thick, shorten <=8pt, shorten >=8pt}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6}, label directions={above,above,above,below,above,above}, label distance=8pt, text style/.style={scale=1.1}]E6
+      \dynkin[scale=4, involutions={[out=-60,in=-120,relative]16;[out=-70,in=-110,relative]35}, mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6}, label directions={above,above,above,below,above,above}, label distance=8pt]E6
       \node at (-0.3,0) {\Large $E_6$};
     \end{scope}
 
     % Arrows
-    \draw[-{Stealth[scale=1.5]}, dashed, thick] (1.4,3) -- (1.4,0.5);
-    \draw[-{Stealth[scale=1.5]}, dashed, thick] (8.75,3) -- (8.75,0.5);
+    \draw[quotient map] (1.4,3) -- (1.4,0.5);
+    \draw[quotient map] (8.75,3) -- (8.75,0.5);
 
     % G2
     \begin{scope}[shift={(0,0)}]
-      \dynkin[arrows=false, scale=\dynkinscale, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt, text style/.style={scale=1.1}] G{*o}
+      \dynkin[scale=4, arrows=false, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt] G{*o}
       \node at (-0.3,0) {\Large $G_2$};
     \end{scope}
 
     % F4
     \begin{scope}[shift={(6,0)}]
-      \dynkin[arrows=false, scale=\dynkinscale, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt, text style/.style={scale=1.1}] F{oo**}
+      \dynkin[scale=4, arrows=false, mark=*, label, label macro/.code={\beta_{[\alpha_{#1}]}}, label distance=8pt] F{oo**}
       \node at (-0.3,0) {\Large $F_4$};
     \end{scope}
-
-    % Grid label
   \end{scope}
 
 \end{tikzpicture}
