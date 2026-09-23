@@ -156,6 +156,8 @@ from dzack_research.preamble.categories.functions import (  # noqa: F401
     ell,
     graded_lebesgue_algebra,
     lebesgue_convolution_algebra,
+    GradedLebesgueAlgebra,
+    LebesgueConvolutionAlgebra,
 )
 
 # Explicit redundant aliases below are public session exports, not private imports.
@@ -542,8 +544,8 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     scope = _sys._getframe(1).f_globals if globals is None else globals
     _sage_load(filename, scope, attach)
     _restore_session_ring_bindings(scope)
-    scope["GradedLebesgueAlgebra"] = graded_lebesgue_algebra()
-    scope["LebesgueConvolutionAlgebra"] = lebesgue_convolution_algebra()
+    scope["GradedLebesgueAlgebra"] = GradedLebesgueAlgebra
+    scope["LebesgueConvolutionAlgebra"] = LebesgueConvolutionAlgebra
     scope["load"] = load
 
 
@@ -558,8 +560,6 @@ matrix = _language_runtime.matrix
 factorial = _language_runtime.factorial
 ellipsis_range = _language_runtime.ellipsis_range
 ellipsis_iter = _language_runtime.ellipsis_iter
-GradedLebesgueAlgebra = graded_lebesgue_algebra()
-LebesgueConvolutionAlgebra = lebesgue_convolution_algebra()
 
 
 def _realize_owned_categories_over(_ring) -> None:
