@@ -108,14 +108,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         ring = self.base_ring()
         return Modules(ring).Subobjects(ring.regular_module())
 
-    def __contains__(self, candidate) -> bool:
-        try:
-            if candidate.base_ring() is not self.base_ring():
-                return False
-        except (AttributeError, TypeError):
-            return False
-        return candidate in self.subobject_category()
-
     @cached_method
     def extension_to_fraction_field(self):
         r"""The functor ``CommutativeIdeals(R) -> FractionalIdeals(R)``, ``I |-> I`` inside ``Frac(R)``."""

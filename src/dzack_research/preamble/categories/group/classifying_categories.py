@@ -103,9 +103,6 @@ class ClassifyingCategory(CategoryPacketMethods, OwnedParameterizedCategory):
     def an_object(self):
         return self.object()
 
-    def __contains__(self, candidate) -> bool:
-        return candidate is self.object()
-
     def super_categories(self):
         return [Objects()]
 

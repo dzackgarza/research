@@ -3390,17 +3390,32 @@ def _normalized_space_names(names):
             return tuple(str(name) for name in names)
 
 
-def _space_placements(base):
-    r"""The integral and normal placements of ``A^n_R`` and ``P^n_R``, read from ``R``."""
+def _space_placements(base, dimension):
+    r"""The theorem-backed placements of ``A^n_R`` and ``P^n_R`` read at construction."""
     schemes = Schemes(base)
-    return tuple(
+    placements = [
         category
         for category, holds in (
             (schemes.Integral(), _integral_placement(base)),
             (schemes.Normal(), _normal_placement(base)),
         )
         if holds
-    )
+    ]
+    if _integral_placement(base):
+        from dzack_research.preamble.categories.schemes.varieties import (
+            Curves,
+            Surfaces,
+            Varieties,
+        )
+
+        dimension = int(dimension)
+        placements.append(Varieties(base))
+        match dimension:
+            case 1:
+                placements.append(Curves(base))
+            case 2:
+                placements.append(Surfaces(base))
+    return tuple(placements)
 
 
 def _affine_space_coordinates(base, dimension, names):
@@ -3422,7 +3437,11 @@ def _affine_space(base, coordinates, placements=(), **level_data):
     """
     engine, algebra = coordinates
     return _object_of(
-        Category.join((AffineSpaces(base), *_space_placements(base), *placements)),
+        Category.join((
+            AffineSpaces(base),
+            *_space_placements(base, int(algebra.algebra_generating_set().cardinality())),
+            *placements,
+        )),
         scheme_base_ring=base,
         scheme_engine=engine,
         coordinate_algebra=algebra,
@@ -3527,7 +3546,7 @@ def _projective_space(base, dimension, names, placements=(), **level_data):
     """
     engine = _SageProjectiveSpace(int(dimension), _engine_ring(base), names=_normalized_space_names(names))
     return _object_of(
-        Category.join((ProjectiveSpaces(base), *_space_placements(base), *placements)),
+        Category.join((ProjectiveSpaces(base), *_space_placements(base, dimension), *placements)),
         scheme_base_ring=base,
         scheme_engine=engine,
         **level_data,
@@ -4293,7 +4312,7 @@ def _scheme_product(*schemes, placements=(), **level_data):
             )
             offsets = tuple(sum(widths[:position]) for position in range(len(widths)))
             return _object_of(
-                Category.join((ProductProjectiveSpaces(base), *_space_placements(base), *placements)),
+                Category.join((ProductProjectiveSpaces(base), *_space_placements(base, sum(width - 1 for width in widths)), *placements)),
                 scheme_base_ring=base,
                 scheme_engine=engine,
                 factors=factors,
@@ -4445,7 +4464,12 @@ def _mixed_affine_projective_product(factors, base, placements, level_data):
     # For products of the standard spaces the charts are polynomial rings over
     # the base, so integral and normal placements are read from the base.
     if all(factor in AffineSpaces(base) or factor in ProjectiveSpaces(base) for factor in schemes):
-        placements.extend(_space_placements(base))
+        placements.extend(
+            _space_placements(
+                base,
+                sum(int(factor.relative_dimension()) for factor in schemes),
+            )
+        )
     return schemes_over_base.glue_affine_atlas(
         tuple(charts[label] for label in chart_labels),
         transitions,

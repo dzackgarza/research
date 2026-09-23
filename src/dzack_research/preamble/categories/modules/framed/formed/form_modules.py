@@ -2016,10 +2016,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U")
 
-    def additional_condition(self):
-        r"""None: a free form module is exactly a form module that is framed free."""
-        return None
-
     @classmethod
     def _repr_object_names(cls):
         return "free form modules"

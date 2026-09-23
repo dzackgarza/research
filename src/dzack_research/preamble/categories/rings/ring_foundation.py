@@ -60,7 +60,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
-    _membership_by_definition,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import (
@@ -2349,9 +2348,6 @@ class OwnedOrders(OwnedCategory):
         r"""The integers, the ring of integers of the rationals."""
         return _own_ring(SageZZ)
 
-    def additional_condition(self):
-        return None
-
     def super_categories(self):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
@@ -2555,21 +2551,6 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
 
     def base_ring(self):
         return self.base()
-
-    def __contains__(self, candidate) -> bool:
-        try:
-            if self in candidate.category().all_super_categories(proper=False):
-                return True
-        except (AttributeError, TypeError, ValueError):
-            return False
-        # Placement has not put the candidate here.  A category that states no
-        # condition of its own is not decided by placement: its objects are
-        # exactly those in every supercategory, and asking that is the whole
-        # question.  Every owned category over a ring reaches membership
-        # through this method, so the statement is read here as well as in
-        # ``OwnedCategory.__contains__``.
-        return _membership_by_definition(self, candidate)
-
 
 def _cross_engine_ring_value(value):
     r"""Cross a private engine-ring value back into the owned universe when possible."""

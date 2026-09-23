@@ -521,12 +521,18 @@ class Sets(OwnedCategory):
 
     def _call_(self, source):
         r"""Construct ``source`` as a represented set when syntactic ingress is needed."""
-        if source in self or source in SageSets():
+        if source in self:
             return source
         from dzack_research.preamble.categories.sets.finite_ordered_sets import (
             finite_ordered_set,
         )
 
+        if source in SageSets():
+            if source not in SageSets().Finite():
+                raise TypeError(
+                    "a foreign infinite Sage set needs an explicit owned representation"
+                )
+            return finite_ordered_set(tuple(source))
         return finite_ordered_set(tuple(SageSet(source)))
 
     def condition_set(self, universe, predicate):
@@ -567,10 +573,6 @@ class Sets(OwnedCategory):
                 return _EnumeratedImageSet(domain_subset, map_, inverse)
             case _:
                 return _ImageSet(domain_subset, map_, image_inverse=inverse)
-
-    def __contains__(self, candidate) -> bool:
-        r"""Placement, and every Sage set object, which this category admits."""
-        return super().__contains__(candidate) or candidate in SageSets()
 
     def Mor(self, domain: Parent, codomain: Parent) -> SetMorCategory:
         if domain not in self or codomain not in self:
@@ -1287,7 +1289,7 @@ class SetInjection(OwnedSetMorphism):
         if composite is NotImplemented:
             return composite
         monomorphisms = Sets().Mono(other.domain(), self.codomain())
-        if other in Sets().Mono(other.domain(), other.codomain()):
+        if Sets().Mono(other.domain(), other.codomain()).accepts(other):
             return _CompositeSetInjection(monomorphisms, self, other)
         return composite
 
@@ -1335,7 +1337,7 @@ class SetSurjection(OwnedSetMorphism):
         if composite is NotImplemented:
             return composite
         epimorphisms = Sets().Epi(other.domain(), self.codomain())
-        if other in Sets().Epi(other.domain(), other.codomain()):
+        if Sets().Epi(other.domain(), other.codomain()).accepts(other):
             return _CompositeSetSurjection(epimorphisms, self, other)
         return composite
 

@@ -371,16 +371,6 @@ class _SubcategoryOfArrows(OwnedCategory):
     def _object_on(self, functor: Functor):
         return _object_of(self, functor=functor)
 
-    def __contains__(self, candidate: Any) -> bool:
-        r"""Placement, or an object of the declared categories whose arrow satisfies the condition."""
-        match candidate:
-            case _ if super().__contains__(candidate):
-                return True
-            case _ if all(candidate in category for category in self.super_categories()):
-                return self.admits_arrow(candidate.arrow())
-            case _:
-                return False
-
     def Mor(self, source: Parent, target: Parent) -> ArrowMor:
         if source not in self or target not in self:
             raise TypeError("a Mor here requires two arrow objects of this category")
@@ -1117,10 +1107,6 @@ class SubobjectCategory(OwnedCategoryBase):
             raise TypeError("the object is not a represented subobject of the fixed base")
         return self.slice_category()(subobject.inclusion())
 
-    def __contains__(self, candidate: Any) -> bool:
-        r"""Whether construction placed the object among these fixed-base subobjects."""
-        return super().__contains__(candidate)
-
     def Mor(self, domain: Parent, codomain: Parent) -> SubobjectMor:
         if domain not in self or codomain not in self:
             raise TypeError("both objects must be subobjects of the fixed base object")
@@ -1410,9 +1396,6 @@ class _WideSubcategory(OwnedCategoryBase):
     def super_categories(self):
         return [self.base_category()]
 
-    def __contains__(self, candidate: Any) -> bool:
-        return candidate in self.base_category()
-
     def admits(self, arrow: Morphism) -> bool:
         r"""Whether ``arrow`` is one of the selected arrows."""
         return self.arrow_category().admits_arrow(arrow)
@@ -1422,6 +1405,11 @@ class _WideSubcategory(OwnedCategoryBase):
         if identity not in self.Mor(obj, obj):
             raise ValueError("the selected arrow class omits an identity")
         return identity
+
+    def Mor(self, domain: Parent, codomain: Parent):
+        if domain not in self.base_category() or codomain not in self.base_category():
+            raise TypeError("a wide-subcategory Mor requires two objects of its base category")
+        return self.MorCategory().Of(domain, codomain)
 
     def compose(self, second: Morphism, first: Morphism) -> Morphism:
         if first.codomain() is not second.domain():
@@ -1456,30 +1444,15 @@ class CoreMor(CategoricalMor):
         return self.base_category()
 
     def __contains__(self, candidate: Any) -> bool:
-        r"""Whether ``candidate`` is an isomorphism between these objects.
-
-        Only a represented isomorphism is an arrow of the core; it is one of
-        these when its forward and inverse maps are arrows of the base category.
-        """
-        match candidate:
-            case CategoricalIsomorphism() if (
-                candidate.domain() is self.domain() and candidate.codomain() is self.codomain()
-            ):
-                base = self.core_category().base_category()
-                return (
-                    candidate.forward() in base.Mor(self.domain(), self.codomain())
-                    and candidate.inverse() in base.Mor(self.codomain(), self.domain())
-                )
-            case _:
-                return False
+        r"""Element membership is the selected core-Mor parent, not an isomorphism probe."""
+        return isinstance(candidate, CategoricalIsomorphism) and candidate.parent() is self
 
     def _element_constructor_(self, forward, inverse=None):
         match forward:
             case CategoricalIsomorphism() if inverse is None:
                 if forward.parent() is self:
                     return forward
-                if forward not in self:
-                    raise ValueError("the isomorphism does not belong to this core Mor")
+                self._require_base_morphisms(forward.forward(), forward.inverse())
                 return self._from_known_inverse_pair(forward.forward(), forward.inverse())
         if inverse is None:
             forward, inverse = forward
@@ -1532,12 +1505,8 @@ class _CoreCategory(OwnedCategoryBase):
     def super_categories(self):
         return [self.base_category()]
 
-    def __contains__(self, candidate: Any) -> bool:
-        r"""The core has the objects of its base category."""
-        return candidate in self.base_category()
-
     def Mor(self, domain: Parent, codomain: Parent) -> CoreMor:
-        if domain not in self or codomain not in self:
+        if domain not in self.base_category() or codomain not in self.base_category():
             raise TypeError("the core Mor requires two base-category objects")
         return self.MorCategory().Of(domain, codomain)
 

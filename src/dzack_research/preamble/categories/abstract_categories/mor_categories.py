@@ -840,17 +840,11 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
         return self._element_constructor_(*args, **kwargs)
 
     def __contains__(self, candidate: Any) -> bool:
-        # The candidate is arbitrary: an object of ``Ar(C)``, a structured
-        # element of this parent (read through its underlying arrow), or a map.
         match candidate:
             case _ if parent(candidate) is self:
-                return self.accepts(candidate.as_morphism())
-            case Morphism():
-                return self.accepts(candidate)
-            case _ if candidate in self.base_category().ArrowCategory():
-                return self.accepts(candidate.arrow())
+                return True
             case _:
-                return False
+                return Category.__contains__(self, candidate)
 
 
 class CategoricalIsomorphism(Morphism):

@@ -95,26 +95,6 @@ def _fix_selected_framing(
     return selected
 
 
-def _membership_by_definition(category: Category, candidate: Parent) -> bool:
-    r"""Whether ``category``'s own definition puts ``candidate`` in it.
-
-    ``False`` unless the category states, through ``additional_condition``,
-    that it imposes no condition over its supercategories.  When it does, its
-    objects are exactly the objects lying in every one of them, and that is
-    the whole question.
-
-    A free function because an owned category that replaces
-    ``OwnedCategory.__contains__`` -- ``OwnedCategoryOverBaseRing`` does, and
-    every category over a ring reaches membership through it -- has to reach
-    the same statement.  One spelling, read wherever the question is asked.
-    """
-    if category.additional_condition() is not None:
-        return False
-    return all(
-        candidate in super_category for super_category in category.super_categories()
-    )
-
-
 class OwnedCategory(OwnedCategoryBase):
     r"""Base class for categories belonging to the owned mathematical graph.
 
@@ -149,49 +129,6 @@ class OwnedCategory(OwnedCategoryBase):
         is per-category mathematics, and a category that cannot is a gap in that
         category.
         """
-
-    def additional_condition(self):
-        r"""Return the condition this category imposes over its supercategories.
-
-        ``self`` when it imposes one and ``None`` when it does not, which is
-        the shape of Sage's ``Category.additional_structure`` and is read the
-        same way.  ``None`` is a mathematical statement, not an omission: the
-        category is the intersection of its supercategories, so its objects
-        are exactly the objects lying in every one of them, and what it adds
-        is operations and theorems rather than a further requirement.
-
-        ``FreeFormModules(R)`` is the model case.  A free form module is
-        exactly a module that is both a form module and framed free, and
-        those two are its declared supercategories, so nothing further is
-        being asked of an object and the two memberships decide it.
-        ``VectorSpaces(K)`` is the degenerate case of the same statement: its
-        one supercategory is ``Modules(K)`` and over a field there is no
-        further condition at all.
-
-        The default is ``self``, because a category normally does state
-        something of its own -- a chosen datum, an axiom, a property -- and a
-        category that has not said otherwise has not been examined.
-        """
-        return self
-
-    def __contains__(self, candidate: Any) -> bool:
-        r"""Whether ``candidate`` is an object of this category.
-
-        Placement decides it, which is Sage's rule and the one every category
-        with a condition of its own needs: an object acquires a chosen datum
-        or an axiom by being built or refined into the category that states
-        it, and no examination of the object afterwards can recover a choice
-        nobody made.
-
-        A category that imposes no condition of its own is not decided that
-        way.  Nothing has to be *placed* in the intersection of two categories
-        to be in it, and requiring that is what left ``U`` outside
-        ``FreeFormModules(R)`` while it was in both ``FormModules(R)`` and
-        ``FramedFreeModules(R)``, and left a free module over a field outside
-        ``VectorSpaces(K)``.  Such a category answers by its definition.
-        """
-        return super().__contains__(candidate) or _membership_by_definition(self, candidate)
-
 
 class OwnedParameterizedCategory(OwnedCategory):
     r"""An owned category parameterized by one object of a stated category.

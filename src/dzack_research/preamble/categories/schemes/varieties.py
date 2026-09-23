@@ -2,9 +2,8 @@
 
 A variety over ``S`` is an integral separated scheme of finite type over
 ``S``; a curve and a surface are the varieties of relative dimension one and
-two.  All three are full subcategories of ``Sch/S``: membership is the
-conjunction of the stated hypotheses, each of which the scheme already
-answers, so nothing is placed and no property is asserted twice.
+two.  Constructors which establish those hypotheses place the result in the
+corresponding full subcategory; membership never recomputes them afterwards.
 """
 
 from sage.misc.cachefunc import cached_method
@@ -39,16 +38,6 @@ class Varieties(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Schemes(self.base_ring()).Integral().Separated().FiniteType()]
 
-    def __contains__(self, candidate) -> bool:
-        r"""Membership is the three hypotheses, each read off the scheme itself."""
-        base = self.base_ring()
-        return (
-            candidate in Schemes(base).Integral()
-            and candidate in Schemes(base).Separated()
-            and candidate in Schemes(base).FiniteType()
-        )
-
-
 class _DimensionSubcategoryOfVarieties(OwnedCategoryOverBaseRing):
     r"""The varieties over ``S`` of one relative dimension.
 
@@ -61,13 +50,6 @@ class _DimensionSubcategoryOfVarieties(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [Varieties(self.base_ring())]
-
-    def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Varieties(self.base_ring())
-            and candidate.relative_dimension() == self.relative_dimension
-        )
-
 
 class Curves(_DimensionSubcategoryOfVarieties):
     r"""Varieties of relative dimension one over the stated base."""

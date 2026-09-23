@@ -236,9 +236,29 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         def dga(self):
             return self
 
+        @cached_method
         def regular_dg_module(self):
-            r"""Read this DGA as its canonical right DG-module over itself."""
-            return self
+            r"""Return the canonical right DG-module built on this DGA's module datum."""
+            from dzack_research.preamble.categories.modules.dg_modules import (
+                DifferentialGradedModules,
+            )
+
+            dga = self
+            source = self.unformed_module()
+
+            def right_action(module_element, algebra_element):
+                module = module_element.parent()
+                return module(dga(module_element) * dga(algebra_element))
+
+            return source._module_with_structure(
+                (DifferentialGradedModules(self),),
+                {
+                    "graded_algebra": self,
+                    "graded_algebra_action": right_action,
+                    "dg_algebra": self,
+                    "regular_module_source": source,
+                },
+            )
 
         def right_action(self):
             return lambda module_element, algebra_element: module_element * algebra_element

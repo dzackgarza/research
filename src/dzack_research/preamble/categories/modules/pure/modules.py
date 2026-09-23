@@ -143,10 +143,6 @@ class LinearEndCategoryConstruction(EndCategoryConstruction):
             raise TypeError("a module endomorphism Mor must be constructed as an owned ring")
         return endomorphisms
 
-    def __contains__(self, candidate) -> bool:
-        return hasattr(candidate, "end_family") and candidate.end_family() is self
-
-
 class ModuleEndCategoryConstruction(LinearEndCategoryConstruction):
     r"""The ring-valued endomorphism family ``M |-> End_R(M)``."""
 
@@ -2594,15 +2590,6 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return Modules(self.base_ring()).an_object()
-
-    def additional_condition(self):
-        r"""None: over a field, a vector space is exactly a module.
-
-        The condition is on the parameter, not on the object.  Every module
-        over a field is a vector space over it, so nothing has to be placed
-        here to be here.
-        """
-        return None
 
     @classmethod
     def _repr_object_names(cls):

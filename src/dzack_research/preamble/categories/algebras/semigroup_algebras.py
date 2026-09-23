@@ -42,16 +42,6 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "affine semigroup algebras"
 
-    def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Algebras(self.base_ring()).Associative().Unital().Commutative()
-            and candidate in AlgebrasWithChosenFinitePresentation(self.base_ring())
-            and isinstance(
-                candidate.__dict__.get("_affine_semigroup_presentation"),
-                _AffineSemigroupPresentation,
-            )
-        )
-
     class ParentMethods:
         def affine_semigroup_generator_coordinates(self):
             r"""Return the selected lattice-generator coordinates as an owned family."""

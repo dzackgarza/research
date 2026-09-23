@@ -8,6 +8,7 @@ standard finite free/cofree constructions.
 """
 
 from sage.categories.morphism import SetMorphism
+from sage.categories.category import Category
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
@@ -46,7 +47,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.owned_category import _object_of
-from dzack_research.preamble.refine import refine
 
 
 class GSetMorCategoryConstruction(MorCategoryConstruction):
@@ -643,15 +643,15 @@ class Torsors(OwnedParameterizedCategory):
     def _repr_object_names(self):
         return f"torsors under {self.group()}"
 
-    def __contains__(self, candidate) -> bool:
-        if candidate not in FiniteGSets(self.group()):
-            return False
-        return candidate.is_torsor() is True
-
     def _call_(self, candidate):
-        if candidate not in self:
+        finite_g_sets = FiniteGSets(self.group())
+        if candidate not in finite_g_sets or candidate.is_torsor() is not True:
             raise ValueError(f"{candidate} is not a torsor under {self.group()}")
-        return refine(candidate, self)
+        return _object_of(
+            Category.join((candidate.category(), self)),
+            point_set=candidate.point_set(),
+            permutation_representation=candidate.permutation_representation(),
+        )
 
     class ParentMethods:
         def an_element(self):

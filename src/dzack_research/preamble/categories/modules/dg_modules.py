@@ -35,11 +35,6 @@ class GradedAlgebraModules(OwnedParameterizedCategory):
         algebra = self.graded_algebra()
         return [GradedModules(algebra.base_ring(), algebra.grading_monoid())]
 
-    def __contains__(self, obj):
-        if obj is self.graded_algebra():
-            return obj in GradedModules(obj.base_ring(), obj.grading_monoid())
-        return super().__contains__(obj)
-
     class ParentMethods:
         def __init__(self, graded_algebra, graded_algebra_action, **rest) -> None:
             self._preamble_graded_algebra = graded_algebra
@@ -86,18 +81,10 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
             CochainComplexes(dga.base_ring()),
         ]
 
-    def __contains__(self, obj):
-        if obj is self.dga():
-            from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-                DifferentialGradedAlgebras,
-            )
-
-            return obj in DifferentialGradedAlgebras(obj.base_ring())
-        return super().__contains__(obj)
-
     class ParentMethods:
-        def __init__(self, dg_algebra, **rest) -> None:
+        def __init__(self, dg_algebra, regular_module_source=None, **rest) -> None:
             self._preamble_dg_algebra = dg_algebra
+            self._preamble_regular_dg_module_source = regular_module_source
             super().__init__(**rest)
 
         def dga(self):
@@ -105,6 +92,39 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
 
         def is_differential_graded_module(self) -> bool:
             return True
+
+        def unformed_module(self):
+            source = self._preamble_regular_dg_module_source
+            return super().unformed_module() if source is None else source
+
+        def _element_of_unformed_module(self, element):
+            source = self._preamble_regular_dg_module_source
+            if source is None:
+                return super()._element_of_unformed_module(element)
+            return source(element)
+
+        def _element_from_unformed_module(self, element):
+            if self._preamble_regular_dg_module_source is None:
+                return super()._element_from_unformed_module(element)
+            return self(element)
+
+        def differential_component(self, degree):
+            source_module = self._preamble_regular_dg_module_source
+            if source_module is None:
+                return super().differential_component(degree)
+            dga = self.dga()
+            source = self.graded_piece(degree)
+            target = self.graded_piece(int(degree) + 1)
+            dga_source = dga.graded_piece(degree)
+            dga_target = dga.graded_piece(int(degree) + 1)
+            differential = dga.differential_component(degree)
+            return source.Mor(target)(
+                lambda element: target(
+                    differential(dga_source(element))
+                    if differential.codomain() is dga_target
+                    else dga_target(differential(dga_source(element)))
+                )
+            )
 
 
 

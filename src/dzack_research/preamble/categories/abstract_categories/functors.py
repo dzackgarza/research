@@ -233,20 +233,6 @@ class DiscreteCategories(OwnedCategory):
 
         return [Cat()]
 
-    def __contains__(self, candidate) -> bool:
-        r"""Placement, read through ``Cat``'s Mor endpoint when it is handed one.
-
-        A discrete category records this category as its placement.  The
-        morphisms of this category are ``Cat``'s, whose endpoints are the
-        represented endpoints ``Cat.object`` builds, so an endpoint lies here
-        when the category it represents does.
-        """
-        match candidate:
-            case CategoryObject():
-                return candidate.represented_category() in self
-            case _:
-                return super().__contains__(candidate)
-
 
 class _DiscreteFunctor(Functor):
     r"""A functor between discrete categories induced by a map of object sets."""
