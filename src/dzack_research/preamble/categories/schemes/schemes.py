@@ -85,7 +85,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     QuotientRings,
-    _refine_commutative_algebra,
+    _commutative_algebra_with_structure,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -237,7 +237,7 @@ def _engine_polynomial_algebra(engine_polynomial_ring, base):
     polynomial rings; this is the one place such a ring is raised to the owned
     free, graded free and symmetric algebra it is.
     """
-    return _refine_commutative_algebra(
+    return _commutative_algebra_with_structure(
         _own_ring(engine_polynomial_ring),
         base,
         tuple(engine_polynomial_ring.variable_names()),
@@ -3534,7 +3534,7 @@ def _rational_functions_in_T():
 
     rationals = _own_ring(SageQQ)
     polynomial = rationals.polynomial_ring("T")
-    rational_functions = _refine_commutative_algebra(polynomial.fraction_field(), rationals, ("T",))
+    rational_functions = _commutative_algebra_with_structure(polynomial.fraction_field(), rationals, ("T",))
     return rational_functions, rational_functions.algebra_generator("T")
 
 

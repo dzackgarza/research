@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     VectorSpaces,
     _biproduct_label,
     _engine_matrix,
-    _refine_matrix_mor,
+    _require_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -1087,7 +1087,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalized_target = _cover_free_module(self, target_labels)
 
             def owned_matrix_morphism(domain, codomain, backend_matrix):
-                mor = _refine_matrix_mor(domain.module_category().Mor(domain, codomain))
+                mor = _require_matrix_mor(domain.module_category().Mor(domain, codomain))
                 source_labels = tuple(domain.module_generating_set())
                 target_labels = tuple(codomain.module_generating_set())
                 if int(backend_matrix.ncols()) != len(source_labels) or int(backend_matrix.nrows()) != len(target_labels):

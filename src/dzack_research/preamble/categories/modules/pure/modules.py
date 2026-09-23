@@ -87,7 +87,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import refine
 
 for _module_axiom in ("FinitelyGenerated", "Free", "Projective", "Torsion"):
     if _module_axiom not in all_axioms:
@@ -4398,7 +4397,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             source = self.codomain()
             codomain = self.domain()
             target = source.module_category().Mor(source, codomain)
-            _refine_matrix_mor(target)
+            _require_matrix_mor(target)
             return target.from_rows(
                 tuple(tuple(self.matrix_entry(row_label, column_label) for row_label in self.parent().row_index_set()) for column_label in self.parent().column_index_set())
             )
@@ -4414,7 +4413,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             ring = self.parent().base_ring()
             source = self.codomain()
             codomain = self.domain()
-            target = _refine_matrix_mor(source.module_category().Mor(source, codomain))
+            target = _require_matrix_mor(source.module_category().Mor(source, codomain))
             return target.from_rows((_owned_engine_element(ring, backend[row, column]) for column in range(target.ncols())) for row in range(target.nrows()))
 
         __invert__ = inverse
@@ -4595,7 +4594,7 @@ def _engine_matrix(morphism):
     r"""Privately materialize one matrix-Mor element in Sage."""
     from sage.matrix.constructor import matrix as sage_matrix
 
-    parent = _refine_matrix_mor(morphism.parent())
+    parent = _require_matrix_mor(morphism.parent())
     if parent not in MatrixSpaces(parent.base_ring()):
         raise TypeError("backend matrix materialization requires a matrix Mor element")
     ring = parent.base_ring()
@@ -4632,7 +4631,7 @@ def _matrix_coefficients(mor, morphism):
     return coefficients
 
 
-def _refine_matrix_mor(mor):
+def _require_matrix_mor(mor):
     r"""Return the already-constructed matrix Mor for finite free endpoints."""
     ring = mor.base_ring()
     domain = mor.domain()

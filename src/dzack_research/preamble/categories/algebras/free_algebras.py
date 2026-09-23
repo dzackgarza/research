@@ -32,7 +32,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
     _SelectedFiniteAlgebraPresentation,
-    _refine_algebra,
+    _algebra_with_structure,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
@@ -181,7 +181,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             law_decisions=(("grading", True),),
         )
 
-    def _refined_specialized_algebra(
+    def _specialized_algebra_with_structure(
         self,
         base_ring,
         labels,
@@ -264,7 +264,7 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
         _SageLaurentPolynomialRing(_engine_ring(base), *args, **kwargs)
     )
     labels = tuple(_engine_ring(result).variable_names())
-    algebra = _refine_algebra(result, base, labels)
+    algebra = _algebra_with_structure(result, base, labels)
     _set_owned_ring_display(
         algebra,
         f"{base}[{', '.join(labels)}^±1]",
@@ -1513,7 +1513,7 @@ def _commutative_algebra_coproduct_backend(left, right):
             _extra_categories=(CommutativeAlgebraCoproducts(base),),
             _extra_construction_data=construction_data,
         )
-    return _refine_algebra(
+    return _algebra_with_structure(
         presentation,
         base,
         combined_labels,

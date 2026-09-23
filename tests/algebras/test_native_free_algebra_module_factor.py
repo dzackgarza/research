@@ -115,12 +115,12 @@ def test_raw_native_polynomials_reach_the_same_constructed_module():
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
     from sage.rings.rational_field import QQ as SageQQ
     from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-    from dzack_research.preamble.categories.rings.commutative_algebra import _refine_commutative_algebra
+    from dzack_research.preamble.categories.rings.commutative_algebra import _commutative_algebra_with_structure
 
     algebra = _own_ring(PolynomialRing(SageQQ, "x"))
     assert algebra is QQ.polynomial_ring("x")
     assert algebra in FramedFreeModules(QQ)
-    assert _refine_commutative_algebra(algebra, QQ, ("x",)) is algebra
+    assert _commutative_algebra_with_structure(algebra, QQ, ("x",)) is algebra
     x = algebra.algebra_generator("x")
     assert algebra.linear_combination(algebra.framing_coefficients(x**5 + algebra.one())) == x**5 + algebra.one()
 

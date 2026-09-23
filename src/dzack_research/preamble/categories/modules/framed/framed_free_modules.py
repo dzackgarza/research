@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     VectorSpaces,
-    _refine_matrix_mor,
+    _require_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -889,7 +889,7 @@ def _matrix_space(base_ring, nrows, ncols=None):
     ncols = nrows if ncols is None else dimension(ncols)
     source = ring.free_module(ncols)
     target = ring.free_module(nrows)
-    return _refine_matrix_mor(source.module_category().Mor(source, target))
+    return _require_matrix_mor(source.module_category().Mor(source, target))
 
 
 def _fresh_free_module_on(

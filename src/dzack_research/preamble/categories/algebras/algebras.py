@@ -757,17 +757,17 @@ class Algebras(OwnedCategoryOverBaseRing):
             return algebra(product(module(self), module(other)))
 
     class ParentMethods:
-        def _refined_specialized_algebra(
+        def _specialized_algebra_with_structure(
             self,
             base_ring,
             labels,
             categories,
             construction_data,
         ):
-            r"""Internal refinement hook for a specialized algebra realization.
+            r"""Internal construction hook for a specialized algebra realization.
 
             Protected Algebras constructor contract under OWN-05.  The sole
-            caller is _refine_algebra.  A specialized algebra owner may return
+            caller is ``_algebra_with_structure``. A specialized algebra owner may return
             the owned algebra preserving its defining representation while
             adding the requested labels, categories, and construction data;
             the default returns None.  No engine handle is exchanged.  This
@@ -1765,7 +1765,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
             r"""The unit of ``End_R(F)``: the identity, the unit of composition."""
             return self.identity()
 
-def _refine_matrix_algebra(mor):
+def _require_matrix_algebra(mor):
     r"""Return a square matrix Mor after requiring constructor-time algebra placement."""
 
     ring = mor.base_ring()
@@ -2842,7 +2842,7 @@ def _owned_algebra_view(
     )
 
 
-def _refine_algebra(
+def _algebra_with_structure(
     algebra,
     base_ring,
     labels=None,
@@ -2858,7 +2858,7 @@ def _refine_algebra(
     native algebra constructor, without assuming a monomial basis.
     """
     base = _owned_ring(base_ring)
-    specialized = algebra._refined_specialized_algebra(
+    specialized = algebra._specialized_algebra_with_structure(
         base,
         labels,
         tuple(categories),
