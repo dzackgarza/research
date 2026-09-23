@@ -2504,6 +2504,15 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         r"""Return the mathematical domain of the base-ring parameter."""
         return OwnedRings()
 
+    @classmethod
+    def an_instance(cls):
+        r"""Return this category over the rational numbers.
+
+        Sage's ``Category_over_base.an_instance`` (category_types.py) returns
+        ``cls(QQ)``; here ``QQ`` is the owned rational field.
+        """
+        return cls(_own_ring(SageQQ))
+
     @staticmethod
     def __classcall__(cls, base_ring, *args, **kwargs):
         # During construction of an engine-backed owned ring, ``self`` already

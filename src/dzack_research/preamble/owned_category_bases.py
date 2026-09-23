@@ -254,6 +254,18 @@ class CategoryWithAxiom(
         self._init_cat_object()
         SageCategoryWithAxiom.__init__(self, base_category)
 
+    @classmethod
+    def an_instance(cls) -> SageCategory:
+        r"""Return the axiom applied to a sample of the category it refines.
+
+        This is how Sage's ``CategoryWithAxiom.__classcall__`` builds an axiom
+        category from its base (category_with_axiom.py): the base category
+        with the axiom applied.  The base's own ``an_instance`` supplies the
+        parameter, e.g. the rational field for a category over a ring.
+        """
+        base_category_class, axiom = cls._base_category_class_and_axiom
+        return base_category_class.an_instance()._with_axiom(axiom)
+
     def base_ring(self) -> Parent:
         r"""Return the base ring of the category this axiom refines."""
         return self._base_category.base_ring()
