@@ -17,7 +17,7 @@ of ``Ar(C)``: each declares it and states only its condition on arrows.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.mor import Mor as SageMor
@@ -54,6 +54,9 @@ from dzack_research.preamble.categories.functors.core import Functor, NaturalTra
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+
+
+_Object = TypeVar("_Object")
 
 
 class _ArrowAsFunctor(Functor):
@@ -788,12 +791,20 @@ class _FullSubcategoryOfArrows(_SubcategoryOfArrows):
     declaration, so the declared graph reads it at the category.
     """
 
+    @staticmethod
+    @cached_function(key=lambda cls, base_category: (cls, id(base_category)))
+    def __classcall__(cls, base_category: Category):
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(base_category)
+        return typecall(cls, base_category)
+
     def __init__(self, base_category: Category) -> None:
         self._base_category = base_category
         super().__init__()
 
     def _make_named_class_key(self, name):
-        return self._base_category
+        return id(self._base_category)
 
     def base_category(self) -> Category:
         return self._base_category
@@ -1318,6 +1329,20 @@ class _WideSubcategory(OwnedCategoryBase):
     not properties decidable by enumerating an arbitrary category.
     Each fixed Mor retains that class's predicate and the original arrow parent.
 
+    The object datum is unchanged: the selected arrow class contributes no
+    object structure. Object construction is the identity on the base's
+    already-placed objects, and ``ObjectType`` and ``ElementType`` are the
+    base's types. Membership reads that same placement; it never evaluates
+    the arrow predicate, refines an input, or infers structure from its
+    representation. This equality of object classes is not a reverse
+    supercategory declaration and does not identify the two Mor theories.
+
+    This is the identity-object case of Mathlib's
+    ``CategoryTheory.InducedWideCategory`` (``Widesubcategory.lean``): the
+    object type is unchanged and only the Hom type is restricted. The
+    preamble's chosen arrow category supplies the multiplicative class;
+    no second representation of an object or proof-object API is introduced.
+
     Unverified specimens: injections form a wide subcategory of sets. A
     noninjective map is an underlying set map, but is not an arrow here::
 
@@ -1336,7 +1361,7 @@ class _WideSubcategory(OwnedCategoryBase):
         True
         sage: swap = maps(lambda point: {"a": "b", "b": "a"}[point])
         sage: collapse = maps(lambda point: "a")
-        sage: swap in Mor, collapse in maps, collapse in Mor
+        sage: Mor.accepts(swap), collapse in maps, Mor.accepts(collapse)
         (True, True, False)
         sage: Mor.object(swap).arrow() is swap
         True
@@ -1378,14 +1403,14 @@ class _WideSubcategory(OwnedCategoryBase):
         return typecall(cls, base_category, arrow_category)
 
     def __init__(self, base_category: Category, arrow_category: _SubcategoryOfArrows) -> None:
-        if arrow_category.base_category() != base_category:
+        if arrow_category.base_category() is not base_category:
             raise ValueError("the selected arrows must belong to the stated base category")
         self._base_category = base_category
         self._arrow_category = arrow_category
         super().__init__()
 
     def _make_named_class_key(self, name):
-        return self._base_category, self._arrow_category
+        return id(self._base_category), id(self._arrow_category)
 
     def base_category(self) -> Category:
         return self._base_category
@@ -1396,30 +1421,59 @@ class _WideSubcategory(OwnedCategoryBase):
     def super_categories(self):
         return [self.base_category()]
 
+    @property
+    def ObjectType(self) -> type[Parent]:
+        r"""The unchanged object type; the arrow class adds no object datum."""
+        return self.base_category().ObjectType
+
+    @property
+    def ElementType(self):
+        r"""The unchanged element type of each base object."""
+        return self.base_category().ElementType
+
+    def __contains__(self, candidate: Any) -> bool:
+        r"""Read placement in the object class fixed by this construction.
+
+        The base owns this placement, including represented objects of Cat
+        and fixed Mor categories. The selected predicate concerns arrows
+        only and is consulted by the separate fixed Mor constructor.
+        """
+        return candidate in self.base_category()
+
+    def object(self, obj: _Object) -> _Object:
+        r"""Retain an already-placed base object, without copying or refining it."""
+        if obj not in self:
+            raise TypeError("a wide subcategory has exactly the objects of its base category")
+        return obj
+
+    __call__ = object
+
+    def _mor_endpoint(self, obj):
+        r"""Use the base object's representation at the fixed-Mor boundary."""
+        return self.base_category()._mor_endpoint(obj)
+
+    def an_object(self):
+        return self.object(self.base_category().an_object())
+
     def admits(self, arrow: Morphism) -> bool:
         r"""Whether ``arrow`` is one of the selected arrows."""
         return self.arrow_category().admits_arrow(arrow)
 
     def identity(self, obj: Parent) -> Morphism:
         identity = _category_mor_parent(self.base_category(), obj, obj).identity()
-        if identity not in self.Mor(obj, obj):
+        if not _category_accepts_morphism(self, obj, obj, identity):
             raise ValueError("the selected arrow class omits an identity")
         return identity
-
-    def Mor(self, domain: Parent, codomain: Parent):
-        if domain not in self.base_category() or codomain not in self.base_category():
-            raise TypeError("a wide-subcategory Mor requires two objects of its base category")
-        return self.MorCategory().Of(domain, codomain)
 
     def compose(self, second: Morphism, first: Morphism) -> Morphism:
         if first.codomain() is not second.domain():
             raise ValueError("the arrows are not composable")
-        if first not in self.Mor(first.domain(), first.codomain()):
+        if not _category_accepts_morphism(self, first.domain(), first.codomain(), first):
             raise ValueError("the first arrow is outside this wide subcategory")
-        if second not in self.Mor(second.domain(), second.codomain()):
+        if not _category_accepts_morphism(self, second.domain(), second.codomain(), second):
             raise ValueError("the second arrow is outside this wide subcategory")
         composite = second * first
-        if composite not in self.Mor(first.domain(), second.codomain()):
+        if not _category_accepts_morphism(self, first.domain(), second.codomain(), composite):
             raise ValueError("the selected arrow class is not closed under this composition")
         return composite
 
@@ -1442,10 +1496,6 @@ class CoreMor(CategoricalMor):
 
     def core_category(self) -> _CoreCategory:
         return self.base_category()
-
-    def __contains__(self, candidate: Any) -> bool:
-        r"""Element membership is the selected core-Mor parent, not an isomorphism probe."""
-        return isinstance(candidate, CategoricalIsomorphism) and candidate.parent() is self
 
     def _element_constructor_(self, forward, inverse=None):
         match forward:
@@ -1483,31 +1533,33 @@ class CoreMorCategoryConstruction(MorCategoryConstruction):
     FixedCategoryClass = CoreMor
 
 
-class _CoreCategory(OwnedCategoryBase):
-    r"""The maximal subgroupoid (core) of a represented category."""
+class _CoreCategory(_WideSubcategory):
+    r"""The wide subcategory whose arrows are represented isomorphisms.
+
+    Mathlib's ``CategoryTheory.Core`` (``Core.lean``) supplies the same
+    objects and inverse-bearing Hom data. Here the wide-subcategory
+    construction retains those exact objects, while ``CoreMor`` constructs
+    the forward/inverse pair in the selected base Mor theory.
+    """
 
     _MorCategory = CoreMorCategoryConstruction
 
+    @staticmethod
+    @cached_function(key=lambda cls, base_category: (cls, id(base_category)))
+    def __classcall__(cls, base_category: Category):
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(base_category)
+        return typecall(cls, base_category)
+
     def __init__(self, base_category: Category) -> None:
-        self._base_category = base_category
-        super().__init__()
-
-    def _make_named_class_key(self, name):
-        return self._base_category
-
-    def base_category(self) -> Category:
-        return self._base_category
+        super().__init__(base_category, _IsoArrowCategory(base_category))
 
     def Core(self) -> Category:
         r"""A core is already a groupoid, so taking its core changes nothing."""
         return self
 
-    def super_categories(self):
-        return [self.base_category()]
-
     def Mor(self, domain: Parent, codomain: Parent) -> CoreMor:
-        if domain not in self.base_category() or codomain not in self.base_category():
-            raise TypeError("the core Mor requires two base-category objects")
         return self.MorCategory().Of(domain, codomain)
 
     def identity(self, obj: Parent) -> CategoricalIsomorphism:

@@ -463,15 +463,8 @@ class Cat(CategoryPacketMethods, Category):
 
             return _CoproductsOfCategory(index_category, self)
 
-        @property
-        def ObjectType(self) -> type[Parent]:
-            r"""Return the complete implementation type for objects of this category."""
-            return self.parent_class
-
-        @property
-        def ElementType(self) -> type[Element]:
-            r"""Return the complete implementation type for their elements."""
-            return self.element_class
+        ObjectType = CategoryPacketMethods.ObjectType
+        ElementType = CategoryPacketMethods.ElementType
 
         @abstract_method(optional=True)
         def _categorical_tensor_product(self, left: Parent, right: Parent) -> Parent:
