@@ -8,6 +8,7 @@ from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+from sage.rings.quotient_ring import QuotientRing_generic
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.localizations import (
@@ -152,20 +153,17 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             containment is decided in ``R`` by the localization criterion in
             :meth:`contains_ambient_element`.
             """
-            try:
-                if other not in CommutativeIdeals(self.ring()):
-                    return False
-                if self.ring() in LocalizationRings():
-                    return all(
-                        other.contains_ambient_element(generator)
-                        for generator in self.ideal_generators()
-                    ) and all(
-                        self.contains_ambient_element(generator)
-                        for generator in other.ideal_generators()
-                    )
-                return bool(self._engine_ideal() == other._engine_ideal())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
+            if other not in CommutativeIdeals(self.ring()):
                 return False
+            if self.ring() in LocalizationRings():
+                return all(
+                    other.contains_ambient_element(generator)
+                    for generator in self.ideal_generators()
+                ) and all(
+                    self.contains_ambient_element(generator)
+                    for generator in other.ideal_generators()
+                )
+            return bool(self._engine_ideal() == other._engine_ideal())
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -205,17 +203,12 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             assert engine is not self.ring(), (
                 "this ideal operation requires an active engine-ideal realization"
             )
-            try:
-                return engine.ideal(
-                    tuple(
-                        _engine_element(self.ring(), generator)
-                        for generator in self.ideal_generators()
-                    )
+            return engine.ideal(
+                tuple(
+                    _engine_element(self.ring(), generator)
+                    for generator in self.ideal_generators()
                 )
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise AssertionError(
-                    "this ideal operation requires an active engine-ideal realization"
-                ) from error
+            )
 
         def extension_to_localization(self, localization_ring):
             r"""Return the represented localization ``S^{-1}I <= S^{-1}R``."""
@@ -227,62 +220,27 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def is_prime(self):
             backend = self._engine_ideal()
-            try:
-                return bool(backend.is_prime())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                try:
-                    return bool(
-                        _engine_quotient_cover_ideal(self.ring(), backend).is_prime()
-                    )
-                except (
-                    AttributeError,
-                    NotImplementedError,
-                    TypeError,
-                    ValueError,
-                ) as quotient_error:
-                    raise AssertionError(
-                        "primality of this ideal requires an exact represented ideal or quotient-cover computation"
-                    ) from quotient_error
+            match _realized_as_quotient(self.ring()):
+                case True:
+                    return bool(_cover_lifted_ideal(self).is_prime())
+                case False:
+                    return bool(backend.is_prime())
 
         def is_maximal(self):
             backend = self._engine_ideal()
-            try:
-                return bool(backend.is_maximal())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                engine_ring = backend.ring()
-                if isinstance(
-                    engine_ring,
-                    (PolynomialRing_generic, MPolynomialRing_base),
-                ) and bool(engine_ring.base_ring().is_field()):
-                    # Zariski's lemma: for a polynomial algebra over a field,
-                    # a prime ideal is maximal exactly when its quotient has
-                    # Krull dimension zero.  Sage exposes both predicates even
-                    # when Ideal.is_maximal() itself is not implemented.
-                    return bool(backend.is_prime() and backend.dimension() == 0)
-                try:
-                    lifted = _engine_quotient_cover_ideal(self.ring(), backend)
-                except (
-                    AttributeError,
-                    NotImplementedError,
-                    TypeError,
-                    ValueError,
-                ) as error:
-                    raise AssertionError(
-                        "maximality of this ideal requires an exact represented ideal or quotient-cover computation"
-                    ) from error
-                try:
-                    return bool(lifted.is_maximal())
-                except NotImplementedError as error:
-                    cover = lifted.ring()
-                    assert bool(cover.base_ring().is_field()), (
-                        "the represented maximality fallback requires a polynomial quotient over a field"
-                    )
-                    try:
-                        return bool(lifted.is_prime() and lifted.dimension() == 0)
-                    except NotImplementedError as fallback_error:
-                        raise AssertionError(
-                            "the selected quotient-cover computation must decide primality and dimension for maximality"
-                        ) from fallback_error
+            match _realized_as_quotient(self.ring()):
+                case True:
+                    selected = _cover_lifted_ideal(self)
+                case False:
+                    selected = backend
+            selected_ring = selected.ring()
+            match selected_ring:
+                case PolynomialRing_generic() | MPolynomialRing_base() if bool(
+                    selected_ring.base_ring().is_field()
+                ):
+                    return bool(selected.is_prime() and selected.dimension() == 0)
+                case _:
+                    return bool(selected.is_maximal())
 
         def radical(self):
             r"""Return ``sqrt(I)``.
@@ -721,7 +679,11 @@ def _realized_as_quotient(ring) -> bool:
     offered and then declines when called.  So the routing is decided from the
     ring rather than from whether the operation is present.
     """
-    return _optional_engine_method(_engine_ring(ring), "cover_ring") is not None
+    match _engine_ring(ring):
+        case QuotientRing_generic():
+            return True
+        case _:
+            return False
 
 
 def _cover_lifted_ideal(ideal):

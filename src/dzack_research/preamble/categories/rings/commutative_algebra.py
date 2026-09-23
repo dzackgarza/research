@@ -471,11 +471,8 @@ class PrimeSpectra(OwnedCategory):
         def __contains__(self, candidate) -> bool:
             if isinstance(candidate, self.category().ElementType):
                 return candidate.parent() is self
-            try:
-                ideal = _engine_ideal(self.ring(), candidate)
-                return bool(ideal.is_prime())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
+            ideal = _engine_ideal(self.ring(), candidate)
+            return bool(ideal.is_prime())
 
         def le(self, left, right) -> bool:
             return self._element_constructor_(left).specializes_to(

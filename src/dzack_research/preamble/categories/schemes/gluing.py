@@ -610,14 +610,11 @@ class _FiniteAtlasSchemeMorphism(SchemeMorphism):
                 )
             case _:
                 pass
-        try:
-            return all(
-                self.local_map(index)
-                == other * self.atlas().chart_embedding(index)
-                for index in self.atlas().chart_indices()
-            )
-        except (AttributeError, TypeError, ValueError):
-            return False
+        return all(
+            self.local_map(index)
+            == other * self.atlas().chart_embedding(index)
+            for index in self.atlas().chart_indices()
+        )
 
     def __ne__(self, other) -> bool:
         return not self == other
