@@ -706,6 +706,7 @@ class LocalizationRings(OwnedCategory):
             submonoid,
             _engine_ring=None,
             _engine_source_decoder=None,
+            _engine_source_encoder=None,
             _engine_units_exact=False,
             *,
             algebra_source=None,
@@ -715,6 +716,7 @@ class LocalizationRings(OwnedCategory):
             self._localization_source = source
             self._localization_submonoid = submonoid
             self._localization_engine_source_decoder = _engine_source_decoder
+            self._localization_engine_source_encoder = _engine_source_encoder
             self._localization_engine_units_exact = bool(_engine_units_exact)
             self._localization_algebra_source = algebra_source
             self._fraction_field_realization = fraction_field_realization
@@ -817,20 +819,6 @@ class LocalizationRings(OwnedCategory):
                 return value
             if isinstance(value, tuple) and len(value) == 2:
                 return self.fraction(value[0], value[1])
-            if self._preamble_engine_ring is not None:
-                try:
-                    value_parent = getattr(value, "parent", lambda: None)()
-                    engine_value = _engine_element(value_parent, value) if value_parent in OwnedRings() else value
-                    represented = self._preamble_engine_ring(engine_value)
-                    structure = self.localization_submonoid()._structure_data()
-                    source = self.localization_source()
-                    source_engine = _engine_ring(source)
-                    return self.fraction(
-                        _owned_engine_element(source, source_engine(represented.numerator())),
-                        _owned_engine_element(source, source_engine(represented.denominator())),
-                    )
-                except (AttributeError, TypeError, ValueError):
-                    pass
             return self.fraction(value)
 
         def __call__(self, value):
@@ -839,11 +827,13 @@ class LocalizationRings(OwnedCategory):
         def __contains__(self, value) -> bool:
             if isinstance(value, self.category().ElementType) and value.parent() is self:
                 return True
-            try:
-                self(value)
-            except (TypeError, ValueError):
-                return False
-            return True
+            source = self.localization_source()
+            if isinstance(value, tuple) and len(value) == 2:
+                numerator, denominator = value
+                if numerator not in source or denominator not in source:
+                    return False
+                return self._valid_denominator(source(denominator))
+            return value in source
 
         def _from_engine_element(self, value):
             engine = self._preamble_engine_ring
@@ -866,7 +856,9 @@ class LocalizationRings(OwnedCategory):
             # by sending the original variables through ``P -> P/I`` and each
             # auxiliary variable to the represented inverse of its selected
             # denominator.  This is exactly the universal localization map.
-            try:
+            if isinstance(engine, QuotientRing_generic) and isinstance(
+                source_engine, QuotientRing_generic
+            ):
                 engine_cover = engine.cover_ring()
                 source_cover = source_engine.cover_ring()
                 source_names = tuple(source_cover.variable_names())
@@ -896,9 +888,6 @@ class LocalizationRings(OwnedCategory):
                                 ) ** int(exponent)
                         result += term
                     return result
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
-
             return self.fraction(
                 _owned_engine_element(source, source_engine(represented.numerator())),
                 _owned_engine_element(source, source_engine(represented.denominator())),
@@ -910,18 +899,24 @@ class LocalizationRings(OwnedCategory):
                 "crossing this localization element to an engine requires a selected computation realization"
             )
             element = self(value)
+            encoder = self._localization_engine_source_encoder
+            if encoder is not None:
+                return encoder(element.numerator()) / encoder(element.denominator())
             numerator = _engine_element(self.localization_source(), element.numerator())
             denominator = _engine_element(self.localization_source(), element.denominator())
-            try:
-                return engine(numerator) / engine(denominator)
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                # A quotient-localization realization is an auxiliary-variable
-                # polynomial quotient.  Sage has no direct coercion from the
-                # source quotient ``P/I`` to that presentation, so cross each
-                # source class through its chosen polynomial lift first.
-                numerator_lift = getattr(numerator, "lift", lambda: numerator)()
-                denominator_lift = getattr(denominator, "lift", lambda: denominator)()
-                return engine(numerator_lift) / engine(denominator_lift)
+            source_engine = _engine_ring(self.localization_source())
+            source_map = engine.coerce_map_from(source_engine)
+            if source_map is not None:
+                return source_map(numerator) / source_map(denominator)
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                QuotientRings,
+            )
+
+            assert self.localization_source() in QuotientRings(), (
+                "a localization engine without a source coercion is represented here "
+                "only for a quotient source with canonical polynomial lifts"
+            )
+            return engine(numerator.lift()) / engine(denominator.lift())
 
         def zero(self):
             return self.fraction(self.localization_source().zero())
@@ -951,29 +946,34 @@ class LocalizationRings(OwnedCategory):
                 prime = structure.get("prime_ideal")
                 if prime is None:
                     return Unknown
-                try:
-                    annihilator = source.ideal(source.zero()).colon(source.ideal(difference))
-                    return any(not prime.contains_ambient_element(generator) for generator in annihilator.ideal_generators())
-                except (AttributeError, NotImplementedError, TypeError, ValueError):
-                    pass
+                annihilator = source.ideal(source.zero()).colon(
+                    source.ideal(difference)
+                )
+                return any(
+                    not prime.contains_ambient_element(generator)
+                    for generator in annihilator.ideal_generators()
+                )
 
             from dzack_research.preamble.categories.rings.commutative_algebra import (
                 QuotientRings,
             )
 
             if source in QuotientRings():
-                try:
-                    source_ring = source.quotient_source()
-                    representative = source_ring(difference.lift())
-                    lifted_generators = tuple(source_ring(generator.lift()) for generator in self.localization_submonoid().monoid_generators())
-                    if lifted_generators:
-                        product = source_ring.one()
-                        for generator in lifted_generators:
-                            product *= generator
-                        saturated = source.defining_ideal().saturation(source_ring.ideal(product))
-                        return saturated.contains_ambient_element(representative)
-                except (AttributeError, NotImplementedError, TypeError, ValueError):
-                    pass
+                source_ring = source.quotient_source()
+                representative = source_ring(difference.lift())
+                lifted_generators = tuple(
+                    source_ring(generator.lift())
+                    for generator in self.localization_submonoid().monoid_generators()
+                )
+                if not lifted_generators:
+                    return False
+                product = source_ring.one()
+                for generator in lifted_generators:
+                    product *= generator
+                saturated = source.defining_ideal().saturation(
+                    source_ring.ideal(product)
+                )
+                return saturated.contains_ambient_element(representative)
 
             # A selected exact coefficient presentation A = P/I contains the
             # same data needed for localization equality as an explicit
@@ -982,46 +982,50 @@ class LocalizationRings(OwnedCategory):
             # lift to P belongs to I : (f_1 ... f_r)^∞.  Indeed, a monomial in
             # the f_i kills d iff a sufficiently large common power of their
             # product kills d, and conversely every such common power lies in S.
-            try:
-                has_presentation = source._has_selected_exact_coefficient_presentation()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                has_presentation = False
+            has_presentation = source._has_selected_exact_coefficient_presentation()
             if has_presentation:
-                try:
-                    presentation_ring = source._exact_coefficient_presentation_ring()
-                    representative = presentation_ring(source._lift_coefficient_to_presentation(difference))
-                    lifted_generators = tuple(
-                        presentation_ring(source._lift_coefficient_to_presentation(generator)) for generator in self.localization_submonoid().monoid_generators()
+                presentation_ring = source._exact_coefficient_presentation_ring()
+                representative = presentation_ring(
+                    source._lift_coefficient_to_presentation(difference)
+                )
+                lifted_generators = tuple(
+                    presentation_ring(
+                        source._lift_coefficient_to_presentation(generator)
                     )
-                    if not lifted_generators:
-                        return False
-                    product = presentation_ring.one()
-                    for generator in lifted_generators:
-                        product *= generator
-                    relations = tuple(presentation_ring(relation) for relation in source._exact_coefficient_presentation_relations())
-                    defining_ideal = presentation_ring.ideal(*(relations or (presentation_ring.zero(),)))
-                    saturated = defining_ideal.saturation(presentation_ring.ideal(product))
-                    return saturated.contains_ambient_element(representative)
-                except (AttributeError, NotImplementedError, TypeError, ValueError):
-                    pass
-
-            try:
-                engine = _engine_ring(source)
-                if bool(engine.is_finite()):
-                    generators = tuple(self.localization_submonoid().monoid_generators())
-                    pending = [difference]
-                    seen = []
-                    while pending:
-                        current = pending.pop()
-                        if current == source.zero():
-                            return True
-                        if any(current == old for old in seen):
-                            continue
-                        seen.append(current)
-                        pending.extend(source(generator * current) for generator in generators)
+                    for generator in self.localization_submonoid().monoid_generators()
+                )
+                if not lifted_generators:
                     return False
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
+                product = presentation_ring.one()
+                for generator in lifted_generators:
+                    product *= generator
+                relations = tuple(
+                    presentation_ring(relation)
+                    for relation in source._exact_coefficient_presentation_relations()
+                )
+                defining_ideal = presentation_ring.ideal(
+                    *(relations or (presentation_ring.zero(),))
+                )
+                saturated = defining_ideal.saturation(
+                    presentation_ring.ideal(product)
+                )
+                return saturated.contains_ambient_element(representative)
+
+            if source in FiniteSets():
+                generators = tuple(self.localization_submonoid().monoid_generators())
+                pending = [difference]
+                seen = []
+                while pending:
+                    current = pending.pop()
+                    if current == source.zero():
+                        return True
+                    if any(current == old for old in seen):
+                        continue
+                    seen.append(current)
+                    pending.extend(
+                        source(generator * current) for generator in generators
+                    )
+                return False
             return Unknown
 
         def _repr_(self):
