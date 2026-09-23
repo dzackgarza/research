@@ -15,7 +15,7 @@ tags:
 Absent from the dissertation, which states only the generic fact that roots have norm $-2$ or $-4$ with divisibility 2.
 
 ::: {.Remark}
-### Why this is the highest-value computational note for this project
+## Why this is the highest-value computational note for this project
 
 `content_pandoc/sections/Open_Problems/Open_Problems.md` poses, as an open conjecture, the horizontal folding involution $\theta$ with $\lkt^\theta \cong T_{\Co}$ and $\lkt^{-\theta}\cong S_{\Co}$, and explicitly demands the $22\times22$ matrix of $\theta$ and the horizontal folding of the $(18,0,0)_1$ diagram.
 Those are stated in exactly the coordinates tabulated below.
@@ -62,7 +62,7 @@ All 19 roots have norm $-2$.
 | $w_9$ | $f-e$ | $w_{19}$ | $\tilde\alpha_2$ |
 | $w_{10}$ | $\tilde w_8+e$ |  |  |
 
-$(18,0,0)_1 = U\oplus E_8^{\oplus2}$ is the lattice to which the Coble cusps are claimed to correspond under $\tilde\eta$; see [[cusp-correspondence-morphism-chain]].
+$(18,0,0)_1 = U\oplus E_8^{\oplus2}$ is the lattice to which the Coble cusps are claimed to correspond under $\tilde\eta$; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
 
 ## The folded diagrams
 
@@ -86,7 +86,7 @@ $s^2_k = w_k + w_{18-k}$, together with $s^2_9 = w_9$ and $s^2_{10} = w_{18}+w_{
 This case is reflection-twisted rather than a plain permutation.
 Set
 $$
-w_\alpha(x) = x + \tfrac12\langle v_{22}, x\rangle\, v_{22},
+w_\alpha(x) = x + \tfrac12\inner{v_{22}}{x}\, v_{22},
 \qquad
 I(x) = x + w_\alpha(x),
 $$
@@ -122,7 +122,7 @@ The induced root-image matrices have shape $(20,12)$ or $(20,14)$ and are assert
 
 The Gram matrix is reconstructed from a Coxeter diagram by
 $$
-\langle v_i, v_j\rangle = \sqrt{v_i^2\, v_j^2}\,\cos\!\left(\frac{\pi}{m_{ij}+2}\right),
+\inner{v_i}{v_j} = \sqrt{v_i^2\, v_j^2}\,\cos\!\left(\frac{\pi}{m_{ij}+2}\right),
 $$
 with $\infty$-labelled edges handled as $\sqrt{v_i^2 v_j^2}$.
 
@@ -153,8 +153,8 @@ Settling it is a prerequisite, not a footnote.
 ::: {.Remark}
 ### A related contradiction, resolved
 
-Two blocks of the same archived outline disagree about which 0-cusps of $F_{\En,2}$ carry toroidal rather than strictly semitoroidal compactifications: one says cusps 2 and 4, the other says cusps 2 and 3. The dissertation settles it as **cusps 2 and 4**, together with the adjacent 1-cusps and 1-cusp 35, citing AEGS Thm.
-5.9. This matters here because the Coble 0-cusp is claimed to be Sterk cusp 2, which is toroidal under either reading; see [[cusp-correspondence-morphism-chain]].
+Two blocks of the same archived outline disagree about which 0-cusps of $\fentwo$ carry toroidal rather than strictly semitoroidal compactifications: one says cusps 2 and 4, the other says cusps 2 and 3. The dissertation settles it as **cusps 2 and 4**, together with the adjacent 1-cusps and 1-cusp 35, citing AEGS Thm.
+5.9. This matters here because the Coble 0-cusp is claimed to be Sterk cusp 2, which is toroidal under either reading; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
 :::
 
-Related: [[coxiter-results-for-cusp-lattices]], [[computational-toolchain-and-recipe]], [[lattice-and-diagram-conventions]], [[cusp-correspondence-morphism-chain]].
+Related: [CoxIter results for cusp lattices](coxiter-results-for-cusp-lattices.md), [computational toolchain and recipe](computational-toolchain-and-recipe.md), [lattice and diagram conventions](../reference-tables/lattice-and-diagram-conventions.md), [cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).

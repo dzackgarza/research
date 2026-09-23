@@ -6,12 +6,12 @@ $$
 \begin{aligned}
     \lkt &= (22, 0, 0)_3 = U^3 \oplus E_8^2 = \latII_{3, 19} &
     E_{10} &= (10, 0, 0)_1 = U \oplus E_8 = \latII_{1, 9} \\
-    S_\En &= (10, 10, 0)_1 = E_{10}(2) &
+    S_\En &= \EnriquesInvariants_1 = E_{10}(2) &
     T_\En &= (12, 10, 0)_2 = U \oplus E_{10}(2) \\
     S_\Co &= (11, 11, 1)_1 = \gens{-2} \oplus E_{10}(2) &
     T_\Co &= (11,11,1)_2 = \gens{2} \oplus E_{10}(2) \\
-    S_{\dP} &= (2,2,0)_1 = U(2) &
-    T_{\dP} &= (20, 2, 0)_2 = U \oplus U(2) \oplus E_8^2
+    \sdp &= (2,2,0)_1 = U(2) &
+    \tdp &= (20, 2, 0)_2 = U \oplus U(2) \oplus E_8^2
 \end{aligned}
 $$
 
@@ -45,7 +45,7 @@ Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 There is a sequence of primitive embeddings
 
 $$
-T_{\Co} \injects T_{\En} \injects T_{\dP} \injects \lkt
+T_{\Co} \injects \ten \injects \tdp \injects \lkt
 $$
 
 which is unique up to
@@ -59,7 +59,7 @@ $$
 \end{aligned}
 $$
 
-and thus an embedding $F_{\Co} \injects F_{(2,2,0)}$.
+and thus an embedding $\fco \injects F_{(2,2,0)}$.
 :::
 
 ::: {.proof}
@@ -81,11 +81,11 @@ $$
 
 This embedding is unique because $E_{10} = U \oplus E_8$ is unimodular.
 A primitively embedded unimodular sublattice splits its ambient lattice
-(\longref{prop:unimodular-splits}), so the codomain of any primitive embedding of
+([the unimodular-splitting proposition](#prop:unimodular-splits)), so the codomain of any primitive embedding of
 $E_{10}$ is $E_{10}\oplus E_{10}^{\perp}$.
 The gluing datum of such an embedding is the graph of an isometry between a
 subgroup of $A_{E_{10}}$ and a subgroup of $A_{E_{10}^\perp}$
-(\longref{rmk:embedding-gluing-data}), and $A_{E_{10}} = 0$, so that datum is
+([the embedding-gluing description](#rmk:embedding-gluing-data)), and $A_{E_{10}} = 0$, so that datum is
 trivial and the embedding is determined by the isometry class of the complement.
 Similarly, by [@Nik80 Cor. 1.5.2, Thm.
 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
@@ -95,9 +95,9 @@ Similarly, by [@Nik80 Cor. 1.5.2, Thm.
 
 The embeddings of lattices
 $\eta: T_\Co\injects T_\En$ (resp.
-$T_{\Co} \injects T_{\dP}$) induce
-locally closed embeddings $F_\Co \injects F_\En$ (resp.
-$F_{\Co} \injects F_{(2,2,0)}$) which extend to morphisms on the
+$T_{\Co} \injects \tdp$) induce
+locally closed embeddings $\fco \injects \fen$ (resp.
+$\fco \injects F_{(2,2,0)}$) which extend to morphisms on the
 Baily--Borel compactifications.
 :::
 
@@ -108,17 +108,17 @@ This follows from [@KK72 §5, Thm.2].
 
 ::: {.Theorem #thm:normalization}
 
-$F_{\Co}$ is the normalization of a closed subvariety of $F_{\En}$.
+$\fco$ is the normalization of a closed subvariety of $\fen$.
 :::
 
 ::: {.proof}
 
 Write $\Gamma_\Co\da\Orth^+(T_\Co)^*$ and $\Gamma_\En\da\Orth^+(T_\En)^*$, and let
 $$
-f\colon F_\Co = \bD(T_\Co)/\Gamma_\Co \longrightarrow \bD(T_\En)/\Gamma_\En = F_\En
+f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En = \fen
 $$
 be the map induced by the embedding $\eta$ of
-\longref{lem:primitive_embedding_eta}.
+[the primitive-embedding lemma](#lem:primitive_embedding_eta).
 The argument has four steps: a gluing computation that identifies the stabilizer
 of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
 
@@ -134,7 +134,7 @@ $T_\Co\oplus K$ has gluing group
 $$
 H = \gens{\bigl(h/2,\; k/2\bigr)}\ \leq\ A_{T_\Co}\oplus A_K
 $$
-in the sense of \longref{def:gluing-datum-of-a-pair}.
+in the sense of [the gluing-datum definition](#def:gluing-datum-of-a-pair).
 It has order $2$ and is isotropic, since
 $q_{T_\Co}(h/2)+q_K(k/2) = \frac12-\frac12 = 0$.
 
@@ -150,7 +150,7 @@ $\Gamma_\Co$.
 Let $g\in\Gamma_\En$ satisfy $g(T_\Co) = T_\Co$.
 Then $g$ preserves $K = T_\Co^{\perp}$ as well, so $g = \varphi\oplus\varepsilon$
 with $\varphi\da\ro{g}{T_\Co}\in\Orth(T_\Co)$ and $\varepsilon = \pm 1$ on $K$.
-By \longref{thm:automorphism-lifting-criterion}, $g$ preserves $T_\En$ only if
+By [the automorphism-lifting criterion](#thm:automorphism-lifting-criterion), $g$ preserves $T_\En$ only if
 $(\bar\varphi\oplus\bar\varepsilon)(H) = H$.
 The group $A_K$ has order $2$, so $\bar\varepsilon = \id$, and the condition on
 the generator of $H$ reads $\bigl(\bar\varphi(h/2),\,k/2\bigr)\in H$.
@@ -161,7 +161,7 @@ $$
 $$
 Next let $x\in A_{E_{10}(2)}$.
 Then $(x,0)\in H^{\perp}$, because $x$ is orthogonal to $h/2$.
-By \longref{thm:nikulin-gluing} the discriminant group of $T_\En$ is
+By [Nikulin's gluing theorem](#thm:nikulin-gluing) the discriminant group of $T_\En$ is
 $H^{\perp}/H$, and $g$ lies in the stable orthogonal group, so $g$ fixes that
 quotient pointwise; hence $\bigl(\bar\varphi(x)-x,\,0\bigr)\in H$.
 Every nonzero element of $H$ has second coordinate $k/2\neq 0$, so
@@ -175,13 +175,13 @@ Therefore $\varphi\in\Gamma_\Co$.
 
 Conversely let $\varphi\in\Gamma_\Co$ and put $g\da\varphi\oplus\id_K$.
 Both $\bar\varphi$ and $\bar{\id}_K$ are the identity, so $g$ preserves $H$ and
-extends to $T_\En$ by \longref{thm:automorphism-lifting-criterion}.
+extends to $T_\En$ by [the automorphism-lifting criterion](#thm:automorphism-lifting-criterion).
 The extension acts trivially on $H^{\perp}/H = A_{T_\En}$ and preserves
 $\bD(T_\En)$, so it lies in $\Gamma_\En$; it stabilizes $T_\Co$ and restricts to
 $\varphi$ there.
 
 In particular the containment required by
-\longref{rmk:descent-of-an-equivariant-inclusion} holds, with equality, so $f$ is
+[the descent criterion](#rmk:descent-of-an-equivariant-inclusion) holds, with equality, so $f$ is
 defined.
 
 **Fibres.**
@@ -189,27 +189,27 @@ For $x = [\omega]\in\bD(T_\En)$ let $T(x)$ be the smallest primitive sublattice
 of $T_\En$ whose complexification contains $\omega$, namely
 $T(x)\da\bigl(T_\En\intersect\omega^{\perp}\bigr)^{\perp}$.
 For a primitive sublattice $M\leq T_\En$ of signature $(2,\ast)$ one has
-$x\in\bD(M)$ if and only if $T(x)\subseteq M$.
+$x\in\bD(M)$ if and only if $T(x)\containedin M$.
 
 Fix $y\in F_\En$ and a lift $\tilde y\in\bD(T_\En)$.
-A point of $f^{-1}(y)$ is a $\Gamma_\Co$-orbit of a point $x = g\tilde y$ with
+A point of $f\inv(y)$ is a $\Gamma_\Co$-orbit of a point $x = g\tilde y$ with
 $g\in\Gamma_\En$ and $x\in\bD(T_\Co)$.
-Writing $M'\da g^{-1}(T_\Co)$, that last condition says
-$T(\tilde y)\subseteq M'$.
-Now $M'^{\perp} = g^{-1}(K) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
+Writing $M'\da g\inv(T_\Co)$, that last condition says
+$T(\tilde y)\containedin M'$.
+Now $M'^{\perp} = g\inv(K) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
 The space $T(\tilde y)\tensor\RR$ contains a positive definite plane and $T_\En$
 has signature $(2,10)$, so $T_\En\intersect T(\tilde y)^{\perp}$ is negative
 definite and contains only finitely many vectors of square $-2$.
 Each such $v$ determines $M' = v^{\perp}$, so only finitely many $M'$ occur.
-For a fixed $M'$ the elements $g$ with $g^{-1}(T_\Co) = M'$ form one coset of
+For a fixed $M'$ the elements $g$ with $g\inv(T_\Co) = M'$ form one coset of
 $\Stab_{\Gamma_\En}(T_\Co)$, whose restrictions to $T_\Co$ all lie in
 $\Gamma_\Co$ by the previous step; the corresponding points $x$ therefore form a
 single $\Gamma_\Co$-orbit.
-Hence $f^{-1}(y)$ is finite, of cardinality at most half the number of
+Hence $f\inv(y)$ is finite, of cardinality at most half the number of
 $(-2)$-vectors of $T_\En\intersect T(\tilde y)^{\perp}$.
 
 **Properness and finiteness.**
-By \longref{lem:locally_closed_embedding_BB} the map $f$ extends to a morphism
+By [the Baily--Borel extension lemma](#lem:locally_closed_embedding_BB) the map $f$ extends to a morphism
 $\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to
 \overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore
 proper.
@@ -217,10 +217,10 @@ A boundary component of $\overline{F_\Co}^{\operatorname{BB}}$ is indexed by a
 primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the
 saturation of $I$ in $T_\En$ is again primitive isotropic of the same rank.
 So $\bar f$ carries boundary to boundary, giving
-$\bar f^{-1}(F_\En) = F_\Co$, and $f$ is proper because properness is stable
+$\bar f\inv(\fen) = \fco$, and $f$ is proper because properness is stable
 under base change.
-A proper morphism with finite fibres is finite [@stacks-02LS], so $f$ is finite.
-Let $Z\da f(F_\Co)$, which is closed in $F_\En$ because a finite morphism is
+A proper morphism with finite fibres is finite [Stacks Project, Tag 02LS](https://stacks.math.columbia.edu/tag/02LS), so $f$ is finite.
+Let $Z\da f(\fco)$, which is closed in $\fen$ because a finite morphism is
 closed.
 
 **Generic injectivity.**
@@ -230,7 +230,7 @@ countably many such $S$.
 So the set of $x\in\bD(T_\Co)$ with $T(x) = T_\Co$ is the complement of countably
 many proper closed analytic subsets, hence dense.
 For such an $x$ the fibre computation allows only $M' = T_\Co$: one has
-$T_\Co = T(x)\subseteq M'$ with both primitive of rank $11$.
+$T_\Co = T(x)\containedin M'$ with both primitive of rank $11$.
 The fibre through $x$ is therefore a single point.
 The locus where a finite morphism of irreducible varieties has more than its
 generic number of preimages is a proper closed subset, and a dense set is not
@@ -245,8 +245,8 @@ variety is its normalization, so $F_\Co$ is the normalization of $Z$.
 ::: {.Remark #rmk:normalization-enriques-analogue}
 ### The same statement one level up
 
-\longref{thm:normalization} is the Coble analogue of [@AEGS25 Lem. 2.8], which
-asserts that $F_{\En,2}$ is the normalization of a closed subvariety of
+[The normalization theorem](#thm:normalization) is the Coble analogue of [@AEGS25 Lem. 2.8], which
+asserts that $\fentwo$ is the normalization of a closed subvariety of
 $F_{(2,2,0)}$.
 There the stabilizer step is run through $T_\dP$: the isometry group
 $\Orth(T_\dP)$ is the image of
@@ -261,7 +261,7 @@ available here because $T_\Co^{\perp T_\En}\cong\gens{-2}$ is of rank one.
 ::: {.Remark #rmk:descent-of-an-equivariant-inclusion}
 ### What the stabilizer statement has to supply
 
-The stabilizer step of \longref{thm:normalization} is one instance of a general
+The stabilizer step of [the normalization theorem](#thm:normalization) is one instance of a general
 criterion for descending a map to a pair of quotients.
 Let $f\colon A\injects B$ be an inclusion of sets, and let $G_A$ and $G_B$ be
 groups acting on $A$ and on $B$.
@@ -273,7 +273,7 @@ precisely when every element of $G_A$ acts on $A$ as the restriction of some
 element of $G_B$ preserving $f(A)$, that is when
 $$
 \im\bigl(G_A\to\Aut(A)\bigr)
-\;\subseteq\;
+\;\containedin\;
 \im\bigl(\Stab_{G_B}(f(A))\to\Aut(f(A))\bigr)
 .
 $$
@@ -289,6 +289,6 @@ may then be identified in $G_B\backslash B$.
 The gluing computation in the proof above rules that out here: the restriction of
 $\Stab_{G_B}(T_\Co)$ to $T_\Co$ is exactly $\Orth^+(T_\Co)^*$, so the
 containment is an equality and the only source of non-injectivity left is a point
-of $\bD(T_\Co)$ lying on a second translate $g^{-1}(T_\Co)$.
+of $\bD(T_\Co)$ lying on a second translate $g\inv(T_\Co)$.
 That is what the fibre count controls.
 :::

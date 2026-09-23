@@ -11,7 +11,7 @@ Then $C$ is a rational curve if and only if it has exactly ten $A_1$ singulariti
 Recall the genus–degree formula for singular plane curves:
 
 $$
-p_a(C) = {1\over 2}(d-1)(d-2) - \sum_p \delta_p
+p_a(C) = {1\over 2}(d-1)(d-2) - \Sum_p \delta_p
 $$
 
 where the sum is over the singular locus of $C$.
@@ -26,7 +26,7 @@ Thus $g = 0$ if and only if $k = 10$.
 We note that an arbitrary rational irreducible sextic need not have exactly ten singularities, nor must its singularities be $A_1$ singularities.
 The condition $g=0$ merely requires that the sum of the $\delta$-invariants of its singularities equals 10. The locus of rational $A_1$-singular sextics forms a Severi variety $V_{6,10}$ [@BHO+12] whose generic element has precisely ten $A_1$ singularities.
 However, $V_{6,10}$ contains lower-dimensional strata parametrizing rational sextics with fewer singularities of higher multiplicity.
-For instance, there exist rational $A_2$-singular sextics lacking ten $A_1$ singularities entirely [@GK20], provided their singularities satisfy $\sum \delta_p = 10$.
+For instance, there exist rational $A_2$-singular sextics lacking ten $A_1$ singularities entirely [@GK20], provided their singularities satisfy $\Sum \delta_p = 10$.
 The classical unnodal Coble surface construction specifically requires a sextic from the generic, 10-$A_1$ locus.
 :::
 
@@ -41,9 +41,9 @@ Moreover, the square of the canonical class can be computed as follows:
 
 $$
 \begin{aligned}
-K_S^2 &= \qty{ \pi^* K_{\PP^2} + \sum_{k=1}^{10}E_k}^2 \\
-&= \qty{\pi^* K_{\PP^2}}^2 + \qty{\sum_{k=1}^{10}E_k}^2 + 2\qty{ \sum_{k=1}^{10}\pi^* K_{\PP^2}\cdot E_k } \\
-&= \qty{-3H}^2 + \sum_{k=1}^{10}E_k^2 \\
+K_S^2 &= \qty{ \pi^* K_{\PP^2} + \Sum_{k=1}^{10}E_k}^2 \\
+&= \qty{\pi^* K_{\PP^2}}^2 + \qty{\Sum_{k=1}^{10}E_k}^2 + 2\qty{ \Sum_{k=1}^{10}\pi^* K_{\PP^2}\cdot E_k } \\
+&= \qty{-3H}^2 + \Sum_{k=1}^{10}E_k^2 \\
 &= 9 + 10\cdot(-1) \\
     &= -1.
 \end{aligned}
@@ -55,7 +55,7 @@ The universal double cover $f: X\to S$ is then a singular normal K3 surface with
 Moreover, by the proof of [@AD18 Lem. 2.2], a Hurwitz-type formula yields
 
 $$
-0 = 2K_X = 2\qty{ f^*(K_S) + \sum_{k=1}^{10} E_k } = f^*(2K_S + C)
+0 = 2K_X = 2\qty{ f^*(K_S) + \Sum_{k=1}^{10} E_k } = f^*(2K_S + C)
 $$
 
 yielding $C\sim -2K_S$.
@@ -101,7 +101,7 @@ stated dimension.
 For a fixed $p$, singularity of $\ts{F = 0}$ at $p$ is the vanishing of the three
 partial derivatives $\partial_x F(p)$, $\partial_y F(p)$, $\partial_z F(p)$; each
 is a linear condition on the coefficients of $F$, and $F(p) = 0$ follows from
-Euler's identity $\sum_i x_i\,\partial_i F = 6F$.
+Euler's identity $\Sum_i x_i\,\partial_i F = 6F$.
 Imposing this at ten points gives $30$ linear conditions on a space of projective
 dimension $27$, so the general such linear system has empty intersection.
 :::
@@ -126,11 +126,11 @@ The count is settled by the equisingular deformation theory of plane curves: for
 curve of degree $d$ with singularities whose root lattices are $R_i$, the space of
 such curves has expected dimension
 $$
-\binom{d+2}{2} - 1 - \sum_i \rank(R_i)
+\binom{d+2}{2} - 1 - \Sum_i \rank(R_i)
 ,
 $$
 and for sextics this expected dimension is attained [@YZZ25 §2.1].
-For ten nodes, $\sum_i\rank(R_i) = 10$, so the Severi variety $V_{6,10}$ of
+For ten nodes, $\Sum_i\rank(R_i) = 10$, so the Severi variety $V_{6,10}$ of
 \longref{rmk:severi-sextics} has dimension $27 - 10 = 17$: exactly ten of the
 thirty conditions are independent, one per node.
 Quotienting by the $8$-dimensional group $\PGL_3$ leaves the nine moduli again.
@@ -151,7 +151,7 @@ $$
 Then the Hessian matrix $H(F)(p) = \bigl(\partial_i\partial_j F(p)\bigr)_{ij}$
 satisfies $H(F)(p)\cdot p = 0$, and hence
 $$
-\operatorname{rank} H(F)(p) \leq 2
+\rank H(F)(p) \leq 2
 .
 $$
 :::
@@ -159,13 +159,13 @@ $$
 ::: {.proof}
 
 Euler's identity for a homogeneous polynomial of degree $n$ reads
-$\sum_i x_i\,\partial_i F = n F$.
+$\Sum_i x_i\,\partial_i F = n F$.
 Differentiating it by $\partial_j$ gives the polynomial identity
 $$
-\sum_i x_i\,\partial_j\partial_i F \;+\; \partial_j F \;=\; n\,\partial_j F
+\Sum_i x_i\,\partial_j\partial_i F \;+\; \partial_j F \;=\; n\,\partial_j F
 ,
 $$
-that is $\sum_i x_i\,\partial_i\partial_j F = (n-1)\,\partial_j F$.
+that is $\Sum_i x_i\,\partial_i\partial_j F = (n-1)\,\partial_j F$.
 Evaluating at $p$, where every first partial vanishes, gives $H(F)(p)\cdot p = 0$.
 Since $p\neq 0$ the kernel of $H(F)(p)$ is nonzero, so by rank-nullity in
 dimension $3$ the rank is at most $2$.

@@ -6,7 +6,7 @@
 For each $1\leq n \leq 10$, there is a moduli space of Coble surfaces with $n$ boundary components.
 As noted, we will primarily be interested in the $n=1$ case.
 In this case, we have two distinct constructions of a moduli space of such Coble surfaces.
-Coble surfaces appear as degenerations of Enriques surfaces, and in fact they form a boundary divisor $\cH_{-2}$ in the 10-dimensional moduli space $F_{\En}$ of Enriques surfaces.
+Coble surfaces appear as degenerations of Enriques surfaces, and in fact they form a boundary divisor $\cH_{-2}$ in the 10-dimensional moduli space $\fen$ of Enriques surfaces.
 Thus they form a 9-dimensional moduli space.
 These are realized by allowing the K3 cover of an Enriques surface to acquire an $A_1$ singularity fixed by the Enriques involution; the resulting quotient has a quartic singularity whose resolution is an irreducible smooth rational curve $C$ satisfying $C^2 = -4$, and by [@Nue15 p. 8] is thus a Coble surface $S$.
 :::

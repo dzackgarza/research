@@ -24,10 +24,10 @@ This page records the same object as a polyhedral cone in $L_\RR$, in the coordi
 Let $L$ be a hyperbolic lattice with bilinear form $\beta_L$ and Gram matrix $G$ in a chosen basis, and let $R = \ts{r_1,\dots,r_k}\subset L$ be a set of roots.
 The cone they bound is
 $$
-C \da \ts{\, x\in L_\RR \;:\; \beta_L(r_i, x)\geq 0 \ \text{ for } i = 1,\dots,k \,}
-\subseteq L_\RR ,
+C \da \ts{\, x\in L_\RR \;:\; \beta_L(r_i, x)\geq 0 \ \textfor i = 1,\dots,k \,}
+\containedin L_\RR ,
 $$
-and $C\cap\HH^n_L$ is the polytope $P$ of \longref{thm:coxeter-type-and-geometry}(3).
+and $C\intersect\HH^n_L$ is the polytope $P$ of \longref{thm:coxeter-type-and-geometry}(3).
 In coordinates the linear functional $\beta_L(r,-)$ is the row $r^{\mathsf T}G$, so the inequality defining the wall of $r$ is given by that row and not by the coordinate row of $r$.
 :::
 
@@ -43,7 +43,7 @@ The vertices of $P$ that \longref{prop:polytope-vertex-subdiagram} describes app
 ### The volume criterion on the cone
 
 Let $L$ have signature $(1,n)$, let $C_L^+$ be the chosen component of the positive cone, and let $C$ be as in \longref{cons:chamber-cone}.
-Then $\vol(C\cap\HH^n_L) < \infty$ if and only if
+Then $\vol(C\intersect\HH^n_L) < \infty$ if and only if
 
 1. every extremal ray generator $v$ of $C$ satisfies $v^2 \geq 0$;
 
@@ -51,7 +51,7 @@ Then $\vol(C\cap\HH^n_L) < \infty$ if and only if
 
 3. the lineality space of $C$ is trivial.
 
-Under these conditions $C \subseteq \overline{C_L^+}$ and the closure of $C\cap\HH^n_L$ in the projective model is the convex hull of the points determined by the extremal rays, which is criterion (1) of \longref{thm:coxeter-polytope-volume}.
+Under these conditions $C \containedin \overline{C_L^+}$ and the closure of $C\intersect\HH^n_L$ in the projective model is the convex hull of the points determined by the extremal rays, which is criterion (1) of \longref{thm:coxeter-polytope-volume}.
 The rays with $v^2 > 0$ are the ordinary vertices and the rays with $v^2 = 0$ the ideal vertices of \longref{prop:polytope-vertex-subdiagram}, so by \longref{thm:coxeter-polytope-volume}(2) the polytope is compact exactly when no extremal ray is isotropic.
 :::
 
@@ -60,7 +60,7 @@ The rays with $v^2 > 0$ are the ordinary vertices and the rays with $v^2 = 0$ th
 
 A cone containing a line meets both components of the positive cone, so (3) does not follow from (1).
 A cone whose extremal rays are isotropic and timelike but distributed between the two components of $C_L$ is not contained in $\overline{C_L^+}$, which is (2).
-Applied to the recorded runs, \longref{prop:chamber-cone-criterion} is what identifies the count reported as *vertices at infinity* in [[coxiter-results-for-cusp-lattices]] with the isotropic extremal rays of the cone, and the *non-cocompact with finite covolume* verdict recorded there with the presence of at least one of them.
+Applied to the recorded runs, \longref{prop:chamber-cone-criterion} is what identifies the count reported as *vertices at infinity* in [the CoxIter results](coxiter-results-for-cusp-lattices.md) with the isotropic extremal rays of the cone, and the *non-cocompact with finite covolume* verdict recorded there with the presence of at least one of them.
 :::
 
 ## Integral data of the chamber
@@ -74,15 +74,15 @@ From the presentation of \longref{cons:chamber-cone} one reads off:
 
 - a primitive integral generator of each ray, obtained by clearing denominators by their least common multiple and dividing by the greatest common divisor of the resulting entries;
 
-- the Hilbert basis of the monoid $C\cap L$, that is, its unique minimal generating set as a monoid, together with generators for its integral points.
+- the Hilbert basis of the monoid $C\intersect L$, that is, its unique minimal generating set as a monoid, together with generators for its integral points.
 
-The last two are the data of the chamber as a subset of $L$, and are what a computation inside $C\cap L$ requires.
+The last two are the data of the chamber as a subset of $L$, and are what a computation inside $C\intersect L$ requires.
 :::
 
 ::: {.Remark}
 ### The recorded specimen
 
-These cells were run over the $22$ roots of $\Phi_{(18,2,0)}$ in $U(2)\oplus E_8^{\oplus 2}$ ([[root-vectors-and-folded-sterk-diagrams]]) and over their restriction to the rank-$10$ invariant sublattice of the block-exchange involution.
+These cells were run over the $22$ roots of $\Phi_{(18,2,0)}$ in $U(2)\oplus E_8^{\oplus 2}$ ([root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md)) and over their restriction to the rank-$10$ invariant sublattice of the block-exchange involution.
 The chamber there is full-dimensional, closed and non-compact, with the ray and integral-point data extracted through a Normaliz backend, and containment was checked by sampling $x\in C$ and testing $\beta_L(r_i,x)\geq 0$ for every root.
 :::
 
@@ -132,4 +132,4 @@ Vinberg's algorithm produces a simple system by admitting a candidate root only 
 For an infinite reflection group the orbit is infinite and the simple system is finite.
 :::
 
-Related: [[reflection-groups-and-vinberg]], [[hyperbolic-coxeter-polytopes]], [[coxiter-results-for-cusp-lattices]], [[sterk-root-counts-and-computed-chambers]], [[lattice-and-diagram-conventions]].
+Related: [reflection groups and Vinberg](../compactifications/reflection-groups-and-vinberg.md), [hyperbolic Coxeter polytopes](../compactifications/hyperbolic-coxeter-polytopes.md), [CoxIter results for cusp lattices](coxiter-results-for-cusp-lattices.md), [Sterk root counts and computed chambers](sterk-root-counts-and-computed-chambers.md), [lattice and diagram conventions](../reference-tables/lattice-and-diagram-conventions.md).

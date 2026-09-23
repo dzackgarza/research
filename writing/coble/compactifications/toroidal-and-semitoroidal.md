@@ -12,30 +12,30 @@ The Coble-specific application of these constructions -- the KSBA stable pair, t
 
 ::: {.Definition #def:toroidal-compactification}
 
-A **toroidal compactification** $\overline{F_\Gamma}^{\Sigma_\bullet}$ refines the singular cusps of the Baily--Borel compactification by choosing an admissible rational polyhedral fan $\Sigma_I$ for each cusp $I$.
+A **toroidal compactification** $\torcpt{\FG}$ refines the singular cusps of the Baily--Borel compactification by choosing an admissible rational polyhedral fan $\torfan_I$ for each cusp $I$.
 
-Locally, the boundary is modeled on toric varieties $X_{\Sigma_I}$.
-This resolves the singularities of $\overline{F_\Gamma}^{\operatorname{BB}}$, providing a proper algebraic variety with a divisorial boundary (often snc).
+Locally, the boundary is modeled on toric varieties $X_{\torfan_I}$.
+This resolves the singularities of $\bbcpt{\FG}$, providing a proper algebraic variety with a divisorial boundary (often snc).
 
 The choice of fans makes the construction non-canonical.
 However, it often allows the extension of period maps and universal families over boundary strata.
-There is a proper $\Gamma$-equivariant morphism $\overline{F_\Gamma}^{\Sigma_\bullet} \to \overline{F_\Gamma}^{\operatorname{BB}}$.
+There is a proper $\Gamma$-equivariant morphism $\torcpt{\FG} \to \bbcpt{\FG}$.
 :::
 
 ## Semitoroidal compactifications
 
 ::: {.Definition #def:semitoroidal-compactification}
 
-Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\overline{F_\Gamma}^{\mathcal{F}_\bullet}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mathcal{F}_I$.
+Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mathcal{F}_I$.
 
 A semifan relaxes the conditions of a fan by not requiring local finiteness or full support.
 This allows "partial" toroidalization at selected cusps while leaving others untouched or less refined.
 
 Semitoroidal compactifications sit in a tower of proper birational morphisms:
 $$
-\overline{F_\Gamma}^{\Sigma_\bullet} \longrightarrow
-\overline{F_\Gamma}^{\mathcal{F}_\bullet} \longrightarrow
-\overline{F_\Gamma}^{\operatorname{BB}}
+\torcpt{\FG} \too
+\semitorcpt{\FG} \too
+\bbcpt{\FG}
 .
 $$
 They are critical for modeling KSBA boundaries where fans may be infinitely generated or accumulate.
@@ -45,9 +45,9 @@ They are critical for modeling KSBA boundaries where fans may be infinitely gene
 
 Any normal compactification admitting a tower
 $$
-\overline{F_\Gamma}^{\Sigma_\bullet} \longrightarrow
-\overline{F_\Gamma}^{\mathcal{F}_\bullet} \longrightarrow
-\overline{F_\Gamma}^{\operatorname{BB}}
+\torcpt{\FG} \too
+\semitorcpt{\FG} \too
+\bbcpt{\FG}
 $$
 as in \longref{def:semitoroidal-compactification} is isomorphic to a semitoroidal compactification [@AE23, Thm. 1].
 :::
@@ -64,26 +64,26 @@ This is the semitoroidal side of the Coble comparison problem, recorded here as 
 
 ::: {.Definition #def:generalized-coxeter-semifan}
 
-The main geometric application of folded Coxeter--Vinberg diagrams is the construction of semitoroidal compactifications of moduli spaces $F_\Gamma$ via **generalized Coxeter semifans**.
+The main geometric application of folded Coxeter--Vinberg diagrams is the construction of semitoroidal compactifications of moduli spaces $\FG$ via **generalized Coxeter semifans**.
 
-For a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, partition the simple roots into $\Phi = \Phi^{\mathrm{rel}} \sqcup \Phi^{\mathrm{irr}}$ [@AT17]:
+For a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, partition the simple roots into $\Phi = \Phi^{\relevant} \sqcup \Phi^{\irrelevant}$ [@AT17]:
 
-- **Irrelevant roots** ($\Phi^{\mathrm{irr}}$): correspond to strata that are contracted in the KSBA stable model over $\eta$.
+- **Irrelevant roots** ($\Phi^{\irrelevant}$): correspond to strata that are contracted in the KSBA stable model over $\eta$.
 
-- **Relevant roots** ($\Phi^{\mathrm{rel}}$): the active walls where combinatorial types of stable models change.
+- **Relevant roots** ($\Phi^{\relevant}$): the active walls where combinatorial types of stable models change.
 
-The **generalized Coxeter semifan** $\mathcal{F}_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16]. Its maximal cones are unions of Weyl chambers $g\big(\bigcup_{h \in W^{\mathrm{irr}}} h(\mathfrak{C})\big)$.
+The **generalized Coxeter semifan** $\mathcal{F}_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16]. Its maximal cones are unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$.
 :::
 
 ::: {.Remark}
 ### Toroidal versus strictly semitoroidal
 
 Unlike classical toroidal compactifications, where all walls of the Weyl chamber are preserved, semitoroidal compactifications allow certain irrelevant roots to be removed.
-The distinction between toroidal and strictly semitoroidal behavior depends on the order of the irrelevant root subgroup $W^{\mathrm{irr}}$:
+The distinction between toroidal and strictly semitoroidal behavior depends on the order of the irrelevant root subgroup $W^{\irrelevant}$:
 
-- **Toroidal**: $|W^{\mathrm{irr}}| < \infty$ (finite irrelevant subgroups).
+- **Toroidal**: $|W^{\irrelevant}| < \infty$ (finite irrelevant subgroups).
 
-- **Strictly semitoroidal**: $|W^{\mathrm{irr}}| = \infty$ (infinite irrelevant subgroups, so the semifan is not locally finite).
+- **Strictly semitoroidal**: $|W^{\irrelevant}| = \infty$ (infinite irrelevant subgroups, so the semifan is not locally finite).
 :::
 
 ::: {.Remark}
@@ -100,7 +100,7 @@ Under the proposed restriction, a Coble wall is irrelevant precisely when every 
 The **KSBA compactification** generalizes the Deligne--Mumford compactification of curves to higher dimensions.
 It compactifies moduli of varieties of log general type by considering **stable slc pairs** $(X, D)$ [@KS88; @Ale96].
 
-A pair $(X, D = \sum b_j D_j)$ is **KSBA-stable** if:
+A pair $(X, D = \Sum b_j D_j)$ is **KSBA-stable** if:
 
 1. $X$ is a projective demi-normal variety;
 
@@ -177,7 +177,7 @@ If $R$ is recognizable, then the normalization of the KSBA compactification $\ov
 
 Two basic examples of recognizable divisors:
 
-1. The **rational curve divisor** $R_{\mathrm{rc}} = \sum R_i$ (the sum of all smooth rational curves in $|L|$).
+1. The **rational curve divisor** $R_{\rcop} = \Sum R_i$ (the sum of all smooth rational curves in $|L|$).
 
 2. The **ramification divisor** $R_\iota$ of a nonsymplectic involution.
 :::

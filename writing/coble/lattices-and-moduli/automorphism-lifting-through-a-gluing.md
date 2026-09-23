@@ -15,11 +15,11 @@ not about either lattice on its own.
 ## The discriminant representation
 
 ::: {.Notation #not:discriminant-representation}
-### The discriminant representation
+### Notation for the discriminant representation
 
 For a lattice $L$ the induced homomorphism
 $$
-\rho_L\colon \Orth(L)\longrightarrow \Orth(q_L)
+\rho_L\colon \Orth(L)\too \Orth(q_L)
 $$
 of the Lattice Theory section, sending an isometry to its action on the
 discriminant form, is the **discriminant representation** of $L$.
@@ -61,7 +61,7 @@ $(M\oplus N)\dual\to A_M\oplus A_N$.
 ::: {.Theorem #thm:automorphism-lifting-criterion}
 ### When a pair of isometries lifts
 
-Let $L$, $M$, $N$ and $H$ be as in \longref{def:gluing-datum-of-a-pair}, and let
+Let $L$, $M$, $N$ and $H$ be as in [the gluing-datum definition](#def:gluing-datum-of-a-pair), and let
 $\varphi_M\in\Orth(M)$ and $\varphi_N\in\Orth(N)$.
 Then $\varphi_M\oplus\varphi_N$ extends to an isometry of $L$ if and only if
 $$
@@ -78,7 +78,7 @@ Write $\psi\da\varphi_M\oplus\varphi_N\in\Orth(M\oplus N)$.
 An isometry of $M\oplus N$ extends uniquely to a $\ZZ$-module isometry $\psi\dual$
 of $(M\oplus N)\dual$ inside $(M\oplus N)\tensor\QQ$, so the only candidate
 extension to $L$ is $\ro{\psi\dual}{L}$, and uniqueness follows.
-Since $M\oplus N\subseteq L\subseteq(M\oplus N)\dual$ by
+Since $M\oplus N\containedin L\containedin(M\oplus N)\dual$ by
 \longref{def:overlattice}, the candidate maps $L$ into
 $(M\oplus N)\dual$ always, and preserves $L$ exactly when it preserves the image
 of $L$ in the quotient $A_{M\oplus N} = A_M\oplus A_N$.
@@ -93,11 +93,11 @@ $L$.
 ::: {.Corollary #cor:liftable-automorphisms}
 ### The liftable subgroup
 
-With the notation of \longref{thm:automorphism-lifting-criterion}, fix
+With the notation of [the lifting criterion](#thm:automorphism-lifting-criterion), fix
 $\varphi_N = \id_N$ and let $\Gamma\leq\Orth(M)$ be any subgroup.
 The isometries of $M$ that extend over $L$ fixing $N$ pointwise form the subgroup
 $$
-\rho_M^{-1}\Bigl(\Stab_{\Orth(q_M)}(H)\Bigr)\ \intersect\ \Gamma
+\rho_M\inv\Bigl(\Stab_{\Orth(q_M)}(H)\Bigr)\ \intersect\ \Gamma
 \ \leq\ \Gamma
 ,
 $$
@@ -110,13 +110,13 @@ $\rho_M(\Gamma)$ is finite.
 
 ::: {.proof}
 
-Apply \longref{thm:automorphism-lifting-criterion} with
+Apply [the lifting criterion](#thm:automorphism-lifting-criterion) with
 $\bar\varphi_N = \id$, so that the condition reads
 $(\bar\varphi_M\oplus\id)(H) = H$; the set of $\bar\varphi_M$ satisfying it is by
 definition the stabilizer, which is a subgroup of $\Orth(q_M)$, and its preimage
 under the homomorphism $\rho_M$ is a subgroup of $\Orth(M)$.
 The stable orthogonal group is the kernel of $\rho_M$
-(\longref{not:discriminant-representation}) and so acts trivially on $H$.
+([the discriminant-representation notation](#not:discriminant-representation)) and so acts trivially on $H$.
 Finiteness of the index follows because $\Orth(q_M)$ is finite, $A_M$ being
 finite.
 :::
@@ -124,13 +124,13 @@ finite.
 ::: {.Remark}
 ### The operation belongs to the arrow
 
-The datum consumed by \longref{thm:automorphism-lifting-criterion} is $H$,
+The datum consumed by [the lifting criterion](#thm:automorphism-lifting-criterion) is $H$,
 equivalently the pair of primitive inclusions of
-\longref{def:gluing-datum-of-a-pair}.
+[the gluing-datum definition](#def:gluing-datum-of-a-pair).
 Neither $M$ nor $N$ determines it: the same lattice $M$ occurs in many gluings,
 and each one imposes its own condition.
 Liftability is therefore a property of the inclusions, and the subgroup of
-\longref{cor:liftable-automorphisms} is attached to them.
+[the liftable-subgroup corollary](#cor:liftable-automorphisms) is attached to them.
 
 The hypotheses are morphism-level for the same reason.
 An inclusion is primitive when its cokernel is torsion-free
@@ -167,20 +167,20 @@ displayed identity.
 ::: {.Remark}
 ### Two computations in this book are instances
 
-\longref{cor:lifting-unimodular} is the mechanism behind two statements proved
+[The unimodular lifting corollary](#cor:lifting-unimodular) is the mechanism behind two statements proved
 elsewhere in this part, both for the unimodular $\lkt$.
 
 The discriminant description of the degree-$2$ Enriques group
 (\longref{prop:gamma-en-two-gluing}) is the liftable-subgroup computation of
-\longref{cor:liftable-automorphisms} for the gluing
-$S_\En\oplus T_\En\subseteq\lkt$, with the extra condition $g_S(h) = h$ cutting
-$\Gamma\leq\Orth(S_\En)$ down to the stabilizer of the polarization; the
+[the liftable-subgroup corollary](#cor:liftable-automorphisms) for the gluing
+$\sen\oplus \ten\containedin\lkt$, with the extra condition $g_S(h) = h$ cutting
+$\Gamma\leq\Orth(\sen)$ down to the stabilizer of the polarization; the
 commutation identity $\bar g_T\circ\gamma = \gamma\circ\bar g_S$ appearing there
 is exactly the criterion above.
 
 The Coble folding involution (\longref{prop:theta-co-exists}) is the same
 criterion applied to the pair $(-\id_{S_\Co}, \id_{T_\Co})$ for the gluing
-$S_\Co\oplus T_\Co\subseteq\lkt$: because both discriminant groups are
+$S_\Co\oplus T_\Co\containedin\lkt$: because both discriminant groups are
 $2$-elementary, $\overline{-\id} = \overline{\id}$ on each, and the identity
 holds trivially, so the pair lifts.
 :::

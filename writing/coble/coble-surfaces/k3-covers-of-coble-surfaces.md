@@ -6,15 +6,15 @@
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$.
 By [@DK25 Prop. 9.1.1], taking a section $s\in H^0(\cL ^{\tensor 2})$ with $Z(s) = C$ yields a branched double cover $f: X\to S$ where $X$ is a smooth K3 surface.
 Let $\sigma$ be the involution generating the deck transformations of this cover.
-Then the fixed locus $\mathrm{Fix}(\sigma)$ is a union of $n$ smooth rational curves which are precisely the reduced preimages $(f^{-1}(C_i))_{\mathrm{red}}$, where $C_i$ are the irreducible components of $C$ in $S$.
-By [@CDL25 Def. 5.4.3], the preimages $f^{-1}(C_i)$ are disjoint $(-2)$-curves and $\Pic(S)$ is a 2-elementary lattice with invariants of the form
+Then the fixed locus $\Fix(\sigma)$ is a union of $n$ smooth rational curves which are precisely the reduced preimages $(f\inv(C_i))_{\mathrm{red}}$, where $C_i$ are the irreducible components of $C$ in $S$.
+By [@CDL25 Def. 5.4.3], the preimages $f\inv(C_i)$ are disjoint $(-2)$-curves and $\Pic(S)$ is a 2-elementary lattice with invariants of the form
 $$
 (r,a,\delta)_1 = (10+n, 12-n, \delta)_1
 .
 $$
 By [@CDL25 Def. 5.4.3, Eqn. 5.3.1], the ramification divisor $R$ is explicitly of one of the following forms:
 
-1. $R=\emptyset$ if $(r,a,\delta) = (10, 10, 0)$,
+1. $R=\emptyset$ if $(r,a,\delta) = \EnriquesInvariants$,
 
 2. $R$ is a sum of two elliptic curves if $(r,a,\delta) = (10, 8, 0)$,
 
@@ -40,7 +40,7 @@ Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let
 $s\in H^0(S, \cL^{\tensor 2})$ have smooth divisor $B\in\abs{-2K_S}$.
 Let
 $$
-\pi\colon X \da \operatorname{Spec}_S\bigl(\OO_S\oplus\cL^{-1}\bigr)\to S
+\pi\colon X \da \Spec_S\bigl(\OO_S\oplus\cL\inv\bigr)\to S
 $$
 be the double cover determined by $s$, branched along $B$.
 Then $X$ is a K3 surface, and for divisors $D, D'$ on $S$,
@@ -59,7 +59,7 @@ K_X = \pi^{*}(K_S + \cL) = \pi^{*}(K_S - K_S) = 0
 ,
 $$
 so $\omega_X\cong\OO_X$.
-Pushing forward, $\pi_*\OO_X = \OO_S\oplus\cL^{-1} = \OO_S\oplus\OO_S(K_S)$, and
+Pushing forward, $\pi_*\OO_X = \OO_S\oplus\cL\inv = \OO_S\oplus\OO_S(K_S)$, and
 $\pi$ is finite, so
 $$
 H^i(X, \OO_X) = H^i(S, \OO_S)\oplus H^i(S, K_S)
@@ -118,17 +118,17 @@ $$
 \qty{f^*D \cdot f^*D'} = D \cdot f_* f^* D' = D\cdot 2D' = 2\qty(D\cdot D')
 .
 $$
-Applied to the orthogonal basis $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\operatorname{diag}(2, -2, \ldots, -2)$, so that $S_\Co \cong \gens{2}\oplus\gens{-2}^{10} = \latI_{1, 10}(2)$, of signature $(1, 10)$.
+Applied to the orthogonal basis $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\diag(2, -2, \ldots, -2)$, so that $S_\Co \cong \gens{2}\oplus\gens{-2}^{10} = \latI_{1, 10}(2)$, of signature $(1, 10)$.
 This recovers, by the projection formula, the twist-by-$2$ described geometrically in \longref{rmk:k3-cover-twist}.
 
-**Rank of the invariant lattice via Lefschetz.** The lattice $S_\Co$ is $\sigma$-invariant, so $S_\Co\subseteq H^2(X, \bZ)^\sigma$.
-The fixed locus $\mathrm{Fix}(\sigma) = R$ is a single smooth rational curve (the case $n = 1$), so $\chi(R) = 2$.
+**Rank of the invariant lattice via Lefschetz.** The lattice $S_\Co$ is $\sigma$-invariant, so $S_\Co\containedin H^2(X, \bZ)^\sigma$.
+The fixed locus $\Fix(\sigma) = R$ is a single smooth rational curve (the case $n = 1$), so $\chi(R) = 2$.
 On the K3 surface $X$, both $H^0$ and $H^4$ are $\sigma$-invariant of rank $1$ and $H^1 = H^3 = 0$, so the topological Lefschetz fixed-point formula reads
 $$
-\chi(R) = \sum_i (-1)^i \operatorname{tr}\qty(\sigma^* \mid H^i(X, \bZ)) = 2 + \operatorname{tr}\qty(\sigma^* \mid H^2(X, \bZ))
+\chi(R) = \Sum_i (-1)^i \trace\qty(\sigma^* \mid H^i(X, \bZ)) = 2 + \trace\qty(\sigma^* \mid H^2(X, \bZ))
 .
 $$
-Since $\chi(R) = 2$, we obtain $\operatorname{tr}(\sigma^* \mid H^2(X, \bZ)) = 0$.
+Since $\chi(R) = 2$, we obtain $\trace(\sigma^* \mid H^2(X, \bZ)) = 0$.
 As $H^2(X, \bZ)$ has rank $22$ and $\sigma^*$ is an involution, the invariant lattice has rank $\tfrac{1}{2}(22 + 0) = 11$ and the coinvariant lattice rank $\tfrac{1}{2}(22 - 0) = 11$, so that $11 + 11 = 22$; cf.
 \longref{prop:involution_eigenspaces}. Hence $S_\Co$, of rank $11$, is a finite-index sublattice of $H^2(X, \bZ)^\sigma$.
 
@@ -144,7 +144,7 @@ $$
 so $S_\Co$ is $2$-elementary of rank $r = 11$ and length $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
 For a nonsymplectic involution whose fixed locus is a single rational curve, the fixed-locus formula assigns the invariant lattice these same invariants $(r, a, \delta) = (11, 11, 1)$ [@CDL25 Def. 5.4.3, Eqn. 5.3.1], so $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
-Since $S_\Co \subseteq H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by \longref{prop:invariant_coinvariant_primitive} the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
+Since $S_\Co \containedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by \longref{prop:invariant_coinvariant_primitive} the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
 That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80]. This derivation makes explicit the invariants stated by citation in \longref{rmk:k3-cover-invariants}.
 :::
 

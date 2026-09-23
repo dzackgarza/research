@@ -22,7 +22,7 @@ so that the free part $H^2(Z; \ZZ)_f$ is identified with the group of numerical
 divisor classes $\Num(Z)$.
 Under the intersection pairing this free part is the even unimodular lattice of
 signature $(1, 9)$, i.e. the Enriques lattice $E_{10}$ of
-\longref{def:enriques-lattice} [@CDL25]; the numerical polarization $[h]$ is thus
+[the Enriques-lattice definition](#def:enriques-lattice) [@CDL25]; the numerical polarization $[h]$ is thus
 an ample class in $\Num(Z)\iso E_{10}$.
 :::
 
@@ -33,7 +33,7 @@ The **degree** of a numerical polarization $[h]$ is its self-intersection $h^2$
 computed in $\Num(Z)$.
 We are primarily interested in the **degree-$2$** case $h^2 = 2$; the
 corresponding moduli space of degree-$2$ numerically polarized Enriques surfaces
-is the space $F_{\En, 2}$ appearing below.
+is the space $\fentwo$ appearing below.
 :::
 
 ## The Noether–Lefschetz locus for Enriques surfaces
@@ -43,13 +43,13 @@ is the space $F_{\En, 2}$ appearing below.
 
 The canonical double cover $\pi\colon X\to Z$ of a degree-$2$ polarized Enriques
 surface yields a K3 surface $X$ carrying two commuting involutions: the
-fixed-point-free **Enriques involution** $\iota_{\En}$ (the deck transformation
-of the canonical cover) and the **del Pezzo involution** $\iota_{\operatorname{dP}}$
+fixed-point-free **Enriques involution** $\ien$ (the deck transformation
+of the canonical cover) and the **del Pezzo involution** $\idp$
 [@AEGS25].
 
 ::: {.Remark}
 The numerical polarization and the $\Num$ marking are those of [@CDL25]; the canonical
-cover with its two involutions, the map $j\colon F_{\En,2}\to F_{(2,2,0)}$, the locus
+cover with its two involutions, the map $j\colon \fentwo\to \fttz$, the locus
 $\mathrm{NL}_{S_{\mathrm{En}}}$ and the KSBA-limit closure $B$ are those of [@AEGS25].
 :::
 :::
@@ -57,17 +57,17 @@ $\mathrm{NL}_{S_{\mathrm{En}}}$ and the KSBA-limit closure $B$ are those of [@AE
 ::: {.Definition #def:nl-locus-enriques}
 ### Noether–Lefschetz locus $\mathrm{NL}_{S_{\mathrm{En}}}$
 
-The moduli space $F_{\En, 2}$ of degree-$2$ numerically polarized Enriques
-surfaces embeds into the K3 moduli space $F_{(2,2,0)}$ via a canonical map $j$.
+The moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques
+surfaces embeds into the K3 moduli space $\fttz$ via a canonical map $j$.
 Its image is the **Noether–Lefschetz locus** $\mathrm{NL}_{S_{\mathrm{En}}}$
 defined by the primitive embedding of the **invariant** (algebraic) lattice of
-$\iota_\En$,
+$\ien$,
 $$
-S_{\mathrm{En}} = E_{10}(2) = U(2)\oplus E_8(2)
+\sen = E_{10}(2) = U(2)\oplus E_8(2)
 ,
 $$
 the rank-$10$, $2$-elementary, signature-$(1,9)$ lattice of type $(10,10,0)$
-(see \longref{def:enriques-lattice} and the Special Lattices section).
+(see [the Enriques-lattice definition](#def:enriques-lattice) and the Special Lattices section).
 The appearance of these extra invariant classes in $\NS$ is what cuts out the
 locus.
 :::
@@ -77,7 +77,7 @@ locus.
 
 The Zariski closure
 $$
-B \da \overline{j(F_{\En, 2})}\subseteq \overline{F_{(2,2,0)}}
+B \da \overline{j(\fentwo)}\containedin \ksbacpt{\fttz}
 $$
 parameterizes all KSBA limits of these double covers.
 The space fails to be normal along the boundary, due to branching and boundary
@@ -100,10 +100,10 @@ $f\colon X\to S$ is the K3 double cover.
 ::: {.Proposition #prop:canonical-perp-is-e10}
 ### The canonical complement is the Enriques lattice
 
-In $\Pic(S)\cong\latI_{1,10}$ one has $K_S = -3H + \sum_{i=1}^{10} E_i$, and a
-divisor $D = aH - \sum_i b_i E_i$ lies in $K_S^{\perp}$ if and only if
+In $\Pic(S)\cong\latI_{1,10}$ one has $K_S = -3H + \Sum_{i=1}^{10} E_i$, and a
+divisor $D = aH - \Sum_i b_i E_i$ lies in $K_S^{\perp}$ if and only if
 $$
-\sum_{i=1}^{10} b_i = 3a
+\Sum_{i=1}^{10} b_i = 3a
 .
 $$
 The sublattice $K_S^{\perp}$ is even and unimodular of signature $(1, 9)$, hence
@@ -111,10 +111,10 @@ $$
 K_S^{\perp} \cong E_{10} = U\oplus E_8
 ,
 $$
-the Enriques lattice of \longref{def:enriques-lattice}.
+the Enriques lattice of [the Enriques-lattice definition](#def:enriques-lattice).
 The Coble boundary curve has class
 $$
-C = 6H - 2\sum_{i=1}^{10} E_i = -2K_S
+C = 6H - 2\Sum_{i=1}^{10} E_i = -2K_S
 .
 $$
 :::
@@ -122,21 +122,21 @@ $$
 ::: {.proof}
 
 The expression for $K_S$ is the blowup formula, and
-$D\cdot K_S = -3a - \sum_i(-b_i)(-1)\cdot(-1)$ evaluates to $3a - \sum_i b_i$ up to
+$D\cdot K_S = -3a - \Sum_i(-b_i)(-1)\cdot(-1)$ evaluates to $3a - \Sum_i b_i$ up to
 sign, giving the stated condition.
 Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\gens{K_S}\cong\gens{-1}$ is
-unimodular, so by \longref{prop:unimodular-splits} it splits $\Pic(S)$ and its
+unimodular, so by [the unimodular-splitting proposition](#prop:unimodular-splits) it splits $\Pic(S)$ and its
 complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
-That complement is even: for $D = aH - \sum_i b_iE_i$ with $\sum_i b_i = 3a$,
+That complement is even: for $D = aH - \Sum_i b_iE_i$ with $\Sum_i b_i = 3a$,
 $$
-D^2 = a^2 - \sum_i b_i^2 \equiv a^2 - \sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv 0
+D^2 = a^2 - \Sum_i b_i^2 \equiv a^2 - \Sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv 0
 \pmod 2
 ,
 $$
 using $b^2\equiv b\bmod 2$.
 An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by
-\longref{thm:indefinite-unimodular-classification}.
-Finally $C = -2K_S = 6H - 2\sum_i E_i$ by the description of $K_S$.
+[the indefinite unimodular classification](#thm:indefinite-unimodular-classification).
+Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
 ::: {.Definition #def:coble-polarization-classes}
@@ -146,13 +146,13 @@ The two classes to be distinguished are:
 
 1.  the **plane class** $H\in\Pic(S)$, the pullback of a line, with $H^2 = 1$; its
     K3 pullback $e_0\da f^{*}H\in S_\Co$ has $e_0^2 = 2$ by
-    \longref{prop:double-cover-is-k3};
+    [the K3 double-cover proposition](#prop:double-cover-is-k3);
 
 2.  the **degree-$2$ Coble polarization**
-    $h_\Co\in K_S^{\perp}\subseteq\Pic(S)$, of Enriques type: in the
+    $h_\Co\in K_S^{\perp}\containedin\Pic(S)$, of Enriques type: in the
     non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and
     $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback
-    $\tilde h_\Co\da f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\subseteq S_\Co$ and
+    $\tilde h_\Co\da f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\containedin S_\Co$ and
     has $\tilde h_\Co^2 = 4$.
 :::
 
@@ -169,7 +169,7 @@ $\tilde h_\Co^2 = 4$.
 The analogue of the Enriques degree-$2$ polarization is $h_\Co$:
 polarization: for a degree-$2$ Enriques surface the numerical polarization has
 $h^2 = 2$ in $\Num(Z)\cong E_{10}$ while the K3-side vector
-$h = e + f\in U(2)$ has $h^2 = 4$ (\longref{prop:gamma-en-two-gluing}), exactly the
+$h = e + f\in U(2)$ has $h^2 = 4$ ([the discriminant description of $\Gamma_{\En,2}$](#prop:gamma-en-two-gluing)), exactly the
 pattern of $h_\Co$ and $\tilde h_\Co$.
 Any comparison of Coble and Enriques polarized moduli, and any pairing of a
 polarization class against roots of a Coxeter diagram, must first record which of

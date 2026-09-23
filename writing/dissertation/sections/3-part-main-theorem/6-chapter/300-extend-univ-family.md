@@ -36,9 +36,9 @@ This family retains the following structure:
 
 - Each geometric point $b \in B$ parametrizes a (possibly degenerate) K3 surface equipped with a degree-4 polarization and a prescribed involution $(\idp)_b$.
 
-- Over the open locus $B^\circ$ parameterizing smooth K3 surfaces, each fiber $\mcx_b$ admits a del Pezzo involution $(\idp)_b$ with ramification divisor $\mcr_b$, as well as a fixed-point-free Enriques involution $(\ien)_b$.
+- Over the open locus $\open{B}$ parameterizing smooth K3 surfaces, each fiber $\mcx_b$ admits a del Pezzo involution $(\idp)_b$ with ramification divisor $\mcr_b$, as well as a fixed-point-free Enriques involution $(\ien)_b$.
 
-For all $b \in B^\circ$, the involutions $(\idp)_b$ and $(\ien)_b$ commute and both preserve the polarized pair $(\mcx_b, \mcr_b)$. These involutions are compatible with the moduli-theoretic structure and cover the appropriate automorphism data underlying the Enriques construction.
+For all $b \in \open{B}$, the involutions $(\idp)_b$ and $(\ien)_b$ commute and both preserve the polarized pair $(\mcx_b, \mcr_b)$. These involutions are compatible with the moduli-theoretic structure and cover the appropriate automorphism data underlying the Enriques construction.
 We now globalize the involution $\ien$ over the entire family $(\mcx_B, \mcr_B)$, including all degenerate fibers.
 
 :::{.theorem
@@ -53,19 +53,19 @@ There exists a unique global involution
 
 with the following properties:
 
-- $\ien$ restricts over $B^\circ$ to the fixed-point-free Enriques involution on each smooth fiber.
+- $\ien$ restricts over $\open{B}$ to the fixed-point-free Enriques involution on each smooth fiber.
 - $\ien \circ \idp = \idp \circ \ien$ fiberwise on all of $\mcx_B$.
 - $\ien(\mcr_B) = \mcr_B$.
 - For every $b \in B$, the restriction $(\ien)_b$ is fixed-point-free on the smooth locus of the fiber $\mcx_b$.
 :::
 
 :::{.proof}
-Over $B^\circ$ the involution $\ien$ is part of the moduli data. Since the universal family in the KSBA moduli problem is separated and proper for automorphism group actions preserving the pair structure, any automorphism defined on the $\mcx_t$ extends uniquely to the $\mcx_0$s, as in the valuative criterion for the separatedness of the moduli functor. The extension respects all divisor and commutativity data because these are closed conditions on the moduli stack of stable pairs with automorphism. Functoriality and the rigidity of automorphism schemes in the KSBA theory propagate these compatibilities to all fibers.
+Over $\open{B}$ the involution $\ien$ is part of the moduli data. Since the universal family in the KSBA moduli problem is separated and proper for automorphism group actions preserving the pair structure, any automorphism defined on the $\mcx_t$ extends uniquely to the $\mcx_0$s, as in the valuative criterion for the separatedness of the moduli functor. The extension respects all divisor and commutativity data because these are closed conditions on the moduli stack of stable pairs with automorphism. Functoriality and the rigidity of automorphism schemes in the KSBA theory propagate these compatibilities to all fibers.
 :::
 
 Once constructed, this global involution $\ien$ satisfies all required compatibilities:
 
-- Commutativity $\ien \circ \idp = \idp \circ \ien$ holds everywhere. This is checked on $B^\circ$ and then globalized via the uniqueness of the extension.
+- Commutativity $\ien \circ \idp = \idp \circ \ien$ holds everywhere. This is checked on $\open{B}$ and then globalized via the uniqueness of the extension.
 
 - Preservation of the ramification divisor: $\ien(\mcr_B) = \mcr_B$. Again, this is a closed condition propagated by the structure of the moduli functor.
 

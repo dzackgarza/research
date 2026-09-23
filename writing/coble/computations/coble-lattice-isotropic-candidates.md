@@ -14,9 +14,9 @@ tags:
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/notebooks/Coble Lattice Invariants.ipynb` and `.../sage-scripts/init.sage`. Absent from the dissertation, which contains no Coble lattice at all.
 
 ::: {.Remark}
-### What open problem this addresses
+## What open problem this addresses
 
-`content_pandoc/sections/Open_Problems/Open_Problems.md` records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\Orth^*(T)$-orbit exists in divisibility 2; the proof of `lem:divisibilityTcoOne` currently *assumes* that uniqueness.
+`content_pandoc/sections/Open_Problems/Open_Problems.md` records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\OStab(T)$-orbit exists in divisibility 2; the proof of `lem:divisibilityTcoOne` currently *assumes* that uniqueness.
 This note records the concrete candidate list and the machinery assembled to settle it.
 :::
 
@@ -42,18 +42,18 @@ $$
 \end{aligned}
 $$
 
-Norm and divisibility were evaluated on each by a helper `divisibility(v, L)` returning the minimum of $|\langle v,x\rangle|$ over nonzero $x$, together with the full list of inner products.
+Norm and divisibility were evaluated on each by a helper `divisibility(v, L)` returning the minimum of $|\inner{v}{x}|$ over nonzero $x$, together with the full list of inner products.
 
 ## The three-way parallel transport
 
 ::: {.Construction}
 ### Term-by-term transport along the embedding chain
 
-The same 18 vectors are transported term-by-term along the embedding chain $T_{\Co}\injects T_{\En}\injects T_{\dP}$:
+The same 18 vectors are transported term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
 
-- into $T_{\En} = U \oplus U(2) \oplus E_8(2)$ by $h \mapsto e+f$;
+- into $\ten = U \oplus U(2) \oplus E_8(2)$ by $h \mapsto e+f$;
 
-- into $T_{\dP} = U \oplus U(2) \oplus E_8^{\oplus 2}$ by $a_i \mapsto a_i + b_i$.
+- into $\tdp = U \oplus U(2) \oplus E_8^{\oplus 2}$ by $a_i \mapsto a_i + b_i$.
 
 This yields a parallel norm and divisibility table across all three lattices, which is exactly the vector-by-vector form in which the Enriques-to-Coble cusp correspondence becomes checkable.
 :::
@@ -84,14 +84,14 @@ This trichotomy is what the cusp correspondence sections of this project rely on
 
 ## Sterk's five representatives, for comparison
 
-In $T_{\En} = U \oplus E_{10}(2)$ with $\omega = 2w_8$ (norm 4) and $\alpha = 2w_1$ (norm 8):
+In $\ten = U \oplus E_{10}(2)$ with $\omega = 2w_8$ (norm 4) and $\alpha = 2w_1$ (norm 8):
 $$
 \eta_1 = e,\quad \eta_2 = e',\quad \eta_3 = e'+f'+\omega,\quad \eta_4 = e'+2f'+\alpha,\quad \eta_5 = 2e+2f+\alpha,
 $$
-with the asserted invariants $\div(e)=1$ and $e^\perp/e \cong E_{10}(2) = (10,10,0)$; $\div(e')=2$ and $e'^\perp/e' \cong U\oplus E_8(2) = (10,8,0)$; $\langle e,e'\rangle^\perp/\langle e,e'\rangle \cong E_8(2) = (8,8,0)$; and for $v' = 2e+2f+2w_1$, $\langle e',v'\rangle^\perp \cong (8,6,0)$.
+with the asserted invariants $\div(e)=1$ and $e^\perp/e \cong E_{10}(2) = \EnriquesInvariants$; $\div(e')=2$ and $e'^\perp/e' \cong U\oplus E_8(2) = (10,8,0)$; $\gens{e,e'}^\perp/\gens{e,e'} \cong E_8(2) = (8,8,0)$; and for $v' = 2e+2f+2w_1$, $\gens{e',v'}^\perp \cong (8,6,0)$.
 
 Also recorded, from a separate OSCAR/Julia notebook, the $(r,a,\delta)$ invariants with printed discriminant forms: $U(2)\to(2,2,0)$, $U(2)\oplus E_8(2)\to(10,10,0)$, $U^3\oplus E_8(2)\to(14,8,0)$, $U\oplus U(2)\oplus E_8^{\oplus2}\to(20,2,0)$, $U\oplus U(2)\oplus E_8(2)\to(12,10,0)$, $E_8(2)\to(8,8,0)$.
 Here $\delta$ is computed as "some diagonal entry of the discriminant quadratic form is non-integral", citing AE22 Def.
 2.3 for coparity.
 
-Related: [[cusp-correspondence-morphism-chain]], [[computational-toolchain-and-recipe]].
+Related: [cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md), [computational toolchain and recipe](computational-toolchain-and-recipe.md).

@@ -15,18 +15,18 @@ v &\mapsto (v, v)
     title="Scattone's Method: Enumerating Boundary Components via Niemeier Lattices"
     #rem:scattone-method-niemeier
 }
-To motivate the detailed study of primitive embeddings, we note that the method of @Sca87 provides a concrete arithmetic approach to enumerating $0$-cusps in the Baily–Borel compactification $\bbcpt{F_{2d}}$ of the moduli space of degree-$2d$ polarized K3 surfaces.
+To motivate the detailed study of primitive embeddings, we note that the method of @Sca87 provides a concrete arithmetic approach to enumerating $0$-cusps in the Baily–Borel compactification $\bbcpt{\ftd}$ of the moduli space of degree-$2d$ polarized K3 surfaces.
 
 By the classification of boundary components for arithmetic quotients of Hermitian symmetric domains [@BB66], $0$-cusps correspond to $\Gamma_{2d}$-orbits of primitive isotropic lines $I \subset L_{2d}$, where
 $$
-\lkttd \da  \langle -2d \rangle \oplus U^{ 2} \oplus E_8^{ 2}
+\lkttd \da  \gens{-2d} \oplus U^{ 2} \oplus E_8^{ 2}
 $$
 is the rank-$21$ lattice of signature $(2,19)$ associated to degree-$2d$ polarized K3 surfaces.
 
 Each such cusp corresponds to a degeneration of K3 surfaces with associated lattice $I^\perp / I$, an even lattice of signature $(1,18)$, which encodes the limiting Hodge structure for degenerations to that cusp.
 @Sca87 classified boundary components by studying primitive embeddings $U\injects L$ where $L$ is one of the $24$ **Niemeier lattices** -- the even, negative-definite, unimodular lattices of rank $24$.
-For each such embedding $U \injects L$, the orthogonal complement $T \da  U^{\perp_L}$ is an even, negative-definite, unimodular lattice of rank $22$. These are the possible isometry classes of lattices of the form $I^{\perp}/I$ at $0$-cusps of $\bbcpt{F_{2d}}$.
-The enumeration of $0$-cusps is thus reduced to counting the orbits of primitive embeddings $U \injects L$ for each Niemeier lattice $L$ up to $\Orth(L)$, where @Sca87 establishes that each such orbit corresponds to a *distinct* $0$-cusp, allowing for an explicit enumeration and thus an understanding of the entire cusp diagram for $F_{2d}$ for a wide range of values of $d$.
+For each such embedding $U \injects L$, the orthogonal complement $T \da  U^{\perp_L}$ is an even, negative-definite, unimodular lattice of rank $22$. These are the possible isometry classes of lattices of the form $I^{\perp}/I$ at $0$-cusps of $\bbcpt{\ftd}$.
+The enumeration of $0$-cusps is thus reduced to counting the orbits of primitive embeddings $U \injects L$ for each Niemeier lattice $L$ up to $\Orth(L)$, where @Sca87 establishes that each such orbit corresponds to a *distinct* $0$-cusp, allowing for an explicit enumeration and thus an understanding of the entire cusp diagram for $\ftd$ for a wide range of values of $d$.
 From this, we find that the class number $\cl(T)$ directly influences the number of 0-cusps, and representatives of isometry classes can be used to provide an explicit indexing set.
 :::
 
@@ -61,7 +61,7 @@ We note that this is not how @Nik79 originally states the theorem, but rather ex
 The generic case is both necessary and sufficient for the existence and uniqueness of a primitive embedding, 
 The weak case, which uses the global invariant $\ell(A_S)$ is easier to check in practice, but only gives a sufficient condition and is thus strictly weaker than the generic case. This is because if $A$ is any finite abelian group, one can consider the primary decomposition $A = \bigoplus_p A_p$, 
 and there is an inequality
-$\max_p \ell(A_p) \leq \ell(A) \leq \sum_p \ell(A_p)$.
+$\max_p \ell(A_p) \leq \ell(A) \leq \Sum_p \ell(A_p)$.
 Thus, using $\ell(A_S)$ in place of $\max_{p \neq 2} \ell(A_{S_p})$ can exclude embeddings that the generic case would allow.
 
 The weak and generic embedding criteria for Nikulin's theorem coincide if and only if the minimal number of generators of the group equals the maximum of the minimal numbers of generators of its $p$-primary parts, i.e., $\ell(A) = \max_p \ell(A_p)$. When $\ell(A) > \max_p \ell(A_p)$, the weak criterion requires a larger difference in ranks than the generic criterion, and thus gives only a sufficient (not necessary) condition for embedding.
@@ -130,14 +130,14 @@ Let $L$ be as above; a primitive embedding $S \injects L$ with $T\da S^{\perp L}
 
 1. A subgroup $H \leq A_{L}$, the *embedding subgroup*, and
 
-2. An isometry $\gamma: H \iso H^{\prime} \subseteq A_{S}$, the *embedding isometry*, where $H'$ is the image of $H$.
+2. An isometry $\gamma: H \iso H^{\prime} \containedin A_{S}$, the *embedding isometry*, where $H'$ is the image of $H$.
 
 Letting $\Gamma$ be the graph of $\gamma$ in $A_{L} \oplus A_{S}(-1)$, one has $A_{T}=\Gamma^{\perp} / \Gamma$ and we note that there is a discriminant formula
 $$
 |\disc T|=\frac{|\disc L| \cdot|\disc S|}{(\sharp H)^{2}} 
 .$$
 Now let $\iota: S \injects L$ be an embedding of even lattices where $L$ is unimodular, and define $H_{L}\da L / \iota(S)$. Using the chain of embeddings $S \injects L \injects L^{\vee} \injects S^{\vee}$ to produce embeddings $H_{L} \injects L^{\vee} / S \injects A_{S}$, one can regard $H_L$ as a subgroup of $A_S$.
-Conversely, for a subgroup $H \leq A_{S}$, write $\eta: S^{\vee} \to A_{S}$ and define a lattice $S_{H}\da \eta^{-1}(H) \subseteq S^{\vee}$. We note that $S_{H} \supseteq S$, so $S_{H}$ is an overlattice of $S$.
+Conversely, for a subgroup $H \leq A_{S}$, write $\eta: S^{\vee} \to A_{S}$ and define a lattice $S_{H}\da \eta\inv(H) \containedin S^{\vee}$. We note that $S_{H} \supseteq S$, so $S_{H}$ is an overlattice of $S$.
 
 These constructions are mutually inverse and define a bijection:
 \begin{align*}
@@ -177,7 +177,7 @@ The strategy is as follows:
 
 3. Restrict $\Psi$ to its scheme-theoretic image, i.e. the smallest closed subscheme of $\fttz$ through which $\Psi$ factors, to obtain $\Psi: \fent \to X$
 
-4. Since $F_{\En, 2}$ is known to be normal by the general theory of @BB66, we then appeal to Zariski's main theorem: since $X$ is a closed subscheme of a normal variety, if $\Psi$ is finite and birational, it satisfies the universal property of normalization.
+4. Since $\fent$ is known to be normal by the general theory of @BB66, we then appeal to Zariski's main theorem: since $X$ is a closed subscheme of a normal variety, if $\Psi$ is finite and birational, it satisfies the universal property of normalization.
 
 We first claim there is a holomorphic, algebraic morphism of period domains
 \begin{align*}
@@ -225,7 +225,7 @@ The following sequence of primitive embeddings is unique up to isometry:
 Passing to orthogonal complements in $\lkt$ yields the sequence
 $$
 \qty{ 
-  S_{\En} \injects S_{\dP} \injects L
+  \sen \injects \sdp \injects L
 } = 
 \qty{
   U(2) \injects U(2) \oplus E_8(2) \injects L

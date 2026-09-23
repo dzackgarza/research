@@ -14,7 +14,7 @@ tags:
 **Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/reports/Sterk{1..5}Output.txt` and `.../coxeter-diagrams/coxiter/`. None of this appears in the dissertation: the strings "CoxIter", "f-vector", "growth rate" and "cocompact" occur nowhere in `dissertation/sections/`.
 
 CoxIter is Guglielmetti's implementation for invariants of hyperbolic Coxeter groups.
-All runs below are on the folded Coxeter diagrams of the five Sterk cusps of $F_{\En,2}$, and on three 0-cusp lattices named by their $(r,a,\delta)$ invariants.
+All runs below are on the folded Coxeter diagrams of the five Sterk cusps of $\fentwo$, and on three 0-cusp lattices named by their $(r,a,\delta)$ invariants.
 
 ## The five Sterk cusps
 
@@ -58,7 +58,7 @@ Nothing in the dissertation contradicts these numbers, and nothing in it reprodu
 
 $(9,9,1)$ is the **Coble 0-cusp lattice** named in this project's own text, alongside the 1-cusp $(7,7,1)$.
 $(10,10,0)$ and $(10,8,0)$ are the two Enriques 0-cusps to which the Coble cusps are claimed to map.
-So this table is direct computational evidence bearing on the cusp correspondence; see [[cusp-correspondence-morphism-chain]].
+So this table is direct computational evidence bearing on the cusp correspondence; see [the cusp-correspondence morphism chain](../coble-moduli/cusp-correspondence-morphism-chain.md).
 :::
 
 ::: {.Remark}
@@ -87,7 +87,7 @@ Sterk 1 for instance carries $A_8(2)\times4$, $E_8(2)\times4$, $D_8(2)\times8$ a
 ### These are not orbit representatives
 
 The lists are the **full** sets of elliptic subdiagrams, before quotienting by diagram symmetry.
-The notebook step that reduced them to orbits (`summarize_maximal_orbits`) has its outputs cleared, so the orbit counts do not survive; see [[computational-toolchain-and-recipe]].
+The notebook step that reduced them to orbits (`summarize_maximal_orbits`) has its outputs cleared, so the orbit counts do not survive; see [the computational toolchain and recipe](computational-toolchain-and-recipe.md).
 :::
 
-Related: [[root-vectors-and-folded-sterk-diagrams]], [[computational-toolchain-and-recipe]], [[sterk-root-counts-and-computed-chambers]].
+Related: [root vectors and folded Sterk diagrams](root-vectors-and-folded-sterk-diagrams.md), [computational toolchain and recipe](computational-toolchain-and-recipe.md), [Sterk root counts and computed chambers](sterk-root-counts-and-computed-chambers.md).

@@ -29,7 +29,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 1
 
 \def\cusponelabels{1}
-\resizebox{1.1\textwidth}{!}{%
 \begin{tikzpicture}
   \cuspone{0}{0}
 \draw[highlight edge] (n0) -- (n1) -- (n2) -- (n3) -- (n4) -- (n11);
@@ -49,7 +48,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n0) -- (n1) -- (n2) -- (n3) -- (n4) -- (n5) -- (n6) -- (n7) -- (n0);
 \draw[highlight edge] (n9) -- (n10);
 \end{tikzpicture}
-  }
 
 - **Boundary Type:** Maps to cusp $(10,10,0)_1$ of $\fen$, and $\Gamma(\mcz_0) = \RP^2$.
 
@@ -66,14 +64,12 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 2
 
 \def\cusptwolabels{1}
-\resizebox{0.9\textwidth}{!}{%
 \begin{tikzpicture}
   \cusptwo{0}{0}
 \draw[highlight edge] (n8) -- (n6) -- (n9) -- (n6) -- (n1);
   \cusptwo{4}{0}
 \draw[highlight edge] (n7) -- (n6) -- (n9) -- (n6) -- (n0);
 \end{tikzpicture}
-  }
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$ of $\fen$; $\Gamma(\mcz_0) = \DD^2$.
 
@@ -90,7 +86,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 3
 
 \def\cuspthreelabels{1}
-\resizebox{1.1\textwidth}{!}{%
 \begin{tikzpicture}
   \cuspthree{0}{0}
 \draw[highlight edge] (n2) -- (n3) -- (n4) -- (n5) -- (n6) -- (n7) -- (n8);
@@ -106,7 +101,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n8) -- (n1);
 \draw[highlight edge] (n11) -- (n1);
 \end{tikzpicture}
-  }
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 
@@ -123,7 +117,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 4
 
 \def\cuspfourlabels{1}
-\resizebox{0.9\textwidth}{!}{%
 \begin{tikzpicture}
   \cuspfour{0}{0}
 \draw[highlight edge] (n1) -- (n2) -- (n3) -- (n4) -- (n5) -- (n6) -- (n7);
@@ -143,7 +136,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n2) -- (n9);
 \draw[highlight edge] (n6) -- (n10);
 \end{tikzpicture}
-}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 
@@ -160,7 +152,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 5
 
 \def\cuspfivelabels{1}
-\resizebox{1.1\textwidth}{!}{%
 \begin{tikzpicture}
   \cuspfive{0}{0}
 \draw[highlight edge] (n0) -- (n1) -- (n2) -- (n3) -- (n4) -- (n5) -- (n6) -- (n7) -- (n0);
@@ -194,7 +185,6 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 \draw[highlight edge] (n8) -- (n13);
 \draw[highlight edge] (n10) -- (n13);
 \end{tikzpicture}
-  }
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 

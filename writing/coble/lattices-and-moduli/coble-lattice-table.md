@@ -33,9 +33,9 @@ The fixed point locus is described by [@CDL25 Eqn. 5.3.1]:
 
 $$
 X^{g}=\left\{\begin{array}{ll}
-\emptyset & \text { if }(r, l, \delta)=(10,10,0), \\
+\emptyset & \text { if }(r, l, \delta)=\EnriquesInvariants, \\
 C_{1}^{(1)}+C_{2}^{(1)} & \text { if }(r, l, \delta)=(10,8,0), \\
-C^{(g)}+\sum_{i=1}^{k} R_{i} & \text { otherwise }
+C^{(g)}+\Sum_{i=1}^{k} R_{i} & \text { otherwise }
 \end{array}\right.
 $$
 

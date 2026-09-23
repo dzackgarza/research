@@ -52,9 +52,7 @@ The image $j(\fent)$ consists precisely of those $(X, H, \idp) \in \fttz$ for wh
 Equivalently,
 
 \begin{align*}
-{\scriptsize
 j(\fent) = \left\{ (X, H, \idp) \in \fttz \st \exists \ien, [\ien,\idp]=0, \, \Pic(X)^{\Ien = -1} \iso  \ten \right\}.
-}
 \end{align*}
 
 :::

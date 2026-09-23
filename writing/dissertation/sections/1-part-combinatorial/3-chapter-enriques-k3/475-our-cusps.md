@@ -2,7 +2,7 @@
 
 
 
-The boundary lattices at 0-cusps $\eta$ have the form $\bdlattice{T}{\eta} = \eta^\perp/\langle\eta\rangle$ for each primitive isotropic vector $\eta$. 
+The boundary lattices at 0-cusps $\eta$ have the form $\bdlattice{T}{\eta} = \eta^\perp/\gens{\eta}$ for each primitive isotropic vector $\eta$. 
 The typical situation is two have some number $n$ of possible isometry classes for boundary lattices, and some number $m\geq n$ of *actual* boundary lattices, where $m$ depends on $\Gamma$, reflecting isometry classes splitting into further possibilities.
 For $\fttz$, there are two isometry classes, each containing one sub-type of lattice, so the two cusps can be labeled
 $$
@@ -12,23 +12,19 @@ $$
 For $\fent$, there are two isometry classes, one which does not split into further subclass corresponding to orbits of divisibility one vectors in $\ten$, the other splitting into four sub-classes, reflecting an $\Orth(\ten)$ orbit of divisibility two vectors that splits into 4 separate orbits.
 We label the cusps $\eta_1,\cdots, \eta_5$, and note that the two isometry classes are given by
 $$
-\div_{\ten}(\eta) = 1\colon (10, 10, 0)_1,
+\div_{\ten}(\eta) = 1\colon \EnriquesInvariants_1,
 \qquad 
 \div_{\ten}(\eta) = 2\colon (10, 8, 0)_1
 $$
 
 
-\begin{longtable}{L{3cm} L{3cm} L{3cm} L{2cm}}
-\toprule
-\textbf{$\fent$ Cusp} & \textbf{$\fttz$ Cusp} & \textbf{Involution} & \textbf{Folded Lattice} \\
-\midrule
-$\eta_1$ ($\div(\eta_1) = 1$) & $\tilde\eta_1 \da (18,2,0)_1$ & $180^\circ$ rotation & $(10,10,0)_1$ \\
-$\eta_2$ ($\div(\eta_2) = 2$) & $\tilde\eta_2 \da (18,0,0)_1$ & Vertical reflection & $(10,8,0)_1$ \\
-$\eta_3$ ($\div(\eta_3) = 2$) & $\tilde\eta_1 \da (18,2,0)_1$ & Diagonal + reflection & $(10,8,0)_1$ \\
-$\eta_4$ ($\div(\eta_4) = 2$) & $\tilde\eta_1 \da (18,2,0)_1$ & Horizontal reflection & $(10,8,0)_1$ \\
-$\eta_5$ ($\div(\eta_5) = 2$) & $\tilde\eta_1 \da (18,2,0)_1$ & 8 commuting reflections & $(10,8,0)_1$ \\
-\bottomrule
-\end{longtable}
+| $\fent$ Cusp | $\fttz$ Cusp | Involution | Folded Lattice |
+|---|---|---|---|
+| $\eta_1$ ($\div(\eta_1) = 1$) | $\tilde\eta_1 \da (18,2,0)_1$ | $180^\circ$ rotation | $\EnriquesInvariants_1$ |
+| $\eta_2$ ($\div(\eta_2) = 2$) | $\tilde\eta_2 \da (18,0,0)_1$ | Vertical reflection | $(10,8,0)_1$ |
+| $\eta_3$ ($\div(\eta_3) = 2$) | $\tilde\eta_1 \da (18,2,0)_1$ | Diagonal + reflection | $(10,8,0)_1$ |
+| $\eta_4$ ($\div(\eta_4) = 2$) | $\tilde\eta_1 \da (18,2,0)_1$ | Horizontal reflection | $(10,8,0)_1$ |
+| $\eta_5$ ($\div(\eta_5) = 2$) | $\tilde\eta_1 \da (18,2,0)_1$ | 8 commuting reflections | $(10,8,0)_1$ |
 
 ### Cusps by Folding
 
@@ -54,9 +50,8 @@ $$
 \tdp = U \oplus U(2) \oplus E_8^2 = (20, 2, 0)_2
 ,$$
 and write $\Ien, \Idp$, and $\Inik$ for the involutions on $\lkt$ induced by the geometric involutions $\ien, \idp$, and $\inik$ respectively.
-In the decomposition $\lkt = U^3 \oplus E_8^2$, these involutions can be written in block form as follows:
-$$\label{involution-lattice-block-forms}
-{ \tiny
+In the decomposition $\lkt = U + U^2 \oplus E_8^2$, these involutions can be written in block form as follows:
+$$
 \Idp:
 \begin{pmatrix}
 -1 & 0 & 0 & 0 & 0 \\
@@ -83,8 +78,7 @@ $$\label{involution-lattice-block-forms}
 0 & 0 & 0 & 0 & -1 \\
 0 & 0 & 0 & -1 & 0
 \end{pmatrix}
-}
-,$$
+,$$ {#eq:involution-lattice-block-forms}
 or as in @eq:three-lattice-involutions,
 \begin{align*}
 \Idp: (u_1,\ u_2,\ u_3,\ \alpha_1,\ \alpha_2) &\to (-u_1,\ u_3,\ u_2,\ -\alpha_1,\ -\alpha_2)
@@ -116,7 +110,7 @@ corresponding to the two 0-cusps of the Baily-Borel compactification $\bbcpt{\ft
 From a similar analysis of $\bbcpt{\fen}$, the moduli space of *unpolarized* Enriques surfaces, one finds that there are similarly two possibilities
 $$
 \bdlattice{\ten}{\eta}: \quad
-(10, 10, 0)_1 = U(2) \oplus E_8(2)
+\EnriquesInvariants_1 = U(2) \oplus E_8(2)
 ,\quad\textor\quad 
 (10,8,0)_1 = U \oplus E_8(2)
 .$$
@@ -125,7 +119,7 @@ We immediately note that the involution $J$ is highly sensitive to the choice of
 To make this dependence explicit, we define the arithmetic groups used to construct period domains for these spaces.
 We define a distinguished polarization
 $$
-h = e + f \in S_{\dP} \iso U(2) \injects S_{\En} \iso U(2) \oplus E_8(2) = (10, 10, 0)_1
+h = e + f \in \sdp \iso U(2) \injects \sen \iso U(2) \oplus E_8(2) = \EnriquesInvariants_1
 ,$$
 and writing $\Psi: \Orth(\lkt) \to \Orth(\ten)$ for the restriction map,
 $$
@@ -137,9 +131,9 @@ where we form $\Gamma_{\En, 2}$ by taking the intersection of the commutator of 
 This is the correct monodromy group for $\fent$; the full details can be found e.g. in [@Ste91].
 For any lattice $T$ of signature $(2, n)$, we define its period domain as
 $$
-\halfpd{T} \da\ts{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }^\circ
+\halfpd{T} \da\ts{ [v]\in \PP(T_\CC) \st v^2 = 0, v\bar{v} > 0 }\interior
 ,$$
-where $(\wait)^\circ$ denotes taking one connected component. 
+where $(\wait)\interior$ denotes taking one connected component. 
 We then define the two moduli spaces
 $$
 \fent \da \dmodgamma{ \halfpd{T} }{ \Gamma }_{\En, 2},
@@ -165,7 +159,7 @@ $$
 \alpha_{16} \leftrightarrow \alpha_{18} \\
 \alpha_{17} \leftrightarrow \alpha_{19}
 \end{cases} \\
-&\text{Invariants:} && (10,10,0)_1, \qquad U(2)\oplus E_8(2)
+&\text{Invariants:} && \EnriquesInvariants_1, \qquad U(2)\oplus E_8(2)
 \end{aligned}
 $$
 
@@ -241,7 +235,8 @@ The following shows the cusp diagram for $\fent$, where we note that the mirror 
 In the diagram below, we recapitulate these incidences, adding new information: recalling if $D$ is a $G$-space and $H\leq G$ is a subgroup, the chain of subgroups $1\injects H\injects G$ induces a chain of surjective morphisms $D\surjects \dmodgamma{D}{H}\surjects \dmodgamma{D}{G}$.
 Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consider the images of the cusps of $\fent$ in $\fen$ as well as their images in $\fttz$.
 
-\resizebox{\linewidth}{!}{
+:::{#fig:fent-boundary-cusp-maps .figure}
+
 \begin{tikzpicture}[
     square/.style={rectangle, draw, minimum width=2.5cm, minimum height=0.8cm},
     highlighted_square/.style={rectangle, draw, minimum width=2.5cm, minimum height=0.8cm, fill=blue!15},
@@ -365,8 +360,9 @@ Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consi
 \node[below=2em of eta2new] {\Huge $F_{\En}$};
 
 \end{tikzpicture}
-}
-\captionof{figure}{Mappings of boundary cusps under $\fen \from \fent \to \fttz$.}
+Mappings of boundary cusps under $\fen \from \fent \to \fttz$.
+
+:::
 
 We briefly describe the methods that go into finding these cusps, due to @Ste91.
 The following result generalizes the Eichler transvection method:
@@ -480,7 +476,7 @@ Recall there are two $\Orth(\tdp)$-orbits of primitive isotropic vectors in $\td
 The fundamental fact is that the set of simple roots defining the faces of the Coxeter chamber are determined by @lem:which-roots-descend
 The *folded chamber* for the reflection group in $\ten$ is the intersection
 $$
-\thecone{C}^I = \thecone{C} \cap 
+\thecone{C}^I = \thecone{C} \intersect 
 \bdlattice{T}{\eta, \RR}^{I = 1}
 $$
 where $\thecone{C}$ is the Coxeter chamber for $\tdp$, yielding a fundamental chamber for the reflection group in $\ten$ whose faces correspond to the roots described above.
@@ -500,7 +496,8 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
 4. A top-to-bottom reflection about the center, and
 5. A composition of commuting reflections in 8 simple roots.
 
-\resizebox{1.0\textwidth}{!}{%
+:::{#fig:fent-five-cusp-coverings .figure}
+
 \begin{tikzpicture}
 
 % Draw first row
@@ -573,6 +570,7 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
 \node[below] at (17,-0.5) {Cusp 4};
 \node[below] at (22,-0.5) {Cusp 5};
 
-\end{tikzpicture}%
-}
-\captionof{figure}{The five 0-cusps $\eta_i$ in $\fent$, along with the five "covering" relations: each corresponds to one of the two 0-cusps of $\fttz$, along with an involution specific to each $\eta_i$.}
+\end{tikzpicture}
+The five 0-cusps $\eta_i$ in $\fent$, along with the five "covering" relations: each corresponds to one of the two 0-cusps of $\fttz$, along with an involution specific to each $\eta_i$.
+
+:::

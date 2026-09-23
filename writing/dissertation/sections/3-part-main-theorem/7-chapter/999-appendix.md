@@ -1,4 +1,4 @@
-## Root Systems
+## Appendix: Root Systems
 
 #### Examples of Specific Root Systems {#sec:root-lattice-conventions}
 
@@ -125,7 +125,6 @@ D_4:\quad \dynkin[mark=o,scale=3]{D}{4}
 
 Roots live in $\EE_{E_6} = \{ x \in \RR^8 : x_1+\cdots+x_8=0 \}$ with 
 $$
-{\tiny
 \Phi(E_6)\colon\,\,
 \begin{cases}
 \alpha_1 = e_1 - e_2 \\[6pt]
@@ -144,7 +143,6 @@ G_{E_6(-1)} =
 0  & 0  & 0  & 1  & -2 & 0 \\
 0  & 0  & 0  & -1 & 0  & -2
 \end{pmatrix}
-}
 $$
 We take $E_n$ to mean $E_n(-1)$, and identify the Coxeter diagram as:
 \begin{align*}
@@ -226,47 +224,27 @@ To fix conventions, we record here Bourbaki's conventions for these Dynkin diagr
 The Euclidean embeddings can be used to compute the following invariants in all types, which we show below.
 Note that for $D_n$, $A_L = \ZZ_{2^2}$ when $n$ is odd, and $A_L = (\ZZ_2)^2$ when $n$ is even.
 
-\begin{center}
-\captionof{table}{Simply Laced Root Lattices (A, D, E types)}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|c|c|c|c|c|}
-\hline
- & $A_n$ & $D_n$ & $E_6$ & $E_7$ & $E_8$ \\
-\hline
-$\rank(L) = |\Phi(L)|$ & $n$ & $n$ & $2 \cdot 3$ & $7$ & $2^3$ \\
-\hline
-$|R(L)|$ & $n(n+1)$ & $2n(n-1)$ & $2^3 \cdot 3^2$ & $2 \cdot 3^2 \cdot 7$ & $2^4 \cdot 3 \cdot 5$ \\
-\hline
-$W(L)$ & $S_{n+1}$ & $(\ZZ_2)^{n-1} \rtimes S_n$ & $W(E_6)$ & $W(E_7)$ & $W(E_8)$ \\
-\hline
-$|W(L)|$ & $(n+1)!$ & $2^{n-1}\cdot n!$ & $2^7 \cdot 3^4 \cdot 5$ & $2^{10} \cdot 3^4 \cdot 5 \cdot 7$ & $2^{14} \cdot 3^5 \cdot 5^2 \cdot 7$ \\
-\hline
-$A_L$ & $\ZZ_{n+1}$ & $\ZZ_{2^2}$ or $\ZZ_2^2$ & $\ZZ_3$ & $\ZZ_2$ & $\{0\}$ \\
-\hline
-$\disc(L)$ & $n+1$ & $2^2$ & $3$ & $2$ & $1$ \\
-\hline
-\end{tabular}\vspace{2em}
+|  | $A_n$ | $D_n$ | $E_6$ | $E_7$ | $E_8$ |
+|---|---|---|---|---|---|
+| $\rank(L) = |\Phi(L)|$ | $n$ | $n$ | $2 \cdot 3$ | $7$ | $2^3$ |
+| $|R(L)|$ | $n(n+1)$ | $2n(n-1)$ | $2^3 \cdot 3^2$ | $2 \cdot 3^2 \cdot 7$ | $2^4 \cdot 3 \cdot 5$ |
+| $W(L)$ | $S_{n+1}$ | $(\ZZ_2)^{n-1} \rtimes S_n$ | $W(E_6)$ | $W(E_7)$ | $W(E_8)$ |
+| $|W(L)|$ | $(n+1)!$ | $2^{n-1}\cdot n!$ | $2^7 \cdot 3^4 \cdot 5$ | $2^{10} \cdot 3^4 \cdot 5 \cdot 7$ | $2^{14} \cdot 3^5 \cdot 5^2 \cdot 7$ |
+| $A_L$ | $\ZZ_{n+1}$ | $\ZZ_{2^2}$ or $\ZZ_2^2$ | $\ZZ_3$ | $\ZZ_2$ | $\{0\}$ |
+| $\disc(L)$ | $n+1$ | $2^2$ | $3$ | $2$ | $1$ |
 
-\captionof{table}{Non-Simply Laced Root Lattices (B, C, F, G types)}
-\renewcommand{\arraystretch}{1.2}
-\begin{tabular}{|l|c|c|c|c|}
-\hline
- & $B_n$ & $C_n$ & $F_4$ & $G_2$ \\
-\hline
-$\rank(L) = |\Phi(L)|$ & $n$ & $n$ & $2^2$ & $2$ \\
-\hline
-$|R(L)|$ & $2n^2$ & $2n^2$ & $2^4 \cdot 3$ & $2^2 \cdot 3$ \\
-\hline
-$W(L)$ & $\ZZ_2^n \rtimes S_n$ & $\ZZ_2^n \rtimes S_n$ & $W(F_4)$ & $W(G_2)$ \\
-\hline
-$|W(L)|$ & $2^n \cdot n!$ & $2^n n!$ & $2^7 \cdot 3^2$ & $2^2 \cdot 3$ \\
-\hline
-$A_L$ & $\ZZ_2$ & $\ZZ_2$ & $\{0\}$ & $\ZZ_3$ \\
-\hline
-$\disc(L)$ & $2$ & $2$ & $1$ & $3$ \\
-\hline
-\end{tabular}
-\end{center}
+: Simply Laced Root Lattices (A, D, E types)
+
+|  | $B_n$ | $C_n$ | $F_4$ | $G_2$ |
+|---|---|---|---|---|
+| $\rank(L) = |\Phi(L)|$ | $n$ | $n$ | $2^2$ | $2$ |
+| $|R(L)|$ | $2n^2$ | $2n^2$ | $2^4 \cdot 3$ | $2^2 \cdot 3$ |
+| $W(L)$ | $\ZZ_2^n \rtimes S_n$ | $\ZZ_2^n \rtimes S_n$ | $W(F_4)$ | $W(G_2)$ |
+| $|W(L)|$ | $2^n \cdot n!$ | $2^n n!$ | $2^7 \cdot 3^2$ | $2^2 \cdot 3$ |
+| $A_L$ | $\ZZ_2$ | $\ZZ_2$ | $\{0\}$ | $\ZZ_3$ |
+| $\disc(L)$ | $2$ | $2$ | $1$ | $3$ |
+
+: Non-Simply Laced Root Lattices (B, C, F, G types)
 
 We now record explicit representatives for the simple roots of each lattice, their Gram matrix, and the associated Coxeter diagrams:
 
@@ -347,7 +325,6 @@ D_n:\,\,
 \end{cases}
 \,\,\qquad\qquad
 G_{D_n} =
-  {\scriptsize
 \begin{pmatrix}
 2 & -1 & \cdot & \cdot & \cdots & \cdot & \cdot & \cdot \\
 -1 & 2 & \ddots & \cdot & \cdots & \cdot & \cdot & \cdot \\
@@ -356,7 +333,7 @@ G_{D_n} =
 \cdot & \cdot & \cdots & \ddots & 2 & -1 & -1 \\
 \cdot & \cdot & \cdots & \cdot & -1 & 2 & \cdot \\
 \cdot & \cdot & \cdots & \cdot & -1 & \cdot & 2
-\end{pmatrix} }
+\end{pmatrix}
   \qquad\qquad\qquad\qquad\\
 \hspace{-26em}
 \raisebox{0.75em}{$D_n$:\,\,}
@@ -375,7 +352,6 @@ E_6:\,\,
 \end{cases}
 \,\,
 G_{E_6} =
-  {\scriptsize
 \begin{pmatrix}
 2 & \cdot & -1 & \cdot & \cdot & \cdot \\
 \cdot & 2 & \cdot & -1 & \cdot & \cdot \\
@@ -384,7 +360,7 @@ G_{E_6} =
 \cdot & \cdot & \cdot & \ddots & \ddots & -1 \\
 \cdot & \cdot & \cdot & \cdot & -1 & 2
 \end{pmatrix}
-  } \\
+ \\
  \hspace{-26em}
 \raisebox{0.75em}{$E_6$:\,\,}
   \dynkin[mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6}, label directions={below,above,below,below,below,below}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] E6  \hspace{12em} \\[1em]

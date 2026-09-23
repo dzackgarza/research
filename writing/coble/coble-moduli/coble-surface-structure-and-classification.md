@@ -23,7 +23,7 @@ Each was checked absent from `content_pandoc` and `knowledge` before being writt
 ### Norms of smooth rational negative curves
 
 Let $S$ be a Coble surface with anti-bicanonical divisor $D$.
-Every smooth rational negative curve $E \subseteq S$ satisfies
+Every smooth rational negative curve $E \containedin S$ satisfies
 $$
 E^2 \in \{-1,\, -2,\, -4\},
 $$
@@ -94,9 +94,9 @@ These are blowups of minimal rational surfaces.
 
 Let $X$ be a Coble surface with $M^2 = 0$.
 
-- If $X$ is of Halphen type, obtained from a minimal Halphen surface $Y_m$ of index 2 by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type **if and only if** $F$ has type $I_n$, $\mathrm{II}$, $\mathrm{III}$ or $\mathrm{IV}$.
+- If $X$ is of Halphen type, obtained from a minimal Halphen surface $Y_m$ of index 2 by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type **if and only if** $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
 
-- If $X$ is of Jacobian type, obtained from a minimal Jacobian rational elliptic surface by blowing up a singular point of one fibre $F$ and at least one singular point, with infinitely near points, on another fibre $F_1$, then $X$ is of K3 type **if and only if** each of $F$ and $F_1$ has type $I_n$, $\mathrm{II}$, $\mathrm{III}$ or $\mathrm{IV}$.
+- If $X$ is of Jacobian type, obtained from a minimal Jacobian rational elliptic surface by blowing up a singular point of one fibre $F$ and at least one singular point, with infinitely near points, on another fibre $F_1$, then $X$ is of K3 type **if and only if** each of $F$ and $F_1$ has type $I_n$, $\II$, $\III$ or $\IV$.
 :::
 
 ::: {.Lemma}
@@ -159,11 +159,11 @@ A Coble surface arises as a degeneration of an Enriques surface exactly when the
 ::: {.Remark}
 ### The rationality correspondence in its explicit form
 
-Dolgachev-Kondo prove $F_{\Co}$ rational by comparison with $\cM_{\mathrm{cusp}} = U/\PGL_3$, the moduli of cuspidal plane quintics.
+Dolgachev-Kondo prove $\fco$ rational by comparison with $\cM_{\mathrm{cusp}} = U/\PGL_3$, the moduli of cuspidal plane quintics.
 They show $\cM_{\mathrm{cusp}} \birational \cM_{\En}$, which is 10-dimensional, and that a distinguished codimension one locus $\cM'_{\mathrm{cusp}} \cong \cM_{\Co}$.
 The locus is explicit: for $C$ a plane quintic with cusp $p$ and $L$ the tangent line to $C$ at $p$, it is the case where $L$ is **also** tangent to $C$ at a smooth point $q \in C$.
 
-The project states only that $F_{\Co}$ is rational "by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics".
+The project states only that $\fco$ is rational "by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics".
 The tangency condition above is what cuts out that subvariety.
 :::
 

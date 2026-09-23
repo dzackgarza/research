@@ -61,7 +61,7 @@ Orbits under $\Orth(T_{\Nod})$ of isotropic vectors and planes can be classified
 ### Why this needs genuinely new machinery
 
 $T_{\Nod}$ is **not 2-elementary**. The entire Sterk-Nikulin apparatus that both this project and the dissertation rely on assumes 2-elementarity, so the classification of boundary components requires developing orbit techniques for non-2-elementary discriminant forms.
-This is the single structural obstruction distinguishing the nodal case from every other family in this program, including the Coble families of [[coble-families-research-program]], which are all 2-elementary.
+This is the single structural obstruction distinguishing the nodal case from every other family in this program, including the Coble families of [the Coble families research program](../coble-moduli/coble-families-research-program.md), which are all 2-elementary.
 :::
 
 ## Literature anchors recorded with the program
@@ -75,4 +75,4 @@ This is the single structural obstruction distinguishing the nodal case from eve
 
 - Dolgachev-Kondo (2013) show $F_{\En,\mathrm{Nod}}$ is rational.
 
-Related: [[coble-families-research-program]], [[halphen-index-2-moduli-program]].
+Related: [Coble families research program](../coble-moduli/coble-families-research-program.md), [Halphen index-2 moduli program](halphen-index-2-moduli-program.md).

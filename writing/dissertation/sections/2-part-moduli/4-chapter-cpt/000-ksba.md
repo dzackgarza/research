@@ -25,7 +25,7 @@ The KSBA compactification provides a canonical and proper compactification of th
 ### Recognizable Divisors
 
 Let $F_S$ be the moduli space of $S$-polarized K3 surfaces, and let $R$ be a canonical ample divisor on the generic surface in $F_S$. The divisor $R$ is called **recognizable** (for $F_S$) if for any $S$-quasipolarized Kulikov degeneration $\mcx \to \Delta$, there exists a divisor $R_0 \subset \mcx_0$ such that, for any other smoothing $\tilde{\mcx} \to \Delta$ with $\mcx_0$ $\tilde{\mcx}_0$, the divisor $R_0$ is, up to the connected component of the identity $\Aut^0(\tilde{\mcx}_0)$, the unique flat limit of the divisors $R_t \subset \mcx_t$ as $t \to 0$.This yields a form of uniqueness and "path-independence" for Kulikov models, namely that $R$ extends unambiguously to all boundary components of $F_S$.
-For any choice of recognizable divisor, the normalization of the KSBA stable pair compactification $\ksbacpt{F}^R$ is a semitoroidal compactification of the period domain, with the semifan determined by $R$.
+For any choice of recognizable divisor, the normalization of the KSBA stable pair compactification $\ksbacpt{F}_R$ is a semitoroidal compactification of the period domain, with the semifan determined by $R$.
 A canonical example of a recognizable divisor comes from @AE23, who compactify the moduli spaces $F_{2d}$ of polarized K3 surfaces $(X, L)$ of degree $2d$.
 The **rational curve divisor** is the formal sum $R_\rcop$ of all smooth genus zero curves in the linear system $\abs{L}$:
 

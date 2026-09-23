@@ -24,21 +24,21 @@ Treat everything here as a claim to re-derive, not as a result.
 
 The claimed chain is
 $$
-F_{\Co} \longrightarrow F_{\En} \longrightarrow F_{\En, 2} \longleftarrow F_{(2,2,0)} ,
+\fco \too \fen \too \fent \longleftarrow F_{(2,2,0)} ,
 $$
-where $F_{(2,2,0)}$ is the moduli space of quartic hyperelliptic K3 surfaces used in AEGS. The purpose of the chain is to transport the KSBA/semitoroidal comparison proved for $F_{\En,2}$ back to $F_{\Co}$.
+where $F_{(2,2,0)}$ is the moduli space of quartic hyperelliptic K3 surfaces used in AEGS. The purpose of the chain is to transport the KSBA/semitoroidal comparison proved for $\fentwo$ back to $\fco$.
 :::
 
 ::: {.Construction}
 ### The embedding and its two extensions
 
-An embedding $F_{\Co} \injects F_{\En}$ into unpolarized Enriques moduli is claimed, together with two extensions to Baily-Borel compactifications:
+An embedding $\fco \injects \fen$ into unpolarized Enriques moduli is claimed, together with two extensions to Baily-Borel compactifications:
 $$
-\eta: \bbcpt{F_{\Co}} \to \bbcpt{F_{\En}},
+\eta: \bbcpt{\fco} \to \bbcpt{\fen},
 \qquad
-\tilde\eta: \bbcpt{F_{\Co}} \to \bbcpt{F_{(2,2,0)}} .
+\tilde\eta: \bbcpt{\fco} \to \bbcpt{F_{(2,2,0)}} .
 $$
-The stratification of $\partial\bbcpt{F_{\Co}}$ is obtained by applying the *mirror moves* of AE22 to $S_{\Co} = (11,11,1)_1$.
+The stratification of $\partial\bbcpt{\fco}$ is obtained by applying the *mirror moves* of AE22 to $S_{\Co} = (11,11,1)_1$.
 The boundary correspondence induced by $\eta$ is claimed to be determined by the divisibility invariant.
 :::
 
@@ -53,7 +53,7 @@ Under $\tilde\eta$, the Coble cusps correspond to $U \oplus E_8^{\oplus 2}$, the
 ::: {.Conjecture}
 ### The Coble 0-cusp is Sterk cusp 2
 
-The Coble 0-cusp corresponds to **cusp 2** of the Sterk cusp diagram of $F_{\En,2}$.
+The Coble 0-cusp corresponds to **cusp 2** of the Sterk cusp diagram of $\fentwo$.
 The Sterk cusp diagram was first given by Sterk (1991).
 :::
 
@@ -76,7 +76,7 @@ The two claims were derived by different routes, so their agreement is a real, a
 
 The stated method for the $\Gamma_{\Co}$-orbit classification, where $\Gamma_{\Co} \leq \Orth(T_{\Co})$ is the relevant subgroup and $D_{\Co}/\Gamma_{\Co}$ the relevant period domain:
 
-1. Careful study of the discriminant groups $A_{T_{\Co}}$ and $A_{T_{\En}}$.
+1. Careful study of the discriminant groups $A_{T_{\Co}}$ and $A_{\ten}$.
 
 2. Techniques reducing the classification of orbits of isotropic vectors in $T_{\Co}$ to finite computable problems in $A_{T_{\Co}}$.
 
@@ -89,7 +89,7 @@ Eichler transvections are not named as a tool in the current `Open_Problems.md`,
 ::: {.Remark}
 ### The GIT birational model
 
-$F_{\Co} \da D_{T_{\Co}}/\Orth(T_{\Co})$ is claimed birational to the GIT quotient $(\PP^2)^{10}\modmod\PGL_3$.
+\fco \da D_{T_{\Co}}/\Orth(T_{\Co})$ is claimed birational to the GIT quotient $(\PP^2)^{10}\modmod\PGL_3$.
 This gives an independent handle on the dimension 9 already asserted in the project, and an avenue for comparing GIT and KSBA compactifications.
 :::
 

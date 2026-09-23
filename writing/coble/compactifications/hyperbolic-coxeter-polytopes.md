@@ -6,8 +6,8 @@
 Vinberg's algorithm (\longref{thm:vinberg-algorithm}) returns a set of simple roots and terminates when they bound a chamber of finite volume.
 The condition it tests is a condition on the vertices of that chamber, and those vertices are read off the Coxeter--Vinberg diagram.
 
-Throughout, $L$ is a hyperbolic lattice of signature $(1,n)$, $C_L^+$ is a fixed component of its positive cone, and $\mathbb{H}^n_L$ is the associated hyperbolic $n$-space of \longref{def:hyperbolic-model}.
-Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\cap\mathbb{H}^n_L$ is nonempty exactly when $v^2 < 0$.
+Throughout, $L$ is a hyperbolic lattice of signature $(1,n)$, $C_L^+$ is a fixed component of its positive cone, and $\HH^n_L$ is the associated hyperbolic $n$-space of \longref{def:hyperbolic-model}.
+Roots are negative-definite directions, so a mirror $H_v = v^{\perp}\cap\HH^n_L$ is nonempty exactly when $v^2 < 0$.
 :::
 
 ## The Tits cone
@@ -22,7 +22,7 @@ $$
 $$
 and the **Tits cone** of $(W,S)$ is
 $$
-U \da \bigcup_{w\in W} w\!\left(\overline{C}\right) \subseteq V^*
+U \da \Union_{w\in W} w\!\left(\overline{C}\right) \containedin V^*
 .
 $$
 When $G$ is nondegenerate it identifies $V$ with $V^*$, and $\overline C$ becomes the cone $\ts{v\in V \mid \beta(v,\alpha_s)\geq 0}$ over the closure of a Weyl chamber in the sense of \longref{def:weyl-chamber}.
@@ -56,10 +56,10 @@ For a hyperbolic Coxeter system, part (3) says which points of the chamber have 
 
 ::: {.Notation}
 
-Let $P\subseteq\mathbb{H}^n_L$ be a Coxeter polytope (\longref{def:coxeter-polytope}) with walls $H_s = \alpha_s^{\perp}$ indexed by a finite set $S$, and Coxeter--Vinberg diagram $\Sigma$.
-For $I\subseteq S$ write
+Let $P\containedin\HH^n_L$ be a Coxeter polytope (\longref{def:coxeter-polytope}) with walls $H_s = \alpha_s^{\perp}$ indexed by a finite set $S$, and Coxeter--Vinberg diagram $\Sigma$.
+For $I\containedin S$ write
 $$
-A_I \da \spanof_\RR\ts{\, \alpha_s \mid s\in I \,} \subseteq L_\RR
+A_I \da \spanof_\RR\ts{\, \alpha_s \mid s\in I \,} \containedin L_\RR
 .
 $$
 The Gram matrix $G[I,I]$ is the Gram matrix of a spanning set of $A_I$, so its rank equals the rank of $\ro{\beta_L}{A_I}$; that common value is the rank of $\Sigma_I$ in the sense of \longref{def:coxeter-subdiagram}.
@@ -68,34 +68,34 @@ The Gram matrix $G[I,I]$ is the Gram matrix of a spanning set of $A_I$, so its r
 ::: {.Proposition #prop:polytope-vertex-subdiagram}
 ### Vertices and subdiagrams
 
-Let $I\subseteq S$.
+Let $I\containedin S$.
 
 1. If $\Sigma_I$ is elliptic of rank $n$, then $\dim A_I = n$, the orthogonal complement $A_I^{\perp L_\RR}$ is a line spanned by a vector of positive norm, and
    $$
-   \bigcap_{s\in I} H_s
+   \Intersect_{s\in I} H_s
    $$
-   is a single point of $\mathbb{H}^n_L$, an **ordinary vertex** of $P$ when it lies in $\overline{P}$.
+   is a single point of $\HH^n_L$, an **ordinary vertex** of $P$ when it lies in $\overline{P}$.
 
 2. If $\Sigma_I$ is parabolic of rank $n-1$, then $\dim A_I = n$, the form $\ro{\beta_L}{A_I}$ is negative semidefinite with radical a line $\RR\eta$ spanned by an isotropic vector $\eta$, one has $A_I^{\perp L_\RR} = \RR\eta$, and
    $$
-   \bigcap_{s\in I}\overline{H_s}
+   \Intersect_{s\in I}\overline{H_s}
    $$
-   meets the closure of $\mathbb{H}^n_L$ in the single boundary point $[\eta]\in\partial\mathbb{H}^n_L$, an **ideal vertex** of $P$ when it lies in $\overline P$.
-   In this case the negative-definite lattice $\eta^{\perp L}/\eta$ has rank $n-1$, and the stabilizer of $[\eta]$ in $W$ is $W_I$, acting on $(\eta^{\perp L}/\eta)\otimes\RR \cong \EE^{\,n-1}$ as the euclidean reflection group with diagram $\Sigma_I$.
+   meets the closure of $\HH^n_L$ in the single boundary point $[\eta]\in\partial\HH^n_L$, an **ideal vertex** of $P$ when it lies in $\overline P$.
+   In this case the negative-definite lattice $\eta^{\perp L}/\eta$ has rank $n-1$, and the stabilizer of $[\eta]$ in $W$ is $W_I$, acting on $(\eta^{\perp L}/\eta)\tensor\RR \cong \EE^{\,n-1}$ as the euclidean reflection group with diagram $\Sigma_I$.
 :::
 
 ::: {.proof}
 Suppose first that $\Sigma_I$ is elliptic of rank $n$.
 Then $G[I,I]$ is negative definite of rank $n$, so the $\alpha_s$ with $s\in I$ are linearly independent and $\dim A_I = n$.
 Since $\ro{\beta_L}{A_I}$ is nondegenerate, $L_\RR = A_I\perp A_I^{\perp}$, so $A_I^{\perp}$ is a line of signature $(1,0)$, spanned by a vector $v$ with $v^2 > 0$.
-Now $\bigcap_{s\in I}H_s$ is the image of $A_I^\perp$ in $\mathbb{H}^n_L$, a single point.
+Now $\Intersect_{s\in I}H_s$ is the image of $A_I^\perp$ in $\HH^n_L$, a single point.
 
 Suppose instead that $\Sigma_I$ is parabolic of rank $n-1$.
 Each connected component of $\Sigma_I$ has a one-dimensional kernel by \longref{def:elliptic-subdiagram}, so $\ro{\beta_L}{A_I}$ is negative semidefinite and degenerate.
-Its radical is $A_I\cap A_I^{\perp}$, a totally isotropic subspace of $L_\RR$, hence of dimension at most $\min(n_+,n_-) = 1$; being nonzero it is a line $\RR\eta$ with $\eta^2 = 0$.
-Then $\dim A_I = \operatorname{rank}(\ro{\beta_L}{A_I}) + 1 = n$, so $\dim A_I^{\perp} = (n+1) - n = 1$, and $\RR\eta\subseteq A_I^\perp$ forces $A_I^{\perp} = \RR\eta$.
-The intersection $\bigcap_{s\in I}\overline{H_s}$ is the image of $A_I^\perp$ in $\PP(L_\RR)$, the single point $[\eta]$, which lies on $\partial\mathbb{H}^n_L$ because $\eta$ is isotropic.
-Since $\eta$ is isotropic and $L$ has signature $(1,n)$, the form induced on $\eta^{\perp}/\eta$ is negative definite of rank $n-1$; and $A_I\subseteq\eta^{\perp}$, with $A_I/\RR\eta$ of dimension $n-1$, so $W_I$ acts on $\eta^{\perp}/\eta$ as the reflection group of $\Sigma_I$, which is euclidean by \longref{def:coxeter-system-type}.
+Its radical is $A_I\intersect A_I^{\perp}$, a totally isotropic subspace of $L_\RR$, hence of dimension at most $\min(n_+,n_-) = 1$; being nonzero it is a line $\RR\eta$ with $\eta^2 = 0$.
+Then $\dim A_I = \rank(\ro{\beta_L}{A_I}) + 1 = n$, so $\dim A_I^{\perp} = (n+1) - n = 1$, and $\RR\eta\containedin A_I^\perp$ forces $A_I^{\perp} = \RR\eta$.
+The intersection $\Intersect_{s\in I}\overline{H_s}$ is the image of $A_I^\perp$ in $\PP(L_\RR)$, the single point $[\eta]$, which lies on $\partial\HH^n_L$ because $\eta$ is isotropic.
+Since $\eta$ is isotropic and $L$ has signature $(1,n)$, the form induced on $\eta^{\perp}/\eta$ is negative definite of rank $n-1$; and $A_I\containedin\eta^{\perp}$, with $A_I/\RR\eta$ of dimension $n-1$, so $W_I$ acts on $\eta^{\perp}/\eta$ as the reflection group of $\Sigma_I$, which is euclidean by \longref{def:coxeter-system-type}.
 :::
 
 ::: {.Corollary #cor:ideal-vertices-are-parabolic}
@@ -104,9 +104,9 @@ Sending an ideal vertex $[\eta]$ of $P$ to the set $I$ of all walls of $P$ throu
 :::
 
 ::: {.proof}
-Let $[\eta]$ be an ideal vertex and $I$ the set of walls through it, so $A_I \subseteq \eta^{\perp}$ and $\Sigma_I$ is parabolic of rank $n-1$ by \longref{prop:polytope-vertex-subdiagram}.
+Let $[\eta]$ be an ideal vertex and $I$ the set of walls through it, so $A_I \containedin \eta^{\perp}$ and $\Sigma_I$ is parabolic of rank $n-1$ by \longref{prop:polytope-vertex-subdiagram}.
 Suppose $\Sigma_J$ is parabolic with $J\supseteq I$.
-Writing $r\leq 1$ for the dimension of the radical of $\ro{\beta_L}{A_J}$, one has $\dim A_J - r = \operatorname{rank}(\ro{\beta_L}{A_J})\leq n_-(L_\RR) = n$, so $\dim A_J\leq n+1$; and $\dim A_J = n+1$ would make $A_J = L_\RR$, whose form is nondegenerate of signature $(1,n)$ rather than negative semidefinite.
+Writing $r\leq 1$ for the dimension of the radical of $\ro{\beta_L}{A_J}$, one has $\dim A_J - r = \rank(\ro{\beta_L}{A_J})\leq n_-(L_\RR) = n$, so $\dim A_J\leq n+1$; and $\dim A_J = n+1$ would make $A_J = L_\RR$, whose form is nondegenerate of signature $(1,n)$ rather than negative semidefinite.
 Hence $\dim A_J\leq n = \dim A_I$, so $A_J = A_I$ and every wall indexed by $J$ contains $A_I^{\perp} = \RR\eta$, that is, passes through $[\eta]$.
 By the choice of $I$ this gives $J = I$.
 :::
@@ -122,22 +122,22 @@ Reading the same construction one level up, at a $0$-cusp $[I]$ of a Baily--Bore
 
 ::: {.Definition #def:covolume}
 
-Let $\Gamma\leq\Isom(\mathbb{H}^n_L)$ be a discrete subgroup.
-Its **covolume** is the hyperbolic volume $\vol(\mathbb{H}^n_L/\Gamma)$ of the quotient orbifold.
-If $\Gamma$ is generated by the reflections in the walls of a Coxeter polytope $P$, then $P$ is a strict fundamental domain and $\vol(\mathbb{H}^n_L/\Gamma) = \vol(P)$.
+Let $\Gamma\leq\Isom(\HH^n_L)$ be a discrete subgroup.
+Its **covolume** is the hyperbolic volume $\vol(\HH^n_L/\Gamma)$ of the quotient orbifold.
+If $\Gamma$ is generated by the reflections in the walls of a Coxeter polytope $P$, then $P$ is a strict fundamental domain and $\vol(\HH^n_L/\Gamma) = \vol(P)$.
 :::
 
 ::: {.Theorem #thm:coxeter-polytope-volume}
 ### Finite volume and compactness
 
-Let $P\subseteq\mathbb{H}^n_L$ be a Coxeter polytope with finitely many walls and Coxeter--Vinberg diagram $\Sigma$.
+Let $P\containedin\HH^n_L$ be a Coxeter polytope with finitely many walls and Coxeter--Vinberg diagram $\Sigma$.
 
-1. $\vol(P) < \infty$ if and only if, in the projective model of \longref{def:hyperbolic-model}, the closure of $P$ is the convex hull of finitely many points of $\overline{\mathbb{H}^n_L}$ --- equivalently, of the ordinary and ideal vertices supplied by \longref{prop:polytope-vertex-subdiagram}.
+1. $\vol(P) < \infty$ if and only if, in the projective model of \longref{def:hyperbolic-model}, the closure of $P$ is the convex hull of finitely many points of $\overline{\HH^n_L}$ --- equivalently, of the ordinary and ideal vertices supplied by \longref{prop:polytope-vertex-subdiagram}.
 
 2. $P$ is compact if and only if $\vol(P)<\infty$ and $P$ has no ideal vertex; equivalently, if and only if the closure of $P$ in the projective model is the convex hull of finitely many ordinary vertices.
    By \longref{cor:ideal-vertices-are-parabolic} this is the condition that no parabolic subdiagram of $\Sigma$ of rank $n-1$ is cut out by a set of walls meeting in $\overline{P}$.
 
-3. $P$ has infinite volume if and only if its closure in the projective model has a vertex outside $\overline{\mathbb{H}^n_L}$.
+3. $P$ has infinite volume if and only if its closure in the projective model has a vertex outside $\overline{\HH^n_L}$.
 
 These are Vinberg's criteria [@Vin67; @Vin85].
 :::
@@ -150,21 +150,21 @@ Criterion (1) is the condition Vinberg's algorithm tests at each stage (\longref
 ::: {.Corollary #cor:coxeter-simplex-volume}
 ### The simplex case
 
-Suppose $\abs{S} = n+1$ and $P$ is a simplex, so that its $n+1$ vertices are cut out by the $n+1$ maximal proper subdiagrams $\Sigma_{S\setminus\ts{s}}$, $s\in S$.
+Suppose $\abs{S} = n+1$ and $P$ is a simplex, so that its $n+1$ vertices are cut out by the $n+1$ maximal proper subdiagrams $\Sigma_{S\sm\ts{s}}$, $s\in S$.
 Then
 
-1. $P$ is compact if and only if every $\Sigma_{S\setminus\ts{s}}$ is elliptic;
+1. $P$ is compact if and only if every $\Sigma_{S\sm\ts{s}}$ is elliptic;
 
-2. $\vol(P) < \infty$ if and only if every $\Sigma_{S\setminus\ts{s}}$ is elliptic or parabolic, the ideal vertices being those $s$ for which $\Sigma_{S\setminus\ts{s}}$ is parabolic;
+2. $\vol(P) < \infty$ if and only if every $\Sigma_{S\sm\ts{s}}$ is elliptic or parabolic, the ideal vertices being those $s$ for which $\Sigma_{S\sm\ts{s}}$ is parabolic;
 
-3. $\vol(P) = \infty$ if and only if some $\Sigma_{S\setminus\ts{s}}$ is hyperbolic.
+3. $\vol(P) = \infty$ if and only if some $\Sigma_{S\sm\ts{s}}$ is hyperbolic.
 :::
 
 ::: {.Remark}
 ### Lannér's classification
 
 The compact hyperbolic Coxeter simplices of \longref{cor:coxeter-simplex-volume}(1) were classified by Lannér.
-In $\mathbb{H}^2$ they are the triangles of \longref{ex:hyperbolic-triangle-groups} with $p,q,r$ all finite, of which there are infinitely many; in $\mathbb{H}^3$ there are nine and in $\mathbb{H}^4$ there are five.
+In $\HH^2$ they are the triangles of \longref{ex:hyperbolic-triangle-groups} with $p,q,r$ all finite, of which there are infinitely many; in $\HH^3$ there are nine and in $\HH^4$ there are five.
 :::
 
 ::: {.Example #ex:hyperbolic-triangle-groups}
@@ -177,7 +177,7 @@ $$
 \;\begin{cases}
 > 1 & \text{spherical, and the triangle lies in } S^2;\\
 = 1 & \text{euclidean, and the triangle lies in } \EE^2;\\
-< 1 & \text{hyperbolic, and the triangle lies in } \mathbb{H}^2.
+< 1 & \text{hyperbolic, and the triangle lies in } \HH^2.
 \end{cases}
 $$
 In the hyperbolic case the triangle has area $\pi\left(1 - \tfrac1p - \tfrac1q - \tfrac1r\right)$ by the Gauss--Bonnet theorem, so every hyperbolic triangle group has finite covolume; it is cocompact exactly when $p,q,r$ are all finite, and each entry equal to $\infty$ contributes one ideal vertex.
@@ -197,9 +197,9 @@ What separates the three cases in \longref{ex:hyperbolic-triangle-groups} is the
 ### Ends of the quotient orbifold
 
 Let $\Gamma$ be generated by the reflections in the walls of a finite-volume Coxeter polytope $P$.
-Since $P$ is a strict fundamental domain, the quotient orbifold $\mathbb{H}^n_L/\Gamma$ is homeomorphic to $P$, and its ends --- its **cusps** --- are the ideal vertices of $P$.
+Since $P$ is a strict fundamental domain, the quotient orbifold $\HH^n_L/\Gamma$ is homeomorphic to $P$, and its ends --- its **cusps** --- are the ideal vertices of $P$.
 By \longref{prop:polytope-vertex-subdiagram} the cross-section of the cusp at $[\eta]$ is the euclidean orbifold $\EE^{\,n-1}/W_I$, where $\Sigma_I$ is the parabolic subdiagram of rank $n-1$ cutting out $[\eta]$; it is compact because $W_I$ is a euclidean reflection group of full rank, and its volume is finite, which is why an ideal vertex contributes finitely to $\vol(P)$.
-A vertex lying outside $\overline{\mathbb{H}^n_L}$ contributes an end of infinite volume.
+A vertex lying outside $\overline{\HH^n_L}$ contributes an end of infinite volume.
 :::
 
 ::: {.Remark}

@@ -62,8 +62,8 @@ $$
 K_Y^2 = (-2\ell_1 - 2\ell_2)^2 = 4(\ell_1^2 + 2(\ell_1 \cdot \ell_2) + \ell_2^2 ) = 4 (0 + 2 \cdot 1 + 0 ) = 8.
 $$
 We thus recover the well-known fact that $Y$ is a del Pezzo surface of degree $8$.
-It is also well-known that  $Y$ is a toric, and the polytope for the projective toric pair $(Y, \OO_Y(a, b))$ is the rectangle $Q_{a,b} \da [0, a] \times [0, b] \subseteq \ZZ^2$.
-In particular, for $\OO_Y(4, 4)$, the polytope is the square $Q\da Q_{4,4} = [0, 4]^2 \subseteq M_Y \da \ZZ^2$ with sides of lattice length 4.
+It is also well-known that  $Y$ is a toric, and the polytope for the projective toric pair $(Y, \OO_Y(a, b))$ is the rectangle $Q_{a,b} \da [0, a] \times [0, b] \containedin \ZZ^2$.
+In particular, for $\OO_Y(4, 4)$, the polytope is the square $Q\da Q_{4,4} = [0, 4]^2 \containedin M_Y \da \ZZ^2$ with sides of lattice length 4.
 
 ##### Involutions in Coordinates
 
@@ -163,17 +163,17 @@ Thus $Q$ and $W$ share the same polytope, but for the two distinct lattices $M_Y
 We briefly recall the standard construction of a double cover of smooth projective surface $Y$ branched over a reduced divisor $B$ as a method of producing (families of) Calabi-Yau varieties (see e.g. [@Par91]).
 Select a line bundle $L$ such that $L^{\tensor 2} \cong \OO_Y(B)$ -- for example, if $B \in |-2K_Y|$, one can take $L = -K_Y$.
 We can write $B$ as the zero divisor of zeros of a section $f \in H^0(Y, L^{\tensor 2})$, and
-define a coherent $\OO_Y$-algebra $\mca = \OO_Y \oplus L^{-1},$ where the algebra structure is locally determined by
+define a coherent $\OO_Y$-algebra $\mca = \OO_Y \oplus L\inv,$ where the algebra structure is locally determined by
 
 \begin{align*}
 (o_1 \oplus \ell_1) \cdot (o_2\oplus \ell_2) = (o_1o_2 + \ro{f}{U} \cdot \ell_1\ell_2) \oplus (o_1\ell_2 + o_2\ell_1)z,
 \\
-\qquad o_i \in \OO_Y(U),\, \ell_i \in L^{-1}(U)
+\qquad o_i \in \OO_Y(U),\, \ell_i \in L\inv(U)
 \end{align*}
 
-where $z\in H^0(L^{-1})$ is a generator of $L^{-1}$ satisfying $z^2 = f$.
+where $z\in H^0(L\inv)$ is a generator of $L\inv$ satisfying $z^2 = f$.
 The double cover $\pi: X\to Y$ is then constructed as $X = \Spec_Y(\mca)$; $\pi$ is a finite morphism, it is etale away from $B$, and is ramified to order 2 precisely over $B$.
-The relation $z^2 + f = 0$ is imposed for an $\OO_Y$-module generator $z$ of $L^{-1}$, and the algebra structure above ensures that global functions on $X$ over an open $U \subseteq Y$ are of the form $s_1 + z s_2$ with $s_i \in \OO_Y(U)$ and $z^2 = f|_U$, and the covering involution is locally modeled by $z\mapsto -z$.
+The relation $z^2 + f = 0$ is imposed for an $\OO_Y$-module generator $z$ of $L\inv$, and the algebra structure above ensures that global functions on $X$ over an open $U \containedin Y$ are of the form $s_1 + z s_2$ with $s_i \in \OO_Y(U)$ and $z^2 = f|_U$, and the covering involution is locally modeled by $z\mapsto -z$.
 By the adjunction formula, one has $K_X = \pi^*\left(K_Y + L\right)$, and so for $L = -K_Y$, and $B \in |-2K_Y|$, we have $K_X = \pi^* (K_Y - K_Y) = \OO_X$ and $X$ is Calabi-Yau.
 
 ##### The main family of K3 surfaces
@@ -183,7 +183,7 @@ We now apply this to $B$ with $L = -K_Y = \OO_Y(2,2)$ as above.
 Since $Y$ is simply connected and $\pi$ is a finite cover, it follows that $X$ is simply connected as well. Moreover, one can show by the Leray spectral sequence that $h^1(\OO_X) = h^1(\OO_Y) = 0$, and thus $X$ is a K3 surface.
 For a toric description, let $P$ denote the polytope in $\RR^3$ formed by forming the pyramid over $Q$ with apex $(2,2,2)$. The associated toric threefold $V_P$ then contains $X$ as the affine hypersurface locally defined by the vanishing locus of $z^2 + f$.
 By varying $B$, we can thus produce families of K3 surfaces as families of hypersurfaces in the toric threefold $V_P$.
-The parameter space for such $B$ corresponds to the space of $\tau$-invariant global sections of $\OO_Y(4,4)$. There are exactly 13 monomials $x^i y^j$ of bidegree $(4,4)$ with $i+j$ even, which can be easily seen by counting lattice points in $Q$, and thus each choice of $f$ defines a point in an open subset $U \subseteq \PP^{12}$.
+The parameter space for such $B$ corresponds to the space of $\tau$-invariant global sections of $\OO_Y(4,4)$. There are exactly 13 monomials $x^i y^j$ of bidegree $(4,4)$ with $i+j$ even, which can be easily seen by counting lattice points in $Q$, and thus each choice of $f$ defines a point in an open subset $U \containedin \PP^{12}$.
 We thus obtain a 12-dimensional family of such K3 surfaces.
 While the full automorphism group of $Y$ is an extensions of $\PGL_2^2$, the relevant symmetries for this family are the scaling actions of the torus factor $(\CCstar)^2$ on the coordinate axes of $Y$, as well as the symmetries $D_4$ of $Q$.
 We thus pass to a 10-dimensional family:
@@ -207,7 +207,7 @@ By checking directly in coordinates, o
 $$
 \idp^2 = \ien^2 = \inik^2 = \id_X, \quad \idp \circ \ien = \ien \circ \idp = \inik
 $$
-and all three commute pairwise, thus generating a faithful representation of the Klein 4-group $G \da \langle \idp, \ien, \inik \rangle \cong \ZZ_2^2 \injects \Aut(X)$ acting by algebraic automorphisms on $X$.
+and all three commute pairwise, thus generating a faithful representation of the Klein 4-group $G \da \gens{\idp, \ien, \inik} \cong \ZZ_2^2 \injects \Aut(X)$ acting by algebraic automorphisms on $X$.
 Moreover, on affine open sets, a generating holomorphic $2$-form for $X$ can be found, where the three involutions act in the following way:
 
 \begin{align*}
@@ -227,31 +227,11 @@ Note that $Z'$ has at least 8 $A_1$ singularities, induced by the 4 fixed points
 However, provided $B$ does not pass through $\Fix(\tau)$, it is a fixed-point-free invollution on $X$ and thus $Z$ is a smooth Enriques surface and $X$ is its universal K3 cover.
 We summarize the current situation below:
 
-\begin{longtable}{|c|c|c|c|c|}
-\hline
-$\iota_\star$ 
-  & $\iota_\star(x,y,z)$ 
-  & $\iota_\star^*\omega_X$ 
-  & $X/\iota_\star$ 
-  & Type \\
-\hline
-\endfirsthead
-\hline
-$\iota_\star$ 
-  & $\iota_\star(x,y,z)$ 
-  & $\iota_\star^*\omega_X$ 
-  & $X/\iota_\star$ 
-  & Type \\
-\hline
-\endhead
-\hline
-\endfoot
-
-$\idp$    & $(x,y,-z)$         & $-\omega_X$        & $\pi: X\to Y$              & $\mathrm{K3}$, smooth        \\ \hline
-$\ien$    & $({-}x,{-}y,{-}z)$  & $-\omega_X$        & $\psi: X\to Z$             & Enriques, smooth  \\ \hline
-$\inik$   & $({-}x,{-}y,\,z)$   & $+\omega_X$        & $\psi': X\to Z'$           & $\widetilde{\mathrm{K3}}$, $\ge8A_1$   \\ \hline
-
-\end{longtable}
+| $\iota_\star$ | $\iota_\star(x,y,z)$ | $\iota_\star^*\omega_X$ | $X/\iota_\star$ | Type |
+|---|---|---|---|---|
+| $\idp$ | $(x,y,-z)$ | $-\omega_X$ | $\pi: X\to Y$ | $\Kthree$, smooth |
+| $\ien$ | $({-}x,{-}y,{-}z)$ | $-\omega_X$ | $\psi: X\to Z$ | Enriques, smooth |
+| $\inik$ | $({-}x,{-}y,\,z)$ | $+\omega_X$ | $\psi': X\to Z'$ | $\widetilde{\Kthree}$, $\ge8A_1$ |
 
 
 ##### Branch and Ramification Divisors
@@ -271,11 +251,8 @@ In this situation, $(Z, \eps R_Z)$ is a log canonical pair for small enough $\ep
 We summarize the overall situation in the following diagram:
 
 
-\begin{figure}[ht]
-  \centering
-  \begin{minipage}{0.98\textwidth}
-    \centering
-    \begin{tikzcd}[
+:::{#fig:main-diagram .figure}
+\begin{tikzcd}[
       row sep={3cm,between origins}, 
       column sep={3.2cm,between origins},
       cells={nodes={font=\Large}}, every label/.append style = {font=\Large},
@@ -292,12 +269,8 @@ We summarize the overall situation in the following diagram:
       Y
         \arrow[r, "\phi"]
       & W
-    \end{tikzcd}
-  \end{minipage}
-  \hfill\vspace{2em}
-  \begin{minipage}{0.98\textwidth}
-    \centering
-    \begin{tikzcd}[
+\end{tikzcd}
+\begin{tikzcd}[
       row sep={3cm,between origins}, 
       column sep={3.2cm,between origins},
       cells={nodes={font=\Large}}, every label/.append style = {font=\Large},
@@ -314,10 +287,10 @@ We summarize the overall situation in the following diagram:
       \PP^1 \times \PP^1
         \arrow[r, "/\tau"]
       & \mathrm{dP}_4
-    \end{tikzcd}
-  \end{minipage}
-  \caption{The main diagram.}
-\end{figure}
+\end{tikzcd}
+The main diagram.
+
+:::
 
 Here,
 

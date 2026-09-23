@@ -23,14 +23,14 @@ This page records where the two disagree, because that boundary is what leaves s
 ### Level sets
 
 For a definite lattice $L$ and $c\in\ZZ$ the level set $\ts{v\in L : v^2 = c}$ is finite, and enumerating it is the basic primitive from which short-vector, closest-vector and automorphism computations are built.
-For an indefinite lattice it can be infinite: in $U$ with $\beta_U(v,w) = x_1y_2+x_2y_1$ the isotropic vectors are $\ts{(x,0)}\cup\ts{(0,y)}$, so the level set at $c = 0$ is infinite.
+For an indefinite lattice it can be infinite: in $U$ with $\beta_U(v,w) = x_1y_2+x_2y_1$ the isotropic vectors are $\ts{(x,0)}\union\ts{(0,y)}$, so the level set at $c = 0$ is infinite.
 An algorithm whose output is a list of the vectors of a given square is therefore available only in the definite case, and its indefinite counterpart returns orbit representatives together with generators for the acting group ([[isotropic-orbits-and-tits-buildings]]).
 :::
 
 ::: {.Remark}
 ### Theta series
 
-The theta series $\sum_{v\in L} q^{v^2}$ has, as the coefficient of $q^c$, the cardinality of the level set at $c$.
+The theta series $\Sum_{v\in L} q^{v^2}$ has, as the coefficient of $q^c$, the cardinality of the level set at $c$.
 For definite $L$ every coefficient is finite and the series converges for $\lvert q\rvert < 1$.
 For $U$ the coefficient of $q^0$ is already infinite, so the series is undefined, and any convergent replacement is a regularization.
 :::
@@ -81,7 +81,7 @@ The elliptic subdiagram counts $121, 65, 67, 78, 119$ for the five Sterk cusps i
 ::: {.Construction #cons:decomposition-search}
 ### Search over signature-additive multisets
 
-Signature is additive over orthogonal direct sums, so a decomposition $L\cong\bigoplus_i L_i$ satisfies $\sum_i (p_i,q_i) = (p,q)$ where $(p,q)$ is the signature of $L$.
+Signature is additive over orthogonal direct sums, so a decomposition $L\cong\bigoplus_i L_i$ satisfies $\Sum_i (p_i,q_i) = (p,q)$ where $(p,q)$ is the signature of $L$.
 Fixing a catalogue $\mathcal B$ of standard blocks, a decomposition of $L$ within $\mathcal B$ is found by
 
 1. grouping $\mathcal B$ by signature;

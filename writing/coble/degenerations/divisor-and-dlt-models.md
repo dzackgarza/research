@@ -69,7 +69,7 @@ degeneration types:
 
 ## Divisor models
 
-::: {.Definition #def:divisor-model}
+::: {.Definition #def:coble-divisor-model}
 ### Divisor model
 
 A *divisor model* for a degeneration $\pi\colon \mathcal{X} \to C$ of K3 (or
@@ -91,7 +91,7 @@ balancing condition at every vertex.
 
 ## Half-divisor models
 
-::: {.Definition #def:half-divisor-model}
+::: {.Definition #def:coble-half-divisor-model}
 ### Half-divisor model
 
 A *half-divisor model* is a pair $(\mathcal{Z}, \mathcal{R}_{\mathcal{Z}})$ over

@@ -3,13 +3,13 @@
 As a starting point to any compactification procedure of lattice polarized K3 surfaces $F_S$, we must first find the cusps of $\bbcpt{F}_S$.
 We give an overview here of various methods in the literature for similar moduli spaces, and how their cusps can be found and studied.
 
-#### $F_{2d}$: Degree 2d Polarized K3 Surfaces (Scattone's Description)
+#### $\ftd$: Degree 2d Polarized K3 Surfaces (Scattone's Description)
 
 \todo{Separate the Hodge-theoretic work}
 
 Let $\lkt$ denote the K3 lattice, and let $h \in \lkt$ be a primitive vector of square $2d > 0$. The lattice orthogonal to the polarization is defined as
 $$
-T_{2d} \da  h^\perp_{\lkt} \cong \langle -2d \rangle \oplus U^{\oplus 2} \oplus E_8^{\oplus 2},
+T_{2d} \da  h^\perp_{\lkt} \cong \gens{-2d} \oplus U^{\oplus 2} \oplus E_8^{\oplus 2},
 $$
 which is even and of signature $(2,19)$. The Type $\IV$ Hermitian symmetric period domain for $T_{2d}$,
 $$
@@ -17,15 +17,15 @@ $$
 $$
 admits a natural right action by the arithmetic group $\Gamma_{2d} \subset \Orth^+(T_{2d})$, the intersection of the original orthogonal group with the subgroup stabilizing $h$ (and, if necessary, a choice of connected component). The arithmetic quotient
 $$
-F_{2d} \da  \dmodgamma{ \halfpd{T_{2d}} }{ \Gamma_{2d} }
+\ftd \da  \dmodgamma{ \halfpd{T_{2d}} }{ \Gamma_{2d} }
 $$
 is the coarse moduli space parametrizing degree $2d$ polarized K3 surfaces.
 
-The Baily–Borel compactification $\bbcpt{F_{2d}}$ is projective, and its boundary strata correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic sublattices of $T_{2d}$ of ranks $1$ and $2$. More precisely, $0$-cusps are in correspondence with orbits of primitive isotropic planes up to the action of $\Gamma_{2d}$. The incidence relations between cusps are set by lattice inclusions: any $0$-cusp (an isotropic line) is contained in the closure of all $1$-cusps (isotropic planes) in which it lies.
+The Baily–Borel compactification $\bbcpt{\ftd}$ is projective, and its boundary strata correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic sublattices of $T_{2d}$ of ranks $1$ and $2$. More precisely, $0$-cusps are in correspondence with orbits of primitive isotropic planes up to the action of $\Gamma_{2d}$. The incidence relations between cusps are set by lattice inclusions: any $0$-cusp (an isotropic line) is contained in the closure of all $1$-cusps (isotropic planes) in which it lies.
 
 As a concrete and illustrative case, set $d = 1$. Then $h^2 = 2$ and
 $$
-T_2 = \langle -2 \rangle \oplus U^{\oplus 2} \oplus E_8^{\oplus 2}.
+T_2 = \gens{-2} \oplus U^{\oplus 2} \oplus E_8^{\oplus 2}.
 $$
 Scattone shows that for squarefree $d$ (in particular, $d = 1$), there is exactly one $\Gamma_{2d}$-orbit of primitive isotropic lines in $T_{2d}$, so the Baily–Borel boundary of $F_2$ has a unique $0$-cusp.
 
@@ -35,10 +35,10 @@ A_1 \oplus E_8^{\oplus 2}, \qquad E_7 \oplus D_{10}, \qquad A_1 \oplus D_{16}, \
 $$ {#eq:ft-four-lattices}
 These emerge as orthogonal complements to embeddings of $E_7$ into the four Niemeier lattices $U$ of rank $24$ that admit such sublattices. Each of these possibilities labels a modular curve in the boundary of $\bbcpt{F_2}$, and the closure of each of these modular curves contains the unique $0$-cusp as every isotropic line is contained in some isotropic plane.
 
-The structure of $\bd \bbcpt{F_{2d}}$ can be studied through the asymptotic behavior of the period map, governed by limiting mixed Hodge structures and their associated monodromy operators, following the work of @FS86. For a one-parameter degeneration $\mcx \to \Delta$ of polarized degree $2d$ K3 surfaces over a punctured disk $\Delta^*$, the unipotent monodromy operator $T \in O(T_{2d})$ determines the degeneration structure. Its nilpotent logarithm $N = \log T \in \Endo(T_{2d, \QQ })$ induces the canonical monodromy weight filtration $\incfiltration{W}$ on $T_{2d, \QQ}$, uniquely characterized by the properties $N(W_k) \subseteq W_{k-2}$ for all $k$, and that for each $j > 0$, the maps $N^j: \Gr^W_{k+j} \to \Gr^W_{k-j}$ are isomorphisms.
+The structure of $\bd \bbcpt{\ftd}$ can be studied through the asymptotic behavior of the period map, governed by limiting mixed Hodge structures and their associated monodromy operators, following the work of @FS86. For a one-parameter degeneration $\mcx \to \Delta$ of polarized degree $2d$ K3 surfaces over a punctured disk $\Delta^*$, the unipotent monodromy operator $T \in O(T_{2d})$ determines the degeneration structure. Its nilpotent logarithm $N = \log T \in \Endo(T_{2d, \QQ })$ induces the canonical monodromy weight filtration $\incfiltration{W}$ on $T_{2d, \QQ}$, uniquely characterized by the properties $N(W_k) \containedin W_{k-2}$ for all $k$, and that for each $j > 0$, the maps $N^j: \Gr^W_{k+j} \to \Gr^W_{k-j}$ are isomorphisms.
 Schmid's Nilpotent Orbit Theorem establishes that the period map asymptotically approaches a nilpotent orbit, defining a limiting Hodge filtration $\decfiltration{F^{\lim}}$ on $T_{2d, \CC}$ which, together with $\incfiltration{W}$, constitutes the limiting mixed Hodge structure (LMHS). This framework provides the connection between geometric degenerations and arithmetic lattice structures.
 
-The boundary components of $\bbcpt{F_{2d}}$ are classified by the nilpotency index of $N$. The Type $\II$ boundary components (1-cusps) correspond to degenerations where $N \neq 0$ but $N^2 = 0$. For such degenerations, associated with a primitive isotropic plane $I \subset T_{2d}$, is a three-step monodromy weight filtration:
+The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index of $N$. The Type $\II$ boundary components (1-cusps) correspond to degenerations where $N \neq 0$ but $N^2 = 0$. For such degenerations, associated with a primitive isotropic plane $I \subset T_{2d}$, is a three-step monodromy weight filtration:
 $$
 0 = W_0 \subset W_1 = I_{\QQ} \subset W_2 = I^{\perp T_{2d}}_{\QQ} \subset W_3 = T_{2d, \QQ}
 .$$
@@ -46,7 +46,7 @@ The LMHS induces a pure polarized Hodge structure of weight 2 on the graded piec
 
 For Type $\III$ degenerations (0-cusps), where $N^2 \neq 0$ but $N^3 = 0$, the weight filtration is of maximal length. The classifying space of such Hodge structures on $\bdlattice{T}{I}$ is itself a Type $\IV$ Hermitian symmetric domain $\halfpd{\bdlattice{T}{I}}$ and the boundary component itself is a modular variety $F_{\Gamma_I}$ for an appropriate arithmetic subgroup $\Gamma_I \leq \Orth^+(\bdlattice{T}{I})$. These degenerations correspond to normal crossing varieties whose dual complex is a triangulation of $S^2$.
 The computational accessibility of these mixed Hodge structures relies on several key tools developed in the work starting in @FS86: the Clemens-Schmid exact sequence relating the cohomology of central and $\mcx_t$s, and the Steenbrink weight spectral sequence, which for K3 surfaces degenerates integrally at the $E_2$-page. This integral degeneration is a special property of K3 surface degenerations that enables explicit computation of the limiting mixed Hodge structure components.
-The vanishing cycle analysis developed by Friedman and Scattone provides detailed control over how cohomology classes behave under degeneration. Through Mayer-Vietoris techniques and careful analysis of the dual complex structure, they established the precise relationship between the geometric combinatorics of singular fibers and the arithmetic invariants encoded in LMHS. The stratification $\bbcpt{F_{2d}}$ is thus realized by the asymptotic behavior of the period map at the various boundary cusps.
+The vanishing cycle analysis developed by Friedman and Scattone provides detailed control over how cohomology classes behave under degeneration. Through Mayer-Vietoris techniques and careful analysis of the dual complex structure, they established the precise relationship between the geometric combinatorics of singular fibers and the arithmetic invariants encoded in LMHS. The stratification $\bbcpt{\ftd}$ is thus realized by the asymptotic behavior of the period map at the various boundary cusps.
 
 #### $F_2$: Scattone's Description
 
@@ -54,7 +54,7 @@ For the specific case $d=1$, @Sca87 finds exactly four possible isometry classes
 
 The cusps in $\bbcpt{F_2}$ are obtained by classifying primitive isotropic sublattices of the lattice  
 $$
-T_{2} \da \langle -2\rangle\oplus U^{\oplus2}\oplus E_{8}^{\oplus2}
+T_{2} \da \gens{-2}\oplus U^{\oplus2}\oplus E_{8}^{\oplus2}
 $$ 
 using discriminant–form methods, from which Scattone shows:
 
@@ -65,6 +65,8 @@ using discriminant–form methods, from which Scattone shows:
 -  These four curves meet transversely at the unique Type $\III$ point.
 
 We assemble this data into the following **cusp diagram**:
+
+:::{#fig:f2-cusp-diagram .figure}
 
 \begin{tikzpicture}[
     square/.style={rectangle, draw, minimum width=3cm, minimum height=0.8cm},
@@ -85,7 +87,9 @@ We assemble this data into the following **cusp diagram**:
 \draw[->] (eta.east) -- (A17.west);
 
 \end{tikzpicture}
-  \captionof{figure}{The cusp diagram of $F_2$, the moduli space of degree 2 polarized K3 surfaces, which contains one 0-cusp $\eta$ adjacent to four 1-cusps.}
+The cusp diagram of $F_2$, the moduli space of degree 2 polarized K3 surfaces, which contains one 0-cusp $\eta$ adjacent to four 1-cusps.
+
+:::
 
 The general enumeration of $\bd\bbcpt{ F_{2d} }$ reduces to finite problems in the discriminant group $A_{T_{2d}}$: cusps can be classified by studying isotropic subgroups of the finite discriminant group $A_{T_{2d}} \da  (T_{2d})^*/T_{2d}$, and applying Nikulin's theorem that the genus of an even lattice is determined by its signature and the isomorphism class of its discriminant form [Nikulin 1980].
 The classification proceeds by associating to a primitive isotropic sublattice $I \subset T_{2d}$ an isotropic subgroup of $A_{T_{2d}}$. The problem of classifying orbits of such sublattices under the infinite group $\Gamma_{2d}$ is thereby reduced to classifying orbits of isotropic subgroups of the finite group $A_{T_{2d}}$ under the action of a subgroup of $\OStab( A_{T_{2d}} )$.
@@ -180,13 +184,15 @@ Two separate KSBA compactifications are constructed:
 
 1.  **The Ramification Divisor Compactification ($\cpt{F}^{\ram}$):** The polarization is given by the class of the ramification divisor $R$ from the representation of the K3 surface as a double cover of $\PP(1,1,4)$, so that $[R] = 3(s+2f)$, where $s$ is the section class and $f$ is the fiber class. This defines a KSBA compactification parametrizing pairs $(X, \epsilon R)$ with $X$ an slc K3 surface.
 
-2.  **The Rational Curve Divisor Compactification ($\cpt{F}^{\rcop}$):** The polarization is taken to be $R = s + m \sum_{i=1}^{24} f_i$, where the $f_i$ are the 24 singular fibers of the elliptic fibration for a generic elliptic K3 surface.
+2.  **The Rational Curve Divisor Compactification ($\cpt{F}^{\rcop}$):** The polarization is taken to be $R = s + m \Sum_{i=1}^{24} f_i$, where the $f_i$ are the 24 singular fibers of the elliptic fibration for a generic elliptic K3 surface.
 
 The core result [@ABE22] is the identification of these KSBA moduli spaces with semitoroidal compactifications defined by specific fans in $\thecone{C}_{\QQ}$. The fundamental fan is the **Coxeter fan** $F^{\cox}$, whose cones are the chambers of the reflection group $W(\II_{1,17})$. The **ramification fan** $F^{\ram}$ is a coarsening of $F^{\cox}$ whose fundamental chamber is a union of four Coxeter chambers. The **rational curve fan** $F^{\rcop}$ is a refinement of $F^{\cox}$ obtained by subdividing its fundamental chamber into nine sub-chambers. @ABE22 prove that the normalizations of $\cpt{F}^{\ram}$ and $\cpt{F}^{\rcop}$ are isomorphic to the semitoroidal compactifications defined by the fans $F^{\ram}$ and $F^{\rcop}$, respectively, laying the groundwork for our main result on $\fent$.
 
 The geometric models for the boundary strata are constructed using the theory of **integral-affine spheres with 24 singularities ($\IAS^2$)**. A Type $\III$ Kulikov degeneration of an elliptic K3 surface corresponds bijectively to a triangulated $\IAS^2$, and  the monodromy of a one-parameter degeneration determines a vector $\lambda \in \thecone{C}_{\QQ}$, the **monodromy invariant**, which determines the combinatorial type of the stable limit $(X_0, \epsilon R)$ and is constant for all $\lambda$ within the interior of a cone of the relevant fan. This provides a description of the boundary strata as unions of rational surfaces with prescribed singularities determined by the $\IAS^2$.
 
 Its Baily–Borel boundary contains a unique 0-cusp and two 1-cusps. The latter correspond to the two $\gell$-orbits of primitive isotropic planes $I \subset \tell$, distinguished by the isomorphism class of the negative-definite rank-16 lattice $\bdlattice{T}{I} = I^\perp/I$. These two classes are isometric to the root lattices $E_8 \oplus E_8$ and $D_{16}$, respectively, and the cusp diagram is as follows:
+
+:::{#fig:fell-cusp-diagram .figure}
 
 \begin{tikzpicture}[
     square/.style={rectangle, draw, minimum width=3cm, minimum height=0.8cm},
@@ -203,11 +209,13 @@ Its Baily–Borel boundary contains a unique 0-cusp and two 1-cusps. The latter 
 \draw[->] (eta.east) -- (D16.west);
 
 \end{tikzpicture}
-  \captionof{figure}{The cusp diagram of $\fell$, the moduli space of elliptic K3 surfaces, which contains one 0-cusp $\eta$ adjacent to two 1-cusps.}
+The cusp diagram of $\fell$, the moduli space of elliptic K3 surfaces, which contains one 0-cusp $\eta$ adjacent to two 1-cusps.
+
+:::
 
 #### $\fen$: Unpolarized Enriques Surfaces {#sec:fen-unpolarized-cusps}
 
-The moduli space of *unpolarized* Enriques surfaces corresponds to the lattice $\ten$ and $\Gamma_{\En} \da \Orth^+(\ten)$, yielding the orthogonal modular variety $F_{\En}$.
+The moduli space of *unpolarized* Enriques surfaces corresponds to the lattice $\ten$ and $\Gamma_{\En} \da \Orth^+(\ten)$, yielding the orthogonal modular variety $\fen$.
 To enumerate the 0-cusps of $\bbcpt{\fen}$, one can replace $\ten$ by an auxiliary lattice $K = U \oplus E_8 \oplus \I_{1,1}$ and utilize a bijection
 $$
 \ten/\Orth(\ten) \cong K/\Orth(K)
@@ -215,18 +223,19 @@ $$
 allowing for a classification in terms of simpler lattices. A primitive isotropic vector $\eta \in \I_{1,1}\subset K$ yields a unimodular lattice $\bdlattice{T}{\eta}$ of signature $(1,9)$. There are precisely two such lattices up to isometry, $\I_{1, 9}$ and $\II_{1, 9}$. Pulling back, some slightly finer analysis shows there are exactly two $\Gamma_{\En}$-orbits of primitive isotropic lines in $\ten$, corresponding to two 0-cusps $\eta_1, \eta_2$.
 A direct approach for **1-cusps** is analytic: any isotropic plane $P \subset K$ must contain an odd primitive isotropic vector $\eta$, due to the indefinite form $\I_{1,1}$. There is only one orbit of such under the full orthogonal group, so $P$ can always be assumed to contain $\eta$. The remaining problem is to classify the possible isometry classes of primitive isotropic lines in $\bdlattice{T}{\eta} \cong \I_{1,9}$. By examining the parities of a basis $\{w, w'\}$ for $P$, one finds two inequivalent types: planes where both generators have the same parity (even/even or odd/odd), and planes where the two have different parity (even/odd). Hence, there are exactly two distinct $\Orth(\ten)$-orbits of primitive isotropic planes, corresponding to two 1-cusps.
 
-Explicit representatives can be given as follows. The 0-cusps correspond to the isotropic lines $\langle e \rangle$ and $\langle e' \rangle$, where $U = \gens{e,f}$ and $U(2) = \gens{e', f'}$ as sublattices of $\ten$. The 1-cusps can be represented by the planes $\langle e, e' \rangle$, and $\langle e', f'+\alpha \rangle$ where $\alpha \in E_8$ is a fixed primitive vector with $\alpha^2=-4$. We thus obtain the following cusp diagram:
+Explicit representatives can be given as follows. The 0-cusps correspond to the isotropic lines $\gens{e}$ and $\gens{e'}$, where $U = \gens{e,f}$ and $U(2) = \gens{e', f'}$ as sublattices of $\ten$. The 1-cusps can be represented by the planes $\gens{e, e'}$, and $\gens{e', f'+\alpha}$ where $\alpha \in E_8$ is a fixed primitive vector with $\alpha^2=-4$. We thus obtain the following cusp diagram:
 
-\resizebox{\columnwidth}{!}{
+:::{#fig:fen-unpolarized-cusp-diagram .figure}
+
 \begin{tikzpicture}[
     square/.style={rectangle, draw, minimum width=3cm, minimum height=1cm},
     circ/.style={circle, draw, minimum size=1cm}
 ]
 
 % Define nodes
-\node[square] (I1) at (0,0) {$I_1 = \langle e', f' + \alpha \rangle$};
+\node[square] (I1) at (0,0) {$I_1 = \gens{e', f' + \alpha}$};
 \node[circ] (eta1) at (4,0) {$\eta_1 = e$};
-\node[square] (I12) at (8,0) {$I_{1,2} = \langle \eta_1, \eta_2 \rangle$};
+\node[square] (I12) at (8,0) {$I_{1,2} = \gens{\eta_1, \eta_2}$};
 \node[circ] (eta2) at (12,0) {$\eta_2 = e'$};
 
 % Draw arrows
@@ -238,8 +247,9 @@ Explicit representatives can be given as follows. The 0-cusps correspond to the 
 \node[below=0.5cm of I1] {$\alpha \in E_8, \alpha^2 = -4$};
 
 \end{tikzpicture}
-  }
-  \captionof{figure}{The cusp diagram of $\fen$, the moduli space of unpolarized Enriques surfaces.}
+The cusp diagram of $\fen$, the moduli space of unpolarized Enriques surfaces.
+
+:::
 
 ##### Mirror Moves
 
@@ -261,18 +271,11 @@ The move replaces $T$ with $\bdlattice{T}{\eta}$, computing the new invariants i
 
 2. **For every admissible mirror move,** check for outgoing arrows (*mirror moves*) from this node, corresponding to possible splittings of boundary lattices $T_{\eta_a}$ for isotropic vectors $\eta_a$. Each outgoing arrow from $(r_0, a_0, \delta_0)$ will be of one of the following types:
    
-\begin{center}
-\begin{longtable}{lll}
-\toprule
-  \textbf{Type of $\eta_a \in T$} & \textbf{Destination} $(r_1, a_1, \delta_1)$ & \textbf{Splitting of} $\bdlattice{T}{\eta_a}$ \\
-\midrule
-\endhead
-Odd/simple & $(r_0-2,\, a_0,\, 1)$ & $U \oplus K$ \\
-Even, ordinary & $(r_0-2,\, a_0-2,\, 1)$ & $U(2) \oplus K$ \\
-Even, characteristic & $(r_0-2,\, a_0-2,\, 0)$ & $I_{1,1}(2) \oplus K$ \\
-\bottomrule
-\end{longtable}
-\end{center}
+| Type of $\eta_a \in T$ | Destination $(r_1, a_1, \delta_1)$ | Splitting of $\bdlattice{T}{\eta_a}$ |
+|---|---|---|
+| Odd/simple | $(r_0-2,\, a_0,\, 1)$ | $U \oplus K$ |
+| Even, ordinary | $(r_0-2,\, a_0-2,\, 1)$ | $U(2) \oplus K$ |
+| Even, characteristic | $(r_0-2,\, a_0-2,\, 0)$ | $I_{1,1}(2) \oplus K$ |
 
    **A $0$-cusp $\eta_a$ exists** if the arrow exists: the destination represents a realizable, hyperbolic, 2-elementary lattice $\bdlattice{T}{\eta_a}$ in Nikulin’s table, and the node at the head of the arrow gives the invariants $(r_1, a_1, \delta_1)$ of the boundary lattice $\bdlattice{T}{\eta_a}$.
 
@@ -280,20 +283,11 @@ Even, characteristic & $(r_0-2,\, a_0-2,\, 0)$ & $I_{1,1}(2) \oplus K$ \\
 
 1. For each $0$-cusp $\eta_a$ determined in Step 1, recursively use $\bdlattice{T}{\eta_a}$ with invariants $(r_1, a_1, \delta_1)$ as a new starting point and consider all outgoing arrows from $(r_1, a_1, \delta_1)$ to construct $(r_2, a_2, \delta_2)$. Each move corresponds to a splitting of $\bdlattice{T}{I} \da  \overline{(T_{\eta_a})}_{\eta_b}$ for a primitive isotropic vector $\eta_b \in \bdlattice{T}{\eta_a}$:
 
-\begin{center}
-\begin{longtable}{@{}llp{2.5cm}@{}}
-\toprule
-\textbf{Type of $\eta_b \in \bdlattice{T}{\eta_a}$} & \textbf{Destination $(r_2, a_2, \delta_2)$} & \textbf{Splitting of $\bdlattice{T}{I} = \cpt{(T_{\eta_a})}_{\eta_b}$} \\
-\midrule
-\endhead
-
-Odd/simple                          & $(r_1 - 2,\, a_1,\, \delta_1)$       & $U \oplus K'$ \\
-Even, ordinary                      & $(r_1 - 2,\, a_1 - 2,\, \delta_1)$   & $U(2) \oplus K'$ \\
-Even, characteristic               & $(r_1 - 2,\, a_1 - 2,\, 0)$          & $I_{1,1}(2) \oplus K'$ \\
-
-\bottomrule
-\end{longtable}
-\end{center}
+| Type of $\eta_b \in \bdlattice{T}{\eta_a}$ | Destination $(r_2, a_2, \delta_2)$ | Splitting of $\bdlattice{T}{I} = \cpt{(T_{\eta_a})}_{\eta_b}$ |
+|---|---|---|
+| Odd/simple | $(r_1 - 2,\, a_1,\, \delta_1)$ | $U \oplus K'$ |
+| Even, ordinary | $(r_1 - 2,\, a_1 - 2,\, \delta_1)$ | $U(2) \oplus K'$ |
+| Even, characteristic | $(r_1 - 2,\, a_1 - 2,\, 0)$ | $I_{1,1}(2) \oplus K'$ |
 
 2. **A $1$-cusp $I$ of type $(\eta_a, \eta_b)$ exists** if and only if the move $(r_1, a_1, \delta_1) \to (r_2, a_2, \delta_2)$ exists, corresponding to a 2-elementary lattice $\bdlattice{T}{I}$ with the specified invariants. The $1$-cusp $I$ is incident to $\eta_a$ if and only if it arises from such a two-step sequence.
 
@@ -303,43 +297,31 @@ The **nodes for $0$-cusps** are given by a single admissible mirror move from $(
 The **nodes for $1$-cusps** are determined by two-step sequences $(r_0, a_0, \delta_0) \to (r_1, a_1, \delta_1) \to (r_2, a_2, \delta_2)$, with associated lattice splitting and root system $\Phi(\bdlattice{T}{I})$. Each $1$-cusp is incident to every $0$-cusp $(r_1, a_1, \delta_1)$ that occurs as an intermediate node in such a sequence.
    While the boundary lattice $\bdlattice{T}{I}$ for a $1$-cusp is determined up to isometry by invariants $(r_2, a_2, \delta_2)$, distinct $\Gamma$-orbits of $1$-cusps are distinguished by their root lattices $\Phi(\bdlattice{T}{I})$, either tabulated in @AE22 or computed via Vinberg’s algorithm. We conclude by tabulating several useful references to use when carrying out this algorithm:
 
-\begin{center}
-\begin{longtable}{@{}llp{5.2cm}@{}}
-\toprule
-\textbf{Cusp} & \textbf{Invariants} & \textbf{Existence Condition} \\
-\midrule
-\endhead
-$0$-cusp $\eta$ & $(r_1, a_1, \delta_1)$ & $\exists\, (r_0, a_0, \delta_0) \to (r_1, a_1, \delta_1)$ \\
-$1$-cusp $I$    & $(r_2, a_2, \delta_2)$, $\Phi(\bdlattice{T}{I})$ & $\exists\, (r_0, a_0, \delta_0) \to (r_1, a_1, \delta_1) \to (r_2, a_2, \delta_2)$ \\
-\bottomrule
-\end{longtable}
-\end{center}
+| Cusp | Invariants | Existence Condition |
+|---|---|---|
+| $0$-cusp $\eta$ | $(r_1, a_1, \delta_1)$ | $\exists\, (r_0, a_0, \delta_0) \to (r_1, a_1, \delta_1)$ |
+| $1$-cusp $I$ | $(r_2, a_2, \delta_2)$, $\Phi(\bdlattice{T}{I})$ | $\exists\, (r_0, a_0, \delta_0) \to (r_1, a_1, \delta_1) \to (r_2, a_2, \delta_2)$ |
 
-\begin{longtable}{@{}llll@{}}
-\toprule
-\textbf{Step 1 Type, $\eta_a$} & \textbf{Step 2 Type, $\eta_b$} & \textbf{$(r_1, a_1, \delta_1)$} & \textbf{$(r_2, a_2, \delta_2)$} \\
-\midrule
-\endhead
+| Step 1 Type, $\eta_a$ | Step 2 Type, $\eta_b$ | $(r_1, a_1, \delta_1)$ | $(r_2, a_2, \delta_2)$ |
+|---|---|---|---|
+| Odd/simple | Odd/simple | $(r_0 - 2,\, a_0,\, 1)$ | $(r_0 - 4,\, a_0,\, 1)$ |
+| Odd/simple | Even, ordinary | $(r_0 - 2,\, a_0,\, 1)$ | $(r_0 - 4,\, a_0 - 2,\, 1)$ |
+| Odd/simple | Even, characteristic | $(r_0 - 2,\, a_0,\, 1)$ | $(r_0 - 4,\, a_0 - 2,\, 0)$ |
+| Even, ordinary | Odd/simple | $(r_0 - 2,\, a_0 - 2,\, 1)$ | $(r_0 - 4,\, a_0 - 2,\, 1)$ |
+| Even, ordinary | Even, ordinary | $(r_0 - 2,\, a_0 - 2,\, 1)$ | $(r_0 - 4,\, a_0 - 4,\, 1)$ |
+| Even, ordinary | Even, characteristic | $(r_0 - 2,\, a_0 - 2,\, 1)$ | $(r_0 - 4,\, a_0 - 4,\, 0)$ |
+| Even, characteristic | Odd/simple | $(r_0 - 2,\, a_0 - 2,\, 0)$ | $(r_0 - 4,\, a_0 - 2,\, 0)$ |
+| Even, characteristic | Even, ordinary | $(r_0 - 2,\, a_0 - 2,\, 0)$ | $(r_0 - 4,\, a_0 - 4,\, 0)$ |
+| Even, characteristic | Even, characteristic | $(r_0 - 2,\, a_0 - 2,\, 0)$ | $(r_0 - 4,\, a_0 - 4,\, 0)$ |
 
-Odd/simple            & Odd/simple            & $(r_0 - 2,\, a_0,\, 1)$     & $(r_0 - 4,\, a_0,\, 1)$     \\
-Odd/simple            & Even, ordinary        & $(r_0 - 2,\, a_0,\, 1)$     & $(r_0 - 4,\, a_0 - 2,\, 1)$ \\
-Odd/simple            & Even, characteristic  & $(r_0 - 2,\, a_0,\, 1)$     & $(r_0 - 4,\, a_0 - 2,\, 0)$ \\
-Even, ordinary        & Odd/simple            & $(r_0 - 2,\, a_0 - 2,\, 1)$ & $(r_0 - 4,\, a_0 - 2,\, 1)$ \\
-Even, ordinary        & Even, ordinary        & $(r_0 - 2,\, a_0 - 2,\, 1)$ & $(r_0 - 4,\, a_0 - 4,\, 1)$ \\
-Even, ordinary        & Even, characteristic  & $(r_0 - 2,\, a_0 - 2,\, 1)$ & $(r_0 - 4,\, a_0 - 4,\, 0)$ \\
-Even, characteristic  & Odd/simple            & $(r_0 - 2,\, a_0 - 2,\, 0)$ & $(r_0 - 4,\, a_0 - 2,\, 0)$ \\
-Even, characteristic  & Even, ordinary        & $(r_0 - 2,\, a_0 - 2,\, 0)$ & $(r_0 - 4,\, a_0 - 4,\, 0)$ \\
-Even, characteristic  & Even, characteristic  & $(r_0 - 2,\, a_0 - 2,\, 0)$ & $(r_0 - 4,\, a_0 - 4,\, 0)$ \\
-
-\bottomrule
-  \caption{Change of invariants under 2-step mirror moves.}
-\end{longtable}
+: Change of invariants under 2-step mirror moves.
 
 Carrying out this algorithm for $\fen$ shows that there are exactly two 1-cusps and two 0-cusps. The following diagram encodes the mirror-move procedure, recording a sequence of moves starting from a primitive sublattice $S\injects \lkt$, computing $T\da S^{\perp \lkt}$, finding $\bar{T}$, the first type of boundary lattice corresponding to a 1-step mirror move (corresponding to $0$-cusps) and finally finding $\overline{\bar T}$, the target of a 2-step mirror move. We find that there are two possibilities for $\bar{T}$, indicated in the $\bar{T}$ column as $(10,10,0)_1$ and $(10, 8, 0)_1$, and two possibilities present in the $\overline{\bar{T}}$ column.
 There are three 2-step paths through the diagram, but only two possibilities for $\overline{\bar{T}}$, yielding two $1$-cusps and two $0$-cusps.
 We record the resulting cusp diagram below as well.
 
-\resizebox{0.9\columnwidth}{!}{
+:::{#fig:fen-mirror-move-summary .figure}
+
 \begin{tikzpicture}[
   scale=1.5,
   decoration=snake,
@@ -381,19 +363,20 @@ We record the resulting cusp diagram below as well.
 \node at (4, 3) {\Large $\bar{T}$};
 \node at (6, 3) {\Large $\bar{\bar{T}}$};
 
-\node at (-0.5, 0.5) {\large $(10, 10, 0)_1$};
+\node at (-0.5, 0.5) {\large $\EnriquesInvariants_1$};
 \node at (1.5, 0.5) {\large $(12, 10, 0)_2$};
-\node at (3.5, 2.5) {\large $(10, 10, 0)_1$};
+\node at (3.5, 2.5) {\large $\EnriquesInvariants_1$};
 \node at (3.5, -2.5) {\large $(10, 8, 0)_1$};
 \node at (6.5, 0.5) {\large $(8, 8, 0)_0$};
 \node at (6.5, -1.5) {\large $(8, 6, 0)_0$};
 
 \end{tikzpicture}
-}
-  \captionof{figure}{A concise summary of the mirror move algorithm applied to $(10, 10, 0)_1$, corresponding to $\fen$.}
+A concise summary of the mirror move algorithm applied to $\EnriquesInvariants_1$, corresponding to $\fen$.
 
-\vspace{2em}
-\resizebox{0.7\textwidth}{!}{%
+:::
+
+:::{#fig:fen-cusp-diagram-summary .figure}
+
 \begin{tikzpicture}[
     square/.style={rectangle, draw, minimum size=1cm},
     circ/.style={circle, draw, minimum size=0.8cm}
@@ -410,7 +393,8 @@ We record the resulting cusp diagram below as well.
 \draw[->] (eta1) -- (I12);
 \draw[->] (I12) -- (eta2);
 
-\end{tikzpicture}%
-}
-  \captionof{figure}{The cusp diagram of $\fen$, indicating two 0-cusps $\eta_{1}, \eta_2$ and two 1-cusps $I_{1}, I_{12}$. We note that this recovers the known cusp diagram shown in @sec:fen-unpolarized-cusps.}
+\end{tikzpicture}
+The cusp diagram of $\fen$, indicating two 0-cusps $\eta_{1}, \eta_2$ and two 1-cusps $I_{1}, I_{12}$. We note that this recovers the known cusp diagram shown in @sec:fen-unpolarized-cusps.
+
+:::
 

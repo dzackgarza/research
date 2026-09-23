@@ -2320,22 +2320,22 @@ The purpose of this appendix is not to add new mathematics, but to make explicit
 | :--- | :--- |
 | Are the ambient Enriques and del Pezzo lattices stated with all summands? | Yes; see @sec-aegs-lattices. |
 | Is the Coble surface distinguished from its smooth rational resolution? | Yes; see Definitions in @sec-surface-classes. |
-| Is $\frac{1}{4}(1,1)$ treated as a normal non-Gorenstein quotient with canonical index $2$? | Yes; see @sec-surface-terminology and \ref{warn-singularity-index}. |
-| Is the canonical index-one cover correctly identified as $A_1$? | Yes; see \ref{warning-index-one-cover}. |
-| Is the stable divisor distinguished from the anti-bicanonical curve? | Yes; see @sec-ramification-divisor and \ref{warn-anticanonical-ramification}. |
+| Is $\frac{1}{4}(1,1)$ treated as a normal non-Gorenstein quotient with canonical index $2$? | Yes; see @sec-surface-terminology and [the warning on order versus canonical index](#warn-singularity-index). |
+| Is the canonical index-one cover correctly identified as $A_1$? | Yes; see [the warning on the index-one cover](#warning-index-one-cover). |
+| Is the stable divisor distinguished from the anti-bicanonical curve? | Yes; see @sec-ramification-divisor and [the warning distinguishing the stable divisor](#warn-anticanonical-ramification). |
 | Is the degree-$2$ class identified as a quasipolarization before contraction? | Yes; see @sec-resolved-diagram. |
 | Are the Hodge stabilizer, direct centralizer, congruence group, and geometric monodromy separated? | Yes; see @sec-four-groups. |
-| Is equality of these groups stated as a theorem already proved? | No; it is Required theorem \ref{prob-group-identification}. |
-| Is abstract lattice isometry distinguished from labeled embedding rigidity? | Yes; see @sec-labeled-lattice-data and \ref{warn-isometry-rigidity}. |
-| Are period-domain inclusions distinguished from maps of arithmetic quotients? | Yes; see @sec-period-diagram and \ref{warn-domain-quotient}. |
+| Is equality of these groups stated as a theorem already proved? | No; it is the [required arithmetic and monodromy identification theorem](#prob-group-identification). |
+| Is abstract lattice isometry distinguished from labeled embedding rigidity? | Yes; see @sec-labeled-lattice-data and [the labeled-rigidity warning](#warn-isometry-rigidity). |
+| Are period-domain inclusions distinguished from maps of arithmetic quotients? | Yes; see @sec-period-diagram and [the domain/quotient warning](#warn-domain-quotient). |
 | Is the direct K3 construction required to factor through the Enriques construction? | Yes; this is Target theorem B in @sec-heegner-target. |
-| Is an $O(A)$ orbit computation used as an integral cusp theorem? | No; see @sec-finite-shadow and \longref{warning-finite-shadow}. |
-| Are the possible Enriques Type II cusp images read with the correct single/double rectangle convention? | Yes; see @sec-possible-cusp-images and \ref{warn-rectangles}. |
-| Are wall slices called Coxeter diagrams? | No; see @sec-wall-slices and \ref{warn-wall-slice}. |
+| Is an $O(A)$ orbit computation used as an integral cusp theorem? | No; see @sec-finite-shadow and [the finite-shadow warning](#warning-finite-shadow). |
+| Are the possible Enriques Type II cusp images read with the correct single/double rectangle convention? | Yes; see @sec-possible-cusp-images and [the AEGS Figure 4 border-type warning](#warn-rectangles). |
+| Are wall slices called Coxeter diagrams? | No; see @sec-wall-slices and [the wall-slice warning](#warn-wall-slice). |
 | Is the corrected thick edge $\alpha_{20}$--$\alpha_{21}$ recorded? | Yes; see @sec-gram-correction. |
-| Are maximal parabolic lists required to be exhaustive? | Yes; see \ref{prob-coxeter-completeness} and \ref{warn-parabolic-exhaustion}. |
+| Are maximal parabolic lists required to be exhaustive? | Yes; see [the Coble Vinberg/root-completeness theorem](#prob-coxeter-completeness) and [the parabolic-exhaustion warning](#warn-parabolic-exhaustion). |
 | Is an affine involution treated as automatically algebraic? | No; see @sec-algebraic-extension. |
-| Is the dlt quotient identified with the stable model before relative Proj? | No; see @sec-relative-proj and \ref{warn-dlt-stable}. |
+| Is the dlt quotient identified with the stable model before relative Proj? | No; see @sec-relative-proj and [the dlt/stable-model warning](#warn-dlt-stable). |
 | Is restriction of an ambient semifan treated as formal? | No; see @sec-restriction-not-formal. |
 | Is the autonomous direct strategy presented as already proving the Heegner theorem? | No; the two target theorems are separated in @sec-ksba-targets. |
 | Are computational scripts assigned explicit mathematical limits? | Yes; see @sec-computational-record. |

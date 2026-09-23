@@ -68,7 +68,7 @@ The computation of $\ten$ can be found, for example, in @Ste91, although it was 
 $$
 \sen \oplus \ten \iso \lkt^{\Ien = 1} \oplus \lkt^{\Ien=-1} \injects \lkt
 ,$$
-realizing these as the invariant and coinvariant lattices respectively.\footnote{We note that there are mixed conventions in the literature regarding whether $S$ or $T$ should be the invariant sublattice -- we choose here the convention used in @AEGS25.}
+realizing these as the invariant and coinvariant lattices respectively.^[We note that there are mixed conventions in the literature regarding whether $S$ or $T$ should be the invariant sublattice -- we choose here the convention used in @AEGS25.]
 This similarly determines a Type $\IV$ period domain $\halfpd{\ten}$, and the quotient
 $$
 \fen \da \dmodgamma{ \halfpd{\ten}}{\Gamma_{\En} }, \qquad 
@@ -86,8 +86,8 @@ $$
 so that the free part $H^2(Z; \ZZ)_f$ is identified with the group of numerical divisor classes, $\Num(Z)$. A **numerical polarization** $[h]$ on $Z$ is the numerical class of $h \da c_1(\mcl)$ for an ample line bundle $\mcl \in \Pic(Z)$, which we often write $[\mcl]$. For a fixed degree $2d$, one considers the moduli space $F_{\En,h}$ of numerically polarized Enriques surfaces of degree $2d$.
 The set of primitive classes $h$ with $h^2 = 2d$, up to the action of $\Orth(\lEn)$, may consist of more than one orbit, except in the case $d = 1$, where the orbit is unique. Therefore, the moduli space $\fent$ of numerically polarized Enriques surfaces of degree 2 is distinguished by this uniqueness property.
 The moduli space $\fent$ parameterizes pairs $(Z, [\mcl_Z])$, where $Z$ is an Enriques surface, possibly with ADE singularities, and $[\mcl_Z] \in \Pic(Z)/\ZZ_2 \cong \Num(Z)$ is the numerical class of an ample polarization of degree 2.
-Equivalently, $\fent$ may be described as the moduli space of pairs $(Z, \mcm)$, where $\mcm = \mcl_Z^{\otimes 2} \in \Pic(Z)$ is a 2-divisible polarization of degree 8.
-Given an ample line bundle $\mcl$ on $Z$, set $\mcm = \mcl^{\otimes 2}$, which has degree 8. By the classification of big and nef linear systems on Enriques surfaces (see [@Cos83]), the linear system $|\mcm|$ is basepoint-free and defines a morphism $\rho\colon Z \to W$ where $W$ is a quartic del Pezzo surface with singularities of type $4A_1$ or $A_3 + 2A_1$. The morphism $\rho$ is a double cover of $W$ which is branched along a divisor $B \subset W$ where the corresponding ramification divisor $R_Z = \rho^{-1}(B)$ is ample, $\QQ$-Cartier, and in the linear system $|\mcm|$.
+Equivalently, $\fent$ may be described as the moduli space of pairs $(Z, \mcm)$, where $\mcm = \mcl_Z^{\tensor 2} \in \Pic(Z)$ is a 2-divisible polarization of degree 8.
+Given an ample line bundle $\mcl$ on $Z$, set $\mcm = \mcl^{\tensor 2}$, which has degree 8. By the classification of big and nef linear systems on Enriques surfaces (see [@Cos83]), the linear system $|\mcm|$ is basepoint-free and defines a morphism $\rho\colon Z \to W$ where $W$ is a quartic del Pezzo surface with singularities of type $4A_1$ or $A_3 + 2A_1$. The morphism $\rho$ is a double cover of $W$ which is branched along a divisor $B \subset W$ where the corresponding ramification divisor $R_Z = \rho\inv(B)$ is ample, $\QQ$-Cartier, and in the linear system $|\mcm|$.
 The pair $(Z, \eps R_Z)$ is log-canonical for sufficiently small $\eps > 0$, and thus $\fent$ admits a KSBA compactification by stable pairs, which we will simply denote $\cpt{\fent}$ throughout this work.
 
 To put us in the setting of the main theorem, fix a basis of $\lkt$ in the decomposition above, so in coordinates we have $(u_1, u_2, u_3, \alpha_1, \alpha_2) \in U^3 \oplus E_8^2$, where each $u_i$ is in a copy of $U$ and each $\alpha_i$ is in a copy of $E_8$.
@@ -108,21 +108,13 @@ Similarly direct computations yield the invariant and coinvariant sublattices sh
 where the triples $(r, a, \delta)_{n_+}$ are the invariants shown by @Nik80 to classify 2-elementary lattices $T$ which admit a primitive embedding $T\injects \lkt$.
 Concretely, $r \da \rank_\ZZ(T)$ is the rank, $a$ is the *length* of $L$, which can be expressed as $\dim_{\FF_2}(A_T)$ where $A_T\da T\dual/T$ is the *discriminant group* of $T$, the integer $\delta\in \ts{0, 1}$ is the *coparity*, and the subscript $n$ is used to track the rank of a maximal positive-definite sublattice, which can be used to recover the signature as $(n_+, r-n_+)$.
 
-\begin{table}[htbp]
-\centering
-\caption{(Co)Invariant Lattices for the Three Involutions}
-\begin{tabular}{|c|l|c|c|l|c|}
-\hline
-$L$ & Isometry Class & $\rank_\ZZ(L)$ & $\signature(L)$ & $(r,a,\delta)_n$ & $A_L$ \\
-\hline
-$S_{\dP}$ & $U(2)$ & $2$ & $(1,1)$ & $(2,2,0)_1$ & $\ZZ_2^2$ \\
-$\tdp$ & $U \oplus U(2) \oplus E_8^2$ & $20$ & $(2,18)$ & $(20,2,0)_2$ & $\ZZ_2^2$ \\
-$\sen$ & $U(2) \oplus E_8(2)$ & $10$ & $(1,9)$ & $(10,10,0)_1$ & $\ZZ_2^{10}$ \\
-$\ten$ & $U \oplus U(2) \oplus E_8(2)$ & $12$ & $(2,10)$ & $(12,10,0)_2$ & $\ZZ_2^{10}$ \\
-$L_{\Nik}^{+}$ & $U^3 \oplus E_8(2)$ & $14$ & $(3,11)$ & $(14,8,0)_3$ & $\ZZ_2^8$ \\
-$L_{\Nik}^{-}$ & $E_8(2)$ & $8$ & $(0,8)$ & $(8,8,0)_0$ & $\ZZ_2^8$ \\
-\hline
-\end{tabular}
-\end{table}
+| $L$ | Isometry Class | $\rank_\ZZ(L)$ | $\signature(L)$ | $(r,a,\delta)_n$ | $A_L$ |
+|---|---|---:|---|---|---|
+| $\sdp$ | $U(2)$ | $2$ | $(1,1)$ | $(2,2,0)_1$ | $\ZZ_2^2$ |
+| $\tdp$ | $U \oplus U(2) \oplus E_8^2$ | $20$ | $(2,18)$ | $(20,2,0)_2$ | $\ZZ_2^2$ |
+| $\sen$ | $U(2) \oplus E_8(2)$ | $10$ | $(1,9)$ | $(10,10,0)_1$ | $\ZZ_2^{10}$ |
+| $\ten$ | $U \oplus U(2) \oplus E_8(2)$ | $12$ | $(2,10)$ | $(12,10,0)_2$ | $\ZZ_2^{10}$ |
+| $L_{\Nik}^{+}$ | $U^3 \oplus E_8(2)$ | $14$ | $(3,11)$ | $(14,8,0)_3$ | $\ZZ_2^8$ |
+| $L_{\Nik}^{-}$ | $E_8(2)$ | $8$ | $(0,8)$ | $(8,8,0)_0$ | $\ZZ_2^8$ |
 
-<!-- \label{canonical-lattice-table} -->
+: (Co)Invariant Lattices for the Three Involutions {#tbl:canonical-lattice-table}

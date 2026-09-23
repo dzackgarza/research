@@ -51,8 +51,7 @@ A short exact sequence $0\to A\xrightarrow{\,i\,}B\xrightarrow{\,p\,}C\to0$ is t
 ::: {#def-quasi-isomorphism}
 ## Quasi-isomorphisms
 
-A chain map $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism for every $n$ [@Wei94, Def. 1.1.2].
-These are the weak equivalences of the model structure of @thm-projective-model-structure.
+A chain map $u\colon C\to D$ is a *quasi-isomorphism* if $H_n(u)$ is an isomorphism for every $n$ [@Wei94, Def. 1.1.2]. These are the weak equivalences of the model structure of @thm-projective-model-structure.
 :::
 
 ::: {#thm-homology-les}
@@ -106,8 +105,7 @@ $$
 \qquad
 d(b,c)=\bigl(-d^Bb,\;d^Cc-f(b)\bigr)
 $$
-[@Wei94, 1.5.1].
-The inclusion of $C$ and the projection onto $B[-1]$ form a short exact sequence
+[@Wei94, 1.5.1]. The inclusion of $C$ and the projection onto $B[-1]$ form a short exact sequence
 $$
 0\longrightarrow C\longrightarrow\operatorname{cone}(f)\longrightarrow B[-1]\longrightarrow0,
 $$
@@ -186,8 +184,7 @@ $$
 $$
 Then $\beta\mapsto\beta^{\sharp}$ is a bijection from the bilinear forms of degree $n$ on $C$ to the chain maps $C\to C^{n-*}$.
 
-*Proof.*
-For each $r$, an $R$-bilinear map $C_r\times C_{n-r}\to R$ is the same as an $R$-linear map $C_r\to\operatorname{Hom}_R(C_{n-r},R)$, and the sign $(-1)^r$ is a bijection of each such set with itself, so the two families correspond.
+*Proof.* For each $r$, an $R$-bilinear map $C_r\times C_{n-r}\to R$ is the same as an $R$-linear map $C_r\to\operatorname{Hom}_R(C_{n-r},R)$, and the sign $(-1)^r$ is a bijection of each such set with itself, so the two families correspond.
 It remains to match the two conditions.
 For $x\in C_r$ and $y\in C_{n-r+1}$,
 $$
@@ -195,8 +192,8 @@ $$
 \qquad
 \bigl((-1)^r(d^C)^{*}\beta^{\sharp}_r(x)\bigr)(y)=(-1)^{2r}\beta_{r,n-r}(x,d^Cy),
 $$
-so $\beta^{\sharp}$ commutes with the differentials exactly when
-$\beta_{r-1,n-r+1}(d^Cx,y)+(-1)^{r}\beta_{r,n-r}(x,d^Cy)=0$ for all $r$, which is the condition of @def-complex-form with $p=r$ and $q=n+1-r$. $\square$
+so $\beta^{\sharp}$ commutes with the differentials exactly when $\beta_{r-1,n-r+1}(d^Cx,y)+(-1)^{r}\beta_{r,n-r}(x,d^Cy)=0$ for all $r$, which is the condition of @def-complex-form with $p=r$ and $q=n+1-r$.
+$\square$
 
 The condition that $\beta^{\sharp}$ be a chain equivalence is the Poincaré condition of @def-poincare-complex.
 :::
@@ -213,14 +210,13 @@ $$
 is a well-defined $R$-bilinear map $H_p(C)\times H_q(C)\to W$.
 If $\beta_n=\gamma\circ d_{n+1}$ for some $R$-linear $\gamma\colon(C\otimes_RC)_{n+1}\to W$, then $\bar\beta_{p,q}=0$.
 
-*Proof.*
-Let $x\in Z_p(C)$ and $y\in C_{q+1}$.
-In $(C\otimes_RC)_{n+1}$ one has $d(x\otimes y)=d^Cx\otimes y+(-1)^px\otimes d^Cy=(-1)^px\otimes d^Cy$, so
-$0=\beta_n\bigl(d(x\otimes y)\bigr)=(-1)^p\beta_{p,q}(x,d^Cy)$ and hence $\beta_{p,q}(x,d^Cy)=0$.
+*Proof.* Let $x\in Z_p(C)$ and $y\in C_{q+1}$.
+In $(C\otimes_RC)_{n+1}$ one has $d(x\otimes y)=d^Cx\otimes y+(-1)^px\otimes d^Cy=(-1)^px\otimes d^Cy$, so $0=\beta_n\bigl(d(x\otimes y)\bigr)=(-1)^p\beta_{p,q}(x,d^Cy)$ and hence $\beta_{p,q}(x,d^Cy)=0$.
 Let $x'\in C_{p+1}$ and $y\in Z_q(C)$.
 Then $d(x'\otimes y)=d^Cx'\otimes y$, so $\beta_{p,q}(d^Cx',y)=0$.
 Thus $\beta_{p,q}$ annihilates $Z_p(C)\times B_q(C)$ and $B_p(C)\times Z_q(C)$, and descends to the subquotients.
-If $\beta_n=\gamma d_{n+1}$ and $x,y$ are cycles, then $d(x\otimes y)=0$ and $\beta_{p,q}(x,y)=\gamma\bigl(d(x\otimes y)\bigr)=0$. $\square$
+If $\beta_n=\gamma d_{n+1}$ and $x,y$ are cycles, then $d(x\otimes y)=0$ and $\beta_{p,q}(x,y)=\gamma\bigl(d(x\otimes y)\bigr)=0$.
+$\square$
 :::
 
 ::: {#prp-degreewise-isometry}
@@ -234,15 +230,13 @@ b_{p-1}(d^Cx,d^Cy)=b_p(x,y)
 $$
 Then $b_p=0$ for every $p$.
 
-*Proof.*
-Apply the hypothesis in degree $p$ and then in degree $p-1$: for $x,y\in C_p$,
+*Proof.* Apply the hypothesis in degree $p$ and then in degree $p-1$: for $x,y\in C_p$,
 $$
 b_p(x,y)=b_{p-1}(d^Cx,d^Cy)=b_{p-2}\bigl((d^C)^2x,(d^C)^2y\bigr)=b_{p-2}(0,0)=0. \qquad\square
 $$
 :::
 
-**Remark.**
-Let $C$ be concentrated in degree $m$ and let $n=2m$.
+**Remark.** Let $C$ be concentrated in degree $m$ and let $n=2m$.
 Then $(C\otimes_RC)_n=C_m\otimes_RC_m$, the compatibility condition of @def-complex-form is vacuous, and a $W$-valued bilinear form of degree $n$ on $C$ is a $W$-valued bilinear form on the module $C_m$ in the sense of @def-form-presheaves.
 For a general $C$ and $n=2m$, a symmetric form of degree $n$ induces on $H_m(C)$ a pairing satisfying
 $$
@@ -262,9 +256,7 @@ $$
 \xrightarrow{\ \epsilon\ }M\longrightarrow0
 $$
 is exact.
-It is a *projective resolution* if every $P_i$ is projective and a *free resolution* if every $P_i$ is free [@Wei94, Def. 2.2.4].
-Every $R$-module has a projective resolution, and every object of an abelian category with enough projectives has one [@Wei94, Lem. 2.2.5].
-A projective resolution of $M$ is a cofibrant replacement of $M$ in the model structure of @thm-projective-model-structure, and the bar construction of @def-comonad-resolution produces one from the free-module adjunction.
+It is a *projective resolution* if every $P_i$ is projective and a *free resolution* if every $P_i$ is free [@Wei94, Def. 2.2.4]. Every $R$-module has a projective resolution, and every object of an abelian category with enough projectives has one [@Wei94, Lem. 2.2.5]. A projective resolution of $M$ is a cofibrant replacement of $M$ in the model structure of @thm-projective-model-structure, and the bar construction of @def-comonad-resolution produces one from the free-module adjunction.
 :::
 
 ::: {#thm-resolution-comparison}
@@ -298,8 +290,7 @@ Every finitely generated graded $R$-module has a graded free resolution of lengt
 ## Minimal free resolutions
 
 Let $(R,\mathfrak m)$ be a local ring.
-A free resolution $F$ of $M$ is *minimal* if $\operatorname{im}\varphi_n\subseteq\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\otimes_RR/\mathfrak m$ is zero [@Eis95, Ch. 20].
-For a finitely generated module over a local ring, and for a finitely generated graded module over a positively graded algebra over a field with its graded maximal ideal, the minimal free resolution is unique up to isomorphism, and every free resolution is the direct sum of the minimal one with a free resolution of the zero module [@Eis95, Ch. 20].
+A free resolution $F$ of $M$ is *minimal* if $\operatorname{im}\varphi_n\subseteq\mathfrak mF_{n-1}$ for every $n$, equivalently if every differential of $F\otimes_RR/\mathfrak m$ is zero [@Eis95, Ch. 20]. For a finitely generated module over a local ring, and for a finitely generated graded module over a positively graded algebra over a field with its graded maximal ideal, the minimal free resolution is unique up to isomorphism, and every free resolution is the direct sum of the minimal one with a free resolution of the zero module [@Eis95, Ch. 20].
 :::
 
 ## Derived functors, Ext, and Tor {#sec-derived-functors}
@@ -312,8 +303,7 @@ For $A\in\mathcal A$ choose a projective resolution $P\to A$ and set
 $$
 L_iF(A)=H_i\bigl(F(P)\bigr).
 $$
-A second projective resolution gives a canonically isomorphic object, and the lift of @thm-resolution-comparison makes each $L_iF$ a functor $\mathcal A\to\mathcal B$ [@Wei94, §2.4, Lem. 2.4.1, Lem. 2.4.4].
-For a left exact $F$ and an $\mathcal A$ with enough injectives, the *right derived functors* $R^iF$ are defined dually from injective resolutions [@Wei94, §2.5].
+A second projective resolution gives a canonically isomorphic object, and the lift of @thm-resolution-comparison makes each $L_iF$ a functor $\mathcal A\to\mathcal B$ [@Wei94, §2.4, Lem. 2.4.1, Lem. 2.4.4]. For a left exact $F$ and an $\mathcal A$ with enough injectives, the *right derived functors* $R^iF$ are defined dually from injective resolutions [@Wei94, §2.5].
 :::
 
 ::: {#def-ext-tor}
@@ -325,14 +315,11 @@ $$
 \qquad
 \operatorname{Tor}^R_n(A,B)=L_n(-\otimes_RB)(A)
 $$
-[@Wei94, Def. 2.5.2, Def. 2.6.4].
-Then $\operatorname{Ext}^0_R(A,B)=\operatorname{Hom}_R(A,B)$ and $\operatorname{Tor}^R_0(A,B)\cong A\otimes_RB$, and $\operatorname{Tor}^R_n(A,B)=H_n(P\otimes_RB)$ for a projective resolution $P\to A$ [@Wei94, §2.6].
-Resolving either variable gives the same result:
+[@Wei94, Def. 2.5.2, Def. 2.6.4]. Then $\operatorname{Ext}^0_R(A,B)=\operatorname{Hom}_R(A,B)$ and $\operatorname{Tor}^R_0(A,B)\cong A\otimes_RB$, and $\operatorname{Tor}^R_n(A,B)=H_n(P\otimes_RB)$ for a projective resolution $P\to A$ [@Wei94, §2.6]. Resolving either variable gives the same result:
 $$
 L_*(A\otimes_R-)(B)\cong L_*(-\otimes_RB)(A)
 $$
-[@Wei94, §2.7].
-For projective $A$, $\operatorname{Tor}^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\operatorname{Ext}^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
+[@Wei94, §2.7]. For projective $A$, $\operatorname{Tor}^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\operatorname{Ext}^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
 
 These vanishings are the hypotheses used in @thm-localization-les: for a lattice $L$, projectivity kills $\operatorname{Tor}^R_1(L,K/R)$ and keeps $\operatorname{Hom}_R(L,-)$ exact on the sequence $0\to R\to K\to K/R\to0$.
 :::

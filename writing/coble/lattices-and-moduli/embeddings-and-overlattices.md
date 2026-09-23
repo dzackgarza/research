@@ -24,32 +24,32 @@ quadratic form $q_L$.
 ::: {.Definition #def:saturation}
 ### Saturation
 
-Let $S\subseteq L$ be a sublattice.
+Let $S\containedin L$ be a sublattice.
 The **saturation** of $S$ in $L$ is the sublattice
 $$
-\operatorname{Sat}_L(S) \da \ts{v\in L \mid nv\in S \text{ for some } n\in \ZZ\setminus\ts{0}}
+\Sat_L(S) \da \ts{v\in L \mid nv\in S \text{ for some } n\in \ZZ\setminus\ts{0}}
 .
 $$
-Equivalently, $\operatorname{Sat}_L(S) = S_\QQ\intersect L$, where
-$S_\QQ \da S\otimes_\ZZ\QQ$ is regarded inside $L_\QQ$.
-We say $S$ is **saturated** in $L$ if $S = \operatorname{Sat}_L(S)$.
+Equivalently, $\Sat_L(S) = S_\QQ\intersect L$, where
+$S_\QQ \da S\tensor_\ZZ\QQ$ is regarded inside $L_\QQ$.
+We say $S$ is **saturated** in $L$ if $S = \Sat_L(S)$.
 :::
 
 ::: {.Proposition #prop:primitive-characterization}
 ### Characterization of primitive sublattices
 
-Let $S\subseteq L$ be a sublattice.
+Let $S\containedin L$ be a sublattice.
 The following conditions are equivalent.
 
 1.  The inclusion $S\injects L$ is a primitive embedding, i.e. $\coker(S\injects L)$
     is torsionfree.
 
-2.  $S$ is saturated in $L$: $S = \operatorname{Sat}_L(S)$.
+2.  $S$ is saturated in $L$: $S = \Sat_L(S)$.
 
 3.  $S_\QQ\intersect L = S$, where the intersection is taken in $L_\QQ$.
 
 4.  $S$ is a direct summand of $L$ as a $\ZZ$-module, i.e. $L\cong S\oplus T$
-    for some submodule $T\subseteq L$.
+    for some submodule $T\containedin L$.
 
 5.  Every $\ZZ$-basis of $S$ extends to a $\ZZ$-basis of $L$.
 
@@ -69,21 +69,21 @@ $(2)\iff(7)$.
 $(1)\iff(2)$: By definition $\coker(S\injects L) = L/S$, and $L/S$ is
 torsionfree if and only if no nonzero element of $L/S$ is torsion.
 An element $v + S$ is torsion in $L/S$ precisely when $nv\in S$ for some
-nonzero $n\in\ZZ$, i.e. when $v\in\operatorname{Sat}_L(S)$.
-Thus $L/S$ is torsionfree if and only if $\operatorname{Sat}_L(S) = S$.
+nonzero $n\in\ZZ$, i.e. when $v\in\Sat_L(S)$.
+Thus $L/S$ is torsionfree if and only if $\Sat_L(S) = S$.
 
 $(2)\iff(3)$: This is the second description of the saturation recorded in
-\longref{def:saturation}.
+[the saturation definition](#def:saturation).
 If $v\in S_\QQ\intersect L$, then $v = \sum_i (a_i/n) s_i$ with $s_i\in S$,
 $a_i\in\ZZ$, and $n\in\ZZ\setminus\ts{0}$, so $nv\in S$ and
-$v\in\operatorname{Sat}_L(S)$; conversely if $nv\in S$ then
+$v\in\Sat_L(S)$; conversely if $nv\in S$ then
 $v = (nv)/n\in S_\QQ$, so $v\in S_\QQ\intersect L$.
-Hence $\operatorname{Sat}_L(S) = S_\QQ\intersect L$, and $(2)$ and $(3)$ are the
+Hence $\Sat_L(S) = S_\QQ\intersect L$, and $(2)$ and $(3)$ are the
 same equation.
 
 $(2)\Rightarrow(4)$: The quotient $L/S$ is a finitely generated $\ZZ$-module,
 hence isomorphic to $\ZZ^k\oplus F$ with $F$ finite.
-The torsion subgroup $F$ is exactly $\operatorname{Sat}_L(S)/S$, which vanishes
+The torsion subgroup $F$ is exactly $\Sat_L(S)/S$, which vanishes
 by $(2)$, so $L/S\cong\ZZ^k$ is free.
 A short exact sequence $0\to S\to L\to L/S\to 0$ with $L/S$ free splits,
 yielding $L\cong S\oplus T$ with $T\cong L/S$.
@@ -98,7 +98,7 @@ Given $\varphi\colon S\to\ZZ$, define $\tilde\varphi\colon L\to\ZZ$ by
 $\tilde\varphi(e_i) = \varphi(e_i)$ for $i\le r$ and $\tilde\varphi(e_j) = 0$
 for $j > r$; then $\tilde\varphi$ restricts to $\varphi$ on $S$.
 
-$(6)\Rightarrow(2)$: Suppose $v\in\operatorname{Sat}_L(S)$ with $nv\in S$,
+$(6)\Rightarrow(2)$: Suppose $v\in\Sat_L(S)$ with $nv\in S$,
 $n\ne 0$, but $v\notin S$.
 Choose a $\ZZ$-basis $s_1,\ldots,s_r$ of $S$ and write $nv = \sum_i a_i s_i$
 with $a_i\in\ZZ$.
@@ -108,9 +108,9 @@ so $\varphi(nv) = a_i$.
 By $(6)$ there is $\tilde\varphi\colon L\to\ZZ$ restricting to $\varphi$, and
 then $n\tilde\varphi(v) = \tilde\varphi(nv) = \varphi(nv) = a_i$, forcing
 $n\mid a_i$, a contradiction.
-Hence $\operatorname{Sat}_L(S) = S$.
+Hence $\Sat_L(S) = S$.
 
-$(2)\Rightarrow(7)$: In general $S\subseteq (S^{\perp L})^{\perp L}$ and the
+$(2)\Rightarrow(7)$: In general $S\containedin (S^{\perp L})^{\perp L}$ and the
 right-hand side is saturated (it is cut out by the vanishing of rational linear
 conditions, hence equals its own $\QQ$-span intersected with $L$).
 Because $L$ is nondegenerate, $S$ and $(S^{\perp L})^{\perp L}$ have the same
@@ -124,7 +124,7 @@ $(3)$ this is condition $(2)$.
 
 ## Equivalence of embeddings
 
-::: {.Definition #def:embedding-equivalence}
+::: {.Definition #def:coble-embedding-equivalence}
 ### Equivalence of primitive embeddings
 
 Two primitive embeddings $\iota_1\colon S\injects L_1$ and
@@ -145,7 +145,7 @@ $\Orth(L)$-orbits of primitive sublattices of $L$ isometric to $S$, together
 with the choice of isometry onto each such sublattice.
 This is the object controlled by the gluing theory of the next subsection and
 made finite, in the even unimodular case, by
-\longref{prop:embedding-finiteness}.
+[the embedding-finiteness proposition](#prop:embedding-finiteness).
 :::
 
 ::: {.Definition #def:embedding-vs-sublattice-equivalence}
@@ -157,7 +157,7 @@ $\iota_2\colon S\injects M_2$ can be compared in two inequivalent ways.
 1.  They are **isomorphic as embeddings** if there is an isometry
     $\varphi\colon M_1\iso M_2$ with $\varphi\circ\iota_1 = \iota_2$, so that
     $\varphi$ restricts to the *identity* of $S$.
-    This is \longref{def:embedding-equivalence}.
+    This is [the embedding-equivalence definition](#def:coble-embedding-equivalence).
 
 2.  They define **isomorphic primitive sublattices** if there is an isometry
     $\varphi\colon M_1\iso M_2$ with $\varphi(\iota_1(S)) = \iota_2(S)$, so that
@@ -176,10 +176,10 @@ different answers to the question of how many primitive embeddings $S\injects L$
 there are.
 Nikulin's classification of primitive embeddings [@Nik80 Prop. 1.15.1] is stated
 for the first relation, in terms of the gluing data $(H_S, H_T, \gamma)$ of
-\longref{rmk:embedding-gluing-data}; passing to the second relation divides out by
+[the embedding-gluing description](#rmk:embedding-gluing-data); passing to the second relation divides out by
 the action of the image of $\Orth(S)$ in $\Orth(q_S)$ on those data, which is the
 extra quotient appearing in the uniqueness statement of
-\longref{thm:nikulin-gluing}.
+[Nikulin's gluing theorem](#thm:nikulin-gluing).
 :::
 
 ## Overlattices and gluing
@@ -189,7 +189,7 @@ extra quotient appearing in the uniqueness statement of
 
 An **overlattice** of a lattice $S$ is a lattice $L$ containing $S$ as a
 finite-index sublattice, with $\ro{\beta_L}{S} = \beta_S$.
-Equivalently, $L$ is a lattice with $S\subseteq L\subseteq S\dual$, where the
+Equivalently, $L$ is a lattice with $S\containedin L\containedin S\dual$, where the
 inclusions use the canonical map $S\injects S\dual$ of [Lattice Theory](lattice-theory.md#sec:lattice-theory)
 and its dual; the finite quotient $L/S$ is then a subgroup of
 $A_S = S\dual/S$.
@@ -211,8 +211,8 @@ The bijection sends an overlattice to the isotropic subgroup it cuts out, and
 an isotropic subgroup to the overlattice it glues:
 $$
 \begin{aligned}
-L &\longmapsto H_L \da L/S \subseteq A_S, \\
-H &\longmapsto \eta^{-1}(H)\subseteq S\dual,
+L &\longmapsto H_L \da L/S \containedin A_S, \\
+H &\longmapsto \eta\inv(H)\containedin S\dual,
 \end{aligned}
 $$
 where $\eta\colon S\dual\to A_S$ is the quotient map.
@@ -233,12 +233,12 @@ under the image of $\Orth(S)$ in $\Orth(q_S)$.
 
 Any lattice $L$ intermediate between $S$ and $S\dual$ contains $S$ with finite
 index, and the pairing $\beta_S$ extends to $L$ with integer values precisely
-when the image $H_L = L/S\subseteq A_S$ is isotropic for $q_S$: for
+when the image $H_L = L/S\containedin A_S$ is isotropic for $q_S$: for
 $x + S, y + S\in H_L$ one has $\beta_{S_\QQ}(x, y)\in\ZZ$ if and only if the
 associated bilinear form on $A_S$ vanishes on $H_L$, and evenness of $L$
 requires in addition $q_S(x + S) = 0$ for all $x + S\in H_L$.
-Conversely, given an isotropic $H\le A_S$, the preimage $\eta^{-1}(H)\subseteq
-S\dual$ is an even overlattice of $S$ with $\eta^{-1}(H)/S = H$; the two
+Conversely, given an isotropic $H\le A_S$, the preimage $\eta\inv(H)\containedin
+S\dual$ is an even overlattice of $S$ with $\eta\inv(H)/S = H$; the two
 constructions are mutually inverse.
 
 For the numerical statements, $[L:S] = \abs{L/S} = \abs{H}$.
@@ -246,7 +246,7 @@ Since $\operatorname{disc}$ scales by the square of the index under passage to a
 finite-index sublattice, $\operatorname{disc} S = [L:S]^2\operatorname{disc} L =
 \abs{H}^2\operatorname{disc} L$, giving the displayed formula.
 Finally, the discriminant form of $L$ is computed on
-$L\dual/L$; one has $L\dual = \eta^{-1}(H^{\perp})$ inside $S_\QQ$, whence
+$L\dual/L$; one has $L\dual = \eta\inv(H^{\perp})$ inside $S_\QQ$, whence
 $A_L = L\dual/L \cong H^{\perp}/H$.
 
 The orbit statement is immediate from the definitions: an isometry of $S$
@@ -257,7 +257,7 @@ attached to its image.
 
 ::: {.Remark #rmk:embedding-gluing-data}
 
-The correspondence of \longref{thm:nikulin-gluing} is the engine behind the
+The correspondence of [Nikulin's gluing theorem](#thm:nikulin-gluing) is the engine behind the
 classification of primitive embeddings.
 A primitive embedding $S\injects L$ with orthogonal complement $T\da S^{\perp L}$
 realizes $L$ as an even overlattice of the orthogonal direct sum $S\oplus T$,
@@ -276,11 +276,11 @@ $$
 recovering, when $L$ is unimodular, the statement that
 $\abs{\operatorname{disc} T} = \abs{\operatorname{disc} S}$ and that $H_S = A_S$,
 $H_T = A_T$ so that $\gamma\colon A_S\xrightarrow{\sim} A_T$ is an isometry onto
-$A_T$ equipped with the negated form; see \longref{prop:embedding-finiteness}.
+$A_T$ equipped with the negated form; see [the embedding-finiteness proposition](#prop:embedding-finiteness).
 The construction and these formulas are due to Nikulin [@Nik80 §1.4--1.5].
 The gluing subgroup $H$ is also what decides whether a pair of isometries of $S$
 and of $T$ assembles into an isometry of $L$; that question is settled in
-\longref{thm:automorphism-lifting-criterion}.
+[the automorphism-lifting criterion](#thm:automorphism-lifting-criterion).
 :::
 
 ## Splitting of unimodular sublattices
@@ -292,7 +292,7 @@ Let $S\injects L$ be a primitive embedding with orthogonal complement
 $T\da S^{\perp L}$.
 We say $S$ **splits** $L$ if $L = S\oplus T$; equivalently, if $L$ is the
 trivial index-$1$ overlattice of $S\oplus T$, i.e. the isotropic subgroup
-$H_L\le A_{S\oplus T}$ of \longref{thm:nikulin-gluing} is the zero group.
+$H_L\le A_{S\oplus T}$ from [Nikulin's gluing theorem](#thm:nikulin-gluing) is the zero group.
 :::
 
 ::: {.Proposition #prop:unimodular-splits}
@@ -314,7 +314,7 @@ Moreover, if $L$ is unimodular then $T$ is unimodular as well.
 First observe that $S\intersect T = \ts{0}$: any $x\in S\intersect T$ satisfies
 $\beta_L(x, S) = 0$, and since $S$ is nondegenerate this forces $x = 0$.
 Thus the sum $S + T$ inside $L$ is direct, giving an inclusion
-$S\oplus T\subseteq L$.
+$S\oplus T\containedin L$.
 
 We show this inclusion is an equality.
 Let $x\in L$ be arbitrary and consider the functional
@@ -346,7 +346,7 @@ In particular $\operatorname{div}_L(v) = 1$ for every primitive vector $v\in L$.
 Since $L$ is unimodular, the canonical map $L\to L\dual$ is an isomorphism, so
 every functional in $L\dual = \Hom_\ZZ(L, \ZZ)$ has the form
 $\beta_L(u,\,\cdot\,)$ for a unique $u\in L$.
-Because $v$ is primitive, by \longref{prop:primitive-characterization} it extends to
+Because $v$ is primitive, by [the primitive-sublattice characterization](#prop:primitive-characterization) it extends to
 a $\ZZ$-basis $e_1 = v, e_2,\ldots,e_n$ of $L$.
 Let $\varphi\colon L\to\ZZ$ be the dual-basis functional with $\varphi(v) = 1$
 and $\varphi(e_j) = 0$ for $j > 1$.
@@ -376,12 +376,12 @@ $$
 ::: {.proof}
 
 Let $e\in L$ be a primitive isotropic vector.
-By \longref{lem:unimodular-divisibility} choose $w\in L$ with
+By [the unimodular-divisibility lemma](#lem:unimodular-divisibility) choose $w\in L$ with
 $\beta_L(e, w) = 1$, and set $k\da w^2$.
 The sublattice $P\da\gens{e, w}$ has Gram matrix
 $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ of determinant $-1$, hence
 $P$ is a rank-$2$ unimodular sublattice, and it is primitive since a unimodular
-sublattice is saturated by \longref{prop:primitive-characterization}.
+sublattice is saturated by [the primitive-sublattice characterization](#prop:primitive-characterization).
 The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram
 matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is
 even and $P\cong\latI_{1, 1}$ (the odd rank-$2$ unimodular hyperbolic lattice)
@@ -405,7 +405,7 @@ of odd norm; in the latter case replace $w$ by $w + u$, which preserves
 $\beta_L(e, w) = 1$ and gives $(w + u)^2 = w^2 + 2\beta_L(w, u) + u^2$ odd.
 Either way $k = w^2$ is odd and $P\cong\latI_{1, 1}$.
 
-Since $P$ is unimodular, \longref{prop:unimodular-splits} gives
+Since $P$ is unimodular, [the unimodular-splitting proposition](#prop:unimodular-splits) gives
 $L\cong P\oplus P^{\perp L}$.
 :::
 
@@ -417,8 +417,8 @@ $L\cong P\oplus P^{\perp L}$.
 An even lattice $L'$ is **maximal** if its discriminant group contains no nonzero
 isotropic subgroup, that is if $q_{L'}$ vanishes on no nonzero subgroup of
 $A_{L'}$.
-An inclusion $L\subseteq L'$ with $L'$ maximal and $L'$ an overlattice of $L$ in
-the sense of \longref{def:overlattice} is a **maximal overlattice** of $L$.
+An inclusion $L\containedin L'$ with $L'$ maximal and $L'$ an overlattice of $L$ in
+the sense of [the overlattice definition](#def:overlattice) is a **maximal overlattice** of $L$.
 :::
 
 ::: {.Lemma #lem:maximal-overlattice-exists}
@@ -429,7 +429,7 @@ A unimodular lattice is maximal.
 
 ::: {.proof}
 
-By \longref{thm:nikulin-gluing} the even overlattices of $L$ correspond to the
+By [Nikulin's gluing theorem](#thm:nikulin-gluing) the even overlattices of $L$ correspond to the
 isotropic subgroups of $A_L$, and the discriminant form of the overlattice
 attached to $H$ is carried by $H^{\perp}/H$.
 Starting from $H = 0$ and repeatedly enlarging $H$ by an isotropic element of
@@ -475,7 +475,7 @@ Let $L'$ be a split maximal lattice of signature $(2, n)$.
     $\tau(x, y)\in\Orth^+(L')$ with $\tau(x, y)\,x = y$; in particular
     $\Orth^+(L')$ acts transitively on primitive isotropic vectors.
 
-2.  Two primitive totally isotropic sublattices $E_1, E_2\subseteq L'$ lie in the
+2.  Two primitive totally isotropic sublattices $E_1, E_2\containedin L'$ lie in the
     same $\Orth^+(L')$-orbit if and only if
     $E_1^{\perp}/E_1\cong E_2^{\perp}/E_2$.
 :::
@@ -484,7 +484,7 @@ Let $L'$ be a split maximal lattice of signature $(2, n)$.
 
 Both statements are in [@Daw22 §3.1]: (1) is Algorithm 3.3, which constructs
 $\tau(x,y)$ explicitly from the two hyperbolic summands of
-\longref{def:split-maximal}, and (2) is the orbit criterion of Attwell-Duval
+[the split-maximal definition](#def:split-maximal), and (2) is the orbit criterion of Attwell-Duval
 recorded there, together with the canonical $\ZZ$-basis $S(E)$ that a totally
 isotropic sublattice of a maximal lattice determines.
 :::
@@ -507,11 +507,11 @@ lattices of rank at most $8$.
 ### Classification of small unimodular lattices
 
 Let $L$ be any unimodular lattice, definite or indefinite, with
-$\operatorname{rank}_\ZZ L\le 4$.
+$\rank_\ZZ L\le 4$.
 Then either
 
 1.  $L$ is odd and $L\cong\latI_{p, q}$ for some $(p, q)$ with $p + q =
-    \operatorname{rank}_\ZZ L$, or
+    \rank_\ZZ L$, or
 
 2.  $L$ is even and $L\cong U$ or $L\cong U^{\oplus 2}$.
 :::
@@ -520,10 +520,10 @@ Then either
 
 The indefinite classification is Serre's theorem on integral quadratic forms
 [@Ser73 Ch.\ V]; the uniqueness statement for definite unimodular lattices of
-small rank, and the $\operatorname{rank}\le 4$ enumeration, are classical and
+small rank, and the $\rank\le 4$ enumeration, are classical and
 may be found in Milnor--Husem\"oller [@MH73 Ch.\ II] and in Conway--Sloane
 [@CS10 Ch.\ 15].
-The even case is especially rigid: in the range $\operatorname{rank}_\ZZ L\le 4$
+The even case is especially rigid: in the range $\rank_\ZZ L\le 4$
 the only even unimodular lattices are $U$ (rank $2$) and $U^{\oplus 2}$ (rank
 $4$), there being no even unimodular lattice of odd rank and none of rank $0$
 other than the zero lattice.
@@ -542,7 +542,7 @@ $\operatorname{Emb}(S, L)$ is a finite set.
 
 ::: {.proof}
 
-By \longref{prop:unimodular-splits} and \longref{rmk:embedding-gluing-data}, a
+By [the unimodular-splitting proposition](#prop:unimodular-splits) and [the embedding-gluing description](#rmk:embedding-gluing-data), a
 primitive embedding $S\injects L$ into an even unimodular $L$ is equivalent to
 the data of its orthogonal complement $T\da S^{\perp L}$ together with an
 isometry
@@ -561,10 +561,10 @@ The discriminant groups $A_S$ and $A_T$ are finite abelian groups, so the set
 $\operatorname{Isom}(A_S, A_T(-1))$ of discriminant-form isometries and the
 group $\Orth(q_T)$ are finite.
 The isometry class of $T$ is constrained to a fixed genus in the sense of
-\longref{def:genus} (its signature is $\operatorname{sign} L - \operatorname{sign} S$
+[the genus definition](#def:genus) (its signature is $\sign L - \sign S$
 and its discriminant form is $-q_S$), and a genus of lattices contains only
 finitely many isometry classes; equivalently, the class group
-$\operatorname{cl}(T)$ of \longref{def:genus} is finite.
+$\operatorname{cl}(T)$ from [the genus definition](#def:genus) is finite.
 A finite union of finite sets of $\Orth(q_T)$-orbits is finite, so
 $\operatorname{Emb}(S, L)$ is finite.
 :::
@@ -582,7 +582,7 @@ $$
 .
 $$
 In particular, if $L$ is unimodular then $A_L = 0$ and
-$A_{L(m)}\cong L/mL\cong(\ZZ/m\ZZ)^{\operatorname{rank} L}$.
+$A_{L(m)}\cong L/mL\cong(\ZZ/m\ZZ)^{\rank L}$.
 :::
 
 ::: {.proof}
@@ -598,14 +598,14 @@ $$
 A_{L(m)} = L(m)\dual/L(m) \cong L\dual/mL
 .
 $$
-The inclusion $mL\subseteq L\subseteq L\dual$ then yields the short exact
+The inclusion $mL\containedin L\containedin L\dual$ then yields the short exact
 sequence
 $$
 0 \to L/mL \to L\dual/mL \to L\dual/L \to 0,
 $$
 which is the claimed sequence $0\to L/mL\to A_{L(m)}\to A_L\to 0$.
 If $L$ is unimodular then $\iota_L$ is an isomorphism, so $A_L = 0$ and
-$A_{L(m)}\cong L/mL\cong(\ZZ/m\ZZ)^{\operatorname{rank} L}$.
+$A_{L(m)}\cong L/mL\cong(\ZZ/m\ZZ)^{\rank L}$.
 :::
 
 ::: {.Proposition #prop:orthogonal-group-ses}
@@ -635,12 +635,12 @@ of the discriminant form $q_L$ to an isometry of $L$.
 By Nikulin's surjectivity criterion, $\psi$ is surjective, i.e.
 $\Orth^*(q_L) = 0$, whenever $L$ is indefinite and
 $$
-\ell(A_L) + 2 \le \operatorname{rank} L,
+\ell(A_L) + 2 \le \rank L,
 $$
-where $\ell(A_L)$ is the length of \longref{def:discriminant-forms}, i.e. the
+where $\ell(A_L)$ is the length from [the discriminant-form definition](#def:discriminant-forms), i.e. the
 minimal number of generators of $A_L$ [@Nik80 Cor.\ 1.5.2, Thm.\ 1.14.2].
 For a unimodular lattice such as $U$ or $E_8$ the discriminant group is trivial,
 so $\Orth(q_L) = 0$ and $\tilde\Orth(L) = \Orth(L)$; the same triviality
 underlies the surjectivity statement invoked for $\lkt$ in
-\longref{lem:sequence_of_embeddings}.
+[the embedding-sequence lemma](#lem:sequence_of_embeddings).
 :::

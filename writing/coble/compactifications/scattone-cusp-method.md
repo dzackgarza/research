@@ -3,9 +3,9 @@
 ::: {.Remark}
 ### Orientation
 
-The Cusp Correspondence section computes the specific cusp diagrams of the Coble and Enriques moduli spaces $F_\Co$ and $F_\En$.
+The Cusp Correspondence section computes the specific cusp diagrams of the Coble and Enriques moduli spaces $\fco$ and $\fen$.
 Here we record the *general* arithmetic machinery underlying those computations, following Scattone [@Sca87]: the boundary components of a Baily--Borel compactification are enumerated by the orbits of primitive isotropic subspaces of a lattice under an arithmetic group, and those orbits are separated by two invariants --- **divisibility** and the image in the **discriminant group** --- via Eichler's criterion and its transvection refinement.
-The concrete cusp counts of $F_\Co$, $F_\En$, and the degree-two K3 space $F_2$ are instances of this method; we cross-reference them below rather than recomputing them.
+The concrete cusp counts of $\fco$, $\fen$, and the degree-two K3 space $F_2$ are instances of this method; we cross-reference them below rather than recomputing them.
 :::
 
 ## The cusp--isotropic-subspace correspondence
@@ -13,14 +13,14 @@ The concrete cusp counts of $F_\Co$, $F_\En$, and the degree-two K3 space $F_2$ 
 ::: {.Remark}
 ### Boundary components of the Baily--Borel compactification
 
-Let $F_{2d}$ be the moduli space of $2d$-polarized K3 surfaces, realized as a quotient $D_{L_{2d}}/\Gamma_{2d}$ of a type IV period domain by an arithmetic group $\Gamma_{2d}$ acting on a lattice $L_{2d}$ of signature $(2, 19)$.
-Scattone [@Sca87] gives a concrete arithmetic approach to enumerating the $0$-cusps of the Baily--Borel compactification $\overline{F_{2d}}^{\mathrm{BB}}$.
+Let $\ftd$ be the moduli space of $2d$-polarized K3 surfaces, realized as a quotient $D_{L_{2d}}/\Gamma_{2d}$ of a type IV period domain by an arithmetic group $\Gamma_{2d}$ acting on a lattice $L_{2d}$ of signature $(2, 19)$.
+Scattone [@Sca87] gives a concrete arithmetic approach to enumerating the $0$-cusps of the Baily--Borel compactification $\bbcpt{\ftd}$.
 
-The boundary of $\overline{F_{2d}}^{\mathrm{BB}}$ is stratified by $\Gamma_{2d}$-orbits of primitive isotropic subspaces of $L_{2d}$:
+The boundary of $\bbcpt{\ftd}$ is stratified by $\Gamma_{2d}$-orbits of primitive isotropic subspaces of $L_{2d}$:
 
-1. the **$0$-cusps** (Type III boundary points) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *lines* $I\subseteq L_{2d}$;
+1. the **$0$-cusps** (Type III boundary points) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *lines* $I\containedin L_{2d}$;
 
-2. the **$1$-cusps** (Type II boundary curves) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *planes* (rank-$2$ isotropic sublattices) $J\subseteq L_{2d}$.
+2. the **$1$-cusps** (Type II boundary curves) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *planes* (rank-$2$ isotropic sublattices) $J\containedin L_{2d}$.
 
 Each $0$-cusp records a degeneration of the underlying K3 surfaces, whose limiting Hodge structure is encoded by the lattice $I^{\perp}/I$; likewise each $1$-cusp carries the boundary lattice $J^{\perp}/J$.
 Thus the enumeration of boundary components reduces to a purely lattice-theoretic orbit problem for primitive isotropic sublattices of $L_{2d}$.
@@ -44,9 +44,9 @@ For $d = 1$ the classification uses primitive embeddings into the $24$ Niemeier 
 ## Divisibility and the discriminant group
 
 The two invariants that separate isotropic orbits are the divisibility of a primitive vector and its image in the discriminant group.
-Recall from the Lattice Theory section that the **divisibility** $\div_L(v)$ of $v\in L$ is the positive generator of the ideal $\beta_L(v, L)\subseteq\ZZ$, and that $v^* \da v/\div_L(v)$.
+Recall from the Lattice Theory section that the **divisibility** $\div_L(v)$ of $v\in L$ is the positive generator of the ideal $\beta_L(v, L)\containedin\ZZ$, and that $v^* \da v/\div_L(v)$.
 
-::: {.Proposition #prop:divisibility-discriminant}
+::: {.Proposition #prop:coble-divisibility-discriminant}
 
 Let $L$ be a nondegenerate lattice and $v\in L$ an arbitrary (not necessarily isotropic) vector.
 Then $v^* \da v/\div_L(v)\in L\dual$ is primitive in the dual lattice, and its image in the discriminant group $A_L \da L\dual/L$ has order $\div_L(v)$.
@@ -66,18 +66,18 @@ Eichler's criterion asserts that, in the presence of two hyperbolic summands, th
 
 ## Eichler's criterion
 
-::: {.Theorem #thm:eichler-criterion}
+::: {.Theorem #thm:scattone-eichler-criterion}
 ### Eichler's criterion
 
 Let $L \xrightarrow{\sim} U^{2}\oplus M$ be an even lattice containing two orthogonal copies of the hyperbolic plane $U$, and let $v, w\in L$ be primitive vectors.
-Then $v$ and $w$ lie in the same $\Orth^*(L)$-orbit (where $\Orth^*(L)$ is the stable orthogonal group, acting trivially on $A_L$) if and only if
+Then $v$ and $w$ lie in the same $\OStab(L)$-orbit (where $\OStab(L)$ is the stable orthogonal group, acting trivially on $A_L$) if and only if
 $$
 v^2 = w^2
 \qquad\text{and}\qquad
 [v^*] = [w^*]\in A_L
 .
 $$
-Equivalently, the $\Orth^*(L)$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group [@Eic74; @Sca87].
+Equivalently, the $\OStab(L)$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group [@Eic74; @Sca87].
 :::
 
 ::: {.Theorem #thm:eichler-transvection}
@@ -98,7 +98,7 @@ where $E(L)$ is the **Eichler transvection group** and $\sim_{E(L)}$ denotes $E(
 ::: {.Remark}
 
 \longref{thm:eichler-transvection} is the engine that separates orbits of isotropic vectors: it reduces the orbit question to computing the image $[v^*]$ in the *finite* discriminant group $A_L$.
-Since $E(L)\leq\Orth(L)$ is generated by Eichler transvections, the criterion also refines \longref{thm:eichler-criterion} by pinning the equivalence to the transvection subgroup on each fixed length level $L[k]$.
+Since $E(L)\leq\Orth(L)$ is generated by Eichler transvections, the criterion also refines \longref{thm:scattone-eichler-criterion} by pinning the equivalence to the transvection subgroup on each fixed length level $L[k]$.
 :::
 
 ## Orbit classification in $T = U\oplus\overline{T}_\eta$
@@ -117,12 +117,12 @@ Let $\eta_1, \eta_2\in T$ be primitive isotropic vectors satisfying
 
 3. $\eta_1 \equiv \eta_2 \pmod{pT}$.
 
-Then there exists an isometry $\phi\in\Orth^*(T)$ with $\phi(\eta_1) = \eta_2$ [@Ste91].
+Then there exists an isometry $\phi\in\OStab(T)$ with $\phi(\eta_1) = \eta_2$ [@Ste91].
 :::
 
 ::: {.Remark}
 
-\longref{thm:sterk-orbit} generalizes the Eichler transvection method of \longref{thm:eichler-transvection} to classify primitive isotropic vectors by the triple (length, divisibility, residue mod $pT$). In particular it shows that all divisibility-one isotropic vectors of a given length in $T_{\En}$ lie in a single $\Orth^*(T_{\En})$-orbit; this is the statement used to collapse the divisibility-one cusps in the Cusp Correspondence computations.
+\longref{thm:sterk-orbit} generalizes the Eichler transvection method of \longref{thm:eichler-transvection} to classify primitive isotropic vectors by the triple (length, divisibility, residue mod $pT$). In particular it shows that all divisibility-one isotropic vectors of a given length in $\ten$ lie in a single $\OStab(\ten)$-orbit; this is the statement used to collapse the divisibility-one cusps in the Cusp Correspondence computations.
 :::
 
 ## Enumeration via Niemeier lattices
@@ -179,5 +179,5 @@ Its ingredients are:
 - the **Clemens--Schmid exact sequence** and the **weight spectral sequence**, which for K3 surfaces degenerates integrally at $E_2$.
 
 The resulting classification identifies Type III degenerations with triangulations of $S^2$ subject to combinatorial constraints; the dual complex of the degeneration then determines the lattice-theoretic invariants, giving a precise dictionary between the geometric degenerations and their monodromy representations.
-This Hodge-theoretic picture matches, on the boundary of $\overline{F_{2d}}^{\mathrm{BB}}$, the $0$-cusps enumerated arithmetically by the isotropic-line correspondence above.
+This Hodge-theoretic picture matches, on the boundary of $\bbcpt{\ftd}$, the $0$-cusps enumerated arithmetically by the isotropic-line correspondence above.
 :::

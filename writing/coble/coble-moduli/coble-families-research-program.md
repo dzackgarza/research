@@ -22,7 +22,7 @@ The table of the ten lattices $M = (10+n,\, 12-n,\, \delta)$ and their orthogona
 ### The lattices from a Coble set
 
 Let $\Sigma$ be a general **Coble set** of points in $\PP^2$, so that the blowup $S$ of $\PP^2$ along $\Sigma$ is a Coble surface double covered by a K3 surface $X$ branched along $C = C_1 + \cdots + C_n$.
-The construction used for $n=1$ (the divisors $e_0,\ldots,e_{10}$ in $X$, with $e_0$ the pullback of the hyperplane class and $e_i$ the preimages of the exceptional divisors over the nodes) yields, in general, a collection of primitively embedded 2-elementary sublattices $L_1,\ldots,L_{10} \subseteq \Pic(X)$ with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
+The construction used for $n=1$ (the divisors $e_0,\ldots,e_{10}$ in $X$, with $e_0$ the pullback of the hyperplane class and $e_i$ the preimages of the exceptional divisors over the nodes) yields, in general, a collection of primitively embedded 2-elementary sublattices $L_1,\ldots,L_{10} \containedin \Pic(X)$ with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
 Applying the period domain construction to these lattices yields ten moduli spaces $F_{\Co,n}$.
 :::
 
@@ -71,7 +71,7 @@ These semifans are either refinements or coarsenings of the canonical Coxeter fa
 By *Enriques Surfaces I*, Prop.
 5.4.6, for each rank-$(10+n)$ lattice in `tbl:coble-lattices` there is an embedding
 $$
-F_{\Co,n} \injects F_{\En}
+F_{\Co,n} \injects \fen
 $$
 into the moduli space of Enriques surfaces, constructed from $E_{10}(2)$-polarized K3 surfaces.
 Consequently the integral-affine structures, and hence the dlt and stable models, can be obtained by restricting the K3 boundary data of AE22. This is the mechanism that makes the whole family tractable at once, rather than one $n$ at a time.

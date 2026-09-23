@@ -50,7 +50,8 @@ Every relatively minimal rational elliptic surface is Halphen of some index.
 In AE22, the case $S = (10,10,1)$ corresponds to K3 surfaces $X$ with a nonsymplectic involution $\iota$ such that $Y \da X/\iota$ is an index 2 Halphen pencil.
 More generally, by AE22 section 4C, the lattices $S = (10+n,\, 12-n,\, \delta)$ for $1\leq n\leq 9$ give index 2 Halphen K3 surfaces $X$ with an $I_{2k}$ fiber, and contracting the $(-1)$-curves in the special fiber yields index 2 Halphen pencils with an $I_k$ fiber.
 
-These are **precisely the lattices of `tbl:coble-lattices`**, the ten Coble families of [[coble-families-research-program]]. The lattice coincidence is the whole content of the conjecture: two geometrically different families of surfaces are attached to one line of Nikulin's triangle.
+These are **precisely the lattices of `tbl:coble-lattices`**, the ten Coble families of [the Coble families research program](../coble-moduli/coble-families-research-program.md).
+The lattice coincidence is the whole content of the conjecture: two geometrically different families of surfaces are attached to one line of Nikulin's triangle.
 :::
 
 ## The program
@@ -88,7 +89,7 @@ The Coxeter diagram for $S \da (10,10,1)$ is well known and the K3 moduli theory
 
 7. Use AE22 to construct dlt models and integral-affine structures classifying $\partial\overline{F_S}^R$.
 
-Steps 3 through 5 are exactly the recipe recorded in [[computational-toolchain-and-recipe]], applied to a new lattice.
+Steps 3 through 5 are exactly the recipe recorded in [the computational toolchain and recipe](../computations/computational-toolchain-and-recipe.md), applied to a new lattice.
 
 ::: {.Remark}
 ### Why the program is stated as worth doing
@@ -97,4 +98,4 @@ It opens a comparison between GIT and KSBA compactifications, since $M_{H,1}$ an
 Generalizing to $\overline{M_{H,m}}^R$ for $m>2$ would give new moduli spaces of general rational elliptic surfaces with no restriction on fiber type.
 :::
 
-Related: [[coble-families-research-program]], [[nodal-enriques-moduli-program]], [[computational-toolchain-and-recipe]].
+Related: [Coble families research program](../coble-moduli/coble-families-research-program.md), [nodal Enriques moduli program](nodal-enriques-moduli-program.md), [computational toolchain and recipe](../computations/computational-toolchain-and-recipe.md).

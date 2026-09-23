@@ -20,10 +20,10 @@ Anticanonical pairs are also known as **log Calabi--Yau surfaces**.
 
 ::: {.Definition #def:charge}
 
-The **charge** of an anticanonical pair $(V, D)$, with $D = \sum_j D_j$ its decomposition into irreducible components, measures the deviation of $(V, D)$ from being toric.
+The **charge** of an anticanonical pair $(V, D)$, with $D = \Sum_j D_j$ its decomposition into irreducible components, measures the deviation of $(V, D)$ from being toric.
 It is defined by
 $$
-Q(V, D) \da 12 - \sum_j \left( D_j^2 + 3 \right)
+Q(V, D) \da 12 - \Sum_j \left( D_j^2 + 3 \right)
 .
 $$
 For a toric surface $V$ with $D = \partial V$ its toric boundary, the charge vanishes:
@@ -43,8 +43,6 @@ The charge behaves as follows under blowups of an anticanonical pair:
 - **Interior blowups**, at smooth points of $D$ (points lying on a single component of $D$), increase the charge by $1$.
 
 This is [@Fri15 Lem. 2.2(iii)]; the charge itself is [@Fri15 Def. 1.1].
-
-
 :::
 
 ::: {.Theorem #thm:friedman-miranda-charge}
@@ -52,18 +50,18 @@ This is [@Fri15 Lem. 2.2(iii)]; the charge itself is [@Fri15 Def. 1.1].
 
 Let $\cX \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber
 $$
-\cX_0 = \bigcup_{i=1}^n V_i
+\cX_0 = \Union_{i=1}^n V_i
 ,
 $$
 and for each component set
 $$
-D_i \da V_i \intersect \overline{\left( \cX_0 \setminus V_i \right)}
+D_i \da V_i \intersect \overline{\left( \cX_0 \sm V_i \right)}
 ,
 $$
 so that each $(V_i, D_i)$ is an anticanonical pair.
 Then the sum of the charges of all components is exactly $24$:
 $$
-\sum_{i=1}^n Q(V_i, D_i) = 24
+\Sum_{i=1}^n Q(V_i, D_i) = 24
 .
 $$
 This imposes severe constraints on the possible combinatorial types of degenerations.
@@ -77,14 +75,14 @@ The identity is [@FM83 Prop. 3.7], proved there in the setting of the dual compl
 Let $(X, D)$ be a normal pair with $K_X + D$ $\QQ$-Cartier, and let $f\colon Y \to X$ be a log resolution.
 The **discrepancy** $a(E, X, D)$ of a divisor $E$ over $X$ is defined by
 $$
-K_Y + D_Y = f^*(K_X + D) + \sum_E a(E, X, D)\, E
+K_Y + D_Y = f^*(K_X + D) + \Sum_E a(E, X, D)\, E
 .
 $$
 :::
 
 ::: {.Definition #def:mmp-singularities}
 
-With discrepancies as in \longref{def:discrepancy}, the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
+With discrepancies as in [the discrepancy definition](#def:discrepancy), the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
 
 - **Terminal**: $a(E, X, D) > 0$.
 

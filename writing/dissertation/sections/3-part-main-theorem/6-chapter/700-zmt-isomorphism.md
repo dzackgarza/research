@@ -25,7 +25,7 @@ The morphism $\phi: \normalize{B} \to \cpt{\fent}$ constructed above satisfies a
 1. Birationality: By @prop:properties-classifying, $\phi$ restricts to an isomorphism over the dense open subset $\fent$.
 2. Finiteness: By @cor:finiteness-classifying-map, $\phi$ is finite.
 3. Normality: $\normalize{B}$ is normal by definition as normalization; $\ksbacpt{\fent}$ is normal as the normalization of the proper algebraic stack $\cpt{\fent}$.
-4. Properness: $\cpt{\fent}$ is proper by the general theory of KSBA compactification for surfaces with numerically trivial canonical class (see Kollár[\text{Theorem 1.2}]).
+4. Properness: $\cpt{\fent}$ is proper by the general theory of KSBA compactification for surfaces with numerically trivial canonical class (see Kollár, Theorem 1.2).
 :::
 
 We are thus led to the following:

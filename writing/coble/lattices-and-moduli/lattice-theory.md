@@ -19,12 +19,12 @@ The study of semitoroidal compactifications of moduli spaces of Coble surfaces l
 ::: {.Remark}
 ### Basic invariants
 
-By a **lattice**, we mean a free $\ZZ$-module $L$ of finite rank equipped with a nondegenerate[^lt1] symmetric integral bilinear form $\beta_L: L \otimes_\ZZ L \to \ZZ$.
+By a **lattice**, we mean a free $\ZZ$-module $L$ of finite rank equipped with a nondegenerate[^lt1] symmetric integral bilinear form $\beta_L: L \tensor_\ZZ L \to \ZZ$.
 We abbreviate $vw \da \beta_L(v, w)$ and $v^2 \da \beta_L(v, v)$ and refer to the latter as the **norm** of $v$.
-We write $L_R \da L\otimes_{\ZZ} R$ and $\beta_{L_R}$ for $R = \QQ, \RR, \CC$ for the $\ZZ$-linear extensions of $(L, \beta_L)$ to the rational, real, and complex numbers respectively.
+We write $L_R \da L\tensor_{\ZZ} R$ and $\beta_{L_R}$ for $R = \QQ, \RR, \CC$ for the $\ZZ$-linear extensions of $(L, \beta_L)$ to the rational, real, and complex numbers respectively.
 
-A submodule $M\subseteq L$ is a **sublattice** if the restricted bilinear form $\ro{\beta_L}{M}$ endows $M$ with the structure of a lattice.
-A vector $v\in L$ is **isotropic** if $v^2 = 0$, i.e. it is norm zero, and more generally a sublattice $M \subseteq L$ is isotropic if $\ro{\beta_L}{M} \equiv 0$.
+A submodule $M\containedin L$ is a **sublattice** if the restricted bilinear form $\ro{\beta_L}{M}$ endows $M$ with the structure of a lattice.
+A vector $v\in L$ is **isotropic** if $v^2 = 0$, i.e. it is norm zero, and more generally a sublattice $M \containedin L$ is isotropic if $\ro{\beta_L}{M} \equiv 0$.
 A lattice is said to be **even** if $x^2\in 2\ZZ$ for all $x\in L$, and **odd** otherwise.
 A nondegenerate symmetric bilinear form can be linearly extended to $L_\RR$ and by Sylvester's theorem, diagonalized with only $1$ or $-1$ on the diagonal.
 We write $n_+$ and $n_-$ respectively for the number of $\pm 1$ entries on the diagonal.
@@ -46,7 +46,7 @@ If $L$ is definite then $L[k]$ is finite for every $k$, since the real extension
 For the same reason $\Orth(L)$ is finite: an isometry is determined by the images of a basis $e_1,\dots,e_r$, and it carries $e_i$ into the finite set $L[e_i^2]$.
 
 Neither statement survives indefiniteness.
-In $U = \ZZ e\oplus\ZZ f$ one has $U[0] = \ZZ e\cup\ZZ f$, which is infinite.
+In $U = \ZZ e\oplus\ZZ f$ one has $U[0] = \ZZ e\union\ZZ f$, which is infinite.
 In $L = \gens{1}\oplus\gens{-2}$ the set $L[1]$ is the solution set of the Pell equation $x^2 - 2y^2 = 1$, again infinite, and
 $$
 M = \begin{bmatrix}3&4\\2&3\end{bmatrix}
@@ -79,7 +79,7 @@ We say $L$ is **unimodular** if any of the following equivalent conditions hold:
 
 3. $\abs{ \operatorname{disc} L} = 1$.
 
-If $A_L \cong (\ZZ/p\ZZ)^a$ for some $a$, we say $L$ is **$p$-elementary**; in our applications we will often have $p=2$.
+If $A_L \cong (\zpz)^a$ for some $a$, we say $L$ is **$p$-elementary**; in our applications we will often have $p=2$.
 For even lattices, the form $\beta_L$ descends to a well-defined quadratic form
 $$
 \begin{aligned}
@@ -101,7 +101,7 @@ Every $g\in\Orth(L_\RR)$ is a product of reflections $g = s_{w_1}\cdots s_{w_m}$
 The **real spinor norm** of $g$ is
 $$
 \spinornorm_\RR(g) \da \prod_{i=1}^{m} \frac{-\beta(w_i, w_i)}{2}
-\ \in\ \RR^{\times}/(\RR^{\times})^2
+\ \in\ \RR\units/(\RR\units)^2
 ,
 $$
 which is independent of the chosen decomposition.
@@ -130,7 +130,7 @@ M^{\perp L} \da \ts{x\in L \mid \beta_L(x, M) = 0}
 .
 $$
 If the ambient lattice $L$ is understood, we often abuse notation and simply write $M^{\perp}$ without reference to $L$.
-Note that $M^{\perp L}\oplus M \subseteq L$ may not be saturated, and is generally a finite index sublattice of $L$.
+Note that $M^{\perp L}\oplus M \containedin L$ may not be saturated, and is generally a finite index sublattice of $L$.
 We note that $M^{\perp L}\intersect M \neq \ts{0}$ in general.[^lt2] We also note that for any lattices $L_i$,
 $$
 A_{L_1 \oplus \cdots \oplus L_n} = A_{L_1} \oplus \cdots \oplus A_{L_n}
@@ -154,7 +154,7 @@ We say that a primitive isotropic vector $e\in L$ is
 3. **even characteristic** if $\operatorname{div}_L(e) = 2$ and $e^*$ is characteristic.
 
 The 2-elementary hyperbolic lattices admitting a primitive embedding into $\lkt$ were classified by Nikulin in [@Nik80 §3.6.2]. An indefinite **even** 2-elementary lattice is determined up to isometry by its signature together with a triple of invariants $(r,a,\delta)$.
-Here, $r\da \operatorname{rank}_\ZZ(L)$ is the rank, $a = \operatorname{rank}_{\bF_2}A_L$ is the exponent appearing in $A_L = (\ZZ/2\ZZ)^a$, and $\delta \in \ts{0, 1}$ is the **coparity**: we set $\delta = 0$ if $q_L(A_L) \subseteq \ZZ$, so $q_L(x) \equiv 0 \mod \ZZ$ for all $x\in A_L$, and $\delta=1$ otherwise.
+Here, $r\da \rank_\ZZ(L)$ is the rank, $a = \rank_{\bF_2}A_L$ is the exponent appearing in $A_L = (\ZZ/2\ZZ)^a$, and $\delta \in \ts{0, 1}$ is the **coparity**: we set $\delta = 0$ if $q_L(A_L) \containedin \ZZ$, so $q_L(x) \equiv 0 \mod \ZZ$ for all $x\in A_L$, and $\delta=1$ otherwise.
 The evenness and indefiniteness hypotheses are both needed: the theorem is Nikulin's classification of even 2-elementary lattices, and it rests on the general uniqueness criterion for even indefinite lattices [@Nik80 Thm. 1.14.2].
 We accordingly specify such lattices using the notation $(r,a,\delta)_{n_+}$.
 :::
@@ -162,16 +162,16 @@ We accordingly specify such lattices using the notation $(r,a,\delta)_{n_+}$.
 ::: {.Theorem #thm:isotropic-trichotomy}
 ### Classification of primitive isotropic vectors by type
 
-Let $S$ be an even hyperbolic 2-elementary lattice with invariants $(r, a, \delta)$, let $v\in S$ be a primitive isotropic vector, and write $\overline{S}\da v^{\perp S}/v$.
+Let $S$ be an even hyperbolic 2-elementary lattice with invariants $(r, a, \delta)$, let $v\in S$ be a primitive isotropic vector, and write $\oS\da v^{\perp S}/v$.
 Then exactly one of the following holds, according to the type of $v$ in the sense above, and in each case $S$ splits off the indicated rank-two summand containing $v$:
 
-1. **odd**: $S \cong U\oplus\overline{S}$, with $a_{\overline{S}} = a$ and $\delta_{\overline{S}} = \delta$;
+1. **odd**: $S \cong U\oplus\oS$, with $a_{\oS} = a$ and $\delta_{\oS} = \delta$;
 
-2. **even ordinary**: $S \cong U(2)\oplus\overline{S}$, with $a_{\overline{S}} = a - 2$ and $\delta_{\overline{S}} = \delta$;
+2. **even ordinary**: $S \cong U(2)\oplus\oS$, with $a_{\oS} = a - 2$ and $\delta_{\oS} = \delta$;
 
-3. **even characteristic**: $S \cong \latI_{1,1}(2)\oplus\overline{S}$, with $a_{\overline{S}} = a - 2$; this case forces $\delta = 1$ and gives $\delta_{\overline{S}} = 0$.
+3. **even characteristic**: $S \cong \latI_{1,1}(2)\oplus\oS$, with $a_{\oS} = a - 2$; this case forces $\delta = 1$ and gives $\delta_{\oS} = 0$.
 
-In all three cases $\overline{S}$ is even negative definite of rank $r - 2$.
+In all three cases $\oS$ is even negative definite of rank $r - 2$.
 Classifying the primitive isotropic vectors of $S$ up to isometry is therefore equivalent to classifying the even negative definite lattices with invariants $(r-2, a, \delta)$, $(r-2, a-2, \delta)$ and $(r-2, a-2, 0)$.
 :::
 
@@ -182,7 +182,7 @@ This is [@AE22 Prop. 5.5].
 
 ::: {.Remark}
 
-\longref{thm:isotropic-trichotomy} is the tool by which a $0$-cusp of a type IV quotient is identified from a single numerical invariant of its isotropic vector: the divisibility, together with the characteristic-or-ordinary dichotomy, determines the invariants of the boundary lattice $\overline{S}$, and for indefinite $\overline{S}$ those invariants determine its isometry class.
+[The isotropic-trichotomy theorem](#thm:isotropic-trichotomy) is the tool by which a $0$-cusp of a type IV quotient is identified from a single numerical invariant of its isotropic vector: the divisibility, together with the characteristic-or-ordinary dichotomy, determines the invariants of the boundary lattice $\overline{S}$, and for indefinite $\overline{S}$ those invariants determine its isometry class.
 It is used in this form throughout the cusp correspondence.
 :::
 
@@ -220,7 +220,11 @@ Any Dynkin diagram of type $A_n, D_n, E_6, E_7, E_8$ corresponds to a root latti
 By convention, we take the negative definite twists of these lattices.
 Of particular importance to us is the $E_8$ lattice associated to the following Dynkin diagram:
 
-![The Dynkin diagram $E_{8}$.](rendered/e8_coxeter_diagram.svg){#fig-e8-coxeter-diagram}
+::: {#fig-e8-coxeter-diagram .figure}
+\input{tikz/e8_coxeter_diagram.tex}
+
+The Dynkin diagram $E_{8}$.
+:::
 :::
 
 ::: {.Remark}

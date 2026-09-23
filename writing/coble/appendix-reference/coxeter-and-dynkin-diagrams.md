@@ -1,4 +1,4 @@
-# Diagrams
+w# Diagrams
 
 Conventions:
 
@@ -18,16 +18,32 @@ coble/tables/dynkin-diagrams.md
 
 * * *
 
-![Coxeter diagrams for $T_\Co$ and $T_\En$ parabolics](rendered/fig_Coxeter_Parabolics_L_Co_1.svg){#fig-appendix-1}
+::: {#fig-appendix-1 .figure}
+\input{tikz/fig_Coxeter_Parabolics_L_Co_1.tex}
+
+Coxeter diagrams for $T_\Co$ and $T_\En$ parabolics.
+:::
 
 * * *
 
-![Mirror moves for the Enriques lattices.](rendered/fig_Mirror_Move_En_Lattices.svg){#fig-appendix-mirror-moves-enriques}
+::: {#fig-appendix-mirror-moves-enriques .figure}
+\input{tikzcd/fig_Mirror_Move_En_Lattices.tex}
+
+Mirror moves for the Enriques lattices.
+:::
 
 * * *
 
-![Geometric cusp correspondence (Coble)](rendered/fig_Mirror_Move_Co_Lattices.svg){#fig-appendix-2}
+::: {#fig-appendix-2 .figure}
+\input{tikzcd/fig_Mirror_Move_Co_Lattices.tex}
+
+Geometric cusp correspondence (Coble).
+:::
 
 * * *
 
-![The Coxeter diagram of $L_{\Co, 1} \da \gens{2} \oplus E_8(2)$.](rendered/fig_Coxeter_Diagram_L_Co_1.svg){#fig-coxeter-diagrams}
+::: {#fig-coxeter-diagrams .figure}
+\input{tikz/fig_Coxeter_Diagram_L_Co_1.tex}
+
+The Coxeter diagram of $L_{\Co, 1} \da \gens{2} \oplus E_8(2)$.
+:::

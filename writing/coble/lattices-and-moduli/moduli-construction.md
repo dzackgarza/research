@@ -5,7 +5,7 @@ We summarize the relevant moduli spaces:
 $$
 \begin{aligned}
 F_\En &= \bD(T_\En)/\Orth^+(T_\En)^* &
-F_{\En, 2} &= \bD(T_\En)/\Gamma_{\En, 2} \\
+\fent &= \bD(T_\En)/\Gamma_{\En, 2} \\
 F_\Co &= \bD(T_\Co) / \Orth^+(T_\Co)^* &
 F_{\Co, 2} &= \bD(T_\Co)/\Gamma_{\Co, 2}
 \end{aligned}
@@ -15,20 +15,20 @@ where
 
 $$
 \begin{aligned}
-\Gamma_{\En, 2} &= \Orth(T_\En) \intersect \Orth(T_\dP) \subseteq \Orth(\lkt) \\
-\Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(T_\En)}(T_\Co) \subseteq \Orth(T_\En) \\
+\Gamma_{\En, 2} &= \Orth(T_\En) \intersect \Orth(\tdp) \containedin \Orth(\lkt) \\
+\Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(T_\En)}(T_\Co) \containedin \Orth(T_\En) \\
 F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^* \\
 F_{\Nod, 2} &= ???
 \end{aligned}
 $$
 
-where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of \longref{lem:primitive_embedding_eta}.
+where $\tdp$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of [the primitive-embedding lemma](#lem:primitive_embedding_eta).
 
 ::: {.Question}
 Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.
 :::
 
-We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth^+(T_\En)^*$.
+We note, as in [@DK13], that $T_{\Co} \cong v^{\perp \ten}$ for some $v^2=-2$, which implies that there is a birational isomorphism $\fco \birational \cH_{-2}/\Orth^+(\ten)^*$.
 
 ```{.tikz}
 %%| filename: moduli-tower
@@ -50,7 +50,7 @@ F_{\mathrm{En}}
 ```
 
 The tower relates the degree-$2$ numerically polarized Coble and Enriques moduli
-$F_{\Co,2}$, $F_{\En,2}$, their unpolarized quotients $F_\Co$, $F_\En$, and the
+$F_{\Co,2}$, $\fentwo$, their unpolarized quotients $\fco$, $F_\En$, and the
 degree-$(2,2,0)$ K3 moduli space $F_{(2,2,0)}\injects F_4$.
 The map $F_{\Co,2}\to F_\Co$ marked $?$ is the one not yet determined, for the reason
 above: $\Gamma_{\Co,2}$ has no explicit description.
@@ -76,7 +76,7 @@ means that there should be 3 conditions imposed upon the configuration
 of 10 points.
 These 3 conditions are precisely the _discriminant
 conditions_ described in [@Cob19 §2, Prop. (10)].
-Letting $D$ be the corresponding discriminant locus, we can identify $F_{\Co}$
+Letting $D$ be the corresponding discriminant locus, we can identify $\fco$
 as an open subset of $\qty{ (\PP^2)^{10} \sm D }/\PGL_3$ at the level of coarse
 moduli spaces.
 :::
@@ -93,10 +93,10 @@ Letting $B\in\abs{-2K_Y}^\tau$ be a
 $\tau$-invariant anti-bicanonical curve in $Y$, if $B$ passes through a
 $\tau$-fixed point $x,y\in \ts{0, \pm \infty}$, then the corresponding
 double branched cover branched over $B$ is a nodal K3 surface $X$ with $A_1$
-singularities and covering involution $\iota_{\dP}$ such that
-$Y = X/\gens{\iota_{\dP}}$.
-Letting $\iota_{\En}$ be a lift of $\tau$, the quotient
-$Z\da X/\gens{\iota_{\En}}$ is a Coble surface.
+singularities and covering involution $\idp$ such that
+$Y = X/\gens{\idp}$.
+Letting $\ien$ be a lift of $\tau$, the quotient
+$Z\da X/\gens{\ien}$ is a Coble surface.
 The case in which $B$ does not
 pass through a $\tau$-invariant point yields an Enriques surface $Z$,
 and an analysis of the corresponding moduli is carried out in [@AEGS25].
@@ -104,8 +104,8 @@ and an analysis of the corresponding moduli is carried out in [@AEGS25].
 It is well-known that there consequently exists a Coble surface $S$ and
 a blowdown $S\to X/\iota$ along the strict transform of $B$.
 In this
-way, one realizes the moduli space $F_{\Co}$ of unpolarized Coble
-surfaces as a divisor in $F_{\En}$, the 10-dimensional moduli space of
+way, one realizes the moduli space $\fco$ of unpolarized Coble
+surfaces as a divisor in $\fen$, the 10-dimensional moduli space of
 unpolarized Enriques surfaces.
 :::
 
@@ -143,22 +143,22 @@ and $D_T$ is one of its connected components.
 ### Dimension of $M$-polarized K3 moduli
 
 Let $M\injects\lkt$ be a primitive embedding of a lattice of signature
-$(1, \operatorname{rank}(M) - 1)$ with orthogonal complement
+$(1, \rank(M) - 1)$ with orthogonal complement
 $T = M^{\perp\lkt}$.
 Then
 $$
-\dim_\CC D_T = \operatorname{rank}(T) - 2 = 20 - \operatorname{rank}(M)
+\dim_\CC D_T = \rank(T) - 2 = 20 - \rank(M)
 .
 $$
-For the Coble lattices $\operatorname{rank}(S_\Co) = 11$, so
+For the Coble lattices $\rank(S_\Co) = 11$, so
 $\dim_\CC D_{T_\Co} = 9$.
 :::
 
 ::: {.proof}
 
-The K3 lattice has rank $22$, so $\operatorname{rank}(T) = 22 - \operatorname{rank}(M)$,
-and $T$ has signature $(2, 20 - \operatorname{rank}(M))$; apply
-\longref{prop:type-iv-dimension}.
+The K3 lattice has rank $22$, so $\rank(T) = 22 - \rank(M)$,
+and $T$ has signature $(2, 20 - \rank(M))$; apply
+[the type-IV dimension proposition](#prop:type-iv-dimension).
 :::
 
 Letting $E_{10} \da U \oplus E_8$, one can similarly consider the Enriques lattices $S_\En := E_{10}(2)$ with $T_\En = U \oplus E_{10}(2)$.
@@ -174,15 +174,19 @@ $-2d$, as in @fig-period-domain-hyperplanes, one can thus present
 
 $$
 \begin{aligned}
-F_{\En} &= \qty{D_{T_\En} \setminus \cH_{-2}} / \Orth^+(T_\En)^* \\
-F_{\Co} &= \cH_{-2} / \Orth^+(T_\En)^* \\
-F_{\Nod} &= \qty{\cH_{-4} \setminus \cH_{-2}} / \Orth^+(T_\En)^*
+\fen &= \qty{D_{T_\En} \sm \cH_{-2}} / \Orth^+(T_\En)^* \\
+\fco &= \cH_{-2} / \Orth^+(T_\En)^* \\
+F_{\Nod} &= \qty{\cH_{-4} \sm \cH_{-2}} / \Orth^+(T_\En)^*
 \end{aligned}
 $$
 
-where surfaces along the divisor $\cH_{-2}$ in $F_\En$ correspond precisely to Coble surfaces and those along $\cH_{-4}\setminus \cH_{-2}$ correspond to Enriques surfaces with $A_1$ singularities.
+where surfaces along the divisor $\cH_{-2}$ in $\fen$ correspond precisely to Coble surfaces and those along $\cH_{-4}\sm \cH_{-2}$ correspond to Enriques surfaces with $A_1$ singularities.
 
-![The period domain $D_{T_\En}$ together with the hyperplanes $v_i^{\perp}$ cut out by vectors $v_i$ of fixed negative norm. The Coble surfaces are precisely the periods lying on the hyperplanes of $\cH_{-2}$.](rendered/fig_type_iv_hsd.svg){#fig-period-domain-hyperplanes width=45%}
+::: {#fig-period-domain-hyperplanes .figure}
+\input{tikz/fig_type_iv_hsd.tex}
+
+The period domain $D_{T_\En}$ together with the hyperplanes $v_i^{\perp}$ cut out by vectors $v_i$ of fixed negative norm. The Coble surfaces are precisely the periods lying on the hyperplanes of $\cH_{-2}$.
+:::
 
 Alternatively, one can construct the period domain for $F_\Co$ directly.
 Following [@DK13 Prop. 3.1] almost verbatim, let $S$ be the blowup of $\PP^2$ along 10 $A_1$ singularities of a rational sextic curve $C$.
@@ -235,10 +239,10 @@ $$
 $$
 for the moduli space of such curves, the quotient being taken in the sense of
 geometric invariant theory [@YZZ25 §2.1].
-Let $\widehat X$ be the double cover of $\PP^2$ branched along $Z$, let $X$ be its
+Let $\wh X$ be the double cover of $\PP^2$ branched along $Z$, let $X$ be its
 minimal resolution --- a K3 surface --- and let $H\in\Pic(X)$ be the pullback of
 the line class, so $H^2 = 2$.
-The exceptional curves of $X\to\widehat X$ span a copy $L\subseteq\Pic(X)$ of the
+The exceptional curves of $X\to\wh X$ span a copy $L\containedin\Pic(X)$ of the
 root lattice $R$, with the exceptional classes as a base $\Delta$.
 Write $P$ for the primitive hull of $\gens H\oplus L$ in $H^2(X;\ZZ)$ and
 $Q \da P^{\perp}$, of signatures $(1,\rank R)$ and $(2, 19 - \rank R)$
@@ -250,7 +254,7 @@ For a general member of $\cV_T$ one has $\Pic(X) = P$ [@YZZ25 §3.3].
 ### The Coble lattices are the lattices of the type $10A_1$
 
 Let $Z$ be an irreducible sextic of type $T = 10A_1$, so that $Z$ is rational by
-\longref{lem:rational_sextic_ten_nodes}, and $X$ is the K3 cover of the Coble
+[the ten-nodal-sextic lemma](#lem:rational_sextic_ten_nodes), and $X$ is the K3 cover of the Coble
 surface $S = X/\iota$.
 Then
 $$
@@ -270,9 +274,9 @@ $(\ZZ/2)^{l'-1}$, where $l'$ is the number of irreducible components of $Z$
 $P = \gens H\oplus L$.
 With $H^2 = 2$ and $L = A_1^{\oplus 10} = \gens{-2}^{\oplus 10}$ this is
 $\gens 2\oplus\gens{-2}^{\oplus 10} = \latI_{1,10}(2)$, which is $S_\Co$ by
-\longref{prop:coble-invariant-lattice}.
+[the Coble invariant-lattice proposition](#prop:coble-invariant-lattice).
 Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and
-\longref{cor:m-polarized-k3-dimension} gives the dimension.
+[the polarized-K3 dimension corollary](#cor:m-polarized-k3-dimension) gives the dimension.
 :::
 
 ::: {.Remark}
@@ -286,7 +290,7 @@ fixes $L$ pointwise and no folding occurs; the sublattice of $H^2(S;\ZZ)$ spanne
 by the exceptional classes of $S\to\PP^2$ then becomes $L$ after scaling by $2$
 [@YZZ25 §5.3].
 That is the same twist by $2$ recorded geometrically in
-\longref{rmk:k3-cover-twist}: the Coble Picard lattice is the blowup lattice
+[the K3-cover twist remark](#rmk:k3-cover-twist): the Coble Picard lattice is the blowup lattice
 $\latI_{1,10}$ scaled by $2$, with no folding correction.
 :::
 
@@ -295,7 +299,7 @@ $\latI_{1,10}$ scaled by $2$, with no folding correction.
 
 Let $\Gamma_T$ be the image of
 $$
-\Orth\bigl(H^2(X;\ZZ),\, \Delta,\, H\bigr) \longrightarrow \Orth(Q)
+\Orth\bigl(H^2(X;\ZZ),\, \Delta,\, H\bigr) \too \Orth(Q)
 ,
 $$
 restricted to the subgroup preserving a chosen component $D(Q)$; it is arithmetic
@@ -303,7 +307,7 @@ of finite index in $\Orth(Q)$, and contains every isometry of $Q$ acting trivial
 on $A_Q$ [@YZZ25 §3.1].
 The **occult period map**
 $$
-\mathscr P_T\colon \cM_T \longrightarrow \Gamma_T\backslash D(Q)
+\mathscr P_T\colon \cM_T \too \Gamma_T\backslash D(Q)
 $$
 is an algebraic open embedding with image
 $\Gamma_T\backslash\bigl(D(Q) - \cH_T\bigr)$, where $\cH_T$ is the arrangement of
@@ -326,15 +330,15 @@ $2$, cutting out arrangements $\cH_\Delta$ and $\cH_\infty$; the roots of $L$ al
 have divisibility $1$, so they contribute to $\cH_\Delta$ only [@YZZ25 §4.1, §4.2].
 Set
 $$
-\cH^{*}_T \da \cH_\infty \cap D(Q) \subseteq \cH_T
+\cH^{*}_T \da \cH_\infty \intersect D(Q) \containedin \cH_T
 .
 $$
 Then $\mathscr P_T$ extends to an isomorphism
 $$
-\widehat{\cM}_T \;\cong\; \overline{\Gamma_T\backslash D(Q)}^{\,\cH^{*}_T}
+\wh{\cM}_T \;\cong\; \overline{\Gamma_T\backslash D(Q)}^{\,\cH^{*}_T}
 $$
 between the GIT compactification of $\cM_T$ and the Looijenga compactification
-(\longref{def:looijenga-compactification}) of
+([the Looijenga-compactification definition](#def:looijenga-compactification)) of
 $\Gamma_T\backslash(D(Q) - \cH^{*}_T)$, compatibly with the corresponding
 statement of Shah and Looijenga for the whole space of sextics,
 $\overline{\cM}\cong\overline{\Gamma_1\backslash D(\Lambda_1)}^{\,\cH_\infty}$
@@ -373,7 +377,7 @@ $\Gamma_{10A_1}$, which contains $\Orth^+(T_\Co)^*$ and may be strictly larger.
 Identifying the two constructions of the Coble moduli space therefore requires the
 comparison
 $$
-\Orth^+(T_\Co)^* \;\subseteq\; \Gamma_{10A_1} \;\subseteq\; \Orth(T_\Co)
+\Orth^+(T_\Co)^* \;\containedin\; \Gamma_{10A_1} \;\containedin\; \Orth(T_\Co)
 ,
 $$
 together with the comparison of both against the polarized group
@@ -403,9 +407,9 @@ this section does not settle.
 
 ::: {.Remark}
 
-By \longref{lem:locally_closed_embedding_BB}, there are morphisms
-$\overline{F_{\Co}}^{\bb} \to \overline{F_{\En}}^{\bb}$ and
-$\overline{F_{\Co}}^{\bb} \to \overline{F_{(2,2,0)}}^{\bb}$ which induce
+By [the Baily--Borel extension lemma](#lem:locally_closed_embedding_BB), there are morphisms
+$\overline{\fco}^{\bb} \to \overline{\fen}^{\bb}$ and
+$\overline{\fco}^{\bb} \to \overline{F_{(2,2,0)}}^{\bb}$ which induce
 correspondences between the boundary cusps.
 :::
 

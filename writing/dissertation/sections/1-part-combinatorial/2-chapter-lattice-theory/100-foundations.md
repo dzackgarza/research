@@ -23,7 +23,7 @@ A **quadratic form** on a $\ZZ$-module $L$ is a map of sets $q: L \to \QQ$ such 
 \beta_q: L \tensor_{\ZZ} L &\to \QQ \\
 (v,w) &\mapsto \beta_q(v,w) \da q(v+w) - q(v) - q(w)
 \end{align*}
-We say $q$ is **integral** if $q(L) \subseteq \ZZ$. The pair $(L,q)$ is called a **quadratic $\ZZ$-module**.
+We say $q$ is **integral** if $q(L) \containedin \ZZ$. The pair $(L,q)$ is called a **quadratic $\ZZ$-module**.
 :::
 
 :::{.lemma title="{Correspondence between Bilinear and Quadratic Forms}" #lem:bilinear-quadratic-correspondence}
@@ -35,7 +35,7 @@ Every $\QQ$-valued bilinear module $(L,\beta)$ determines a $\QQ$-valued quadrat
 
 There is a bijection between even symmetric integral forms and integral quadratic forms:
 $$\begin{aligned}
-\{\beta \in \Sym_{\ZZ}^2(L\dual) \st \beta \text{ is even}\} &\rightleftharpoons \Quad_{\ZZ}(L) \\
+\{\beta \in \Sym_{\ZZ}^2(L\dual) \st \beta \text{ is even}\} &\mapstofrom \Quad_{\ZZ}(L) \\
 \beta &\mapsto q(v) \da {1\over 2}\beta(v,v) \\
 \beta_q &\mapsfrom q
 \end{aligned}$$
@@ -52,7 +52,7 @@ A lattice $(L,\beta)$ is **even** if $\beta(v,v) \in 2\ZZ$ for all $v \in L$, an
 ##### Gram Matrices
 
 :::{.definition title="{Gram Matrix}" #def:gram-matrices}
-Given a basis $B_L = (e_i)_{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$, the **Gram matrix** of $\beta$ is $G_\beta \da (\beta(e_i, e_j))_{i,j} \in \Mat_{n \times n}(\QQ)$. For vectors $v = \sum a_j e_j$ and $w = \sum b_j e_j$, we have $\beta(v,w) = v^t G_\beta w$.
+Given a basis $B_L = (e_i)_{1 \leq i \leq n}$ for a bilinear module $(L,\beta)$, the **Gram matrix** of $\beta$ is $G_\beta \da (\beta(e_i, e_j))_{i,j} \in \Mat_{n \times n}(\QQ)$. For vectors $v = \Sum a_j e_j$ and $w = \Sum b_j e_j$, we have $\beta(v,w) = v^t G_\beta w$.
 Similarly, for a quadratic module $(L,q)$, a **Gram matrix** $G_q$ is any matrix such that $q(v) = v^t G_q v$.
 We define the **discriminant** $\disc(L)$ of $L$ as $\det(G_\beta)$ in any choice of basis.
 We note that for any sublattice $S \leq L$, we have the formula 
@@ -110,7 +110,7 @@ For any lattice $(L,\beta)$ and positive integer $m$, the **scaled lattice** $L(
 :::
 
 :::{.example title="{Diagonal and Hyperbolic Lattices}"}
-The **diagonal lattice** $\gens{a_1, \ldots, a_n}$ is $\ZZ^n$ with the bilinear form $\beta(x,y) = \sum a_i x_i y_i$ and diagonal Gram matrix $\diag(a_1, \ldots, a_n)$.
+The **diagonal lattice** $\gens{a_1, \ldots, a_n}$ is $\ZZ^n$ with the bilinear form $\beta(x,y) = \Sum a_i x_i y_i$ and diagonal Gram matrix $\diag(a_1, \ldots, a_n)$.
 In the special case $a_1,\cdots, a_{p} = 1$ and $a_{m+1}, \cdots, a_n = -1$, we write this lattice as $\I_{p, q}$, due to its distinguished nature as the unique nondegenerate odd unimodular lattice of signature $p, q$. 
 The **hyperbolic lattice** $U$ is the free $\ZZ$-module $\ZZ^2$ with basis $e,f$ such that $\beta(e,e) = \beta(f,f) = 0$ and $\beta(e,f) = 1$. It is an even, integral, rank 2 lattice with Gram matrix 
 $$
@@ -139,14 +139,14 @@ A sublattice $S \leq L$ is **primitive** (or **saturated**) if the quotient modu
 
 :::{.proposition title="{Characterization of Primitive Sublattices}" #prop:saturation-characterization}
 
-For a sublattice $S \subseteq L$, the following are equivalent:
+For a sublattice $S \containedin L$, the following are equivalent:
 
 - $S$ is a primitive sublattice of $L$.
 - The inclusion $S \injects L$ is a primitive embedding.
-- $S$ is saturated in $L$, meaning $S = \Sat_L(S) \da \{v \in L \st nv \in S \text{ for some } n \in \ZZ \setminus \{0\}\}$.
+- $S$ is saturated in $L$, meaning $S = \Sat_L(S) \da \{v \in L \st nv \in S \text{ for some } n \in \ZZ \sm \{0\}\}$.
 - $S$ is a direct summand of $L$ as a $\ZZ$-module (i.e., $L \cong S \oplus T$ for some submodule $T$).
 - Any $\ZZ$-basis of $S$ can be extended to a $\ZZ$-basis of $L$.
-- $S_\QQ \cap L = S$.
+- $S_\QQ \intersect L = S$.
 - $S = (S^{\perp L})^{\perp L}$.
 - Every integral linear functional on $S$ can be lifted to an integral linear functional on $L$.
 :::
@@ -173,11 +173,11 @@ corpus-references: ""
 depends-on: "#def:lattice"
 audited: false
 ```
-For a lattice $(L,\beta)$, a submodule $W \subseteq L$ is **isotropic** if $\beta|_W = 0$ (equivalently, $W \subseteq W^{\perp L}$). An **isotropic vector** is an element $v \in L$ with $\beta(v,v) = 0$. The **Witt index** $\WI(L)$ is the maximal rank of an isotropic sublattice.
+For a lattice $(L,\beta)$, a submodule $W \containedin L$ is **isotropic** if $\beta|_W = 0$ (equivalently, $W \containedin W^{\perp L}$). An **isotropic vector** is an element $v \in L$ with $\beta(v,v) = 0$. The **Witt index** $\WI(L)$ is the maximal rank of an isotropic sublattice.
 :::
 
 :::{.definition title="{Divisibility}" #def:divisibility-primitive-elements}
-Let $L$ be a lattice with form $\beta$, and let $v \in L$. The **divisibility** of $v$ in $L$, denoted $\div_L(v)$, is the positive generator of the ideal $\ts{ \beta(v, w)\st w \in L} \subseteq \ZZ$.
+Let $L$ be a lattice with form $\beta$, and let $v \in L$. The **divisibility** of $v$ in $L$, denoted $\div_L(v)$, is the positive generator of the ideal $\ts{ \beta(v, w)\st w \in L} \containedin \ZZ$.
 :::
 
 :::{.proposition title="{Divisibility and Discriminant for Primitive Vectors}" #prop:divisibility-discriminant}
@@ -207,16 +207,16 @@ For an integral lattice $(L,\beta)$, the **dual lattice** is the $\ZZ$-module of
 :::{.theorem title="{Geometric Identification of the Dual Lattice}" #thm:geometric-identification-dual}
 For a nondegenerate integral lattice $(L,\beta)$, the dual lattice can be identified with a sublattice of $L_{\QQ} \da L \tensor_{\ZZ} \QQ$ via the bijection:
 \begin{align*}
-L\dual \cong \{ v \in L_{\QQ} \st \beta_{\QQ}(v,L) \subseteq \ZZ\}
+L\dual \cong \{ v \in L_{\QQ} \st \beta_{\QQ}(v,L) \containedin \ZZ\}
 \end{align*}
-where a functional $\phi \in L\dual$ corresponds to the unique vector $v_\phi \in L_\QQ$ such that $\phi(w) = \beta(v_\phi, w)$ for all $w \in L$. Under this identification, we have the inclusions $L \subseteq L\dual \subseteq L_{\QQ}$.
+where a functional $\phi \in L\dual$ corresponds to the unique vector $v_\phi \in L_\QQ$ such that $\phi(w) = \beta(v_\phi, w)$ for all $w \in L$. Under this identification, we have the inclusions $L \containedin L\dual \containedin L_{\QQ}$.
 :::
 
 :::{.remark title="{Properties of Dual Lattices}" #rem:dual-lattice-properties}
 We summarize some standard properties of dual lattices
 
 - Duality commutes with direct sums, $(L \oplus M)^\vee = L\dual \oplus M^\vee$.
-- If $L$ has Gram matrix $G_\beta$ in a basis $B_L$, then the dual basis satisfies $B_{L\dual} = (B_L^t)^{-1}$, and the Gram matrix of the dual form is $G_{\beta^\vee} = G_\beta^{-1}$.
+- If $L$ has Gram matrix $G_\beta$ in a basis $B_L$, then the dual basis satisfies $B_{L\dual} = (B_L^t)\inv$, and the Gram matrix of the dual form is $G_{\beta^\vee} = G_\beta\inv$.
 - The discriminant of the dual satisfies $\disc(L\dual) = 1/\disc(L)$, and the dual of a scaled lattice is $(L(m))^\vee = L\dual(1/m)$.
 :::
 

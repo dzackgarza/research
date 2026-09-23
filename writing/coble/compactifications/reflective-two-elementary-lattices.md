@@ -1,9 +1,9 @@
 # Reflective two-elementary lattices {#sec:reflective-two-elementary}
 
 ::: {.Remark}
-### Orientation
+## Orientation
 
-Every lattice in [the Coble table](coble-lattice-table.md) satisfies
+Every lattice in [the Coble table](../lattices-and-moduli/coble-lattice-table.md) satisfies
 $r + a = 22$: the row indexed by $n$ has $r = 10 + n$ and $a = 12 - n$.
 The line $r + a = 22$ is exactly the range in which Alexeev classifies the
 reflective even hyperbolic $2$-elementary lattices and computes their Coxeter
@@ -32,7 +32,7 @@ The lattice $S$ is **two-reflective** if $W_2(S)$ has finite index in $\Orth(S)$
 and **reflective** if $W_r(S)$ has finite index in $\Orth(S)$.
 Write $\Gamma_2$ and $\Gamma_r$ for the Coxeter--Vinberg diagrams
 (\longref{def:coxeter-vinberg-diagram}) of the two reflection groups, and
-$\Gamma_4\subseteq\Gamma_r$ for the subdiagram spanned by the long roots.
+$\Gamma_4\containedin\Gamma_r$ for the subdiagram spanned by the long roots.
 :::
 
 ::: {.Remark}
@@ -243,7 +243,7 @@ terminates and produces a finite diagram $\Gamma_r$.
 Then the $\Orth(S)$-orbits of primitive isotropic vectors of $S$ correspond
 bijectively to the maximal parabolic subdiagrams of $\Gamma_r$, and the orbits
 modulo $\Aut\Gamma_r$ to the subdiagrams modulo $\Aut\Gamma_r$.
-If a parabolic subdiagram $\Gamma\subseteq\Gamma_r$ corresponds to $v\in S$ with
+If a parabolic subdiagram $\Gamma\containedin\Gamma_r$ corresponds to $v\in S$ with
 $v^2 = 0$, then the image of $\Gamma$ in $v^{\perp}/v$ spans an elliptic root
 system: of type $A_n, D_n, E_n$ when every vertex of $\Gamma$ is a short root, and
 of type $A_n(2), D_n(2), E_n(2)$ when every vertex is a long root.
@@ -373,10 +373,10 @@ pair $(Y, B)$ acting trivially on $\Pic Y$.
 Then there is an exact sequence
 $$
 0 \to \gens{\iota}\times\Aut'(Y, B) \to \Aut(X) \to
-\operatorname{Sym}\Gamma_r \ltimes W(\Gamma_4) \to 0
+\Sym\Gamma_r \ltimes W(\Gamma_4) \to 0
 ,
 $$
-where $\Gamma_4\subseteq\Gamma_r$ is the subdiagram of long roots.
+where $\Gamma_4\containedin\Gamma_r$ is the subdiagram of long roots.
 In particular $\Aut(X)$ is finite if and only if $S_X$ is two-reflective.
 :::
 
@@ -389,7 +389,7 @@ consists of the automorphisms descending to $(Y, B)$; the surjectivity of
 $\Orth(H)\to\Orth(A_H, q_H)$ for indefinite $2$-elementary $H$
 (\longref{thm:two-elementary-surjectivity}), which lifts an isometry of $S$ to one of
 $\lkt$; and \longref{thm:reflection-group-quotient}, which identifies
-$\Orth^+(S)/W_2(S)$ with $\operatorname{Sym}\Gamma_r\ltimes W(\Gamma_4)$.
+$\Orth^+(S)/W_2(S)$ with $\Sym\Gamma_r\ltimes W(\Gamma_4)$.
 :::
 
 ::: {.Theorem #thm:long-root-subdiagrams}
@@ -422,7 +422,7 @@ This is [@Ale22 Table 1].
 ::: {.Remark}
 
 For $S_\Co = (11,11,1)$ the long-root subdiagram is the three-legged tree
-$T_{2,3,7}$, and $\operatorname{Sym}\Gamma_r$ is trivial, so
+$T_{2,3,7}$, and $\Sym\Gamma_r$ is trivial, so
 \longref{thm:k3-automorphism-sequence} presents the automorphism group of the K3
 cover of an unnodal Coble surface as an extension of the Coxeter group
 $W(T_{2,3,7})$ by $\gens{\iota}\times\Aut'(Y, B)$.
@@ -450,7 +450,7 @@ This is [@Huy16 §11.1]; the correspondence in the form used here is
 ### Ample cone
 
 Let $X$ be a projective K3 surface with Picard lattice $S_X$.
-The **ample cone** $A(X)\subseteq S_X\tensor\RR$ is the set of ample classes.
+The **ample cone** $A(X)\containedin S_X\tensor\RR$ is the set of ample classes.
 It is one connected component of
 $$
 \ts{ x\in S_X\tensor\RR \;\middle|\; x^2 > 0,\ x\cdot d > 0 \text{ for every root } d \text{ of } S_X }

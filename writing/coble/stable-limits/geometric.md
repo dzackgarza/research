@@ -28,8 +28,8 @@ Such a terminal Coble surface is *basic rational*: it admits a birational morphi
 ::: {.Remark}
 
 The polarization enters through the degree-$2$ numerically polarized Enriques picture into which the Coble locus embeds.
-A degree-$2$ numerically polarized Enriques surface is a pair $(Z, [\mathcal L_Z])$ with $[\mathcal L_Z] \in \Num(Z)$ an ample class of degree $2$; the system $\abs{\mathcal L_Z^{\otimes 2}}$ is basepoint-free and realizes $Z$ as a double cover $\rho\colon Z \to W$ of a quartic del Pezzo surface $W$ with singularities of type $4A_1$ or $A_3 + 2A_1$, branched along a divisor $B \subset W$ [@CDL25]. This is the finite analogue of the map $\phi_{ij}$ above, which in the Coble case fails to be finite.
-The ramification divisor $R_Z = \rho^{-1}(B)$ is ample, $\QQ$-Cartier, and lies in $\abs{\mathcal L_Z^{\otimes 2}}$, so $(Z, \varepsilon R_Z)$ is log canonical for small $\varepsilon > 0$ [@CDL25]. It is the Coble descent of this ramification divisor that supplies the stable-pair boundary of the KSBA stable limits.
+A degree-$2$ numerically polarized Enriques surface is a pair $(Z, [\mathcal L_Z])$ with $[\mathcal L_Z] \in \Num(Z)$ an ample class of degree $2$; the system $\abs{\mathcal L_Z^{\tensor 2}}$ is basepoint-free and realizes $Z$ as a double cover $\rho\colon Z \to W$ of a quartic del Pezzo surface $W$ with singularities of type $4A_1$ or $A_3 + 2A_1$, branched along a divisor $B \containedin W$ [@CDL25]. This is the finite analogue of the map $\phi_{ij}$ above, which in the Coble case fails to be finite.
+The ramification divisor $R_Z = \rho\inv(B)$ is ample, $\QQ$-Cartier, and lies in $\abs{\mathcal L_Z^{\tensor 2}}$, so $(Z, \varepsilon R_Z)$ is log canonical for small $\varepsilon > 0$ [@CDL25]. It is the Coble descent of this ramification divisor that supplies the stable-pair boundary of the KSBA stable limits.
 :::
 
 ## The components of a stable degeneration
@@ -42,7 +42,7 @@ degenerations of K3 surfaces with a nonsymplectic involution.
 A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and a
 Type II component by an affine diagram $\widetilde{A}_n$, $\widetilde{D}_n$ or
 $\widetilde{E}_n$, matching the elliptic and parabolic subdiagrams of the Coxeter
-diagram (\longref{def:elliptic-subdiagram}).
+diagram ([the elliptic-subdiagram definition](#def:elliptic-subdiagram)).
 Each ADE surface $(X, D + \varepsilon R)$ comes with a double cover
 $\pi\colon X\to Y$ onto a del Pezzo ADE surface
 $\bigl(Y,\ C + \tfrac{1+\varepsilon}{2}B\bigr)$ of index $2$
@@ -55,9 +55,9 @@ $\bigl(Y,\ C + \tfrac{1+\varepsilon}{2}B\bigr)$ of index $2$
 The **BCDE surfaces** are the quotients of ADE surfaces by involutions, and they
 correspond to the foldings of the ADE Dynkin diagrams.
 Type B components are the quotients by an Enriques involution
-$\iota_\En$, acting in suitable coordinates as
-$(x, y, z)\mapsto (x^{-1}, -y, -z)$; type C components are the quotients by the
-symplectic involution $\iota_{\mathrm{Nik}}$.
+$\ien$, acting in suitable coordinates as
+$(x, y, z)\mapsto (x\inv, -y, -z)$; type C components are the quotients by the
+symplectic involution $\inik$.
 The label
 $$
 \alpha : 2 = {}_2\beta \subset \gamma

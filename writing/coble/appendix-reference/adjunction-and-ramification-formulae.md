@@ -19,6 +19,6 @@ Let $f: Y\to X$ be a branched cover with branch locus $B$ and ramification locus
 Then
 
 $$
-K_Y = f^* K_X + R, \qquad R \da \sum_{p\in X} \mathrm{len}\qty{ \Omega_{X/Y, p}} [p].
+K_Y = f^* K_X + R, \qquad R \da \Sum_{p\in X} \mathrm{len}\qty{ \Omega_{X/Y, p}} [p].
 $$
 :::

@@ -3,7 +3,7 @@
 ::: {.Remark}
 
 We record the lattice-theoretic constructions attached to a group of isometries of a lattice, and specialize them to the case of an involution.
-This apparatus underpins the lattice theory of the K3-cover / Enriques-cover picture used throughout: the $2$-elementary lattices $S_\Co$ and $T_\Co$ arise as the invariant and coinvariant lattices of the nonsymplectic involution on the K3 cover of a Coble surface, and it is these lattices that enter the chain of primitive embeddings of \longref{lem:sequence_of_embeddings}.
+This apparatus underpins the lattice theory of the K3-cover / Enriques-cover picture used throughout: the $2$-elementary lattices $S_\Co$ and $T_\Co$ arise as the invariant and coinvariant lattices of the nonsymplectic involution on the K3 cover of a Coble surface, and it is these lattices that enter the chain of primitive embeddings of [the embedding-sequence lemma](#lem:sequence_of_embeddings).
 :::
 
 ::: {.Definition #def:invariant_coinvariant_lattices}
@@ -39,7 +39,7 @@ $$
 ,
 $$
 so $\beta_{L_\QQ}(v, w) = 0$.
-Hence $V_-\subseteq V_+^{\perp}$, and comparing dimensions gives $V_- = V_+^{\perp} = (L_G)_\QQ$.
+Hence $V_-\containedin V_+^{\perp}$, and comparing dimensions gives $V_- = V_+^{\perp} = (L_G)_\QQ$.
 :::
 
 ::: {.Proposition #prop:invariant_coinvariant_primitive}
@@ -65,7 +65,7 @@ $$
 
 ::: {.proof}
 
-Orthogonality and primitivity are the case $G = \gens{I}$ of \longref{prop:invariant_coinvariant_primitive}, and $L_G = (L^G)^{\perp L}$ is orthogonal to $L^G$ by definition.
+Orthogonality and primitivity are the case $G = \gens{I}$ of [the primitivity proposition](#prop:invariant_coinvariant_primitive), and $L_G = (L^G)^{\perp L}$ is orthogonal to $L^G$ by definition.
 For the decomposition, fix $v\in L$ and set $v_+ \da v + I(v)$ and $v_- \da v - I(v)$, both of which lie in $L$.
 Applying $I$ and using $I^2 = \id$,
 $$
@@ -74,19 +74,19 @@ I(v_+) = I(v) + I^2(v) = I(v) + v = v_+,
 I(v_-) = I(v) - v = -v_-
 ,
 $$
-so $v_+$ is fixed by $I$ and hence $v_+\in L^G$, while $v_-$ lies in the $-1$ eigenspace of $I$ and hence, by \longref{prop:involution_eigenspaces}, in $(L_G)_\QQ\cap L = L_G$.
+so $v_+$ is fixed by $I$ and hence $v_+\in L^G$, while $v_-$ lies in the $-1$ eigenspace of $I$ and hence, by [the eigenspace proposition](#prop:involution_eigenspaces), in $(L_G)_\QQ\intersect L = L_G$.
 Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogonal since $v_+\in L^G$ and $v_-\in L_G = (L^G)^{\perp L}$.
 :::
 
 ::: {.Proposition #prop:coinvariant_involution_2elementary}
 
-Let $L$ be a $2$-elementary lattice and let $I\in\Orth^*(L)$ be an involution lying in the stable orthogonal group $\Orth^*(L) = \tilde\Orth(L)$.
+Let $L$ be a $2$-elementary lattice and let $I\in\OStab(L)$ be an involution lying in the stable orthogonal group $\OStab(L) = \tilde\Orth(L)$.
 Then both the invariant lattice $L^I$ and the coinvariant lattice $L_I$ are again $2$-elementary.
 :::
 
 ::: {.proof}
 
-Write $\pi_\pm\colon L\otimes\QQ \to L^{\pm}\otimes\QQ$ for the projections
+Write $\pi_\pm\colon L\tensor\QQ \to L^{\pm}\tensor\QQ$ for the projections
 $\pi_\pm(v) = \tfrac12(v \pm I v)$, where $L^{+} = L^I$ and $L^{-} = L_I$.
 
 Both $L^{\pm}$ are primitive in $L$: if $nv \in L^I$ for some $v \in L$ and $n \neq 0$ then
@@ -100,15 +100,15 @@ $$
 $$
 
 Now use the two hypotheses. Since $I$ lies in the stable orthogonal group it acts trivially
-on $A_L = L\dual/L$, so $Iw - w \in L$; and since $L$ is $2$-elementary, $2L\dual \subseteq L$,
+on $A_L = L\dual/L$, so $Iw - w \in L$; and since $L$ is $2$-elementary, $2L\dual \containedin L$,
 so $2w \in L$. Therefore
 $$
 2x = w - Iw = -(Iw - w) \in L
 \qquad\text{and}\qquad
 2x = w + Iw = 2w + (Iw - w) \in L
 $$
-in the two cases respectively. In each case $2x$ lies in $L^{\pm}\otimes\QQ$ as well as in
+in the two cases respectively. In each case $2x$ lies in $L^{\pm}\tensor\QQ$ as well as in
 $L$, and $L^{\pm}$ is primitive, so $2x \in L^{\pm}$.
 
-Thus $2(L^{\pm})\dual \subseteq L^{\pm}$, which is $2$-elementarity.
+Thus $2(L^{\pm})\dual \containedin L^{\pm}$, which is $2$-elementarity.
 :::

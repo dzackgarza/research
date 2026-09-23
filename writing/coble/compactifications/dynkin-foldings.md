@@ -39,7 +39,7 @@ Given a simple root $\alpha_i \in \Phi$, let $[\alpha_i] \subset \Phi$ denote it
 
 The associated **folded root** and **folded root system** are defined by
 $$
-\beta_{[\alpha_i]} \da \sum_{\alpha_j \in [\alpha_i]} \alpha_j \in L^G,
+\beta_{[\alpha_i]} \da \Sum_{\alpha_j \in [\alpha_i]} \alpha_j \in L^G,
 \qquad
 \Phi^G \da \ts{ \beta_{[\alpha_i]} \in L^G \mid [\alpha_i] \in \Phi/G }
 .
@@ -76,18 +76,18 @@ The criterion below is stated in terms of the short and long roots of $T_\dP$: $
 ::: {.Lemma #lem:root-folding-tdp}
 ### Root folding criterion
 
-Let $\Phi(T_\dP)$ be the root system of $T_\dP$ and $I = -I_\En$ the induced involution on $T_\dP$ whose fixed lattice is $T_\En$.
+Let $\Phi(T_\dP)$ be the root system of $T_\dP$ and $I = -I_\En$ the induced involution on $T_\dP$ whose fixed lattice is $\ten$.
 
 The folded roots $\beta_{[v]} \in \Phi\left( T_\dP^{\gens{I}} \right)$ arise in exactly one of the following ways:
 
-1. $v \in \Phi^2(T_\dP)$ and $\beta_{[v]} \in \Phi(T_\En)$;
+1. $v \in \Phi^2(T_\dP)$ and $\beta_{[v]} \in \Phi(\ten)$;
 
-2. $v \in \Phi^4(T_\dP)$ and $\beta_{[v]} \in \Phi(T_\En)$; or
+2. $v \in \Phi^4(T_\dP)$ and $\beta_{[v]} \in \Phi(\ten)$; or
 
-3. $v \in \Phi^2(T_\dP) \cap I(v)^{\perp T_\dP}$, and so $\beta_{[v]} \da v + I(v) \in \Phi^4(T_\En)$ is the sum of orthogonal roots in $\Phi^2(T_\dP)$.
+3. $v \in \Phi^2(T_\dP) \intersect I(v)^{\perp T_\dP}$, and so $\beta_{[v]} \da v + I(v) \in \Phi^4(\ten)$ is the sum of orthogonal roots in $\Phi^2(T_\dP)$.
 :::
 
-This criterion governs how roots in the boundary lattices at the $0$-cusps of $F_{(2,2,0)}$ descend or combine when passing to the $I$-invariant sublattices corresponding to $F_{\En, 2}$.
+This criterion governs how roots in the boundary lattices at the $0$-cusps of $F_{(2,2,0)}$ descend or combine when passing to the $I$-invariant sublattices corresponding to $\fent$.
 
 ## Mirror moves
 

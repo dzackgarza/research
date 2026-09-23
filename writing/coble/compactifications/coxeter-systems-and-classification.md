@@ -17,7 +17,7 @@ A **Coxeter matrix** on $S$ is a symmetric matrix $M = (m_{st})_{s,t\in S}$ with
 $$
 m_{ss} = 1,
 \qquad
-m_{st} = m_{ts} \in \ts{2,3,4,\dots}\cup\ts{\infty}
+m_{st} = m_{ts} \in \ts{2,3,4,\dots}\union\ts{\infty}
 \quad (s\neq t)
 .
 $$
@@ -78,9 +78,9 @@ $$
 so that $A_{ss} = 2$ and $s_{\alpha_t}(\alpha_s) = \alpha_s - A_{st}\alpha_t$; it records the reflections and is symmetric only when all the $\alpha_s$ have equal norm.
 The two are related by a diagonal factor on the right,
 $$
-A = G\cdot\operatorname{diag}\!\left(\frac{2}{G_{11}},\dots,\frac{2}{G_{nn}}\right),
+A = G\cdot\diag\!\left(\frac{2}{G_{11}},\dots,\frac{2}{G_{nn}}\right),
 \qquad
-G = A\cdot\operatorname{diag}\!\left(\frac{G_{11}}{2},\dots,\frac{G_{nn}}{2}\right)
+G = A\cdot\diag\!\left(\frac{G_{11}}{2},\dots,\frac{G_{nn}}{2}\right)
 ,
 $$
 so $G$ is the Cartan matrix symmetrized by the root lengths.
@@ -132,7 +132,7 @@ Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$.
 
 3. If $(W,S)$ is hyperbolic, then $\RR^S$ with the form $G$ is a model of hyperbolic $(n-1)$-space in the sense of \longref{def:hyperbolic-model}, and the reflections $s_{\alpha_s}$ generate a discrete subgroup of its isometry group whose fundamental domain is the Coxeter polytope
    $$
-   P \da \ts{\, [v] \in \mathbb{H}^{\,n-1} \mid \beta(v,\alpha_s)\geq 0 \text{ for all } s\in S \,}
+   P \da \ts{\, [v] \in \HH^{\,n-1} \mid \beta(v,\alpha_s)\geq 0 \text{ for all } s\in S \,}
    $$
    of \longref{def:coxeter-polytope} [@Vin67; @Vin85].
 :::
@@ -146,7 +146,7 @@ Statement (3) asserts nothing about the volume of $P$: the finite-volume and com
 
 ::: {.Definition #def:coxeter-subdiagram}
 
-Let $\Sigma$ be the Coxeter diagram of $(W,S)$ and let $I\subseteq S$.
+Let $\Sigma$ be the Coxeter diagram of $(W,S)$ and let $I\containedin S$.
 The **subdiagram** $\Sigma_I$ is the induced diagram on $I$, with Coxeter matrix $M[I,I]$ and Gram form the principal submatrix $G[I,I]$.
 The **rank** of $\Sigma_I$ is the rank of $G[I,I]$.
 The subgroup
@@ -160,7 +160,7 @@ is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Co
 ### Parabolic subgroups and parabolic subdiagrams
 
 The two uses of *parabolic* are independent.
-The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\subseteq S$, whatever the definiteness of $G[I,I]$.
+The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\containedin S$, whatever the definiteness of $G[I,I]$.
 The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (\longref{def:elliptic-subdiagram}), and then $(W_I, I)$ is a product of irreducible euclidean Coxeter systems, one for each component.
 :::
 
@@ -179,13 +179,13 @@ and the same inequalities hold for $n_-$.
 ::: {.proof}
 The integer $n_+(\beta)$ is the largest dimension of a subspace of $V$ on which $\beta$ is positive definite.
 A subspace of $V'$ on which $\ro{\beta}{V'}$ is positive definite is such a subspace of $V$, which gives the upper bound.
-If $P\leq V$ is positive definite of dimension $n_+(\beta)$, then $\beta$ is positive definite on $P\cap V'$, and $\dim(P\cap V')\geq n_+(\beta) - c$, which gives the lower bound.
+If $P\leq V$ is positive definite of dimension $n_+(\beta)$, then $\beta$ is positive definite on $P\intersect V'$, and $\dim(P\intersect V')\geq n_+(\beta) - c$, which gives the lower bound.
 Applying both to $-\beta$ gives the statement for $n_-$.
 :::
 
 ::: {.Corollary #cor:subdiagram-inheritance}
 
-Let $\Sigma$ be a Coxeter diagram on $S$ and $J\subseteq I\subseteq S$.
+Let $\Sigma$ be a Coxeter diagram on $S$ and $J\containedin I\containedin S$.
 
 1. If $\Sigma_I$ is elliptic then so is $\Sigma_J$.
    Equivalently, a subdiagram that is not elliptic is contained in no elliptic subdiagram.
@@ -254,7 +254,7 @@ The diagram $\tilde A_1$ has two vertices joined by a bond with $m_{12} = \infty
 Let $\Sigma$ be an irreducible euclidean diagram on the vertex set $I$, with Gram form $G[I,I]$ and simple roots $\ts{\alpha_s}_{s\in I}$.
 Then $\ker G[I,I]$ is spanned by a vector
 $$
-\delta = \sum_{s\in I} n_s\,\alpha_s
+\delta = \Sum_{s\in I} n_s\,\alpha_s
 \qquad\text{with all } n_s > 0
 ,
 $$
@@ -302,7 +302,7 @@ For $m_{st}\in\ts{2,3}$ the entries $0$ and $1$ are already integral, and the si
 Let $M$ be a Coxeter matrix on $S$.
 Its **base field** is the subfield
 $$
-K(M) \da \QQ\!\left(\, 2\cos(\pi/m_{st}) \;:\; s\neq t,\ m_{st} < \infty \,\right) \subseteq \RR
+K(M) \da \QQ\!\left(\, 2\cos(\pi/m_{st}) \;:\; s\neq t,\ m_{st} < \infty \,\right) \containedin \RR
 ,
 $$
 the smallest field over which the Gram form $G(M)$ is defined.
@@ -310,9 +310,9 @@ the smallest field over which the Gram form $G(M)$ is defined.
 
 ::: {.Proposition #prop:coxeter-base-field-degree}
 
-For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \zeta_{2m}^{-1}$ for a primitive $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal totally real subfield of $\QQ(\zeta_{2m})$ and
+For an integer $m\geq 2$ one has $2\cos(\pi/m) = \zeta_{2m} + \zeta_{2m}\inv$ for a primitive $2m$-th root of unity $\zeta_{2m}$, so $\QQ(2\cos(\pi/m))$ is the maximal totally real subfield of $\QQ(\zeta_{2m})$ and
 $$
-\left[\QQ\!\left(2\cos(\pi/m)\right) : \QQ\right] = \tfrac12\,\#(\ZZ/2m\ZZ)^{\times}
+\left[\QQ\!\left(2\cos(\pi/m)\right) : \QQ\right] = \tfrac12\,\#(\ZZ/2m\ZZ)\units
 .
 $$
 In particular $K(M) = \QQ$ exactly when $m_{st}\in\ts{2,3,\infty}$ for all $s\neq t$.

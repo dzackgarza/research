@@ -102,8 +102,6 @@ sections/3-part-main-theorem/7-chapter/800-divisor-models.md
 sections/3-part-main-theorem/7-chapter/900-five-cusps.md
 ```
 
-\appendix
-
 ```include
 sections/3-part-main-theorem/7-chapter/999-appendix.md
 ```
