@@ -3,7 +3,6 @@ r"""Archived standard-cardinality facts not already covered by live catalogues."
 from dzack_research.preamble.all import (
     QQ,
     RR,
-    FramedAlgebras,
     aleph0,
     continuum,
 )
@@ -27,7 +26,9 @@ def test_rational_power_series_have_continuum_cardinality() -> None:
     power_series = QQ.power_series_ring("t")
 
     assert power_series.cardinality() == continuum
-    assert power_series not in FramedAlgebras(QQ)
+    # A finitely generated QQ-algebra is a quotient of some QQ[x_1, ..., x_n], hence
+    # countable, so the continuum-sized QQ[[t]] is not finitely generated.
+    assert not power_series.is_finitely_generated()
     assert tuple(power_series.formal_parameter_set()) == ("t",)
 
 

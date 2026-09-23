@@ -11,7 +11,7 @@ def test_cartan_inclusion_into_sl2_has_zero_lie_cokernel_but_module_cokernel_of_
     module = Modules(QQ).free_module(("e", "f", "h"))
     e, f, h = (module.module_generator(label) for label in ("e", "f", "h"))
     zero = module.zero()
-    sl2 = Algebras(QQ).Lie()(
+    sl2 = Algebras(QQ)(
         module,
         {
             ("e", "e"): zero, ("f", "f"): zero, ("h", "h"): zero,
@@ -21,9 +21,11 @@ def test_cartan_inclusion_into_sl2_has_zero_lie_cokernel_but_module_cokernel_of_
         },
     )
     line = Modules(QQ).free_module(("h",))
-    cartan = Algebras(QQ).Lie()(line, {("h", "h"): line.zero()})
+    cartan = Algebras(QQ)(line, {("h", "h"): line.zero()})
     inclusion = cartan.Mor(sl2)({cartan(line.module_generator("h")): sl2(h)})
 
+    assert sl2 in Algebras(QQ).Lie()
+    assert cartan in Algebras(QQ).Lie()
     assert sl2(h) * sl2(e) == 2 * sl2(e)
     assert sl2(e) * sl2(f) == sl2(h)
     assert inclusion.cokernel().module_rank() == 0

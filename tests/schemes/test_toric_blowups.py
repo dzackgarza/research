@@ -82,8 +82,8 @@ def _maximal_cone_with_vectors(surface, vectors):
     vectors = tuple(vectors)
     for cone in surface.fan().maximal_cones():
         rays = tuple(cone.rays())
-        if len(rays) == len(vectors) and all(
-            any(ray == vector for ray in rays) for vector in vectors
+        if all(any(ray == vector for ray in rays) for vector in vectors) and all(
+            any(ray == vector for vector in vectors) for ray in rays
         ):
             return cone
     raise AssertionError("maximal cone not found")

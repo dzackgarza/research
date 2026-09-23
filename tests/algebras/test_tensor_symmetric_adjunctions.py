@@ -12,10 +12,12 @@ def _cyclic(order):
 
 
 def _torsion_sum(*orders):
-    r"""``⊕ ZZ/n_i`` as the cokernel of ``diag(n_i)`` on ``ZZ^k``."""
-    free = Modules(ZZ).free_module(len(orders))
-    basis = [free.module_generator(index) for index in range(len(orders))]
-    return free.Mor(free)({e: n * e for e, n in zip(basis, orders)}).cokernel()
+    r"""``⊕ ZZ/n_i`` as the cokernel of ``e_i -> n_i e_i`` on the free module on the indices ``i``."""
+    order_of = dict(enumerate(orders))
+    free = Modules(ZZ).free_module(tuple(order_of))
+    return free.Mor(free)(
+        {free.module_generator(i): n * free.module_generator(i) for i, n in order_of.items()}
+    ).cokernel()
 
 
 def _adjunction(flavor):

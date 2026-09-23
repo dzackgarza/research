@@ -33,9 +33,9 @@ def test_distinguished_open_flat_pullback_drops_disjoint_component_and_preserves
     away_from_y_axis = plane.distinguished_open(x)
 
     pulled = away_from_y_axis.flat_pullback_cycle(cycle)
-    coefficients = pulled.parent().framing_coefficients(pulled)
+    away_ring = away_from_y_axis.coordinate_algebra()
+    x_axis_away = away_from_y_axis.underlying_space()(away_ring.ideal(away_ring(y)))
 
     assert pulled.parent().cycle_scheme() is away_from_y_axis
     assert pulled.parent().cycle_dimension() == 1
-    assert len(coefficients) == 1
-    assert next(iter(coefficients.values())) == ZZ(2)
+    assert pulled.parent().framing_coefficients(pulled) == {x_axis_away: ZZ(2)}

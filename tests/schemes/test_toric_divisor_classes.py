@@ -198,22 +198,15 @@ def test_hirzebruch_zero_picard_pairing_is_the_hyperbolic_plane() -> None:
     projection = surface.torus_invariant_cartier_class_projection()
     classes = tuple(projection(divisor) for divisor in divisors)
 
-    isotropic_pair = None
-    for left in classes:
-        for right in classes:
-            if (
-                pairing(left, left) == 0
-                and pairing(right, right) == 0
-                and pairing(left, right) == 1
-            ):
-                isotropic_pair = (left, right)
-                break
-        if isotropic_pair is not None:
-            break
-
-    assert isotropic_pair is not None
-    left, right = isotropic_pair
-    assert pairing(right, left) == 1
+    # The two ruling classes f_1, f_2 satisfy f_i^2 = 0 and f_1 f_2 = f_2 f_1 = 1.
+    assert any(
+        pairing(left, left) == 0
+        and pairing(right, right) == 0
+        and pairing(left, right) == 1
+        and pairing(right, left) == 1
+        for left in classes
+        for right in classes
+    )
 
 
 def test_projective_plane_chow_groups_are_owned_integral_cycle_quotients() -> None:
@@ -402,8 +395,9 @@ def test_the_cox_ring_of_p1_times_p1_has_two_generators_in_each_ruling_degree() 
     ``(1,0), (1,0), (0,1), (0,1)`` in ``Cl = ZZ^2`` (CLS Example 5.2.2)."""
     surface = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
     cox = surface.cox_ring()
-    degrees = tuple(cox.generator_degree(label) for label in cox.algebra_generating_set())
+    labels = cox.algebra_generating_set()
+    degrees = tuple(cox.generator_degree(label) for label in labels)
 
     assert cox.grading_monoid() is surface.class_group()
-    assert len(degrees) == 4
+    assert labels.cardinality() == 4
     assert all(degrees.count(degree) == 2 for degree in degrees)
