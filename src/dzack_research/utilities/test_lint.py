@@ -141,6 +141,10 @@ def _bound_names(tree: ast.Module) -> set[str]:
                 bound.add(name)
             case ast.MatchAs(name=str() as name) | ast.MatchStar(name=str() as name):
                 bound.add(name)
+            case ast.Call(func=ast.Name(id="var"), args=[ast.Constant(value=str() as names), *_]):
+                # Sage's ``var`` binds the names it lists in the session's
+                # namespace; the dialect lowers ``f(t) = ...`` through it.
+                bound.update(names.replace(",", " ").split())
     return bound
 
 
