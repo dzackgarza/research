@@ -44,6 +44,7 @@ from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+from sage.rings.quotient_ring import QuotientRing_generic
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
 from sage.structure.element import CommutativeRingElement, RingElement
@@ -2250,27 +2251,16 @@ def OwnedPrincipalIdealDomains():
 
 def _engine_krull_dimension(ring):
     engine = _engine_ring(ring)
-    method = getattr(engine, "krull_dimension", None)
-    if callable(method):
-        try:
-            return _owned_engine_element(SageZZ, SageZZ(method()))
-        except NotImplementedError:
-            pass
-    defining_ideal = getattr(engine, "defining_ideal", None)
-    assert callable(defining_ideal), (
-        f"Krull dimension of {ring} requires a selected engine dimension or defining-ideal computation"
-    )
-    ideal = defining_ideal()
-    dimension = getattr(ideal, "dimension", None)
-    assert callable(dimension), (
-        f"Krull dimension of {ring} requires a dimension operation on its selected defining ideal"
-    )
-    try:
-        return _owned_engine_element(SageZZ, SageZZ(dimension()))
-    except NotImplementedError as error:
-        raise AssertionError(
-            f"Krull dimension of {ring} is unsupported by the selected defining-ideal engine"
-        ) from error
+    match engine:
+        case QuotientRing_generic():
+            dimension = engine.defining_ideal().dimension()
+        case _:
+            method = getattr(engine, "krull_dimension", None)
+            assert callable(method), (
+                f"Krull dimension of {ring} requires a selected engine dimension computation"
+            )
+            dimension = method()
+    return _owned_engine_element(SageZZ, SageZZ(dimension))
 
 
 def OwnedNoetherianRings():
@@ -3441,10 +3431,12 @@ def _integer_mod_local_prime(engine):
 
 def _engine_field_decision(engine):
     r"""Return the engine's exact field decision when represented."""
-    try:
-        return engine.is_field()
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        return engine in SageFields()
+    if engine in SageFields():
+        return True
+    method = getattr(engine, "is_field", None)
+    if method is None:
+        return False
+    return method()
 
 
 def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
@@ -3507,11 +3499,9 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
     field_decision = _engine_field_decision(engine)
     match field_decision:
         case True:
-            finite_prime = False
-            try:
-                finite_prime = bool(engine.is_finite()) and SageZZ(engine.cardinality()) == SageZZ(engine.characteristic())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
+            finite_prime = bool(engine.is_finite()) and SageZZ(
+                engine.cardinality()
+            ) == SageZZ(engine.characteristic())
             match engine is SageQQ or finite_prime:
                 case True:
                     extra.append(PrimeFields())
@@ -3531,10 +3521,12 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
         # orders in its PrincipalIdealDomains category, so retain this
         # theorem at the owned boundary where the class number is exact.
         extra.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
-    try:
-        noetherian = engine.is_noetherian()
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        noetherian = engine is SageZZ
+    noetherian_method = getattr(engine, "is_noetherian", None)
+    noetherian = (
+        engine is SageZZ
+        if noetherian_method is None
+        else noetherian_method()
+    )
     if noetherian is True or engine is SageZZ:
         extra.append(OwnedRings().Noetherian())
     match field_decision:
