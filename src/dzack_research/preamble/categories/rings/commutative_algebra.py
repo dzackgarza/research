@@ -2843,7 +2843,6 @@ def _finite_generated_localization(source, submonoid):
         submonoid=submonoid,
         _engine_ring=localization_engine,
         _engine_source_decoder=engine_source_decoder,
-        _engine_units_exact=localization_engine is not None,
         algebra_source=algebra_source,
     )
 

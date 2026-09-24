@@ -144,6 +144,23 @@ report, and pytest aborts with `INTERNALERROR ... Failed: Timeout`;
 Route chosen: a triage catalogue run resumes after the interrupted file; the
 gated default run treats any test at its time limit as a failed run anyway.
 
+### `Localization.is_unit` answers True for any nonzero element of a number-field order
+
+`Localization(O, S).is_unit` returns
+`_cut_off_extra_units_from_base_ring_element(numerator).is_unit()`, whose
+first test is `x.numerator().is_unit()` (`sage/rings/localization.py` 448,
+872). For an element of a number-field order, `numerator()` is an element of
+the field, where every nonzero element is a unit, so the localization reports
+every nonzero numerator a unit. Specimen, Sage alone (no preamble):
+`QuadraticField(-1, "a").maximal_order().localization((2,))(3).is_unit()` is
+`True`, although 3 is prime in `Z[i]` and `S = {2^k}`; `ZZ.localization((2,))(3)`
+answers `False` correctly. Sage 10.10.beta8, 2026-09-25.
+
+Route chosen: a localization decides units from the definition in the source
+ring -- `a/s` is a unit exactly when saturating `(a)` by the inverted elements
+gives the unit ideal (`LocalizationRings.ElementMethods.is_unit`) -- and never
+asks the engine localization.
+
 ### Sage's default conversion into a parent needs the source in Sage's categories
 
 `SR(x)` for an element of a parent whose category is not one of Sage's own

@@ -681,9 +681,6 @@ class LocalizationRings(OwnedCategory):
                     return self.numerator() != source.zero()
                 case _:
                     pass
-            if parent._localization_engine_units_exact:
-                engine = parent._selected_engine_ring()
-                return bool(engine(parent._engine_element(self)).is_unit())
             bottom, inverted_family = _one_step_inverted_family(
                 source, parent.inverted_elements()
             )
@@ -768,7 +765,6 @@ class LocalizationRings(OwnedCategory):
             submonoid,
             _engine_ring=None,
             _engine_source_decoder=None,
-            _engine_units_exact=False,
             *,
             algebra_source=None,
             fraction_field_realization=None,
@@ -777,7 +773,6 @@ class LocalizationRings(OwnedCategory):
             self._localization_source = source
             self._localization_submonoid = submonoid
             self._localization_engine_source_decoder = _engine_source_decoder
-            self._localization_engine_units_exact = bool(_engine_units_exact)
             self._localization_algebra_source = algebra_source
             self._fraction_field_realization = fraction_field_realization
             self._preamble_engine_ring = _engine_ring
@@ -2066,29 +2061,19 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
     class ParentMethods:
         def _fresh_free_module_on(self, labels, **options):
-            r"""Return the free module on ``labels`` over this ring's own scalars.
+            r"""Return the free ``R``-module on ``labels``, for this ring ``R``.
 
-            A ring is free of rank one over itself, so its sibling free modules
-            are free over it.  A ring the construction placed as a finite free
-            module over a smaller base -- a number field presented over the
-            rationals -- has that base for its scalars, and the question is
-            asked of the placement rather than of state a leaf restated.
+            A ring that is also a free module over a smaller base -- a number
+            field over the rationals, an order over the integers -- is still
+            the ring its modules are over here; the free modules over the
+            smaller base are asked of that base.
             """
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 _fresh_free_module_on,
             )
-            from dzack_research.preamble.categories.modules.pure.modules import (
-                FinitelyGeneratedFreeModules,
-            )
 
-            scalars = self.base()
-            over_a_smaller_base = (
-                scalars is not None
-                and scalars is not self
-                and self in FinitelyGeneratedFreeModules(scalars)
-            )
             return _fresh_free_module_on(
-                scalars if over_a_smaller_base else self,
+                self,
                 labels,
                 **options,
             )
