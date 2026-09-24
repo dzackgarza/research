@@ -6,7 +6,7 @@ integral, and infinite order (its eigenvalues $(3 \pm \sqrt 5)/2$ are not roots 
 has the solution $x = e_0 - e_1$.  The rotation $\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}$ has order $4$.
 $\begin{pmatrix} 1 & 2 \\ 2 & 4 \end{pmatrix}$ has rank $1$ and determinant $0$.  The Smith form of
 $\begin{pmatrix} 2 & 4 \\ 6 & 8 \end{pmatrix}$ is $\operatorname{diag}(2, 4)$: $d_1 = \gcd$ of the entries
-$= 2$ and $d_1 d_2 = \lvert\det\rvert = 8$ (Dummit-Foote 12.1, Theorem 4 and 12.2).  The ring
+$= 2$ and $d_1 d_2 = \lvert\det\rvert = 8$.   The ring
 $M_2(\mathbb Z)$ is not commutative and $M_1(\mathbb Z) = \mathbb Z$ is.  All values by hand.
 """
 

@@ -3,8 +3,8 @@ r"""The permutation module $\mathbb Z[C_2]$: invariants, coinvariants and charac
 $C_2 = \langle g \rangle$ acts on $\mathbb Z^2 = \mathbb Z a \oplus \mathbb Z b$ by swapping $a$ and
 $b$; this is the regular module $\mathbb Z[C_2]$.  Its invariants are $\mathbb Z(a + b)$, of rank one;
 its coinvariants are $\mathbb Z^2 / (a - b) \cong \mathbb Z$, free of rank one; its character is
-$\chi(1) = 2$, $\chi(g) = \operatorname{tr}\begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} = 0$ (Serre, *Linear
-Representations of Finite Groups*, 2.4; Brown, *Cohomology of Groups*, II.2).
+$\chi(1) = 2$, $\chi(g) = \operatorname{tr}\begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} = 0$.
+Values by hand from the definitions.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403

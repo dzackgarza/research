@@ -4,8 +4,7 @@ A linear map $f$ of free modules of equal rank is invertible over $R$ exactly wh
 $\det f \in R^\times$; the preimage of $w$ under an isomorphism is $f^{-1}(w)$.  A surjection of
 free modules $p$ splits: a section $s$ has $p s = \mathrm{id}$, and a split injection $i$ has a
 retraction $r$ with $r i = \mathrm{id}$.  A map $f: A \to X$ factors through a monomorphism
-$j: B \to X$, $f = j k$, exactly when $f(A) \subseteq j(B)$, and then $k$ is unique (Lang,
-*Algebra*, III.3 and XIII.4).  Every value is computed by hand.
+$j: B \to X$, $f = j k$, exactly when $f(A) \subseteq j(B)$, and then $k$ is unique.  Every value is computed by hand.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403

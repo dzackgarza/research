@@ -3,8 +3,7 @@ r"""The modules $\operatorname{Hom}_{\mathbb Z}(M, N)$ between cyclic and free a
 A homomorphism out of $\mathbb Z/m$ is determined by the image $n$ of $1$, subject to $mn = 0$, so
 $\operatorname{Hom}(\mathbb Z/m, \mathbb Z/k) \cong \mathbb Z/\gcd(m, k)$,
 $\operatorname{Hom}(\mathbb Z, N) \cong N$ and $\operatorname{Hom}(\mathbb Z/m, \mathbb Z) = 0$; for free
-modules $\operatorname{Hom}(R^a, R^b) \cong R^{ab}$ (Dummit-Foote, 10.5, exercises 10.5.10 and
-10.2.10).  Pre- and postcomposition make $\operatorname{Hom}$ a functor: precomposing with
+modules $\operatorname{Hom}(R^a, R^b) \cong R^{ab}$, by hand from the definitions.  Pre- and postcomposition make $\operatorname{Hom}$ a functor: precomposing with
 $3: \mathbb Z \to \mathbb Z$ sends $\varphi$ to $3\varphi$.
 """
 

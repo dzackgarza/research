@@ -7,7 +7,7 @@ $\operatorname{Tor}_1(\mathbb Z/m, \mathbb Z/n) = \mathbb Z/\gcd(m, n)$; $\opera
 \mathbb Z) = 0$.  Applying $\operatorname{Hom}(-, N)$ gives $N \xrightarrow{m} N$, so
 $\operatorname{Hom}(\mathbb Z/m, \mathbb Z/n) = \operatorname{Ext}^1(\mathbb Z/m, \mathbb Z/n) =
 \mathbb Z/\gcd(m, n)$, $\operatorname{Hom}(\mathbb Z/m, \mathbb Z) = 0$ and $\operatorname{Ext}^1(\mathbb
-Z/m, \mathbb Z) = \mathbb Z/m$ (Weibel, *An Introduction to Homological Algebra*, 3.1.3 and 3.3.2).
+Z/m, \mathbb Z) = \mathbb Z/m$, by hand from these complexes.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403

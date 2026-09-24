@@ -1,8 +1,7 @@
 r"""The free resolution of a free module, and lifts of module maps to resolutions.
 
 A free module $F$ is its own free resolution: $0 \to F \xrightarrow{\mathrm{id}} F \to 0$, of
-length $0$, with $F_1 = 0$.  By the comparison theorem (Weibel, *An Introduction to Homological
-Algebra*, 2.2.6) a map $f: M \to N$ lifts to a chain map $\tilde f: P_\bullet \to Q_\bullet$ of
+length $0$, with $F_1 = 0$.  By the comparison theorem a map $f: M \to N$ lifts to a chain map $\tilde f: P_\bullet \to Q_\bullet$ of
 projective resolutions with $\varepsilon_Q \tilde f_0 = f \varepsilon_P$, unique up to chain homotopy;
 for resolutions of length $0$ by the modules themselves, $\tilde f_0 = f$ and the homotopy between
 $\tilde f$ and itself vanishes.

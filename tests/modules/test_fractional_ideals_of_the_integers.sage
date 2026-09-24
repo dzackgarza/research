@@ -3,8 +3,8 @@ r"""Fractional ideals of $\mathbb Z$: membership, inverses, products, sums and i
 Every fractional ideal of $\mathbb Z$ is $q\mathbb Z$ for a unique positive rational $q$; they form a
 group under multiplication with $(q)^{-1} = (1/q)$ and $(q)(r) = (qr)$, and $(q) + (r) =
 (\gcd(q, r))$, $(q) \cap (r) = (\operatorname{lcm}(q, r))$, where for $q = a/b$ in lowest terms the
-gcd and lcm of rationals are taken prime by prime on the valuations (Neukirch, *Algebraic Number
-Theory*, I.3.8; by hand: $\gcd(1/2, 1/3) = 1/6$, $\operatorname{lcm}(1/2, 1/3) = 1$).
+gcd and lcm of rationals are taken prime by prime on the valuations (by hand:
+$\gcd(1/2, 1/3) = 1/6$, $\operatorname{lcm}(1/2, 1/3) = 1$).
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403

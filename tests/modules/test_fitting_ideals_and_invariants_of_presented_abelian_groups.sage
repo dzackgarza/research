@@ -2,7 +2,7 @@ r"""Fitting ideals, annihilators, exponents and ranks of presented abelian group
 
 For $M = \operatorname{coker}(A: \mathbb Z^r \to \mathbb Z^n)$ the $k$-th Fitting ideal is generated
 by the $(n - k)$-minors of $A$ (all of $\mathbb Z$ when $n - k \le 0$, and $0$ when $n - k$ exceeds
-the number of relations); it depends only on $M$ (Eisenbud, *Commutative Algebra*, 20.2).  For
+the number of relations); it depends only on $M$.  For
 $M = \mathbb Z^2 / (6u) \cong \mathbb Z/6 \oplus \mathbb Z$ with relation matrix $(6, 0)$:
 $\operatorname{Fitt}_0 = 0$, $\operatorname{Fitt}_1 = (6)$, $\operatorname{Fitt}_2 = \mathbb Z$; $M$ has
 rank $1$, is not torsion, has annihilator and exponent $0$, is countably infinite, and has

@@ -8,7 +8,7 @@ its cokernel has order $\lvert\det\rvert = 3$.  The Weyl group of $A_2$ contains
 $e_0 \leftrightarrow e_1$, and $e_0 \mapsto e_1$, $e_1 \mapsto e_1 - e_0$ is an isometry of order
 $6$ (the Coxeter element composed with $-1$); $e_0 \mapsto 2e_0$ is not an isometry.  Base
 change along $\mathbb Z \to \mathbb Q$ keeps the Gram matrix, and along $\mathbb Z \to \mathbb F_3$
-the determinant becomes $0$.  All values by hand (Conway-Sloane, *SPLAG*, ch. 4, for $A_2$).
+the determinant becomes $0$.  All values by hand.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403

@@ -4,8 +4,7 @@ In $\mathbb Z\text{-Mod}$ the product $\prod_i M_i$ is the Cartesian product of 
 sets with componentwise operations, so $\lvert \prod_i M_i \rvert = \prod_i \lvert M_i \rvert$; the
 empty product is the terminal module $0$.  A cone $(f_i: X \to M_i)$ factors uniquely through the
 product by $x \mapsto (f_i(x))_i$.  The equalizer of $f, g: M \to N$ is
-$\{m : f(m) = g(m)\}$ with its inclusion, and the coequalizer is $N / (f - g)(M)$
-(Mac Lane, *Categories for the Working Mathematician*, III.3-4; Weibel 1.6).  On $\mathbb Z/6$,
+$\{m : f(m) = g(m)\}$ with its inclusion, and the coequalizer is $N / (f - g)(M)$, by the definitions.  On $\mathbb Z/6$,
 multiplication by $5$ and the identity agree exactly on $\{x : 4x = 0\} = \{0, 3\}$, and
 $\mathbb Z/6 / 4\mathbb Z/6 = \mathbb Z/2$.
 """

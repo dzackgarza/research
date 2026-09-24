@@ -5,8 +5,8 @@ $\mathbb Z[G]$-resolution $\cdots \to \mathbb Z[G] \xrightarrow{N} \mathbb Z[G]
 \xrightarrow{t - 1} \mathbb Z[G] \to \mathbb Z$, with $N = \sum_{g} g$.  Applying
 $\operatorname{Hom}_{\mathbb Z[G]}(-, \mathbb Z)$ gives $\mathbb Z \xrightarrow{0} \mathbb Z
 \xrightarrow{n} \mathbb Z \xrightarrow{0} \mathbb Z \to \cdots$, so $H^0(C_n, \mathbb Z) = \mathbb Z$,
-$H^1(C_n, \mathbb Z) = 0$ and $H^2(C_n, \mathbb Z) = \mathbb Z/n$ (Brown, *Cohomology of Groups*,
-I.6 and III.1, example 1).  Here $n = 3$.
+$H^1(C_n, \mathbb Z) = 0$ and $H^2(C_n, \mathbb Z) = \mathbb Z/n$.  Values by hand from
+the definitions.  Here $n = 3$.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
