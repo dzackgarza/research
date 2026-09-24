@@ -2792,16 +2792,19 @@ def _fraction_field_localization(source, submonoid):
     assert engine is not source, (
         f"cannot construct the fraction field of {source}: it has no computer-algebra model"
     )
-    if source in QuotientRings():
-        # Sage's IntegralDomains.ParentMethods.fraction_field is precisely
-        # FractionField_generic(self).  A represented quotient carries the
-        # domain theorem in its owned construction, while its private Sage
-        # realization remains in Sage's quotient-ring category.  Use that
-        # maintained constructor directly instead of mutating the realization
-        # merely to make the category method appear.
-        fraction_engine = SageFractionField(engine)
-    else:
-        fraction_engine = engine.fraction_field()
+    match engine:
+        case QuotientRing_generic():
+            # Sage's IntegralDomains.ParentMethods.fraction_field is precisely
+            # FractionField_generic(self).  A represented quotient carries the
+            # domain theorem in its owned construction, while its private Sage
+            # realization remains in Sage's quotient-ring category.  Use that
+            # maintained constructor directly instead of mutating the
+            # realization merely to make the category method appear.  An owned
+            # quotient whose engine is not a generic quotient (ZZ/(0) is
+            # realized by ZZ itself) asks its engine, which knows its field.
+            fraction_engine = SageFractionField(engine)
+        case _:
+            fraction_engine = engine.fraction_field()
     field = _own_ring(fraction_engine)
     placements = [OwnedRings().Commutative().NoZeroDivisors(), OwnedRings().Division().Commutative()]
     if source in OwnedRings().Noetherian():
