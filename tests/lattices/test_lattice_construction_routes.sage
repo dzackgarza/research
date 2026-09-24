@@ -44,9 +44,10 @@ def test_the_named_basis_of_the_hyperbolic_plane() -> None:
 
 
 def test_a_cartan_type_given_as_a_list() -> None:
+    r"""\(A_3\) is negative definite here, so \(\det A_3 = (-1)^3 \cdot 4\), as \(|\det A_n| = n + 1\)."""
     lattice = Lattices(ZZ)(["A", 3])
 
-    assert lattice.determinant() == 4
+    assert lattice.determinant() == -4
     assert lattice.is_negative_definite()
 
 

@@ -10,7 +10,7 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -45,6 +45,12 @@ def _integral_covector(lattice, coordinates):
     integral covector on its ray.
     """
     return _owned_vector(lattice.dual_module(), _primitive_integral_coordinates(tuple(coordinates)))
+
+
+def _engine_rational_coordinates(coordinates):
+    r"""Lower session rational coordinates of a wall to the engine, for :func:`_integral_covector`."""
+    rationals = _own_ring(SageQQ)
+    return tuple(_engine_element(rationals, coordinate) for coordinate in coordinates)
 
 
 def _ambient_vector(lattice, ambient, vector):

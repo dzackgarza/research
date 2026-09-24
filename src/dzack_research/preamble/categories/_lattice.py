@@ -1418,8 +1418,13 @@ def _finite_crystallographic_cartan_type(data):
     r"""Return the finite crystallographic Cartan type named by ``data``.
 
     ``data`` is a Cartan type, its name, or its list form; Sage's
-    ``CartanType`` reads all three.
+    ``CartanType`` reads all three, once the session's integers in a list form
+    are lowered to the engine.
     """
+    integers = _own_ring(SageZZ)
+    match data:
+        case list() | tuple():
+            data = [int(entry) if entry in integers else entry for entry in data]
     cartan_type = CartanType(data)
     assert cartan_type.is_finite() and cartan_type.is_crystallographic(), (
         f"{cartan_type} is not a finite crystallographic Cartan type"
@@ -1639,7 +1644,7 @@ def _lattice(
                 module_generators,
                 category,
             )
-        case Integer() | int() if int(data) >= 0:
+        case _ if data in _own_ring(SageZZ) and int(data) >= 0:
             return _identity_lattice(
                 ring.free_module(int(data)),
                 ring,

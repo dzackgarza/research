@@ -2513,12 +2513,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             integral covector on its ray, which cuts out the same half-space.
             """
             from dzack_research.preamble.categories.polyhedral_cones import (
+                _engine_rational_coordinates,
                 _integral_covector,
             )
 
+            def covector(wall):
+                return _integral_covector(self, _engine_rational_coordinates(wall))
+
             return self.rational_polyhedral_cone(
-                tuple(_integral_covector(self, wall) for wall in inequalities),
-                equation_covectors=tuple(_integral_covector(self, wall) for wall in equations),
+                tuple(covector(wall) for wall in inequalities),
+                equation_covectors=tuple(covector(wall) for wall in equations),
             )
 
         def reduction_complex_exploration(
