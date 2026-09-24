@@ -634,10 +634,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             orbit-cone correspondence restricted to codimension one: ``D_rho``
             is the closure of the orbit of ``rho``.
             """
-            module = _integers()._fresh_free_module_on(
-                finite_ordered_set(tuple(self.fan().cones(1))),
-            )
-            return WeilDivisorGroups()(module)
+            return WeilDivisorGroups()(self, finite_ordered_set(tuple(self.fan().cones(1))))
 
         weil_divisor_group = torus_invariant_divisor_group
 
