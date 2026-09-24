@@ -259,6 +259,8 @@ sage-init-check: sage-init-install
 
 # Rebuild the Sage-owned research environment.
 sage-rebuild:
+    #!/usr/bin/env bash
+    set -euo pipefail
     sage_root="${SAGE_DEV_ROOT:-/home/dzack/gitclones/sage-dev-allopts}"
     just --justfile "${sage_root}/justfile" research-environment-sync
 

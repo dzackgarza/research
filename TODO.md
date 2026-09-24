@@ -215,12 +215,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Source convergence and terminal proof
 
-- [ ] **`research-sage-runtime`**. **Needs:** none.
-  **Owner and delta:** the tracked `.envrc` and intended stable research-Sage installation, verified through the existing just recipes once source remediation closes.
-  **Invariants:** establish the currently selected executable, interpreter, version and declared dependencies before diagnosing an environment failure. The old failed source-checkout launcher is not evidence that the current `.venv/bin/sage` fails. Repair a reproduced defect at the intended installation; no temporary Sage distribution or filesystem dependency replacement.
-  **Closure evidence:** the tracked environment launches the intended Sage, preparses the repository's `.sage` inputs by the normal route and reaches the fresh star import. If it already does so, no environment edit is required. Keep mathematical failures distinct from launcher/provisioning failures.
-
-- [ ] **`terminal-session`**. **Needs:** `research-sage-runtime`.
+- [ ] **`terminal-session`**. **Needs:** none.
   **Owner and delta:** execute the integrated mathematical proof burden on the final owned session and research notebook; `DEV-58` governs this transition.
   **Invariants:** a fresh process imports `from dzack_research.preamble.all import *` and exposes Cat and Lattices. This is a prerequisite, not mathematical acceptance. Regenerate `docs/preamble-megadoc.md` and the graph through `just preamble-megadoc`; inspect their agreement with live categories, operations, domains and codomains. Preamble warnings and order-dependent imports require repair.
   **Closure evidence:** execute all required banked construction specimens and the protected expectation/user-simulation obligations through the prescribed project recipes, classify actual failures at their owners and repair them without weakening expectations. Cover direct, convenience, functor, catalogue and engine-raised routes; free/nonfree, finite/infinite and changed-base regimes where claimed. A previous run certifies only the source it exercised.
