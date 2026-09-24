@@ -159,12 +159,10 @@ class OrderEmbedding(Morphism):
         for basis_element in self.domain().integral_basis():
             source_owned = source_field(basis_element)
             image = field_embedding(source_owned)
-            try:
-                self.codomain()(image)
-            except (TypeError, ValueError) as error:
+            if image not in self.codomain():
                 raise ValueError(
                     "the field embedding does not carry the source order into the target order"
-                ) from error
+                )
         self._field_embedding = field_embedding
 
     def field_embedding(self) -> NumberFieldEmbedding:
