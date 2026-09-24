@@ -176,10 +176,7 @@ class RingMorphism(Morphism):
         r"""Ask only the selected private engine realization about identity."""
         if self._engine_morphism is None:
             return False
-        try:
-            return bool(self._engine_morphism.is_identity())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return False
+        return bool(self._engine_morphism.is_identity())
 
     def _richcmp_(self, other, op):
         r"""Decide equality from represented universal/construction data.
@@ -1171,27 +1168,24 @@ class LocalizationRings(OwnedCategory):
                     fraction.denominator()
                 ).inverse_of_unit()
 
+            engine_source = _engine_ring(source)
+            engine_target = _engine_ring(morphism.codomain())
+            engine_localization = self._selected_engine_ring()
+            source_generators = tuple(engine_source.gens())
+            localization_generators = tuple(engine_localization.gens())
             engine_morphism = None
-            try:
-                engine_source = _engine_ring(source)
-                engine_target = _engine_ring(morphism.codomain())
-                engine_localization = self._selected_engine_ring()
-                source_generators = tuple(engine_source.gens())
-                localization_generators = tuple(engine_localization.gens())
-                if len(source_generators) == len(localization_generators):
-                    engine_images = [
-                        _engine_element(
-                            morphism.codomain(),
-                            morphism(_owned_engine_element(source, generator)),
-                        )
-                        for generator in source_generators
-                    ]
-                    engine_morphism = engine_localization.mor(
-                        engine_images,
-                        engine_target,
+            if len(source_generators) == len(localization_generators):
+                engine_images = [
+                    _engine_element(
+                        morphism.codomain(),
+                        morphism(_owned_engine_element(source, generator)),
                     )
-            except (AttributeError, NotImplementedError, TypeError, ValueError, RuntimeError):
-                pass
+                    for generator in source_generators
+                ]
+                engine_morphism = engine_localization.mor(
+                    engine_images,
+                    engine_target,
+                )
 
             return self.Mor(morphism.codomain())._elementwise_with_engine(
                 image,
@@ -2667,7 +2661,7 @@ def _owned_ring_element_text(element) -> str:
         return str(numerator) if denominator == 1 else f"{numerator}/{denominator}"
     if isinstance(engine, (PolynomialRing_generic, MPolynomialRing_base)):
         return _owned_polynomial_text(parent, value)
-    kind = parent.__dict__.get("_preamble_ring_display_kind")
+    kind = parent._preamble_ring_display_kind
     if kind == "modular":
         return f"[{int(value.lift())}]"
     if kind == "real":
@@ -3189,6 +3183,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         """
         canonical_native = base is None and category is None
         self._engine = engine
+        self._preamble_ring_display = None
+        self._preamble_ring_display_kind = None
         integer_bootstrap = canonical_native and engine is SageZZ
         # ``OwnedOrders`` is declared using ``Algebras(ZZ)``.  The canonical
         # integer object therefore has to be the parameter of that category
@@ -3363,7 +3359,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         )
 
     def _repr_(self):
-        display = self.__dict__.get("_preamble_ring_display")
+        display = self._preamble_ring_display
         if display is not None:
             return display
         if self._engine is SageZZ:
@@ -3374,26 +3370,19 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             variables = ", ".join(self.variable_names())
             return f"Polynomial ring {self.base_ring()}[{variables}]"
         if self._preamble_is_number_field():
-            try:
-                return f"Number field over {self.base_ring()} with defining polynomial {self.defining_polynomial()}"
-            except (AttributeError, TypeError, ValueError):
-                return f"Number field over {self.base_ring()}"
+            return (
+                f"Number field over {self.base_ring()} with defining polynomial "
+                f"{self.defining_polynomial()}"
+            )
         if self._preamble_is_number_field_order():
-            try:
-                rank = self.module_rank()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                rank = None
+            rank = self.module_rank()
             names = tuple(self.variable_names())
             generator_text = f" generated by {', '.join(names)}" if names else ""
-            rank_text = f" of rank {rank}" if rank is not None else ""
-            return f"Order{rank_text} over Integer Ring{generator_text}"
-        try:
+            return f"Order of rank {rank} over Integer Ring{generator_text}"
+        if self in FiniteSets():
             size = self.cardinality()
-            if size.is_finite():
-                kind = "Field" if self in OwnedRings().Division().Commutative() else "Ring"
-                return f"Finite {kind.lower()} with {size} elements"
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+            kind = "Field" if self in OwnedRings().Division().Commutative() else "Ring"
+            return f"Finite {kind.lower()} with {size} elements"
         base = self.base_ring()
         return f"Ring over {base}" if base is not self else f"Ring in {self.category()}"
 
