@@ -76,7 +76,9 @@ This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_
 We recall Sterk's cusp diagram for $\fent$:
 
 ::: {#fig-sterk-cusp-diagram .figure}
-\input{tikz/dissertation/cusp_diagrams/FEn2-cusp-diagram.tikz}
+\begin{tikzpicture}
+\pic {object=bb-cusps/fen2};
+\end{tikzpicture}
 
 Sterk's cusp diagram for $\fent$.
 :::
@@ -99,7 +101,9 @@ We have the following divisibilities in various lattices:
 We recall the cusp diagram for $F_{(2,2,0)}$:
 
 ::: {#fig-220-cusp-diagram .figure}
-\input{tikz/fig_Cusp_Diagram_220.tex}
+\begin{tikzpicture}
+\pic {object=bb-cusps/f220};
+\end{tikzpicture}
 
 Cusp diagram for $F_{(2,2,0)}$.
 :::

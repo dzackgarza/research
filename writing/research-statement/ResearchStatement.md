@@ -134,13 +134,17 @@ Toward this end, I have been working on adapting the techniques of [@Ste91] and 
 Ultimately, this chain of correspondences will allow me to leverage [@AEGS25], [@AT17], and [@AE22] to construct integral affine structures and dlt models of KSBA-stable Coble surfaces in terms of those for K3 and Enriques surfaces. From these data, in an in-progress paper which will comprise the majority of my dissertation, I am working on constructing the KSBA stable limits of Coble surfaces as special cases of limits of Enriques surfaces satisfying a certain linear relation, yielding a geometrically meaningful, explicit, combinatorial description of the KSBA stable pair compactification \( \overline{F_{\Co}} \) and its boundary \( \partial \overline{F_{\Co}} \).
 
 ::: {#fig:220-cusps-diagram .figure}
-\input{tikz/fig_Cusp_Diagram_220.tex}
+\begin{tikzpicture}
+\pic {object=bb-cusps/f220};
+\end{tikzpicture}
 
 The boundary cusp diagram of $F_{(2,2,0)}$, the moduli space of quartic hyperelliptic K3 surfaces.
 :::
 
 ::: {#fig:sterk-cusp-diagram .figure}
-\input{tikz/dissertation/cusp_diagrams/FEn2-cusp-diagram.tikz}
+\begin{tikzpicture}
+\pic {object=bb-cusps/fen2};
+\end{tikzpicture}
  
 The boundary cusp diagram of $F_{\operatorname{En}, 2}$, the moduli space of degree 2 numerically polarized Enriques surfaces.
 :::

@@ -69,7 +69,7 @@ We assemble this data into the following **cusp diagram**:
 :::{#fig:f2-cusp-diagram .figure}
 
 \begin{tikzpicture}
-\pic[cusp labels=eta] {bb f2};
+\pic[cusp labels=eta] {object=bb-cusps/f2};
 \end{tikzpicture}
 The cusp diagram of $F_2$, the moduli space of degree 2 polarized K3 surfaces, which contains one 0-cusp $\eta$ adjacent to four 1-cusps.
 
@@ -179,7 +179,7 @@ Its Baily–Borel boundary contains a unique 0-cusp and two 1-cusps. The latter 
 :::{#fig:fell-cusp-diagram .figure}
 
 \begin{tikzpicture}
-\pic[cusp labels=eta] {bb fell};
+\pic[cusp labels=eta] {object=bb-cusps/fell};
 \end{tikzpicture}
 The cusp diagram of $\fell$, the moduli space of elliptic K3 surfaces, which contains one 0-cusp $\eta$ adjacent to two 1-cusps.
 
@@ -200,11 +200,11 @@ Explicit representatives can be given as follows. The 0-cusps correspond to the 
 :::{#fig:fen-unpolarized-cusp-diagram .figure}
 
 \begin{tikzpicture}
-\pic[cusp labels=none] (E) {bb fen};
+\pic[cusp labels=none] (E) {object=bb-cusps/fen};
 % The isotropic vectors spanning each cusp.
 \foreach \c/\v in {E10/{\eta_1 = e}, E8/{I_{1,2} = \gens{e, e'}}, UE8/{\eta_2 = e'},
     D8/{I_2 = \gens{e', 2e + 2f + \alpha_1 + \alpha_2}}}
-  {\node[below=2mm] at (E\c.south) {$\v$};}
+  {\node[below=2mm] at (E-\c.south) {$\v$};}
 \end{tikzpicture}
 The cusp diagram of $\fen$, the moduli space of unpolarized Enriques surfaces.
 
@@ -290,7 +290,7 @@ A concise summary of the mirror move algorithm applied to $\EnriquesInvariants_1
 :::{#fig:fen-cusp-diagram-summary .figure}
 
 \begin{tikzpicture}
-\pic[cusp labels=eta] {bb fen};
+\pic[cusp labels=eta] {object=bb-cusps/fen};
 \end{tikzpicture}
 The cusp diagram of $\fen$, indicating two 0-cusps $\eta_{1}, \eta_2$ and two 1-cusps $I_{1,2}, I_2$. We note that this recovers the known cusp diagram shown in @sec:fen-unpolarized-cusps.
 

@@ -241,16 +241,16 @@ Thus there is a chain of maps $\halfpd{\ten}\to \fent\to \fen$, and we can consi
 % F_En (top), F_{En,2} (middle), F_{(2,2,0)} (bottom). The 0-cusp eta_1 of
 % F_{En,2}, its 1-cusps, and their images in F_En are highlighted; the dashed
 % arrows are cusp maps.
-\pic (E) at (0.5,6.5) {bb fen};
-\pic (S) at (0,0) {bb fen2};
-\pic (K) at (0.6,-8) {bb f220};
+\pic (E) at (0.5,6.5) {object=bb-cusps/fen};
+\pic (S) at (0,0) {object=bb-cusps/fen2};
+\pic (K) at (0.6,-8) {object=bb-cusps/f220};
 \begin{scope}[on background layer]
-  \foreach \c in {12, 13, 14, 15} {\draw[cusp image] (S1.center) -- (S\c.center);}
-  \draw[cusp image] (EE10.center) -- (EE8.center);
+  \foreach \c in {12, 13, 14, 15} {\draw[cusp image] (S-1.center) -- (S-\c.center);}
+  \draw[cusp image] (E-E10.center) -- (E-E8.center);
 \end{scope}
-\draw[cusp map] (S1) -- (EE10);
-\draw[cusp map] (S2) -- ([yshift=6mm]KUE8E8.north);
-\draw[cusp map] (S5) -- ([yshift=6mm]KU2E8E8.north);
+\draw[cusp map] (S-1) -- (E-E10);
+\draw[cusp map] (S-2) -- ([yshift=6mm]K-UE8E8.north);
+\draw[cusp map] (S-5) -- ([yshift=6mm]K-U2E8E8.north);
 \node[anchor=east] at (-1.3,6.5) {$F_{\En}$};
 \node[anchor=east] at (-1.3,0) {$F_{\En, 2}$};
 \node[anchor=east] at (-1.3,-8) {$F_{(2,2,0)}$};
