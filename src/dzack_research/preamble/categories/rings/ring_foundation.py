@@ -474,7 +474,7 @@ def _ring_morphism_with_engine(domain, codomain, function, engine_morphism):
     supplied owned element function. The raw map is retained by the ring-Mor
     owner and is never mathematical output.
     """
-    return domain.Mor(codomain)._elementwise_with_engine(function, engine_morphism)
+    return domain.Mor(codomain, category=OwnedRings())._elementwise_with_engine(function, engine_morphism)
 
 
 def _ring_morphisms_equal(left, right):
@@ -1299,7 +1299,7 @@ class LocalizationRings(OwnedCategory):
                     engine_target,
                 )
 
-            return self.Mor(morphism.codomain())._elementwise_with_engine(
+            return self.Mor(morphism.codomain(), category=OwnedRings())._elementwise_with_engine(
                 image,
                 engine_morphism,
             )

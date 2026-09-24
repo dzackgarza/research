@@ -311,3 +311,11 @@ Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen:
 whether such a quotient is a field is left undecided (`Unknown`), so it is not
 placed in fields. Over `Zmod(n)` the question reduces to `ZZ`, because
 `(Z/n)[x]/I = Z[x]/(n, I)`.
+
+### `Qp(p).quotient(I)` invents an invalid generator name
+
+`Qp(3, 20).quotient(Qp(3, 20).ideal(3))` raises `ValueError: variable name
+'3bar' does not start with a letter`: Sage names the quotient's generator
+after the field's generator, which is `3`. With `names=('u',)` it returns the
+zero ring. Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route
+chosen: a field engine's quotient is built with an explicit private name.

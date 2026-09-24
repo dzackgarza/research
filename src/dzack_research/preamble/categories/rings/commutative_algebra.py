@@ -842,7 +842,13 @@ class QuotientRings(OwnedCategory):
         def an_element(self):
             return self.one()
 
+        def _is_zero_ring(self) -> bool:
+            r"""Whether this is ``R/R``, the zero ring."""
+            return bool(_engine_ideal(self.quotient_source(), self.defining_ideal()).is_one())
+
         def is_finite(self):
+            if self._is_zero_ring():
+                return True
             if self._preamble_engine_ring is not None:
                 return bool(self._preamble_engine_ring.is_finite())
             source_engine = _engine_ring(self.quotient_source())
@@ -855,6 +861,10 @@ class QuotientRings(OwnedCategory):
             return Unknown
 
         def cardinality(self):
+            # Sage's generic quotient of a field by its unit ideal has no
+            # cardinality method; R/R has exactly one element.
+            if self._is_zero_ring():
+                return cardinal(1)
             if self._preamble_engine_ring is not None:
                 return cardinal(self._preamble_engine_ring.cardinality())
             source_engine = _engine_ring(self.quotient_source())
@@ -2423,14 +2433,22 @@ def _quotient_ring(source, defining_ideal):
     else:
         engine = _engine_ring(source)
         defining = _engine_ideal(source, defining_ideal)
-        if isinstance(engine, QuotientRing_generic):
-            lifted = _engine_quotient_cover_ideal(source, defining)
-            quotient_engine = lifted.ring().quotient(lifted)
-        else:
-            quotient_engine = engine.quotient(defining)
+        match engine:
+            case QuotientRing_generic():
+                lifted = _engine_quotient_cover_ideal(source, defining)
+                quotient_engine = lifted.ring().quotient(lifted)
+            case _ if engine in SageFields():
+                # Sage names a field's quotient generator after the field's
+                # generator, which for Qp(3) is the invalid "3bar"
+                # (TRAPS.md); the quotient of a field is the field or zero,
+                # so the private name is never read.
+                quotient_engine = engine.quotient(defining, names=("quotient_generator",))
+            case _:
+                quotient_engine = engine.quotient(defining)
 
     dimension = None
-    if quotient_engine is not None and source in OwnedRings().Noetherian():
+    # R/R is the zero ring, whose empty spectrum has no Krull dimension.
+    if quotient_engine is not None and source in OwnedRings().Noetherian() and not defining.is_one():
         dimension = _krull_dimension_of_engine(quotient_engine)
 
     quotient_is_field = False
