@@ -1050,9 +1050,57 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
     parameterized categories may share an implementation type.  Defining
     data are passed to the resulting object, never stored on this type.
     """
-    assert issubclass(implementation, owner), (
-        "an object engine realizes a declared owner in the selected category"
-    )
+    if not issubclass(implementation, owner):
+        # An owned join linearizes the declared method providers directly, so
+        # its implementation type need not (and in the interesting C3 cases
+        # cannot) subclass the already-composed dynamic class of each branch.
+        # The owner's providers are nevertheless present among the join's
+        # direct bases.  Insert the private engine immediately before the first
+        # such base, preserving the same semantic precedence as the ordinary
+        # subclass path below: stronger providers first, engine computation,
+        # then the owner's defaults and the weaker structure underneath it.
+        owner_mro = frozenset(owner.__mro__)
+        anchors = tuple(
+            index
+            for index, base in enumerate(implementation.__bases__)
+            if base in owner_mro
+        )
+        assert anchors, (
+            "an object engine realizes a declared owner in the selected category"
+        )
+        anchor = anchors[0]
+        bases = (
+            implementation.__bases__[:anchor]
+            + (engine,)
+            + implementation.__bases__[anchor:]
+        )
+        reduction = (_implementation_with_engine, (implementation, owner, engine))
+        if not any(isinstance(base, ABCMeta) for base in bases):
+            return dynamic_class(
+                f"{implementation.__name__}[{engine.__name__}]",
+                bases,
+                implementation,
+                reduction=reduction,
+                doccls=engine,
+                prepend_cls_bases=False,
+                cache=False,
+            )
+        methods = dict(implementation.__dict__)
+        for key in ("__dict__", "__weakref__", "__slots__"):
+            methods.pop(key, None)
+        methods.update(
+            _reduction=reduction,
+            _doccls=(engine,),
+            __doc__=engine.__doc__,
+            __module__=engine.__module__,
+        )
+        result = _abc_metaclass_for(bases)(
+            f"{implementation.__name__}[{engine.__name__}]",
+            bases,
+            methods,
+        )
+        _abc_init(result)
+        return result
     match implementation is owner:
         case True:
             bases = (engine, owner)
