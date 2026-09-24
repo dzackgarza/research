@@ -77,6 +77,7 @@ log_file_level = "DEBUG"
 
 [dependency-groups]
 dev = [
+    "coverage>=7.10",
     "hypothesis>=6.167.1",
     "ipython>=9.16.1",
     "pyrefly==1.2.0",
