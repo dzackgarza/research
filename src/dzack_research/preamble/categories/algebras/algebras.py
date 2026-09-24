@@ -2901,6 +2901,10 @@ class _ScalarAlgebraEngine:
     def _from_engine_element(self, value):
         return self(_owned_engine_element(self._native_ring, value))
 
+    def _selected_engine_ring(self):
+        r"""Return the native ring realization selected for this algebra view."""
+        return self._preamble_engine_ring
+
     def _engine_element(self, value):
         module_element = self.unformed_module()(self(value))
         return _engine_element(self._native_ring, module_element.underlying_element())

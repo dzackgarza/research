@@ -812,7 +812,7 @@ class LocalizationRings(OwnedCategory):
             source = element_parent(value)
             if source is not self and source in Modules(self.base_ring()) and source.unformed_module() is self:
                 return source._element_of_unformed_module(value)
-            if isinstance(value, self.category().ElementType) and value.parent() is self:
+            if source is self:
                 return value
             if isinstance(value, tuple) and len(value) == 2:
                 return self.fraction(value[0], value[1])
@@ -822,7 +822,7 @@ class LocalizationRings(OwnedCategory):
             return self._element_constructor_(value)
 
         def __contains__(self, value) -> bool:
-            if isinstance(value, self.category().ElementType) and value.parent() is self:
+            if element_parent(value) is self:
                 return True
             source = self.localization_source()
             if isinstance(value, tuple) and len(value) == 2:
@@ -1368,8 +1368,7 @@ class _PredicateSubringParent(Parent):
 
     def _from_engine_element(self, element):
         r"""Cross a computation in the larger ring back into this subring."""
-        converter = getattr(self._ambient_ring, "_from_engine_element", None)
-        candidate = converter(element) if converter is not None else self._ambient_ring(element)
+        candidate = _owned_engine_element(self._ambient_ring, element)
         if (candidate == self._ambient_ring.zero()) is True:
             return self._zero
         if (candidate == self._ambient_ring.one()) is True:
@@ -1379,13 +1378,14 @@ class _PredicateSubringParent(Parent):
     def _element_in_larger_ring(self, element):
         r"""Raise this subring's stored computation in its exact larger ring."""
         native = self._engine_element(element)
-        larger = self._ambient_ring
-        if _engine_ring(larger) is larger:
-            return larger(native)
-        return _owned_engine_element(larger, native)
+        return _owned_engine_element(self._ambient_ring, native)
 
     def _engine_element(self, element):
         return self(element)._backend()
+
+    def _selected_engine_ring(self):
+        r"""Return the ambient ring's selected computation realization."""
+        return _engine_ring(self._ambient_ring)
 
     def __contains__(self, element):
         return PredicateSubrings.ParentMethods.__contains__(self, element)
@@ -1981,6 +1981,27 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
     class ParentMethods:
+        def _selected_engine_ring(self):
+            r"""Return the private computation parent selected for this ring.
+
+            Protected ring-realization contract under OWN-05--07.  The only
+            permitted callers are the ring owner's lowering/raising dispatchers
+            and ring-local computation adapters after a mathematical operation
+            has already been selected.  A ring with no separate foreign
+            realization computes in its owned parent itself; engine-backed
+            constructions override this method at their construction owner.
+            Raw computation parents never leave those adapters.
+            """
+            return self
+
+        def _engine_element(self, element):
+            r"""Lower an owned element for a self-realized ring adapter."""
+            return self(element)
+
+        def _from_engine_element(self, element):
+            r"""Raise a self-realized computation value into this ring."""
+            return self(element)
+
         def _fresh_free_module_on(self, labels, **options):
             r"""Return the free module on ``labels`` over this ring's own scalars.
 
@@ -3247,6 +3268,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         value = self(value)
         return value._backend()
 
+    def _selected_engine_ring(self):
+        r"""Return this native ring's selected private Sage realization."""
+        return self._engine
+
     def __call__(self, value):
         r"""Construct an owned ring element without Sage coercion discovery."""
         return self._element_constructor_(value)
@@ -3746,22 +3771,13 @@ def _owned_ring(ring):
 
 
 def _engine_ring(ring):
-    r"""Return the Sage computation parent behind an owned ring."""
-    represented = getattr(ring, "_preamble_engine_ring", None)
-    if represented is not None:
-        ring = represented
-    # An owned view can stand over another owned view: an algebra view over a
-    # ring view, say.  One unwrap would then still hand back an owned parent,
-    # which is not an engine object at all, so the descent continues to the
-    # Sage parent underneath.
-    while True:
-        if isinstance(ring, _OwnedRingParent):
-            ring = ring._engine
-            continue
-        if isinstance(ring, _PredicateSubringParent):
-            ring = ring._ambient_ring
-            continue
-        return ring
+    r"""Return the selected private computation parent behind an owned ring.
+
+    This is the designated dispatcher for the protected ring-realization
+    contract declared on :class:`OwnedRings.ParentMethods`.  It performs no
+    representation probing: each construction owner states its realization.
+    """
+    return _own_ring(ring)._selected_engine_ring()
 
 
 def _engine_quotient_cover_ideal(ring, engine_ideal):
@@ -3789,20 +3805,7 @@ def _engine_element(ring, element):
     future Julia/OSCAR-backed rings can therefore keep one public mathematical
     parent while changing computational realizations independently.
     """
-    owned = _own_ring(ring)
-    if isinstance(owned, _PredicateSubringParent):
-        return owned._engine_element(element)
-    if getattr(element, "parent", lambda: None)() is owned:
-        backend = getattr(element, "_backend", None)
-        if callable(backend):
-            return backend()
-    converter = getattr(owned, "_engine_element", None)
-    if converter is not None:
-        return converter(element)
-    engine = _engine_ring(owned)
-    if engine is owned:
-        return owned(element)
-    return engine(element)
+    return _own_ring(ring)._engine_element(element)
 
 
 def _owned_engine_element(ring, engine_element):
@@ -3816,16 +3819,7 @@ def _owned_engine_element(ring, engine_element):
     :func:`_engine_element`, so every ring realization has one lowering and
     one raising dispatcher.
     """
-    owned = _own_ring(ring)
-    if getattr(engine_element, "parent", lambda: None)() is owned:
-        return owned(engine_element)
-    converter = getattr(owned, "_from_engine_element", None)
-    if callable(converter):
-        return converter(engine_element)
-    engine = _engine_ring(owned)
-    if engine is owned:
-        return owned(engine_element)
-    return owned(engine(engine_element))
+    return _own_ring(ring)._from_engine_element(engine_element)
 
 
 def _engine_numeral(ring, value):
@@ -3839,10 +3833,10 @@ def _engine_numeral(ring, value):
 
     owned = _own_ring(ring)
     engine = _engine_ring(owned)
-    parent = getattr(value, "parent", lambda: None)()
+    parent = element_parent(value)
     if parent in OwnedRings():
         value = _engine_element(parent, value)
-    elif parent is not None and parent not in SageRings():
+    elif parent not in SageRings() and isinstance(value, SageObject):
         raise TypeError("an engine numeral must come from a ring")
     return engine(value)
 

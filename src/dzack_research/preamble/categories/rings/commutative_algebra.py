@@ -750,36 +750,32 @@ class QuotientRings(OwnedCategory):
             source = element_parent(value)
             if source is not self and source in Modules(self.base_ring()) and source.unformed_module() is self:
                 return source._element_of_unformed_module(value)
-            if isinstance(value, self.category().ElementType) and value.parent() is self:
+            if source is self:
                 return value
-            source = self.quotient_source()
-            source_engine = _engine_ring(source)
-            value_parent = getattr(value, "parent", lambda: None)()
+            quotient_source = self.quotient_source()
+            source_engine = _engine_ring(quotient_source)
+            value_parent = source
             quotient_engine = self._preamble_engine_ring
             if quotient_engine is not None and value_parent is quotient_engine:
                 backend_value = quotient_engine(value)
-                lift = getattr(backend_value, "lift", None)
-                if lift is None:
-                    raise TypeError(
-                        "the selected quotient-engine element has no lift to the source ring"
-                    )
-                value = _owned_engine_element(source, source_engine(lift()))
+                value = _owned_engine_element(
+                    quotient_source,
+                    source_engine(backend_value.lift()),
+                )
             elif value_parent in OwnedRings():
                 value_engine = _engine_ring(value_parent)
-                if value_parent is source or value_engine is source_engine:
-                    value = _owned_engine_element(source,
+                if value_parent is quotient_source or value_engine is source_engine:
+                    value = _owned_engine_element(quotient_source,
                         source_engine(_engine_element(value_parent, value))
                     )
                 elif quotient_engine is not None and value_engine is quotient_engine:
                     backend_value = quotient_engine(_engine_element(value_parent, value))
-                    lift = getattr(backend_value, "lift", None)
-                    if lift is None:
-                        raise TypeError(
-                            "the equivalent owned quotient element has no lift to the source ring"
-                        )
-                    value = _owned_engine_element(source, source_engine(lift()))
+                    value = _owned_engine_element(
+                        quotient_source,
+                        source_engine(backend_value.lift()),
+                    )
             elif value_parent is source_engine:
-                value = _owned_engine_element(source, source_engine(value))
+                value = _owned_engine_element(quotient_source, source_engine(value))
             return self.element_class(self, value)
 
         def __call__(self, value):
@@ -792,6 +788,14 @@ class QuotientRings(OwnedCategory):
                 "crossing from a quotient engine requires this quotient to carry that selected realization"
             )
             return self._element_constructor_(engine(value))
+
+        def _selected_engine_ring(self):
+            r"""Return this quotient's selected private computation realization."""
+            engine = self._preamble_engine_ring
+            assert engine is not None, (
+                "this quotient operation requires a selected computation realization"
+            )
+            return engine
 
         def _engine_element(self, value):
             engine = self._preamble_engine_ring
