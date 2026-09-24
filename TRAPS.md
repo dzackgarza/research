@@ -266,3 +266,15 @@ over Sage's own `ZZ.localization(2)` answers. Route chosen: a univariate
 polynomial algebra over a localized base keeps that engine; flattening is
 used only in several variables, where no engine answers and the gap is
 still open.
+
+### `x in RealBallField(p)` is not "the field can enclose x"
+
+`pi^2 in RealBallField(64)` and `sqrt(2) in RealBallField(64)` are both
+`False`, while `RealBallField(64)(pi^2)` returns `[9.8696... +/- 3.20e-18]`.
+Conversion succeeds for every closed real symbolic expression measured
+(`pi^2`, `sqrt(2)`, `e + log(3)`, `sin(1)`, `3/7`) and raises `TypeError`
+for `x + 1`, `I` and `I*pi`. `expression.variables() == ()` together with
+`expression.is_real()` separates the two. `pi^2 in AA` is `False` and
+`sqrt(2) in AA` is `True`, so `AA` membership does test algebraicity. Measured
+on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the ball-sign
+certificate is attempted on closed real expressions.

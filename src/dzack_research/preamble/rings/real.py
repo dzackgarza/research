@@ -159,7 +159,10 @@ def _sign_from_algebraic(expression: Expression):
 def _sign_from_ball(expression: Expression, precision: int):
     r"""Certify the sign using an Arb enclosure, or return ``None``."""
     field = RealBallField(precision)
-    if expression not in field:
+    # ``expression in RealBallField`` is False even for pi^2 and sqrt(2),
+    # which the field encloses; a closed real expression is what it
+    # converts (TRAPS.md).
+    if expression.variables() or not expression.is_real():
         return None
     ball = field(expression)
     if ball == 0:
