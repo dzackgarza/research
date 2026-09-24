@@ -1354,47 +1354,46 @@ from the breadth of this specification.
   its source and target when no closed formula is represented; a free object may
   display `Free_R(S)` together with a useful view of `S`.
 
-### `OWN-22`: Admission has one authority and no disabling switch
+### `OWN-22`: Structure is constructed, and checking it is asked for
 
-- **Rule:** Every object and morphism reaches its category's canonical admission
-  boundary. Admission checks endpoints, base maps and defining equations at
-  their owning mathematical level. Known false data are rejected. Decidable
-  obligations are decided; genuinely undecidable obligations remain explicit
-  `Unknown` hypotheses under `CON-16`, rather than being claimed as theorems.
-  Finiteness alone does not imply decidability without an effective decision
-  procedure. A theorem-backed construction supplies the actual defining data
-  and the hypotheses under which its laws follow through the same owner.
+- **Rule:** An object or morphism is built by the construction that places it
+  in its category, and that construction is trusted: the preamble constructs
+  objects into the right categories, and nothing re-derives at construction
+  what the construction already states.  Checking that a map preserves
+  structure, is equivariant, is bilinear, or satisfies an algebra's relations
+  is never eager.  It is a flag the caller sets when they want their input
+  checked, or a method they call; the default constructs without checking.
 
-  For each required law, distinguish a decision, a derivation from the supplied
-  construction, and an unresolved hypothesis. A decision names an applicable
-  procedure; a derivation names the construction, its actual endpoints and the
-  premises that imply the equation. A caller-supplied label such as "linear",
-  "assumed" or "theorem-backed" establishes none of these. Conditional data may
-  remain meaningful under explicit hypotheses, but every dependent conclusion
-  retains those hypotheses. A consumer requiring an established law must obtain
-  its evidence or fail at that frontier; placement alone cannot discharge it.
-  Composition, scalar change and lazy realization preserve the dependencies of
-  the laws they use. Refuted premises are rejected, never changed to `Unknown`.
+  Structure is the morphism that defines it, held as a callable, not a
+  computed table.  An algebra's multiplication is its ring structure, and
+  the multiplication of `RR` as an `RR`-algebra is the multiplication of
+  `RR`.  An `R`-module is the action morphism `rho: R -> End(M)`, and
+  `End_R(M)`'s algebra structure is composition.  Most algebra and module
+  constructions go through the action-morphism construction; the
+  construction of an algebra from a multiplication map uses that map only to
+  define the action.  A multiplication tensor, a structure-constant array or
+  a presentation of a Mor module is computed only when it is asked for, and
+  then as a morphism, with a matrix-like array extracted only by an explicit
+  matrix-like request.
 
-  `verify_linearity=False`, `check=False`, a trusted constructor, a direct
-  concrete-class allocation, or a renamed internal equivalent may not turn off
-  admission. Moving the switch into a private helper is the same bypass.
-  Conversely, replacing every bypass with exhaustive enumeration is not a
-  repair: unframed and infinite inputs retain their mathematical domain.
-- **Observed defect:** `ModuleMorphism` and its public elementwise construction
-  accept `verify_linearity=False`; product/equalizer maps propagate that switch.
-  A universal formula can justify those maps, but a boolean cannot carry that
-  justification or establish endpoint compatibility.
-- **Correct Example:** projections from a module product are admitted through
-  the product's universal construction and the module morphism owner. On a
-  one-dimensional module over GF(3), the constant nonzero function is rejected
-  as nonlinear by every route; the zero map is admitted. No construction flag
-  makes the former a linear map.
-  On Z, the function n -> n^2 preserves zero but is not additive. Over GF(4),
-  Frobenius is additive but not GF(4)-linear. An infinite product projection is
-  linear by its componentwise construction, without enumeration. These require
-  different admission evidence; passing the finite-field specimen alone cannot
-  establish the general contract.
+  `Mor_C(X, Y)` is always a category (a set when 0-truncated), and one
+  category: constructing it fixes its endpoints and composition, and never
+  computes a presentation of it as a module or of its composition as a map
+  out of a tensor product.
+- **Rationale:** An eager check or an eager structure table costs what the
+  construction never needed, and it compounds: building `End_R(C)` for a
+  presented `C` built its multiplication `End ⊗ End -> End` through another
+  presented Mor module, so `End(Z/2 + Z^(n-1))` took 0.42 s, 2.76 s and 329 s
+  for n = 1, 2, 3 (measured 2026-09-25).  Owner ruling, 2026-09-25.
+- **Violation Example:** a Mor constructor that computes the presented
+  internal-Hom model of its endpoints; an `End` constructor that builds its
+  multiplication as a morphism out of `End ⊗ End`; a constructor that checks
+  linearity or equivariance unless the caller asked it to.
+- **Correct Example:** `End_R(M)` multiplies by composing its elements;
+  `f.is_equivariant()` checks equivariance when called; a constructor's
+  `check=True` checks the caller's data; `A.multiplication()` returns the
+  multiplication as a morphism when asked, and its matrix only through an
+  explicit matrix extraction.
 
 ### `OWN-23`: Lazy realization fixes all defining choices before exposure
 

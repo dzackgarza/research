@@ -126,7 +126,7 @@ Among ready items, close a shared constructor/admission prerequisite before its 
 
 The node's own contract and `DEV-67` are conjunctive. Review the complete affected entry and consumer family, not only its first specimen. Every source delivery must establish:
 
-- **Defining datum:** the exact owned objects, maps, base and hypotheses are fixed at admission, with one constructor and no disabling flag (`CON-16`, `OWN-22`, `OWN-23`).
+- **Defining datum:** the exact owned objects, maps, base and hypotheses are fixed by one constructor; structure is the defining morphism, and checks and structure tables are computed only when asked for (`CON-16`, `OWN-22`, `OWN-23`).
 - **Inherited structure:** the immediate general construction supplies its actual operations; stronger structure adds only its own data. Retained input, free-functor source and underlying object are not conflated (`OWN-14`--`20`).
 - **Mathematical maps:** domains, codomains, equations, universal factorizations and transport agree. Dimension/rank/cardinality agreement is insufficient.
 - **Ownership and computation:** every reachable result is owned; protected access stays at its declared owner; a maintained semantic computation is actually reused (`OWN-04`--`08`).
