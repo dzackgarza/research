@@ -149,16 +149,12 @@ def _value_as_module_element(formed_module, value):
     represented = _represented_value_module(formed_module)
     if represented is formed_module.value_module():
         return represented(value)
-    extension = getattr(represented, "module_over_extension", lambda: None)()
-    if extension is not None:
-        unit_label = extension.module_generating_set()[0]
-        return represented.wrap(
-            extension.linear_combination(
-                {unit_label: formed_module.value_module()(value)}
-            )
+    extension = represented.module_over_extension()
+    unit_label = extension.module_generating_set()[0]
+    return represented.wrap(
+        extension.linear_combination(
+            {unit_label: formed_module.value_module()(value)}
         )
-    return represented.linear_combination(
-        {0: formed_module.base_ring()(value)}
     )
 
 
@@ -167,19 +163,12 @@ def _value_from_module_element(formed_module, element):
     if represented is formed_module.value_module():
         return represented(element)
 
-    extension = getattr(represented, "module_over_extension", lambda: None)()
-    if extension is not None:
-        restricted_element = represented(element)
-        coefficients = extension.framing_coefficients(restricted_element.underlying_element())
-        unit_label = extension.module_generating_set()[0]
-        value_ring = formed_module.value_module()
-        return value_ring(coefficients.get(unit_label, value_ring.zero()))
-
-    coefficients = represented.framing_coefficients(element)
-    ring = formed_module.base_ring()
-    labels = represented.module_generating_set()
-    unit_label = labels[0]
-    return ring(coefficients.get(unit_label, ring.zero()))
+    extension = represented.module_over_extension()
+    restricted_element = represented(element)
+    coefficients = extension.framing_coefficients(restricted_element.underlying_element())
+    unit_label = extension.module_generating_set()[0]
+    value_ring = formed_module.value_module()
+    return value_ring(coefficients.get(unit_label, value_ring.zero()))
 
 
 class FormedModuleMorphism(Morphism):
