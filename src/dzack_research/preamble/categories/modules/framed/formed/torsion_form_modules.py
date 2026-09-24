@@ -61,35 +61,30 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.tensors.tensor import (
+    Tensor,
     _engine_component_matrix,
     tensor,
 )
 
 
 def _gram_rows(gram, rank):
-    try:
-        parent = gram.parent()
-    except AttributeError:
-        parent = None
-    if parent is not None:
-
-        try:
-            is_matrix = parent in MatrixSpaces(parent.base_ring())
-        except (AttributeError, TypeError, ValueError):
-            is_matrix = False
-        if is_matrix:
+    match gram:
+        case ModuleMorphism():
+            parent = gram.parent()
+            if parent not in MatrixSpaces(parent.base_ring()):
+                raise TypeError("a morphism Gram presentation must be an owned matrix Mor element")
             rows = tuple(
                 tuple(gram[row, column] for column in range(parent.ncols()))
                 for row in range(parent.nrows())
             )
-        else:
+        case Tensor():
             shape = gram.tensor_shape()
             rows = tuple(
                 tuple(gram[row, column] for column in range(int(shape[1])))
                 for row in range(int(shape[0]))
             )
-    else:
-        rows = tuple(tuple(row) for row in gram)
+        case _:
+            rows = tuple(tuple(row) for row in gram)
     if len(rows) != rank or any(len(row) != rank for row in rows):
         raise ValueError(f"the Gram presentation must have shape {rank} x {rank}")
     return rows
