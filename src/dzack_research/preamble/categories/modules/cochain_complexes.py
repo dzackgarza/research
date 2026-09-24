@@ -564,15 +564,7 @@ class CochainMor(CategoricalMor):
         elif isinstance(components, Morphism):
             if components.domain() is not self.domain() or components.codomain() is not self.codomain():
                 raise ValueError("the morphism has the wrong cochain endpoints")
-            component = getattr(components, "component", None)
-            if component is not None:
-                components = indexed_family(
-                    self.domain().degree_index_set(),
-                    component,
-                    name="Cochain-morphism components",
-                )
-            else:
-                return self.elementwise(lambda element: components(element))
+            return self.elementwise(lambda element: components(element))
         elif isinstance(components, dict):
             selected = {int(degree): morphism for degree, morphism in components.items()}
 
