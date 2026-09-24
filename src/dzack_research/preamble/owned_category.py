@@ -625,6 +625,21 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         """
         return _declared_category_is_subcategory(self, category)
 
+    def _subcategory_hook_(self, category):
+        r"""Answer incoming subcategory queries from the owned graph as well.
+
+        Sage calls the *target* category's hook before the source category's
+        ``is_subcategory`` implementation.  This matters for mixed host joins
+        such as the category of ``Sets.Δ[n]``: one branch is the owned finite
+        ordinal category and the other branches are Sage's finite/facade
+        implementation categories.  The intersection is still an owned set
+        because its owned branch forgets to :class:`Sets`; Python inheritance
+        between the mixed join's ``parent_class`` and the owned target is not
+        that mathematical statement.  Use the same declared join law for this
+        target-side query.
+        """
+        return _declared_category_is_subcategory(category, self)
+
     _IMPLEMENTATION_PROVIDER_NAMES = {
         "ParentMethods": ("ParentMethods",),
         "ElementMethods": ("ElementMethods",),
