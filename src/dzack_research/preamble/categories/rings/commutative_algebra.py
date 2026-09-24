@@ -3324,11 +3324,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
         defining = polynomial.ideal(
             *(polynomial.algebra_generator(label) for label in labels)
         )
-        precision = getattr(
-            parser,
-            "default_prec",
-            lambda: kwargs.get("default_prec", 20),
-        )()
+        precision = parser.default_prec()
         completion = AdicCompletions()(
             polynomial,
             defining,
