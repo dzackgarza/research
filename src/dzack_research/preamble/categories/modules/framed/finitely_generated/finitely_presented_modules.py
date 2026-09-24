@@ -2627,21 +2627,18 @@ def _presented_module_from_morphism(
     torsion_decision = Unknown
     match base_ring in PrincipalIdealDomains():
         case True:
-            try:
-                fraction_field_map = base_ring.fraction_field_map()
-                field = fraction_field_map.codomain()
-                generic_relations = field.matrix_space(
-                    relations_matrix.nrows(),
-                    relations_matrix.ncols(),
-                ).from_rows(
-                    tuple(
-                        tuple(fraction_field_map(coefficient) for coefficient in row)
-                        for row in _matrix_coordinate_rows(relations_matrix)
-                    )
+            fraction_field_map = base_ring.fraction_field_map()
+            field = fraction_field_map.codomain()
+            generic_relations = field.matrix_space(
+                relations_matrix.nrows(),
+                relations_matrix.ncols(),
+            ).from_rows(
+                tuple(
+                    tuple(fraction_field_map(coefficient) for coefficient in row)
+                    for row in _matrix_coordinate_rows(relations_matrix)
                 )
-                torsion_decision = int(_engine_matrix(generic_relations).rank()) == width
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                torsion_decision = Unknown
+            )
+            torsion_decision = int(_engine_matrix(generic_relations).rank()) == width
         case False:
             pass
     match (_require_torsion, torsion_decision):
