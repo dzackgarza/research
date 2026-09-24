@@ -804,6 +804,32 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
     immediate branch implementations directly.
     """
 
+    def is_subcategory(self, category):
+        r"""Compare this intersection through its mathematical branches.
+
+        Sage's generic join implementation first asks the target category's
+        ``_subcategory_hook_`` about the join.  The default hook compares
+        ``parent_class`` objects.  Owned joins deliberately flatten their
+        implementation providers because the complete branch classes can have
+        no common C3 linearization, so that implementation-class comparison is
+        no longer a semantic test.  The join law itself is enough: this
+        intersection lies in ``category`` when one of its defining branches
+        does; when the target is another join it must lie in every target
+        branch.  Branch comparisons retain Sage's parameter-aware category
+        semantics.
+        """
+        if category is self:
+            return True
+        if isinstance(category, JoinCategory):
+            return all(
+                self.is_subcategory(branch)
+                for branch in category._super_categories
+            )
+        return any(
+            branch.is_subcategory(category)
+            for branch in self._super_categories
+        )
+
 
 def owned_category_join(categories) -> Category:
     r"""Return Sage's axiom-closed join realized as an owned join category."""
