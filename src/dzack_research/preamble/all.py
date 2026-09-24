@@ -16,15 +16,6 @@ import sageparse.preparser.research  # noqa: F401
 from sage.repl.load import load as _sage_load
 
 from dzack_research.preamble import language_runtime as _language_runtime
-from dzack_research.preamble.catalogue import (  # noqa: F401
-    Embeddings,
-    Involutions,
-    NamedLattices,
-    NegativeDefTwoElementary,
-    TwoElementary,
-    signature_orthogonal_sums,
-    two_elementary_orthogonal_sums,
-)
 from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
     Cat,
     CategoricalIsomorphism,
@@ -593,3 +584,19 @@ def _realize_owned_categories_over(_ring) -> None:
 
 for _initial_ring in (globals()["ZZ"],):
     _realize_owned_categories_over(_initial_ring)
+
+
+# The catalogue constructs named lattices at import time.  Keep that work
+# after the deterministic category realization above: constructing ``U`` or
+# ``E8`` earlier forces parent classes before all owned ``ZZ`` categories have
+# stable comparison keys, reintroducing the order-dependent MRO failure this
+# realization step exists to prevent.
+from dzack_research.preamble.catalogue import (  # noqa: E402,F401
+    Embeddings,
+    Involutions,
+    NamedLattices,
+    NegativeDefTwoElementary,
+    TwoElementary,
+    signature_orthogonal_sums,
+    two_elementary_orthogonal_sums,
+)
