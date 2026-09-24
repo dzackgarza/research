@@ -1787,11 +1787,9 @@ class AdicCompletions(Category):
                 for generator in self.ideal_of_definition().ideal_generators()
             ):
                 raise ValueError("the source ideal does not map into the target ideal")
-            identity_factory = getattr(source_morphism.parent(), "identity", None)
             if (
                 source_morphism.domain() is source_morphism.codomain()
-                and callable(identity_factory)
-                and source_morphism is identity_factory()
+                and source_morphism is source_morphism.parent().identity()
                 and target_completion is self
             ):
                 return self.Mor(self).identity()
@@ -1945,10 +1943,10 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         return self._exact_source_expression
 
     def _with_source_expression(self, backend_value, source_expression):
-        constructor = getattr(self.parent(), "_completion_element", None)
-        if constructor is None:
-            return _owned_engine_element(self.parent(), backend_value)
-        return constructor(backend_value, source_expression=source_expression)
+        return self.parent()._completion_element(
+            backend_value,
+            source_expression=source_expression,
+        )
 
     def _add_(self, other):
         left_source = self.exact_source_expression()
@@ -2003,33 +2001,8 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         difference = left_source - right_source
         if difference == self.parent().completion_source().zero():
             return True
-        try:
-            kernel = self.parent().completion_map_kernel()
-        except NotImplementedError:
-            return None
+        kernel = self.parent().completion_map_kernel()
         return bool(kernel.contains_ambient_element(difference))
-
-    @staticmethod
-    def _backend_exact_zero_status(difference):
-        r"""Return ``True``/``False`` when the backend decides exact zero.
-
-        ``None`` means that the selected finite information agrees with zero
-        but does not decide exact zero in the completion.
-        """
-        exact_zero = getattr(difference, "_is_exact_zero", None)
-        if callable(exact_zero) and bool(exact_zero()):
-            return True
-        inexact_zero = getattr(difference, "_is_inexact_zero", None)
-        if callable(inexact_zero) and bool(inexact_zero()):
-            return None
-
-        precision = getattr(difference, "precision_absolute", None)
-        if callable(precision):
-            if bool(difference):
-                return False
-            return True if precision() is Infinity else None
-
-        return None
 
     def _completion_equal(self, other) -> bool:
         parent = self.parent()
@@ -2048,11 +2021,9 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         if mode == "exact_backend":
             return bool(left == right)
         if mode == "exact_lazy":
-            options = getattr(left.parent(), "options", None)
-            old_secure = None
-            if options is not None:
-                old_secure = options["secure"]
-                options["secure"] = True
+            options = left.parent().options
+            old_secure = options["secure"]
+            options["secure"] = True
             try:
                 try:
                     return bool(left == right)
@@ -2061,15 +2032,9 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
                         "exact equality of these lazy completion elements is undecidable by the selected engine"
                     ) from error
             finally:
-                if options is not None:
-                    options["secure"] = old_secure
+                options["secure"] = old_secure
         difference = left - right
-        status = self._backend_exact_zero_status(difference)
-        if status is True:
-            return True
-        if status is False:
-            return False
-        if mode == "finite_approximation" and difference != left.parent().zero():
+        if bool(difference):
             return False
         raise AssertionError(
             "finite completion data agree at the selected precision but do not decide exact equality"
@@ -2102,9 +2067,8 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
 
     def precision_absolute(self):
         r"""Return the selected absolute computation precision when represented."""
-        precision = getattr(self._backend(), "precision_absolute", None)
-        if callable(precision):
-            return precision()
+        if self.parent().completion_arithmetic_mode() == "finite_precision":
+            return self._backend().precision_absolute()
         return self.parent().computation_precision()
 
     def refine_precision(self, precision):
@@ -2267,7 +2231,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         return self._adic_arithmetic_mode
 
     def _completion_element(self, value, *, source_expression=None):
-        if getattr(value, "parent", lambda: None)() is not self._engine:
+        if element_parent(value) is not self._engine:
             value = self._engine(value)
         return self.element_class(
             self,
@@ -2276,7 +2240,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         )
 
     def _element_constructor_(self, value):
-        if getattr(value, "parent", lambda: None)() is self:
+        if element_parent(value) is self:
             return value
         completion_map = self._realized_completion_map
         if completion_map is None:
