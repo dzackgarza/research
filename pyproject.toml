@@ -82,7 +82,9 @@ dev = [
     "ipython>=9.16.1",
     "pyrefly==1.2.0",
     "pyrefly-shape-extensions==1.2.0",
+    "pytest-cov>=7.0",
     "pytest-reportlog>=1.0.0",
     "pytest-timeout>=2.4.0",
+    "pytest-xdist>=3.8",
     "sage-stubs @ git+https://github.com/dzackgarza/sage-stubs.git",
 ]

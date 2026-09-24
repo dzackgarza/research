@@ -286,30 +286,93 @@ test-push:
 test-ci:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
-# Branch coverage of the preamble by the whole suite: the percentage, and every line and branch no test runs
-coverage:
+# The suite runs in parallel, one Sage process per worker, and records which
+# test ran each line; only lines a passing test ran count as covered.
+# Every preamble line and branch no passing test runs, file by file
+coverage workers="6":
     #!/usr/bin/env bash
     set -euo pipefail
     qc=~/ai-review-ci/justfiles/sage.just
-    sage_python="$(just -f "$qc" -d . _sage-python)"
     # tests/ is the suite for src/; computation scripts elsewhere are not.
     mapfile -t tests < <(just -f "$qc" -d . _sage-test-files; just -f "$qc" -d . _sage-python-test-files)
     mapfile -t tests < <(printf '%s\n' "${tests[@]}" | grep '^tests/')
-    export PYTHONPATH="$HOME/ai-review-ci/tool-artifacts/pytest_plugins${PYTHONPATH:+:$PYTHONPATH}"
-    out="{{justfile_directory()}}/.tmp/coverage"
+    out=.tmp/coverage
     mkdir -p "$out"
-    export COVERAGE_FILE="$out/.coverage"
-    # Sage's startup import runs inside coverage, so modules it loads are measured.
-    printf 'import sys\nimport sage.all  # noqa: F401\nimport pytest\nsys.exit(pytest.main(sys.argv[1:]))\n' > "$out/driver.py"
-    # The specification subtrees are red until the preamble meets them, so a
-    # failing suite still yields its coverage; its exit status is reported, not fatal.
-    # No per-test timeout: its SIGALRM inside Cython ends the whole run (TRAPS.md).
-    # One-line tracebacks keep failure reports from computing owned reprs.
+    for old in "$out"/*.jsonl; do if [ -e "$old" ]; then gio trash "$old"; fi; done
+    touch "$out/measured-at"
+    # Work stealing rebalances the few long tests across idle workers.
     status=0
-    "$sage_python" -m coverage run --branch --source=src/dzack_research/preamble "$out/driver.py" \
-        -p qc_sage_session -q --timeout=0 --tb=line "${tests[@]}" || status=$?
-    "$sage_python" -m coverage report --show-missing --skip-covered | tee "$out/report.txt"
-    echo "pytest exit status: $status; full report: $out/report.txt"
+    just _coverage-pytest "$out/.coverage" "$out/run.jsonl" -n {{workers}} --dist worksteal "${tests[@]}" || status=$?
+    just coverage-report
+    echo "pytest exit status: $status"
+
+# Use it while writing tests against a gap the full run reported; it costs
+# the named tests, not the suite.
+# Add the named tests to the last full run; report the preamble files they reach
+[positional-arguments]
+coverage-add +tests:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    out=.tmp/coverage
+    if [ ! -e "$out/.coverage" ]; then echo "no full run to add to: run just coverage first"; exit 1; fi
+    sage_python="$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)"
+    run="$(date +%s%N)"
+    status=0
+    # Many tests share out across workers; a few run in one process, sparing the worker startups.
+    parallel=(); if [ "$#" -gt 50 ]; then parallel=(-n 6 --dist worksteal); fi
+    just _coverage-pytest "$out/.coverage.add-$run" "$out/add-$run.jsonl" "${parallel[@]}" "$@" || status=$?
+    # Several sessions may add at once; the lock serializes the merge and the report.
+    flock "$out/.lock" "$sage_python" -m coverage combine --keep --append \
+        --data-file="$out/.coverage" "$out/.coverage.add-$run"
+    flock "$out/.lock" "$sage_python" -m dzack_research.utilities.coverage_gaps \
+        --touched-by "$out/.coverage.add-$run"
+    gio trash "$out/.coverage.add-$run"
+    echo "pytest exit status: $status"
+
+# The stored data records which tests ran each preamble file, so after an edit
+# only those tests, and the edited test files, run again.
+# Remeasure what edits since the last measurement reach, then report
+coverage-update:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    out=.tmp/coverage
+    if [ ! -e "$out/.coverage" ]; then echo "nothing measured yet: run just coverage first"; exit 1; fi
+    sage_python="$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)"
+    mapfile -t tests < <(flock "$out/.lock" "$sage_python" -m dzack_research.utilities.coverage_gaps --select-affected)
+    # A purged file whose lines only the import runs is remeasured by collection alone.
+    if [ "${#tests[@]}" -eq 0 ]; then
+        just coverage-add --collect-only tests/conftest.py > /dev/null
+        just coverage-report
+        exit 0
+    fi
+    echo "rerunning ${#tests[@]} tests reached by the edits"
+    just coverage-add "${tests[@]}"
+
+# The coverage recorded so far, for the preamble or for the source paths matching globs such as '*/schemes/*'
+[positional-arguments]
+coverage-report *include:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    select=(); if [ "$#" -gt 0 ]; then select=(--include "$@"); fi
+    "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" -m dzack_research.utilities.coverage_gaps "${select[@]}"
+
+# The specification subtrees are red until the preamble meets them, so a
+# failing suite still yields its coverage; the caller reports the exit status.
+# No per-test timeout: its SIGALRM inside Cython ends the whole run (TRAPS.md),
+# and coverage's tracing makes the time gates meaningless.  One-line
+# tracebacks keep failure reports from computing owned reprs.
+[positional-arguments]
+_coverage-pytest data log *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export PYTHONPATH="$HOME/ai-review-ci/tool-artifacts/pytest_plugins${PYTHONPATH:+:$PYTHONPATH}"
+    export COVERAGE_FILE="$1"
+    log="$2"
+    shift 2
+    "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" -m pytest -p qc_sage_session \
+        -q --no-time-gates --timeout=0 --tb=line --report-log="$log" \
+        --cov=src/dzack_research/preamble --cov-branch --cov-context=test --cov-report= \
+        "$@"
 
 # Survey an operation before changing what it returns or renaming it.
 # Reports every definition with its owner and return expressions, flags
