@@ -78,25 +78,25 @@ A triangulated integral affine sphere.
 
 ::: {.Remark}
 
-The following is a combinatorial representation of a Kulikov model for Sterk 2.
+The following is a combinatorial representation of the Kulikov model of $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13].
 
-::: {#fig-ias-sterk2-kulikov-model .figure}
-\input{tikz/ias_sterk2_kulikov_model.tikz}
+::: {#fig-ias-sterk3-kulikov-model .figure}
+\input{tikz/ias_sterk3_kulikov_model.tikz}
 
-A combinatorial Kulikov model for Sterk 2.
+A combinatorial Kulikov model for $B_3(\ell)$ at Sterk cusp $3$.
 :::
 :::
 
-## The Sterk 2 integral affine structure
+## The integral affine structure $B_3(\ell)$ at Sterk cusp 3
 
 ::: {.Warning}
 The figures below were drawn for this construction but their accompanying text has not been written; they are collected here so that the artwork is not orphaned. Each caption states only what the picture shows.
 :::
 
-::: {#fig-sterk2-ias .figure}
-\input{tikz/sterk2_ias_singularities.tex}
+::: {#fig-sterk3-ias .figure}
+\input{tikz/sterk3_ias_singularities.tex}
 
-An integral affine structure for Sterk 2 drawn in the plane: five integral affine singularities are marked with their multiplicities, solid segments carry the triangulation of the shaded region and dashed segments the lattice lines outside it.
+The integral affine structure $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13], drawn in the plane: five integral affine singularities are marked with their multiplicities, solid segments carry the triangulation of the shaded region and dashed segments the lattice lines outside it.
 :::
 
 ::: {#fig-ias2-disc-slice .figure}
@@ -169,7 +169,4 @@ matching the folding involution of Sterk $2$; the Coble boundary is expected to
 produce disc-type integral affine structures rather than sphere- or
 $\mathbf{RP}^2$-type limits, in agreement with the flowerpot degenerations of
 Morrison [@Mor81; @AEGS25].
-The combinatorial disc-type model of @fig-ias-sterk2-kulikov-model and the
-integral affine structure for Sterk $2$ of @fig-sterk2-ias illustrate this
-case.
 :::
