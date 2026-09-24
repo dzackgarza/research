@@ -2058,6 +2058,10 @@ class FinitePowerSets(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
+    def __call__(self, source):
+        r"""Construct ``P_fin(source)`` even when ``source`` is itself a set of finite subsets."""
+        return self._call_(source)
+
     def _call_(self, source):
         r"""Construct the finite-subset object of ``source``."""
         return _object_of(self, source=source)

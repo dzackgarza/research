@@ -49,6 +49,10 @@ class _ExponentialFunctor(Functor):
 class _InverseImagePowerSetFunctor(Functor):
     r"""The contravariant power-set functor on the opposite of Set."""
 
+    # If f != g then f(x) != g(x) for some x, and x lies in f^{-1}{f(x)} but
+    # not in g^{-1}{f(x)}.
+    _faithful = True
+
     def __init__(self) -> None:
         self._opposite_sets = Sets().opposite()
         super().__init__(self._opposite_sets, Sets())
@@ -75,6 +79,10 @@ class _InverseImagePowerSetFunctor(Functor):
 
 class _FinitePowerSetFunctor(Functor):
     r"""The covariant finite-power-set functor under direct image."""
+
+    # If f != g then f(x) != g(x) for some x, and the direct images of the
+    # finite subset {x} are {f(x)} != {g(x)}.
+    _faithful = True
 
     def __init__(self) -> None:
         super().__init__(Sets(), Sets())
