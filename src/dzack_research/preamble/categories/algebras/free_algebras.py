@@ -15,6 +15,7 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.ideal import Ideal_generic
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -663,10 +664,9 @@ def _localized_coefficient_presentation_backend(
     base = presentation_ring.base_ring()
     if base not in LocalizationRings():
         return None
-    try:
-        inverted = tuple(base.inverted_elements())
-    except NotImplementedError:
+    if base.localization_submonoid()._structure_data().get("kind") != "finitely_generated":
         return None
+    inverted = tuple(base.inverted_elements())
     if not inverted:
         return None
 
@@ -674,24 +674,14 @@ def _localized_coefficient_presentation_backend(
     presentation_engine = _engine_ring(presentation_ring)
     coefficient_source_engine = _engine_ring(coefficient_source)
     base_engine = _engine_ring(base)
-    try:
-        variable_names = tuple(presentation_engine.variable_names())
-        polynomial_bottom = _SagePolynomialRing(
-            coefficient_source_engine,
-            names=variable_names,
-        )
-        flattening_factory = getattr(
-            polynomial_bottom,
-            "flattening_morphism",
-            None,
-        )
-        if not callable(flattening_factory):
-            return None
-        flattening = flattening_factory()
-        flattened = flattening.codomain()
-        unflatten = flattening.section()
-    except (AttributeError, TypeError, ValueError):
-        return None
+    variable_names = tuple(presentation_engine.variable_names())
+    polynomial_bottom = _SagePolynomialRing(
+        coefficient_source_engine,
+        names=variable_names,
+    )
+    flattening = polynomial_bottom.flattening_morphism()
+    flattened = flattening.codomain()
+    unflatten = flattening.section()
 
     flat_names = tuple(flattened.variable_names())
     occupied = set(flat_names)
@@ -915,7 +905,7 @@ def _finitely_presented_algebra_from_data(
     if (
         label_size.is_finite()
         and int(label_size.finite_value()) == 1
-        and hasattr(quotient_engine, "modulus")
+        and isinstance(quotient_engine, PolynomialQuotientRing_generic)
     ):
         modulus = quotient_engine.modulus()
         degree = int(modulus.degree())
