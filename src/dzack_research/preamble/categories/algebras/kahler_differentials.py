@@ -105,8 +105,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
             algebra = self.source_algebra()
             spectrum = algebra.spectrum()
-            if getattr(point, "parent", lambda: None)() is not spectrum:
-                point = spectrum(point)
+            point = spectrum(point)
             # The cotangent fiber is canonically the direct scalar extension
             # Omega^1_{A/R} tensor_A kappa(p); no localization realization is
             # needed to define or compute this selected fiber.
@@ -119,8 +118,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
             algebra = self.source_algebra()
             spectrum = algebra.spectrum()
-            if getattr(point, "parent", lambda: None)() is not spectrum:
-                point = spectrum(point)
+            point = spectrum(point)
             cotangent = self.cotangent_space(point)
             return cotangent.module_category().Mor(
                 cotangent,
@@ -137,8 +135,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
             algebra = self.source_algebra()
             spectrum = algebra.spectrum()
-            if getattr(point, "parent", lambda: None)() is not spectrum:
-                point = spectrum(point)
+            point = spectrum(point)
             return self.conormal_morphism().base_change(point.residue_map())
 
         @cached_method
