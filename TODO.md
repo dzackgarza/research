@@ -211,6 +211,15 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Forms, actions and arithmetic realizations
 
+- [ ] **`forms-valued-in-a-restricted-module`**. **Needs:** none.
+  **Owner and delta:** a form `b: M x M -> W` on an `R`-module `M` whose values lie in an `S`-module along a ring map `R -> S`, above all `L^vee` of a `ZZ`-lattice, whose form takes values in `QQ` viewed as a `ZZ`-module. `Lattices.dual_lattice` (`categories/lattices.py`) builds the dual module with a `QQ`-valued form and refines it into `FormModules(ZZ).Nondegenerate()`; the correlation `M -> Hom_R(M, W)` (`categories/modules/hodge.py`, `_algebraic_correlation_morphism`) exists only for `W = R`, and `Hom_ZZ(M, QQ)` cannot be formed because `QQ` is not a `ZZ`-module until it is restricted along `ZZ -> QQ`.
+  **Invariants:** the value module is an `R`-module, reached by restriction of scalars as a functor (`CAT-16`); nondegeneracy is injectivity of `M -> Hom_R(M, W)` and unimodularity is its bijectivity, for every `W`, with `W = R` recovered as the special case.
+  **Closure specimens:** `NamedLattices.TdP.dual_lattice()` returns `L^vee` with its `QQ`-valued form and its inclusion `L -> L^vee`; `A_1^vee` has discriminant group `ZZ/2`; a degenerate `QQ`-valued form on `ZZ^2` is reported degenerate.
+
+- [ ] **`framing-is-per-structure`**. **Needs:** an owner ruling. **Rule conflict:** `AGENTS.md` (*Axioms live as high up as possible*) makes `Framed` one global axiom; `CONTRIBUTING.md` (property vs data rule) says a chosen datum is a class, never an axiom. Sage applies an axiom to every supercategory, so `Algebras(R).Associative().Unital().Commutative().Framed()` is a subcategory of `Modules(R).Framed()`: a chosen algebra generating family is read as a chosen module generating family. An algebra framed by `x` over `QQ` then claims a module framing it never received.
+  **Observed:** `ADELogPairs(QQ).at21("A", 3)` (and `D_4`, `E_6`) stops in `selected_framing` building the toric chart's semigroup algebra `QQ[s0, s1]/I` (`categories/algebras/free_algebras.py`, `_PresentedAlgebraParent`), when the tensor-classifier linearity check asks that algebra, as a `QQ`-module, for its module generators.
+  **Closure specimens:** after the ruling, a finitely presented commutative algebra with chosen algebra generators is not a framed module unless a module basis was chosen; `at21("A", 3)`, `at21("D", 4)`, `at21("E", 6)` construct their pairs.
+
 ## Common categorical authority and public boundaries
 
 - [ ] **`membership-by-placement`**. **Needs:** none.
@@ -347,7 +356,7 @@ The first full execution of the suite since the tree stopped importing (2026-09-
 
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** `probe-and-exception-residue`, `canonical-notebook-contract`, `engine-wiring-audit`.
+- [ ] **`architecture-remediation`**. **Needs:** `probe-and-exception-residue`, `canonical-notebook-contract`, `engine-wiring-audit`, `forms-valued-in-a-restricted-module`, `framing-is-per-structure`.
   **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
   **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open. Each complaint's entire burden is discharged or retained in a required prerequisite. All alternative construction routes affected by a repair are inspected. No numerical answer, renamed field, new wrapper, source count or administrative record substitutes for delivery (`DEV-67`, `DEV-68`).
   **Closure comparison:** reconcile the original complaint/requirement clauses with the delivered owner and consumer routes, including the generality beyond their first specimens. Review later changes to each shared contract against its delivery evidence. In particular, an "assumed linear" rename, a framing proof depending on its own Mor placement, or a private access deferred from a delivered producer fails this comparison and reopens that exact repair. Existing evidence for unaffected routes remains usable.
