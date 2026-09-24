@@ -521,7 +521,57 @@ def _join_implementation_bases(
                 known for known in bases if not issubclass(candidate, known)
             ]
             bases.append(candidate)
-    return tuple(bases) or (object,)
+
+    # A stronger construction can consume one datum and derive a lower-level
+    # constructor parameter before cooperative ``super()`` reaches that owner.
+    # Flattening branch implementation classes must retain that dependency,
+    # not merely the category comparison order.  ``BiproductModules`` is the
+    # canonical example: it consumes ``biproduct_factors`` and derives the
+    # ``summands`` parameter of ``DirectSumObjects``.  Put every such producer
+    # before the providers that explicitly consume its derived names, keeping
+    # the category-linearized order as the stable tie-breaker.
+    explicit_parameters: dict[type, frozenset[str]] = {}
+    for provider in bases:
+        initializer = provider.__dict__.get("__init__")
+        if initializer is None:
+            explicit_parameters[provider] = frozenset()
+            continue
+        parameters = signature(initializer).parameters.values()
+        explicit_parameters[provider] = frozenset(
+            parameter.name
+            for parameter in parameters
+            if parameter.name != "self"
+            and parameter.kind
+            not in (Parameter.VAR_POSITIONAL, Parameter.VAR_KEYWORD)
+        )
+
+    predecessors = {provider: set() for provider in bases}
+    for producer in bases:
+        derived = frozenset(
+            getattr(producer, "_derived_construction_parameters", ())
+        )
+        if not derived:
+            continue
+        for consumer in bases:
+            if producer is consumer:
+                continue
+            if derived.intersection(explicit_parameters[consumer]):
+                predecessors[consumer].add(producer)
+
+    pending = set(bases)
+    ordered: list[type] = []
+    while pending:
+        ready = tuple(
+            provider
+            for provider in bases
+            if provider in pending
+            and not predecessors[provider].intersection(pending)
+        )
+        assert ready, "constructor-data dependencies among implementation providers are acyclic"
+        selected = ready[0]
+        ordered.append(selected)
+        pending.remove(selected)
+    return tuple(ordered) or (object,)
 
 
 class OwnedCategoryMixin(CatConstructionsMixin):

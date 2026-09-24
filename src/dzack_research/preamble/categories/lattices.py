@@ -3190,16 +3190,6 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        _derived_construction_parameters = frozenset({"summands"})
-
-        def __init__(self, biproduct_factors, **rest) -> None:
-            r"""Thread one selected factor family through both biproduct owners."""
-            super().__init__(
-                summands=biproduct_factors,
-                biproduct_factors=biproduct_factors,
-                **rest,
-            )
-
         def _biproduct_factor_position(self, index):
             factors = self.biproduct_factors()
             normalized = factors.index_set()(index)
