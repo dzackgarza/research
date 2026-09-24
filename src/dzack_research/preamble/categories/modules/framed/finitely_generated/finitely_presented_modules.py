@@ -184,7 +184,7 @@ def _fix_selected_module_presentation(module, base_ring, relation_matrix, presen
     module, relation matrix and presentation morphism; downstream consumers
     read them through the presentation operations rather than this storage.
     """
-    if module.__dict__.get("_selected_module_presentation") is not None:
+    if module._selected_module_presentation is not None:
         raise ValueError(f"{module} already has a selected presentation")
     module._selected_module_presentation = _SelectedModulePresentationData(
         base_ring,
