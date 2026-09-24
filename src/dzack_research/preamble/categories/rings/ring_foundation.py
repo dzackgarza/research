@@ -2950,7 +2950,10 @@ class _OwnedRingElement(RingElement):
         return not self == other
 
     def __hash__(self):
-        return hash((id(self.parent()), self._backend()))
+        # Equal elements hash equally: ``__eq__`` identifies this element with
+        # the literal it converts from, so the hash is the value's, as for
+        # Sage's own elements (``hash(Integer(1)) == hash(1)``).
+        return hash(self._backend())
 
     def __bool__(self):
         return bool(self._backend())

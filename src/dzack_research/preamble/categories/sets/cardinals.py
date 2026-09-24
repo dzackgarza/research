@@ -42,6 +42,22 @@ from dzack_research.preamble.owned_category import _object_of
 IndexT = TypeVar("IndexT")
 
 
+def _is_session_integer(value) -> bool:
+    r"""Whether ``value`` is an exact integer: a Python ``int`` or an element of the owned ``ZZ``.
+
+    The session's integer literals are owned integers, which Sage's ``ZZ``
+    neither contains nor converts, so the owned ring is asked about them.  A
+    Python ``int`` is answered first, without the owned ring, because this
+    module names finite cardinals while the owned integers are still being
+    built.
+    """
+    if value in ZZ:
+        return True
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+    return value in _own_ring(ZZ)
+
+
 class _CardinalExpression(ABC):
     r"""A term of cardinal arithmetic, the defining datum of a cardinal.
 
@@ -450,7 +466,7 @@ class Cardinalities(OwnedCategory):
                     return self.expression() == other.expression()
                 case _ if other is Infinity:
                     return self.expression() == Cardinalities()(other).expression()
-                case _ if isinstance(other, SupportsInt) and other in ZZ and int(other) >= 0:
+                case _ if _is_session_integer(other) and int(other) >= 0:
                     return self.expression() == Cardinalities()(other).expression()
                 case _:
                     return False
@@ -1216,7 +1232,7 @@ class OrdinalSemirings(OwnedCategory):
                     return True
                 case _ if value in Cardinalities():
                     return value.is_finite()
-                case _ if isinstance(value, SupportsInt) and value in ZZ:
+                case _ if _is_session_integer(value):
                     return int(value) >= 0
                 case _:
                     return False
