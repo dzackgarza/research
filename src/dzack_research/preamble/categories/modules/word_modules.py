@@ -275,16 +275,12 @@ class _WordPresentation:
         factor_labels = _flatten_nested_label(component_label, len(items))
         counts = {}
         for (source_key, multiplicity), factor_label in zip(items, factor_labels, strict=True):
-            source_component = source.module_component(source_key)
             if multiplicity == 1:
                 labelled_factors = ((factor_label, 1),)
-            elif hasattr(factor_label, "support"):
-                labelled_factors = ((label, factor_label.multiplicity(label)) for label in factor_label.support())
             else:
-                labelled_factors = zip(
-                    source_component.module_generating_set(),
-                    tuple(factor_label),
-                    strict=True,
+                labelled_factors = (
+                    (label, factor_label.multiplicity(label))
+                    for label in factor_label.support()
                 )
             for source_component_label, exponent in labelled_factors:
                 exponent = int(exponent)
