@@ -6,6 +6,7 @@ from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
@@ -95,7 +96,7 @@ def _symbol_index(
     latex_prefix: str | None,
 ) -> int | None:
     r"""The integer \(n\) when ``elt`` is the indexed symbol of this prefix, and ``None`` otherwise."""
-    parent = getattr(elt, "parent", lambda: None)()
+    parent = element_parent(elt)
     if parent is _symbolic_ring():
         symbol = SR(_engine_element(_symbolic_ring(), elt))
     elif elt in SR:

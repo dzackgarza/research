@@ -7,6 +7,8 @@ the functions below and every backend value is crossed back before return.
 
 from __future__ import annotations
 
+from sage.structure.element import parent as element_parent
+
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
@@ -66,7 +68,7 @@ def matrix(rows):
     ring = None
     for row in rows:
         for entry in row:
-            parent = getattr(entry, "parent", lambda: None)()
+            parent = element_parent(entry)
             if parent in OwnedRings():
                 ring = parent
                 break

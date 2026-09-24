@@ -1,6 +1,7 @@
 r"""Exact vector-orbit data for owned lattices."""
 
 from sage.misc.cachefunc import cached_method
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import _torsion_form_isometry
 
@@ -38,7 +39,7 @@ class VectorPrimitiveExtension:
     def __init__(self, lattice, element) -> None:
         vector = (
             element
-            if getattr(element, "parent", lambda: None)() is lattice
+            if element_parent(element) is lattice
             else lattice(element)
         )
         if vector.q() == 0:
