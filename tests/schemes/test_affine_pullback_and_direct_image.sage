@@ -18,6 +18,15 @@ def _squaring():
     return x_ring, s_ring, target, source, source.Mor(target)(x_ring.Mor(s_ring)({"x": s**2}))
 
 
+def test_pullback_is_left_adjoint_to_direct_image() -> None:
+    r"""The adjunction ``f^* -| f_*`` has ``f^*`` and ``f_*`` as its two functors."""
+    x_ring, s_ring, target, source, squaring = _squaring()
+    adjunction = squaring.quasi_coherent_adjunction()
+
+    assert adjunction.left_adjoint() == squaring.module_pullback_functor()
+    assert adjunction.right_adjoint() == squaring.direct_image_functor()
+
+
 def test_the_direct_image_of_the_structure_sheaf_is_the_ring_upstairs_over_the_ring_downstairs() -> None:
     r"""``Gamma(f_* O) = Q[s]`` as a ``Q[x]``-module, which is free of rank 2."""
     x_ring, s_ring, target, source, squaring = _squaring()
@@ -38,12 +47,3 @@ def test_the_pullback_of_the_structure_sheaf_is_the_structure_sheaf() -> None:
     pulled = squaring.module_pullback(structure)
 
     assert QuasiCoherentSheaves(source).global_sections(pulled).module_rank() == 1
-
-
-def test_pullback_is_left_adjoint_to_direct_image() -> None:
-    r"""The adjunction ``f^* -| f_*`` has ``f^*`` and ``f_*`` as its two functors."""
-    x_ring, s_ring, target, source, squaring = _squaring()
-    adjunction = squaring.quasi_coherent_adjunction()
-
-    assert adjunction.left_adjoint() == squaring.module_pullback_functor()
-    assert adjunction.right_adjoint() == squaring.direct_image_functor()
