@@ -9,9 +9,10 @@ from dzack_research.preamble.all import *
 
 
 def test_the_image_of_the_cuspidal_parametrization_is_the_cusp() -> None:
-    r"""The scheme-theoretic image of ``t -> (t^2, t^3)`` is ``V(y^2 - x^3)``: its ideal is the kernel
-    of ``x -> t^2, y -> t^3`` (Stacks, Tag 01R7), which is ``(y^2 - x^3)``.  So on the image
-    ``y^2 = x^3`` while ``x``, ``y`` and ``y - x`` stay nonzero, and the parametrization is not a
+    r"""The scheme-theoretic image of ``t -> (t^2, t^3)`` is ``V(y^2 - x^3)``.  The morphism factors
+    through ``V(I)`` exactly when ``I`` lies in the kernel of ``x -> t^2, y -> t^3``, so the smallest
+    such closed subscheme (Stacks, Tag 01R7) is ``V`` of that kernel, which is ``(y^2 - x^3)``.  On
+    the image ``y^2 = x^3`` while ``x``, ``y`` and ``y - x`` stay nonzero, and the parametrization is not a
     closed immersion since ``t`` is not in the image of the pullback."""
     plane_ring = QQ["x,y"]
     line_ring = QQ["t"]
@@ -36,8 +37,8 @@ def test_the_image_of_the_cuspidal_parametrization_is_the_cusp() -> None:
 
 
 def test_the_x_axis_embedding_is_a_closed_immersion() -> None:
-    r"""``t -> (t, 0)`` has surjective pullback ``x -> t, y -> 0``, so it is a closed immersion
-    (Stacks, Tag 01HV)."""
+    r"""``t -> (t, 0)`` has surjective pullback ``x -> t, y -> 0``, so it is ``Spec`` of a quotient
+    map and a closed immersion."""
     plane_ring = QQ["x,y"]
     line_ring = QQ["t"]
     t = line_ring.algebra_generator("t")
