@@ -75,6 +75,7 @@ from dzack_research.preamble.categories.group.magmas import (
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
+    ModuleMorphism,
     _engine_matrix,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
@@ -1154,10 +1155,7 @@ def _group_constructor_argument(value):
             return _element_to_engine(value.parent(), value)
         case Element() if value.parent() in OwnedRings():
             return _engine_element(value.parent(), value)
-        case Morphism() if (
-            hasattr(value.parent(), "base_ring")
-            and value.parent() in MatrixSpaces(value.parent().base_ring())
-        ):
+        case ModuleMorphism() if value.parent() in MatrixSpaces(value.domain().base_ring()):
             return _engine_matrix(value)
         case _:
             return value
