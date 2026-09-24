@@ -17,10 +17,11 @@ from sage.misc.unknown import Unknown
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.fraction_field import FractionField_generic as SageFractionField
+from sage.rings.ideal import Ideal_generic as SageIdeal
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.quotient_ring import QuotientRing_generic
-from sage.structure.element import CommutativeRingElement, Element
+from sage.structure.element import CommutativeRingElement, Element, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
@@ -500,8 +501,8 @@ def _engine_ring_value(ring, value):
     r"""Cross one owned/ordinary ring value to ``ring``'s private engine."""
     source = _own_ring(ring)
     engine = _engine_ring(source)
-    parent = getattr(value, "parent", lambda: None)()
-    if parent is engine or (parent is not None and parent in SageRings()):
+    parent = element_parent(value)
+    if parent is engine or parent in SageRings():
         return engine(value)
     return engine(_engine_element(source, source(value)))
 
@@ -515,8 +516,6 @@ def _engine_ideal(ring, ideal):
     """
     source = _own_ring(ring)
     engine = _engine_ring(source)
-    if getattr(ideal, "ring", lambda: None)() is engine:
-        return ideal
     from dzack_research.preamble.categories.rings.commutative_ideals import (
         CommutativeIdeals,
         _engine_commutative_ideal,
@@ -524,15 +523,18 @@ def _engine_ideal(ring, ideal):
 
     if ideal in CommutativeIdeals(source):
         return _engine_commutative_ideal(ideal)
-    ideal_generators = getattr(ideal, "ideal_generators", None)
-    if ideal_generators is not None:
+    if isinstance(ideal, GeneratedIdealView):
         return engine.ideal(
-            tuple(_engine_element(ring, value) for value in ideal_generators())
+            tuple(
+                _engine_element(ring, value)
+                for value in ideal.ideal_generators()
+            )
         )
-    generators = getattr(ideal, "gens", None)
-    if generators is not None and not isinstance(ideal, (tuple, list)):
+    if isinstance(ideal, SageIdeal):
+        if ideal.ring() is engine:
+            return ideal
         return engine.ideal(
-            tuple(_engine_ring_value(ring, value) for value in generators())
+            tuple(_engine_ring_value(ring, value) for value in ideal.gens())
         )
     if isinstance(ideal, (tuple, list)):
         return engine.ideal(tuple(_engine_ring_value(ring, value) for value in ideal))
