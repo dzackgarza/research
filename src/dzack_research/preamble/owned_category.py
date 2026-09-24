@@ -831,9 +831,127 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
         )
 
 
+def _declared_category_is_subcategory(category: Category, target: Category) -> bool:
+    r"""Read category inclusion from the declared graph, without class synthesis.
+
+    This is the comparison used while an owned join is being normalized.  At
+    that point ``parent_class`` may not exist yet, so Sage's default
+    ``is_subcategory`` fallback to ``issubclass(parent_class, ...)`` is a
+    circular implementation test.  A join is an intersection: it lies below a
+    target when one branch does, and a category lies below a join when it lies
+    below every branch.  For ordinary nodes, the transitive declared
+    supercategory set is the forgetful-functor relation available before any
+    implementation classes are built.
+    """
+    if category is target:
+        return True
+    if isinstance(target, JoinCategory):
+        return all(
+            _declared_category_is_subcategory(category, branch)
+            for branch in target._super_categories
+        )
+    if isinstance(category, JoinCategory):
+        return any(
+            _declared_category_is_subcategory(branch, target)
+            for branch in category._super_categories
+        )
+    return target in category._set_of_super_categories
+
+
+def _owned_flatten_categories(categories) -> tuple[Category, ...]:
+    r"""Flatten join branches without invoking Sage's subcategory sorter."""
+    flattened = []
+    for category in categories:
+        if isinstance(category, JoinCategory):
+            flattened.extend(category._super_categories)
+        else:
+            flattened.append(category)
+    return tuple(flattened)
+
+
+def _owned_sort_uniq(categories) -> tuple[Category, ...]:
+    r"""Return the declared-antichain normalization of ``categories``."""
+    ordered = tuple(
+        sorted(
+            _owned_flatten_categories(categories),
+            key=lambda category: category._cmp_key,
+            reverse=True,
+        )
+    )
+    result = []
+    for category in ordered:
+        if any(
+            _declared_category_is_subcategory(known, category)
+            for known in result
+        ):
+            continue
+        result.append(category)
+    return tuple(result)
+
+
+def _owned_join_as_tuple(categories) -> tuple[Category, ...]:
+    r"""Canonicalize an owned intersection while propagating its axioms.
+
+    This is Sage's ``join_as_tuple`` algorithm with exactly one substitution:
+    every redundancy comparison uses the declared category graph above rather
+    than ``is_subcategory``.  The axiom propagation itself is unchanged in
+    substance; in particular an intersection of a free-form category with a
+    finite-generation refinement still produces the corresponding
+    ``FreeFormModules.FinitelyGenerated`` category and retains its methods.
+    """
+    categories = _owned_sort_uniq(categories)
+    axioms = set()
+    for category in categories:
+        axioms.update(category.axioms())
+
+    done = {category: category.axioms() for category in categories}
+    todo = {
+        (category, axiom)
+        for category, known_axioms in done.items()
+        for axiom in axioms.difference(known_axioms)
+    }
+    while todo:
+        category, axiom = todo.pop()
+        if category not in done:
+            continue
+        new_categories = tuple(
+            new_category
+            for new_category in _owned_flatten_categories(
+                category._with_axiom_as_tuple(axiom)
+            )
+            if not any(
+                _declared_category_is_subcategory(known, new_category)
+                for known in done
+            )
+        )
+        for known in tuple(done):
+            if any(
+                _declared_category_is_subcategory(new_category, known)
+                for new_category in new_categories
+            ):
+                del done[known]
+
+        new_axioms = {
+            new_axiom
+            for new_category in new_categories
+            for new_axiom in new_category.axioms()
+            if new_axiom not in axioms
+        }
+        axioms.update(new_axioms)
+        for known in done:
+            for new_axiom in new_axioms:
+                todo.add((known, new_axiom))
+        for new_category in new_categories:
+            known_axioms = new_category.axioms()
+            done[new_category] = known_axioms
+            for missing in axioms.difference(known_axioms):
+                todo.add((new_category, missing))
+    return _owned_sort_uniq(done)
+
+
 def owned_category_join(categories) -> Category:
     r"""Return Sage's axiom-closed join realized as an owned join category."""
-    branches = tuple(Category.join(tuple(categories), as_list=True))
+    branches = _owned_join_as_tuple(tuple(categories))
     assert branches, "the join of no owned categories is not represented"
     if len(branches) == 1:
         return branches[0]
