@@ -3,7 +3,7 @@ r"""Morphisms of commutative algebras given by generators and relations.
 A morphism out of the polynomial algebra ``R[x_1, ..., x_n]`` is the same as a
 choice of images of the variables, and a morphism out of ``R[x]/I`` is such a
 choice that kills ``I`` (the universal properties of the polynomial ring and of
-the quotient; Atiyah-Macdonald, Ch. 1).  So the assignment ``x -> x + 1, y -> y``
+the quotient).  So the assignment ``x -> x + 1, y -> y``
 on ``Q[x, y]/(xy)`` is not a morphism, since ``(x + 1) y = y`` is not zero there,
 while ``x -> 0, y -> y`` from ``Q[x, y]/(xy)`` to ``Q[x, y]/(x)`` is one.
 

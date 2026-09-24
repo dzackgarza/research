@@ -7,7 +7,7 @@ The generic point specializes to every closed point and no closed point
 specializes to another.  The local ring ``Z_(p)`` is a discrete valuation ring,
 hence regular with embedding dimension one, and the order of vanishing at ``(p)``
 is the ``p``-adic valuation: ``ord_5(50) = 2`` and ``ord_5(3) = 0``.  The residue
-field at ``(5)`` is ``F_5`` and at ``(0)`` is ``Q`` (Atiyah-Macdonald, Ch. 9).
+field at ``(5)`` is ``F_5`` and at ``(0)`` is ``Q``.
 
 ``Z/6`` has exactly two primes, ``(2)`` and ``(3)``, so its spectrum has two points.
 """
