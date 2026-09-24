@@ -213,14 +213,9 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Public mathematical interaction
 
-- [ ] **`canonical-notebook-contract`**. **Needs:** none.
-  **Owner and delta:** `computations/notebooks/preamble.ipynb`, through japi, organized around research questions and their mathematical witnesses (`NB-01`--`05`).
-  **Invariants:** all substantive claims are executable assertions or displayed witnesses using the final owned session API. Preserve the existing useful research content; replace raw constructors, global Hom, ambiguous generators and coordinate workarounds with their mathematical owners. Clear stale failure output without representing unexecuted replacements as passed.
-  **Closure specimens:** actual algebra substitutions, a nonidentity morphism, group/lattice constructions and the notebook's geometric claims have falsifiable expected results. Source authoring closes here; clean-kernel execution and visual inspection of every relevant rendered output remain required in `terminal-session`.
-
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** `canonical-notebook-contract`.
+- [ ] **`architecture-remediation`**. **Needs:** none.
   **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
   **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open. Each complaint's entire burden is discharged or retained in a required prerequisite. All alternative construction routes affected by a repair are inspected. No numerical answer, renamed field, new wrapper, source count or administrative record substitutes for delivery (`DEV-67`, `DEV-68`).
   **Closure comparison:** reconcile the original complaint/requirement clauses with the delivered owner and consumer routes, including the generality beyond their first specimens. Review later changes to each shared contract against its delivery evidence. In particular, an "assumed linear" rename, a framing proof depending on its own Mor placement, or a private access deferred from a delivered producer fails this comparison and reopens that exact repair. Existing evidence for unaffected routes remains usable.
