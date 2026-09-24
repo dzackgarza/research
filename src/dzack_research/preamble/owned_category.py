@@ -65,7 +65,7 @@ from abc import ABCMeta
 from _abc import _abc_init
 from collections.abc import Hashable
 from dataclasses import dataclass
-from inspect import Parameter, signature
+from inspect import Parameter, isclass, ismethod, signature
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters, JoinCategory
@@ -542,6 +542,53 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         itself a category, and its objects are the arrows.
         """
         return None
+
+    @cached_method
+    def _with_axiom_as_tuple(self, axiom):
+        r"""Return structural branches whose meet adds ``axiom``.
+
+        This follows Sage's ``Category._with_axiom_as_tuple`` construction,
+        but its final redundancy elimination is read from the declared
+        supercategory ancestry rather than ``is_subcategory``.  The latter
+        synthesizes ``parent_class`` objects and is therefore circular while
+        owned category implementation classes are still being assembled.
+        """
+        if axiom in self.axioms():
+            return (self,)
+        axiom_attribute = getattr(self.__class__, axiom, None)
+        if axiom_attribute is None:
+            return (self,)
+        if axiom in self.__class__.__base__.__dict__:
+            from sage.categories.category_with_axiom import CategoryWithAxiom
+
+            if isclass(axiom_attribute) and issubclass(
+                axiom_attribute, CategoryWithAxiom
+            ):
+                return (axiom_attribute(self),)
+            return (self,)
+
+        result = (self,) + tuple(
+            branch
+            for category in self._super_categories
+            for branch in category._with_axiom_as_tuple(axiom)
+        )
+        hook = getattr(self, axiom + "_extra_super_categories", None)
+        if hook is not None:
+            assert ismethod(hook)
+            result += tuple(hook())
+
+        reduced = []
+        for member in result:
+            if any(
+                other is not member
+                and member in other._set_of_super_categories
+                and other not in member._set_of_super_categories
+                for other in result
+            ):
+                continue
+            if all(member is not known for known in reduced):
+                reduced.append(member)
+        return tuple(reduced)
 
     @cached_method
     def _with_axiom(self, axiom):
