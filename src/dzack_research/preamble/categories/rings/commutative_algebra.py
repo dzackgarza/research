@@ -54,6 +54,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _engine_krull_dimension,
+    _krull_dimension_of_engine,
     _engine_quotient_cover_ideal,
     _engine_ring,
     _install_local_ring_construction,
@@ -2430,7 +2431,7 @@ def _quotient_ring(source, defining_ideal):
 
     dimension = None
     if quotient_engine is not None and source in OwnedRings().Noetherian():
-        dimension = _engine_krull_dimension(quotient_engine)
+        dimension = _krull_dimension_of_engine(quotient_engine)
 
     quotient_is_field = False
     quotient_is_domain = False

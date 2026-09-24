@@ -2374,9 +2374,21 @@ def OwnedPrincipalIdealDomains():
 
 
 def _engine_krull_dimension(ring):
-    engine = _engine_ring(ring)
+    return _krull_dimension_of_engine(_engine_ring(ring))
+
+
+def _krull_dimension_of_engine(engine):
+    r"""The Krull dimension of a Sage computation ring, as an owned integer.
+
+    ``OWN-06`` adapter.  Sage answers ``krull_dimension`` itself on every
+    engine but one: the generic quotient ``S/I`` of a multivariate polynomial
+    ring falls to the ``CommutativeRings`` default, which raises.  There
+    ``dim S/I = dim I``, the dimension Singular computes for ``I`` (TRAPS.md).
+    ``Zmod(n)`` is also a ``QuotientRing_generic``, over ``ZZ``, and keeps its
+    own method.
+    """
     match engine:
-        case QuotientRing_generic():
+        case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base):
             dimension = engine.defining_ideal().dimension()
         case _:
             dimension = engine.krull_dimension()

@@ -218,3 +218,19 @@ p = P(); a = p.g(); p.h(); p.g() is a   # False
 Observed as `ToricSchemes.weil_divisor_group = torus_invariant_divisor_group`:
 a divisor built in `Div_T(X)` stopped belonging to `Div_T(X)` after the alias was
 called. Route chosen: an alias of a cached method is a method that calls it.
+
+### `krull_dimension` is missing on generic quotients of multivariate polynomial rings
+
+`R.quotient(I)` for `R = PolynomialRing(QQ, ['x','y'])` is a
+`QuotientRing_generic` whose `krull_dimension` is the `CommutativeRings`
+category default, which raises `NotImplementedError`
+(`sage/categories/commutative_rings.py`). There `I.dimension()` (Singular)
+gives the answer. Every other engine measured has its own method:
+`Zmod(6)` and `ZZ.quotient(2)` give 0 (`IntegerModRing_generic`),
+`ZZ['x'].quotient(x^2+1)` gives 1 (`PolynomialQuotientRing_generic`), and
+`QQ['x']`, `ZZ` and `ZZ.localization(2)` give 1. `Zmod(n)` is itself a
+`QuotientRing_generic`, over `ZZ`, whose ideals have no `dimension`, so a
+dispatch on `QuotientRing_generic` alone sends it to the wrong route.
+Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the
+defining-ideal route applies only when the cover ring is an
+`MPolynomialRing_base`.
