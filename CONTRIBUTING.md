@@ -2691,6 +2691,31 @@ The method remains on the category where nondegeneracy is mathematically meaning
 
 Do **not** replace these statements by exception-valued mathematical branches. The assertion records the proof/computability context and should fail loudly at the first unmet assumption.
 
+**The message is read only when the assertion fails, and two people read it.** A research
+mathematician, who called an operation in a session, must learn from it which mathematical
+hypothesis failed and on which object. A coder must learn where the construction went wrong.
+So the message states, in the field's words, the object, the hypothesis it failed, and what
+the object actually is, formatted from the live values. It is never the invariant restated as
+a sentence: a failed assertion printing "the action is on the supplied owned additive group"
+reads as a true statement, names nothing, and uses words no mathematician owns. Internal
+vocabulary — "native", "presentation", "supplied", "owned", "datum", "realization", private
+method names — does not appear in a message.
+
+**Bad:**
+
+```python
+assert module in AdditiveGroups().AdditiveCommutative(), "the action is on the supplied owned additive group"
+```
+
+**Preferred:**
+
+```python
+assert module in AdditiveGroups().AdditiveCommutative(), (
+    f"{module} cannot be made an {ring}-module: a module's addition must be commutative, "
+    f"but {module} is only known to be in {module.category()}"
+)
+```
+
 ### Representation and DRY patterns
 
 #### `STY-50`: Parallel representation of a canonical object -> reuse the canonical construction
