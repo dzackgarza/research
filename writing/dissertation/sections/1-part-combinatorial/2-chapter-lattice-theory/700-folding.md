@@ -70,7 +70,7 @@ Classical foldings of simply-laced Dynkin diagrams to the corresponding non-simp
 
 :::
 
-##### Case 1: $A_5 \to C_3(2)$ (Horizontal Reflection, $G = S_2$)
+##### Case 1: $A_5 \to B_3$ (Horizontal Reflection, $G = S_2$)
 
 Let $L = A_5$, where we recall the simple roots and Gram matrix:
 $$
@@ -145,33 +145,30 @@ G_{\Phi(A_5^G)} =
 -2 & 4 & -2 \\
 0 & -2 & 2
 \end{pmatrix}
-\sim
-G_{C_3(2)} = 2\cdot
+=
+G_{B_3} =
 \begin{pmatrix}
-2 & -1 & 0 \\
--1 & 2 & -1 \\
-0 & -1 & 1
+4 & -2 & 0 \\
+-2 & 4 & -2 \\
+0 & -2 & 2
 \end{pmatrix}
 $$
-which is the Gram matrix for $C_3$ up to uniform scaling, so $\Phi(A_5^G) \cong \Phi(C_3)$.
+which is precisely the Gram matrix for $B_3$, so $\Phi(A_5^G) \cong \Phi(B_3)$.
 One can see the equivalence of these root systems by noting that the Coxeter diagrams are isomorphic as weighted graphs with weighted nodes:
 
-::: {#fig-a5-fold-c3 .figure}
+::: {#fig-a5-fold-b3 .figure}
 \begin{tikzpicture}
 % Edge weights from the Gram matrices above: beta_1 beta_2 has cos^2 = 1/4 (m = 3)
-% and beta_2 beta_3 has cos^2 = 1/2 (m = 4) in all three diagrams.
+% and beta_2 beta_3 has cos^2 = 1/2 (m = 4) in both diagrams.
 \pic (G) at (0,0) {root chain={black/\beta_{[\alpha_1]}^2 = 4/3, black/\beta_{[\alpha_2]}^2 = 4/4,
   white/\beta_{[\alpha_3]}^2 = 2/}};
 \node at (1.5,1.2) {\Large $A_5^G$};
-\pic (C) at (6,2) {root chain={white/\alpha_1^2 = 2/3, white/\alpha_2^2 = 2/4,
-  white/\alpha_3^2 = 1/}};
-\node at (7.5,3.2) {\Large $C_3$};
-\pic (D) at (6,-2) {root chain={black/\alpha_1^2 = 4/3, black/\alpha_2^2 = 4/4,
+\pic (B) at (6,0) {root chain={black/\alpha_1^2 = 4/3, black/\alpha_2^2 = 4/4,
   white/\alpha_3^2 = 2/}};
-\node at (7.5,-0.8) {\Large $C_3(2)$};
+\node at (7.5,1.2) {\Large $B_3$};
 \end{tikzpicture}
 
-The folded root system $A_5^G$ compared with $C_3$ and its scaled form $C_3(2)$.
+The folded root system $A_5^G$ compared with the Coxeter diagram of $B_3$.
 
 :::
 
