@@ -215,13 +215,7 @@ Paths below are relative to `src/dzack_research/preamble/categories/` unless a d
 
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** none.
-  **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
-  **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open. Each complaint's entire burden is discharged or retained in a required prerequisite. All alternative construction routes affected by a repair are inspected. No numerical answer, renamed field, new wrapper, source count or administrative record substitutes for delivery (`DEV-67`, `DEV-68`).
-  **Closure comparison:** reconcile the original complaint/requirement clauses with the delivered owner and consumer routes, including the generality beyond their first specimens. Review later changes to each shared contract against its delivery evidence. In particular, an "assumed linear" rename, a framing proof depending on its own Mor placement, or a private access deferred from a delivered producer fails this comparison and reopens that exact repair. Existing evidence for unaffected routes remains usable.
-  **Closure evidence:** bank falsifying specimens for every repaired obligation, including inherited operations, wrong nearby inputs and relevant infinite/nonfree/base-change cases. Commits record source coverage and unexecuted proof. Review composed consumers after their prerequisites, without rerunning an unrelated whole-tree inventory after every leaf. Source closure authorizes T; it does not claim runtime success.
-
-- [ ] **`research-sage-runtime`**. **Needs:** `architecture-remediation`.
+- [ ] **`research-sage-runtime`**. **Needs:** none.
   **Owner and delta:** the tracked `.envrc` and intended stable research-Sage installation, verified through the existing just recipes once source remediation closes.
   **Invariants:** establish the currently selected executable, interpreter, version and declared dependencies before diagnosing an environment failure. The old failed source-checkout launcher is not evidence that the current `.venv/bin/sage` fails. Repair a reproduced defect at the intended installation; no temporary Sage distribution or filesystem dependency replacement.
   **Closure evidence:** the tracked environment launches the intended Sage, preparses the repository's `.sage` inputs by the normal route and reaches the fresh star import. If it already does so, no environment edit is required. Keep mathematical failures distinct from launcher/provisioning failures.
