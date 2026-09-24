@@ -17,6 +17,7 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.logic import ask
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReal
 from dzack_research.preamble.rings.real import RR
 
 
@@ -77,10 +78,8 @@ class _UnitInterval:
     def _element_constructor_(self, value):
         if sage_parent(value) is self:
             return value
-        try:
+        if isinstance(value, NonNegativeReal):
             value = value.as_extended_real()
-        except AttributeError:
-            pass
         real = RR(value)
         nonnegative = ask(real >= RR.zero())
         at_most_one = ask(real <= RR.one())
