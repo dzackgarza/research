@@ -545,12 +545,11 @@ def _torsion_form_subobject_action(form, family, acting):
         image = frozenset(
             automorphism(element) for element in _embedded_elements(subobject)
         )
-        try:
-            return by_embedded_elements[image]
-        except KeyError as error:
+        if image not in by_embedded_elements:
             raise ValueError(
                 "the selected subobject family is not invariant under the acting group"
-            ) from error
+            )
+        return by_embedded_elements[image]
 
     return FiniteGSets(acting)(points, act)
 

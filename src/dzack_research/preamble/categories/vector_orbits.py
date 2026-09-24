@@ -190,10 +190,10 @@ class VectorPrimitiveExtension:
     def class_of_representative(self, element):
         r"""Return the class of ``A_L`` represented by an element of ``H^perp``."""
         key = self.sum_form(element)
-        try:
-            return self._representative_table()[key]
-        except KeyError as error:
-            raise ValueError("the element lies outside H^perp and represents no class of A_L") from error
+        table = self._representative_table()
+        if key not in table:
+            raise ValueError("the element lies outside H^perp and represents no class of A_L")
+        return table[key]
 
     def complement_is_definite(self) -> bool:
         r"""Return whether the orthogonal complement is definite."""

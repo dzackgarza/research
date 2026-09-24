@@ -933,10 +933,10 @@ class CoxeterDiagrams(OwnedCategory):
             r"""Return the archived rooted-diagram fill convention determined by root square."""
             square = self.root(vertex).q()
             colors = {-4: "#F8F9FE", -2: "#BFC9CA"}
-            try:
-                return colors[int(square)]
-            except KeyError as error:
-                raise ValueError(f"no Coxeter node color is defined for square {square}") from error
+            square_key = int(square)
+            if square_key not in colors:
+                raise ValueError(f"no Coxeter node color is defined for square {square}")
+            return colors[square_key]
 
         def equivariant_positions(self, automorphism):
             r"""Return exact planar positions intertwining a finite diagram automorphism."""
