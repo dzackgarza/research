@@ -128,10 +128,7 @@ def _galois_orbits_of_irreducible_characters(group):
     if not characters:
         return tuple()
     field = group.character_table().base_ring()
-    try:
-        automorphisms = tuple(field.galois_group())
-    except (AttributeError, NotImplementedError, TypeError):
-        automorphisms = tuple()
+    automorphisms = tuple(field.galois_group())
     if not automorphisms:
         return tuple(IsotypicCharacter((character,)) for character in characters)
 
@@ -166,14 +163,12 @@ def _split_irreducible_characters(module):
     characters = tuple(group.irreducible_characters())
     for character in characters:
         for value in character.values():
-            try:
-                ring(value)
-            except (TypeError, ValueError) as error:
+            if value not in ring:
                 raise AssertionError(
                     f"cannot decompose {module} into isotypic components: {module.coefficient_ring()} is not a "
                     f"splitting field for {group}, since the value {value} of the irreducible character "
                     f"{character} does not lie in it"
-                ) from error
+                )
     return tuple(IsotypicCharacter((character,)) for character in characters)
 
 

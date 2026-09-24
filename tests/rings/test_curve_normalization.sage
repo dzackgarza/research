@@ -1,5 +1,7 @@
 r"""Normalization, conductor, and delta for represented affine curve domains."""
 
+import pytest
+
 from dzack_research.preamble.all import *
 
 
@@ -41,3 +43,10 @@ def test_a_smooth_affine_line_is_its_own_normalization() -> None:
     assert line.is_normal()
     assert line.delta_invariant() == 0
     assert line.conductor_ideal() == line.ideal(line.one())
+
+
+def test_normalization_rejects_a_non_polynomial_quotient_at_its_frontier() -> None:
+    quotient = ZZ.quotient_ring(ZZ.ideal(ZZ(6)))
+
+    with pytest.raises(AssertionError):
+        quotient.normalization()

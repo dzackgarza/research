@@ -10,6 +10,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    FramedAlgebras,
     _algebra_on_module,
     _root_algebra_law_decisions,
 )
@@ -214,8 +215,10 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             dga_differential_decisions=None,
             **rest,
         ) -> None:
-            if dga_underlying_algebra is not None:
-                self._preamble_dga_underlying_algebra = dga_underlying_algebra
+            self._preamble_dga_underlying_algebra = (
+                self if dga_underlying_algebra is None else dga_underlying_algebra
+            )
+            self._preamble_differential = None
             super().__init__(**rest)
             if dga_differential_function is not None:
                 decisions = (
@@ -232,7 +235,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
         def underlying_graded_algebra(self):
             r"""Return the exact graded algebra equipped with this differential."""
-            return self.__dict__.get("_preamble_dga_underlying_algebra", self)
+            return self._preamble_dga_underlying_algebra
 
         def cohomology_algebra(self):
             r"""Return the represented graded cohomology algebra ``H^*(self)``."""
@@ -370,11 +373,10 @@ class Differential(GradedDerivation):
 
     def _square_zero_on_generators(self):
         algebra = self.algebra()
-        try:
-            labels = algebra.algebra_generating_set()
-            finite = labels.cardinality().is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        if algebra not in FramedAlgebras(algebra.base_ring()):
             return Unknown
+        labels = algebra.algebra_generating_set()
+        finite = labels.cardinality().is_finite()
         match finite:
             case True:
                 pass
@@ -422,7 +424,7 @@ def _fix_selected_differential(
     operation. The retained datum is read only through ``differential()``;
     callers never open the private storage.
     """
-    if algebra.__dict__.get("_preamble_differential") is not None:
+    if algebra._preamble_differential is not None:
         raise ValueError(f"{algebra} already has a differential; it cannot be given a second one")
     if not (graded_leibniz is True or graded_leibniz is Unknown) or not (
         square_zero is True or square_zero is Unknown
@@ -491,12 +493,11 @@ class DGAMorphism(Morphism):
     def _decide_differential_compatibility(self):
         source = self.domain()
         target = self.codomain()
-        try:
-            labels = source.algebra_generating_set()
-            finite = labels.cardinality().is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        if source not in FramedAlgebras(source.base_ring()):
             return Unknown
-        if not finite:
+        labels = source.algebra_generating_set()
+        finite = labels.cardinality().is_finite()
+        if finite is not True:
             return Unknown
         comparisons = tuple(
             self._underlying(source.d(source.algebra_generator(label)))

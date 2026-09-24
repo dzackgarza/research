@@ -262,9 +262,19 @@ def _catalogue_entry(name):
     return lazy_class_attribute(entry)
 
 
-for _name, _entry in vars(NamedLattices).items():
-    if isinstance(_entry, lazy_class_attribute):
-        setattr(Lattices, _name, _catalogue_entry(_name))
+_NAMED_LATTICE_NAMES = frozenset(
+    name for name, entry in vars(NamedLattices).items() if isinstance(entry, lazy_class_attribute)
+)
+
+
+def _named_lattice_block(name):
+    r"""The catalogue lattice ``NamedLattices.<name>``, constructed on its first access."""
+    assert name in _NAMED_LATTICE_NAMES, f"{name} is not a named lattice of the catalogue"
+    return getattr(NamedLattices, name)
+
+
+for _name in _NAMED_LATTICE_NAMES:
+    setattr(Lattices, _name, _catalogue_entry(_name))
 
 
 # Exact Gram-block names used by the represented direct-sum decomposition.
@@ -381,7 +391,7 @@ def _orthogonal_sum(recipe):
     sums that ``indecomposable_summands`` would have to walk back apart.
     """
     blocks = tuple(
-        getattr(NamedLattices, name)
+        _named_lattice_block(name)
         for name, multiplicity in recipe
         for _index in range(multiplicity)
     )
@@ -792,8 +802,8 @@ def _negative_block(name, twist=1):
         # ``rank_one_negative(d)`` in the archived catalogue means
         # ``<-2d>``, not ``<-d>``.
         block = _C([[-2 * SageZZ(name[1:])]])
-    elif hasattr(NamedLattices, name):
-        block = getattr(NamedLattices, name)
+    elif name in _NAMED_LATTICE_NAMES:
+        block = _named_lattice_block(name)
     else:
         block = _C(name)
     return block if twist == 1 else block.twist(SageZZ(twist))
@@ -813,6 +823,9 @@ def _negative_sum(parts):
         for _copy in range(multiplicity):
             result = block if result is None else result + block
     return NamedLattices.Zero if result is None else result
+
+
+_CATALOGUE_GLUE_INCLUSIONS = []
 
 
 @cache
@@ -840,7 +853,7 @@ def _negative_two_elementary_row(key):
                 )
             inclusion = lattice.overlattice(discriminant_class)
             lattice = inclusion.codomain()
-            lattice._catalogue_glue_inclusion = inclusion
+            _CATALOGUE_GLUE_INCLUSIONS.append((lattice, inclusion))
         values.append(lattice)
     return tuple(values)
 
@@ -866,20 +879,12 @@ NegativeDefTwoElementary = _NegativeDefTwoElementaryTable()
 
 
 
+_TWO_ELEMENTARY_BLOCK_NAMES = ("A1", "D4", "D6", "D8", "E7", "E8", "E8_2", "Z_2", "U", "U_2")
+
+
 @cache
 def _two_elementary_blocks():
-    blocks = (
-        NamedLattices.A1,
-        NamedLattices.D4,
-        NamedLattices.D6,
-        NamedLattices.D8,
-        NamedLattices.E7,
-        NamedLattices.E8,
-        NamedLattices.E8_2,
-        NamedLattices.Z_2,
-        NamedLattices.U,
-        NamedLattices.U_2,
-    )
+    blocks = tuple(_named_lattice_block(name) for name in _TWO_ELEMENTARY_BLOCK_NAMES)
     return tuple(
         (
             block,
@@ -923,11 +928,8 @@ def two_elementary_orthogonal_sums(target_signature, a, delta):
         if index == len(block_data):
             if positive == negative == length == 0 and realized_delta == target_delta:
                 recipe = tuple(
-                    (
-                        next(name for name, specimen in vars(NamedLattices).items() if specimen is block),
-                        count,
-                    )
-                    for (block, *_invariants), count in zip(block_data, counts, strict=True)
+                    (name, count)
+                    for name, count in zip(_TWO_ELEMENTARY_BLOCK_NAMES, counts, strict=True)
                     if count
                 )
                 realizations.append(_orthogonal_sum(recipe))

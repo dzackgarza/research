@@ -22,9 +22,10 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 SourcePointT = TypeVar("SourcePointT")
@@ -38,7 +39,7 @@ class _DomainFunctor(Functor):
     def __init__(self, category: Category) -> None:
         super().__init__(category.ArrowCategory(), category)
 
-    def _apply_object(self, arrow_object: Parent) -> Parent:
+    def _apply_object(self, arrow_object: Parent) -> ObjectOfCategory:
         return arrow_object.source_object()
 
     def _apply_morphism(self, square: Map) -> Map:
@@ -51,7 +52,7 @@ class _CodomainFunctor(Functor):
     def __init__(self, category: Category) -> None:
         super().__init__(category.ArrowCategory(), category)
 
-    def _apply_object(self, arrow_object: Parent) -> Parent:
+    def _apply_object(self, arrow_object: Parent) -> ObjectOfCategory:
         return arrow_object.target_object()
 
     def _apply_morphism(self, square: Map) -> Map:
@@ -103,7 +104,7 @@ class DiscreteMor(CategoricalMor):
     def discrete_category(self) -> DiscreteCategory:
         return self.base_category()
 
-    def cardinality(self) -> Parent:
+    def cardinality(self) -> Cardinal:
 
         return cardinal(1 if self.domain() is self.codomain() else 0)
 
@@ -166,7 +167,7 @@ class DiscreteCategory(OwnedCategory):
                 return cls.__base__(object_set)
         return typecall(cls, object_set)
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The object at a point of the underlying set."""
         return self.object(self.object_set().an_element())
 
@@ -201,7 +202,7 @@ class DiscreteCategory(OwnedCategory):
     def _make_named_class_key(self, name):
         return id(self._object_set)
 
-    def object_set(self) -> Parent:
+    def object_set(self) -> Sets().ObjectType:
         return self._object_set
 
     def category(self) -> Category:
@@ -211,7 +212,7 @@ class DiscreteCategory(OwnedCategory):
     def super_categories(self):
         return [Objects()]
 
-    def object(self, value: SourcePointT) -> Parent:
+    def object(self, value: SourcePointT) -> ObjectOfCategory:
         return self._objects(value)
 
     __call__ = object
@@ -274,7 +275,7 @@ class _DiscreteFunctor(Functor):
     def object_map(self) -> Morphism:
         return self._object_map
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         return self.codomain()(self.object_map()(obj.value()))
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -287,7 +288,7 @@ class ObjectSetFunctor(Functor):
     def __init__(self) -> None:
         super().__init__(DiscreteCategories(), Sets())
 
-    def _apply_object(self, category: Parent) -> Parent:
+    def _apply_object(self, category: Parent) -> Sets().ObjectType:
         match category:
             case CategoryObject():
                 category = category.represented_category()
@@ -316,7 +317,7 @@ class _DiscreteDiagram(Functor):
     def diagram_objects(self) -> IndexedFamily:
         return self._values
 
-    def _apply_object(self, index: Parent) -> Parent:
+    def _apply_object(self, index: Parent) -> ObjectOfCategory:
         return self._values(index.value())
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -336,10 +337,10 @@ class _ConstantDiagram(Functor):
         self._value = value
         super().__init__(index_category, codomain)
 
-    def constant_value(self) -> Parent:
+    def constant_value(self) -> ObjectOfCategory:
         return self._value
 
-    def _apply_object(self, index: Parent) -> Parent:
+    def _apply_object(self, index: Parent) -> ObjectOfCategory:
         return self.constant_value()
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -371,7 +372,7 @@ class _DiagonalFunctor(Functor):
     def product_category(self) -> Category:
         return self._product_category
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         return self.product_category()(obj, obj)
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -388,7 +389,7 @@ class _ProductFunctor(Functor):
         self._product_category = Cat().product((category, category))
         super().__init__(self._product_category, category)
 
-    def _apply_object(self, pair: Parent) -> Parent:
+    def _apply_object(self, pair: Parent) -> ObjectOfCategory:
 
         return self.codomain().product((pair.first(), pair.second()))
 
@@ -408,7 +409,7 @@ class _CoproductFunctor(Functor):
         self._product_category = Cat().product((category, category))
         super().__init__(self._product_category, category)
 
-    def _apply_object(self, pair: Parent) -> Parent:
+    def _apply_object(self, pair: Parent) -> ObjectOfCategory:
 
         return self.codomain().coproduct((pair.first(), pair.second()))
 
@@ -451,7 +452,7 @@ class _LimitFunctor(Functor):
     def _diagram(diagram_object):
         return diagram_object.functor()
 
-    def _apply_object(self, diagram_object: Parent) -> Parent:
+    def _apply_object(self, diagram_object: Parent) -> ObjectOfCategory:
         return self._limits.construction(self._diagram(diagram_object)).object()
 
     def _apply_morphism(self, transformation_morphism: Map) -> Map:
@@ -478,7 +479,7 @@ class _ColimitFunctor(Functor):
     def _diagram(diagram_object):
         return diagram_object.functor()
 
-    def _apply_object(self, diagram_object: Parent) -> Parent:
+    def _apply_object(self, diagram_object: Parent) -> ObjectOfCategory:
         return self._colimits.construction(self._diagram(diagram_object)).object()
 
     def _apply_morphism(self, transformation_morphism: Map) -> Map:

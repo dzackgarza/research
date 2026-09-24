@@ -118,6 +118,7 @@ class PowerAlgebraMorphism(Morphism):
 
     def __init__(self, parent, degree_one_map) -> None:
         Morphism.__init__(self, parent)
+        self._preamble_is_identity = False
         source_module = self.domain().generating_module()
         target_module = self.codomain().generating_module()
         if isinstance(degree_one_map, ModuleMorphism):
@@ -166,7 +167,7 @@ class PowerAlgebraMorphism(Morphism):
         return self._call_(element)
 
     def is_identity(self) -> bool:
-        return bool(getattr(self, "_preamble_is_identity", False))
+        return self._preamble_is_identity
 
     def __mul__(self, other):
         if not isinstance(other, PowerAlgebraMorphism) or other.codomain() is not self.domain():

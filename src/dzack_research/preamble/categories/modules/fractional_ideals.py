@@ -6,6 +6,7 @@ from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import ModuleElement
+from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -166,7 +167,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         def _element_constructor_(self, value):
             if isinstance(value, self.element_class) and value.parent() is self:
                 return value
-            parent = getattr(value, "parent", lambda: None)()
+            parent = element_parent(value)
             if parent is not None and parent in OwnedRings():
                 candidate = _engine_element(parent, value)
             else:
@@ -180,7 +181,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         def __contains__(self, value) -> bool:
             if isinstance(value, self.element_class) and value.parent() is self:
                 return True
-            parent = getattr(value, "parent", lambda: None)()
+            parent = element_parent(value)
             match parent:
                 case _ if parent is not None and parent in OwnedRings():
                     candidate = _engine_element(parent, value)
@@ -489,7 +490,7 @@ def _fraction_field_backend_value(base_ring, value):
     ring = _owned_ring(base_ring)
     field = ring.fraction_field()
     engine_field = _engine_ring(field)
-    value_parent = getattr(value, "parent", lambda: None)()
+    value_parent = element_parent(value)
     if value_parent in OwnedRings():
         return engine_field(_engine_element(value_parent, value))
     return engine_field(value)

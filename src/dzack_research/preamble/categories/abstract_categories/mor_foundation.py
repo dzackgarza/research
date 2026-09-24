@@ -2,12 +2,21 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sage.categories.category import Category
 from sage.categories.homset import Homset as SageHomset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
+from sage.misc.cachefunc import cached_method
 from sage.structure.element import Element
 from sage.structure.parent import Parent
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon.category_theory import (
+        ElementOfCategoryObject,
+        ObjectOfCategory,
+    )
 
 
 class OwnedMor(SageHomset):
@@ -18,6 +27,16 @@ class OwnedMor(SageHomset):
     concrete Mor object owns the interpretation implemented by
     ``_element_constructor_``.
     """
+
+    @cached_method
+    def _selected_framing_registry(self):
+        r"""The chosen framings of this Mor object, by ambient category.
+
+        A Mor object fixes its framing before its category is set, so the
+        ``Objects`` registry cannot reach it yet; this is the same registry
+        at the Mor objects' own host root.
+        """
+        return {}
 
     def __call__(self, *args, **kwargs) -> Morphism:
         return self._element_constructor_(*args, **kwargs)
@@ -120,12 +139,12 @@ class CategoryPacketMethods:
     """
 
     @property
-    def ObjectType(self) -> type[Parent]:
+    def ObjectType(self) -> type[ObjectOfCategory]:
         r"""The implementation type for objects of this category."""
         return self.parent_class
 
     @property
-    def ElementType(self) -> type[Element]:
+    def ElementType(self) -> type[ElementOfCategoryObject]:
         r"""The implementation type for elements of those objects."""
         return self.element_class
 
@@ -146,7 +165,10 @@ class CategoryPacketMethods:
 
         return _CoreCategory(self)
 
-    def _mor_endpoint(self, obj: Parent | Category) -> Parent | Category:
+    def _mor_endpoint(
+        self,
+        obj: Parent | Category,
+    ) -> ObjectOfCategory | Category:
         r"""Represent an endpoint in this category's Mor construction.
 
         Ordinary categories already receive their objects. ``Cat`` overrides

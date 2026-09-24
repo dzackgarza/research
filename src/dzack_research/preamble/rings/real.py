@@ -26,6 +26,7 @@ from sage.functions import trig as _sage_trig
 from sage.misc import functional as _sage_functional
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
+from sage.categories.rings import Rings as SageRings
 from sage.rings.integer_ring import ZZ
 from sage.rings.qqbar import AA, QQbar
 from sage.rings.rational_field import QQ
@@ -48,6 +49,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_engi
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedRings,
+    _OwnedRingBootstrapParent,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -90,13 +92,11 @@ def _contains_approximation(expression: Expression) -> bool:
     if isinstance(atom, (float, complex)):
         return True
 
-    try:
-        atom_parent = parent(atom)
-        is_exact = atom_parent.is_exact()
-    except (AttributeError, TypeError):
-        # Symbolic constants such as pi are not approximate Sage ring elements.
-        return False
-    return not bool(is_exact)
+    atom_parent = parent(atom)
+    if atom_parent in SageRings():
+        return not bool(atom_parent.is_exact())
+    # Symbolic constants and foreign Python atoms are not approximation rings.
+    return False
 
 
 def _closed_exact_real_expression(value) -> Expression:
@@ -104,25 +104,16 @@ def _closed_exact_real_expression(value) -> Expression:
     if isinstance(value, ExactRealNumber):
         return value.expression()
 
-    try:
-
+    value_parent = parent(value)
+    if value_parent in OwnedRings():
+        value = _engine_element(value_parent, value)
         value_parent = parent(value)
-        if value_parent in OwnedRings():
-            value = _engine_element(value_parent, value)
-    except (AttributeError, TypeError, ValueError):
-        pass
 
     if isinstance(value, float):
         raise TypeError(
             f"{value!r} is a floating-point number, not an exact real number; "
             "give the exact expression it approximates"
         )
-
-    value_parent = None
-    try:
-        value_parent = parent(value)
-    except TypeError:
-        pass
 
     if value_parent is QQbar:
         if value.imag() != 0:
@@ -133,14 +124,11 @@ def _closed_exact_real_expression(value) -> Expression:
             f"{value} is a numerical approximation in {value_parent}, not an exact real number; "
             "give the exact expression it approximates"
         )
-    elif value_parent is not None and value_parent is not SR:
-        try:
-            if not value_parent.is_exact():
-                raise TypeError(
-                    f"{value} lies in the inexact ring {value_parent}, so it is an approximation, not an exact real number"
-                )
-        except AttributeError:
-            pass
+    elif value_parent is not SR and value_parent in SageRings():
+        if not value_parent.is_exact():
+            raise TypeError(
+                f"{value} lies in the inexact ring {value_parent}, so it is an approximation, not an exact real number"
+            )
 
     expression = SR(value)
     if expression.variables():
@@ -160,10 +148,9 @@ def _simplified_difference(left: Expression, right: Expression) -> Expression:
 
 def _sign_from_algebraic(expression: Expression):
     r"""Return ``-1,0,1`` when ``expression`` is algebraic, else ``None``."""
-    try:
-        value = AA(expression)
-    except (TypeError, ValueError, NotImplementedError):
+    if expression not in AA:
         return None
+    value = AA(expression)
     if value == 0:
         return 0
     return -1 if value < 0 else 1
@@ -171,10 +158,10 @@ def _sign_from_algebraic(expression: Expression):
 
 def _sign_from_ball(expression: Expression, precision: int):
     r"""Certify the sign using an Arb enclosure, or return ``None``."""
-    try:
-        ball = RealBallField(precision)(expression)
-    except (TypeError, ValueError, NotImplementedError):
+    field = RealBallField(precision)
+    if expression not in field:
         return None
+    ball = field(expression)
     if ball == 0:
         return 0
     if ball.contains_zero():
@@ -542,8 +529,7 @@ class ExactRealField(UniqueRepresentation, Field):
             FinitelyGeneratedFreeModules,
         )
 
-        # A field is a commutative unital algebra and a rank-one free module
-        # over itself, the placement _owned_ring_category gives every owned ring.
+        regular_algebra = Algebras(self).Associative().Unital().Commutative()
         Field.__init__(
             self,
             base=self,
@@ -551,7 +537,7 @@ class ExactRealField(UniqueRepresentation, Field):
                 (
                     OwnedFields(),
                     UncountableSets(),
-                    Algebras(self).Associative().Unital().Commutative(),
+                    regular_algebra,
                     FinitelyGeneratedFreeModules(self),
                 )
             ),
@@ -600,11 +586,10 @@ class ExactRealField(UniqueRepresentation, Field):
         computation_source = _engine_ring(source)
         if computation_source in (ZZ, QQ, AA):
             return True
-        try:
-            if AA.has_coerce_map_from(computation_source):
-                return True
-        except TypeError:
-            pass
+        if computation_source not in SageRings():
+            return None
+        if AA.has_coerce_map_from(computation_source):
+            return True
         return None
 
     def relation(self, left: ExactRealNumber, right: ExactRealNumber, relation):
@@ -657,6 +642,9 @@ class ExactRealField(UniqueRepresentation, Field):
         from sage.symbolic.constants import e
 
         return self(e)
+
+
+_OwnedRingBootstrapParent.register(ExactRealField)
 
 
 RR = ExactRealField()

@@ -12,6 +12,11 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
+from dzack_research.preamble.lexicon.category_theory import (
+    ElementOfCategoryObject,
+    ObjectOfCategory,
+)
+from dzack_research.preamble.lexicon.set_theory import SetObject
 
 if TYPE_CHECKING:
     from sage.structure.element import Element
@@ -35,7 +40,7 @@ def _cyclic_cover_presentation(
     algebra: Parent,
     branch_coefficient: Element,
     degree: Integer,
-) -> Parent:
+) -> ObjectOfCategory:
     r"""Return ``R[z]/(z^n - f)``, the cover algebra of a trivialized chart.
 
     Where ``L`` is trivialized by ``e``, the branch section reads ``s = f e^n``
@@ -57,7 +62,10 @@ def _cyclic_cover_presentation(
     )
 
 
-def _rank_one_coefficient(module: Parent, element: Element) -> Element:
+def _rank_one_coefficient(
+    module: Parent,
+    element: Element,
+) -> ElementOfCategoryObject:
     labels = module.module_generating_set()
     if not labels.cardinality().is_finite() or int(labels.cardinality()) != 1:
         raise TypeError(
@@ -110,13 +118,12 @@ class CyclicCoverAlgebra(SageObject):
         if degree < 2:
             raise ValueError(f"a cyclic cover of degree n needs n >= 2, but n = {degree}")
 
-        try:
-            supplied_parent = branch_section.parent()
-        except AttributeError as error:
+        if not isinstance(branch_section, Element):
             raise TypeError(
                 f"the branch section must be a section of L^{degree} for L = {line_bundle}, but "
                 f"{branch_section!r} is not a section"
-            ) from error
+            )
+        supplied_parent = branch_section.parent()
 
         branch_power = line_bundle.tensor_power(int(degree))
         match line_bundle.cover() in DistinguishedAffineCovers():
@@ -189,13 +196,13 @@ class CyclicCoverAlgebra(SageObject):
         )
         self._gluing_datum = self._build_algebra_gluing_datum()
 
-    def line_bundle(self) -> Parent:
+    def line_bundle(self) -> ObjectOfCategory:
         return self._line_bundle
 
-    def branch_power(self) -> Parent:
+    def branch_power(self) -> ObjectOfCategory:
         return self._branch_power
 
-    def branch_section(self) -> Element:
+    def branch_section(self) -> ElementOfCategoryObject:
         return self._branch_section
 
     def degree(self) -> Integer:
@@ -204,12 +211,12 @@ class CyclicCoverAlgebra(SageObject):
     def cover(self) -> DistinguishedAffineCovers().ObjectType:
         return self.line_bundle().cover()
 
-    def chart_index_set(self) -> Parent:
+    def chart_index_set(self) -> SetObject:
         r"""Return the exact finite index set labelling the cyclic-cover atlas."""
 
         return self._chart_index_set
 
-    def scheme(self) -> Parent:
+    def scheme(self) -> ObjectOfCategory:
         return self.line_bundle().scheme()
 
     def _chart_scheme(self, index):
@@ -224,17 +231,17 @@ class CyclicCoverAlgebra(SageObject):
             case False:
                 return cover.chart(index)
 
-    def local_branch_coefficient(self, index: Integer) -> Element:
+    def local_branch_coefficient(self, index: Integer) -> ElementOfCategoryObject:
         return self._local_branch_coefficients[self.chart_index_set()(index)]
 
-    def _build_local_algebra(self, index: Integer) -> Parent:
+    def _build_local_algebra(self, index: Integer) -> ObjectOfCategory:
         algebra = self._chart_scheme(index).coordinate_algebra()
         return algebra.cyclic_cover_presentation(
             self.local_branch_coefficient(index),
             self.degree(),
         )
 
-    def local_algebra(self, index: Integer) -> Parent:
+    def local_algebra(self, index: Integer) -> ObjectOfCategory:
         return self._local_algebra_family[self.chart_index_set()(index)]
 
     def local_algebras(self) -> IndexedFamily:
@@ -242,7 +249,7 @@ class CyclicCoverAlgebra(SageObject):
 
         return self._local_algebra_family
 
-    def local_underlying_module(self, index: Integer) -> Parent:
+    def local_underlying_module(self, index: Integer) -> ObjectOfCategory:
         r"""Return the same local algebra object, carrying its rank-``n`` module basis."""
 
         return self.local_algebra(index)
@@ -253,7 +260,7 @@ class CyclicCoverAlgebra(SageObject):
     def local_presentation(self, index: Integer) -> IndexedFamily:
         return self.local_algebra(index).presentation()
 
-    def local_equation(self, index: Integer) -> Element:
+    def local_equation(self, index: Integer) -> ElementOfCategoryObject:
         relations = self.local_algebra(index).relations()
         return relations.value(next(iter(relations.index_set())))
 
@@ -290,7 +297,7 @@ class CyclicCoverAlgebra(SageObject):
         )
         return algebras.Core().Mor(source, target)(forward, inverse)
 
-    def _build_algebra_gluing_datum(self) -> Parent:
+    def _build_algebra_gluing_datum(self) -> ObjectOfCategory:
         charts = self.chart_index_set()
         from dzack_research.preamble.categories.schemes.ringed_spaces import (
             DistinguishedAffineCovers,
@@ -329,18 +336,18 @@ class CyclicCoverAlgebra(SageObject):
                 }
                 return AlgebraGluingData(self.cover())(self.local_algebras(), transitions)
 
-    def gluing_datum(self) -> Parent:
+    def gluing_datum(self) -> ObjectOfCategory:
         r"""The algebra descent datum ``(B_i, phi_ij)`` on the cover."""
         return self._gluing_datum
 
-    def sheaf(self) -> Parent:
+    def sheaf(self) -> ObjectOfCategory:
         r"""The sheaf of ``O_X``-algebras glued from the descent datum."""
         return self.gluing_datum().sheaf()
 
-    def underlying_module_datum(self) -> Parent:
+    def underlying_module_datum(self) -> ObjectOfCategory:
         return self.gluing_datum().underlying_module_datum()
 
-    def global_sections(self) -> Parent:
+    def global_sections(self) -> ObjectOfCategory:
         r"""``Gamma(X, A)``, the ``O(X)``-algebra of compatible local sections."""
         return self.gluing_datum().compatible_sections()
 
@@ -415,7 +422,7 @@ class CyclicCoverAlgebra(SageObject):
         self,
         chart_index: Integer,
         *intersection_indices: Integer,
-    ) -> Parent:
+    ) -> ObjectOfCategory:
         return self.gluing_datum().restricted_algebra(
             chart_index,
             *intersection_indices,

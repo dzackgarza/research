@@ -183,13 +183,11 @@ class OrderEmbedding(Morphism):
         for basis_element in self.domain().integral_basis():
             source_owned = source_field(basis_element)
             image = field_embedding(source_owned)
-            try:
-                self.codomain()(image)
-            except (TypeError, ValueError) as error:
+            if image not in self.codomain():
                 raise ValueError(
                     f"{field_embedding} does not restrict to a morphism of orders {self.domain()} -> {self.codomain()}: "
                     f"it sends the basis element {basis_element} to {image}, which is not in {self.codomain()}"
-                ) from error
+                )
         self._field_embedding = field_embedding
 
     def field_embedding(self) -> NumberFieldEmbedding:

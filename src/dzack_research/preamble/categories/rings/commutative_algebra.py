@@ -11,15 +11,18 @@ from sage.all import (
 from sage.all import (
     Zp as _SageZp,
 )
-from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
+from sage.categories.fields import Fields as SageFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
+from sage.rings.fraction_field import FractionField_generic as SageFractionField
+from sage.rings.ideal import Ideal_generic as SageIdeal
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import CommutativeRingElement, Element
+from sage.rings.quotient_ring import QuotientRing_generic
+from sage.structure.element import CommutativeRingElement, Element, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
@@ -38,7 +41,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _OwnedAlgebraElement,
     _OwnedAlgebraParent,
     _algebra_structure_morphism,
-    _refine_algebra,
+    _algebra_with_structure,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
@@ -74,9 +77,9 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category
 
 
-def _refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
+def _commutative_algebra_with_structure(algebra, base_ring, labels=None, *categories):
     r"""Construct the commutative owned algebra view over ``base_ring``."""
-    return _refine_algebra(algebra, base_ring, labels, *categories)
+    return _algebra_with_structure(algebra, base_ring, labels, *categories)
 
 
 class _PrimeSpectrumTopologyData:
@@ -172,13 +175,7 @@ class PrimeSpectra(OwnedCategory):
             point_engine = _engine_ideal(ring, self.ideal())
             if ring in QuotientRings():
                 point_engine = _engine_quotient_cover_ideal(ring, point_engine)
-            try:
-                degree = int(point_engine.vector_space_dimension())
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise AssertionError(
-                    f"cannot compute the residue degree [kappa(p) : k] at the closed point {self} of Spec({ring}): "
-                    "the dimension of the residue field over k could not be computed"
-                ) from error
+            degree = int(point_engine.vector_space_dimension())
             return _own_ring(SageZZ)(degree)
 
         @cached_method
@@ -490,11 +487,8 @@ class PrimeSpectra(OwnedCategory):
         def __contains__(self, candidate) -> bool:
             if isinstance(candidate, self.category().ElementType):
                 return candidate.parent() is self
-            try:
-                ideal = _engine_ideal(self.ring(), candidate)
-                return bool(ideal.is_prime())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
+            ideal = _engine_ideal(self.ring(), candidate)
+            return bool(ideal.is_prime())
 
         def le(self, left, right) -> bool:
             return self._element_constructor_(left).specializes_to(
@@ -528,18 +522,21 @@ def _engine_ring_value(ring, value):
     r"""Cross one owned/ordinary ring value to ``ring``'s private engine."""
     source = _own_ring(ring)
     engine = _engine_ring(source)
-    parent = getattr(value, "parent", lambda: None)()
-    if parent is engine or (parent is not None and parent in SageRings()):
+    parent = element_parent(value)
+    if parent is engine or parent in SageRings():
         return engine(value)
     return engine(_engine_element(source, source(value)))
 
 
 def _engine_ideal(ring, ideal):
-    r"""Return the computation-ring ideal represented by ``ideal``."""
+    r"""Return the computation-ring ideal represented by ``ideal``.
+
+    Protected commutative-algebra adapter under OWN-06. Representation
+    dispatch is confined here; after a representation is selected, a failure
+    in that route propagates rather than selecting another route by exception.
+    """
     source = _own_ring(ring)
     engine = _engine_ring(source)
-    if getattr(ideal, "ring", lambda: None)() is engine:
-        return ideal
     from dzack_research.preamble.categories.rings.commutative_ideals import (
         CommutativeIdeals,
         _engine_commutative_ideal,
@@ -547,36 +544,38 @@ def _engine_ideal(ring, ideal):
 
     if ideal in CommutativeIdeals(source):
         return _engine_commutative_ideal(ideal)
-    ideal_generators = getattr(ideal, "ideal_generators", None)
-    if ideal_generators is not None:
+    if isinstance(ideal, GeneratedIdealView):
         return engine.ideal(
-            tuple(_engine_element(ring, value) for value in ideal_generators())
+            tuple(
+                _engine_element(ring, value)
+                for value in ideal.ideal_generators()
+            )
         )
-    generators = getattr(ideal, "gens", None)
-    if generators is not None and not isinstance(ideal, (tuple, list)):
-        try:
-            return engine.ideal(tuple(_engine_ring_value(ring, value) for value in generators()))
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+    if isinstance(ideal, SageIdeal):
+        if ideal.ring() is engine:
+            return ideal
+        return engine.ideal(
+            tuple(_engine_ring_value(ring, value) for value in ideal.gens())
+        )
     if isinstance(ideal, (tuple, list)):
         return engine.ideal(tuple(_engine_ring_value(ring, value) for value in ideal))
     return engine.ideal(_engine_ring_value(ring, ideal))
 
 
 def _engine_coefficient_ring(engine):
-    r"""Return an optional coefficient ring of a private engine realization."""
-    base_ring = getattr(engine, "base_ring", None)
-    return None if base_ring is None else base_ring()
+    r"""Return the coefficient ring declared by a private ring realization."""
+    return engine.base_ring()
 
 
 def _owned_ideal(ring, ideal):
-    r"""Return the live ideal subobject represented by ``ideal`` when available."""
+    r"""Return an owned ideal unchanged, or raise represented input into one."""
     source = _own_ring(ring)
-    try:
-        if ideal.ring() is source and ideal.inclusion().codomain() is not None:
-            return ideal
-    except (AttributeError, TypeError):
-        pass
+    from dzack_research.preamble.categories.rings.commutative_ideals import (
+        CommutativeIdeals,
+    )
+
+    if ideal in CommutativeIdeals(source):
+        return ideal
     backend = _engine_ideal(source, ideal)
     engine = _engine_ring(source)
     return source.ideal(
@@ -774,39 +773,32 @@ class QuotientRings(OwnedCategory):
             source = element_parent(value)
             if source is not self and source in Modules(self.base_ring()) and source.unformed_module() is self:
                 return source._element_of_unformed_module(value)
-            if isinstance(value, self.category().ElementType) and value.parent() is self:
+            if source is self:
                 return value
-            source = self.quotient_source()
-            source_engine = _engine_ring(source)
-            value_parent = getattr(value, "parent", lambda: None)()
+            quotient_source = self.quotient_source()
+            source_engine = _engine_ring(quotient_source)
+            value_parent = source
             quotient_engine = self._preamble_engine_ring
             if quotient_engine is not None and value_parent is quotient_engine:
                 backend_value = quotient_engine(value)
-                lift = getattr(backend_value, "lift", None)
-                if lift is None:
-                    raise TypeError(
-                        f"cannot convert {value} into {self}: it has no lift to the ring {self.quotient_source()}"
-                    )
-                value = _owned_engine_element(source, source_engine(lift()))
+                value = _owned_engine_element(
+                    quotient_source,
+                    source_engine(backend_value.lift()),
+                )
             elif value_parent in OwnedRings():
-                try:
-                    value_engine = _engine_ring(value_parent)
-                except (TypeError, ValueError, AttributeError):
-                    value_engine = None
-                if value_parent is source or value_engine is source_engine:
-                    value = _owned_engine_element(source,
+                value_engine = _engine_ring(value_parent)
+                if value_parent is quotient_source or value_engine is source_engine:
+                    value = _owned_engine_element(quotient_source,
                         source_engine(_engine_element(value_parent, value))
                     )
                 elif quotient_engine is not None and value_engine is quotient_engine:
                     backend_value = quotient_engine(_engine_element(value_parent, value))
-                    lift = getattr(backend_value, "lift", None)
-                    if lift is None:
-                        raise TypeError(
-                            f"cannot convert {value} into {self}: it has no lift to the ring {self.quotient_source()}"
-                        )
-                    value = _owned_engine_element(source, source_engine(lift()))
+                    value = _owned_engine_element(
+                        quotient_source,
+                        source_engine(backend_value.lift()),
+                    )
             elif value_parent is source_engine:
-                value = _owned_engine_element(source, source_engine(value))
+                value = _owned_engine_element(quotient_source, source_engine(value))
             return self.element_class(self, value)
 
         def __call__(self, value):
@@ -820,6 +812,14 @@ class QuotientRings(OwnedCategory):
             )
             return self._element_constructor_(engine(value))
 
+        def _selected_engine_ring(self):
+            r"""Return this quotient's selected private computation realization."""
+            engine = self._preamble_engine_ring
+            assert engine is not None, (
+                "this quotient operation requires a selected computation realization"
+            )
+            return engine
+
         def _engine_element(self, value):
             engine = self._preamble_engine_ring
             assert engine is not None, (
@@ -827,13 +827,10 @@ class QuotientRings(OwnedCategory):
             )
             element = self(value)
             source_value = _engine_element(self.quotient_source(), element.lift())
-            try:
-                return engine(source_value)
-            except (TypeError, ValueError):
-                quotient_map = engine.coerce_map_from(_engine_ring(self.quotient_source()))
-                if quotient_map is None:
-                    raise
+            quotient_map = engine.coerce_map_from(_engine_ring(self.quotient_source()))
+            if quotient_map is not None:
                 return quotient_map(source_value)
+            return engine(source_value)
 
         def zero(self):
             return self(self.quotient_source().zero())
@@ -873,11 +870,7 @@ class QuotientRings(OwnedCategory):
                     backend = _engine_ring_value(source, generator)
                     if backend == source_engine.zero():
                         continue
-                    valuation = getattr(backend, "valuation", None)
-                    if valuation is None:
-                        valuations = []
-                        break
-                    valuations.append(int(valuation()))
+                    valuations.append(int(backend.valuation()))
                 if valuations:
                     residue_size = source.residue_field().cardinality()
                     return residue_size ** min(valuations)
@@ -898,13 +891,7 @@ class QuotientRings(OwnedCategory):
             if self._preamble_engine_ring is not None:
                 return _engine_krull_dimension(self)
             backend = _engine_ideal(self.quotient_source(), self.defining_ideal())
-            try:
-                return _owned_engine_element(SageZZ, SageZZ(backend.dimension()))
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise AssertionError(
-                    f"cannot compute the Krull dimension of {self}: the dimension of the ideal "
-                    f"{self.defining_ideal()} of {self.quotient_source()} could not be computed"
-                ) from error
+            return _owned_engine_element(SageZZ, SageZZ(backend.dimension()))
 
         def _repr_(self):
             return f"{self.quotient_source()} / {self.defining_ideal()}"
@@ -959,25 +946,15 @@ class QuotientRings(OwnedCategory):
                 )
                 return _owned_engine_element(SageZZ, generator)
             coefficient_ring = _engine_coefficient_ring(source_engine)
-            if coefficient_ring is not None:
-                try:
-                    if bool(coefficient_ring.is_field()):
-                        return _owned_engine_element(
-                            SageZZ,
-                            SageZZ(coefficient_ring.characteristic()),
-                        )
-                except (AttributeError, NotImplementedError, TypeError, ValueError):
-                    pass
-            try:
+            if coefficient_ring in SageFields():
                 return _owned_engine_element(
                     SageZZ,
-                    SageZZ(_engine_ring(self).characteristic()),
+                    SageZZ(coefficient_ring.characteristic()),
                 )
-            except NotImplementedError as error:
-                raise AssertionError(
-                    f"cannot compute the characteristic of {self}: the defining ideal {self.defining_ideal()} "
-                    "could not be intersected with the prime subring"
-                ) from error
+            return _owned_engine_element(
+                SageZZ,
+                SageZZ(_engine_ring(self).characteristic()),
+            )
 
         @cached_method
         def _affine_normalization_data(self):
@@ -1158,12 +1135,12 @@ def _affine_reduced_quotient_normalization_data(quotient):
     source = quotient.quotient_source()
     source_engine = _engine_ring(source)
     if not quotient.is_reduced():
-        raise ValueError(
-            f"the normalization is computed here only for a reduced ring, but {quotient} is not reduced"
-        )
-    assert hasattr(source_engine, "_singular_"), (
-        f"the normalization of {quotient} is computed by Singular, which needs {source} to be a "
-        "polynomial ring Singular accepts"
+        raise ValueError("normalization here requires a reduced affine quotient")
+    assert source in SymmetricAlgebras(source.algebra_base_ring()), (
+        "affine normalization currently requires a symmetric-algebra presentation"
+    )
+    assert source.algebra_generating_set() in FiniteSets(), (
+        "affine normalization currently requires a finite symmetric-algebra presentation"
     )
 
     defining_engine = _engine_ideal(source, quotient.defining_ideal())
@@ -1286,10 +1263,8 @@ def _affine_reduced_quotient_normalization_data(quotient):
             components,
         )
     finally:
-        try:
+        if previous_ring is not None:
             previous_ring.set_ring()
-        except (AttributeError, TypeError, ValueError):
-            pass
 
 
 
@@ -1874,15 +1849,10 @@ class AdicCompletions(Category):
                 not target_ideal.contains_ambient_element(source_morphism(generator))
                 for generator in self.ideal_of_definition().ideal_generators()
             ):
-                raise ValueError(
-                    f"cannot induce a continuous map {self} -> {target_completion} from {source_morphism}: "
-                    f"it does not send the ideal {self.ideal_of_definition()} into {target_ideal}"
-                )
-            identity_factory = getattr(source_morphism.parent(), "identity", None)
+                raise ValueError("the source ideal does not map into the target ideal")
             if (
                 source_morphism.domain() is source_morphism.codomain()
-                and callable(identity_factory)
-                and source_morphism is identity_factory()
+                and source_morphism is source_morphism.parent().identity()
                 and target_completion is self
             ):
                 return self.Mor(self).identity()
@@ -2047,10 +2017,10 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         return self._exact_source_expression
 
     def _with_source_expression(self, backend_value, source_expression):
-        constructor = getattr(self.parent(), "_completion_element", None)
-        if constructor is None:
-            return _owned_engine_element(self.parent(), backend_value)
-        return constructor(backend_value, source_expression=source_expression)
+        return self.parent()._completion_element(
+            backend_value,
+            source_expression=source_expression,
+        )
 
     def _add_(self, other):
         left_source = self.exact_source_expression()
@@ -2105,33 +2075,8 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         difference = left_source - right_source
         if difference == self.parent().completion_source().zero():
             return True
-        try:
-            kernel = self.parent().completion_map_kernel()
-        except NotImplementedError:
-            return None
+        kernel = self.parent().completion_map_kernel()
         return bool(kernel.contains_ambient_element(difference))
-
-    @staticmethod
-    def _backend_exact_zero_status(difference):
-        r"""Return ``True``/``False`` when the backend decides exact zero.
-
-        ``None`` means that the selected finite information agrees with zero
-        but does not decide exact zero in the completion.
-        """
-        exact_zero = getattr(difference, "_is_exact_zero", None)
-        if callable(exact_zero) and bool(exact_zero()):
-            return True
-        inexact_zero = getattr(difference, "_is_inexact_zero", None)
-        if callable(inexact_zero) and bool(inexact_zero()):
-            return None
-
-        precision = getattr(difference, "precision_absolute", None)
-        if callable(precision):
-            if bool(difference):
-                return False
-            return True if precision() is Infinity else None
-
-        return None
 
     def _completion_equal(self, other) -> bool:
         parent = self.parent()
@@ -2150,29 +2095,15 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         if mode == "exact_backend":
             return bool(left == right)
         if mode == "exact_lazy":
-            options = getattr(left.parent(), "options", None)
-            old_secure = None
-            if options is not None:
-                old_secure = options["secure"]
-                options["secure"] = True
+            options = left.parent().options
+            old_secure = options["secure"]
+            options["secure"] = True
             try:
-                try:
-                    return bool(left == right)
-                except ValueError as error:
-                    raise AssertionError(
-                        f"cannot decide whether {self} == {other} in {parent}: exact equality of these power series "
-                        "is undecidable at the computed precision"
-                    ) from error
+                return bool(left == right)
             finally:
-                if options is not None:
-                    options["secure"] = old_secure
+                options["secure"] = old_secure
         difference = left - right
-        status = self._backend_exact_zero_status(difference)
-        if status is True:
-            return True
-        if status is False:
-            return False
-        if mode == "finite_approximation" and difference != left.parent().zero():
+        if bool(difference):
             return False
         raise AssertionError(
             f"cannot decide whether {self} == {other} in {parent}: they agree to the computed precision, "
@@ -2206,9 +2137,8 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
 
     def precision_absolute(self):
         r"""Return the selected absolute computation precision when represented."""
-        precision = getattr(self._backend(), "precision_absolute", None)
-        if callable(precision):
-            return precision()
+        if self.parent().completion_arithmetic_mode() == "finite_precision":
+            return self._backend().precision_absolute()
         return self.parent().computation_precision()
 
     def refine_precision(self, precision):
@@ -2310,22 +2240,16 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 )
 
         # A formal-power-series specialization knows the quotient by its
-        # represented ideal of variables exactly: R[x_1,...,x_n]/(x_1,...,x_n)
-        # is R.  Thus that ideal is maximal when the coefficient ring is a
-        # field, without asking a backend ideal predicate that may not decide
-        # maximality over a general base such as ZZ.  For arbitrary adic
-        # completions, preserve an unavailable maximality algorithm as
-        # undecided; absence of an algorithm is not evidence that the ideal is
-        # nonmaximal.
+        # represented ideal of variables exactly. For an arbitrary adic
+        # completion, maximality is the defining ideal owner's computation;
+        # a failure of that selected computation is a failure, not a category
+        # decision.
         if formal_parameter_labels is not None and formal_base is not None:
             defining_ideal_is_maximal = (
                 True if formal_base in OwnedRings().Division().Commutative() else None
             )
         else:
-            try:
-                defining_ideal_is_maximal = bool(defining_ideal.is_maximal())
-            except NotImplementedError:
-                defining_ideal_is_maximal = None
+            defining_ideal_is_maximal = bool(defining_ideal.is_maximal())
 
         match (
             defining_ideal_is_maximal,
@@ -2372,7 +2296,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         return self._adic_arithmetic_mode
 
     def _completion_element(self, value, *, source_expression=None):
-        if getattr(value, "parent", lambda: None)() is not self._engine:
+        if element_parent(value) is not self._engine:
             value = self._engine(value)
         return self.element_class(
             self,
@@ -2381,17 +2305,20 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         )
 
     def _element_constructor_(self, value):
-        if getattr(value, "parent", lambda: None)() is self:
+        value_parent = element_parent(value)
+        if value_parent is self:
             return value
         completion_map = self._realized_completion_map
         if completion_map is None:
             return super()._element_constructor_(value)
         source = self.completion_source()
-        try:
-            selected = source(value)
-        except (TypeError, ValueError, AttributeError):
-            return super()._element_constructor_(value)
-        return completion_map(selected)
+        if (
+            value_parent is source
+            or value_parent is source.base_ring()
+            or value_parent is None
+        ):
+            return completion_map(source(value))
+        return super()._element_constructor_(value)
 
     def zero(self):
         completion_map = self._realized_completion_map
@@ -2429,8 +2356,9 @@ class GeneratedIdealView(SageObject):
         if not isinstance(other, GeneratedIdealView) or other.ring() is not self.ring():
             return False
         if self.source_ideal() is not None and other.source_ideal() is not None:
-            source = getattr(self.ring(), "localization_source", lambda: None)()
-            if source is not None:
+            ring = self.ring()
+            if ring in LocalizationRings():
+                source = ring.localization_source()
                 return bool(
                     _engine_ideal(source, self.source_ideal())
                     == _engine_ideal(source, other.source_ideal())
@@ -2481,58 +2409,36 @@ def _quotient_ring(source, defining_ideal):
     their own equality, so ``(2)`` and ``(2,4)`` reach the same quotient of the
     integers.
 
-    A prime localization is realized by a fraction field, where every nonzero
-    ideal is the unit ideal, so a quotient read from that realization would be
-    the zero ring however small ``I`` is.  ``R_p/I R_p`` is therefore left to
-    the represented classes, whose equality is the owned membership
-    ``a - b in I R_p`` and is exact.
+    A localization keeps its localization engine as a private realization of
+    fractions, not as quotient-construction data. Its quotient is therefore
+    represented by classes directly; equality is the owned membership
+    ``a - b in I`` and is exact. This is essential for prime localizations,
+    whose fraction-field realization would otherwise collapse every nonzero
+    ideal to the unit ideal, and it gives every represented localization the
+    same construction rule without probing backend quotient capabilities.
     """
-    if source in PrimeLocalizations():
+    if source in LocalizationRings():
         quotient_engine = None
     else:
         engine = _engine_ring(source)
         defining = _engine_ideal(source, defining_ideal)
-        try:
+        if isinstance(engine, QuotientRing_generic):
             lifted = _engine_quotient_cover_ideal(source, defining)
             quotient_engine = lifted.ring().quotient(lifted)
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            try:
-                quotient_engine = engine.quotient(defining)
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                quotient_engine = None
+        else:
+            quotient_engine = engine.quotient(defining)
 
     dimension = None
     if quotient_engine is not None and source in OwnedRings().Noetherian():
-        try:
-            dimension = _engine_krull_dimension(quotient_engine)
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+        dimension = _engine_krull_dimension(quotient_engine)
 
     quotient_is_field = False
     quotient_is_domain = False
-    try:
+    if source not in LocalizationRings():
         quotient_is_field = bool(defining_ideal.is_maximal())
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        pass
-    if quotient_engine is not None:
-        try:
-            quotient_is_field = bool(quotient_engine.is_field())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
-        try:
-            quotient_is_domain = bool(quotient_engine.is_integral_domain())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+        quotient_is_domain = quotient_is_field or bool(defining_ideal.is_prime())
         if quotient_is_domain and dimension == 0:
             quotient_is_field = True
-        if quotient_is_domain or quotient_is_field:
-            # Sage builds every quotient in its quotient-ring category and
-            # never refines it, so the realization refuses to build a fraction
-            # field over an ideal it has just proved prime.  The residue field
-            # at a point that is not closed is exactly that fraction field, so
-            # the realization is told the fact it computed.
-            quotient_engine._refine_category_(SageIntegralDomains())
-
     placements = []
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
@@ -2540,12 +2446,8 @@ def _quotient_ring(source, defining_ideal):
         placements.append(OwnedRings().Division().Commutative())
     elif quotient_is_domain:
         placements.append(OwnedRings().Commutative().NoZeroDivisors())
-    if quotient_engine is not None:
-        try:
-            if bool(quotient_engine.is_finite()):
-                placements.append(FiniteSets())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+    if source in FiniteSets() or isinstance(quotient_engine, IntegerModRing_generic):
+        placements.append(FiniteSets())
     if dimension == 0:
         placements.append(OwnedRings().Artinian())
 
@@ -2600,24 +2502,29 @@ def _one_step_inverted_family(source, generators):
     return source, inverted
 
 
-def _generated_submonoid_contains_zero_in_domain(source, submonoid):
-    r"""Decide whether a generated multiplicative submonoid contains zero in a domain.
+def _submonoid_contains_zero_in_domain(source, submonoid):
+    r"""Decide whether a represented multiplicative submonoid contains zero in a domain.
 
     In an integral domain a finite product is zero exactly when one factor is
     zero.  Thus a submonoid given by generators contains zero exactly when one
-    chosen generator is zero.  A predicate-defined submonoid decides
-    membership by its own predicate.
+    chosen generator is zero.  Predicate-defined submonoids use their selected
+    membership predicate instead.
     """
     assert source in OwnedRings().Commutative().NoZeroDivisors(), (
         f"cannot decide whether 0 lies in {submonoid} by its generators: {source} is not "
         f"known to be an integral domain, and outside a domain a product of nonzero "
         f"elements can vanish"
     )
-    match submonoid._structure_data().get("kind"):
-        case "finitely_generated":
-            return any(generator == source.zero() for generator in submonoid.monoid_generators())
-        case _:
+    match submonoid._selected_representation_kind():
+        case "predicate":
             return source.zero() in submonoid
+        case "generators":
+            generators = tuple(submonoid.monoid_generators())
+            return any(generator == source.zero() for generator in generators)
+        case representation:
+            raise AssertionError(
+                f"unknown selected submonoid representation {representation!r}"
+            )
 
 
 def _localization_size_placements(source, submonoid):
@@ -2632,7 +2539,7 @@ def _localization_size_placements(source, submonoid):
         return (FiniteSets(),)
     if source not in OwnedRings().Commutative().NoZeroDivisors():
         return ()
-    contains_zero = _generated_submonoid_contains_zero_in_domain(source, submonoid)
+    contains_zero = _submonoid_contains_zero_in_domain(source, submonoid)
     if contains_zero is not False:
         return ()
     if source in CountablyInfiniteSets():
@@ -2665,11 +2572,13 @@ def _flattened_symmetric_localization_engine(source, inverted):
         or coefficient_ring not in LocalizationRings()
         or coefficient_ring in PrimeLocalizations()
     ):
-        return None, None
-    try:
-        coefficient_inverted = tuple(coefficient_ring.inverted_elements())
-    except NotImplementedError:
-        return None, None
+        return None, None, None
+    if (
+        coefficient_ring.localization_submonoid()._structure_data().get("kind")
+        != "finitely_generated"
+    ):
+        return None, None, None
+    coefficient_inverted = tuple(coefficient_ring.inverted_elements())
     coefficient_bottom, coefficient_family = _one_step_inverted_family(
         coefficient_ring,
         coefficient_inverted,
@@ -2677,38 +2586,22 @@ def _flattened_symmetric_localization_engine(source, inverted):
     source_engine = _engine_ring(source)
     coefficient_engine = _engine_ring(coefficient_ring)
     coefficient_bottom_engine = _engine_ring(coefficient_bottom)
-    try:
-        names = tuple(source_engine.variable_names())
-        polynomial_bottom = _SagePolynomialRing(
-            coefficient_bottom_engine,
-            names=names,
-        )
-    except (AttributeError, TypeError, ValueError):
-        return None, None
+    names = tuple(source_engine.variable_names())
+    polynomial_bottom = _SagePolynomialRing(
+        coefficient_bottom_engine,
+        names=names,
+    )
 
-    flattening = getattr(polynomial_bottom, "flattening_morphism", None)
-    if callable(flattening):
-        flattening = flattening()
-        engine_bottom = flattening.codomain()
-        unflatten = flattening.section()
-        to_engine_bottom = flattening
-    else:
-        engine_bottom = polynomial_bottom
-
-        def unflatten(element):
-            return polynomial_bottom(element)
-
-        def to_engine_bottom(element):
-            return engine_bottom(element)
+    flattening = polynomial_bottom.flattening_morphism()
+    engine_bottom = flattening.codomain()
+    unflatten = flattening.section()
+    to_engine_bottom = flattening
 
     variables = tuple(polynomial_bottom.gens())
 
     def powers_of(exponent):
-        if len(variables) == 1 and not isinstance(exponent, tuple):
-            try:
-                return (int(exponent),)
-            except TypeError:
-                pass
+        if len(variables) == 1:
+            return (int(exponent),)
         return tuple(int(power) for power in exponent)
 
     def cleared_polynomial(element):
@@ -2743,91 +2636,93 @@ def _flattened_symmetric_localization_engine(source, inverted):
         for element in coefficient_family
     ]
     engine_inverted.extend(cleared_polynomial(element) for element in inverted)
-    try:
-        localization_engine = engine_bottom.localization(tuple(engine_inverted))
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        return None, None
+    localization_engine = engine_bottom.localization(tuple(engine_inverted))
 
     def decode(element):
         nested = unflatten(engine_bottom(element))
         return _owned_engine_element(source, source_engine(nested))
 
-    return localization_engine, decode
+    def encode(element):
+        represented = source_engine(_engine_element(source, source(element)))
+        result = localization_engine.zero()
+        for exponent, coefficient in represented.dict().items():
+            represented_coefficient = coefficient_engine(coefficient)
+            numerator = coefficient_bottom_engine(
+                represented_coefficient.numerator()
+            )
+            denominator = coefficient_bottom_engine(
+                represented_coefficient.denominator()
+            )
+            numerator_term = localization_engine(
+                to_engine_bottom(polynomial_bottom(numerator))
+            )
+            denominator_term = localization_engine(
+                to_engine_bottom(polynomial_bottom(denominator))
+            )
+            term = numerator_term / denominator_term
+            for variable, power in zip(
+                variables, powers_of(exponent), strict=True
+            ):
+                if power:
+                    term *= localization_engine(
+                        to_engine_bottom(variable)
+                    ) ** int(power)
+            result += term
+        return result
+
+    return localization_engine, decode, encode
 
 
 def _finite_generated_localization(source, submonoid):
-    try:
-        generators = tuple(submonoid.monoid_generators())
-    except NotImplementedError as error:
-        raise AssertionError(
-            f"cannot localize {source} at {submonoid}: the localization is computed only at a multiplicative "
-            "set with a finite generating set, and none is known for this one"
-        ) from error
+    generators = tuple(submonoid.monoid_generators())
     if not generators:
         return source
     bottom, inverted = _one_step_inverted_family(source, generators)
     values = tuple(_engine_element(bottom, value) for value in inverted)
     engine_bottom = _engine_ring(bottom)
     engine_source_decoder = None
-    try:
-        localization_engine = engine_bottom.localization(values)
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        localization_engine, engine_source_decoder = _flattened_symmetric_localization_engine(
-            bottom,
-            inverted,
+    engine_source_encoder = None
+    if all(value.is_unit() for value in values):
+        localization_engine = engine_bottom
+    elif isinstance(engine_bottom, QuotientRing_generic):
+        # Protected OWN-06 dispatch: a Sage generic quotient parent requires
+        # the standard auxiliary-variable localization presentation.
+        cover = engine_bottom.cover_ring()
+        defining = engine_bottom.defining_ideal()
+        cover_names = tuple(cover.variable_names())
+        occupied = set(cover_names)
+        inverse_names = []
+        for position in range(len(values)):
+            candidate = f"localization_inverse_{position}"
+            while candidate in occupied:
+                candidate = "localization_" + candidate
+            occupied.add(candidate)
+            inverse_names.append(candidate)
+        extended_cover = _SagePolynomialRing(
+            cover.base_ring(),
+            names=(*cover_names, *inverse_names),
         )
-        # Sage does not localize a generic quotient ring directly, even when
-        # the quotient is a domain.  Present the same ring by adjoining an
-        # inverse variable for each selected denominator:
-        #
-        #   (P/I)[f_1^-1,...,f_r^-1]
-        #       = P[u_1,...,u_r]/(I, u_1 f_1-1, ..., u_r f_r-1).
-        #
-        # Unlike a quotient of Sage's localization parent, this ordinary
-        # polynomial quotient supports exact quotient maps and unit inversion,
-        # which are the private operations affine ``Spec`` needs.
+        inverse_variables = tuple(
+            extended_cover.gen(len(cover_names) + position)
+            for position in range(len(values))
+        )
+        relations = tuple(
+            extended_cover(generator) for generator in defining.gens()
+        ) + tuple(
+            inverse * extended_cover(value.lift()) - extended_cover.one()
+            for inverse, value in zip(inverse_variables, values, strict=True)
+        )
+        localization_engine = extended_cover.quotient(
+            extended_cover.ideal(relations)
+        )
+    else:
+        (
+            localization_engine,
+            engine_source_decoder,
+            engine_source_encoder,
+        ) = _flattened_symmetric_localization_engine(bottom, inverted)
         if localization_engine is None:
-            try:
-                cover = engine_bottom.cover_ring()
-                defining = engine_bottom.defining_ideal()
-                cover_names = tuple(cover.variable_names())
-                occupied = set(cover_names)
-                inverse_names = []
-                for position in range(len(values)):
-                    candidate = f"localization_inverse_{position}"
-                    while candidate in occupied:
-                        candidate = "localization_" + candidate
-                    occupied.add(candidate)
-                    inverse_names.append(candidate)
-                extended_cover = _SagePolynomialRing(
-                    cover.base_ring(),
-                    names=(*cover_names, *inverse_names),
-                )
-                inverse_variables = tuple(
-                    extended_cover.gen(len(cover_names) + position)
-                    for position in range(len(values))
-                )
-                relations = tuple(
-                    extended_cover(generator) for generator in defining.gens()
-                ) + tuple(
-                    inverse * extended_cover(value.lift()) - extended_cover.one()
-                    for inverse, value in zip(inverse_variables, values, strict=True)
-                )
-                localization_engine = extended_cover.quotient(
-                    extended_cover.ideal(relations)
-                )
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
-        if localization_engine is None:
-            # Localizing at units changes no ring.  Some Sage polynomial-ring
-            # engines refuse the syntactic localization at ``1``; in that case
-            # the source engine itself is the exact realization of the selected
-            # localization.
-            try:
-                all_units = all(value.is_unit() for value in values)
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                all_units = False
-            localization_engine = engine_bottom if all_units else None
+            localization_engine = engine_bottom.localization(values)
     placements = list(_localization_size_placements(source, submonoid))
     if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
         placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
@@ -2854,6 +2749,7 @@ def _finite_generated_localization(source, submonoid):
         submonoid=submonoid,
         _engine_ring=localization_engine,
         _engine_source_decoder=engine_source_decoder,
+        _engine_source_encoder=engine_source_encoder,
         algebra_source=algebra_source,
     )
 
@@ -2890,7 +2786,16 @@ def _fraction_field_localization(source, submonoid):
     assert engine is not source, (
         f"cannot construct the fraction field of {source}: it has no computer-algebra model"
     )
-    fraction_engine = engine.fraction_field()
+    if source in QuotientRings():
+        # Sage's IntegralDomains.ParentMethods.fraction_field is precisely
+        # FractionField_generic(self).  A represented quotient carries the
+        # domain theorem in its owned construction, while its private Sage
+        # realization remains in Sage's quotient-ring category.  Use that
+        # maintained constructor directly instead of mutating the realization
+        # merely to make the category method appear.
+        fraction_engine = SageFractionField(engine)
+    else:
+        fraction_engine = engine.fraction_field()
     field = _own_ring(fraction_engine)
     placements = [OwnedRings().Commutative().NoZeroDivisors(), OwnedRings().Division().Commutative()]
     if source in OwnedRings().Noetherian():
@@ -2962,20 +2867,17 @@ def _localization_at_submonoid(source, submonoid):
 
 
 def _quotient_representative(element):
-    lift = getattr(element, "lift", None)
-    assert lift is not None, (
-        f"{element} in {element.parent()} has no lift to its ring before the quotient"
+    assert element.parent() in QuotientRings(), (
+        "a represented quotient element used in quotient/localization comparison must carry its canonical lift"
     )
-    return lift()
+    return element.lift()
 
 
 def _localization_element_from_source_fraction(localization_ring, numerator, denominator):
-    fraction = getattr(localization_ring, "fraction", None)
-    if fraction is not None:
-        return fraction(numerator, denominator)
-    numerator_image = localization_ring.localization_map()(numerator)
-    denominator_image = localization_ring.localization_map()(denominator)
-    return localization_ring(numerator_image / denominator_image)
+    assert localization_ring in LocalizationRings(), (
+        "source-fraction reconstruction requires a represented localization"
+    )
+    return localization_ring.fraction(numerator, denominator)
 
 
 def _quotient_localization_comparison(source_quotient, localization_ring):
@@ -3026,14 +2928,11 @@ def _quotient_localization_comparison(source_quotient, localization_ring):
             quotient_map.extension_of_ideal(prime)
         )
     else:
-        try:
-            source_generators = tuple(source_submonoid.monoid_generators())
-        except NotImplementedError as error:
-            raise AssertionError(
-                f"cannot compare {source_quotient} localized at {source_submonoid} with {localization_ring}: "
-                "the image of the multiplicative set S needs a finite generating set of S, or S the "
-                "complement of a prime"
-            ) from error
+        assert source_submonoid._selected_representation_kind() == "generators", (
+            "the quotient/localization comparison reads the image of S from a chosen "
+            "finite generating set, or from the prime whose complement S is"
+        )
+        source_generators = tuple(source_submonoid.monoid_generators())
 
         quotient_submonoid = source_quotient.generated_submonoid(
             tuple(quotient_map(generator) for generator in source_generators),
@@ -3527,11 +3426,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
         defining = polynomial.ideal(
             *(polynomial.algebra_generator(label) for label in labels)
         )
-        precision = getattr(
-            parser,
-            "default_prec",
-            lambda: kwargs.get("default_prec", 20),
-        )()
+        precision = parser.default_prec()
         completion = AdicCompletions()(
             polynomial,
             defining,
@@ -3656,7 +3551,7 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
 def _dual_numbers(base_ring, name="epsilon"):
     r"""Return the dual-number algebra ``R[epsilon]/(epsilon^2)``."""
     base = _own_ring(base_ring)
-    polynomial = _refine_algebra(
+    polynomial = _algebra_with_structure(
         _own_ring(_SagePolynomialRing(_engine_ring(base), name)),
         base,
         (name,),

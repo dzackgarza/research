@@ -741,22 +741,22 @@ class RelativeProjectivizations(OwnedCategoryOverBaseRing):
                     return GeneralProjectivizationBaseChangeComparison(self, ring_map)
                 case False:
                     from dzack_research.preamble.categories.schemes.gluing import (
-                        _finite_atlas_of_sheaf_placement,
+                        _finite_atlas_sheaf_placement,
                     )
 
-                    try:
-                        _finite_atlas_of_sheaf_placement(
-                            self.projectivization_source_sheaf()
-                        )
-                    except TypeError:
-                        return ExactProjectivizationBaseChangeComparison(
-                            self,
-                            ring_map,
-                        )
-                    return ExactFiniteAtlasProjectivizationBaseChangeComparison(
-                        self,
-                        ring_map,
-                    )
+                    match _finite_atlas_sheaf_placement(
+                        self.projectivization_source_sheaf()
+                    ):
+                        case None:
+                            return ExactProjectivizationBaseChangeComparison(
+                                self,
+                                ring_map,
+                            )
+                        case _:
+                            return ExactFiniteAtlasProjectivizationBaseChangeComparison(
+                                self,
+                                ring_map,
+                            )
 
 
 def _ratio_name(module, denominator_label, numerator_label) -> str:
@@ -1910,15 +1910,19 @@ def _projectivization_map(sheaf_morphism):
     target_family = target_sheaf.projectivization()
     source_total = source_family.arrow().domain()
     target_total = target_family.arrow().domain()
-    try:
-        source_atlas = source_total.selected_finite_affine_atlas()
-        target_atlas = target_total.selected_finite_affine_atlas()
-    except TypeError:
-        return _exact_projectivization_map(
-            sheaf_morphism,
-            source_total,
-            target_total,
-        )
+    match (
+        source_total.has_selected_finite_affine_atlas(),
+        target_total.has_selected_finite_affine_atlas(),
+    ):
+        case (True, True):
+            source_atlas = source_total.selected_finite_affine_atlas()
+            target_atlas = target_total.selected_finite_affine_atlas()
+        case _:
+            return _exact_projectivization_map(
+                sheaf_morphism,
+                source_total,
+                target_total,
+            )
     fine_data = {}
 
     scheme = source_sheaf.scheme()
@@ -3032,14 +3036,14 @@ def _projectivization(sheaf):
             return _affine_projectivization(sheaf)
         case False:
             from dzack_research.preamble.categories.schemes.gluing import (
-                _finite_atlas_of_sheaf_placement,
+                _finite_atlas_sheaf_placement,
             )
 
-            try:
-                _finite_atlas_of_sheaf_placement(sheaf)
-            except TypeError:
-                return _exact_relative_projectivization(sheaf)
-            return _finite_atlas_projectivization(sheaf)
+            match _finite_atlas_sheaf_placement(sheaf):
+                case None:
+                    return _exact_relative_projectivization(sheaf)
+                case _:
+                    return _finite_atlas_projectivization(sheaf)
 
 
 __all__ = []

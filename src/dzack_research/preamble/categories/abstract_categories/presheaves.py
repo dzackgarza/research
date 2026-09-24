@@ -83,6 +83,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
 )
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
@@ -97,7 +98,7 @@ class _OppositeFunctor(Functor):
     def original(self) -> Functor:
         return self._functor
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         return self.codomain()(self.original()(obj.underlying_object()))
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -125,10 +126,10 @@ class _RepresentablePresheaf(Functor):
         self._representing_object = representing_object
         super().__init__(category.opposite(), Sets())
 
-    def representing_object(self) -> Parent:
+    def representing_object(self) -> ObjectOfCategory:
         return self._representing_object
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         return self._category.Mor(obj.underlying_object(), self.representing_object())
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -153,7 +154,7 @@ class _YonedaEmbedding(Functor):
         self._category = category
         super().__init__(category, category.presheaves())
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         return self.codomain().object(_RepresentablePresheaf(self._category, obj))
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -204,7 +205,7 @@ class _PresheafTransport(Functor):
     def _transport_presheaf(self, presheaf: Functor) -> Functor:
         return self._opposite_site_functor.then(presheaf).then(self.value_functor())
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         return self.codomain().object(self._transport_presheaf(obj.functor()))
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -344,7 +345,7 @@ class _CoverPresentationDiagram(Functor):
     def _pair(self, position):
         return self._pair_labels[int(position)]
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         kind, position = self._label(obj)
         match kind:
             case "target":
@@ -1056,7 +1057,7 @@ class DescentEqualizer(SageObject):
     def value_category(self) -> Category:
         return self._value_category
 
-    def _value(self, obj: Parent) -> Parent:
+    def _value(self, obj: Parent) -> ObjectOfCategory:
         return self.presheaf()(self.coverage().site_category().opposite()(obj))
 
     def _restriction(self, arrow: Morphism) -> Morphism:
@@ -1176,7 +1177,7 @@ class DescentEqualizer(SageObject):
     def equalizer_construction(self):
         return self._equalizer
 
-    def equalizer_object(self) -> Parent:
+    def equalizer_object(self) -> ObjectOfCategory:
         return self.equalizer_construction().object()
 
     def canonical_map(self) -> Morphism:

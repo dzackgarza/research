@@ -1,5 +1,7 @@
 r"""Modules equipped with exact bilinear or quadratic forms."""
 
+from collections.abc import Iterable
+
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
@@ -72,6 +74,7 @@ from dzack_research.preamble.categories.modules.framed.fraction_field_quotients 
     FractionFieldQuotients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
@@ -107,6 +110,14 @@ def _is_quadratic_form(form) -> bool:
     return _form_is_quadratic(form)
 
 
+def _has_finite_framing(module) -> bool:
+    ring = module.base_ring()
+    return (
+        module in FramedModules(ring)
+        and module.module_generating_set().cardinality().is_finite()
+    )
+
+
 @cached_function(key=lambda formed_module: id(formed_module))
 def _represented_value_module(formed_module):
     r"""Return the actual module object underlying a form's public value object.
@@ -127,8 +138,10 @@ def _represented_value_module(formed_module):
         try:
             scalar_map = OwnedRings().Mor(ring, value)(lambda scalar: value(scalar))
             return value.regular_module().restrict_scalars(scalar_map)
-        except (TypeError, ValueError, NotImplementedError):
-            pass
+        except (TypeError, ValueError, NotImplementedError) as error:
+            raise TypeError(
+                f"the form value ring {value} does not carry the required represented {ring}-module structure"
+            ) from error
     raise TypeError(
         f"the form on {formed_module} takes values in {value}, which is neither an "
         f"{ring}-module nor a ring receiving a map from {ring}, so it cannot serve as a value module"
@@ -139,16 +152,12 @@ def _value_as_module_element(formed_module, value):
     represented = _represented_value_module(formed_module)
     if represented is formed_module.value_module():
         return represented(value)
-    extension = getattr(represented, "module_over_extension", lambda: None)()
-    if extension is not None:
-        unit_label = extension.module_generating_set()[0]
-        return represented.wrap(
-            extension.linear_combination(
-                {unit_label: formed_module.value_module()(value)}
-            )
+    extension = represented.module_over_extension()
+    unit_label = extension.module_generating_set()[0]
+    return represented.wrap(
+        extension.linear_combination(
+            {unit_label: formed_module.value_module()(value)}
         )
-    return represented.linear_combination(
-        {0: formed_module.base_ring()(value)}
     )
 
 
@@ -157,19 +166,12 @@ def _value_from_module_element(formed_module, element):
     if represented is formed_module.value_module():
         return represented(element)
 
-    extension = getattr(represented, "module_over_extension", lambda: None)()
-    if extension is not None:
-        restricted_element = represented(element)
-        coefficients = extension.framing_coefficients(restricted_element.underlying_element())
-        unit_label = extension.module_generating_set()[0]
-        value_ring = formed_module.value_module()
-        return value_ring(coefficients.get(unit_label, value_ring.zero()))
-
-    coefficients = represented.framing_coefficients(element)
-    ring = formed_module.base_ring()
-    labels = represented.module_generating_set()
-    unit_label = labels[0]
-    return ring(coefficients.get(unit_label, ring.zero()))
+    extension = represented.module_over_extension()
+    restricted_element = represented(element)
+    coefficients = extension.framing_coefficients(restricted_element.underlying_element())
+    unit_label = extension.module_generating_set()[0]
+    value_ring = formed_module.value_module()
+    return value_ring(coefficients.get(unit_label, value_ring.zero()))
 
 
 class FormedModuleMorphism(Morphism):
@@ -923,14 +925,11 @@ def _formed_module_base_change(self, ring_map):
     form = self._formed_form()
 
     if _is_bilinear_form(form):
-        try:
+        if _has_finite_framing(form.module()):
             changed_values = form.coordinate_values().map(
                 lambda value: _base_change_scalar(ring_map, value),
                 name="Base-changed bilinear coordinate values",
             )
-        except TypeError:
-            changed_values = None
-        if changed_values is not None:
             return FormModules(target_ring)(
                 changed.bilinear_forms(target_ring)(changed_values)
             )
@@ -963,14 +962,12 @@ def _formed_module_base_change(self, ring_map):
             f"but the form {form} on {self} is neither"
         )
 
-    try:
-        changed_lift_values = form.lift_coordinate_values().map(
+    source_form = self.form()
+    if source_form.has_selected_bilinear_lift():
+        changed_lift_values = source_form.lift_coordinate_values().map(
             lambda value: _base_change_scalar(ring_map, value),
             name="Base-changed quadratic-lift coordinate values",
         )
-    except TypeError:
-        changed_lift_values = None
-    if changed_lift_values is not None:
         return FormModules(target_ring)(
             changed.quadratic_forms(target_ring)(changed_lift_values)
         )
@@ -1213,34 +1210,33 @@ class FormModules(OwnedCategoryOverBaseRing):
 
             form = self._formed_form()
             if _is_bilinear_form(form):
-                try:
+                if _has_finite_framing(form.module()):
                     values = form.coordinate_values().map(
                         lambda value: scalar * value,
                         name="Twisted bilinear coordinate values",
                     )
-                except TypeError:
                     return FormModules(self.base_ring())(
-                        self.bilinear_forms(self.value_module())(
-                            lambda left, right: scalar * form(left, right)
-                        )
+                        self.bilinear_forms(self.value_module())(values)
                     )
                 return FormModules(self.base_ring())(
-                    self.bilinear_forms(self.value_module())(values)
+                    self.bilinear_forms(self.value_module())(
+                        lambda left, right: scalar * form(left, right)
+                    )
                 )
-            try:
-                values = form.lift_coordinate_values().map(
+            source_form = self.form()
+            if source_form.has_selected_bilinear_lift():
+                values = source_form.lift_coordinate_values().map(
                     lambda value: scalar * value,
                     name="Twisted quadratic-lift coordinate values",
                 )
-            except TypeError:
                 return FormModules(self.base_ring())(
-                    self.quadratic_map(
-                        self.value_module(),
-                        lambda element: scalar * form(element),
-                    )
+                    self.quadratic_forms(self.value_module())(values)
                 )
             return FormModules(self.base_ring())(
-                self.quadratic_forms(self.value_module())(values)
+                self.quadratic_map(
+                    self.value_module(),
+                    lambda element: scalar * form(element),
+                )
             )
 
         base_change = _formed_module_base_change
@@ -2133,7 +2129,10 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     ``QQ/2ZZ`` by ``2ZZ`` changes its half by ``ZZ``.
                     """
                     value_module = self.value_module()
-                    if not hasattr(value_module, "modulus") or value_module.modulus() != 2:
+                    if (
+                        value_module not in FractionFieldQuotients(self.base_ring())
+                        or value_module.modulus() != 2
+                    ):
                         raise TypeError(
                             f"the polarization of {self} is computed only for quadratic forms valued in QQ/2ZZ, "
                             f"but q takes values in {value_module}"
@@ -2332,11 +2331,8 @@ def _form_module(
         categories.append(FreeFormModules(base_ring).FinitelyGenerated())
     if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
-        try:
-            symmetric = form.gram_tensor().is_symmetric()
-        except TypeError:
-            symmetric = False
-        if symmetric:
+        has_finite_scalar_gram = form.codomain() in OwnedRings() and _has_finite_framing(module)
+        if has_finite_scalar_gram and form.gram_tensor().is_symmetric():
             categories.append(BilinearFormModules(base_ring).Symmetric())
     else:
         categories.append(QuadraticFormModules(base_ring))
@@ -2394,11 +2390,7 @@ def _quadratic_form(module, value_module, datum):
 
     coordinate_datum = (
         isinstance(datum, IndexedFamily)
-        or hasattr(datum, "rows")
-        or (
-            isinstance(datum, (tuple, list))
-            and all(isinstance(row, (tuple, list)) for row in datum)
-        )
+        or (isinstance(datum, Iterable) and not isinstance(datum, (str, bytes)))
     )
     form = (
         module.quadratic_forms(value_module)(datum)

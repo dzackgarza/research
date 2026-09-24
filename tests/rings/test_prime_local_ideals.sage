@@ -30,6 +30,11 @@ def test_the_maximal_ideal_is_the_non_units() -> None:
     assert not local.maximal_ideal().contains_ambient_element(local(3))
 
 
+def test_a_prime_local_principal_quotient_has_residue_size_to_valuation() -> None:
+    local = ZZ.localize_at_prime(2)
+    quotient = local.quotient_ring(local.ideal(local(8)))
+
+    assert quotient.cardinality() == 8
 def test_localization_of_a_polynomial_pid_remains_a_pid() -> None:
     polynomial = QQ.polynomial_ring("x")
     x = polynomial.algebra_generator("x")

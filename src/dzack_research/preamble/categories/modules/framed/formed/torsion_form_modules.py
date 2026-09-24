@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
+    ModuleSubobjects,
     Modules,
     _torsion_module_presented_by_matrix,
 )
@@ -61,35 +62,30 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.tensors.tensor import (
+    Tensor,
     _engine_component_matrix,
     tensor,
 )
 
 
 def _gram_rows(gram, rank):
-    try:
-        parent = gram.parent()
-    except AttributeError:
-        parent = None
-    if parent is not None:
-
-        try:
-            is_matrix = parent in MatrixSpaces(parent.base_ring())
-        except (AttributeError, TypeError, ValueError):
-            is_matrix = False
-        if is_matrix:
+    match gram:
+        case ModuleMorphism():
+            parent = gram.parent()
+            if parent not in MatrixSpaces(parent.base_ring()):
+                raise TypeError("a morphism Gram presentation must be an owned matrix Mor element")
             rows = tuple(
                 tuple(gram[row, column] for column in range(parent.ncols()))
                 for row in range(parent.nrows())
             )
-        else:
+        case Tensor():
             shape = gram.tensor_shape()
             rows = tuple(
                 tuple(gram[row, column] for column in range(int(shape[1])))
                 for row in range(int(shape[0]))
             )
-    else:
-        rows = tuple(tuple(row) for row in gram)
+        case _:
+            rows = tuple(tuple(row) for row in gram)
     if len(rows) != rank or any(len(row) != rank for row in rows):
         raise ValueError(
             f"a Gram matrix on {rank} generators must be {rank} x {rank}, but the given rows have lengths "
@@ -566,13 +562,12 @@ def _torsion_form_subobject_action(form, family, acting):
         image = frozenset(
             automorphism(element) for element in _embedded_elements(subobject)
         )
-        try:
-            return by_embedded_elements[image]
-        except KeyError as error:
+        if image not in by_embedded_elements:
             raise ValueError(
                 f"the family of submodules of {form} is not invariant under {acting}: "
                 f"{automorphism} sends {subobject} outside it"
-            ) from error
+            )
+        return by_embedded_elements[image]
 
     return FiniteGSets(acting)(points, act)
 
@@ -1328,33 +1323,33 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
 
     def stabilizer_of_subgroup(self, subgroup):
         r"""Return the setwise stabilizer through the owned subobject G-set."""
-        try:
-            ambient = subgroup.inclusion().codomain()
-        except AttributeError as error:
+        form = self.domain()
+        base_ring = form.base_ring()
+        if subgroup not in ModuleSubobjects(base_ring):
             raise TypeError(
-                f"the stabilizer in {self} is taken of a submodule of {self.domain()}, but {subgroup} "
+                f"the stabilizer in {self} is taken of a submodule of {form}, but {subgroup} "
                 "has no inclusion morphism"
-            ) from error
-        if ambient is not self.domain():
+            )
+        if subgroup not in Modules(base_ring).Subobjects(form):
             raise ValueError(
-                f"the stabilizer in {self} is taken of a submodule of {self.domain()}, but {subgroup} "
-                f"is a submodule of {ambient}"
+                f"the stabilizer in {self} is taken of a submodule of {form}, but {subgroup} "
+                f"is a submodule of {subgroup.inclusion().codomain()}"
             )
         family = _torsion_form_all_subobjects(
-            self.domain(),
+            form,
             quadratic=self.is_quadratic(),
         )
         by_embedded_elements = {
             _embedded_elements(candidate): candidate
             for candidate in family
         }
-        try:
-            point = by_embedded_elements[_embedded_elements(subgroup)]
-        except KeyError as error:
+        embedded = _embedded_elements(subgroup)
+        if embedded not in by_embedded_elements:
             raise ValueError(
-                f"{subgroup} does not match any submodule of {self.domain()}, so {self} has no stabilizer for it"
-            ) from error
-        action = _torsion_form_subobject_action(self.domain(), family, self)
+                f"{subgroup} does not match any submodule of {form}, so {self} has no stabilizer for it"
+            )
+        point = by_embedded_elements[embedded]
+        action = _torsion_form_subobject_action(form, family, self)
         return action.stabilizer(point)
 
     stabilizer_of_subobject = stabilizer_of_subgroup

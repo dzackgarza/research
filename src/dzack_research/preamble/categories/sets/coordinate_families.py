@@ -13,9 +13,10 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.category_theory import ElementOfCategoryObject
 
 
-def _finite_framing(module: Parent) -> Parent:
+def _finite_framing(module: Parent) -> Sets().ObjectType:
     r"""Return a selected module framing after asserting that it is finite."""
 
     labels = module.module_generating_set()
@@ -27,7 +28,10 @@ def _finite_framing(module: Parent) -> Parent:
     return labels
 
 
-def _coordinate_index_set(left_labels: Parent, right_labels: Parent) -> Parent:
+def _coordinate_index_set(
+    left_labels: Parent,
+    right_labels: Parent,
+) -> Sets().ObjectType:
     r"""Return the dependent two-factor index set for a rectangular family."""
 
     return Sets().product(indexed_family(Sets.Δ[1], lambda index: left_labels if int(index) == 0 else right_labels))
@@ -36,7 +40,7 @@ def _coordinate_index_set(left_labels: Parent, right_labels: Parent) -> Parent:
 def _coerce_family_value[CoordinateValueInputT](
     value_module: Parent,
     value: CoordinateValueInputT,
-) -> Element:
+) -> ElementOfCategoryObject:
     r"""``value`` as an element of ``value_module``: itself when that is its parent, its conversion otherwise."""
     return value if element_parent(value) is value_module else value_module(value)
 
@@ -53,7 +57,7 @@ def _coordinate_family_from_family(
     indices = _coordinate_index_set(left_labels, right_labels)
     source_indices = datum.index_set()
 
-    def transported(pair: Element) -> Element:
+    def transported(pair: Element) -> ElementOfCategoryObject:
         source_pair = source_indices(lambda index: pair.component(index))
         return _coerce_family_value(value_module, datum[source_pair])
 
@@ -131,7 +135,7 @@ def _coordinate_pair[LeftLabelT, RightLabelT](
     values: IndexedFamily,
     left_label: LeftLabelT,
     right_label: RightLabelT,
-) -> Element:
+) -> ElementOfCategoryObject:
     indices = values.index_set()
     return values[
         indices(lambda index: left_label if int(index) == 0 else right_label)

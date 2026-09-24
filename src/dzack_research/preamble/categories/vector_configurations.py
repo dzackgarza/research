@@ -226,7 +226,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             :meth:`configuration_isometry`, which verifies every pairing.
             """
             automorphisms = self.configuration_automorphism_group()
-            if getattr(automorphism, "parent", lambda: None)() is not automorphisms:
+            if automorphism not in automorphisms:
                 raise ValueError(
                     f"cannot lift {automorphism} to an isometry of {self}: it is not an "
                     f"element of the automorphism group {automorphisms} of the configuration"
@@ -242,7 +242,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         def ambient_isometry_from_automorphism(self, automorphism):
             r"""Lift a graph automorphism to ``O(L)`` when the configuration frames ``L``."""
             automorphisms = self.configuration_automorphism_group()
-            if getattr(automorphism, "parent", lambda: None)() is not automorphisms:
+            if automorphism not in automorphisms:
                 raise ValueError(
                     f"cannot lift {automorphism} to an isometry of the lattice framed by "
                     f"{self}: it is not an element of the automorphism group {automorphisms} "

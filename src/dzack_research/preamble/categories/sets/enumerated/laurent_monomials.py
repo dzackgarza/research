@@ -5,16 +5,15 @@ Elements are formal symbols in \(\mathrm{SR}\), not evaluated powers:
 """
 
 from sage.misc.cachefunc import cached_function
-from sage.structure.parent import Parent
-
 from dzack_research.preamble.categories.sets.enumerated.function_sets import (
     EnumeratedByIntegers,
     FunctionEnumeratedSets,
 )
+from dzack_research.preamble.lexicon.set_theory import SetObject
 
 
 @cached_function
-def LaurentMonomials() -> Parent:
+def LaurentMonomials() -> SetObject:
     r"""The enumerated set \(\{z^n : n\in\mathbb Z\}\subset\mathrm{SR}\)."""
     return FunctionEnumeratedSets()(
         "z",

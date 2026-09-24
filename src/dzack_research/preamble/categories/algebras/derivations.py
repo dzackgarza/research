@@ -21,7 +21,10 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _RestrictedMorCategoryOf,
     RestrictedMorCategoryParent,
 )
-from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    FramedAlgebras,
+)
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -278,17 +281,13 @@ class Derivation(ModuleElement):
 
         return _lie_derivative(self)
 
+    @cached_method
     def underlying_linear_morphism(self):
-        cached = self.__dict__.get("_preamble_underlying_linear_morphism")
-        if cached is not None:
-            return cached
-        morphism = DerivationUnderlyingLinearMorphism(
+        return DerivationUnderlyingLinearMorphism(
             self.parent().arrow_set(),
             self,
             lambda element: self.restricted_codomain()(self(element)),
         )
-        self._preamble_underlying_linear_morphism = morphism
-        return morphism
 
     as_morphism = underlying_linear_morphism
 
@@ -681,17 +680,13 @@ class GradedDerivation(ModuleElement):
 
         return _graded_commutator(self, other)
 
+    @cached_method
     def underlying_linear_morphism(self):
-        cached = self.__dict__.get("_preamble_underlying_linear_morphism")
-        if cached is not None:
-            return cached
-        morphism = GradedDerivationUnderlyingLinearMorphism(
+        return GradedDerivationUnderlyingLinearMorphism(
             self.parent().arrow_set(),
             self,
             lambda element: self(element),
         )
-        self._preamble_underlying_linear_morphism = morphism
-        return morphism
 
     as_morphism = underlying_linear_morphism
 
@@ -730,11 +725,10 @@ class GradedDerivation(ModuleElement):
         """
         algebra = self.algebra()
         target = self.target()
-        try:
-            labels = algebra.algebra_generating_set()
-            finite = labels.cardinality().is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        if algebra not in FramedAlgebras(algebra.base_ring()):
             return Unknown
+        labels = algebra.algebra_generating_set()
+        finite = labels.cardinality().is_finite()
         match finite:
             case True:
                 pass
@@ -750,10 +744,9 @@ class GradedDerivation(ModuleElement):
                     return Unknown
                 case False:
                     pass
-            try:
-                generator_degree = algebra.homogeneous_degree(generator)
-            except (ValueError, NotImplementedError):
+            if not generator.is_homogeneous():
                 return Unknown
+            generator_degree = algebra.homogeneous_degree(generator)
             image = self(generator)
             image_is_zero = image == target.zero()
             match image_is_zero:
@@ -763,10 +756,9 @@ class GradedDerivation(ModuleElement):
                     return Unknown
                 case False:
                     pass
-            try:
-                image_degree = target.homogeneous_degree(image)
-            except (ValueError, NotImplementedError):
-                return Unknown
+            if not image.is_homogeneous():
+                return False
+            image_degree = target.homogeneous_degree(image)
             match image_degree == generator_degree + self.degree_shift():
                 case True:
                     pass
@@ -784,10 +776,9 @@ class GradedDerivation(ModuleElement):
                     return Unknown
                 case False:
                     pass
-            try:
-                left_degree = algebra.homogeneous_degree(left)
-            except (ValueError, NotImplementedError):
+            if not left.is_homogeneous():
                 return Unknown
+            left_degree = algebra.homogeneous_degree(left)
             for right_label in labels:
                 right = algebra.algebra_generator(right_label)
                 signed_second = left * self(right)
@@ -1017,12 +1008,14 @@ class GradedDerivationCategoryConstruction(_RestrictedMorCategoryOf):
 def _graded_derivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
     if target is None:
         target = algebra
-    if algebra.base_ring() is not target.base_ring():
-        raise ValueError(
-            f"graded derivations {algebra} -> {target} need one coefficient ring, but they are over "
-            f"{algebra.base_ring()} and {target.base_ring()}"
-        )
     ring = algebra.base_ring()
+    if target not in Modules(ring):
+        raise TypeError("a graded derivation target must be a module over the algebra's coefficient ring")
+    graded_modules = algebra._graded_module_placement()
+    if target not in graded_modules:
+        raise TypeError(
+            "a graded derivation target must carry the same declared grading as its algebra"
+        )
     return GradedDerivationCategoryConstruction(Modules(ring), shift).Of(
         algebra,
         target,

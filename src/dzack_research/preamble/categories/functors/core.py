@@ -22,6 +22,8 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+
 
 def _functor_factor_family(factors):
     r"""Return a finite ordinal-indexed family of composition factors without a foundational import cycle."""
@@ -79,7 +81,7 @@ class Functor:
         self._codomain = codomain
         # Cache the forward action by source identity.  A codomain object does
         # not determine a preimage; chosen preimages belong to ImageOfFunctor.
-        self._object_images: dict[int, tuple[Parent, Parent]] = {}
+        self._object_images: dict[int, tuple[ObjectOfCategory, ObjectOfCategory]] = {}
         self._morphism_images: dict[int, tuple[Map, Map]] = {}
 
     def _cache_key(self) -> int:
@@ -93,20 +95,24 @@ class Functor:
         return self._codomain
 
     @abstract_method
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: ObjectOfCategory) -> ObjectOfCategory:
         r"""Return the image of one object of the domain."""
 
     @abstract_method
     def _apply_morphism(self, morphism: Map) -> Map:
         r"""Return the image of one morphism of the domain."""
 
-    def _cached_object_image(self, preimage: Parent) -> Parent | None:
+    def _cached_object_image(self, preimage: ObjectOfCategory) -> ObjectOfCategory | None:
         recorded = self._object_images.get(id(preimage))
         if recorded is not None and recorded[0] is preimage:
             return recorded[1]
         return None
 
-    def _record_object_image(self, preimage: Parent, image: Parent) -> Parent:
+    def _record_object_image(
+        self,
+        preimage: ObjectOfCategory,
+        image: ObjectOfCategory,
+    ) -> ObjectOfCategory:
         key = id(preimage)
         recorded = self._object_images.get(key)
         if recorded is not None and recorded[0] is preimage and recorded[1] is not image:
@@ -132,7 +138,7 @@ class Functor:
         self._morphism_images[key] = (preimage, image)
         return image
 
-    def object_image(self, obj: Parent) -> Parent:
+    def object_image(self, obj: ObjectOfCategory) -> ObjectOfCategory:
         if obj not in self.domain():
             raise TypeError(f"{obj} is not an object of {self.domain()}")
         cached = self._cached_object_image(obj)
@@ -154,7 +160,11 @@ class Functor:
 
         return ImageOfFunctor(self)
 
-    def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
+    def adopt_object_image(
+        self,
+        preimage: ObjectOfCategory,
+        image: ObjectOfCategory,
+    ) -> ObjectOfCategory:
         r"""Use the stated exact object as this functor instance's forward image of ``preimage``."""
         if preimage not in self.domain() or image not in self.codomain():
             raise TypeError(
@@ -163,7 +173,7 @@ class Functor:
             )
         return self._record_object_image(preimage, image)
 
-    def on_object(self, obj: Parent) -> Parent:
+    def on_object(self, obj: ObjectOfCategory) -> ObjectOfCategory:
         return self.object_image(obj)
 
     def morphism_image(self, morphism: Map) -> Map:
@@ -200,12 +210,12 @@ class Functor:
         return self.morphism_image(morphism)
 
     @overload
-    def __call__(self, value: Parent) -> Parent: ...
+    def __call__(self, value: ObjectOfCategory) -> ObjectOfCategory: ...
 
     @overload
     def __call__(self, value: Map) -> Map: ...
 
-    def __call__(self, value: Parent | Map) -> Parent | Map:
+    def __call__(self, value: ObjectOfCategory | Map) -> ObjectOfCategory | Map:
         r"""Apply the object action to an object of the domain, the arrow action otherwise.
 
         Whether ``value`` is an object is the domain category's question.
@@ -383,7 +393,7 @@ class IdentityFunctor(Functor):
     def __init__(self, category: Category) -> None:
         super().__init__(category, category)
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: ObjectOfCategory) -> ObjectOfCategory:
         return obj
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -414,7 +424,7 @@ class _CategoryInclusionFunctor(Functor):
             raise ValueError(f"{subcategory} is not a subcategory of {supercategory}")
         super().__init__(subcategory, supercategory)
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: ObjectOfCategory) -> ObjectOfCategory:
         return obj
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -438,13 +448,17 @@ class _CompositeFunctor(Functor):
         self._second = second
         super().__init__(first.domain(), second.codomain())
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: ObjectOfCategory) -> ObjectOfCategory:
         return self._second(self._first(obj))
 
     def _apply_morphism(self, morphism: Map) -> Map:
         return self._second(self._first(morphism))
 
-    def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
+    def adopt_object_image(
+        self,
+        preimage: ObjectOfCategory,
+        image: ObjectOfCategory,
+    ) -> ObjectOfCategory:
         if preimage not in self.domain() or image not in self.codomain():
             raise TypeError(
                 f"cannot set F({preimage}) = {image} for the composite F = {self}: F is a functor "

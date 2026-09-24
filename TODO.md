@@ -364,44 +364,21 @@ The first full execution of the suite since the tree stopped importing (2026-09-
 
 ## Common categorical authority and public boundaries
 
-- [ ] **`membership-by-placement`**. **Needs:** none.
-  **Owner and delta:** category containment throughout the preamble, including abstract functor, arrow, product, morphism and sheaf categories and predicates hidden in helpers.
-  **Concrete residue:** reconcile `GroupAutomorphismGroup._subgroup_from_engine` with the fixed-Mor family contract. A subgroup must retain its group inclusion and action without claiming to be the ambient family's selected fixed Iso category. Trace its construction, category role, inherited arrows and inclusion together; do not broaden membership by runtime class recognition or replace the ambient family's cached object.
-  **Coverage boundary:** enumerate category declarations and follow their inherited/overridden containment and helper calls, then compare every route with the original "each category" requirement. Distinguish genuine element membership at set owners explicitly. A scan of `__contains__` bodies or the original scheme complaint alone is incomplete. Earlier producer repairs must already establish their placements; this node reconciles the untouched remainder.
-  **Invariants:** category membership follows construction placement or the specified functor, not engine class, duck typing, cardinality, or an implicit walk up a base-ring tower. Distinguish category membership from genuine element membership in a mathematical set; the latter may require an exact predicate at its owner.
-  **Closure specimens:** a correctly placed object is accepted, a similarly represented object with the wrong structure is not. A QQ-scheme is not silently treated as a ZZ-scheme without the specified base passage. Check discrete categories and arrow helpers as well as the original scheme example; inspect every category containment body before closure.
-
-- [ ] **`refinement-convergence`**. **Needs:** none.
-  **Owner and delta:** every remaining `refine`/placement mutation in ring, scheme, module and functor-image construction after the bootstrap repair.
-  **Invariants:** defining or selected structure exists at construction; later refinement only records a genuinely newly established mathematical fact. No accessor, engine query, import order or first arithmetic operation completes initialization retroactively.
-  **Closure specimens:** request categories and inherited operations in different orders for ring, scheme, module and functor-image objects and obtain the same mathematical data. Each surviving refinement identifies the later theorem and its evidence. Moving mutation behind a helper or converting it into a category flag cannot close the node.
-
-- [ ] **`probe-and-exception-residue`**. **Needs:** `membership-by-placement`, `refinement-convergence`.
-  **Owner and delta:** all remaining `isinstance`, `getattr`, `hasattr`, `__dict__` probes and exception branches across preamble mathematics.
-  **Invariants:** owned operations use the category's declared contract. Any sanctioned ingress/equality/containment or adapter probe is reviewed against its declaration; the method name alone grants no exemption from `CAT-23` or `OWN-05`. Runtime exceptions do not select an alternative mathematical algorithm; declared boundary rendering preserves the real failure.
-  **Closure specimens:** supported input takes its owned route; a nearby unsupported representation fails at the stated frontier; an engine defect is not converted into a false value or another algorithm. Inspect each residual site and called helper. Search completeness is coverage evidence; replacing syntax without repairing data flow fails `DEV-68`.
-
 - [ ] **`engine-wiring-audit`**. **Needs:** none.
   **Owner and delta:** every owned construction that computes, itself, behaviour a maintained engine provides, starting with the set layer (`categories/sets/`): membership, position and order of finite sets, images, products, coproducts, power sets and function sets, as tabulated in [COMPLAINTS.md](COMPLAINTS.md#set-theoretic-behaviour-is-re-implemented-instead-of-wired-to-a-set-engine), then the whole preamble.
   **Invariants:** public mathematics stays owned; the computation behind it is the engine's, reached privately at its owner (`OWN-06`). A membership decision follows the set's definition -- predicate, identity of listed points, inverse of an image -- and never searches an enumeration. An enumeration is a chosen bijection from an ordinal, separate from membership. No owned code re-implements what Sage, GAP, SymPy, PARI or the Python standard library computes, unless the engine lacks it, which is then recorded in `TRAPS.md` with the measurement.
   **Coverage:** survey the preamble once for owned code whose body is a general algorithm -- loops that search, compare element by element, enumerate to decide, or rebuild an object to read one value -- and map each to the engine routine that computes it or to the recorded reason there is none. The profiled sites of 2026-09-23 are the first evidence, not the population.
   **Closure specimens:** membership of a point in a finite set of SR symbols, an image, a product and a power set answered without comparing against every point; a rank-16 diagonal lattice built in time linear in its Gram entries; each audited family's route read from its public entry to the engine call.
-
 ## Public mathematical interaction
 
-- [ ] **`mathematical-return-types`**. **Needs:** `refinement-convergence`.
-  **Owner and delta:** the full public return-annotation family using Parent, Element, CategoryObject or ad hoc Any, including functor images, cardinalities and scheme operations.
-  **Invariants:** annotations name the actual mathematical codomain, refinement or honest union. A central mathematically named alias may express a limitation of Python syntax; a universal type with a new name may not hide it. This node does not optimize checker counts.
-  **Closure specimens:** follow a functor image, a cardinality, a scheme map and a composite's components into operations their claimed codomain supports. Review every occurrence family and required central alias; no narrowing to the currently convenient engine realization or broad Any escape.
-
-- [ ] **`canonical-notebook-contract`**. **Needs:** `mathematical-return-types`.
+- [ ] **`canonical-notebook-contract`**. **Needs:** none.
   **Owner and delta:** `computations/notebooks/preamble.ipynb`, through japi, organized around research questions and their mathematical witnesses (`NB-01`--`05`).
   **Invariants:** all substantive claims are executable assertions or displayed witnesses using the final owned session API. Preserve the existing useful research content; replace raw constructors, global Hom, ambiguous generators and coordinate workarounds with their mathematical owners. Clear stale failure output without representing unexecuted replacements as passed.
   **Closure specimens:** actual algebra substitutions, a nonidentity morphism, group/lattice constructions and the notebook's geometric claims have falsifiable expected results. Source authoring closes here; clean-kernel execution and visual inspection of every relevant rendered output remain required in `terminal-session`.
 
 ## Source convergence and terminal proof
 
-- [ ] **`architecture-remediation`**. **Needs:** `probe-and-exception-residue`, `canonical-notebook-contract`, `engine-wiring-audit`, `dual-lattice-through-the-discriminant-sequence`.
+- [ ] **`architecture-remediation`**. **Needs:** `canonical-notebook-contract`, `engine-wiring-audit`, `dual-lattice-through-the-discriminant-sequence`.
   **Owner and delta:** the integrated source route from public category entry through complete defining data, private computation and every owned result and consumer, against all unresolved complaints.
   **Invariants:** every required source descendant closes before this node; introducing a residual child keeps this node open. Each complaint's entire burden is discharged or retained in a required prerequisite. All alternative construction routes affected by a repair are inspected. No numerical answer, renamed field, new wrapper, source count or administrative record substitutes for delivery (`DEV-67`, `DEV-68`).
   **Closure comparison:** reconcile the original complaint/requirement clauses with the delivered owner and consumer routes, including the generality beyond their first specimens. Review later changes to each shared contract against its delivery evidence. In particular, an "assumed linear" rename, a framing proof depending on its own Mor placement, or a private access deferred from a delivered producer fails this comparison and reopens that exact repair. Existing evidence for unaffected routes remains usable.

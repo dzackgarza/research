@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     VectorSpaces,
     _biproduct_label,
     _engine_matrix,
-    _refine_matrix_mor,
+    _require_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -205,7 +205,7 @@ def _fix_selected_module_presentation(module, base_ring, relation_matrix, presen
     module, relation matrix and presentation morphism; downstream consumers
     read them through the presentation operations rather than this storage.
     """
-    if module.__dict__.get("_selected_module_presentation") is not None:
+    if module._selected_module_presentation is not None:
         raise ValueError(f"{module} already has chosen generators and relations; they are fixed once")
     module._selected_module_presentation = _SelectedModulePresentationData(
         base_ring,
@@ -395,7 +395,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             :meth:`cokernel_projection`.  Dually, a kernel subgroup answers
             ``kernel_morphism()``.
             """
-            selected = self.__dict__.get("_selected_module_presentation")
+            selected = self._selected_module_presentation
             assert selected is not None, (
                 f"{self} has no cokernel morphism: it was not constructed from generators and relations"
             )
@@ -545,7 +545,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation(self):
             r"""Return the selected relation morphism ``F_1 -> F_0``."""
-            selected = self.__dict__.get("_selected_module_presentation")
+            selected = self._selected_module_presentation
             assert selected is not None, (
                 f"{self} has no relation map F_1 -> F_0: it was not constructed from generators and relations"
             )
@@ -553,7 +553,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation_matrix(self):
             r"""Return its relation rows in the selected target framing."""
-            selected = self.__dict__.get("_selected_module_presentation")
+            selected = self._selected_module_presentation
             assert selected is not None, (
                 f"{self} has no relation matrix: it was not constructed from generators and relations"
             )
@@ -1143,7 +1143,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalized_target = _cover_free_module(self, target_labels)
 
             def owned_matrix_morphism(domain, codomain, backend_matrix):
-                mor = _refine_matrix_mor(domain.module_category().Mor(domain, codomain))
+                mor = _require_matrix_mor(domain.module_category().Mor(domain, codomain))
                 source_labels = tuple(domain.module_generating_set())
                 target_labels = tuple(codomain.module_generating_set())
                 if int(backend_matrix.ncols()) != len(source_labels) or int(backend_matrix.nrows()) != len(target_labels):
@@ -2723,21 +2723,18 @@ def _presented_module_from_morphism(
     torsion_decision = Unknown
     match base_ring in PrincipalIdealDomains():
         case True:
-            try:
-                fraction_field_map = base_ring.fraction_field_map()
-                field = fraction_field_map.codomain()
-                generic_relations = field.matrix_space(
-                    relations_matrix.nrows(),
-                    relations_matrix.ncols(),
-                ).from_rows(
-                    tuple(
-                        tuple(fraction_field_map(coefficient) for coefficient in row)
-                        for row in _matrix_coordinate_rows(relations_matrix)
-                    )
+            fraction_field_map = base_ring.fraction_field_map()
+            field = fraction_field_map.codomain()
+            generic_relations = field.matrix_space(
+                relations_matrix.nrows(),
+                relations_matrix.ncols(),
+            ).from_rows(
+                tuple(
+                    tuple(fraction_field_map(coefficient) for coefficient in row)
+                    for row in _matrix_coordinate_rows(relations_matrix)
                 )
-                torsion_decision = int(_engine_matrix(generic_relations).rank()) == width
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                torsion_decision = Unknown
+            )
+            torsion_decision = int(_engine_matrix(generic_relations).rank()) == width
         case False:
             pass
     match (_require_torsion, torsion_decision):

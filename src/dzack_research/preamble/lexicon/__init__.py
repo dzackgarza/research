@@ -1,11 +1,17 @@
 """Single import surface for mathematical nouns used by the preamble."""
 
 from dzack_research.preamble.lexicon.algebra import (
+    AlgebraHomomorphism,
     BaseRing,
     Element,
     Matrix,
     ModuleElement,
+    MonoidObject,
     RingElement,
+)
+from dzack_research.preamble.lexicon.category_theory import (
+    ElementOfCategoryObject,
+    ObjectOfCategory,
 )
 from dzack_research.preamble.lexicon.foundations import (
     CartanType,
@@ -15,8 +21,6 @@ from dzack_research.preamble.lexicon.foundations import (
     MatrixData,
     OrderedSet,
     Rational,
-    RealApproximation,
-    RealNumber,
     SignaturePair,
     SymbolicExpression,
 )
@@ -28,12 +32,15 @@ from dzack_research.preamble.lexicon.interop import (
     SageParent,
     SageUniqueRepresentation,
 )
+from dzack_research.preamble.lexicon.set_theory import SetObject
 
 __all__ = [
+    "AlgebraHomomorphism",
     "BaseRing",
     "CartanType",
     "CoxeterMatrix",
     "Element",
+    "ElementOfCategoryObject",
     "GramMatrix",
     "Graph",
     "Integer",
@@ -41,17 +48,18 @@ __all__ = [
     "Matrix",
     "MatrixData",
     "ModuleElement",
+    "MonoidObject",
     "OrderedSet",
+    "ObjectOfCategory",
     "Polyhedron",
     "Rational",
-    "RealApproximation",
-    "RealNumber",
     "RingElement",
     "SageCategory",
     "SageElement",
     "SageMorphism",
     "SageParent",
     "SageUniqueRepresentation",
+    "SetObject",
     "SignaturePair",
     "SymbolicExpression",
 ]

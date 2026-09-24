@@ -1,6 +1,7 @@
 r"""Exact vector-orbit data for owned lattices."""
 
 from sage.misc.cachefunc import cached_method
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import _torsion_form_isometry
 
@@ -41,7 +42,7 @@ class VectorPrimitiveExtension:
     def __init__(self, lattice, element) -> None:
         vector = (
             element
-            if getattr(element, "parent", lambda: None)() is lattice
+            if element_parent(element) is lattice
             else lattice(element)
         )
         if vector.q() == 0:
@@ -225,13 +226,13 @@ class VectorPrimitiveExtension:
     def class_of_representative(self, element):
         r"""Return the class of ``A_L`` represented by an element of ``H^perp``."""
         key = self.sum_form(element)
-        try:
-            return self._representative_table()[key]
-        except KeyError as error:
+        table = self._representative_table()
+        if key not in table:
             raise ValueError(
                 f"{element} does not lie in H^perp for L = {self.lattice}, so it represents no "
                 f"class of A_L"
-            ) from error
+            )
+        return table[key]
 
     def complement_is_definite(self) -> bool:
         r"""Return whether the orthogonal complement is definite."""
@@ -337,13 +338,16 @@ def _definite_complement_extensions(lattice, left, right):
             for row in range(source_rank)
         )
         candidate = target_inclusion * block * source_inverse
-        try:
-            integral = ring.matrix_space(source_rank).from_rows(
-                (ring(candidate[row, column]) for column in range(source_rank))
-                for row in range(source_rank)
-            )
-        except (TypeError, ValueError):
+        if not all(
+            candidate[row, column] in ring
+            for row in range(source_rank)
+            for column in range(source_rank)
+        ):
             continue
+        integral = ring.matrix_space(source_rank).from_rows(
+            (ring(candidate[row, column]) for column in range(source_rank))
+            for row in range(source_rank)
+        )
         images = tuple(
             sum(
                 (
@@ -394,8 +398,16 @@ def _line_isometry(source, target):
 
 def _finite_form_isometries(start):
     r"""Yield the complete finite-form isometry torsor generated from ``start``."""
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        QuadraticFormModules,
+    )
+
     source = start.domain()
     target = start.codomain()
+    quadratic = (
+        source in QuadraticFormModules(source.base_ring())
+        and target in QuadraticFormModules(target.base_ring())
+    )
     for automorphism in target.O():
         forward = automorphism.forward() * start.forward()
         inverse = start.inverse() * automorphism.inverse_morphism()
@@ -403,7 +415,7 @@ def _finite_form_isometries(start):
         yield _torsion_form_isometry(
             forward,
             inverse,
-            quadratic=hasattr(source, "q") and hasattr(target, "q"),
+            quadratic=quadratic,
         )
 
 

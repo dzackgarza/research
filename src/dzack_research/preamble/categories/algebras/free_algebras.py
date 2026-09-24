@@ -10,11 +10,10 @@ from sage.all import (
 from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
-from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.rings.ideal import Ideal_generic
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -32,7 +31,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
     _SelectedFiniteAlgebraPresentation,
-    _refine_algebra,
+    _algebra_with_structure,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
@@ -59,7 +58,16 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets, NN, Sets
+
+
+def _polynomial_monomial_exponents(engine, monomial) -> tuple[int, ...]:
+    r"""Decode a polynomial monomial key at the private Sage boundary."""
+    if isinstance(engine, PolynomialRing_generic):
+        return (int(monomial),)
+    if isinstance(engine, MPolynomialRing_base):
+        return tuple(int(exponent) for exponent in monomial)
+    raise TypeError("the selected symmetric-algebra computation uses a polynomial ring")
 
 
 class _NativeMonomialEvaluation:
@@ -119,11 +127,7 @@ class _NativeMonomialEvaluation:
                         lambda position, word=word: word[int(position)]
                     )
                 case "symmetric":
-                    match engine:
-                        case PolynomialRing_generic():
-                            exponents = (int(monomial),)
-                        case _:
-                            exponents = tuple(int(exponent) for exponent in monomial)
+                    exponents = _polynomial_monomial_exponents(engine, monomial)
                     degree = sum(exponents)
                     powers = dict(zip(labels, exponents, strict=True))
                     inner = module_labels.cofactor(NN(degree)).from_multiplicities(powers)
@@ -181,9 +185,10 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category, *categories),
             construction_data=construction_data,
             law_decisions=(("grading", True),),
+            algebra_framing_source=self,
         )
 
-    def _refined_specialized_algebra(
+    def _specialized_algebra_with_structure(
         self,
         base_ring,
         labels,
@@ -266,7 +271,7 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
         _SageLaurentPolynomialRing(_engine_ring(base), *args, **kwargs)
     )
     labels = tuple(_engine_ring(result).variable_names())
-    algebra = _refine_algebra(result, base, labels)
+    algebra = _algebra_with_structure(result, base, labels)
     _set_owned_ring_display(
         algebra,
         f"{base}[{', '.join(labels)}^±1]",
@@ -320,26 +325,7 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
 def _relations_to_ideal(presentation_ring, relations):
     r"""Return the backend ideal and the owned finite relation family."""
     engine = _engine_ring(presentation_ring)
-    if isinstance(relations, Ideal_generic):
-        if relations.ring() is not engine:
-            raise ValueError(
-                f"the relations of a quotient of {presentation_ring} must form an ideal of it, but {relations} "
-                f"is an ideal of {relations.ring()}"
-            )
-        backend_by_position = {
-            position: relation for position, relation in enumerate(relations.gens())
-        }
-        indices = Sets.Δ[len(backend_by_position) - 1]
-        selected_relations = indexed_family(
-            indices,
-            lambda index: _owned_engine_element(presentation_ring,
-                backend_by_position[int(index)]
-            ),
-            name="Defining relation family",
-        )
-        return relations, selected_relations
-
-    if hasattr(relations, "index_set") and callable(getattr(relations, "value", None)):
+    if isinstance(relations, IndexedFamily):
         size = cardinal(relations.cardinality())
         if not size.is_finite():
             raise TypeError(
@@ -358,12 +344,7 @@ def _relations_to_ideal(presentation_ring, relations):
             lambda index: presentation_ring(by_position[int(index)]),
             name="Defining relation family",
         )
-    elif hasattr(relations, "cardinality"):
-        size = cardinal(relations.cardinality())
-        if not size.is_finite():
-            raise TypeError(
-                f"an algebra given by generators and relations needs finitely many relations, but got {size}"
-            )
+    elif relations in FiniteSets():
         selected_relations = indexed_family(
             relations,
             lambda relation: presentation_ring(relation),
@@ -383,18 +364,10 @@ def _relations_to_ideal(presentation_ring, relations):
 
 
 def _base_change_commutative_presentation(algebra, ring_map):
-    if not isinstance(ring_map, Map):
-        raise TypeError(
-            f"base change of {algebra} is along a ring morphism, but {ring_map!r} is not a map"
-        )
-    if _engine_ring(ring_map.domain()) is not _engine_ring(algebra.base_ring()):
-        raise ValueError(
-            f"base change of {algebra} along {ring_map} needs a ring map starting at {algebra.base_ring()}, "
-            f"but it starts at {ring_map.domain()}"
-        )
-    target_base = _owned_ring(ring_map.codomain())
-    target_presentation_ring = target_base.free_module(algebra.algebra_generating_set()).symmetric_algebra()
     source_base = algebra.base_ring()
+    target_base = _owned_ring(ring_map.codomain())
+    ring_map = source_base.Mor(target_base)(ring_map)
+    target_presentation_ring = target_base.free_module(algebra.algebra_generating_set()).symmetric_algebra()
     source_engine = _engine_ring(source_base)
     target_base_engine = _engine_ring(target_base)
     target_engine = _engine_ring(target_presentation_ring)
@@ -545,14 +518,19 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             generator_values=selected_generator_values,
             categories=tuple(placement),
             law_decisions=law_decisions,
+            algebra_framing_source=presentation_ring,
+            algebra_framing_morphism_factory=presentation_morphism,
         )
-        if commutative_backend:
-            self._preamble_commutative_algebra_coproduct_backend = lambda left, right: (
-                _commutative_algebra_coproduct_backend(left, right)
-            )
-            self._preamble_commutative_algebra_pushout_backend = lambda left_map, right_map: (
-                _commutative_algebra_pushout_backend(left_map, right_map)
-            )
+        self._preamble_commutative_algebra_coproduct_backend = (
+            (lambda left, right: _commutative_algebra_coproduct_backend(left, right))
+            if commutative_backend
+            else None
+        )
+        self._preamble_commutative_algebra_pushout_backend = (
+            (lambda left_map, right_map: _commutative_algebra_pushout_backend(left_map, right_map))
+            if commutative_backend
+            else None
+        )
 
 
 
@@ -680,10 +658,9 @@ def _localized_coefficient_presentation_backend(
     base = presentation_ring.base_ring()
     if base not in LocalizationRings():
         return None
-    try:
-        inverted = tuple(base.inverted_elements())
-    except NotImplementedError:
+    if base.localization_submonoid()._structure_data().get("kind") != "finitely_generated":
         return None
+    inverted = tuple(base.inverted_elements())
     if not inverted:
         return None
 
@@ -691,24 +668,14 @@ def _localized_coefficient_presentation_backend(
     presentation_engine = _engine_ring(presentation_ring)
     coefficient_source_engine = _engine_ring(coefficient_source)
     base_engine = _engine_ring(base)
-    try:
-        variable_names = tuple(presentation_engine.variable_names())
-        polynomial_bottom = _SagePolynomialRing(
-            coefficient_source_engine,
-            names=variable_names,
-        )
-        flattening_factory = getattr(
-            polynomial_bottom,
-            "flattening_morphism",
-            None,
-        )
-        if not callable(flattening_factory):
-            return None
-        flattening = flattening_factory()
-        flattened = flattening.codomain()
-        unflatten = flattening.section()
-    except (AttributeError, TypeError, ValueError):
-        return None
+    variable_names = tuple(presentation_engine.variable_names())
+    polynomial_bottom = _SagePolynomialRing(
+        coefficient_source_engine,
+        names=variable_names,
+    )
+    flattening = polynomial_bottom.flattening_morphism()
+    flattened = flattening.codomain()
+    unflatten = flattening.section()
 
     flat_names = tuple(flattened.variable_names())
     occupied = set(flat_names)
@@ -934,7 +901,7 @@ def _finitely_presented_algebra_from_data(
     if (
         label_size.is_finite()
         and int(label_size.finite_value()) == 1
-        and hasattr(quotient_engine, "modulus")
+        and isinstance(quotient_engine, PolynomialQuotientRing_generic)
     ):
         modulus = quotient_engine.modulus()
         degree = int(modulus.degree())
@@ -1096,10 +1063,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             if degree == 0:
                 labels = finite_ordered_set((0,))
             else:
-                try:
-                    labels = self.graded_piece(degree).module_generating_set()
-                except ValueError:
-                    labels = finite_ordered_set(())
+                labels = self.graded_piece(degree).module_generating_set()
             return indexed_family(
                 labels,
                 lambda label: self._realize_graded_piece_basis_label(degree, label),
@@ -1362,14 +1326,9 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             r"""Project onto the canonical symmetric-power degree piece."""
             degree = int(degree)
             element = self(element)
-
-            def monomial_degree(exponent):
-                try:
-                    return sum(exponent)
-                except TypeError:
-                    return int(exponent)
             piece = self.graded_piece(degree)
             backend = _engine_element(self, element)
+            engine = backend.parent()
             coefficients = backend.monomial_coefficients()
             exponent_to_label = {}
             for label in piece.module_generating_set():
@@ -1392,23 +1351,18 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
                         engine_ring(coefficient)
                     )
                     for exponent, coefficient in coefficients.items()
-                    if coefficient and monomial_degree(exponent) == degree
+                    if coefficient
+                    and sum(_polynomial_monomial_exponents(engine, exponent)) == degree
                 }
             )
 
         def homogeneous_components(self, element):
             r"""Return all nonzero polynomial-degree components."""
             backend = _engine_element(self, self(element))
-
-            def monomial_degree(exponent):
-                try:
-                    return sum(exponent)
-                except TypeError:
-                    return int(exponent)
-
+            engine = backend.parent()
             degrees = sorted(
                 {
-                    monomial_degree(exponent)
+                    sum(_polynomial_monomial_exponents(engine, exponent))
                     for exponent, coefficient in backend.monomial_coefficients().items()
                     if coefficient
                 }
@@ -1491,27 +1445,21 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
 
 def _presentation_data(algebra):
+    from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRings
+
     base = algebra.base_ring()
-    has_selected_presentation = hasattr(algebra, "presentation_ring") and hasattr(
-        algebra, "relations"
-    )
-    is_free_polynomial = algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base)
-    has_quotient_presentation = hasattr(algebra, "quotient_source") and hasattr(
-        algebra, "defining_ideal"
-    )
-    quotient_source = algebra.quotient_source() if has_quotient_presentation else None
-    assert (
-        has_selected_presentation
-        or is_free_polynomial
-        or (has_quotient_presentation and quotient_source in SymmetricAlgebras(base))
-    ), (
+    match algebra:
+        case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
+            return algebra.presentation_ring(), tuple(algebra.relations())
+        case _ if algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base):
+            return algebra, ()
+        case _ if algebra in QuotientRings():
+            quotient_source = algebra.quotient_source()
+            if quotient_source in SymmetricAlgebras(base):
+                return quotient_source, tuple(algebra.defining_ideal().ideal_generators())
+    raise TypeError(
         f"{algebra} must be a polynomial algebra or a quotient of one given by finitely many relations"
     )
-    if has_selected_presentation:
-        return algebra.presentation_ring(), tuple(algebra.relations())
-    if is_free_polynomial:
-        return algebra, ()
-    return quotient_source, tuple(algebra.defining_ideal().gens())
 
 
 def _transport_relations(presentation_ring, relations, target, tag):
@@ -1561,7 +1509,7 @@ def _commutative_algebra_coproduct_backend(left, right):
             _extra_categories=(CommutativeAlgebraCoproducts(base),),
             _extra_construction_data=construction_data,
         )
-    return _refine_algebra(
+    return _algebra_with_structure(
         presentation,
         base,
         combined_labels,
@@ -1585,21 +1533,20 @@ def _quotient_by_algebra_elements_backend(
     if not selected:
         identity = Algebras(base).Associative().Unital().Commutative().Mor(algebra, algebra).identity()
         return algebra, identity
-    has_selected_presentation = hasattr(algebra, "presentation_ring") and hasattr(
-        algebra, "relations"
-    )
-    assert has_selected_presentation or algebra in SymmetricAlgebras(base), (
-        f"the quotient of {algebra} by {elements} is computed only for a polynomial algebra or a "
-        "quotient of one given by relations"
-    )
-    if has_selected_presentation:
-        presentation = algebra.presentation_ring()
-        relations = tuple(algebra.relations()) + tuple(
-            algebra.lift_to_presentation(element) for element in selected
-        )
-    elif algebra in SymmetricAlgebras(base):
-        presentation = algebra
-        relations = selected
+    match algebra:
+        case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
+            presentation = algebra.presentation_ring()
+            relations = tuple(algebra.relations()) + tuple(
+                algebra.lift_to_presentation(element) for element in selected
+            )
+        case _ if algebra in SymmetricAlgebras(base):
+            presentation = algebra
+            relations = selected
+        case _:
+            raise TypeError(
+                f"the quotient of {algebra} by {elements} is computed only for a polynomial algebra or a "
+                "quotient of one given by relations"
+            )
     quotient = (presentation).quotient_by_relations(relations,
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
@@ -1615,16 +1562,10 @@ def _quotient_by_algebra_elements_backend(
 
 @cached_function
 def _commutative_algebra_pushout_backend(left_map, right_map):
-    try:
-        common = left_map.domain()
-        left = left_map.codomain()
-        right_common = right_map.domain()
-        right = right_map.codomain()
-    except AttributeError as error:
-        raise TypeError(
-            f"a pushout of commutative algebras needs two algebra morphisms, but got {left_map!r} and "
-            f"{right_map!r}"
-        ) from error
+    common = left_map.domain()
+    left = left_map.codomain()
+    right_common = right_map.domain()
+    right = right_map.codomain()
     if common is not right_common:
         raise ValueError(
             f"a pushout needs a span B <- A -> C, but the maps start at {common} and {right_common}"
@@ -1763,18 +1704,14 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def _tensor_terms(self, element):
         domain = self.domain()
-        if hasattr(domain, "lift_to_presentation"):
+        if domain in AlgebrasWithChosenFinitePresentation(domain.base_ring()):
             presentation_ring = domain.presentation_ring()
             presented = _engine_element(
                 presentation_ring,
                 domain.lift_to_presentation(element),
             )
         else:
-            engine_domain = _engine_ring(domain)
-            if getattr(element, "parent", lambda: None)() is engine_domain:
-                presented = engine_domain(element)
-            else:
-                presented = _engine_element(domain, domain(element))
+            presented = _engine_element(domain, element)
         engine = presented.parent()
         labels = self._finite_engine_generator_labels()
         generator_labels = dict(zip(engine.monoid().gens(), labels, strict=True))
@@ -1789,27 +1726,18 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def _symmetric_terms(self, element):
         domain = self.domain()
-        if hasattr(domain, "lift_to_presentation"):
+        if domain in AlgebrasWithChosenFinitePresentation(domain.base_ring()):
             presentation_ring = domain.presentation_ring()
             presented = _engine_element(
                 presentation_ring,
                 domain.lift_to_presentation(element),
             )
         else:
-            engine_domain = _engine_ring(domain)
-            if getattr(element, "parent", lambda: None)() is engine_domain:
-                presented = engine_domain(element)
-            else:
-                presented = _engine_element(domain, domain(element))
+            presented = _engine_element(domain, element)
+        engine = presented.parent()
         labels = self._finite_engine_generator_labels()
         for monomial, coefficient in presented.monomial_coefficients().items():
-            try:
-                exponents = tuple(int(exponent) for exponent in monomial)
-            except TypeError:
-                if hasattr(monomial, "exponents"):
-                    exponents = tuple(monomial.exponents()[0])
-                else:
-                    exponents = (int(monomial),)
+            exponents = _polynomial_monomial_exponents(engine, monomial)
             factors = tuple(
                 label
                 for label, exponent in zip(labels, exponents, strict=True)
@@ -1828,6 +1756,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def _call_(self, element):
         domain = self.domain()
+        element = domain(element)
         terms = (
             self._tensor_terms(element)
             if domain in TensorAlgebras(domain.base_ring())
@@ -1850,15 +1779,6 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def is_identity(self) -> bool:
         return self._preamble_is_identity
-
-    def __mul__(self, other):
-        if not isinstance(other, FramedFreeAlgebraMorphism) or other.codomain() is not self.domain():
-            return super().__mul__(other)
-        if self.is_identity():
-            return other
-        if other.is_identity():
-            return self
-        return super().__mul__(other)
 
 
 class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):

@@ -17,6 +17,7 @@ from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import ModuleElement
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
@@ -36,6 +37,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -183,7 +185,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         def _element_constructor_(self, value):
             if isinstance(value, self.category().ElementType) and value.parent() is self:
                 return value
-            parent = getattr(value, "parent", lambda: None)()
+            parent = element_parent(value)
             if parent is not None:
                 if parent in OwnedRings():
                     return self._from_engine_element(_engine_element(parent, value))
@@ -347,7 +349,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
 
 @cached_function
-def _owned_fraction_field_quotient(engine: QmodnZ) -> Parent:
+def _owned_fraction_field_quotient(engine: QmodnZ) -> ObjectOfCategory:
     base_ring = _own_ring(SageZZ)
     placement = [FractionFieldQuotients(base_ring)]
     if not engine.n.is_zero():

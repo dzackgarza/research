@@ -1,6 +1,7 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
 from sage.categories.category import Category
+from sage.categories.rings import Rings as SageRings
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
 from sage.misc.cachefunc import cached_function, cached_method
@@ -8,6 +9,8 @@ from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+from sage.rings.quotient_ring import QuotientRing_generic
+from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.localizations import (
@@ -158,20 +161,17 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             containment is decided in ``R`` by the localization criterion in
             :meth:`contains_ambient_element`.
             """
-            try:
-                if other not in CommutativeIdeals(self.ring()):
-                    return False
-                if self.ring() in LocalizationRings():
-                    return all(
-                        other.contains_ambient_element(generator)
-                        for generator in self.ideal_generators()
-                    ) and all(
-                        self.contains_ambient_element(generator)
-                        for generator in other.ideal_generators()
-                    )
-                return bool(self._engine_ideal() == other._engine_ideal())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
+            if other not in CommutativeIdeals(self.ring()):
                 return False
+            if self.ring() in LocalizationRings():
+                return all(
+                    other.contains_ambient_element(generator)
+                    for generator in self.ideal_generators()
+                ) and all(
+                    self.contains_ambient_element(generator)
+                    for generator in other.ideal_generators()
+                )
+            return bool(self._engine_ideal() == other._engine_ideal())
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -212,18 +212,12 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 f"cannot compute this operation on the ideal {self}: its ring {self.ring()} has no "
                 "computer-algebra model in which to compute with ideals"
             )
-            try:
-                return engine.ideal(
-                    tuple(
-                        _engine_element(self.ring(), generator)
-                        for generator in self.ideal_generators()
-                    )
+            return engine.ideal(
+                tuple(
+                    _engine_element(self.ring(), generator)
+                    for generator in self.ideal_generators()
                 )
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise AssertionError(
-                    f"cannot compute this operation on the ideal {self}: its generators could not be transferred "
-                    f"to a computer-algebra model of {self.ring()}"
-                ) from error
+            )
 
         def extension_to_localization(self, localization_ring):
             r"""Return the represented localization ``S^{-1}I <= S^{-1}R``."""
@@ -240,66 +234,27 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def is_prime(self):
             backend = self._engine_ideal()
-            try:
-                return bool(backend.is_prime())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                try:
-                    return bool(
-                        _engine_quotient_cover_ideal(self.ring(), backend).is_prime()
-                    )
-                except (
-                    AttributeError,
-                    NotImplementedError,
-                    TypeError,
-                    ValueError,
-                ) as quotient_error:
-                    raise AssertionError(
-                        f"cannot decide whether the ideal {self} of {self.ring()} is prime: no exact primality "
-                        "algorithm applies to this ideal or to its preimage in a covering polynomial ring"
-                    ) from quotient_error
+            match _realized_as_quotient(self.ring()):
+                case True:
+                    return bool(_cover_lifted_ideal(self).is_prime())
+                case False:
+                    return bool(backend.is_prime())
 
         def is_maximal(self):
             backend = self._engine_ideal()
-            try:
-                return bool(backend.is_maximal())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                engine_ring = backend.ring()
-                if isinstance(
-                    engine_ring,
-                    (PolynomialRing_generic, MPolynomialRing_base),
-                ) and bool(engine_ring.base_ring().is_field()):
-                    # Zariski's lemma: for a polynomial algebra over a field,
-                    # a prime ideal is maximal exactly when its quotient has
-                    # Krull dimension zero.  Sage exposes both predicates even
-                    # when Ideal.is_maximal() itself is not implemented.
-                    return bool(backend.is_prime() and backend.dimension() == 0)
-                try:
-                    lifted = _engine_quotient_cover_ideal(self.ring(), backend)
-                except (
-                    AttributeError,
-                    NotImplementedError,
-                    TypeError,
-                    ValueError,
-                ) as error:
-                    raise AssertionError(
-                        f"cannot decide whether the ideal {self} of {self.ring()} is maximal: no exact maximality "
-                        "algorithm applies to this ideal or to its preimage in a covering polynomial ring"
-                    ) from error
-                try:
-                    return bool(lifted.is_maximal())
-                except NotImplementedError as error:
-                    cover = lifted.ring()
-                    assert bool(cover.base_ring().is_field()), (
-                        f"cannot decide whether the ideal {self} is maximal: its preimage {lifted} lies in {cover}, "
-                        f"whose coefficient ring {cover.base_ring()} is not a field, so 'prime of dimension 0' is not maximality"
-                    )
-                    try:
-                        return bool(lifted.is_prime() and lifted.dimension() == 0)
-                    except NotImplementedError as fallback_error:
-                        raise AssertionError(
-                            f"cannot decide whether the ideal {self} is maximal: primality or Krull dimension of its "
-                            f"preimage {lifted} in {cover} could not be computed"
-                        ) from fallback_error
+            match _realized_as_quotient(self.ring()):
+                case True:
+                    selected = _cover_lifted_ideal(self)
+                case False:
+                    selected = backend
+            selected_ring = selected.ring()
+            match selected_ring:
+                case PolynomialRing_generic() | MPolynomialRing_base() if bool(
+                    selected_ring.base_ring().is_field()
+                ):
+                    return bool(selected.is_prime() and selected.dimension() == 0)
+                case _:
+                    return bool(selected.is_maximal())
 
         def radical(self):
             r"""Return ``sqrt(I)``.
@@ -353,39 +308,32 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             none, so the computation is lifted and the result descended.
             """
             _require_same_ring(self, other)
-            if _realized_as_quotient(self.ring()):
+            ring = self.ring()
+            if _realized_as_quotient(ring):
                 return _descend_cover_ideal(
-                    self.ring(),
+                    ring,
                     _cover_lifted_ideal(self).quotient(_cover_lifted_ideal(other)),
                 )
-            method = _optional_engine_method(self._engine_ideal(), "quotient")
-            match method:
-                case None:
-                    ring = self.ring()
-                    assert ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals(), (
-                        f"cannot compute the ideal quotient ({self} : {other}): no algorithm is available over {ring}, "
-                        f"and {ring} is not known to be a principal ideal domain"
-                    )
-                    numerator = _pid_principal_ideal_generator(self)
-                    denominator = _pid_principal_ideal_generator(other)
-                    match denominator == ring.zero():
-                        case True:
-                            return ring.ideal(ring.one())
-                        case False:
-                            common = numerator.gcd(denominator)
-                            quotient, remainder = numerator.quo_rem(common)
-                    match remainder == ring.zero():
-                        case True:
-                            return ring.ideal(quotient)
-                        case False:
-                            raise ArithmeticError(
-                                f"cannot compute the ideal quotient ({self} : {other}) in the principal ideal domain {ring}: "
-                                f"the gcd {common} does not divide {numerator} exactly (remainder {remainder})"
-                            )
-                case _:
-                    return _from_engine_ideal(
-                        self.ring(), method(other._engine_ideal())
-                    )
+            if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+                numerator = _pid_principal_ideal_generator(self)
+                denominator = _pid_principal_ideal_generator(other)
+                match denominator == ring.zero():
+                    case True:
+                        return ring.ideal(ring.one())
+                    case False:
+                        common = numerator.gcd(denominator)
+                        quotient, remainder = numerator.quo_rem(common)
+                match remainder == ring.zero():
+                    case True:
+                        return ring.ideal(quotient)
+                    case False:
+                        raise ArithmeticError(
+                            "a PID gcd did not divide the ideal generator exactly"
+                        )
+            return _from_engine_ideal(
+                ring,
+                self._engine_ideal().quotient(other._engine_ideal()),
+            )
 
         ideal_quotient = colon
 
@@ -400,48 +348,41 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             computation, not about the ideal.
             """
             _require_same_ring(self, other)
-            if _realized_as_quotient(self.ring()):
+            ring = self.ring()
+            if _realized_as_quotient(ring):
                 saturated, _reached_at_exponent = _cover_lifted_ideal(self).saturation(
                     _cover_lifted_ideal(other)
                 )
-                return _descend_cover_ideal(self.ring(), saturated)
-            method = _optional_engine_method(self._engine_ideal(), "saturation")
-            match method:
-                case None:
-                    ring = self.ring()
-                    assert ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals(), (
-                        f"cannot compute the saturation ({self} : {other}^infinity): no algorithm is available over "
-                        f"{ring}, and {ring} is not known to be a principal ideal domain"
-                    )
+                return _descend_cover_ideal(ring, saturated)
+            if ring in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
+                numerator = _pid_principal_ideal_generator(self)
+                denominator = _pid_principal_ideal_generator(other)
+                match (numerator == ring.zero(), denominator == ring.zero()):
+                    case (_, True):
+                        return ring.ideal(ring.one())
+                    case (True, False):
+                        return ring.ideal(ring.zero())
+                    case (False, False):
+                        current = numerator
 
-                    numerator = _pid_principal_ideal_generator(self)
-                    denominator = _pid_principal_ideal_generator(other)
-                    match (numerator == ring.zero(), denominator == ring.zero()):
-                        case (_, True):
-                            return ring.ideal(ring.one())
-                        case (True, False):
-                            return ring.ideal(ring.zero())
-                        case (False, False):
-                            current = numerator
-
-                    while True:
-                        common = current.gcd(denominator)
-                        match common.is_unit():
-                            case True:
-                                return ring.ideal(current)
-                            case False:
-                                quotient, remainder = current.quo_rem(common)
-                                match remainder == ring.zero():
-                                    case True:
-                                        current = quotient
-                                    case False:
-                                        raise ArithmeticError(
-                                            f"cannot compute the saturation ({self} : {other}^infinity) in the principal ideal domain "
-                                            f"{ring}: the gcd {common} does not divide {current} exactly (remainder {remainder})"
-                                        )
-                case _:
-                    saturated, _reached_at_exponent = method(other._engine_ideal())
-                    return _from_engine_ideal(self.ring(), saturated)
+                while True:
+                    common = current.gcd(denominator)
+                    match common.is_unit():
+                        case True:
+                            return ring.ideal(current)
+                        case False:
+                            quotient, remainder = current.quo_rem(common)
+                            match remainder == ring.zero():
+                                case True:
+                                    current = quotient
+                                case False:
+                                    raise ArithmeticError(
+                                        "a PID gcd did not divide the ideal generator exactly"
+                                    )
+            saturated, _reached_at_exponent = self._engine_ideal().saturation(
+                other._engine_ideal()
+            )
+            return _from_engine_ideal(ring, saturated)
 
         saturation = ideal_saturation
 
@@ -459,95 +400,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 return source_ideal
 
             source_ring = localization_ring.localization_source()
-
-            # If the source is represented as A = P/I, compute contraction in
-            # the selected presentation ring P rather than asking Singular to
-            # saturate an ideal inside Sage's generic quotient parent.  For
-            # S=<s_1,...,s_r>, the contraction of S^{-1}J is
-            #
-            #     (I + J~) : (s~_1 ... s~_r)^infinity / I,
-            #
-            # where tildes denote the selected lifts to P.  This is the same
-            # exact presentation data used by quotient-coefficient module
-            # equality and by localization fraction equality.
-            try:
-                has_presentation = source_ring._has_selected_exact_coefficient_presentation()
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                has_presentation = False
-            if has_presentation:
-                presentation_ring = source_ring._exact_coefficient_presentation_ring()
-                lifted_ideal_generators = tuple(
-                    presentation_ring(
-                        source_ring._lift_coefficient_to_presentation(generator)
-                    )
-                    for generator in source_ideal.ideal_generators()
-                )
-                presentation_relations = tuple(
-                    presentation_ring(relation)
-                    for relation in source_ring._exact_coefficient_presentation_relations()
-                )
-                lifted_denominators = tuple(
-                    presentation_ring(
-                        source_ring._lift_coefficient_to_presentation(generator)
-                    )
-                    for generator in generators
-                )
-                product = presentation_ring.one()
-                for denominator in lifted_denominators:
-                    product *= denominator
-                lifted_ideal = presentation_ring.ideal(
-                    *(
-                        presentation_relations
-                        + lifted_ideal_generators
-                        or (presentation_ring.zero(),)
-                    )
-                )
-                saturated = lifted_ideal.saturation(
-                    presentation_ring.ideal(product)
-                )
-                descended_generators = tuple(
-                    source_ring._descend_coefficient_from_presentation(generator)
-                    for generator in saturated.ideal_generators()
-                )
-                return source_ring.ideal(
-                    *(descended_generators or (source_ring.zero(),))
-                )
-
-            engine = _engine_ring(source_ring)
-            source_backend = source_ideal._engine_ideal()
-            saturation_method = _optional_engine_method(source_backend, "saturation")
-            if saturation_method is not None:
-                product = engine.one()
-                for generator in generators:
-                    product *= _engine_ring_value(source_ring, generator)
-                result = saturation_method(engine.ideal(product))
-                saturated = result[0] if isinstance(result, tuple) else result
-                return _from_engine_ideal(source_ring, saturated)
-
-            # Principal-ideal-domain computation.  If I=(a), saturation by
-            # <s_1,...,s_n> removes from a every prime factor occurring in
-            # one of the s_i.  Repeated gcd division does this without a
-            # separate factorization algorithm.
-            from sage.categories.principal_ideal_domains import PrincipalIdealDomains
-
-            if engine in PrincipalIdealDomains():
-                generator = engine(source_backend.gen())
-                if generator == 0:
-                    return source_ideal
-                changed = True
-                while changed:
-                    changed = False
-                    for denominator in generators:
-                        gcd = generator.gcd(_engine_ring_value(source_ring, denominator))
-                        if gcd != 0 and not gcd.is_unit():
-                            generator = engine(generator / gcd)
-                            changed = True
-                return source_ring.ideal(_owned_engine_element(source_ring, engine(generator)))
-
-            assert engine in PrincipalIdealDomains(), (
-                f"cannot contract the ideal {self} of {self.ring()} to {source_ring}: no saturation algorithm "
-                f"is available and {engine} is not a principal ideal domain"
-            )
+            product = source_ring.one()
+            for generator in generators:
+                product *= source_ring(generator)
+            return source_ideal.ideal_saturation(source_ring.ideal(product))
 
         contraction = contraction_from_localization
 
@@ -580,12 +436,11 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _engine_element(ring, value) in self._engine_ideal()
 
         def __contains__(self, candidate) -> bool:
-            if getattr(candidate, "parent", lambda: None)() is self:
+            if element_parent(candidate) is self:
                 return True
-            try:
-                return self.contains_ambient_element(candidate)
-            except (TypeError, ValueError):
+            if candidate not in self.ring():
                 return False
+            return self.contains_ambient_element(candidate)
 
         def sum(self, other):
             _require_same_ring(self, other)
@@ -649,10 +504,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             backend = self._engine_ideal()
             selected = tuple(backend.gens())
             rows = _engine_ideal_syzygy_rows(self.ring(), backend, selected)
-            assert rows is not None, (
-                f"cannot compute the syzygies of the generators {selected} of the ideal {self}: "
-                f"no syzygy algorithm is available over {self.ring()}"
-            )
             ring = self.ring()
             owned_rows = tuple(
                 tuple(
@@ -667,13 +518,11 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             ).from_rows(owned_rows)
 
         def primary_decomposition(self):
-            method = _engine_ideal_method(
-                self,
-                "primary_decomposition",
-                "no primary-decomposition algorithm is available over this ring",
-            )
             return finite_ordered_set(
-                tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+                tuple(
+                    _from_engine_ideal(self.ring(), ideal)
+                    for ideal in self._engine_ideal().primary_decomposition()
+                )
             )
 
         def hilbert_polynomial_value(self, argument):
@@ -683,25 +532,18 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             engine polynomial itself does not cross the ideal boundary.  Only
             its exact scalar value is raised into the owned coefficient ring.
             """
-            method = _engine_ideal_method(
-                self,
-                "hilbert_polynomial",
-                "no algorithm for the Hilbert polynomial of R/I is available over this ring",
-            )
-            value = method()(SageZZ(argument))
-            parent = getattr(value, "parent", lambda: None)()
-            if parent is None:
-                return _owned_engine_element(SageZZ, SageZZ(value))
-            return _owned_engine_element(parent, value)
+            value = self._engine_ideal().hilbert_polynomial()(SageZZ(argument))
+            parent = element_parent(value)
+            if parent in SageRings():
+                return _owned_engine_element(parent, value)
+            return _owned_engine_element(SageZZ, SageZZ(value))
 
         def associated_primes(self):
-            method = _engine_ideal_method(
-                self,
-                "associated_primes",
-                "no algorithm for the associated primes of R/I is available over this ring",
-            )
             return finite_ordered_set(
-                tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
+                tuple(
+                    _from_engine_ideal(self.ring(), ideal)
+                    for ideal in self._engine_ideal().associated_primes()
+                )
             )
 
         def _repr_(self):
@@ -731,20 +573,6 @@ def _pid_principal_ideal_generator(ideal):
             return generator
 
 
-def _optional_engine_method(engine, name):
-    r"""Return one optional operation of a private computational realization."""
-    return getattr(engine, name, None)
-
-
-def _engine_ideal_method(ideal, name, unavailable_message):
-    r"""Resolve a selected ideal-engine operation only at the private boundary."""
-    method = _optional_engine_method(ideal._engine_ideal(), name)
-    assert callable(method), (
-        f"cannot compute {name} of the ideal {ideal} of {ideal.ring()}: {unavailable_message}"
-    )
-    return method
-
-
 def _realized_as_quotient(ring) -> bool:
     r"""Return whether the realization of ``ring`` is a quotient ``P/K``.
 
@@ -753,7 +581,11 @@ def _realized_as_quotient(ring) -> bool:
     offered and then declines when called.  So the routing is decided from the
     ring rather than from whether the operation is present.
     """
-    return _optional_engine_method(_engine_ring(ring), "cover_ring") is not None
+    match _engine_ring(ring):
+        case QuotientRing_generic():
+            return True
+        case _:
+            return False
 
 
 def _cover_lifted_ideal(ideal):
@@ -792,32 +624,32 @@ def _engine_ideal_syzygy_rows(ring, backend, selected):
     relation modulo ``J`` iff ``sum a_i f_i`` is a linear combination of the
     generators of ``J``.
     """
-    try:
-        syzygies = backend.syzygy_module()
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        engine = _engine_ring(ring)
-        if isinstance(engine, SageNumberFieldOrder):
+    engine = _engine_ring(ring)
+    match engine:
+        case SageNumberFieldOrder():
             return _order_ideal_syzygy_rows(engine, selected)
-        try:
+        case QuotientRing_generic():
             cover = engine.cover_ring()
             defining = engine.defining_ideal()
             lifted = tuple(engine(generator).lift() for generator in selected)
             augmented = cover.ideal(lifted + tuple(defining.gens()))
             syzygies = augmented.syzygy_module()
-        except (
-            AttributeError,
-            NotImplementedError,
-            TypeError,
-            ValueError,
-        ):
-            return None
 
-        rows = tuple(
-            tuple(engine(syzygies[position, column]) for column in range(len(selected)))
-            for position in range(syzygies.nrows())
-        )
-        zero = engine.zero()
-        return tuple(row for row in rows if any(coefficient != zero for coefficient in row))
+            rows = tuple(
+                tuple(
+                    engine(syzygies[position, column])
+                    for column in range(len(selected))
+                )
+                for position in range(syzygies.nrows())
+            )
+            zero = engine.zero()
+            return tuple(
+                row
+                for row in rows
+                if any(coefficient != zero for coefficient in row)
+            )
+        case _:
+            syzygies = backend.syzygy_module()
 
     return tuple(
         tuple(syzygies[position, column] for column in range(syzygies.ncols()))
@@ -889,7 +721,7 @@ def _engine_ring_value(ring, value):
     r"""Cross one ring element to the private engine of ``ring``."""
     source = _own_ring(ring)
     engine = _engine_ring(source)
-    parent = getattr(value, "parent", lambda: None)()
+    parent = element_parent(value)
     if parent is engine:
         return engine(value)
     return engine(_engine_element(source, source(value)))
@@ -899,9 +731,6 @@ def _owned_engine_value(ring, value):
     r"""Cross one private engine value back into the owned ring."""
     source = _own_ring(ring)
     engine_value = _engine_ring(source)(value)
-    ambient_ring = getattr(source, "ambient_ring", None)
-    if callable(ambient_ring):
-        return source(_owned_engine_element(ambient_ring(), engine_value))
     return _owned_engine_element(source, engine_value)
 
 
@@ -946,8 +775,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
         "engine_ideal": backend,
         "ideal_generators": target_generators,
     }
-    presentation = getattr(changed, "presentation", None)
-    if presentation is None:
+    if changed not in ModulesWithChosenFinitePresentation(target):
         return target._fresh_free_module_on(
             changed.module_generating_set(),
             _subobject_ambient=ambient_module,
@@ -956,7 +784,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
             _extra_construction_data=construction_data,
         )
     return ModulesWithChosenFinitePresentation(target)(
-        presentation(),
+        changed.presentation(),
         subobject_ambient=ambient_module,
         subobject_generator_images=generator_images,
         category=Category.join((CommutativeIdeals(target),)),
@@ -979,14 +807,7 @@ def _commutative_ideal(source, generators):
         values = (engine.zero(),)
     backend = engine.ideal(values)
     selected = tuple(backend.gens())
-    syzygy_rows = _engine_ideal_syzygy_rows(source, backend, selected)
-    if syzygy_rows is None:
-        assert source in OwnedRings().Commutative().NoZeroDivisors() and len(selected) == 1, (
-            f"cannot construct the ideal of {source} generated by {generators}: no syzygy algorithm is "
-            f"available, which is allowed only for a principal ideal of an integral domain, but {source} "
-            f"is in {source.category()} and the ideal has {len(selected)} generators"
-        )
-
+    if source in OwnedRings().Commutative().NoZeroDivisors() and len(selected) == 1:
         generator = selected[0]
         ambient_module = source.regular_module()
         if generator == engine.zero():
@@ -1021,6 +842,7 @@ def _commutative_ideal(source, generators):
             )
         return ideal
 
+    syzygy_rows = _engine_ideal_syzygy_rows(source, backend, selected)
     labels = finite_ordered_set(range(len(selected)))
     relation_labels = finite_ordered_set(range(len(syzygy_rows)))
     free_generators = source.free_module(labels)

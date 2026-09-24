@@ -52,6 +52,8 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import (
@@ -230,7 +232,10 @@ def _precomposable(second: Morphism, first) -> bool:
 
 
 @cached_function(key=lambda category, arrow: (id(category), id(arrow)))
-def _fixed_mor_arrow_object(category: FixedMorObject, arrow: Morphism) -> Parent:
+def _fixed_mor_arrow_object(
+    category: FixedMorObject,
+    arrow: Morphism,
+) -> ObjectOfCategory:
     r"""Construct the one object of a fixed Mor on this admitted arrow.
 
     The two fixed-Mor realizations share this entry. Their raw arrows have
@@ -435,13 +440,13 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
     def base_category(self) -> Category:
         return self.mor_family().base_category()
 
-    def domain_object(self) -> Parent:
+    def domain_object(self) -> ObjectOfCategory:
         return self._domain_object
 
-    def codomain_object(self) -> Parent:
+    def codomain_object(self) -> ObjectOfCategory:
         return self._codomain_object
 
-    def arrow_set(self) -> Parent:
+    def arrow_set(self) -> SetObject:
         return self
 
     underlying_mor = arrow_set
@@ -675,13 +680,13 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
     def base_category(self) -> Category:
         return self.mor_family().base_category()
 
-    def domain_object(self) -> Parent:
+    def domain_object(self) -> ObjectOfCategory:
         return self._domain_object
 
-    def codomain_object(self) -> Parent:
+    def codomain_object(self) -> ObjectOfCategory:
         return self._codomain_object
 
-    def arrow_set(self) -> Parent:
+    def arrow_set(self) -> SetObject:
         r"""The substrate of a Mor with no more specific declared constructor.
 
         Only an unreduced root family constructs this class.  Re-entering the
@@ -790,7 +795,7 @@ class FixedEndCategory(FixedMorCategory):
 
 
 class FixedRestrictedMorCategory(FixedMorCategory):
-    def arrow_set(self) -> Parent:
+    def arrow_set(self) -> SetObject:
         r"""Return the existing ``Mor`` parent for these endpoints.
 
         A restricted Mor category classifies some arrows in the base

@@ -114,6 +114,8 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
 )
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.owned_category import (
     OwnedCategoryMixin,
     OwnedCategoryObject,
@@ -266,11 +268,11 @@ class CategoryWithAxiom(
         base_category_class, axiom = cls._base_category_class_and_axiom
         return base_category_class.an_instance()._with_axiom(axiom)
 
-    def base_ring(self) -> Parent:
+    def base_ring(self) -> ObjectOfCategory:
         r"""Return the base ring of the category this axiom refines."""
         return self._base_category.base_ring()
 
-    def base(self) -> Parent:
+    def base(self) -> ObjectOfCategory:
         return self._base_category.base()
 
 
@@ -379,7 +381,7 @@ class MorCategoryConstruction(
             return [categorical_mor]
         return [categorical_mor, owned_sets.MorCategory()]
 
-    def Of(self, source: Parent, target: Parent) -> Parent:
+    def Of(self, source: Parent, target: Parent) -> SetObject:
         r"""Return the set-valued Mor object supplied by Sage's Mor backend."""
         return self._object(source, target, self)
 
@@ -388,7 +390,7 @@ class MorCategoryConstruction(
         source: Parent,
         target: Parent,
         placement: SageCategory,
-    ) -> Parent:
+    ) -> SetObject:
         r"""Construct one locally small Mor object through its owned type."""
         return placement.ObjectType(
             domain=source,

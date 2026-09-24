@@ -12,6 +12,7 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -39,7 +40,7 @@ def _engine_cartan_type_data(value):
         return [_engine_cartan_type_data(entry) for entry in value]
     if isinstance(value, tuple):
         return tuple(_engine_cartan_type_data(entry) for entry in value)
-    parent = getattr(value, "parent", lambda: None)()
+    parent = element_parent(value)
     if parent is not None and parent in OwnedRings():
         return _engine_numeral(_own_ring(SageZZ), value)
     return value
@@ -994,13 +995,13 @@ class CoxeterDiagrams(OwnedCategory):
             r"""Return the archived rooted-diagram fill convention determined by root square."""
             square = self.root(vertex).q()
             colors = {-4: "#F8F9FE", -2: "#BFC9CA"}
-            try:
-                return colors[int(square)]
-            except KeyError as error:
+            square_key = int(square)
+            if square_key not in colors:
                 raise ValueError(
                     f"cannot draw the vertex {vertex} of {self}: node colors are defined for "
                     f"roots of square -2 and -4, and this root has square {square}"
-                ) from error
+                )
+            return colors[square_key]
 
         def equivariant_positions(self, automorphism):
             r"""Return exact planar positions intertwining a finite diagram automorphism."""

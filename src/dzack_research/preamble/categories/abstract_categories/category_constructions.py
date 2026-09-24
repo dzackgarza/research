@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -129,7 +130,7 @@ class _OppositeCategory(OwnedCategory):
 
     _MorCategory = OppositeMorCategoryConstruction
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""An object of the base category, read in the opposite."""
         return self.object(self.base_category().an_object())
 
@@ -143,7 +144,7 @@ class _OppositeCategory(OwnedCategory):
         def opposite_category(self) -> _OppositeCategory:
             return self.category()
 
-        def underlying_object(self) -> Parent:
+        def underlying_object(self) -> ObjectOfCategory:
             return self._underlying_object
 
         def _repr_(self) -> str:
@@ -163,7 +164,7 @@ class _OppositeCategory(OwnedCategory):
         return [Objects()]
 
     @cached_method(key=lambda self, underlying_object: id(underlying_object))
-    def object(self, underlying_object: Parent) -> Parent:
+    def object(self, underlying_object: Parent) -> ObjectOfCategory:
         if underlying_object not in self.base_category():
             raise TypeError(
                 f"an object of the opposite category C^op needs an object of C = {self.base_category()}, but "
@@ -372,7 +373,7 @@ class _ProductCategory(OwnedCategory):
 
     _MorCategory = ProductMorCategoryConstruction
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The pair of witnesses of the two factors."""
         return self.pair(
             self.first_category().an_object(),
@@ -390,10 +391,10 @@ class _ProductCategory(OwnedCategory):
         def product_category(self) -> _ProductCategory:
             return self.category()
 
-        def first(self) -> Parent:
+        def first(self) -> ObjectOfCategory:
             return self._first
 
-        def second(self) -> Parent:
+        def second(self) -> ObjectOfCategory:
             return self._second
 
         def __iter__(self):
@@ -426,7 +427,7 @@ class _ProductCategory(OwnedCategory):
         return [Objects()]
 
     @cached_method(key=lambda self, first, second: (id(first), id(second)))
-    def pair(self, first: Parent, second: Parent) -> Parent:
+    def pair(self, first: Parent, second: Parent) -> ObjectOfCategory:
         if first not in self.first_category() or second not in self.second_category():
             raise TypeError(
                 f"an object (X, Y) of {self} needs X in {self.first_category()} and Y in "

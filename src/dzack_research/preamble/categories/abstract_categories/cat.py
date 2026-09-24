@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.functors.core import (
     NaturalTransformation,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -99,12 +100,12 @@ class CategoryFunctorMorphism(Morphism):
         return self._functor
 
     @overload
-    def __call__(self, value: Parent) -> Parent: ...
+    def __call__(self, value: Parent) -> ObjectOfCategory: ...
 
     @overload
     def __call__(self, value: Map) -> Map: ...
 
-    def __call__(self, value: Parent | Map) -> Parent | Map:
+    def __call__(self, value: Parent | Map) -> ObjectOfCategory | Map:
         return self.functor()(value)
 
     def _call_(self, value):
@@ -170,10 +171,10 @@ class CategoryFunctorMor(CategoricalMor):
         # transformations of [C,D], not a discretization of those functors.
         return [self.functor_category()]
 
-    def object(self, functor: Functor | CategoryFunctorMorphism) -> Parent:
+    def object(self, functor: Functor | CategoryFunctorMorphism) -> ObjectOfCategory:
         return self.functor_category().object(functor)
 
-    def _mor_endpoint(self, obj: Parent | Functor | CategoryFunctorMorphism) -> Parent:
+    def _mor_endpoint(self, obj: Parent | Functor | CategoryFunctorMorphism) -> ObjectOfCategory:
         return self.functor_category()._mor_endpoint(obj)
 
     def __contains__(self, candidate: Any) -> bool:
@@ -492,15 +493,15 @@ class Cat(CategoryPacketMethods, Category):
         ElementType = CategoryPacketMethods.ElementType
 
         @abstract_method(optional=True)
-        def _categorical_tensor_product(self, left: Parent, right: Parent) -> Parent:
+        def _categorical_tensor_product(self, left: Parent, right: Parent) -> ObjectOfCategory:
             r"""Return this category's represented tensor product of two objects."""
 
         @abstract_method(optional=True)
-        def _categorical_biproduct(self, left: Parent, right: Parent) -> Parent:
+        def _categorical_biproduct(self, left: Parent, right: Parent) -> ObjectOfCategory:
             r"""Return this category's represented biproduct of two objects."""
 
         @abstract_method(optional=True)
-        def _categorical_product(self, left: Parent, right: Parent) -> Parent:
+        def _categorical_product(self, left: Parent, right: Parent) -> ObjectOfCategory:
             r"""Return this category's represented product of two objects."""
 
         @abstract_method(optional=True)
@@ -508,7 +509,7 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return the selected product with its discrete diagram and universal cone."""
 
         @abstract_method(optional=True)
-        def _categorical_coproduct(self, left: Parent, right: Parent) -> Parent:
+        def _categorical_coproduct(self, left: Parent, right: Parent) -> ObjectOfCategory:
             r"""Return this category's represented coproduct of two objects."""
 
         @abstract_method(optional=True)
@@ -520,7 +521,7 @@ class Cat(CategoryPacketMethods, Category):
             self,
             left_morphism: Morphism,
             right_morphism: Morphism,
-        ) -> Parent:
+        ) -> ObjectOfCategory:
             r"""Return this category's represented pushout of a span."""
 
         @abstract_method(optional=True)
@@ -528,7 +529,7 @@ class Cat(CategoryPacketMethods, Category):
             self,
             left_morphism: Morphism,
             right_morphism: Morphism,
-        ) -> Parent:
+        ) -> ObjectOfCategory:
             r"""Return this category's represented pullback of a cospan."""
 
         @abstract_method(optional=True)
@@ -536,7 +537,7 @@ class Cat(CategoryPacketMethods, Category):
             self,
             left_morphism: Morphism,
             right_morphism: Morphism,
-        ) -> Parent:
+        ) -> ObjectOfCategory:
             r"""Return this category's represented equalizer of parallel arrows."""
 
         @abstract_method(optional=True)
@@ -552,7 +553,7 @@ class Cat(CategoryPacketMethods, Category):
             self,
             left_morphism: Morphism,
             right_morphism: Morphism,
-        ) -> Parent:
+        ) -> ObjectOfCategory:
             r"""Return this category's represented coequalizer of parallel arrows."""
 
         @abstract_method(optional=True)
@@ -564,11 +565,11 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return the selected coequalizer with its diagram, cocone and factorization."""
 
         @abstract_method(optional=True)
-        def _categorical_equalizer_family(self, morphisms: IndexedFamily) -> Parent:
+        def _categorical_equalizer_family(self, morphisms: IndexedFamily) -> ObjectOfCategory:
             r"""Return this category's represented equalizer of an indexed arrow family."""
 
         @abstract_method(optional=True)
-        def _categorical_coequalizer_family(self, morphisms: IndexedFamily) -> Parent:
+        def _categorical_coequalizer_family(self, morphisms: IndexedFamily) -> ObjectOfCategory:
             r"""Return this category's represented coequalizer of an indexed arrow family."""
 
         def product_construction(self, factors):
@@ -631,7 +632,7 @@ class Cat(CategoryPacketMethods, Category):
             self,
             left_morphism: Morphism,
             right_morphism: Morphism,
-        ) -> Parent:
+        ) -> ObjectOfCategory:
             r"""Return this category's represented equalizer of a parallel pair."""
             assert left_morphism.domain() is right_morphism.domain(), (
                 f"an equalizer needs parallel maps f, g: X -> Y, but {left_morphism} starts at "
@@ -651,7 +652,7 @@ class Cat(CategoryPacketMethods, Category):
             self,
             left_morphism: Morphism,
             right_morphism: Morphism,
-        ) -> Parent:
+        ) -> ObjectOfCategory:
             r"""Return this category's represented coequalizer of a parallel pair."""
             assert left_morphism.domain() is right_morphism.domain(), (
                 f"a coequalizer needs parallel maps f, g: X -> Y, but {left_morphism} starts at "
@@ -667,7 +668,7 @@ class Cat(CategoryPacketMethods, Category):
             )
             return construction(left_morphism, right_morphism)
 
-        def equalizer_of_family(self, morphisms) -> Parent:
+        def equalizer_of_family(self, morphisms) -> ObjectOfCategory:
             r"""Return this category's represented wide equalizer."""
             match morphisms:
                 case IndexedFamily():
@@ -684,7 +685,7 @@ class Cat(CategoryPacketMethods, Category):
             )
             return construction(family)
 
-        def coequalizer_of_family(self, morphisms) -> Parent:
+        def coequalizer_of_family(self, morphisms) -> ObjectOfCategory:
             r"""Return this category's represented wide coequalizer."""
             match morphisms:
                 case IndexedFamily():
@@ -721,7 +722,7 @@ class Cat(CategoryPacketMethods, Category):
         ) -> Morphism:
             r"""Return the induced morphism between represented binary coproducts."""
 
-        def fiber_product(self, left_leg: Morphism, right_leg: Morphism) -> Parent:
+        def fiber_product(self, left_leg: Morphism, right_leg: Morphism) -> ObjectOfCategory:
             r"""Return the fiber product of the cospan these two legs form.
 
             \(A\times_C B\) is the equalizer of \(f p_A\) and \(g p_B\) on
@@ -740,7 +741,7 @@ class Cat(CategoryPacketMethods, Category):
                 right_leg * total.right_projection(),
             )
 
-        def span(self, left_leg: Morphism, right_leg: Morphism) -> Parent:
+        def span(self, left_leg: Morphism, right_leg: Morphism) -> ObjectOfCategory:
             r"""Return the span these two legs form, as an object of this category.
 
             The span is an object: it has an apex, two legs, a diagram over
@@ -781,7 +782,7 @@ class Cat(CategoryPacketMethods, Category):
 
             return (_discrete_diagram(factors, target_category=self)).CoproductCocones()
 
-        def pushout(self, left_leg: Morphism, right_leg: Morphism) -> Parent:
+        def pushout(self, left_leg: Morphism, right_leg: Morphism) -> ObjectOfCategory:
             r"""Return the pushout of the span these two legs form.
 
             Dual to the fiber product: the coequalizer of \(\iota_A f\) and

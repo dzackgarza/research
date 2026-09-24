@@ -385,19 +385,10 @@ def _hodge_star_over_fraction_field(metric, volume, degree):
             f"the form on {metric} is degenerate, so it has no Hodge star even over the fraction field"
         )
     ring = metric.base_ring()
-    try:
-        fraction_field = ring.fraction_field()
-    except (AttributeError, NotImplementedError) as error:
-        raise TypeError(
-            f"cannot form the Hodge star of {metric} over the fraction field: {ring} has no fraction field here"
-        ) from error
+    ring_map = ring.fraction_field_map()
+    fraction_field = ring_map.codomain()
     if fraction_field is ring:
         return metric.hodge_star(volume, degree)
-    ring_map = _engine_ring(fraction_field).coerce_map_from(_engine_ring(ring))
-    if ring_map is None:
-        raise ValueError(
-            f"cannot form the Hodge star of {metric} over {fraction_field}: no inclusion {ring} -> {fraction_field} was found"
-        )
     changed_metric = metric.base_change(ring_map)
     volume_scalar, _inverse_volume_scalar = _volume_scalars(metric, volume)
     changed_volume = changed_metric.framing_volume_trivialization(

@@ -79,6 +79,10 @@ from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.lexicon.category_theory import (
+    ElementOfCategoryObject,
+    ObjectOfCategory,
+)
 from dzack_research.preamble.owned_category import _object_of
 
 if TYPE_CHECKING:
@@ -406,7 +410,7 @@ class FunctionModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     @cached_method
-    def of(self, kind: str, domain_name: str) -> Parent:
+    def of(self, kind: str, domain_name: str) -> ObjectOfCategory:
         r"""Return the represented function module of ``kind`` on ``domain_name``.
 
         The category already owns both the scalar ring and the construction
@@ -420,11 +424,11 @@ class FunctionModules(OwnedCategoryOverBaseRing):
             domain_name=domain_name,
         )
 
-    def smooth(self, domain_name: str = _THE_REAL_LINE) -> Parent:
+    def smooth(self, domain_name: str = _THE_REAL_LINE) -> ObjectOfCategory:
         r"""Return ``C^infty`` on the named domain in this scalar category."""
         return self.of(_SMOOTH, domain_name)
 
-    def square_integrable(self, domain_name: str = _THE_REAL_LINE) -> Parent:
+    def square_integrable(self, domain_name: str = _THE_REAL_LINE) -> ObjectOfCategory:
         r"""Return ``L^2`` on the named domain in this scalar category."""
         return self.of(_SQUARE_INTEGRABLE, domain_name)
 
@@ -452,14 +456,14 @@ class FunctionModules(OwnedCategoryOverBaseRing):
 
         def _element_constructor_(
             self: Self, function: Function | Element
-        ) -> Element:
+        ) -> ElementOfCategoryObject:
             if isinstance(function, SageElement) and function.parent() is self:
                 return function
             _certify_membership(self._kind, self._domain_name, function)
             member: Element = self.element_class(self, function)
             return member
 
-        def zero(self: Self) -> Element:
+        def zero(self: Self) -> ElementOfCategoryObject:
             r"""Return the zero function, a member of anything by closure."""
             zero_function: Element = self.element_class(self, SR.zero())
             return zero_function
@@ -485,7 +489,7 @@ class FunctionModules(OwnedCategoryOverBaseRing):
             self._function = function
             super().__init__(parent, **rest)
 
-        def __call__(self: Self, point: Element) -> Element:
+        def __call__(self: Self, point: Element) -> ElementOfCategoryObject:
             r"""Return the value at ``point``; such an element is a function.
 
             A symbolic expression is evaluated by substituting for its variable,
@@ -499,7 +503,7 @@ class FunctionModules(OwnedCategoryOverBaseRing):
                 })
             return self._function(point)
 
-        def _by_closure(self: Self, function: Function) -> Element:
+        def _by_closure(self: Self, function: Function) -> ElementOfCategoryObject:
             r"""Return an element of the same module, without certifying it.
 
             A module is closed under its own operations, so a sum, a negative or a
@@ -510,17 +514,17 @@ class FunctionModules(OwnedCategoryOverBaseRing):
             member: Element = parent.element_class(parent, function)
             return member
 
-        def _add_(self: Self, other: Self) -> Element:
+        def _add_(self: Self, other: Self) -> ElementOfCategoryObject:
             if isinstance(self._function, Expression) and isinstance(other._function, Expression):
                 return self._by_closure(self._function + other._function)
             return self._by_closure(lambda point: self(point) + other(point))
 
-        def _neg_(self: Self) -> Element:
+        def _neg_(self: Self) -> ElementOfCategoryObject:
             if isinstance(self._function, Expression):
                 return self._by_closure(-self._function)
             return self._by_closure(lambda point: -self(point))
 
-        def _lmul_(self: Self, scalar: Element) -> Element:
+        def _lmul_(self: Self, scalar: Element) -> ElementOfCategoryObject:
             if isinstance(self._function, Expression):
                 return self._by_closure(scalar * self._function)
             return self._by_closure(lambda point: scalar * self(point))

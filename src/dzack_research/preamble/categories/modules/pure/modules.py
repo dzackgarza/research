@@ -87,7 +87,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import refine
 
 for _module_axiom in ("FinitelyGenerated", "Free", "Projective", "Torsion"):
     if _module_axiom not in all_axioms:
@@ -1841,9 +1840,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 """
                 super().__init__(**rest)
                 if module_generating_set is None:
-                    if Modules(self.base_ring()) not in self.__dict__.get(
-                        "_selected_framings", {}
-                    ):
+                    if Modules(self.base_ring()) not in self._selected_framing_registry():
                         raise ValueError(
                             f"{self} was constructed as a module with chosen generators, but no generating set was given"
                         )
@@ -2716,6 +2713,24 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
                 f"no subset of the generators of the vector space {self} over {self.base_ring()} is known to be a basis"
             )
             return represented
+
+
+class ModulesWithChosenComponentPresentation(OwnedCategoryOverBaseRing):
+    r"""Framed modules retaining an exact decomposition of framing labels into components.
+
+    The datum consists of a component key for every framing label, the module
+    represented by each component, and the two inverse translations between a
+    component generator label and the corresponding global framing label.
+    Constructions such as word quotients may use this datum directly; method
+    presence is not evidence that an arbitrary framed module carries it.
+    """
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "modules with a chosen component presentation"
+
+    def super_categories(self):
+        return [FramedModules(self.base_ring())]
 
 
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
@@ -4594,7 +4609,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             source = self.codomain()
             codomain = self.domain()
             target = source.module_category().Mor(source, codomain)
-            _refine_matrix_mor(target)
+            _require_matrix_mor(target)
             return target.from_rows(
                 tuple(tuple(self.matrix_entry(row_label, column_label) for row_label in self.parent().row_index_set()) for column_label in self.parent().column_index_set())
             )
@@ -4612,7 +4627,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             ring = self.parent().base_ring()
             source = self.codomain()
             codomain = self.domain()
-            target = _refine_matrix_mor(source.module_category().Mor(source, codomain))
+            target = _require_matrix_mor(source.module_category().Mor(source, codomain))
             return target.from_rows((_owned_engine_element(ring, backend[row, column]) for column in range(target.ncols())) for row in range(target.nrows()))
 
         __invert__ = inverse
@@ -4800,7 +4815,7 @@ def _engine_matrix(morphism):
     r"""Privately materialize one matrix-Mor element in Sage."""
     from sage.matrix.constructor import matrix as sage_matrix
 
-    parent = _refine_matrix_mor(morphism.parent())
+    parent = _require_matrix_mor(morphism.parent())
     if parent not in MatrixSpaces(parent.base_ring()):
         raise TypeError(
             f"{morphism} has no matrix: it is a map in {parent}, which is not a space of matrices over "
@@ -4840,7 +4855,7 @@ def _matrix_coefficients(mor, morphism):
     return coefficients
 
 
-def _refine_matrix_mor(mor):
+def _require_matrix_mor(mor):
     r"""Return the already-constructed matrix Mor for finite free endpoints."""
     ring = mor.base_ring()
     domain = mor.domain()

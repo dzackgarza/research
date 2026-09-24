@@ -621,15 +621,7 @@ class CochainMor(CategoricalMor):
                     f"{components} is a map {components.domain()} -> {components.codomain()}, "
                     f"not an element of {self}"
                 )
-            component = getattr(components, "component", None)
-            if component is not None:
-                components = indexed_family(
-                    self.domain().degree_index_set(),
-                    component,
-                    name="Cochain-morphism components",
-                )
-            else:
-                return self.elementwise(lambda element: components(element))
+            return self.elementwise(lambda element: components(element))
         elif isinstance(components, dict):
             selected = {int(degree): morphism for degree, morphism in components.items()}
 

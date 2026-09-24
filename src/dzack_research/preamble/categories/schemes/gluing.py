@@ -641,14 +641,11 @@ class _FiniteAtlasSchemeMorphism(SchemeMorphism):
                 )
             case _:
                 pass
-        try:
-            return all(
-                self.local_map(index)
-                == other * self.atlas().chart_embedding(index)
-                for index in self.atlas().chart_indices()
-            )
-        except (AttributeError, TypeError, ValueError):
-            return False
+        return all(
+            self.local_map(index)
+            == other * self.atlas().chart_embedding(index)
+            for index in self.atlas().chart_indices()
+        )
 
     def __ne__(self, other) -> bool:
         return not self == other
@@ -2063,8 +2060,8 @@ def _finite_atlas_quasi_coherent_sheaves(atlas):
     )
 
 
-def _finite_atlas_of_sheaf_placement(sheaf):
-    r"""Read the selected finite atlas from the sheaf's concrete category placement."""
+def _finite_atlas_sheaf_placement(sheaf):
+    r"""Return the finite atlas named by the sheaf's placement, if one is named."""
     for placement in sheaf.category().all_super_categories(proper=False):
         match placement:
             case Sheaves():
@@ -2075,10 +2072,19 @@ def _finite_atlas_of_sheaf_placement(sheaf):
                         pass
             case _:
                 pass
-    raise TypeError(
-        f"cannot find the finite affine atlas of {sheaf}: it is not a sheaf for the Čech coverage "
-        f"of a finite affine atlas; it is an object of {sheaf.category()}"
-    )
+    return None
+
+
+def _finite_atlas_of_sheaf_placement(sheaf):
+    r"""Read the selected finite atlas from the sheaf's concrete category placement."""
+    match _finite_atlas_sheaf_placement(sheaf):
+        case None:
+            raise TypeError(
+                f"cannot find the finite affine atlas of {sheaf}: it is not a sheaf for the Čech coverage "
+                f"of a finite affine atlas; it is an object of {sheaf.category()}"
+            )
+        case atlas:
+            return atlas
 
 
 class FiniteAtlasInvertibleSheafRefinement(SageObject):

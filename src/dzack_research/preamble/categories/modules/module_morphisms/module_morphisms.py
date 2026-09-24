@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
+    FiniteSets,
     Sets,
 )
 
@@ -195,7 +196,7 @@ class ModuleMorphism(Morphism):
         morphisms override this at their declaration, so callers cannot select
         a derivation with a string or boolean flag.
         """
-        premise = getattr(self, "_direct_linearity_premise", None)
+        premise = self._direct_linearity_premise
         if premise is not None:
             return premise.linearity_decision()
         return None
@@ -375,11 +376,7 @@ class ModuleMorphism(Morphism):
         codomain = self.codomain()
         ring = codomain.base_ring()
         targets = None
-        try:
-            finite_codomain = codomain.is_finite() is True
-        except (AttributeError, NotImplementedError):
-            finite_codomain = False
-        if finite_codomain:
+        if codomain in FiniteSets():
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
             if codomain in EnumeratedSets() or codomain in Modules(ring).FinitelyPresented().Torsion():
@@ -1942,10 +1939,7 @@ class ModuleEmbedding(ModuleMorphism):
             raise ValueError(f"cannot accept {self.domain()} -> {self.codomain()} as an injective linear map: it is not known to be {self.domain().base_ring()}-linear")
         decision = self._injectivity_derivation()
         if decision is None:
-            try:
-                decision = ModuleMorphism.is_injective(self)
-            except (AssertionError, AttributeError, TypeError, ValueError):
-                decision = Unknown
+            decision = ModuleMorphism.is_injective(self)
         if decision is False:
             raise ValueError(f"{self.domain()} -> {self.codomain()} is not an injective linear map: its kernel is nonzero")
         if decision is not True:

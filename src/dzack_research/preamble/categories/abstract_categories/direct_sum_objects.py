@@ -17,10 +17,11 @@ from sage.categories.category import Category
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
 LabelT = TypeVar("LabelT")
 
@@ -43,7 +44,7 @@ class DirectSumObjects(OwnedCategory):
     def _repr_object_names(self):
         return f"objects of {self.base_category()._repr_object_names()} with a chosen direct-sum decomposition"
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""``X (+) X`` for an object ``X`` of ``C``, decomposed into its two summands."""
         witness = self.base_category().an_object()
         return self.base_category().biproduct((witness, witness))
@@ -56,7 +57,7 @@ class DirectSumObjects(OwnedCategory):
         underlying_object: Parent,
         summands: IndexedFamily | Iterable[Parent],
         summand_index_set: Parent | None = None,
-    ) -> Parent:
+    ) -> ObjectOfCategory:
         r"""Verify the constructor-owned decomposition ``underlying_object = ⊕ M_i``."""
         match summands:
             case IndexedFamily():
@@ -118,10 +119,10 @@ class DirectSumObjects(OwnedCategory):
         def summands(self) -> IndexedFamily:
             return self._summands
 
-        def summand_index_set(self) -> Parent:
+        def summand_index_set(self) -> Sets().ObjectType:
             return self.summands().index_set()
 
-        def summand(self, label: LabelT) -> Parent:
+        def summand(self, label: LabelT) -> ObjectOfCategory:
             labels = self.summand_index_set()
             if label not in labels:
                 raise ValueError(
@@ -129,7 +130,7 @@ class DirectSumObjects(OwnedCategory):
                 )
             return self.summands()[label]
 
-        def number_of_summands(self) -> Parent:
+        def number_of_summands(self) -> Cardinal:
             return self.summand_index_set().cardinality()
 
 __all__ = ["DirectSumObjects"]

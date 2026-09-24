@@ -6,6 +6,7 @@ from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
@@ -20,6 +21,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -95,7 +97,7 @@ def _symbol_index(
     latex_prefix: str | None,
 ) -> int | None:
     r"""The integer \(n\) when ``elt`` is the indexed symbol of this prefix, and ``None`` otherwise."""
-    parent = getattr(elt, "parent", lambda: None)()
+    parent = element_parent(elt)
     if parent is _symbolic_ring():
         symbol = SR(_engine_element(_symbolic_ring(), elt))
     elif elt in SR:
@@ -142,7 +144,7 @@ class FunctionEnumeratedSets(OwnedCategory):
     category.  Prefixes and print names do not define a new category of sets.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         from dzack_research.preamble.categories.sets.enumerated.hermite_polynomials import (
             HermitePolynomials,
         )
@@ -159,7 +161,7 @@ class FunctionEnumeratedSets(OwnedCategory):
         description: str,
         *,
         indexing: Category,
-    ) -> Parent:
+    ) -> Sets().ObjectType:
         r"""Construct the set of symbols with this prefix, indexed as ``indexing`` states."""
         return _object_of(
             Category.join([self, indexing]),
@@ -253,7 +255,7 @@ class EnumeratedByNaturals(OwnedCategory):
         return [EnumeratedSets(), Sets().Infinite()]
 
     class ParentMethods:
-        def index_set(self) -> Parent:
+        def index_set(self) -> Sets().ObjectType:
             return NN
 
         def _index_from_rank(self, position):
@@ -284,7 +286,7 @@ class EnumeratedByIntegers(OwnedCategory):
         return [EnumeratedSets(), Sets().Infinite()]
 
     class ParentMethods:
-        def index_set(self) -> Parent:
+        def index_set(self) -> Sets().ObjectType:
             return _integers()
 
         def _index_from_rank(self, position):

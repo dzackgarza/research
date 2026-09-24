@@ -1,5 +1,6 @@
 """Submonoids represented as monomorphism subobjects of an ambient monoid."""
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.group.magmas import (
@@ -97,6 +98,19 @@ class _SubmonoidEngine:
         r"""Return private constructor metadata for localization adapters."""
         return dict(self._submonoid_structure_data)
 
+    def _selected_representation_kind(self):
+        r"""Return the representation selected when this submonoid was built.
+
+        Protected construction contract for localization adapters.  A
+        predicate-presented submonoid has exact membership by that predicate;
+        otherwise the constructor retained a chosen finite generating family.
+        Consumers use this datum instead of attempting one representation and
+        selecting another when it raises.
+        """
+        if self._defining_predicate is not None:
+            return "predicate"
+        return "generators"
+
     def defining_predicate(self):
         assert self._defining_predicate is not None, (
             f"the submonoid {self} was defined by monoid generators, not by a membership "
@@ -174,9 +188,10 @@ def _predicate_submonoid(
     predicate,
     description,
     *,
+    placements=(),
     structure_data=None,
 ):
-    category = Monoids().Subobjects(ambient)
+    category = Category.join((Monoids().Subobjects(ambient), *placements))
     return _object_of(
         category,
         _engine=(category, _SubmonoidEngine, None),

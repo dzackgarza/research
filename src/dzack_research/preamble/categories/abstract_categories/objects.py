@@ -21,6 +21,7 @@ from dzack_research.preamble.owned_category_bases import (
     Category as OwnedCategoryBase,
     CategoryWithAxiom,
 )
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
 
 if "Framed" not in all_axioms:
@@ -101,7 +102,7 @@ def _fix_selected_framing(
     framing_morphism_factory,
 ):
     r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
-    selected_by_owner = target.__dict__.setdefault("_selected_framings", {})
+    selected_by_owner = target._selected_framing_registry()
     if owner in selected_by_owner:
         raise ValueError(
             f"{target} already has a chosen generating surjection in {owner}; it cannot be given a second one"
@@ -148,7 +149,7 @@ class OwnedCategory(OwnedCategoryBase):
                 return super().__contains__(value)
 
     @abstract_method
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""Return one object of this category.
 
         A witness that the category is inhabited, and the datum every construction
@@ -211,10 +212,10 @@ class OwnedParameterizedCategory(OwnedCategory):
             )
         super().__init__()
 
-    def parameter(self) -> Parent:
+    def parameter(self) -> ObjectOfCategory:
         return self._owned_parameter
 
-    def base(self) -> Parent:
+    def base(self) -> ObjectOfCategory:
         return self.parameter()
 
 
@@ -226,7 +227,7 @@ class Objects(OwnedCategory):
     semantic ancestors of owned categories.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The set 2, which is an object like any other.
 
         The root has no structure to exhibit, so its witness is whatever the
@@ -244,6 +245,10 @@ class Objects(OwnedCategory):
         belongs here and nowhere above.  A level declares its own datum and
         threads into this one with a cooperative ``super().__init__(**rest)``.
         """
+
+        @cached_method
+        def _selected_framing_registry(self):
+            return {}
 
         def __call__(self, *arguments, **options):
             r"""Construct an element of this object, without coercion discovery.
@@ -288,7 +293,7 @@ class Objects(OwnedCategory):
         class ParentMethods:
             def selected_framing(self, owner):
                 r"""Return the constructor-owned 1-framing in ``owner``."""
-                selected = self.__dict__.get("_selected_framings", {}).get(owner)
+                selected = self._selected_framing_registry().get(owner)
                 assert selected is not None, (
                     f"{self} has no chosen generating surjection in {owner}"
                 )

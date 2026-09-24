@@ -2,6 +2,7 @@ r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."
 from sage.libs.gap.libgap import libgap
 
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+from dzack_research.preamble.categories.group.groups import Subgroups
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Set, Sets
@@ -52,12 +53,10 @@ class OrthogonalCharacterQuotient:
             labels.append("discriminant")
             factors["discriminant"] = self._discriminant_group
             for target in self.discriminant_preimages:
-                ambient = (
-                    target
-                    if target is self._discriminant_group
-                    else getattr(target, "supergroup", lambda: None)()
-                )
-                if ambient is not self._discriminant_group:
+                if (
+                    target is not self._discriminant_group
+                    and target not in Subgroups(self._discriminant_group)
+                ):
                     raise ValueError(
                         f"{subgroup} is described as the preimage of {target} under "
                         f"O(L) -> O(A_L) for L = {self.lattice}, but {target} is not a "

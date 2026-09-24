@@ -30,14 +30,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.algebra import MonoidObject
+from dzack_research.preamble.lexicon.set_theory import SetObject
 
 
-def _normalize_grading_monoid(monoid: Parent | None) -> Parent:
+def _normalize_grading_monoid(monoid: Parent | None) -> SetObject:
     r"""Return the owned grading monoid, defaulting to \(\mathbb{Z},+\)."""
     return _own_ring(SageZZ) if monoid is None else monoid
 
 
-def _require_grading_monoid(monoid: Parent | None) -> Parent:
+def _require_grading_monoid(monoid: Parent | None) -> MonoidObject:
     monoid = _normalize_grading_monoid(monoid)
     if monoid not in Monoids() and monoid not in AdditiveMonoids():
         raise TypeError(
@@ -128,27 +130,15 @@ def _concentrated_graded_module(base_ring, grading_monoid=None):
 
 
 def _represented_homogeneous_degree_or_none(element):
-    r"""Return a represented homogeneous degree, or ``None`` when no degree view is selected."""
-    parent = element.parent()
-    selected = parent.__dict__.get("_preamble_concentrated_degree")
-    if selected is not None:
-        if element == parent.zero():
-            raise ValueError(
-                f"the zero element of {parent} is homogeneous of every degree, so it has no single degree"
-            )
-        return selected
-    homogeneous_function = getattr(element, "is_homogeneous", None)
-    degree_function = getattr(element, "degree", None)
-    match callable(homogeneous_function) and callable(degree_function):
-        case False:
-            return None
-        case True:
-            pass
-    if not homogeneous_function():
+    r"""Return the represented homogeneous degree, or ``None`` for the zero element."""
+    components = tuple(element.homogeneous_components().items())
+    if not components:
+        return None
+    if len(components) != 1:
         raise ValueError(
             f"{element} is not homogeneous in {element.parent()}, so it has no single degree"
         )
-    return degree_function()
+    return components[0][0]
 
 
 def _selected_homogeneous_degree(element):
@@ -329,10 +319,10 @@ class GradedModules(OwnedCategoryOverBaseRing):
             extra_categories=placements, construction_data=construction_data,
         )
 
-    def grading_index_set(self) -> Parent:
+    def grading_index_set(self) -> SetObject:
         return self._grading_index_set
 
-    def grading_monoid(self) -> Parent:
+    def grading_monoid(self) -> MonoidObject:
         return _require_grading_monoid(self.grading_index_set())
 
     def parity_homomorphism(self):
@@ -362,31 +352,37 @@ class GradedModules(OwnedCategoryOverBaseRing):
     _EndCategory = LinearEndCategoryConstruction
 
     class ParentMethods:
+        def __init__(
+            self,
+            concentrated_degree=None,
+            degree_on_module_generator=None,
+            **rest,
+        ) -> None:
+            self._preamble_concentrated_degree = concentrated_degree
+            self._preamble_degree_on_module_generator = degree_on_module_generator
+            super().__init__(**rest)
+
         def is_graded(self) -> bool:
             return True
 
-        def grading_index_set(self):
+        def _graded_module_placement(self):
+            r"""Return the declared graded-module placement carrying the grading datum."""
             for category in self.category().all_super_categories(proper=False):
-                try:
-                    return category.grading_index_set()
-                except AttributeError:
-                    continue
-            raise TypeError(f"{self} is not a graded module: it is only known to be in {self.category()}")
+                # Sage realizes a category instance in a dynamic subclass; the
+                # declared placement is therefore recognized by its category class.
+                if isinstance(category, GradedModules):
+                    return category
+            raise AssertionError(f"{self} is not a graded module: it is only known to be in {self.category()}")
+
+        def grading_index_set(self):
+            return self._graded_module_placement().grading_index_set()
 
         def grading_monoid(self):
             return _require_grading_monoid(self.grading_index_set())
 
         def parity_homomorphism(self):
             r"""Return the parity ``M -> ZZ/2`` stated with this module's grading."""
-            for cat in self.category().all_super_categories(proper=False):
-                try:
-                    parity = cat.parity_homomorphism
-                except AttributeError:
-                    continue
-                return parity()
-            raise TypeError(
-                f"{self} has no parity: it is not a graded module, only known to be in {self.category()}"
-            )
+            return self._graded_module_placement().parity_homomorphism()
 
         def combine_degrees(self, left, right):
             r"""The monoid product of two degrees.
@@ -402,7 +398,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             return left * right
 
         def concentrated_degree(self):
-            selected = self.__dict__.get("_preamble_concentrated_degree")
+            selected = self._preamble_concentrated_degree
             if selected is None:
                 raise TypeError(f"{self} was not constructed as a graded module concentrated in a single degree")
             return selected
@@ -415,11 +411,15 @@ class GradedModules(OwnedCategoryOverBaseRing):
             algebras override it; a merely category-placed object with no
             represented grading on its framing refuses rather than guessing.
             """
-            selected = self.__dict__.get("_preamble_degree_on_module_generator")
-            assert selected is not None, (
+            selected = self._preamble_degree_on_module_generator
+            if selected is not None:
+                return selected(module_generator)
+            concentrated = self._preamble_concentrated_degree
+            if concentrated is not None:
+                return concentrated
+            raise TypeError(
                 f"{self} gives no degree to its chosen module generators, so the degree of {module_generator} is unknown"
             )
-            return selected(module_generator)
 
         def module_generators_of_degree(self, degree):
             r"""Return the selected framing generators lying in ``degree``."""
@@ -454,6 +454,14 @@ class GradedModules(OwnedCategoryOverBaseRing):
                     f"it is in {self.category()}"
                 )
             return self.subobject_on(self.module_generators_of_degree(degree))
+
+        def homogeneous_degree(self, element):
+            r"""Return the selected degree of one nonzero homogeneous element."""
+            element = self(element)
+            degree = _represented_homogeneous_degree_or_none(element)
+            if degree is None:
+                raise ValueError("zero has no selected homogeneous degree here")
+            return self.grading_monoid()(degree)
 
     class ElementMethods:
         def degree(self):

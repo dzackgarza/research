@@ -7,6 +7,7 @@ modules and value object; its pointwise module structure is constructed
 through the module owner, without assigning it a finite presentation.
 """
 
+from collections.abc import Iterable
 from itertools import chain, combinations, product
 
 from sage.misc.cachefunc import cached_function, cached_method
@@ -353,8 +354,15 @@ class _CallableFormMethods:
             name="Extensional bilinear coordinate values",
         )
 
+    def has_selected_bilinear_lift(self) -> bool:
+        r"""Whether this quadratic map retains a chosen bilinear lift."""
+        return (
+            self.parent().kind() == "quadratic"
+            and self._lift_evaluation is not None
+        )
+
     def lift_coordinate_values(self):
-        if self.parent().kind() != "quadratic" or self._lift_evaluation is None:
+        if not self.has_selected_bilinear_lift():
             raise TypeError(
                 f"{self} is not a quadratic form with a chosen bilinear lift, so it has no lift coordinate values"
             )
@@ -585,8 +593,8 @@ class _CallableFormSpace:
         r"""Admit a map of this space: one of its elements, finite coordinates, or an evaluation.
 
         This is the one boundary that reads the shape of foreign data.  An
-        indexed family over the two framings, a matrix, or rows are finite
-        coordinates; any other callable is the evaluation itself.
+        indexed family over the two framings or an iterable of rows is finite
+        coordinate data; any other callable is the evaluation itself.
         """
         if element_parent(datum) is self:
             return datum
@@ -601,16 +609,13 @@ class _CallableFormSpace:
                     name=name,
                 )
             )
-        if hasattr(datum, "rows") or (
-            isinstance(datum, (tuple, list))
-            and all(isinstance(row, (tuple, list)) for row in datum)
-        ):
+        if isinstance(datum, Iterable) and not isinstance(datum, (str, bytes)):
             return self._from_coordinate_values(
                 _coordinate_family_from_rows(
                     _finite_framing(self.left_module()),
                     _finite_framing(self.right_module()),
                     self.codomain(),
-                    datum.rows() if hasattr(datum, "rows") else datum,
+                    datum,
                     name=name,
                 )
             )

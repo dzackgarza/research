@@ -85,7 +85,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     QuotientRings,
-    _refine_commutative_algebra,
+    _commutative_algebra_with_structure,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -110,6 +110,11 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.algebra import AlgebraHomomorphism
+from dzack_research.preamble.lexicon.category_theory import (
+    ElementOfCategoryObject,
+    ObjectOfCategory,
+)
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -237,7 +242,7 @@ def _engine_polynomial_algebra(engine_polynomial_ring, base):
     polynomial rings; this is the one place such a ring is raised to the owned
     free, graded free and symmetric algebra it is.
     """
-    return _refine_commutative_algebra(
+    return _commutative_algebra_with_structure(
         _own_ring(engine_polynomial_ring),
         base,
         tuple(engine_polynomial_ring.variable_names()),
@@ -328,7 +333,11 @@ def _polynomial_exponents(exponent, variable_count: int) -> tuple[int, ...]:
             return tuple(int(value) for value in exponent)
 
 
-def _copy_polynomial_by_exponents(polynomial, target_ring, target_variables):
+def _copy_polynomial_by_exponents(
+    polynomial,
+    target_ring,
+    target_variables,
+) -> ElementOfCategoryObject:
     r"""Copy a Sage polynomial onto name-independent variables by its exponent dictionary."""
     source = polynomial.parent()
     variable_count = len(source.gens())
@@ -390,7 +399,10 @@ def _evaluate_owned_homogeneous_polynomial_on_coordinates(
     return source_ring(result)
 
 
-def _evaluate_polynomial_in_algebra(polynomial, algebra):
+def _evaluate_polynomial_in_algebra(
+    polynomial,
+    algebra,
+) -> ElementOfCategoryObject:
     r"""Evaluate an engine polynomial on the chosen algebra generators of ``algebra``."""
     labels = tuple(algebra.algebra_generating_set())
     source = polynomial.parent()
@@ -2211,6 +2223,19 @@ class Schemes(OwnedCategoryOverBaseRing):
                         f"object of {self.category()}"
                     )
 
+        def has_selected_finite_affine_atlas(self) -> bool:
+            r"""Whether construction selected a concrete finite affine atlas for this scheme."""
+            base = self.scheme_base_ring()
+            match self:
+                case _ if self._is_glued_from_affine_atlas():
+                    return True
+                case _ if self in ProjectiveSpaces(base):
+                    return True
+                case _ if self in ProductProjectiveSpaces(base):
+                    return True
+                case _:
+                    return False
+
         def is_covered_by_open_immersions(self, embeddings) -> bool:
             r"""Decide joint coverage for the represented open-cover regimes owned here.
 
@@ -3367,11 +3392,17 @@ class AffineGSchemes(OwnedCategory):
             return self.closed_subscheme(tuple(self.fixed_ideal().ideal_generators()))
 
         @cached_method
-        def _invariant_algebra_data(self):
+        def _invariant_algebra_data(
+            self,
+        ) -> tuple[
+            ObjectOfCategory,
+            AlgebraHomomorphism,
+            tuple[ElementOfCategoryObject, ...],
+        ]:
             r"""Return the selected ``(A^G, A^G -> A, engine invariants)``."""
             return _affine_linear_invariant_algebra_data(self)
 
-        def invariant_algebra(self):
+        def invariant_algebra(self) -> ObjectOfCategory:
             r"""Return the represented invariant algebra ``A^G``.
 
             The represented invariant computation supports finite linear actions on a polynomial
@@ -3381,11 +3412,11 @@ class AffineGSchemes(OwnedCategory):
             """
             return self._invariant_algebra_data()[0]
 
-        def invariant_algebra_inclusion(self):
+        def invariant_algebra_inclusion(self) -> AlgebraHomomorphism:
             r"""Return the represented inclusion ``A^G -> A``."""
             return self._invariant_algebra_data()[1]
 
-        def invariant_algebra_element(self, element):
+        def invariant_algebra_element(self, element) -> ElementOfCategoryObject:
             r"""Express one invariant element of ``A`` in ``A^G``.
 
             The invariant-ring computation used by the affine quotient returns a
@@ -3423,7 +3454,7 @@ class AffineGSchemes(OwnedCategory):
             return result
 
         @cached_method
-        def affine_quotient(self):
+        def affine_quotient(self) -> ObjectOfCategory:
             r"""Return ``Spec(A^G)`` for the supported affine linear action."""
             return self.invariant_algebra().affine_spectrum(base_ring=self.scheme_base_ring())
 
@@ -3495,7 +3526,13 @@ class AffineGSchemes(OwnedCategory):
             return self.factor_through_affine_quotient(family_morphism)
 
 
-def _affine_linear_invariant_algebra_data(scheme):
+def _affine_linear_invariant_algebra_data(
+    scheme,
+) -> tuple[
+    ObjectOfCategory,
+    AlgebraHomomorphism,
+    tuple[ElementOfCategoryObject, ...],
+]:
     r"""Return a finite presentation of ``A^G`` and its inclusion into ``A``.
 
     Private computation boundary (``OWN-06``) for the supported affine quotient
@@ -3792,7 +3829,7 @@ def _rational_functions_in_T():
 
     rationals = _own_ring(SageQQ)
     polynomial = rationals.polynomial_ring("T")
-    rational_functions = _refine_commutative_algebra(polynomial.fraction_field(), rationals, ("T",))
+    rational_functions = _commutative_algebra_with_structure(polynomial.fraction_field(), rationals, ("T",))
     return rational_functions, rational_functions.algebra_generator("T")
 
 

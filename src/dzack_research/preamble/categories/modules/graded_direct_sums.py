@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
+    ModulesWithChosenComponentPresentation,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
@@ -77,7 +78,7 @@ class _DirectSumFactorMorphism(ModuleMorphism):
         decision = True
         for degree in indices:
             morphism = self._component_maps[degree]
-            current = getattr(morphism, "linearity_decision", lambda: Unknown)()
+            current = morphism.linearity_decision()
             if current is False:
                 return False
             if current is not True:
@@ -380,9 +381,15 @@ def _direct_sum_of_modules(
         f"{pieces.index_set()}, not by the grading monoid"
     )
     category = Cat().meet((graded, *extra_categories))
+    framed = category.is_subcategory(FramedModules(ring))
+    if framed:
+        category = Cat().meet((
+            category,
+            ModulesWithChosenComponentPresentation(ring),
+        ))
     match _realization:
         case None:
-            match category.is_subcategory(FramedModules(ring)):
+            match framed:
                 case True:
                     realization = (_FramedDirectSumOfModules, GradedDirectSumElement)
                 case False:

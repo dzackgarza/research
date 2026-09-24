@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.group.groups import (
     _gap_model,
     _own_group,
 )
-from dzack_research.preamble.refine import refine
 
 
 class _AbelianizationFunctor(Functor):
@@ -38,12 +37,14 @@ class _AbelianizationFunctor(Functor):
         model = _gap_model(group)
         derived = libgap.DerivedSubgroup(model)
         projection = libgap.NaturalMorphismByNormalSubgroup(model, derived)
-        quotient = _own_group(GroupLibGAP(projection.Range()))
         # A quotient of a finite group is finite.
         placement = (
             OwnedFiniteAbelianGroups() if group.is_finite() is True else OwnedAbelianGroups()
         )
-        quotient = refine(quotient, placement)
+        quotient = _own_group(
+            GroupLibGAP(projection.Range()),
+            refinements=(placement,),
+        )
         quotient_projection = group.Mor(quotient)(projection)
         self._quotient_projections[id(group)] = (
             group,

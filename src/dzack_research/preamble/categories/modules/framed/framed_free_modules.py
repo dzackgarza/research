@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     VectorSpaces,
-    _refine_matrix_mor,
+    _require_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -508,11 +508,8 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             def _represented_kernel_of_morphism(self, morphism):
                 if morphism.domain() is not self:
                     return NotImplemented
-                try:
-                    codomain_is_zero = morphism.codomain().is_zero()
-                except NotImplementedError:
-                    codomain_is_zero = False
-                if codomain_is_zero:
+                codomain_is_zero = morphism.codomain().is_zero()
+                if codomain_is_zero is True:
                     return self.whole_subobject()
                 coordinate_matrix = self.module_category().Mor(
                     self, morphism.codomain()
@@ -909,7 +906,7 @@ def _matrix_space(base_ring, nrows, ncols=None):
     ncols = nrows if ncols is None else dimension(ncols)
     source = ring.free_module(ncols)
     target = ring.free_module(nrows)
-    return _refine_matrix_mor(source.module_category().Mor(source, target))
+    return _require_matrix_mor(source.module_category().Mor(source, target))
 
 
 def _fresh_free_module_on(

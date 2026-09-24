@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
@@ -73,7 +74,7 @@ class _ArrowAsFunctor(Functor):
     def arrow(self) -> Morphism:
         return self._arrow
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         match obj.position():
             case 0:
                 return self.arrow().domain()
@@ -387,7 +388,7 @@ class _SubcategoryOfArrows(OwnedCategory):
         witness = base.an_object()
         return self.object(_category_mor_parent(base, witness, witness).identity())
 
-    def object(self, arrow: Morphism) -> Parent:
+    def object(self, arrow: Morphism) -> ObjectOfCategory:
         if not self.admits_arrow(arrow):
             raise TypeError(
                 f"{arrow} is not an object of {self}: it is not an arrow of the base category"
@@ -485,7 +486,7 @@ class _EndofunctorAlgebraForgetfulFunctor(Functor):
         self._algebras = algebras
         super().__init__(algebras, algebras.base_category())
 
-    def _apply_object(self, algebra: Parent) -> Parent:
+    def _apply_object(self, algebra: Parent) -> ObjectOfCategory:
         return algebra.target_object()
 
     def _apply_morphism(self, morphism: Map) -> Map:
@@ -542,7 +543,11 @@ class _EndofunctorAlgebraCategory(_SubcategoryOfArrows):
         r"""An algebra structure on its target: an arrow ``T(X) -> X``."""
         return super().admits_arrow(arrow) and arrow.domain() is self.endofunctor()(arrow.codomain())
 
-    def algebra(self, underlying_object: Parent, structure: Morphism):
+    def algebra(
+        self,
+        underlying_object: Parent,
+        structure: Morphism,
+    ) -> ObjectOfCategory:
         r"""Return ``(X, structure : T(X) -> X)`` for the object ``X`` of ``C``.
 
         Both the supplied object and the supplied structure arrow are kept
@@ -707,7 +712,7 @@ class SliceCategory(_SubcategoryOfArrows):
     def base_category(self) -> Category:
         return self._base_category
 
-    def base_object(self) -> Parent:
+    def base_object(self) -> ObjectOfCategory:
         return self._base_object
 
     def object(
@@ -716,7 +721,7 @@ class SliceCategory(_SubcategoryOfArrows):
         *,
         _engine=None,
         construction_data=None,
-    ) -> Parent:
+    ) -> ObjectOfCategory:
         r"""Construct an object of ``C/X``, optionally with a private realization."""
         if not self.admits_arrow(arrow):
             raise TypeError(
@@ -741,7 +746,7 @@ class SliceCategory(_SubcategoryOfArrows):
 
         return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
-    def an_object(self):
+    def an_object(self) -> ObjectOfCategory:
         r"""The identity of the fixed base object."""
         base_object = self.base_object()
         return self.object(
@@ -831,7 +836,7 @@ class CosliceCategory(_SubcategoryOfArrows):
     def base_category(self) -> Category:
         return self._base_category
 
-    def base_object(self) -> Parent:
+    def base_object(self) -> ObjectOfCategory:
         return self._base_object
 
     def super_categories(self):
@@ -841,7 +846,7 @@ class CosliceCategory(_SubcategoryOfArrows):
 
         return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
-    def an_object(self):
+    def an_object(self) -> ObjectOfCategory:
         r"""The identity of the fixed base object."""
         base_object = self.base_object()
         return self.object(
@@ -1182,7 +1187,7 @@ class SubobjectCategory(OwnedCategoryBase):
     def base_category(self) -> Category:
         return self._base_category
 
-    def base_object(self) -> Parent:
+    def base_object(self) -> ObjectOfCategory:
         return self._base_object
 
     def super_categories(self):
@@ -1203,7 +1208,7 @@ class SubobjectCategory(OwnedCategoryBase):
         return self.base_category().MonomorphismArrowCategory()
 
     @cached_method(key=lambda self, subobject: id(subobject))
-    def as_slice_object(self, subobject: Parent) -> Parent:
+    def as_slice_object(self, subobject: Parent) -> ObjectOfCategory:
         if subobject not in self:
             raise TypeError(f"{subobject} is not a subobject in {self}")
         return self.slice_category()(subobject.inclusion())
@@ -1519,7 +1524,7 @@ class _WideSubcategory(OwnedCategoryBase):
         return [self.base_category()]
 
     @property
-    def ObjectType(self) -> type[Parent]:
+    def ObjectType(self) -> type[ObjectOfCategory]:
         r"""The unchanged object type; the arrow class adds no object datum."""
         return self.base_category().ObjectType
 

@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    FramedAlgebras,
     _algebra_on_module,
     _assert_not_refuted,
     _associativity,
@@ -31,9 +32,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
     OwnedRings,
-    _engine_element,
     _own_ring,
 )
+from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 # Bourbaki, Algebra III §4.9: an alternating graded algebra is one satisfying
@@ -100,12 +101,7 @@ def _rank_one_unit_algebra(category):
 def _homogeneous_degree(element):
     r"""Return the degree owned by ``element.parent()``."""
     parent = element.parent()
-    try:
-        return parent.homogeneous_degree(element)
-    except AttributeError as error:
-        raise AssertionError(
-            f"cannot read the degree of {element}: its parent {parent} is not graded"
-        ) from error
+    return parent.homogeneous_degree(element)
 
 
 class GradedAlgebraMorphism(Morphism):
@@ -139,15 +135,10 @@ class GradedAlgebraMorphism(Morphism):
         r"""Decide degree preservation on finite selected generators, else retain ``Unknown``."""
         domain = self.domain()
         codomain = self.codomain()
-        try:
-            labels = domain.algebra_generating_set()
-        except AttributeError:
+        if domain not in FramedAlgebras(domain.base_ring()):
             return Unknown
-        try:
-            finite = labels.cardinality().is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            finite = False
-        if not finite:
+        labels = domain.algebra_generating_set()
+        if labels.cardinality().is_finite() is not True:
             return Unknown
         for label in labels:
             generator = domain.algebra_generator(label)
@@ -280,7 +271,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         self._graded_modules = graded_modules
         super().__init__(base_ring)
 
-    def grading_monoid(self) -> Parent:
+    def grading_monoid(self) -> MonoidObject:
         return self._graded_modules.grading_monoid()
 
     def parity_homomorphism(self):
@@ -318,7 +309,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             base_category.parity_homomorphism()
             super().__init__(base_category)
 
-        def grading_monoid(self) -> Parent:
+        def grading_monoid(self) -> MonoidObject:
             return self._base_category.grading_monoid()
 
         def parity_homomorphism(self):
@@ -343,7 +334,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             rings with 2-torsion.
             """
 
-            def grading_monoid(self) -> Parent:
+            def grading_monoid(self) -> MonoidObject:
                 return self._base_category.grading_monoid()
 
             def parity_homomorphism(self):
@@ -381,63 +372,13 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             if element == self.zero():
                 raise ValueError(f"the zero element of {self} has no degree")
 
-            concentrated = self.__dict__.get("_preamble_concentrated_degree")
-            if concentrated is not None:
-                return concentrated
-
-            components = getattr(element, "homogeneous_components", None)
-            if callable(components):
-                try:
-                    component_items = components().items()
-                except (AttributeError, NotImplementedError):
-                    component_items = ()
-                nonzero_degrees = {
-                    int(degree)
-                    for degree, component in component_items
-                    if component != component.parent().zero()
-                }
-                if nonzero_degrees:
-                    if len(nonzero_degrees) != 1:
-                        raise ValueError(
-                            f"{element} is not homogeneous in {self}: it has components in degrees {nonzero_degrees}"
-                        )
-                    return self.grading_monoid()(next(iter(nonzero_degrees)))
-
-            coefficients = getattr(element, "monomial_coefficients", None)
-            if callable(coefficients):
-                degrees = set()
-                for label, coefficient in coefficients().items():
-                    if not coefficient:
-                        continue
-                    if hasattr(label, "summand_index"):
-                        degrees.add(int(label.summand_index()))
-                    elif hasattr(label, "degree"):
-                        degrees.add(int(label.degree()))
-                if degrees:
-                    if len(degrees) != 1:
-                        raise ValueError(
-                            f"{element} is not homogeneous in {self}: it has components in degrees {degrees}"
-                        )
-                    return self.grading_monoid()(next(iter(degrees)))
-
-            presentation = self
-            representative = element
-            if hasattr(self, "lift_to_presentation") and hasattr(
-                self, "presentation_ring"
-            ):
-                presentation = self.presentation_ring()
-                representative = self.lift_to_presentation(element)
-            backend = _engine_element(presentation, representative)
-            is_homogeneous = getattr(backend, "is_homogeneous", None)
-            degree_function = getattr(backend, "degree", None)
-            assert callable(is_homogeneous) and callable(degree_function), (
-                f"cannot compute the degree of {element} in {self}: no degree algorithm is available"
-            )
-            homogeneous = is_homogeneous()
-            degree = degree_function()
-            if not homogeneous:
-                raise ValueError(f"{element} is not homogeneous in {self}")
-            return self.grading_monoid()(int(degree))
+            components = tuple(element.homogeneous_components().items())
+            if len(components) != 1:
+                raise ValueError(
+                    f"{element} is not homogeneous in {self}: it has components in {len(components)} degrees"
+                )
+            degree, _component = components[0]
+            return self.grading_monoid()(degree)
 
         @cached_method
         def degree_zero_chart(self, localization):
@@ -514,11 +455,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     class ElementMethods:
         def is_homogeneous(self):
-            try:
-                self.parent().homogeneous_degree(self)
-            except ValueError:
-                return False
-            return True
+            return len(tuple(self.homogeneous_components().items())) <= 1
 
         def degree(self):
             return self.parent().homogeneous_degree(self)

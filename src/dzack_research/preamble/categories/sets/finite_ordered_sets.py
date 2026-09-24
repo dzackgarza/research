@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     TotallyOrderedSets,
     finite_ordinal_set,
 )
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 IndexT = TypeVar("IndexT")
@@ -37,7 +38,7 @@ class OrderedEnumeratedSets(OwnedCategory):
     enumeration transports from \(I\), which ``EnumeratedSets`` answers.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The ordinal on three points."""
         return finite_ordered_set((0, 1, 2))
 
@@ -62,7 +63,7 @@ class OrderedEnumeratedSets(OwnedCategory):
         index_of: Callable[[PointT], IndexT | None],
         contains: Callable[[PointT], bool] | None = None,
         name: str | None = None,
-    ) -> Parent:
+    ) -> Sets().ObjectType:
         r"""Construct an ordered enumerated set from its chosen enumeration."""
         assert index_set in EnumeratedSets(), (
             f"an ordered set is indexed by an enumerated set, but {index_set} is not enumerated"
@@ -113,7 +114,7 @@ class OrderedEnumeratedSets(OwnedCategory):
                     placement = Category.join((placement, Sets().Infinite()))
             super().__init__(category=placement, facade=True, **rest)
 
-        def index_set(self) -> Parent:
+        def index_set(self) -> Sets().ObjectType:
             return self._index_set
 
         def enumeration(self) -> Callable[[IndexT], PointT]:
@@ -207,7 +208,7 @@ class FiniteOrderedSets(OwnedCategory):
     and enters through it.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The three-point ordered set."""
         return finite_ordered_set((0, 1, 2))
 
@@ -217,7 +218,7 @@ class FiniteOrderedSets(OwnedCategory):
         # integer, and a cardinality here is a cardinal.
         return [OrderedEnumeratedSets(), FiniteSets()]
 
-    def _call_(self, elements: Parent | Iterable[PointT]) -> Parent:
+    def _call_(self, elements: Parent | Iterable[PointT]) -> ObjectOfCategory:
         r"""Construct the finite ordered set a finite set or finitely many points present.
 
         The category call returns ``elements`` itself when it already is one.
@@ -231,7 +232,7 @@ class FiniteOrderedSets(OwnedCategory):
             case _:
                 return self._on_points(elements)
 
-    def _on_finite_set(self, source: Parent) -> Parent:
+    def _on_finite_set(self, source: Parent) -> ObjectOfCategory:
         r"""The finite ordered set on the points of the finite set ``source``."""
         size = cardinal(source.cardinality())
         assert size.is_finite(), (
@@ -257,7 +258,7 @@ class FiniteOrderedSets(OwnedCategory):
                     contains=lambda element: element in source,
                 )
 
-    def _on_points(self, points: Iterable[PointT]) -> Parent:
+    def _on_points(self, points: Iterable[PointT]) -> ObjectOfCategory:
         r"""The finite ordered set on finitely many points, repeated points identified.
 
         Literal ingress: the points are read once, in order.
@@ -277,7 +278,7 @@ class FiniteOrderedSets(OwnedCategory):
         index_of: Callable[[PointT], IndexT | None] | None = None,
         contains: Callable[[PointT], bool] | None = None,
         name: str | None = None,
-    ) -> Parent:
+    ) -> ObjectOfCategory:
         r"""Construct the finite ordered set enumerated by ``element_at`` on ``index_set``.
 
         When the caller states no membership decision, membership is Sage's
@@ -418,7 +419,7 @@ class _FilteredOrderedSet(FiniteOrderedSets().ObjectType):
             category=FiniteOrderedSets(),
         )
 
-    def universe(self) -> Parent:
+    def universe(self) -> Sets().ObjectType:
         r"""The set \(S\) this subset is cut out of."""
         return self._universe
 
@@ -497,6 +498,6 @@ class _EnumeratedImageSet(OrderedEnumeratedSets().ObjectType):
 
 def finite_ordered_set[PointT](
     elements: Parent | Iterable[PointT],
-) -> Parent:
+) -> FiniteOrderedSets().ObjectType:
     r"""The finite ordered set a finite set or finitely many points present."""
     return FiniteOrderedSets()(elements)

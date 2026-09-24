@@ -78,18 +78,12 @@ def _divided_to_symmetric(module):
                     denominator *= int(factorial(power))
                     monomial *= target.algebra_generator(generator_label) ** int(power)
                 denominator_scalar = ring(denominator)
-                try:
-                    scalar = coefficient / denominator_scalar
-                except (TypeError, ZeroDivisionError) as error:
-                    raise ValueError(
-                        f"the map Gamma(M) -> Sym(M) needs the factorial {denominator_scalar} to be invertible, but it "
-                        f"does not divide {coefficient}"
-                    ) from error
-                if scalar * denominator_scalar != coefficient:
+                if not denominator_scalar.is_unit():
                     raise ValueError(
                         f"the map Gamma(M) -> Sym(M) needs the factorial {denominator_scalar} to be invertible, but it "
                         f"does not divide {coefficient}"
                     )
+                scalar = coefficient * denominator_scalar.inverse_of_unit()
                 result += scalar * monomial
         return result
 

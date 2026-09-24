@@ -4,13 +4,18 @@ from __future__ import annotations
 
 from collections.abc import Callable, Hashable, Iterator, Mapping
 from itertools import islice
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sage.misc.unknown import Unknown
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
+
+from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.owned_category import _object_of
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 
 class IndexedFamily[IndexT, ValueT]:
@@ -42,10 +47,10 @@ class IndexedFamily[IndexT, ValueT]:
         self._name = name
         super().__init__(**rest)
 
-    def index_set(self) -> Parent:
+    def index_set(self) -> SetObject:
         return self._index_set
 
-    def cardinality(self) -> Parent:
+    def cardinality(self) -> Cardinal:
         from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         return cardinal(self.index_set().cardinality())
@@ -96,7 +101,7 @@ class IndexedFamily[IndexT, ValueT]:
     def items(self) -> Iterator[tuple[IndexT, ValueT]]:
         return ((index, self.value(index)) for index in self.index_set())
 
-    def keys(self) -> Parent:
+    def keys(self) -> SetObject:
         r"""Return the mathematical index set of this family."""
         return self.index_set()
 
