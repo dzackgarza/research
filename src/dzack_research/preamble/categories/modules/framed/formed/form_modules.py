@@ -856,14 +856,12 @@ def _formed_module_base_change(self, ring_map):
     if not _is_quadratic_form(form):
         raise TypeError(f"{form} is not a bilinear or quadratic form")
 
-    try:
-        changed_lift_values = form.lift_coordinate_values().map(
+    source_form = self.form()
+    if source_form.has_selected_bilinear_lift():
+        changed_lift_values = source_form.lift_coordinate_values().map(
             lambda value: _base_change_scalar(ring_map, value),
             name="Base-changed quadratic-lift coordinate values",
         )
-    except TypeError:
-        changed_lift_values = None
-    if changed_lift_values is not None:
         return FormModules(target_ring)(
             changed.quadratic_forms(target_ring)(changed_lift_values)
         )
@@ -1112,20 +1110,20 @@ class FormModules(OwnedCategoryOverBaseRing):
                         lambda left, right: scalar * form(left, right)
                     )
                 )
-            try:
-                values = form.lift_coordinate_values().map(
+            source_form = self.form()
+            if source_form.has_selected_bilinear_lift():
+                values = source_form.lift_coordinate_values().map(
                     lambda value: scalar * value,
                     name="Twisted quadratic-lift coordinate values",
                 )
-            except TypeError:
                 return FormModules(self.base_ring())(
-                    self.quadratic_map(
-                        self.value_module(),
-                        lambda element: scalar * form(element),
-                    )
+                    self.quadratic_forms(self.value_module())(values)
                 )
             return FormModules(self.base_ring())(
-                self.quadratic_forms(self.value_module())(values)
+                self.quadratic_map(
+                    self.value_module(),
+                    lambda element: scalar * form(element),
+                )
             )
 
         base_change = _formed_module_base_change

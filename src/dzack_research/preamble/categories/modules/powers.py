@@ -229,9 +229,13 @@ class QuadraticModuleMorphism(ModuleMorphism):
     def classifying_morphism(self):
         return self
 
+    def has_selected_bilinear_lift(self) -> bool:
+        r"""Whether this quadratic classifier retains chosen bilinear coordinates."""
+        return self._lift_coordinate_values is not None
+
     def lift_coordinate_values(self):
         values = self._lift_coordinate_values
-        if values is None:
+        if not self.has_selected_bilinear_lift():
             raise TypeError(
                 "this quadratic map has no selected bilinear coordinate presentation"
             )

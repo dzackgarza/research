@@ -317,8 +317,15 @@ class _CallableFormMethods:
             name="Extensional bilinear coordinate values",
         )
 
+    def has_selected_bilinear_lift(self) -> bool:
+        r"""Whether this quadratic map retains a chosen bilinear lift."""
+        return (
+            self.parent().kind() == "quadratic"
+            and self._lift_evaluation is not None
+        )
+
     def lift_coordinate_values(self):
-        if self.parent().kind() != "quadratic" or self._lift_evaluation is None:
+        if not self.has_selected_bilinear_lift():
             raise TypeError(
                 "an extensional callable quadratic form has no chosen bilinear coordinate lift"
             )
