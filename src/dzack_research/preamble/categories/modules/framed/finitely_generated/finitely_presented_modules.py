@@ -367,9 +367,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             :meth:`cokernel_projection`.  Dually, a kernel subgroup answers
             ``kernel_morphism()``.
             """
-            selected = self.__dict__.get("_selected_module_presentation")
-            assert selected is not None, f"{self} was constructed without selected presentation data"
-            morphism = selected.cokernel_morphism()
+            morphism = self._selected_module_presentation.cokernel_morphism()
             assert morphism is not None, (
                 f"{self} was not constructed as the cokernel of a morphism"
             )
@@ -512,15 +510,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation(self):
             r"""Return the selected relation morphism ``F_1 -> F_0``."""
-            selected = self.__dict__.get("_selected_module_presentation")
-            assert selected is not None, f"{self} was constructed without selected presentation data"
-            return selected.presentation()
+            return self._selected_module_presentation.presentation()
 
         def presentation_matrix(self):
             r"""Return its relation rows in the selected target framing."""
-            selected = self.__dict__.get("_selected_module_presentation")
-            assert selected is not None, f"{self} was constructed without selected presentation data"
-            return selected.relation_matrix()
+            return self._selected_module_presentation.relation_matrix()
 
         def _selected_presentation_rows(self):
             r"""Return relation rows to represented module-construction adapters.

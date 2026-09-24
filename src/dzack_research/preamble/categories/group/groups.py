@@ -3277,10 +3277,7 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             self._presentation_source_group = selected_source_group
 
         def presenting_free_group(self):
-            selected = self.__dict__.get("_selected_group_presentation")
-            assert selected is not None, (
-                f"{self} was constructed without chosen finite-presentation data"
-            )
+            selected = self._selected_group_presentation
             assert selected.free_group() is self.selected_framing_source(OwnedGroups()), (
                 "the chosen presentation extends the object's selected framing"
             )
@@ -3288,11 +3285,7 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
 
         def defining_relations(self):
             r"""The chosen relators, as elements of the presenting free group."""
-            selected = self.__dict__.get("_selected_group_presentation")
-            assert selected is not None, (
-                f"{self} was constructed without chosen finite-presentation data"
-            )
-            return selected.relations()
+            return self._selected_group_presentation.relations()
 
         def presentation_source_group(self):
             r"""Return the exact group for which this presentation was selected."""
