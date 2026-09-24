@@ -2421,8 +2421,13 @@ class AlgebraMorphism(Morphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         if not isinstance(other, AlgebraMorphism):
-            compose = getattr(other, "_postcompose_algebra_morphism", None)
-            return NotImplemented if compose is None else compose(self)
+            from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+                SparseFreeAlgebraMorphism,
+            )
+
+            if isinstance(other, SparseFreeAlgebraMorphism):
+                return other._postcompose_algebra_morphism(self)
+            return NotImplemented
         if self._engine_morphism is not None and other._engine_morphism is not None:
             composed_engine = self._engine_morphism * other._engine_morphism
             return Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain())(composed_engine)
@@ -2753,7 +2758,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 position = int(selected_labels.ranking_map()(label))
                 return self._from_engine_element(engine.gen(position))
         else:
-            if hasattr(generator_values, "index_set") and callable(getattr(generator_values, "value", None)):
+            if isinstance(generator_values, IndexedFamily):
                 if generator_values.cardinality() != label_size:
                     raise ValueError("the number of algebra-generator values must equal the framing size")
 
@@ -2763,7 +2768,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
                 def value(label):
                     raw = generator_values(label)
-                    return raw if getattr(raw, "parent", lambda: None)() is self else self._from_engine_element(raw)
+                    return raw if element_parent(raw) is self else self._from_engine_element(raw)
             elif isinstance(generator_values, (tuple, list)):
                 if len(generator_values) != int(label_size.finite_value()):
                     raise ValueError("the number of algebra-generator values must equal the framing size")
@@ -2773,7 +2778,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
                 def value(label):
                     raw = by_position[int(selected_labels.ranking_map()(label))]
-                    return raw if getattr(raw, "parent", lambda: None)() is self else self._from_engine_element(raw)
+                    return raw if element_parent(raw) is self else self._from_engine_element(raw)
             else:
                 raise TypeError("algebra-generator values are a callable/indexed family or explicit finite ingress")
 
