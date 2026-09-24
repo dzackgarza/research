@@ -204,15 +204,32 @@ However, observing that $\tilde w_2\cdot \alpha_3 = 1$, we immediately obtain th
 Thus $\tilde w_2$ is odd, and we apply case (a) of [@AE22 Thm. 5.10].
 :::
 
-::: {.Conjecture #conj:rank_16_cusp_E8}
+::: {.Proposition #prop:rank_16_cusp_D16}
 
-The negative-definite lattice $\tilde w_2^{\perp T_\dP}/\tilde w_2 \cong (16,0,0)_0$ of [the del Pezzo cusp-map lemma](#lem:cusp_map_dP) is isometric to $E_8^{\oplus 2}$, and not to the other even negative-definite unimodular lattice of rank $16$, namely $D_{16}^+$.
+The negative-definite lattice $\tilde w_2^{\perp T_\dP}/\tilde w_2 \cong (16,0,0)_0$ of [the del Pezzo cusp-map lemma](#lem:cusp_map_dP) is isometric to $D_{16}^+$, and not to the other even negative-definite unimodular lattice of rank $16$, namely $E_8^{\oplus 2}$.
 :::
 
-::: {.Remark}
+::: {.proof}
 
 The invariants $(r,a,\delta) = (16,0,0)$ do not by themselves determine the isometry class, since the even negative-definite unimodular lattices of rank $16$ are exactly $E_8^{\oplus 2}$ and $D_{16}^+$.
-A proof of [the rank-$16$ cusp conjecture](#conj:rank_16_cusp_E8) would follow from showing that $\tilde w_2^{\perp T_\dP}/\tilde w_2$ inherits the $E_8 \oplus E_8$ splitting of $T_\dP = U \oplus U(2) \oplus E_8^2$.
+The root system of $E_8^{\oplus 2}$ has two orthogonal components, each of rank $8$; the root system of $D_{16}^+$ is the irreducible system $D_{16}$.
+So it suffices to exhibit a chain of roots of $\tilde J^\perp/\tilde J$, where $\tilde J = \gens{\tilde w_1, \tilde w_2}$, in which consecutive roots are not orthogonal and which spans a sublattice of rank greater than $8$.
+
+Label the simple roots of each $E_8$ summand as in Bourbaki, so that $\alpha_1 \perp \alpha_2$, as $\tilde w_2^2 = 0$ requires, and $\alpha_3$ meets $\alpha_1$, as in the proof above.
+Put $s = \alpha_3 + \alpha_4$ and $\tilde s = \tilde\alpha_3 + \tilde\alpha_4$.
+The twelve vectors
+
+$$
+\tilde\alpha_8,\ \tilde\alpha_7,\ \tilde\alpha_6,\ \tilde\alpha_5,\ \tilde s - f,\ \tilde\alpha_1 + f,\ \tilde\alpha_1 + e,\ s - f,\ \alpha_5,\ \alpha_6,\ \alpha_7,\ \alpha_8
+$$
+
+have square $-2$ and are orthogonal to $\tilde w_1 = e'$ and to $\tilde w_2 = 2e + 2f + \alpha_1 + \alpha_2 + \tilde\alpha_1 + \tilde\alpha_2$.
+Consecutive vectors in the list pair to $\pm 1$.
+Since $\tilde J$ is isotropic, it lies in the radical of the form on $\tilde J^\perp$, so the images in $\tilde J^\perp/\tilde J$ are roots with the same pairings.
+The twelve vectors together with $\tilde J$ span a sublattice of rank $14$, so the images span a sublattice of rank $12$.
+The images therefore lie in one irreducible component of rank at least $12$, and $\tilde J^\perp/\tilde J \not\cong E_8^{\oplus 2}$.
+
+An enumeration in Sage agrees: $\tilde J^\perp/\tilde J$ has $480$ roots, forming one irreducible system.
 :::
 
 ::: {.Remark}
