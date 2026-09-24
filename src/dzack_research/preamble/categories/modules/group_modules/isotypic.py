@@ -154,12 +154,10 @@ def _split_irreducible_characters(module):
     characters = tuple(group.irreducible_characters())
     for character in characters:
         for value in character.values():
-            try:
-                ring(value)
-            except (TypeError, ValueError) as error:
+            if value not in ring:
                 raise AssertionError(
                     "the coefficient field is not a splitting field for the represented irreducible characters"
-                ) from error
+                )
     return tuple(IsotypicCharacter((character,)) for character in characters)
 
 
