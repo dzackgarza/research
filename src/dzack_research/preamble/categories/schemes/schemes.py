@@ -879,7 +879,7 @@ class SchemeMorphism(Morphism):
         return self.quasi_coherent_adjunction().direct_image_functor()
 
     def direct_image(self, sheaf):
-        r"""``f_* N~ = (Res_{f^#} N)~`` for affine ``f: Spec B -> Spec A`` (Stacks, Tag 01I8)."""
+        r"""``f_* N~ = (Res_{f^#} N)~`` for affine ``f: Spec B -> Spec A`` (Stacks, Tag 01I9)."""
         return self.direct_image_functor().on_object(sheaf)
 
     @cached_method(key=lambda self, sheaf: id(sheaf))
@@ -887,7 +887,7 @@ class SchemeMorphism(Morphism):
         r"""Return the represented object ``f^*F``.
 
         For affine ``f : Spec B -> Spec A`` this is ``(M tensor_A B)~``
-        (Stacks, Tag 01I8), through the affine pullback functor.  For a
+        (Stacks, Tag 01I9), through the affine pullback functor.  For a
         represented closed immersion ``i : Z -> P`` into projective space, the
         standard twists ``O_P(d)`` have their object pullback represented
         directly.  In every other represented non-affine case the exact object

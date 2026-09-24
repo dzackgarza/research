@@ -21,6 +21,10 @@ one full run, a check costs the tests the edits reach, not the suite.  A test
 that reaches an edited file only through a call the edit introduced is not
 selected; the next full run measures it.
 
+A construction cached across tests is credited only to the test that first
+built it.  When that test fails, the passing tests that reuse the cached
+object get no credit for its lines, so the report undercounts there.
+
 Run ``python -m dzack_research.utilities.coverage_gaps [--include GLOB ...]
 [--touched-by DATAFILE] [--select-affected]``, or the ``just coverage-*``
 recipes.
