@@ -615,7 +615,7 @@ class ZariskiCoveringFamilies(OwnedParameterizedCategory):
     def site_category(self):
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        return Schemes(self.scheme().scheme_base_ring()).SliceCategory(self.scheme())
+        return Schemes(self.scheme().scheme_base_ring()).SliceOver(self.scheme())
 
     @cached_method
     def slice_target(self):
@@ -722,7 +722,7 @@ class DistinguishedAffineCovers(OwnedCategory):
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
         affine_schemes = Schemes(scheme.scheme_base_ring()).Affine()
-        return affine_schemes.SliceCategory(scheme)
+        return affine_schemes.SliceOver(scheme)
 
     def coverage(self):
         scheme = self.scheme()
@@ -1728,7 +1728,7 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
                 _ringed_covering_family,
             )
 
-            site = LocallyRingedSpaces().SliceCategory(self)
+            site = LocallyRingedSpaces().SliceOver(self)
             return _ringed_covering_family(
                 self,
                 site,

@@ -61,8 +61,8 @@ In order to make this theory concrete, we now show how to explicitly carry out t
     label directions={above,above,above,below,above,above}, label distance=8pt}{E6}{mark=*,
     labels={\beta_{[\alpha_1]},\beta_{[\alpha_2]},\beta_{[\alpha_3]},\beta_{[\alpha_4]}}, label distance=8pt}{F{oo**}}};
   \foreach \p/\a/\b in {P/A_3/C_2, Q/D_4/B_3, R/D_4/G_2, S/E_6/F_4} {
-    \node[left] at (\p unfolded.west) {\Large $\a$};
-    \node[left] at (\p folded.west) {\Large $\b$};
+    \node[left] at (\p-unfolded.west) {\Large $\a$};
+    \node[left] at (\p-folded.west) {\Large $\b$};
   }
 \end{tikzpicture}
 

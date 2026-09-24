@@ -29,23 +29,23 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 1
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {sterk cusp=1};
-\scoped[on background layer] \draw[parabolic] (A6.center) -- (A7.center) -- (A0.center) -- (A1.center) -- (A2.center) -- (A11.center);
-\scoped[on background layer] \draw[parabolic] (A4.center) -- (A5.center) -- (A6.center);
-\scoped[on background layer] \draw[parabolic] (A6.center) -- (A8.center);
-\pic[root labels] (B) at (6,0) {sterk cusp=1};
-\scoped[on background layer] \draw[parabolic] (B6.center) -- (B7.center) -- (B0.center) -- (B1.center);
-\scoped[on background layer] \draw[parabolic] (B3.center) -- (B4.center) -- (B5.center) -- (B6.center);
-\scoped[on background layer] \draw[parabolic] (B6.center) -- (B8.center);
-\scoped[on background layer] \draw[parabolic] (B10.center) -- (B11.center);
-\pic[root labels] (C) at (0,6) {sterk cusp=1};
-\scoped[on background layer] \draw[parabolic] (C6.center) -- (C7.center) -- (C0.center) -- (C1.center) -- (C2.center) -- (C3.center);
-\scoped[on background layer] \draw[parabolic] (C5.center) -- (C6.center);
-\scoped[on background layer] \draw[parabolic] (C6.center) -- (C8.center);
-\scoped[on background layer] \draw[parabolic] (C11.center) -- (C2.center);
-\pic[root labels] (D) at (6,6) {sterk cusp=1};
-\scoped[on background layer] \draw[parabolic] (D6.center) -- (D7.center) -- (D0.center) -- (D1.center) -- (D2.center) -- (D3.center) -- (D4.center) -- (D5.center) -- (D6.center);
-\scoped[on background layer] \draw[parabolic] (D9.center) -- (D10.center);
+\pic[root labels] (A) at (0,0) {object=coxeter/sterk-cusp-1};
+\scoped[on background layer] \draw[parabolic] (A-6.center) -- (A-7.center) -- (A-0.center) -- (A-1.center) -- (A-2.center) -- (A-11.center);
+\scoped[on background layer] \draw[parabolic] (A-4.center) -- (A-5.center) -- (A-6.center);
+\scoped[on background layer] \draw[parabolic] (A-6.center) -- (A-8.center);
+\pic[root labels] (B) at (6,0) {object=coxeter/sterk-cusp-1};
+\scoped[on background layer] \draw[parabolic] (B-6.center) -- (B-7.center) -- (B-0.center) -- (B-1.center);
+\scoped[on background layer] \draw[parabolic] (B-3.center) -- (B-4.center) -- (B-5.center) -- (B-6.center);
+\scoped[on background layer] \draw[parabolic] (B-6.center) -- (B-8.center);
+\scoped[on background layer] \draw[parabolic] (B-10.center) -- (B-11.center);
+\pic[root labels] (C) at (0,6) {object=coxeter/sterk-cusp-1};
+\scoped[on background layer] \draw[parabolic] (C-6.center) -- (C-7.center) -- (C-0.center) -- (C-1.center) -- (C-2.center) -- (C-3.center);
+\scoped[on background layer] \draw[parabolic] (C-5.center) -- (C-6.center);
+\scoped[on background layer] \draw[parabolic] (C-6.center) -- (C-8.center);
+\scoped[on background layer] \draw[parabolic] (C-11.center) -- (C-2.center);
+\pic[root labels] (D) at (6,6) {object=coxeter/sterk-cusp-1};
+\scoped[on background layer] \draw[parabolic] (D-6.center) -- (D-7.center) -- (D-0.center) -- (D-1.center) -- (D-2.center) -- (D-3.center) -- (D-4.center) -- (D-5.center) -- (D-6.center);
+\scoped[on background layer] \draw[parabolic] (D-9.center) -- (D-10.center);
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,10,0)_1$ of $\fen$, and $\Gamma(\mcz_0) = \RP^2$.
@@ -63,10 +63,8 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 2
 
 \begin{tikzpicture}
-\pic (A) at (0,0) {vinberg 10 8 0};
-\coxeterparabolic[A]{vinberg 10 8 0/E8}
-\pic (B) at (0,-2.5) {vinberg 10 8 0};
-\coxeterparabolic[B]{vinberg 10 8 0/B8}
+\pic (A) [maximal parabolic=E8] at (0,0) {object=coxeter/vinberg-10-8-0};
+\pic (B) [maximal parabolic=B8] at (0,-2.5) {object=coxeter/vinberg-10-8-0};
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$ of $\fen$; $\Gamma(\mcz_0) = \DD^2$.
@@ -84,19 +82,19 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 3
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {sterk cusp=3};
-\scoped[on background layer] \draw[parabolic] (A1.center) -- (A2.center) -- (A3.center) -- (A4.center) -- (A5.center) -- (A6.center) -- (A7.center);
-\scoped[on background layer] \draw[parabolic] (A4.center) -- (A9.center);
-\scoped[on background layer] \draw[parabolic] (A10.center) -- (A11.center);
-\pic[root labels] (B) at (6.5,0) {sterk cusp=3};
-\scoped[on background layer] \draw[parabolic] (B1.center) -- (B2.center) -- (B3.center) -- (B4.center) -- (B5.center) -- (B6.center) -- (B7.center);
-\scoped[on background layer] \draw[parabolic] (B4.center) -- (B9.center);
-\scoped[on background layer] \draw[parabolic] (B7.center) -- (B8.center);
-\scoped[on background layer] \draw[parabolic] (B1.center) -- (B0.center);
-\pic[root labels] (C) at (13,0) {sterk cusp=3};
-\scoped[on background layer] \draw[parabolic] (C9.center) -- (C4.center) -- (C5.center) -- (C4.center) -- (C3.center) -- (C0.center);
-\scoped[on background layer] \draw[parabolic] (C7.center) -- (C8.center);
-\scoped[on background layer] \draw[parabolic] (C11.center) -- (C8.center);
+\pic[root labels] (A) at (0,0) {object=coxeter/sterk-cusp-3};
+\scoped[on background layer] \draw[parabolic] (A-1.center) -- (A-2.center) -- (A-3.center) -- (A-4.center) -- (A-5.center) -- (A-6.center) -- (A-7.center);
+\scoped[on background layer] \draw[parabolic] (A-4.center) -- (A-9.center);
+\scoped[on background layer] \draw[parabolic] (A-10.center) -- (A-11.center);
+\pic[root labels] (B) at (6.5,0) {object=coxeter/sterk-cusp-3};
+\scoped[on background layer] \draw[parabolic] (B-1.center) -- (B-2.center) -- (B-3.center) -- (B-4.center) -- (B-5.center) -- (B-6.center) -- (B-7.center);
+\scoped[on background layer] \draw[parabolic] (B-4.center) -- (B-9.center);
+\scoped[on background layer] \draw[parabolic] (B-7.center) -- (B-8.center);
+\scoped[on background layer] \draw[parabolic] (B-1.center) -- (B-0.center);
+\pic[root labels] (C) at (13,0) {object=coxeter/sterk-cusp-3};
+\scoped[on background layer] \draw[parabolic] (C-9.center) -- (C-4.center) -- (C-5.center) -- (C-4.center) -- (C-3.center) -- (C-0.center);
+\scoped[on background layer] \draw[parabolic] (C-7.center) -- (C-8.center);
+\scoped[on background layer] \draw[parabolic] (C-11.center) -- (C-8.center);
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
@@ -114,23 +112,23 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 4
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {sterk cusp=4};
-\scoped[on background layer] \draw[parabolic] (A1.center) -- (A2.center) -- (A3.center) -- (A4.center) -- (A5.center) -- (A6.center) -- (A7.center);
-\scoped[on background layer] \draw[parabolic] (A2.center) -- (A9.center);
-\scoped[on background layer] \draw[parabolic] (A6.center) -- (A10.center);
-\pic[root labels] (B) at (6,0) {sterk cusp=4};
-\scoped[on background layer] \draw[parabolic] (B1.center) -- (B0.center);
-\scoped[on background layer] \draw[parabolic] (B1.center) -- (B2.center) -- (B3.center) -- (B4.center) -- (B5.center) -- (B6.center) -- (B7.center);
-\scoped[on background layer] \draw[parabolic] (B6.center) -- (B10.center);
-\pic[root labels] (C) at (0,6) {sterk cusp=4};
-\scoped[on background layer] \draw[parabolic] (C1.center) -- (C0.center);
-\scoped[on background layer] \draw[parabolic] (C1.center) -- (C2.center) -- (C3.center) -- (C4.center) -- (C5.center) -- (C6.center) -- (C7.center) -- (C8.center);
-\pic[root labels] (D) at (6,6) {sterk cusp=4};
-\scoped[on background layer] \draw[parabolic] (D1.center) -- (D0.center);
-\scoped[on background layer] \draw[parabolic] (D1.center) -- (D2.center) -- (D3.center);
-\scoped[on background layer] \draw[parabolic] (D5.center) -- (D6.center) -- (D7.center) -- (D8.center);
-\scoped[on background layer] \draw[parabolic] (D2.center) -- (D9.center);
-\scoped[on background layer] \draw[parabolic] (D6.center) -- (D10.center);
+\pic[root labels] (A) at (0,0) {object=coxeter/sterk-cusp-4};
+\scoped[on background layer] \draw[parabolic] (A-1.center) -- (A-2.center) -- (A-3.center) -- (A-4.center) -- (A-5.center) -- (A-6.center) -- (A-7.center);
+\scoped[on background layer] \draw[parabolic] (A-2.center) -- (A-9.center);
+\scoped[on background layer] \draw[parabolic] (A-6.center) -- (A-10.center);
+\pic[root labels] (B) at (6,0) {object=coxeter/sterk-cusp-4};
+\scoped[on background layer] \draw[parabolic] (B-1.center) -- (B-0.center);
+\scoped[on background layer] \draw[parabolic] (B-1.center) -- (B-2.center) -- (B-3.center) -- (B-4.center) -- (B-5.center) -- (B-6.center) -- (B-7.center);
+\scoped[on background layer] \draw[parabolic] (B-6.center) -- (B-10.center);
+\pic[root labels] (C) at (0,6) {object=coxeter/sterk-cusp-4};
+\scoped[on background layer] \draw[parabolic] (C-1.center) -- (C-0.center);
+\scoped[on background layer] \draw[parabolic] (C-1.center) -- (C-2.center) -- (C-3.center) -- (C-4.center) -- (C-5.center) -- (C-6.center) -- (C-7.center) -- (C-8.center);
+\pic[root labels] (D) at (6,6) {object=coxeter/sterk-cusp-4};
+\scoped[on background layer] \draw[parabolic] (D-1.center) -- (D-0.center);
+\scoped[on background layer] \draw[parabolic] (D-1.center) -- (D-2.center) -- (D-3.center);
+\scoped[on background layer] \draw[parabolic] (D-5.center) -- (D-6.center) -- (D-7.center) -- (D-8.center);
+\scoped[on background layer] \draw[parabolic] (D-2.center) -- (D-9.center);
+\scoped[on background layer] \draw[parabolic] (D-6.center) -- (D-10.center);
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
@@ -148,37 +146,37 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 #### Cusp 5
 
 \begin{tikzpicture}
-\pic[root labels] (A) at (0,0) {sterk cusp=5};
-\scoped[on background layer] \draw[parabolic] (A0.center) -- (A1.center) -- (A2.center) -- (A3.center) -- (A4.center) -- (A5.center) -- (A6.center) -- (A7.center) -- (A0.center);
-\scoped[on background layer] \draw[parabolic] (A13.center) -- (A12.center);
-\pic[root labels] (B) at (6,0) {sterk cusp=5};
-\scoped[on background layer] \draw[parabolic] (B0.center) -- (B1.center) -- (B2.center) -- (B3.center) -- (B4.center) -- (B5.center) -- (B6.center) -- (B7.center) -- (B0.center);
-\scoped[on background layer] \draw[parabolic] (B2.center) -- (B9.center);
-\scoped[on background layer] \draw[parabolic] (B4.center) -- (B10.center);
-\pic[root labels] (C) at (12,0) {sterk cusp=5};
-\scoped[on background layer] \draw[parabolic] (C0.center) -- (C1.center) -- (C2.center);
-\scoped[on background layer] \draw[parabolic] (C4.center) -- (C10.center);
-\scoped[on background layer] \draw[parabolic] (C6.center) -- (C7.center) -- (C0.center);
-\scoped[on background layer] \draw[parabolic] (C2.center) -- (C9.center);
-\scoped[on background layer] \draw[parabolic] (C6.center) -- (C11.center);
-\scoped[on background layer] \draw[parabolic] (C13.center) -- (C12.center);
-\scoped[on background layer] \draw[parabolic] (C9.center) -- (C13.center);
-\scoped[on background layer] \draw[parabolic] (C11.center) -- (C13.center);
-\scoped[on background layer] \draw[parabolic] (C10.center) -- (C12.center);
-\pic[root labels] (D) at (4,6) {sterk cusp=5};
-\scoped[on background layer] \draw[parabolic] (D2.center) -- (D3.center) -- (D4.center);
-\scoped[on background layer] \draw[parabolic] (D6.center) -- (D7.center) -- (D0.center);
-\scoped[on background layer] \draw[parabolic] (D0.center) -- (D8.center);
-\scoped[on background layer] \draw[parabolic] (D2.center) -- (D9.center);
-\scoped[on background layer] \draw[parabolic] (D4.center) -- (D10.center);
-\scoped[on background layer] \draw[parabolic] (D6.center) -- (D11.center);
-\pic[root labels] (E) at (10,6) {sterk cusp=5};
-\scoped[on background layer] \draw[parabolic] (E1.center) -- (E2.center) -- (E3.center);
-\scoped[on background layer] \draw[parabolic] (E5.center) -- (E6.center) -- (E7.center);
-\scoped[on background layer] \draw[parabolic] (E2.center) -- (E9.center);
-\scoped[on background layer] \draw[parabolic] (E6.center) -- (E11.center);
-\scoped[on background layer] \draw[parabolic] (E8.center) -- (E12.center);
-\scoped[on background layer] \draw[parabolic] (E10.center) -- (E12.center);
+\pic[root labels] (A) at (0,0) {object=coxeter/sterk-cusp-5};
+\scoped[on background layer] \draw[parabolic] (A-0.center) -- (A-1.center) -- (A-2.center) -- (A-3.center) -- (A-4.center) -- (A-5.center) -- (A-6.center) -- (A-7.center) -- (A-0.center);
+\scoped[on background layer] \draw[parabolic] (A-13.center) -- (A-12.center);
+\pic[root labels] (B) at (6,0) {object=coxeter/sterk-cusp-5};
+\scoped[on background layer] \draw[parabolic] (B-0.center) -- (B-1.center) -- (B-2.center) -- (B-3.center) -- (B-4.center) -- (B-5.center) -- (B-6.center) -- (B-7.center) -- (B-0.center);
+\scoped[on background layer] \draw[parabolic] (B-2.center) -- (B-9.center);
+\scoped[on background layer] \draw[parabolic] (B-4.center) -- (B-10.center);
+\pic[root labels] (C) at (12,0) {object=coxeter/sterk-cusp-5};
+\scoped[on background layer] \draw[parabolic] (C-0.center) -- (C-1.center) -- (C-2.center);
+\scoped[on background layer] \draw[parabolic] (C-4.center) -- (C-10.center);
+\scoped[on background layer] \draw[parabolic] (C-6.center) -- (C-7.center) -- (C-0.center);
+\scoped[on background layer] \draw[parabolic] (C-2.center) -- (C-9.center);
+\scoped[on background layer] \draw[parabolic] (C-6.center) -- (C-11.center);
+\scoped[on background layer] \draw[parabolic] (C-13.center) -- (C-12.center);
+\scoped[on background layer] \draw[parabolic] (C-9.center) -- (C-13.center);
+\scoped[on background layer] \draw[parabolic] (C-11.center) -- (C-13.center);
+\scoped[on background layer] \draw[parabolic] (C-10.center) -- (C-12.center);
+\pic[root labels] (D) at (4,6) {object=coxeter/sterk-cusp-5};
+\scoped[on background layer] \draw[parabolic] (D-2.center) -- (D-3.center) -- (D-4.center);
+\scoped[on background layer] \draw[parabolic] (D-6.center) -- (D-7.center) -- (D-0.center);
+\scoped[on background layer] \draw[parabolic] (D-0.center) -- (D-8.center);
+\scoped[on background layer] \draw[parabolic] (D-2.center) -- (D-9.center);
+\scoped[on background layer] \draw[parabolic] (D-4.center) -- (D-10.center);
+\scoped[on background layer] \draw[parabolic] (D-6.center) -- (D-11.center);
+\pic[root labels] (E) at (10,6) {object=coxeter/sterk-cusp-5};
+\scoped[on background layer] \draw[parabolic] (E-1.center) -- (E-2.center) -- (E-3.center);
+\scoped[on background layer] \draw[parabolic] (E-5.center) -- (E-6.center) -- (E-7.center);
+\scoped[on background layer] \draw[parabolic] (E-2.center) -- (E-9.center);
+\scoped[on background layer] \draw[parabolic] (E-6.center) -- (E-11.center);
+\scoped[on background layer] \draw[parabolic] (E-8.center) -- (E-12.center);
+\scoped[on background layer] \draw[parabolic] (E-10.center) -- (E-12.center);
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.

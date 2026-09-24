@@ -396,10 +396,10 @@ Each folding involution is strictly speaking an element of $\Orth( \Phi(T) )$ fo
 \begin{tikzpicture}
 % First row: the five cusps. Second row: their K3 covers with the involution J_k.
 \foreach \n/\x/\pos in {1/0/{(0,4)}, 3/17/{(17,1)}, 4/25.5/{(25.5,0)}, 5/34/{(34,4)}}
-  \pic[root labels=none] at \pos {sterk cusp=\n};
-\pic[root labels=none] at (8.4,2) {vinberg 10 8 0};
+  \pic[root labels=none] at \pos {object=coxeter/sterk-cusp-\n};
+\pic[root labels=none] at (8.4,2) {object=coxeter/vinberg-10-8-0};
 \foreach \n/\x in {1/0, 2/8.5, 3/17, 4/25.5, 5/34}
-  \pic[root labels=index] at (\x,7) {sterk cusp cover=\n};
+  \pic[root labels=index] at (\x,7) {object=coxeter/sterk-cusp-cover-\n};
 \foreach \x/\c/\name in {0/2/1, 8.5/3.6/2, 17/2.5/3, 25.5/2/4, 34/2/5} {
   \node[below] at (\x+\c,-0.7) {Cusp \name};
   \node[above] at (\x+\c,14) {Cover \name};

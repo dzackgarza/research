@@ -16,7 +16,9 @@ Cusp diagram for $\fen = F_{\EnriquesInvariants}$ corresponding to $\ten = U \op
 This can be recovered using the mirror move algorithm:
 
 ::: {#fig-mirror-moves-enriques-simplified .figure}
-\input{tikz/mirror_moves_enriques_simplified.tex}
+\begin{tikzpicture}
+\pic {object=mirror-moves/enriques};
+\end{tikzpicture}
 
 The mirror moves for $\sen = \EnriquesInvariants_1$.
 :::
@@ -54,7 +56,9 @@ Cusp diagram for $\fco = F_{(11, 11, 1)}$ where $T_\Co = \gens{2} \oplus E_{10}(
 The corresponding Coxeter diagrams are computed in [@AN06] and [@AEGS25], and shown in @fig-coble-coxeter-diagrams. Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determining 1-cusps, and these are shown in @fig-coble-cusp-9-9-1-parabolics.
 
 ::: {#fig-coble-coxeter-diagrams .figure}
-\input{tikz/fig_Coxeter_Diagram_Co_9_9_1.tex}
+\begin{tikzpicture}
+\pic {object=coxeter/vinberg-9-9-1};
+\end{tikzpicture}
 
 The Coxeter diagram $G_{(9,9,1)_1} = G_{\gens{2} \oplus E_8(2)}$.
 :::

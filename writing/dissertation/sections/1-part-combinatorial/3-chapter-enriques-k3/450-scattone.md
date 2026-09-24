@@ -281,7 +281,9 @@ We record the resulting cusp diagram below as well.
 
 :::{#fig:fen-mirror-move-summary .figure}
 
-\input{tikz/mirror_moves_enriques_simplified.tex}
+\begin{tikzpicture}
+\pic {object=mirror-moves/enriques};
+\end{tikzpicture}
 
 A concise summary of the mirror move algorithm applied to $\EnriquesInvariants_1$, corresponding to $\fen$.
 

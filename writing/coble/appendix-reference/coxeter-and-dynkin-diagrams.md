@@ -27,7 +27,9 @@ Coxeter diagrams for $T_\Co$ and $T_\En$ parabolics.
 * * *
 
 ::: {#fig-appendix-mirror-moves-enriques .figure}
-\input{tikzcd/fig_Mirror_Move_En_Lattices.tex}
+\begin{tikzpicture}
+\pic {object=mirror-moves/enriques};
+\end{tikzpicture}
 
 Mirror moves for the Enriques lattices.
 :::
@@ -35,7 +37,9 @@ Mirror moves for the Enriques lattices.
 * * *
 
 ::: {#fig-appendix-2 .figure}
-\input{tikzcd/fig_Mirror_Move_Co_Lattices.tex}
+\begin{tikzpicture}
+\pic[mirror targets=all] {object=mirror-moves/coble};
+\end{tikzpicture}
 
 Geometric cusp correspondence (Coble).
 :::

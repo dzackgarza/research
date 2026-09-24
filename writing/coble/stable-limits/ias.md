@@ -128,7 +128,9 @@ The same polytope after Symington surgeries, marked in red along the boundary.
 :::
 
 ::: {#fig-16gon-full .figure}
-\input{tikz/fig_16gon_full.tex}
+\begin{tikzpicture}[scale=0.8]
+\pic[root labels=ell, parity marks=false] {object=coxeter/vinberg-18-2-0};
+\end{tikzpicture}
 
 The $16$-gon with its boundary lines $\ell_1, \ell_{16}, \dots, \ell_{21}$ labelled.
 :::

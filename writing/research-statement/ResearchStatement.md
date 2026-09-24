@@ -104,7 +104,9 @@ In my current single-author project, I have studied the boundary \( \partial \ov
 on their Baily-Borel compactifications. To determine the stratification of \( \overline{ F_{\Co} }^{\operatorname{BB}} \), I apply the *mirror moves* of [@AE22], which are encoded in @fig:mirror-moves-coble-simplified-tikz.
 
 ::: {#fig:mirror-moves-coble-simplified-tikz .figure}
-\input{tikz/mirror_moves_coble_simplified.tex}
+\begin{tikzpicture}
+\pic {object=mirror-moves/coble};
+\end{tikzpicture}
 
 Application of the mirror move algorithm to $S_{\Co} = (11, 11, 1)_1$.
 :::

@@ -221,7 +221,9 @@ By convention, we take the negative definite twists of these lattices.
 Of particular importance to us is the $E_8$ lattice associated to the following Dynkin diagram:
 
 ::: {#fig-e8-coxeter-diagram .figure}
-\input{tikz/e8_coxeter_diagram.tex}
+\begin{tikzpicture}
+\pic {object=coxeter/E8};
+\end{tikzpicture}
 
 The Dynkin diagram $E_{8}$.
 :::

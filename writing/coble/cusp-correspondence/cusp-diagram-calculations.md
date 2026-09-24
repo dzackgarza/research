@@ -20,7 +20,9 @@ Having identified the 2-elementary lattice $S_\Co = (11, 11, 1)_1$, one can appl
 The outcome of the algorithm is summarized by the following tree:
 
 ::: {#fig-mirror-moves-coble .figure}
-\input{tikzcd/fig_Mirror_Move_Co_Lattices.tex}
+\begin{tikzpicture}
+\pic[mirror targets=all] {object=mirror-moves/coble};
+\end{tikzpicture}
 
 Blue (resp. red) indicate lattices which are valid (resp. invalid) targets of mirror moves.
 :::
@@ -41,7 +43,9 @@ where $v_1 \in v_0^{\perp T_{\Co}}/\gens{v_0}$.
 In the diagrammatic language of [@AE22 Fig. 1, Thm. 5.10], this corresponds to a $U^2$ move and can be summarized in the following mirror move diagram as a composition of two even ordinary $U(2)$-type moves:
 
 ::: {#fig-mirror-moves-coble-simplified .figure}
-\input{tikz/mirror_moves_coble_simplified.tex}
+\begin{tikzpicture}
+\pic {object=mirror-moves/coble};
+\end{tikzpicture}
 
 The mirror moves for $S_{\Co} = (11,11,1)_1$.
 :::
