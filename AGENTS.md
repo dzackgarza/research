@@ -1973,6 +1973,18 @@ tower). Where the surrounding category supports it, prefer the principled
 package — an augmented chain complex for additive data, a DGA only when the
 resolution must carry multiplication — over loose tuples of maps.
 
+`C.Framed()` is the category of pairs `(x, Fr(x))`: `x` together with its
+chosen framing, supplied at construction. The image of `Free_C : Sets -> C` is
+framed by the identity, since the set it is free on was supplied. A framing
+travels along a forgetful functor, and what it becomes is decided by the
+mathematics of that functor, not by the axiom: `U : Alg_R -> Mod_R` carries
+the algebra framing `Free_Alg(S) -> A` to the module framing
+`Free_Mod(Mon(S)) -> U(A)`, the words in `S` spanning `A`. Finiteness is not
+preserved: `R[x]` is framed as an algebra by one generator, and `U(R[x])` is
+framed by the infinitely many monomials. An object placed in a framed
+category through a forgetful functor therefore receives the transported
+framing when it is constructed.
+
 ## Axioms live as high up as possible
 
 An axiomatic subcategory is declared once, at the highest category that can
