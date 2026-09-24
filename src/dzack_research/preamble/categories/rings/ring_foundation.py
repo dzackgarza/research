@@ -377,12 +377,18 @@ class RingMor(CategoricalMor):
         if isinstance(datum, Map):
             source_engine = _engine_ring(self.domain())
             target_engine = _engine_ring(self.codomain())
-            if _engine_ring(datum.domain()) is not source_engine:
+
+            def engine_endpoint(ring):
+                # An engine map has Sage rings as endpoints; an owned map's
+                # endpoints are lowered to their engines.
+                return _engine_ring(ring) if ring in OwnedRings() else ring
+
+            if engine_endpoint(datum.domain()) is not source_engine:
                 raise ValueError(
                     f"cannot view {datum} as an element of Mor({self.domain()}, {self.codomain()}): its domain "
                     f"is {datum.domain()}"
                 )
-            if _engine_ring(datum.codomain()) is not target_engine:
+            if engine_endpoint(datum.codomain()) is not target_engine:
                 raise ValueError(
                     f"cannot view {datum} as an element of Mor({self.domain()}, {self.codomain()}): its codomain "
                     f"is {datum.codomain()}"
