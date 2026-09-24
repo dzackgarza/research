@@ -1620,7 +1620,9 @@ class Modules(OwnedCategoryOverBaseRing):
                         _extra_construction_data=construction_data,
                     )
                 case _ if _represented_framed_free(self):
-                    return self._fresh_free_module_on(
+                    from dzack_research.preamble.categories.modules.framed.framed_free_modules import _fresh_free_module_on
+                    return _fresh_free_module_on(
+                        self.base_ring(),
                         self.module_generating_set(), _extra_categories=categories,
                         _extra_construction_data=construction_data,
                     )

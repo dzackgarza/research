@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
     finite_indexed_family,
     indexed_family,
 )
@@ -323,16 +324,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring()).Free(), FramedModules(self.base_ring())]
 
     class ParentMethods:
-        def _fresh_free_module_on(self, labels, **options):
-            r"""Return a new free module on ``labels`` over this module's ring.
-
-            Protected contract of framed free modules: constructions that build
-            sibling free modules (covers, relation modules, matrix units) ask
-            the free module they start from, so the new module is over the same
-            ring.
-            """
-            return _fresh_free_module_on(self.base_ring(), labels, **options)
-
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
                 return NotImplemented
@@ -567,7 +558,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 _extra_categories=(),
                 _extra_construction_data=None,
             ):
-                return self._fresh_free_module_on(
+                return _fresh_free_module_on(self.base_ring(), 
                     labels,
                     _extra_categories=tuple(_extra_categories),
                     _extra_construction_data=_extra_construction_data,
@@ -585,7 +576,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             @cached_method
             def _identity_resolution(self):
-                zero = self._fresh_free_module_on(finite_ordered_set(()))
+                zero = _fresh_free_module_on(self.base_ring(), finite_ordered_set(()))
                 degrees = Sets.Δ[0]
                 return FreeResolution(
                     self,
@@ -602,7 +593,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             @cached_method
             def dual_module(self):
-                return self._fresh_free_module_on(self.module_generating_set())
+                return _fresh_free_module_on(self.base_ring(), self.module_generating_set())
 
 
 def _new_sparse_free_module(
@@ -665,6 +656,14 @@ def _known_finite_generator_family(module_generating_set):
     match module_generating_set:
         case tuple() | list() | range():
             return finite_ordered_set(module_generating_set)
+        case IndexedFamily():
+            # A family spans what its values span; kernels hand theirs over
+            # this way, indexed by the finite set of solution vectors.
+            assert module_generating_set.cardinality().is_finite(), (
+                "subobject generators indexed by a family need a finite index set, but "
+                f"{module_generating_set.index_set()} is not finite"
+            )
+            return module_generating_set
         case _:
             assert (
                 module_generating_set in Sets()

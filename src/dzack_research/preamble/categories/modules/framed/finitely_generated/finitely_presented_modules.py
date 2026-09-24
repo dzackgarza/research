@@ -523,7 +523,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 f"cannot compute {steps} steps of a free resolution of {self}: at least one step is needed"
             )
             degree_zero = self.presentation().codomain()
-            zero = degree_zero._fresh_free_module_on(Sets.Δ[-1])
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import _fresh_free_module_on
+            zero = _fresh_free_module_on(degree_zero.base_ring(), Sets.Δ[-1])
             terms = {0: degree_zero}
             differentials = {}
             differential = self.presentation()
@@ -749,7 +750,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             """
             ring = self.base_ring()
             coordinate = finite_ordered_set(("r",))
-            line = self.presentation().codomain()._fresh_free_module_on(coordinate)
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import _fresh_free_module_on
+            line = _fresh_free_module_on(self.presentation().codomain().base_ring(), coordinate)
             multiplication = line.module_category().Mor(line, self)({"r": self(element)})
             kernel = multiplication.kernel()
             inclusion = kernel.inclusion()
@@ -1403,7 +1405,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             free_positions = positions.filtered(
                 lambda position: invariants[int(position)] == self.base_ring().zero(),
             )
-            target = self.presentation().codomain()._fresh_free_module_on(free_positions)
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import _fresh_free_module_on
+            target = _fresh_free_module_on(self.presentation().codomain().base_ring(), free_positions)
             normalized_projection = normalized.module_category().Mor(normalized, target)(
                 {
                     label: (
@@ -2645,8 +2648,9 @@ def _presentation_from_relation_rows(
 ):
 
     free_owner = relations.domain()
-    target = free_owner._fresh_free_module_on(labels)
-    source = free_owner._fresh_free_module_on(relation_labels)
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import _fresh_free_module_on
+    target = _fresh_free_module_on(free_owner.base_ring(), labels)
+    source = _fresh_free_module_on(free_owner.base_ring(), relation_labels)
     images = {label: _relation_element(target, row) for label, row in zip(source.module_generating_set(), _matrix_coordinate_rows(relations), strict=True)}
     return source.module_category().Mor(source, target)(images)
 

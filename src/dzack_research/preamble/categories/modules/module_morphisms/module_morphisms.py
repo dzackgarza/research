@@ -1343,7 +1343,8 @@ class ModuleMorphism(Morphism):
 
         source_generators = tuple(self.domain().module_generators())
         labels = Sets.Δ[len(source_generators) - 1]
-        target = codomain._fresh_free_module_on(labels)
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import _fresh_free_module_on
+        target = _fresh_free_module_on(ring, labels)
         pairing_map = codomain.module_category().Mor(codomain, target)(
             {
                 label: target.linear_combination(
