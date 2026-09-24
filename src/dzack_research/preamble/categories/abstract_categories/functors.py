@@ -191,7 +191,7 @@ class DiscreteCategory(OwnedCategory):
     def _make_named_class_key(self, name):
         return id(self._object_set)
 
-    def object_set(self) -> Parent:
+    def object_set(self) -> Sets().ObjectType:
         return self._object_set
 
     def category(self) -> Category:
@@ -201,7 +201,7 @@ class DiscreteCategory(OwnedCategory):
     def super_categories(self):
         return [Objects()]
 
-    def object(self, value: SourcePointT) -> Parent:
+    def object(self, value: SourcePointT) -> ObjectOfCategory:
         return self._objects(value)
 
     __call__ = object

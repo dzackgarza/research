@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
@@ -1015,7 +1016,7 @@ class _ConeCategory(OwnedCategory):
         def diagram(self) -> Functor:
             return self.cone_category().diagram()
 
-        def apex(self) -> Parent:
+        def apex(self) -> ObjectOfCategory:
             return self._apex
 
         def transformation(self) -> Morphism:
@@ -1094,7 +1095,7 @@ class _CoconeCategory(OwnedCategory):
         def diagram(self) -> Functor:
             return self.cocone_category().diagram()
 
-        def apex(self) -> Parent:
+        def apex(self) -> ObjectOfCategory:
             return self._apex
 
         def transformation(self) -> Morphism:
@@ -1179,7 +1180,7 @@ class _SpanCategory(_ConeCategory):
         def right_leg(self) -> Morphism:
             return self.structure_morphism(self.diagram().domain()(1))
 
-        def pushout(self) -> Parent:
+        def pushout(self) -> ObjectOfCategory:
             r"""Return the pushout of this span, the colimit of its diagram."""
             return self.target_category().pushout(self.left_leg(), self.right_leg())
 

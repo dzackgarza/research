@@ -173,10 +173,10 @@ class OwnedParameterizedCategory(OwnedCategory):
             )
         super().__init__()
 
-    def parameter(self) -> Parent:
+    def parameter(self) -> ObjectOfCategory:
         return self._owned_parameter
 
-    def base(self) -> Parent:
+    def base(self) -> ObjectOfCategory:
         return self.parameter()
 
 

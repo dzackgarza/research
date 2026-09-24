@@ -128,7 +128,7 @@ class _OppositeCategory(OwnedCategory):
         def opposite_category(self) -> _OppositeCategory:
             return self.category()
 
-        def underlying_object(self) -> Parent:
+        def underlying_object(self) -> ObjectOfCategory:
             return self._underlying_object
 
         def _repr_(self) -> str:
@@ -148,7 +148,7 @@ class _OppositeCategory(OwnedCategory):
         return [Objects()]
 
     @cached_method(key=lambda self, underlying_object: id(underlying_object))
-    def object(self, underlying_object: Parent) -> Parent:
+    def object(self, underlying_object: Parent) -> ObjectOfCategory:
         if underlying_object not in self.base_category():
             raise TypeError("the object lies outside the base category")
         return _object_of(self, underlying_object=underlying_object)
@@ -350,10 +350,10 @@ class _ProductCategory(OwnedCategory):
         def product_category(self) -> _ProductCategory:
             return self.category()
 
-        def first(self) -> Parent:
+        def first(self) -> ObjectOfCategory:
             return self._first
 
-        def second(self) -> Parent:
+        def second(self) -> ObjectOfCategory:
             return self._second
 
         def __iter__(self):
@@ -386,7 +386,7 @@ class _ProductCategory(OwnedCategory):
         return [Objects()]
 
     @cached_method(key=lambda self, first, second: (id(first), id(second)))
-    def pair(self, first: Parent, second: Parent) -> Parent:
+    def pair(self, first: Parent, second: Parent) -> ObjectOfCategory:
         if first not in self.first_category() or second not in self.second_category():
             raise TypeError("the pair lies outside the product category")
         return _object_of(self, first=first, second=second)

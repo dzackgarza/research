@@ -983,7 +983,7 @@ class DescentEqualizer(SageObject):
     def value_category(self) -> Category:
         return self._value_category
 
-    def _value(self, obj: Parent) -> Parent:
+    def _value(self, obj: Parent) -> ObjectOfCategory:
         return self.presheaf()(self.coverage().site_category().opposite()(obj))
 
     def _restriction(self, arrow: Morphism) -> Morphism:
@@ -1100,7 +1100,7 @@ class DescentEqualizer(SageObject):
     def equalizer_construction(self):
         return self._equalizer
 
-    def equalizer_object(self) -> Parent:
+    def equalizer_object(self) -> ObjectOfCategory:
         return self.equalizer_construction().object()
 
     def canonical_map(self) -> Morphism:

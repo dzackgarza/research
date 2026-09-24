@@ -7,7 +7,10 @@ from dzack_research.preamble.lexicon.algebra import (
     ModuleElement,
     RingElement,
 )
-from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+from dzack_research.preamble.lexicon.category_theory import (
+    ElementOfCategoryObject,
+    ObjectOfCategory,
+)
 from dzack_research.preamble.lexicon.foundations import (
     CartanType,
     GramMatrix,
@@ -29,12 +32,14 @@ from dzack_research.preamble.lexicon.interop import (
     SageParent,
     SageUniqueRepresentation,
 )
+from dzack_research.preamble.lexicon.set_theory import SetObject
 
 __all__ = [
     "BaseRing",
     "CartanType",
     "CoxeterMatrix",
     "Element",
+    "ElementOfCategoryObject",
     "GramMatrix",
     "Graph",
     "Integer",
@@ -54,6 +59,7 @@ __all__ = [
     "SageMorphism",
     "SageParent",
     "SageUniqueRepresentation",
+    "SetObject",
     "SignaturePair",
     "SymbolicExpression",
 ]

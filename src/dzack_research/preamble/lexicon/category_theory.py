@@ -8,5 +8,10 @@ from typing import Any
 # Python cannot currently express the dependent type C.ObjectType here.
 type ObjectOfCategory = Any
 
+# An element of an object of a mathematically specified category when that
+# element type is itself determined only after the runtime category/object is
+# known.  This is the dependent referent of a category packet's ElementType.
+type ElementOfCategoryObject = Any
 
-__all__ = ["ObjectOfCategory"]
+
+__all__ = ["ElementOfCategoryObject", "ObjectOfCategory"]

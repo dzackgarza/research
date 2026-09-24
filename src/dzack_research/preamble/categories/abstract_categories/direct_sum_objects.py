@@ -17,7 +17,7 @@ from sage.categories.category import Category
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -107,16 +107,16 @@ class DirectSumObjects(OwnedCategory):
         def summands(self) -> IndexedFamily:
             return self._summands
 
-        def summand_index_set(self) -> Parent:
+        def summand_index_set(self) -> Sets().ObjectType:
             return self.summands().index_set()
 
-        def summand(self, label: LabelT) -> Parent:
+        def summand(self, label: LabelT) -> ObjectOfCategory:
             labels = self.summand_index_set()
             if label not in labels:
                 raise ValueError(f"{label!r} is not a summand label")
             return self.summands()[label]
 
-        def number_of_summands(self) -> Parent:
+        def number_of_summands(self) -> Cardinal:
             return self.summand_index_set().cardinality()
 
 __all__ = ["DirectSumObjects"]
