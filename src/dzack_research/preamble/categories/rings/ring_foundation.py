@@ -134,15 +134,13 @@ class RingMorphism(Morphism):
         return self._engine_morphism
 
     def __mul__(self, other):
-        if not isinstance(other, RingMorphism) or other.codomain() is not self.domain():
+        if not _is_ring_map_into(other, self.domain()):
             return NotImplemented
         if self.is_identity():
             return other
         if other.is_identity():
             return self
-        return other.domain().Mor(self.codomain()).elementwise(
-            lambda element: self(other(element)),
-        )
+        return _ring_composite(self, other)
 
     def compose(self, before):
         result = self * before
@@ -408,6 +406,32 @@ class RingMor(CategoricalMor):
 
     def _repr_(self):
         return f"Mor_Ring({self.domain()}, {self.codomain()})"
+
+
+def _is_ring_map_into(candidate, target) -> bool:
+    r"""Whether ``candidate`` is a ring morphism ending at ``target``.
+
+    Composition is asked of an arbitrary right operand, so this is the one
+    site that decides whether it is a map at all (Sage's ``Map`` protocol).
+    """
+    return (
+        isinstance(candidate, Map)
+        and candidate.codomain() is target
+        and candidate.domain() in OwnedRings()
+    )
+
+
+def _ring_composite(second, first):
+    r"""``second o first`` in the category of rings, evaluated elementwise.
+
+    Every specialized ring morphism (field embeddings, order embeddings) is a
+    ring morphism, so any composable pair has this composite; a
+    specialization composes on its own data only when both factors are of its
+    kind.
+    """
+    return first.domain().Mor(second.codomain()).elementwise(
+        lambda element: second(first(element)),
+    )
 
 
 def _ring_mor_category(domain, codomain) -> RingMor:

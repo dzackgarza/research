@@ -89,8 +89,15 @@ class NumberFieldEmbedding(Morphism):
         return True
 
     def __mul__(self, other):
-        if not isinstance(other, NumberFieldEmbedding) or other.codomain() is not self.domain():
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _is_ring_map_into,
+            _ring_composite,
+        )
+
+        if not _is_ring_map_into(other, self.domain()):
             return NotImplemented
+        if not isinstance(other, NumberFieldEmbedding):
+            return _ring_composite(self, other)
         target = self.codomain()
         source = other.domain()
         if _engine_ring(source) is SageQQ:
