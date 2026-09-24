@@ -734,7 +734,12 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         # and each object carries its own parameter as instance data.
         key: tuple[type, str, Hashable] | None = None
         if isinstance(category, CategoryWithParameters):
-            key = (declaring_class, name, category._make_named_class_key(name))
+            class_key = (
+                bases
+                if isinstance(category, JoinCategory)
+                else category._make_named_class_key(name)
+            )
+            key = (declaring_class, name, class_key)
             shared = category._make_named_class_cache.get(key)
             if shared is not None:
                 return shared
@@ -781,7 +786,12 @@ class OwnedCategoryMixin(CatConstructionsMixin):
 
         result = build()
         if key is not None:
-            if key[2] != category._make_named_class_key(name):
+            current_key = (
+                bases
+                if isinstance(category, JoinCategory)
+                else category._make_named_class_key(name)
+            )
+            if key[2] != current_key:
                 # The parameter's category was refined while we built, so the
                 # key we would store is stale.  Sage's own override handles
                 # this the same way: discard and recompute.
