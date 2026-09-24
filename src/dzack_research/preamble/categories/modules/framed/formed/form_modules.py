@@ -1989,7 +1989,10 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     ``QQ/2ZZ`` by ``2ZZ`` changes its half by ``ZZ``.
                     """
                     value_module = self.value_module()
-                    if not hasattr(value_module, "modulus") or value_module.modulus() != 2:
+                    if (
+                        value_module not in FractionFieldQuotients(self.base_ring())
+                        or value_module.modulus() != 2
+                    ):
                         raise TypeError("this polarization currently requires a QQ/2ZZ-valued quadratic form")
 
                     bilinear_values = FractionFieldQuotients(self.base_ring())(1)
