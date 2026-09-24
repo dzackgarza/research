@@ -121,15 +121,15 @@ class EnumeratedSets(OwnedCategory):
 
 
 class FiniteOrdinalSets(OwnedCategory):
-    r"""The canonical finite ordinals \(\{0,\dots,n-1\}\), lazily."""
+    r"""The standard finite ordered sets \([n] = \{0 < 1 < \dots < n-1\}\), one for each finite ordinal \(n\), their order type."""
 
     def an_object(self) -> Parent:
         r"""\(\{0,1,2\}\)."""
         return finite_ordinal_set(3)
 
     def super_categories(self):
-        # A finite ordinal is a finite totally ordered set, enumerated by
-        # itself; it is the base case of the enumeration datum.
+        # [n] is a finite totally ordered set, enumerated by itself: it is the
+        # base case of the enumeration datum.  The ordinal n is its order type.
         from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
         return [FiniteOrderedSets()]
@@ -146,8 +146,8 @@ class FiniteOrdinalSets(OwnedCategory):
             assert self._size >= 0 and size == self._size, (
                 f"the finite ordinal [n] = {{0, ..., n-1}} needs n a nonnegative integer, but n = {size!r}"
             )
-            # The ordinal is its own index set, and its enumeration is the
-            # identity: the point at position k is k.
+            # [n] is its own index set, and its enumeration is the identity: the
+            # point at position k is k.
             super().__init__(
                 index_set=self,
                 element_at=lambda position: NN(int(position)),
