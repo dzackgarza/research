@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
     _module_tensor_product_with_data,
@@ -301,21 +302,23 @@ class QuadraticModuleMorphism(ModuleMorphism):
         result = self * induced
         values = self._lift_coordinate_values
         pulled_values = None
-        if values is not None:
-            try:
-                labels = _finite_framing(morphism.domain())
-                pulled_values = _coordinate_family_from_function(
-                    labels,
-                    labels,
-                    self.codomain(),
-                    lambda left_label, right_label: self.lift_pairing(
-                        morphism(morphism.domain().module_generator(left_label)),
-                        morphism(morphism.domain().module_generator(right_label)),
-                    ),
-                    name="Pulled-back quadratic lift coordinate values",
-                )
-            except TypeError:
-                pass
+        pullback_domain = morphism.domain()
+        has_finite_framing = (
+            pullback_domain in FramedModules(pullback_domain.base_ring())
+            and pullback_domain.module_generating_set().cardinality().is_finite()
+        )
+        if values is not None and has_finite_framing:
+            labels = _finite_framing(pullback_domain)
+            pulled_values = _coordinate_family_from_function(
+                labels,
+                labels,
+                self.codomain(),
+                lambda left_label, right_label: self.lift_pairing(
+                    morphism(pullback_domain.module_generator(left_label)),
+                    morphism(pullback_domain.module_generator(right_label)),
+                ),
+                name="Pulled-back quadratic lift coordinate values",
+            )
         parent = result.parent()
         return parent._from_classifying_morphism(
             result,
