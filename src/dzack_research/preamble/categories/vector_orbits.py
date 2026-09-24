@@ -340,8 +340,16 @@ def _line_isometry(source, target):
 
 def _finite_form_isometries(start):
     r"""Yield the complete finite-form isometry torsor generated from ``start``."""
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        QuadraticFormModules,
+    )
+
     source = start.domain()
     target = start.codomain()
+    quadratic = (
+        source in QuadraticFormModules(source.base_ring())
+        and target in QuadraticFormModules(target.base_ring())
+    )
     for automorphism in target.O():
         forward = automorphism.forward() * start.forward()
         inverse = start.inverse() * automorphism.inverse_morphism()
@@ -349,7 +357,7 @@ def _finite_form_isometries(start):
         yield _torsion_form_isometry(
             forward,
             inverse,
-            quadratic=hasattr(source, "q") and hasattr(target, "q"),
+            quadratic=quadratic,
         )
 
 
