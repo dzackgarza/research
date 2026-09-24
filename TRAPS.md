@@ -246,3 +246,23 @@ Over `S = PolynomialRing(QQ, ['x','y'])`, `S.ideal(x, y).is_maximal()` and
 2026-09-25. Route chosen: multivariate ideals over a field use Zariski's
 lemma, prime with quotient of dimension zero; every other ideal asks Sage's
 `is_maximal`.
+
+### Sage's localizations of polynomial rings decide units on only one shape
+
+`L(e).is_unit()` measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25, for
+`e` in `x, 2, 3, x+1, 2x`:
+
+| engine | nonconstant `e` | constants |
+| --- | --- | --- |
+| `ZZ['x'].localization((2, x))` | `TypeError: cannot convert nonconstant polynomial` | correct |
+| `ZZ['x'].localization(2).localization(x)` | same `TypeError` | correct |
+| `PolynomialRing(ZZ, 'x,y').localization((2, x))`, nested or flat | same `TypeError` | correct |
+| `ZZ.localization(2)['x'].localization(x)` | correct (`x`, `2x` units; `x+1` not) | correct |
+| `PolynomialRing(ZZ.localization(2), 'x,y').localization(x)` | `NotImplementedError` | `NotImplementedError` |
+
+So a localization that inverts a constant in a polynomial ring over `ZZ`
+cannot decide units of nonconstant elements, and only the univariate ring
+over Sage's own `ZZ.localization(2)` answers. Route chosen: a univariate
+polynomial algebra over a localized base keeps that engine; flattening is
+used only in several variables, where no engine answers and the gap is
+still open.

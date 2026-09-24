@@ -2588,6 +2588,11 @@ def _flattened_symmetric_localization_engine(source, inverted):
     coefficient_engine = _engine_ring(coefficient_ring)
     coefficient_bottom_engine = _engine_ring(coefficient_bottom)
     names = tuple(source_engine.variable_names())
+    # In one variable Sage's own localization of C[x] decides units, while
+    # the flattened A[x] inverting a constant raises on every nonconstant
+    # element (TRAPS.md); only several variables take the flattened route.
+    if len(names) == 1:
+        return None, None, None
     polynomial_bottom = _SagePolynomialRing(
         coefficient_bottom_engine,
         names=names,
