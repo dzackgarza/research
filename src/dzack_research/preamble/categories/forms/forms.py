@@ -7,6 +7,7 @@ modules and value object; its pointwise module structure is constructed
 through the module owner, without assigning it a finite presentation.
 """
 
+from collections.abc import Iterable
 from itertools import chain, combinations, product
 
 from sage.misc.cachefunc import cached_function
@@ -543,8 +544,8 @@ class _CallableFormSpace:
         r"""Admit a map of this space: one of its elements, finite coordinates, or an evaluation.
 
         This is the one boundary that reads the shape of foreign data.  An
-        indexed family over the two framings, a matrix, or rows are finite
-        coordinates; any other callable is the evaluation itself.
+        indexed family over the two framings or an iterable of rows is finite
+        coordinate data; any other callable is the evaluation itself.
         """
         if element_parent(datum) is self:
             return datum
@@ -559,16 +560,13 @@ class _CallableFormSpace:
                     name=name,
                 )
             )
-        if hasattr(datum, "rows") or (
-            isinstance(datum, (tuple, list))
-            and all(isinstance(row, (tuple, list)) for row in datum)
-        ):
+        if isinstance(datum, Iterable) and not isinstance(datum, (str, bytes)):
             return self._from_coordinate_values(
                 _coordinate_family_from_rows(
                     _finite_framing(self.left_module()),
                     _finite_framing(self.right_module()),
                     self.codomain(),
-                    datum.rows() if hasattr(datum, "rows") else datum,
+                    datum,
                     name=name,
                 )
             )

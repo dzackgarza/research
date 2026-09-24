@@ -1,5 +1,7 @@
 r"""Modules equipped with exact bilinear or quadratic forms."""
 
+from collections.abc import Iterable
+
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
@@ -2227,11 +2229,7 @@ def _quadratic_form(module, value_module, datum):
 
     coordinate_datum = (
         isinstance(datum, IndexedFamily)
-        or hasattr(datum, "rows")
-        or (
-            isinstance(datum, (tuple, list))
-            and all(isinstance(row, (tuple, list)) for row in datum)
-        )
+        or (isinstance(datum, Iterable) and not isinstance(datum, (str, bytes)))
     )
     form = (
         module.quadratic_forms(value_module)(datum)
