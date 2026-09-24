@@ -169,7 +169,7 @@ $$
 \begin{aligned}
 &\text{Transcendental lattice:} && (18,0,0)_1, \qquad U\oplus E_8^2 \\
 &\text{Automorphism: vertical reflection:} && 
-\alpha_i \leftrightarrow \alpha_{20-i}, \quad i=1,\ldots,8 \\
+\alpha_i \leftrightarrow \alpha_{20-i}, \quad i=1,\ldots,9 \\
 &\text{Invariants:} && (10,8,0)_1, \qquad U\oplus E_8(2)
 \end{aligned}
 $$
