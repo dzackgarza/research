@@ -594,6 +594,17 @@ class _PairingGram(ModuleElement, Tensor):
             return self
         return _ScaledGram(self, scalar)
 
+    def _lmul_(self, scalar):
+        r"""The module's scalar action on this tensor: \(\mathrm{scalar}\cdot b\).
+
+        ``ModuleElement._lmul_`` answers ``None`` for "not implemented", and the
+        module's scalar action (``_owned_scalar_multiple``) calls this method.
+        """
+        return self.scaled_by(scalar)
+
+    def _rmul_(self, scalar):
+        return self.scaled_by(scalar)
+
     def __mul__(self, other):
         r"""Scale by an element of the base ring, or contract a type-$(1,0)$ vector of the same rank."""
         ring = self.base_ring()
