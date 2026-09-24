@@ -223,7 +223,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             :meth:`configuration_isometry`, which verifies every pairing.
             """
             automorphisms = self.configuration_automorphism_group()
-            if getattr(automorphism, "parent", lambda: None)() is not automorphisms:
+            if automorphism not in automorphisms:
                 raise ValueError(
                     "the permutation to lift must lie in this configuration's automorphism group"
                 )
@@ -238,7 +238,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         def ambient_isometry_from_automorphism(self, automorphism):
             r"""Lift a graph automorphism to ``O(L)`` when the configuration frames ``L``."""
             automorphisms = self.configuration_automorphism_group()
-            if getattr(automorphism, "parent", lambda: None)() is not automorphisms:
+            if automorphism not in automorphisms:
                 raise ValueError(
                     "the permutation to lift must lie in this configuration's automorphism group"
                 )
