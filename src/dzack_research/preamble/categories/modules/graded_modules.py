@@ -327,6 +327,16 @@ class GradedModules(OwnedCategoryOverBaseRing):
     _EndCategory = LinearEndCategoryConstruction
 
     class ParentMethods:
+        def __init__(
+            self,
+            concentrated_degree=None,
+            degree_on_module_generator=None,
+            **rest,
+        ) -> None:
+            self._preamble_concentrated_degree = concentrated_degree
+            self._preamble_degree_on_module_generator = degree_on_module_generator
+            super().__init__(**rest)
+
         def is_graded(self) -> bool:
             return True
 
@@ -363,7 +373,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             return left * right
 
         def concentrated_degree(self):
-            selected = self.__dict__.get("_preamble_concentrated_degree")
+            selected = self._preamble_concentrated_degree
             if selected is None:
                 raise TypeError(f"{self} is not represented as a concentrated graded module")
             return selected
@@ -376,11 +386,15 @@ class GradedModules(OwnedCategoryOverBaseRing):
             algebras override it; a merely category-placed object with no
             represented grading on its framing refuses rather than guessing.
             """
-            selected = self.__dict__.get("_preamble_degree_on_module_generator")
-            assert selected is not None, (
+            selected = self._preamble_degree_on_module_generator
+            if selected is not None:
+                return selected(module_generator)
+            concentrated = self._preamble_concentrated_degree
+            if concentrated is not None:
+                return concentrated
+            raise TypeError(
                 f"{self} has no represented degree on its selected module framing"
             )
-            return selected(module_generator)
 
         def module_generators_of_degree(self, degree):
             r"""Return the selected framing generators lying in ``degree``."""
