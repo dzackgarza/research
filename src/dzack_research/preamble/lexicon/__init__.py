@@ -1,6 +1,7 @@
 """Single import surface for mathematical nouns used by the preamble."""
 
 from dzack_research.preamble.lexicon.algebra import (
+    AlgebraHomomorphism,
     BaseRing,
     Element,
     Matrix,
@@ -36,6 +37,7 @@ from dzack_research.preamble.lexicon.interop import (
 from dzack_research.preamble.lexicon.set_theory import SetObject
 
 __all__ = [
+    "AlgebraHomomorphism",
     "BaseRing",
     "CartanType",
     "CoxeterMatrix",

@@ -506,7 +506,11 @@ class _EndofunctorAlgebraCategory(_SubcategoryOfArrows):
         r"""An algebra structure on its target: an arrow ``T(X) -> X``."""
         return super().admits_arrow(arrow) and arrow.domain() is self.endofunctor()(arrow.codomain())
 
-    def algebra(self, underlying_object: Parent, structure: Morphism):
+    def algebra(
+        self,
+        underlying_object: Parent,
+        structure: Morphism,
+    ) -> ObjectOfCategory:
         r"""Return ``(X, structure : T(X) -> X)`` for the object ``X`` of ``C``.
 
         Both the supplied object and the supplied structure arrow are kept
@@ -683,7 +687,7 @@ class SliceCategory(_SubcategoryOfArrows):
 
         return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
-    def an_object(self):
+    def an_object(self) -> ObjectOfCategory:
         r"""The identity of the fixed base object."""
         base_object = self.base_object()
         return self.object(
@@ -771,7 +775,7 @@ class CosliceCategory(_SubcategoryOfArrows):
 
         return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
-    def an_object(self):
+    def an_object(self) -> ObjectOfCategory:
         r"""The identity of the fixed base object."""
         base_object = self.base_object()
         return self.object(

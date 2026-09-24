@@ -43,6 +43,8 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+from dzack_research.preamble.lexicon.set_theory import SetObject
 
 
 def _reversed_isomorphism(transition):
@@ -130,18 +132,18 @@ class FiniteGluedInvariantQuotient(SageObject):
         self._verify_source_transition_equivariance()
         self._verify_quotient_descent_squares()
 
-    def base_ring(self):
+    def base_ring(self) -> ObjectOfCategory:
         return self._base_ring
 
-    def acting_group(self):
+    def acting_group(self) -> ObjectOfCategory:
         return self._group
 
-    def chart_index_set(self):
+    def chart_index_set(self) -> SetObject:
         return self._chart_index_set
 
     chart_indices = chart_index_set
 
-    def pair_index_set(self):
+    def pair_index_set(self) -> SetObject:
         return self._pair_index_set
 
     def normalize_chart_index(self, index):
