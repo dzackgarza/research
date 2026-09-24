@@ -492,18 +492,21 @@ def declared_implementation_types(
     return declared[0], tuple(declared[1:])
 
 
-def _join_implementation_bases(
-    category: JoinCategory,
+def _owned_implementation_bases(
+    category: Category,
     provider_names: tuple[str, ...],
 ) -> tuple[type, ...]:
-    r"""Return one cooperative implementation MRO for an owned join.
+    r"""Return one cooperative implementation MRO for an owned category.
 
-    A join has no implementation provider of its own.  Inheriting the already
-    composed ``parent_class`` objects of each branch can make three individually
-    valid MROs impose a precedence cycle on shared providers.  The category
-    linearization already fixes the mathematical order, so read each level's
-    declared providers from that linearization and compose those providers
-    directly instead of nesting dynamic classes.
+    Sage flattens join-valued supercategories when it computes a category's
+    immediate supercategories.  Consequently the same C3 conflict that occurs
+    on an explicit join also occurs on an ordinary category such as
+    ``RootLattices`` whose one declared supercategory is a join.  Inheriting
+    already-composed ``parent_class`` objects can make individually valid MROs
+    impose a precedence cycle on shared providers.  The category linearization
+    already fixes the mathematical order, so every owned category composes the
+    declared providers from that linearization directly instead of nesting
+    dynamic implementation classes.
     """
     bases: list[type] = []
     for level in category._all_super_categories:
@@ -610,6 +613,18 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     # categories.
     _cmp_key = _OwnedCategoryComparisonKey()
 
+    def is_subcategory(self, category):
+        r"""Compare owned categories through their declared mathematical graph.
+
+        Owned implementation classes are provider-linearized rather than
+        nested along the category graph, because the latter need not admit a
+        common Python C3 MRO.  They are therefore implementation vehicles, not
+        subcategory witnesses.  Category inclusion is the declared forgetful
+        graph itself, with the intersection rules handled by
+        :func:`_declared_category_is_subcategory`.
+        """
+        return _declared_category_is_subcategory(self, category)
+
     _IMPLEMENTATION_PROVIDER_NAMES = {
         "ParentMethods": ("ParentMethods",),
         "ElementMethods": ("ElementMethods",),
@@ -708,67 +723,19 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         provider_names = self._IMPLEMENTATION_PROVIDER_NAMES[method_provider]
         match name:
             case "parent_class":
-                bases = (
-                    _join_implementation_bases(category, provider_names)
-                    if isinstance(category, JoinCategory)
-                    else tuple(
-                        super_category.parent_class
-                        for super_category in category._super_categories_for_classes
-                    )
-                )
+                bases = _owned_implementation_bases(category, provider_names)
                 reduction_function = _parent_class_of
             case "element_class":
-                bases = (
-                    _join_implementation_bases(category, provider_names)
-                    if isinstance(category, JoinCategory)
-                    else tuple(
-                        super_category.element_class
-                        for super_category in category._super_categories_for_classes
-                    )
-                )
+                bases = _owned_implementation_bases(category, provider_names)
                 reduction_function = _element_class_of
             case "morphism_class":
-                bases = (
-                    _join_implementation_bases(category, provider_names)
-                    if isinstance(category, JoinCategory)
-                    else tuple(
-                        super_category.morphism_class
-                        for super_category in category._super_categories_for_classes
-                    )
-                )
+                bases = _owned_implementation_bases(category, provider_names)
                 reduction_function = _morphism_class_of
             case _:
                 raise AssertionError(f"unsupported implementation type {name}")
-        provider, inherited = (
-            (None, ())
-            if isinstance(category, JoinCategory)
-            else declared_implementation_types(declaring_class, provider_names)
+        provider, _inherited = declared_implementation_types(
+            declaring_class, provider_names
         )
-        # Ahead of the super categories, behind the level's own declaration.
-        # The owned construction base states what being a subobject *is*, and
-        # Sage's ``Sets.Subquotients`` states the same names abstractly; a
-        # super category carries the abstract ones, so an owned declaration
-        # placed after them would be shadowed by exactly what it exists to
-        # replace.  A super category that already reached this declaration is
-        # skipped: it has it at the end of its own linearization, and asking
-        # for it earlier contradicts that order, which C3 refuses.
-        declared = () if provider is None or any(provider in base.mro() for base in bases) else (provider,)
-        carried = tuple(ancestor_provider for ancestor_provider in inherited if not any(ancestor_provider in base.mro() for base in bases))
-        bases = declared + carried + bases
-        # A base reached twice -- a join whose members share a super category --
-        # is one base, in the position it was first required.
-        seen: dict[type, None] = {}
-        for base in bases:
-            seen.setdefault(base, None)
-        bases = tuple(seen)
-        if len(bases) > 1 and object in bases:
-            # A super category with no methods class of its own contributes
-            # ``object``.  Left in place beside a real base it is a base that
-            # every other base already derives from, and C3 refuses the class:
-            # ``TypeError: Cannot create a consistent method resolution order
-            # (MRO) for bases object, Modules.parent_class,
-            # FreeModules.ParentMethods``.
-            bases = tuple(base for base in bases if base is not object)
         doccls = provider or declaring_class
         class_name = f"{declaring_class.__name__}.{name}"
         reduction = (reduction_function, (category,)) if picklable else None
@@ -784,12 +751,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         # and each object carries its own parameter as instance data.
         key: tuple[type, str, Hashable] | None = None
         if isinstance(category, CategoryWithParameters):
-            class_key = (
-                bases
-                if isinstance(category, JoinCategory)
-                else category._make_named_class_key(name)
-            )
-            key = (declaring_class, name, class_key)
+            key = (declaring_class, name, bases)
             shared = category._make_named_class_cache.get(key)
             if shared is not None:
                 return shared
@@ -836,12 +798,8 @@ class OwnedCategoryMixin(CatConstructionsMixin):
 
         result = build()
         if key is not None:
-            current_key = (
-                bases
-                if isinstance(category, JoinCategory)
-                else category._make_named_class_key(name)
-            )
-            if key[2] != current_key:
+            current_bases = _owned_implementation_bases(category, provider_names)
+            if key[2] != current_bases:
                 # The parameter's category was refined while we built, so the
                 # key we would store is stale.  Sage's own override handles
                 # this the same way: discard and recompute.
