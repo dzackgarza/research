@@ -3666,10 +3666,23 @@ def _integer_mod_local_prime(engine):
 
 
 def _engine_field_decision(engine):
-    r"""Return the engine's exact field decision when represented."""
-    if engine in SageFields():
-        return True
-    return engine.is_field()
+    r"""Return the engine's exact field decision when represented.
+
+    ``OWN-06`` adapter.  ``S/I`` is a field exactly when ``I`` is maximal.
+    For a multivariate polynomial ring ``S`` over a field Sage's
+    ``is_maximal`` raises (TRAPS.md), so Zariski's lemma decides it: ``I`` is
+    maximal exactly when it is prime and ``S/I`` has Krull dimension zero.
+    """
+    match engine:
+        case _ if engine in SageFields():
+            return True
+        case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base) and bool(
+            engine.cover_ring().base_ring().is_field()
+        ):
+            defining = engine.defining_ideal()
+            return bool(defining.is_prime() and defining.dimension() == 0)
+        case _:
+            return engine.is_field()
 
 
 def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
