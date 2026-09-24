@@ -2274,11 +2274,7 @@ def _engine_krull_dimension(ring):
         case QuotientRing_generic():
             dimension = engine.defining_ideal().dimension()
         case _:
-            method = getattr(engine, "krull_dimension", None)
-            assert callable(method), (
-                f"Krull dimension of {ring} requires a selected engine dimension computation"
-            )
-            dimension = method()
+            dimension = engine.krull_dimension()
     return _owned_engine_element(SageZZ, SageZZ(dimension))
 
 
@@ -2633,10 +2629,7 @@ def _proper_restriction_base_ring(ring):
 
 def _engine_multiplicative_generator(engine):
     r"""Return the selected engine's multiplicative generator at the private boundary."""
-    generator = getattr(engine, "multiplicative_generator", None)
-    if generator is None:
-        raise AttributeError(f"{engine} has no represented multiplicative generator")
-    return generator()
+    return engine.multiplicative_generator()
 
 
 
@@ -3463,10 +3456,7 @@ def _engine_field_decision(engine):
     r"""Return the engine's exact field decision when represented."""
     if engine in SageFields():
         return True
-    method = getattr(engine, "is_field", None)
-    if method is None:
-        return False
-    return method()
+    return engine.is_field()
 
 
 def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
@@ -3551,13 +3541,8 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
         # orders in its PrincipalIdealDomains category, so retain this
         # theorem at the owned boundary where the class number is exact.
         extra.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
-    noetherian_method = getattr(engine, "is_noetherian", None)
-    noetherian = (
-        engine is SageZZ
-        if noetherian_method is None
-        else noetherian_method()
-    )
-    if noetherian is True or engine is SageZZ:
+    noetherian = engine.is_noetherian()
+    if noetherian is True:
         extra.append(OwnedRings().Noetherian())
     match field_decision:
         case True:
