@@ -909,7 +909,20 @@ class LocalizationRings(OwnedCategory):
                 if numerator not in source or denominator not in source:
                     return False
                 return self._valid_denominator(source(denominator))
-            return value in source
+            parent = element_parent(value)
+            match parent:
+                case _ if (
+                    parent is not source
+                    and parent in OwnedRings()
+                    and self._preamble_engine_ring is not None
+                    and self._localization_engine_source_decoder is None
+                ):
+                    # An element of a larger ring, such as 1/4 in QQ for
+                    # ZZ[1/2], is in S^-1 A exactly when it is some a/s; the
+                    # engine localization decides that on its own fractions.
+                    return _engine_element(parent, value) in self._preamble_engine_ring
+                case _:
+                    return value in source
 
         def _from_engine_element(self, value):
             engine = self._preamble_engine_ring
