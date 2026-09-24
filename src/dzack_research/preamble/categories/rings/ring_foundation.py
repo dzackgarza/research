@@ -1601,6 +1601,12 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         def extra_super_categories(self):
             return [OwnedRings().NoZeroDivisors()]
 
+        class ElementMethods:
+            def inverse_of_unit(self):
+                r"""``x^{-1}``: in a division ring every nonzero element is a unit."""
+                assert not self.is_zero(), f"0 is not a unit of {self.parent()}"
+                return self.parent().one() / self
+
         class Commutative(CategoryWithAxiom):
             r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``."""
 
@@ -1645,6 +1651,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return GF(2)
 
             class ParentMethods:
+                def krull_dimension(self):
+                    r"""``0``: the only prime ideal of a field is ``(0)``."""
+                    return _own_ring(SageZZ).zero()
+
                 def field_generators(self):
                     r"""Return exact elements which determine a unital map out of this field."""
                     from dzack_research.preamble.categories.rings.field_morphisms import (
