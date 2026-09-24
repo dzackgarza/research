@@ -169,9 +169,15 @@ NamedLattices.E7 = _C("E7")
 NamedLattices.Z_m2 = NamedLattices.Z.twist(-2)
 
 
-for _name, _value in vars(NamedLattices).items():
-    if not _name.startswith("_") and _value in _C:
-        setattr(Lattices, _name, _value)
+_NAMED_LATTICE_BLOCKS = {
+    name: value
+    for name, value in vars(NamedLattices).items()
+    if not name.startswith("_") and value in _C
+}
+
+
+for _name, _value in _NAMED_LATTICE_BLOCKS.items():
+    setattr(Lattices, _name, _value)
 
 
 # Exact Gram-block names used by the represented direct-sum decomposition.
@@ -288,7 +294,7 @@ def _orthogonal_sum(recipe):
     sums that ``indecomposable_summands`` would have to walk back apart.
     """
     blocks = tuple(
-        getattr(NamedLattices, name)
+        _NAMED_LATTICE_BLOCKS[name]
         for name, multiplicity in recipe
         for _index in range(multiplicity)
     )
@@ -716,8 +722,8 @@ def _negative_block(name, twist=1):
         # ``rank_one_negative(d)`` in the archived catalogue means
         # ``<-2d>``, not ``<-d>``.
         block = _C([[-2 * SageZZ(name[1:])]])
-    elif hasattr(NamedLattices, name):
-        block = getattr(NamedLattices, name)
+    elif name in _NAMED_LATTICE_BLOCKS:
+        block = _NAMED_LATTICE_BLOCKS[name]
     else:
         block = _C(name)
     return block if twist == 1 else block.twist(SageZZ(twist))
@@ -739,6 +745,9 @@ def _negative_sum(parts):
     return NamedLattices.Zero if result is None else result
 
 
+_CATALOGUE_GLUE_INCLUSIONS = []
+
+
 @cache
 def _negative_two_elementary_row(key):
     values = []
@@ -756,7 +765,7 @@ def _negative_two_elementary_row(key):
                 raise ValueError(f"the recorded glue class for {key} is not isotropic")
             inclusion = lattice.overlattice(discriminant_class)
             lattice = inclusion.codomain()
-            lattice._catalogue_glue_inclusion = inclusion
+            _CATALOGUE_GLUE_INCLUSIONS.append((lattice, inclusion))
         values.append(lattice)
     return tuple(values)
 
@@ -787,7 +796,14 @@ class _NegativeDefTwoElementaryTable(Mapping):
                 actual = lattice.two_elementary_invariants()
                 if actual != nikulin_invariants(*key):
                     raise AssertionError(f"{key} contains a lattice with invariants {actual}")
-                inclusion = getattr(lattice, "_catalogue_glue_inclusion", None)
+                inclusion = next(
+                    (
+                        selected
+                        for candidate, selected in _CATALOGUE_GLUE_INCLUSIONS
+                        if candidate is lattice
+                    ),
+                    None,
+                )
                 if inclusion is not None:
                     source = inclusion.domain()
                     index = SageZZ(inclusion.index())
@@ -857,7 +873,7 @@ def two_elementary_orthogonal_sums(target_signature, a, delta):
             if positive == negative == length == 0 and realized_delta == target_delta:
                 recipe = tuple(
                     (
-                        next(name for name, specimen in vars(NamedLattices).items() if specimen is block),
+                        next(name for name, specimen in _NAMED_LATTICE_BLOCKS.items() if specimen is block),
                         count,
                     )
                     for (block, *_invariants), count in zip(block_data, counts, strict=True)
