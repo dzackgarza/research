@@ -128,21 +128,33 @@ class FiniteOrdinalSets(OwnedCategory):
         return finite_ordinal_set(3)
 
     def super_categories(self):
-        # The join every finite ordinal was built in, declared once
-        # by the category rather than computed for each object.
-        return [EnumeratedSets(), TotallyOrderedSets(), FiniteSets()]
+        # A finite ordinal is a finite totally ordered set, enumerated by
+        # itself; it is the base case of the enumeration datum.
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+
+        return [FiniteOrderedSets()]
 
     def _call_(self, size):
         r"""Construct the canonical finite ordinal of cardinality ``size``."""
         return _object_of(self, size=size)
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"index_set", "element_at", "index_of"})
+
         def __init__(self, size: int, **rest) -> None:
             self._size = int(size)
             assert self._size >= 0 and size == self._size, (
                 f"the finite ordinal [n] = {{0, ..., n-1}} needs n a nonnegative integer, but n = {size!r}"
             )
-            super().__init__(facade=True, **rest)
+            # The ordinal is its own index set, and its enumeration is the
+            # identity: the point at position k is k.
+            super().__init__(
+                index_set=self,
+                element_at=lambda position: NN(int(position)),
+                index_of=lambda point: int(point) if point in self else None,
+                contains=self.__contains__,
+                **rest,
+            )
 
         def order_type(self) -> cardinals.Ordinal:
             r"""The ordinal ``n`` this well-ordered set is isomorphic to: itself.
@@ -3104,6 +3116,14 @@ class NaturalNumberSets(OwnedCategory):
         def __le__(self, other):
             other = self.parent()(other)
             return self._value <= other._value
+
+        def __gt__(self, other):
+            other = self.parent()(other)
+            return self._value > other._value
+
+        def __ge__(self, other):
+            other = self.parent()(other)
+            return self._value >= other._value
 
         def __add__(self, other):
             other = self.parent()(other)
