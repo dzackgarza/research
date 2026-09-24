@@ -5,7 +5,7 @@ the diagonal induced by the pair ``(id, id)`` composes with each projection back
 the identity.
 """
 
-from dzack_research.preamble.all import QQ, ZZ, AffineSpaces
+from dzack_research.preamble.all import *
 
 
 def _line_over(ring):

@@ -1,6 +1,6 @@
 r"""Projective restriction maps use the exact image on general closed subschemes."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def _plane_line_and_sections():

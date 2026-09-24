@@ -4,7 +4,7 @@ r"""The orthogonal direct sum as the monoidal operation on lattices.
 discriminant multiplies, and the zeroth power is the unit.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices, signature_pair
+from dzack_research.preamble.all import *
 
 
 def test_the_orthogonal_power_adds_signatures_and_multiplies_discriminants() -> None:

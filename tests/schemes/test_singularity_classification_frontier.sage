@@ -1,6 +1,6 @@
 r"""Right equivalence of plane curve germs, and the regular/smooth boundary."""
 
-from dzack_research.preamble.all import GF, QQ, IsolatedHypersurfaceSingularity
+from dzack_research.preamble.all import *
 
 
 def test_a_sheared_a2_becomes_x2_plus_y3_after_x_to_x_plus_y() -> None:

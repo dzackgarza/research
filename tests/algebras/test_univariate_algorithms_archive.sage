@@ -1,6 +1,6 @@
 r"""Archive reconciliation for univariate polynomial-ring algorithms."""
 
-from dzack_research.preamble.all import QQ, QQbar
+from dzack_research.preamble.all import *
 
 
 def test_archive_euclidean_algorithms_return_owned_polynomial_elements() -> None:

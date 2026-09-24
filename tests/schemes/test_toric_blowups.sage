@@ -1,9 +1,4 @@
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    RationalPolyhedralFans,
-    ToricFixedPointBlowups,
-)
+from dzack_research.preamble.all import *
 
 
 def _projective_plane():

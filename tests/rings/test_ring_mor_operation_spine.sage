@@ -1,6 +1,6 @@
 r"""The ring Mor family refines both multiplicative-additive operation spines."""
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def test_framed_polynomial_ring_map_uses_owned_generator_images() -> None:

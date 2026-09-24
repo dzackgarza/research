@@ -1,6 +1,6 @@
 r"""Isometry of lattices presented in different bases."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_a_change_of_basis_of_the_odd_unimodular_plane_is_isometric_to_it() -> None:

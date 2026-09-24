@@ -5,7 +5,7 @@ Every value is computed by hand from the component formulas; matrices act on
 column vectors, and a linear map is given by the images of the basis vectors.
 """
 
-from dzack_research.preamble.all import QQ, ZZ
+from dzack_research.preamble.all import *
 
 
 def _linear_map(source, target, columns):

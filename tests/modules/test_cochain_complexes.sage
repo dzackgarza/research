@@ -1,6 +1,6 @@
 r"""Cohomology of two-term cochain complexes of abelian groups."""
 
-from dzack_research.preamble.all import ZZ, CochainComplexes, Modules
+from dzack_research.preamble.all import *
 
 
 def test_the_complex_ZZ_times_two_ZZ_has_H0_zero_and_H1_ZZ_mod_2() -> None:

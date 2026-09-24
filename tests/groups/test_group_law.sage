@@ -1,6 +1,6 @@
 r"""The group law of a permutation group is composition, and its permutation modules are left modules."""
 
-from dzack_research.preamble.all import QQ, Groups, Modules
+from dzack_research.preamble.all import *
 
 
 def test_the_product_of_two_transpositions_in_s3_is_their_composite_three_cycle() -> None:

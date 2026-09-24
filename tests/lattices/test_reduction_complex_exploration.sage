@@ -1,6 +1,6 @@
 r"""The four coordinate quadrants tile \(\mathbb R^2\) and their face pairings generate \(O(I_2)\)."""
 
-from dzack_research.preamble.all import ZZ, Lattices, Sets
+from dzack_research.preamble.all import *
 
 
 def test_the_four_quadrants_pair_every_facet_and_their_transporters_generate_O_of_I2() -> None:

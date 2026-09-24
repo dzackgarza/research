@@ -1,6 +1,6 @@
 r"""Open subgroups of the absolute Galois group of a finite field."""
 
-from dzack_research.preamble.all import GF
+from dzack_research.preamble.all import *
 
 
 def test_the_open_subgroup_of_the_galois_group_of_f5_fixing_f25_has_index_two() -> None:

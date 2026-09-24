@@ -6,7 +6,7 @@ constituents.  The formula is recomputed from the canonical Jordan tuples and
 compared with the owned genus value.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def _local_excess_from_constituents(constituents, prime: int) -> int:

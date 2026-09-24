@@ -6,7 +6,7 @@ this archive specimen preserves the recorded mathematical table rather than
 porting the notebook's temporary Oscar helper.
 """
 
-from dzack_research.preamble.all import NamedLattices, nikulin_invariants
+from dzack_research.preamble.all import *
 
 
 def _period_lattices():

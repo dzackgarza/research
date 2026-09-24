@@ -5,7 +5,7 @@ so \(\pm e_1\): one mirror \(e_1^\perp = \mathbb Z e_0\), two chambers, and the
 Weyl group \(\{1, s_{e_1}\}\).
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_reflection_in_the_wall_root_carries_the_chamber_across_the_wall() -> None:

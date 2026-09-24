@@ -7,7 +7,7 @@ from the indiscrete space to the Sierpinski space pulls the open `\{1\}` back to
 preimage of an open is open, so it is continuous.
 """
 
-from dzack_research.preamble.all import Sets, TopologicalSpaces
+from dzack_research.preamble.all import *
 
 
 def test_the_identity_is_continuous_from_sierpinski_to_indiscrete_but_not_back() -> None:

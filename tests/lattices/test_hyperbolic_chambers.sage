@@ -1,6 +1,6 @@
 r"""Rational polyhedral cones and reflection chambers of small hyperbolic lattices."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_isotropic_cone_of_the_lorentz_plane_has_two_ideal_rays() -> None:

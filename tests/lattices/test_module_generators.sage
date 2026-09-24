@@ -1,6 +1,6 @@
 r"""Form predicates on the countable-rank identity lattice and a reflection in \(U\)."""
 
-from dzack_research.preamble.all import NN, ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_identity_form_on_countable_rank_is_nondegenerate_definite_and_not_unimodular() -> None:

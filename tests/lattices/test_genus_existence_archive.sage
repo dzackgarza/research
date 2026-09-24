@@ -7,7 +7,7 @@ exceeds the length ``1`` of the form this is sufficient (Nikulin 1979,
 Thm. 1.10.1).  Adjoining ``U`` leaves the discriminant form unchanged.
 """
 
-from dzack_research.preamble.all import ZZ, Genus, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_a2_discriminant_genus_exists_exactly_when_the_signature_satisfies_milgram() -> None:

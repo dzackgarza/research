@@ -6,7 +6,7 @@ UFD, so `\operatorname{Cl}(\mathbb{A}^2) = 0`; `\operatorname{Cl}(\mathbb{P}^2) 
 \operatorname{Cl}` (II.6.16).
 """
 
-from dzack_research.preamble.all import QQ, AffineSpaces, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def test_affine_plane_has_trivial_picard_and_class_groups() -> None:

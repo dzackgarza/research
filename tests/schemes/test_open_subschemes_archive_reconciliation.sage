@@ -1,6 +1,6 @@
 r"""Distinguished opens of the affine plane over QQ."""
 
-from dzack_research.preamble.all import QQ, AffineSpaces
+from dzack_research.preamble.all import *
 
 
 def test_inclusions_of_distinguished_opens_compose_and_intersect() -> None:

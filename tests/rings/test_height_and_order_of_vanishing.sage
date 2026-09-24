@@ -11,10 +11,7 @@ These are the numbers a Weil divisor is written with, which is why they are
 asked of the point rather than of the ring.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-)
+from dzack_research.preamble.all import *
 
 
 def test_a_nonzero_prime_of_the_integers_has_height_one() -> None:

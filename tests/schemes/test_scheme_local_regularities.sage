@@ -6,7 +6,7 @@ in a local ring of dimension 1, so it is singular, while at `(1, 1)` the gradien
 `(-3x^2, 2y) = (-3, 2)` is nonzero.
 """
 
-from dzack_research.preamble.all import QQ, AffineSpaces
+from dzack_research.preamble.all import *
 
 
 def test_the_plane_is_regular_and_the_cusp_is_singular_only_at_the_origin() -> None:

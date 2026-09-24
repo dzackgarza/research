@@ -1,6 +1,6 @@
 r"""Transporters of ``O(U_QQ)`` between commensurable lattices in ``U tensor QQ``."""
 
-from dzack_research.preamble.all import QQ, ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_diagonal_rescaling_of_the_hyperbolic_basis_is_a_rational_isometry() -> None:

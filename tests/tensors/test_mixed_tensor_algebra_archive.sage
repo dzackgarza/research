@@ -4,7 +4,7 @@ Its product is the tensor product, bigraded by `(p, q)`, with unit `1` in bidegr
 `(0, 0)`, and it is bilinear.
 """
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def _vector_and_covector():

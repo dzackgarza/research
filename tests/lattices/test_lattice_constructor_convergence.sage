@@ -1,6 +1,6 @@
 r"""Isotropic reduction of an orthogonal sum with a hyperbolic plane."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_isotropic_reduction_of_U_plus_A2_along_e_is_A2() -> None:

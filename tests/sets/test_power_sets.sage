@@ -1,6 +1,6 @@
 r"""Direct and inverse images of subsets along maps of sets."""
 
-from dzack_research.preamble.all import Sets
+from dzack_research.preamble.all import *
 
 
 def test_inverse_and_direct_image_form_the_set_subobject_galois_connection() -> None:

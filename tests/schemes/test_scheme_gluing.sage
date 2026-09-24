@@ -5,7 +5,7 @@ origin is not separated, II.4.0.1) and Example II.2.3.6 (gluing along
 `t \mapsto 1/t` gives `\mathbb{P}^1`).
 """
 
-from dzack_research.preamble.all import QQ, AffineSpaces, ProjectiveSpaces, Schemes
+from dzack_research.preamble.all import *
 
 
 def _line_and_punctured_line():

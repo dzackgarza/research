@@ -1,6 +1,6 @@
 r"""Archive reconciliation for a selected maximal overlattice."""
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def test_a1_four_maximal_overlattice_is_the_index_two_d4_genus_extension() -> None:

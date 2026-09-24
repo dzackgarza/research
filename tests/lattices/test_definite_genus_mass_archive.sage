@@ -6,7 +6,7 @@ For the even unimodular ``E8`` genus there is one class, so its mass is exactly
 the reciprocal of the full orthogonal-group order.
 """
 
-from dzack_research.preamble.all import QQ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_archived_e8_genus_has_one_owned_representative() -> None:

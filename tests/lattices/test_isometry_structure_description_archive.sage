@@ -1,7 +1,7 @@
 r"""Archived finite-isometry structure descriptions at the live group owner."""
 
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_rank_one_root_lattice_has_cyclic_order_two_orthogonal_group() -> None:

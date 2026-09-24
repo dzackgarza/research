@@ -7,7 +7,7 @@ value computed another way, so an implementation that returned the transpose,
 the inverse Gram, or the wrong index would fail.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_correlation_of_a_hyperbolic_plane_swaps_the_dual_framing() -> None:

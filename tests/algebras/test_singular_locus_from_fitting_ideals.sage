@@ -7,7 +7,7 @@ closed set is the singular locus.  The node ``y^2 = x^3 + x^2`` is a curve, so
 d is one, and its singular locus is the origin alone.
 """
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def test_the_node_is_singular_at_the_origin_and_nowhere_else() -> None:

@@ -1,7 +1,4 @@
-from dzack_research.preamble.all import (
-    QQ,
-    QuadraticField,
-)
+from dzack_research.preamble.all import *
 
 
 def test_exact_embeddings_are_an_owned_ordered_finite_set() -> None:

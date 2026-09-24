@@ -7,7 +7,7 @@ whose linearity remains conditional.
 
 import pytest
 
-from dzack_research.preamble.all import GF, Modules
+from dzack_research.preamble.all import *
 
 
 def _coefficient(module, element, label):

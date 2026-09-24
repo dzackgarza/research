@@ -6,12 +6,7 @@ the total quotient ring, the ring a rational function and a Cartier divisor are
 stated in, which over an integral domain is the fraction field.
 """
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    Fields,
-)
+from dzack_research.preamble.all import *
 
 
 def test_a_zero_divisor_in_a_nonreduced_quotient_is_not_regular() -> None:

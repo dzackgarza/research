@@ -1,6 +1,6 @@
 r"""The discriminant group ``A_L = L^#/L`` of an integral lattice."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_A2_discriminant_group_has_order_three_and_the_lattice_maps_to_zero_in_it() -> None:

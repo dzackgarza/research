@@ -8,7 +8,7 @@ project is not provisioned, the capability registry refuses with the
 provisioning remedy; nothing here substitutes another engine.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import *
 
 
 def test_rational_spinor_norm_sign_of_hyperbolic_plane_isometries() -> None:

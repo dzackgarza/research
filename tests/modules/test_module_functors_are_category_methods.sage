@@ -6,12 +6,7 @@ spelled.  Each is applied here to one specimen: the free ``ZZ``-module of rank
 two, and the involution of it that exchanges the two basis vectors.
 """
 
-from dzack_research.preamble.all import (
-    ZZ,
-    Algebras,
-    AlternatingAlgebras,
-    Modules,
-)
+from dzack_research.preamble.all import *
 
 
 def _plane_with_swap():

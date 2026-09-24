@@ -3,7 +3,7 @@ r"""Primitive embeddings of ``A1`` into the non-unimodular lattice ``U + A1``.
 ``A1`` is negative definite here: its generator has norm ``-2``.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_two_primitive_embeddings_of_a1_into_u_plus_a1_have_nonisometric_complements() -> None:

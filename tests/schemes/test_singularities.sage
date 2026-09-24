@@ -7,7 +7,7 @@ I.2 (Milnor and Tjurina numbers; `\mu = \tau` for quasihomogeneous germs, and
 Milnor's formula `\mu = 2\delta - r + 1`).
 """
 
-from dzack_research.preamble.all import QQ, IsolatedHypersurfaceSingularity
+from dzack_research.preamble.all import *
 
 
 def _plane():

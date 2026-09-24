@@ -7,11 +7,7 @@ reflections, fundamental weights, root signs/heights, and coroots.  The
 mere root enumeration.
 """
 
-from dzack_research.preamble.all import (
-    Set,
-    ZZ,
-    Lattices,
-)
+from dzack_research.preamble.all import *
 
 
 def test_archived_a2_selected_simple_system_and_highest_root_are_live() -> None:

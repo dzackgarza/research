@@ -5,7 +5,7 @@ For a primitive anisotropic vector ``w`` of ``L``, the orthogonal sum
 isotropic gluing subgroup of the discriminant form of the sum.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_archived_a2_vector_extension_has_the_expected_nontrivial_gluing() -> None:

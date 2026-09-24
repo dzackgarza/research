@@ -1,6 +1,6 @@
 r"""Orthogonal decomposition of definite lattices into indecomposables."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_a_skew_gram_presentation_of_A1_plus_A1_splits_into_two_copies_of_A1() -> None:

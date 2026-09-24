@@ -1,6 +1,6 @@
 r"""Primitive duals of lattice vectors."""
 
-from dzack_research.preamble.all import NamedLattices
+from dzack_research.preamble.all import *
 
 
 def test_primitive_dual_retains_the_actual_dual_lattice_element() -> None:

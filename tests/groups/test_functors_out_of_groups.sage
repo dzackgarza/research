@@ -6,10 +6,7 @@ small specimen.  The adjunction states the endpoints of its unit and counit
 and one triangle identity at a group generator.
 """
 
-from dzack_research.preamble.all import (
-    AbelianGroups,
-    Groups,
-)
+from dzack_research.preamble.all import *
 
 
 def test_the_abelianization_functor_kills_the_derived_subgroup() -> None:

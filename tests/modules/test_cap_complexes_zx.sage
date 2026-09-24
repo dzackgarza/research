@@ -1,6 +1,6 @@
 r"""Kernels and cohomology of complexes of modules over \(\mathbb Z[x]\)."""
 
-from dzack_research.preamble.all import ZZ, CochainComplexes, Modules
+from dzack_research.preamble.all import *
 
 
 def _koszul_specimen():

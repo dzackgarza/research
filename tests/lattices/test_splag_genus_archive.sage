@@ -6,7 +6,7 @@ object can carry the common genus and class number even where the pairwise
 indefinite isometry decision remains ``Unknown``.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_splag_ternary_forms_share_one_genus_of_class_number_two() -> None:

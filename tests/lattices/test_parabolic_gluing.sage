@@ -1,6 +1,6 @@
 r"""Non-unimodular cusp gluing can restrict the Levi image."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def _glued_divisibility_two_cusp():

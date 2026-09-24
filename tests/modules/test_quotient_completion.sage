@@ -1,8 +1,6 @@
 r"""Noetherian quotient/completion comparison through the canonical maps."""
 
-from dzack_research.preamble.all import (
-    QQ,
-)
+from dzack_research.preamble.all import *
 
 
 def _nodal_plane_comparison(precision=6):

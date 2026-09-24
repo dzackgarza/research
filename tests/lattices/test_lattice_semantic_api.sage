@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import NN, QQ, ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_correlation_of_QQ_to_the_NN_is_injective_but_not_onto_its_algebraic_dual() -> None:

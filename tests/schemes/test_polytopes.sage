@@ -1,7 +1,7 @@
 r"""Lattice-point counts, Ehrhart data and polar duality of small lattice polygons,
 and the symmetry of the regular dodecahedron."""
 
-from dzack_research.preamble.all import ZZ, ConvexPolytopes, RegularPolytopes
+from dzack_research.preamble.all import *
 
 
 def test_triangle_with_vertices_0_0_0_3_6_0_satisfies_pick() -> None:

@@ -6,7 +6,7 @@ The specified monomials below test the correspondence, not just its two
 implementations composed with each other.
 """
 
-from dzack_research.preamble.all import Algebras, Modules, QQ, ZZ
+from dzack_research.preamble.all import *
 
 
 

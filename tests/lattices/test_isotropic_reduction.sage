@@ -8,7 +8,7 @@ isotropic line is the smallest specimen of that statement:
 \(U\oplus X\) reduces along a generator of the first plane to \(X\).
 """
 
-from dzack_research.preamble.all import ZZ, Lattices, signature_pair
+from dzack_research.preamble.all import *
 
 
 def test_reducing_a_hyperbolic_plane_off_an_isotropic_line_returns_the_complement() -> None:

@@ -1,8 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import (
-    Sets,
-)
+from dzack_research.preamble.all import *
 
 
 def test_exponential_functor_is_contravariant_in_source_and_covariant_in_target() -> None:

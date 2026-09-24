@@ -8,7 +8,7 @@ four and two respectively.  This is the rank-one case recorded in the
 Miranda--Morrison 2-adic form rules used by the archived suite.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_rank_one_2adic_quadratic_refinement_cuts_the_orthogonal_group_in_half() -> None:

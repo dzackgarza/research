@@ -15,7 +15,7 @@ the algebras over itself, so an endomorphism ring that cannot answer cannot
 take that placement.
 """
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def _noncommutative_base():

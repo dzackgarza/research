@@ -6,7 +6,7 @@ catalogue; the literature values are the independent oracle rather than a
 recomputation from the same backend representation.
 """
 
-from dzack_research.preamble.all import Groups
+from dzack_research.preamble.all import *
 
 WEYL_ORDERS = {
     ("A", 2): 6,

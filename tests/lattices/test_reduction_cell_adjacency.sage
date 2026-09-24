@@ -1,6 +1,6 @@
 r"""Adjacency of cones in the standard lattice \(\mathbb Z^2\)."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_a_quadrant_meets_its_reflection_in_a_ray_and_its_opposite_only_at_the_origin() -> None:

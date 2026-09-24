@@ -1,6 +1,6 @@
 r"""Owned toric weight complexes and their induced maps."""
 
-from dzack_research.preamble.all import QQ, ZZ, RationalPolyhedralFans
+from dzack_research.preamble.all import *
 
 
 def _projective_plane():

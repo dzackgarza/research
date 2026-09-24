@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Ordinals, omega
+from dzack_research.preamble.all import *
 
 
 def test_archive_natural_and_ordinary_ordinal_products_are_distinct() -> None:

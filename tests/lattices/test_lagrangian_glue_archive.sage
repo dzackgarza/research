@@ -5,7 +5,7 @@ and equals its own orthogonal complement.  Nikulin's correspondence therefore
 gives an index-two even unimodular overlattice.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_rank_one_sign_pair_diagonal_glue_is_lagrangian_and_unimodular() -> None:

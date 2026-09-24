@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_two_automorphisms_of_the_a2_diagram_lift_to_two_distinct_isometries() -> None:

@@ -1,6 +1,6 @@
 r"""Elementary discriminant groups and the parity invariant \(\delta\)."""
 
-from dzack_research.preamble.all import NamedLattices
+from dzack_research.preamble.all import *
 
 
 def test_p_elementary_means_prime_exponent_not_prime_power_order() -> None:

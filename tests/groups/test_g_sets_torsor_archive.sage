@@ -1,6 +1,6 @@
 r"""Finite $G$-sets and torsors."""
 
-from dzack_research.preamble.all import FiniteGSets, Groups, Torsors
+from dzack_research.preamble.all import *
 
 
 def test_the_equivariant_self_maps_of_the_regular_c3_set_are_its_three_translations() -> None:

@@ -1,6 +1,6 @@
 r"""An isometry between two presentations of an indefinite lattice."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_u_plus_minus_two_is_isometric_to_its_skewed_presentation() -> None:

@@ -1,6 +1,6 @@
 r"""Relative Spec of a sheaf of algebras glued on a Zariski cover of the affine line."""
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def _glued_polynomial_algebra(cover, variable):

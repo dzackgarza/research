@@ -6,7 +6,7 @@ identifies ``M12`` with its inner automorphism subgroup, so the full
 automorphism group has order ``190080`` and the inner subgroup has index two.
 """
 
-from dzack_research.preamble.all import Groups
+from dzack_research.preamble.all import *
 
 
 def test_m12_inner_automorphisms_have_index_two_in_the_full_automorphism_group() -> None:

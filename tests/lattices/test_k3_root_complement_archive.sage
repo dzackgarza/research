@@ -8,7 +8,7 @@ different primitive-complement specimen from the positive-square polarization
 cases: the signature changes on the opposite side.
 """
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def test_primitive_k3_root_has_the_nikulin_complement_discriminant_form() -> None:

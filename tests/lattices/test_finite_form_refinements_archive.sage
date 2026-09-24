@@ -6,7 +6,7 @@ and ``v_1`` are small specimens where the underlying finite groups and
 bilinear forms agree while the quadratic refinements do not.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_rank_one_sign_pair_is_bilinearly_isomorphic_but_not_quadratically() -> None:

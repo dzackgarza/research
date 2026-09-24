@@ -1,6 +1,6 @@
 r"""Completion is the represented inverse limit, not a selected finite stage."""
 
-from dzack_research.preamble.all import QQ, AdicallyCompleteRings
+from dzack_research.preamble.all import *
 
 
 def test_power_series_constructor_retains_the_same_adic_completion_data() -> None:

@@ -6,9 +6,7 @@ ideal ``m A + (e)``.  Both parts are needed: over ``Z_3`` the scalar ``3`` is a
 non-unit of the power-series ring, and in two variables both variables are.
 """
 
-from dzack_research.preamble.all import (
-    Zp,
-)
+from dzack_research.preamble.all import *
 
 
 

@@ -11,12 +11,7 @@ solution must be integral.
 Unverified: written without running the suite.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    FinitelyGeneratedModules,
-    Modules,
-)
+from dzack_research.preamble.all import *
 
 
 def _rational_plane():

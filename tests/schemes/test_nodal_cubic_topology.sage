@@ -6,7 +6,7 @@ points identified, homotopy equivalent to `S^2 \vee S^1`, so
 degree 1, so it is an isomorphism on `H^2` and it kills the loop through the node.
 """
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def _nodal_cubic():

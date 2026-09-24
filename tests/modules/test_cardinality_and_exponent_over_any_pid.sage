@@ -7,7 +7,7 @@ exponent is the one generator of ``Ann_R(M)``.  Neither statement mentions the
 integers, and ``GF(5)[t]`` exhibits both without them.
 """
 
-from dzack_research.preamble.all import GF, Modules
+from dzack_research.preamble.all import *
 
 
 def test_F5t_mod_t_squared_has_25_elements_and_exponent_t_squared() -> None:

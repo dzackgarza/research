@@ -1,6 +1,6 @@
 r"""Proper closed pushforward and flat open pullback of affine cycles."""
 
-from dzack_research.preamble.all import QQ, ZZ, AffineSpaces
+from dzack_research.preamble.all import *
 
 
 def test_closed_immersion_pushes_prime_cycle_to_same_support_with_same_multiplicity() -> None:

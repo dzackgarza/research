@@ -7,11 +7,7 @@ is the structure sheaf of the origin: nonzero, killed by the coordinate, and
 zero on the open where that coordinate is a unit.
 """
 
-from dzack_research.preamble.all import (
-    AffineSpaces,
-    QQ,
-    QuasiCoherentSheaves,
-)
+from dzack_research.preamble.all import *
 
 
 def _line_and_multiplication():

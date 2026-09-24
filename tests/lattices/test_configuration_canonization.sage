@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_reordering_the_a3_simple_roots_changes_the_gram_matrix_but_not_its_canonical_form() -> None:

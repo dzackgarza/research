@@ -9,7 +9,7 @@ type, and a subdiagram mixing roots of square \(-2\) and \(-4\) is of type
 \(B_n = C_n\) at scale \(1\).
 """
 
-from dzack_research.preamble.all import Set, Sterk
+from dzack_research.preamble.all import *
 
 _ARCHIVED_TOTALS = {
     "Sterk_1": 121,

@@ -5,7 +5,7 @@ vacuous.  They assert the actual bilinear form on pure tensors and its
 compatibility with orthogonal direct sums, rather than only comparing ranks.
 """
 
-from dzack_research.preamble.all import ZZ, BilinearMap, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_sum_of_a_list_is_the_orthogonal_direct_sum() -> None:

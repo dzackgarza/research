@@ -5,7 +5,7 @@ VIII.3: `H^2(X, \mathbb{Z})` of a K3 surface is the even unimodular lattice
 `3U \oplus 2E_8(-1)` of signature `(3, 19)`, and `H^1 = H^3 = 0`.
 """
 
-from dzack_research.preamble.all import QQ, NamedLattices, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def _fermat_quartic():

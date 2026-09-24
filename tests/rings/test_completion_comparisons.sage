@@ -1,6 +1,6 @@
 r"""The theorem-backed localization/completion comparisons and their boundary."""
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def test_maximal_adic_completion_agrees_before_and_after_localization() -> None:

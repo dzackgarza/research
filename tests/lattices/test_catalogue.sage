@@ -1,11 +1,4 @@
-from dzack_research.preamble.all import (
-    Embeddings,
-    Involutions,
-    Lattices,
-    NamedLattices,
-    signature_orthogonal_sums,
-    signature_pair,
-)
+from dzack_research.preamble.all import *
 
 
 def test_named_surface_lattices_have_their_expected_signatures_and_ranks() -> None:

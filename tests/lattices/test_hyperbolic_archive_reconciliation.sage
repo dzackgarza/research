@@ -1,6 +1,6 @@
 r"""Vinberg's algorithm on the hyperbolic lattice ``U + A1``."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_vinberg_algorithm_on_u_plus_a1_finds_the_2_3_infinity_triangle() -> None:

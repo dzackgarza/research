@@ -8,7 +8,7 @@ kernel is the ideal `(y^2 - x^3)` of the cusp; the counit `f^* f_* \mathcal{O} \
 which is surjective.
 """
 
-from dzack_research.preamble.all import QQ, AffineSpaces
+from dzack_research.preamble.all import *
 
 
 def test_unit_of_pullback_pushforward_on_the_structure_sheaf_has_kernel_the_cusp_ideal() -> None:

@@ -5,7 +5,7 @@ Source: Cox, Little, Schenck, *Toric Varieties*, Prop. 4.3.3: for a full-dimensi
 \mathcal{O}(1))` and its double gives `(\mathbb{P}^2, \mathcal{O}(2))`.
 """
 
-from dzack_research.preamble.all import QQ, ZZ, ConvexPolytopes, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def test_the_standard_triangle_polarizes_the_projective_plane_with_sections_its_lattice_points() -> None:

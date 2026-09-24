@@ -4,12 +4,7 @@ Specimens: ``S = QQ[x]/(x^2 + 1)`` over ``QQ`` and ``ZZ[S_3]`` over ``ZZ``, both
 finitely framed over their scalars.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    Groups,
-    Modules,
-)
+from dzack_research.preamble.all import *
 
 def _gaussian_rationals():
     r"""``S = QQ[x]/(x^2 + 1)`` with its class ``i`` of ``x`` and its structure map ``QQ -> S``."""

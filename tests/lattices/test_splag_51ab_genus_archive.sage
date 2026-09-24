@@ -8,7 +8,7 @@ isometry decision is deliberately not used as a Boolean oracle here: its
 unresolved indefinite regime remains a separate question.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_splag_51a_and_51b_share_one_two_class_genus() -> None:

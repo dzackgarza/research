@@ -9,7 +9,7 @@ rings and among the algebras over itself, so an endomorphism ring that cannot
 answer it cannot take that placement.
 """
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def test_the_two_by_two_matrix_algebra_does_not_commute() -> None:

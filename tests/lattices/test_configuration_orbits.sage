@@ -14,11 +14,7 @@ where the ``A3`` chain on the same three vectors admits only the reversal.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    Lattices,
-    NamedLattices,
-    ZZ,
-)
+from dzack_research.preamble.all import *
 
 # Cartan type: (order of the diagram automorphism group, |O(L)|, |W(L)|)
 ROOT_BASES = {

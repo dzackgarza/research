@@ -4,7 +4,7 @@ The primitive isotropic lines of ``U`` are ``ZZ e`` and ``ZZ f``.  ``O(U) =
 {+-1, +-swap}`` exchanges them; ``SO(U) = {+-1}`` fixes each.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_O_U_acts_transitively_on_the_primitive_isotropic_lines_of_U() -> None:

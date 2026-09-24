@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import NamedLattices
+from dzack_research.preamble.all import *
 
 
 def test_u2_quadratic_maximal_isotropic_subgroups_are_its_two_lagrangians() -> None:

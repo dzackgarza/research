@@ -1,6 +1,6 @@
 r"""Group homomorphisms: kernels, images, cokernels, composites and automorphism groups."""
 
-from dzack_research.preamble.all import Groups
+from dzack_research.preamble.all import *
 
 
 def test_reduction_c4_to_c2_has_kernel_of_order_two_and_c4_mod_kernel_is_the_image() -> None:

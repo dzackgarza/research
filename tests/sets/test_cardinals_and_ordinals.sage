@@ -8,17 +8,7 @@ comparison of `\aleph_2` with `2^{\aleph_0}` is independent of ZFC (Cohen); ordi
 exponentiation `2^\omega = \omega` is countable.
 """
 
-from dzack_research.preamble.all import (
-    CardinalComparison,
-    Cardinalities,
-    Ordinals,
-    Unknown,
-    aleph,
-    aleph0,
-    cardinal,
-    continuum,
-    omega,
-)
+from dzack_research.preamble.all import *
 
 
 def test_natural_ordinal_operations_form_the_commutative_semiring() -> None:

@@ -7,9 +7,7 @@ polynomial ring and the same scalars as the first cut, not stacked on top of it
 as a second quotient object.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-)
+from dzack_research.preamble.all import *
 
 
 

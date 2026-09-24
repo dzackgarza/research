@@ -16,12 +16,7 @@ One case per row, so a run names every row that fails.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    NegativeDefTwoElementary,
-    TwoElementary,
-    nikulin_invariants,
-    signature_pair,
-)
+from dzack_research.preamble.all import *
 
 
 def _name(triple) -> str:

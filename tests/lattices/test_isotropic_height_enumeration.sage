@@ -1,6 +1,6 @@
 r"""Isotropic vectors of bounded height against a timelike vector."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_isotropic_vectors_of_U_plus_A1_of_height_at_most_one_are_zero_and_plus_minus_e_f() -> None:

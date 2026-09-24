@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def test_xy_equals_t_family_retains_morphism_special_fiber_and_nonsmooth_locus() -> None:

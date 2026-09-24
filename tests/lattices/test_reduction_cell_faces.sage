@@ -1,6 +1,6 @@
 r"""Faces and stabilizers of the positive quadrant of \(\mathbb Z^2\)."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_positive_quadrant_has_two_rays_and_a_stabilizer_of_order_two() -> None:

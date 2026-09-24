@@ -1,6 +1,6 @@
 r"""Standard finite groups, their subgroups and their isomorphism types."""
 
-from dzack_research.preamble.all import GF, Groups
+from dzack_research.preamble.all import *
 
 
 def test_sl2_f3_is_sp2_f3_and_modulo_its_centre_is_a4() -> None:

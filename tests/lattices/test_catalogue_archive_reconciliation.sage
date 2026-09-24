@@ -1,15 +1,6 @@
 r"""The 2-elementary catalogues, the K3 involutions and the embedding chain."""
 
-from dzack_research.preamble.all import (
-    Embeddings,
-    Involutions,
-    NamedLattices,
-    NegativeDefTwoElementary,
-    TwoElementary,
-    signature_orthogonal_sums,
-    signature_pair,
-    two_elementary_orthogonal_sums,
-)
+from dzack_research.preamble.all import *
 
 
 def test_two_elementary_catalogues_and_searches_retain_the_archive_mathematics() -> None:

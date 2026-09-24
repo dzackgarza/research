@@ -5,10 +5,7 @@ the length of the resolution; over ``QQ[x]`` the annihilators say which
 cyclic module came out.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-)
+from dzack_research.preamble.all import *
 
 
 def _cyclic(ring, generator):

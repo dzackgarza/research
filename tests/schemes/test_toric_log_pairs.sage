@@ -5,14 +5,7 @@ a toric variety is minus the sum of the torus-invariant prime divisors, so the
 toric boundary is anticanonical and the toric log pair is log Calabi--Yau.
 """
 
-from dzack_research.preamble.all import (
-    LogPairs,
-    QQ,
-    RationalPolyhedralFans,
-    Schemes,
-    ToricLogPairs,
-    ZZ,
-)
+from dzack_research.preamble.all import *
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two

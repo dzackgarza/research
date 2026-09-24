@@ -1,6 +1,6 @@
 r"""Finite-length presented modules use their selected relation module."""
 
-from dzack_research.preamble.all import QQ, ZZ
+from dzack_research.preamble.all import *
 
 
 def test_square_of_rational_origin_has_length_three() -> None:

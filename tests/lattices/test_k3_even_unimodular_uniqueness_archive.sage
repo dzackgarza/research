@@ -7,7 +7,7 @@ a genuinely regrouped orthogonal sum, so the final assertion is an isometry
 statement and not construction identity.
 """
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def test_k3_lattice_is_the_even_unimodular_signature_3_19_model() -> None:

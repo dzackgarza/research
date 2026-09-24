@@ -1,6 +1,6 @@
 r"""Gluing modules on a Zariski cover of the affine line over QQ."""
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def test_gluing_by_multiplication_by_x_has_section_one_x_and_not_one_one() -> None:

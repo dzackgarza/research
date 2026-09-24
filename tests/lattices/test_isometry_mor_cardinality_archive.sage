@@ -1,6 +1,6 @@
 r"""Cardinalities of sets of isometries ``Isom(L, M)`` of integral lattices."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_even_and_odd_unimodular_planes_are_not_isometric() -> None:

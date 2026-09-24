@@ -8,13 +8,7 @@ isotropic line ``ZZ e_0`` that isometry gives ``g(L) < L``, which separates the
 equality from the containment.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    IntegralStructureAction,
-    Lattices,
-    Modules,
-)
+from dzack_research.preamble.all import *
 
 
 def _rational_hyperbolic_plane_and_its_underlying_ZZ_module():

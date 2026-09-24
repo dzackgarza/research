@@ -1,7 +1,7 @@
 r"""Archive reconciliation for primitive isotropic cusp types."""
 
 
-from dzack_research.preamble.all import Lattices, NamedLattices
+from dzack_research.preamble.all import *
 
 
 def test_divisibility_one_isotropic_vector_has_odd_cusp_type() -> None:

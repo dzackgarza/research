@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, ZZ
+from dzack_research.preamble.all import *
 
 
 def test_localization_units_use_ideal_saturation_over_multivariate_polynomials() -> None:

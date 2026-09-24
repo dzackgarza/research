@@ -5,7 +5,7 @@ is left adjoint to restriction; the counit \(K \otimes_{\mathbb Q} N \to N\) mul
 scalars back in, and both triangle identities hold (Mac Lane, CWM, IV.1).
 """
 
-from dzack_research.preamble.all import QQ, Modules
+from dzack_research.preamble.all import *
 
 
 def _gaussian_extension():

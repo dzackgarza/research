@@ -1,6 +1,6 @@
 r"""Invariant maps factor through the quotient of the affine plane by the coordinate swap."""
 
-from dzack_research.preamble.all import QQ, Algebras, GObjects, Groups, Schemes
+from dzack_research.preamble.all import *
 
 
 def test_the_swap_invariant_map_x_plus_y_factors_through_the_quotient() -> None:

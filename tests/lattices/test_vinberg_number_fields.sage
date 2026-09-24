@@ -1,6 +1,6 @@
 r"""Vinberg's algorithm over the ring of integers of a real quadratic field."""
 
-from dzack_research.preamble.all import AA, Lattices, QuadraticField, signature_pair
+from dzack_research.preamble.all import *
 
 
 def test_vinberg_on_the_belolipetsky_lattice_over_the_golden_integers_finds_four_simple_roots() -> None:

@@ -1,6 +1,6 @@
 r"""Vector equivalence under special orthogonal groups, with transporters."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_a_root_of_a2_and_its_negative_are_equivalent_under_so() -> None:

@@ -1,6 +1,6 @@
 r"""Isotropic reductions ``I^perp/I`` of the Enriques lattice ``U + U(2) + E_8(2)``."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def _enriques_lattice():

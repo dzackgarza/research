@@ -7,7 +7,7 @@ integrally closed; `\mathbb{Z}` and `\mathbb{Q}` are such.  Over
 is not even reduced.
 """
 
-from dzack_research.preamble.all import QQ, ZZ, AffineSpaces, ProjectiveSpaces, Zmod
+from dzack_research.preamble.all import *
 
 
 def test_affine_space_over_a_normal_domain_is_normal_and_over_z_mod_12_is_not() -> None:

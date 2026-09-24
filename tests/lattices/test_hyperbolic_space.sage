@@ -1,6 +1,6 @@
 r"""Positive-cone components and the hyperbolic line of the Lorentz plane ``<2> + <-2>``."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_positive_cone_component_through_a_timelike_vector_separates_the_two_sheets() -> None:

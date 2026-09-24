@@ -1,6 +1,6 @@
 r"""The Legendre family `y^2 z = x (x - z)(x - \lambda z)` and its monodromy around `\lambda = 0`."""
 
-from dzack_research.preamble.all import LegendreMonodromyFamily
+from dzack_research.preamble.all import *
 
 
 def test_legendre_fiber_over_zero_is_a_nodal_cubic_and_nearby_fibers_are_elliptic() -> None:

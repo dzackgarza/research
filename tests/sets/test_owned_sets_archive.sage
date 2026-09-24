@@ -1,12 +1,6 @@
 r"""Cantor: the power set of the natural numbers is uncountable."""
 
-from dzack_research.preamble.all import (
-    NN,
-    CountableSets,
-    CountablyInfiniteSets,
-    InfiniteSets,
-    UncountableSets,
-)
+from dzack_research.preamble.all import *
 
 
 def test_archived_uncountable_sets_are_infinite_and_not_countable() -> None:

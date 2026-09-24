@@ -6,7 +6,7 @@ Brown invariant of an even lattice discriminant form with its signature
 modulo eight.  These assertions exercise the live owned discriminant forms.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_elementary_u_k_forms_have_brown_invariant_zero_and_are_isotropic() -> None:

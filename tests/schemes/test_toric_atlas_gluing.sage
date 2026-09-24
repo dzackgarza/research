@@ -8,11 +8,7 @@ torus is the orbit-cone correspondence, Thm. 3.2.6.
 Unverified: written by eye against the construction, not run.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    RationalPolyhedralFans,
-)
+from dzack_research.preamble.all import *
 
 
 # One lattice per rank for the whole file: a free module is a fresh object on

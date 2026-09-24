@@ -6,7 +6,7 @@ matrix inverts only over `\mathbb{Q}` and the cokernel of its correlation is the
 discriminant group, of order 3 (Conway--Sloane, *SPLAG*, Ch. 4, section 6.1).
 """
 
-from dzack_research.preamble.all import ZZ, Lattices, tensor
+from dzack_research.preamble.all import *
 
 
 def test_archive_unimodular_gram_raises_to_identity_and_lowers_back() -> None:

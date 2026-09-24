@@ -2,7 +2,7 @@ r"""The \(2U \oplus K\) Eichler model: \(2U\) as the determinant form on \(M_2(\
 with \(\mathrm{SL}_2(\mathbb Z) \times \mathrm{SL}_2(\mathbb Z)\) acting by
 \((g, h)\cdot X = g X h^{-1}\), and \(O(K)\) acting on the complement."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_left_and_right_SL2_actions_are_homomorphisms_that_commute() -> None:

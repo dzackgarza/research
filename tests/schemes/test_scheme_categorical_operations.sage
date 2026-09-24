@@ -1,7 +1,7 @@
 r"""Diagonals, graphs, fixed loci, equalizers, inverse images and scheme-theoretic images
 of morphisms of affine schemes over QQ."""
 
-from dzack_research.preamble.all import QQ, AffineSpaces, Schemes
+from dzack_research.preamble.all import *
 
 
 def _plane():

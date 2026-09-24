@@ -6,12 +6,7 @@ rather than the intersection of the point sets is what distinguishes a
 tangential meeting from a transverse one.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    AffineSpaces,
-    ClosedEmbeddings,
-    IntegralSchemes,
-)
+from dzack_research.preamble.all import *
 
 
 def _plane():

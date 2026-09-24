@@ -6,7 +6,7 @@ Derivation: the words of length `n` over a `k`-letter alphabet are the functions
 `n \in \mathbb{N}`, are countably infinite.
 """
 
-from dzack_research.preamble.all import NN, Sets
+from dzack_research.preamble.all import *
 
 
 def test_words_and_multisets_over_two_letters_number_two_to_the_n_and_n_plus_one() -> None:

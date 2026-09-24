@@ -1,6 +1,6 @@
 r"""Archive reconciliation for intersection and cohomology data on ``P1 x P1``."""
 
-from dzack_research.preamble.all import QQ, ZZ, RationalPolyhedralFans
+from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/framework/test_chow_cohomology_intersections.sage",

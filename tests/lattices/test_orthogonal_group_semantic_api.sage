@@ -1,6 +1,6 @@
 r"""Stabilizers in the orthogonal group of the hyperbolic plane."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_in_o_u_the_vector_e_has_trivial_stabilizer_and_its_line_a_stabilizer_of_order_two() -> None:

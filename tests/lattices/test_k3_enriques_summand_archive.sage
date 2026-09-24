@@ -6,7 +6,7 @@ there is no finite glue ambiguity: their orthogonal sum already has the K3
 lattice's signature and isometry class.
 """
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def test_enriques_lattice_and_its_unimodular_complement_sum_to_k3_lattice() -> None:

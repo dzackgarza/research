@@ -1,6 +1,6 @@
 r"""The orthogonal group of the rank-one root lattice."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_reflection_in_the_root_generates_O_A1_of_order_two() -> None:

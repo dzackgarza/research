@@ -1,14 +1,6 @@
 r"""Isotypic decompositions of integral representations of cyclic groups."""
 
-from dzack_research.preamble.all import (
-    Set,
-    ZZ,
-    FormModules,
-    Groups,
-    Lattices,
-    Modules,
-    tensor,
-)
+from dzack_research.preamble.all import *
 
 
 def test_the_swap_on_ZZ2_has_isotypic_components_ZZ_1_1_and_ZZ_1_minus_1_of_index_two() -> None:

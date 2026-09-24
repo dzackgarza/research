@@ -7,7 +7,7 @@ slots first.  Every value below is computed by hand from the component formulas
 `b(v, w) = \sum b_{ij} v^i w^j`.
 """
 
-from dzack_research.preamble.all import ZZ
+from dzack_research.preamble.all import *
 
 
 def _plane():

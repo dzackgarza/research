@@ -7,7 +7,7 @@ its discriminant quadratic form, so the two sign conventions are related by
 anti-isometry rather than ordinary isometry.
 """
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def test_a2_root_reflection_has_the_defining_action() -> None:

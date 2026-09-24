@@ -7,7 +7,7 @@ eight fixed points).  `\tau` is the involution `(x, y) \mapsto (-x, -y)` of the
 base, with four fixed points.
 """
 
-from dzack_research.preamble.all import HorikawaK3Family
+from dzack_research.preamble.all import *
 
 
 def test_tau_splits_the_bidegree_four_four_sections_as_thirteen_plus_twelve() -> None:

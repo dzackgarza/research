@@ -6,7 +6,7 @@ Derivation: `D(f_1), \dots, D(f_n)` cover `\operatorname{Spec} A` iff
 `D(x)` nor `D(y)`.
 """
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def test_d_x_and_d_y_miss_the_origin_while_d_x_and_d_1_minus_x_cover_the_line() -> None:

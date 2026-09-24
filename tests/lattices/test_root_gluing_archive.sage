@@ -5,7 +5,7 @@ root-lattice glue tables give the two concrete reconstructions below.  The
 assertions are on the live owned inclusions and discriminant classes.
 """
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def test_a1_four_has_a_proper_index_two_overlattice_of_d4_genus() -> None:

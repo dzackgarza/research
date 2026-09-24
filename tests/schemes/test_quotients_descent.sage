@@ -6,7 +6,7 @@ Source: `\mathbb{Q}[x, y]^{C_2} = \mathbb{Q}[e_1, e_2]` with `e_1 = x + y`,
 `e_1 \mapsto e_1 + 2`, `e_2 \mapsto e_2 + e_1 + 1`.
 """
 
-from dzack_research.preamble.all import QQ, Algebras, GObjects, Groups, Schemes
+from dzack_research.preamble.all import *
 
 
 def test_the_diagonal_translation_descends_to_e1_plus_2_and_e2_plus_e1_plus_1() -> None:

@@ -2,7 +2,7 @@ r"""Isotypic and coinvariant sublattices of A2 under the swap action of C2."""
 
 import pytest
 
-from dzack_research.preamble.all import ZZ, Groups, Lattices
+from dzack_research.preamble.all import *
 
 
 def _acted_a2():

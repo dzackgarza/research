@@ -4,7 +4,7 @@ Source: Barth, Hulek, Peters, Van de Ven, *Compact Complex Surfaces*, 2nd ed.,
 VIII.3: a K3 surface has `h^{2,0} = h^{0,2} = 1`, `h^{1,1} = 20`, `b_2 = 22`.
 """
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def _fermat_quartic():

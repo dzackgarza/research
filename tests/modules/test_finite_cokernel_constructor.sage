@@ -1,7 +1,7 @@
 r"""Finite cokernel construction retains its arrow and an actual free presentation."""
 
 
-from dzack_research.preamble.all import ZZ
+from dzack_research.preamble.all import *
 
 
 def test_infinite_numerator_module_can_have_finite_zero_localization():

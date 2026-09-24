@@ -1,6 +1,6 @@
 r"""The glue of the primitive extension cut out by an involution of ``U``."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_swap_on_u_glues_invariant_and_coinvariant_parts_along_index_two() -> None:

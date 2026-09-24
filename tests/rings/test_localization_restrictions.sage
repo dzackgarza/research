@@ -8,10 +8,7 @@ the same restriction gives the map from a section to its restriction, and at a
 prime to its germ.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-)
+from dzack_research.preamble.all import *
 
 
 def test_localization_restrictions_compose_along_a_chain_of_inverted_scalars() -> None:

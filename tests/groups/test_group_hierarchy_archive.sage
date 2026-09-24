@@ -1,6 +1,6 @@
 r"""Finite presentations and the groups they present."""
 
-from dzack_research.preamble.all import Groups
+from dzack_research.preamble.all import *
 
 
 def test_the_coxeter_presentation_of_s3_presents_a_group_of_order_six() -> None:

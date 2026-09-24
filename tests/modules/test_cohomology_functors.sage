@@ -1,6 +1,6 @@
 r"""Cohomology is a functor: on cochain complexes and, through de Rham, on algebras."""
 
-from dzack_research.preamble.all import GF, ZZ, Algebras, CochainComplexes, Modules
+from dzack_research.preamble.all import *
 
 
 def test_multiplication_by_three_induces_the_identity_on_H1_of_ZZ_times_two_ZZ() -> None:

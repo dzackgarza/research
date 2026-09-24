@@ -8,7 +8,7 @@ cover `\pi: X \to Y`, `e(Y) = 12`, `K_Y` is 2-torsion and nonzero,
 `U(2) \oplus E_8(-2)`, whose orthogonal complement is `U \oplus U(2) \oplus E_8(-2)`.
 """
 
-from dzack_research.preamble.all import NamedLattices, HorikawaEnriquesSurface
+from dzack_research.preamble.all import *
 
 
 def test_enriques_surface_is_a_free_double_quotient_of_a_k3_surface() -> None:

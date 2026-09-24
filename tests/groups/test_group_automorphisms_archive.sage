@@ -7,7 +7,7 @@ Dummit--Foote, *Abstract Algebra*, 3rd ed., section 4.4 gives
 on private GAP parents.
 """
 
-from dzack_research.preamble.all import Groups
+from dzack_research.preamble.all import *
 
 
 def test_aut_c8_is_the_klein_four_group() -> None:

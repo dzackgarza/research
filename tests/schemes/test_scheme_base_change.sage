@@ -1,14 +1,6 @@
 r"""Base change of schemes along a ring map, and the slice adjunction along a base morphism."""
 
-from dzack_research.preamble.all import (
-    QQ,
-    AffineSchemes,
-    AffineSpaces,
-    FiberProductSchemes,
-    ProjectiveSpaces,
-    QuadraticField,
-    Schemes,
-)
+from dzack_research.preamble.all import *
 
 
 def _extension():

@@ -1,6 +1,6 @@
 r"""Morphisms of the affine group schemes of roots of unity over QQ."""
 
-from dzack_research.preamble.all import QQ, AffineGroupSchemes, Algebras
+from dzack_research.preamble.all import *
 
 
 def test_squaring_mu_four_onto_mu_two_is_a_homomorphism_with_kernel_mu_two() -> None:

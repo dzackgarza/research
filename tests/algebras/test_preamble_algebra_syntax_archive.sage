@@ -7,11 +7,7 @@ owners; these specimens retain the cross-owner user syntax without restoring a
 second algebra object system.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    QuadraticField,
-)
+from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_preamble_algebra_syntax.sage",

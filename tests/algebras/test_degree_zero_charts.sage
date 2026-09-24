@@ -8,9 +8,7 @@ the projective plane, and the restriction between two localizations cuts down
 to the overlap map between their charts.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-)
+from dzack_research.preamble.all import *
 
 
 def _projective_plane_coordinates():

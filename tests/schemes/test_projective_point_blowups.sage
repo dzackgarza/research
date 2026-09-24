@@ -7,7 +7,7 @@ Source: Hartshorne, *Algebraic Geometry*, V.3.2, V.3.3, V.3.6: for
 `d` with multiplicity `m` at `p` has strict transform `dH - mE`.
 """
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def _blowup():

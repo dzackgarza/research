@@ -7,7 +7,7 @@ Source: Hartshorne, *Algebraic Geometry*, II.6.6.1: `\operatorname{Pic}(\mathbb{
 affine.
 """
 
-from dzack_research.preamble.all import QQ, AffineSpaces, ProjectiveSpaces, Schemes
+from dzack_research.preamble.all import *
 
 
 def test_the_product_of_two_projective_lines_is_a_projective_surface_not_the_plane() -> None:

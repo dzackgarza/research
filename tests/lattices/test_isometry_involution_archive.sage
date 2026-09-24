@@ -1,6 +1,6 @@
 r"""Archived involution predicate on live lattice isometries."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 

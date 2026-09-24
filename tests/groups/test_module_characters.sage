@@ -1,6 +1,6 @@
 r"""Ordinary and Brauer characters of group modules."""
 
-from dzack_research.preamble.all import GF, ZZ, Groups, Modules
+from dzack_research.preamble.all import *
 
 
 def test_the_character_of_sign_plus_trivial_of_s3_is_2_0_2() -> None:

@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QQ, ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_peters_sterk_example_1_6_9_uses_nikulins_quadratic_convention() -> None:

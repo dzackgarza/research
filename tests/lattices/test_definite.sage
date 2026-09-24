@@ -1,13 +1,6 @@
 r"""Definite and small indefinite lattices: minima, isometry classes, orthogonal groups, orbits."""
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    Lattices,
-    Set,
-    aleph0,
-    signature_pair,
-)
+from dzack_research.preamble.all import *
 
 
 def test_lll_and_hkz_reduced_bases_begin_with_a_shortest_vector() -> None:

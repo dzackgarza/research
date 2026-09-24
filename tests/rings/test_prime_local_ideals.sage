@@ -8,12 +8,7 @@ maximal ideal is distinguished from every other ideal by containment rather
 than by the name it was built under.
 """
 
-from dzack_research.preamble.all import (
-    PrincipalIdealDomains,
-    QQ,
-    ZZ,
-    aleph0,
-)
+from dzack_research.preamble.all import *
 
 
 def test_a_unit_generates_the_whole_prime_local_ring() -> None:

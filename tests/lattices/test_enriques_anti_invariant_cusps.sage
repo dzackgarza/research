@@ -1,6 +1,6 @@
 r"""The Enriques anti-invariant arithmetic group from primitive gluing."""
 
-from dzack_research.preamble.all import Involutions, NamedLattices
+from dzack_research.preamble.all import *
 
 
 def test_enriques_coinvariant_group_is_the_glue_compatible_discriminant_preimage() -> None:

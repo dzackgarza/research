@@ -7,11 +7,7 @@ object itself.  The Gaussian field gives a source-standard exact specimen:
 its maximal order is ``ZZ[i]``, of class number one and discriminant ``-4``.
 """
 
-from dzack_research.preamble.all import (
-    ZZ,
-    PrincipalIdealDomains,
-    QuadraticField,
-)
+from dzack_research.preamble.all import *
 
 
 def test_gaussian_field_retains_class_number_ramification_and_galois_group() -> None:

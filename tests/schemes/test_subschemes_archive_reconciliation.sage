@@ -1,6 +1,6 @@
 r"""Closed subschemes of the affine plane over QQ cut out by equations."""
 
-from dzack_research.preamble.all import QQ, AffineSpaces
+from dzack_research.preamble.all import *
 
 
 def _plane():

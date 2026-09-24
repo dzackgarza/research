@@ -11,7 +11,7 @@ For the crystallographic types these orders agree with Humphreys,
 orders used by the archived literature corpus.
 """
 
-from dzack_research.preamble.all import Groups
+from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/coxeter_tdd_specs/conftest.py",

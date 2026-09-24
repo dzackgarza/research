@@ -6,7 +6,7 @@ Source: Hartshorne, *Algebraic Geometry*, II.6.6.1 and V.1.4.3:
 intersection form is the hyperbolic plane.
 """
 
-from dzack_research.preamble.all import QQ, ZZ, ProjectiveSpaces, RationalPolyhedralFans, Schemes
+from dzack_research.preamble.all import *
 
 
 def test_picard_arithmetic_of_a_product_of_lines_is_by_bidegree() -> None:

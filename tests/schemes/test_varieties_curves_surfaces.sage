@@ -4,16 +4,7 @@ A variety is integral, separated and of finite type over its base; a curve and a
 surface are the varieties of relative dimension one and two.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    AffineSpaces,
-    Curves,
-    IntegralSchemes,
-    ProjectiveSpaces,
-    Schemes,
-    Varieties,
-)
+from dzack_research.preamble.all import *
 
 
 def test_two_crossing_lines_are_reducible_while_the_parabola_is_a_curve() -> None:

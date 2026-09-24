@@ -6,7 +6,7 @@ the bilinear pairing is ``G^{-1}`` modulo ``ZZ``, and primary components have
 exactly the prime-power orders of the finite abelian group.
 """
 
-from dzack_research.preamble.all import QQ, ZZ, Lattices
+from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_discriminant_forms.sage",

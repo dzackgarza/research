@@ -18,7 +18,7 @@ planes are summands, and once as the catalogue's ``LK3``, which is presented
 by a Gram matrix and therefore answers that it splits nothing.
 """
 
-from dzack_research.preamble.all import NamedLattices
+from dzack_research.preamble.all import *
 
 
 def _decomposed_k3():

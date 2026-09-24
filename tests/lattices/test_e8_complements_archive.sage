@@ -6,7 +6,7 @@ adds the remaining mathematical comparison: in an even unimodular lattice,
 the discriminant forms of a primitive complement pair are anti-isometric.
 """
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def _adjacent_pair(lattice):

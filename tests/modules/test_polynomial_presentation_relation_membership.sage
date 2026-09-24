@@ -1,6 +1,6 @@
 r"""Exact relation membership for selected presentations over polynomial rings."""
 
-from dzack_research.preamble.all import QQ
+from dzack_research.preamble.all import *
 
 
 def _cyclic_quotient(ring, relation):

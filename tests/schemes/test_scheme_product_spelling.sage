@@ -2,7 +2,7 @@ r"""The Segre embedding identifies `\mathbb{P}^1 \times \mathbb{P}^1` with the q
 `xw = yz` in `\mathbb{P}^3` (Hartshorne, *Algebraic Geometry*, Exercise I.2.14 and
 Example II.7.6.3)."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def test_the_projective_line_times_itself_is_the_smooth_quadric_surface() -> None:

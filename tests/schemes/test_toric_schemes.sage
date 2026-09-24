@@ -7,20 +7,7 @@ three generators of the ``A_1`` chart are Example 1.2.22, and the face
 localization is Prop. 1.3.16.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    AffineSchemes,
-    IntegralSchemes,
-    ConvexPolytopes,
-    NormalSchemes,
-    RationalPolyhedralFans,
-    Schemes,
-    SmoothSchemes,
-    Surfaces,
-    ToricSchemes,
-    Varieties,
-)
+from dzack_research.preamble.all import *
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two

@@ -5,7 +5,7 @@ Derivation: `0^0 = |\{\emptyset \to \emptyset\}| = 1` while `0^1 = |\{1 \to \emp
 gives `2^\kappa \le 2^\lambda`, e.g. `2^1 = 2 \le 4 = 2^2`.
 """
 
-from dzack_research.preamble.all import Cardinalities, cardinal
+from dzack_research.preamble.all import *
 
 
 def test_zero_to_the_zero_is_one_and_zero_to_the_one_is_zero() -> None:

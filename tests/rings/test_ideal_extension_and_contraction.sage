@@ -7,9 +7,7 @@ of the line contracts to the ideal of its preimage in the plane, and the
 kernel is the contraction of zero, which is the defining ideal again.
 """
 
-from dzack_research.preamble.all import (
-    QQ,
-)
+from dzack_research.preamble.all import *
 
 
 def _plane_and_line():

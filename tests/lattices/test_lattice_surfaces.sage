@@ -1,15 +1,4 @@
-from dzack_research.preamble.all import (
-    AA,
-    Groups,
-    Lattices,
-    Modules,
-    ProjectiveModules,
-    QuadraticField,
-    Set,
-    tensor,
-    ZZ,
-    signature_pair,
-)
+from dzack_research.preamble.all import *
 
 
 def test_subobject_orthogonal_complement_defers_to_the_inclusion() -> None:

@@ -1,6 +1,6 @@
 r"""Stalks of the structure sheaf of the affine line over QQ."""
 
-from dzack_research.preamble.all import QQ, AffineSpaces, Fields, LocalRings
+from dzack_research.preamble.all import *
 
 
 def test_stalks_of_the_affine_line_at_the_origin_and_the_generic_point() -> None:

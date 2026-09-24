@@ -5,13 +5,7 @@ by Batyrev's theorem the toric variety of the normal fan of a reflexive
 polytope is Gorenstein Fano; the projective plane is among them.
 """
 
-from dzack_research.preamble.all import (
-    ConvexPolytopes,
-    LatticePolygons,
-    LatticePolytopes,
-    QQ,
-    ZZ,
-)
+from dzack_research.preamble.all import *
 
 
 def test_there_are_sixteen_reflexive_polygons() -> None:

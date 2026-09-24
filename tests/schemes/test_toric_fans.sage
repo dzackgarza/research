@@ -5,10 +5,7 @@ The stated values are Cox--Little--Schenck, *Toric Varieties*: the fan of
 three semigroup generators of the ``A_1`` cone are Example 1.2.22.
 """
 
-from dzack_research.preamble.all import (
-    RationalPolyhedralFans,
-    ZZ,
-)
+from dzack_research.preamble.all import *
 
 
 # One rank-two cocharacter lattice for the whole file: a free module is a

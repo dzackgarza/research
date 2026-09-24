@@ -5,7 +5,7 @@ the equation equal `s^2 (s^2 - t^2)^2 t^3`; `(1:0) \mapsto (0:1:0)`, and the two
 points `(1:\pm 1)` both map to the node `(0:0:1)`.
 """
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def _parametrization():

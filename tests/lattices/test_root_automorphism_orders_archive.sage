@@ -5,7 +5,7 @@ SPLAG chapter 4 gives the automorphism-group orders below.  It also identifies
 ``W(E8)``, so ``Aut(E8)=W(E8)``.
 """
 
-from dzack_research.preamble.all import ZZ, Groups, Lattices
+from dzack_research.preamble.all import *
 
 ROOT_AUTOMORPHISM_ORDERS = {
     "A2": 12,

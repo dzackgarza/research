@@ -1,6 +1,6 @@
 r"""Chart changes between the standard affine charts `U_i = D_+(x_i)` of projective space."""
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def test_the_projective_line_transition_inverts_the_ratio() -> None:

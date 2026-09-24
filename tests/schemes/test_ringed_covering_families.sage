@@ -6,7 +6,7 @@ regular off a point of codimension 2 extends), so `U` is not affine, since an
 affine scheme with the coordinate ring of `\mathbb{A}^2` would be `\mathbb{A}^2`.
 """
 
-from dzack_research.preamble.all import QQ, AffineSpaces
+from dzack_research.preamble.all import *
 
 
 def test_the_punctured_plane_is_not_affine_and_has_the_functions_of_the_plane() -> None:

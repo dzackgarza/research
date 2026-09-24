@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_chosen_target_embedding_filters_a_nontrivial_genus() -> None:

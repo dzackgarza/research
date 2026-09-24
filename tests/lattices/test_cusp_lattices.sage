@@ -26,13 +26,7 @@ published root configurations into them needs the projection
 
 import pytest
 
-from dzack_research.preamble.all import (
-    Set,
-    Sets,
-    NamedLattices,
-    Sterk,
-    nikulin_invariants,
-)
+from dzack_research.preamble.all import *
 
 # cusp name: (named reduction lattice, Nikulin invariants of the reduction)
 STERK_CUSPS = {

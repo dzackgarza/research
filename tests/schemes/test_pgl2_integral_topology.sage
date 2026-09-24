@@ -5,7 +5,7 @@ Source: `PGL_2(\mathbb{C})` deformation retracts onto `PU(2) \cong SO(3) \cong
 in degrees 0 to 3 (Hatcher, *Algebraic Topology*, Example 3.8).
 """
 
-from dzack_research.preamble.all import QQ, ProjectiveSpaces
+from dzack_research.preamble.all import *
 
 
 def _pgl2():

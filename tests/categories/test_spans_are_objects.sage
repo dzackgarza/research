@@ -7,10 +7,7 @@ object, it has an apex, two legs, a diagram, and a colimit it asks its
 category for.
 """
 
-from dzack_research.preamble.all import (
-    Sets,
-    cardinal,
-)
+from dzack_research.preamble.all import *
 
 
 def _two_element_span():

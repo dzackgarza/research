@@ -1,6 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import QQ, ZZ, Lattices, Modules
+from dzack_research.preamble.all import *
 
 
 def test_poincare_duality_on_zz2_sends_e_to_f_dual_and_f_to_minus_e_dual() -> None:

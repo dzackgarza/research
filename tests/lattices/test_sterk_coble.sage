@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Sterk
+from dzack_research.preamble.all import *
 
 _STERK_NORM_COUNTS = {
     "Sterk_1": {-4: 12, -2: 0},

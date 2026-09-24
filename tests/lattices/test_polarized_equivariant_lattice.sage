@@ -1,6 +1,6 @@
 r"""The polarized Enriques arithmetic group inside \(O(L_{K3})\)."""
 
-from dzack_research.preamble.all import Involutions, NamedLattices
+from dzack_research.preamble.all import *
 
 
 def test_negation_centralizes_the_enriques_involution_but_leaves_its_polarized_group() -> None:

@@ -6,7 +6,7 @@ independent of the still-unresolved Leech-lattice realization.  Each result is
 built through the live owned lattice category and its orthogonal sums.
 """
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/lattices.sage",

@@ -1,6 +1,6 @@
 r"""Direct and inverse images along the cusp parametrization, and relative Spec under base change."""
 
-from dzack_research.preamble.all import QQ, AffineSpaces, Algebras, Schemes
+from dzack_research.preamble.all import *
 
 
 def test_direct_and_inverse_images_along_the_cusp_parametrization() -> None:

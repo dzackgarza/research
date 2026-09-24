@@ -8,7 +8,7 @@ are the monomials of degree 2.  The sum of all six,
 locus is a smooth conic.
 """
 
-from dzack_research.preamble.all import QQ, ZZ, ConvexPolytopes
+from dzack_research.preamble.all import *
 
 
 def test_the_polarizing_divisor_of_twice_the_triangle_recovers_it_and_cuts_a_smooth_conic() -> None:

@@ -5,7 +5,7 @@ ch. 4 §6.1), so its order is 240, its centre is \(\{\pm1\}\) and its derived
 subgroup is \(A_5\), of order 60.
 """
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_orthogonal_group_of_a4_is_s5_times_c2() -> None:

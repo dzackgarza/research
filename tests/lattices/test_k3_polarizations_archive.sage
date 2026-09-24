@@ -6,7 +6,7 @@ its transcendental complement has anti-isometric discriminant form.  Degree
 discriminant groups although their complements have the same rank/signature.
 """
 
-from dzack_research.preamble.all import Lattices
+from dzack_research.preamble.all import *
 
 
 def _polarization_complement(vector):

@@ -3,7 +3,7 @@ r"""Metric invariants of the square lattice and the hexagonal lattice A2.
 Values: Conway--Sloane, *Sphere Packings, Lattices and Groups*, 1.2 and 4.6.1.
 """
 
-from dzack_research.preamble.all import QQ, RR, ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_square_lattice_metric_invariants_are_exact() -> None:

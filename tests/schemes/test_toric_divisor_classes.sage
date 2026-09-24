@@ -8,12 +8,7 @@ by Prop. 4.3.3.
 """
 
 
-from dzack_research.preamble.all import (
-    NN,
-    QQ,
-    ZZ,
-    RationalPolyhedralFans,
-)
+from dzack_research.preamble.all import *
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two

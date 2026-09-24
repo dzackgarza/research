@@ -1,6 +1,6 @@
 r"""The swap involution of the hyperbolic plane ``U``: its eigenlattices and centralizer."""
 
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def _hyperbolic_swap():

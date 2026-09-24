@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_the_simple_reflection_s1_of_A2_negates_a1_and_sends_a2_to_a1_plus_a2() -> None:

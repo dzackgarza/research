@@ -12,15 +12,7 @@ automorphisms* (1950); Bourbaki, *Groupes et algèbres de Lie* VI.1.1 for the
 crystallographic restriction.
 """
 
-from dzack_research.preamble.all import (
-    AA,
-    ZZ,
-    CoxeterDiagrams,
-    Lattices,
-    VinbergInvariantMatrices,
-    matrix,
-    reflection_cosines,
-)
+from dzack_research.preamble.all import *
 
 
 def rooted_diagram(gram_rows):

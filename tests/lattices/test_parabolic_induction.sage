@@ -6,9 +6,7 @@ Groups*, ch. 26: ``II_{1,9} = U + E8``), so the cusp of the isotropic line
 ``Z e`` has ``E8`` as its reduction lattice.
 """
 
-from dzack_research.preamble.all import (
-    NamedLattices,
-)
+from dzack_research.preamble.all import *
 
 
 def _lorentzian_line():

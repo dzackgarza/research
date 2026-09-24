@@ -6,7 +6,7 @@ curve, `\operatorname{Pic} \mathbb{P}(\mathcal{F}) = \mathbb{Z}\xi \oplus \pi^*
 \operatorname{Pic}` and `\xi^2 = \deg \mathcal{F}` with `\xi = c_1(\mathcal{O}(1))`).
 """
 
-from dzack_research.preamble.all import QQ, AffineSpaces, ProjectiveSpaces, Schemes
+from dzack_research.preamble.all import *
 
 
 def test_projectivization_of_a_non_locally_free_sheaf_jumps_at_its_torsion() -> None:
