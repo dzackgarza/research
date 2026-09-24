@@ -2249,10 +2249,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return aleph0
             if category.is_subcategory(UncountableSets()):
                 return continuum
-            assert False, (
-                f"cannot compute the cardinality of the ring {self}: it is not known to be finite, countably "
-                "infinite, or uncountable"
-            )
+            # No size placement on the ring: its underlying set may still be
+            # constructed at a lower level, as M_n(R) is the free module R^(n^2).
+            return super().cardinality()
 
         def _has_selected_exact_coefficient_presentation(self) -> bool:
             r"""Return whether this ring carries a nontrivial selected exact presentation.
