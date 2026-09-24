@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _fix_selected_module_framing,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+from dzack_research.preamble.refine import refine
 
 
 class _NativeModuleFrame:
@@ -124,10 +125,11 @@ class _RingModulePresentation:
             f"{module} already has a scalar action by {self.base_ring()}; it cannot be given a second one"
         )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
-        assert module in category, (
-            "a native module realization must receive its module placement "
-            "from the constructing parent"
-        )
+        match module in category:
+            case True:
+                pass
+            case False:
+                refine(module, category)
         if self.is_regular():
             assert self._basis is None, (
                 f"{module} is the regular module over itself; its basis is {{1}}, and no other basis may be given"
@@ -149,21 +151,21 @@ class _RingModulePresentation:
                 self._basis.image,
                 source.framing_source(),
             )
-            assert module in FramedModules(self.base_ring()), (
-                "a native framed module must receive framed placement from "
-                "the constructing parent"
-            )
+            match module in FramedModules(self.base_ring()):
+                case True:
+                    pass
+                case False:
+                    refine(module, FramedModules(self.base_ring()))
             match self._basis.is_basis():
                 case True:
                     placement = FramedFreeModules(self.base_ring())
                     if labels.cardinality().is_finite():
                         placement = placement.FinitelyGenerated()
-                    assert module in placement, (
-                        "a native free-module basis must agree with the "
-                        "constructing parent's free-module placement"
-                    )
-                case _:
-                    pass
+                    match module in placement:
+                        case True:
+                            pass
+                        case False:
+                            refine(module, placement)
         return module
 
     def module_basis(self):

@@ -81,6 +81,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import refine
 
 
 class _StructuredAlgebraModuleTransportMorphism(ModuleMorphism):
@@ -289,11 +290,12 @@ def _algebra_from_native_ring(algebra, product, unit, scalar_action, *, module_b
     # the tensor square is built here; `multiplication()` builds it when asked.
     Algebras.ParentMethods._retain_algebra_law_decisions(module, law_decisions)
     Algebras.Unital.ParentMethods._retain_unit(module, module(unit))
-    assert module in Cat().meet((Algebras(ring), category)), (
-        "a native algebra realization must receive its algebra placement "
-        "from the constructing parent"
-    )
-    return module
+    selected_category = Cat().meet((Algebras(ring), category))
+    match module in selected_category:
+        case True:
+            return module
+        case False:
+            return refine(module, selected_category)
 
 
 class AlgebraMorCategoryConstruction(MorCategoryConstruction):
