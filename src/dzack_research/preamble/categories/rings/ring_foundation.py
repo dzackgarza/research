@@ -2827,17 +2827,18 @@ class _OwnedRingElement(RingElement):
     def _operand(self, other):
         r"""``other`` in this ring along the canonical map, for arithmetic and comparison.
 
-        An element of another owned ring enters only when that ring maps
-        canonically into this one.  Otherwise the other ring is where the
-        operation lives, and the refusal lets Python ask the other operand:
-        ``2 * q.one()`` for a quotient ``q`` of ``QQ[x,y]`` is an element of
-        ``q``, not the integer that the lift of ``1`` would convert to.
+        When the canonical map runs from this ring into the other one and not
+        back, the operation lives in the other ring, and the refusal lets
+        Python ask the other operand: ``2 * q.one()`` for a quotient ``q`` of
+        ``QQ[x,y]`` is an element of ``q``, not the integer that the lift of
+        ``1`` would convert to.  Otherwise the element is read in this ring.
         """
         other_parent = getattr(other, "parent", lambda: None)()
         if (
             other_parent is not None
             and other_parent is not self.parent()
             and other_parent in OwnedRings()
+            and _engine_ring(other_parent).has_coerce_map_from(_engine_ring(self.parent()))
             and not _engine_ring(self.parent()).has_coerce_map_from(_engine_ring(other_parent))
         ):
             raise TypeError(
@@ -3009,6 +3010,21 @@ class _OwnedRingElement(RingElement):
 
     def __invert__(self):
         return _owned_engine_element(self.parent(), ~self._backend())
+
+    def __mod__(self, other):
+        r"""The remainder of Euclidean division by ``other``, as the engine ring computes it."""
+        try:
+            other = self._operand(other)
+        except (TypeError, ValueError):
+            return NotImplemented
+        return _owned_engine_element(self.parent(), self._backend() % other._backend())
+
+    def __rmod__(self, other):
+        try:
+            other = self._operand(other)
+        except (TypeError, ValueError):
+            return NotImplemented
+        return _owned_engine_element(self.parent(), other._backend() % self._backend())
 
     def __truediv__(self, other):
         try:
@@ -4048,8 +4064,18 @@ def _constructor_over_ring(constructor):
     return construct
 
 
+def _lowered_integer_arguments(args):
+    r"""The arguments of an engine ring constructor, with the session's integers lowered to Python ``int``.
+
+    Sage's constructors neither contain nor convert the owned integers
+    (TRAPS.md); every other argument, such as a generator name, passes as given.
+    """
+    integers = _owned_integers()
+    return tuple(int(argument) if argument in integers else argument for argument in args)
+
+
 def GF(*args, **kwargs):
-    engine = _SageGF(*args, **kwargs)
+    engine = _SageGF(*_lowered_integer_arguments(args), **kwargs)
     field = _own_ring(engine)
     _set_owned_ring_display(field, f"GF({engine.order()})", kind="finite_field")
     return field
@@ -4064,7 +4090,7 @@ def PrimeField(characteristic):
 
 def Zmod(*args, **kwargs):
     r"""Return ``ZZ/nZZ`` with its exact finite-ring refinements."""
-    engine = _SageZmod(*args, **kwargs)
+    engine = _SageZmod(*_lowered_integer_arguments(args), **kwargs)
     ring = _own_ring(engine)
     if engine is SageZZ:
         return ring

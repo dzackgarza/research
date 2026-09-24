@@ -29,7 +29,7 @@ def test_gaussian_primitive_element_has_two_owned_embedding_images() -> None:
 
     assert embeddings.cardinality() == 2
     assert images.cardinality() == 2
-    assert set(images) == {primitive, -primitive}
+    assert Set(images) == {primitive, -primitive}
     assert conjugates.index_set() is embeddings
     assert conjugates.cardinality() == 2
     assert {conjugates[embedding] for embedding in embeddings} == {
