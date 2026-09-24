@@ -286,6 +286,27 @@ test-push:
 test-ci:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
+# Branch coverage of the preamble by the whole suite: the percentage, and every line and branch no test runs
+coverage:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    qc=~/ai-review-ci/justfiles/sage.just
+    sage_python="$(just -f "$qc" -d . _sage-python)"
+    mapfile -t tests < <(just -f "$qc" -d . _sage-test-files; just -f "$qc" -d . _sage-python-test-files)
+    export PYTHONPATH="$HOME/ai-review-ci/tool-artifacts/pytest_plugins${PYTHONPATH:+:$PYTHONPATH}"
+    out="{{justfile_directory()}}/.tmp/coverage"
+    mkdir -p "$out"
+    export COVERAGE_FILE="$out/.coverage"
+    # Sage's startup import runs inside coverage, so modules it loads are measured.
+    printf 'import sys\nimport sage.all  # noqa: F401\nimport pytest\nsys.exit(pytest.main(sys.argv[1:]))\n' > "$out/driver.py"
+    # The specification subtrees are red until the preamble meets them, so a
+    # failing suite still yields its coverage; its exit status is reported, not fatal.
+    status=0
+    "$sage_python" -m coverage run --branch --source=src/dzack_research/preamble "$out/driver.py" \
+        -p qc_sage_session -q "${tests[@]}" || status=$?
+    "$sage_python" -m coverage report --show-missing --skip-covered | tee "$out/report.txt"
+    echo "pytest exit status: $status; full report: $out/report.txt"
+
 # Survey an operation before changing what it returns or renaming it.
 # Reports every definition with its owner and return expressions, flags
 # divergent codomains (CONTRIBUTING.md LEX-11), and censuses the call sites by
