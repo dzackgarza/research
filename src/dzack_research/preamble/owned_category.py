@@ -822,23 +822,13 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
         ``parent_class`` objects.  Owned joins deliberately flatten their
         implementation providers because the complete branch classes can have
         no common C3 linearization, so that implementation-class comparison is
-        no longer a semantic test.  The join law itself is enough: this
-        intersection lies in ``category`` when one of its defining branches
-        does; when the target is another join it must lie in every target
-        branch.  Branch comparisons retain Sage's parameter-aware category
-        semantics.
+        no longer a semantic test.  The declared category graph already
+        records the forgetful maps, including their concrete parameters, and
+        the join law supplies the intersection cases.  Use that graph only;
+        falling back to a branch's generic ``is_subcategory`` would simply
+        re-enter the same ``parent_class`` proxy through the target hook.
         """
-        if category is self:
-            return True
-        if isinstance(category, JoinCategory):
-            return all(
-                self.is_subcategory(branch)
-                for branch in category._super_categories
-            )
-        return any(
-            branch.is_subcategory(category)
-            for branch in self._super_categories
-        )
+        return _declared_category_is_subcategory(self, category)
 
 
 def _declared_category_is_subcategory(category: Category, target: Category) -> bool:
