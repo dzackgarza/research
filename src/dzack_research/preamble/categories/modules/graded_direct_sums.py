@@ -78,7 +78,7 @@ class _DirectSumFactorMorphism(ModuleMorphism):
         decision = True
         for degree in indices:
             morphism = self._component_maps[degree]
-            current = getattr(morphism, "linearity_decision", lambda: Unknown)()
+            current = morphism.linearity_decision()
             if current is False:
                 return False
             if current is not True:
