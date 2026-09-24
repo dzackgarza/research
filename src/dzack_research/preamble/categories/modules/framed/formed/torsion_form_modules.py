@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
+    ModuleSubobjects,
     Modules,
     _torsion_module_presented_by_matrix,
 )
@@ -1283,25 +1284,25 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
 
     def stabilizer_of_subgroup(self, subgroup):
         r"""Return the setwise stabilizer through the owned subobject G-set."""
-        try:
-            ambient = subgroup.inclusion().codomain()
-        except AttributeError as error:
-            raise TypeError("the stabilized object must be a represented subobject") from error
-        if ambient is not self.domain():
+        form = self.domain()
+        base_ring = form.base_ring()
+        if subgroup not in ModuleSubobjects(base_ring):
+            raise TypeError("the stabilized object must be a represented subobject")
+        if subgroup not in Modules(base_ring).Subobjects(form):
             raise ValueError("the stabilized subobject must lie in this form")
         family = _torsion_form_all_subobjects(
-            self.domain(),
+            form,
             quadratic=self.is_quadratic(),
         )
         by_embedded_elements = {
             _embedded_elements(candidate): candidate
             for candidate in family
         }
-        try:
-            point = by_embedded_elements[_embedded_elements(subgroup)]
-        except KeyError as error:
-            raise ValueError("the stabilized subgroup is not a subobject of this form") from error
-        action = _torsion_form_subobject_action(self.domain(), family, self)
+        embedded = _embedded_elements(subgroup)
+        if embedded not in by_embedded_elements:
+            raise ValueError("the stabilized subgroup is not a subobject of this form")
+        point = by_embedded_elements[embedded]
+        action = _torsion_form_subobject_action(form, family, self)
         return action.stabilizer(point)
 
     stabilizer_of_subobject = stabilizer_of_subgroup
