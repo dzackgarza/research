@@ -349,15 +349,10 @@ def _hodge_star_over_fraction_field(metric, volume, degree):
     if not metric.is_nondegenerate():
         raise ValueError("fraction-field Hodge star requires a nondegenerate metric")
     ring = metric.base_ring()
-    try:
-        fraction_field = ring.fraction_field()
-    except (AttributeError, NotImplementedError) as error:
-        raise TypeError("the coefficient ring has no represented fraction field") from error
+    ring_map = ring.fraction_field_map()
+    fraction_field = ring_map.codomain()
     if fraction_field is ring:
         return metric.hodge_star(volume, degree)
-    ring_map = _engine_ring(fraction_field).coerce_map_from(_engine_ring(ring))
-    if ring_map is None:
-        raise ValueError("the fraction field does not expose the canonical scalar extension")
     changed_metric = metric.base_change(ring_map)
     volume_scalar, _inverse_volume_scalar = _volume_scalars(metric, volume)
     changed_volume = changed_metric.framing_volume_trivialization(
