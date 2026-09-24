@@ -346,6 +346,24 @@ def _unit_morphism_from_element(module, unit, ring):
 class _CommutativeUnitalAlgebraSubcategoryMethods:
     r"""Constructions that require commutative associative unital algebras."""
 
+    def _selected_binary_colimit_owner(self, left, right):
+        r"""Return the factor whose owned presentation realizes a binary colimit."""
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            SymmetricAlgebras,
+        )
+
+        base = self.base_ring()
+        for factor in (left, right):
+            if (
+                factor in SymmetricAlgebras(base)
+                or factor in AlgebrasWithChosenFinitePresentation(base)
+            ):
+                return factor
+        raise AssertionError(
+            "commutative-algebra binary colimits currently require a symmetric-algebra "
+            "or chosen finite-presentation factor"
+        )
+
     def spectrum(self):
         r"""``Spec_R : CAlg_R^op -> AffSch_R``, the affine spectrum functor."""
         from dzack_research.preamble.categories.schemes.affine_spec import (
@@ -392,13 +410,8 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
         return self._categorical_coproduct(left, right)
 
     def _categorical_coproduct(self, left, right):
-        operation = getattr(left, "_commutative_algebra_coproduct", None)
-        if operation is None:
-            operation = getattr(right, "_commutative_algebra_coproduct", None)
-        assert operation is not None, (
-            "commutative-algebra coproduct requires a represented coproduct backend on one selected factor"
-        )
-        return operation(left, right)
+        owner = self._selected_binary_colimit_owner(left, right)
+        return owner._commutative_algebra_coproduct(left, right)
 
     def _categorical_coproduct_morphism(
         self,
@@ -420,13 +433,8 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
     def _categorical_pushout(self, left_morphism, right_morphism):
         left = left_morphism.codomain()
         right = right_morphism.codomain()
-        operation = getattr(left, "_commutative_algebra_pushout", None)
-        if operation is None:
-            operation = getattr(right, "_commutative_algebra_pushout", None)
-        assert operation is not None, (
-            "commutative-algebra pushout requires a represented pushout backend on one selected factor"
-        )
-        return operation(left_morphism, right_morphism)
+        owner = self._selected_binary_colimit_owner(left, right)
+        return owner._commutative_algebra_pushout(left_morphism, right_morphism)
 
 
 class _CommutativeUnitalAlgebraParentMethods:
@@ -2088,11 +2096,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             injections; no engine algebra or presentation storage crosses this
             method.
             """
-            operation = getattr(
-                self,
-                "_preamble_commutative_algebra_coproduct_backend",
-                None,
-            )
+            operation = self._preamble_commutative_algebra_coproduct_backend
             assert operation is not None, (
                 "this selected presentation requires a represented commutative-algebra coproduct backend"
             )
@@ -2107,11 +2111,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             its structure maps are owned algebraic objects; private
             presentation data remain inside the construction implementation.
             """
-            operation = getattr(
-                self,
-                "_preamble_commutative_algebra_pushout_backend",
-                None,
-            )
+            operation = self._preamble_commutative_algebra_pushout_backend
             assert operation is not None, (
                 "this selected presentation requires a represented commutative-algebra pushout backend"
             )

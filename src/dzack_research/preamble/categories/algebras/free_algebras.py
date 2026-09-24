@@ -532,13 +532,16 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             categories=tuple(placement),
             law_decisions=law_decisions,
         )
-        if commutative_backend:
-            self._preamble_commutative_algebra_coproduct_backend = lambda left, right: (
-                _commutative_algebra_coproduct_backend(left, right)
-            )
-            self._preamble_commutative_algebra_pushout_backend = lambda left_map, right_map: (
-                _commutative_algebra_pushout_backend(left_map, right_map)
-            )
+        self._preamble_commutative_algebra_coproduct_backend = (
+            (lambda left, right: _commutative_algebra_coproduct_backend(left, right))
+            if commutative_backend
+            else None
+        )
+        self._preamble_commutative_algebra_pushout_backend = (
+            (lambda left_map, right_map: _commutative_algebra_pushout_backend(left_map, right_map))
+            if commutative_backend
+            else None
+        )
 
 
 
