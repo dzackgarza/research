@@ -519,7 +519,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             categories=tuple(placement),
             law_decisions=law_decisions,
             algebra_framing_source=presentation_ring,
-            algebra_framing_morphism_factory=presentation_morphism,
+            algebra_framing_morphism_factory=lambda: self._selected_algebra_presentation.presentation_morphism(),
         )
         self._preamble_commutative_algebra_coproduct_backend = (
             (lambda left, right: _commutative_algebra_coproduct_backend(left, right))
