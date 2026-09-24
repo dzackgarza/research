@@ -2025,12 +2025,7 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
             old_secure = options["secure"]
             options["secure"] = True
             try:
-                try:
-                    return bool(left == right)
-                except ValueError as error:
-                    raise AssertionError(
-                        "exact equality of these lazy completion elements is undecidable by the selected engine"
-                    ) from error
+                return bool(left == right)
             finally:
                 options["secure"] = old_secure
         difference = left - right
@@ -2169,22 +2164,16 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 )
 
         # A formal-power-series specialization knows the quotient by its
-        # represented ideal of variables exactly: R[x_1,...,x_n]/(x_1,...,x_n)
-        # is R.  Thus that ideal is maximal when the coefficient ring is a
-        # field, without asking a backend ideal predicate that may not decide
-        # maximality over a general base such as ZZ.  For arbitrary adic
-        # completions, preserve an unavailable maximality algorithm as
-        # undecided; absence of an algorithm is not evidence that the ideal is
-        # nonmaximal.
+        # represented ideal of variables exactly. For an arbitrary adic
+        # completion, maximality is the defining ideal owner's computation;
+        # a failure of that selected computation is a failure, not a category
+        # decision.
         if formal_parameter_labels is not None and formal_base is not None:
             defining_ideal_is_maximal = (
                 True if formal_base in OwnedRings().Division().Commutative() else None
             )
         else:
-            try:
-                defining_ideal_is_maximal = bool(defining_ideal.is_maximal())
-            except NotImplementedError:
-                defining_ideal_is_maximal = None
+            defining_ideal_is_maximal = bool(defining_ideal.is_maximal())
 
         match (
             defining_ideal_is_maximal,
@@ -2240,17 +2229,20 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         )
 
     def _element_constructor_(self, value):
-        if element_parent(value) is self:
+        value_parent = element_parent(value)
+        if value_parent is self:
             return value
         completion_map = self._realized_completion_map
         if completion_map is None:
             return super()._element_constructor_(value)
         source = self.completion_source()
-        try:
-            selected = source(value)
-        except (TypeError, ValueError, AttributeError):
-            return super()._element_constructor_(value)
-        return completion_map(selected)
+        if (
+            value_parent is source
+            or value_parent is source.base_ring()
+            or value_parent is None
+        ):
+            return completion_map(source(value))
+        return super()._element_constructor_(value)
 
     def zero(self):
         completion_map = self._realized_completion_map
