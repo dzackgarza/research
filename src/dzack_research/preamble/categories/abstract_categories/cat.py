@@ -929,14 +929,18 @@ class Cat(CategoryPacketMethods, Category):
         # branch.  A strict supercategory contributes no new mathematics to
         # an intersection once one of its subcategories is already present,
         # and retaining both can make Sage linearize the same inherited
-        # method provider twice.  Remove only strict supercategories; leave
-        # incomparable or merely equivalent categories intact.
+        # method provider twice.  Determine that redundancy only from the
+        # declared category ancestry.  Calling ``is_subcategory`` here can
+        # force ``parent_class`` construction while this meet is itself still
+        # assembling those implementation classes, making the redundancy
+        # check circular.  A relation known only through a runtime hook is
+        # therefore conservatively left unpruned.
         reduced = []
         for member in members:
             if any(
                 other is not member
-                and other.is_subcategory(member)
-                and not member.is_subcategory(other)
+                and member in other._set_of_super_categories
+                and other not in member._set_of_super_categories
                 for other in members
             ):
                 continue
