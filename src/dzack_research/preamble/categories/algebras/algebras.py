@@ -924,7 +924,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 case _ if self in FramedModules(self.algebra_base_ring()):
                     return self.linear_combination(module.framing_coefficients(element))
                 case _:
-                    return self(module.underlying_additive_group()(element))
+                    return self(module._underlying_additive_element(element))
 
         def multiplication(self):
             r"""The multiplication ``m: M (x)_R M -> M`` this algebra was stated with, an element of ``M.bilinear_forms(M)``.
@@ -3035,9 +3035,8 @@ class _ScalarAlgebraEngine:
         if source is self:
             return value
         if source in Modules(self.base_ring()) and self._built_on_the_same_data(source):
-            return super()._element_constructor_(value)
-        module_value = self.unformed_module()(self._native_ring(value))
-        return super()._element_constructor_(module_value)
+            return self._element_on_the_same_data(source, value)
+        return super()._element_constructor_(self._native_ring(value))
 
     def _from_engine_element(self, value):
         return self(_owned_engine_element(self._native_ring, value))

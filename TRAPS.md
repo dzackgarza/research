@@ -234,3 +234,15 @@ dispatch on `QuotientRing_generic` alone sends it to the wrong route.
 Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the
 defining-ideal route applies only when the cover ring is an
 `MPolynomialRing_base`.
+
+### `is_maximal` raises on multivariate polynomial ideals, and univariate ideals have no `dimension`
+
+Over `S = PolynomialRing(QQ, ['x','y'])`, `S.ideal(x, y).is_maximal()` and
+`S.ideal(x).is_maximal()` raise `NotImplementedError`, as does
+`ZZ['x'].ideal(2, x).is_maximal()`. `MPolynomialIdeal.dimension()` answers
+(`S.ideal(x).dimension() == 1`). Over `QQ['x']` the opposite holds:
+`Ideal_1poly_field` has no `dimension`, and `is_maximal()` answers
+(`(x^2+1)` gives `True`). Measured on Sage 10.9 (`sage-dev-allopts`),
+2026-09-25. Route chosen: multivariate ideals over a field use Zariski's
+lemma, prime with quotient of dimension zero; every other ideal asks Sage's
+`is_maximal`.

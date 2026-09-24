@@ -8,7 +8,6 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
-from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.quotient_ring import QuotientRing_generic
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -249,9 +248,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     selected = backend
             selected_ring = selected.ring()
             match selected_ring:
-                case PolynomialRing_generic() | MPolynomialRing_base() if bool(
-                    selected_ring.base_ring().is_field()
-                ):
+                case MPolynomialRing_base() if bool(selected_ring.base_ring().is_field()):
+                    # Sage's multivariate is_maximal raises (TRAPS.md); by
+                    # Zariski's lemma a prime is maximal exactly when its
+                    # quotient has Krull dimension zero.
                     return bool(selected.is_prime() and selected.dimension() == 0)
                 case _:
                     return bool(selected.is_maximal())
