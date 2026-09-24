@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     TotallyOrderedSets,
     finite_ordinal_set,
 )
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 IndexT = TypeVar("IndexT")
@@ -36,7 +37,7 @@ class OrderedEnumeratedSets(OwnedCategory):
     enumeration transports from \(I\), which ``EnumeratedSets`` answers.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The ordinal on three points."""
         return finite_ordered_set((0, 1, 2))
 
@@ -204,7 +205,7 @@ class FiniteOrderedSets(OwnedCategory):
     and enters through it.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The three-point ordered set."""
         return finite_ordered_set((0, 1, 2))
 

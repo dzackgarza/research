@@ -158,7 +158,7 @@ class DiscreteCategory(OwnedCategory):
                 return cls.__base__(object_set)
         return typecall(cls, object_set)
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The object at a point of the underlying set."""
         return self.object(self.object_set().an_element())
 

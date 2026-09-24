@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
 LabelT = TypeVar("LabelT")
 
@@ -43,7 +44,7 @@ class DirectSumObjects(OwnedCategory):
     def _repr_object_names(self):
         return f"objects of {self.base_category()._repr_object_names()} with a chosen direct-sum decomposition"
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""``X (+) X`` for an object ``X`` of ``C``, decomposed into its two summands."""
         witness = self.base_category().an_object()
         return self.base_category().biproduct((witness, witness))

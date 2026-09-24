@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -113,7 +114,7 @@ class _OppositeCategory(OwnedCategory):
 
     _MorCategory = OppositeMorCategoryConstruction
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""An object of the base category, read in the opposite."""
         return self.object(self.base_category().an_object())
 
@@ -331,7 +332,7 @@ class _ProductCategory(OwnedCategory):
 
     _MorCategory = ProductMorCategoryConstruction
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The pair of witnesses of the two factors."""
         return self.pair(
             self.first_category().an_object(),

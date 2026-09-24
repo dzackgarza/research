@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_engine_element,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, EnumeratedSets, Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -143,7 +144,7 @@ class FunctionEnumeratedSets(OwnedCategory):
     category.  Prefixes and print names do not define a new category of sets.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         from dzack_research.preamble.categories.sets.enumerated.hermite_polynomials import (
             HermitePolynomials,
         )

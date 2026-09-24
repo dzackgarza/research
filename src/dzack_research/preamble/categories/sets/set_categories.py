@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     ordinal,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -58,7 +59,7 @@ for _axiom in ("Countable", "Uncountable"):
 class EnumeratedSets(OwnedCategory):
     r"""Sets equipped with a represented ranking/enumeration."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The ordinal 2, ranked by its own order."""
         return finite_ordinal_set(2)
 
@@ -125,7 +126,7 @@ class EnumeratedSets(OwnedCategory):
 class FiniteOrdinalSets(OwnedCategory):
     r"""The canonical finite ordinals \(\{0,\dots,n-1\}\), lazily."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""\(\{0,1,2\}\)."""
         return finite_ordinal_set(3)
 
@@ -512,7 +513,7 @@ class Sets(OwnedCategory):
     ℵ = _Aleph()
     א = ℵ
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The ordinal 2: two distinct elements, so a map out of it is not forced."""
         return finite_ordinal_set(2)
 
@@ -1162,7 +1163,7 @@ class Sets(OwnedCategory):
     class Finite(CategoryWithAxiom):
         r"""Sets whose cardinality is finite."""
 
-        def an_object(self) -> Parent:
+        def an_object(self) -> ObjectOfCategory:
             r"""The ordinal 2."""
             return finite_ordinal_set(2)
 
@@ -1203,28 +1204,28 @@ class Sets(OwnedCategory):
     class Infinite(CategoryWithAxiom):
         r"""Sets whose cardinality is infinite."""
 
-        def an_object(self) -> Parent:
+        def an_object(self) -> ObjectOfCategory:
             r"""The natural numbers."""
             return NN
 
     class Countable(CategoryWithAxiom):
         r"""Sets whose cardinality is at most \(\aleph_0\)."""
 
-        def an_object(self) -> Parent:
+        def an_object(self) -> ObjectOfCategory:
             r"""The natural numbers."""
             return NN
 
         class Infinite(CategoryWithAxiom):
             r"""Sets whose cardinality is \(\aleph_0\)."""
 
-            def an_object(self) -> Parent:
+            def an_object(self) -> ObjectOfCategory:
                 r"""The natural numbers."""
                 return NN
 
     class Uncountable(CategoryWithAxiom):
         r"""Sets whose cardinality exceeds \(\aleph_0\)."""
 
-        def an_object(self) -> Parent:
+        def an_object(self) -> ObjectOfCategory:
             r"""The power set of the natural numbers."""
             return NN.power_set()
 
@@ -1618,7 +1619,7 @@ class SetInclusion(OwnedSetMorphism):
 class PowerSets(OwnedCategory):
     r"""The power object \(P(X)\), represented by subobjects of ``X``."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""One object of this category."""
         return Sets.Δ[2].power_set()
 
@@ -1802,7 +1803,7 @@ def _function_set_of(codomain, exponent):
 class FunctionSets(OwnedCategory):
     r"""Exponentials \(Y^X=\operatorname{Hom}_{Set}(X,Y)\)."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""\(\Delta_2^{\Delta_1}\)."""
         return Sets.Δ[2].exponential(Sets.Δ[1])
 
@@ -1854,7 +1855,7 @@ def _exponential_of_sets(codomain: Parent, exponent: Parent) -> Parent:
 class FixedCardinalitySubsetSets(OwnedCategory):
     r"""The sets \([X]^k\) of subsets of one fixed finite cardinality."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""One object of this category."""
         return Sets.Δ[2].subsets_of_size(2)
 
@@ -1925,7 +1926,7 @@ def _subsets_of_size(source: Parent, subset_cardinality: int) -> Parent:
 class FinitePowerSets(OwnedCategory):
     r"""Finite power objects \(P_{fin}(X)\), the finite subsets of \(X\)."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""One object of this category."""
         return Sets.Δ[2].finite_subsets()
 
@@ -2461,7 +2462,7 @@ class CartesianProductsOfSets(OwnedCategory):
         def _repr_(self) -> str:
             return f"Product of the family over {self.index_set()}"
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The square of the ordinal 2."""
         return Sets().product((finite_ordinal_set(2), finite_ordinal_set(2)))
 
@@ -2771,7 +2772,7 @@ class CoproductsOfSets(OwnedCategory):
         def _repr_(self) -> str:
             return f"Coproduct of the family over {self.index_set()}"
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The disjoint union of the ordinal 2 with itself."""
         return Sets().coproduct((finite_ordinal_set(2), finite_ordinal_set(2)))
 
@@ -2886,7 +2887,7 @@ ExponentialsOfSets = FunctionSets
 class NaturalNumberSets(OwnedCategory):
     r"""The owned set \(\mathbb{N}=\{0,1,2,\dots\}\)."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""\(\mathbb{N}\)."""
         return NN
 
@@ -3041,7 +3042,7 @@ class Mors(OwnedCategory):
 class PartiallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a partial order."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The natural numbers under their usual order."""
         return NN
 
@@ -3052,7 +3053,7 @@ class PartiallyOrderedSets(OwnedCategory):
 class TotallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a total order."""
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The natural numbers, totally ordered."""
         return NN
 
@@ -3073,7 +3074,7 @@ class FinitelySupportedFunctionSets(OwnedCategory):
     immediate supercategory.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""Functions from the ordinal 2 to itself, all of finite support."""
         return finite_ordinal_set(2).exponential(finite_ordinal_set(2))
 

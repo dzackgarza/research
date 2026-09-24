@@ -19,6 +19,7 @@ from dzack_research.preamble.owned_category_bases import (
     Category as OwnedCategoryBase,
     CategoryWithAxiom,
 )
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
 
 if "Framed" not in all_axioms:
@@ -109,7 +110,7 @@ class OwnedCategory(OwnedCategoryBase):
     """
 
     @abstract_method
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""Return one object of this category.
 
         A witness that the category is inhabited, and the datum every construction
@@ -187,7 +188,7 @@ class Objects(OwnedCategory):
     semantic ancestors of owned categories.
     """
 
-    def an_object(self) -> Parent:
+    def an_object(self) -> ObjectOfCategory:
         r"""The set 2, which is an object like any other.
 
         The root has no structure to exhibit, so its witness is whatever the
