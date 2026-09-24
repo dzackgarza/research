@@ -1455,7 +1455,7 @@ def _install_local_ring_construction(ring, maximal_ideal, residue_field, residue
         if residue_map.domain() is not ring or residue_map.codomain() is not residue_field:
             raise ValueError("a local-ring residue map must have endpoints R -> kappa(m)")
     construction = LocalRingConstruction(maximal_ideal, residue_field, residue_map)
-    existing = getattr(ring, "_local_ring_construction", None)
+    existing = ring._selected_local_ring_construction()
     if existing is not None:
         if (
             existing.maximal_ideal() is not maximal_ideal
@@ -1769,7 +1769,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     return True
 
                 def local_ring_construction(self):
-                    construction = getattr(self, "_local_ring_construction", None)
+                    construction = self._selected_local_ring_construction()
                     assert construction is not None, (
                         f"{self} is placed as a nonfield local ring without its selected maximal-ideal/residue construction"
                     )
@@ -1981,6 +1981,17 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
     class ParentMethods:
+        def _selected_local_ring_construction(self):
+            r"""Return an installed local-ring datum, or ``None``.
+
+            Protected ring-construction contract under OWN-05. Ordinary local
+            rings such as fields and prime localizations compute their residue
+            data through their mathematical owners and therefore return
+            ``None`` here. Native/adically completed/dual-number parents that
+            retain a selected maximal-ideal quotient override this endpoint.
+            """
+            return None
+
         def _selected_engine_ring(self):
             r"""Return the private computation parent selected for this ring.
 
@@ -3192,6 +3203,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         self._engine = engine
         self._preamble_ring_display = None
         self._preamble_ring_display_kind = None
+        self._local_ring_construction = None
         integer_bootstrap = canonical_native and engine is SageZZ
         # ``OwnedOrders`` is declared using ``Algebras(ZZ)``.  The canonical
         # integer object therefore has to be the parameter of that category
@@ -3264,6 +3276,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def _selected_engine_ring(self):
         r"""Return this native ring's selected private Sage realization."""
         return self._engine
+
+    def _selected_local_ring_construction(self):
+        r"""Return this native ring's selected local quotient datum, if any."""
+        return self._local_ring_construction
 
     def __call__(self, value):
         r"""Construct an owned ring element without Sage coercion discovery."""
