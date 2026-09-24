@@ -849,11 +849,7 @@ class QuotientRings(OwnedCategory):
                     backend = _engine_ring_value(source, generator)
                     if backend == source_engine.zero():
                         continue
-                    valuation = getattr(backend, "valuation", None)
-                    if valuation is None:
-                        valuations = []
-                        break
-                    valuations.append(int(valuation()))
+                    valuations.append(int(backend.valuation()))
                 if valuations:
                     residue_size = source.residue_field().cardinality()
                     return residue_size ** min(valuations)
@@ -1111,8 +1107,11 @@ def _affine_reduced_quotient_normalization_data(quotient):
     source_engine = _engine_ring(source)
     if not quotient.is_reduced():
         raise ValueError("normalization here requires a reduced affine quotient")
-    assert hasattr(source_engine, "_singular_"), (
-        "affine normalization currently requires a polynomial presentation supported by Singular"
+    assert source in SymmetricAlgebras(source.algebra_base_ring()), (
+        "affine normalization currently requires a symmetric-algebra presentation"
+    )
+    assert source.algebra_generating_set() in FiniteSets(), (
+        "affine normalization currently requires a finite symmetric-algebra presentation"
     )
 
     defining_engine = _engine_ideal(source, quotient.defining_ideal())
@@ -1234,10 +1233,8 @@ def _affine_reduced_quotient_normalization_data(quotient):
             components,
         )
     finally:
-        try:
+        if previous_ring is not None:
             previous_ring.set_ring()
-        except (AttributeError, TypeError, ValueError):
-            pass
 
 
 

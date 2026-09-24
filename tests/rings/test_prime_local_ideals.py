@@ -43,6 +43,13 @@ def test_the_maximal_ideal_is_the_non_units() -> None:
     assert not local.maximal_ideal().contains_ambient_element(local(3))
 
 
+def test_a_prime_local_principal_quotient_has_residue_size_to_valuation() -> None:
+    local = ZZ.localize_at_prime(2)
+    quotient = local.quotient_ring(local.ideal(local(8)))
+
+    assert quotient.cardinality() == 8
+
+
 def test_prime_local_ideals_of_a_nonreduced_quotient_need_no_fraction_field() -> None:
     r"""``QQ[x,y]/(xy)`` at the origin: a local ring of a ring with zero divisors."""
     presentation = QQ.polynomial_ring(("x", "y"))
