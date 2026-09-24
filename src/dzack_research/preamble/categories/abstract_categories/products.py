@@ -1056,7 +1056,7 @@ class _ConeCategory(OwnedCategory):
         self,
         apex: Parent,
         components: Callable[[Parent], Morphism],
-    ) -> Parent:
+    ) -> ObjectOfCategory:
 
         constant = Cat().Mor(
             self.diagram().domain(), self.target_category()
@@ -1135,7 +1135,7 @@ class _CoconeCategory(OwnedCategory):
         self,
         apex: Parent,
         components: Callable[[Parent], Morphism],
-    ) -> Parent:
+    ) -> ObjectOfCategory:
 
         constant = Cat().Mor(
             self.diagram().domain(), self.target_category()

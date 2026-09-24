@@ -83,6 +83,8 @@ from sage.structure.dynamic_class import (
 )
 from sage.structure.parent import Parent as SageParent
 
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+
 if TYPE_CHECKING:
     from typing import Any
 
@@ -935,7 +937,7 @@ def _object_of(
     *,
     _engine: tuple[Category, type, type | None] | None = None,
     **data: ConstructionData,
-) -> Parent:
+) -> ObjectOfCategory:
     r"""The object of ``category`` built from the data its levels declare.
 
     The instantiable class is ``category.parent_class``; this is the one line

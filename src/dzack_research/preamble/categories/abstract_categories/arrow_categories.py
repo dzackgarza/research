@@ -64,10 +64,9 @@ class _ArrowAsFunctor(Functor):
     r"""The functor ``[1] -> C`` sending the arrow ``0 -> 1`` to one morphism of ``C``."""
 
     def __init__(self, base_category: Category, arrow: Morphism) -> None:
-from dzack_research.preamble.categories.abstract_categories.products import (
+        from dzack_research.preamble.categories.abstract_categories.products import (
             FiniteOrdinalCategory,
-)
-from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+        )
 
         self._arrow = arrow
         super().__init__(FiniteOrdinalCategory(2), base_category)
@@ -661,7 +660,7 @@ class SliceCategory(_SubcategoryOfArrows):
         *,
         _engine=None,
         construction_data=None,
-    ) -> Parent:
+    ) -> ObjectOfCategory:
         r"""Construct an object of ``C/X``, optionally with a private realization."""
         if not self.admits_arrow(arrow):
             raise TypeError("the supplied morphism is not an object of this slice")

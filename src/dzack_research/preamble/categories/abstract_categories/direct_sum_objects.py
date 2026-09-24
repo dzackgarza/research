@@ -57,7 +57,7 @@ class DirectSumObjects(OwnedCategory):
         underlying_object: Parent,
         summands: IndexedFamily | Iterable[Parent],
         summand_index_set: Parent | None = None,
-    ) -> Parent:
+    ) -> ObjectOfCategory:
         r"""Verify the constructor-owned decomposition ``underlying_object = ⊕ M_i``."""
         match summands:
             case IndexedFamily():
