@@ -1222,12 +1222,12 @@ def _affine_reduced_quotient_normalization_data(quotient):
                     f"the normalization map of {quotient} must send each of the {source_engine.ngens()} generators of "
                     f"{source} to one element, but Singular returned {len(target_images)} images"
                 )
-            source_component_map = source_engine.mor(target_images, target_engine)
+            source_component_map = source_engine.hom(target_images, target_engine)
             source_prime = _from_engine_ideal(source, source_component_map.kernel())
             component_prime = quotient.ideal(
                 *(quotient(generator) for generator in source_prime.ideal_generators())
             )
-            engine_component_map = source_quotient_engine.mor(target_images, target_engine)
+            engine_component_map = source_quotient_engine.hom(target_images, target_engine)
             def component_image(
                 element,
                 component=component,

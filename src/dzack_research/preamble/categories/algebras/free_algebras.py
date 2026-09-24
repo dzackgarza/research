@@ -726,7 +726,7 @@ def _localized_coefficient_presentation_backend(
     engine_generators = tuple(engine_presentation.gens())
     flattened_generators = engine_generators[: flattened.ngens()]
     inverse_generators = engine_generators[flattened.ngens() :]
-    flattened_to_engine = flattened.mor(
+    flattened_to_engine = flattened.hom(
         flattened_generators,
         engine_presentation,
     )
@@ -797,7 +797,7 @@ def _localized_coefficient_presentation_backend(
             )
             for generator in coefficient_generators
         ]
-        engine_scalar_map = base_engine.mor(
+        engine_scalar_map = base_engine.hom(
             scalar_images,
             quotient_engine,
         )
@@ -828,7 +828,7 @@ def _localized_coefficient_presentation_backend(
         )
         for inverted_element in inverted
     )
-    engine_to_presentation = engine_presentation.mor(
+    engine_to_presentation = engine_presentation.hom(
         reverse_images,
         presentation_engine,
     )

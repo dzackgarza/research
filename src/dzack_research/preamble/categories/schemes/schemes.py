@@ -219,7 +219,7 @@ def _engine_coordinate_pullback_of(native, domain_algebra, codomain_algebra):
             return codomain_algebra.Mor(domain_algebra)(native.ring_homomorphism())
         case _SageSchemeMorphismPolynomial():
             return codomain_algebra.Mor(domain_algebra)(
-                _engine_ring(codomain_algebra).mor(
+                _engine_ring(codomain_algebra).hom(
                     list(native.defining_polynomials()),
                     _engine_ring(domain_algebra),
                 )
@@ -833,7 +833,7 @@ class SchemeMorphism(Morphism):
             f"a chosen set of algebra generators, but it is an object of {source_algebra.category()}"
         )
         target_engine = _engine_ring(target_algebra)
-        return _engine_ring(source_algebra).mor(
+        return _engine_ring(source_algebra).hom(
             [
                 target_engine(_engine_element(target_algebra, pullback(source_algebra.algebra_generator(label))))
                 for label in source_algebra.algebra_generating_set()

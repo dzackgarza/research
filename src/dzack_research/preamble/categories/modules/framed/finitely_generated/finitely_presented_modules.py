@@ -1801,7 +1801,7 @@ class _GeneralPresentedModule:
 
         if engine.ngens() == 1 and "multi_polynomial" not in type(engine).__module__:
             singular_ring = coefficient_field.polynomial_ring(1, engine.variable_names())
-            to_singular = engine.mor([singular_ring.gen(0)], singular_ring)
+            to_singular = engine.hom([singular_ring.gen(0)], singular_ring)
         else:
             singular_ring = engine
             to_singular = singular_ring

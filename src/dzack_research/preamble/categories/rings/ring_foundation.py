@@ -1241,7 +1241,7 @@ class LocalizationRings(OwnedCategory):
                         )
                         for generator in source_generators
                     ]
-                    engine_morphism = engine_localization.mor(
+                    engine_morphism = engine_localization.hom(
                         engine_images,
                         engine_target,
                     )

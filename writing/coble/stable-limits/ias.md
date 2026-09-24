@@ -81,7 +81,9 @@ A triangulated integral affine sphere.
 The following is a combinatorial representation of the Kulikov model of $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13].
 
 ::: {#fig-ias-sterk3-kulikov-model .figure}
-\input{tikz/ias_sterk3_kulikov_model.tikz}
+\begin{tikzpicture}[scale=1.4]
+\pic {object=ias/sterk3-kulikov};
+\end{tikzpicture}
 
 A combinatorial Kulikov model for $B_3(\ell)$ at Sterk cusp $3$.
 :::
@@ -94,7 +96,9 @@ The figures below were drawn for this construction but their accompanying text h
 :::
 
 ::: {#fig-sterk3-ias .figure}
-\input{tikz/sterk3_ias_singularities.tex}
+\begin{tikzpicture}
+\pic {object=ias/sterk3-ias};
+\end{tikzpicture}
 
 The integral affine structure $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13], drawn in the plane: five integral affine singularities are marked with their multiplicities, solid segments carry the triangulation of the shaded region and dashed segments the lattice lines outside it.
 :::

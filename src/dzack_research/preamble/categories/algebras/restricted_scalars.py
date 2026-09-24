@@ -124,7 +124,7 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
                     engine_base.Hom(algebra_engine),
                     engine_base_image,
                 )
-                presentation_engine_map = presentation_engine.mor(
+                presentation_engine_map = presentation_engine.hom(
                     [generator_values(label) for label in labels],
                     algebra_engine,
                     base_map=engine_base_map,
@@ -230,7 +230,7 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
 
     extension_presentation_engine = _engine_ring(extension_ring.presentation_ring())
     # Private finite backend serialization required by Sage's polynomial-Hom constructor.
-    extension_presentation_map = extension_presentation_engine.mor(
+    extension_presentation_map = extension_presentation_engine.hom(
         list(scalar_variables),
         presentation_engine,
     )

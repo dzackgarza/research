@@ -2792,7 +2792,7 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
         if domain in FramedAlgebras(domain.base_ring()):
             return self(lambda label: domain.algebra_generator(label))
         engine = _engine_ring(domain)
-        return self(engine.mor(engine))
+        return self(engine.hom(engine))
 
 
 class AlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
@@ -3261,7 +3261,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
         # Keep that theorem visible to Sage's quotient-Hom verifier instead of
         # wrapping id_R as an opaque set map whose multiplicativity Sage cannot
         # certify when checking the defining relations.
-        base_map = engine_base.mor(engine_base)
+        base_map = engine_base.hom(engine_base)
     else:
         native_base_map = engine_codomain.coerce_map_from(engine_base)
         if native_base_map is not None:
@@ -3332,7 +3332,7 @@ def _engine_algebra_morphism_from_generator_images(domain, codomain, generator_i
                 owned_generator = _owned_engine_element(domain, engine_generator)
                 selected_lift = domain.lift_to_presentation(owned_generator)
                 private_images.append(presentation_map(_engine_element(presentation, selected_lift)))
-            return engine_domain.mor(
+            return engine_domain.hom(
                 private_images,
                 engine_codomain,
             )
@@ -3368,7 +3368,7 @@ def _engine_morphism_from_generator_images(engine_domain, engine_codomain, image
         f"a ring morphism given by generator images needs rings Sage can compute with, but got "
         f"{engine_domain} and {engine_codomain}"
     )
-    return engine_domain.mor(
+    return engine_domain.hom(
         [engine_codomain(image) for image in images],
         engine_codomain,
         base_map=base_map,

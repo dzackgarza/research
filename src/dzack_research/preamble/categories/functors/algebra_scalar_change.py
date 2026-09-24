@@ -61,7 +61,7 @@ def _base_change_presented_element(algebra, element, target, ring_map):
     presentation_ring = algebra.presentation_ring()
     presentation = _engine_ring(presentation_ring)
     target_engine = _engine_ring(target)
-    presentation_map = presentation.mor(
+    presentation_map = presentation.hom(
         [
             _engine_element(target, target.algebra_generator(label))
             for label in algebra.algebra_generating_set()

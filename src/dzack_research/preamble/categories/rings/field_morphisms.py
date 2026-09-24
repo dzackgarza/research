@@ -245,7 +245,7 @@ class _ExactFieldMor(CategoricalMor):
                 f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
         engine = _engine_ring(self.domain())
-        return self(engine.mor(engine))
+        return self(engine.hom(engine))
 
     def _repr_(self) -> str:
         return f"Exact field morphisms from {self.domain()} to {self.codomain()}"

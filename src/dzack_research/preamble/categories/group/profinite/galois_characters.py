@@ -131,7 +131,7 @@ class CyclotomicCharacter(ProfiniteCharacter):
                 polynomial = cast(Any, cyclotomic_polynomial(n)).change_ring(base)
                 field = base.extension(polynomial, f"zeta_{n}")
                 owned_field = _own_ring(field)
-                backend = field.mor([root], closure)
+                backend = field.hom([root], closure)
                 embedding = _exact_field_morphism_from_engine(
                     owned_field,
                     domain.algebraic_closure(),
@@ -224,7 +224,7 @@ class QuadraticCharacter(ProfiniteCharacter):
             t = polynomial_ring.gen()
             field = base.extension(t**2 - backend_a, "sqrt_a")
             owned_field = _own_ring(field)
-            backend = field.mor([root], closure)
+            backend = field.hom([root], closure)
             embedding = _exact_field_morphism_from_engine(
                 owned_field,
                 domain.algebraic_closure(),

@@ -95,7 +95,7 @@ class NumberFieldEmbedding(Morphism):
         source = other.domain()
         if _engine_ring(source) is SageQQ:
             return source.Mor(target)(
-                _engine_ring(source).mor(_engine_ring(target))
+                _engine_ring(source).hom(_engine_ring(target))
             )
         primitive = source.primitive_element()
         return source.Mor(target)(self(other(primitive)))
@@ -121,13 +121,13 @@ class NumberFieldMor(CategoricalMor):
         engine_domain = _engine_ring(self.domain())
         engine_codomain = _engine_ring(self.codomain())
         if engine_domain is SageQQ:
-            return self.element_class(self, engine_domain.mor(engine_codomain))
+            return self.element_class(self, engine_domain.hom(engine_codomain))
         image = datum(self.domain().primitive_element()) if callable(datum) else datum
         owned_image = self.codomain()(image)
         backend_image = _engine_element(self.codomain(), owned_image)
         return self.element_class(
             self,
-            engine_domain.mor([backend_image], engine_codomain),
+            engine_domain.hom([backend_image], engine_codomain),
         )
 
     def identity(self):
@@ -137,7 +137,7 @@ class NumberFieldMor(CategoricalMor):
             )
         engine = _engine_ring(self.domain())
         if engine is SageQQ:
-            return self(engine.mor(engine))
+            return self(engine.hom(engine))
         return self(self.domain().primitive_element())
 
     def embeddings(self):

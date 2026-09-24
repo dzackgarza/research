@@ -1886,7 +1886,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 ),
                 name="Chart pullbacks of a toric morphism",
             )
-            native = _engine_scheme(self).mor(
+            native = _engine_scheme(self).hom(
                 _engine_fan_morphism(lattice_morphism, self.fan(), codomain_fan),
                 _engine_scheme(codomain),
             )

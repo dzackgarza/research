@@ -126,7 +126,7 @@ def _base_change_unit(algebra, changed_algebra, ring_map):
         case _ if algebra is source:
             engine = _engine_ring_map(ring_map)
         case _:
-            engine = _engine_ring(algebra).mor(
+            engine = _engine_ring(algebra).hom(
                 [
                     changed_engine(_engine_element(changed_algebra, changed_algebra.algebra_generator(label)))
                     for label in algebra.algebra_generating_set()
@@ -409,7 +409,7 @@ class _SchemeBaseChangeFunctor(Functor):
                 case _:
                     target = to_scheme.codomain()
                     engine_target = _engine_ring(target)
-                    native = _engine_ring(changed_algebra).mor(
+                    native = _engine_ring(changed_algebra).hom(
                         [_engine_element(target, to_scheme(algebra.algebra_generator(label)))
                          for label in algebra.algebra_generating_set()],
                         engine_target, base_map=_engine_ring_map(to_base),
