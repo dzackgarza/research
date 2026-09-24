@@ -5,6 +5,7 @@ from dzack_research.preamble.lexicon.algebra import (
     Element,
     Matrix,
     ModuleElement,
+    MonoidObject,
     RingElement,
 )
 from dzack_research.preamble.lexicon.category_theory import (
@@ -47,6 +48,7 @@ __all__ = [
     "Matrix",
     "MatrixData",
     "ModuleElement",
+    "MonoidObject",
     "OrderedSet",
     "ObjectOfCategory",
     "Polyhedron",

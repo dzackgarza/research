@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _own_ring,
 )
+from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 # Bourbaki, Algebra III §4.9: an alternating graded algebra is one satisfying
@@ -260,7 +261,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         self._graded_modules = graded_modules
         super().__init__(base_ring)
 
-    def grading_monoid(self) -> Parent:
+    def grading_monoid(self) -> MonoidObject:
         return self._graded_modules.grading_monoid()
 
     def parity_homomorphism(self):
@@ -298,7 +299,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             base_category.parity_homomorphism()
             super().__init__(base_category)
 
-        def grading_monoid(self) -> Parent:
+        def grading_monoid(self) -> MonoidObject:
             return self._base_category.grading_monoid()
 
         def parity_homomorphism(self):
@@ -323,7 +324,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             rings with 2-torsion.
             """
 
-            def grading_monoid(self) -> Parent:
+            def grading_monoid(self) -> MonoidObject:
                 return self._base_category.grading_monoid()
 
             def parity_homomorphism(self):

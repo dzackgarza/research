@@ -30,14 +30,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.algebra import MonoidObject
+from dzack_research.preamble.lexicon.set_theory import SetObject
 
 
-def _normalize_grading_monoid(monoid: Parent | None) -> Parent:
+def _normalize_grading_monoid(monoid: Parent | None) -> SetObject:
     r"""Return the owned grading monoid, defaulting to \(\mathbb{Z},+\)."""
     return _own_ring(SageZZ) if monoid is None else monoid
 
 
-def _require_grading_monoid(monoid: Parent | None) -> Parent:
+def _require_grading_monoid(monoid: Parent | None) -> MonoidObject:
     monoid = _normalize_grading_monoid(monoid)
     if monoid not in Monoids() and monoid not in AdditiveMonoids():
         raise TypeError(f"{monoid} is not a monoid in the owned category graph")
@@ -294,10 +296,10 @@ class GradedModules(OwnedCategoryOverBaseRing):
             extra_categories=placements, construction_data=construction_data,
         )
 
-    def grading_index_set(self) -> Parent:
+    def grading_index_set(self) -> SetObject:
         return self._grading_index_set
 
-    def grading_monoid(self) -> Parent:
+    def grading_monoid(self) -> MonoidObject:
         return _require_grading_monoid(self.grading_index_set())
 
     def parity_homomorphism(self):

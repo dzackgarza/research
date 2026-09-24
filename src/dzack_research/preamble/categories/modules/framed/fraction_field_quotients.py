@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -341,7 +342,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
 
 @cached_function
-def _owned_fraction_field_quotient(engine: QmodnZ) -> Parent:
+def _owned_fraction_field_quotient(engine: QmodnZ) -> ObjectOfCategory:
     base_ring = _own_ring(SageZZ)
     placement = [FractionFieldQuotients(base_ring)]
     if not engine.n.is_zero():
