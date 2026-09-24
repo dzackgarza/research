@@ -376,10 +376,7 @@ class LatticeEmbedding(LatticeMorphism):
         LatticeMorphism.__init__(self, parent, images, elementwise=elementwise)
         decision = self._injectivity_derivation()
         if decision is None:
-            try:
-                decision = ModuleMorphism.is_injective(self)
-            except (AssertionError, AttributeError, TypeError, ValueError):
-                decision = Unknown
+            decision = ModuleMorphism.is_injective(self)
         if decision is False:
             raise ValueError(
                 f"{self} is not a lattice embedding of {self.domain()} into "
