@@ -1003,7 +1003,7 @@ def _object_of(
         case None:
             implementation = category.ObjectType
         case (owner, object_engine, element_engine):
-            assert category.is_subcategory(owner), (
+            assert category is owner or owner in category._set_of_super_categories, (
                 "the object's mathematical category contains the engine's owner"
             )
             implementation = _engine_object_type(
