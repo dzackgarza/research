@@ -278,3 +278,12 @@ for `x + 1`, `I` and `I*pi`. `expression.variables() == ()` together with
 `sqrt(2) in AA` is `True`, so `AA` membership does test algebraicity. Measured
 on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: the ball-sign
 certificate is attempted on closed real expressions.
+
+### `FreeAlgebra.__contains__` rejects constants
+
+`ZZ(2) in FreeAlgebra(QQ, 2, 'x,y')` and `QQ(2) in FreeAlgebra(QQ, 2, 'x,y')`
+are `False`, and so is `ZZ(2) in FreeAlgebra(ZZ, 2, 'x,y')`, although the
+coercion exists and `F(2)` is twice the unit. `ZZ(2) in QQ['x,y']` is `True`.
+Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: an
+owned ring decides membership of another owned ring's element by the
+canonical map first, then by the engine's `in`.

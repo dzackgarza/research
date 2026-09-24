@@ -2849,7 +2849,7 @@ def _owned_ring_element_text(element) -> str:
     ):
         cover = _own_ring(engine.cover_ring())
         return f"[{_owned_polynomial_text(cover, value.lift())}]"
-    return f"element of {parent} of additive order {element.additive_order()}"
+    return f"element of {parent}"
 
 
 class _OwnedRingElement(RingElement):
@@ -3507,7 +3507,11 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         if source in Modules(self.base_ring()) and source.unformed_module() is self:
             return True
         if source in OwnedRings():
-            return _engine_element(source, value) in self._engine
+            # An element on which the canonical map lands is in this ring.
+            # Sage's FreeAlgebra answers `2 in F` False although F(2) is its
+            # scalar two (TRAPS.md), so the coercion is asked first.
+            represented = _engine_element(source, value)
+            return self._engine.has_coerce_map_from(_engine_ring(source)) or represented in self._engine
         from dzack_research.preamble.categories.sets.set_categories import NN
 
         if source is NN:
