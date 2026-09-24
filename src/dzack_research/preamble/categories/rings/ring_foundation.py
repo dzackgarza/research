@@ -681,6 +681,12 @@ class LocalizationRings(OwnedCategory):
                     return self.numerator() != source.zero()
                 case _:
                     pass
+            # Sage's localization decides a unit by its numerator's units, which
+            # is exact when numerators lie in the source ring and wrong for a
+            # number-field order, whose numerators lie in the field (TRAPS.md).
+            if parent._preamble_engine_ring is not None and source not in OwnedOrders():
+                engine = parent._selected_engine_ring()
+                return bool(engine(parent._engine_element(self)).is_unit())
             bottom, inverted_family = _one_step_inverted_family(
                 source, parent.inverted_elements()
             )
@@ -1600,12 +1606,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def extra_super_categories(self):
             return [OwnedRings().NoZeroDivisors()]
-
-        class ElementMethods:
-            def inverse_of_unit(self):
-                r"""``x^{-1}``: in a division ring every nonzero element is a unit."""
-                assert not self.is_zero(), f"0 is not a unit of {self.parent()}"
-                return self.parent().one() / self
 
         class Commutative(CategoryWithAxiom):
             r"""Fields, spelled as Sage spells them: ``DivisionRings().Commutative()``."""

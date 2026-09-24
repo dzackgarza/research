@@ -286,13 +286,16 @@ def _algebra_from_native_ring(algebra, product, unit, scalar_action, *, module_b
     if algebra.is_commutative() is True:
         category = category.Commutative()
         law_decisions["commutativity"] = True
-    return _algebra_on_module(
-        module,
-        presentation.multiplication(),
-        placement=(category,),
-        unit=unit,
-        law_decisions=law_decisions,
-    )
+    # The ring's own product is its algebra structure (OWN-22): no map out of
+    # the tensor square is built here; `multiplication()` builds it when asked.
+    Algebras.ParentMethods._retain_algebra_law_decisions(module, law_decisions)
+    Algebras.Unital.ParentMethods._retain_unit(module, module(unit))
+    selected_category = Cat().meet((Algebras(ring), category))
+    match module in selected_category:
+        case True:
+            return module
+        case False:
+            return refine(module, selected_category)
 
 
 class AlgebraMorCategoryConstruction(MorCategoryConstruction):
@@ -918,8 +921,18 @@ class Algebras(OwnedCategoryOverBaseRing):
                     return self(module.underlying_additive_group()(element))
 
         def multiplication(self):
-            r"""The multiplication ``m: M (x)_R M -> M`` this algebra was stated with, an element of ``M.bilinear_forms(M)``."""
-            return self._preamble_multiplication
+            r"""The multiplication ``m: M (x)_R M -> M`` this algebra was stated with, an element of ``M.bilinear_forms(M)``.
+
+            A ring that is its own algebra is stated by its product, not by a
+            map out of a tensor product (``OWN-22``), so for it the map is
+            built from that product here, when it is asked for.
+            """
+            stated = vars(self).get("_preamble_multiplication")
+            if stated is not None:
+                return stated
+            native = self._native_module_presentation()
+            assert native is not None, f"{self} was constructed without a multiplication"
+            return native.multiplication()
 
         @cached_method
         def multiplication_morphism(self):

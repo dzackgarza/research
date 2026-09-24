@@ -382,6 +382,11 @@ class ExactRealNumber(FieldElement):
     def __invert__(self):
         return self.parent().one() / self
 
+    def inverse_of_unit(self):
+        r"""``x^{-1}``: every nonzero real number is a unit."""
+        assert not self.is_zero(), f"0 is not a unit of {self.parent()}"
+        return ~self
+
     def __pow__(self, exponent, modulus=None):
         if modulus is not None:
             raise TypeError(

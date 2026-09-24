@@ -156,10 +156,12 @@ every nonzero numerator a unit. Specimen, Sage alone (no preamble):
 `True`, although 3 is prime in `Z[i]` and `S = {2^k}`; `ZZ.localization((2,))(3)`
 answers `False` correctly. Sage 10.10.beta8, 2026-09-25.
 
-Route chosen: a localization decides units from the definition in the source
-ring -- `a/s` is a unit exactly when saturating `(a)` by the inverted elements
-gives the unit ideal (`LocalizationRings.ElementMethods.is_unit`) -- and never
-asks the engine localization.
+Route chosen: a localization of a number-field order decides units from the
+definition in the source ring -- `a/s` is a unit exactly when saturating `(a)`
+by the inverted elements gives the unit ideal
+(`LocalizationRings.ElementMethods.is_unit`).  Other sources keep the engine's
+decision, which is exact when numerators lie in the source ring; the owned
+ideal machinery cannot yet saturate in every such ring (`Z[1/2][x]`).
 
 ### Sage's default conversion into a parent needs the source in Sage's categories
 
