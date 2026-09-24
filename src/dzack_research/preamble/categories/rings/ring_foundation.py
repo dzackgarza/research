@@ -3763,10 +3763,10 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
     field_decision = _engine_field_decision(engine)
     match field_decision:
         case True:
-            finite_prime = bool(engine.is_finite()) and SageZZ(
-                engine.cardinality()
-            ) == SageZZ(engine.characteristic())
-            match engine is SageQQ or finite_prime:
+            # A prime field is QQ or F_p.  A field realized as Zmod(n) is F_p
+            # (GF(p) is an IntegerModRing_generic, GF(p^k) for k > 1 is not);
+            # Sage's generic quotients have no is_finite to ask instead.
+            match engine is SageQQ or isinstance(engine, IntegerModRing_generic):
                 case True:
                     extra.append(PrimeFields())
                 case False:
