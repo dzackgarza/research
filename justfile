@@ -292,7 +292,9 @@ coverage:
     set -euo pipefail
     qc=~/ai-review-ci/justfiles/sage.just
     sage_python="$(just -f "$qc" -d . _sage-python)"
+    # tests/ is the suite for src/; computation scripts elsewhere are not.
     mapfile -t tests < <(just -f "$qc" -d . _sage-test-files; just -f "$qc" -d . _sage-python-test-files)
+    mapfile -t tests < <(printf '%s\n' "${tests[@]}" | grep '^tests/')
     export PYTHONPATH="$HOME/ai-review-ci/tool-artifacts/pytest_plugins${PYTHONPATH:+:$PYTHONPATH}"
     out="{{justfile_directory()}}/.tmp/coverage"
     mkdir -p "$out"
