@@ -270,10 +270,30 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             integers = _own_ring(SageZZ)
             return _owned_engine_element(integers, SageZZ(coordinate))
 
+        def rational_point(self, point):
+            r"""Return ``point`` of ``M`` or ``M_QQ`` as a point of ``M_QQ = M tensor QQ``.
+
+            ``M`` includes into ``M_QQ`` by ``m |-> m tensor 1``, which keeps
+            the coordinates of ``m`` in the shared frame.
+            """
+            ambient = self.ambient_space()
+            lattice = self.ambient_lattice()
+            match point.parent():
+                case parent if parent is lattice:
+                    rationals = _own_ring(SageQQ)
+                    return ambient.linear_combination(
+                        {
+                            label: rationals(coefficient)
+                            for label, coefficient in lattice.framing_coefficients(point).items()
+                        }
+                    )
+                case _:
+                    return ambient(point)
+
         def _engine_coordinates(self, point):
             rationals = _own_ring(SageQQ)
             ambient = self.ambient_space()
-            point = ambient(point)
+            point = self.rational_point(point)
             coefficients = ambient.framing_coefficients(point)
             zero = rationals.zero()
             return tuple(
@@ -419,7 +439,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             rationals = _own_ring(SageQQ)
             ambient = self.ambient_space()
             dual = self.ambient_lattice().dual_module()
-            point = ambient(point)
+            point = self.rational_point(point)
             normal = dual(normal)
             point_coefficients = ambient.framing_coefficients(point)
             normal_coefficients = dual.framing_coefficients(normal)

@@ -79,11 +79,10 @@ def _rationals():
     return _own_ring(SageQQ)
 
 
-def _rational_point(coordinates):
-    r"""A rational point of the plane, in the coordinate frame of ``Q``."""
+def _rational_point(polygon, coordinates):
+    r"""A rational point of ``M_QQ``, the rational space ``Q`` lives in."""
     rationals = _rationals()
-    return tensor.vector(
-        rationals,
+    return polygon.ambient_space()(
         tuple(_owned_engine_element(rationals, SageQQ(coordinate)) for coordinate in coordinates),
     )
 
@@ -282,10 +281,10 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
                 "is_affine_type": bool(affine),
                 "polygon": polygon,
                 "polygon_vertex_order": finite_family(
-                    tuple(_rational_point(vertex) for vertex in vertices),
+                    tuple(_rational_point(polygon, vertex) for vertex in vertices),
                     name="ADE polygon boundary order",
                 ),
-                "distinguished_point": _rational_point(point),
+                "distinguished_point": _rational_point(polygon, point),
                 "side_decorations": decorations,
                 "log_scheme": toric_base,
                 "boundary_divisor": toric_base.toric_boundary_divisor(),
