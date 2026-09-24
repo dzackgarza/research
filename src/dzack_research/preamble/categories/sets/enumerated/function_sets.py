@@ -161,7 +161,7 @@ class FunctionEnumeratedSets(OwnedCategory):
         description: str,
         *,
         indexing: Category,
-    ) -> Parent:
+    ) -> Sets().ObjectType:
         r"""Construct the set of symbols with this prefix, indexed as ``indexing`` states."""
         return _object_of(
             Category.join([self, indexing]),
@@ -255,7 +255,7 @@ class EnumeratedByNaturals(OwnedCategory):
         return [EnumeratedSets(), Sets().Infinite()]
 
     class ParentMethods:
-        def index_set(self) -> Parent:
+        def index_set(self) -> Sets().ObjectType:
             return NN
 
         def _index_from_rank(self, position):
@@ -286,7 +286,7 @@ class EnumeratedByIntegers(OwnedCategory):
         return [EnumeratedSets(), Sets().Infinite()]
 
     class ParentMethods:
-        def index_set(self) -> Parent:
+        def index_set(self) -> Sets().ObjectType:
             return _integers()
 
         def _index_from_rank(self, position):

@@ -5,16 +5,15 @@ functions. This set does not compute integrals or \(L^2\) Gram matrices.
 """
 
 from sage.misc.cachefunc import cached_function
-from sage.structure.parent import Parent
-
 from dzack_research.preamble.categories.sets.enumerated.function_sets import (
     EnumeratedByIntegers,
     FunctionEnumeratedSets,
 )
+from dzack_research.preamble.lexicon.set_theory import SetObject
 
 
 @cached_function
-def SincTranslates() -> Parent:
+def SincTranslates() -> SetObject:
     r"""The enumerated set \(\{\operatorname{sinc}(\,\cdot\,-n):n\in\mathbb Z\}\subset\mathrm{SR}\).
 
     Each translate is the formal symbol \(\mathrm{sinc}_n\), not Sage's

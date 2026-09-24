@@ -11,6 +11,7 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
+from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -40,7 +41,7 @@ class IndexedFamily[IndexT, ValueT]:
         self._name = name
         super().__init__(**rest)
 
-    def index_set(self) -> Parent:
+    def index_set(self) -> SetObject:
         return self._index_set
 
     def cardinality(self) -> Cardinal:
@@ -92,7 +93,7 @@ class IndexedFamily[IndexT, ValueT]:
     def items(self) -> Iterator[tuple[IndexT, ValueT]]:
         return ((index, self.value(index)) for index in self.index_set())
 
-    def keys(self) -> Parent:
+    def keys(self) -> SetObject:
         r"""Return the mathematical index set of this family."""
         return self.index_set()
 
