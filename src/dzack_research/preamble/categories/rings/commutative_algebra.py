@@ -1512,6 +1512,17 @@ class PrimeLocalizations(OwnedCategory):
             )
             return represented
 
+        def krull_dimension(self):
+            r"""Return ``dim R_p``, the height of ``p``.
+
+            The primes of ``R_p`` are the ``qR_p`` for the primes ``q`` of
+            ``R`` inside ``p``, in order-preserving bijection, so a chain in
+            ``R_p`` is a chain in ``R`` ending at ``p``.
+            The height is asked of the point ``p`` of ``Spec R``.
+            """
+            source = self.localization_source()
+            return source.spectrum()(self.localized_prime()).height()
+
         @cached_method
         def residue_field(self):
             r"""Return ``kappa(p) = R_p / p R_p``.

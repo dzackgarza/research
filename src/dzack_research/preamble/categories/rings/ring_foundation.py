@@ -2814,13 +2814,34 @@ class _OwnedRingElement(RingElement):
         r"""Return the private backend value for boundary code in this module."""
         return self._backend_value
 
+    def _operand(self, other):
+        r"""``other`` in this ring along the canonical map, for arithmetic and comparison.
+
+        An element of another owned ring enters only when that ring maps
+        canonically into this one.  Otherwise the other ring is where the
+        operation lives, and the refusal lets Python ask the other operand:
+        ``2 * q.one()`` for a quotient ``q`` of ``QQ[x,y]`` is an element of
+        ``q``, not the integer that the lift of ``1`` would convert to.
+        """
+        other_parent = getattr(other, "parent", lambda: None)()
+        if (
+            other_parent is not None
+            and other_parent is not self.parent()
+            and other_parent in OwnedRings()
+            and not _engine_ring(self.parent()).has_coerce_map_from(_engine_ring(other_parent))
+        ):
+            raise TypeError(
+                f"{other!r} lies in {other_parent}, which has no canonical map into {self.parent()}"
+            )
+        return self.parent()(other)
+
     def _add_(self, other):
         parent = self.parent()
         return _owned_engine_element(parent, self._backend() + other._backend())
 
     def __add__(self, other):
         try:
-            other = self.parent()(other)
+            other = self._operand(other)
         except (TypeError, ValueError):
             return NotImplemented
         return self._add_(other)
@@ -2829,14 +2850,14 @@ class _OwnedRingElement(RingElement):
 
     def __sub__(self, other):
         try:
-            other = self.parent()(other)
+            other = self._operand(other)
         except (TypeError, ValueError):
             return NotImplemented
         return self._add_(-other)
 
     def __rsub__(self, other):
         try:
-            other = self.parent()(other)
+            other = self._operand(other)
         except (TypeError, ValueError):
             return NotImplemented
         return other._add_(-self)
@@ -2881,14 +2902,14 @@ class _OwnedRingElement(RingElement):
             except (AttributeError, TypeError, ValueError):
                 return NotImplemented
         try:
-            other = self.parent()(other)
+            other = self._operand(other)
         except (TypeError, ValueError):
             return NotImplemented
         return _OwnedRingElement._mul_(self, other)
 
     def __rmul__(self, other):
         try:
-            other = self.parent()(other)
+            other = self._operand(other)
         except (TypeError, ValueError):
             return NotImplemented
         return _OwnedRingElement._mul_(other, self)
@@ -2899,7 +2920,7 @@ class _OwnedRingElement(RingElement):
     def _richcmp_(self, other, op):
         if not isinstance(other, _OwnedRingElement) or other.parent() is not self.parent():
             try:
-                other = self.parent()(other)
+                other = self._operand(other)
             except (TypeError, ValueError):
                 return NotImplemented
         return richcmp(self._backend(), other._backend(), op)
@@ -2908,7 +2929,7 @@ class _OwnedRingElement(RingElement):
         if self.parent() not in OwnedOrderedRings():
             return NotImplemented
         try:
-            other = self.parent()(other)
+            other = self._operand(other)
         except (TypeError, ValueError):
             return NotImplemented
         return bool(richcmp(self._backend(), other._backend(), op))
@@ -2927,7 +2948,7 @@ class _OwnedRingElement(RingElement):
 
     def __eq__(self, other):
         try:
-            other = self.parent()(other)
+            other = self._operand(other)
         except (TypeError, ValueError):
             # Not this ring's decision: a cardinal, say, knows whether it
             # equals a natural number of the ring, so Python asks it next.
@@ -2981,7 +3002,7 @@ class _OwnedRingElement(RingElement):
 
     def __truediv__(self, other):
         try:
-            other = self.parent()(other)
+            other = self._operand(other)
         except (TypeError, ValueError):
             return NotImplemented
         value = self._backend() / other._backend()
