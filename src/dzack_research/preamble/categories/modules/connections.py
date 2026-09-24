@@ -295,18 +295,14 @@ class Connection(Element):
     def _call_(self, element):
         return self.__call__(element)
 
+    @cached_method
     def underlying_linear_morphism(self):
-        cached = self.__dict__.get("_preamble_underlying_linear_morphism")
-        if cached is not None:
-            return cached
         target = self.parent().codomain_object()
-        morphism = ConnectionUnderlyingLinearMorphism(
+        return ConnectionUnderlyingLinearMorphism(
             self.parent().arrow_set(),
             self,
             lambda element: target(self(element.underlying_element())),
         )
-        self._preamble_underlying_linear_morphism = morphism
-        return morphism
 
     as_morphism = underlying_linear_morphism
 
