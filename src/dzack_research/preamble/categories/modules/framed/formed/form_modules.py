@@ -136,8 +136,10 @@ def _represented_value_module(formed_module):
         try:
             scalar_map = OwnedRings().Mor(ring, value)(lambda scalar: value(scalar))
             return value.regular_module().restrict_scalars(scalar_map)
-        except (TypeError, ValueError, NotImplementedError):
-            pass
+        except (TypeError, ValueError, NotImplementedError) as error:
+            raise TypeError(
+                f"the form value ring {value} does not carry the required represented {ring}-module structure"
+            ) from error
     raise TypeError(
         f"the form value object {value} has no represented {ring}-module structure"
     )
