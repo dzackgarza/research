@@ -147,11 +147,9 @@ class RingMorphism(Morphism):
         return self._engine_morphism
 
     def __mul__(self, other):
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        if element_parent(other) is not OwnedRings().Mor(
-            other.domain(), other.codomain()
-        ):
+        # Any ring morphism composes here, including one whose Mor is a
+        # subcategory's (a number-field embedding is a ring morphism).
+        if not _is_ring_map_into(other, self.domain()):
             return NotImplemented
         if self.is_identity():
             return other
