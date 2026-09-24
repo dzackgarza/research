@@ -2341,13 +2341,15 @@ def _quotient_ring(source, defining_ideal):
     their own equality, so ``(2)`` and ``(2,4)`` reach the same quotient of the
     integers.
 
-    A prime localization is realized by a fraction field, where every nonzero
-    ideal is the unit ideal, so a quotient read from that realization would be
-    the zero ring however small ``I`` is.  ``R_p/I R_p`` is therefore left to
-    the represented classes, whose equality is the owned membership
-    ``a - b in I R_p`` and is exact.
+    A localization keeps its localization engine as a private realization of
+    fractions, not as quotient-construction data. Its quotient is therefore
+    represented by classes directly; equality is the owned membership
+    ``a - b in I`` and is exact. This is essential for prime localizations,
+    whose fraction-field realization would otherwise collapse every nonzero
+    ideal to the unit ideal, and it gives every represented localization the
+    same construction rule without probing backend quotient capabilities.
     """
-    if source in PrimeLocalizations():
+    if source in LocalizationRings():
         quotient_engine = None
     else:
         engine = _engine_ring(source)
@@ -2356,33 +2358,17 @@ def _quotient_ring(source, defining_ideal):
             lifted = _engine_quotient_cover_ideal(source, defining)
             quotient_engine = lifted.ring().quotient(lifted)
         else:
-            try:
-                quotient_engine = engine.quotient(defining)
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                quotient_engine = None
+            quotient_engine = engine.quotient(defining)
 
     dimension = None
     if quotient_engine is not None and source in OwnedRings().Noetherian():
-        try:
-            dimension = _engine_krull_dimension(quotient_engine)
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+        dimension = _engine_krull_dimension(quotient_engine)
 
     quotient_is_field = False
     quotient_is_domain = False
-    try:
+    if source not in LocalizationRings():
         quotient_is_field = bool(defining_ideal.is_maximal())
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        pass
-    if quotient_engine is not None:
-        try:
-            quotient_is_field = bool(quotient_engine.is_field())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
-        try:
-            quotient_is_domain = bool(quotient_engine.is_integral_domain())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+        quotient_is_domain = quotient_is_field or bool(defining_ideal.is_prime())
         if quotient_is_domain and dimension == 0:
             quotient_is_field = True
     placements = []
@@ -2392,12 +2378,8 @@ def _quotient_ring(source, defining_ideal):
         placements.append(OwnedRings().Division().Commutative())
     elif quotient_is_domain:
         placements.append(OwnedRings().Commutative().NoZeroDivisors())
-    if quotient_engine is not None:
-        try:
-            if bool(quotient_engine.is_finite()):
-                placements.append(FiniteSets())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+    if source in FiniteSets() or isinstance(quotient_engine, IntegerModRing_generic):
+        placements.append(FiniteSets())
     if dimension == 0:
         placements.append(OwnedRings().Artinian())
 
