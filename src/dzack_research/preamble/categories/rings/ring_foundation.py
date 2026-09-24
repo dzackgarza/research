@@ -1274,7 +1274,7 @@ class LocalizationRings(OwnedCategory):
                     )
                     for generator in source_generators
                 ]
-                engine_morphism = engine_localization.mor(
+                engine_morphism = engine_localization.hom(
                     engine_images,
                     engine_target,
                 )
@@ -2831,6 +2831,11 @@ def _owned_ring_element_text(element) -> str:
             f"p-adic element with residue {int(residue)}, "
             f"valuation {valuation}, precision {precision}"
         )
+    if isinstance(engine, QuotientRing_generic) and isinstance(
+        engine.cover_ring(), (PolynomialRing_generic, MPolynomialRing_base)
+    ):
+        cover = _own_ring(engine.cover_ring())
+        return f"[{_owned_polynomial_text(cover, value.lift())}]"
     return f"element of {parent} of additive order {element.additive_order()}"
 
 
