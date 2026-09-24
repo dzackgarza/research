@@ -42,6 +42,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_engi
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedRings,
+    _OwnedRingBootstrapParent,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -467,7 +468,6 @@ class ExactRealField(UniqueRepresentation, Field):
     r"""The exact field of real numbers represented by closed exact expressions."""
 
     Element = ExactRealNumber
-    _preamble_owned_ring_parent = True
 
     def __init__(self) -> None:
         from dzack_research.preamble.categories.algebras.algebras import Algebras
@@ -585,6 +585,9 @@ class ExactRealField(UniqueRepresentation, Field):
         from sage.symbolic.constants import e
 
         return self(e)
+
+
+_OwnedRingBootstrapParent.register(ExactRealField)
 
 
 RR = ExactRealField()

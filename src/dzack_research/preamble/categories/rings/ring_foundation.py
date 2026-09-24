@@ -1,5 +1,6 @@
 """Owned scalar hierarchy and the boundary to Sage computation rings."""
 
+from abc import ABCMeta
 from collections.abc import Mapping
 from functools import wraps
 
@@ -84,6 +85,17 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category
+
+
+class _OwnedRingBootstrapParent(metaclass=ABCMeta):
+    r"""Declared parent types admitted while their owned ring category is built.
+
+    This is a construction-time type contract only. Category membership is
+    the mathematical classification once Parent initialization finishes; this
+    virtual base exists solely for the self-referential interval before that
+    membership can be asked without circularity.
+    """
+
 
 if "Noetherian" not in all_axioms:
     all_axioms.add("Noetherian")
@@ -1305,8 +1317,6 @@ class LocalizationRings(OwnedCategory):
 
 
 class _PredicateSubringParent(Parent):
-    _preamble_owned_ring_parent = True
-
     @lazy_attribute
     def Element(self):
         return _PredicateSubringElement
@@ -1389,6 +1399,9 @@ class _PredicateSubringParent(Parent):
 
     def __contains__(self, element):
         return PredicateSubrings.ParentMethods.__contains__(self, element)
+
+
+_OwnedRingBootstrapParent.register(_PredicateSubringParent)
 
 
 def _predicate_subring(ambient_ring, predicate, description, category=None):
@@ -2530,10 +2543,10 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         # ``Algebras(R).Associative().Unital().Commutative()`` must therefore accept that constructing
         # parent directly rather than asking category membership of an object
         # whose category is precisely what is being built.
-        match getattr(base_ring, "_preamble_owned_ring_parent", False):
-            case True:
+        match base_ring:
+            case _OwnedRingBootstrapParent():
                 pass
-            case False:
+            case _:
                 base_ring = _owned_ring(base_ring)
         return OwnedParameterizedCategory.__classcall__(
             cls,
@@ -2543,8 +2556,8 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         )
 
     def __init__(self, base_ring) -> None:
-        match getattr(base_ring, "_preamble_owned_ring_parent", False):
-            case True:
+        match base_ring:
+            case _OwnedRingBootstrapParent():
                 # The host type is itself the owned-ring construction.  During
                 # its bootstrap the category being built is precisely what
                 # will establish ``base_ring in OwnedRings()``; asking that
@@ -2553,7 +2566,7 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
                 # without re-asking the theorem under construction.
                 self._owned_parameter = base_ring
                 OwnedCategory.__init__(self)
-            case False:
+            case _:
                 OwnedParameterizedCategory.__init__(self, base_ring)
 
     def base_ring(self):
@@ -3161,7 +3174,6 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     ``_from_engine_element`` and leave through ``_engine_element``.
     """
 
-    _preamble_owned_ring_parent = True
     _native_module_basis = None
 
 
@@ -3433,6 +3445,9 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def _latex_(self):
         text = self._repr_().replace("_", r"\_")
         return rf"\text{{{text}}}"
+
+
+_OwnedRingBootstrapParent.register(_OwnedRingParent)
 
 
 def _engine_scalar_ring(engine: Ring):
