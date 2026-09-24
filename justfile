@@ -303,9 +303,11 @@ coverage:
     printf 'import sys\nimport sage.all  # noqa: F401\nimport pytest\nsys.exit(pytest.main(sys.argv[1:]))\n' > "$out/driver.py"
     # The specification subtrees are red until the preamble meets them, so a
     # failing suite still yields its coverage; its exit status is reported, not fatal.
+    # No per-test timeout: its SIGALRM inside Cython ends the whole run (TRAPS.md).
+    # One-line tracebacks keep failure reports from computing owned reprs.
     status=0
     "$sage_python" -m coverage run --branch --source=src/dzack_research/preamble "$out/driver.py" \
-        -p qc_sage_session -q "${tests[@]}" || status=$?
+        -p qc_sage_session -q --timeout=0 --tb=line "${tests[@]}" || status=$?
     "$sage_python" -m coverage report --show-missing --skip-covered | tee "$out/report.txt"
     echo "pytest exit status: $status; full report: $out/report.txt"
 
