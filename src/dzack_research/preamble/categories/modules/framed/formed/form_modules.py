@@ -72,6 +72,7 @@ from dzack_research.preamble.categories.modules.framed.fraction_field_quotients 
     FractionFieldQuotients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
@@ -2171,11 +2172,12 @@ def _form_module(
         categories.append(FreeFormModules(base_ring).FinitelyGenerated())
     if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
-        try:
-            symmetric = form.gram_tensor().is_symmetric()
-        except TypeError:
-            symmetric = False
-        if symmetric:
+        has_finite_scalar_gram = (
+            form.codomain() in OwnedRings()
+            and module in FramedModules(base_ring)
+            and module.module_generating_set().cardinality().is_finite()
+        )
+        if has_finite_scalar_gram and form.gram_tensor().is_symmetric():
             categories.append(BilinearFormModules(base_ring).Symmetric())
     else:
         categories.append(QuadraticFormModules(base_ring))
