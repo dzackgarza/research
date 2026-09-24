@@ -108,6 +108,14 @@ def _is_quadratic_form(form) -> bool:
     return _form_is_quadratic(form)
 
 
+def _has_finite_framing(module) -> bool:
+    ring = module.base_ring()
+    return (
+        module in FramedModules(ring)
+        and module.module_generating_set().cardinality().is_finite()
+    )
+
+
 @cached_function(key=lambda formed_module: id(formed_module))
 def _represented_value_module(formed_module):
     r"""Return the actual module object underlying a form's public value object.
@@ -814,14 +822,11 @@ def _formed_module_base_change(self, ring_map):
     form = self._formed_form()
 
     if _is_bilinear_form(form):
-        try:
+        if _has_finite_framing(form.module()):
             changed_values = form.coordinate_values().map(
                 lambda value: _base_change_scalar(ring_map, value),
                 name="Base-changed bilinear coordinate values",
             )
-        except TypeError:
-            changed_values = None
-        if changed_values is not None:
             return FormModules(target_ring)(
                 changed.bilinear_forms(target_ring)(changed_values)
             )
@@ -1094,19 +1099,18 @@ class FormModules(OwnedCategoryOverBaseRing):
 
             form = self._formed_form()
             if _is_bilinear_form(form):
-                try:
+                if _has_finite_framing(form.module()):
                     values = form.coordinate_values().map(
                         lambda value: scalar * value,
                         name="Twisted bilinear coordinate values",
                     )
-                except TypeError:
                     return FormModules(self.base_ring())(
-                        self.bilinear_forms(self.value_module())(
-                            lambda left, right: scalar * form(left, right)
-                        )
+                        self.bilinear_forms(self.value_module())(values)
                     )
                 return FormModules(self.base_ring())(
-                    self.bilinear_forms(self.value_module())(values)
+                    self.bilinear_forms(self.value_module())(
+                        lambda left, right: scalar * form(left, right)
+                    )
                 )
             try:
                 values = form.lift_coordinate_values().map(
@@ -2172,11 +2176,7 @@ def _form_module(
         categories.append(FreeFormModules(base_ring).FinitelyGenerated())
     if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
-        has_finite_scalar_gram = (
-            form.codomain() in OwnedRings()
-            and module in FramedModules(base_ring)
-            and module.module_generating_set().cardinality().is_finite()
-        )
+        has_finite_scalar_gram = form.codomain() in OwnedRings() and _has_finite_framing(module)
         if has_finite_scalar_gram and form.gram_tensor().is_symmetric():
             categories.append(BilinearFormModules(base_ring).Symmetric())
     else:
