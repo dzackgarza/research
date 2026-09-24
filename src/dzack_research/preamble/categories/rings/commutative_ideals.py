@@ -869,8 +869,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
         "engine_ideal": backend,
         "ideal_generators": target_generators,
     }
-    presentation = getattr(changed, "presentation", None)
-    if presentation is None:
+    if changed not in ModulesWithChosenFinitePresentation(target):
         return target._fresh_free_module_on(
             changed.module_generating_set(),
             _subobject_ambient=ambient_module,
@@ -879,7 +878,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
             _extra_construction_data=construction_data,
         )
     return ModulesWithChosenFinitePresentation(target)(
-        presentation(),
+        changed.presentation(),
         subobject_ambient=ambient_module,
         subobject_generator_images=generator_images,
         category=Category.join((CommutativeIdeals(target),)),
