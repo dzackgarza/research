@@ -715,10 +715,9 @@ class GradedDerivation(ModuleElement):
                     return Unknown
                 case False:
                     pass
-            try:
-                generator_degree = algebra.homogeneous_degree(generator)
-            except ValueError:
+            if not generator.is_homogeneous():
                 return Unknown
+            generator_degree = algebra.homogeneous_degree(generator)
             image = self(generator)
             match image == target.zero():
                 case True:
@@ -727,10 +726,9 @@ class GradedDerivation(ModuleElement):
                     return Unknown
                 case False:
                     pass
-            try:
-                image_degree = target.homogeneous_degree(image)
-            except ValueError:
+            if not image.is_homogeneous():
                 return False
+            image_degree = target.homogeneous_degree(image)
             match image_degree == generator_degree + self.degree_shift():
                 case True:
                     pass
@@ -747,10 +745,9 @@ class GradedDerivation(ModuleElement):
                     return Unknown
                 case False:
                     pass
-            try:
-                left_degree = algebra.homogeneous_degree(left)
-            except ValueError:
+            if not left.is_homogeneous():
                 return Unknown
+            left_degree = algebra.homogeneous_degree(left)
             for right_label in labels:
                 right = algebra.algebra_generator(right_label)
                 signed_second = left * self(right)
@@ -971,9 +968,14 @@ class GradedDerivationCategoryConstruction(_RestrictedMorCategoryOf):
 def _graded_derivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
     if target is None:
         target = algebra
-    if algebra.base_ring() is not target.base_ring():
-        raise ValueError("a graded derivation requires one coefficient ring")
     ring = algebra.base_ring()
+    if target not in Modules(ring):
+        raise TypeError("a graded derivation target must be a module over the algebra's coefficient ring")
+    graded_modules = algebra._graded_module_placement()
+    if target not in graded_modules:
+        raise TypeError(
+            "a graded derivation target must carry the same declared grading as its algebra"
+        )
     return GradedDerivationCategoryConstruction(Modules(ring), shift).Of(
         algebra,
         target,

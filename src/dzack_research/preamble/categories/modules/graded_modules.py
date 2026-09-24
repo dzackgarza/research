@@ -410,6 +410,14 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 raise TypeError("a generic graded piece requires a framed graded module")
             return self.subobject_on(self.module_generators_of_degree(degree))
 
+        def homogeneous_degree(self, element):
+            r"""Return the selected degree of one nonzero homogeneous element."""
+            element = self(element)
+            degree = _represented_homogeneous_degree_or_none(element)
+            if degree is None:
+                raise ValueError("zero has no selected homogeneous degree here")
+            return self.grading_monoid()(degree)
+
     class ElementMethods:
         def degree(self):
             r"""Return the largest degree occurring in the selected finite support.
