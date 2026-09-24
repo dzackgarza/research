@@ -19,7 +19,8 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _SelectedFinitePresentationModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules, Modules, ModuleSubobjects, ModulesWithChosenFinitePresentation,
+    FramedModules, Modules, ModuleSubobjects,
+    ModulesWithChosenComponentPresentation, ModulesWithChosenFinitePresentation,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -54,16 +55,8 @@ def _flatten_nested_label(label, length):
 
 
 def _has_component_presentation(source):
-    r"""Read the existing component-presentation protocol at its module adapter.
-
-    The four operations describe the finite relation components and their
-    framing correspondence.  They are representation data, not a claim of
-    freeness deduced from a generating set.  This adapter is the only consumer
-    selecting between that data and an actual free source.
-    """
-    return all(callable(getattr(source, name, None)) for name in (
-        "module_component_key", "module_component", "module_component_generator_label", "module_label_from_component",
-    ))
+    r"""Whether ``source`` retains the owned component-presentation datum."""
+    return source in ModulesWithChosenComponentPresentation(source.base_ring())
 
 
 class _WordPresentation:
@@ -685,7 +678,13 @@ def _word_module(presentation, *, extra_categories=(), construction_data=None):
     """
     ring = presentation.base_ring()
     data = dict(construction_data or {})
-    category = Cat().meet((GeneralModules(ring), FramedModules(ring), GradedModules(ring), *extra_categories))
+    category = Cat().meet((
+        GeneralModules(ring),
+        FramedModules(ring),
+        GradedModules(ring),
+        ModulesWithChosenComponentPresentation(ring),
+        *extra_categories,
+    ))
     engine = data.pop("_engine", (GeneralModules(ring), _WordModule, _WordModuleElement))
     return _object_of(category, _engine=engine, base_ring=ring, word_presentation=presentation, **data)
 

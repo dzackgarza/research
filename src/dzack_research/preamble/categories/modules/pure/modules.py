@@ -2613,6 +2613,24 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
             return represented
 
 
+class ModulesWithChosenComponentPresentation(OwnedCategoryOverBaseRing):
+    r"""Framed modules retaining an exact decomposition of framing labels into components.
+
+    The datum consists of a component key for every framing label, the module
+    represented by each component, and the two inverse translations between a
+    component generator label and the corresponding global framing label.
+    Constructions such as word quotients may use this datum directly; method
+    presence is not evidence that an arbitrary framed module carries it.
+    """
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "modules with a chosen component presentation"
+
+    def super_categories(self):
+        return [FramedModules(self.base_ring())]
+
+
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented modules carrying one selected finite presentation."""
 
