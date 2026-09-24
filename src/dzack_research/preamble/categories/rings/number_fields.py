@@ -9,10 +9,12 @@ from sage.all import (
 from sage.all import (
     QuadraticField as _SageQuadraticField,
 )
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories._lattice import signature_pair
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -63,7 +65,7 @@ def QuadraticField(discriminant, *args, **kwargs):
 
 
 def _number_field(polynomial, *args, **kwargs):
-    parent = getattr(polynomial, "parent", lambda: None)()
+    parent = element_parent(polynomial)
     if parent not in OwnedRings():
         raise TypeError("number-field construction expects a polynomial in an owned polynomial ring")
     backend_polynomial = _engine_element(parent, polynomial)
@@ -149,8 +151,8 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
         def extension(self, polynomial, name="a"):
             r"""Return the finite extension defined by an owned polynomial over ``self``."""
-            polynomial_ring = getattr(polynomial, "parent", lambda: None)()
-            if polynomial_ring is None or polynomial_ring.base_ring() is not self:
+            polynomial_ring = element_parent(polynomial)
+            if polynomial_ring not in OwnedRings() or polynomial_ring.base_ring() is not self:
                 raise TypeError(
                     "a relative number-field extension requires a polynomial over this field"
                 )
@@ -259,8 +261,9 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
             def embedding_position(embedding):
                 if (
-                    getattr(embedding, "domain", lambda: None)() is not self
-                    or getattr(embedding, "codomain", lambda: None)() is not target
+                    not isinstance(embedding, Morphism)
+                    or embedding.domain() is not self
+                    or embedding.codomain() is not target
                 ):
                     raise ValueError(embedding)
                 primitive_image = embedding(primitive)
