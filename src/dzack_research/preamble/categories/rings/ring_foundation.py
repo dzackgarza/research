@@ -429,7 +429,10 @@ def _ring_composite(second, first):
     specialization composes on its own data only when both factors are of its
     kind.
     """
-    return first.domain().Mor(second.codomain()).elementwise(
+    # The composite is a morphism of rings; the domain's own ``Mor`` may be a
+    # more structured homset (algebra maps out of a polynomial ring), which
+    # the composite need not belong to.
+    return _ring_mor_category(first.domain(), second.codomain()).elementwise(
         lambda element: second(first(element)),
     )
 
