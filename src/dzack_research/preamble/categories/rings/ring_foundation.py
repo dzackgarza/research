@@ -52,6 +52,8 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
 from sage.structure.element import CommutativeRingElement, RingElement, parent as element_parent
 from sage.structure.parent import Parent
+from sage.misc.unknown import Unknown
+from sage.rings.qqbar import AA as SageAA
 from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
 from sage.structure.richcmp import op_EQ, op_GE, op_GT, op_LE, op_LT, op_NE, richcmp
 from sage.structure.sage_object import SageObject
@@ -3748,6 +3750,12 @@ def _engine_field_decision(engine):
     match engine:
         case _ if engine in SageFields():
             return True
+        case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base) and (
+            engine.cover_ring().base_ring() is SageAA
+        ):
+            # Singular has no algebraic-real coefficients and Sage has no
+            # other primality route over AA (TRAPS.md): undecided.
+            return Unknown
         case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base) and bool(
             engine.cover_ring().base_ring().is_field()
         ):
@@ -3755,6 +3763,17 @@ def _engine_field_decision(engine):
             return bool(defining.is_prime() and defining.dimension() == 0)
         case QuotientRing_generic() if _is_integral_multivariate_ideal(engine.defining_ideal()):
             return _integral_polynomial_ideal_is_maximal(engine.defining_ideal())
+        case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base) and isinstance(
+            engine.cover_ring().base_ring(), IntegerModRing_generic
+        ):
+            # (Z/n)[x]/I = Z[x]/(n, I), so the integral test decides it.
+            cover = engine.cover_ring()
+            modulus = SageZZ(cover.base_ring().characteristic())
+            integral = cover.change_ring(SageZZ)
+            lifted = integral.ideal(
+                (integral(modulus), *(integral(generator.change_ring(SageZZ)) for generator in engine.defining_ideal().gens()))
+            )
+            return _integral_polynomial_ideal_is_maximal(lifted)
         case _:
             return engine.is_field()
 

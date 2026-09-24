@@ -301,3 +301,13 @@ over `ZZ`: `minAssZ` from `primdecint.lib` gives the minimal primes
 2026-09-25. Route chosen: primality by `minAssZ`, maximality by
 `I cap ZZ = (p)` and Zariski's lemma in `F_p[x_1, ..., x_n]`, syzygies by
 Singular `syz`.
+
+### Over `AA`, multivariate ideals have no primality test
+
+`PolynomialRing(AA, ['x','y']).ideal(x, y).is_prime()` raises `TypeError:
+cannot call Singular function 'primdecSY'`: Singular has no algebraic-real
+coefficients, and Sage has no other primary decomposition over `AA`.
+Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen:
+whether such a quotient is a field is left undecided (`Unknown`), so it is not
+placed in fields. Over `Zmod(n)` the question reduces to `ZZ`, because
+`(Z/n)[x]/I = Z[x]/(n, I)`.
