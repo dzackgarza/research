@@ -745,11 +745,7 @@ def _connection_de_rham_component(connection, degree, component, target):
     source_tensor = modules.tensor_product((coefficient_module, source_forms))
     target_tensor = modules.tensor_product((coefficient_module, target_forms))
     result = target_tensor.zero()
-    match hasattr(component, "underlying_element"):
-        case True:
-            underlying = component.underlying_element()
-        case False:
-            underlying = component
+    underlying = component.underlying_element()
     for (module_label, form_label), coefficient in source_tensor.framing_coefficients(underlying).items():
         coefficient_vector = coefficient_module.scalar_multiple(
             coefficient,
@@ -794,11 +790,7 @@ def _connection_de_rham_right_action(module, module_element, algebra_element):
         left_forms = omega.exterior_power(left_degree)
         modules = Modules(coefficient_module.base_ring())
         left_tensor = modules.tensor_product((coefficient_module, left_forms))
-        match hasattr(left_component, "underlying_element"):
-            case True:
-                left_underlying = left_component.underlying_element()
-            case False:
-                left_underlying = left_component
+        left_underlying = left_component.underlying_element()
         for right_degree, right_component in exterior_element.homogeneous_components().items():
             target_degree = left_degree + right_degree
             target_forms = omega.exterior_power(target_degree)
