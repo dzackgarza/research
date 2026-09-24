@@ -2796,20 +2796,17 @@ def _localization_at_submonoid(source, submonoid):
 
 
 def _quotient_representative(element):
-    lift = getattr(element, "lift", None)
-    assert lift is not None, (
+    assert element.parent() in QuotientRings(), (
         "a represented quotient element used in quotient/localization comparison must carry its canonical lift"
     )
-    return lift()
+    return element.lift()
 
 
 def _localization_element_from_source_fraction(localization_ring, numerator, denominator):
-    fraction = getattr(localization_ring, "fraction", None)
-    if fraction is not None:
-        return fraction(numerator, denominator)
-    numerator_image = localization_ring.localization_map()(numerator)
-    denominator_image = localization_ring.localization_map()(denominator)
-    return localization_ring(numerator_image / denominator_image)
+    assert localization_ring in LocalizationRings(), (
+        "source-fraction reconstruction requires a represented localization"
+    )
+    return localization_ring.fraction(numerator, denominator)
 
 
 def _quotient_localization_comparison(source_quotient, localization_ring):
@@ -2852,13 +2849,11 @@ def _quotient_localization_comparison(source_quotient, localization_ring):
             quotient_map.extension_of_ideal(prime)
         )
     else:
-        try:
-            source_generators = tuple(source_submonoid.monoid_generators())
-        except NotImplementedError as error:
-            raise AssertionError(
-                "the quotient/localization comparison reads the image of S from a chosen "
-                "finite generating set, or from the prime whose complement S is"
-            ) from error
+        assert source_submonoid._selected_representation_kind() == "generators", (
+            "the quotient/localization comparison reads the image of S from a chosen "
+            "finite generating set, or from the prime whose complement S is"
+        )
+        source_generators = tuple(source_submonoid.monoid_generators())
 
         quotient_submonoid = source_quotient.generated_submonoid(
             tuple(quotient_map(generator) for generator in source_generators),
