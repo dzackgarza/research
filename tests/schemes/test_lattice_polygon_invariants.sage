@@ -1,11 +1,11 @@
 r"""Lattice polygons: Pick's theorem, Ehrhart polynomials, ``h^*``-vectors, reflexivity,
 polar duals, halfspace presentations and normal fans.
 
-Sources: Beck--Robins, *Computing the Continuous Discretely*, Thm. 2.8 (Pick), Thm. 3.8
-(Ehrhart's theorem) and §3.5 (the ``h^*``-polynomial of a lattice polygon is
-``1 + (L(1) - 3) z + I z^2``); Batyrev's reflexive polytopes, of which there are 16 in
-dimension two (Cox--Little--Schenck, *Toric Varieties*, Thm. 8.3.7); the normal fan of
-a lattice polygon (CLS §2.3).
+For a lattice polygon with ``I`` interior and ``B`` boundary lattice points, Pick's formula
+gives area ``I + B/2 - 1``, the Ehrhart polynomial is ``L(t) = A t^2 + (B/2) t + 1``, and
+``h^* = (1, L(1) - 3, I)``; these relations are checked on each specimen.  There are exactly
+16 equivalence classes of reflexive polygons (Cox--Little--Schenck, *Toric Varieties*,
+Thm. 8.3.7).
 """
 
 from dzack_research.preamble.all import *
@@ -104,7 +104,7 @@ def test_there_are_sixteen_reflexive_polygons() -> None:
 
 def test_the_normal_fan_of_a_triangle_has_one_ray_per_edge() -> None:
     r"""The normal fan of a polygon has one ray per edge and one maximal cone per vertex, and is
-    complete (CLS Prop. 2.3.8)."""
+    complete."""
     lattice = ZZ.free_module(2)
     triangle = ConvexPolytopes(lattice)(((0, 0), (0, 3), (6, 0)))
     fan = triangle.normal_fan()
