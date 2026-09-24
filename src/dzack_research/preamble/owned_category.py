@@ -492,6 +492,38 @@ def declared_implementation_types(
     return declared[0], tuple(declared[1:])
 
 
+def _join_implementation_bases(
+    category: JoinCategory,
+    provider_names: tuple[str, ...],
+) -> tuple[type, ...]:
+    r"""Return one cooperative implementation MRO for an owned join.
+
+    A join has no implementation provider of its own.  Inheriting the already
+    composed ``parent_class`` objects of each branch can make three individually
+    valid MROs impose a precedence cycle on shared providers.  The category
+    linearization already fixes the mathematical order, so read each level's
+    declared providers from that linearization and compose those providers
+    directly instead of nesting dynamic classes.
+    """
+    bases: list[type] = []
+    for level in category._all_super_categories:
+        provider, inherited = declared_implementation_types(
+            type(level), provider_names
+        )
+        candidates = (() if provider is None else (provider,)) + inherited
+        for candidate in candidates:
+            if any(
+                candidate is known or issubclass(known, candidate)
+                for known in bases
+            ):
+                continue
+            bases = [
+                known for known in bases if not issubclass(candidate, known)
+            ]
+            bases.append(candidate)
+    return tuple(bases) or (object,)
+
+
 class OwnedCategoryMixin(CatConstructionsMixin):
     r"""Tie a category to its implementation classes.
 
@@ -623,21 +655,44 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         declaring_class = type(category)
         if declaring_class.__name__.endswith("_with_category"):
             declaring_class = declaring_class.__base__
+        provider_names = self._IMPLEMENTATION_PROVIDER_NAMES[method_provider]
         match name:
             case "parent_class":
-                bases = tuple(super_category.parent_class for super_category in category._super_categories_for_classes)
+                bases = (
+                    _join_implementation_bases(category, provider_names)
+                    if isinstance(category, JoinCategory)
+                    else tuple(
+                        super_category.parent_class
+                        for super_category in category._super_categories_for_classes
+                    )
+                )
                 reduction_function = _parent_class_of
             case "element_class":
-                bases = tuple(super_category.element_class for super_category in category._super_categories_for_classes)
+                bases = (
+                    _join_implementation_bases(category, provider_names)
+                    if isinstance(category, JoinCategory)
+                    else tuple(
+                        super_category.element_class
+                        for super_category in category._super_categories_for_classes
+                    )
+                )
                 reduction_function = _element_class_of
             case "morphism_class":
-                bases = tuple(super_category.morphism_class for super_category in category._super_categories_for_classes)
+                bases = (
+                    _join_implementation_bases(category, provider_names)
+                    if isinstance(category, JoinCategory)
+                    else tuple(
+                        super_category.morphism_class
+                        for super_category in category._super_categories_for_classes
+                    )
+                )
                 reduction_function = _morphism_class_of
             case _:
                 raise AssertionError(f"unsupported implementation type {name}")
-        provider, inherited = declared_implementation_types(
-            declaring_class,
-            self._IMPLEMENTATION_PROVIDER_NAMES[method_provider],
+        provider, inherited = (
+            (None, ())
+            if isinstance(category, JoinCategory)
+            else declared_implementation_types(declaring_class, provider_names)
         )
         # Ahead of the super categories, behind the level's own declaration.
         # The owned construction base states what being a subobject *is*, and
