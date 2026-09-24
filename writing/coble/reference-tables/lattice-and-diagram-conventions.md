@@ -58,21 +58,26 @@ This is the only place the corpus records that value explicitly.
 | Labelled simple edge | $H_i \pitchfork H_j$ | $m_{ij}\geq 7$ | $\pi/m_{ij}$ | $\cos(\pi/m_{ij})$ |
 | Thick edge | $H_i \parallel H_j$ | $\infty$ | undefined | $1$ |
 | Dotted edge | $H_i$ ultraparallel $H_j$ | 0 | $\infty$ | $\cosh\rho(H_i,H_j)$ |
-| Black vertex | $h_i^2 = -2$ | - | - | 2 |
-| White vertex | $h_i^2 = -4$ | - | - | 4 |
+| White vertex | $h_i^2 = -2$ | - | - | 2 |
+| Black vertex | $h_i^2 = -4$ | - | - | 4 |
 
 ### Valid node-edge configurations
 
-| Configuration | $h_1^2$ | $h_2^2$ | $h_1 h_2$ |
+$|h_1 h_2| = \sqrt{h_1^2 h_2^2}\, w_{12}$ with $w_{12}$ from the table above.
+
+| Configuration | $h_1^2$ | $h_2^2$ | $\abs{h_1 h_2}$ |
 | --- | --- | --- | --- |
-| black, black, no edge | $-2$ | $-2$ | 1 |
-| black, black, simple | $-2$ | $-2$ | 2 |
-| black, black, double | $-2$ | $-2$ | $>2$ |
-| black, white, no edge | $-2$ | $-4$ | 2 |
-| black, white, simple | $-2$ | $-4$ | $>2$ |
-| white, white, no edge | $-4$ | $-4$ | 2 |
-| white, white, double | $-4$ | $-4$ | 4 |
-| white, white, labelled double | $-4$ | $-4$ | $>4$ |
+| white, white, no edge | $-2$ | $-2$ | 0 |
+| white, white, simple | $-2$ | $-2$ | 1 |
+| white, white, thick | $-2$ | $-2$ | 2 |
+| white, white, dotted | $-2$ | $-2$ | $>2$ |
+| white, black, no edge | $-2$ | $-4$ | 0 |
+| white, black, double | $-2$ | $-4$ | 2 |
+| white, black, dotted | $-2$ | $-4$ | $>2$ |
+| black, black, no edge | $-4$ | $-4$ | 0 |
+| black, black, simple | $-4$ | $-4$ | 2 |
+| black, black, thick | $-4$ | $-4$ | 4 |
+| black, black, dotted | $-4$ | $-4$ | $>4$ |
 
 This project's `content_pandoc/sections/Compactifications/Reflection_Groups_and_Vinberg.md` describes dotted edges in prose only; the tables above are the corresponding numerical conventions, and are what the reconstruction formula
 $$
