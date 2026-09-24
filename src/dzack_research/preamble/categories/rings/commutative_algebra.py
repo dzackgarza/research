@@ -2288,8 +2288,9 @@ class GeneratedIdealView(SageObject):
         if not isinstance(other, GeneratedIdealView) or other.ring() is not self.ring():
             return False
         if self.source_ideal() is not None and other.source_ideal() is not None:
-            source = getattr(self.ring(), "localization_source", lambda: None)()
-            if source is not None:
+            ring = self.ring()
+            if ring in LocalizationRings():
+                source = ring.localization_source()
                 return bool(
                     _engine_ideal(source, self.source_ideal())
                     == _engine_ideal(source, other.source_ideal())
@@ -2451,22 +2452,24 @@ def _one_step_inverted_family(source, generators):
     return source, inverted
 
 
-def _generated_submonoid_contains_zero_in_domain(source, submonoid):
-    r"""Decide whether a generated multiplicative submonoid contains zero in a domain.
+def _submonoid_contains_zero_in_domain(source, submonoid):
+    r"""Decide whether a represented multiplicative submonoid contains zero in a domain.
 
     In an integral domain a finite product is zero exactly when one factor is
     zero.  Thus a submonoid given by generators contains zero exactly when one
-    chosen generator is zero.  Predicate-defined submonoids keep their own
-    membership decision, and an unrepresented case remains unknown.
+    chosen generator is zero.  Predicate-defined submonoids use their selected
+    membership predicate instead.
     """
-    try:
-        return source.zero() in submonoid
-    except NotImplementedError:
-        try:
+    match submonoid._selected_representation_kind():
+        case "predicate":
+            return source.zero() in submonoid
+        case "generators":
             generators = tuple(submonoid.monoid_generators())
-        except NotImplementedError:
-            return None
-        return any(generator == source.zero() for generator in generators)
+            return any(generator == source.zero() for generator in generators)
+        case representation:
+            raise AssertionError(
+                f"unknown selected submonoid representation {representation!r}"
+            )
 
 
 def _localization_size_placements(source, submonoid):
@@ -2481,7 +2484,7 @@ def _localization_size_placements(source, submonoid):
         return (FiniteSets(),)
     if source not in OwnedRings().Commutative().NoZeroDivisors():
         return ()
-    contains_zero = _generated_submonoid_contains_zero_in_domain(source, submonoid)
+    contains_zero = _submonoid_contains_zero_in_domain(source, submonoid)
     if contains_zero is not False:
         return ()
     if source in CountablyInfiniteSets():

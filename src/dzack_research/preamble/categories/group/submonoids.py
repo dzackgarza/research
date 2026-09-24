@@ -81,6 +81,19 @@ class _SubmonoidEngine:
         r"""Return private constructor metadata for localization adapters."""
         return dict(self._submonoid_structure_data)
 
+    def _selected_representation_kind(self):
+        r"""Return the representation selected when this submonoid was built.
+
+        Protected construction contract for localization adapters.  A
+        predicate-presented submonoid has exact membership by that predicate;
+        otherwise the constructor retained a chosen finite generating family.
+        Consumers use this datum instead of attempting one representation and
+        selecting another when it raises.
+        """
+        if self._defining_predicate is not None:
+            return "predicate"
+        return "generators"
+
     def defining_predicate(self):
         assert self._defining_predicate is not None, (
             "defining_predicate requires a submonoid represented by a selected membership predicate"
