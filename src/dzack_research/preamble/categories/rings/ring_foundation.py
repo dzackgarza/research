@@ -2561,7 +2561,7 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
 
 def _cross_engine_ring_value(value):
     r"""Cross a private engine-ring value back into the owned universe when possible."""
-    parent = getattr(value, "parent", lambda: None)()
+    parent = element_parent(value)
     if parent in SageRings():
         return _owned_engine_element(parent, value)
     return value
@@ -2723,30 +2723,34 @@ class _OwnedRingElement(RingElement):
         r"""Return the private backend value for boundary code in this module."""
         return self._backend_value
 
+    def _operator_operand(self, value):
+        r"""Return ``value`` in this ring, or ``NotImplemented`` for Python dispatch."""
+        ring = self.parent()
+        if value not in ring:
+            return NotImplemented
+        return ring(value)
+
     def _add_(self, other):
         parent = self.parent()
         return _owned_engine_element(parent, self._backend() + other._backend())
 
     def __add__(self, other):
-        try:
-            other = self.parent()(other)
-        except (TypeError, ValueError):
+        other = self._operator_operand(other)
+        if other is NotImplemented:
             return NotImplemented
         return self._add_(other)
 
     __radd__ = __add__
 
     def __sub__(self, other):
-        try:
-            other = self.parent()(other)
-        except (TypeError, ValueError):
+        other = self._operator_operand(other)
+        if other is NotImplemented:
             return NotImplemented
         return self._add_(-other)
 
     def __rsub__(self, other):
-        try:
-            other = self.parent()(other)
-        except (TypeError, ValueError):
+        other = self._operator_operand(other)
+        if other is NotImplemented:
             return NotImplemented
         return other._add_(-self)
 
@@ -2782,23 +2786,19 @@ class _OwnedRingElement(RingElement):
         the conversion is tried.  It is the same operation the registered action
         performs, reached on the one route the coercion model does not see.
         """
-        other_parent = getattr(other, "parent", lambda: None)()
-        if other_parent is not None and other_parent is not self.parent():
-            try:
-                if other_parent.base_ring() is self.parent():
-                    return other_parent.scalar_multiple(self, other)
-            except (AttributeError, TypeError, ValueError):
-                return NotImplemented
-        try:
-            other = self.parent()(other)
-        except (TypeError, ValueError):
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        other_parent = element_parent(other)
+        if other_parent is not self.parent() and other_parent in Modules(self.parent()):
+            return other_parent.scalar_multiple(self, other)
+        other = self._operator_operand(other)
+        if other is NotImplemented:
             return NotImplemented
         return _OwnedRingElement._mul_(self, other)
 
     def __rmul__(self, other):
-        try:
-            other = self.parent()(other)
-        except (TypeError, ValueError):
+        other = self._operator_operand(other)
+        if other is NotImplemented:
             return NotImplemented
         return _OwnedRingElement._mul_(other, self)
 
@@ -2806,19 +2806,17 @@ class _OwnedRingElement(RingElement):
         return _owned_engine_element(self.parent(), -self._backend())
 
     def _richcmp_(self, other, op):
-        if not isinstance(other, _OwnedRingElement) or other.parent() is not self.parent():
-            try:
-                other = self.parent()(other)
-            except (TypeError, ValueError):
+        if element_parent(other) is not self.parent():
+            other = self._operator_operand(other)
+            if other is NotImplemented:
                 return NotImplemented
         return richcmp(self._backend(), other._backend(), op)
 
     def _ordered_comparison(self, other, op):
         if self.parent() not in OwnedOrderedRings():
             return NotImplemented
-        try:
-            other = self.parent()(other)
-        except (TypeError, ValueError):
+        other = self._operator_operand(other)
+        if other is NotImplemented:
             return NotImplemented
         return bool(richcmp(self._backend(), other._backend(), op))
 
@@ -2835,16 +2833,18 @@ class _OwnedRingElement(RingElement):
         return self._ordered_comparison(other, op_GE)
 
     def __eq__(self, other):
-        try:
-            other = self.parent()(other)
-        except (TypeError, ValueError):
+        other = self._operator_operand(other)
+        if other is NotImplemented:
             # Not this ring's decision: a cardinal, say, knows whether it
             # equals a natural number of the ring, so Python asks it next.
             return NotImplemented
         return bool(self._backend() == other._backend())
 
     def __ne__(self, other):
-        return not self == other
+        equal = self.__eq__(other)
+        if equal is NotImplemented:
+            return NotImplemented
+        return not equal
 
     def __hash__(self):
         return hash((id(self.parent()), self._backend()))
@@ -2888,7 +2888,7 @@ class _OwnedRingElement(RingElement):
     def __truediv__(self, other):
         other = self.parent()(other)
         value = self._backend() / other._backend()
-        value_parent = getattr(value, "parent", lambda: None)()
+        value_parent = element_parent(value)
         if value_parent is self.parent()._engine:
             return _owned_engine_element(self.parent(), value)
         if value_parent in SageRings():
@@ -2897,9 +2897,8 @@ class _OwnedRingElement(RingElement):
 
     def __pow__(self, exponent, modulus=None):
         if modulus is not None:
-            try:
-                modulus = self.parent()(modulus)
-            except (TypeError, ValueError):
+            modulus = self._operator_operand(modulus)
+            if modulus is NotImplemented:
                 return NotImplemented
             value = pow(self._backend(), exponent, modulus._backend())
         else:
@@ -2908,7 +2907,7 @@ class _OwnedRingElement(RingElement):
             except AttributeError:
                 return NotImplemented
             value = self._backend() ** exponent
-        value_parent = getattr(value, "parent", lambda: None)()
+        value_parent = element_parent(value)
         if value_parent is self.parent()._engine:
             return _owned_engine_element(self.parent(), value)
         if value_parent in SageRings():
@@ -2916,9 +2915,8 @@ class _OwnedRingElement(RingElement):
         return value
 
     def __rtruediv__(self, other):
-        try:
-            numerator = self.parent()(other)
-        except (TypeError, ValueError):
+        numerator = self._operator_operand(other)
+        if numerator is NotImplemented:
             return NotImplemented
         return numerator.__truediv__(self)
 
