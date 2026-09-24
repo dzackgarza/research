@@ -159,7 +159,16 @@ coercion model's `bin_op` does not reach the element's `_symbolic_`, so
 `1/2 + pi` and `binomial(5, 2)` fail the same way. Observed with Sage 10.9
 (`sage-dev-allopts`) on 2026-09-23.
 
-Route chosen: owned numbers never enter `SR`. The preamble owns `pi`, `e` and
+Sage's `ZZ` and `QQ` fail the same way on an owned element: `SageZZ(n)`,
+`SageQQ(n)`, `CartanType(["A", n])` raise, and `n in SageZZ` is False, for
+the session literal `n`. Sage's `ZZ` alone has a way around the default map:
+its `_convert_method_name` is `_integer_`, so it converts any element whose
+class has an `_integer_` method (`parent.pyx` 1958, `convert_method_map`).
+`QQ._convert_method_name` is `None`. Observed 2026-09-25.
+
+Route chosen: owned numbers never enter `SR`, and owned code lowers a session
+value to the engine itself before calling Sage (`_engine_element`), never
+relying on Sage to convert it. The preamble owns `pi`, `e` and
 the elementary functions over its exact real field (`rings/real.py`), and the
 owned rings declare their coercions among themselves (`_coerce_map_from_`).
 
