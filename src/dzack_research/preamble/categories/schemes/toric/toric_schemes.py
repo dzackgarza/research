@@ -885,11 +885,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             Membership in that image is decided by the cokernel of the map.
             """
             for cone in self.fan().maximal_cones():
-                quotient = self.local_character_divisor_morphism(cone).cokernel()
-                image = quotient.cokernel_projection()(
-                    self.local_divisor_restriction(divisor, cone)
-                )
-                if image != quotient.zero():
+                projection = self.local_character_divisor_morphism(cone).cokernel_projection()
+                image = projection(self.local_divisor_restriction(divisor, cone))
+                if image != projection.codomain().zero():
                     return False
             return True
 
@@ -1060,12 +1058,21 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "polarizing divisor"
             )
             polytope = self.polarizing_polytope()
-            characters = self.character_lattice()
+            # P lives in its lattice M; the normal fan lives in N = M^*, whose
+            # character lattice is M^**.  The vertices cross by biduality.
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            lattice = polytope.ambient_lattice()
+            biduality = Modules(lattice.base_ring()).dualization().double_dual_morphism(lattice)
+            assert biduality.codomain() is self.character_lattice(), (
+                f"the polytope {polytope} of {self} lies in {lattice}, whose double dual "
+                f"{biduality.codomain()} is not the character lattice {self.character_lattice()} of its fan"
+            )
             group = self.torus_invariant_divisor_group()
             coefficients = {}
             for ray in self.fan().cones(1):
                 values = tuple(
-                    _pairing_on_ray(self.fan(), characters(vertex), ray)
+                    _pairing_on_ray(self.fan(), biduality(vertex), ray)
                     for vertex in polytope.vertices()
                 )
                 coefficients[ray] = -min(values)

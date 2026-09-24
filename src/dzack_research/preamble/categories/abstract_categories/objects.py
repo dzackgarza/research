@@ -3,6 +3,7 @@
 from typing import Any
 
 from sage.categories.category import Category
+from sage.categories.map import Map
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
@@ -129,6 +130,22 @@ class OwnedCategory(OwnedCategoryBase):
     nothing else, is why a level would otherwise need a hand-written parent
     class beside its category.
     """
+
+    def __contains__(self, value: Any) -> bool:
+        r"""Whether ``value`` is an object of this category.
+
+        Sage decides membership by ``value.category()``, and a Sage morphism
+        answers that with the category of its Mor object: every endomorphism
+        of a module would then be a module, and ``C(f)`` would return ``f``
+        itself as its own cokernel.  A morphism is an element of its Mor
+        object, not an object of the category that Mor object lies in.  A
+        category whose objects are arrows states its own membership.
+        """
+        match value:
+            case Map():
+                return False
+            case _:
+                return super().__contains__(value)
 
     @abstract_method
     def an_object(self) -> Parent:
