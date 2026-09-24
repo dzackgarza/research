@@ -709,6 +709,10 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
     product therefore adds degrees and duality negates them.
     """
 
+    # The standard atlas and the transition units are computed here from the
+    # projective space and the degree.
+    _derived_construction_parameters = frozenset({"gluing_datum", "transition_units"})
+
     def __init__(
         self,
         projective_space,
