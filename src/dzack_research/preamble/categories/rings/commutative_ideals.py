@@ -27,6 +27,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_quotient_cover_ideal,
     _engine_ring,
+    _integral_polynomial_ideal_is_maximal,
+    _integral_polynomial_ideal_is_prime,
+    _is_integral_multivariate_ideal,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -235,9 +238,14 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             backend = self._engine_ideal()
             match _realized_as_quotient(self.ring()):
                 case True:
-                    return bool(_cover_lifted_ideal(self).is_prime())
+                    selected = _cover_lifted_ideal(self)
                 case False:
-                    return bool(backend.is_prime())
+                    selected = backend
+            match selected:
+                case _ if _is_integral_multivariate_ideal(selected):
+                    return _integral_polynomial_ideal_is_prime(selected)
+                case _:
+                    return bool(selected.is_prime())
 
         def is_maximal(self):
             backend = self._engine_ideal()
@@ -248,6 +256,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     selected = backend
             selected_ring = selected.ring()
             match selected_ring:
+                case _ if _is_integral_multivariate_ideal(selected):
+                    return _integral_polynomial_ideal_is_maximal(selected)
                 case MPolynomialRing_base() if bool(selected_ring.base_ring().is_field()):
                     # Sage's multivariate is_maximal raises (TRAPS.md); by
                     # Zariski's lemma a prime is maximal exactly when its
@@ -613,6 +623,25 @@ def _descend_cover_ideal(ring, cover_ideal):
     return source.ideal(*(descended or (source.zero(),)))
 
 
+def _polynomial_syzygy_rows(ideal):
+    r"""Rows of the syzygy module of a polynomial-ring ideal's generators.
+
+    Sage's ``syzygy_module`` requires a coefficient field; over ``ZZ``
+    Singular's ``syz`` computes the same module (TRAPS.md).
+    """
+    match ideal:
+        case _ if _is_integral_multivariate_ideal(ideal):
+            from sage.libs.singular.function import singular_function
+
+            return tuple(tuple(row) for row in singular_function("syz")(ideal))
+        case _:
+            syzygies = ideal.syzygy_module()
+            return tuple(
+                tuple(syzygies[position, column] for column in range(syzygies.ncols()))
+                for position in range(syzygies.nrows())
+            )
+
+
 def _engine_ideal_syzygy_rows(ring, backend, selected):
     r"""Return exact relation rows for selected ideal generators.
 
@@ -633,14 +662,9 @@ def _engine_ideal_syzygy_rows(ring, backend, selected):
             defining = engine.defining_ideal()
             lifted = tuple(engine(generator).lift() for generator in selected)
             augmented = cover.ideal(lifted + tuple(defining.gens()))
-            syzygies = augmented.syzygy_module()
-
             rows = tuple(
-                tuple(
-                    engine(syzygies[position, column])
-                    for column in range(len(selected))
-                )
-                for position in range(syzygies.nrows())
+                tuple(engine(entry) for entry in row[: len(selected)])
+                for row in _polynomial_syzygy_rows(augmented)
             )
             zero = engine.zero()
             return tuple(
@@ -649,12 +673,7 @@ def _engine_ideal_syzygy_rows(ring, backend, selected):
                 if any(coefficient != zero for coefficient in row)
             )
         case _:
-            syzygies = backend.syzygy_module()
-
-    return tuple(
-        tuple(syzygies[position, column] for column in range(syzygies.ncols()))
-        for position in range(syzygies.nrows())
-    )
+            return _polynomial_syzygy_rows(backend)
 
 
 def _order_ideal_syzygy_rows(order, selected):

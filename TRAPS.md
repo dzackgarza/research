@@ -287,3 +287,17 @@ coercion exists and `F(2)` is twice the unit. `ZZ(2) in QQ['x,y']` is `True`.
 Measured on Sage 10.9 (`sage-dev-allopts`), 2026-09-25. Route chosen: an
 owned ring decides membership of another owned ring's element by the
 canonical map first, then by the engine's `in`.
+
+### Over `ZZ`, Sage's multivariate ideals decide neither primality nor maximality, and have no `syzygy_module`
+
+For `R = PolynomialRing(ZZ, ['x','y'])`, `R.ideal(...).is_prime()` and
+`is_maximal()` raise `NotImplementedError`, and `syzygy_module()` raises
+`ValueError: Coefficient ring must be a field`. Singular answers all three
+over `ZZ`: `minAssZ` from `primdecint.lib` gives the minimal primes
+(`(6, x, y)` gives `(2, x, y)` and `(3, x, y)`; `(2, x^2+1, y)` gives
+`(2, x+1, y)`), `syz` gives the syzygies (`(2, x, y)` gives `(y, 0, -2)`,
+`(x, -2, 0)`, `(0, -y, x)`), and a Groebner basis over `ZZ` exposes
+`I cap ZZ` as its constant. Measured on Sage 10.9 (`sage-dev-allopts`),
+2026-09-25. Route chosen: primality by `minAssZ`, maximality by
+`I cap ZZ = (p)` and Zariski's lemma in `F_p[x_1, ..., x_n]`, syzygies by
+Singular `syz`.

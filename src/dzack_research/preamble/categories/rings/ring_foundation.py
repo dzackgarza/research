@@ -52,6 +52,7 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
 from sage.structure.element import CommutativeRingElement, RingElement, parent as element_parent
 from sage.structure.parent import Parent
+from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
 from sage.structure.richcmp import op_EQ, op_GE, op_GT, op_LE, op_LT, op_NE, richcmp
 from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
@@ -3500,6 +3501,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         source = element_parent(value)
         if source is self:
             return True
+        # Sage's parent() of a value outside Sage (a Cartan type, a list) is
+        # its Python class, which no category can be asked about.
+        if not isinstance(source, Parent):
+            return value in self._engine
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         if source in Modules(self.base_ring()) and source.unformed_module() is self:
@@ -3685,6 +3690,53 @@ def _integer_mod_local_prime(engine):
             return None
 
 
+def _is_integral_multivariate_ideal(engine_ideal) -> bool:
+    r"""Whether ``engine_ideal`` lives in ``ZZ[x_1, ..., x_n]``, where Sage's own ``is_prime`` and ``is_maximal`` raise."""
+    ring = engine_ideal.ring()
+    return isinstance(ring, MPolynomialRing_base) and ring.base_ring() is SageZZ
+
+
+def _integral_polynomial_ideal_is_prime(engine_ideal) -> bool:
+    r"""Primality of ``I`` in ``ZZ[x_1, ..., x_n]``.
+
+    ``OWN-06`` adapter.  Sage's ``is_prime`` raises over ``ZZ`` (TRAPS.md);
+    Singular's ``minAssZ`` (``primdecint.lib``) gives the minimal primes of
+    ``I``, and a proper ``I`` is prime exactly when it is its only minimal
+    prime.
+    """
+    from sage.libs.singular.function import lib as singular_lib, singular_function
+
+    ring = engine_ideal.ring()
+    if engine_ideal.is_one():
+        return False
+    singular_lib("primdecint.lib")
+    minimal_primes = singular_function("minAssZ")(engine_ideal)
+    return len(minimal_primes) == 1 and ring.ideal(minimal_primes[0]) == engine_ideal
+
+
+def _integral_polynomial_ideal_is_maximal(engine_ideal) -> bool:
+    r"""Maximality of ``I`` in ``ZZ[x_1, ..., x_n]``.
+
+    ``OWN-06`` adapter.  ``ZZ`` is a Jacobson ring, so a field that is a
+    finitely generated ``ZZ``-algebra is finite: ``I`` is maximal exactly
+    when ``I cap ZZ = (p)`` for a prime ``p`` and the image of ``I`` in
+    ``F_p[x_1, ..., x_n]`` is maximal, which Zariski's lemma decides there
+    (prime, with quotient of dimension zero).  ``I cap ZZ`` is read off the
+    constants of a Groebner basis over ``ZZ``.
+    """
+    ring = engine_ideal.ring()
+    constants = tuple(g for g in engine_ideal.groebner_basis() if g.degree() <= 0)
+    match constants:
+        case (constant,):
+            characteristic = SageZZ(constant).abs()
+        case _:
+            return False
+    if not characteristic.is_prime():
+        return False
+    reduction = engine_ideal.change_ring(ring.change_ring(SageGF(characteristic)))
+    return bool(reduction.is_prime() and reduction.dimension() == 0)
+
+
 def _engine_field_decision(engine):
     r"""Return the engine's exact field decision when represented.
 
@@ -3701,6 +3753,8 @@ def _engine_field_decision(engine):
         ):
             defining = engine.defining_ideal()
             return bool(defining.is_prime() and defining.dimension() == 0)
+        case QuotientRing_generic() if _is_integral_multivariate_ideal(engine.defining_ideal()):
+            return _integral_polynomial_ideal_is_maximal(engine.defining_ideal())
         case _:
             return engine.is_field()
 

@@ -10,6 +10,7 @@ an element of \(N\).
 Sage's ``Fan`` and ``Cone`` are the private polyhedral computation engine.
 """
 
+from sage.structure.element import parent as element_parent
 from sage.geometry.cone import Cone as _SageCone
 from sage.geometry.fan import Fan as _SageFan
 from sage.geometry.toric_lattice import ToricLattice as _SageToricLattice
@@ -582,7 +583,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
 
         def __eq__(self, other) -> bool:
             return (
-                other.parent() is self.parent()
+                element_parent(other) is self.parent()
                 and _cone_key(self._engine_cone()) == _cone_key(other._engine_cone())
             )
 
