@@ -14,6 +14,7 @@ from sage.categories.category import Category
 from sage.arith.misc import binomial
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
@@ -108,7 +109,7 @@ class _PowerModuleParentMethods:
     def _lift_from_ambient_power_algebra(self, element):
         r"""Read an ambient homogeneous element back in this power module."""
         algebra = self.ambient_power_algebra()
-        if getattr(element, "parent", lambda: None)() is not algebra:
+        if element_parent(element) is not algebra:
             raise TypeError("the element belongs to a different ambient algebra")
         degree = self.power_degree()
         component = algebra.homogeneous_component(element, degree)
@@ -117,9 +118,9 @@ class _PowerModuleParentMethods:
         return self(component)
 
     def __contains__(self, element) -> bool:
-        if getattr(element, "parent", lambda: None)() is self:
+        if element_parent(element) is self:
             return True
-        if getattr(element, "parent", lambda: None)() is self.ambient_power_algebra():
+        if element_parent(element) is self.ambient_power_algebra():
             try:
                 self._lift_from_ambient_power_algebra(element)
             except (TypeError, ValueError):
@@ -218,7 +219,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
         return self.domain().divided_square_source()
 
     def __call__(self, element):
-        parent = getattr(element, "parent", lambda: None)()
+        parent = element_parent(element)
         if parent is self.domain():
             return self._call_(element)
         module = self.module()
