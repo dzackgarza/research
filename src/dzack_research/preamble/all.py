@@ -468,7 +468,6 @@ from dzack_research.preamble.categories.vinberg_invariants import (  # noqa: F40
     VinbergInvariantMatrices,
     reflection_cosines,
 )
-from dzack_research.preamble.coble import Coble  # noqa: F401
 from dzack_research.preamble.logic import Predicate, Propositions, Unknown, ask  # noqa: F401
 from dzack_research.preamble.rings import (  # noqa: F401
     RR,
@@ -510,7 +509,6 @@ from dzack_research.preamble.rings import (  # noqa: F401
     ZariskiClosedSubobjects,
     _restore_session_ring_bindings,  # noqa: F401
 )
-from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
 from dzack_research.preamble.utilities import (
     lmap as lmap,
@@ -600,3 +598,5 @@ from dzack_research.preamble.catalogue import (  # noqa: E402,F401
     signature_orthogonal_sums,
     two_elementary_orthogonal_sums,
 )
+from dzack_research.preamble.coble import Coble  # noqa: E402,F401
+from dzack_research.preamble.sterk import Sterk  # noqa: E402,F401
