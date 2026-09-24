@@ -47,7 +47,7 @@ from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.quotient_ring import QuotientRing_generic
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
-from sage.structure.element import CommutativeRingElement, RingElement
+from sage.structure.element import CommutativeRingElement, RingElement, parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_GE, op_GT, op_LE, op_LT, op_NE, richcmp
 from sage.structure.sage_object import SageObject
@@ -3239,7 +3239,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return element._lmul_(self.base_ring()(scalar))
 
     def _from_engine_element(self, value):
-        if getattr(value, "parent", lambda: None)() is not self._engine:
+        if element_parent(value) is not self._engine:
             value = self._engine(value)
         return self.element_class(self, value)
 
@@ -3252,7 +3252,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
-        parent = getattr(value, "parent", lambda: None)()
+        parent = element_parent(value)
         if parent is self:
             return value
         from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -3260,11 +3260,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         if parent in Modules(self.base_ring()) and parent.unformed_module() is self:
             return parent._element_of_unformed_module(value)
         if parent is not None:
-            try:
-                if parent in OwnedRings():
-                    return self._from_engine_element(self._engine(_engine_element(parent, value)))
-            except (TypeError, ValueError, AttributeError):
-                pass
+            if parent in OwnedRings():
+                return self._from_engine_element(
+                    self._engine(_engine_element(parent, value))
+                )
             from dzack_research.preamble.categories.sets.set_categories import NN
 
             if parent is NN:
@@ -3276,12 +3275,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._from_engine_element(self._engine(value))
 
     def __contains__(self, value) -> bool:
-        r"""Return whether ``value`` represents an element of this owned ring."""
-        try:
-            self(value)
-        except (TypeError, ValueError):
-            return False
-        return True
+        r"""Return whether ``value`` is an element of this owned ring."""
+        return element_parent(value) is self
 
     def zero(self):
         return self._from_engine_element(self._engine.zero())
