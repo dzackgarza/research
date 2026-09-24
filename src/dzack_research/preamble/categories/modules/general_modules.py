@@ -218,7 +218,19 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             return cardinal(self.underlying_set().cardinality())
 
         def is_finite(self):
-            return self.cardinality().is_finite()
+            r"""Whether the underlying set is placed as finite: True, False, or Unknown."""
+            from sage.misc.unknown import Unknown
+
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            underlying = self.underlying_set()
+            match underlying:
+                case _ if underlying in Sets().Finite():
+                    return True
+                case _ if underlying in Sets().Infinite():
+                    return False
+                case _:
+                    return Unknown
 
         def _element_constructor_(self, value):
             r"""Read foreign data as an element of the underlying set.

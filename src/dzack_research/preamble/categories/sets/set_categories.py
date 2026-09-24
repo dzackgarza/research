@@ -6,7 +6,7 @@ from collections.abc import Callable, Iterable
 from itertools import count
 from math import comb
 from operator import index as integer_index
-from typing import Any, Self, SupportsIndex, TypeVar
+from typing import TYPE_CHECKING, Any, Self, SupportsIndex, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
@@ -33,19 +33,17 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.sets.cardinals import (
-    Cardinalities,
-    CardinalityMorphism,
-    Ordinal,
-    aleph,
-    aleph0,
-    cardinal,
-    ordinal,
-)
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.cardinals import (
+        Cardinalities,
+        CardinalityMorphism,
+        Ordinal,
+    )
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 IndexT = TypeVar("IndexT")
 SourcePointT = TypeVar("SourcePointT")
@@ -54,6 +52,44 @@ TargetPointT = TypeVar("TargetPointT")
 for _axiom in ("Countable", "Uncountable"):
     if _axiom not in all_axioms:
         all_axioms.add(_axiom)
+
+
+def cardinal(value):
+    from dzack_research.preamble.categories.sets.cardinals import cardinal as construct
+
+    return construct(value)
+
+
+def ordinal(value):
+    from dzack_research.preamble.categories.sets.cardinals import ordinal as construct
+
+    return construct(value)
+
+
+def aleph(index):
+    from dzack_research.preamble.categories.sets.cardinals import aleph as construct
+
+    return construct(index)
+
+
+def _aleph0():
+    from dzack_research.preamble.categories.sets.cardinals import aleph0
+
+    return aleph0
+
+
+def _cardinalities():
+    from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+    return Cardinalities()
+
+
+def indexed_family(*args, **kwargs):
+    from dzack_research.preamble.categories.sets.indexed_families import (
+        indexed_family as construct,
+    )
+
+    return construct(*args, **kwargs)
 
 
 class EnumeratedSets(OwnedCategory):
@@ -245,8 +281,8 @@ class _Delta:
         A finite cardinal \(n\) names \(\Delta[n]\) as an integer does.
         """
         match dimension:
-            case _ if dimension in Cardinalities():
-                if dimension == aleph0:
+            case _ if dimension in _cardinalities():
+                if dimension == _aleph0():
                     return NN
                 assert dimension.is_finite(), (
                     "the represented simplex index is finite or countably infinite"
@@ -1060,12 +1096,12 @@ class Sets(OwnedCategory):
                 case _ if self in FinitePowerSets():
                     return cardinal(self.source().cardinality())
                 case _ if self in CartesianProductsOfSets():
-                    return Cardinalities().indexed_product(
+                    return _cardinalities().indexed_product(
                         self.index_set(),
                         lambda index: cardinal(self.factor(index).cardinality()),
                     )
                 case _ if self in CoproductsOfSets():
-                    return Cardinalities().indexed_sum(
+                    return _cardinalities().indexed_sum(
                         self.index_set(),
                         lambda index: cardinal(self.cofactor(index).cardinality()),
                     )
@@ -1077,7 +1113,7 @@ class Sets(OwnedCategory):
                         "whose cardinality is represented here, and it is placed "
                         "neither as a finite set nor as a countably infinite set"
                     )
-                    return aleph0
+                    return _aleph0()
 
         def finite_words(self):
             r"""All finite words in this alphabet, including the empty word."""
@@ -1774,7 +1810,7 @@ class PowerSets(OwnedCategory):
 
         def cardinality_comparison(self) -> CardinalityMorphism:
             size = self.cardinality()
-            return Cardinalities().Mor(size, size).identity()
+            return _cardinalities().Mor(size, size).identity()
 
         def _repr_(self) -> str:
             return f"Power set of {self.base_set()}"
@@ -2184,7 +2220,7 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
         factor_cardinalities = tuple(
             cardinal(family(index).cardinality()) for index in index_set
         )
-        product_cardinality = Cardinalities().product(*factor_cardinalities)
+        product_cardinality = _cardinalities().product(*factor_cardinalities)
         if product_cardinality.is_finite():
             if all(
                 family(index) in FiniteSets() and family(index) in EnumeratedSets()
@@ -2793,6 +2829,8 @@ class _FiniteWordSet:
     This determines the cardinality without sampling an infinite family.
     """
 
+    _derived_construction_parameters = frozenset({"family"})
+
     def __init__(self, alphabet, commutative, **rest) -> None:
         self._alphabet = alphabet
         match commutative:
@@ -2809,7 +2847,7 @@ class _FiniteWordSet:
             case True:
                 return cardinal(1)
             case False:
-                return aleph0
+                return _aleph0()
 
 
 @cached_function

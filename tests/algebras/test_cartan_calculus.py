@@ -1,4 +1,4 @@
-from sage.categories.mor import Mor
+from sage.categories.homset import Homset as Mor
 
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.modules import Modules

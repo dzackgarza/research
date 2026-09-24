@@ -2712,11 +2712,26 @@ def _fraction_field_localization(source, submonoid):
     placements = [OwnedRings().Commutative().NoZeroDivisors(), OwnedRings().Division().Commutative()]
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
+    base = source.base_ring()
+    algebra_source = (
+        source
+        if base is not None and source in Algebras(base).Associative().Unital()
+        else None
+    )
+    algebra_categories = []
+    if algebra_source is not None:
+        algebra_base = algebra_source.base_ring()
+        algebra_categories = [Algebras(algebra_base).Associative().Unital()]
+        if algebra_source in Algebras(algebra_base).Associative().Unital().Commutative():
+            algebra_categories.append(
+                Algebras(algebra_base).Associative().Unital().Commutative()
+            )
     return _object_of(
-        Category.join((LocalizationRings(), *placements)),
+        Category.join((LocalizationRings(), *placements, *algebra_categories)),
         source=source,
         submonoid=submonoid,
         _engine_ring=fraction_engine,
+        algebra_source=algebra_source,
         fraction_field_realization=field,
     )
 
@@ -3378,8 +3393,35 @@ def Zp(*args, **kwargs):
 class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
     r"""The dual-number quotient with its defining quotient data fixed at construction."""
 
+    def algebra_base_ring(self):
+        r"""Return the selected coefficient ring of the dual-number algebra."""
+        return self.base_ring()
+
     def __init__(self, engine, base, polynomial, defining_ideal, label) -> None:
+        from dzack_research.preamble.categories.modules.native_modules import (
+            _NativeModuleBasis,
+        )
+
         engine_map = engine.coerce_map_from(_engine_ring(polynomial))
+        basis_labels = finite_ordered_set((0, 1))
+        basis_source = base.free_module(basis_labels)
+
+        def basis_image(index):
+            value = engine.one() if index == 0 else engine.gen()
+            return self._from_engine_element(value)
+
+        def basis_coordinates(value):
+            lift = _engine_element(self, self(value)).lift()
+            return {
+                index: _owned_engine_element(base, lift[index])
+                for index in basis_labels
+            }
+
+        self._native_module_basis = _NativeModuleBasis(
+            basis_source,
+            basis_image,
+            basis_coordinates,
+        )
 
         def quotient_map():
             return _canonical_map(

@@ -1,7 +1,7 @@
 import pytest
 
 from sage.misc.unknown import Unknown
-from sage.categories.mor import Mor
+from sage.categories.homset import Homset as Mor
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
 from dzack_research.preamble.all import GF, QQ, QuadraticField

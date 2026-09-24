@@ -6,6 +6,7 @@ from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 # The marker every owned category base carries, axiom categories included.
@@ -37,16 +38,19 @@ class _SelectedFraming:
         generating_set,
         generator_morphism,
         framing_morphism_factory,
+        *,
+        generator_morphism_factory=None,
     ) -> None:
-        if generator_morphism.domain() is not generating_set:
-            raise ValueError("a framing generator morphism starts at its selected generating set")
-        if generator_morphism.codomain() is not target:
-            raise ValueError("a framing generator morphism lands in the framed object")
+        if generator_morphism is None and generator_morphism_factory is None:
+            raise ValueError("a selected framing requires its generator morphism")
+        if generator_morphism is not None and generator_morphism_factory is not None:
+            raise ValueError("a selected framing supplies its generator morphism exactly once")
         self._owner = owner
         self._target = target
         self._source = source
         self._generating_set = generating_set
         self._generator_morphism = generator_morphism
+        self._generator_morphism_factory = generator_morphism_factory
         self._framing_morphism_factory = framing_morphism_factory
         self._framing_morphism = None
 
@@ -60,7 +64,17 @@ class _SelectedFraming:
         return self._generating_set
 
     def generator_morphism(self):
-        return self._generator_morphism
+        selected = self._generator_morphism
+        if selected is None:
+            selected = self._generator_morphism_factory()
+            if selected.domain() is not self._generating_set:
+                raise ValueError(
+                    "a framing generator morphism starts at its selected generating set"
+                )
+            if selected.codomain() is not self._target:
+                raise ValueError("a framing generator morphism lands in the framed object")
+            self._generator_morphism = selected
+        return selected
 
     def framing_morphism(self):
         selected = self._framing_morphism
@@ -72,6 +86,16 @@ class _SelectedFraming:
         return selected
 
 
+def _selected_framing_registry(target):
+    r"""Return the framing registry, including during pre-Parent construction."""
+    name = "_preamble_selected_framings"
+    selected_by_owner = getattr(target, name, None)
+    if selected_by_owner is None:
+        selected_by_owner = {}
+        setattr(target, name, selected_by_owner)
+    return selected_by_owner
+
+
 def _fix_selected_framing(
     target,
     owner,
@@ -79,9 +103,11 @@ def _fix_selected_framing(
     generating_set,
     generator_morphism,
     framing_morphism_factory,
+    *,
+    generator_morphism_factory=None,
 ):
     r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
-    selected_by_owner = target._selected_framing_registry()
+    selected_by_owner = _selected_framing_registry(target)
     if owner in selected_by_owner:
         raise ValueError(f"{target} already has a selected framing in {owner}")
     selected = _SelectedFraming(
@@ -91,6 +117,7 @@ def _fix_selected_framing(
         generating_set,
         generator_morphism,
         framing_morphism_factory,
+        generator_morphism_factory=generator_morphism_factory,
     )
     selected_by_owner[owner] = selected
     return selected
@@ -199,6 +226,11 @@ class Objects(OwnedCategory):
 
         return Sets().an_object()
 
+    class SubcategoryMethods:
+        def Framed(self):
+            r"""Return this category with the global selected-framing axiom."""
+            return self._with_axiom("Framed")
+
     class ParentMethods(OwnedParent, Parent):
         r"""The owned root of every object chain.
 
@@ -209,7 +241,7 @@ class Objects(OwnedCategory):
 
         @cached_method
         def _selected_framing_registry(self):
-            return {}
+            return _selected_framing_registry(self)
 
         def __call__(self, *arguments, **options):
             r"""Construct an element of this object, without coercion discovery.
@@ -222,6 +254,9 @@ class Objects(OwnedCategory):
             which is the one boundary that admits foreign values.
             """
             return self._element_constructor_(*arguments, **options)
+
+    class ElementMethods(Element):
+        r"""The owned root of every element chain: the host element runtime."""
 
     class Framed(CategoryWithAxiom):
         r"""Objects carrying one chosen generating epimorphism from a free object.

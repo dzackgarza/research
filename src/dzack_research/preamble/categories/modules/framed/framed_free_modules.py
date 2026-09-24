@@ -47,6 +47,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
     finite_indexed_family,
     indexed_family,
 )
@@ -644,6 +645,11 @@ def _known_finite_generator_family(module_generating_set):
     match module_generating_set:
         case tuple() | list() | range():
             return finite_ordered_set(module_generating_set)
+        case IndexedFamily():
+            assert module_generating_set.cardinality().is_finite(), (
+                "subobject generator indexed families must have finite index set"
+            )
+            return module_generating_set
         case _:
             assert (
                 module_generating_set in Sets()

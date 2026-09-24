@@ -711,7 +711,7 @@ class GradedDerivation(ModuleElement):
             match generator == algebra.zero():
                 case True:
                     continue
-                case Unknown:
+                case answer if answer is Unknown:
                     return Unknown
                 case False:
                     pass
@@ -722,7 +722,7 @@ class GradedDerivation(ModuleElement):
             match image == target.zero():
                 case True:
                     continue
-                case Unknown:
+                case answer if answer is Unknown:
                     return Unknown
                 case False:
                     pass
@@ -741,7 +741,7 @@ class GradedDerivation(ModuleElement):
             match left == algebra.zero():
                 case True:
                     continue
-                case Unknown:
+                case answer if answer is Unknown:
                     return Unknown
                 case False:
                     pass

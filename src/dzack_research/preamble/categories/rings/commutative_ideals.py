@@ -713,6 +713,17 @@ def _owned_engine_value(ring, value):
     return _owned_engine_element(source, engine_value)
 
 
+def _regular_module_element(regular_module, scalar):
+    r"""Return ``scalar * 1`` in the selected rank-one regular module."""
+    labels = tuple(regular_module.module_generating_set())
+    if len(labels) != 1:
+        raise ArithmeticError("a ring viewed as a module over itself must have rank one")
+    return regular_module.scalar_multiple(
+        regular_module.base_ring()(scalar),
+        regular_module.module_generator(labels[0]),
+    )
+
+
 def _flat_extension_commutative_ideal(source_ideal, morphism):
     r"""Return ``I S`` by scalar-extending a finite presentation along a flat map.
 
@@ -741,7 +752,7 @@ def _flat_extension_commutative_ideal(source_ideal, morphism):
         tuple(_engine_element(target, generator) for generator in target_generators)
     )
     generator_images = {
-        label: ambient_module((target_generators[position],))
+        label: _regular_module_element(ambient_module, target_generators[position])
         for position, label in enumerate(labels)
     }
     construction_data = {
@@ -801,7 +812,10 @@ def _commutative_ideal(source, generators):
                 Sets.Δ[0],
                 _subobject_ambient=ambient_module,
                 _subobject_generator_images={
-                    0: ambient_module((_owned_engine_value(source, generator),))
+                    0: _regular_module_element(
+                        ambient_module,
+                        _owned_engine_value(source, generator),
+                    )
                 },
                 _extra_categories=(CommutativeIdeals(source),),
                 _extra_construction_data={
@@ -835,7 +849,10 @@ def _commutative_ideal(source, generators):
         presentation,
         subobject_ambient=ambient_module,
         subobject_generator_images={
-            label: ambient_module((_owned_engine_value(source, selected[position]),))
+            label: _regular_module_element(
+                ambient_module,
+                _owned_engine_value(source, selected[position]),
+            )
             for position, label in enumerate(labels)
         },
         category=Category.join((CommutativeIdeals(source),)),

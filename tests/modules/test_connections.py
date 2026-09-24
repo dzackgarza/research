@@ -1,4 +1,4 @@
-from sage.categories.mor import Mor
+from sage.categories.homset import Homset as Mor
 from sage.misc.unknown import Unknown
 
 import pytest

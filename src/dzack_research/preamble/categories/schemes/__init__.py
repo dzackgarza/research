@@ -1,204 +1,98 @@
-'Owned algebraic-geometry and polyhedral categories.'
+"""Lazy public aggregation for owned algebraic-geometry categories."""
 
-from dzack_research.preamble.categories.schemes.ringed_spaces import (
-    AlgebraSheaves,
-    DistinguishedAffineCoverRefinement,
-    DistinguishedAffineCovers,
-    distinguished_affine_coverage,
-    LocallyRingedSpaces,
-    ModuleSheaves,
-    QuasiCoherentSheaves,
-    RingedSpaces,
-    SheafObjects,
-    SheafedSpaces,
-    ZariskiCoveringFamilies,
-    zariski_coverage,
-)
+from importlib import import_module as _import_module
 
-from dzack_research.preamble.categories.schemes.analytic_families import AnalyticDiscFamily
 
-from dzack_research.preamble.categories.schemes.cyclic_covers import (
-    CyclicCoverBaseChangeComparison,
-    RelativeCyclicCoverLift,
-)
+_EXPORTS = {
+    'HesseBertiniFamily': ('dzack_research.preamble.categories.schemes.bertini_families', 'HesseBertiniFamily'),
+    'HorikawaEnriquesSurface': ('dzack_research.preamble.categories.schemes.enriques_families', 'HorikawaEnriquesSurface'),
+    'ADELogPairs': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'ADELogPairs'),
+    'SideDecoration': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'SideDecoration'),
+    'AlgebraSheaves': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'AlgebraSheaves'),
+    'AnalyticDiscFamily': ('dzack_research.preamble.categories.schemes.analytic_families', 'AnalyticDiscFamily'),
+    'CyclicCoverBaseChangeComparison': ('dzack_research.preamble.categories.schemes.cyclic_covers', 'CyclicCoverBaseChangeComparison'),
+    'RelativeCyclicCoverLift': ('dzack_research.preamble.categories.schemes.cyclic_covers', 'RelativeCyclicCoverLift'),
+    'RelativeProjectivizations': ('dzack_research.preamble.categories.schemes.relative_proj', 'RelativeProjectivizations'),
+    'HorikawaK3Family': ('dzack_research.preamble.categories.schemes.k3_families', 'HorikawaK3Family'),
+    'LegendreMonodromyFamily': ('dzack_research.preamble.categories.schemes.monodromy', 'LegendreMonodromyFamily'),
+    'PointedAnalyticFundamentalGroup': ('dzack_research.preamble.categories.schemes.monodromy', 'PointedAnalyticFundamentalGroup'),
+    'AffineInvariantQuotientBaseChangeComparison': ('dzack_research.preamble.categories.schemes.quotients', 'AffineInvariantQuotientBaseChangeComparison'),
+    'AffineSchemes': ('dzack_research.preamble.categories.schemes.schemes', 'AffineSchemes'),
+    'AffineGSchemes': ('dzack_research.preamble.categories.schemes.schemes', 'AffineGSchemes'),
+    'AffineGroupSchemes': ('dzack_research.preamble.categories.schemes.group_schemes', 'AffineGroupSchemes'),
+    'AffineGroupSchemeActions': ('dzack_research.preamble.categories.schemes.group_schemes', 'AffineGroupSchemeActions'),
+    'AffineSpaces': ('dzack_research.preamble.categories.schemes.schemes', 'AffineSpaces'),
+    'ClosedEmbeddings': ('dzack_research.preamble.categories.schemes.schemes', 'ClosedEmbeddings'),
+    'ClosedSubschemes': ('dzack_research.preamble.categories.schemes.schemes', 'ClosedSubschemes'),
+    'ConvexPolygons': ('dzack_research.preamble.categories.schemes.polytopes', 'ConvexPolygons'),
+    'ConvexPolytopes': ('dzack_research.preamble.categories.schemes.polytopes', 'ConvexPolytopes'),
+    'DistinguishedAffineCoverRefinement': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'DistinguishedAffineCoverRefinement'),
+    'DistinguishedAffineCovers': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'DistinguishedAffineCovers'),
+    'distinguished_affine_coverage': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'distinguished_affine_coverage'),
+    'Curves': ('dzack_research.preamble.categories.schemes.varieties', 'Curves'),
+    'CurveLocalDeltaContribution': ('dzack_research.preamble.categories.schemes.curve_genus', 'CurveLocalDeltaContribution'),
+    'rational_quintic_with_nonrational_node_normalization': ('dzack_research.preamble.categories.schemes.curve_genus', 'rational_quintic_with_nonrational_node_normalization'),
+    'rational_quintic_with_two_nodes_normalization': ('dzack_research.preamble.categories.schemes.curve_genus', 'rational_quintic_with_two_nodes_normalization'),
+    'SchemeMonomorphisms': ('dzack_research.preamble.categories.schemes.schemes', 'SchemeMonomorphisms'),
+    'FiberProductSchemes': ('dzack_research.preamble.categories.schemes.schemes', 'FiberProductSchemes'),
+    'IntegralSchemes': ('dzack_research.preamble.categories.schemes.schemes', 'IntegralSchemes'),
+    'IsolatedHypersurfaceSingularity': ('dzack_research.preamble.categories.schemes.singularities', 'IsolatedHypersurfaceSingularity'),
+    'LatticePolygons': ('dzack_research.preamble.categories.schemes.polytopes', 'LatticePolygons'),
+    'LatticePolytopes': ('dzack_research.preamble.categories.schemes.polytopes', 'LatticePolytopes'),
+    'RegularPolytopes': ('dzack_research.preamble.categories.schemes.polytopes', 'RegularPolytopes'),
+    'LocallyRingedSpaces': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'LocallyRingedSpaces'),
+    'ModuleSheaves': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'ModuleSheaves'),
+    'LogPairs': ('dzack_research.preamble.categories.schemes.log_pairs', 'LogPairs'),
+    'NormalSchemes': ('dzack_research.preamble.categories.schemes.schemes', 'NormalSchemes'),
+    'OpenImmersions': ('dzack_research.preamble.categories.schemes.schemes', 'OpenImmersions'),
+    'ProjectivePointBlowups': ('dzack_research.preamble.categories.schemes.blowups', 'ProjectivePointBlowups'),
+    'ProjectiveCompleteIntersections': ('dzack_research.preamble.categories.schemes.complete_intersections', 'ProjectiveCompleteIntersections'),
+    'ProjectiveSchemes': ('dzack_research.preamble.categories.schemes.schemes', 'ProjectiveSchemes'),
+    'ProjectiveSpaces': ('dzack_research.preamble.categories.schemes.schemes', 'ProjectiveSpaces'),
+    'ProductProjectiveSpaces': ('dzack_research.preamble.categories.schemes.schemes', 'ProductProjectiveSpaces'),
+    'ProductSchemes': ('dzack_research.preamble.categories.schemes.schemes', 'ProductSchemes'),
+    'QuasiCoherentSheaves': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'QuasiCoherentSheaves'),
+    'RationalPolyhedralFans': ('dzack_research.preamble.categories.schemes.toric.fans', 'RationalPolyhedralFans'),
+    'RingedSpaces': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'RingedSpaces'),
+    'SheafObjects': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'SheafObjects'),
+    'SheafedSpaces': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'SheafedSpaces'),
+    'ZariskiCoveringFamilies': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'ZariskiCoveringFamilies'),
+    'zariski_coverage': ('dzack_research.preamble.categories.schemes.ringed_spaces', 'zariski_coverage'),
+    'SchemeMorphism': ('dzack_research.preamble.categories.schemes.schemes', 'SchemeMorphism'),
+    'Schemes': ('dzack_research.preamble.categories.schemes.schemes', 'Schemes'),
+    'SmoothSchemes': ('dzack_research.preamble.categories.schemes.schemes', 'SmoothSchemes'),
+    'Surfaces': ('dzack_research.preamble.categories.schemes.varieties', 'Surfaces'),
+    'ToricLogPairs': ('dzack_research.preamble.categories.schemes.log_pairs', 'ToricLogPairs'),
+    'ToricFixedPointBlowups': ('dzack_research.preamble.categories.schemes.toric.blowups', 'ToricFixedPointBlowups'),
+    'ToricSchemes': ('dzack_research.preamble.categories.schemes.toric.toric_schemes', 'ToricSchemes'),
+    'ToricGeometricLineBundleCohomologySpaces': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'ToricGeometricLineBundleCohomologySpaces'),
+    'GeometricFundamentalGroups': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'GeometricFundamentalGroups'),
+    'IntegralTopologicalCohomologyGroups': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'IntegralTopologicalCohomologyGroups'),
+    'ResolutionIntegralCohomologyGroups': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'ResolutionIntegralCohomologyGroups'),
+    'NodalCubic': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'NodalCubic'),
+    'NodalCubicNormalization': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'NodalCubicNormalization'),
+    'NodalCubicIntegralTopology': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'NodalCubicIntegralTopology'),
+    'IntegralSingularCohomologyGroups': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'IntegralSingularCohomologyGroups'),
+    'PGL2IntegralTopology': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'PGL2IntegralTopology'),
+    'ProjectiveGeneralLinearGroup2': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'ProjectiveGeneralLinearGroup2'),
+    'ToricIntegralSingularCohomologyGroups': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'ToricIntegralSingularCohomologyGroups'),
+    'ToricFundamentalGroups': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'ToricFundamentalGroups'),
+    'ToricWeightCohomologyComplexes': ('dzack_research.preamble.categories.schemes.geometric_cohomology', 'ToricWeightCohomologyComplexes'),
+    'Varieties': ('dzack_research.preamble.categories.schemes.varieties', 'Varieties'),
+    'FiniteGluedInvariantQuotient': ('dzack_research.preamble.categories.schemes.invariant_quotient_gluing', 'FiniteGluedInvariantQuotient'),
+}
 
-from dzack_research.preamble.categories.schemes.k3_families import (
-    HorikawaK3Family,
-)
+__all__ = ['HesseBertiniFamily', 'HorikawaEnriquesSurface', 'ADELogPairs', 'SideDecoration', 'AlgebraSheaves', 'AnalyticDiscFamily', 'CyclicCoverBaseChangeComparison', 'RelativeCyclicCoverLift', 'RelativeProjectivizations', 'HorikawaK3Family', 'LegendreMonodromyFamily', 'PointedAnalyticFundamentalGroup', 'AffineInvariantQuotientBaseChangeComparison', 'AffineSchemes', 'AffineGSchemes', 'AffineGroupSchemes', 'AffineGroupSchemeActions', 'AffineSpaces', 'ClosedEmbeddings', 'ClosedSubschemes', 'ConvexPolygons', 'ConvexPolytopes', 'DistinguishedAffineCoverRefinement', 'DistinguishedAffineCovers', 'distinguished_affine_coverage', 'Curves', 'CurveLocalDeltaContribution', 'rational_quintic_with_nonrational_node_normalization', 'rational_quintic_with_two_nodes_normalization', 'SchemeMonomorphisms', 'FiberProductSchemes', 'IntegralSchemes', 'IsolatedHypersurfaceSingularity', 'LatticePolygons', 'LatticePolytopes', 'RegularPolytopes', 'LocallyRingedSpaces', 'ModuleSheaves', 'LogPairs', 'NormalSchemes', 'OpenImmersions', 'ProjectivePointBlowups', 'ProjectiveCompleteIntersections', 'ProjectiveSchemes', 'ProjectiveSpaces', 'ProductProjectiveSpaces', 'ProductSchemes', 'QuasiCoherentSheaves', 'RationalPolyhedralFans', 'RingedSpaces', 'SheafObjects', 'SheafedSpaces', 'ZariskiCoveringFamilies', 'zariski_coverage', 'SchemeMorphism', 'Schemes', 'SmoothSchemes', 'Surfaces', 'ToricLogPairs', 'ToricFixedPointBlowups', 'ToricSchemes', 'ToricGeometricLineBundleCohomologySpaces', 'GeometricFundamentalGroups', 'IntegralTopologicalCohomologyGroups', 'ResolutionIntegralCohomologyGroups', 'NodalCubic', 'NodalCubicNormalization', 'NodalCubicIntegralTopology', 'IntegralSingularCohomologyGroups', 'PGL2IntegralTopology', 'ProjectiveGeneralLinearGroup2', 'ToricIntegralSingularCohomologyGroups', 'ToricFundamentalGroups', 'ToricWeightCohomologyComplexes', 'Varieties', 'FiniteGluedInvariantQuotient']
 
-from dzack_research.preamble.categories.schemes.monodromy import (
-    LegendreMonodromyFamily,
-    PointedAnalyticFundamentalGroup,
-)
 
-from dzack_research.preamble.categories.schemes.quotients import AffineInvariantQuotientBaseChangeComparison
+def __getattr__(name):
+    if name not in _EXPORTS:
+        raise AttributeError(name)
+    module_name, attribute = _EXPORTS[name]
+    value = getattr(_import_module(module_name), attribute)
+    globals()[name] = value
+    return value
 
-from dzack_research.preamble.categories.schemes.relative_proj import RelativeProjectivizations
 
-from dzack_research.preamble.categories.schemes.schemes import (
-    AffineSchemes,
-    AffineGSchemes,
-    AffineSpaces,
-    ClosedEmbeddings,
-    ClosedSubschemes,
-    SchemeMonomorphisms,
-    FiberProductSchemes,
-    IntegralSchemes,
-    NormalSchemes,
-    OpenImmersions,
-    ProjectiveSchemes,
-    ProjectiveSpaces,
-    ProductProjectiveSpaces,
-    ProductSchemes,
-    Schemes,
-    SchemeMorphism,
-    SmoothSchemes,
-)
-
-from dzack_research.preamble.categories.schemes.group_schemes import (
-    AffineGroupSchemes,
-    AffineGroupSchemeActions,
-)
-
-from dzack_research.preamble.categories.schemes.singularities import IsolatedHypersurfaceSingularity
-
-from dzack_research.preamble.categories.schemes.blowups import ProjectivePointBlowups
-
-from dzack_research.preamble.categories.schemes.complete_intersections import ProjectiveCompleteIntersections
-
-from dzack_research.preamble.categories.schemes.varieties import (
-    Curves,
-    Surfaces,
-    Varieties,
-)
-
-from dzack_research.preamble.categories.schemes.curve_genus import (
-    CurveLocalDeltaContribution,
-    rational_quintic_with_nonrational_node_normalization,
-    rational_quintic_with_two_nodes_normalization,
-)
-
-from dzack_research.preamble.categories.schemes.polytopes import (
-    ConvexPolygons,
-    ConvexPolytopes,
-    LatticePolygons,
-    LatticePolytopes,
-    RegularPolytopes,
-)
-
-from dzack_research.preamble.categories.schemes.ade_surfaces import (
-    ADELogPairs,
-    SideDecoration,
-)
-
-from dzack_research.preamble.categories.schemes.log_pairs import (
-    LogPairs,
-    ToricLogPairs,
-)
-
-from dzack_research.preamble.categories.schemes.toric.blowups import ToricFixedPointBlowups
-
-from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
-
-from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
-
-from dzack_research.preamble.categories.schemes.invariant_quotient_gluing import FiniteGluedInvariantQuotient
-
-from dzack_research.preamble.categories.schemes.geometric_cohomology import (
-    ToricGeometricLineBundleCohomologySpaces,
-    GeometricFundamentalGroups,
-    IntegralTopologicalCohomologyGroups,
-    ResolutionIntegralCohomologyGroups,
-    NodalCubic,
-    NodalCubicNormalization,
-    NodalCubicIntegralTopology,
-    IntegralSingularCohomologyGroups,
-    PGL2IntegralTopology,
-    ProjectiveGeneralLinearGroup2,
-    ToricIntegralSingularCohomologyGroups,
-    ToricFundamentalGroups,
-    ToricWeightCohomologyComplexes,
-)
-
-from dzack_research.preamble.categories.schemes.enriques_families import HorikawaEnriquesSurface
-
-from dzack_research.preamble.categories.schemes.bertini_families import HesseBertiniFamily
-
-__all__ = [
-    'HesseBertiniFamily',
-    'HorikawaEnriquesSurface',
-    'ADELogPairs',
-    'SideDecoration',
-    'AlgebraSheaves',
-    'AnalyticDiscFamily',
-    'CyclicCoverBaseChangeComparison',
-    'RelativeCyclicCoverLift',
-    'RelativeProjectivizations',
-    'HorikawaK3Family',
-    'LegendreMonodromyFamily',
-    'PointedAnalyticFundamentalGroup',
-    'AffineInvariantQuotientBaseChangeComparison',
-    'AffineSchemes',
-    'AffineGSchemes',
-    'AffineGroupSchemes',
-    'AffineGroupSchemeActions',
-    'AffineSpaces',
-    'ClosedEmbeddings',
-    'ClosedSubschemes',
-    'ConvexPolygons',
-    'ConvexPolytopes',
-    'DistinguishedAffineCoverRefinement',
-    'DistinguishedAffineCovers',
-    'distinguished_affine_coverage',
-    'Curves',
-    'CurveLocalDeltaContribution',
-    'rational_quintic_with_nonrational_node_normalization',
-    'rational_quintic_with_two_nodes_normalization',
-    'SchemeMonomorphisms',
-    'FiberProductSchemes',
-    'IntegralSchemes',
-    'IsolatedHypersurfaceSingularity',
-    'LatticePolygons',
-    'LatticePolytopes',
-    'RegularPolytopes',
-    'LocallyRingedSpaces',
-    'ModuleSheaves',
-    'LogPairs',
-    'NormalSchemes',
-    'OpenImmersions',
-    'ProjectivePointBlowups',
-    'ProjectiveCompleteIntersections',
-    'ProjectiveSchemes',
-    'ProjectiveSpaces',
-    'ProductProjectiveSpaces',
-    'ProductSchemes',
-    'QuasiCoherentSheaves',
-    'RationalPolyhedralFans',
-    'RingedSpaces',
-    'SheafObjects',
-    'SheafedSpaces',
-    'ZariskiCoveringFamilies',
-    'zariski_coverage',
-    'SchemeMorphism',
-    'Schemes',
-    'SmoothSchemes',
-    'Surfaces',
-    'ToricLogPairs',
-    'ToricFixedPointBlowups',
-    'ToricSchemes',
-    'ToricGeometricLineBundleCohomologySpaces',
-    'GeometricFundamentalGroups',
-    'IntegralTopologicalCohomologyGroups',
-    'ResolutionIntegralCohomologyGroups',
-    'NodalCubic',
-    'NodalCubicNormalization',
-    'NodalCubicIntegralTopology',
-    'IntegralSingularCohomologyGroups',
-    'PGL2IntegralTopology',
-    'ProjectiveGeneralLinearGroup2',
-    'ToricIntegralSingularCohomologyGroups',
-    'ToricFundamentalGroups',
-    'ToricWeightCohomologyComplexes',
-    'Varieties',
-    'FiniteGluedInvariantQuotient',
-]
+def __dir__():
+    return sorted((*globals(), *__all__))

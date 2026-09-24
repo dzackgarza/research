@@ -334,6 +334,20 @@ class Modules(OwnedCategoryOverBaseRing):
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""
 
+        def Subobjects(self, base_object):
+            r"""Return represented module subobjects of ``base_object``.
+
+            Module subobjects retain their structured source parent and chosen
+            linear inclusion.  They are therefore the generic structured
+            subobjects of this module category, not the set-specific slice
+            objects inherited from ``Sets``.
+            """
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                SubobjectCategory,
+            )
+
+            return SubobjectCategory(self, base_object)
+
         # Properties of the objects, each an axiom on this category.
 
         def FinitelyGenerated(self):
@@ -922,6 +936,7 @@ class Modules(OwnedCategoryOverBaseRing):
 
     def _mor_parent_placement(self, domain, codomain, *, full_internal_mor=False):
         r"""Return the category chosen when the canonical module Mor is constructed."""
+        from dzack_research.preamble.owned_category import owned_category_join
 
         from dzack_research.preamble.categories.group.additive_mors import (
             AdditiveEndomorphismRings,
@@ -933,17 +948,23 @@ class Modules(OwnedCategoryOverBaseRing):
             placement = [LinearMorModules(center)]
             if domain is codomain:
                 placement.append(AdditiveEndomorphismRings(center))
-            return Category.join(tuple(placement))
+            return owned_category_join(tuple(placement))
         placement = [InternalMorModules(ring) if full_internal_mor else LinearMorModules(ring)]
         matrix = _coordinate_framed_free_module(domain, ring) and _coordinate_framed_free_module(codomain, ring)
         if matrix:
             placement.append(MatrixSpaces(ring))
             if domain is codomain:
                 from dzack_research.preamble.categories.algebras.algebras import (
+                    Algebras,
                     MatrixAlgebras,
                 )
 
                 placement.append(MatrixAlgebras(ring))
+                rank = domain.module_generating_set().cardinality()
+                if int(rank.finite_value()) <= 1:
+                    placement.append(
+                        Algebras(ring).Associative().Unital().Commutative()
+                    )
         elif domain is codomain:
             placement.append(AdditiveEndomorphismRings(ring))
         if full_internal_mor and not matrix:
@@ -959,7 +980,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 from dzack_research.preamble.categories.forms.forms import BilinearFormMors
 
                 placement.append(BilinearFormMors(ring))
-        return Category.join(tuple(placement))
+        return owned_category_join(tuple(placement))
 
     _MorCategory = ModuleMorCategoryConstruction
     _MonoCategory = ModuleMonoCategoryConstruction
@@ -3072,16 +3093,16 @@ def _fix_selected_module_framing(module, base_ring, labels, generator_function, 
         )
     if not callable(generator_function):
         raise TypeError("a selected framing supplies the image of every free generator")
-    generator_morphism = Sets().Mor(labels, module)(
-        lambda label: module(generator_function(label))
-    )
     _fix_selected_framing(
         module,
         Modules(base_ring),
         source,
         labels,
-        generator_morphism,
+        None,
         lambda: _framing_morphism(module),
+        generator_morphism_factory=lambda: Sets().Mor(labels, module)(
+            lambda label: module(generator_function(label))
+        ),
     )
 
 

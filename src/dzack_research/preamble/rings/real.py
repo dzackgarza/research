@@ -50,7 +50,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import UncountableSets
-from dzack_research.preamble.logic import Propositions, ask
+from dzack_research.preamble.logic import Predicate, Propositions, ask
 from dzack_research.preamble.refine import realize_owned_category
 
 
@@ -454,6 +454,10 @@ class ExactRealField(UniqueRepresentation, Field):
     r"""The exact field of real numbers represented by closed exact expressions."""
 
     Element = ExactRealNumber
+
+    def is_commutative(self) -> bool:
+        r"""Return the commutativity known before owned-category initialization."""
+        return True
 
     def __init__(self) -> None:
         from dzack_research.preamble.categories.algebras.algebras import Algebras

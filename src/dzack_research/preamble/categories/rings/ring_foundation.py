@@ -44,6 +44,7 @@ from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.quotient_ring import QuotientRing_generic
 from sage.rings.rational_field import QQ as SageQQ
@@ -70,19 +71,7 @@ from dzack_research.preamble.categories.group.magmas import (
     Monoids,
     Semigroups,
 )
-from dzack_research.preamble.categories.sets.cardinals import (
-    aleph0,
-    cardinal,
-    continuum,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.categories.sets.set_categories import (
-    CountablyInfiniteSets,
-    FiniteSets,
-    Sets,
-    UncountableSets,
-)
+from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category
 
@@ -422,7 +411,10 @@ def _ring_morphism_with_engine(domain, codomain, function, engine_morphism):
     supplied owned element function. The raw map is retained by the ring-Mor
     owner and is never mathematical output.
     """
-    return domain.Mor(codomain)._elementwise_with_engine(function, engine_morphism)
+    return OwnedRings().Mor(domain, codomain)._elementwise_with_engine(
+        function,
+        engine_morphism,
+    )
 
 
 def _ring_morphisms_equal(left, right):
@@ -1026,7 +1018,7 @@ class LocalizationRings(OwnedCategory):
                 )
                 return saturated.contains_ambient_element(representative)
 
-            if source in FiniteSets():
+            if source in owned_sets.FiniteSets():
                 generators = tuple(self.localization_submonoid().monoid_generators())
                 pending = [difference]
                 seen = []
@@ -1783,6 +1775,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 r"""The integers localized at the prime (2)."""
                 return _own_ring(SageZZ).localize_at_prime(2)
 
+            class SubcategoryMethods:
+                def Complete(self):
+                    r"""Return the complete-local refinement."""
+                    return self._with_axiom("Complete")
+
             class ParentMethods:
                 def is_local(self):
                     return True
@@ -2035,27 +2032,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         def _fresh_free_module_on(self, labels, **options):
             r"""Return the free module on ``labels`` over this ring's own scalars.
 
-            A ring is free of rank one over itself, so its sibling free modules
-            are free over it.  A ring the construction placed as a finite free
-            module over a smaller base -- a number field presented over the
-            rationals -- has that base for its scalars, and the question is
-            asked of the placement rather than of state a leaf restated.
+            A ring may itself carry module structure over a smaller coefficient
+            ring, but the free-module construction requested from the ring is
+            ``Free_R(S)`` and therefore retains this ring as its scalar object.
             """
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 _fresh_free_module_on,
             )
-            from dzack_research.preamble.categories.modules.pure.modules import (
-                FinitelyGeneratedFreeModules,
-            )
-
-            scalars = self.base()
-            over_a_smaller_base = (
-                scalars is not None
-                and scalars is not self
-                and self in FinitelyGeneratedFreeModules(scalars)
-            )
             return _fresh_free_module_on(
-                scalars if over_a_smaller_base else self,
+                self,
                 labels,
                 **options,
             )
@@ -2200,16 +2185,21 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def cardinality(self):
             r"""Return the exact represented cardinal of the underlying set."""
+            from dzack_research.preamble.categories.sets.cardinals import (
+                aleph0,
+                cardinal,
+                continuum,
+            )
 
             category = self.category()
-            if category.is_subcategory(FiniteSets()):
+            if category.is_subcategory(owned_sets.FiniteSets()):
                 from sage.rings.integer_ring import ZZ as SageZZ
 
                 integers = _own_ring(SageZZ)
                 return cardinal(_owned_engine_element(integers, SageZZ(_engine_ring(self).cardinality())))
-            if category.is_subcategory(CountablyInfiniteSets()):
+            if category.is_subcategory(owned_sets.CountablyInfiniteSets()):
                 return aleph0
-            if category.is_subcategory(UncountableSets()):
+            if category.is_subcategory(owned_sets.UncountableSets()):
                 return continuum
             assert False, f"cardinality is defined for every ring, but the current exact computation does not cover the represented ring {self}"
 
@@ -2228,7 +2218,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         def _exact_coefficient_presentation_relations(self):
             r"""Return the selected coefficient relations in the computation ring."""
 
-            return finite_ordered_set(())
+            return owned_sets.finite_ordered_set(())
 
         def _lift_coefficient_to_presentation(self, value):
             return self(value)
@@ -2301,6 +2291,8 @@ def OwnedPrincipalIdealDomains():
 def _engine_krull_dimension(ring):
     engine = _engine_ring(ring)
     match engine:
+        case PolynomialQuotientRing_generic():
+            dimension = engine.krull_dimension()
         case QuotientRing_generic():
             dimension = engine.defining_ideal().dimension()
         case _:
@@ -2596,14 +2588,14 @@ class OwnedFactorization(SageObject):
         owned_factors = tuple(
             _owned_engine_element(parent, factor) for factor, _multiplicity in engine_pairs
         )
-        indices = finite_ordered_set(owned_factors)
+        indices = owned_sets.finite_ordered_set(owned_factors)
         multiplicities = {
             factor: _owned_engine_element(SageZZ, SageZZ(multiplicity))
             for factor, (_engine_factor, multiplicity) in zip(
                 owned_factors, engine_pairs, strict=True
             )
         }
-        self._factors = finite_indexed_family(
+        self._factors = owned_sets.finite_indexed_family(
             indices,
             multiplicities.__getitem__,
             name=f"Factor multiplicities in {parent}",
@@ -2951,7 +2943,7 @@ class _OwnedRingElement(RingElement):
         other = self.parent()(other)
         quotient, remainder = self._backend().quo_rem(other._backend())
         ring = self.parent()
-        product = Sets().product((ring, ring))
+        product = owned_sets.Sets().product((ring, ring))
         return product((
             _owned_engine_element(ring, quotient),
             _owned_engine_element(ring, remainder),
@@ -2970,7 +2962,7 @@ class _OwnedRingElement(RingElement):
         other = self.parent()(other)
         gcd, left, right = self._backend().xgcd(other._backend())
         ring = self.parent()
-        product = Sets().product((ring, ring, ring))
+        product = owned_sets.Sets().product((ring, ring, ring))
         return product((
             _owned_engine_element(ring, gcd),
             _owned_engine_element(ring, left),
@@ -2988,7 +2980,7 @@ class _OwnedRingElement(RingElement):
 
     def prime_divisors(self):
         r"""Return the distinct prime divisors as an owned finite ordered set."""
-        return finite_ordered_set(
+        return owned_sets.finite_ordered_set(
             tuple(
                 _owned_engine_element(self.parent(), prime)
                 for prime in self._backend().prime_divisors()
@@ -3000,7 +2992,7 @@ class _OwnedRingElement(RingElement):
 
     def divisors(self):
         r"""Return the positive divisors as an owned finite ordered set."""
-        return finite_ordered_set(
+        return owned_sets.finite_ordered_set(
             tuple(
                 _owned_engine_element(self.parent(), divisor)
                 for divisor in self._backend().divisors()
@@ -3054,9 +3046,9 @@ class _OwnedRingElement(RingElement):
                 )
                 for root, multiplicity in backend_roots
             )
-        indices = finite_ordered_set(tuple(root for root, _multiplicity in owned_pairs))
+        indices = owned_sets.finite_ordered_set(tuple(root for root, _multiplicity in owned_pairs))
         multiplicities = dict(owned_pairs)
-        return finite_indexed_family(
+        return owned_sets.finite_indexed_family(
             indices,
             multiplicities.__getitem__,
             name=f"Roots of {self}",
@@ -3243,7 +3235,9 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                 owned_ring=self,
             )
             if category is not None:
-                placement = Category.join((placement, category))
+                from dzack_research.preamble.owned_category import owned_category_join
+
+                placement = owned_category_join((placement, category))
             Parent.__init__(self, base=base, category=placement)
             realize_owned_category(self)
 
@@ -3389,12 +3383,25 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def is_projective(self) -> bool:
         r"""Projectivity as a module over the base ring.
 
-        A ring is free of rank one over itself, and a number-field order is
-        free of finite rank over the integers (its integral basis).
+        A ring is free of rank one over itself, a number-field order is
+        free of finite rank over the integers (its integral basis), and a
+        ring constructed with a native module basis over its base ring is
+        free on that basis.
         """
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
         if self.base_ring() is self or self._preamble_is_number_field_order():
             return True
-        raise AssertionError(f"projectivity of {self} over {self.base_ring()} is not decided here")
+        presentation = Modules.ParentMethods._native_module_presentation(self)
+        basis = None if presentation is None else presentation.module_basis()
+        if basis is not None and basis.source() in FramedFreeModules(self.base_ring()):
+            return True
+        raise AssertionError(
+            f"projectivity of {self._engine} over {self.base_ring()} is not decided here"
+        )
 
     def _preamble_is_number_field(self):
         return self._engine in SageNumberFields()
@@ -3414,9 +3421,9 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     def elements(self):
         r"""Return all elements when this ring is finite, as an owned ordered set."""
-        if self not in FiniteSets():
+        if self not in owned_sets.FiniteSets():
             raise ValueError("elements() is represented only for a finite ring")
-        return finite_ordered_set(
+        return owned_sets.finite_ordered_set(
             tuple(self._from_engine_element(element) for element in self._engine.list())
         )
 
@@ -3441,7 +3448,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             names = tuple(self.variable_names())
             generator_text = f" generated by {', '.join(names)}" if names else ""
             return f"Order of rank {rank} over Integer Ring{generator_text}"
-        if self in FiniteSets():
+        if self in owned_sets.FiniteSets():
             size = self.cardinality()
             kind = "Field" if self in OwnedRings().Division().Commutative() else "Ring"
             return f"Finite {kind.lower()} with {size} elements"
@@ -3488,13 +3495,22 @@ def _integer_mod_local_prime(engine):
 
 
 def _engine_field_decision(engine):
-    r"""Return the engine's exact field decision when represented."""
+    r"""Return the engine's exact field decision when represented.
+
+    See ``TRAPS.md`` for Sage parents whose ``is_field()`` has no represented
+    decision.
+    """
     if engine in SageFields():
         return True
-    return engine.is_field()
+    try:
+        return engine.is_field()
+    except NotImplementedError:
+        return None
 
 
 def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> Category:
+    from dzack_research.preamble.owned_category import owned_category_join
+
     r"""Return the strongest owned ring category witnessed by ``engine``.
 
     ``scalar_base`` is the owned base already selected by the constructor.
@@ -3547,6 +3563,19 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
             extra.append(FinitelyGeneratedFreeModules(owned_ring))
         case _:
             pass
+    match owned_ring:
+        case _ if owned_ring is not None and owned_ring._native_module_basis is not None:
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+            )
+
+            native_source = owned_ring._native_module_basis.source()
+            native_free = FramedFreeModules(algebra_base)
+            if native_source.module_generating_set().cardinality().is_finite():
+                native_free = native_free.FinitelyGenerated()
+            extra.append(native_free)
+        case _:
+            pass
     if engine in SageIntegralDomains():
         extra.append(OwnedRings().Commutative().NoZeroDivisors())
     if engine is SageZZ or engine is SageQQ:
@@ -3589,7 +3618,7 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
                 case False:
                     placement = OwnedRings()
     size = _owned_ring_size(engine)
-    match size.is_subcategory(FiniteSets()):
+    match size.is_subcategory(owned_sets.FiniteSets()):
         case True:
             extra.append(OwnedRings().Artinian())
         case False:
@@ -3624,12 +3653,12 @@ def _owned_ring_category(engine: Ring, *, scalar_base=None, owned_ring=None) -> 
             extra.append(OrdersWithChosenIntegralBasis())
         case False:
             pass
-    joined = Category.join((placement, size, *extra))
+    joined = owned_category_join((placement, size, *extra))
     if engine is SageZZ or (
         isinstance(engine, SageNumberFieldOrder)
         and (scalar_base is None or _engine_ring(scalar_base) is SageZZ)
     ):
-        return Category.join((joined, OwnedOrders()))
+        return owned_category_join((joined, OwnedOrders()))
     return joined
 
 
@@ -3665,7 +3694,7 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
             )
 
             integers = _own_ring(SageZZ)
-            labels = finite_ordered_set(range(int(engine.rank())))
+            labels = owned_sets.finite_ordered_set(range(int(engine.rank())))
             source = integers.free_module(labels)
             _fix_selected_module_framing(
                 ring,
@@ -3688,9 +3717,9 @@ def _owned_ring_size(engine):
     from sage.rings.qqbar import QQbar as SageQQbar
 
     if engine.category().is_subcategory(SageSets().Finite()):
-        return FiniteSets()
+        return owned_sets.FiniteSets()
     if not engine.is_exact():
-        return UncountableSets()
+        return owned_sets.UncountableSets()
     if (
         engine is SageZZ
         or engine is SageQQ
@@ -3699,18 +3728,18 @@ def _owned_ring_size(engine):
         or engine is SageAA
         or engine is SageQQbar
     ):
-        return CountablyInfiniteSets()
+        return owned_sets.CountablyInfiniteSets()
     if isinstance(engine, (PolynomialRing_generic, MPolynomialRing_base)):
         coefficient_size = _owned_ring_size(engine.base_ring())
         if engine.ngens() == 0:
             return coefficient_size
-        if coefficient_size.is_subcategory(FiniteSets()) or coefficient_size.is_subcategory(CountablyInfiniteSets()):
-            return CountablyInfiniteSets()
+        if coefficient_size.is_subcategory(owned_sets.FiniteSets()) or coefficient_size.is_subcategory(owned_sets.CountablyInfiniteSets()):
+            return owned_sets.CountablyInfiniteSets()
     if engine.category().is_subcategory(SageQuotientFields()):
         source_size = _owned_ring_size(engine.ring())
-        if source_size.is_subcategory(FiniteSets()) or source_size.is_subcategory(CountablyInfiniteSets()):
-            return CountablyInfiniteSets()
-    return Sets()
+        if source_size.is_subcategory(owned_sets.FiniteSets()) or source_size.is_subcategory(owned_sets.CountablyInfiniteSets()):
+            return owned_sets.CountablyInfiniteSets()
+    return owned_sets.Sets()
 
 
 def _own_if_ring(result):
@@ -3973,10 +4002,8 @@ def _enumerated_ring_elements(ring):
     The finite-linearity callers use owned values.  Only this ring adapter
     accesses the computation ring's iterator and converts its outputs.
     """
-    from dzack_research.preamble.categories.sets.set_categories import FiniteSets
-
     match ring:
-        case _ if ring in FiniteSets():
+        case _ if ring in owned_sets.FiniteSets():
             engine = _engine_ring(ring)
             return tuple(_owned_engine_element(ring, engine(value)) for value in engine)
         case _:

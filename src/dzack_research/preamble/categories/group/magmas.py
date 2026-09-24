@@ -17,6 +17,20 @@ class Magmas(OwnedCategory):
         return [Sets()]
 
     class SubcategoryMethods:
+        def Subobjects(self, base_object):
+            r"""Return represented structured subobjects of ``base_object``.
+
+            A submagma remains a magma equipped with its chosen monomorphism
+            into the fixed object.  It therefore uses the generic structured
+            subobject category rather than the set-specific slice realization
+            inherited from ``Sets``.
+            """
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                SubobjectCategory,
+            )
+
+            return SubobjectCategory(self, base_object)
+
         def Commutative(self):
             r"""Return this category with the axiom ``xy = yx``.
 

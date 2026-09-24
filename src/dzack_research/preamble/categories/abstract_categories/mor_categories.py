@@ -28,10 +28,10 @@ reuses the arrow objects without inheriting all the squares between them.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sage.categories.category import Category
-from sage.categories.mor import Hom as SageHom, Mor as SageMor
+from sage.categories.homset import Hom as SageHom, Homset as SageMor
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects as SageObjects
 from sage.categories.sets_cat import Sets as SageSets
@@ -51,10 +51,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
     _underlying_set_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
-from dzack_research.preamble.categories.sets.finite_families import finite_family
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.refine import (
@@ -63,6 +59,11 @@ from dzack_research.preamble.refine import (
     refine,
     run_construction_hooks,
 )
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+    from dzack_research.preamble.lexicon.set_theory import SetObject
 
 
 def _category_mor(
@@ -694,6 +695,8 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
         return Category.__contains__(self, candidate)
 
     def objects(self) -> IndexedFamily:
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
         arrows = self.arrow_set()
         return indexed_family(
             arrows,
@@ -1137,6 +1140,8 @@ class CategoryPacket:
         return self._auts
 
     def super_packets(self):
+        from dzack_research.preamble.categories.sets.finite_families import finite_family
+
         return finite_family(
             (
                 _category_packet(category)

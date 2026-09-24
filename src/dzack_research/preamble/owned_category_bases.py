@@ -86,9 +86,9 @@ from sage.categories.filtered_modules import (
 from sage.categories.graded_modules import (
     GradedModulesCategory as SageGradedModulesCategory,
 )
-from sage.categories.mors import Mors as SageMors
-from sage.categories.mors import MorsCategory as SageMorsCategory
-from sage.categories.mors import MorsOf as SageMorsOf
+from sage.categories.homsets import Homsets as SageMors
+from sage.categories.homsets import HomsetsCategory as SageMorsCategory
+from sage.categories.homsets import HomsetsOf as SageMorsOf
 from sage.categories.isomorphic_objects import (
     IsomorphicObjectsCategory as SageIsomorphicObjectsCategory,
 )
@@ -114,14 +114,14 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
 )
-from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.owned_category import (
     OwnedCategoryMixin,
     OwnedCategoryObject,
 )
 
 if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+    from dzack_research.preamble.lexicon.set_theory import SetObject
     from sage.categories.morphism import Morphism
     from sage.structure.category_object import CategoryObject
     from sage.structure.element import Element as CategoryElement

@@ -3,7 +3,7 @@ r"""A represented category ``Cat`` of categories, functors, and natural transfor
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, overload
+from typing import TYPE_CHECKING, Any, overload
 
 from sage.categories.category import Category
 from sage.categories.map import Map
@@ -33,9 +33,11 @@ from dzack_research.preamble.categories.functors.core import (
     IdentityFunctor,
     NaturalTransformation,
 )
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 
 class CategoryObject(OwnedParent, Parent):
@@ -649,6 +651,8 @@ class Cat(CategoryPacketMethods, Category):
 
         def equalizer_of_family(self, morphisms) -> ObjectOfCategory:
             r"""Return this category's represented wide equalizer."""
+            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
             match morphisms:
                 case IndexedFamily():
                     family = morphisms
@@ -666,6 +670,8 @@ class Cat(CategoryPacketMethods, Category):
 
         def coequalizer_of_family(self, morphisms) -> ObjectOfCategory:
             r"""Return this category's represented wide coequalizer."""
+            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
             match morphisms:
                 case IndexedFamily():
                     family = morphisms
@@ -937,7 +943,11 @@ class Cat(CategoryPacketMethods, Category):
             if all(member is not known for known in reduced):
                 reduced.append(member)
 
-        return reduced[0] if len(reduced) == 1 else Category.join(tuple(reduced))
+        if len(reduced) == 1:
+            return reduced[0]
+        from dzack_research.preamble.owned_category import owned_category_join
+
+        return owned_category_join(tuple(reduced))
 
     def join(self, categories: Iterable[Category]) -> Category:
         r"""Return the smallest category containing all of ``categories``.

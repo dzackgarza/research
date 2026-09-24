@@ -2098,7 +2098,7 @@ def _initialize_module_mor_parent(
         _algebra_from_native_ring(
             parent,
             parent._compose_endomorphisms,
-            _ModuleMorCommonMethods.identity(parent),
+            parent.identity(),
             lambda scalar, arrow: _ModuleMorCommonMethods._owned_scalar_multiple(parent, scalar, arrow),
         )
 
@@ -2148,16 +2148,21 @@ class _ModuleMorCommonMethods:
         return self.element_class(self, images)
 
     def is_projective(self):
-        r"""Answer ``Unknown`` for a Mor module with neither a matrix nor a presented model.
+        r"""Decide projectivity of a finite free Mor module from its endpoints.
 
-        A matrix space is free on its matrix units and a Mor between modules
-        with chosen finite presentations is decided from its presented model;
-        both answer through their placement.  The Mor modules reaching this
-        method have neither, and projectivity is not decided for them.
+        Over a commutative ring, the Mor from one finite framed free module
+        to another is free on its matrix units.  This predicate is asked
+        while that Mor parent is being admitted into its placement, so the
+        endpoints are the construction-time certificate.
         """
         from sage.misc.unknown import Unknown
 
-        return Unknown
+        ring = self.base_ring()
+        match ring in OwnedRings().Commutative():
+            case True if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
+                return True
+            case _:
+                return Unknown
 
     def _apply_pointwise_scalar(self, scalar, element):
         return self.codomain().scalar_multiple(self.base_ring()(scalar), element)

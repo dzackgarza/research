@@ -278,9 +278,10 @@ class FiniteOrderedSets(OwnedCategory):
     ) -> ObjectOfCategory:
         r"""Construct the finite ordered set enumerated by ``element_at`` on ``index_set``.
 
-        When the caller states no inverse or no membership decision, both are
-        decided by searching the finite index set, which is what finiteness
-        permits.
+        When the caller states no inverse, it is decided by searching the
+        finite index set, which is what finiteness permits.  An omitted
+        membership shortcut remains omitted: ``OrderedEnumeratedSets`` then
+        decides membership from that same inverse instead of searching twice.
         """
         assert cardinal(index_set.cardinality()).is_finite(), (
             "a finite ordered set requires a finite index set"
@@ -292,9 +293,6 @@ class FiniteOrderedSets(OwnedCategory):
                     (index for index in index_set if element_at(index) == element),
                     None,
                 )
-        if contains is None:
-            def contains(element):
-                return any(element_at(index) == element for index in index_set)
         return _object_of(
             self,
             index_set=index_set,

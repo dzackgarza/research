@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import Any, TypeVar
 
 from sage.categories.category import Category
-from sage.categories.mor import Mor as SageMor
+from sage.categories.homset import Homset as SageMor
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method

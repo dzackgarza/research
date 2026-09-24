@@ -3,16 +3,19 @@
 from __future__ import annotations
 
 from sage.categories.category import Category
-from sage.categories.mor import Mor as SageMor
+from sage.categories.homset import Homset as SageMor
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.lexicon.category_theory import (
-    ElementOfCategoryObject,
-    ObjectOfCategory,
-)
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon.category_theory import (
+        ElementOfCategoryObject,
+        ObjectOfCategory,
+    )
 
 class OwnedMor(SageMor):
     r"""A Mor object whose elements enter through its owned constructor directly.

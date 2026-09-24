@@ -62,13 +62,14 @@ from __future__ import annotations
 import copyreg
 import hashlib
 from abc import ABCMeta
+from _abc import _abc_init
 from collections.abc import Hashable
 from dataclasses import dataclass
 from inspect import Parameter, signature
 from typing import TYPE_CHECKING
 
-from sage.categories.category import Category, CategoryWithParameters
-from sage.misc.cachefunc import cached_function
+from sage.categories.category import Category, CategoryWithParameters, JoinCategory
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import ClasscallMetaclass
 from sage.misc.constant_function import ConstantFunction
 from sage.misc.inherit_comparison import InheritComparisonMetaclass
@@ -83,12 +84,11 @@ from sage.structure.dynamic_class import (
 )
 from sage.structure.parent import Parent as SageParent
 
-from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-
 if TYPE_CHECKING:
     from typing import Any
 
     from sage.structure.parent import Parent
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
     # The construction data one level of an owned chain hands to the levels
     # above it.  Genuinely open: each level consumes the datum it declares and
@@ -543,6 +543,17 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         """
         return None
 
+    @cached_method
+    def _with_axiom(self, axiom):
+        r"""Return this owned category with ``axiom`` through the owned meet.
+
+        Sage's axiom closure still computes the mathematical branches through
+        :meth:`Category._with_axiom_as_tuple`.  Only their runtime join is
+        owned: its implementation types inherit the immediate branch types,
+        which already carry every indirect owned implementation.
+        """
+        return owned_category_join(self._with_axiom_as_tuple(axiom))
+
     def _make_named_class(
         self,
         name: str,
@@ -647,7 +658,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             # never asked for on this path, and its ``__slots__`` suppression,
             # which cannot fire because a provider is a plain Python class and
             # so always contributes a ``__dictoffset__``.
-            return _abc_metaclass_for(bases)(
+            result = _abc_metaclass_for(bases)(
                 class_name,
                 bases,
                 {
@@ -657,6 +668,14 @@ class OwnedCategoryMixin(CatConstructionsMixin):
                     "__module__": doccls.__module__,
                 },
             )
+            # Sage's dynamic/Classcall/InheritComparison metaclasses perform
+            # their required initialization when called above, but their type
+            # construction path precedes ``ABCMeta.__new__`` in the metaclass
+            # MRO.  Initialize CPython's ABC state explicitly after preserving
+            # that Sage lifecycle; otherwise ``isinstance`` reaches
+            # ``ABCMeta.__instancecheck__`` with no ``_abc_impl``.
+            _abc_init(result)
+            return result
 
         result = build()
         if key is not None:
@@ -672,6 +691,25 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             if arrow_type is not None:
                 result.ObjectType = arrow_type
         return result
+
+
+class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
+    r"""The computed intersection of owned categories.
+
+    This is Sage's join mathematically.  The separate runtime class is needed
+    because owned implementation providers are bases rather than copied method
+    dictionaries; :class:`OwnedCategoryMixin` therefore linearizes the
+    immediate branch implementations directly.
+    """
+
+
+def owned_category_join(categories) -> Category:
+    r"""Return Sage's axiom-closed join realized as an owned join category."""
+    branches = tuple(Category.join(tuple(categories), as_list=True))
+    assert branches, "the join of no owned categories is not represented"
+    if len(branches) == 1:
+        return branches[0]
+    return OwnedJoinCategory(branches)
 
 
 @dataclass(frozen=True)
@@ -892,7 +930,7 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
             bases = (engine, owner)
         case False:
             bases = (implementation, _implementation_with_engine(owner, owner, engine))
-    return _abc_metaclass_for(bases)(
+    result = _abc_metaclass_for(bases)(
         f"{implementation.__name__}[{engine.__name__}]",
         bases,
         {
@@ -902,34 +940,39 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
             "__module__": engine.__module__,
         },
     )
+    _abc_init(result)
+    return result
 
 
 @cached_function
 def _engine_object_type(object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine):
     r"""The native parent/element realization, without a second category node."""
     realized = _implementation_with_engine(object_type, owner_object_type, object_engine)
-    elements = (
-        element_type
-        if element_engine is None
-        else _implementation_with_engine(element_type, owner_element_type, element_engine)
-    )
-    return type(realized)(
-        f"{realized.__name__}.ObjectType",
-        (realized,),
-        {
+    namespace = {
+        "_reduction": (
+            _engine_object_type,
+            (object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine),
+        ),
+        "_doccls": (object_engine,),
+        "__doc__": object_engine.__doc__,
+        "__module__": object_engine.__module__,
+    }
+    match element_engine:
+        case None:
+            pass
+        case _:
             # Sage Parent.element_class consumes Element; the owned public
-            # type protocol exposes the identical complete implementation.
-            "Element": elements,
-            "ElementType": elements,
-            "_reduction": (
-                _engine_object_type,
-                (object_type, owner_object_type, object_engine, element_type, owner_element_type, element_engine),
-            ),
-            "_doccls": (object_engine,),
-            "__doc__": object_engine.__doc__,
-            "__module__": object_engine.__module__,
-        },
-    )
+            # type protocol already has the complete implementation.  Expose
+            # it directly so Sage does not wrap it in a second dynamic class
+            # carrying the same category element base.
+            elements = _implementation_with_engine(element_type, owner_element_type, element_engine)
+            namespace["Element"] = elements
+            namespace["ElementType"] = elements
+            namespace["element_class"] = elements
+    result = type(realized)(f"{realized.__name__}.ObjectType", (realized,), namespace)
+    if isinstance(type(result), type) and issubclass(type(result), ABCMeta):
+        _abc_init(result)
+    return result
 
 
 def _object_of(
