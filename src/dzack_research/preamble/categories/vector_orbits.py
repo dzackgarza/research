@@ -288,13 +288,16 @@ def _definite_complement_extensions(lattice, left, right):
             for row in range(source_rank)
         )
         candidate = target_inclusion * block * source_inverse
-        try:
-            integral = ring.matrix_space(source_rank).from_rows(
-                (ring(candidate[row, column]) for column in range(source_rank))
-                for row in range(source_rank)
-            )
-        except (TypeError, ValueError):
+        if not all(
+            candidate[row, column] in ring
+            for row in range(source_rank)
+            for column in range(source_rank)
+        ):
             continue
+        integral = ring.matrix_space(source_rank).from_rows(
+            (ring(candidate[row, column]) for column in range(source_rank))
+            for row in range(source_rank)
+        )
         images = tuple(
             sum(
                 (
