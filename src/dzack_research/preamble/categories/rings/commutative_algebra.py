@@ -2537,25 +2537,15 @@ def _flattened_symmetric_localization_engine(source, inverted):
         names=names,
     )
 
-    flattening = getattr(polynomial_bottom, "flattening_morphism", None)
-    if callable(flattening):
-        flattening = flattening()
-        engine_bottom = flattening.codomain()
-        unflatten = flattening.section()
-        to_engine_bottom = flattening
-    else:
-        engine_bottom = polynomial_bottom
-
-        def unflatten(element):
-            return polynomial_bottom(element)
-
-        def to_engine_bottom(element):
-            return engine_bottom(element)
+    flattening = polynomial_bottom.flattening_morphism()
+    engine_bottom = flattening.codomain()
+    unflatten = flattening.section()
+    to_engine_bottom = flattening
 
     variables = tuple(polynomial_bottom.gens())
 
     def powers_of(exponent):
-        if len(variables) == 1 and not isinstance(exponent, tuple):
+        if len(variables) == 1:
             return (int(exponent),)
         return tuple(int(power) for power in exponent)
 
