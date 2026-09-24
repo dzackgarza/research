@@ -3768,8 +3768,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             )
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-
-            return ClassGroups()(_own_ring(SageZZ).free_module(finite_ordered_set(())), scheme=self)
+            return ClassGroups().trivial(self)
 
         def basic_open(self, element):
             r"""Archived spelling for the distinguished open ``D(element)``."""
@@ -3897,12 +3896,10 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     )
                     from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
                     from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
-                    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
-                    zero_module = _own_ring(SageZZ).free_module(finite_ordered_set(()))
                     base_scheme = self.base_scheme()
                     base_picard = PicardGroups().trivial(base_scheme)
-                    base_class = ClassGroups()(zero_module, scheme=base_scheme)
+                    base_class = ClassGroups().trivial(base_scheme)
                     comparison = base_picard.module_category().Mor(base_picard, base_class)({})
                     return _projective_space_picard_to_class_group_morphism(self, base_picard, base_class, comparison)
                 case _:
@@ -4072,14 +4069,16 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             r"""Return ``omega_{P^n_R} = O(-n-1)`` in the standard smooth projective regime."""
             return self.O(-int(self.relative_dimension()) - 1)
 
-        canonical_bundle = canonical_line_bundle
+        def canonical_bundle(self, *args, **kwargs):
+            return self.canonical_line_bundle(*args, **kwargs)
 
         @cached_method
         def anticanonical_line_bundle(self):
             r"""Return ``omega_{P^n_R}^{-1} = O(n+1)``."""
             return self.O(int(self.relative_dimension()) + 1)
 
-        anticanonical_bundle = anticanonical_line_bundle
+        def anticanonical_bundle(self, *args, **kwargs):
+            return self.anticanonical_line_bundle(*args, **kwargs)
 
         @cached_method
         def standard_affine_atlas(self):
@@ -4498,13 +4497,15 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
         def canonical_line_bundle(self):
             return self.O(*(-int(factor.relative_dimension()) - 1 for factor in self.factors()))
 
-        canonical_bundle = canonical_line_bundle
+        def canonical_bundle(self, *args, **kwargs):
+            return self.canonical_line_bundle(*args, **kwargs)
 
         @cached_method
         def anticanonical_line_bundle(self):
             return self.O(*(int(factor.relative_dimension()) + 1 for factor in self.factors()))
 
-        anticanonical_bundle = anticanonical_line_bundle
+        def anticanonical_bundle(self, *args, **kwargs):
+            return self.anticanonical_line_bundle(*args, **kwargs)
 
 
 def _scheme_product_cache_key(factors):

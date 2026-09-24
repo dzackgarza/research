@@ -168,3 +168,25 @@ namespace (`globals() is vars(sage.all)`), so a star import rebinds the
 attributes of `sage.all`. Owned code that falls back to a Sage function takes
 it from its defining module (`sage.functions.trig`, `sage.misc.functional`),
 never through `sage.all`.
+
+### A class-body alias of a `cached_method` discards the original's cache
+
+`h = g` for a `@cached_method g` does not share `g`'s cache. Reached through
+`h`, `CachedMethod.__get__` looks for an existing caller only in
+`inst._cached_methods`, builds a fresh caller with an empty cache, and stores
+it under the function's own name with `setattr(inst, "g", caller)`
+(`sage/misc/cachefunc.pyx`, `CachedMethod.__get__`). So `x.h()` replaces the
+cache of `x.g()`, and a later `x.g()` recomputes and returns a different
+object. Reproducer, Sage 10.9 (`sage-dev-allopts`), 2026-09-24:
+
+```python
+class P(Parent):
+    @cached_method
+    def g(self): return object()
+    h = g
+p = P(); a = p.g(); p.h(); p.g() is a   # False
+```
+
+Observed as `ToricSchemes.weil_divisor_group = torus_invariant_divisor_group`:
+a divisor built in `Div_T(X)` stopped belonging to `Div_T(X)` after the alias was
+called. Route chosen: an alias of a cached method is a method that calls it.

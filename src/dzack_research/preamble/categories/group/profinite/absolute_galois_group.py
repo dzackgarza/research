@@ -88,7 +88,8 @@ class AbsoluteGaloisGroupElement(Element):
             return field_endomorphisms(self._exact_action)
         return field_endomorphisms.elementwise(lambda element: self(element))
 
-    underlying_field_morphism = as_morphism
+    def underlying_field_morphism(self, *args, **kwargs):
+        return self.as_morphism(*args, **kwargs)
 
     def domain(self):
         return self.parent().algebraic_closure()

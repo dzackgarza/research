@@ -304,12 +304,16 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             affine,
         )
         pair = self(letter, rank, variant=low_variant, affine=affine)
-        branch_class = pair.log_scheme().polarizing_divisor()
+        surface = pair.log_scheme()
+        branch_class = surface.polarizing_divisor()
         expected = _own_ring(SageZZ)(2) * pair.complementary_divisor()
-        if branch_class != expected:
+        # Lemma 3.4 is an identity of divisor classes: L and 2C' differ by the
+        # divisor of a character, so they are compared in Cl(Y).
+        if surface.divisor_class(branch_class) != surface.divisor_class(expected):
             raise ArithmeticError(
                 f"the log pair {pair} of type {letter}_{rank} does not satisfy AT21 Lemma 3.4: "
-                f"the branch class L = -2(K_Y + C) is {branch_class}, not 2C' = {expected}"
+                f"the branch divisor L = -2(K_Y + C) = {branch_class} is not linearly equivalent "
+                f"to 2C' = {expected}"
             )
         branch_line_bundle = pair.log_scheme().invertible_sheaf_of_divisor(branch_class)
         return ToricLogPairs(self.base_ring())(

@@ -89,7 +89,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
             r"""The blowdown ``Bl_p(P^2) -> P^2``: the first projection along the inclusion."""
             return self.graph_ambient_product().projection(0) * self.inclusion()
 
-        blowdown = blowup_morphism
+        def blowdown(self, *args, **kwargs):
+            return self.blowup_morphism(*args, **kwargs)
 
         def graph_relation(self):
             r"""The bihomogeneous equation ``f V - g U`` cutting the blowup out."""
@@ -282,7 +283,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         def anticanonical_line_bundle(self):
             return self.canonical_line_bundle().dual_sheaf()
 
-        anticanonical_bundle = anticanonical_line_bundle
+        def anticanonical_bundle(self, *args, **kwargs):
+            return self.anticanonical_line_bundle(*args, **kwargs)
 
         def is_del_pezzo(self) -> bool:
             return bool(self.anticanonical_line_bundle().is_ample())

@@ -6195,7 +6195,8 @@ class _FiniteAtlasInverseImageModuleSheaves(OwnedCategory):
             _engine=_FiniteAtlasInverseImageModuleSheafEngine,
         )
 
-    __call__ = object
+    def __call__(self, *args, **kwargs):
+        return self.object(*args, **kwargs)
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:

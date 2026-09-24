@@ -2743,7 +2743,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             )
             return _subgroup_from_gap(self, _gap_model(self).DerivedSubgroup())
 
-        derived_subgroup = commutator_subgroup
+        def derived_subgroup(self, *args, **kwargs):
+            return self.commutator_subgroup(*args, **kwargs)
 
         @cached_method
         def subgroups(self):

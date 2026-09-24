@@ -313,7 +313,8 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             """
             return self.invariant_lattice().orthogonal_complement()
 
-        formed_coinvariants = coinvariant_lattice
+        def formed_coinvariants(self, *args, **kwargs):
+            return self.coinvariant_lattice(*args, **kwargs)
 
         def isotypic_lattice(self, character):
             r"""Return the formed ``character``-isotypic sublattice with its restricted action.

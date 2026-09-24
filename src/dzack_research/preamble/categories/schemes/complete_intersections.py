@@ -301,7 +301,8 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         def anticanonical_line_bundle(self):
             return self.canonical_line_bundle().dual_sheaf()
 
-        anticanonical_bundle = anticanonical_line_bundle
+        def anticanonical_bundle(self, *args, **kwargs):
+            return self.anticanonical_line_bundle(*args, **kwargs)
 
         def is_del_pezzo(self) -> bool:
             r"""Decide the del Pezzo condition for a smooth complete-intersection surface.

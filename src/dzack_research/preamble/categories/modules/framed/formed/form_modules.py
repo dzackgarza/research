@@ -1607,7 +1607,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                         name=f"Primary components of {self}",
                     )
 
-                primary_decomposition = primary_components
+                def primary_decomposition(self, *args, **kwargs):
+                    return self.primary_components(*args, **kwargs)
 
 
                 @cached_method
@@ -1991,7 +1992,8 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                         name=f"Primary components of {self}",
                     )
 
-                primary_decomposition = primary_components
+                def primary_decomposition(self, *args, **kwargs):
+                    return self.primary_components(*args, **kwargs)
 
 
                 @cached_method

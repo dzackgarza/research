@@ -636,7 +636,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             return WeilDivisorGroups()(self, finite_ordered_set(tuple(self.fan().cones(1))))
 
-        weil_divisor_group = torus_invariant_divisor_group
+        def weil_divisor_group(self, *args, **kwargs):
+            return self.torus_invariant_divisor_group(*args, **kwargs)
 
         @cached_method
         def torus_invariant_cartier_divisor_group(self):
@@ -762,14 +763,16 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""Return ``omega_X = O_X(K_X)`` in the represented toric Cartier regime."""
             return self.invertible_sheaf_of_divisor(self.canonical_divisor())
 
-        canonical_bundle = canonical_line_bundle
+        def canonical_bundle(self, *args, **kwargs):
+            return self.canonical_line_bundle(*args, **kwargs)
 
         @cached_method
         def anticanonical_line_bundle(self):
             r"""Return ``omega_X^{-1} = O_X(-K_X)``."""
             return self.invertible_sheaf_of_divisor(-self.canonical_divisor())
 
-        anticanonical_bundle = anticanonical_line_bundle
+        def anticanonical_bundle(self, *args, **kwargs):
+            return self.anticanonical_line_bundle(*args, **kwargs)
 
         @cached_method
         def character_divisor_morphism(self):
@@ -815,7 +818,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             fan, so the class group is this cokernel whether or not ``X`` has a
             torus factor; it is exact on the left exactly when ``X`` has none.
             """
-            return ClassGroups()(self.character_divisor_morphism().cokernel())
+            return ClassGroups()(self, self.character_divisor_morphism())
 
         @cached_method
         def class_group_projection(self):
@@ -1573,7 +1576,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""Return ``O_{P^n}(1)`` from the selected hyperplane divisor."""
             return self.invertible_sheaf_of_divisor(self.hyperplane_divisor())
 
-        O1 = hyperplane_line_bundle
+        def O1(self, *args, **kwargs):
+            return self.hyperplane_line_bundle(*args, **kwargs)
 
         def ample_divisor_self_intersection(self, divisor):
             r"""Return ``D^2`` from the normalized area of ``P_D``.

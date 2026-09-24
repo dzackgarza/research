@@ -235,7 +235,8 @@ class FiniteGluedInvariantQuotient(SageObject):
             **data,
         )
 
-    quotient = quotient_scheme
+    def quotient(self, *args, **kwargs):
+        return self.quotient_scheme(*args, **kwargs)
 
     def source_chart_action(self, index, group_element):
         r"""``g`` acting on the chart ``U_i``, read from the acted chart on the same algebra."""
@@ -327,7 +328,8 @@ class FiniteGluedInvariantQuotient(SageObject):
         source = self.source_scheme()
         return Sets().Mor(self.acting_group(), source.Mor(source))(self.action_of)
 
-    global_action = action
+    def global_action(self, *args, **kwargs):
+        return self.action(*args, **kwargs)
 
     def fixed_locus_is_empty(self, group_element) -> bool:
         r"""Decide emptiness of ``X^g`` on the invariant affine atlas.

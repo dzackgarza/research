@@ -1206,7 +1206,8 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return self.Aut().predicate_subgroup(lambda automorphism: automorphism.determinant() == 1, "det(g)=1", character_data={"determinant_kernel": True})
 
-        SO = special_orthogonal_group
+        def SO(self, *args, **kwargs):
+            return self.special_orthogonal_group(*args, **kwargs)
 
         def spinor_kernel_subgroup(self):
             r"""Return the kernel of the real spinor-norm sign on ``O(L)``."""

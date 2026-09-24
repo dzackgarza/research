@@ -171,7 +171,8 @@ class _OppositeCategory(OwnedCategory):
             )
         return _object_of(self, underlying_object=underlying_object)
 
-    __call__ = object
+    def __call__(self, *args, **kwargs):
+        return self.object(*args, **kwargs)
 
     def Mor(self, domain: Parent, codomain: Parent) -> OppositeMor:
         if domain not in self or codomain not in self:
@@ -433,7 +434,8 @@ class _ProductCategory(OwnedCategory):
             )
         return _object_of(self, first=first, second=second)
 
-    __call__ = pair
+    def __call__(self, *args, **kwargs):
+        return self.pair(*args, **kwargs)
 
     def Mor(self, domain: Parent, codomain: Parent) -> ProductMor:
         if domain not in self or codomain not in self:

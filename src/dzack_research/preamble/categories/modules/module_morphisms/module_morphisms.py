@@ -2674,8 +2674,10 @@ class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
             identity = module.module_category().Mor(module, module).identity()
             return self._from_known_inverse_pair(identity, identity)
 
-        one = identity
-        identity_automorphism = identity
+        def one(self, *args, **kwargs):
+            return self.identity(*args, **kwargs)
+        def identity_automorphism(self, *args, **kwargs):
+            return self.identity(*args, **kwargs)
 
 
 class ModuleAutomorphismGroup(CategoricalMor):
@@ -2736,8 +2738,10 @@ class ModuleAutomorphismGroup(CategoricalMor):
         identity = module.module_category().Mor(module, module).identity()
         return self._from_known_inverse_pair(identity, identity)
 
-    one = identity
-    identity_automorphism = identity
+    def one(self, *args, **kwargs):
+        return self.identity(*args, **kwargs)
+    def identity_automorphism(self, *args, **kwargs):
+        return self.identity(*args, **kwargs)
 
     def module(self):
         return self.domain()

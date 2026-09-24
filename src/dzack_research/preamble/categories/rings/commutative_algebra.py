@@ -138,7 +138,8 @@ class PrimeSpectra(OwnedCategory):
         def local_ring(self):
             return self.parent().ring().localize_at_prime(self.ideal())
 
-        stalk = local_ring
+        def stalk(self, *args, **kwargs):
+            return self.local_ring(*args, **kwargs)
 
         @cached_method
         def residue_field(self):

@@ -534,7 +534,8 @@ class NaturalTransformation:
             )
         return arrow
 
-    __call__ = component
+    def __call__(self, *args, **kwargs):
+        return self.component(*args, **kwargs)
 
     def naturality_target_composite(self, morphism: Map) -> Morphism:
         r"""Return ``G(f) o eta_A`` for this transformation ``eta:F=>G``."""

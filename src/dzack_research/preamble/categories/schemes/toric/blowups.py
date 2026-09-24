@@ -58,7 +58,8 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             identity = lattice.module_category().Mor(lattice, lattice).identity()
             return self.toric_morphism(identity, source)
 
-        blowdown = blowup_morphism
+        def blowdown(self, *args, **kwargs):
+            return self.blowup_morphism(*args, **kwargs)
 
         def blowup_center_cone(self):
             r"""Return the maximal source-fan cone indexing the blown-up fixed point."""

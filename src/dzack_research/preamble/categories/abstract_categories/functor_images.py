@@ -179,7 +179,8 @@ class ImageOfFunctor(OwnedCategory):
         self.functor()(preimage)
         return _object_of(self, preimage=preimage)
 
-    __call__ = object
+    def __call__(self, *args, **kwargs):
+        return self.object(*args, **kwargs)
 
     def Mor(self, domain: Parent, codomain: Parent):
         if domain not in self or codomain not in self:

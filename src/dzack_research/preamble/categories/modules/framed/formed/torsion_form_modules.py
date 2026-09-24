@@ -1281,8 +1281,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def one(self):
         return self._from_engine(self._engine_group_parent.one())
 
-    identity = one
-    identity_automorphism = one
+    def identity(self, *args, **kwargs):
+        return self.one(*args, **kwargs)
+    def identity_automorphism(self, *args, **kwargs):
+        return self.one(*args, **kwargs)
 
     def order(self):
         return self.domain().base_ring()(int(self._engine_group_parent.order()))
