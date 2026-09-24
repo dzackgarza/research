@@ -60,7 +60,16 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets, NN, Sets
+
+
+def _polynomial_monomial_exponents(engine, monomial) -> tuple[int, ...]:
+    r"""Decode a polynomial monomial key at the private Sage boundary."""
+    if isinstance(engine, PolynomialRing_generic):
+        return (int(monomial),)
+    if isinstance(engine, MPolynomialRing_base):
+        return tuple(int(exponent) for exponent in monomial)
+    raise TypeError("the selected symmetric-algebra computation uses a polynomial ring")
 
 
 class _NativeMonomialEvaluation:
@@ -120,11 +129,7 @@ class _NativeMonomialEvaluation:
                         lambda position, word=word: word[int(position)]
                     )
                 case "symmetric":
-                    match engine:
-                        case PolynomialRing_generic():
-                            exponents = (int(monomial),)
-                        case _:
-                            exponents = tuple(int(exponent) for exponent in monomial)
+                    exponents = _polynomial_monomial_exponents(engine, monomial)
                     degree = sum(exponents)
                     powers = dict(zip(labels, exponents, strict=True))
                     inner = module_labels.cofactor(NN(degree)).from_multiplicities(powers)
@@ -335,7 +340,7 @@ def _relations_to_ideal(presentation_ring, relations):
         )
         return relations, selected_relations
 
-    if hasattr(relations, "index_set") and callable(getattr(relations, "value", None)):
+    if isinstance(relations, IndexedFamily):
         size = cardinal(relations.cardinality())
         if not size.is_finite():
             raise TypeError("a chosen finite algebra presentation requires finitely many relations")
@@ -352,10 +357,7 @@ def _relations_to_ideal(presentation_ring, relations):
             lambda index: presentation_ring(by_position[int(index)]),
             name="Defining relation family",
         )
-    elif hasattr(relations, "cardinality"):
-        size = cardinal(relations.cardinality())
-        if not size.is_finite():
-            raise TypeError("a chosen finite algebra presentation requires finitely many relations")
+    elif relations in FiniteSets():
         selected_relations = indexed_family(
             relations,
             lambda relation: presentation_ring(relation),
@@ -1317,14 +1319,9 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             r"""Project onto the canonical symmetric-power degree piece."""
             degree = int(degree)
             element = self(element)
-
-            def monomial_degree(exponent):
-                try:
-                    return sum(exponent)
-                except TypeError:
-                    return int(exponent)
             piece = self.graded_piece(degree)
             backend = _engine_element(self, element)
+            engine = backend.parent()
             coefficients = backend.monomial_coefficients()
             exponent_to_label = {}
             for label in piece.module_generating_set():
@@ -1346,23 +1343,18 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
                         engine_ring(coefficient)
                     )
                     for exponent, coefficient in coefficients.items()
-                    if coefficient and monomial_degree(exponent) == degree
+                    if coefficient
+                    and sum(_polynomial_monomial_exponents(engine, exponent)) == degree
                 }
             )
 
         def homogeneous_components(self, element):
             r"""Return all nonzero polynomial-degree components."""
             backend = _engine_element(self, self(element))
-
-            def monomial_degree(exponent):
-                try:
-                    return sum(exponent)
-                except TypeError:
-                    return int(exponent)
-
+            engine = backend.parent()
             degrees = sorted(
                 {
-                    monomial_degree(exponent)
+                    sum(_polynomial_monomial_exponents(engine, exponent))
                     for exponent, coefficient in backend.monomial_coefficients().items()
                     if coefficient
                 }
@@ -1442,27 +1434,21 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
 
 def _presentation_data(algebra):
+    from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRings
+
     base = algebra.base_ring()
-    has_selected_presentation = hasattr(algebra, "presentation_ring") and hasattr(
-        algebra, "relations"
-    )
-    is_free_polynomial = algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base)
-    has_quotient_presentation = hasattr(algebra, "quotient_source") and hasattr(
-        algebra, "defining_ideal"
-    )
-    quotient_source = algebra.quotient_source() if has_quotient_presentation else None
-    assert (
-        has_selected_presentation
-        or is_free_polynomial
-        or (has_quotient_presentation and quotient_source in SymmetricAlgebras(base))
-    ), (
+    match algebra:
+        case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
+            return algebra.presentation_ring(), tuple(algebra.relations())
+        case _ if algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base):
+            return algebra, ()
+        case _ if algebra in QuotientRings():
+            quotient_source = algebra.quotient_source()
+            if quotient_source in SymmetricAlgebras(base):
+                return quotient_source, tuple(algebra.defining_ideal().ideal_generators())
+    raise TypeError(
         "the active commutative-algebra backend requires a free polynomial or selected finite presentation"
     )
-    if has_selected_presentation:
-        return algebra.presentation_ring(), tuple(algebra.relations())
-    if is_free_polynomial:
-        return algebra, ()
-    return quotient_source, tuple(algebra.defining_ideal().gens())
 
 
 def _transport_relations(presentation_ring, relations, target, tag):
@@ -1530,20 +1516,19 @@ def _quotient_by_algebra_elements_backend(
     if not selected:
         identity = Algebras(base).Associative().Unital().Commutative().Mor(algebra, algebra).identity()
         return algebra, identity
-    has_selected_presentation = hasattr(algebra, "presentation_ring") and hasattr(
-        algebra, "relations"
-    )
-    assert has_selected_presentation or algebra in SymmetricAlgebras(base), (
-        "quotienting by represented algebra elements requires a selected polynomial presentation"
-    )
-    if has_selected_presentation:
-        presentation = algebra.presentation_ring()
-        relations = tuple(algebra.relations()) + tuple(
-            algebra.lift_to_presentation(element) for element in selected
-        )
-    elif algebra in SymmetricAlgebras(base):
-        presentation = algebra
-        relations = selected
+    match algebra:
+        case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
+            presentation = algebra.presentation_ring()
+            relations = tuple(algebra.relations()) + tuple(
+                algebra.lift_to_presentation(element) for element in selected
+            )
+        case _ if algebra in SymmetricAlgebras(base):
+            presentation = algebra
+            relations = selected
+        case _:
+            raise TypeError(
+                "quotienting by represented algebra elements requires a selected polynomial presentation"
+            )
     quotient = (presentation).quotient_by_relations(relations,
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
@@ -1694,18 +1679,14 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def _tensor_terms(self, element):
         domain = self.domain()
-        if hasattr(domain, "lift_to_presentation"):
+        if domain in AlgebrasWithChosenFinitePresentation(domain.base_ring()):
             presentation_ring = domain.presentation_ring()
             presented = _engine_element(
                 presentation_ring,
                 domain.lift_to_presentation(element),
             )
         else:
-            engine_domain = _engine_ring(domain)
-            if getattr(element, "parent", lambda: None)() is engine_domain:
-                presented = engine_domain(element)
-            else:
-                presented = _engine_element(domain, domain(element))
+            presented = _engine_element(domain, element)
         engine = presented.parent()
         labels = self._finite_engine_generator_labels()
         generator_labels = dict(zip(engine.monoid().gens(), labels, strict=True))
@@ -1720,27 +1701,18 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def _symmetric_terms(self, element):
         domain = self.domain()
-        if hasattr(domain, "lift_to_presentation"):
+        if domain in AlgebrasWithChosenFinitePresentation(domain.base_ring()):
             presentation_ring = domain.presentation_ring()
             presented = _engine_element(
                 presentation_ring,
                 domain.lift_to_presentation(element),
             )
         else:
-            engine_domain = _engine_ring(domain)
-            if getattr(element, "parent", lambda: None)() is engine_domain:
-                presented = engine_domain(element)
-            else:
-                presented = _engine_element(domain, domain(element))
+            presented = _engine_element(domain, element)
+        engine = presented.parent()
         labels = self._finite_engine_generator_labels()
         for monomial, coefficient in presented.monomial_coefficients().items():
-            try:
-                exponents = tuple(int(exponent) for exponent in monomial)
-            except TypeError:
-                if hasattr(monomial, "exponents"):
-                    exponents = tuple(monomial.exponents()[0])
-                else:
-                    exponents = (int(monomial),)
+            exponents = _polynomial_monomial_exponents(engine, monomial)
             factors = tuple(
                 label
                 for label, exponent in zip(labels, exponents, strict=True)
@@ -1758,6 +1730,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def _call_(self, element):
         domain = self.domain()
+        element = domain(element)
         terms = (
             self._tensor_terms(element)
             if domain in TensorAlgebras(domain.base_ring())
