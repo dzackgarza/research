@@ -8,7 +8,7 @@ We have Nikulin's 2-elementary diagram:
 ::: {#fig-nikulin-table .figure}
 \input{tikz/nikulin_2elementary_table.tex}
 
-White nodes are $\delta=0$, black are $\delta=1$, double circled are both.
+White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 0,1$.
 :::
 :::
 
