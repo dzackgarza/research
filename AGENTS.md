@@ -732,6 +732,12 @@ A miss is a dated, scoped result — *not found in the corpus at the index it cu
 and never the claim that nobody has formalized this. Widen to upstream Mathlib, Loogle, LeanSearch
 and GitHub before recording a negative, the way the reuse gate in `lean-categories` does.
 
+**The corpus locates a notion; it does not rule on a field it has barely formalized.** Lattice
+theory over number fields (duals, `A`-modularity, genera, discriminant forms) is thin and partly
+wrong in Mathlib. There the authority is the number-theory literature — arXiv papers, Kirschmer,
+O'Meara — and the maintained implementations in Hecke/Oscar. A Mathlib definition is cited for
+such a notion only when it agrees with those sources.
+
 # Work-selection discipline (always-on)
 
 An output that cannot fail carries no information.
