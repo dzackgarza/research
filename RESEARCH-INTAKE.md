@@ -1,240 +1,4 @@
-<!--toc:start-->
-
-- [Research Intake](#research-intake)
-
-  - [Reference implementations](#reference-implementations)
-
-  - [Leads](#leads)
-
-  - [Intake report: https://github.com/taklab-org/CAP_finding_monodromy — 2026-09-15](#intake-report-httpsgithub.comtaklab-orgcap_finding_monodromy-2026-09-15)
-
-  - [Fundamental semantic language required — verbatim — 2026-09-15](#fundamental-semantic-language-required-verbatim-2026-09-15)
-
-  - [Desired capability: families as scheme morphisms — note 2026-09-15](#desired-capability-families-as-scheme-morphisms-note-2026-09-15)
-
-  - [Desired capability: generatingfunctionology (Wilf Ch.1-2) — note 2026-09-15](#desired-capability-generatingfunctionology-wilf-ch.1-2-note-2026-09-15)
-
-  - [Desired capability: monodromy groups/representations + $\pi_1$/$H_1$ + CW + graded — note 2026-09-15](#desired-capability-monodromy-groupsrepresentations-pi_1h_1-cw-graded-note-2026-09-15)
-
-  - [Intake: https://github.com/lairez/periods — functionality — 2026-09-15](#intake-httpsgithub.comlairezperiods-functionality-2026-09-15)
-
-  - [How periods generalize — verbatim — 2026-09-15](#how-periods-generalize-verbatim-2026-09-15)
-
-  - [Fundamental semantic language for periods generalization — verbatim — 2026-09-15](#fundamental-semantic-language-for-periods-generalization-verbatim-2026-09-15)
-
-  - [Intake: Monodromy of Family of Cubic Surfaces — 2026-09-15 — verbatim](#intake-monodromy-of-family-of-cubic-surfaces-2026-09-15-verbatim)
-
-  - [Intake: Fermat Jacobians — functionality — 2026-09-15 — verbatim](#intake-fermat-jacobians-functionality-2026-09-15-verbatim)
-
-  - [Fundamental objects for Fermat Jacobians generalization — verbatim — 2026-09-15](#fundamental-objects-for-fermat-jacobians-generalization-verbatim-2026-09-15)
-
-  - [Desired capability: honest and operationalized $Q_\ell$, étale cohomology, Galois cohomology as specialization — computable in some cases — note 2026-09-16](#desired-capability-honest-and-operationalized-q_ell-étale-cohomology-galois-cohomology-as-specialization-computable-in-some-cases-note-2026-09-16)
-
-  - [Desired capability: Gauss-Manin, six functors, derived pushforwards — note 2026-09-15](#desired-capability-gauss-manin-six-functors-derived-pushforwards-note-2026-09-15)
-
-  - [Desired capability: p-curvature — note 2026-09-15](#desired-capability-p-curvature-note-2026-09-15)
-
-  - [Desired capability: zeta functions of varieties over $F_q$ and Weil verification — note 2026-09-15](#desired-capability-zeta-functions-of-varieties-over-f_q-and-weil-verification-note-2026-09-15)
-
-  - [Fundamental objects to even state Weil conjectures — verbatim — 2026-09-15](#fundamental-objects-to-even-state-weil-conjectures-verbatim-2026-09-15)
-
-  - [Desired capability: operationalize Lefschetz trace for Frob — note 2026-09-15](#desired-capability-operationalize-lefschetz-trace-for-frob-note-2026-09-15)
-
-  - [Desired capability: $HH(A)$ — Hochschild (co)homology — note 2026-09-16](#desired-capability-hha-hochschild-cohomology-note-2026-09-16)
-
-  - [Desired capability: right-derived Hom and left-derived tensor — Ext, Tor, derived tensor products — note 2026-09-15](#desired-capability-right-derived-hom-and-left-derived-tensor-ext-tor-derived-tensor-products-note-2026-09-15)
-
-  - [Intake: https://www-fourier.univ-grenoble-alpes.fr/~sergerar/Kenzo/kenzo-demo.html — functionality — 2026-09-15 — verbatim](#intake-httpswww-fourier.univ-grenoble-alpes.frsergerarkenzokenzo-demo.html-functionality-2026-09-15-verbatim)
-
-  - [How Kenzo generalizes — what is new vs intake — verbatim — 2026-09-15](#how-kenzo-generalizes-what-is-new-vs-intake-verbatim-2026-09-15)
-
-  - [Fundamental semantic language for Kenzo generalization — verbatim — 2026-09-15](#fundamental-semantic-language-for-kenzo-generalization-verbatim-2026-09-15)
-
-  - [Fundamental semantic language for stable/characteristic/chromatic machinery — verbatim — 2026-09-15](#fundamental-semantic-language-for-stablecharacteristicchromatic-machinery-verbatim-2026-09-15)
-
-  - [Desired capability: Eilenberg-Moore sseq operationalized for effective computations — note 2026-09-15](#desired-capability-eilenberg-moore-sseq-operationalized-for-effective-computations-note-2026-09-15)
-
-  - [Desired capability: hypercohomology and Čech cohomology operationalized and effective — note 2026-09-15](#desired-capability-hypercohomology-and-čech-cohomology-operationalized-and-effective-note-2026-09-15)
-
-  - [Desired capability: filtered complexes, standard filtrations, Hodge-Frölicher and Grothendieck sseqs, with computable degeneration — note 2026-09-15](#desired-capability-filtered-complexes-standard-filtrations-hodge-frölicher-and-grothendieck-sseqs-with-computable-degeneration-note-2026-09-15)
-
-  - [Intake: https://www-fourier.univ-grenoble-alpes.fr/~sergerar/Papers/Ana-JSC.pdf — fixtures + algorithms — 2026-09-15 — verbatim](#intake-httpswww-fourier.univ-grenoble-alpes.frsergerarpapersana-jsc.pdf-fixtures-algorithms-2026-09-15-verbatim)
-
-  - [Desired capability: interactive spectral sequence visualizer attached to sseq objects — note 2026-09-15](#desired-capability-interactive-spectral-sequence-visualizer-attached-to-sseq-objects-note-2026-09-15)
-
-  - [Desired capability: concrete geometric models for classifying spaces $BG$, $EG\to BG$, simplicial objects in $C$, configuration spaces — note 2026-09-15](#desired-capability-concrete-geometric-models-for-classifying-spaces-bg-egto-bg-simplicial-objects-in-c-configuration-spaces-note-2026-09-15)
-
-  - [Desired capability: character varieties, Betti moduli space, general GIT quotients and Hilbert schemes, honest holonomy groups — note 2026-09-15](#desired-capability-character-varieties-betti-moduli-space-general-git-quotients-and-hilbert-schemes-honest-holonomy-groups-note-2026-09-15)
-
-  - [Desired capability: group (co)homology with Tate/transfers/traces/norms/induction, surface groups, group objects, Higgs/NAH, RR/index/Poincaré/Chern, 4-manifold Freedman, spinnability/Arf/KS/Â, equivariant, Hodge ops, cobordism/TQFT, normal bundles — note 2026-09-15](#desired-capability-group-cohomology-with-tatetransferstracesnormsinduction-surface-groups-group-objects-higgsnah-rrindexpoincaréchern-4-manifold-freedman-spinnabilityarfksâ-equivariant-hodge-ops-cobordismtqft-normal-bundles-note-2026-09-15)
-
-  - [Desired capability: almost complex structures, integral structure, Nijenhuis tensor, curvature tensors — note 2026-09-15](#desired-capability-almost-complex-structures-integral-structure-nijenhuis-tensor-curvature-tensors-note-2026-09-15)
-
-  - [Desired capability: flatness, moduli of flat connections, curvature, Levi-Civita, gauge group, Hermitian, covariant derivatives, gradient/Hamiltonian flows — note 2026-09-15](#desired-capability-flatness-moduli-of-flat-connections-curvature-levi-civita-gauge-group-hermitian-covariant-derivatives-gradienthamiltonian-flows-note-2026-09-15)
-
-  - [Desired capability: Teichmüller space and Weil-Petersson metric — note 2026-09-15](#desired-capability-teichmüller-space-and-weil-petersson-metric-note-2026-09-15)
-
-  - [Desired capability: slopes of vector bundles — and checking (semi)stability — note 2026-09-15](#desired-capability-slopes-of-vector-bundles-and-checking-semistability-note-2026-09-15)
-
-  - [Desired capability: composition series, filtrations, associated graded, semidirect, is_simple, Jordan-Hölder, Inn/Out, artinian/noetherian, subgroup poset — note 2026-09-15](#desired-capability-composition-series-filtrations-associated-graded-semidirect-is_simple-jordan-hölder-innout-artiniannoetherian-subgroup-poset-note-2026-09-15)
-
-  - [Desired capability: open-set categories, powersets, topologies, poset $\leftrightarrow$ poset-category fluid interface — note 2026-09-15](#desired-capability-open-set-categories-powersets-topologies-poset-leftrightarrow-poset-category-fluid-interface-note-2026-09-15)
-
-  - [Desired capability: short exact sequences $1\to A\to B\to C\to 1$ and fibrations $F\to E\to B$ classified by Ext / twisting cocycle — note 2026-09-15](#desired-capability-short-exact-sequences-1to-ato-bto-cto-1-and-fibrations-fto-eto-b-classified-by-ext-twisting-cocycle-note-2026-09-15)
-
-  - [Desired capability: Lie groups $\to$ Lie algebras, matrix groups as Lie groups, algebraic / Lie / group scheme interfaces, Ad/ad — note 2026-09-15](#desired-capability-lie-groups-to-lie-algebras-matrix-groups-as-lie-groups-algebraic-lie-group-scheme-interfaces-adad-note-2026-09-15)
-
-  - [Desired capability: group cohomology pairings via composition morphisms, Zariski tangent of character varieties as group cohomology — note 2026-09-15](#desired-capability-group-cohomology-pairings-via-composition-morphisms-zariski-tangent-of-character-varieties-as-group-cohomology-note-2026-09-15)
-
-  - [Desired capability: de Rham cohomology with coefficients in a flat vector bundle / local system (Bott & Tu), honest K(G,n) — note 2026-09-15](#desired-capability-de-rham-cohomology-with-coefficients-in-a-flat-vector-bundle-local-system-bott-tu-honest-kgn-note-2026-09-15)
-
-  - [Desired capability: modular forms, automorphic forms, factors of automorphy, automorphic bundles — note 2026-09-16](#desired-capability-modular-forms-automorphic-forms-factors-of-automorphy-automorphic-bundles-note-2026-09-16)
-
-  - [Desired capability: spaces of modular forms, bases, Eisenstein, q-expansions, containment and sampling — note 2026-09-16](#desired-capability-spaces-of-modular-forms-bases-eisenstein-q-expansions-containment-and-sampling-note-2026-09-16)
-
-  - [Desired capability: congruence subgroups, arithmetic subgroups, modular curves and their invariants, fundamental domains — note 2026-09-16](#desired-capability-congruence-subgroups-arithmetic-subgroups-modular-curves-and-their-invariants-fundamental-domains-note-2026-09-16)
-
-  - [Desired capability: del Pezzo, Hirzebruch, common surfaces; toric surfaces classification and Fulton — note 2026-09-16](#desired-capability-del-pezzo-hirzebruch-common-surfaces-toric-surfaces-classification-and-fulton-note-2026-09-16)
-
-  - [Desired capability: rational maps, birational maps, blowups, blowdowns, contractions — note 2026-09-16](#desired-capability-rational-maps-birational-maps-blowups-blowdowns-contractions-note-2026-09-16)
-
-  - [Desired capability: singularities — normal forms, Milnor/Tjurina, Kodaira fibers, dual graphs — note 2026-09-16](#desired-capability-singularities-normal-forms-milnortjurina-kodaira-fibers-dual-graphs-note-2026-09-16)
-
-  - [Desired capability: generalized weighted graphs, Coxeter/Dynkin/s.e. laced, bilinear $\leftrightarrow$ graph — note 2026-09-16](#desired-capability-generalized-weighted-graphs-coxeterdynkins.e.-laced-bilinear-leftrightarrow-graph-note-2026-09-16)
-
-  - [Desired capability: invariants/coinvariants under $G\to O(M,b)$, folding, converse $G\to\operatorname{Aut}(D)\to O(M,b)$ — note 2026-09-16](#desired-capability-invariantscoinvariants-under-gto-omb-folding-converse-gtooperatornameautdto-omb-note-2026-09-16)
-
-  - [Desired capability: vector fields on Lie groups and manifolds, brackets, flows, ad/Ad — note 2026-09-16](#desired-capability-vector-fields-on-lie-groups-and-manifolds-brackets-flows-adad-note-2026-09-16)
-
-  - [Desired capability: canonical sheaves, Serre duality — note 2026-09-16](#desired-capability-canonical-sheaves-serre-duality-note-2026-09-16)
-
-  - [Desired capability: Siegel half-spaces — note 2026-09-16](#desired-capability-siegel-half-spaces-note-2026-09-16)
-
-  - [Desired capability: derivations of modules and augmented ZZ-algebras, Fox free differential calculus — note 2026-09-16](#desired-capability-derivations-of-modules-and-augmented-zz-algebras-fox-free-differential-calculus-note-2026-09-16)
-
-  - [Desired capability: content ideal $c_M(x)$ of an element $x\in M$ — note 2026-09-16](#desired-capability-content-ideal-c_mx-of-an-element-xin-m-note-2026-09-16)
-
-  - [Desired capability: shortcuts for common matrices — Jordan blocks, banded, tridiagonal, antidiagonal, symplectic form — note 2026-09-16](#desired-capability-shortcuts-for-common-matrices-jordan-blocks-banded-tridiagonal-antidiagonal-symplectic-form-note-2026-09-16)
-
-  - [Desired capability: rational canonical form (Frobenius normal form) — note 2026-09-16](#desired-capability-rational-canonical-form-frobenius-normal-form-note-2026-09-16)
-
-  - [Desired capability: annihilators and element-wise methods via annihilator ideals — note 2026-09-16](#desired-capability-annihilators-and-element-wise-methods-via-annihilator-ideals-note-2026-09-16)
-
-  - [Desired capability: matrix spaces over $R$ as fibered category $\mathsf{Mat}(R)$ and module morphisms via matrices as honest functor — note 2026-09-16](#desired-capability-matrix-spaces-over-r-as-fibered-category-mathsfmatr-and-module-morphisms-via-matrices-as-honest-functor-note-2026-09-16)
-
-  - [Desired capability: honest products and pullbacks of categories, categories fibred over other categories, stacks — note 2026-09-16](#desired-capability-honest-products-and-pullbacks-of-categories-categories-fibred-over-other-categories-stacks-note-2026-09-16)
-
-  - [Desired capability: $\mathsf{Top}$ and $\mathsf{Top}_*$, $S = \mathsf{Spaces} =$ homotopy types $= \infty$-groupoids — note 2026-09-16](#desired-capability-mathsftop-and-mathsftop_-s-mathsfspaces-homotopy-types-infty-groupoids-note-2026-09-16)
-
-  - [Desired capability: simplicial complexes and Kan complexes operationalized — note 2026-09-16](#desired-capability-simplicial-complexes-and-kan-complexes-operationalized-note-2026-09-16)
-
-  - [Desired capability: categories from finitary data — graphs, posets, topologies — note 2026-09-16](#desired-capability-categories-from-finitary-data-graphs-posets-topologies-note-2026-09-16)
-
-  - [Desired capability: (homotopy coherent) nerve of finitary category as Kan complex — note 2026-09-16](#desired-capability-homotopy-coherent-nerve-of-finitary-category-as-kan-complex-note-2026-09-16)
-
-  - [Desired capability: Lurie's tangent category, cotangent complex, obstruction theories, DGLAs, Sullivan minimal models — note 2026-09-16](#desired-capability-luries-tangent-category-cotangent-complex-obstruction-theories-dglas-sullivan-minimal-models-note-2026-09-16)
-
-  - [Desired capability: Yoneda and coYoneda, Mor, functor of points — note 2026-09-16](#desired-capability-yoneda-and-coyoneda-mor-functor-of-points-note-2026-09-16)
-
-  - [Desired capability: abelianization, centers, centralizers, stabilizers, Hurewicz — note 2026-09-16](#desired-capability-abelianization-centers-centralizers-stabilizers-hurewicz-note-2026-09-16)
-
-  - [Desired capability: implicitly deriving tensor and hom, tensor-hom and power/copowering adjunctions, enriched, induction/restriction — note 2026-09-16](#desired-capability-implicitly-deriving-tensor-and-hom-tensor-hom-and-powercopowering-adjunctions-enriched-inductionrestriction-note-2026-09-16)
-
-  - [Desired capability: axiomatic subcategories of $\mathsf{Cat}$, `show(C)`, limits/colimits, monads, $QX$, interchange — note 2026-09-16](#desired-capability-axiomatic-subcategories-of-mathsfcat-showc-limitscolimits-monads-qx-interchange-note-2026-09-16)
-
-  - [Desired capability: attaching homological notions to modules — free resolutions then apply functor and take homology for derived functors — note 2026-09-16](#desired-capability-attaching-homological-notions-to-modules-free-resolutions-then-apply-functor-and-take-homology-for-derived-functors-note-2026-09-16)
-
-  - [Desired capability: Yoneda product on $\operatorname{Ext}$ operationalized — note 2026-09-16](#desired-capability-yoneda-product-on-operatornameext-operationalized-note-2026-09-16)
-
-  - [Desired capability: $\mathrm{MU}$ and $\mathrm{BP}$, spectra, $E_n$ and $A_n$ ring spectra, free $E_n$ algebras — note 2026-09-16](#desired-capability-mathrmmu-and-mathrmbp-spectra-e_n-and-a_n-ring-spectra-free-e_n-algebras-note-2026-09-16)
-
-  - [Desired capability: Morava $K(n)$ and $K(n)$-local spheres, heights, $p$-local/$p$-complete, fibers/cofibers in spectra — note 2026-09-16](#desired-capability-morava-kn-and-kn-local-spheres-heights-p-localp-complete-fiberscofibers-in-spectra-note-2026-09-16)
-
-  - [Desired capability: framed manifolds, factorization homology, $(-)^{hG}$ and $(-)_{hG}$, $\mathrm{MString}$ and $\mathrm{tmf}$ — note 2026-09-16](#desired-capability-framed-manifolds-factorization-homology--hg-and--_hg-mathrmmstring-and-mathrmtmf-note-2026-09-16)
-
-  - [Desired capability: sieves, Grothendieck topologies, pullbacks as intersections, topoi — note 2026-09-16](#desired-capability-sieves-grothendieck-topologies-pullbacks-as-intersections-topoi-note-2026-09-16)
-
-  - [Desired capability: superficie.info as oracle source for surface invariants, and interactive geography/classification tool for lattices — intake 2026-09-19](#desired-capability-superficie.info-as-oracle-source-for-surface-invariants-and-interactive-geographyclassification-tool-for-lattices-intake-2026-09-19)
-
-  - [Desired capability: Fano 3-folds geography, classification, and derived categories (Fanography) — intake 2026-09-19](#desired-capability-fano-3-folds-geography-classification-and-derived-categories-fanography-intake-2026-09-19)
-
-  - [Desired capability: Generalized Grassmannians $G/P$, Schubert calculus, and homogeneous bundles (Grassmannian.info) — intake 2026-09-19](#desired-capability-generalized-grassmannians-gp-schubert-calculus-and-homogeneous-bundles-grassmannian.info-intake-2026-09-19)
-
-  - [Desired capability: Scheme and morphism adjectives, automated deduction, and counterexamples (The Adjectives Project) — intake 2026-09-19](#desired-capability-scheme-and-morphism-adjectives-automated-deduction-and-counterexamples-the-adjectives-project-intake-2026-09-19)
-
-  - [Desired capability: General topology counterexamples, properties, and universal constructions (pi-Base) — intake 2026-09-19](#desired-capability-general-topology-counterexamples-properties-and-universal-constructions-pi-base-intake-2026-09-19)
-
-  - [Desired capability: Bilinear forms to polynomial schemes, 1-parameter quadric families, and integral point transport — intake 2026-09-19](#desired-capability-bilinear-forms-to-polynomial-schemes-1-parameter-quadric-families-and-integral-point-transport-intake-2026-09-19)
-
-  - [Desired capability: Category of Hodge structures (pure, mixed, polarized) and operations — intake 2026-09-19](#desired-capability-category-of-hodge-structures-pure-mixed-polarized-and-operations-intake-2026-09-19)
-
-  - [Desired capability: Projectivization of linear groups and matrix subgroups — intake 2026-09-19](#desired-capability-projectivization-of-linear-groups-and-matrix-subgroups-intake-2026-09-19)
-
-  - [Desired capability: Lambert expansions of generating functions — intake 2026-09-19](#desired-capability-lambert-expansions-of-generating-functions-intake-2026-09-19)
-
-  - [Desired capability: Computing Picard-Fuchs operators of families — intake 2026-09-19](#desired-capability-computing-picard-fuchs-operators-of-families-intake-2026-09-19)
-
-  - [Desired capability: Converting linear recurrences to differential equations symbolically — intake 2026-09-19](#desired-capability-converting-linear-recurrences-to-differential-equations-symbolically-intake-2026-09-19)
-
-  - [Desired capability: Large poset navigation, 2D grid layouts, Coxeter subdiagrams, and G-poset quotients — intake 2026-09-19](#desired-capability-large-poset-navigation-2d-grid-layouts-coxeter-subdiagrams-and-g-poset-quotients-intake-2026-09-19)
-
-  - [Desired capability: q-analogues — intake 2026-09-19](#desired-capability-q-analogues-intake-2026-09-19)
-
-  - [Desired capability: Elliptic surfaces, elliptic fibrations, Mordell-Weil groups, Weierstrass forms, and Néron models — intake 2026-09-19](#desired-capability-elliptic-surfaces-elliptic-fibrations-mordell-weil-groups-weierstrass-forms-and-néron-models-intake-2026-09-19)
-
-  - [Desired capability: Euler operator $\theta = t \partial_t$ and standard formal operators on $R[[t]]$ — intake 2026-09-19](#desired-capability-euler-operator-theta-t-partial_t-and-standard-formal-operators-on-rt-intake-2026-09-19)
-
-  - [Desired capability: Catalogue of known mirror family pairs from the literature — intake 2026-09-19](#desired-capability-catalogue-of-known-mirror-family-pairs-from-the-literature-intake-2026-09-19)
-
-  - [Desired capability: Operationalized convergence criteria, Dirichlet irrationality, symbolic integration by parts, and L-function zeta regularization — intake 2026-09-19](#desired-capability-operationalized-convergence-criteria-dirichlet-irrationality-symbolic-integration-by-parts-and-l-function-zeta-regularization-intake-2026-09-19)
-
-  - [Desired capability: Gerstenhaber algebra structure on Hochschild cohomology $HH^*(A, A)$ — intake 2026-09-19](#desired-capability-gerstenhaber-algebra-structure-on-hochschild-cohomology-hha-a-intake-2026-09-19)
-
-  - [Desired capability: Continuous actions of topological groups on topological spaces — intake 2026-09-19](#desired-capability-continuous-actions-of-topological-groups-on-topological-spaces-intake-2026-09-19)
-
-  - [Desired capability: Associated torus $T(L) = L_\mathbb{R}/L$ and abelian varieties from $\mathbb{Z}$-lattices — intake 2026-09-19](#desired-capability-associated-torus-tl-l_mathbbrl-and-abelian-varieties-from-mathbbz-lattices-intake-2026-09-19)
-
-  - [Desired capability: Cartier and Pontryagin dualities — intake 2026-09-19](#desired-capability-cartier-and-pontryagin-dualities-intake-2026-09-19)
-
-  - [Desired capability: Operationalized Grothendieck spectral sequences and concrete specializations — intake 2026-09-19](#desired-capability-operationalized-grothendieck-spectral-sequences-and-concrete-specializations-intake-2026-09-19)
-
-  - [Desired capability: Operationalized Riemann-Hurwitz formula and ramification theory — intake 2026-09-19](#desired-capability-operationalized-riemann-hurwitz-formula-and-ramification-theory-intake-2026-09-19)
-
-  - [Desired capability: Differential graded modules over DG-algebras and graded foundations — intake 2026-09-19](#desired-capability-differential-graded-modules-over-dg-algebras-and-graded-foundations-intake-2026-09-19)
-
-  - [Desired capability: Witt vectors, $p$-adics as explicit power series, and ghost vector representations — intake 2026-09-19](#desired-capability-witt-vectors-p-adics-as-explicit-power-series-and-ghost-vector-representations-intake-2026-09-19)
-
-  - [Desired capability: Operationalized algebraic topology calculational theorems (Hatcher toolkit) — intake 2026-09-19](#desired-capability-operationalized-algebraic-topology-calculational-theorems-hatcher-toolkit-intake-2026-09-19)
-
-  - [Desired capability: Concrete combinatorial models for small categories, walking diagrams, deloopings BG, and finitely presented 2-categories — intake 2026-09-19](#desired-capability-concrete-combinatorial-models-for-small-categories-walking-diagrams-deloopings-bg-and-finitely-presented-2-categories-intake-2026-09-19)
-
-  - [Desired capability: Cyclotomic spectra, topological cyclic homology (TC), Tate constructions, and motivic prismatic filtrations — intake 2026-09-19](#desired-capability-cyclotomic-spectra-topological-cyclic-homology-tc-tate-constructions-and-motivic-prismatic-filtrations-intake-2026-09-19)
-
-  - [Desired capability: Special values, polylogarithms, p-adic integration, Dedekind zeta residues, and BSD equality invariants — intake 2026-09-19](#desired-capability-special-values-polylogarithms-p-adic-integration-dedekind-zeta-residues-and-bsd-equality-invariants-intake-2026-09-19)
-
-  - [Desired capability: Lie coalgebras, Chevalley-Eilenberg complexes, and spectral K-theories (algebraic K, Grothendieck-Witt, and Milnor-Witt as spectra) — intake 2026-09-19](#desired-capability-lie-coalgebras-chevalley-eilenberg-complexes-and-spectral-k-theories-algebraic-k-grothendieck-witt-and-milnor-witt-as-spectra-intake-2026-09-19)
-
-  - [Desired capability: Logarithmic differentials $\Omega_{R/S}(\log D)$, Stasheff associahedra, and Coxiter invariant integration — intake 2026-09-19](#desired-capability-logarithmic-differentials-omega_rslog-d-stasheff-associahedra-and-coxiter-invariant-integration-intake-2026-09-19)
-
-  - [Desired capability: Morse functions, gradient flows, trajectory moduli spaces, flow categories $\mathcal{C}_f$, and free loop spaces $LM$ — intake 2026-09-19](#desired-capability-morse-functions-gradient-flows-trajectory-moduli-spaces-flow-categories-mathcalc_f-and-free-loop-spaces-lm-intake-2026-09-19)
-
-  - [Desired capability: Universal classifying fibrations $E\mathcal{C} \to B\mathcal{C}$ for small and finitely presented categories — intake 2026-09-19](#desired-capability-universal-classifying-fibrations-emathcalc-to-bmathcalc-for-small-and-finitely-presented-categories-intake-2026-09-19)
-
-  - [Desired capability: Riemannian, symplectic, Kähler, and hyperkähler manifolds, holonomy classifications, and reductions of structure groups — intake 2026-09-19](#desired-capability-riemannian-symplectic-kähler-and-hyperkähler-manifolds-holonomy-classifications-and-reductions-of-structure-groups-intake-2026-09-19)
-
-  - [Desired capability: Hamiltonian flows, action functionals on path spaces, and gradient-flow handle decompositions — intake 2026-09-19](#desired-capability-hamiltonian-flows-action-functionals-on-path-spaces-and-gradient-flow-handle-decompositions-intake-2026-09-19)
-
-  - [Desired capability: Polarized modules $(M, E)$ with spectral decomposition $M = M_- \oplus M_+$ from self-adjoint Fredholm operators — intake 2026-09-19](#desired-capability-polarized-modules-m-e-with-spectral-decomposition-m-m_--oplus-m_-from-self-adjoint-fredholm-operators-intake-2026-09-19)
-
-  - [Desired capability: Moduli spaces of connections on smooth manifolds, gauge theory, Yang-Mills functional, and instanton/flat connection moduli — intake 2026-09-19](#desired-capability-moduli-spaces-of-connections-on-smooth-manifolds-gauge-theory-yang-mills-functional-and-instantonflat-connection-moduli-intake-2026-09-19)
-
-  - [Desired capability: Rational changes of variables, birational substitutions, and verification of birational equivalences — intake 2026-09-19](#desired-capability-rational-changes-of-variables-birational-substitutions-and-verification-of-birational-equivalences-intake-2026-09-19)
-
-  - [Intake: Ishige–Takayasu arXiv:2501.03792 — on-the-nose K3 PF monodromy — 2026-09-22](#intake-ishigetakayasu-arxiv2501.03792-on-the-nose-k3-pf-monodromy-2026-09-22)
-
-  - [Tamagawa Numbers](#tamagawa-numbers)
-
-<!--toc:end-->
+\newcommand{\Sha}{\text{Ш}}
 
 # Research Intake
 
@@ -1699,7 +1463,7 @@ Need normal bundles of immersions and embeddings.
 
 * Group (co)homology is not $H^n(G,M)=\operatorname{Ext}^n_{Z[G]}(Z,M)$ as a bare `Ext` call without $G$-structure.
   For $G : \mathsf{Groups}$ (finite, finitely presented $G=\langle S\mid R\rangle$, Lie, profinite, group scheme), $M : ZZ[G]\text{-}\mathsf{Mod}$ ($G$-module as $\mathsf{Ab}$ with $G$-action $\rho: G\to\operatorname{Aut}(M)$), $H_n(G,M)=\operatorname{Tor}_n^{ZZ[G]}(ZZ,M)=H_n(M\otimes_{ZZ[G]} P_\bullet)$ and $H^n(G,M)=\operatorname{Ext}^n_{ZZ[G]}(ZZ,M)=H^n(\operatorname{Hom}_{ZZ[G]}(P_\bullet,M))$ where $P_\bullet\to ZZ$ is projective resolution of trivial $G$-module $ZZ$ (e.g. bar resolution $B_\bullet(G)=ZZ[G^{n+1}]$ as free $ZZ[G]$-module).
-  Tate cohomology $\hat{H}^n(G,M)$ for finite $G$ extends to $n\in ZZ$ via complete resolution $\hat{P}_\bullet$ (norm $N=\sum_{g\in G}g: M_G\to M^G$), with $\hat{H}^0=M^G/NM$, $\hat{H}^{-1}=\ker N / I_G M$, $\hat{H}^n=H^n$ ($n\geq 1$), $\hat{J}_n=H_n$ ($n\geq 1$). Transfers $\operatorname{tr}^G_H: H^*(H,M)\to H^*(G,M)$ and co-transfer $\operatorname{cor}: H_*(H)\to H_*(G)$, traces $\operatorname{tr}: M\to M^G$, norms $N_G: M\to M^G$, induction $\operatorname{Ind}_H^G: H\text{-}\mathsf{Mod}\to G\text{-}\mathsf{Mod}$ $\operatorname{Ind}_H^G M = ZZ[G]\otimes_{ZZ[H]}M$ left adjoint to restriction $\operatorname{Res}_H^G$, and coinduction $\operatorname{CoInd}_H^G = \operatorname{Hom}_{ZZ[H]}(ZZ[G],M)$ right adjoint, with Shapiro $H^*(G,\operatorname{CoInd})=H^*(H,M)$ and $H_*(G,\operatorname{Ind})=H_*(H,M)$.
+  Tate cohomology $\hat{H}^n(G,M)$ for finite $G$ extends to $n\in ZZ$ via complete resolution $\hat{P}_\bullet$ (norm $N=\sum_{g\in G}g: M_G\to M^G$), with $\hat{H}^0=M^G/NM$, $\hat{H}^{-1}=\ker N / I_G M$, $\hat{H}^n=H^n$ ($n\geq 1$), $\hat{H}^{-n-1}=H_n$ ($n\geq 1$). Transfers $\operatorname{tr}^G_H: H^*(H,M)\to H^*(G,M)$ and co-transfer $\operatorname{cor}: H_*(H)\to H_*(G)$, traces $\operatorname{tr}: M\to M^G$, norms $N_G: M\to M^G$, induction $\operatorname{Ind}_H^G: H\text{-}\mathsf{Mod}\to G\text{-}\mathsf{Mod}$ $\operatorname{Ind}_H^G M = ZZ[G]\otimes_{ZZ[H]}M$ left adjoint to restriction $\operatorname{Res}_H^G$, and coinduction $\operatorname{CoInd}_H^G = \operatorname{Hom}_{ZZ[H]}(ZZ[G],M)$ right adjoint, with Shapiro $H^*(G,\operatorname{CoInd})=H^*(H,M)$ and $H_*(G,\operatorname{Ind})=H_*(H,M)$.
   Also co-versions $\operatorname{coInd}$ vs $\operatorname{coRes}$ via $\operatorname{Hom}$/$\otimes$ duality.
   Interface `G.group_cohomology(n,M)` $\to H^n$, `G.tate_cohomology(n,M)` $\to \hat{H}^n$, `H.transfer(G,M)` etc. on the group object, with $P_\bullet$ as $D(ZZ[G])$ object and $\otimes^L_{ZZ[G]}$ already intaken.
 
@@ -2879,14 +2643,15 @@ Intended owners: `categories/spectra/morava_k.py` ($K(n) : \mathsf{CAlg}(\mathsf
 
 Operationalize framed manifolds, factorization homology, $(*)^{hG}$ and $(*)_{hG}$ functors, $\mathrm{MString}$ and $\mathrm{tmf}$ spectra.
 
-* Framed $n$-manifold is $M : \mathsf{Mfld}^{\mathrm{fr}}_n$ with $M : \mathsf{Man}$ smooth $n$-manifold and framing $\varphi: TM \cong M\times R^n$ as $\mathsf{Vect}$ trivialization, equivalently lift of classifying map $M \to \mathrm{BO}(n)$ to $\mathrm{BString}$?
+* Framed $n$-manifold is $M : \mathsf{Mfld}^{\mathrm{fr}}_n$ with $M : \mathsf{Man}$ smooth $n$-manifold and framing $\varphi: TM \cong M\times R^n$ as $\mathsf{Vect}$ trivialization, equivalently a lift of the classifying map $M \to \mathrm{BGL}_n(\mathbb{R})$ through the whole Whitehead tower $\ast \to \cdots \to \mathrm{BString}(n) \to \mathrm{BSpin}(n) \to \mathrm{BSO}(n) \to \mathrm{BO}(n) \to \mathrm{BGL}_n(\mathbb{R})$, whose intermediate lifts are Riemannian, orientation, spin and string structures.
   actually $\mathrm{BO}(n)$ via $\mathrm{EO}(n)$, with $\mathsf{Mfld}^{\mathrm{fr}}_n : \mathsf{Cat}$ with morphisms embeddings $M\hookrightarrow N$ preserving framing.
   Need `FramedManifold` with $TM$ framing.
 
 * Factorization homology $\int_M A$ for $E_n$-algebra $A : \operatorname{Alg}_{E_n}(\mathsf{Sp})$ (or $\operatorname{Alg}_{E_n}(C)$ for $C : \mathsf{Cat}$ like $\mathsf{Ch}$, $\mathsf{Sp}$, $\mathsf{Vect}$) and framed $M : \mathsf{Mfld}^{\mathrm{fr}}_n$ is $\int_M A = \operatorname{colim}_{\mathsf{Disk}^{\mathrm{fr}}_{n/M}} A$ as colimit over $\mathsf{Disk}^{\mathrm{fr}}_{n/M} = \{ U = \coprod_{i\in I} R^n \hookrightarrow M \}$ with $A(U)=A^{\otimes I}$, with $\int_{R^n} A \simeq A$ and excision $\int_{M \cup_{M_0\times R} N} A \simeq \int_M A \otimes_{\int_{M_0\times R} A} \int_N A$.
   For $A$ as $E_\infty$ algebra, $\int_M A \simeq A\otimes \Sigma^\infty_+ M$ etc. Need `A.factorization_homology(M)` $\to \int_M A : C$ with $A$ as $E_n$-algebra.
 
-* $(-)^{hG}$ and $(-)_{hG}$ functors: for $G : \mathsf{Groups}$ finite (or $G : \mathsf{Spaces}$ as $\infty$-group $BG$), $X : \mathsf{Sp}^{BG} = \operatorname{Fun}(BG,\mathsf{Sp})$ is spectrum with $G$-action, homotopy fixed points $X^{hG} = \lim_{BG} X = \operatorname{Map}_{\mathsf{Sp}^{BG}}(1, X) : \mathsf{Sp}$ as limit over $BG$ and homotopy orbits $X_{hG} = \operatorname{colim}_{BG} X = 1 \otimes_{G} X : \mathsf{Sp}$ as colimit, with $X^{hG} = (X)^{G}$ derived and $X_{hG}=X/G$ derived, norm $\operatorname{Nm}: X_{hG} \to X^{hG}$ and Tate construction $X^{tG}=\operatorname{cofib}(\operatorname{Nm})$ with $X^{tG}= (X^{hG})_{?}$ etc. Need `X.homotopy_fixed_points(G)` $\to X^{hG} : \mathsf{Sp}$ and `X.homotopy_orbits(G)` $\to X_{hG} : \mathsf{Sp}$.
+* $(-)^{hG}$ and $(-)_{hG}$ functors: for $G : \mathsf{Groups}$ finite (or $G : \mathsf{Spaces}$ as $\infty$-group $BG$), $X : \mathsf{Sp}^{BG} = \operatorname{Fun}(BG,\mathsf{Sp})$ is spectrum with $G$-action, homotopy fixed points $X^{hG} = \lim_{BG} X = \operatorname{Map}_{\mathsf{Sp}^{BG}}(1, X) : \mathsf{Sp}$ as limit over $BG$ and homotopy orbits $X_{hG} = \operatorname{colim}_{BG} X = 1 \otimes_{G} X : \mathsf{Sp}$ as colimit, with $X^{hG} = (X)^{G}$ derived and $X_{hG}=X/G$ derived, norm $\operatorname{Nm}: X_{hG} \to X^{hG}$ and Tate construction $X^{tG}=\operatorname{cofib}(\operatorname{Nm})$ so $X_{hG} \xrightarrow{\operatorname{Nm}} X^{hG} \to X^{tG}$ is a cofiber sequence, and for a $G$-module $M$, $\pi_{-n}(HM)^{tG} = \hat{H}^{n}(G;M)$ for all $n \in \mathbb{Z}$.
+  Need `X.homotopy_fixed_points(G)` $\to X^{hG} : \mathsf{Sp}$ and `X.homotopy_orbits(G)` $\to X_{hG} : \mathsf{Sp}$.
 
 * $\mathrm{MString}$ and $\mathrm{tmf}$ spectra: $\mathrm{MString} = \operatorname{Thom}(\mathrm{MString})$ as $E_\infty$ ring spectrum $\mathrm{MString} = \operatorname{Thom}(\mathrm{BString} \to \mathrm{BO})$ with $\mathrm{BString} = \mathrm{BSpin}\langle\frac{1}{2}p_1\rangle$ and $\pi_*(\mathrm{MString})$ string bordism, and $\mathrm{tmf} = O^{\mathrm{top}}(M_{\mathrm{ell}})$ topological modular forms as $E_\infty$ ring spectrum $\mathrm{tmf}$ with $\pi_*(\mathrm{tmf})$ via $\mathrm{tmf}_* =$ $E_\infty$ with $\mathrm{tmf} \to \mathrm{MString}$ orientation $\sigma: \mathrm{MString} \to \mathrm{tmf}$ Witten genus, $\mathrm{TMF} = \mathrm{tmf}[\Delta^{-1}]$ periodic, $\mathrm{Tmf}$ compactified.
   Need $\mathrm{MString} : \mathsf{CAlg}(\mathsf{Sp})$ and $\mathrm{tmf} : \mathsf{CAlg}(\mathsf{Sp})$ with $\sigma$.
