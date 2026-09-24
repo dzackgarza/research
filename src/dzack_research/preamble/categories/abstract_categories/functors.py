@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
@@ -100,7 +100,7 @@ class DiscreteMor(CategoricalMor):
     def discrete_category(self) -> DiscreteCategory:
         return self.base_category()
 
-    def cardinality(self) -> Parent:
+    def cardinality(self) -> Cardinal:
 
         return cardinal(1 if self.domain() is self.codomain() else 0)
 

@@ -10,6 +10,7 @@ from sage.misc.unknown import Unknown
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -42,9 +43,7 @@ class IndexedFamily[IndexT, ValueT]:
     def index_set(self) -> Parent:
         return self._index_set
 
-    def cardinality(self) -> Parent:
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
+    def cardinality(self) -> Cardinal:
         return cardinal(self.index_set().cardinality())
 
     def value(self, index: IndexT) -> ValueT:
