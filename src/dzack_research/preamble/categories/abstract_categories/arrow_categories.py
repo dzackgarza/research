@@ -63,9 +63,10 @@ class _ArrowAsFunctor(Functor):
     r"""The functor ``[1] -> C`` sending the arrow ``0 -> 1`` to one morphism of ``C``."""
 
     def __init__(self, base_category: Category, arrow: Morphism) -> None:
-        from dzack_research.preamble.categories.abstract_categories.products import (
+from dzack_research.preamble.categories.abstract_categories.products import (
             FiniteOrdinalCategory,
-        )
+)
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
         self._arrow = arrow
         super().__init__(FiniteOrdinalCategory(2), base_category)
@@ -73,7 +74,7 @@ class _ArrowAsFunctor(Functor):
     def arrow(self) -> Morphism:
         return self._arrow
 
-    def _apply_object(self, obj: Parent) -> Parent:
+    def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         match obj.position():
             case 0:
                 return self.arrow().domain()
@@ -451,7 +452,7 @@ class _EndofunctorAlgebraForgetfulFunctor(Functor):
         self._algebras = algebras
         super().__init__(algebras, algebras.base_category())
 
-    def _apply_object(self, algebra: Parent) -> Parent:
+    def _apply_object(self, algebra: Parent) -> ObjectOfCategory:
         return algebra.target_object()
 
     def _apply_morphism(self, morphism: Map) -> Map:

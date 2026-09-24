@@ -7,6 +7,7 @@ from dzack_research.preamble.lexicon.algebra import (
     ModuleElement,
     RingElement,
 )
+from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.lexicon.foundations import (
     CartanType,
     GramMatrix,
@@ -42,6 +43,7 @@ __all__ = [
     "MatrixData",
     "ModuleElement",
     "OrderedSet",
+    "ObjectOfCategory",
     "Polyhedron",
     "Rational",
     "RealApproximation",
