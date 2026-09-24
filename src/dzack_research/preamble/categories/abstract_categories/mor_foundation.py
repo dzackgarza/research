@@ -38,6 +38,10 @@ class OwnedMor(SageHomset):
         """
         return {}
 
+    # A Mor object fixes its chosen presentation, like its framing, before
+    # its category is set; the presented-modules slot starts empty here too.
+    _selected_module_presentation = None
+
     def __call__(self, *args, **kwargs) -> Morphism:
         return self._element_constructor_(*args, **kwargs)
 
