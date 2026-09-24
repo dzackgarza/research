@@ -1,6 +1,7 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
 from sage.categories.category import Category
+from sage.categories.rings import Rings as SageRings
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
 from sage.misc.cachefunc import cached_function, cached_method
@@ -9,6 +10,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.quotient_ring import QuotientRing_generic
+from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.localizations import (
@@ -514,7 +516,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _engine_element(ring, value) in self._engine_ideal()
 
         def __contains__(self, candidate) -> bool:
-            if getattr(candidate, "parent", lambda: None)() is self:
+            if element_parent(candidate) is self:
                 return True
             if candidate not in self.ring():
                 return False
@@ -618,10 +620,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 "this ideal backend has no Hilbert-polynomial computation",
             )
             value = method()(SageZZ(argument))
-            parent = getattr(value, "parent", lambda: None)()
-            if parent is None:
-                return _owned_engine_element(SageZZ, SageZZ(value))
-            return _owned_engine_element(parent, value)
+            parent = element_parent(value)
+            if parent in SageRings():
+                return _owned_engine_element(parent, value)
+            return _owned_engine_element(SageZZ, SageZZ(value))
 
         def associated_primes(self):
             method = _engine_ideal_method(
@@ -818,7 +820,7 @@ def _engine_ring_value(ring, value):
     r"""Cross one ring element to the private engine of ``ring``."""
     source = _own_ring(ring)
     engine = _engine_ring(source)
-    parent = getattr(value, "parent", lambda: None)()
+    parent = element_parent(value)
     if parent is engine:
         return engine(value)
     return engine(_engine_element(source, source(value)))
