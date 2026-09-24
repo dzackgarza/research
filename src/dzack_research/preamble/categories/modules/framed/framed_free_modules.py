@@ -500,11 +500,8 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             def _represented_kernel_of_morphism(self, morphism):
                 if morphism.domain() is not self:
                     return NotImplemented
-                try:
-                    codomain_is_zero = morphism.codomain().is_zero()
-                except NotImplementedError:
-                    codomain_is_zero = False
-                if codomain_is_zero:
+                codomain_is_zero = morphism.codomain().is_zero()
+                if codomain_is_zero is True:
                     return self.whole_subobject()
                 coordinate_matrix = self.module_category().Mor(
                     self, morphism.codomain()
