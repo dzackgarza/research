@@ -66,9 +66,15 @@ class _SelectedFraming:
         if selected is None:
             selected = self._generator_morphism_factory()
             if selected.domain() is not self._generating_set:
-                raise ValueError("a framing generator morphism starts at its selected generating set")
+                raise ValueError(
+                    f"the map from the chosen generating set of {self._target} must start at "
+                    f"{self._generating_set}, but {selected} starts at {selected.domain()}"
+                )
             if selected.codomain() is not self._target:
-                raise ValueError("a framing generator morphism lands in the framed object")
+                raise ValueError(
+                    f"the map from the chosen generating set must end at {self._target}, but {selected} ends at "
+                    f"{selected.codomain()}"
+                )
             self._generator_morphism = selected
         return selected
 
@@ -77,7 +83,10 @@ class _SelectedFraming:
         if selected is None:
             selected = self._framing_morphism_factory()
             if selected.domain() is not self.source() or selected.codomain() is not self._target:
-                raise ValueError("the selected framing epimorphism has the wrong endpoints")
+                raise ValueError(
+                    f"the chosen surjection F(S) -> X onto {self._target} must be a map {self.source()} -> "
+                    f"{self._target}, but {selected} is a map {selected.domain()} -> {selected.codomain()}"
+                )
             self._framing_morphism = selected
         return selected
 
@@ -93,7 +102,9 @@ def _fix_selected_framing(
     r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
     selected_by_owner = target.__dict__.setdefault("_selected_framings", {})
     if owner in selected_by_owner:
-        raise ValueError(f"{target} already has a selected framing in {owner}")
+        raise ValueError(
+            f"{target} already has a chosen generating surjection in {owner}; it cannot be given a second one"
+        )
     selected = _SelectedFraming(
         owner,
         target,
@@ -262,7 +273,7 @@ class Objects(OwnedCategory):
                 r"""Return the constructor-owned 1-framing in ``owner``."""
                 selected = self.__dict__.get("_selected_framings", {}).get(owner)
                 assert selected is not None, (
-                    f"{self} was constructed without selected framing data in {owner}"
+                    f"{self} has no chosen generating surjection in {owner}"
                 )
                 return selected
 
@@ -282,7 +293,9 @@ class Objects(OwnedCategory):
                 r"""Return the image of one selected free generator."""
                 labels = self.selected_framing_generating_set(owner)
                 if label not in labels:
-                    raise ValueError(f"{label!r} is not a framing-generator label")
+                    raise ValueError(
+                        f"{label!r} is not a label of a generator of {self} in {owner}; the labels are {labels}"
+                    )
                 return self.selected_framing_generator_morphism(owner)(labels(label))
 
             @cached_method

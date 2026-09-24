@@ -178,7 +178,8 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
                     else tuple(int(value) for value in exponent)
                 )
                 assert powers in by_exponents, (
-                    "the polynomial is not homogeneous of this section-space degree"
+                    f"{polynomial} is not homogeneous of degree {self.homogeneous_degree()}: it has a "
+                    f"monomial with exponents {powers}, so it is not a section of O({self.homogeneous_degree()})"
                 )
                 coefficients[by_exponents[powers]] = _owned_engine_element(base,
                     engine_base(coefficient)
@@ -195,7 +196,8 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             """
             source_scheme = self.section_scheme()
             assert morphism.codomain() is source_scheme, (
-                "section pullback requires a morphism into the section scheme"
+                f"cannot pull back sections of O({self.homogeneous_degree()}) on {source_scheme} along "
+                f"{morphism}: its codomain is {morphism.codomain()}, not {source_scheme}"
             )
             pulled_bundle = source_scheme.O(self.homogeneous_degree()).pullback(morphism)
             target = pulled_bundle.global_sections()
@@ -237,16 +239,19 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             """
             scheme = self.section_scheme()
             assert morphism.domain() is scheme and morphism.codomain() is scheme, (
-                "section pullback here requires a projective automorphism of the section scheme"
+                f"cannot pull back sections on {scheme} along {morphism}: it is a morphism "
+                f"{morphism.domain()} -> {morphism.codomain()}, not an automorphism of {scheme}"
             )
             coordinates = tuple(morphism.homogeneous_coordinates())
             ring = self.homogeneous_coordinate_ring()
             labels = tuple(ring.algebra_generating_set())
             assert len(coordinates) == len(labels), (
-                "a projective automorphism needs one homogeneous coordinate per variable"
+                f"{morphism} is given by {len(coordinates)} homogeneous coordinates, but {scheme} has "
+                f"{len(labels)}: an automorphism of projective space has one coordinate per variable"
             )
             assert all(coordinate.parent() is ring for coordinate in coordinates), (
-                "projective automorphism coordinates must lie in the section homogeneous-coordinate ring"
+                f"the coordinates {coordinates} of {morphism} are not all polynomials in the homogeneous "
+                f"coordinate ring {ring} of {scheme}"
             )
             substitution = ring.Mor(ring)(
                 {label: coordinate for label, coordinate in zip(labels, coordinates, strict=True)}
@@ -339,7 +344,9 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             source_labels = tuple(source.algebra_generating_set())
             target_labels = tuple(target.algebra_generating_set())
             assert stop - start == len(source_labels), (
-                "the retained multiprojective coordinate block has the wrong width"
+                f"the coordinate block {start}..{stop} of factor {factor_label} in {product} has "
+                f"{stop - start} variables, but the factor {factor} has {len(source_labels)} homogeneous "
+                "coordinates"
             )
             return source.Mor(target)(
                 {
@@ -518,7 +525,10 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
                 for index, coordinate in enumerate(coordinates)
                 if coordinate != self.base_ring().zero()
             )
-            assert len(nonzero) == 1, "this jet condition was not selected at a coordinate point"
+            assert len(nonzero) == 1, (
+                f"the point {coordinates} is not a coordinate point: it has {len(nonzero)} nonzero "
+                "homogeneous coordinates, and a coordinate point has exactly one"
+            )
             return nonzero[0]
 
 
@@ -571,14 +581,20 @@ def _homogeneous_polynomial_section_space(projective_scheme, degree, *, coordina
     """
     base = projective_scheme.scheme_base_ring()
     degree = int(degree)
-    assert degree >= 0, "a homogeneous polynomial degree is nonnegative"
+    assert degree >= 0, (
+        f"no space of homogeneous polynomials of degree {degree} on {projective_scheme}: "
+        "the degree must be nonnegative"
+    )
     width = int(projective_scheme.relative_dimension()) + 1
     names = (
         tuple(f"x{index}" for index in range(width))
         if coordinate_names is None
         else tuple(coordinate_names)
     )
-    assert len(names) == width, "projective homogeneous coordinates have dimension plus one names"
+    assert len(names) == width, (
+        f"{len(names)} coordinate names {names} were given for {projective_scheme}, which has "
+        f"relative dimension {width - 1} and so {width} homogeneous coordinates"
+    )
     ring = base.polynomial_ring(names)
     labels = tuple(ring.algebra_generating_set())
     monomials = []
@@ -612,17 +628,20 @@ def _multihomogeneous_polynomial_section_space(projective_product, degrees):
     """
     base = projective_product.scheme_base_ring()
     assert projective_product in ProductProjectiveSpaces(base), (
-        "a multihomogeneous section space requires a product of projective spaces"
+        f"{projective_product} is not a product of projective spaces over {base}, so it has no "
+        "space of multihomogeneous polynomials"
     )
     factors = projective_product.factors()
     factor_indices = factors.index_set()
     factor_labels = tuple(factor_indices)
     assert degrees.index_set() is factor_indices, (
-        "a multidegree is indexed by the product's exact factor index set"
+        f"the multidegree {degrees} is indexed by {degrees.index_set()}, but the factors of "
+        f"{projective_product} are indexed by {factor_indices}"
     )
     degree_values = tuple(_own_ring(SageZZ)(degrees[label]) for label in factor_labels)
     assert all(degree >= 0 for degree in degree_values), (
-        "multihomogeneous polynomial degrees are nonnegative"
+        f"no space of multihomogeneous polynomials of multidegree {degree_values} on "
+        f"{projective_product}: every degree must be nonnegative"
     )
     multidegree = finite_indexed_family(
         factor_indices,
@@ -690,9 +709,13 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
     degree = int(degree)
     coordinate_index = int(coordinate_index)
     dimension = int(projective_space.relative_dimension())
-    assert dimension >= 1, "a coordinate hyperplane requires positive projective dimension"
+    assert dimension >= 1, (
+        f"{projective_space} has relative dimension {dimension}, so it has no coordinate "
+        "hyperplane: this requires dimension at least 1"
+    )
     assert 0 <= coordinate_index <= dimension, (
-        "the coordinate index is outside the projective coordinate range"
+        f"coordinate index {coordinate_index} is out of range for {projective_space}, whose "
+        f"homogeneous coordinates are x0, ..., x{dimension}"
     )
     source_names = tuple(f"x{index}" for index in range(dimension + 1))
     source = _homogeneous_polynomial_section_space(
@@ -785,21 +808,25 @@ def _projective_section_restriction(
     """
     scheme = line_bundle.projective_space()
     assert closed_subscheme.inclusion().codomain() is scheme, (
-        "a section restriction is taken to a closed subscheme of its projective space"
+        f"cannot restrict sections of {line_bundle} to {closed_subscheme}: it is a closed "
+        f"subscheme of {closed_subscheme.inclusion().codomain()}, not of {scheme}"
     )
     base = scheme.scheme_base_ring()
     assert base in OwnedFields(), (
-        "the represented projective restriction-image computation requires a field base"
+        f"cannot compute the restriction of sections of {line_bundle} to {closed_subscheme}: "
+        f"the base ring {base} is not a field, and this computation requires a field"
     )
     complete = line_bundle.global_sections()
     source = complete if source is None else source
     if source is complete:
         into_complete = complete.module_category().Mor(complete, complete).identity()
     assert into_complete is not None, (
-        "a selected section source requires its embedding into the complete section space"
+        f"the section space {source} is not the space of all global sections of {line_bundle}, "
+        "so its inclusion into that space must be given"
     )
     assert into_complete.domain() is source and into_complete.codomain() is complete, (
-        "the selected section embedding has the wrong endpoints"
+        f"{into_complete} is a map {into_complete.domain()} -> {into_complete.codomain()}, not the "
+        f"inclusion {source} -> {complete} of sections of {line_bundle}"
     )
 
     coordinate_ring = complete.homogeneous_coordinate_ring()
@@ -853,7 +880,10 @@ def _projective_linear_system(line_bundle, sections):
     ambient = line_bundle.global_sections()
     base = scheme.scheme_base_ring()
     sections = tuple(ambient(section) for section in sections)
-    assert sections, "a projective linear system requires a nonzero section subspace"
+    assert sections, (
+        f"no sections of {line_bundle} were given: a linear system is the projectivization "
+        "of a nonzero space of sections"
+    )
     labels = Sets.Δ[len(sections) - 1]
     selected = base._fresh_free_module_on(labels)
     images = {
@@ -862,7 +892,8 @@ def _projective_linear_system(line_bundle, sections):
     }
     selected_map = selected.module_category().Mor(selected, ambient)(images)
     assert int(selected_map.kernel().dimension()) == 0, (
-        "the supplied sections must be a basis of their selected subspace"
+        f"the sections {sections} of {line_bundle} are linearly dependent over {base}: a linear "
+        "system is given by a basis of its space of sections"
     )
     embedding = selected.Mono(ambient)(images)
     polynomials = tuple(
@@ -911,28 +942,38 @@ def _projective_point_jet_evaluation(line_bundle, point, jet_order):
     projective_space = line_bundle.projective_space()
     base = projective_space.scheme_base_ring()
     assert base in OwnedFields(), (
-        "the represented projective point-jet realization requires a field base"
+        f"cannot compute jets of sections of {line_bundle}: the base ring {base} is not a field, "
+        "and jet evaluation is computed here only over a field"
     )
     assert point.codomain() is projective_space, (
-        "a projective jet is evaluated at a point of its line bundle's scheme"
+        f"cannot evaluate jets of {line_bundle} at {point}: it is a point of {point.codomain()}, "
+        f"not of {projective_space}"
     )
     assert point.domain() is projective_space.base_scheme(), (
-        "the represented projective jet is computed at a rational point, a section of "
-        "the structure morphism; a point over a residue field extension is outside it"
+        f"cannot evaluate jets of {line_bundle} at {point}: it is a point over "
+        f"{point.domain()}, not a rational point over {projective_space.base_scheme()}; jets "
+        "are computed here only at rational points"
     )
     jet_order = int(jet_order)
-    assert jet_order >= 1, "a jet order is positive"
+    assert jet_order >= 1, (
+        f"the jet order {jet_order} is not positive: the jet space L_p / m_p^r L_p is taken "
+        "for r >= 1"
+    )
 
     coordinates = tuple(point.point_coordinates())
     dimension = int(projective_space.relative_dimension())
     assert len(coordinates) == dimension + 1, (
-        "a projective point has dimension plus one homogeneous coordinates"
+        f"the point {point} has {len(coordinates)} homogeneous coordinates, but "
+        f"{projective_space} has relative dimension {dimension} and so {dimension + 1}"
     )
     pivot = next(
         (index for index, coordinate in enumerate(coordinates) if coordinate != base.zero()),
         None,
     )
-    assert pivot is not None, "projective point coordinates cannot all vanish"
+    assert pivot is not None, (
+        f"the homogeneous coordinates {coordinates} of {point} are all zero, which is not a "
+        "point of projective space"
+    )
     pivot_inverse = coordinates[pivot].inverse_of_unit()
     affine_values = tuple(
         coordinates[index] * pivot_inverse
@@ -1017,7 +1058,8 @@ def _coordinate_point_jet_evaluation(projective_space, degree, coordinate_index,
     coordinate_index = int(coordinate_index)
     dimension = int(projective_space.relative_dimension())
     assert 0 <= coordinate_index <= dimension, (
-        "the coordinate index is outside the projective coordinate range"
+        f"coordinate index {coordinate_index} is out of range for {projective_space}, whose "
+        f"homogeneous coordinates are x0, ..., x{dimension}"
     )
     base = projective_space.scheme_base_ring()
     coordinates = tuple(
@@ -1035,7 +1077,10 @@ def _imposed_point_multiplicity_linear_system(line_bundle, point, vanishing_orde
     r"""Projectivize sections vanishing to order at least ``r`` at ``point``."""
     evaluation = _projective_point_jet_evaluation(line_bundle, point, vanishing_order)
     dimension = int(evaluation.kernel().dimension())
-    assert dimension != 0, "the imposed condition leaves no nonzero section to projectivize"
+    assert dimension != 0, (
+        f"no nonzero section of {line_bundle} vanishes to order {vanishing_order} at {point}, "
+        "so the linear system is empty and has no projectivization"
+    )
     base = line_bundle.projective_space().scheme_base_ring()
     return _projective_space(
         base,
@@ -1051,7 +1096,8 @@ def _coordinate_imposed_multiplicity_linear_system(projective_space, degree, coo
     coordinate_index = int(coordinate_index)
     dimension = int(projective_space.relative_dimension())
     assert 0 <= coordinate_index <= dimension, (
-        "the coordinate index is outside the projective coordinate range"
+        f"coordinate index {coordinate_index} is out of range for {projective_space}, whose "
+        f"homogeneous coordinates are x0, ..., x{dimension}"
     )
     base = projective_space.scheme_base_ring()
     point = projective_space.point_morphism(
@@ -1075,10 +1121,18 @@ def _complete_linear_system(scheme, divisor, section_space):
     ``P^(r-1)``; the empty section space has no projectivization and is refused.
     """
     base = scheme.scheme_base_ring()
-    assert scheme in Schemes(base), "a complete linear system requires a represented scheme"
-    assert section_space.base_ring() is base, "the section space must be over the scheme base field"
+    assert scheme in Schemes(base), (
+        f"{scheme} is not a scheme over {base}, so it has no complete linear system |{divisor}|"
+    )
+    assert section_space.base_ring() is base, (
+        f"the space of sections of {divisor} is over {section_space.base_ring()}, but {scheme} is "
+        f"over {base}"
+    )
     dimension = int(section_space.dimension())
-    assert dimension != 0, "the empty linear system has no represented projective space"
+    assert dimension != 0, (
+        f"{divisor} has no nonzero global sections on {scheme}, so its complete linear system "
+        "is empty and has no projectivization"
+    )
     return _projective_space(
         base,
         dimension - 1,

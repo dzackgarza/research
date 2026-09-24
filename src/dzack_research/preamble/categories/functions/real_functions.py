@@ -103,7 +103,7 @@ def _regularity(k):
     integers = _own_ring(ZZ)
     k = integers(k)
     if k < integers.zero():
-        raise ValueError("C^k is defined for k >= 0")
+        raise ValueError(f"C^k is defined for k >= 0, but k = {k}")
     return k
 
 
@@ -128,9 +128,11 @@ def _integrability(p):
                 return integers(rational) if rational in integers else rational
             return real
         case False:
-            raise ValueError("L^p and ell^p are defined for p > 0")
+            raise ValueError(f"L^p and ell^p are defined for p > 0, but p = {p}")
         case _:
-            raise TypeError("positivity of the supplied exact exponent is undecided")
+            raise TypeError(
+                f"L^p and ell^p are defined for p > 0, but it is undecided whether p = {p} is positive"
+            )
 
 
 def _exponent_key(exponent):
@@ -393,7 +395,7 @@ def _univariate_coefficient_family(value):
         }
         if any(exponent < 0 for exponent in family):
             raise TypeError(
-                "a Laurent series is a two-sided sequence; ell^p is indexed by NN"
+                f"{value} has terms of negative degree, but a sequence in ell^p is indexed by NN"
             )
         return family
     if isinstance(value, LaurentSeries):
@@ -473,7 +475,7 @@ class _RealMap(ModuleElement):
     def expression(self):
         r"""Return the symbolic formula from which this map was constructed."""
         if self._expression is None:
-            raise ValueError(f"{self} is a placed callable; it has no symbolic formula")
+            raise ValueError(f"{self} was given as a function on points, not as a formula, so it has no symbolic formula")
         return self._expression
 
     def _formula(self):
@@ -923,7 +925,9 @@ class _DifferentiabilityClass(_FunctionSpace):
     def coordinate(self):
         r"""The identity map, an element of \(C^k(X,X)\)."""
         if self.domain() is not self.codomain():
-            raise TypeError("the identity map lives in C(k, X) = C(k, X, X)")
+            raise TypeError(
+                f"the identity map lies in C^k(X, X), but this is a space of maps {self.domain()} -> {self.codomain()}"
+            )
         if self.domain() is RR:
             return self(self.indeterminate())
         return self._placed(lambda point: point)
@@ -1129,7 +1133,9 @@ class _LebesgueSpace(_FunctionSpace):
             from dzack_research.preamble.logic import ask
 
             if ask(RR(formula) != RR.zero()) is True:
-                raise ValueError("a nonzero constant on R has infinite finite-p integral")
+                raise ValueError(
+                    f"the nonzero constant {formula} is not in {self}: its p-th power has infinite integral over RR"
+                )
         if (exponent == 2) is not True:
             return element
         formula = element._formula()
@@ -1162,7 +1168,10 @@ class _LebesgueSpace(_FunctionSpace):
     def integration_morphism(self):
         r"""Integration \(\iota:L^1(\mathbb R)\to\mathbb R\)."""
         if self.integrability_exponent() != 1:
-            raise TypeError("integration as a bounded linear functional is owned by L^1(RR)")
+            raise TypeError(
+                f"integration is a bounded linear functional only on L^1(RR), but {self} has p = "
+                f"{self.integrability_exponent()}"
+            )
 
         def evaluate(function, space=self):
             function = space(function)
@@ -1183,13 +1192,14 @@ class _LebesgueSpace(_FunctionSpace):
     def __mul__(self, other):
         if not _is_lebesgue_space(other):
             raise TypeError(
-                f"{self} * {other} is a pairing module only when both factors are Lebesgue spaces"
+                f"{self} * {other} is a pairing only when both factors are Lebesgue spaces, but {other} is not one"
             )
         if not _are_holder_conjugates(
             self.integrability_exponent(), other.integrability_exponent()
         ):
             raise TypeError(
-                f"{self} ⊗ {other} → RR is a pairing when 1/p + 1/q = 1"
+                f"{self} (x) {other} -> RR is a pairing only when 1/p + 1/q = 1, but p = "
+                f"{self.integrability_exponent()} and q = {other.integrability_exponent()}"
             )
         return _lebesgue_pairing_module(self, other)
 
@@ -1265,13 +1275,14 @@ class _SequenceSpace(_FunctionSpace):
     def __mul__(self, other):
         if not _is_sequence_space(other):
             raise TypeError(
-                f"{self} * {other} is a pairing module only when both factors are sequence spaces"
+                f"{self} * {other} is a pairing only when both factors are sequence spaces, but {other} is not one"
             )
         if not _are_holder_conjugates(
             self.integrability_exponent(), other.integrability_exponent()
         ):
             raise TypeError(
-                f"{self} ⊗ {other} → RR is a pairing when 1/p + 1/q = 1"
+                f"{self} (x) {other} -> RR is a pairing only when 1/p + 1/q = 1, but p = "
+                f"{self.integrability_exponent()} and q = {other.integrability_exponent()}"
             )
         return _sequence_pairing_module(self, other)
 
@@ -1345,7 +1356,9 @@ class _SequenceSpaceNotation:
     """
 
     def __call__(self, p, values=None):
-        assert values is None or values is RR, f"ell^p is sequences of reals, not of {values}"
+        assert values is None or values is RR, (
+            f"ell^p is a space of sequences of real numbers, so its values lie in RR, not in {values}"
+        )
         return _sequence_space(_integrability(p))
 
     def __pow__(self, p):

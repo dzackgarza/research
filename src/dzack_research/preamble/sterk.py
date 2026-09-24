@@ -238,7 +238,10 @@ class Sterk:
         }
         for name, roots in configurations.items():
             for root in roots:
-                assert root.q() in (-2, -4), f"{name} contains a non-root vector"
+                assert root.q() in (-2, -4), (
+                    f"the configuration {name} contains {root}, which is not a root: "
+                    f"its square is {root.q()}, not -2 or -4"
+                )
         assert reflect(reflect(v["v20"])) == v["v20"]
         assert reflect(reflect(v["v18"])) == v["v18"]
         assert orbit_sum(v["v20"]) == v["v22"] + 2 * v["v20"]

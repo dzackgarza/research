@@ -145,27 +145,38 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             ring = _owned_ring(base_ring)
             if rho is not None:
                 assert all(datum is None for datum in (underlying_set, addition, zero, negation, scalar_action)), (
-                    "the action morphism determines the underlying additive group"
+                    f"cannot construct an {ring}-module from {rho}: a ring morphism rho: {ring} -> End(A) "
+                    "already determines the additive group A, so no set, addition, zero, negation or "
+                    "scalar multiplication may be given alongside it"
                 )
                 assert rho.parent().mor_category().is_subcategory(OwnedRings()) and rho.domain() is ring, (
-                    "the scalar action must be a ring morphism out of the module's base ring"
+                    f"cannot construct an {ring}-module from {rho}: the scalar action must be a ring "
+                    f"morphism out of {ring}, but {rho} lies in {rho.parent()}"
                 )
                 underlying_set = rho.codomain().domain()
                 assert rho.codomain() is AdditiveGroups().AdditiveCommutative().End(underlying_set), (
-                    "the action takes values in the endomorphism ring of an additive group"
+                    f"cannot construct an {ring}-module from {rho}: the scalar action must take values in "
+                    f"the endomorphism ring End(A) of an abelian group A, but its codomain is {rho.codomain()}"
                 )
                 addition = operator.add
                 zero = underlying_set.zero()
                 negation = operator.neg
             else:
-                assert callable(scalar_action), "an elementwise module presentation includes scalar multiplication"
+                assert callable(scalar_action), (
+                    f"cannot construct an {ring}-module on {underlying_set}: a scalar multiplication "
+                    f"{ring} x A -> A is required, but {scalar_action!r} is not a function"
+                )
             assert callable(addition) and callable(negation), (
-                "the additive structure of the underlying group is given by its operations"
+                f"cannot construct an {ring}-module on {underlying_set}: an addition and a negation are "
+                f"required, but got addition {addition!r} and negation {negation!r}"
             )
             self._underlying_set = Set(underlying_set)
             self._addition = addition
             self._negation = negation
-            assert zero in self._underlying_set, "the additive zero belongs to the underlying set"
+            assert zero in self._underlying_set, (
+                f"cannot construct an {ring}-module on {underlying_set}: the zero {zero!r} is not an "
+                f"element of {underlying_set}"
+            )
             self._zero_value = zero
             self._rho = rho
             self._elementwise_scalar_action = scalar_action
@@ -255,7 +266,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             underlying = self.underlying_set()
             normalized = value if value in underlying else underlying(value)
             assert normalized in underlying, (
-                f"{normalized!r} is not in the set this module is built on"
+                f"{value!r} is not an element of {self}: it is not in the underlying set {underlying}"
             )
             return self.element_class(self, normalized)
 
@@ -302,7 +313,8 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         def scalar_action_input(self):
             r"""Return the supplied ``rho`` when the module was given one."""
             assert self._rho is not None, (
-                "this module was given by a binary scalar action, not by a morphism"
+                f"{self} has no ring morphism {self.base_ring()} -> End(A): it was constructed from a "
+                f"scalar multiplication {self.base_ring()} x A -> A instead"
             )
             return self._rho
 
@@ -313,12 +325,13 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             an enumerable finite regime a stronger algebra backend is required.
             """
             assert self.is_finite() is True, (
-                "the annihilator of this general module needs a finite underlying set "
-                "or a stronger algebra backend"
+                f"cannot compute the annihilator of {self}: this algorithm needs a finite underlying set, "
+                f"and {self.underlying_set()} is not known to be finite"
             )
             scalars = _enumerated_ring_elements(self.base_ring())
             assert scalars is not None, (
-                "the annihilator of this general module needs an enumerable finite scalar ring"
+                f"cannot compute the annihilator of {self}: this algorithm needs a finite scalar ring "
+                f"whose elements can be listed, and {self.base_ring()} is not one"
             )
             zero = self.zero()
             annihilating = tuple(
@@ -359,19 +372,23 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             zero = self.zero()
             for element in elements:
                 assert element + zero == element and zero + element == element, (
-                    "the selected zero is not an additive identity"
+                    f"{self} is not a module: the given zero {zero} is not an additive identity, "
+                    f"since {element} + {zero} != {element}"
                 )
                 assert element + (-element) == zero, (
-                    "the selected negation does not give additive inverses"
+                    f"{self} is not a module: the given negation does not give additive inverses, "
+                    f"since {element} + ({-element}) != {zero}"
                 )
             for left in elements:
                 for right in elements:
                     assert left + right == right + left, (
-                        "the selected addition is not commutative"
+                        f"{self} is not a module: its addition is not commutative, "
+                        f"since {left} + {right} != {right} + {left}"
                     )
                     for third in elements:
                         assert (left + right) + third == left + (right + third), (
-                            "the selected addition is not associative"
+                            f"{self} is not a module: its addition is not associative on "
+                            f"{left}, {right}, {third}"
                         )
 
             scalars = _enumerated_ring_elements(self.base_ring())
@@ -388,27 +405,38 @@ class GeneralModules(OwnedCategoryOverBaseRing):
             zero_scalar = self.base_ring().zero()
             for element in elements:
                 assert self.scalar_multiple(one, element) == element, (
-                    "1 does not act as the identity on the module"
+                    f"{self} is not a module: 1 in {self.base_ring()} does not act as the identity, "
+                    f"since 1 * {element} != {element}"
                 )
                 assert self.scalar_multiple(zero_scalar, element) == zero, (
-                    "0 does not act as zero on the module"
+                    f"{self} is not a module: 0 in {self.base_ring()} does not act as zero, "
+                    f"since 0 * {element} != {zero}"
                 )
                 for scalar in scalars:
                     for other in elements:
                         assert self.scalar_multiple(scalar, element + other) == (
                             self.scalar_multiple(scalar, element)
                             + self.scalar_multiple(scalar, other)
-                        ), "scalar multiplication is not additive in the module variable"
+                        ), (
+                            f"{self} is not a module: scalar multiplication by {scalar} is not additive, "
+                            f"since {scalar} * ({element} + {other}) != {scalar} * {element} + {scalar} * {other}"
+                        )
                     for second_scalar in scalars:
                         assert self.scalar_multiple(scalar + second_scalar, element) == (
                             self.scalar_multiple(scalar, element)
                             + self.scalar_multiple(second_scalar, element)
-                        ), "scalar multiplication is not additive in the scalar"
+                        ), (
+                            f"{self} is not a module: ({scalar} + {second_scalar}) * {element} != "
+                            f"{scalar} * {element} + {second_scalar} * {element}"
+                        )
                         assert self.scalar_multiple(
                             scalar * second_scalar, element
                         ) == self.scalar_multiple(
                             scalar, self.scalar_multiple(second_scalar, element)
-                        ), "scalar multiplication is not associative"
+                        ), (
+                            f"{self} is not a module: ({scalar} * {second_scalar}) * {element} != "
+                            f"{scalar} * ({second_scalar} * {element})"
+                        )
             return True
 
         def _repr_(self):

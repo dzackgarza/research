@@ -54,7 +54,8 @@ def _native_field_generators(engine):
 def _field_generators(field):
     r"""A finite determining family for a represented finite or number field."""
     assert _uses_generator_comparison(field), (
-        "this adapter reads field generators from finite-field and number-field presentations"
+        f"cannot list field generators of {field}: generators are computed only for finite fields "
+        f"and number fields, and {field} is neither"
     )
     return finite_ordered_set(tuple(
         _owned_engine_element(field, generator)
@@ -99,7 +100,10 @@ class ExactFieldMorphism(Morphism):
     def inverse(self):
         r"""Return the inverse exact field morphism of this field automorphism."""
         if self.domain() is not self.codomain():
-            raise ValueError("inverse is represented here only for a field automorphism")
+            raise ValueError(
+                f"{self} has no inverse as a field automorphism: its domain {self.domain()} "
+                f"differs from its codomain {self.codomain()}"
+            )
         backend = self._engine_morphism_crossing().inverse()
         return self.domain().exact_morphisms_to(self.domain())(backend)
 
@@ -171,7 +175,8 @@ class ExactFieldMorphism(Morphism):
         ]
         if len(restrictions) != 1:
             raise ValueError(
-                "the automorphism does not have a unique restriction along this embedding"
+                f"the automorphism {self} does not restrict along {embedding} to a unique automorphism "
+                f"of {embedding.domain()}: {len(restrictions)} automorphisms are compatible with it"
             )
         return restrictions[0]
 
@@ -213,20 +218,32 @@ class _ExactFieldMor(CategoricalMor):
                 return datum
             datum = datum._engine_morphism_crossing()
         if not isinstance(datum, Map):
-            raise TypeError("an exact field morphism requires a Sage map backend")
+            raise TypeError(
+                f"cannot form a field morphism {self.domain()} -> {self.codomain()} from {datum!r}: "
+                f"it is a {type(datum).__name__}, not a map"
+            )
         if not datum.parent().mor_category().is_subcategory(SageFields()):
             raise TypeError(
-                "an exact field morphism requires a genuine field-homomorphism backend"
+                f"cannot form a field morphism {self.domain()} -> {self.codomain()} from {datum}: "
+                f"it is a morphism in {datum.parent().mor_category()}, not a homomorphism of fields"
             )
         if _engine_ring(datum.domain()) is not _engine_ring(self.domain()):
-            raise ValueError("the exact backend has the wrong domain")
+            raise ValueError(
+                f"cannot form a field morphism {self.domain()} -> {self.codomain()} from {datum}: "
+                f"its domain is {datum.domain()}, not {self.domain()}"
+            )
         if _engine_ring(datum.codomain()) is not _engine_ring(self.codomain()):
-            raise ValueError("the exact backend has the wrong codomain")
+            raise ValueError(
+                f"cannot form a field morphism {self.domain()} -> {self.codomain()} from {datum}: "
+                f"its codomain is {datum.codomain()}, not {self.codomain()}"
+            )
         return self.element_class(self, datum)
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         engine = _engine_ring(self.domain())
         return self(engine.mor(engine))
 

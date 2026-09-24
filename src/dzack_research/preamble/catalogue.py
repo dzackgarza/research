@@ -52,7 +52,11 @@ def _block_gram(*grams):
             or shape[0] != rank
             or shape[1] != rank
         ):
-            raise TypeError("a catalogue Gram block is a square type-(0,2) tensor")
+            raise TypeError(
+                f"{gram} cannot be a block of an orthogonal direct sum: a Gram block must be "
+                f"a square tensor of type (0, 2), but it has type {gram.tensor_valence()} "
+                f"and shape {shape}"
+            )
         for i in range(rank):
             for j in range(rank):
                 values[offset + i][offset + j] = ZZ(gram[i, j])
@@ -821,11 +825,19 @@ def _negative_two_elementary_row(key):
             coefficients = rest[0]
             labels = tuple(lattice.module_generating_set())
             if len(coefficients) != len(labels):
-                raise RuntimeError(f"glue vector for {key} has length {len(coefficients)}, not lattice rank {len(labels)}")
+                raise RuntimeError(
+                    f"the Nikulin table row {key} records a glue vector with "
+                    f"{len(coefficients)} coefficients for {lattice}, which has rank {len(labels)}"
+                )
             vector = lattice.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
             discriminant_class = vector.divided_discriminant_class()
             if lattice.discriminant_module().q(discriminant_class) != 0:
-                raise ValueError(f"the recorded glue class for {key} is not isotropic")
+                raise ValueError(
+                    f"the Nikulin table row {key} records the glue class {discriminant_class} "
+                    f"of {lattice}, which cannot define an overlattice: an overlattice needs an "
+                    f"isotropic class, but its discriminant square is "
+                    f"{lattice.discriminant_module().q(discriminant_class)}"
+                )
             inclusion = lattice.overlattice(discriminant_class)
             lattice = inclusion.codomain()
             lattice._catalogue_glue_inclusion = inclusion
@@ -887,11 +899,20 @@ def two_elementary_orthogonal_sums(target_signature, a, delta):
     target_a = int(a)
     target_delta = int(delta)
     if min(positive_target, negative_target, target_a) < 0:
-        raise ValueError("signature indices and discriminant length are nonnegative")
+        raise ValueError(
+            f"there is no 2-elementary lattice of signature {target_signature} and "
+            f"discriminant length a = {a}: the signature and a must be nonnegative"
+        )
     if positive_target + negative_target == 0:
-        raise ValueError("the zero lattice is not a nonempty block sum")
+        raise ValueError(
+            f"cannot write a lattice of signature {target_signature} as an orthogonal sum "
+            f"of blocks: it is the zero lattice, and the sum must be nonempty"
+        )
     if target_delta not in (0, 1):
-        raise ValueError("Nikulin's delta is zero or one")
+        raise ValueError(
+            f"there is no 2-elementary lattice with delta = {delta}: Nikulin's invariant "
+            f"delta is 0 or 1"
+        )
 
     block_data = _two_elementary_blocks()
     realizations = []
@@ -940,15 +961,25 @@ def signature_orthogonal_sums(target_signature, blocks):
     positive_target = int(target_signature.first())
     negative_target = int(target_signature.second())
     if min(positive_target, negative_target) < 0:
-        raise ValueError("signature indices are nonnegative")
+        raise ValueError(
+            f"there is no lattice of signature {target_signature}: both entries of a "
+            f"signature must be nonnegative"
+        )
     if positive_target + negative_target == 0:
-        raise ValueError("the zero lattice is not a nonempty block sum")
+        raise ValueError(
+            f"cannot write a lattice of signature {target_signature} as an orthogonal sum "
+            f"of blocks: it is the zero lattice, and the sum must be nonempty"
+        )
     block_data = tuple(
         (block, int(block.signature_pair().first()), int(block.signature_pair().second()))
         for block in blocks
     )
     if any(positive + negative == 0 for _block, positive, negative in block_data):
-        raise ValueError("rank-zero blocks make multiset enumeration unbounded")
+        raise ValueError(
+            f"cannot enumerate orthogonal sums of the blocks {blocks} with signature "
+            f"{target_signature}: some block has rank zero, so there are infinitely many "
+            f"such sums"
+        )
     realizations = []
 
     def extend(index, positive, negative, selected):

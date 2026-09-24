@@ -130,7 +130,8 @@ def _represented_value_module(formed_module):
         except (TypeError, ValueError, NotImplementedError):
             pass
     raise TypeError(
-        f"the form value object {value} has no represented {ring}-module structure"
+        f"the form on {formed_module} takes values in {value}, which is neither an "
+        f"{ring}-module nor a ring receiving a map from {ring}, so it cannot serve as a value module"
     )
 
 
@@ -183,15 +184,27 @@ class FormedModuleMorphism(Morphism):
     def __init__(self, parent, module_morphism, value_morphism) -> None:
         Morphism.__init__(self, parent)
         if module_morphism.domain() is not self.domain():
-            raise ValueError("the underlying module map has the wrong domain")
+            raise ValueError(
+                f"a morphism of formed modules {self.domain()} -> {self.codomain()} needs a module map "
+                f"with domain {self.domain()}, but {module_morphism} has domain {module_morphism.domain()}"
+            )
         if module_morphism.codomain() is not self.codomain():
-            raise ValueError("the underlying module map has the wrong codomain")
+            raise ValueError(
+                f"a morphism of formed modules {self.domain()} -> {self.codomain()} needs a module map "
+                f"with codomain {self.codomain()}, but {module_morphism} has codomain {module_morphism.codomain()}"
+            )
         source_values = _represented_value_module(self.domain())
         target_values = _represented_value_module(self.codomain())
         if value_morphism.domain() is not source_values:
-            raise ValueError("the value-module map has the wrong domain")
+            raise ValueError(
+                f"the value map {value_morphism} must start at the value module {source_values} of "
+                f"{self.domain()}, but starts at {value_morphism.domain()}"
+            )
         if value_morphism.codomain() is not target_values:
-            raise ValueError("the value-module map has the wrong codomain")
+            raise ValueError(
+                f"the value map {value_morphism} must end at the value module {target_values} of "
+                f"{self.codomain()}, but ends at {value_morphism.codomain()}"
+            )
         self._module_morphism = module_morphism
         self._value_morphism = value_morphism
         self._check_form_square()
@@ -247,7 +260,10 @@ class FormedModuleMorphism(Morphism):
         source_generators = tuple(self.domain().module_generators())
         if _is_bilinear_form(source_form):
             if not _is_bilinear_form(target_form):
-                raise TypeError("bilinear formed modules map to bilinear formed modules")
+                raise TypeError(
+                    f"{self.domain()} has a bilinear form, so a morphism out of it must land in a "
+                    f"module with a bilinear form, but {self.codomain()} has form {target_form}"
+                )
             commutes = all(
                 self.map_value(self.domain().b(left, right))
                 == self.codomain().b(
@@ -258,7 +274,10 @@ class FormedModuleMorphism(Morphism):
             )
         elif _is_quadratic_form(source_form):
             if not _is_quadratic_form(target_form):
-                raise TypeError("quadratic formed modules map to quadratic formed modules")
+                raise TypeError(
+                    f"{self.domain()} has a quadratic form, so a morphism out of it must land in a "
+                    f"module with a quadratic form, but {self.codomain()} has form {target_form}"
+                )
             probes = source_generators + tuple(
                 left + right
                 for index, left in enumerate(source_generators)
@@ -270,9 +289,16 @@ class FormedModuleMorphism(Morphism):
                 for element in probes
             )
         else:
-            raise TypeError("a formed morphism requires bilinear or quadratic forms")
+            raise TypeError(
+                f"a morphism of formed modules requires a bilinear or quadratic form on its domain, "
+                f"but {self.domain()} has form {source_form}"
+            )
         if not commutes:
-            raise ValueError("the module and value maps do not commute with the form")
+            raise ValueError(
+                f"({self.module_morphism()}, {self.value_morphism()}) is not a morphism of formed modules "
+                f"{self.domain()} -> {self.codomain()}: the value map applied to the source form does not equal "
+                f"the target form on the images of the generators"
+            )
 
     def __call__(self, element):
         return self.module_morphism()(element)
@@ -303,7 +329,10 @@ class FormedModuleMorphism(Morphism):
         if not isinstance(other, FormedModuleMorphism):
             return NotImplemented
         if other.codomain() is not self.domain():
-            raise ValueError("formed morphisms are not composable")
+            raise ValueError(
+                f"cannot compose {self} after {other}: the codomain {other.codomain()} of {other} "
+                f"is not the domain {self.domain()} of {self}"
+            )
         return FormModules(other.domain().base_ring()).Mor(other.domain(), self.codomain())(
             (
                 self.module_morphism() * other.module_morphism(),
@@ -343,15 +372,30 @@ class FormEmbedding(FormedModuleMorphism):
         source = self.domain()
         target = self.codomain()
         if source not in FreeFormModules(source.base_ring()).FinitelyGenerated():
-            raise TypeError("orthogonal complements currently require a finite free formed source")
+            raise TypeError(
+                f"the orthogonal complement of {self} is computed only for a finitely generated free "
+                f"formed domain, but {source} is in {source.category()}"
+            )
         if target not in FreeFormModules(target.base_ring()).FinitelyGenerated():
-            raise TypeError("orthogonal complements currently require a finite free formed target")
+            raise TypeError(
+                f"the orthogonal complement of {self} is computed only in a finitely generated free "
+                f"formed module, but {target} is in {target.category()}"
+            )
         if source.value_module() is not source.base_ring():
-            raise TypeError("orthogonal complements currently require scalar-valued forms")
+            raise TypeError(
+                f"the orthogonal complement of {self} is computed only for forms valued in the base ring "
+                f"{source.base_ring()}, but the form on {source} takes values in {source.value_module()}"
+            )
         if target.value_module() is not target.base_ring():
-            raise TypeError("orthogonal complements currently require scalar-valued forms")
+            raise TypeError(
+                f"the orthogonal complement of {self} is computed only for forms valued in the base ring "
+                f"{target.base_ring()}, but the form on {target} takes values in {target.value_module()}"
+            )
         if source.base_ring() is not target.base_ring():
-            raise TypeError("an orthogonal complement is taken in one coefficient ring")
+            raise TypeError(
+                f"the orthogonal complement of {self} needs source and target over one base ring, "
+                f"but {source} is over {source.base_ring()} and {target} is over {target.base_ring()}"
+            )
 
         dual = source.dual_module()
         images = {}
@@ -387,13 +431,19 @@ class FormEmbeddingMor(CategoricalMor):
         ring = domain.base_ring()
         formed = FormModules(ring)
         if codomain.base_ring() is not ring or domain not in formed or codomain not in formed:
-            raise TypeError("a form embedding requires two formed modules over one scalar ring")
+            raise TypeError(
+                f"form-preserving embeddings {domain} -> {codomain} need two modules with forms over one "
+                f"base ring {ring}, but they lie in {domain.category()} and {codomain.category()}"
+            )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images, *, quadratic: bool | None = None):
         if isinstance(images, FormEmbedding):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError("the form embedding has the wrong endpoints")
+                raise ValueError(
+                    f"{images} is an embedding {images.domain()} -> {images.codomain()}, "
+                    f"not an element of {self}"
+                )
             if images.parent() is self:
                 return images
             images = images.module_morphism()
@@ -405,7 +455,10 @@ class FormEmbeddingMor(CategoricalMor):
             quadratic = domain in QuadraticFormModules(ring)
         values = _represented_value_module(domain)
         if _represented_value_module(codomain) is not values:
-            raise TypeError("a form embedding keeps the value module")
+            raise TypeError(
+                f"a form-preserving embedding {domain} -> {codomain} needs both forms valued in one module, "
+                f"but they take values in {values} and {_represented_value_module(codomain)}"
+            )
         module_morphism = domain.module_category().Mor(domain, codomain)(images)
         embedding = self.element_class(
             self,
@@ -415,7 +468,10 @@ class FormEmbeddingMor(CategoricalMor):
         )
         injective = embedding.is_injective()
         if injective is not True:
-            raise ValueError("a form embedding requires an injective underlying module map")
+            raise ValueError(
+                f"{module_morphism} is not a form-preserving embedding {domain} -> {codomain}: "
+                f"the module map is not known to be injective (is_injective returned {injective})"
+            )
         return embedding
 
     def super_categories(self):
@@ -438,7 +494,10 @@ class FormedModuleMor(CategoricalMor):
 
     def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() != codomain.base_ring():
-            raise ValueError("fixed-fiber formed morphisms require one base ring")
+            raise ValueError(
+                f"morphisms of formed modules {domain} -> {codomain} need one base ring, but {domain} is "
+                f"over {domain.base_ring()} and {codomain} is over {codomain.base_ring()}"
+            )
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -464,19 +523,25 @@ class FormedModuleMor(CategoricalMor):
 
         if isinstance(datum, FormedModuleMorphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
-                raise ValueError("the formed morphism has the wrong endpoints")
+                raise ValueError(
+                    f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not an element of {self}"
+                )
             if datum.parent() is self:
                 return datum
             datum = (datum.module_morphism(), datum.value_morphism())
         elif isinstance(datum, ModuleMorphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
-                raise ValueError("the underlying module morphism has the wrong endpoints")
+                raise ValueError(
+                    f"the module map {datum} is {datum.domain()} -> {datum.codomain()}, so it does not give "
+                    f"an element of {self}"
+                )
             source_values = _represented_value_module(self.domain())
             target_values = _represented_value_module(self.codomain())
             if source_values is not target_values:
                 raise TypeError(
-                    "a bare module morphism determines a formed morphism only "
-                    "when the value module is unchanged"
+                    f"the module map {datum} alone does not determine a morphism of formed modules in {self}: "
+                    f"the forms take values in different modules {source_values} and {target_values}, "
+                    "so a value map must also be given"
                 )
             datum = (datum, source_values.module_category().Mor(source_values, target_values).identity())
         module_morphism, value_morphism = datum
@@ -525,15 +590,28 @@ class FiberedFormedModuleMorphism(Morphism):
         Morphism.__init__(self, parent)
         changed = parent.base_changed_domain()
         if module_morphism.domain() is not changed:
-            raise ValueError("the module map must start at the base-changed source")
+            raise ValueError(
+                f"a morphism of formed modules over {parent.ring_map()} needs a module map out of the "
+                f"scalar extension {changed} of {self.domain()}, but {module_morphism} starts at "
+                f"{module_morphism.domain()}"
+            )
         if module_morphism.codomain() is not self.codomain():
-            raise ValueError("the module map has the wrong target formed module")
+            raise ValueError(
+                f"a morphism of formed modules into {self.codomain()} needs a module map with that "
+                f"codomain, but {module_morphism} ends at {module_morphism.codomain()}"
+            )
         source_values = _represented_value_module(changed)
         target_values = _represented_value_module(self.codomain())
         if value_morphism.domain() is not source_values:
-            raise ValueError("the value map must start at the base-changed source value module")
+            raise ValueError(
+                f"the value map {value_morphism} must start at the value module {source_values} of the "
+                f"scalar extension {changed}, but starts at {value_morphism.domain()}"
+            )
         if value_morphism.codomain() is not target_values:
-            raise ValueError("the value map has the wrong target value module")
+            raise ValueError(
+                f"the value map {value_morphism} must end at the value module {target_values} of "
+                f"{self.codomain()}, but ends at {value_morphism.codomain()}"
+            )
         self._module_morphism = module_morphism
         self._value_morphism = value_morphism
         self._underlying_semilinear_morphism = parent.module_mor()._from_linearization(
@@ -572,7 +650,10 @@ class FiberedFormedModuleMorphism(Morphism):
         generators = tuple(changed.module_generators())
         if _is_bilinear_form(source_form):
             if not _is_bilinear_form(target_form):
-                raise TypeError("bilinear formed modules map to bilinear formed modules")
+                raise TypeError(
+                    f"{changed} has a bilinear form, so a morphism out of it must land in a "
+                    f"module with a bilinear form, but {self.codomain()} has form {target_form}"
+                )
             commutes = all(
                 self.map_value(changed.b(left, right))
                 == self.codomain().b(
@@ -583,7 +664,10 @@ class FiberedFormedModuleMorphism(Morphism):
             )
         elif _is_quadratic_form(source_form):
             if not _is_quadratic_form(target_form):
-                raise TypeError("quadratic formed modules map to quadratic formed modules")
+                raise TypeError(
+                    f"{changed} has a quadratic form, so a morphism out of it must land in a "
+                    f"module with a quadratic form, but {self.codomain()} has form {target_form}"
+                )
             probes = generators + tuple(
                 left + right
                 for index, left in enumerate(generators)
@@ -595,9 +679,16 @@ class FiberedFormedModuleMorphism(Morphism):
                 for element in probes
             )
         else:
-            raise TypeError("a fibered formed morphism requires a bilinear or quadratic form")
+            raise TypeError(
+                f"a morphism of formed modules over {self.ring_map()} requires a bilinear or quadratic "
+                f"form on its domain, but {changed} has form {source_form}"
+            )
         if not commutes:
-            raise ValueError("the base-changed module and value maps do not commute with the form")
+            raise ValueError(
+                f"({self.module_morphism()}, {self.value_morphism()}) is not a morphism of formed modules "
+                f"{changed} -> {self.codomain()} over {self.ring_map()}: the value map applied to the source "
+                f"form does not equal the target form on the images of the generators"
+            )
 
     def _call_(self, element):
         r"""Apply the equivalent semilinear map to an element of the original source."""
@@ -610,7 +701,10 @@ class FiberedFormedModuleMorphism(Morphism):
         if not isinstance(other, FiberedFormedModuleMorphism):
             return NotImplemented
         if other.codomain() is not self.domain():
-            raise ValueError("fibered formed morphisms are not composable")
+            raise ValueError(
+                f"cannot compose {self} after {other}: the codomain {other.codomain()} of {other} "
+                f"is not the domain {self.domain()} of {self}"
+            )
         composite_ring_map = self.ring_map() * other.ring_map()
         mor = other.domain().fibered_formed_mor(
             self.codomain(), composite_ring_map
@@ -624,7 +718,11 @@ class FiberedFormedModuleMorphism(Morphism):
         )
         module_map = module_semilinear.linearization()
         if module_map.domain() is not direct_changed:
-            raise ValueError("formed scalar extension disagrees with its module owner")
+            raise ValueError(
+                f"composing {self} after {other}: the linearized module map starts at "
+                f"{module_map.domain()}, not at the scalar extension {direct_changed} of {other.domain()} "
+                f"along {composite_ring_map}"
+            )
 
         other_values = _represented_value_module(other.base_changed_domain())
         middle_values = _represented_value_module(self.domain())
@@ -655,7 +753,10 @@ class FiberedFormedModuleMor(CategoricalMor):
 
         target_ring = _base_change_codomain(domain, ring_map)
         if target_ring != codomain.base_ring():
-            raise ValueError("the coefficient map does not land at the target base ring")
+            raise ValueError(
+                f"the ring map {ring_map} sends {domain.base_ring()} to {target_ring}, "
+                f"not to the base ring {codomain.base_ring()} of {codomain}"
+            )
         from dzack_research.preamble.categories.modules.fibered_modules import (
             ModulesOverCommutativeRings,
         )
@@ -688,14 +789,22 @@ class FiberedFormedModuleMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism Mor")
+            raise ValueError(
+                f"{self} has no identity: its domain {self.domain()} differs from its codomain {self.codomain()}"
+            )
         if not self.ring_map().is_identity():
-            raise ValueError("the fibered identity must lie over the identity ring map")
+            raise ValueError(
+                f"{self} has no identity: it lies over the ring map {self.ring_map()}, "
+                "which is not the identity"
+            )
 
         changed = self.base_changed_domain()
         module_map = self.module_mor().identity().linearization()
         if module_map.domain() is not changed:
-            raise ValueError("formed identity scalar extension disagrees with its module owner")
+            raise ValueError(
+                f"the identity of {self} linearizes to a module map starting at {module_map.domain()}, "
+                f"not at the scalar extension {changed} of {self.domain()} along {self.ring_map()}"
+            )
         source_values = _represented_value_module(changed)
         target_values = _represented_value_module(self.domain())
         value_map = source_values.module_category().Mor(source_values, target_values)(
@@ -773,11 +882,12 @@ class PairedModules(OwnedParameterizedCategory):
                 )
             )
         assert pairing.parent().mor_category().is_subcategory(Modules(ring)), (
-            f"a pairing in {self} is a morphism of {Modules(ring)}; {pairing} is not one, "
-            "so its tensor-product domain is not represented"
+            f"a pairing in {self} is a morphism of {Modules(ring)}; {pairing} is not one: "
+            f"it lies in {pairing.parent()}"
         )
         assert pairing.domain() in TensorProductModules(ring), (
-            f"a pairing is classified on a tensor product; {pairing.domain()} is not one"
+            f"a pairing in {self} is a morphism out of a tensor product of {ring}-modules, "
+            f"but {pairing} has domain {pairing.domain()} in {pairing.domain().category()}"
         )
         return _object_of(self, arrow=pairing)
 
@@ -848,7 +958,10 @@ def _formed_module_base_change(self, ring_map):
         )
 
     if not _is_quadratic_form(form):
-        raise TypeError(f"{form} is not a bilinear or quadratic form")
+        raise TypeError(
+            f"base change along {ring_map} is defined for bilinear and quadratic forms, "
+            f"but the form {form} on {self} is neither"
+        )
 
     try:
         changed_lift_values = form.lift_coordinate_values().map(
@@ -928,7 +1041,10 @@ class FormModules(OwnedCategoryOverBaseRing):
         r"""Equip the module classified by ``form`` with that selected form."""
         module = form.module()
         if module.base_ring() is not self.base_ring():
-            raise ValueError("a formed module belongs to the scalar ring of its selected form")
+            raise ValueError(
+                f"{self} is over {self.base_ring()}, but the form {form} is on {module}, "
+                f"which is over {module.base_ring()}"
+            )
         return _form_module(
             form,
             _extra_categories=_extra_categories,
@@ -1038,7 +1154,9 @@ class FormModules(OwnedCategoryOverBaseRing):
         def b(self, left, right):
             r"""Evaluate the (polar) bilinear form on two elements of this module."""
             if left not in self or right not in self:
-                raise TypeError("a form pairs two elements of one formed module")
+                raise TypeError(
+                    f"the form on {self} pairs two of its elements, but {left} or {right} is not in {self}"
+                )
             form = self.form()
             if form.module() is not self:
                 module = self.unformed_module()
@@ -1050,7 +1168,9 @@ class FormModules(OwnedCategoryOverBaseRing):
         def norm(self, element):
             r"""Return ``q(x)`` for a quadratic form, else ``b(x, x)``."""
             if element not in self:
-                raise TypeError("the norm is defined on elements of this formed module")
+                raise TypeError(
+                    f"the norm on {self} is defined on its elements, but {element} is not in {self}"
+                )
             form = self.form()
             if form.module() is not self:
                 element = self.unformed_module()(element)
@@ -1264,7 +1384,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 contributes them with the factor ``2`` in ``b(v,v)``.
                 """
                 assert self.module_rank().is_finite(), (
-                    "conversion of an even bilinear form to a quadratic form requires a finite framing"
+                    f"the quadratic form q(v)=b(v,v)/2 of {self} is computed only for finite rank, "
+                    f"but {self} has rank {self.module_rank()}"
                 )
                 ring = self.base_ring()
                 two = ring(2)
@@ -1276,7 +1397,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     quotient, remainder = value.quo_rem(two)
                     if remainder != zero:
                         raise ValueError(
-                            "the symmetric bilinear form is not even over its coefficient ring"
+                            f"{self} has no quadratic form q(v)=b(v,v)/2: the form is not even, "
+                            f"since the value {value} is not divisible by 2 in {ring}"
                         )
                     return quotient
 
@@ -1359,14 +1481,18 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 """
                 if module not in Modules(self.base_ring()).FinitelyPresented().Torsion():
                     raise ValueError(
-                        "a torsion form is stated on a finitely presented module constructed in the torsion category"
+                        f"a torsion bilinear form in {self} is defined on a finitely presented torsion "
+                        f"{self.base_ring()}-module, but {module} is in {module.category()}"
                     )
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)
                 relations = _presentation_matrix(module)
                 if not _bilinear_descends(relations, values, value_module):
-                    raise ValueError("the bilinear form does not descend through the selected relations")
+                    raise ValueError(
+                        f"the Gram matrix {values} does not define a bilinear form on {module}: some relation "
+                        f"of {module} does not pair to zero in {value_module} with every generator"
+                    )
                 formed = FormModules(module.base_ring())(
                     module.bilinear_forms(value_module)(values),
                     _extra_categories=(self, *tuple(_extra_categories)),
@@ -1387,7 +1513,10 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 r"""Return the quotient-valued bilinear form on the literal finite cokernel of ``morphism``."""
                 cover = morphism.codomain()
                 if cover.base_ring() is not self.base_ring():
-                    raise ValueError("the cokernel form must stay over the selected base ring")
+                    raise ValueError(
+                        f"the cokernel form of {morphism} in {self} needs its codomain over {self.base_ring()}, "
+                        f"but {cover} is over {cover.base_ring()}"
+                    )
                 module = morphism.cokernel()
                 values = FractionFieldQuotients(self.base_ring())(1)
                 generators = tuple(cover.module_generators())
@@ -1537,12 +1666,15 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 def metabolizer(self):
                     lagrangians = self.lagrangian_subobjects()
                     if lagrangians.cardinality() == 0:
-                        raise ValueError("this finite form has no metabolizer")
+                        raise ValueError(f"{self} is not metabolic: it has no Lagrangian submodule")
                     return lagrangians[0]
 
                 def restricted_form(self, subobject):
                     if subobject.inclusion().codomain() is not self:
-                        raise ValueError("the restricted form requires a subobject of this form")
+                        raise ValueError(
+                            f"the form of {self} restricts only to a submodule of {self}, but {subobject} "
+                            f"is included into {subobject.inclusion().codomain()}"
+                        )
                     return subobject
 
                 def subquotient_form(self, subobject, over):
@@ -1609,7 +1741,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                         for element in self.elements()
                     ):
                         raise ValueError(
-                            "the pairing does not identify this module with its Pontryagin dual because it is degenerate"
+                            f"the form on {self} is degenerate: some nonzero element pairs to zero with every "
+                            f"generator, so it does not identify {self} with its Pontryagin dual"
                         )
                     characters = self.module_category().Mor(self, self.value_module())
 
@@ -1656,7 +1789,9 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
         def q(self, element):
             r"""Evaluate the equipped quadratic form on ``element``."""
             if element not in self:
-                raise TypeError("the quadratic form is defined on this module")
+                raise TypeError(
+                    f"the quadratic form on {self} is defined on its elements, but {element} is not in {self}"
+                )
             return self.norm(element)
 
         def associated_bilinear_module(self):
@@ -1673,8 +1808,8 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
             discriminant-form owner instead.
             """
             assert self.value_module() is self.base_ring(), (
-                "generic quadratic-form polarization requires scalar-ring values; "
-                "changed quotient values belong to the specialized quadratic-form owner"
+                f"the polar bilinear form b(x,y)=q(x+y)-q(x)-q(y) of {self} is computed here only for "
+                f"forms valued in {self.base_ring()}, but q takes values in {self.value_module()}"
             )
             unformed = self.unformed_module()
             return unformed.equip_bilinear_form(
@@ -1726,16 +1861,22 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 """
                 if module not in Modules(self.base_ring()).FinitelyPresented().Torsion():
                     raise ValueError(
-                        "a torsion quadratic form is stated on a finitely presented module constructed in the torsion category"
+                        f"a torsion quadratic form in {self} is defined on a finitely presented torsion "
+                        f"{self.base_ring()}-module, but {module} is in {module.category()}"
                     )
 
                 rank = int(module.module_generating_set().cardinality())
                 values = _coerced_gram(value_module, gram, rank)
                 if any(values[i][j] != values[j][i] for i in range(rank) for j in range(rank)):
-                    raise ValueError("the chosen bilinear lift of a quadratic form must be symmetric")
+                    raise ValueError(
+                        f"the Gram matrix {values} of a quadratic form on {module} must be symmetric, but it is not"
+                    )
                 relations = _presentation_matrix(module)
                 if not _quadratic_descends(relations, values, value_module):
-                    raise ValueError("the quadratic form does not descend through the selected relations")
+                    raise ValueError(
+                        f"the Gram matrix {values} does not define a quadratic form on {module}: for some "
+                        f"relation r, q(r) or the polar value of r with a generator is nonzero in {value_module}"
+                    )
                 formed = FormModules(module.base_ring())(
                     module.quadratic_forms(value_module)(values),
                     _extra_categories=(self, *tuple(_extra_categories)),
@@ -1756,7 +1897,10 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 r"""Return the quotient-valued quadratic form on the literal finite cokernel of ``morphism``."""
                 cover = morphism.codomain()
                 if cover.base_ring() is not self.base_ring():
-                    raise ValueError("the cokernel form must stay over the selected base ring")
+                    raise ValueError(
+                        f"the cokernel form of {morphism} in {self} needs its codomain over {self.base_ring()}, "
+                        f"but {cover} is over {cover.base_ring()}"
+                    )
                 module = morphism.cokernel()
                 values = FractionFieldQuotients(self.base_ring())(2)
                 generators = tuple(cover.module_generators())
@@ -1906,12 +2050,15 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                 def metabolizer(self):
                     lagrangians = self.lagrangian_subobjects()
                     if lagrangians.cardinality() == 0:
-                        raise ValueError("this finite form has no metabolizer")
+                        raise ValueError(f"{self} is not metabolic: it has no Lagrangian submodule")
                     return lagrangians[0]
 
                 def restricted_form(self, subobject):
                     if subobject.inclusion().codomain() is not self:
-                        raise ValueError("the restricted form requires a subobject of this form")
+                        raise ValueError(
+                            f"the form of {self} restricts only to a submodule of {self}, but {subobject} "
+                            f"is included into {subobject.inclusion().codomain()}"
+                        )
                     return subobject
 
                 def subquotient_form(self, subobject, over):
@@ -1985,7 +2132,10 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
                     """
                     value_module = self.value_module()
                     if not hasattr(value_module, "modulus") or value_module.modulus() != 2:
-                        raise TypeError("this polarization currently requires a QQ/2ZZ-valued quadratic form")
+                        raise TypeError(
+                            f"the polarization of {self} is computed only for quadratic forms valued in QQ/2ZZ, "
+                            f"but q takes values in {value_module}"
+                        )
 
                     bilinear_values = FractionFieldQuotients(self.base_ring())(1)
                     quadratic_form = self.form()
@@ -2070,7 +2220,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 r"""Return the coordinate matrix of the selected finite free form."""
                 selected = tuple(self.module_generators()) if basis is None else tuple(basis)
                 if any(vector.parent() is not self for vector in selected):
-                    raise ValueError("a Gram matrix basis consists of vectors of this formed module")
+                    raise ValueError(
+                        f"a Gram matrix of {self} is taken on elements of {self}, but {basis} contains "
+                        "an element of another module"
+                    )
                 size = len(selected)
                 return self.value_module().matrix_space(size, size).from_rows(
                     tuple(tuple(self.b(left, right) for right in selected) for left in selected)
@@ -2091,7 +2244,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 computation is introduced here.
                 """
                 if self.value_module() is not self.base_ring():
-                    raise TypeError("the radical via correlation requires a scalar-valued form")
+                    raise TypeError(
+                        f"the radical of {self} is computed only for forms valued in {self.base_ring()}, "
+                        f"but its form takes values in {self.value_module()}"
+                    )
                 injective = self in FormModules(self.base_ring()).Nondegenerate()
                 return _algebraic_correlation_morphism(
                     self, injective=injective
@@ -2117,7 +2273,8 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             def determinant(self):
                 r"""Return the Gram determinant of a form with values in a ring containing ``R``."""
                 assert self.value_module() in OwnedRings(), (
-                    "the determinant of a form is defined for ring-valued forms"
+                    f"the determinant of the form on {self} needs values in a ring, "
+                    f"but it takes values in {self.value_module()}, in {self.value_module().category()}"
                 )
                 return self.gram_matrix().determinant()
 
@@ -2155,7 +2312,9 @@ def _form_module(
     """
 
     if not (_is_bilinear_form(form) or _is_quadratic_form(form)):
-        raise TypeError("a formed module is classified by a bilinear or quadratic form")
+        raise TypeError(
+            f"a module with a form is built from a bilinear or quadratic form, but {form} is neither"
+        )
     module = form.module()
     base_ring = module.base_ring()
     categories = [FormModules(base_ring)]

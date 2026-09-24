@@ -61,7 +61,9 @@ class _TotalQuotientSheafEngine:
         r"""Return ``K_X(U)=Q(O_X(U))`` in the represented Noetherian regime."""
         ring = affine_open.coordinate_algebra()
         assert ring in OwnedNoetherianRings(), (
-            "the affine total-quotient formula for K_X is used only in the represented Noetherian regime"
+            f"cannot compute K_X on the affine open {affine_open}: the total-quotient-ring formula "
+            f"K_X(U) = Q(O_X(U)) is implemented only for Noetherian coordinate rings, "
+            f"but {ring} is not known to be Noetherian"
         )
         return ring.total_quotient_ring()
 
@@ -107,7 +109,9 @@ class _CartierDivisorQuotientSheafEngine:
         self._numerator_sheaf = numerator_sheaf
         self._denominator_sheaf = denominator_sheaf
         assert numerator_sheaf.scheme() is denominator_sheaf.scheme(), (
-            "a quotient of unit sheaves is formed on one scheme"
+            f"cannot form the quotient sheaf {numerator_sheaf} / {denominator_sheaf}: the two sheaves "
+            f"must live on the same scheme, but they live on {numerator_sheaf.scheme()} and "
+            f"{denominator_sheaf.scheme()}"
         )
         super().__init__(**rest)
 
@@ -200,12 +204,15 @@ def _total_quotient_pullback(ring_morphism, rational_section):
                 ring_morphism(source(rational_section.denominator()))
             )
             assert denominator.is_unit(), (
-                "an affine-open restriction sends a represented total-quotient denominator to a unit"
+                f"cannot restrict the rational function {rational_section} along {ring_morphism}: its "
+                f"denominator maps to {denominator}, which is not a unit of {target_total}"
             )
             return target_total(numerator * denominator.inverse_of_unit())
         case False:
             raise AssertionError(
-                "finite-atlas Cartier restriction currently requires the source total quotient ring to have a localization realization"
+                f"cannot restrict the rational function {rational_section} along {ring_morphism}: "
+                f"restriction is implemented only when the total quotient ring {source_total} "
+                f"is a localization of {source}"
             )
 
 
@@ -251,7 +258,8 @@ class _CartierSectionClass:
 
     def gluing_datum(self):
         assert self.is_finite_atlas_presentation(), (
-            "this represented Cartier section is not presently stored by one finite atlas"
+            f"{self} has no gluing data on a finite affine atlas: it was built from other "
+            "Cartier divisors by a group operation, not from local equations on an atlas"
         )
         return self._atlas
 
@@ -340,7 +348,10 @@ class _CartierSectionClasses:
             case True:
                 return value
             case False:
-                raise TypeError("a Cartier section class requires a represented global section")
+                raise TypeError(
+                    f"{value} is not a global section of {self.quotient_sheaf()}, "
+                    f"so it is not a Cartier divisor on {self.scheme()}"
+                )
 
     @cached_method
     def zero(self):
@@ -352,24 +363,30 @@ class _CartierSectionClasses:
                 pass
             case False:
                 raise TypeError(
-                    "finite-atlas Cartier equations require a finite affine atlas of this scheme"
+                    f"cannot define a Cartier divisor on {self.scheme()} from local equations on {atlas}: "
+                    "the charts must form a finite affine atlas of that scheme"
                 )
         supplied = dict(local_equations)
         assert set(supplied) == set(atlas.chart_indices()), (
-            "a Cartier datum requires one local equation on every atlas chart"
+            f"a Cartier divisor on {self.scheme()} needs exactly one local equation per chart of "
+            f"{atlas}: the charts are indexed by {set(atlas.chart_indices())}, but equations "
+            f"were given for {set(supplied)}"
         )
         equations = {}
         for index in atlas.chart_indices():
             ring = atlas.chart(index).coordinate_algebra()
             assert ring in OwnedNoetherianRings(), (
-                "the represented finite-atlas lift computes K_X on Noetherian affine charts"
+                f"cannot compute K_X on chart {index} of {atlas}: the total-quotient-ring formula is "
+                f"implemented only for Noetherian coordinate rings, but {ring} is not known to "
+                "be Noetherian"
             )
             total = self.quotient_sheaf().numerator_sheaf().ring_sheaf().sections_on_affine(
                 atlas.chart(index)
             )
             equation = total(supplied[index])
             assert equation.is_unit(), (
-                "a Cartier local equation is a unit of the chart's total quotient ring"
+                f"the local equation {equation} on chart {index} of {atlas} is not a unit of the "
+                f"total quotient ring {total}, so it does not define a Cartier divisor"
             )
             equations[index] = equation
         equations = finite_indexed_family(
@@ -418,11 +435,15 @@ class _CartierSectionClasses:
             target_on_source
         ).inverse_of_unit()
         assert ratio in overlap_ring, (
-            "Cartier local equations must have a regular ratio on every overlap"
+            f"the local equations on charts {source_index} and {target_index} of {atlas} do not "
+            f"agree up to a regular function on their overlap: their ratio {ratio} does not "
+            f"lie in {overlap_ring}"
         )
         unit = overlap_ring(ratio)
         assert unit.is_unit(), (
-            "Cartier local equations must differ by a unit on every overlap"
+            f"the local equations on charts {source_index} and {target_index} of {atlas} do not "
+            f"agree up to a unit on their overlap: their ratio {unit} is not a unit of "
+            f"{overlap_ring}"
         )
         return unit
 
@@ -606,7 +627,9 @@ class CartierDivisorGroups(Category):
         r"""Construct the global-section group of ``K_X^*/O_X^*``."""
         scheme = quotient_sheaf.scheme()
         assert quotient_sheaf is _cartier_divisor_quotient_sheaf(scheme), (
-            "the Cartier divisor group is constructed from the represented quotient sheaf K_X^*/O_X^*"
+            f"cannot construct CDiv({scheme}) from {quotient_sheaf}: the Cartier divisor group is "
+            f"the group of global sections of K_X^*/O_X^* on {scheme}, and {quotient_sheaf} "
+            "is a different sheaf"
         )
         sections = _cartier_section_classes(quotient_sheaf)
         return _object_of(

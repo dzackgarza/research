@@ -34,7 +34,11 @@ class _ScalarIdentityEvaluation:
     """
 
     def __init__(self, parent, scalar):
-        assert parent.domain() is parent.codomain(), "a scalar identity is an endomorphism"
+        assert parent.domain() is parent.codomain(), (
+            f"cannot form the scalar multiple {scalar}·id in {parent}: a multiple of the "
+            f"identity is an endomorphism, but {parent.domain()} and {parent.codomain()} "
+            f"are different groups"
+        )
         self._parent = parent
         self.scalar = parent.base_ring()(scalar)
 
@@ -115,7 +119,9 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
         assert self.base_ring() in OwnedRings().Commutative(), (
-            "pointwise scalar enrichment requires a commutative scalar ring"
+            f"endomorphisms of abelian groups form an algebra over {self.base_ring()} only "
+            f"when that ring is commutative, but {self.base_ring()} is only known to be in "
+            f"{self.base_ring().category()}"
         )
         return [AdditiveMorGroups(), Algebras(self.base_ring()).Associative().Unital()]
 
@@ -271,19 +277,27 @@ class AdditiveMor(CategoricalMor):
     def _element_constructor_(self, datum):
         if isinstance(datum, Morphism):
             assert datum.domain() is self.domain() and datum.codomain() is self.codomain(), (
-                "an additive morphism must have the selected Mor endpoints"
+                f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a "
+                f"morphism {self.domain()} -> {self.codomain()}"
             )
             if datum.parent() is self:
                 return datum
             return self.elementwise(datum)
         if callable(datum):
             return self.elementwise(datum)
-        assert self.domain() is self.codomain(), "integer scalars embed in an endomorphism ring"
+        assert self.domain() is self.codomain(), (
+            f"cannot read the scalar {datum} as a morphism {self.domain()} -> "
+            f"{self.codomain()}: a scalar is a multiple of the identity, which exists only "
+            f"when the domain and codomain are the same group"
+        )
         return self._owned_scalar_multiple(self._base_ring(datum), self.identity())
 
     def elementwise(self, function):
         r"""Construct the additive map declared by ``function``."""
-        assert callable(function), "an additive morphism requires its element map"
+        assert callable(function), (
+            f"cannot build a morphism {self.domain()} -> {self.codomain()} from {function}: "
+            f"an additive morphism is given by a map on elements, and {function} is not a map"
+        )
         return self.element_class(self, function)
 
     def _apply_pointwise_scalar(self, scalar, element):

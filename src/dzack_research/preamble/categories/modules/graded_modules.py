@@ -40,7 +40,9 @@ def _normalize_grading_monoid(monoid: Parent | None) -> Parent:
 def _require_grading_monoid(monoid: Parent | None) -> Parent:
     monoid = _normalize_grading_monoid(monoid)
     if monoid not in Monoids() and monoid not in AdditiveMonoids():
-        raise TypeError(f"{monoid} is not a monoid in the owned category graph")
+        raise TypeError(
+            f"{monoid} cannot grade a module by degrees that add: it is not a monoid, only known to be in {monoid.category()}"
+        )
     return monoid
 
 
@@ -104,10 +106,11 @@ def _grading_parity(grading_monoid, parity=None):
             return _two_parity()
         return None
     assert parity.domain() is grading_monoid, (
-        "the parity homomorphism is defined on the grading monoid"
+        f"{parity} cannot be the parity of a grading by {grading_monoid}: its domain is {parity.domain()}"
     )
     assert parity.codomain() is parity_target, (
-        f"a parity is a monoid morphism into {parity_target}"
+        f"{parity} cannot be the parity of a grading by {grading_monoid}: its codomain is "
+        f"{parity.codomain()}, not {parity_target}"
     )
     return parity
 
@@ -130,7 +133,9 @@ def _represented_homogeneous_degree_or_none(element):
     selected = parent.__dict__.get("_preamble_concentrated_degree")
     if selected is not None:
         if element == parent.zero():
-            raise ValueError("zero has no selected homogeneous degree here")
+            raise ValueError(
+                f"the zero element of {parent} is homogeneous of every degree, so it has no single degree"
+            )
         return selected
     homogeneous_function = getattr(element, "is_homogeneous", None)
     degree_function = getattr(element, "degree", None)
@@ -140,7 +145,9 @@ def _represented_homogeneous_degree_or_none(element):
         case True:
             pass
     if not homogeneous_function():
-        raise ValueError("the graded-module element is not homogeneous")
+        raise ValueError(
+            f"{element} is not homogeneous in {element.parent()}, so it has no single degree"
+        )
     return degree_function()
 
 
@@ -148,7 +155,7 @@ def _selected_homogeneous_degree(element):
     r"""Return one represented homogeneous degree without imposing one element API."""
     degree = _represented_homogeneous_degree_or_none(element)
     assert degree is not None, (
-        "this graded-module element has no represented homogeneous degree"
+        f"cannot read a degree of {element}: its parent {element.parent()} gives no degrees to its elements"
     )
     return degree
 
@@ -170,7 +177,10 @@ class GradedModuleMorphism(ModuleMorphism):
                 elementwise=True,
             )
         if self.linearity_decision() is not True:
-            raise ValueError("a graded-module morphism requires an established underlying linear map")
+            raise ValueError(
+                f"the proposed map {parent.domain()} -> {parent.codomain()} is not known to be "
+                f"{parent.domain().base_ring()}-linear, so it is not a graded-module morphism"
+            )
         self._check_selected_degrees()
 
     def _elementwise_linearity_derivation(self):
@@ -197,9 +207,15 @@ class GradedModuleMorphism(ModuleMorphism):
                 continue
             target_degree = _represented_homogeneous_degree_or_none(image)
             if target_degree is None:
-                raise ValueError("a graded-module map has an image with no represented homogeneous degree")
+                raise ValueError(
+                    f"{self} does not preserve degree: the generator {source} of degree {source_degree} "
+                    f"maps to {image}, which has no single degree in {self.codomain()}"
+                )
             if target_degree != source_degree:
-                raise ValueError("a graded-module morphism must preserve degree")
+                raise ValueError(
+                    f"{self} does not preserve degree: the generator {source} of degree {source_degree} "
+                    f"maps to {image} of degree {target_degree}"
+                )
 
     def __mul__(self, other):
         if not isinstance(other, GradedModuleMorphism):
@@ -232,14 +248,23 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def __init__(self, mor_family, domain, codomain) -> None:
         indices = domain.grading_index_set()
-        assert indices is codomain.grading_index_set(), "graded-module arrows use the same indexing set"
-        assert indices is mor_family.base_category().grading_index_set(), "the graded-module arrow category uses those indices"
+        assert indices is codomain.grading_index_set(), (
+            f"no graded-module morphisms {domain} -> {codomain}: the domain is graded by {indices} "
+            f"but the codomain by {codomain.grading_index_set()}"
+        )
+        assert indices is mor_family.base_category().grading_index_set(), (
+            f"the morphisms {domain} -> {codomain} are graded by {indices}, but were placed in a category "
+            f"graded by {mor_family.base_category().grading_index_set()}"
+        )
         _initialize_module_mor_parent(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images):
         if isinstance(images, ModuleMorphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError("the module morphism has the wrong graded-module endpoints")
+                raise ValueError(
+                    f"{images} is not a map {self.domain()} -> {self.codomain()}: it is a map "
+                    f"{images.domain()} -> {images.codomain()}"
+                )
             if isinstance(images, GradedModuleMorphism) and images.parent() is self:
                 return images
             return self.element_class(self, images)
@@ -281,7 +306,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         :func:`_grading_parity`.
         """
         monoid = _normalize_grading_monoid(grading_monoid)
-        assert monoid in Sets(), "a grading is indexed by an owned set"
+        assert monoid in Sets(), f"{monoid} cannot index a grading: it is not a set, only known to be in {monoid.category()}"
         selected_parity = _grading_parity(monoid, parity)
         return OwnedCategoryOverBaseRing.__classcall__(
             cls,
@@ -346,7 +371,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
                     return category.grading_index_set()
                 except AttributeError:
                     continue
-            raise TypeError(f"{self} has no selected grading index set")
+            raise TypeError(f"{self} is not a graded module: it is only known to be in {self.category()}")
 
         def grading_monoid(self):
             return _require_grading_monoid(self.grading_index_set())
@@ -359,7 +384,9 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 except AttributeError:
                     continue
                 return parity()
-            raise TypeError(f"{self} is not in a graded module category")
+            raise TypeError(
+                f"{self} has no parity: it is not a graded module, only known to be in {self.category()}"
+            )
 
         def combine_degrees(self, left, right):
             r"""The monoid product of two degrees.
@@ -377,7 +404,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         def concentrated_degree(self):
             selected = self.__dict__.get("_preamble_concentrated_degree")
             if selected is None:
-                raise TypeError(f"{self} is not represented as a concentrated graded module")
+                raise TypeError(f"{self} was not constructed as a graded module concentrated in a single degree")
             return selected
 
         def degree_on_module_generator(self, module_generator):
@@ -390,18 +417,21 @@ class GradedModules(OwnedCategoryOverBaseRing):
             """
             selected = self.__dict__.get("_preamble_degree_on_module_generator")
             assert selected is not None, (
-                f"{self} has no represented degree on its selected module framing"
+                f"{self} gives no degree to its chosen module generators, so the degree of {module_generator} is unknown"
             )
             return selected(module_generator)
 
         def module_generators_of_degree(self, degree):
             r"""Return the selected framing generators lying in ``degree``."""
             if self not in FramedModules(self.base_ring()):
-                raise TypeError("graded-piece generators require a framed graded module")
+                raise TypeError(
+                    f"cannot list the generators of {self} in degree {degree}: {self} has no chosen "
+                    f"generating set; it is in {self.category()}"
+                )
             labels = self.module_generating_set()
             assert labels.cardinality().is_finite() is True, (
-                "generic degree-piece filtering requires a finite selected framing; "
-                "an infinite graded construction supplies its intrinsic graded_piece instead"
+                f"cannot list the generators of {self} in degree {degree}: its chosen generating set {labels} "
+                f"is not known to be finite"
             )
             return finite_ordered_set(
                 tuple(
@@ -419,7 +449,10 @@ class GradedModules(OwnedCategoryOverBaseRing):
             powers, override this method and remain authoritative.
             """
             if self not in FramedModules(self.base_ring()):
-                raise TypeError("a generic graded piece requires a framed graded module")
+                raise TypeError(
+                    f"cannot form the degree-{degree} piece of {self}: {self} has no chosen generating set; "
+                    f"it is in {self.category()}"
+                )
             return self.subobject_on(self.module_generators_of_degree(degree))
 
     class ElementMethods:
@@ -430,7 +463,10 @@ class GradedModules(OwnedCategoryOverBaseRing):
             """
             parent = self.parent()
             if parent.grading_monoid() is not _own_ring(SageZZ):
-                raise TypeError("top degree is represented here only for the integer grading")
+                raise TypeError(
+                    f"cannot give the top degree of {self}: its parent {parent} is graded by "
+                    f"{parent.grading_monoid()}, and top degree is computed only for gradings by the integers"
+                )
             support = parent.framing_coefficients(self)
             if not support:
                 return -_Infinity
@@ -465,7 +501,10 @@ class GradedModules(OwnedCategoryOverBaseRing):
             r"""Return the sum of homogeneous terms of degree strictly below ``degree``."""
             parent = self.parent()
             if parent.grading_monoid() is not _own_ring(SageZZ):
-                raise TypeError("degree truncation is represented here only for the integer grading")
+                raise TypeError(
+                    f"cannot truncate {self} below degree {degree}: its parent {parent} is graded by "
+                    f"{parent.grading_monoid()}, and truncation is computed only for gradings by the integers"
+                )
             result = parent.zero()
             for label, coefficient in parent.framing_coefficients(self).items():
                 generator = parent.module_generator(label)

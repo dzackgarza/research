@@ -81,7 +81,9 @@ def _internal_mor_model_data_from_endpoints(source, target):
     """
     ring = _owned_ring(source.base_ring())
     assert _represented_finite_presentation(source) and _represented_finite_presentation(target), (
-        "the presented model of Hom_R(M, N) is computed from chosen finite presentations of M and N"
+        f"cannot compute Hom_{ring}({source}, {target}): this algorithm needs both modules to be "
+        f"finitely presented with a chosen finite presentation, but {source} is in {source.category()} "
+        f"and {target} is in {target.category()}"
     )
 
     source_labels = source.module_generating_set()
@@ -159,7 +161,8 @@ def _internal_mor_model_data_from_endpoints(source, target):
         ambient = construction.ambient_module()
         images = construction.generator_images()
         assert ambient is not None and images is not None, (
-            "an internal-Mor kernel must retain its subobject inclusion data"
+            f"cannot compute Hom_{ring}({source}, {target}) as a kernel: the kernel {model} was "
+            "returned without its inclusion into the module of generator assignments"
         )
         lift = construction.selected_lift()
         inclusion = _module_subobject_inclusion(
@@ -208,13 +211,25 @@ def _internal_mor_morphism(
             target_map.codomain(),
         )
     if source_map.codomain() is not source_internal_mor.source_module():
-        raise ValueError("precomposition has the wrong codomain")
+        raise ValueError(
+            f"cannot precompose with {source_map}: its codomain {source_map.codomain()} is not the "
+            f"source {source_internal_mor.source_module()} of {source_internal_mor}"
+        )
     if target_map.domain() is not source_internal_mor.target_module():
-        raise ValueError("postcomposition has the wrong domain")
+        raise ValueError(
+            f"cannot postcompose with {target_map}: its domain {target_map.domain()} is not the "
+            f"target {source_internal_mor.target_module()} of {source_internal_mor}"
+        )
     if target_internal_mor.source_module() is not source_map.domain():
-        raise ValueError("the target internal Mor has the wrong source")
+        raise ValueError(
+            f"{target_internal_mor} is not Hom({source_map.domain()}, {target_map.codomain()}): its "
+            f"source is {target_internal_mor.source_module()}, not the domain of {source_map}"
+        )
     if target_internal_mor.target_module() is not target_map.codomain():
-        raise ValueError("the target internal Mor has the wrong target")
+        raise ValueError(
+            f"{target_internal_mor} is not Hom({source_map.domain()}, {target_map.codomain()}): its "
+            f"target is {target_internal_mor.target_module()}, not the codomain of {target_map}"
+        )
 
     return _InternalMorFunctorialMorphism(
         source_internal_mor.module_category().Mor(

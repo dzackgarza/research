@@ -7,7 +7,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedCatego
 def LieAlgebraMorphism(parent, linear):
     r"""Read the bracket-preserving linear map through the root algebra equation."""
     category = Algebras(parent.domain().base_ring()).Lie()
-    assert parent.mor_category().is_subcategory(category), "the supplied arrow parent is a Lie-algebra Mor"
+    assert parent.mor_category().is_subcategory(category), (
+        f"a morphism of Lie algebras must lie in {category}, but {parent} is a set of morphisms in "
+        f"{parent.mor_category()}"
+    )
     return parent(linear)
 
 

@@ -96,8 +96,9 @@ def _base_changed_algebra(algebra, ring_map):
             return target.free_module(algebra.algebra_generating_set()).symmetric_algebra()
         case _:
             assert False, (
-                f"base change of {algebra} along {ring_map} is not represented: it needs a "
-                "chosen finite presentation, a polynomial framing, or the scalar ring itself"
+                f"base change of {algebra} along {ring_map} is not implemented: {algebra} must "
+                f"be the scalar ring {source}, a {source}-algebra given by finitely many generators "
+                f"and relations, or a polynomial algebra over {source}; it is in {algebra.category()}"
             )
 
 
@@ -183,8 +184,10 @@ class _SchemeBaseChangeFunctor(Functor):
                 changed = self._projective_closed_base_change(scheme)
             case _:
                 assert False, (
-                    f"base change of {scheme} is represented for affine schemes, projective spaces, "
-                    "finite products of projective spaces, and schemes presented by finite affine gluings"
+                    f"base change of {scheme} along {source} -> {target} is not implemented: it is "
+                    "implemented for affine schemes, projective spaces, finite products of projective "
+                    "spaces, closed subschemes of projective space, and schemes glued from a finite "
+                    f"affine cover; {scheme} is in {scheme.category()}"
                 )
         return changed
 
@@ -299,7 +302,8 @@ class _SchemeBaseChangeFunctor(Functor):
                 chart_map = to_source.domain().categorical_identity_morphism()
             case _:
                 raise AssertionError(
-                    "a represented map into this glued scalar base change must factor through a selected source chart"
+                    f"cannot induce a map into the base change {changed}: the map {to_source} into "
+                    "the original scheme does not factor through one affine chart of its gluing"
                 )
         changed_chart = changed_datum.chart(chart_index)
         into_changed_chart = changed_chart.from_pullback_cone(
@@ -395,7 +399,10 @@ class _SchemeBaseChangeFunctor(Functor):
 
         def factor(to_scheme, to_base):
             r"""``A tensor_R R' -> C`` from ``A -> C`` and ``R' -> C`` agreeing on ``R``."""
-            assert to_scheme.codomain() is to_base.codomain(), "a pushout cocone has one codomain"
+            assert to_scheme.codomain() is to_base.codomain(), (
+                f"the maps {to_scheme} and {to_base} do not form a cocone on the tensor product: "
+                f"their codomains {to_scheme.codomain()} and {to_base.codomain()} differ"
+            )
             match algebra:
                 case _ if algebra is source:
                     return to_base

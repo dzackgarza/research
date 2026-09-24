@@ -62,7 +62,10 @@ class HesseBertiniFamily(SageObject):
         assert all(
             value_evaluation(section) == value_evaluation.codomain().zero()
             for section in (fermat, product)
-        ), "the selected Hesse point [1:-1:0] is not a base point of the pencil"
+        ), (
+            f"the point {basepoint} = [1:-1:0] of {reference_plane} is not a base point of the "
+            "Hesse pencil: x^3 + y^3 + z^3 or xyz does not vanish there"
+        )
 
         discriminant = t**3 - parameter.one()
         parameter_scheme = family.base_scheme()

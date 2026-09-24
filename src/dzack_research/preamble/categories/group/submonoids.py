@@ -19,12 +19,20 @@ class SubmonoidInclusion(MonoidMorphism):
     def factor_through(self, target_inclusion):
         factor = self.factor_through_or_none(target_inclusion)
         if factor is None:
-            raise ValueError("the source submonoid is not contained in the target")
+            raise ValueError(
+                f"{self.domain()} is not contained in {target_inclusion.domain()}: "
+                f"some monoid generator of {self.domain()} does not lie in "
+                f"{target_inclusion.domain()}"
+            )
         return factor
 
     def factor_through_or_none(self, target_inclusion):
         if target_inclusion.codomain() is not self.codomain():
-            raise ValueError("submonoid factorization requires one ambient monoid")
+            raise ValueError(
+                f"cannot factor {self.domain()} through {target_inclusion.domain()}: they are "
+                f"submonoids of different monoids, {self.codomain()} and "
+                f"{target_inclusion.codomain()}"
+            )
         if target_inclusion is self:
             return Monoids().Mor(self.domain(), self.domain()).identity()
         source = self.domain()
@@ -51,9 +59,15 @@ class _SubmonoidEngine:
         **rest,
     ) -> None:
         if ambient not in Monoids():
-            raise TypeError(f"{ambient} is not an owned monoid")
+            raise TypeError(
+                f"cannot form a submonoid of {ambient}: it is not a monoid, "
+                f"only known to be in {ambient.category()}"
+            )
         if generators is None and predicate is None:
-            raise ValueError("a represented submonoid needs generators or a membership predicate")
+            raise ValueError(
+                f"cannot form a submonoid of {ambient}: give monoid generators "
+                f"or a membership predicate"
+            )
         self._ambient_monoid = ambient
         self._defining_predicate = predicate
         self._description = description
@@ -63,7 +77,10 @@ class _SubmonoidEngine:
         )
         super().__init__(facade=ambient, **rest)
         if predicate is not None and not bool(predicate(ambient.one())):
-            raise ValueError("a submonoid must contain the ambient multiplicative identity")
+            raise ValueError(
+                f"the predicate {description or predicate} does not define a submonoid of "
+                f"{ambient}: the identity {ambient.one()} does not satisfy it"
+            )
 
     def ambient_monoid(self):
         return self._ambient_monoid
@@ -82,13 +99,15 @@ class _SubmonoidEngine:
 
     def defining_predicate(self):
         assert self._defining_predicate is not None, (
-            "defining_predicate requires a submonoid represented by a selected membership predicate"
+            f"the submonoid {self} was defined by monoid generators, not by a membership "
+            f"predicate, so it has no defining predicate"
         )
         return self._defining_predicate
 
     def monoid_generators(self):
         assert self._monoid_generators is not None, (
-            "monoid_generators requires a submonoid represented by a chosen generating set"
+            f"the submonoid {self} was defined by a membership predicate, not by monoid "
+            f"generators, so it has no chosen generating set"
         )
         return self._monoid_generators
 
@@ -98,7 +117,10 @@ class _SubmonoidEngine:
 
     def _normalize(self, datum):
         ambient = self.ambient_monoid()
-        assert datum in ambient, "a submonoid element belongs to its ambient monoid"
+        assert datum in ambient, (
+            f"{datum} cannot be an element of the submonoid {self}: it is not an element "
+            f"of the monoid {ambient}"
+        )
         return ambient(datum)
 
     def __contains__(self, datum):
@@ -115,8 +137,9 @@ class _SubmonoidEngine:
         generators = tuple(self._monoid_generators)
         is_selected_generator = any(element == generator for generator in generators)
         assert is_selected_generator, (
-            "membership beyond the identity and selected generators requires a represented "
-            "generated-submonoid decision procedure"
+            f"cannot decide whether {element} lies in the submonoid {self} of {ambient}: "
+            f"it is neither the identity nor a monoid generator, and no algorithm for "
+            f"membership in a finitely generated submonoid is available"
         )
         return True
 

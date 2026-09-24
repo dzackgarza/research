@@ -374,16 +374,23 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
 
     def attach_end_family(self, family: _EndCategoryOf) -> None:
         if self.domain_object() is not self.codomain_object():
-            raise ValueError("only an endomorphism Mor category can carry an End-family role")
+            raise ValueError(
+                f"only End(X) = Mor(X, X) can be the endomorphism category of X, but {self} is "
+                f"Mor({self.domain_object()}, {self.codomain_object()}) with distinct objects"
+            )
         owner = _category_packet(self.base_category()).Ends()
         if family is not owner:
             represented = _category_packet(family.base_category()).Mors().Of(
                 self.domain_object(), self.codomain_object()
             )
             if represented is not self and represented.arrow_set() is not self:
-                raise ValueError("the End family selects a different fixed Mor object")
+                raise ValueError(
+                    f"{family} already has {represented} as End({self.domain_object()}), so {self} cannot also be it"
+                )
         if self._end_family is not None and self._end_family is not owner:
-            raise ValueError("one fixed Mor category cannot carry two End-family roles")
+            raise ValueError(
+                f"{self} is already the endomorphism category End({self.domain_object()}) of another family"
+            )
         self._end_family = owner
         owner._remember_between(self.domain_object(), self.codomain_object(), self)
 
@@ -392,16 +399,23 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
 
     def attach_aut_family(self, family: _AutCategoryOf) -> None:
         if self.domain_object() is not self.codomain_object():
-            raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
+            raise ValueError(
+                f"only Iso(X, X) can be the automorphism category Aut(X), but {self} is "
+                f"Iso({self.domain_object()}, {self.codomain_object()}) with distinct objects"
+            )
         owner = _category_packet(self.base_category()).Auts()
         if family is not owner:
             represented = _category_packet(family.base_category()).Isos().Of(
                 self.domain_object(), self.codomain_object()
             )
             if represented is not self and represented.arrow_set() is not self:
-                raise ValueError("the Aut family selects a different fixed Iso object")
+                raise ValueError(
+                    f"{family} already has {represented} as Aut({self.domain_object()}), so {self} cannot also be it"
+                )
         if self._aut_family is not None and self._aut_family is not owner:
-            raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
+            raise ValueError(
+                f"{self} is already the automorphism category Aut({self.domain_object()}) of another family"
+            )
         self._aut_family = owner
         owner._remember_between(self.domain_object(), self.codomain_object(), self)
 
@@ -410,7 +424,9 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
 
     def identity_endomorphism(self) -> Morphism:
         if self.end_family() is None:
-            raise ValueError("this fixed Mor category has not been given an End-family role")
+            raise ValueError(
+                f"{self} is not the endomorphism category End(X) of an object, so it has no identity endomorphism"
+            )
         identity = self.arrow_set().identity()
         return self(identity)
 
@@ -454,7 +470,10 @@ class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
             case _ if arrow in self.base_category().ArrowCategory():
                 return self.object(arrow.arrow())
             case _:
-                raise TypeError("a fixed Mor object is constructed from an arrow or an arrow object")
+                raise TypeError(
+                    f"an object of {self} is an arrow of {self.base_category()} or an object of its arrow category, "
+                    f"but got {arrow!r}"
+                )
 
     def _mor_endpoint(self, obj: Parent | Category | Morphism):
         return self.object(obj)
@@ -526,10 +545,15 @@ class MorArrowDiscreteMor(CategoricalMor):
 
     def _element_constructor_(self, value=None):
         if self.domain() is not self.codomain():
-            raise ValueError("distinct arrows have no represented 2-morphism")
+            raise ValueError(
+                f"the arrows {self.domain()} and {self.codomain()} are distinct, so there is no 2-morphism "
+                "between them"
+            )
         if value is not None:
             if parent(value) is not self:
-                raise ValueError("the discrete 2-Mor contains only its identity")
+                raise ValueError(
+                    f"Mor({self.domain()}, {self.domain()}) contains only the identity 2-morphism, but got {value}"
+                )
             return value
         return self.element_class(self)
 
@@ -591,16 +615,23 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
 
     def attach_end_family(self, family: _EndCategoryOf) -> None:
         if self.domain_object() is not self.codomain_object():
-            raise ValueError("only an endomorphism Mor category can carry an End-family role")
+            raise ValueError(
+                f"only End(X) = Mor(X, X) can be the endomorphism category of X, but {self} is "
+                f"Mor({self.domain_object()}, {self.codomain_object()}) with distinct objects"
+            )
         owner = _category_packet(self.base_category()).Ends()
         if family is not owner:
             represented = _category_packet(family.base_category()).Mors().Of(
                 self.domain_object(), self.codomain_object()
             )
             if represented is not self and represented.arrow_set() is not self:
-                raise ValueError("the End family selects a different fixed Mor object")
+                raise ValueError(
+                    f"{family} already has {represented} as End({self.domain_object()}), so {self} cannot also be it"
+                )
         if self._end_family is not None and self._end_family is not owner:
-            raise ValueError("one fixed Mor category cannot carry two End-family roles")
+            raise ValueError(
+                f"{self} is already the endomorphism category End({self.domain_object()}) of another family"
+            )
         self._end_family = owner
         owner._remember_between(self.domain_object(), self.codomain_object(), self)
 
@@ -609,16 +640,23 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
 
     def attach_aut_family(self, family: _AutCategoryOf) -> None:
         if self.domain_object() is not self.codomain_object():
-            raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
+            raise ValueError(
+                f"only Iso(X, X) can be the automorphism category Aut(X), but {self} is "
+                f"Iso({self.domain_object()}, {self.codomain_object()}) with distinct objects"
+            )
         owner = _category_packet(self.base_category()).Auts()
         if family is not owner:
             represented = _category_packet(family.base_category()).Isos().Of(
                 self.domain_object(), self.codomain_object()
             )
             if represented is not self and represented.arrow_set() is not self:
-                raise ValueError("the Aut family selects a different fixed Iso object")
+                raise ValueError(
+                    f"{family} already has {represented} as Aut({self.domain_object()}), so {self} cannot also be it"
+                )
         if self._aut_family is not None and self._aut_family is not owner:
-            raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
+            raise ValueError(
+                f"{self} is already the automorphism category Aut({self.domain_object()}) of another family"
+            )
         self._aut_family = owner
         owner._remember_between(self.domain_object(), self.codomain_object(), self)
 
@@ -627,7 +665,9 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
 
     def identity_endomorphism(self) -> Morphism:
         if self.end_family() is None:
-            raise ValueError("this fixed Mor category has not been given an End-family role")
+            raise ValueError(
+                f"{self} is not the endomorphism category End(X) of an object, so it has no identity endomorphism"
+            )
         return self(self.arrow_set().identity())
 
     one = identity_endomorphism
@@ -677,7 +717,10 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
             case _ if arrow in self.base_category().ArrowCategory():
                 return self.object(arrow.arrow())
             case _:
-                raise TypeError("a fixed Mor object is constructed from an arrow or an arrow object")
+                raise TypeError(
+                    f"an object of {self} is an arrow of {self.base_category()} or an object of its arrow category, "
+                    f"but got {arrow!r}"
+                )
 
     __call__ = object
 
@@ -859,16 +902,28 @@ class CategoricalIsomorphism(Morphism):
     ) -> None:
         Morphism.__init__(self, parent)
         if forward.domain() is not self.domain() or forward.codomain() is not self.codomain():
-            raise ValueError("the forward map has the wrong endpoints")
+            raise ValueError(
+                f"an isomorphism {self.domain()} -> {self.codomain()} needs a forward map "
+                f"{self.domain()} -> {self.codomain()}, but {forward} is a map {forward.domain()} -> {forward.codomain()}"
+            )
         if inverse.domain() is not self.codomain() or inverse.codomain() is not self.domain():
-            raise ValueError("the inverse map has the wrong endpoints")
+            raise ValueError(
+                f"an isomorphism {self.domain()} -> {self.codomain()} needs an inverse map "
+                f"{self.codomain()} -> {self.domain()}, but {inverse} is a map {inverse.domain()} -> {inverse.codomain()}"
+            )
         if verify:
             left = inverse * forward
             right = forward * inverse
             if (left == left.parent().identity()) is not True:
-                raise ValueError("the supplied maps do not establish a left inverse")
+                raise ValueError(
+                    f"{inverse} is not a left inverse of {forward}: {inverse} o {forward} is not the identity of "
+                    f"{self.domain()}"
+                )
             if (right == right.parent().identity()) is not True:
-                raise ValueError("the supplied maps do not establish a right inverse")
+                raise ValueError(
+                    f"{inverse} is not a right inverse of {forward}: {forward} o {inverse} is not the identity of "
+                    f"{self.codomain()}"
+                )
         self._forward = forward
         self._inverse = inverse
 
@@ -964,9 +1019,14 @@ class FixedIsoCategory(FixedRestrictedMorCategory):
 
     def identity_automorphism(self) -> CategoricalIsomorphism:
         if self.aut_family() is None:
-            raise ValueError("this isomorphism category has not been given an Aut-family role")
+            raise ValueError(
+                f"{self} is not the automorphism category Aut(X) of an object, so it has no identity automorphism"
+            )
         if self.domain_object() is not self.codomain_object():
-            raise ValueError("an automorphism category has equal endpoints")
+            raise ValueError(
+                f"the identity automorphism exists only on Aut(X), but {self} is "
+                f"Iso({self.domain_object()}, {self.codomain_object()})"
+            )
         identity = self.arrow_set().identity()
         return self(
             CategoricalIsomorphism(
@@ -1352,7 +1412,9 @@ class _MorCategoryOf(OwnedCategoryBase):
             domain = self.base_category()._mor_endpoint(domain)
             codomain = self.base_category()._mor_endpoint(codomain)
         if domain not in self.base_category() or codomain not in self.base_category():
-            raise TypeError("Mor endpoints must lie in the base category")
+            raise TypeError(
+                f"Mor(X, Y) in {self.base_category()} needs X and Y objects of it, but got {domain} and {codomain}"
+            )
         # Endpoint identity, not a hash: hashing a Mor endpoint re-enters Mor
         # construction, so Sage's cached_method recurses here.  Endpoint
         # refinement may strengthen the represented fixed Mor, so a
@@ -1404,8 +1466,8 @@ class _MorCategoryOf(OwnedCategoryBase):
             )
         elif inherited:
             raise TypeError(
-                f"{self.base_category()} inherits incompatible Mor constructions; "
-                "declare _MorCategory explicitly"
+                f"{self.base_category()} inherits two incompatible constructions of Mor(X, Y) from its "
+                "supercategories, so it must state its own"
             )
         else:
             # No declared or inherited implementation remains.  The root
@@ -1553,9 +1615,13 @@ class _EndCategoryOf(_MorCategoryOf):
             if codomain is not None:
                 codomain = self.base_category()._mor_endpoint(codomain)
         if codomain is not None and codomain is not obj:
-            raise ValueError("an endomorphism category has equal endpoints")
+            raise ValueError(
+                f"End(X) = Mor(X, X) needs equal endpoints, but got {obj} and {codomain}"
+            )
         if obj not in self.base_category():
-            raise TypeError("the endomorphism object must lie in the base category")
+            raise TypeError(
+                f"End(X) in {self.base_category()} needs X an object of it, but {obj} is not one"
+            )
         endomorphisms = _category_packet(self.base_category()).Mors().Of(obj, obj)
         # A Mor shared with the category above is the same set of morphisms, so
         # its endomorphisms are the same too and the End object is that one.
@@ -1679,9 +1745,11 @@ class _AutCategoryOf(_IsoCategoryOf):
             if codomain is not None:
                 codomain = self.base_category()._mor_endpoint(codomain)
         if codomain is not None and codomain is not obj:
-            raise ValueError("an automorphism category has equal endpoints")
+            raise ValueError(f"Aut(X) needs equal endpoints, but got {obj} and {codomain}")
         if obj not in self.base_category():
-            raise TypeError("the automorphism object must lie in the base category")
+            raise TypeError(
+                f"Aut(X) in {self.base_category()} needs X an object of it, but {obj} is not one"
+            )
         automorphisms = _category_packet(self.base_category()).Isos().Of(obj, obj)
         # As for End above: a shared Iso object has the same isomorphisms, so
         # the same automorphisms. Their defining category owns the role.

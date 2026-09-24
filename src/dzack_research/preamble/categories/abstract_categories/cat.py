@@ -84,9 +84,15 @@ class CategoryFunctorMorphism(Morphism):
     def __init__(self, parent: CategoryFunctorMor, functor: Functor) -> None:
         Morphism.__init__(self, parent)
         if functor.domain() is not self.domain().represented_category():
-            raise ValueError("the functor has the wrong Cat-domain")
+            raise ValueError(
+                f"cannot view {functor} as a morphism {self.domain()} -> {self.codomain()} in Cat: it starts at "
+                f"{functor.domain()}, not at {self.domain().represented_category()}"
+            )
         if functor.codomain() is not self.codomain().represented_category():
-            raise ValueError("the functor has the wrong Cat-codomain")
+            raise ValueError(
+                f"cannot view {functor} as a morphism {self.domain()} -> {self.codomain()} in Cat: it ends at "
+                f"{functor.codomain()}, not at {self.codomain().represented_category()}"
+            )
         self._functor = functor
 
     def functor(self) -> Functor:
@@ -196,7 +202,9 @@ class CategoryFunctorMor(CategoricalMor):
     @cached_method
     def identity(self) -> CategoryFunctorMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism functor Mor object")
+            raise ValueError(
+                f"the identity functor exists only on Mor(C, C), but this is Mor({self.domain()}, {self.codomain()})"
+            )
 
         return self(IdentityFunctor(self.domain().represented_category()))
 
@@ -317,7 +325,9 @@ class Cat(CategoryPacketMethods, Category):
             case Category():
                 return self._object_on(category)
             case _:
-                raise TypeError("an object of Cat is a category")
+                raise TypeError(
+                    f"an object of Cat is a category, but {category!r} is not a category"
+                )
 
     _mor_endpoint = object
 
@@ -354,7 +364,10 @@ class Cat(CategoryPacketMethods, Category):
         first: CategoryFunctorMorphism,
     ) -> CategoryFunctorMorphism:
         if first.codomain() is not second.domain():
-            raise ValueError("functors are not composable in Cat")
+            raise ValueError(
+                f"cannot compose the functors {second} o {first}: {first} ends at {first.codomain()}, but "
+                f"{second} starts at {second.domain()}"
+            )
         return second * first
 
     class ParentMethods:
@@ -562,7 +575,7 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return this category's selected product construction on ``factors``."""
             construction = self._categorical_product_construction
             assert construction is not NotImplemented, (
-                f"{self} does not represent a selected product construction"
+                f"no construction of products is available in {self}"
             )
             return construction(factors)
 
@@ -570,7 +583,7 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return this category's selected coproduct construction on ``factors``."""
             construction = self._categorical_coproduct_construction
             assert construction is not NotImplemented, (
-                f"{self} does not represent a selected coproduct construction"
+                f"no construction of coproducts is available in {self}"
             )
             return construction(factors)
 
@@ -581,14 +594,16 @@ class Cat(CategoryPacketMethods, Category):
         ):
             r"""Return this category's selected equalizer construction."""
             assert left_morphism.domain() is right_morphism.domain(), (
-                "equalizer arrows have one common domain"
+                f"an equalizer needs parallel maps f, g: X -> Y, but {left_morphism} starts at "
+                f"{left_morphism.domain()} and {right_morphism} starts at {right_morphism.domain()}"
             )
             assert left_morphism.codomain() is right_morphism.codomain(), (
-                "equalizer arrows have one common codomain"
+                f"an equalizer needs parallel maps f, g: X -> Y, but {left_morphism} ends at "
+                f"{left_morphism.codomain()} and {right_morphism} ends at {right_morphism.codomain()}"
             )
             construction = self._categorical_equalizer_construction
             assert construction is not NotImplemented, (
-                f"{self} does not represent a selected equalizer construction"
+                f"no construction of equalizers is available in {self}"
             )
             return construction(left_morphism, right_morphism)
 
@@ -599,14 +614,16 @@ class Cat(CategoryPacketMethods, Category):
         ):
             r"""Return this category's selected coequalizer construction."""
             assert left_morphism.domain() is right_morphism.domain(), (
-                "coequalizer arrows have one common domain"
+                f"a coequalizer needs parallel maps f, g: X -> Y, but {left_morphism} starts at "
+                f"{left_morphism.domain()} and {right_morphism} starts at {right_morphism.domain()}"
             )
             assert left_morphism.codomain() is right_morphism.codomain(), (
-                "coequalizer arrows have one common codomain"
+                f"a coequalizer needs parallel maps f, g: X -> Y, but {left_morphism} ends at "
+                f"{left_morphism.codomain()} and {right_morphism} ends at {right_morphism.codomain()}"
             )
             construction = self._categorical_coequalizer_construction
             assert construction is not NotImplemented, (
-                f"{self} does not represent a selected coequalizer construction"
+                f"no construction of coequalizers is available in {self}"
             )
             return construction(left_morphism, right_morphism)
 
@@ -617,14 +634,16 @@ class Cat(CategoryPacketMethods, Category):
         ) -> Parent:
             r"""Return this category's represented equalizer of a parallel pair."""
             assert left_morphism.domain() is right_morphism.domain(), (
-                "equalizer arrows have one common domain"
+                f"an equalizer needs parallel maps f, g: X -> Y, but {left_morphism} starts at "
+                f"{left_morphism.domain()} and {right_morphism} starts at {right_morphism.domain()}"
             )
             assert left_morphism.codomain() is right_morphism.codomain(), (
-                "equalizer arrows have one common codomain"
+                f"an equalizer needs parallel maps f, g: X -> Y, but {left_morphism} ends at "
+                f"{left_morphism.codomain()} and {right_morphism} ends at {right_morphism.codomain()}"
             )
             construction = self._categorical_equalizer
             assert construction is not NotImplemented, (
-                f"{self} does not represent equalizers of this parallel pair"
+                f"no construction of the equalizer of {left_morphism} and {right_morphism} is available in {self}"
             )
             return construction(left_morphism, right_morphism)
 
@@ -635,14 +654,16 @@ class Cat(CategoryPacketMethods, Category):
         ) -> Parent:
             r"""Return this category's represented coequalizer of a parallel pair."""
             assert left_morphism.domain() is right_morphism.domain(), (
-                "coequalizer arrows have one common domain"
+                f"a coequalizer needs parallel maps f, g: X -> Y, but {left_morphism} starts at "
+                f"{left_morphism.domain()} and {right_morphism} starts at {right_morphism.domain()}"
             )
             assert left_morphism.codomain() is right_morphism.codomain(), (
-                "coequalizer arrows have one common codomain"
+                f"a coequalizer needs parallel maps f, g: X -> Y, but {left_morphism} ends at "
+                f"{left_morphism.codomain()} and {right_morphism} ends at {right_morphism.codomain()}"
             )
             construction = self._categorical_coequalizer
             assert construction is not NotImplemented, (
-                f"{self} does not represent coequalizers of this parallel pair"
+                f"no construction of the coequalizer of {left_morphism} and {right_morphism} is available in {self}"
             )
             return construction(left_morphism, right_morphism)
 
@@ -659,7 +680,7 @@ class Cat(CategoryPacketMethods, Category):
                     family = finite_family(tuple(morphisms))
             construction = self._categorical_equalizer_family
             assert construction is not NotImplemented, (
-                f"{self} does not represent wide equalizers of this family"
+                f"no construction of wide equalizers is available in {self}"
             )
             return construction(family)
 
@@ -676,7 +697,7 @@ class Cat(CategoryPacketMethods, Category):
                     family = finite_family(tuple(morphisms))
             construction = self._categorical_coequalizer_family
             assert construction is not NotImplemented, (
-                f"{self} does not represent wide coequalizers of this family"
+                f"no construction of wide coequalizers is available in {self}"
             )
             return construction(family)
 
@@ -710,7 +731,8 @@ class Cat(CategoryPacketMethods, Category):
             own supplies it instead.
             """
             assert left_leg.codomain() is right_leg.codomain(), (
-                "a cospan has one common codomain"
+                f"a fiber product needs a cospan X -> Z <- Y, but {left_leg} ends at {left_leg.codomain()} "
+                f"and {right_leg} ends at {right_leg.codomain()}"
             )
             total = self.product([left_leg.domain(), right_leg.domain()])
             return self.equalizer(
@@ -729,7 +751,10 @@ class Cat(CategoryPacketMethods, Category):
                 _discrete_diagram,
             )
 
-            assert left_leg.domain() is right_leg.domain(), "a span has one common domain"
+            assert left_leg.domain() is right_leg.domain(), (
+                f"a span X <- Z -> Y needs both legs to start at one object, but {left_leg} starts at "
+                f"{left_leg.domain()} and {right_leg} starts at {right_leg.domain()}"
+            )
             legs = (left_leg, right_leg)
             diagram = _discrete_diagram(
                 (left_leg.codomain(), right_leg.codomain()),
@@ -764,7 +789,8 @@ class Cat(CategoryPacketMethods, Category):
             \(g(c)\).  A category with coproducts and coequalizers has this.
             """
             assert left_leg.domain() is right_leg.domain(), (
-                "a span has one common domain"
+                f"a pushout needs a span X <- Z -> Y, but {left_leg} starts at {left_leg.domain()} "
+                f"and {right_leg} starts at {right_leg.domain()}"
             )
             total = self.coproduct([left_leg.codomain(), right_leg.codomain()])
             labels = total.index_set()
@@ -916,7 +942,7 @@ class Cat(CategoryPacketMethods, Category):
         are inverted.
         """
         members = tuple(categories)
-        assert members, "the meet of no categories is not represented"
+        assert members, "the meet of categories needs at least one category, but none was given"
 
         # ``Category.join`` builds one dynamic class from every supplied
         # branch.  A strict supercategory contributes no new mathematics to
@@ -949,7 +975,7 @@ class Cat(CategoryPacketMethods, Category):
         two names arrive inverted.
         """
         members = tuple(categories)
-        assert members, "the join of no categories is not represented"
+        assert members, "the join of categories needs at least one category, but none was given"
         return Category.meet(members)
 
     def presheaves(self, category: Category, value_category: Category | None = None) -> Category:
@@ -1016,9 +1042,15 @@ class NaturalTransformationMorphism(Morphism):
     ) -> None:
         Morphism.__init__(self, parent)
         if transformation.source() is not self.domain().functor():
-            raise ValueError("the natural transformation has the wrong source functor")
+            raise ValueError(
+                f"a morphism {self.domain()} -> {self.codomain()} in the functor category needs a natural "
+                f"transformation from {self.domain().functor()}, but {transformation} starts at {transformation.source()}"
+            )
         if transformation.target() is not self.codomain().functor():
-            raise ValueError("the natural transformation has the wrong target functor")
+            raise ValueError(
+                f"a morphism {self.domain()} -> {self.codomain()} in the functor category needs a natural "
+                f"transformation to {self.codomain().functor()}, but {transformation} ends at {transformation.target()}"
+            )
         self._transformation = transformation
 
     def transformation(self) -> NaturalTransformation:
@@ -1117,7 +1149,10 @@ class NaturalTransformationMor(CategoricalMor):
     @cached_method
     def identity(self) -> NaturalTransformationMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism natural-transformation Mor object")
+            raise ValueError(
+                f"the identity natural transformation exists only on Mor(F, F), but this is "
+                f"Mor({self.domain()}, {self.codomain()})"
+            )
         functor = self.domain().functor()
 
 
@@ -1310,7 +1345,9 @@ class _FunctorCategory(FixedMorCategory):
             case CategoryFunctorMorphism():
                 functor = functor.functor()
         if not self._has_endpoints_of(functor):
-            raise ValueError("the functor has the wrong functor-category endpoints")
+            raise ValueError(
+                f"{functor} is not an object of the functor category {self}: its domain or codomain is wrong"
+            )
         if _engine is None and construction_data is None:
             return self._object_on(functor)
         return _object_of(
@@ -1366,7 +1403,9 @@ class _FunctorCategory(FixedMorCategory):
         domain = self._mor_endpoint(domain)
         codomain = self._mor_endpoint(codomain)
         if domain not in self or codomain not in self:
-            raise TypeError("a natural-transformation Mor requires two parallel functors")
+            raise TypeError(
+                f"a morphism in the functor category {self} needs two functors in it, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     two_mor = Mor

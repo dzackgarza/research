@@ -121,7 +121,8 @@ class OpenAbsoluteGaloisSubgroups(OwnedParameterizedCategory):
     def __classcall__(cls, supergroup):
         if supergroup not in AbsoluteGaloisGroups():
             raise TypeError(
-                "an open absolute-Galois subgroup requires an ambient absolute Galois group"
+                f"cannot form open subgroups of {supergroup}: open subgroups G_E of G_K "
+                f"are taken inside an absolute Galois group G_K, but {supergroup} is not one"
             )
         return OwnedParameterizedCategory.__classcall__(cls, supergroup)
 

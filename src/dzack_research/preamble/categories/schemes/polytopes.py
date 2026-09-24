@@ -76,13 +76,17 @@ class RegularPolytopes(OwnedCategory):
             case str() as written:
                 written = written.strip()
                 if not (written.startswith("{") and written.endswith("}")):
-                    raise ValueError("a Schlaefli symbol is written {p1,...,pr}")
+                    raise ValueError(
+                        f"a Schlaefli symbol is written {{p1,...,pr}}, but {written!r} is not in braces"
+                    )
                 body = written[1:-1].strip()
                 bonds = () if not body else tuple(int(part.strip()) for part in body.split(","))
             case _:
                 bonds = tuple(int(bond) for bond in symbol)
         if not bonds or any(bond < 3 for bond in bonds):
-            raise ValueError("a finite regular polytope symbol has bond orders at least three")
+            raise ValueError(
+                f"a Schlaefli symbol {{p1,...,pr}} needs r >= 1 entries, each at least 3, but it is {bonds}"
+            )
         rank = len(bonds) + 1
         entries = tuple(
             tuple(
@@ -97,7 +101,8 @@ class RegularPolytopes(OwnedCategory):
         )
         diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(entries))
         assert diagram.is_elliptic(), (
-            "this Schlaefli symbol does not define a finite spherical regular polytope"
+            f"the Schlaefli symbol {bonds} does not define a finite regular polytope: its Coxeter "
+            "group is infinite (the Coxeter diagram is not spherical)"
         )
         return _object_of(
             self,
@@ -163,7 +168,9 @@ class ConvexPolytopes(OwnedParameterizedCategory):
     def _call_(self, vertices, lattice=None):
         r"""Construct the convex polytope on the selected vertices."""
         if lattice is not None and lattice is not self.ambient_lattice():
-            raise ValueError("the supplied lattice differs from this polytope category's ambient lattice")
+            raise ValueError(
+                f"polytopes in {self} have vertices in the lattice {self.ambient_lattice()}, not in {lattice}"
+            )
         return _convex_polytope(vertices, lattice=self.ambient_lattice())
 
     def from_halfspaces(self, halfspaces, lattice=None):
@@ -189,10 +196,12 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         ]
         polyhedron = Polyhedron(ieqs=engine_rows, base_ring=SageQQ)
         assert polyhedron.is_compact(), (
-            "a polytope is a bounded intersection of halfspaces"
+            f"the halfspaces {halfspaces} cut out an unbounded region, so they do not define a polytope"
         )
         if lattice is not None and lattice is not self.ambient_lattice():
-            raise ValueError("the supplied lattice differs from this polytope category's ambient lattice")
+            raise ValueError(
+                f"polytopes in {self} have vertices in the lattice {self.ambient_lattice()}, not in {lattice}"
+            )
         return _convex_polytope(
             engine_polyhedron=polyhedron,
             lattice=self.ambient_lattice(),
@@ -246,7 +255,8 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             self-contained local HTML representation at the view boundary.
             """
             assert int(self._engine_polyhedron().ambient_dim()) == 3, (
-                "a Three.js polytope view requires ambient dimension three"
+                f"a three-dimensional view of {self} needs its vertices in a lattice of rank 3, but "
+                f"the lattice has rank {self._engine_polyhedron().ambient_dim()}"
             )
             graphic = self._engine_polyhedron().plot()
             rich = graphic._rich_repr_threejs(online=False)
@@ -343,7 +353,11 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
             assert int(self.dimension()) == int(
                 self._engine_polyhedron().ambient_dim()
-            ), "the normal fan is taken of a full-dimensional polytope"
+            ), (
+                f"the normal fan of {self} is defined only for a full-dimensional polytope, but it "
+                f"has dimension {self.dimension()} in a lattice of rank "
+                f"{self._engine_polyhedron().ambient_dim()}"
+            )
             cocharacters = self.ambient_lattice().dual_module()
             return RationalPolyhedralFans(cocharacters)._from_engine_fan(
                 self._engine_normal_fan()
@@ -357,7 +371,8 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             and it is not recoverable from the fan alone.
             """
             assert self.is_lattice_polytope(), (
-                "the toric variety of a polytope is defined for lattice polytopes"
+                f"the toric variety of {self} is defined only for a lattice polytope, but {self} "
+                "has a vertex that is not a lattice point"
             )
             return self.normal_fan().toric_variety(
                 base_ring,
@@ -476,7 +491,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             integers = _own_ring(SageZZ)
             scalar = integers(scalar)
             assert scalar >= integers.zero(), (
-                "Ehrhart dilation factors are nonnegative"
+                f"the dilate k P of {self} is taken here only for k >= 0, but k = {scalar}"
             )
             return ConvexPolytopes(self.ambient_lattice()).Integral()(
                 [tuple(scalar * coordinate for coordinate in vertex) for vertex in self.vertices()],
@@ -485,7 +500,8 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         def ehrhart_polynomial(self, variable="t"):
             r"""Return the exact owned Ehrhart polynomial by interpolation."""
             assert self.is_lattice_polytope(), (
-                "the Ehrhart polynomial is defined here for lattice polytopes"
+                f"the Ehrhart polynomial of {self} is computed only for a lattice polytope, but "
+                f"{self} has a vertex that is not a lattice point"
             )
 
             rationals = _own_ring(SageQQ)
@@ -515,7 +531,8 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
             integers = _own_ring(SageZZ)
             assert self.is_lattice_polytope(), (
-                "the h* vector is defined here for lattice polytopes"
+                f"the h* vector of {self} is computed only for a lattice polytope, but {self} has "
+                "a vertex that is not a lattice point"
             )
             d = int(self.dimension())
             counts = [
@@ -550,10 +567,15 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         def polar_dual(self):
             assert int(self.dimension()) == int(
                 self._engine_polyhedron().ambient_dim()
-            ), "polar duality here requires a full-dimensional polytope"
+            ), (
+                f"the polar dual of {self} is defined only for a full-dimensional polytope, but it "
+                f"has dimension {self.dimension()} in a lattice of rank "
+                f"{self._engine_polyhedron().ambient_dim()}"
+            )
             origin = (SageQQ.zero(),) * int(self._engine_polyhedron().ambient_dim())
             assert self._engine_polyhedron().interior_contains(origin), (
-                "the polar dual is bounded only when the origin is interior"
+                f"the polar dual of {self} is a polytope only when the origin is an interior point, "
+                f"but the origin is not in the interior of {self}"
             )
             polar = self._engine_polyhedron().polar()
             return ConvexPolytopes(self.ambient_lattice().dual_module())(polar.vertices())
@@ -601,11 +623,12 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
             dimension = int(dimension)
             assert dimension in (2, 3), (
-                "the represented reflexive-polytope classification covers "
-                "dimensions two and three"
+                f"the classification of reflexive polytopes is available in dimensions 2 and 3, "
+                f"not in dimension {dimension}"
             )
             assert int(self.ambient_lattice().module_rank()) == dimension, (
-                "the reflexive-polytope classification dimension equals the ambient lattice rank"
+                f"reflexive polytopes of dimension {dimension} do not lie in the lattice "
+                f"{self.ambient_lattice()} of rank {self.ambient_lattice().module_rank()}"
             )
             return finite_ordered_set(
                 tuple(
@@ -625,7 +648,10 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             def an_object(self):
                 r"""The standard triangle in the first two coordinates."""
                 labels = tuple(self.ambient_lattice().module_generating_set())
-                assert len(labels) >= 2, "a polygon requires ambient lattice rank at least two"
+                assert len(labels) >= 2, (
+                    f"a polygon needs a lattice of rank at least 2, but {self.ambient_lattice()} "
+                    f"has rank {len(labels)}"
+                )
                 return self(
                     (
                         tuple(0 for _label in labels),
@@ -650,7 +676,10 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             from sage.rings.rational import Rational
 
             labels = tuple(self.ambient_lattice().module_generating_set())
-            assert len(labels) >= 2, "a polygon requires ambient lattice rank at least two"
+            assert len(labels) >= 2, (
+                f"a polygon needs a lattice of rank at least 2, but {self.ambient_lattice()} "
+                f"has rank {len(labels)}"
+            )
             return self(
                 (
                     tuple(0 for _label in labels),
@@ -746,7 +775,10 @@ def _polytope_in(category, vertices, lattice):
     if lattice is None:
         lattice = category.ambient_lattice()
     polytope = _convex_polytope(vertices, lattice=lattice)
-    assert polytope in category, f"the vertices do not span an object of {category}"
+    assert polytope in category, (
+        f"the polytope {polytope} with vertices {vertices} is not an object of {category}; "
+        f"it is in {polytope.category()}"
+    )
     return polytope
 
 
@@ -788,12 +820,16 @@ def _convex_polytope(
         polyhedron = Polyhedron(vertices=engine_vertices, base_ring=SageQQ)
 
     ambient_dimension = int(polyhedron.ambient_dim())
-    assert lattice is not None, "a convex-polytope construction names its ambient lattice"
+    assert lattice is not None, (
+        "a convex polytope must be given the lattice its vertices lie in, but none was given"
+    )
     assert lattice.base_ring() is integers, (
-        "the ambient lattice of a rational polytope is an owned ZZ-module"
+        f"the vertices of a polytope lie in a lattice over ZZ, but {lattice} is a module over "
+        f"{lattice.base_ring()}"
     )
     assert int(lattice.module_rank()) == ambient_dimension, (
-        "the ambient lattice rank must equal the coordinate dimension"
+        f"the vertices have {ambient_dimension} coordinates, but the lattice {lattice} has rank "
+        f"{lattice.module_rank()}"
     )
 
     placement = ConvexPolytopes(lattice)

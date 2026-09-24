@@ -94,7 +94,8 @@ def _scalar_extension_comparison(source, direct, iterated):
             pass
         case _:
             raise TypeError(
-                "represented scalar-extension comparison requires the retained selected framing"
+                f"the comparison T (x)_R M = T (x)_S (S (x)_R M) for M = {source} is computed only when "
+                f"{source}, {direct} and {iterated} have chosen generating sets"
             )
     modules = Modules(target_ring)
     forward = modules.Mor(direct, iterated)(
@@ -142,10 +143,12 @@ class _ScalarExtensionFunctor(Functor):
         source_module = morphism.domain()
         target_module = morphism.codomain()
         assert source_module in FramedModules(source_module.base_ring()), (
-            "represented scalar extension of a module morphism currently requires a selected source framing"
+            f"scalar extension of the morphism {morphism} needs a chosen generating set of its domain "
+            f"{source_module}"
         )
         assert target_module in FramedModules(target_module.base_ring()), (
-            "represented scalar extension of a module morphism currently requires a selected target framing"
+            f"scalar extension of the morphism {morphism} needs a chosen generating set of its codomain "
+            f"{target_module}"
         )
         source = self(source_module)
         target = self(target_module)
@@ -173,14 +176,19 @@ class _ScalarExtensionFunctor(Functor):
             case True:
                 pass
             case False:
-                raise ValueError("the identity comparison belongs to scalar extension along an identity map")
+                raise ValueError(
+                    f"the comparison id_* M = M exists only for scalar extension along an identity map, but "
+                    f"{self.ring_map()} is not an identity"
+                )
         changed = self(module)
         match changed is module:
             case True:
                 identity = module.module_category().Mor(module, module).identity()
                 return module.module_category().Core().Mor(module, module)(identity, identity)
             case False:
-                raise ArithmeticError("scalar extension along the identity changed the module object")
+                raise ArithmeticError(
+                    f"scalar extension along the identity {self.ring_map()} sent {module} to a different module"
+                )
 
     @cached_method(key=lambda self, second_ring_map: id(second_ring_map))
     def composite_ring_map(self, second_ring_map):
@@ -189,7 +197,10 @@ class _ScalarExtensionFunctor(Functor):
             case True:
                 return second_ring_map * self.ring_map()
             case False:
-                raise ValueError("composed scalar extension requires matching intermediate rings")
+                raise ValueError(
+                    f"cannot compose {second_ring_map} after {self.ring_map()}: the first ends at "
+                    f"{self.ring_map().codomain()}, but the second starts at {second_ring_map.domain()}"
+                )
 
     def composition_comparison(self, second_ring_map, module):
         r"""Return ``(second * self)_* M ~= second_* (self_* M)``.
@@ -289,9 +300,12 @@ class _CoextensionOfScalarsFunctor(Functor):
     def scalars_as_module(self):
         r"""``S`` as an ``R``-module, the domain of every ``Hom_R(S, M)``."""
         scalars, ring = self._target_ring, self._source_ring
-        assert scalars in Modules(ring), f"{scalars} is not placed as a module over {ring}"
+        assert scalars in Modules(ring), (
+            f"Mor_R(S, -) needs S = {scalars} to be a module over R = {ring}, but it is not one"
+        )
         assert scalars in FramedModules(ring) and scalars in FinitelyGeneratedModules(ring), (
-            f"Hom_R(S, -) is represented here for S finitely framed over R; {scalars} is not"
+            f"Mor_R(S, -) is computed only for S finitely generated over R with a chosen generating set, "
+            f"but {scalars} is not one over {ring}"
         )
         return scalars
 

@@ -18,10 +18,15 @@ def _require_finite_free(module) -> int:
 
     ring = module.base_ring()
     if module not in FinitelyGeneratedFreeModules(ring):
-        raise TypeError("this construction requires a finite free module")
+        raise TypeError(
+            f"{module} is not a finitely generated free {ring}-module, which determinant, Poincaré "
+            f"duality and Hodge constructions require; it is only known to be in {module.category()}"
+        )
     rank = module.module_rank()
     if rank == Infinity:
-        raise TypeError("this construction requires finite rank")
+        raise TypeError(
+            f"{module} has infinite rank; determinant, Poincaré duality and Hodge constructions require finite rank"
+        )
     return int(rank)
 
 
@@ -44,7 +49,9 @@ def _power_label(word: tuple, degree: int):
 def _unique_generator(module):
     labels = tuple(module.module_generating_set())
     if len(labels) != 1:
-        raise ValueError(f"{module} is not represented as a rank-one free module")
+        raise ValueError(
+            f"{module} is not free of rank one: its chosen generating set has {len(labels)} elements"
+        )
     return module.module_generator(labels[0])
 
 
@@ -61,7 +68,7 @@ def _exterior_forms(module, degree):
     rank = _require_finite_free(module)
     degree = int(degree)
     if degree < 0 or degree > rank:
-        raise ValueError(f"an exterior degree must lie in [0,{rank}]")
+        raise ValueError(f"no exterior power of degree {degree} of {module}: the degree must lie in [0, {rank}], the rank of {module}")
     return module.dual_module().exterior_power(degree)
 
 
@@ -75,13 +82,22 @@ def _volume_trivialization(module, forward, inverse):
     determinant = module.determinant_line()
     scalars = module.base_ring().regular_module()
     if forward.domain() is not determinant or forward.codomain() is not scalars:
-        raise ValueError("the volume map must have type det(M) -> R")
+        raise ValueError(
+            f"{forward} is not a map det({module}) -> {module.base_ring()}: it is a map "
+            f"{forward.domain()} -> {forward.codomain()}"
+        )
     if inverse.domain() is not scalars or inverse.codomain() is not determinant:
-        raise ValueError("the inverse volume map must have type R -> det(M)")
+        raise ValueError(
+            f"{inverse} is not a map {module.base_ring()} -> det({module}): it is a map "
+            f"{inverse.domain()} -> {inverse.codomain()}"
+        )
     modules = Modules(module.base_ring())
     result = modules.Core().Mor(determinant, scalars)(forward, inverse)
     if result not in modules.Iso(determinant, scalars):
-        raise ValueError("the stated maps do not define a module volume trivialization")
+        raise ValueError(
+            f"{forward} and {inverse} are not mutually inverse, so they do not give an isomorphism "
+            f"det({module}) -> {module.base_ring()}"
+        )
     return result
 
 
@@ -99,7 +115,9 @@ def _framing_volume_trivialization(module, unit=None):
     one = _unique_generator(scalars)
     unit = ring.one() if unit is None else ring(unit)
     if not unit.is_unit():
-        raise ValueError("a volume trivialization must send a determinant basis to a unit")
+        raise ValueError(
+            f"cannot trivialize det({module}) by sending its generator to {unit}: {unit} is not a unit of {ring}"
+        )
     inverse_unit = unit.inverse_of_unit()
     forward = determinant.module_category().Mor(determinant, scalars)(
         {next(iter(determinant.module_generating_set())): scalars.scalar_multiple(unit, one)}
@@ -115,7 +133,9 @@ def _volume_scalars(module, volume):
     determinant = module.determinant_line()
     scalars = module.base_ring().regular_module()
     if volume not in Modules(module.base_ring()).Iso(determinant, scalars):
-        raise TypeError("the Hodge datum requires an isomorphism det(M) ~= R")
+        raise TypeError(
+            f"{volume} is not an isomorphism det({module}) -> {module.base_ring()}, so it is not a volume form on {module}"
+        )
     top = _unique_generator(determinant)
     one = _unique_generator(scalars)
     forward_coefficients = scalars.framing_coefficients(volume(top))
@@ -134,7 +154,7 @@ def _poincare_duality(module, volume, degree):
     rank = _require_finite_free(module)
     degree = int(degree)
     if degree < 0 or degree > rank:
-        raise ValueError(f"an exterior degree must lie in [0,{rank}]")
+        raise ValueError(f"no Poincaré duality in degree {degree} on {module}: the degree must lie in [0, {rank}], the rank of {module}")
     volume_scalar, inverse_volume_scalar = _volume_scalars(module, volume)
     dual = module.dual_module()
     source = module.exterior_power(degree)
@@ -192,7 +212,9 @@ def _poincare_duality(module, volume, degree):
     modules = Modules(module.base_ring())
     result = modules.Core().Mor(source, target)(forward, inverse)
     if result not in modules.Iso(source, target):
-        raise ArithmeticError("the represented Poincaré maps failed to define an isomorphism")
+        raise ArithmeticError(
+            f"the Poincaré duality maps {source} <-> {target} of {module} in degree {degree} are not mutually inverse"
+        )
     return result
 
 
@@ -207,11 +229,15 @@ def _algebraic_correlation_morphism(metric, *, injective=False):
     r"""Return ``g^flat : M -> M^vee`` for a scalar-valued bilinear metric."""
 
     if metric.value_module() is not metric.base_ring():
-        raise TypeError("the algebraic correlation requires a scalar-valued form")
+        raise TypeError(
+            f"the form on {metric} takes values in {metric.value_module()}, not in its base ring "
+            f"{metric.base_ring()}, so it has no correlation {metric} -> dual module"
+        )
     ring = metric.base_ring()
     if metric not in FramedFreeModules(ring):
         raise TypeError(
-            "the represented algebraic correlation currently requires a framed free module"
+            f"cannot compute the correlation of {metric}: this needs a free {ring}-module with a chosen basis, "
+            f"but {metric} is only known to be in {metric.category()}"
         )
     dual = metric.dual_module()
     source_labels = metric.module_generating_set()
@@ -263,7 +289,8 @@ def _correlation_isomorphism(metric):
 
     if not metric.is_unimodular():
         raise ValueError(
-            "an integral Hodge star on covariant forms requires a perfect/unimodular metric"
+            f"the form on {metric} is not unimodular, so its correlation {metric} -> dual module is not an "
+            f"isomorphism and there is no Hodge star over {metric.base_ring()}; use the Hodge star over the fraction field"
         )
     forward = metric.algebraic_correlation_morphism()
     dual = forward.codomain()
@@ -276,7 +303,9 @@ def _correlation_isomorphism(metric):
     modules = Modules(metric.base_ring())
     result = modules.Core().Mor(metric, dual)(forward, inverse)
     if result not in modules.Iso(metric, dual):
-        raise ArithmeticError("the represented correlation failed to define an isomorphism")
+        raise ArithmeticError(
+            f"the correlation of the unimodular form on {metric} and its computed inverse are not mutually inverse"
+        )
     return result
 
 
@@ -298,7 +327,7 @@ def _hodge_star(metric, volume, degree):
     rank = _require_finite_free(metric)
     degree = int(degree)
     if degree < 0 or degree > rank:
-        raise ValueError(f"an exterior degree must lie in [0,{rank}]")
+        raise ValueError(f"no Hodge star on {degree}-forms of {metric}: the degree must lie in [0, {rank}], the rank of {metric}")
     correlation = metric.correlation_isomorphism()
     poincare = metric.poincare_duality(volume, degree)
     raise_metric = correlation.inverse().exterior_power(degree)
@@ -310,7 +339,9 @@ def _hodge_star(metric, volume, degree):
     modules = Modules(metric.base_ring())
     result = modules.Core().Mor(source, target)(forward, inverse)
     if result not in modules.Iso(source, target):
-        raise ArithmeticError("the represented form Hodge maps failed to define an isomorphism")
+        raise ArithmeticError(
+            f"the Hodge star maps {source} <-> {target} of {metric} in degree {degree} are not mutually inverse"
+        )
     return result
 
 
@@ -325,7 +356,7 @@ def _multivector_hodge_star(metric, volume, degree):
     rank = _require_finite_free(metric)
     degree = int(degree)
     if degree < 0 or degree > rank:
-        raise ValueError(f"an exterior degree must lie in [0,{rank}]")
+        raise ValueError(f"no Hodge star on {degree}-vectors of {metric}: the degree must lie in [0, {rank}], the rank of {metric}")
     correlation = metric.algebraic_correlation_morphism()
     poincare_complement = metric.poincare_duality(volume, rank - degree)
     lower_metric = correlation.exterior_power(degree)
@@ -333,7 +364,10 @@ def _multivector_hodge_star(metric, volume, degree):
     source = metric.exterior_power(degree)
     target = metric.exterior_power(rank - degree)
     if forward.domain() is not source or forward.codomain() is not target:
-        raise ArithmeticError("the represented multivector Hodge map has the wrong endpoints")
+        raise ArithmeticError(
+            f"the Hodge star on {degree}-vectors of {metric} should be a map {source} -> {target}, "
+            f"but it is a map {forward.domain()} -> {forward.codomain()}"
+        )
     return forward
 
 
@@ -347,17 +381,23 @@ def _hodge_star_over_fraction_field(metric, volume, degree):
 
     _require_finite_free(metric)
     if not metric.is_nondegenerate():
-        raise ValueError("fraction-field Hodge star requires a nondegenerate metric")
+        raise ValueError(
+            f"the form on {metric} is degenerate, so it has no Hodge star even over the fraction field"
+        )
     ring = metric.base_ring()
     try:
         fraction_field = ring.fraction_field()
     except (AttributeError, NotImplementedError) as error:
-        raise TypeError("the coefficient ring has no represented fraction field") from error
+        raise TypeError(
+            f"cannot form the Hodge star of {metric} over the fraction field: {ring} has no fraction field here"
+        ) from error
     if fraction_field is ring:
         return metric.hodge_star(volume, degree)
     ring_map = _engine_ring(fraction_field).coerce_map_from(_engine_ring(ring))
     if ring_map is None:
-        raise ValueError("the fraction field does not expose the canonical scalar extension")
+        raise ValueError(
+            f"cannot form the Hodge star of {metric} over {fraction_field}: no inclusion {ring} -> {fraction_field} was found"
+        )
     changed_metric = metric.base_change(ring_map)
     volume_scalar, _inverse_volume_scalar = _volume_scalars(metric, volume)
     changed_volume = changed_metric.framing_volume_trivialization(

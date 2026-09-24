@@ -104,7 +104,7 @@ def _homogeneous_degree(element):
         return parent.homogeneous_degree(element)
     except AttributeError as error:
         raise AssertionError(
-            "this graded object does not expose homogeneous element degrees"
+            f"cannot read the degree of {element}: its parent {parent} is not graded"
         ) from error
 
 
@@ -120,7 +120,8 @@ class GradedAlgebraMorphism(Morphism):
             self._decide_degree_preservation() if derived is None else derived
         )
         assert self._degree_preservation_decision is not False, (
-            "a graded algebra morphism must preserve degree"
+            f"{images} does not define a morphism of graded algebras {self.domain()} -> {self.codomain()}: "
+            "it does not preserve degree"
         )
 
     def underlying_algebra_morphism(self):
@@ -200,11 +201,18 @@ class GradedAlgebraMor(CategoricalMor):
     def __init__(self, mor_family, domain, codomain) -> None:
         self._grading_monoid = mor_family.base_category().grading_monoid()
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("graded algebra morphisms require one common base ring")
+            raise ValueError(
+                f"morphisms of graded algebras {domain} -> {codomain} need one base ring, but they are over "
+                f"{domain.base_ring()} and {codomain.base_ring()}"
+            )
         if _require_grading_monoid(domain.grading_monoid()) != self._grading_monoid:
-            raise ValueError("the source has the wrong grading monoid")
+            raise ValueError(
+                f"{domain} is graded by {domain.grading_monoid()}, not by {self._grading_monoid}"
+            )
         if _require_grading_monoid(codomain.grading_monoid()) != self._grading_monoid:
-            raise ValueError("the target has the wrong grading monoid")
+            raise ValueError(
+                f"{codomain} is graded by {codomain.grading_monoid()}, not by {self._grading_monoid}"
+            )
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -228,7 +236,9 @@ class GradedAlgebraMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a graded algebra endomorphism Mor")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         ordinary = Algebras(self.domain().base_ring()).Associative().Unital().Mor(
             self.domain(), self.codomain()
         )
@@ -369,7 +379,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             r"""Return the selected degree of one nonzero homogeneous element."""
             element = self(element)
             if element == self.zero():
-                raise ValueError("zero has no selected homogeneous degree here")
+                raise ValueError(f"the zero element of {self} has no degree")
 
             concentrated = self.__dict__.get("_preamble_concentrated_degree")
             if concentrated is not None:
@@ -388,7 +398,9 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
                 }
                 if nonzero_degrees:
                     if len(nonzero_degrees) != 1:
-                        raise ValueError("the algebra element is not homogeneous")
+                        raise ValueError(
+                            f"{element} is not homogeneous in {self}: it has components in degrees {nonzero_degrees}"
+                        )
                     return self.grading_monoid()(next(iter(nonzero_degrees)))
 
             coefficients = getattr(element, "monomial_coefficients", None)
@@ -403,7 +415,9 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
                         degrees.add(int(label.degree()))
                 if degrees:
                     if len(degrees) != 1:
-                        raise ValueError("the algebra element is not homogeneous")
+                        raise ValueError(
+                            f"{element} is not homogeneous in {self}: it has components in degrees {degrees}"
+                        )
                     return self.grading_monoid()(next(iter(degrees)))
 
             presentation = self
@@ -417,13 +431,12 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             is_homogeneous = getattr(backend, "is_homogeneous", None)
             degree_function = getattr(backend, "degree", None)
             assert callable(is_homogeneous) and callable(degree_function), (
-                "homogeneous degree is represented here when the graded-algebra backend exposes "
-                "homogeneity and degree operations"
+                f"cannot compute the degree of {element} in {self}: no degree algorithm is available"
             )
             homogeneous = is_homogeneous()
             degree = degree_function()
             if not homogeneous:
-                raise ValueError("the algebra element is not homogeneous")
+                raise ValueError(f"{element} is not homogeneous in {self}")
             return self.grading_monoid()(int(degree))
 
         @cached_method
@@ -446,7 +459,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             """
 
             assert localization in LocalizationRings(), (
-                "a degree-zero chart is the degree-zero part of a localization"
+                f"a degree-zero chart is the degree-zero part of a localization, but {localization} is not one"
             )
             assert localization.localization_source() is self, (
                 f"{localization} localizes a different ring than {self}"
@@ -457,7 +470,10 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             )
             assert all(
                 self(inverted).is_homogeneous() for inverted in localization.inverted_elements()
-            ), "a graded localization inverts homogeneous elements"
+            ), (
+                f"the degree-zero part of {localization} needs every inverted element homogeneous, but "
+                f"{localization.inverted_elements()} are not all homogeneous"
+            )
 
             def is_degree_zero(fraction) -> bool:
                 numerator = self(fraction.numerator())
@@ -509,13 +525,22 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a graded-algebra Mor requires two objects of this category")
+            raise TypeError(
+                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
+            )
         if domain.base_ring() is not self.base_ring() or codomain.base_ring() is not self.base_ring():
-            raise ValueError("graded algebra morphisms require one common base ring")
+            raise ValueError(
+                f"morphisms in {self} need both algebras over {self.base_ring()}, but they are over "
+                f"{domain.base_ring()} and {codomain.base_ring()}"
+            )
         if _require_grading_monoid(domain.grading_monoid()) != self.grading_monoid():
-            raise ValueError("the source has the wrong grading monoid")
+            raise ValueError(
+                f"{domain} is graded by {domain.grading_monoid()}, not by {self.grading_monoid()}"
+            )
         if _require_grading_monoid(codomain.grading_monoid()) != self.grading_monoid():
-            raise ValueError("the target has the wrong grading monoid")
+            raise ValueError(
+                f"{codomain} is graded by {codomain.grading_monoid()}, not by {self.grading_monoid()}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     _MorCategory = GradedAlgebraMorCategoryConstruction

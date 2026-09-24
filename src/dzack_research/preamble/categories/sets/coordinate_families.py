@@ -20,7 +20,10 @@ def _finite_framing(module: Parent) -> Parent:
 
     labels = module.module_generating_set()
     if not cardinal(labels.cardinality()).is_finite():
-        raise TypeError("a coordinate presentation requires a finite module framing")
+        raise TypeError(
+            f"coordinates on {module} need a finite generating set, but its module generating set "
+            f"{labels} is infinite"
+        )
     return labels
 
 
@@ -80,7 +83,8 @@ def _coordinate_family_from_rows[CoordinateValueInputT](
     )
     if len(entries) != left_size or any(len(row) != right_size for row in entries):
         raise ValueError(
-            f"the coordinate presentation must have shape {left_size} x {right_size}"
+            f"the coordinate array for {name} must have {left_size} rows of {right_size} entries each, but "
+            f"the rows given have lengths {tuple(len(row) for row in entries)}"
         )
 
     return indexed_family(

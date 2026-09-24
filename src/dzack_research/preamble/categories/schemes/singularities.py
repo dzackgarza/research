@@ -30,7 +30,10 @@ def _parse_ade_type(ade_type):
             return str(letter).upper(), int(index)
         case _:
             label = str(ade_type).strip().upper()
-            assert label[1:].isdigit(), "an ADE label has a letter and a positive index"
+            assert label[1:].isdigit(), (
+                f"an ADE type is written as a letter A, D or E followed by an index, such as E6, "
+                f"but {ade_type!r} is not"
+            )
             return label[0], int(label[1:])
 
 
@@ -40,10 +43,10 @@ def _ade_normal_form_equation(polynomial_ring, ade_type):
     letter, index = _parse_ade_type(ade_type)
     match letter:
         case "A":
-            assert index >= 1, "A_n requires n >= 1"
+            assert index >= 1, f"the singularity A_n needs n >= 1, but n = {index}"
             return x**2 + y ** (index + 1)
         case "D":
-            assert index >= 4, "D_n requires n >= 4"
+            assert index >= 4, f"the singularity D_n needs n >= 4, but n = {index}"
             return x**2 * y + y ** (index - 1)
         case "E":
             match index:
@@ -54,9 +57,13 @@ def _ade_normal_form_equation(polynomial_ring, ade_type):
                 case 8:
                     return x**3 + y**5
                 case _:
-                    raise ValueError("the exceptional simple plane curves are E6, E7 and E8")
+                    raise ValueError(
+                        f"the simple plane curve singularities of type E are E6, E7 and E8, not E{index}"
+                    )
         case _:
-            raise ValueError("a supported simple plane curve has type A, D or E")
+            raise ValueError(
+                f"a simple plane curve singularity has type A, D or E, not {letter}{index}"
+            )
 
 
 class _PlaneLinearRightEquivalence(CategoricalIsomorphism):
@@ -88,21 +95,29 @@ def PlaneLinearRightEquivalence(source, target, forward, inverse):
     r"""Return the selected linear right-equivalence as an algebra automorphism."""
     ring = source.polynomial_ring()
     assert target.polynomial_ring() is ring, (
-        "a represented linear right-equivalence uses one polynomial ring"
+        f"a right equivalence from {source} to {target} is a coordinate change of one plane, "
+        f"but their equations lie in {ring} and {target.polynomial_ring()}"
     )
     assert forward.domain() is ring and forward.codomain() is ring, (
-        "the forward coordinate change is an automorphism of the plane ring"
+        f"the coordinate change {forward} must be an endomorphism of {ring}, but it is a map "
+        f"{forward.domain()} -> {forward.codomain()}"
     )
     assert inverse.domain() is ring and inverse.codomain() is ring, (
-        "the inverse coordinate change is an automorphism of the plane ring"
+        f"the inverse coordinate change {inverse} must be an endomorphism of {ring}, but it is a "
+        f"map {inverse.domain()} -> {inverse.codomain()}"
     )
     assert all(
         inverse(forward(generator)) == generator
         and forward(inverse(generator)) == generator
         for generator in ring.algebra_generators()
-    ), "the selected coordinate maps are not inverse on the generators"
+    ), (
+        f"the coordinate changes {forward} and {inverse} of {ring} are not mutually inverse on "
+        "the variables"
+    )
     assert forward(source.equation()) == target.equation(), (
-        "the coordinate change does not carry the source equation to the target equation"
+        f"the coordinate change {forward} sends the equation {source.equation()} to "
+        f"{forward(source.equation())}, not to {target.equation()}, so it is not a right "
+        f"equivalence from {source} to {target}"
     )
     algebras = Algebras(ring.base_ring()).Associative().Unital()
     core_mor = algebras.Core().Mor(ring, ring)
@@ -121,7 +136,10 @@ class IsolatedHypersurfaceSingularity:
 
     def __init__(self, polynomial_ring, equation) -> None:
         base = polynomial_ring.base_ring()
-        assert polynomial_ring in SymmetricAlgebras(base), "a hypersurface singularity requires a polynomial algebra"
+        assert polynomial_ring in SymmetricAlgebras(base), (
+            f"a hypersurface singularity is given by an equation in a polynomial ring over {base}, "
+            f"but {polynomial_ring} is in {polynomial_ring.category()}"
+        )
         self._polynomial_ring = polynomial_ring
         self._equation = polynomial_ring(equation)
         engine = _engine_ring(polynomial_ring)
@@ -130,7 +148,10 @@ class IsolatedHypersurfaceSingularity:
         derivatives = tuple(f.derivative(variable) for variable in variables)
         jacobian = engine.ideal(derivatives)
         dimension = jacobian.vector_space_dimension()
-        assert dimension in SageZZ, "the Jacobian algebra is not finite-dimensional at the selected origin"
+        assert dimension in SageZZ, (
+            f"V({equation}) is not an isolated singularity: the Jacobian algebra "
+            f"{polynomial_ring}/(partial derivatives) is infinite-dimensional, so the Milnor number is infinite"
+        )
         self._engine_derivatives = derivatives
         self._milnor_number = int(dimension)
 
@@ -144,7 +165,9 @@ class IsolatedHypersurfaceSingularity:
         analytically equivalent equation has already been transformed to it.
         """
         assert int(_engine_ring(base_ring).characteristic()) == 0, (
-            "the represented ADE plane-curve normal forms require characteristic zero"
+            f"the ADE normal forms of plane curve singularities are the classification in "
+            f"characteristic zero, but {base_ring} has characteristic "
+            f"{_engine_ring(base_ring).characteristic()}"
         )
         ring = base_ring.polynomial_ring(tuple(names))
         return cls(ring, _ade_normal_form_equation(ring, ade_type))
@@ -163,7 +186,9 @@ class IsolatedHypersurfaceSingularity:
         """
         ring = self.polynomial_ring()
         assert int(_engine_ring(ring.base_ring()).characteristic()) == 0, (
-            "ADE normal-form recognition is represented in characteristic zero"
+            f"recognizing an ADE normal form of {self} uses the classification in characteristic "
+            f"zero, but {ring.base_ring()} has characteristic "
+            f"{_engine_ring(ring.base_ring()).characteristic()}"
         )
         if len(tuple(ring.algebra_generators())) != 2:
             return None
@@ -188,7 +213,10 @@ class IsolatedHypersurfaceSingularity:
         then verifies the inverse identities and the equation itself.
         """
         ring = self.polynomial_ring()
-        assert target.polynomial_ring() is ring, "linear right-equivalence currently uses one selected plane ring"
+        assert target.polynomial_ring() is ring, (
+            f"a linear right equivalence from {self} to {target} is a coordinate change of one "
+            f"plane, but their equations lie in {ring} and {target.polynomial_ring()}"
+        )
         forward = Algebras(ring.base_ring()).Associative().Unital().Mor(ring, ring)(forward_images)
         inverse = Algebras(ring.base_ring()).Associative().Unital().Mor(ring, ring)(inverse_images)
         return PlaneLinearRightEquivalence(self, target, forward, inverse)
@@ -245,7 +273,10 @@ class IsolatedHypersurfaceSingularity:
             for relation in (self.equation(), *self.jacobian_generators())
         )
         dimension = ideal.vector_space_dimension()
-        assert dimension in SageZZ, "the Tjurina algebra is not finite-dimensional at the selected origin"
+        assert dimension in SageZZ, (
+            f"{self} is not an isolated singularity: its Tjurina algebra is infinite-dimensional, "
+            "so the Tjurina number is infinite"
+        )
         return _own_ring(SageZZ)(dimension)
 
     def completed_local_ring(self, *, precision=20):
@@ -313,12 +344,16 @@ class IsolatedHypersurfaceSingularity:
         ring = self.polynomial_ring()
         generators = tuple(ring.algebra_generators())
         assert len(generators) == 2, (
-            "local delta data are represented here for plane curves"
+            f"the delta invariant is computed only for plane curves, but {self} is a "
+            f"hypersurface in {len(generators)} variables"
         )
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
-        assert equation_ideal.radical() == equation_ideal, "delta and conductor require a reduced plane curve"
+        assert equation_ideal.radical() == equation_ideal, (
+            f"the delta invariant and the conductor are defined for reduced curves, but "
+            f"{self.equation()} has a repeated factor"
+        )
         if self.is_regular_at_origin():
             return 0, 0, 1
         origin = engine.ideal(*engine.gens())
@@ -337,15 +372,22 @@ class IsolatedHypersurfaceSingularity:
         contribution over the ground field.
         """
         ring = self.polynomial_ring()
-        assert point.parent().ring() is ring, "the selected local point belongs to a different plane"
+        assert point.parent().ring() is ring, (
+            f"the point {point} is a point of the plane of {point.parent().ring()}, not of the "
+            f"plane of {self}, whose coordinates lie in {ring}"
+        )
         generators = tuple(ring.algebra_generators())
         assert len(generators) == 2, (
-            "local delta data are represented here for plane curves"
+            f"the delta invariant is computed only for plane curves, but {self} is a "
+            f"hypersurface in {len(generators)} variables"
         )
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
-        assert equation_ideal.radical() == equation_ideal, "delta and conductor require a reduced plane curve"
+        assert equation_ideal.radical() == equation_ideal, (
+            f"the delta invariant and the conductor are defined for reduced curves, but "
+            f"{self.equation()} has a repeated factor"
+        )
         singular_lib("normal.lib")
         point_ideal = engine.ideal(
             tuple(
@@ -363,7 +405,8 @@ class IsolatedHypersurfaceSingularity:
         )
         residue_degree = int(point.residue_degree())
         assert residue_degree > 0 and total_delta % residue_degree == 0, (
-            "local delta total is incompatible with the represented residue degree"
+            f"the total delta invariant {total_delta} over the conjugates of {point} is not "
+            f"divisible by its residue degree {residue_degree}"
         )
         return (
             total_delta // residue_degree,
@@ -375,13 +418,13 @@ class IsolatedHypersurfaceSingularity:
     def delta_invariant_at(self, point):
         r"""Return the local delta invariant at a represented closed point."""
         delta, _tjurina, _branches, _degree = self._plane_curve_prime_data(point)
-        assert delta >= 0, "the selected curve germ has infinite delta invariant"
+        assert delta >= 0, f"the curve {self} has infinite delta invariant at {point}"
         return _own_ring(SageZZ)(delta)
 
     def delta_contribution_over_base(self, point):
         r"""Return ``delta_p [kappa(p):k]`` without splitting the closed point."""
         delta, _tjurina, _branches, degree = self._plane_curve_prime_data(point)
-        assert delta >= 0, "the selected curve germ has infinite delta invariant"
+        assert delta >= 0, f"the curve {self} has infinite delta invariant at {point}"
         return _own_ring(SageZZ)(delta * degree)
 
     def delta_invariant(self):
@@ -417,12 +460,16 @@ class IsolatedHypersurfaceSingularity:
         ring = self.polynomial_ring()
         generators = tuple(ring.algebra_generators())
         assert len(generators) == 2, (
-            "local conductor data are represented here for plane curves"
+            f"the conductor is computed only for plane curves, but {self} is a hypersurface in "
+            f"{len(generators)} variables"
         )
         engine = _engine_ring(ring)
         equation = _engine_element(ring, self.equation())
         equation_ideal = engine.ideal(equation)
-        assert equation_ideal.radical() == equation_ideal, "delta and conductor require a reduced plane curve"
+        assert equation_ideal.radical() == equation_ideal, (
+            f"the delta invariant and the conductor are defined for reduced curves, but "
+            f"{self.equation()} has a repeated factor"
+        )
         singular_lib("normal.lib")
         conductor_engine = singular_function("normalConductor")(equation_ideal, ring=engine)
         conductor = _from_engine_ideal(ring, conductor_engine)

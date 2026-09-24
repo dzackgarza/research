@@ -162,7 +162,10 @@ class ModulesOverGroupAlgebra(Modules):
         r"""Construct the actual ``R[G]``-module defined by the supplied action."""
         if isinstance(action, Functor):
             if action.domain() != self.acting_group().classifying_category():
-                raise ValueError("the action functor has the wrong acting group")
+                raise ValueError(
+                    f"{action} cannot define an action of {self.acting_group()} on {module}: its domain is "
+                    f"{action.domain()}, not the one-object category of {self.acting_group()}"
+                )
             return _equip_action(module, action)
         if isinstance(action, Map) and action.domain() is self.group_algebra():
             return _equip_action(module, action)
@@ -185,7 +188,8 @@ class ModulesOverGroupAlgebra(Modules):
 
         group = self.acting_group()
         assert group.is_finite() is True, (
-            "the selected splitting field is represented here for finite groups"
+            f"cannot give a splitting field for {group}: this is computed only for finite groups, "
+            f"and {group} is not known to be finite"
         )
         fraction_field = self.coefficient_ring().fraction_field()
         order = int(group.order())
@@ -193,7 +197,8 @@ class ModulesOverGroupAlgebra(Modules):
             return fraction_field
         cyclotomic = CyclotomicField(order)
         assert fraction_field.exact_embeddings(cyclotomic).cardinality() != 0, (
-            "the selected splitting-field representation requires the coefficient fraction field to embed into the chosen cyclotomic field"
+            f"cannot give a splitting field for {group} over {self.coefficient_ring()}: the fraction field "
+            f"{fraction_field} does not embed into the cyclotomic field {cyclotomic} of order {order}"
         )
         return cyclotomic
 
@@ -222,7 +227,10 @@ class ModulesOverGroupAlgebra(Modules):
     def coefficient_base_change_adjunction(self, ring_map):
         r"""Return coefficient scalar change ``R[G]-Mod <-> S[G]-Mod`` along ``R -> S``."""
         if _owned_ring(ring_map.domain()) is not self.coefficient_ring():
-            raise ValueError("the coefficient scalar map has the wrong source ring")
+            raise ValueError(
+                f"cannot change coefficients of {self} along {ring_map}: its domain is "
+                f"{ring_map.domain()}, but the coefficient ring is {self.coefficient_ring()}"
+            )
         from dzack_research.preamble.categories.functors.group_scalar_change import (
             _group_module_base_change_adjunction,
         )
@@ -371,7 +379,9 @@ class ModulesOverGroupAlgebra(Modules):
                 # so the placement is recognized by its category class.
                 if isinstance(placement, ModulesOverGroupAlgebra):
                     return placement
-            raise AssertionError(f"{self} is not placed over a group algebra")
+            raise AssertionError(
+                f"{self} is not a module over a group algebra R[G]; it is only known to be in {self.category()}"
+            )
 
         def group(self):
             return self._group_module_placement().acting_group()
@@ -482,12 +492,14 @@ class ModulesOverGroupAlgebra(Modules):
 
             group = self.group()
             assert group in OwnedGroups().Framed(), (
-                "deciding triviality of this action requires a chosen finite group generating set"
+                f"cannot decide whether {group} acts trivially on {self}: this needs a chosen finite generating "
+                f"set of {group}, but {group} is only known to be in {group.category()}"
             )
             module = self.unformed_module()
             labels = module.module_generating_set()
             assert labels.cardinality().is_finite() is True, (
-                "deciding triviality of this action requires a chosen finite module generating set"
+                f"cannot decide whether {group} acts trivially on {self}: this needs a finite generating set of "
+                f"the module {module}, but its chosen generating set {labels} is not known to be finite"
             )
             for group_generator in group.group_generators():
                 action = self.action_of(group_generator)
@@ -497,7 +509,8 @@ class ModulesOverGroupAlgebra(Modules):
                     if equal is False:
                         return False
                     assert equal is True, (
-                        "triviality of the represented action requires equality to be decided on each selected generator"
+                        f"cannot decide whether {group} acts trivially on {self}: whether the generator "
+                        f"{group_generator} fixes the module generator {generator} is undecided"
                     )
             return True
 
@@ -552,7 +565,10 @@ class ModulesOverGroupAlgebra(Modules):
 
         def _Hom_(self, codomain, category=None):
             if codomain not in Modules(self.group_algebra()):
-                raise TypeError("an R[G]-module morphism requires the same acting group")
+                raise TypeError(
+                    f"no {self.group_algebra()}-module morphisms {self} -> {codomain}: the codomain is not a "
+                    f"module over {self.group_algebra()}; it is in {codomain.category()}"
+                )
             return Modules(self.group_algebra()).Mor(self, codomain)
 
         def _finite_action_endomorphism_family(self):
@@ -564,7 +580,8 @@ class ModulesOverGroupAlgebra(Modules):
             """
             group = self.group()
             assert group in OwnedGroups().Framed(), (
-                "the represented action equalizer/coequalizer requires a chosen finite group generating set"
+                f"cannot form the invariants or coinvariants of {self}: this needs a chosen finite generating "
+                f"set of {group}, but {group} is only known to be in {group.category()}"
             )
             generators = group.group_generators()
             indices = Sets().coproduct(
@@ -692,7 +709,10 @@ class ModulesOverGroupAlgebra(Modules):
             assumed: the exact lift through the inclusion decides it.
             """
             if inclusion.codomain() is not self.unformed_module():
-                raise ValueError("the stable subobject inclusion must land in the coefficient restriction")
+                raise ValueError(
+                    f"cannot restrict {endomorphism} to the domain of {inclusion}: that map is not a "
+                    f"submodule inclusion into {self.unformed_module()}, since its codomain is {inclusion.codomain()}"
+                )
             equivariant = self.Mor(self)(endomorphism)
             acted_inclusion = self.restrict_action_to(inclusion)
             return equivariant.restrict_to(acted_inclusion)
@@ -707,9 +727,15 @@ class ModulesOverGroupAlgebra(Modules):
             not merely an invertible-looking ``R``-linear map.
             """
             if automorphism.domain() is not self or automorphism.codomain() is not self:
-                raise ValueError("the automorphism must be an endomorphism of this group module")
+                raise ValueError(
+                    f"{automorphism} is not an automorphism of {self}: it is a map "
+                    f"{automorphism.domain()} -> {automorphism.codomain()}"
+                )
             if inclusion.codomain() is not self.unformed_module():
-                raise ValueError("the stable subobject inclusion must land in the coefficient restriction")
+                raise ValueError(
+                    f"cannot restrict {automorphism} to the domain of {inclusion}: that map is not a "
+                    f"submodule inclusion into {self.unformed_module()}, since its codomain is {inclusion.codomain()}"
+                )
 
             from dzack_research.preamble.categories.abstract_categories.mor_categories import (
                 CategoricalIsomorphism,
@@ -737,17 +763,17 @@ class ModulesOverGroupAlgebra(Modules):
             coefficient_module = self.unformed_module()
             coefficient_ring = self.coefficient_ring()
             assert group.is_finite() is True, (
-                "ordinary character computation here requires a finite group"
+                f"cannot compute the character of {self}: this needs a finite group, and {group} is not known to be finite"
             )
             assert coefficient_module in FinitelyGeneratedFreeModules(coefficient_ring), (
-                "the ordinary character is represented here for a finite free group module; "
-                "a finite presentation alone does not supply the finite-dimensional linear representation used by this construction"
+                f"cannot compute the character of {self}: the trace needs a free {coefficient_ring}-module of "
+                f"finite rank, but {coefficient_module} is only known to be in {coefficient_module.category()}"
             )
             if coefficient_ring.characteristic() != 0:
                 raise TypeError(
-                    "ordinary characters are not obtained by treating modular traces as "
-                    "characteristic-zero class functions; use the native Brauer-character "
-                    "machinery when appropriate"
+                    f"cannot compute the ordinary character of {self}: {coefficient_ring} has characteristic "
+                    f"{coefficient_ring.characteristic()}, not 0; a modular representation has a Brauer "
+                    f"character instead (brauer_character())"
                 )
             representatives = group.conjugacy_classes_representatives()
             traces = tuple(self.action_of(group_element).trace() for group_element in representatives)
@@ -764,15 +790,21 @@ class ModulesOverGroupAlgebra(Modules):
             coefficient_module = self.unformed_module()
             coefficient_ring = self.coefficient_ring()
             assert group.is_finite() is True, (
-                "Brauer character computation here requires a finite group"
+                f"cannot compute the Brauer character of {self}: this needs a finite group, and {group} is not known to be finite"
             )
             assert coefficient_module in FinitelyGeneratedFreeModules(coefficient_ring), (
-                "the Brauer character is represented here for a finite free group module"
+                f"cannot compute the Brauer character of {self}: this needs a free {coefficient_ring}-module of "
+                f"finite rank, but {coefficient_module} is only known to be in {coefficient_module.category()}"
             )
             if coefficient_ring.characteristic() == 0:
-                raise TypeError("Brauer characters are the positive-characteristic representation invariant")
+                raise TypeError(
+                    f"cannot compute the Brauer character of {self}: {coefficient_ring} has characteristic 0, "
+                    f"and Brauer characters are defined in positive characteristic; use character()"
+                )
             if not coefficient_ring.is_field():
-                raise TypeError("Brauer characters require a finite-dimensional representation over a field of positive characteristic")
+                raise TypeError(
+                    f"cannot compute the Brauer character of {self}: the coefficient ring {coefficient_ring} is not a field"
+                )
 
             from sage.combinat.free_module import CombinatorialFreeModule
 
@@ -810,14 +842,20 @@ class ModulesOverGroupAlgebra(Modules):
             ).brauer_character()
             backend_values = tuple(backend_character)
             if not backend_values:
-                raise ArithmeticError("a finite group has at least the identity p-regular class")
+                raise ArithmeticError(
+                    f"the Brauer character of {self} came back with no values, but {group} has at least the "
+                    f"identity as a p-regular class"
+                )
             value_ring = _own_ring(backend_values[0].parent())
             engine_value_ring = _engine_ring(value_ring)
             values = tuple(_owned_engine_element(value_ring, engine_value_ring(value)) for value in backend_values)
             characteristic = int(coefficient_ring.characteristic())
             representatives = tuple(representative for representative in group.conjugacy_classes_representatives() if int(representative.order()) % characteristic)
             if len(representatives) != len(values):
-                raise ArithmeticError("the private Brauer-character engine returned the wrong number of p-regular class values")
+                raise ArithmeticError(
+                    f"the Brauer character of {self} has {len(values)} values, but {group} has "
+                    f"{len(representatives)} {characteristic}-regular conjugacy classes"
+                )
             return group.class_function(
                 value_ring,
                 values,
@@ -914,13 +952,18 @@ def _coefficient_morphism_from_images(
             return mor.elementwise(
                 lambda element: target(images(parent.domain()(element)))
             )
-        raise ValueError("the morphism has the wrong equivariant-map endpoints")
+        raise ValueError(
+            f"{images} cannot give a map {parent.domain()} -> {parent.codomain()}: it is a map "
+            f"{images.domain()} -> {images.codomain()}"
+        )
 
     # An image stated in the acted codomain or in its retained module reads
     # in the retained module by coercion.
     if elementwise:
         if not callable(images):
-            raise TypeError("an elementwise equivariant map must be callable")
+            raise TypeError(
+                f"{images} cannot define a map {parent.domain()} -> {parent.codomain()} elementwise: it is not a function"
+            )
         return mor.elementwise(
             lambda element: target(images(parent.domain()(element))),
         )
@@ -951,7 +994,10 @@ class GroupModuleMorphism(ModuleMorphism):
             elementwise=elementwise,
         )
         if underlying.linearity_decision() is not True:
-            raise ValueError("an equivariant morphism requires an established coefficient-linear map")
+            raise ValueError(
+                f"{underlying} is not known to be {underlying.domain().base_ring()}-linear, so it is not a "
+                f"morphism {parent.domain()} -> {parent.codomain()}"
+            )
         self._preamble_underlying_module_morphism = underlying
         super().__init__(
             parent,
@@ -965,13 +1011,19 @@ class GroupModuleMorphism(ModuleMorphism):
             case True:
                 pass
             case False:
-                raise ValueError("the stated module map is not G-equivariant")
+                raise ValueError(
+                    f"{underlying} is not {parent.domain().group()}-equivariant, so it is not a morphism "
+                    f"{parent.domain()} -> {parent.codomain()}"
+                )
             case _:
                 match parent.is_equivariant(self):
                     case True:
                         pass
                     case _:
-                        raise ValueError("the stated module map is not G-equivariant")
+                        raise ValueError(
+                            f"{underlying} is not known to be {parent.domain().group()}-equivariant, so it is "
+                            f"not a morphism {parent.domain()} -> {parent.codomain()}"
+                        )
 
     def _equivariance_derivation(self):
         r"""Return a construction-derived equivariance decision, or ``None``."""
@@ -1024,12 +1076,20 @@ class GroupModuleMorphism(ModuleMorphism):
         """
         ambient = self.domain()
         if self.codomain() is not ambient:
-            raise ValueError("restriction to a stable subobject is defined here for an endomorphism")
+            raise ValueError(
+                f"cannot restrict {self} to a submodule: it is a map {ambient} -> {self.codomain()}, "
+                f"not an endomorphism"
+            )
         if inclusion.codomain() is not ambient:
-            raise ValueError("the equivariant inclusion must land in the endomorphism domain")
+            raise ValueError(
+                f"cannot restrict {self} along {inclusion}: that map lands in {inclusion.codomain()}, not in {ambient}"
+            )
         piece = inclusion.domain()
         if piece not in Modules(ambient.group_algebra()):
-            raise TypeError("the restricted subobject must carry the same group-module structure")
+            raise TypeError(
+                f"cannot restrict {self} to {piece}: the submodule is not a module over "
+                f"{ambient.group_algebra()}; it is in {piece.category()}"
+            )
 
         underlying = _RestrictedEquivariantCoefficientMorphism(
             piece.unformed_module().module_category().Mor(
@@ -1058,7 +1118,9 @@ class GroupModuleMorphism(ModuleMorphism):
 
         module = self.domain()
         if self.codomain() is not module:
-            raise ValueError("an automorphism is an endomorphism")
+            raise ValueError(
+                f"{self} is not an automorphism: it is a map {module} -> {self.codomain()}"
+            )
         inverse = self.inverse()
         return Modules(module.group_algebra()).Aut(module)(
             CategoricalIsomorphism(
@@ -1087,10 +1149,16 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     Element = GroupModuleMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        assert domain.group() == codomain.group(), "R[G]-module morphisms require the same acting group"
+        assert domain.group() == codomain.group(), (
+            f"no equivariant morphisms {domain} -> {codomain}: the domain is acted on by {domain.group()} "
+            f"but the codomain by {codomain.group()}"
+        )
         coefficient_ring = domain.coefficient_ring()
         if codomain.coefficient_ring() is not coefficient_ring:
-            raise ValueError("equivariant maps require one coefficient ring")
+            raise ValueError(
+                f"no equivariant morphisms {domain} -> {codomain}: the domain has coefficients in "
+                f"{coefficient_ring} but the codomain in {codomain.coefficient_ring()}"
+            )
         scalar_ring = (
             coefficient_ring
             if coefficient_ring in OwnedRings().Commutative()
@@ -1152,7 +1220,9 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Mor object")
+            raise ValueError(
+                f"{self} has no identity: its domain {self.domain()} and codomain {self.codomain()} differ"
+            )
         underlying = self.underlying_mor().identity()
         return self._from_equivariant_images(underlying)
 
@@ -1214,7 +1284,8 @@ def _equip_action(module, group_or_action, action=None):
 
     base_ring = module.base_ring()
     assert module in FinitelyPresentedModules(base_ring), (
-        "equipping an action requires a represented finite presentation"
+        f"cannot equip {module} with a group action: this needs a finitely presented {base_ring}-module, "
+        f"but {module} is only known to be in {module.category()}"
     )
     ring_action = None
     supplied_action_functor = None
@@ -1229,13 +1300,19 @@ def _equip_action(module, group_or_action, action=None):
                         case True:
                             pass
                         case False:
-                            raise ValueError("a module action functor must land in Modules(R)")
+                            raise ValueError(
+                                f"{source_action} cannot define an action on {module}: its codomain is "
+                                f"{source_action.codomain()}, not {Modules(base_ring)}"
+                            )
                     group = _owned_group(classifying.group())
                     match source_action(classifying.an_object()) is module:
                         case True:
                             pass
                         case False:
-                            raise ValueError("the action functor must select the module being equipped")
+                            raise ValueError(
+                                f"{source_action} does not define an action on {module}: it sends the one "
+                                f"object to {source_action(classifying.an_object())}"
+                            )
                     supplied_action_functor = source_action
                 case Map():
                     match source_action.domain():
@@ -1251,18 +1328,25 @@ def _equip_action(module, group_or_action, action=None):
                         case acting_group:
                             group = _owned_group(acting_group)
                 case _:
-                    raise TypeError("with two arguments, an action functor or morphism with the acting group as domain is expected")
+                    raise TypeError(
+                        f"{source_action} cannot define a group action on {module}: expected a functor from "
+                        f"the one-object category of a group, or a morphism out of a group or group algebra"
+                    )
         case _:
             group = _owned_group(group_or_action)
 
     labels = module.module_generating_set()
     assert labels.cardinality().is_finite(), (
-        "equipping an action materializes a finite selected framing"
+        f"cannot equip {module} with a group action: this needs a finite generating set of the module, "
+        f"but its chosen generating set {labels} is not known to be finite"
     )
 
     is_free = module in FinitelyGeneratedFreeModules(base_ring)
     if not is_free and module not in ModulesWithChosenFinitePresentation(base_ring):
-        raise TypeError("a nonfree group module requires a chosen finite presentation")
+        raise TypeError(
+            f"cannot equip {module} with a group action: it is not known to be free, so it needs a chosen "
+            f"finite presentation by generators and relations, and it has none; it is in {module.category()}"
+        )
 
     group_algebra = base_ring[group]
     coefficient_modules = Modules(base_ring)
@@ -1298,7 +1382,10 @@ def _equip_action(module, group_or_action, action=None):
                 case True:
                     pass
                 case _:
-                    raise ValueError("the group identity must act as the identity module morphism")
+                    raise ValueError(
+                        f"the proposed action of {group} on {module} is not an action: the identity of {group} "
+                        f"does not act as the identity map"
+                    )
             for group_generator in group.group_generators():
                 forward = admitted_action_morphism(group_generator)
                 inverse = admitted_action_morphism(~group_generator)
@@ -1306,7 +1393,11 @@ def _equip_action(module, group_or_action, action=None):
                     case (True, True):
                         pass
                     case _:
-                        raise ValueError("each selected group generator must act by a module automorphism")
+                        raise ValueError(
+                            f"the proposed action of {group} on {module} is not an action: the generator "
+                            f"{group_generator} does not act by an automorphism, since its action and that of "
+                            f"its inverse do not compose to the identity"
+                        )
         case _:
             pass
 

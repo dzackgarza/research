@@ -91,7 +91,10 @@ def _gram_rows(gram, rank):
     else:
         rows = tuple(tuple(row) for row in gram)
     if len(rows) != rank or any(len(row) != rank for row in rows):
-        raise ValueError(f"the Gram presentation must have shape {rank} x {rank}")
+        raise ValueError(
+            f"a Gram matrix on {rank} generators must be {rank} x {rank}, but the given rows have lengths "
+            f"{tuple(len(row) for row in rows)}"
+        )
     return rows
 
 
@@ -172,14 +175,18 @@ class TorsionFormIsometry(CategoricalIsomorphism):
                 for right in generators[index + 1 :]
             )
             if any(source.q(element) != target.q(forward(element)) for element in probes):
-                raise ValueError("the stated isomorphism does not preserve the quadratic form")
+                raise ValueError(
+                    f"{forward} is not an isometry {source} -> {target}: it does not preserve the quadratic form q"
+                )
             return
         if any(
             source.b(left, right) != target.b(forward(left), forward(right))
             for left in generators
             for right in generators
         ):
-            raise ValueError("the stated isomorphism does not preserve the bilinear form")
+            raise ValueError(
+                f"{forward} is not an isometry {source} -> {target}: it does not preserve the bilinear form b"
+            )
 
     def is_quadratic(self) -> bool:
         return self._quadratic
@@ -248,7 +255,8 @@ def _engine_torsion_form(normalized_form, *, quadratic: bool):
     )
     if int(engine.cardinality()) != int(normalized_form.cardinality()):
         raise ArithmeticError(
-            "the available finite-form engine does not retain the whole presented module"
+            f"the finite quadratic module built from the Gram matrix of {normalized_form} has order "
+            f"{engine.cardinality()}, not the order {normalized_form.cardinality()} of {normalized_form}"
         )
     if not quadratic:
         # Sage's orthogonal group preserves both b and q.  Setting the
@@ -382,7 +390,9 @@ def _torsion_form_subobject_on(form, generators, *, quadratic: bool):
                 None,
             )
             if lifted is None:
-                raise ValueError("the selected ambient element does not lie in this finite torsion subobject")
+                raise ValueError(
+                    f"{element} does not lie in the submodule {source} of {form}"
+                )
         return source(lifted)
 
     return category.from_module(
@@ -452,7 +462,8 @@ def _torsion_form_all_subobjects(form, *, quadratic: bool):
     """
     integers = _own_ring(SageZZ)
     assert form.base_ring() is integers, (
-        "finite torsion-form subobject enumeration uses the represented ZZ Smith specialization"
+        f"the submodules of the torsion form {form} are enumerated only over ZZ, "
+        f"but {form} is over {form.base_ring()}"
     )
     normalization = form.invariant_factor_form()
     normalized = normalization.codomain()
@@ -491,7 +502,10 @@ def _torsion_form_orthogonal_subobject(form, subobject, *, quadratic: bool):
     r"""Return ``S^perp`` as a form-bearing subobject of ``form``."""
     inclusion = subobject.inclusion()
     if inclusion.codomain() is not form:
-        raise ValueError("the orthogonal is taken inside this finite form")
+        raise ValueError(
+            f"the orthogonal complement in {form} is taken of a submodule of {form}, but {subobject} "
+            f"is a submodule of {inclusion.codomain()}"
+        )
     generators = tuple(subobject.embedded_module_generators())
     zero = form.associated_bilinear_form().value_module().zero() if quadratic else form.value_module().zero()
     selected = tuple(
@@ -545,7 +559,10 @@ def _torsion_form_subobject_action(form, family, acting):
 
     def act(automorphism, subobject):
         if subobject.inclusion().codomain() is not form:
-            raise ValueError("the acted subobject must lie in this finite form")
+            raise ValueError(
+                f"the automorphisms of {form} act on submodules of {form}, but {subobject} is a submodule "
+                f"of {subobject.inclusion().codomain()}"
+            )
         image = frozenset(
             automorphism(element) for element in _embedded_elements(subobject)
         )
@@ -553,7 +570,8 @@ def _torsion_form_subobject_action(form, family, acting):
             return by_embedded_elements[image]
         except KeyError as error:
             raise ValueError(
-                "the selected subobject family is not invariant under the acting group"
+                f"the family of submodules of {form} is not invariant under {acting}: "
+                f"{automorphism} sends {subobject} outside it"
             ) from error
 
     return FiniteGSets(acting)(points, act)
@@ -570,18 +588,28 @@ def _torsion_form_subquotient(form, subobject, over, *, quadratic: bool):
     small_inclusion = subobject.inclusion()
     large_inclusion = over.inclusion()
     if small_inclusion.codomain() is not form or large_inclusion.codomain() is not form:
-        raise ValueError("a subquotient uses two subobjects of this finite form")
+        raise ValueError(
+            f"the subquotient K/H of {form} needs H={subobject} and K={over} to be submodules of {form}, "
+            f"but they are submodules of {small_inclusion.codomain()} and {large_inclusion.codomain()}"
+        )
     small_elements = _embedded_elements(subobject)
     large_elements = _embedded_elements(over)
     if not small_elements <= large_elements:
-        raise ValueError("K/H requires H contained in K")
+        raise ValueError(
+            f"the subquotient K/H of {form} requires H contained in K, but H={subobject} is not contained in K={over}"
+        )
     if not form.form_vanishes_on(small_elements):
-        raise ValueError("the subquotient form descends only along an isotropic H")
+        raise ValueError(
+            f"the form of {form} descends to K/H only when H is isotropic, but the form does not vanish on H={subobject}"
+        )
     perpendicular = _torsion_form_orthogonal_subobject(
         form, subobject, quadratic=quadratic
     )
     if not large_elements <= _embedded_elements(perpendicular):
-        raise ValueError("the subquotient form requires K contained in H^perp")
+        raise ValueError(
+            f"the form of {form} descends to K/H only when K is contained in H^perp, "
+            f"but K={over} is not contained in the orthogonal complement of H={subobject}"
+        )
 
     images = {
         label: large_inclusion.lift(
@@ -619,7 +647,9 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
 
     generators = tuple(generators)
     if any(generator not in form for generator in generators):
-        raise TypeError("a change of framing is specified by elements of this finite form")
+        raise TypeError(
+            f"new generators of {form} must be elements of {form}, but {generators} contains an element not in {form}"
+        )
     module = _underlying_presented_module(form)
     ring = module.base_ring()
     labels = finite_ordered_set(range(len(generators)))
@@ -1087,7 +1117,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         crossing; the engine value stays private to those adapters.
         """
         if not self.accepts(automorphism):
-            raise ValueError("the engine crossing requires an automorphism of this form")
+            raise ValueError(f"{automorphism} is not an element of the orthogonal group {self}")
         return self._engine_group_parent(automorphism._engine())
 
     def _engine_subgroup_from_generators(self, generators):
@@ -1172,7 +1202,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
     def from_morphism(self, morphism):
         r"""Return a live form automorphism as an element of this owned group."""
         if morphism.domain() is not self.domain() or morphism.codomain() is not self.domain():
-            raise ValueError("the automorphism must act on this finite form")
+            raise ValueError(
+                f"{morphism} is not an automorphism of {self.domain()}: it is a morphism "
+                f"{morphism.domain()} -> {morphism.codomain()}"
+            )
         normalization = self.normalization_isometry()
         normalized_form = normalization.codomain()
 
@@ -1216,7 +1249,9 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
 
         if isinstance(datum, TorsionFormAutomorphism):
             if datum.domain() is not self.domain():
-                raise ValueError("the automorphism must act on this finite form")
+                raise ValueError(
+                    f"{datum} is an automorphism of {datum.domain()}, not of {self.domain()}"
+                )
             if datum.parent() is self:
                 return datum
             return self._from_engine(datum._engine())
@@ -1278,7 +1313,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         """
         supplied = tuple(group_generators)
         if any(generator.parent() is not self for generator in supplied):
-            raise ValueError("orthogonal subgroup generators must belong to this group")
+            raise ValueError(
+                f"a subgroup of {self} is generated by elements of {self}, but {supplied} contains an element "
+                "of another group"
+            )
         return self.subgroup(supplied)
 
     def stabilizer_of_element(self, element):
@@ -1291,9 +1329,15 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         try:
             ambient = subgroup.inclusion().codomain()
         except AttributeError as error:
-            raise TypeError("the stabilized object must be a represented subobject") from error
+            raise TypeError(
+                f"the stabilizer in {self} is taken of a submodule of {self.domain()}, but {subgroup} "
+                "has no inclusion morphism"
+            ) from error
         if ambient is not self.domain():
-            raise ValueError("the stabilized subobject must lie in this form")
+            raise ValueError(
+                f"the stabilizer in {self} is taken of a submodule of {self.domain()}, but {subgroup} "
+                f"is a submodule of {ambient}"
+            )
         family = _torsion_form_all_subobjects(
             self.domain(),
             quadratic=self.is_quadratic(),
@@ -1305,7 +1349,9 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         try:
             point = by_embedded_elements[_embedded_elements(subgroup)]
         except KeyError as error:
-            raise ValueError("the stabilized subgroup is not a subobject of this form") from error
+            raise ValueError(
+                f"{subgroup} does not match any submodule of {self.domain()}, so {self} has no stabilizer for it"
+            ) from error
         action = _torsion_form_subobject_action(self.domain(), family, self)
         return action.stabilizer(point)
 
@@ -1326,7 +1372,10 @@ def _torsion_form_automorphism_from_engine_matrix(orthogonal_group, engine_matri
     engine element leaves this dispatcher.
     """
     if not isinstance(orthogonal_group, TorsionFormOrthogonalGroup):
-        raise TypeError("an engine matrix is raised only by a torsion-form orthogonal group")
+        raise TypeError(
+            f"an automorphism matrix is interpreted only in the orthogonal group of a torsion form, "
+            f"but {orthogonal_group} is not one"
+        )
     return orthogonal_group._from_engine_matrix(engine_matrix)
 
 
@@ -1438,7 +1487,10 @@ class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
             r"""Return the quotient projection from the cover to this formed cokernel."""
             unformed_projection = self.presentation().cokernel_projection()
             if unformed_projection.codomain() is not self.unformed_module():
-                raise ArithmeticError("the retained cokernel presentation changed its quotient object")
+                raise ArithmeticError(
+                    f"the cokernel projection of {self.presentation()} lands in {unformed_projection.codomain()}, "
+                    f"not in the module underlying {self}"
+                )
             cover = unformed_projection.domain()
             return cover.module_category().Mor(cover, self)(
                 {

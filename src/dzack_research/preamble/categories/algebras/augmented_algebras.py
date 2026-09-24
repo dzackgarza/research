@@ -82,7 +82,7 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def __init__(self, selected_augmentation=None, **rest) -> None:
             assert selected_augmentation is not None, (
-                "an augmented algebra retains its selected augmentation morphism"
+                "an augmented algebra needs its augmentation A -> R, but none was given"
             )
             self._preamble_selected_augmentation = selected_augmentation
             super().__init__(**rest)
@@ -226,7 +226,9 @@ def _augmented_algebra(augmentation):
         case True:
             pass
         case False:
-            raise TypeError("an augmentation is an algebra morphism to the base ring")
+            raise TypeError(
+                f"an augmentation is an algebra morphism A -> R, but {augmentation!r} is not a map"
+            )
     domain = augmentation.domain()
     base = _owned_ring(domain.base_ring())
     algebras = Algebras(base).Associative().Unital()
@@ -234,13 +236,18 @@ def _augmented_algebra(augmentation):
         case True:
             pass
         case False:
-            raise TypeError(f"{domain} is not an algebra over {base}")
+            raise TypeError(
+                f"an augmentation {augmentation} needs its domain {domain} to be an algebra over {base}, but it is not"
+            )
     aug_codomain = _owned_ring(augmentation.codomain())
     match _augmentation_codomain_is_allowed(domain, base, aug_codomain):
         case True:
             pass
         case False:
-            raise TypeError(f"an augmentation of {domain} is a morphism to {base}")
+            raise TypeError(
+                f"an augmentation of {domain} is a morphism to {base}, but {augmentation} ends at "
+                f"{augmentation.codomain()}"
+            )
     selected = algebras.Mor(domain, aug_codomain)(augmentation)
     placement = _graded_algebra_placement(domain, base)
     law_decisions = _root_algebra_law_decisions(domain)

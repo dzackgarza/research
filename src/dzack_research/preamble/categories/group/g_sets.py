@@ -142,7 +142,10 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         )
 
         def __init__(self, point_set, permutation_representation, **rest) -> None:
-            assert point_set in FiniteSets(), "a represented G-set is on a finite point set"
+            assert point_set in FiniteSets(), (
+                f"cannot form a finite G-set on {point_set}: it is not a finite set, only "
+                f"known to be in {point_set.category()}"
+            )
             group = permutation_representation.domain()
             self._point_set = point_set
             self._permutation_representation = permutation_representation
@@ -159,13 +162,15 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                     determining = group
                 case _:
                     assert False, (
-                        "a represented finite G-set requires either selected group generators "
-                        "or an exhaustively enumerable finite acting group"
+                        f"cannot check that {permutation_representation} is an action of "
+                        f"{group} on {point_set}: {group} has no chosen group generators "
+                        f"and is not known to be finite"
                     )
             for group_generator in determining:
                 for point in point_set:
                     assert permute(group_generator, point) in point_set, (
-                        "the action morphism does not preserve the stated point set"
+                        f"{permutation_representation} is not an action of {group} on "
+                        f"{point_set}: {group_generator} sends {point} outside {point_set}"
                     )
 
             def point_map(group_element):
@@ -278,15 +283,22 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         def transporter_witness(self, source, target):
             r"""Return one ``g`` with ``g.source = target`` when one exists."""
             if source not in self or target not in self:
-                raise ValueError("a transporter requires two points of the G-set")
+                raise ValueError(
+                    f"no transporter from {source} to {target} in {self}: both must be "
+                    f"points of {self.point_set()}"
+                )
             group = self.acting_group()
             assert group.is_finite() is True, (
-                "represented transporter search requires a finite acting group"
+                f"cannot search for an element of {group} carrying {source} to {target}: "
+                f"{group} is not known to be finite"
             )
             for group_element in group:
                 if self.act(group_element, source) == target:
                     return group_element
-            raise ValueError(f"no group element moves {source} to {target}")
+            raise ValueError(
+                f"{source} and {target} lie in different orbits of {self}: no element of "
+                f"{group} carries {source} to {target}"
+            )
 
         def transporter(self, source, target):
             r"""Return the unique transporter between two points of a torsor.
@@ -297,8 +309,9 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             """
             if self.is_torsor() is not True:
                 raise ValueError(
-                    "a unique transporter is defined here only for a torsor; "
-                    "use transporter_witness() for a general action"
+                    f"{self} is not known to be a torsor under {self.acting_group()} (a free "
+                    f"transitive action), so the element carrying {source} to {target} is "
+                    f"not unique; use transporter_witness() for one such element"
                 )
             return self.transporter_witness(source, target)
 
@@ -323,7 +336,11 @@ class GSetMorphism(SetMorphism):
     def __init__(self, parent, function) -> None:
         SetMorphism.__init__(self, parent, function)
         if parent.is_equivariant(self) is not True:
-            raise ValueError("the stated set map is not G-equivariant")
+            raise ValueError(
+                f"the map {parent.domain()} -> {parent.codomain()} is not a morphism of "
+                f"G-sets: it does not commute with the action of "
+                f"{parent.domain().acting_group()}"
+            )
 
     def __mul__(self, other):
         if other.codomain() is not self.domain():
@@ -365,7 +382,10 @@ class GSetMor(GObjectMor):
         return self.element_class(self, function)
 
     def identity(self):
-        assert self.domain() is self.codomain(), "identity is defined on an endomorphism Mor object"
+        assert self.domain() is self.codomain(), (
+            f"no identity morphism from {self.domain()} to {self.codomain()}: the domain "
+            f"and codomain are different G-sets"
+        )
         return self(lambda point: point)
 
 
@@ -445,7 +465,8 @@ class OrbitSets(OwnedCategory):
                     action_generators = group
                 case _:
                     assert False, (
-                        "constructing finite orbits requires selected generators or an exhaustively enumerable finite acting group"
+                        f"cannot compute the orbits of {g_set}: the acting group {group} "
+                        f"has no chosen group generators and is not known to be finite"
                     )
 
             point_set = finite_ordered_set(g_set)
@@ -519,7 +540,7 @@ class OrbitSets(OwnedCategory):
             )
 
         def orbit_points(self, orbit):
-            assert orbit in self, "the orbit class belongs to a different quotient"
+            assert orbit in self, f"{orbit} is not an orbit of {self}"
             return self._orbit_points[orbit._index]
 
         def orbit_of(self, point):
@@ -527,7 +548,10 @@ class OrbitSets(OwnedCategory):
             for orbit in self:
                 if point in self.orbit_points(orbit):
                     return orbit
-            raise AssertionError("every point of a finite G-set belongs to an orbit")
+            raise AssertionError(
+                f"the point {point} of {self.g_set()} lies in no orbit of {self}; the "
+                f"orbits of a G-set must cover its points"
+            )
 
         def _repr_(self):
             return f"Orbit set of {self.g_set()}"
@@ -537,7 +561,8 @@ def _permutation_from_point_map(permutation_group, point_set, mapping):
     images = [mapping(point) for point in point_set]
     for point in point_set:
         assert sum(image == point for image in images) == 1, (
-            "a group action must send each group element to a permutation"
+            f"the map {mapping} on {point_set} is not a permutation: {point} has "
+            f"{sum(image == point for image in images)} preimages, not exactly one"
         )
 
     return permutation_group(
@@ -576,7 +601,8 @@ def _finite_g_set_from_action(group, point_set, action):
     """
     point_set = _owned_point_set(point_set)
     assert point_set in FiniteSets(), (
-        "the represented G-set constructor requires a finite point set"
+        f"cannot form a finite G-set on {point_set}: it is not a finite set, only "
+        f"known to be in {point_set.category()}"
     )
     group = _owned_group(group)
     # Private finite backend serialization: Sage's SymmetricGroup constructor
@@ -607,7 +633,8 @@ def _finite_g_set_from_action(group, point_set, action):
             )
         case _:
             assert False, (
-                "a represented finite G-set requires selected generators or an exhaustively enumerable finite acting group"
+                f"cannot form the action of {group} on {point_set}: {group} has no chosen "
+                f"group generators and is not known to be finite"
             )
     return _object_of(
         FiniteGSets(permutation_representation.domain()),
@@ -646,7 +673,10 @@ class Torsors(OwnedParameterizedCategory):
     def _call_(self, candidate):
         finite_g_sets = FiniteGSets(self.group())
         if candidate not in finite_g_sets or candidate.is_torsor() is not True:
-            raise ValueError(f"{candidate} is not a torsor under {self.group()}")
+            raise ValueError(
+                f"{candidate} is not a torsor under {self.group()}: it must be a finite "
+                f"{self.group()}-set whose action is free and transitive"
+            )
         return _object_of(
             Category.join((candidate.category(), self)),
             point_set=candidate.point_set(),

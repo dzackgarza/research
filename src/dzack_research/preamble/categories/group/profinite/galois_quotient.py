@@ -40,12 +40,14 @@ def _relative_degree(base_field, extension_field):
     base = _engine_ring(base_field)
     extension = _engine_ring(extension_field)
     assert base.characteristic() == extension.characteristic(), (
-        "a finite extension has the same characteristic as its base"
+        f"{extension_field} is not an extension of {base_field}: their characteristics "
+        f"{extension.characteristic()} and {base.characteristic()} differ"
     )
     base_degree = ZZ(base.absolute_degree())
     extension_degree = ZZ(extension.absolute_degree())
     assert extension_degree % base_degree == 0, (
-        "the stated field cannot be finite over the base field"
+        f"{extension_field} is not a finite extension of {base_field}: its absolute "
+        f"degree {extension_degree} is not a multiple of {base_degree}"
     )
     return _owned_engine_element(ZZ, extension_degree // base_degree)
 
@@ -159,10 +161,12 @@ def FiniteGaloisExtension(
     field = _own_ring(field)
     closure = _own_ring(closure)
     assert base_embedding.parent() is base_field.exact_morphisms_to(field), (
-        "the base inclusion K -> L is an exact field morphism from the base field to the field"
+        f"the base inclusion K -> L must be a field morphism {base_field} -> {field}, "
+        f"but {base_embedding} lies in {base_embedding.parent()}"
     )
     assert closure_embedding.parent() is field.exact_morphisms_to(closure), (
-        "the realization L -> Kbar is an exact field morphism from the field to the closure"
+        f"the embedding L -> Kbar must be a field morphism {field} -> {closure}, "
+        f"but {closure_embedding} lies in {closure_embedding.parent()}"
     )
 
     coslice = OwnedFields().CosliceUnder(base_field)
@@ -172,13 +176,17 @@ def FiniteGaloisExtension(
         extension_object = coslice(composite)
     else:
         assert extension_object in coslice, (
-            "the fixed geometric point is an object of the same field coslice"
+            f"the embedding K -> Kbar {extension_object} is not a field extension of "
+            f"{base_field}"
         )
         assert extension_object.target_object() is closure, (
-            "the fixed geometric point has the stated algebraic closure as target"
+            f"the embedding K -> Kbar {extension_object} does not land in the algebraic "
+            f"closure {closure}"
         )
         assert extension_object.arrow() == composite, (
-            "the finite stage factors the fixed geometric point K -> Kbar"
+            f"{field} is not an intermediate field of {base_field} -> {closure}: the "
+            f"composite {base_field} -> {field} -> {closure} differs from the given "
+            f"embedding {extension_object.arrow()}"
         )
 
     factorization = coslice.Mor(source_object, extension_object)(closure_embedding)
@@ -198,7 +206,9 @@ def FiniteGaloisExtension(
         )
     )
     assert compatible_embeddings.cardinality() == cardinal(stage.degree()), (
-        "a represented finite extension is separable over its base field: it has [L:K] K-embeddings into Kbar"
+        f"{field} is not separable over {base_field}: it has "
+        f"{compatible_embeddings.cardinality()} {base_field}-embeddings into {closure}, "
+        f"not [L:K] = {stage.degree()}"
     )
     return stage
 
@@ -247,7 +257,7 @@ class FiniteGaloisAutomorphism(Element):
             if value == identity:
                 return _owned_engine_element(ZZ, ZZ(order))
         raise ArithmeticError(
-            "the represented finite group element has no finite order"
+            f"{self} has no power equal to the identity in the finite group {self.parent()}"
         )
 
     def __pow__(self, exponent):
@@ -314,14 +324,21 @@ class _FiniteFieldAutomorphismEngine:
             datum = datum.action()
         if isinstance(datum, ExactFieldMorphism):
             if datum.domain() is not self.top_field() or datum.codomain() is not self.top_field():
-                raise ValueError("an automorphism has this top field as both endpoints")
+                raise ValueError(
+                    f"{datum} is not an automorphism of {self.top_field()}: it is a map "
+                    f"{datum.domain()} -> {datum.codomain()}"
+                )
             position = self._signature_positions().get(_morphism_signature(datum))
             if position is None:
-                raise ValueError("the map is not an automorphism in this group")
+                raise ValueError(
+                    f"{datum} is not a {self.base_field()}-automorphism of {self.top_field()}"
+                )
             return self.element_class(self, position)
         index = int(ZZ(datum))
         if not 0 <= index < int(self.order()):
-            raise ValueError("the automorphism index is outside this finite group")
+            raise ValueError(
+                f"{self} has {self.order()} elements, so {index} is not an index of one"
+            )
         return self.element_class(self, index)
 
     def __iter__(self):
@@ -330,7 +347,7 @@ class _FiniteFieldAutomorphismEngine:
     def one(self):
         identity_signature = tuple(self.top_field().field_generators())
         assert identity_signature in self._signature_positions(), (
-            "the enumerated automorphisms contain the identity"
+            f"the identity of {self.top_field()} is missing from the automorphisms of {self}"
         )
         return self.element_class(self, self._signature_positions()[identity_signature])
 
@@ -348,7 +365,7 @@ class _FiniteFieldAutomorphismEngine:
             left(right(generator)) for generator in self.top_field().field_generators()
         )
         assert images in self._signature_positions(), (
-            "the finite automorphism list is closed under composition"
+            f"the composite {left} * {right} is missing from the automorphisms of {self}"
         )
         return self.element_class(self, self._signature_positions()[images])
 
@@ -396,7 +413,8 @@ class _FiniteFieldAutomorphismEngine:
             if element.multiplicative_order() == self.order()
         )
         assert self.order() == 1 or generators, (
-            "the Galois group of a finite extension of finite fields is cyclic"
+            f"the Galois group {self} of an extension of finite fields must be cyclic, "
+            f"but no element has order {self.order()}"
         )
         return finite_ordered_set(generators[:1])
 
@@ -453,7 +471,9 @@ class GaloisRestrictionMap(Morphism):
         Morphism.__init__(self, parent)
         self._extension = self.domain().extension_data(extension)
         assert self.codomain() is self.domain().finite_quotient(self._extension), (
-            "a Galois restriction map lands in the quotient of its represented finite stage"
+            f"the restriction map to {self._extension} must land in its Galois group "
+            f"{self.domain().finite_quotient(self._extension)}, but its codomain is "
+            f"{self.codomain()}"
         )
 
     def extension(self) -> FiniteGaloisExtension:
@@ -480,7 +500,8 @@ class GaloisRestrictionMap(Morphism):
             None,
         )
         assert restriction is not None, (
-            "the represented automorphism preserves this Galois stage"
+            f"{element} does not map {self.extension().field()} into itself, so it has no "
+            f"restriction in {self.codomain()}"
         )
         return restriction
 
@@ -538,12 +559,16 @@ class _LiftCosetEngine:
         """
         if candidate is not None:
             if candidate not in self:
-                raise ValueError("the supplied automorphism is not in this lift coset")
+                raise ValueError(
+                    f"{candidate} does not restrict to {self._element} on "
+                    f"{self.extension().field()}"
+                )
             return candidate
         if self.supergroup()._is_finite_field():
             return self.supergroup().lift(self._element)
         raise ValueError(
-            "this extension coset has no canonically selected representative"
+            f"the lifts of {self._element} to {self.supergroup()} have no canonical "
+            f"representative unless the base field is finite; give one as `candidate`"
         )
 
     def _repr_(self) -> str:

@@ -32,9 +32,17 @@ class OppositeMorphism(Morphism):
     ) -> None:
         Morphism.__init__(self, parent)
         if underlying_arrow.domain() is not self.codomain().underlying_object():
-            raise ValueError("the underlying opposite arrow has the wrong domain")
+            raise ValueError(
+                f"a morphism {self.domain()} -> {self.codomain()} in the opposite category is an arrow "
+                f"{self.codomain().underlying_object()} -> {self.domain().underlying_object()} of the base "
+                f"category, but {underlying_arrow} starts at {underlying_arrow.domain()}"
+            )
         if underlying_arrow.codomain() is not self.domain().underlying_object():
-            raise ValueError("the underlying opposite arrow has the wrong codomain")
+            raise ValueError(
+                f"a morphism {self.domain()} -> {self.codomain()} in the opposite category is an arrow "
+                f"{self.codomain().underlying_object()} -> {self.domain().underlying_object()} of the base "
+                f"category, but {underlying_arrow} ends at {underlying_arrow.codomain()}"
+            )
         self._underlying_arrow = underlying_arrow
 
     def underlying_arrow(self) -> Morphism:
@@ -84,7 +92,10 @@ class OppositeMor(CategoricalMor):
                 if underlying_arrow.parent() is self:
                     return underlying_arrow
                 if underlying_arrow.domain() is not self.domain() or underlying_arrow.codomain() is not self.codomain():
-                    raise ValueError("the opposite morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {underlying_arrow} as a morphism {self.domain()} -> {self.codomain()} in the "
+                        f"opposite category: it is a morphism {underlying_arrow.domain()} -> {underlying_arrow.codomain()}"
+                    )
                 underlying_arrow = underlying_arrow.underlying_arrow()
         base = self.opposite_category().base_category()
         if not _category_accepts_morphism(
@@ -93,12 +104,17 @@ class OppositeMor(CategoricalMor):
             self.domain().underlying_object(),
             underlying_arrow,
         ):
-            raise ValueError("the reversed arrow does not belong to the base category")
+            raise ValueError(
+                f"{underlying_arrow} is not a morphism {self.codomain().underlying_object()} -> "
+                f"{self.domain().underlying_object()} of the base category"
+            )
         return OppositeMorphism(self, underlying_arrow)
 
     def identity(self) -> OppositeMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         underlying = self.domain().underlying_object()
         base = self.opposite_category().base_category()
         return self(_category_mor_parent(base, underlying, underlying).identity())
@@ -149,14 +165,19 @@ class _OppositeCategory(OwnedCategory):
     @cached_method(key=lambda self, underlying_object: id(underlying_object))
     def object(self, underlying_object: Parent) -> Parent:
         if underlying_object not in self.base_category():
-            raise TypeError("the object lies outside the base category")
+            raise TypeError(
+                f"an object of the opposite category C^op needs an object of C = {self.base_category()}, but "
+                f"{underlying_object} is not one"
+            )
         return _object_of(self, underlying_object=underlying_object)
 
     __call__ = object
 
     def Mor(self, domain: Parent, codomain: Parent) -> OppositeMor:
         if domain not in self or codomain not in self:
-            raise TypeError("an opposite Mor requires two opposite objects")
+            raise TypeError(
+                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
 
@@ -182,9 +203,17 @@ class ProductMorphism(Morphism):
     ) -> None:
         Morphism.__init__(self, parent)
         if first.domain() is not self.domain().first() or first.codomain() is not self.codomain().first():
-            raise ValueError("the first component has the wrong endpoints")
+            raise ValueError(
+                f"the first component of a morphism {self.domain()} -> {self.codomain()} must be a map "
+                f"{self.domain().first()} -> {self.codomain().first()}, but {first} is a map "
+                f"{first.domain()} -> {first.codomain()}"
+            )
         if second.domain() is not self.domain().second() or second.codomain() is not self.codomain().second():
-            raise ValueError("the second component has the wrong endpoints")
+            raise ValueError(
+                f"the second component of a morphism {self.domain()} -> {self.codomain()} must be a map "
+                f"{self.domain().second()} -> {self.codomain().second()}, but {second} is a map "
+                f"{second.domain()} -> {second.codomain()}"
+            )
         self._first = first
         self._second = second
 
@@ -241,7 +270,10 @@ class ProductMor(CategoricalMor):
                 if first.parent() is self:
                     return first
                 if first.domain() is not self.domain() or first.codomain() is not self.codomain():
-                    raise ValueError("the product morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {first} as a morphism {self.domain()} -> {self.codomain()} in the product "
+                        f"category: it is a morphism {first.domain()} -> {first.codomain()}"
+                    )
                 first, second = first.first(), first.second()
         if second is None:
             first, second = first
@@ -252,19 +284,27 @@ class ProductMor(CategoricalMor):
             self.codomain().first(),
             first,
         ):
-            raise ValueError("the first map is not a morphism of the first category")
+            raise ValueError(
+                f"the first component {first} is not a morphism {self.domain().first()} -> "
+                f"{self.codomain().first()} of the first factor category"
+            )
         if not _category_accepts_morphism(
             product.second_category(),
             self.domain().second(),
             self.codomain().second(),
             second,
         ):
-            raise ValueError("the second map is not a morphism of the second category")
+            raise ValueError(
+                f"the second component {second} is not a morphism {self.domain().second()} -> "
+                f"{self.codomain().second()} of the second factor category"
+            )
         return ProductMorphism(self, first, second)
 
     def identity(self) -> ProductMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         first = self.domain().first()
         second = self.domain().second()
         product = self.product_category()
@@ -387,14 +427,19 @@ class _ProductCategory(OwnedCategory):
     @cached_method(key=lambda self, first, second: (id(first), id(second)))
     def pair(self, first: Parent, second: Parent) -> Parent:
         if first not in self.first_category() or second not in self.second_category():
-            raise TypeError("the pair lies outside the product category")
+            raise TypeError(
+                f"an object (X, Y) of {self} needs X in {self.first_category()} and Y in "
+                f"{self.second_category()}, but got X = {first} and Y = {second}"
+            )
         return _object_of(self, first=first, second=second)
 
     __call__ = pair
 
     def Mor(self, domain: Parent, codomain: Parent) -> ProductMor:
         if domain not in self or codomain not in self:
-            raise TypeError("a product Mor requires two product-category objects")
+            raise TypeError(
+                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
 

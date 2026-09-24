@@ -65,7 +65,10 @@ class IsotypicDecompositions(OwnedCategoryOverBaseRing):
             characters = tuple(isotypic_characters)
             components = tuple(isotypic_components)
             if len(characters) != len(components):
-                raise ValueError("isotypic characters and components must have equal length")
+                raise ValueError(
+                    f"an isotypic decomposition needs one component per character, but {len(characters)} "
+                    f"characters {characters} were given with {len(components)} components"
+                )
             self._preamble_isotypic_characters = characters
             self._preamble_isotypic_components = components
             index_set = finite_ordered_set(characters)
@@ -86,13 +89,18 @@ class IsotypicDecompositions(OwnedCategoryOverBaseRing):
             for position, candidate in enumerate(labels):
                 if candidate == character or character in candidate.characters:
                     return self._preamble_isotypic_components[position]
-            raise ValueError(f"{character!r} does not index this isotypic decomposition")
+            raise ValueError(
+                f"{character!r} is not a character of the isotypic decomposition {self}; its characters are {labels}"
+            )
 
         def trivial_component(self):
             for character in self.isotypic_characters():
                 if character.is_trivial():
                     return self.isotypic_component(character)
-            raise ValueError("this decomposition has no trivial character")
+            raise ValueError(
+                f"the isotypic decomposition {self} has no trivial component: none of its characters "
+                f"{self.isotypic_characters()} is the trivial character"
+            )
 
         def nontrivial_components(self):
             return finite_ordered_set(
@@ -152,7 +160,8 @@ def _split_irreducible_characters(module):
     if ring in (SageZZ, SageQQ):
         return _galois_orbits_of_irreducible_characters(group)
     assert ring.is_field() and ring.characteristic() == 0, (
-        "the represented ordinary-character isotypic projectors require a characteristic-zero field"
+        f"cannot decompose {module} into isotypic components: the projectors by ordinary characters of "
+        f"{group} need a field of characteristic 0, but the coefficient ring is {module.coefficient_ring()}"
     )
     characters = tuple(group.irreducible_characters())
     for character in characters:
@@ -161,7 +170,9 @@ def _split_irreducible_characters(module):
                 ring(value)
             except (TypeError, ValueError) as error:
                 raise AssertionError(
-                    "the coefficient field is not a splitting field for the represented irreducible characters"
+                    f"cannot decompose {module} into isotypic components: {module.coefficient_ring()} is not a "
+                    f"splitting field for {group}, since the value {value} of the irreducible character "
+                    f"{character} does not lie in it"
                 ) from error
     return tuple(IsotypicCharacter((character,)) for character in characters)
 
@@ -238,7 +249,10 @@ def _isotypic_component(module, character):
         None,
     )
     if selected is None:
-        raise ValueError(f"{character!r} is not an irreducible-character index for this module")
+        raise ValueError(
+            f"{character!r} is not an irreducible character of {module.group()} over "
+            f"{module.coefficient_ring()}, so {module} has no isotypic component for it"
+        )
     projector = _central_projector(module, selected)
     coefficient_module = module.unformed_module()
     base_ring = module.coefficient_ring()

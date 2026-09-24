@@ -158,9 +158,8 @@ class _AlgebraScalarExtensionFunctor(Functor):
                 )
 
                 assert algebra in OrdersWithChosenIntegralBasis(), (
-                    "algebra scalar extension is materialized for algebras with a chosen "
-                    "finite commutative polynomial presentation or a number-field order "
-                    "with a chosen integral basis"
+                    f"scalar extension of the algebra {algebra} is computed only for a commutative algebra given "
+                    "by finitely many generators and relations, or an order in a number field with an integral basis"
                 )
                 return algebra.base_change(self.ring_map())
 
@@ -184,8 +183,8 @@ class _AlgebraScalarExtensionFunctor(Functor):
                     case False:
                         pass
                 assert _engine_ring(source_field).is_absolute(), (
-                    "order-morphism scalar extension uses the selected absolute "
-                    "primitive-element presentation"
+                    f"scalar extension of the order morphism {morphism} is computed only over an absolute number "
+                    f"field, but {source_field} is a relative extension"
                 )
                 primitive_image = morphism.field_embedding()(
                     source_field.primitive_element()

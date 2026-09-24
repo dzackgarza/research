@@ -29,7 +29,9 @@ def _family(values, *, index_set=None, name):
     match values:
         case IndexedFamily():
             if values.cardinality().is_finite() is not True:
-                raise TypeError(f"{name} is a finite family")
+                raise TypeError(
+                    f"{name} must be a finite family, but {values} has cardinality {values.cardinality()}"
+                )
             match index_set:
                 case None:
                     return values
@@ -42,7 +44,10 @@ def _family(values, *, index_set=None, name):
                 case _:
                     pass
             if set(values) != set(index_set):
-                raise ValueError(f"{name} has exactly the covering-family index set")
+                raise ValueError(
+                    f"{name} must be indexed by the charts {sorted(map(str, index_set))}, but its "
+                    f"keys are {sorted(map(str, values))}"
+                )
             entries = dict(values)
         case _:
             sequence = tuple(values)
@@ -52,7 +57,10 @@ def _family(values, *, index_set=None, name):
                 case _:
                     pass
             if len(sequence) != int(index_set.cardinality().finite_value()):
-                raise ValueError(f"{name} has the wrong number of entries")
+                raise ValueError(
+                    f"{name} must have one entry for each of the {index_set.cardinality()} charts, "
+                    f"but it has {len(sequence)}"
+                )
             entries = {
                 index: sequence[position]
                 for position, index in enumerate(index_set)
@@ -78,7 +86,10 @@ def _ringed_covering_family(
     """
 
     if site_category.base_object() is not ambient_space:
-        raise ValueError("a ringed covering family is built in the slice over its ambient space")
+        raise ValueError(
+            f"a covering family of {ambient_space} must be built in the slice category over "
+            f"{ambient_space}, but {site_category} is the slice over {site_category.base_object()}"
+        )
     chart_family = _family(charts, name="Charts of a ringed covering family")
     embedding_family = _family(
         embeddings,
@@ -89,13 +100,25 @@ def _ringed_covering_family(
     for index in chart_family.index_set():
         embedding = embedding_family[index]
         if not isinstance(embedding, Morphism):
-            raise TypeError("a represented ringed covering chart uses an actual morphism")
+            raise TypeError(
+                f"the embedding of chart {index} into {ambient_space} must be a morphism of ringed "
+                f"spaces, but it is {embedding}"
+            )
         if embedding.domain() is not chart_family[index] or embedding.codomain() is not ambient_space:
-            raise ValueError("a covering chart embedding has the wrong endpoints")
+            raise ValueError(
+                f"the embedding of chart {index} must be a morphism {chart_family[index]} -> "
+                f"{ambient_space}, but it is {embedding.domain()} -> {embedding.codomain()}"
+            )
     if chart_family[ambient_index] is not ambient_space:
-        raise ValueError("the certified covering regime contains the ambient space as a chart")
+        raise ValueError(
+            f"a cover is recognized as covering only when one chart is the whole space "
+            f"{ambient_space}, but chart {ambient_index} is {chart_family[ambient_index]}"
+        )
     if embedding_family[ambient_index] != ambient_space.categorical_identity_morphism():
-        raise ValueError("the ambient chart is embedded by the identity morphism")
+        raise ValueError(
+            f"chart {ambient_index} is the whole space {ambient_space}, so its embedding must be "
+            f"the identity, but it is {embedding_family[ambient_index]}"
+        )
 
     target = site_category.an_object()
     chart_objects = finite_indexed_family(
@@ -122,21 +145,38 @@ def _ringed_covering_family(
             case False:
                 normalized[right, left] = (datum[0], datum[2], datum[1])
     if set(normalized) != set(expected_pairs):
-        raise ValueError("a covering family retains one represented overlap for every chart pair")
+        raise ValueError(
+            f"a covering family of {ambient_space} needs one overlap for each pair of charts "
+            f"{[tuple(map(str, pair)) for pair in expected_pairs]}, but overlaps were given for "
+            f"{[tuple(map(str, pair)) for pair in normalized]}"
+        )
 
     overlap_data = {}
     for left, right in expected_pairs:
         overlap_space, left_map, right_map = normalized[left, right]
         if not isinstance(left_map, Morphism) or not isinstance(right_map, Morphism):
-            raise TypeError("represented ringed overlaps use actual morphisms")
+            raise TypeError(
+                f"the overlap of charts {left} and {right} must be given by morphisms of ringed "
+                f"spaces into each chart, but it is given by {left_map} and {right_map}"
+            )
         if left_map.domain() is not overlap_space or right_map.domain() is not overlap_space:
-            raise ValueError("both overlap embeddings have the overlap as domain")
+            raise ValueError(
+                f"both maps from the overlap {overlap_space} of charts {left} and {right} must "
+                f"start at it, but they start at {left_map.domain()} and {right_map.domain()}"
+            )
         if left_map.codomain() is not chart_family[left] or right_map.codomain() is not chart_family[right]:
-            raise ValueError("an overlap embedding lands in the wrong covering chart")
+            raise ValueError(
+                f"the overlap of charts {left} and {right} must map into {chart_family[left]} and "
+                f"{chart_family[right]}, but its maps land in {left_map.codomain()} and "
+                f"{right_map.codomain()}"
+            )
         left_to_ambient = embedding_family[left] * left_map
         right_to_ambient = embedding_family[right] * right_map
         if left_to_ambient != right_to_ambient:
-            raise ValueError("the two overlap embeddings define different maps to the ambient space")
+            raise ValueError(
+                f"the overlap {overlap_space} of charts {left} and {right} maps to {ambient_space} "
+                f"in two different ways through the two charts: {left_to_ambient} and {right_to_ambient}"
+            )
         overlap_object = site_category.object(left_to_ambient)
         overlap_data[left, right] = (
             overlap_object,

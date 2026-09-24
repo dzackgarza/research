@@ -111,8 +111,10 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
             """
             quotient = self.into_perpendicular().cokernel()
             assert quotient.module_rank() == self.isotropic_reduction().module_rank(), (
-                "the represented cokernel of I -> I^perp and the owned isotropic "
-                "reduction I^perp/I must have the same rank"
+                f"two constructions of I^perp/I for the isotropic sublattice I = {self} "
+                f"disagree: the cokernel of I -> I^perp has rank {quotient.module_rank()}, "
+                f"but the isotropic reduction has rank "
+                f"{self.isotropic_reduction().module_rank()}"
             )
             return quotient
 
@@ -150,8 +152,9 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         def levi_restriction(self, automorphism):
             r"""Return ``g|_I`` in ``GL(I)`` for ``g`` in the parabolic subgroup."""
             assert self.stabilizes(automorphism), (
-                "the restriction along iota is defined for an isometry stabilizing "
-                "this isotropic subobject"
+                f"cannot restrict {automorphism} to the isotropic sublattice {self}: "
+                f"restriction is defined only for an isometry g with g(I) = I, and "
+                f"this isometry does not map {self} onto itself"
             )
             inclusion = self.inclusion()
             return self.module_category().Mor(self, self)(
@@ -166,8 +169,9 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         def levi_quotient_action(self, automorphism):
             r"""Return the descent of ``g`` to ``I^perp/I`` for ``g`` in ``P_I``."""
             assert self.stabilizes(automorphism), (
-                "the descent to I^perp/I is defined for an isometry stabilizing "
-                "this isotropic subobject"
+                f"cannot descend {automorphism} to I^perp/I for the isotropic sublattice "
+                f"I = {self}: descent is defined only for an isometry g with g(I) = I, "
+                f"and this isometry does not map {self} onto itself"
             )
             perpendicular = self.isotropic_perpendicular()
             perpendicular_inclusion = perpendicular.inclusion()
@@ -224,8 +228,9 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
                 return self.acts_trivially_on_isotropic_reduction(automorphism)
 
             assert inclusion.codomain() is self.ambient_lattice(), (
-                "the unipotent radical is cut out inside the orthogonal group of "
-                "the lattice this subobject includes into"
+                f"cannot form the unipotent radical of {self}: its inclusion has codomain "
+                f"{inclusion.codomain()}, which is not the lattice {self.ambient_lattice()} "
+                f"whose orthogonal group contains the radical"
             )
             return self.ambient_lattice().Aut().predicate_subgroup(is_unipotent, f"g acts as the identity on {self} and on its isotropic reduction")
 
@@ -250,22 +255,30 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
             lattice = self.ambient_lattice()
             ring = lattice.base_ring()
             assert int(self.module_rank()) == 1, (
-                "an Eichler transvection is attached to a rank-one isotropic subobject"
+                f"no Eichler transvection is attached to {self}: an Eichler transvection "
+                f"needs an isotropic sublattice of rank one, but {self} has rank "
+                f"{self.module_rank()}"
             )
             assert lattice.is_even(), (
-                "the Eichler transvection's coefficient q(x)/2 is integral on an "
-                "even lattice; this lattice is not even"
+                f"no Eichler transvection of {self} is defined in {lattice}: the "
+                f"coefficient q(x)/2 is integral only on an even lattice, and {lattice} "
+                f"is not even"
             )
             isotropic_vector = self.embedded_module_generators()[
                 self.module_generating_set()[0]
             ]
             assert (
                 lattice.b(isotropic_vector, orthogonal_vector) == ring.zero()
-            ), "an Eichler transvection takes a vector orthogonal to its isotropic vector"
+            ), (
+                f"no Eichler transvection E_(f,x) with f = {isotropic_vector} and "
+                f"x = {orthogonal_vector}: x must be orthogonal to f, but b(f, x) = "
+                f"{lattice.b(isotropic_vector, orthogonal_vector)}"
+            )
             square = lattice.q(orthogonal_vector)
             half_square = square // ring(2)
             assert ring(2) * half_square == square, (
-                "q(x) is odd here, so E_{f,x} would not preserve the lattice"
+                f"no Eichler transvection E_(f,x) with x = {orthogonal_vector} preserves "
+                f"{lattice}: q(x) = {square} is odd, so q(x)/2 is not in {ring}"
             )
 
             def image(label):
@@ -323,7 +336,8 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
             ``parabolic_subgroup`` presents it.
             """
             assert other.ambient_lattice() is self.ambient_lattice(), (
-                "an isotropic transporter compares two subobjects of one lattice"
+                f"no isometry can carry {self} to {other}: they are sublattices of "
+                f"different lattices, {self.ambient_lattice()} and {other.ambient_lattice()}"
             )
             return self.ambient_lattice().Aut().isotropic_equivalence_witness(
                 self, other

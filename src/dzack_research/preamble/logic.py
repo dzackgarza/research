@@ -41,7 +41,10 @@ class _PropositionElement:
         ...
 
     def __bool__(self):
-        raise TypeError("an undecided predicate has no truth value; use ask(...)")
+        raise TypeError(
+            f"the proposition {self} has no Python truth value, because it may be "
+            f"undecided; call ask(...) on it to get True, False or Unknown"
+        )
 
 
 class _PropositionSetEngine:
@@ -58,7 +61,10 @@ class _PropositionSetEngine:
     def _element_constructor_(self, statement):
         if element_parent(statement) is self:
             return statement
-        raise TypeError("a represented proposition is constructed by its defining relation")
+        raise TypeError(
+            f"{statement!r} cannot be converted into a proposition: a proposition is "
+            f"constructed from its defining relation"
+        )
 
     def _repr_(self) -> str:
         return "Set of represented closed propositions"
@@ -88,11 +94,12 @@ def ask(
         case Predicate():
             answer = statement._ask_(max_prec=max_prec)
             assert answer is True or answer is False or answer is Unknown, (
-                "a proposition's decision is True, False, or Unknown"
+                f"deciding the proposition {statement} returned {answer!r}, "
+                f"which is not True, False or Unknown"
             )
             return answer
         case _:
-            raise TypeError(f"ask(...) expects a boolean or Predicate, got {statement!r}")
+            raise TypeError(f"ask(...) decides True, False, Unknown or a proposition, but was given {statement!r}")
 
 
 __all__ = ["Predicate", "Propositions", "Unknown", "ask"]

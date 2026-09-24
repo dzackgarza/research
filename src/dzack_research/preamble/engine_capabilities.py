@@ -69,7 +69,10 @@ class EngineCapabilities:
         available: Callable[[], bool],
         provisioning: str,
     ) -> None:
-        assert capability and provider, "a computational capability and provider need nonempty names"
+        assert capability and provider, (
+            f"cannot register capability {capability!r} with provider {provider!r}: "
+            f"both names must be nonempty"
+        )
         assert provisioning, f"provider {provider!r} must state how it is provisioned"
         providers = self._providers[capability]
         assert all(candidate.name != provider for candidate in providers), (

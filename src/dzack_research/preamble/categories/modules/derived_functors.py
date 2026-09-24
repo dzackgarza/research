@@ -29,7 +29,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 def _common_base_ring(module, other):
     ring = _owned_ring(module.base_ring())
     assert _owned_ring(other.base_ring()) == ring, (
-        "Tor and Ext are taken between modules over one common base ring"
+        f"Tor and Ext of {module} and {other} are not defined: both modules must be over one ring, "
+        f"but they are over {ring} and {other.base_ring()}"
     )
     return ring
 
@@ -54,7 +55,9 @@ def _tensored_resolution(module, other, shift, steps):
 def _tor(module, other, degree=0):
     r"""Return ``Tor_degree(module, other)``, the homology of ``F_• ⊗ other``."""
     degree = int(degree)
-    assert degree >= 0, "a homological degree is nonnegative"
+    assert degree >= 0, (
+        f"Tor_{degree}({module}, {other}) is not defined: Tor is indexed by degrees n >= 0"
+    )
     # Homology in degree n reads the map out of F_n and the map into it, so
     # the resolution must reach one term past the degree asked for.
     steps = degree + 1
@@ -66,7 +69,9 @@ def _tor(module, other, degree=0):
 def _ext(module, other, degree=0):
     r"""Return ``Ext^degree(module, other)``, the cohomology of ``Hom(F_•, other)``."""
     degree = int(degree)
-    assert degree >= 0, "a cohomological degree is nonnegative"
+    assert degree >= 0, (
+        f"Ext^{degree}({module}, {other}) is not defined: Ext is indexed by degrees n >= 0"
+    )
     ring = _common_base_ring(module, other)
     resolution = module.free_resolution(degree + 1)
     length = resolution.length()
@@ -103,7 +108,9 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
     """
     degree = int(degree)
     if degree < 0:
-        raise ValueError("a Tor degree is nonnegative")
+        raise ValueError(
+            f"the map induced by {morphism} on Tor_{degree} is not defined: Tor is indexed by degrees n >= 0"
+        )
     match int(argument):
         case 1:
             steps = degree + 1
@@ -115,16 +122,27 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
                 else lift
             )
             if lifted.domain() is not source_resolution or lifted.codomain() is not target_resolution:
-                raise ValueError("the selected Tor lift uses different resolutions")
+                raise ValueError(
+                    f"{lifted} cannot compute the map on Tor induced by {morphism}: it must be a chain map "
+                    f"between the free resolutions {source_resolution} -> {target_resolution}, but it is "
+                    f"{lifted.domain()} -> {lifted.codomain()}"
+                )
             if lifted.module_morphism() is not morphism:
-                raise ValueError("the selected Tor lift lies over a different module morphism")
+                raise ValueError(
+                    f"{lifted} cannot compute the map on Tor induced by {morphism}: it must lift {morphism}, "
+                    f"but it lifts {lifted.module_morphism()}"
+                )
             tensor = other.tensor_mor_adjunction().left_adjoint()
             component = tensor(lifted.component(degree))
             source = morphism.domain().tor(other, degree=degree)
             target = morphism.codomain().tor(other, degree=degree)
         case 2:
             if lift is not None:
-                raise ValueError("an explicit resolution lift applies only to Tor's first argument")
+                raise ValueError(
+                    f"the map induced by {morphism} in the second argument of Tor is computed from a free "
+                    f"resolution of {other}; a lift {lift} of a map between resolutions applies only in the "
+                    f"first argument"
+                )
             steps = degree + 1
             resolution = other.free_resolution(steps)
             term = resolution.term(degree)
@@ -136,7 +154,9 @@ def _tor_map(morphism, other, degree=0, *, argument=1, lift=None):
             source = other.tor(morphism.domain(), degree=degree)
             target = other.tor(morphism.codomain(), degree=degree)
         case _:
-            raise ValueError("the Tor argument must be 1 or 2")
+            raise ValueError(
+                f"Tor has two arguments, numbered 1 and 2, so {morphism} cannot act in argument {argument}"
+            )
     return source.module_category().Mor(source, target).elementwise(
         lambda class_: target.class_of_cycle(
             component(source.cycle_representative(class_))
@@ -153,7 +173,9 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
     """
     degree = int(degree)
     if degree < 0:
-        raise ValueError("an Ext degree is nonnegative")
+        raise ValueError(
+            f"the map induced by {morphism} on Ext^{degree} is not defined: Ext is indexed by degrees n >= 0"
+        )
     match int(argument):
         case 1:
             steps = degree + 1
@@ -165,9 +187,16 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
                 else lift
             )
             if lifted.domain() is not source_resolution or lifted.codomain() is not target_resolution:
-                raise ValueError("the selected Ext lift uses different resolutions")
+                raise ValueError(
+                    f"{lifted} cannot compute the map on Ext induced by {morphism}: it must be a chain map "
+                    f"between the free resolutions {source_resolution} -> {target_resolution}, but it is "
+                    f"{lifted.domain()} -> {lifted.codomain()}"
+                )
             if lifted.module_morphism() is not morphism:
-                raise ValueError("the selected Ext lift lies over a different module morphism")
+                raise ValueError(
+                    f"{lifted} cannot compute the map on Ext induced by {morphism}: it must lift {morphism}, "
+                    f"but it lifts {lifted.module_morphism()}"
+                )
             identity = other.module_category().Mor(other, other).identity()
             source_internal = target_resolution.term(degree).module_category().Mor(target_resolution.term(degree), other)
             target_internal = source_resolution.term(degree).module_category().Mor(source_resolution.term(degree), other)
@@ -180,7 +209,11 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             target = morphism.domain().ext(other, degree=degree)
         case 2:
             if lift is not None:
-                raise ValueError("an explicit resolution lift applies only to Ext's first argument")
+                raise ValueError(
+                    f"the map induced by {morphism} in the second argument of Ext is computed from a free "
+                    f"resolution of {other}; a lift {lift} of a map between resolutions applies only in the "
+                    f"first argument"
+                )
             steps = degree + 1
             resolution = other.free_resolution(steps)
             term = resolution.term(degree)
@@ -195,7 +228,9 @@ def _ext_map(morphism, other, degree=0, *, argument=1, lift=None):
             source = other.ext(morphism.domain(), degree=degree)
             target = other.ext(morphism.codomain(), degree=degree)
         case _:
-            raise ValueError("the Ext argument must be 1 or 2")
+            raise ValueError(
+                f"Ext has two arguments, numbered 1 and 2, so {morphism} cannot act in argument {argument}"
+            )
     return source.module_category().Mor(source, target).elementwise(
         lambda class_: target.class_of_cycle(
             component(source.cycle_representative(class_))

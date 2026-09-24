@@ -21,7 +21,9 @@ class OrthogonalCharacterQuotient:
         self.subgroup = subgroup
         if not subgroup.character_data_is_complete():
             raise ValueError(
-                "the retained finite characters do not define this whole subgroup"
+                f"{subgroup} is not the kernel of a finite quotient of O(L) by "
+                f"characters: its discriminant, determinant and spinor characters do not "
+                f"determine the whole subgroup"
             )
         # This finite-image algorithm is explicitly generator-driven.  Selecting
         # the exact represented O(L) framing is therefore part of constructing
@@ -38,7 +40,9 @@ class OrthogonalCharacterQuotient:
             or self.spinor_kernel
         ):
             raise ValueError(
-                "a finite orthogonal-character quotient requires discriminant, determinant, or spinor data"
+                f"{subgroup} defines no finite quotient of O({self.lattice}) by "
+                f"characters: it is not cut out by the discriminant representation, "
+                f"the determinant or the real spinor norm"
             )
         self._has_discriminant = bool(self.discriminant_preimages)
         factors = {}
@@ -54,7 +58,11 @@ class OrthogonalCharacterQuotient:
                     else getattr(target, "supergroup", lambda: None)()
                 )
                 if ambient is not self._discriminant_group:
-                    raise ValueError("a discriminant preimage must lie in O(A_L)")
+                    raise ValueError(
+                        f"{subgroup} is described as the preimage of {target} under "
+                        f"O(L) -> O(A_L) for L = {self.lattice}, but {target} is not a "
+                        f"subgroup of O(A_L) = {self._discriminant_group}"
+                    )
         signs = finite_ordered_set(
             (self.lattice.base_ring()(-1), self.lattice.base_ring()(1))
         )
@@ -172,7 +180,9 @@ class OrthogonalCharacterQuotient:
         group = libgap.Group(list(permutations.values()))
         if int(group.Size()) != len(keys):
             raise ArithmeticError(
-                "the libGAP right-regular model does not have the character-image order"
+                f"the right-regular permutation representation of the character image "
+                f"of O({self.lattice}) has order {group.Size()} in GAP, but the image has "
+                f"{len(keys)} elements"
             )
         return keys, permutations, group
 
@@ -207,7 +217,9 @@ class OrthogonalCharacterQuotient:
             )
             if quotient_representative is None:
                 raise ArithmeticError(
-                    "a libGAP right-coset representative did not cross back to the character image"
+                    f"GAP returned the right-coset representative {gap_representative}, "
+                    f"which is not the permutation of any element of the character image "
+                    f"of O({self.lattice})"
                 )
             quotient_representatives.append(quotient_representative)
 
@@ -220,12 +232,16 @@ class OrthogonalCharacterQuotient:
         )
         if len(set(owned_cosets)) != len(owned_cosets):
             raise ArithmeticError(
-                "the selected right-coset representatives repeat a character-image coset"
+                f"the right-coset representatives of the image of {self.subgroup} in the "
+                f"character image of O({self.lattice}) are not a transversal: two of "
+                f"them lie in the same coset"
             )
         covered = frozenset().union(*owned_cosets) if owned_cosets else frozenset()
         if Set(covered) != self.image_keys():
             raise ArithmeticError(
-                "the selected right cosets do not cover the full character image"
+                f"the right cosets of the image of {self.subgroup} do not cover the "
+                f"character image of O({self.lattice}): they cover {len(covered)} of its "
+                f"elements"
             )
         return finite_ordered_set(
             tuple(
@@ -260,7 +276,9 @@ class OrthogonalCharacterQuotient:
             )
             if quotient_representative is None:
                 raise ArithmeticError(
-                    "a libGAP double-coset representative did not cross back to the character image"
+                    f"GAP returned the double-coset representative {gap_representative}, "
+                    f"which is not the permutation of any element of the character image "
+                    f"of O({self.lattice})"
                 )
             representatives.append(self._witnesses[quotient_representative])
         return finite_ordered_set(tuple(representatives))
@@ -289,16 +307,19 @@ class OrthogonalCharacterQuotient:
             candidate = stabilizer_witness * witness
             if candidate not in self.subgroup:
                 raise ArithmeticError(
-                    "complete finite-character data accepted a transporter excluded by its subgroup predicate"
+                    f"the characters say {candidate} lies in {self.subgroup}, but the "
+                    f"subgroup's defining predicate rejects it: the characters do not "
+                    f"determine {self.subgroup}"
                 )
             return candidate
         return None
 
 
 _MISSING_ARITHMETIC_GENERATING_SET = (
-    "Over an indefinite lattice O(L) is an infinite arithmetic group and this "
-    "subgroup has no owned generating set.  The missing operation is a "
-    "generating set for an arithmetic subgroup of O(L), owned by lattice_engines"
+    "Over an indefinite lattice L, O(L) is an infinite arithmetic group and no "
+    "generating set of this subgroup is known.  The missing operation is a "
+    "generating set for an arithmetic subgroup of O(L), which belongs in "
+    "lattice_engines.py"
 )
 
 
@@ -313,9 +334,9 @@ def _finite_supergroup_elements(subgroup):
     supergroup = subgroup.supergroup()
     lattice = supergroup.domain()
     assert lattice.is_definite(), (
-        f"{subgroup} is cut out by a predicate that is not a character kernel, "
-        "so it is described by acting with the subgroup itself.  That is a "
-        "finite computation only for a definite lattice.  "
+        f"cannot list the elements of {subgroup}: it is cut out by a predicate that "
+        f"is not a character kernel, so its elements must be listed inside O(L), "
+        f"and O(L) is finite only for a definite lattice, which {lattice} is not.  "
         + _MISSING_ARITHMETIC_GENERATING_SET
     )
     return tuple(

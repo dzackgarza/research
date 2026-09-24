@@ -97,7 +97,8 @@ def _finite_generating_family(module_generators):
     """
     if isinstance(module_generators, IndexedFamily):
         assert module_generators.index_set().cardinality().is_finite(), (
-            "subobject generators are a finite indexed family"
+            f"cannot form a finitely generated submodule from {module_generators}: "
+            "it is indexed by an infinite set"
         )
         return module_generators
     generators = finite_ordered_set(module_generators)
@@ -135,17 +136,33 @@ class _SelectedModulePresentationData:
 
     def __init__(self, base_ring, relation_matrix, presentation, cokernel_morphism=None) -> None:
         if presentation.domain().base_ring() is not base_ring or presentation.codomain().base_ring() is not base_ring:
-            raise ValueError("a selected presentation has free endpoints over the module base ring")
+            raise ValueError(
+                f"the relation map {presentation} must be a map of free {base_ring}-modules, "
+                f"but its domain and codomain are over {presentation.domain().base_ring()} "
+                f"and {presentation.codomain().base_ring()}"
+            )
         if not presentation.domain().module_generating_set().cardinality().is_finite():
-            raise ValueError("a selected finite presentation has finitely many relation generators")
+            raise ValueError(
+                f"the module presented by {presentation} is not finitely presented: "
+                "it has infinitely many relations"
+            )
         if not presentation.codomain().module_generating_set().cardinality().is_finite():
-            raise ValueError("a selected finite presentation has finitely many module generators")
+            raise ValueError(
+                f"the module presented by {presentation} is not finitely presented: "
+                "it has infinitely many generators"
+            )
         rows = relation_matrix.parent().row_index_set().cardinality()
         columns = relation_matrix.parent().column_index_set().cardinality()
         if rows != presentation.domain().module_generating_set().cardinality():
-            raise ValueError("the selected relation matrix has one row per relation generator")
+            raise ValueError(
+                f"the relation matrix of {presentation} has {rows} rows, but there are "
+                f"{presentation.domain().module_generating_set().cardinality()} relations"
+            )
         if columns != presentation.codomain().module_generating_set().cardinality():
-            raise ValueError("the selected relation matrix has one column per module generator")
+            raise ValueError(
+                f"the relation matrix of {presentation} has {columns} columns, but there are "
+                f"{presentation.codomain().module_generating_set().cardinality()} generators"
+            )
         target_labels = presentation.codomain().module_generating_set()
         for relation_label, row in zip(
             presentation.domain().module_generating_set(),
@@ -160,7 +177,11 @@ class _SelectedModulePresentationData:
                 }
             )
             if presentation(presentation.domain().module_generator(relation_label)) != represented:
-                raise ValueError("the selected relation matrix does not represent the selected presentation morphism")
+                raise ValueError(
+                    f"the relation matrix does not agree with {presentation}: relation "
+                    f"{relation_label!r} maps to {presentation(presentation.domain().module_generator(relation_label))}, "
+                    f"but its matrix row gives {represented}"
+                )
         self._relation_matrix = relation_matrix
         self._presentation = presentation
         self._cokernel_morphism = cokernel_morphism
@@ -185,7 +206,7 @@ def _fix_selected_module_presentation(module, base_ring, relation_matrix, presen
     read them through the presentation operations rather than this storage.
     """
     if module.__dict__.get("_selected_module_presentation") is not None:
-        raise ValueError(f"{module} already has a selected presentation")
+        raise ValueError(f"{module} already has chosen generators and relations; they are fixed once")
     module._selected_module_presentation = _SelectedModulePresentationData(
         base_ring,
         relation_matrix,
@@ -224,7 +245,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             only its own Smith engine chooses the coordinate representative.
             """
             smith = self._smith_engine()
-            assert smith is not None, "Smith representatives require the selected PID quotient engine"
+            assert smith is not None, (
+                f"cannot reduce {element} to its Smith normal form representative: "
+                f"{self} has no Smith normal form, which needs a principal ideal domain base, here {self.base_ring()}"
+            )
             coordinates = smith.coordinate_vector(self._to_smith_engine_element(element), reduce=False)
             ring = _engine_ring(self.base_ring())
             reduced = tuple(
@@ -255,7 +279,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             super().__init__(**rest)
             if self.selected_framing_source(Modules(self.base_ring())) is not presentation.codomain():
                 raise ValueError(
-                    "the selected module presentation target must be the selected framing source"
+                    f"{self}: the codomain {presentation.codomain()} of the relation map "
+                    "must be the free module on its chosen generators"
                 )
 
         def _same_selected_presentation_as(self, other):
@@ -298,7 +323,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         ):
             r"""Return a fresh module carrying this chosen finite presentation."""
             if labels != self.module_generating_set():
-                raise ValueError("the requested framing differs from the selected presentation")
+                raise ValueError(
+                    f"cannot rebuild {self} on generators {labels}: its chosen generators are "
+                    f"{self.module_generating_set()}"
+                )
             return _presented_module_from_morphism(
                 self.presentation(),
                 _extra_categories=tuple(_extra_categories),
@@ -368,7 +396,9 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             ``kernel_morphism()``.
             """
             selected = self.__dict__.get("_selected_module_presentation")
-            assert selected is not None, f"{self} was constructed without selected presentation data"
+            assert selected is not None, (
+                f"{self} has no cokernel morphism: it was not constructed from generators and relations"
+            )
             morphism = selected.cokernel_morphism()
             assert morphism is not None, (
                 f"{self} was not constructed as the cokernel of a morphism"
@@ -489,7 +519,9 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def _syzygy_resolution(self, steps):
             r"""Resolve by iterated syzygies, stopping early where they vanish."""
 
-            assert steps >= 1, "a syzygy resolution computes at least the relation step"
+            assert steps >= 1, (
+                f"cannot compute {steps} steps of a free resolution of {self}: at least one step is needed"
+            )
             degree_zero = self.presentation().codomain()
             zero = degree_zero._fresh_free_module_on(Sets.Δ[-1])
             terms = {0: degree_zero}
@@ -513,13 +545,17 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def presentation(self):
             r"""Return the selected relation morphism ``F_1 -> F_0``."""
             selected = self.__dict__.get("_selected_module_presentation")
-            assert selected is not None, f"{self} was constructed without selected presentation data"
+            assert selected is not None, (
+                f"{self} has no relation map F_1 -> F_0: it was not constructed from generators and relations"
+            )
             return selected.presentation()
 
         def presentation_matrix(self):
             r"""Return its relation rows in the selected target framing."""
             selected = self.__dict__.get("_selected_module_presentation")
-            assert selected is not None, f"{self} was constructed without selected presentation data"
+            assert selected is not None, (
+                f"{self} has no relation matrix: it was not constructed from generators and relations"
+            )
             return selected.relation_matrix()
 
         def _selected_presentation_rows(self):
@@ -628,7 +664,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             index = int(index)
             if index < 0:
-                raise ValueError("a Fitting-ideal index is nonnegative")
+                raise ValueError(f"the Fitting ideal Fitt_{index}({self}) is undefined: the index must be nonnegative")
             ring = self.base_ring()
 
             # Fitting ideals commute with arbitrary base change, hence in
@@ -690,7 +726,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             # algebra backend enters here: whatever presents a kernel over this
             # ring presents the annihilator too.
             labels = tuple(self.module_generating_set())
-            assert labels, "a module with no generators is zero and its annihilator is the unit ideal"
+            assert labels, (
+                f"cannot intersect annihilators of generators of {self}: it has no generators, "
+                "so it is zero and its annihilator is the unit ideal"
+            )
             annihilator = self.annihilator_of(self.module_generator(labels[0]))
             for label in labels[1:]:
                 annihilator = annihilator.intersection(
@@ -742,25 +781,34 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             spectrum = ring.spectrum()
             point = point if element_parent(point) is spectrum else spectrum(point)
-            assert point.ideal().is_maximal(), "finite local module length is taken at a closed point"
+            assert point.ideal().is_maximal(), (
+                f"cannot take the length of {self} at {point}: it is not a closed point of {spectrum}"
+            )
             assert self.fitting_ideal(0).radical() == point.ideal(), (
-                "the module is supported only at the selected closed point"
+                f"cannot take the length of {self} at {point}: the length is finite only when the "
+                f"support of {self} is exactly this point"
             )
             # Engine adapter (``OWN-06``): Singular's ``std``/``vdim`` over a
             # multivariate polynomial ring over a field.
             engine = _engine_ring(ring)
             assert engine.base_ring() in SageFields() and "multi_polynomial" in type(engine).__module__, (
-                "finite module length is represented through Singular over a multivariate polynomial algebra over a field"
+                f"cannot compute the length of {self} at {point}: this is implemented only over a "
+                f"polynomial ring over a field, and the base ring is {ring}"
             )
             relations = _engine_matrix(self.presentation_matrix()).transpose()
             standard_basis = singular_function("std")(relations, ring=engine)
             vector_dimension = int(
                 singular_function("vdim")(standard_basis, ring=engine)
             )
-            assert vector_dimension >= 0, "the module has finite base-field dimension"
+            assert vector_dimension >= 0, (
+                f"{self} has infinite dimension over the coefficient field of {ring}, "
+                f"so it is not supported only at {point}"
+            )
             residue_degree = int(point.residue_degree())
             assert residue_degree > 0 and vector_dimension % residue_degree == 0, (
-                "the base-field dimension of a module supported at p is a multiple of the residue degree of p"
+                f"{self} has dimension {vector_dimension} over the coefficient field, which is not a "
+                f"multiple of the residue degree {residue_degree} of {point}; a module supported "
+                "only at a point p has dimension a multiple of [kappa(p):k]"
             )
             return _own_ring(SageZZ)(vector_dimension // residue_degree)
 
@@ -773,7 +821,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             """
             ring = self.base_ring()
             if ring not in LocalRings():
-                raise TypeError("minimal generators via Nakayama require a represented local base ring")
+                raise TypeError(
+                    f"cannot find minimal generators of {self}: Nakayama's lemma needs a local base "
+                    f"ring, and {ring} is not known to be local"
+                )
             residue_module = self.residue_module()
             basis_labels = residue_module.basis_generator_labels()
             return FiniteOrderedSets().from_indexed(
@@ -884,7 +935,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if point.parent() is not spectrum:
                 point = spectrum(point)
             if not self._is_free_at_point(point):
-                raise ValueError("the module is not free at the supplied point")
+                raise ValueError(f"{self} is not free at {point}, so its localization there has no basis")
 
             localized = self.localize_at_prime(point)
             selected_labels = localized.residue_module().basis_generator_labels()
@@ -926,7 +977,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             ring = self.base_ring()
             assert ring in PrincipalIdealDomains(), (
-                "selected-presentation Smith reduction is represented here over a PID"
+                f"cannot compute the Smith normal form of the relation matrix of {self}: "
+                f"the base ring {ring} must be a principal ideal domain"
             )
             backend_relation_matrix = _engine_matrix(self.presentation_matrix())
             return backend_relation_matrix.smith_form()
@@ -964,7 +1016,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if ring in OwnedFields():
                 return cardinal(self._represented_vector_space_dimension())
             assert ring in PrincipalIdealDomains(), (
-                "rank from selected invariant factors is represented here over a PID"
+                f"cannot compute the rank of {self} from invariant factors: "
+                f"the base ring {ring} must be a principal ideal domain or a field"
             )
             return cardinal(sum(1 for invariant in self._invariants_with_units() if invariant == 0))
 
@@ -1065,7 +1118,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             ring = self.base_ring()
             assert ring in PrincipalIdealDomains(), (
-                "invariant-factor presentation normalization is represented here over a PID"
+                f"cannot compute the invariant factor form of {self}: "
+                f"the base ring {ring} must be a principal ideal domain"
             )
             presentation = self.presentation()
             relation_rows = tuple(_matrix_coordinate_rows(self.presentation_matrix()))
@@ -1091,7 +1145,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 source_labels = tuple(domain.module_generating_set())
                 target_labels = tuple(codomain.module_generating_set())
                 if int(backend_matrix.ncols()) != len(source_labels) or int(backend_matrix.nrows()) != len(target_labels):
-                    raise ArithmeticError("the Smith basis-change matrix has incompatible endpoint ranks")
+                    raise ArithmeticError(
+                        f"invariant factor form of {self}: a change-of-basis matrix is "
+                        f"{backend_matrix.nrows()} x {backend_matrix.ncols()}, but the map "
+                        f"{domain} -> {codomain} needs {len(target_labels)} x {len(source_labels)}"
+                    )
                 return mor(
                     {
                         source_label: codomain.linear_combination(
@@ -1160,7 +1218,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             ring = self.base_ring()
             assert ring in PrincipalIdealDomains(), (
-                "Hermite presentation normalization is represented here over a PID"
+                f"cannot compute the Hermite form of the relations of {self}: "
+                f"the base ring {ring} must be a principal ideal domain"
             )
             backend = _engine_matrix(self.presentation_matrix()).row_module().basis_matrix()
             labels = self.module_generating_set()
@@ -1234,11 +1293,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             ring = self.base_ring()
             assert ring in PrincipalIdealDomains(), (
-                "finite-free trivialization from invariant factors is represented here over a PID"
+                f"cannot construct an isomorphism {self} ~= R^r from invariant factors: "
+                f"the base ring {ring} must be a principal ideal domain"
             )
             if not self.is_torsion_free():
                 raise ValueError(
-                    "a finitely presented PID module with torsion is not finite free"
+                    f"{self} is not free: it has nonzero torsion over {ring}"
                 )
 
             normalization = self.invariant_factor_form()
@@ -1325,7 +1385,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             source = self.presentation().codomain()
             framing = self.framing_morphism()
             assert framing.domain() is source, (
-                "the selected presentation target is the selected framing source"
+                f"{self}: the codomain {source} of the relation map is not the free module "
+                f"{framing.domain()} on its chosen generators"
             )
             return framing
 
@@ -1547,7 +1608,10 @@ class _GeneralPresentedElement(ModuleElement):
         parent = self.parent()
         smith_engine = parent._smith_engine()
         if smith_engine is None:
-            raise TypeError("hashing a presented-module class requires a represented canonical quotient key")
+            raise TypeError(
+                f"cannot hash {self}: an element of {parent} has a canonical representative only "
+                f"over a principal ideal domain, and the base ring is {parent.base_ring()}"
+            )
         key = tuple(parent._to_smith_engine_element(self).vector())
         return hash((id(parent), key))
 
@@ -1556,7 +1620,8 @@ class _GeneralPresentedElement(ModuleElement):
         parent = self.parent()
         engine = parent._smith_engine()
         assert engine is not None and parent.is_torsion(), (
-            "additive order requires a represented finite torsion Smith presentation"
+            f"cannot compute the additive order of {self}: {parent} must be a torsion module "
+            "over a principal ideal domain"
         )
         order = parent._to_smith_engine_element(self).additive_order()
         return _owned_engine_element(parent.base_ring(), SageZZ(order))
@@ -1990,14 +2055,17 @@ def _presentation_matrix(module):
     """
     ring = module.base_ring()
     if module not in ModulesWithChosenFinitePresentation(ring):
-        raise TypeError("a presentation matrix requires selected finite presentation data")
+        raise TypeError(
+            f"{module} has no relation matrix: it is not a module with chosen finitely many "
+            f"generators and relations, but is in {module.category()}"
+        )
 
     if module in _SelectedFinitePresentationModules(ring):
         return module.presentation_matrix()
 
     rows = module._selected_presentation_rows()
     if rows is None:
-        raise TypeError("the selected finite presentation has no represented relation rows")
+        raise TypeError(f"{module} is finitely presented, but its relations are not known explicitly")
     rows = tuple(tuple(row) for row in rows)
     return _matrix_space_like(
         module,
@@ -2015,10 +2083,13 @@ def _matrix_coordinate_rows(matrix):
 def _presentation_rows(module):
     r"""Return the selected finite relation rows without forcing matrix realization."""
     if module not in ModulesWithChosenFinitePresentation(module.base_ring()):
-        raise TypeError("relation rows require selected finite presentation data")
+        raise TypeError(
+            f"{module} has no relations: it is not a module with chosen finitely many "
+            f"generators and relations, but is in {module.category()}"
+        )
     rows = module._selected_presentation_rows()
     if rows is None:
-        raise TypeError("the selected finite presentation has no represented relation rows")
+        raise TypeError(f"{module} is finitely presented, but its relations are not known explicitly")
     return tuple(tuple(row) for row in rows)
 
 
@@ -2049,7 +2120,10 @@ def _selected_presentation_kernel(morphism):
     domain = morphism.domain()
     codomain = morphism.codomain()
     ring = domain.base_ring()
-    assert codomain.base_ring() is ring, "a kernel presentation requires one coefficient ring"
+    assert codomain.base_ring() is ring, (
+        f"cannot compute the kernel of {morphism}: its domain is over {ring} and its codomain "
+        f"over {codomain.base_ring()}, but a module morphism has one base ring"
+    )
     selected = ModulesWithChosenFinitePresentation(ring)
     if domain not in selected or codomain not in selected:
         return NotImplemented
@@ -2085,10 +2159,14 @@ def _cap_presentation_kernel(morphism):
     codomain = morphism.codomain()
     ring = _owned_ring(domain.base_ring())
     if _owned_ring(codomain.base_ring()) is not ring:
-        raise ValueError("a kernel presentation requires one coefficient ring")
+        raise ValueError(
+            f"cannot compute the kernel of {morphism}: its domain is over {ring} and its codomain "
+            f"over {codomain.base_ring()}, but a module morphism has one base ring"
+        )
     variable_names = tuple(ring.variable_names())
     assert variable_names and ring.base_ring() is _own_ring(SageZZ), (
-        "the selected CAP kernel provider is the polynomial-ring-over-ZZ specialization"
+        f"cannot compute the kernel of {morphism} with this algorithm: it needs a polynomial "
+        f"ring over ZZ, and the base ring is {ring}"
     )
 
     source_labels = tuple(domain.module_generating_set())
@@ -2180,9 +2258,15 @@ def _pid_presentation_kernel(morphism):
     codomain = morphism.codomain()
     ring = _owned_ring(domain.base_ring())
     if _owned_ring(codomain.base_ring()) is not ring:
-        raise ValueError("a kernel presentation requires one coefficient ring")
+        raise ValueError(
+            f"cannot compute the kernel of {morphism}: its domain is over {ring} and its codomain "
+            f"over {codomain.base_ring()}, but a module morphism has one base ring"
+        )
     if ring not in PrincipalIdealDomains():
-        raise TypeError("the PID presented-kernel backend requires a principal ideal domain")
+        raise TypeError(
+            f"cannot compute the kernel of {morphism} with this algorithm: the base ring {ring} "
+            "must be a principal ideal domain"
+        )
 
     engine = _engine_ring(ring)
     source_labels = tuple(domain.module_generating_set())
@@ -2228,7 +2312,8 @@ def _pid_presentation_kernel(morphism):
         # A module morphism carries each source relation into the target
         # relations, so every relation row lies in the preimage.
         assert source_relation in preimage, (
-            "a module morphism carries the source relations into the target relations"
+            f"{morphism} is not well defined: the relation {source_relation} of its domain "
+            "does not map into the relations of its codomain"
         )
         coordinates = preimage.coordinate_vector(source_relation)
         relation_coordinate_rows.append(tuple(_owned_engine_element(ring, engine(coefficient)) for coefficient in coordinates))
@@ -2369,7 +2454,10 @@ def _singular_presentation_kernel(morphism):
     codomain = morphism.codomain()
     ring = _owned_ring(domain.base_ring())
     if _owned_ring(codomain.base_ring()) is not ring:
-        raise ValueError("a kernel presentation requires one coefficient ring")
+        raise ValueError(
+            f"cannot compute the kernel of {morphism}: its domain is over {ring} and its codomain "
+            f"over {codomain.base_ring()}, but a module morphism has one base ring"
+        )
 
     coefficient_presentation = ring._exact_coefficient_presentation_ring()
     presentation_ring = _engine_ring(coefficient_presentation)
@@ -2390,7 +2478,8 @@ def _singular_presentation_kernel(morphism):
 
     coefficient_field = presentation_ring.base_ring()
     assert coefficient_field in SageFields(), (
-        "the selected general presented-kernel backend uses Singular over a polynomial ring over a field"
+        f"cannot compute the kernel of {morphism} with this algorithm: {ring} must be a "
+        f"quotient of a polynomial ring over a field, and here the coefficients are {coefficient_field}"
     )
 
     # Singular's syz entry point requires a multivariate polynomial parent,
@@ -2413,8 +2502,8 @@ def _singular_presentation_kernel(morphism):
     n = len(source_labels)
     m = len(target_labels)
     assert n > 0 and m > 0, (
-        "the Singular kernel provider receives only nonzero finite presentations; "
-        "a map from or to the zero module is already handled by the selected-presentation dispatcher"
+        f"cannot compute the kernel of {morphism} with this algorithm: its domain has {n} "
+        f"generators and its codomain {m}, and both must be nonzero"
     )
 
     def singular_relation_module(relations, width):
@@ -2590,13 +2679,16 @@ def _presented_module_from_morphism(
     codomain = presentation.codomain()
     base_ring = codomain.base_ring()
     assert presentation.domain() in FramedModules(base_ring), (
-        "the selected cokernel algorithm needs a source framing"
+        f"cannot form the cokernel of {presentation}: its domain must be a {base_ring}-module "
+        f"with chosen generators, but it is in {presentation.domain().category()}"
     )
     assert presentation.domain().module_generating_set().cardinality().is_finite(), (
-        "the selected cokernel algorithm adjoins finitely many generator images"
+        f"cannot form the cokernel of {presentation}: its domain must be finitely generated, "
+        f"but its generators are indexed by {presentation.domain().module_generating_set()}"
     )
     assert codomain in ModulesWithChosenFinitePresentation(base_ring), (
-        "the selected cokernel algorithm uses a finite presentation of its target"
+        f"cannot form the cokernel of {presentation}: its codomain {codomain} must be finitely "
+        f"presented with chosen generators and relations, but it is in {codomain.category()}"
     )
     engine = _engine_ring(base_ring)
 
@@ -2648,10 +2740,13 @@ def _presented_module_from_morphism(
         case (True, True):
             pass
         case (True, False):
-            raise ValueError("the supplied finite presentation has a nonzero free summand")
+            raise ValueError(
+                f"the cokernel of {presentation} is not a torsion {base_ring}-module: it has a nonzero free summand"
+            )
         case (True, _):
             raise AssertionError(
-                "torsion admission from a finite PID presentation requires an exact rank decision"
+                f"cannot decide whether the cokernel of {presentation} is a torsion {base_ring}-module: "
+                "the rank of its relation matrix over the fraction field could not be computed"
             )
         case _:
             pass

@@ -31,7 +31,10 @@ class IndexedFamily[IndexT, ValueT]:
         **rest,
     ) -> None:
         if not callable(value):
-            raise TypeError("an indexed family requires a value map")
+            raise TypeError(
+                f"an indexed family over {index_set} needs a map from indices to values, but {value!r} is "
+                "not callable"
+            )
         self._index_set = index_set
         self._value_function = value
         self._value_cache: dict[IndexT, ValueT] = {}
@@ -111,7 +114,9 @@ class IndexedFamily[IndexT, ValueT]:
         r"""Return the Python length when the mathematical index set is finite."""
         size = self.cardinality()
         if not size.is_finite():
-            raise TypeError("an infinite indexed family has no Python length")
+            raise TypeError(
+                f"the family {self} has infinite index set of cardinality {size}, so it has no length"
+            )
         return int(size.finite_value())
 
     def map[MappedValueT](
@@ -121,7 +126,7 @@ class IndexedFamily[IndexT, ValueT]:
         name: str | None = None,
     ) -> IndexedFamily[IndexT, MappedValueT]:
         if not callable(function):
-            raise TypeError("a family map must be callable")
+            raise TypeError(f"cannot map {function!r} over the family {self}: it is not callable")
         return indexed_family(
             self.index_set(),
             lambda index: function(self.value(index)),
@@ -250,7 +255,9 @@ def finite_indexed_family_from_values(
                 case True:
                     pass
                 case _:
-                    raise TypeError("finite indexed-family literal ingress requires finite data")
+                    raise TypeError(
+                        f"cannot read {values} as a finite family: its index set has cardinality {supplied_cardinality}"
+                    )
             supplied_size = int(supplied_cardinality.finite_value())
         case Mapping():
             match index_set:
@@ -278,12 +285,17 @@ def finite_indexed_family_from_values(
         case True:
             pass
         case _:
-            raise TypeError("finite indexed-family literal ingress requires a finite index set")
+            raise TypeError(
+                f"cannot read {values!r} as a finite family: the index set {labels} is not finite"
+            )
     match int(family.cardinality().finite_value()) == supplied_size:
         case True:
             pass
         case False:
-            raise ValueError("finite indexed-family literal data has the wrong number of entries")
+            raise ValueError(
+                f"cannot read {values!r} as a family indexed by {labels}: it has {supplied_size} entries, but "
+                f"{labels} has {family.cardinality()} elements"
+            )
     return family
 
 

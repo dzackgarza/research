@@ -37,7 +37,10 @@ class DegreewiseLinearMorphism(Morphism):
 
     def __init__(self, domain, codomain, function) -> None:
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("a differential component requires one base ring")
+            raise ValueError(
+                f"a component {domain} -> {codomain} of a differential needs both pieces over one base ring, but "
+                f"they are over {domain.base_ring()} and {codomain.base_ring()}"
+            )
         self._function = function
         Morphism.__init__(
             self,
@@ -59,11 +62,13 @@ class DegreewiseLinearMorphism(Morphism):
         target = self.codomain()
         ring = source.base_ring()
         assert source in FramedModules(ring) and target in FramedModules(ring), (
-            "materializing a differential component as a module morphism requires selected framings on both endpoints"
+            f"the differential component {self} is a module morphism only when {source} and {target} have "
+            "chosen generating sets"
         )
         labels = source.module_generating_set()
         assert labels.cardinality().is_finite(), (
-            "materializing a differential component as a module morphism requires a finite selected source framing"
+            f"the differential component {self} is a module morphism only when {source} has finitely many "
+            f"chosen generators, but it has {labels.cardinality()}"
         )
         return source.module_category().Mor(source, target)(
             {label: self(source.module_generator(label)) for label in labels}
@@ -100,11 +105,14 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         graded = GradedAlgebras(self.base_ring())
         if algebra not in graded:
             raise TypeError(
-                "a differential graded algebra is constructed on a graded algebra over the same base ring"
+                f"a differential graded algebra over {self.base_ring()} is built on a graded algebra over "
+                f"{self.base_ring()}, but {algebra} is not one"
             )
         if isinstance(differential, Differential):
             if differential.algebra() is not algebra:
-                raise ValueError("the selected differential belongs to another graded algebra")
+                raise ValueError(
+                    f"the differential {differential} is a differential on {differential.algebra()}, not on {algebra}"
+                )
             function = differential
             decisions = (
                 differential.graded_leibniz_decision(),
@@ -114,26 +122,34 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
             function = differential
             decisions = (Unknown, Unknown)
         else:
-            raise TypeError("a differential is a represented degree-one element map")
+            raise TypeError(
+                f"a differential on {algebra} is a map of degree one on elements, but got {differential!r}"
+            )
         return self._from_differential_data(algebra, function, decisions)
 
     def _from_constructed_differential(self, algebra, differential):
         r"""Construct when the supplying owner proves Leibniz and square-zero."""
         if not callable(differential):
-            raise TypeError("a constructed differential is represented by an element map")
+            raise TypeError(
+                f"a differential on {algebra} needs a map on elements, but {differential!r} is not callable"
+            )
         return self._from_differential_data(algebra, differential, (True, True))
 
     def _from_differential_data(self, algebra, differential, decisions):
         graded = GradedAlgebras(self.base_ring())
         if algebra not in graded:
             raise TypeError(
-                "a differential graded algebra is constructed on a graded algebra over the same base ring"
+                f"a differential graded algebra over {self.base_ring()} is built on a graded algebra over "
+                f"{self.base_ring()}, but {algebra} is not one"
             )
         leibniz, square_zero = decisions
         if not (leibniz is True or leibniz is Unknown) or not (
             square_zero is True or square_zero is Unknown
         ):
-            raise ValueError("differential law decisions are True or Unknown")
+            raise ValueError(
+                f"the Leibniz rule and d^2 = 0 are recorded only as True or Unknown, but got {leibniz} and "
+                f"{square_zero}"
+            )
         placements = [self]
         ring = self.base_ring()
         supercommutative = algebra in graded.Supercommutative()
@@ -332,7 +348,9 @@ class Differential(GradedDerivation):
         observed = self._square_zero_on_generators()
         match observed:
             case False:
-                raise ValueError("the proposed differential does not square to zero")
+                raise ValueError(
+                    f"{function} is not a differential on {algebra}: d^2 != 0 on a generator"
+                )
             case _:
                 pass
         derived = self._square_zero_derivation()
@@ -342,7 +360,7 @@ class Differential(GradedDerivation):
             case decision if decision is True or decision is Unknown:
                 self._square_zero_decision = decision
             case _:
-                raise ValueError("a differential square-zero premise is True or Unknown")
+                raise ValueError(f"d^2 = 0 is recorded only as True or Unknown, but got {observed}")
 
     def _square_zero_derivation(self):
         return None
@@ -405,11 +423,14 @@ def _fix_selected_differential(
     callers never open the private storage.
     """
     if algebra.__dict__.get("_preamble_differential") is not None:
-        raise ValueError(f"{algebra} already has a selected differential")
+        raise ValueError(f"{algebra} already has a differential; it cannot be given a second one")
     if not (graded_leibniz is True or graded_leibniz is Unknown) or not (
         square_zero is True or square_zero is Unknown
     ):
-        raise ValueError("differential law decisions are True or Unknown")
+        raise ValueError(
+            f"the Leibniz rule and d^2 = 0 are recorded only as True or Unknown, but got {graded_leibniz} "
+            f"and {square_zero}"
+        )
     algebra._preamble_differential = _RetainedDifferential(
         algebra,
         function,
@@ -439,7 +460,10 @@ class DGAMorphism(Morphism):
             self._underlying = graded_mor(morphism)
         observed = self._decide_differential_compatibility()
         if observed is False:
-            raise ValueError("a DGA morphism must commute with the differential")
+            raise ValueError(
+                f"{morphism} is not a morphism of differential graded algebras {self.domain()} -> "
+                f"{self.codomain()}: f d != d f"
+            )
         if differential_compatibility is None:
             self._differential_compatibility = observed
         else:
@@ -447,7 +471,9 @@ class DGAMorphism(Morphism):
                 differential_compatibility is True
                 or differential_compatibility is Unknown
             ):
-                raise ValueError("differential compatibility is True or Unknown")
+                raise ValueError(
+                    f"compatibility f d = d f is recorded only as True or Unknown, but got {differential_compatibility}"
+                )
             self._differential_compatibility = differential_compatibility
 
     def underlying_graded_algebra_morphism(self):
@@ -536,7 +562,10 @@ class DGAMor(CategoricalMor):
 
     def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("DGA morphisms require one common differential base ring")
+            raise ValueError(
+                f"morphisms of differential graded algebras {domain} -> {codomain} need one base ring, but they "
+                f"are over {domain.base_ring()} and {codomain.base_ring()}"
+            )
         CategoricalMor.__init__(
             self,
             mor_family,
@@ -570,7 +599,9 @@ class DGAMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a DGA endomorphism Mor")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         source = self.domain()
         underlying = GradedAlgebras(
             source.base_ring(), source.grading_monoid()

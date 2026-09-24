@@ -152,17 +152,24 @@ class PosetMor(CategoricalMor):
     @cached_method
     def unique(self):
         if self.cardinality() != cardinal(1):
-            raise ValueError("there is no arrow between these incomparable poset objects")
+            raise ValueError(
+                f"there is no arrow {self.domain()} -> {self.codomain()} in the poset: {self.domain()} is not "
+                f"<= {self.codomain()}"
+            )
         return PosetMorphism(self)
 
     def _element_constructor_(self, value=None):
         if value is not None and value is not self.unique():
-            raise ValueError("a poset Mor object has at most one arrow")
+            raise ValueError(
+                f"Mor({self.domain()}, {self.codomain()}) in a poset has at most one arrow, and {value} is not it"
+            )
         return self.unique()
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity requires one object")
+            raise ValueError(
+                f"the identity arrow exists only on Mor(x, x), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         return self.unique()
 
 
@@ -195,7 +202,9 @@ class PosetCategory(OwnedCategory):
 
     def __init__(self, ordered_set, le=None) -> None:
         if ordered_set not in Sets():
-            raise TypeError("a poset category requires an owned set of indices")
+            raise TypeError(
+                f"a poset category is built on a set, but {ordered_set} is not in the category of sets"
+            )
         self._ordered_set = ordered_set
         self._le = le
         self._objects = indexed_family(
@@ -229,7 +238,9 @@ class PosetCategory(OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a poset Mor requires objects of this category")
+            raise TypeError(
+                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     def identity(self, obj):
@@ -238,8 +249,8 @@ class PosetCategory(OwnedCategory):
     @cached_method
     def arrows(self):
         assert self.object_set() in FiniteSets(), (
-            "arrow enumeration for a poset category requires a finite represented object set; "
-            "an infinite poset is represented by its order relation instead"
+            f"cannot list the arrows of {self}: its set of objects {self.object_set()} is not finite; an "
+            "infinite poset is given by its order relation"
         )
         return finite_ordered_set(
             tuple(
@@ -284,17 +295,25 @@ class FiniteOrdinalMor(CategoricalMor):
     @cached_method
     def unique(self):
         if self.cardinality() != cardinal(1):
-            raise ValueError("there is no arrow in the decreasing direction of a finite ordinal")
+            raise ValueError(
+                f"there is no arrow {self.domain()} -> {self.codomain()} in a finite ordinal: arrows go only "
+                "from smaller to larger elements"
+            )
         return FiniteOrdinalMorphism(self)
 
     def _element_constructor_(self, value=None):
         if value is not None and value is not self.unique():
-            raise ValueError("a finite-ordinal Mor object has at most one arrow")
+            raise ValueError(
+                f"Mor({self.domain()}, {self.codomain()}) in a finite ordinal has at most one arrow, and "
+                f"{value} is not it"
+            )
         return self.unique()
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity requires one object")
+            raise ValueError(
+                f"the identity arrow exists only on Mor(x, x), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         return self.unique()
 
 
@@ -329,7 +348,7 @@ class FiniteOrdinalCategory(OwnedCategory):
     def __init__(self, size) -> None:
         size = int(size)
         if size < 0:
-            raise ValueError("a finite ordinal category has nonnegative size")
+            raise ValueError(f"the finite ordinal category [n] needs n >= 0, but n = {size}")
         self._object_set = Sets.Δ[size - 1]
         self._objects = indexed_family(
             self._object_set,
@@ -352,7 +371,9 @@ class FiniteOrdinalCategory(OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a finite-ordinal Mor requires objects of this category")
+            raise TypeError(
+                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     def identity(self, obj):
@@ -377,15 +398,24 @@ class FiniteSequenceDiagram(Functor):
         self._objects = tuple(objects)
         self._transitions = tuple(transitions)
         if len(self._transitions) != max(0, len(self._objects) - 1):
-            raise ValueError("a finite sequence has one transition between consecutive objects")
+            raise ValueError(
+                f"a sequence of {len(self._objects)} objects needs {max(0, len(self._objects) - 1)} maps between "
+                f"consecutive objects, but {len(self._transitions)} were given"
+            )
         if any(obj not in target_category for obj in self._objects):
-            raise TypeError("every finite-sequence object must lie in the target category")
+            raise TypeError(
+                f"every object of the sequence must lie in {target_category}, but the objects are {self._objects}"
+            )
         for position, transition in enumerate(self._transitions):
             if (
                 transition.domain() is not self._objects[position]
                 or transition.codomain() is not self._objects[position + 1]
             ):
-                raise ValueError("a finite-sequence transition has the wrong consecutive endpoints")
+                raise ValueError(
+                    f"the map at position {position} of the sequence must be a map {self._objects[position]} -> "
+                    f"{self._objects[position + 1]}, but {transition} is a map {transition.domain()} -> "
+                    f"{transition.codomain()}"
+                )
         self._shape = FiniteOrdinalCategory(len(self._objects))
         super().__init__(self._shape, target_category)
 
@@ -439,7 +469,9 @@ class ParallelPairMorphism(Morphism):
             return other
         if other.is_identity():
             return self
-        raise ValueError("the walking parallel pair has no composite of two nonidentity arrows")
+        raise ValueError(
+            f"the walking parallel pair has no composite {self} o {other} of two non-identity arrows"
+        )
 
     def __eq__(self, other) -> bool:
         return parent(other) is self.parent() and other.name() == self.name()
@@ -472,18 +504,27 @@ class ParallelPairMor(CategoricalMor):
         category = self.parallel_pair_category()
         if self.domain() is self.codomain():
             if name not in (None, "identity"):
-                raise ValueError("an endomorphism of the walking parallel pair is its identity")
+                raise ValueError(
+                    f"Mor({self.domain()}, {self.domain()}) in the walking parallel pair contains only the identity, "
+                    f"but got {name!r}"
+                )
             return ParallelPairMorphism(self, "identity")
         if self.domain() is category.source() and self.codomain() is category.target():
             if name not in ("left", "right"):
-                raise ValueError("the two parallel arrows are named 'left' and 'right'")
+                raise ValueError(
+                    f"the two parallel arrows 0 -> 1 are named 'left' and 'right', but got {name!r}"
+                )
             return ParallelPairMorphism(self, name)
-        raise ValueError("the walking parallel pair has no arrow from 1 to 0")
+        raise ValueError(
+            f"the walking parallel pair has no arrow {self.domain()} -> {self.codomain()}"
+        )
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity requires one object")
+            raise ValueError(
+                f"the identity arrow exists only on Mor(x, x), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         return self()
 
 
@@ -536,7 +577,9 @@ class ParallelPairCategory(OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a walking-parallel-pair Mor requires its owned objects")
+            raise TypeError(
+                f"a morphism in the walking parallel pair needs two of its objects, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     @cached_method
@@ -556,7 +599,10 @@ class ParallelPairDiagram(Functor):
 
     def __init__(self, left: Morphism, right: Morphism, target_category: Category) -> None:
         if left.domain() is not right.domain() or left.codomain() is not right.codomain():
-            raise ValueError("a parallel-pair diagram requires parallel arrows")
+            raise ValueError(
+                f"a parallel pair f, g: X -> Y needs maps with one domain and one codomain, but {left} is "
+                f"{left.domain()} -> {left.codomain()} and {right} is {right.domain()} -> {right.codomain()}"
+            )
         self._left = left
         self._right = right
         self._shape = ParallelPairCategory()
@@ -579,7 +625,7 @@ class ParallelPairDiagram(Functor):
             return self.source_object()
         if obj is self.domain().target():
             return self.target_object()
-        raise ValueError("the object is not in the walking parallel pair")
+        raise ValueError(f"{obj} is not an object of the walking parallel pair")
 
     def _apply_morphism(self, morphism):
         if morphism.is_identity():
@@ -589,7 +635,7 @@ class ParallelPairDiagram(Functor):
             return self.left()
         if morphism.name() == "right":
             return self.right()
-        raise ValueError("unknown arrow of the walking parallel pair")
+        raise ValueError(f"{morphism} is not an arrow of the walking parallel pair")
 
 
 @cached_function
@@ -609,7 +655,10 @@ class RestrictedDiagram(Functor):
 
     def __init__(self, diagram: Functor, indexing_functor: Functor) -> None:
         if indexing_functor.codomain() is not diagram.domain():
-            raise ValueError("a diagram restriction precomposes by a functor into the index category")
+            raise ValueError(
+                f"restricting the diagram {diagram} along {indexing_functor} needs a functor into "
+                f"{diagram.domain()}, but it ends at {indexing_functor.codomain()}"
+            )
         self._diagram = diagram
         self._indexing_functor = indexing_functor
         super().__init__(indexing_functor.domain(), diagram.codomain())
@@ -636,7 +685,10 @@ class SelectedLimitConstruction(SageObject):
 
     def __init__(self, diagram, universal_cone, factorizer) -> None:
         if universal_cone.diagram() is not diagram:
-            raise ValueError("a selected limit retains a cone over its own diagram")
+            raise ValueError(
+                f"the limit cone {universal_cone} lies over {universal_cone.diagram()}, not over the diagram "
+                f"{diagram} of the limit"
+            )
         self._diagram = diagram
         self._universal_cone = universal_cone
         self._factorizer = factorizer
@@ -657,7 +709,10 @@ class SelectedLimitConstruction(SageObject):
 
     def factor(self, cone):
         if cone.diagram() is not self.diagram():
-            raise ValueError("the cone to factor must lie over this construction's diagram")
+            raise ValueError(
+                f"cannot factor the cone {cone} through the limit of {self.diagram()}: it is a cone over "
+                f"{cone.diagram()}"
+            )
         factor = self._factorizer(cone)
         match factor:
             case ConeMorphism():
@@ -665,16 +720,25 @@ class SelectedLimitConstruction(SageObject):
                     case True, True:
                         return factor
                     case _:
-                        raise ValueError("the selected factorizer returned a cone morphism with the wrong endpoints")
+                        raise ValueError(
+                            f"the factorization of the cone {cone} through the limit must be a morphism of cones "
+                            f"{cone} -> {self.cone()}, but it is {factor}"
+                        )
             case _:
                 return _ConeCategory(self.diagram()).Mor(cone, self.cone())(factor)
 
     def induced_map(self, transformation, target_construction):
         r"""Return the map on selected limits induced by ``D -> E``."""
         if transformation.source() is not self.diagram():
-            raise ValueError("the natural transformation must start at this limit's diagram")
+            raise ValueError(
+                f"the map of limits induced by {transformation} needs it to start at the diagram "
+                f"{self.diagram()}, but it starts at {transformation.source()}"
+            )
         if transformation.target() is not target_construction.diagram():
-            raise ValueError("the natural transformation must end at the target limit's diagram")
+            raise ValueError(
+                f"the map of limits induced by {transformation} needs it to end at the diagram "
+                f"{target_construction.diagram()}, but it ends at {transformation.target()}"
+            )
         induced_cone = _ConeCategory(target_construction.diagram()).cone(
             self.object(),
             lambda index: (
@@ -693,7 +757,10 @@ class SelectedColimitConstruction(SageObject):
 
     def __init__(self, diagram, universal_cocone, factorizer) -> None:
         if universal_cocone.diagram() is not diagram:
-            raise ValueError("a selected colimit retains a cocone under its own diagram")
+            raise ValueError(
+                f"the colimit cocone {universal_cocone} lies under {universal_cocone.diagram()}, not under the "
+                f"diagram {diagram} of the colimit"
+            )
         self._diagram = diagram
         self._universal_cocone = universal_cocone
         self._factorizer = factorizer
@@ -714,16 +781,25 @@ class SelectedColimitConstruction(SageObject):
 
     def factor(self, cocone):
         if cocone.diagram() is not self.diagram():
-            raise ValueError("the cocone to factor must lie under this construction's diagram")
+            raise ValueError(
+                f"cannot factor the cocone {cocone} through the colimit of {self.diagram()}: it is a cocone "
+                f"under {cocone.diagram()}"
+            )
         apex_map = self._factorizer(cocone)
         return _CoconeCategory(self.diagram()).Mor(self.cocone(), cocone)(apex_map)
 
     def induced_map(self, transformation, target_construction):
         r"""Return the map on selected colimits induced by ``D -> E``."""
         if transformation.source() is not self.diagram():
-            raise ValueError("the natural transformation must start at this colimit's diagram")
+            raise ValueError(
+                f"the map of colimits induced by {transformation} needs it to start at the diagram "
+                f"{self.diagram()}, but it starts at {transformation.source()}"
+            )
         if transformation.target() is not target_construction.diagram():
-            raise ValueError("the natural transformation must end at the target colimit's diagram")
+            raise ValueError(
+                f"the map of colimits induced by {transformation} needs it to end at the diagram "
+                f"{target_construction.diagram()}, but it ends at {transformation.target()}"
+            )
         induced_cocone = _CoconeCategory(self.diagram()).cocone(
             target_construction.object(),
             lambda index: (
@@ -758,23 +834,35 @@ class ConeMorphism(Morphism):
                     case True:
                         pass
                     case False:
-                        raise ValueError("the apex map does not commute with the cone legs")
+                        raise ValueError(
+                            f"{apex_map} is not a morphism of cones {self.domain()} -> {self.codomain()}: it does not "
+                            "commute with the legs of the cones"
+                        )
             case False:
                 pass
 
     def _initialize_apex_map(self, parent: ConeMor, apex_map: Morphism) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
-            raise ValueError("the cone map has the wrong domain apex")
+            raise ValueError(
+                f"a morphism of cones {self.domain()} -> {self.codomain()} is a map of apexes starting at "
+                f"{self.domain().apex()}, but {apex_map} starts at {apex_map.domain()}"
+            )
         if apex_map.codomain() is not self.codomain().apex():
-            raise ValueError("the cone map has the wrong codomain apex")
+            raise ValueError(
+                f"a morphism of cones {self.domain()} -> {self.codomain()} is a map of apexes ending at "
+                f"{self.codomain().apex()}, but {apex_map} ends at {apex_map.codomain()}"
+            )
         if not _category_accepts_morphism(
             parent.cone_category().target_category(),
             self.domain().apex(),
             self.codomain().apex(),
             apex_map,
         ):
-            raise ValueError("the apex map is not a morphism of the diagram's target category")
+            raise ValueError(
+                f"the map of apexes {apex_map} is not a morphism {self.domain().apex()} -> "
+                f"{self.codomain().apex()} of the category the diagram takes values in"
+            )
         self._apex_map = apex_map
 
     def apex_map(self) -> Morphism:
@@ -817,20 +905,32 @@ class CoconeMorphism(Morphism):
     def __init__(self, parent: CoconeMor, apex_map: Morphism, *, verify: bool = True) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
-            raise ValueError("the cocone map has the wrong domain apex")
+            raise ValueError(
+                f"a morphism of cocones {self.domain()} -> {self.codomain()} is a map of apexes starting at "
+                f"{self.domain().apex()}, but {apex_map} starts at {apex_map.domain()}"
+            )
         if apex_map.codomain() is not self.codomain().apex():
-            raise ValueError("the cocone map has the wrong codomain apex")
+            raise ValueError(
+                f"a morphism of cocones {self.domain()} -> {self.codomain()} is a map of apexes ending at "
+                f"{self.codomain().apex()}, but {apex_map} ends at {apex_map.codomain()}"
+            )
         if not _category_accepts_morphism(
             parent.cocone_category().target_category(),
             self.domain().apex(),
             self.codomain().apex(),
             apex_map,
         ):
-            raise ValueError("the apex map is not a morphism of the diagram's target category")
+            raise ValueError(
+                f"the map of apexes {apex_map} is not a morphism {self.domain().apex()} -> "
+                f"{self.codomain().apex()} of the category the diagram takes values in"
+            )
         if verify and not _commutes_with_diagram(
             self.domain(), self.codomain(), apex_map, cocone=True
         ):
-            raise ValueError("the apex map does not commute with the cocone legs")
+            raise ValueError(
+                f"{apex_map} is not a morphism of cocones {self.domain()} -> {self.codomain()}: it does not "
+                "commute with the legs of the cocones"
+            )
         self._apex_map = apex_map
 
     def apex_map(self) -> Morphism:
@@ -882,7 +982,10 @@ class ConeMor(CategoricalMor):
                 if apex_map.parent() is self:
                     return apex_map
                 if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
-                    raise ValueError("the cone morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {apex_map} as a morphism of cones {self.domain()} -> {self.codomain()}: it is a "
+                        f"morphism {apex_map.domain()} -> {apex_map.codomain()}"
+                    )
                 apex_map = apex_map.apex_map()
         return ConeMorphism(self, apex_map)
 
@@ -892,7 +995,9 @@ class ConeMor(CategoricalMor):
 
     def identity(self) -> ConeMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity requires one cone")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(C, C), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         apex = self.domain().apex()
         return ConeMorphism(
             self,
@@ -923,13 +1028,18 @@ class CoconeMor(CategoricalMor):
                 if apex_map.parent() is self:
                     return apex_map
                 if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
-                    raise ValueError("the cocone morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {apex_map} as a morphism of cocones {self.domain()} -> {self.codomain()}: it is a "
+                        f"morphism {apex_map.domain()} -> {apex_map.codomain()}"
+                    )
                 apex_map = apex_map.apex_map()
         return CoconeMorphism(self, apex_map)
 
     def identity(self) -> CoconeMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity requires one cocone")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(C, C), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         apex = self.domain().apex()
         return CoconeMorphism(
             self,
@@ -1067,7 +1177,9 @@ class _ConeCategory(OwnedCategory):
 
     def Mor(self, domain: Parent, codomain: Parent) -> ConeMor:
         if domain not in self or codomain not in self:
-            raise TypeError("a cone Mor requires two cones over the same diagram")
+            raise TypeError(
+                f"a morphism in {self} needs two cones over its diagram, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
 
@@ -1146,7 +1258,9 @@ class _CoconeCategory(OwnedCategory):
 
     def Mor(self, domain: Parent, codomain: Parent) -> CoconeMor:
         if domain not in self or codomain not in self:
-            raise TypeError("a cocone Mor requires two cocones under the same diagram")
+            raise TypeError(
+                f"a morphism in {self} needs two cocones under its diagram, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
 
@@ -1221,9 +1335,15 @@ class _LimitsOfCategory(OwnedCategoryBase):
 
     def _finite_shape_data(self, diagram):
         if diagram.domain() is not self.index_category():
-            raise ValueError("a selected limit diagram has the wrong indexing category")
+            raise ValueError(
+                f"the diagram {diagram} must be indexed by {self.index_category()}, but it is indexed by "
+                f"{diagram.domain()}"
+            )
         if diagram.codomain() is not self.target_category():
-            raise ValueError("a selected limit diagram has the wrong target category")
+            raise ValueError(
+                f"the diagram {diagram} must take values in {self.target_category()}, but it takes values in "
+                f"{diagram.codomain()}"
+            )
         shape = self.index_category()
         # This is the computational frontier of the finite product/equalizer
         # realization, not a test for mathematical category structure.  Its
@@ -1234,11 +1354,13 @@ class _LimitsOfCategory(OwnedCategoryBase):
         object_set = shape.object_set()
         objects = shape.objects()
         assert cardinal(object_set.cardinality()).is_finite(), (
-            "the current product/equalizer realization enumerates a finite represented shape"
+            f"this limit is computed from products and equalizers only over a finite index category, but "
+            f"{shape} has infinitely many objects"
         )
         arrows = shape.arrows()
         assert cardinal(arrows.cardinality()).is_finite(), (
-            "the current product/equalizer realization enumerates a finite represented arrow set"
+            f"this limit is computed from products and equalizers only over a finite index category, but "
+            f"{shape} has infinitely many arrows"
         )
         return object_set, objects, arrows
 
@@ -1311,7 +1433,7 @@ class _LimitsOfCategory(OwnedCategoryBase):
             for label in object_set:
                 if objects.value(label) is obj:
                     return label
-            raise ValueError("an arrow endpoint is not one of the indexing category's objects")
+            raise ValueError(f"{obj} is not an object of the index category {diagram.domain()}")
 
         p_shape = product_objects.diagram().domain()
         product_arrows.diagram().domain()
@@ -1413,7 +1535,7 @@ class _ColimitsOfCategory(_LimitsOfCategory):
             for label in object_set:
                 if objects.value(label) is obj:
                     return label
-            raise ValueError("an arrow endpoint is not one of the indexing category's objects")
+            raise ValueError(f"{obj} is not an object of the index category {diagram.domain()}")
 
         coproduct_arrows.diagram().domain()
         b_shape = coproduct_objects.diagram().domain()
@@ -1509,7 +1631,10 @@ def _finite_factor_family(factors, *, name="Selected factors"):
     r"""Return the family, where the construction is represented over finite index sets."""
     family = _factor_family(factors, name=name)
     if not family.cardinality().is_finite():
-        raise TypeError("the current product/coproduct construction requires finitely many factors")
+        raise TypeError(
+            f"products and coproducts are computed here only for finitely many factors, but {name} has "
+            f"cardinality {family.cardinality()}"
+        )
     return family
 
 
@@ -1525,8 +1650,7 @@ def _two_factors_of(factors, *, name="Selected factors"):
     """
     family = _factor_family(factors, name=name)
     assert family.cardinality() == cardinal(2), (
-        f"{name.lower()} over an index set other than a two-element one is "
-        "defined, but the represented construction takes exactly two factors"
+        f"this construction takes exactly two factors, but {name.lower()} has {family.cardinality()}"
     )
     labels = tuple(family.index_set())
     return family[labels[0]], family[labels[1]]
@@ -1537,7 +1661,7 @@ def _discrete_diagram(factors, target_category=None):
     if family.cardinality() == cardinal(0):
         if target_category is None:
             raise ValueError(
-                "an empty diagram has no object from which to infer its target category"
+                "an empty diagram has no object to read its target category from; give the target category"
             )
         target = target_category
     else:

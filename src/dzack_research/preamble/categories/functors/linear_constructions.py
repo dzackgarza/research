@@ -158,9 +158,8 @@ class _OrthogonalDirectSumBifunctor(Functor):
     def _apply_object(self, pair):
         left, right = pair.first(), pair.second()
         assert left.module_rank().is_finite() and right.module_rank().is_finite(), (
-            "the orthogonal direct sum of arbitrary lattices exists; its morphism action is "
-            "represented here by concatenating finite framings, so both summands must have "
-            "finite rank"
+            f"the orthogonal direct sum {left} + {right} acts on morphisms here only for lattices of finite "
+            f"rank, but the ranks are {left.module_rank()} and {right.module_rank()}"
         )
         return left + right
 

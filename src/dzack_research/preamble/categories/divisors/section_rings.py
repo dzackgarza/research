@@ -51,7 +51,9 @@ class SectionRings(OwnedCategoryOverBaseRing):
             **rest,
         ) -> None:
             assert (section_line_bundle is None) != (section_divisor is None), (
-                "a section ring is stated on one line bundle or on one divisor"
+                f"a section ring of {section_scheme} is the ring of sections of exactly one line "
+                f"bundle L or one divisor D, but was given line bundle {section_line_bundle} "
+                f"and divisor {section_divisor}"
             )
             self._section_scheme = section_scheme
             self._section_line_bundle = section_line_bundle
@@ -65,14 +67,16 @@ class SectionRings(OwnedCategoryOverBaseRing):
         def section_divisor(self):
             r"""The divisor \(D\) with \(L = \mathcal{O}_X(D)\), when the ring was stated on a divisor."""
             assert self._section_divisor is not None, (
-                "this section ring was stated on a line bundle, not a divisor"
+                f"{self} is the section ring of the line bundle {self._section_line_bundle}, "
+                "which was not given as O_X(D) for a divisor D"
             )
             return self._section_divisor
 
         def section_line_bundle(self):
             r"""The line bundle \(L\), when the ring was stated on a line bundle."""
             assert self._section_line_bundle is not None, (
-                "this section ring was stated on a divisor, not a line bundle"
+                f"{self} is the section ring of the divisor {self._section_divisor}; ask for "
+                "section_divisor() instead of a line bundle"
             )
             return self._section_line_bundle
 
@@ -88,7 +92,9 @@ class SectionRings(OwnedCategoryOverBaseRing):
         def homogeneous_degree(self, element):
             r"""Return the nonnegative degree of one homogeneous section-ring element."""
             element = self(element)
-            assert element != self.zero(), "zero has no selected homogeneous section-ring degree"
+            assert element != self.zero(), (
+                f"the zero element of {self} has no degree: it is homogeneous of every degree"
+            )
             presentation = self.presentation_ring()
             representative = self.lift_to_presentation(element)
             backend = _engine_element(presentation, representative)
@@ -103,7 +109,8 @@ class SectionRings(OwnedCategoryOverBaseRing):
                 degrees.append(degree)
             selected = degrees[0]
             assert all(degree == selected for degree in degrees[1:]), (
-                "the section-ring element is not homogeneous"
+                f"{element} in {self} has no single degree: it is not homogeneous, its terms have "
+                f"degrees {sorted(set(degrees))}"
             )
             return NN(selected)
 
@@ -229,8 +236,9 @@ def _section_exponent_data(section_space):
             }
         case _:
             assert False, (
-                "exponent data is read from a homogeneous or multihomogeneous polynomial "
-                "section space; this section module is neither"
+                f"cannot read monomial exponents from {section_space}: it must be a space of "
+                "homogeneous or multihomogeneous polynomials, but it is in "
+                f"{section_space.category()}"
             )
 
 
@@ -245,9 +253,15 @@ def _split_block(exponents, part_total, count):
             part.append(take)
             remaining[position] -= take
             need -= take
-        assert need == 0, "a homogeneous exponent block has the wrong total degree"
+        assert need == 0, (
+            f"cannot split the monomial exponent {tuple(exponents)} into {count} monomials of "
+            f"degree {part_total}: its total degree is too small"
+        )
         parts.append(tuple(part))
-    assert not any(remaining), "homogeneous exponent splitting left a nonzero remainder"
+    assert not any(remaining), (
+        f"cannot split the monomial exponent {tuple(exponents)} into {count} monomials of "
+        f"degree {part_total}: its total degree is too large, {tuple(remaining)} is left over"
+    )
     return tuple(parts)
 
 
@@ -265,20 +279,30 @@ def _split_section_exponents(exponents, base_degree, block_widths, count):
     block_widths = tuple(int(value) for value in block_widths)
     count = int(count)
     assert len(base_degree) == len(block_widths), (
-        "section exponent blocks and multidegree have different lengths"
+        f"cannot factor a section monomial: the multidegree {base_degree} and the "
+        f"projective factor widths {block_widths} must have the same number of factors"
     )
     assert len(exponents) == sum(block_widths), (
-        "section exponent vector has the wrong number of coordinates"
+        f"cannot factor the section monomial with exponent {exponents}: a product of "
+        f"projective spaces with coordinate counts {block_widths} needs "
+        f"{sum(block_widths)} exponents"
     )
     if count == 0:
-        assert not any(exponents), "degree-zero section exponents must vanish"
+        assert not any(exponents), (
+            f"the section monomial with exponent {exponents} is said to have degree 0 in the "
+            "section ring, but it is not the constant monomial"
+        )
         return ()
 
     split_blocks = []
     offset = 0
     for degree, width in zip(base_degree, block_widths, strict=True):
         block = exponents[offset : offset + width]
-        assert sum(block) == count * degree, "a section exponent block has the wrong total degree"
+        assert sum(block) == count * degree, (
+            f"cannot write the monomial with exponent {exponents} as a product of {count} "
+            f"sections of multidegree {base_degree}: its block {block} has total degree "
+            f"{sum(block)}, not {count} * {degree}"
+        )
         split_blocks.append(_split_block(block, degree, count))
         offset += width
 
@@ -324,20 +348,22 @@ def _line_bundle_section_data(bundle):
             return degrees, widths
         case _:
             assert False, (
-                "the represented line-bundle section ring is stated on projective and "
-                "multiprojective O(d), whose sections are polynomial section spaces"
+                f"cannot form the section ring of {bundle}: section rings of line bundles are "
+                "implemented only for O(d) on a projective space or a product of projective "
+                f"spaces, whose sections are polynomials; its sections {sections} are not"
             )
 
 
 def _line_bundle_section_ring(category, bundle):
     r"""Construct the Veronese/Segre-Veronese section algebra of ``bundle``."""
     assert bundle.scheme().scheme_base_ring() is category.base_ring(), (
-        "a line-bundle section ring stays over the bundle's scalar base"
+        f"cannot form the section ring of {bundle} over {category.base_ring()}: the bundle's "
+        f"scheme is over {bundle.scheme().scheme_base_ring()}, a different ring"
     )
     base_degree, _block_widths = _line_bundle_section_data(bundle)
     assert all(degree >= 0 for degree in base_degree), (
-        "the represented projective section-ring presentation requires a nonnegative "
-        "line-bundle multidegree"
+        f"cannot form the section ring of {bundle}: it is implemented only for O(d) with "
+        f"every degree nonnegative, but the multidegree is {base_degree}"
     )
     degree_one = bundle.global_sections()
     exponent_data = _section_exponent_data(degree_one)
@@ -345,7 +371,10 @@ def _line_bundle_section_ring(category, bundle):
         (*exponent_data[label], 1)
         for label in degree_one.module_generating_set()
     )
-    assert semigroup_generators, "a nonnegative projective O(d) must have a degree-one section"
+    assert semigroup_generators, (
+        f"the section ring of {bundle} has no generators: the bundle has no global sections "
+        f"in degree one, although its multidegree {base_degree} is nonnegative"
+    )
     names = tuple(f"s{position}" for position in range(len(semigroup_generators)))
     return AffineSemigroupAlgebras(category.base_ring())(
         semigroup_generators,
@@ -365,14 +394,21 @@ def _toric_divisor_section_ring(category, scheme, divisor):
     from dzack_research.preamble.categories.schemes.toric.fans import _engine_vector
 
     assert scheme.scheme_base_ring() is category.base_ring(), (
-        "a divisor section ring stays over the scheme's scalar base"
+        f"cannot form the section ring of {divisor} over {category.base_ring()}: the scheme "
+        f"{scheme} is over {scheme.scheme_base_ring()}, a different ring"
     )
     assert scheme.fan().is_complete(), (
-        "the supported toric section-ring construction requires a complete fan"
+        f"cannot form the section ring of {divisor} on the toric variety {scheme}: section "
+        "rings of toric divisors are implemented only for complete toric varieties, and "
+        "its fan is not complete"
     )
-    assert scheme.is_cartier(divisor), "a divisor section ring requires a Cartier divisor"
+    assert scheme.is_cartier(divisor), (
+        f"cannot form the section ring of {divisor} on {scheme}: the divisor must be "
+        "Cartier, and it is not"
+    )
     assert scheme.is_basepoint_free(divisor), (
-        "the supported cone-over-polytope section-ring construction requires a basepoint-free divisor"
+        f"cannot form the section ring of {divisor} on {scheme}: section rings of toric "
+        "divisors are implemented only for basepoint-free divisors, and this one has base points"
     )
 
     polytope = scheme.divisor_polytope(divisor)

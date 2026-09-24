@@ -87,7 +87,11 @@ class _AffineGroupSchemeEngine:
         super().__init__(**rest)
         base = self.category().base_ring()
         if internal_group_object not in Grp(Schemes(base).Affine()):
-            raise TypeError("an affine group scheme requires an affine internal group object")
+            raise TypeError(
+                f"{internal_group_object} is not a group object in affine schemes over {base}, "
+                f"so it does not define an affine group scheme over {base}; it is in "
+                f"{internal_group_object.category()}"
+            )
 
     def internal_group_object(self):
         return self._internal_group_object
@@ -158,7 +162,10 @@ class AffineGroupSchemeMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a group-scheme endomorphism Mor")
+            raise ValueError(
+                f"there is no identity morphism from {self.domain()} to the different group "
+                f"scheme {self.codomain()}; the identity exists only when domain and codomain agree"
+            )
         return self(self.domain().scheme().categorical_identity_morphism())
 
 
@@ -227,11 +234,22 @@ class _AffineGroupSchemeActionEngine:
         self._group_scheme = group
         base = group.base_ring()
         if internal_action.group_object() is not group.internal_group_object():
-            raise ValueError("the affine action must use this group scheme's internal group object")
+            raise ValueError(
+                f"the action {internal_action} is an action of {internal_action.group_object()}, "
+                f"not of the group scheme {group}"
+            )
         if internal_action.underlying_object() not in Schemes(base).Affine():
-            raise TypeError("an affine group-scheme action requires an affine scheme over the group base")
+            raise TypeError(
+                f"the scheme {internal_action.underlying_object()} acted on by {group} must be an "
+                f"affine scheme over {base}, but it is in "
+                f"{internal_action.underlying_object().category()}"
+            )
         if internal_action.underlying_object().base_scheme() is not group.base_scheme():
-            raise ValueError("the group scheme and acted scheme must have the same represented base")
+            raise ValueError(
+                f"the group scheme {group} lies over {group.base_scheme()}, but the scheme it acts "
+                f"on, {internal_action.underlying_object()}, lies over "
+                f"{internal_action.underlying_object().base_scheme()}; they must have the same base"
+            )
 
     def internal_action(self):
         return self._internal_action
@@ -282,7 +300,10 @@ class AffineGroupSchemeActionMor(CategoricalMor):
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.group_scheme() is not codomain.group_scheme():
-            raise ValueError("an equivariant Mor requires one common acting group scheme")
+            raise ValueError(
+                f"equivariant morphisms from {domain} to {codomain} need one acting group scheme, "
+                f"but they are acted on by {domain.group_scheme()} and {codomain.group_scheme()}"
+            )
         CategoricalMor.__init__(self, family, domain, codomain)
 
     def _element_constructor_(self, arrow):
@@ -293,7 +314,10 @@ class AffineGroupSchemeActionMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an equivariant endomorphism Mor")
+            raise ValueError(
+                f"there is no identity morphism from {self.domain()} to the different scheme "
+                f"with action {self.codomain()}; the identity exists only when domain and codomain agree"
+            )
         return self(self.domain().scheme().categorical_identity_morphism())
 
 
@@ -368,7 +392,7 @@ def _roots_of_unity_group_scheme(base_ring, degree: int):
     dual to ``u |-> u_1 u_2``, ``u |-> 1``, and ``u |-> u^(degree-1)``.
     """
     if degree < 1:
-        raise ValueError("mu_n requires n >= 1")
+        raise ValueError(f"the group scheme mu_n of n-th roots of unity needs n >= 1, got n = {degree}")
     base = _own_ring(base_ring)
     presentation = base.polynomial_ring("u")
     u_presentation = presentation.algebra_generator("u")

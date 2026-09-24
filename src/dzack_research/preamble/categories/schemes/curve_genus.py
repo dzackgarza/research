@@ -47,7 +47,8 @@ class CurveLocalDeltaContribution(SageObject):
 
     def __init__(self, singularity, point, *, projective_support=None) -> None:
         assert point.parent().ring() is singularity.polynomial_ring(), (
-            "a curve delta contribution uses a point of its local plane"
+            f"the point {point} is not a point of the plane of the singularity {singularity}: "
+            f"its coordinates lie in {point.parent().ring()}, not in {singularity.polynomial_ring()}"
         )
         self._singularity = singularity
         self._point = point
@@ -87,7 +88,10 @@ class _CurveGenusComparison(SageObject):
     def __init__(self, curve) -> None:
         self._curve = curve
         assert self.arithmetic_genus() == self.geometric_genus() + self.total_delta_contribution(), (
-            "the selected local delta contributions do not exhaust the normalization genus defect"
+            f"the genus formula p_a = g + sum of delta invariants fails for {curve}: "
+            f"arithmetic genus {self.arithmetic_genus()}, geometric genus {self.geometric_genus()}, "
+            f"total delta {self.total_delta_contribution()}; some singular point is missing or "
+            "has the wrong delta invariant"
         )
 
     def normalization_data(self):

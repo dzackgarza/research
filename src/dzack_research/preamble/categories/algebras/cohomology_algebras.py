@@ -95,7 +95,8 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
         dgas = DifferentialGradedAlgebras(self.base_ring())
         if dga not in dgas:
             raise TypeError(
-                "a cohomology algebra is constructed from a differential graded algebra over the same base ring"
+                f"the cohomology algebra over {self.base_ring()} is built from a differential graded algebra "
+                f"over {self.base_ring()}, but {dga} is not one"
             )
         return _cohomology_algebra_from_dga(dga)
 
@@ -123,11 +124,20 @@ class CohomologyAlgebraMorphism(Morphism):
     def __init__(self, parent, dga_morphism) -> None:
         Morphism.__init__(self, parent)
         if not isinstance(dga_morphism, DGAMorphism):
-            raise TypeError("a cohomology-algebra morphism is induced by an actual DGA morphism")
+            raise TypeError(
+                f"a morphism {self.domain()} -> {self.codomain()} of cohomology algebras is induced by a "
+                f"morphism of differential graded algebras, but {dga_morphism!r} is not one"
+            )
         if dga_morphism.domain() is not self.domain().source_dga():
-            raise ValueError("the DGA morphism has the wrong cohomology source")
+            raise ValueError(
+                f"a morphism of cohomology algebras {self.domain()} -> {self.codomain()} is induced by a map "
+                f"starting at {self.domain().source_dga()}, but {dga_morphism} starts at {dga_morphism.domain()}"
+            )
         if dga_morphism.codomain() is not self.codomain().source_dga():
-            raise ValueError("the DGA morphism has the wrong cohomology target")
+            raise ValueError(
+                f"a morphism of cohomology algebras {self.domain()} -> {self.codomain()} is induced by a map "
+                f"ending at {self.codomain().source_dga()}, but {dga_morphism} ends at {dga_morphism.codomain()}"
+            )
         self._dga_morphism = dga_morphism
 
     def underlying_dga_morphism(self):
@@ -173,7 +183,9 @@ class CohomologyAlgebraMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a cohomology-algebra endomorphism Mor")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
+            )
 
         source_dga = self.domain().source_dga()
         return self(

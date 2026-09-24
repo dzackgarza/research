@@ -51,7 +51,10 @@ def _coxeter_entry(q1, q2, pairing):
     q2 = _engine_element(integers, q2)
     pairing = _engine_element(integers, pairing)
     if q1 == 0 or q2 == 0:
-        raise ValueError("a Coxeter root has nonzero square")
+        raise ValueError(
+            f"cannot compute the Coxeter angle of two vectors with squares {q1} and {q2}: "
+            f"a root must have nonzero square"
+        )
     if pairing == 0:
         return SageZZ(2)
     four_cos_squared = QQ(4 * pairing**2) / QQ(q1 * q2)
@@ -63,7 +66,11 @@ def _coxeter_entry(q1, q2, pairing):
         return SageZZ(6)
     if four_cos_squared >= 4:
         return Infinity
-    raise ValueError(f"the root pair does not determine a crystallographic Coxeter angle: 4 cos^2(pi/m) = {four_cos_squared}")
+    raise ValueError(
+        f"two roots with squares {q1}, {q2} and pairing {pairing} have no crystallographic "
+        f"Coxeter angle pi/m: 4 cos^2(pi/m) would be {four_cos_squared}, which is not 0, 1, 2, 3 "
+        f"or at least 4"
+    )
 
 
 class CoxeterDiagramMorphism(Morphism):
@@ -129,14 +136,20 @@ class CoxeterDiagramMor(CategoricalMor):
         if isinstance(datum, CoxeterDiagramMorphism):
             if datum.parent() is self:
                 return datum
-            raise ValueError("the Coxeter-diagram morphism has different endpoints")
+            raise ValueError(
+                f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a morphism "
+                f"{self.domain()} -> {self.codomain()} of Coxeter diagrams"
+            )
         if callable(datum):
             function = datum
         else:
             images = tuple(datum)
             vertices = tuple(self.domain().index_set())
             if len(images) != len(vertices):
-                raise ValueError("a Coxeter-diagram morphism needs one image per vertex")
+                raise ValueError(
+                    f"{images} does not define a morphism of Coxeter diagrams from {self.domain()}: "
+                    f"it gives {len(images)} images for {len(vertices)} vertices"
+                )
             assignment = dict(zip(vertices, images, strict=True))
             function = assignment.__getitem__
         morphism = CoxeterDiagramMorphism(self, function)
@@ -145,13 +158,21 @@ class CoxeterDiagramMor(CategoricalMor):
                 if self.domain().coxeter_entry(left, right) != self.codomain().coxeter_entry(
                     morphism(left), morphism(right)
                 ):
-                    raise ValueError("a Coxeter-diagram morphism must preserve every Coxeter matrix entry")
+                    raise ValueError(
+                        f"{morphism} is not a morphism of Coxeter diagrams: the vertices {left}, {right} "
+                        f"have Coxeter entry {self.domain().coxeter_entry(left, right)} in {self.domain()}, "
+                        f"but their images {morphism(left)}, {morphism(right)} have entry "
+                        f"{self.codomain().coxeter_entry(morphism(left), morphism(right))} in {self.codomain()}"
+                    )
         return morphism
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity requires one Coxeter diagram")
+            raise ValueError(
+                f"there is no identity morphism from {self.domain()} to {self.codomain()}: an "
+                f"identity needs its domain and codomain to be the same Coxeter diagram"
+            )
         return self(lambda vertex: vertex)
 
 
@@ -177,7 +198,10 @@ class CoxeterDiagrams(OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a Coxeter-diagram morphism requires two Coxeter diagrams")
+            raise TypeError(
+                f"there are no morphisms of Coxeter diagrams from {domain} to {codomain}: both "
+                f"must be Coxeter diagrams"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     @cached_method
@@ -230,9 +254,15 @@ class CoxeterDiagrams(OwnedCategory):
                 self._preferred_positions = None
             else:
                 if set(positions) != set(self._index_set):
-                    raise ValueError("positions need one coordinate pair for every vertex")
+                    raise ValueError(
+                        f"the drawing positions {positions} do not place the vertices "
+                        f"{self._index_set}: every vertex needs exactly one position"
+                    )
                 if any(len(coordinates) != 2 for coordinates in positions.values()):
-                    raise ValueError("every diagram position must be a coordinate pair")
+                    raise ValueError(
+                        f"the drawing positions {positions} are not all points of the plane: every "
+                        f"position must be a pair of coordinates"
+                    )
                 self._preferred_positions = {vertex: (coordinates[0], coordinates[1]) for vertex, coordinates in positions.items()}
             self._computed_positions = None
             super().__init__(**rest)
@@ -285,7 +315,10 @@ class CoxeterDiagrams(OwnedCategory):
 
         def edge_label(self, left, right):
             if not self.has_edge(left, right):
-                raise ValueError("the selected Coxeter vertices are not joined by an edge")
+                raise ValueError(
+                    f"the vertices {left} and {right} of {self} are not joined by an edge, so the "
+                    f"edge has no label"
+                )
             return self.coxeter_entry(left, right)
 
         def num_vertices(self):
@@ -315,12 +348,18 @@ class CoxeterDiagrams(OwnedCategory):
 
         def roots(self):
             if self._roots is None:
-                raise ValueError("this Coxeter diagram has no selected root realization")
+                raise ValueError(
+                    f"{self} has no roots: it was given only by its Coxeter matrix, not by "
+                    f"roots in a lattice"
+                )
             return self._roots
 
         def root_gram_tensor(self):
             if self._root_gram is None:
-                raise ValueError("this Coxeter diagram has no selected root realization")
+                raise ValueError(
+                    f"{self} has no Gram matrix of roots: it was given only by its Coxeter "
+                    f"matrix, not by roots in a lattice"
+                )
             return self._root_gram
 
         def preferred_positions(self):
@@ -428,7 +467,10 @@ class CoxeterDiagrams(OwnedCategory):
                     positions=None if self._preferred_positions is None else {},
                 )
             if any(vertex not in self.index_set() for vertex in vertices):
-                raise ValueError("an induced subdiagram uses vertices of this diagram")
+                raise ValueError(
+                    f"cannot form the subdiagram of {self} induced on {vertices}: some of them are "
+                    f"not vertices of {self}, whose vertices are {self.index_set()}"
+                )
             matrix_ = self.coxeter_matrix()
             entries = [[matrix_[left, right] for right in vertices] for left in vertices]
             ranking = self.index_set().ranking_map()
@@ -836,7 +878,9 @@ class CoxeterDiagrams(OwnedCategory):
         def root_realization(self):
             r"""Return the lattice in which the diagram roots are realized."""
             roots = self.roots()
-            assert roots, "the diagram on no vertices realizes no roots"
+            assert roots, (
+                f"{self} has no vertices, so it has no roots and no lattice in which they lie"
+            )
             return roots[0].parent()
 
         def root_lattice(self):
@@ -877,20 +921,32 @@ class CoxeterDiagrams(OwnedCategory):
             if not self.is_rooted() or self.cardinality() == 0:
                 return None
             if not self.is_connected() or not self.is_elliptic():
-                raise ValueError("scaled Cartan recognition requires a connected elliptic rooted diagram")
+                raise ValueError(
+                    f"cannot recognize a Cartan type of {self}: the diagram must be connected and "
+                    f"elliptic (spherical), and it is not both"
+                )
             gram = self.root_gram_tensor()
             rank = int(self.cardinality())
             squares = tuple(-SageZZ(gram[index, index]) for index in range(rank))
             shortest = min(squares)
             if shortest <= 0 or shortest % 2:
-                raise ValueError("a crystallographic root normalization has shortest square 2 times an integer scale")
+                raise ValueError(
+                    f"cannot recognize a scaled Cartan type of {self}: the shortest root must "
+                    f"have square -2k for a positive integer k, but the squares are {squares}"
+                )
             scale = SageZZ(shortest // 2)
             coxeter_type = self.coxeter_matrix().coxeter_type()
             if coxeter_type is self.coxeter_matrix():
-                raise ValueError("the rooted elliptic diagram has no recognized finite Coxeter type")
+                raise ValueError(
+                    f"{self} is elliptic, but its Coxeter matrix {self.coxeter_matrix()} was not "
+                    f"recognized as a finite Coxeter type"
+                )
             cartan = coxeter_type.cartan_type()
             if str(cartan[0]) == "H":
-                raise ValueError("H root systems are noncrystallographic and have no integral Cartan scale")
+                raise ValueError(
+                    f"{self} has Coxeter type {cartan}, which is not crystallographic, so it has "
+                    f"no Cartan type and no integral root scale"
+                )
             if str(cartan[0]) == "B":
                 short_count = sum(square == 2 * scale for square in squares)
                 if rank == 2:
@@ -900,13 +956,19 @@ class CoxeterDiagrams(OwnedCategory):
                 elif short_count == rank - 1:
                     cartan = CartanType(["C", rank])
                 else:
-                    raise ArithmeticError("a bond-four chain has neither the B nor C root-length pattern")
+                    raise ArithmeticError(
+                        f"{self} has Coxeter type B/C of rank {rank}, but its root squares {squares} "
+                        f"match neither B (one short root) nor C (one long root)"
+                    )
             reference = Lattices.root_lattice(str(cartan[0]), int(cartan[1])).twist(scale)
             reference_diagram = CoxeterDiagrams().from_roots(tuple(reference.module_generators()))
             if not self.root_intersection_graph().is_isomorphic(
                 reference_diagram.root_intersection_graph(), edge_labels=True
             ):
-                raise ArithmeticError("the recognized Cartan type does not recover the rooted Gram data")
+                raise ArithmeticError(
+                    f"{self} was recognized as Cartan type {cartan} with scale {scale}, but the "
+                    f"roots of that type do not have the same Gram data as the roots of {self}"
+                )
             return cartan, scale
 
         def component_scaled_cartan_types(self):
@@ -935,7 +997,10 @@ class CoxeterDiagrams(OwnedCategory):
             try:
                 return colors[int(square)]
             except KeyError as error:
-                raise ValueError(f"no Coxeter node color is defined for square {square}") from error
+                raise ValueError(
+                    f"cannot draw the vertex {vertex} of {self}: node colors are defined for "
+                    f"roots of square -2 and -4, and this root has square {square}"
+                ) from error
 
         def equivariant_positions(self, automorphism):
             r"""Return exact planar positions intertwining a finite diagram automorphism."""
@@ -944,7 +1009,10 @@ class CoxeterDiagrams(OwnedCategory):
 
             order = int(automorphism.order())
             if order < 2:
-                raise ValueError("equivariant positioning requires a nonidentity automorphism")
+                raise ValueError(
+                    f"cannot place the vertices of {self} symmetrically under {automorphism}: it "
+                    f"has order {order}, and a symmetric layout needs an automorphism of order at least 2"
+                )
             unseen = set(self.index_set())
             orbits = []
             while unseen:
@@ -956,7 +1024,10 @@ class CoxeterDiagrams(OwnedCategory):
                     unseen.discard(point)
                     point = automorphism(point)
                 if point != start:
-                    raise ArithmeticError("the selected automorphism does not permute this vertex set cyclically")
+                    raise ArithmeticError(
+                        f"{automorphism} is not a permutation of the vertices of {self}: following it "
+                        f"from {start} does not return to {start}"
+                    )
                 orbits.append(tuple(orbit))
             zeta = QQbar(CyclotomicField(order).gen())
             positions = {}
@@ -970,12 +1041,19 @@ class CoxeterDiagrams(OwnedCategory):
                         positions[orbit[0]] = QQbar(place) + imaginary
                         positions[orbit[1]] = QQbar(place) - imaginary
                     else:
-                        raise ValueError("an involution has only fixed points and two-cycles")
+                        raise ValueError(
+                            f"{automorphism} has order 2 but an orbit {orbit} of length {len(orbit)}: "
+                            f"an involution has only fixed points and 2-cycles"
+                        )
                     place += 1
             else:
                 fixed = tuple(orbit for orbit in orbits if len(orbit) == 1)
                 if any(len(orbit) not in (1, order) for orbit in orbits) or len(fixed) > 1:
-                    raise ValueError("a planar primitive rotation permits free orbits and at most one fixed vertex")
+                    raise ValueError(
+                        f"cannot place the vertices of {self} as a rotation by {automorphism}: a "
+                        f"rotation of order {order} needs every orbit of length 1 or {order} and at most "
+                        f"one fixed vertex, but the orbits are {orbits}"
+                    )
                 radius = 1
                 for orbit in orbits:
                     if len(orbit) == 1:
@@ -1067,7 +1145,10 @@ class CoxeterDiagrams(OwnedCategory):
         if scale is not None:
             scale = _own_ring(SageZZ)(scale)
             if scale < 1:
-                raise ValueError("a Coxeter root-lattice scale is a positive integer")
+                raise ValueError(
+                    f"cannot scale the root lattice of type {cartan_type} by {scale}: the scale "
+                    f"must be a positive integer"
+                )
             rooted = True
         if not rooted:
             return _coxeter_diagram(CoxeterMatrix(cartan_type), names=names, positions=positions)
@@ -1099,10 +1180,16 @@ class CoxeterDiagrams(OwnedCategory):
     def from_roots(self, roots, names=None, index_set=None, positions=None):
         roots = tuple(roots)
         if not roots:
-            raise ValueError("a rooted Coxeter diagram needs at least one root")
+            raise ValueError(
+                "cannot form a Coxeter diagram from roots: no roots were given, and the "
+                "diagram needs at least one to determine its lattice"
+            )
         realization = roots[0].parent()
         if any(root.parent() is not realization for root in roots):
-            raise ValueError("all diagram roots must belong to one lattice")
+            raise ValueError(
+                f"the roots {roots} do not all lie in one lattice: the first lies in "
+                f"{realization}, and a Coxeter diagram of roots needs a single lattice"
+            )
         # The roots carry their own enumeration; the vertices are indexed by it
         # unless the caller names them otherwise.
         root_positions = finite_ordered_set(
@@ -1110,7 +1197,10 @@ class CoxeterDiagrams(OwnedCategory):
         )
         mirrors = root_positions if index_set is None else finite_ordered_set(index_set)
         if mirrors.cardinality() != root_positions.cardinality():
-            raise ValueError("the index set must have one vertex per root")
+            raise ValueError(
+                f"the index set {index_set} does not label the {len(roots)} roots: it has "
+                f"{mirrors.cardinality()} elements, and there must be one per root"
+            )
         gram = tensor(
             realization.base_ring(),
             (),

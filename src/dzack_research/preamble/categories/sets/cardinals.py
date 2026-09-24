@@ -334,15 +334,24 @@ class CardinalityMor(CategoricalMor):
     def cardinality(self) -> Cardinal:
         r"""Zero or one when the cardinal comparison decides the Mor's emptiness."""
         empty = self.is_empty()
-        assert empty is not Unknown, "this cardinal comparison does not decide the Mor cardinality"
+        assert empty is not Unknown, (
+            f"cannot compute the cardinality of {self}: it is undecided whether {self.domain()} <= "
+            f"{self.codomain()}, so it is undecided whether this set of morphisms is empty"
+        )
         return cardinal(0 if empty else 1)
 
     @cached_method
     def unique_morphism(self) -> CardinalityMorphism:
         empty = self.is_empty()
         if empty is True:
-            raise ValueError(f"there is no cardinality morphism {self.domain()} -> {self.codomain()}")
-        assert empty is False, "this cardinal comparison does not decide the existence of the arrow"
+            raise ValueError(
+                f"there is no morphism {self.domain()} -> {self.codomain()} of cardinals: "
+                f"{self.domain()} is not <= {self.codomain()}"
+            )
+        assert empty is False, (
+            f"cannot give the morphism {self.domain()} -> {self.codomain()} of cardinals: it is "
+            f"undecided whether {self.domain()} <= {self.codomain()}"
+        )
         return self.element_class(self)
 
     def _element_constructor_(self, morphism=None):
@@ -352,7 +361,9 @@ class CardinalityMor(CategoricalMor):
 
     def identity(self) -> CardinalityMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         return self.unique_morphism()
 
 
@@ -389,9 +400,11 @@ class Cardinalities(OwnedCategory):
             return aleph(0)
         integer = int(value)
         if value != integer:
-            raise TypeError("a finite cardinal is specified by an exact integer")
+            raise TypeError(
+                f"a finite cardinal is given by an integer, but {value!r} is not an integer"
+            )
         if integer < 0:
-            raise ValueError(f"a cardinal is nonnegative; found {integer}")
+            raise ValueError(f"a cardinal is nonnegative, but {integer} is negative")
         return _cardinal_with_expression(_FiniteCardinal(integer))
 
     def Mor(
@@ -476,7 +489,8 @@ class Cardinalities(OwnedCategory):
         def is_finite(self) -> bool:
             expression = self.expression()
             assert expression.is_normal_form(), (
-                "finiteness is not selected for an arbitrary indexed cardinal family"
+                f"cannot decide whether the cardinal {self} is finite: it is not a finite sum, product, or "
+                "supremum of known cardinals"
             )
             return expression.is_finite()
 
@@ -501,7 +515,8 @@ class Cardinalities(OwnedCategory):
             """
             expression = self.expression()
             assert expression.is_normal_form(), (
-                "countability is not selected for an arbitrary indexed cardinal family"
+                f"cannot decide whether the cardinal {self} is uncountable: it is not a finite sum, product, "
+                "or supremum of known cardinals"
             )
             if self.is_countable():
                 return False
@@ -554,7 +569,9 @@ class Cardinalities(OwnedCategory):
             category: Category | None = None,
         ) -> CardinalityMor:
             if category is not None and category is not Cardinalities():
-                raise TypeError("a cardinal morphism lies in Cardinalities")
+                raise TypeError(
+                    f"a morphism of cardinals lies in the category of cardinals, not in {category}"
+                )
             return Cardinalities().Mor(self, codomain)
 
     def zero(self) -> Cardinal:
@@ -667,7 +684,10 @@ class Cardinalities(OwnedCategory):
     ) -> CardinalityMorphism:
         r"""Apply exponentiation to comparisons when the source base is nonzero."""
         if not self.le(1, base_morphism.domain()):
-            raise ValueError("cardinal exponentiation is monotone in the exponent only for a nonzero source base")
+            raise ValueError(
+                f"exponentiation is monotone in the exponent only for a nonzero base, but the base "
+                f"{base_morphism.domain()} may be zero"
+            )
         source = self.power(
             base_morphism.domain(),
             exponent_morphism.domain(),
@@ -688,7 +708,9 @@ class Cardinalities(OwnedCategory):
             for cardinal_number in map(cardinal, cardinal_numbers)
             for term in cardinal_number.expression().supremum_terms(cardinal_number)
         ]
-        assert terms, "a finite supremum needs at least one cardinal"
+        assert terms, (
+            "the supremum of finitely many cardinals needs at least one cardinal, but none was given"
+        )
         maximal_terms: list[Cardinal] = []
         for candidate in sorted(set(terms), key=lambda term: term.sort_key()):
             if any(self.le(candidate, term) for term in maximal_terms):
@@ -970,7 +992,10 @@ class OrdinalSemiringMorphism(Morphism):
     ) -> None:
         Morphism.__init__(self, parent)
         if not callable(function):
-            raise TypeError("an ordinal-semiring morphism requires an exact map")
+            raise TypeError(
+                f"a morphism of ordinal semirings {self.domain()} -> {self.codomain()} needs a map on "
+                f"elements, but {function!r} is not callable"
+            )
         self._function = function
 
     def _call_(self, element):
@@ -1020,7 +1045,10 @@ class OrdinalSemiringMor(CategoricalMor):
     def _element_constructor_(self, function):
         if isinstance(function, OrdinalSemiringMorphism):
             if function.domain() is not self.domain() or function.codomain() is not self.codomain():
-                raise ValueError("the ordinal-semiring morphism has the wrong endpoints")
+                raise ValueError(
+                    f"cannot view {function} as a morphism {self.domain()} -> {self.codomain()}: it is a morphism "
+                    f"{function.domain()} -> {function.codomain()}"
+                )
             if function.parent() is self:
                 return function
             morphism = function
@@ -1034,7 +1062,9 @@ class OrdinalSemiringMor(CategoricalMor):
     def identity(self) -> OrdinalSemiringMorphism:
         r"""The identity arrow, interned: ``is_identity`` reads it by identity."""
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         return self(lambda element: element)
 
 
@@ -1163,7 +1193,10 @@ class OrdinalSemirings(OwnedCategory):
         codomain: OrdinalSemiring,
     ) -> OrdinalSemiringMor:
         if domain not in self or codomain not in self:
-            raise TypeError("an ordinal-semiring morphism requires two ordinal semirings")
+            raise TypeError(
+                f"a morphism of ordinal semirings needs an ordinal semiring as domain and codomain, but got "
+                f"{domain} and {codomain}"
+            )
         return OrdinalSemiringMorCategoryConstruction(self).Of(domain, codomain)
 
     class ParentMethods:
@@ -1192,7 +1225,9 @@ class OrdinalSemirings(OwnedCategory):
             if element_parent(value) is self:
                 return value
             if value not in self:
-                raise ValueError(f"{value!r} names no ordinal: an ordinal is an ordinal of this semiring or a nonnegative integer")
+                raise ValueError(
+                    f"{value!r} is not an ordinal: an ordinal is an element of {self} or a nonnegative integer"
+                )
             return self.from_expression(_FiniteOrdinal(ZZ(int(value))))
 
         def zero(self) -> Ordinal:
@@ -1278,7 +1313,9 @@ class OrdinalSemirings(OwnedCategory):
             category: Category | None = None,
         ) -> OrdinalSemiringMor:
             if category is not None and category is not OrdinalSemirings():
-                raise TypeError("an ordinal-semiring morphism lies in OrdinalSemirings")
+                raise TypeError(
+                    f"a morphism of ordinal semirings lies in the category of ordinal semirings, not in {category}"
+                )
             return OrdinalSemirings().Mor(self, codomain)
 
 

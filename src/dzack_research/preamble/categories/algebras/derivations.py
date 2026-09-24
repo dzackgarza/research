@@ -56,12 +56,16 @@ def _commutative_presentation_data(algebra):
 
     base = algebra.base_ring()
     if algebra not in Algebras(base).Associative().Unital().Commutative():
-        raise TypeError("Kähler calculus requires a commutative algebra")
+        raise TypeError(
+            f"Kahler differentials are defined here for commutative algebras, but {algebra} is not known "
+            "to be commutative"
+        )
     assert (
         algebra in AlgebrasWithChosenFinitePresentation(base)
         or algebra in SymmetricAlgebras(base)
     ), (
-        "the represented Kähler-calculus backend requires a symmetric algebra or a chosen finite commutative polynomial presentation"
+        f"Kahler differentials of {algebra} are computed only for a polynomial algebra or an algebra "
+        "given by finitely many generators and relations"
     )
 
     if algebra in AlgebrasWithChosenFinitePresentation(base):
@@ -111,14 +115,20 @@ class Derivation(ModuleElement):
         if isinstance(generator_images, dict):
             missing = [label for label in labels if label not in generator_images]
             if missing:
-                raise ValueError(f"derivation assignment omits {missing}")
+                raise ValueError(
+                    f"a derivation of {parent.algebra()} needs the image of every algebra generator, but "
+                    f"{missing} are missing"
+                )
             images = {label: generator_images[label] for label in labels}
         elif callable(generator_images):
             images = {label: generator_images(label) for label in labels}
         else:
             values = tuple(generator_images)
             if len(values) != len(labels):
-                raise ValueError("a derivation needs one image for each algebra generator")
+                raise ValueError(
+                    f"a derivation of {parent.algebra()} needs one image for each of its {len(labels)} generators, "
+                    f"but {len(values)} were given"
+                )
             images = dict(zip(labels, values, strict=True))
         target = parent.target_module()
         self._generator_images = {
@@ -171,7 +181,8 @@ class Derivation(ModuleElement):
                 )
                 if self._evaluate_coefficients(localized_coefficients) != self.codomain().zero():
                     raise ValueError(
-                        "the proposed generator images do not annihilate a defining source-algebra relation under the localized derivation rule"
+                        f"the generator images do not define a derivation of {self.domain()}: the localized "
+                        "derivation rule does not send a defining relation to 0"
                     )
             return
 
@@ -186,7 +197,8 @@ class Derivation(ModuleElement):
             )
             if self._evaluate_coefficients(coefficients) != self.codomain().zero():
                 raise ValueError(
-                    "the proposed generator images do not annihilate a defining algebra relation under the derivation rule"
+                    f"the generator images do not define a derivation of {self.domain()}: a defining relation "
+                    "is not sent to 0"
                 )
 
     def __call__(self, element):
@@ -382,7 +394,10 @@ class DerivationSpace(RestrictedMorCategoryParent):
     def __init__(self, family, algebra, restricted_target) -> None:
         target_module = restricted_target.module_over_extension()
         if target_module.base_ring() is not algebra:
-            raise TypeError("an R-derivation A -> M requires M to be an A-module")
+            raise TypeError(
+                f"an R-derivation A -> M needs M to be a module over A = {algebra}, but {target_module} is a "
+                f"module over {target_module.base_ring()}"
+            )
         self._algebra = algebra
         self._target_module = target_module
         presentation_algebra = (
@@ -510,10 +525,15 @@ class DerivationSpace(RestrictedMorCategoryParent):
                 generator_images.domain() is not self.algebra()
                 or generator_images.codomain() is not self.restricted_target_module()
             ):
-                raise ValueError("the linear map has the wrong derivation endpoints")
+                raise ValueError(
+                    f"cannot view {generator_images} as a derivation {self.algebra()} -> "
+                    f"{self.restricted_target_module()}: it is a map {generator_images.domain()} -> "
+                    f"{generator_images.codomain()}"
+                )
             if not isinstance(generator_images, DerivationUnderlyingLinearMorphism):
                 raise ValueError(
-                    "an arbitrary R-linear map alone does not supply the Leibniz rule required of a derivation"
+                    f"{generator_images} is only a linear map; a derivation must also satisfy the Leibniz rule "
+                    "D(ab) = a D(b) + D(a) b"
                 )
             selected = generator_images.derivation()
             if selected.parent() is self:
@@ -571,7 +591,10 @@ class DerivationCategoryConstruction(_RestrictedMorCategoryOf):
 @cached_function(key=lambda algebra, target_module: (id(algebra), id(target_module)))
 def _derivations(algebra, target_module) -> DerivationSpace:
     if target_module.base_ring() is not algebra:
-        raise TypeError("an R-derivation A -> M requires M to be an A-module")
+        raise TypeError(
+            f"an R-derivation A -> M needs M to be a module over A = {algebra}, but {target_module} is a "
+            f"module over {target_module.base_ring()}"
+        )
     base = algebra.base_ring()
     restricted_target = target_module.restrict_scalars(
         algebra.algebra_structure_morphism()
@@ -593,14 +616,17 @@ class GradedDerivation(ModuleElement):
 
     def __init__(self, parent, function) -> None:
         if not callable(function):
-            raise TypeError("a graded derivation is specified by an element map")
+            raise TypeError(
+                f"a graded derivation of {parent.algebra()} needs a map on elements, but {function!r} is not callable"
+            )
         ModuleElement.__init__(self, parent)
         self._function = function
         observed = self.check_on_generators()
         match observed:
             case False:
                 raise ValueError(
-                    f"the proposed map is not a degree-{self.degree_shift()} graded derivation"
+                    f"{function} is not a graded derivation of degree {self.degree_shift()}: it fails the graded "
+                    "Leibniz rule on a generator"
                 )
             case _:
                 pass
@@ -615,7 +641,9 @@ class GradedDerivation(ModuleElement):
                 self._degree_preservation_decision = decision
                 self._graded_leibniz_decision = decision
             case _:
-                raise ValueError("a graded-derivation construction premise is True or Unknown")
+                raise ValueError(
+                    f"a graded derivation is recorded only when its defining laws are True or Unknown, but got {derived}"
+                )
 
     def _graded_derivation_derivation(self):
         r"""Return a construction-derived graded-derivation premise, or ``None`` for a stated map."""
@@ -853,7 +881,10 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
     def __init__(self, family, algebra, target) -> None:
         if algebra.base_ring() is not target.base_ring():
-            raise ValueError("a graded derivation requires one coefficient ring")
+            raise ValueError(
+                f"graded derivations {algebra} -> {target} need one coefficient ring, but they are over "
+                f"{algebra.base_ring()} and {target.base_ring()}"
+            )
         self._algebra = algebra
         self._target = target
         self._shift = family.degree_shift()
@@ -896,13 +927,17 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
             return function
         if isinstance(function, Morphism):
             if function.domain() is not self.algebra() or function.codomain() is not self.target():
-                raise ValueError("the linear map has the wrong graded-derivation endpoints")
+                raise ValueError(
+                    f"cannot view {function} as a graded derivation {self.algebra()} -> {self.target()}: it is a "
+                    f"map {function.domain()} -> {function.codomain()}"
+                )
             if (
                 not isinstance(function, GradedDerivationUnderlyingLinearMorphism)
                 or function.degree_shift() != self.degree_shift()
             ):
                 raise ValueError(
-                    "an arbitrary R-linear map alone does not supply the graded Leibniz rule required of a graded derivation"
+                    f"{function} is only a linear map; a graded derivation of degree {self.degree_shift()} must "
+                    "also satisfy the graded Leibniz rule"
                 )
             derivation = function.derivation()
             if derivation.parent() is self:
@@ -920,7 +955,9 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
     def elementwise(self, function):
         if not callable(function):
-            raise TypeError("a graded derivation is specified by an element map")
+            raise TypeError(
+                f"a graded derivation of {self.algebra()} needs a map on elements, but {function!r} is not callable"
+            )
         return GradedDerivation(self, function)
 
     def _from_constructed_elementwise(self, function):
@@ -981,7 +1018,10 @@ def _graded_derivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
     if target is None:
         target = algebra
     if algebra.base_ring() is not target.base_ring():
-        raise ValueError("a graded derivation requires one coefficient ring")
+        raise ValueError(
+            f"graded derivations {algebra} -> {target} need one coefficient ring, but they are over "
+            f"{algebra.base_ring()} and {target.base_ring()}"
+        )
     ring = algebra.base_ring()
     return GradedDerivationCategoryConstruction(Modules(ring), shift).Of(
         algebra,

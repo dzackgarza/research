@@ -7,7 +7,10 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules
 def _inverse_image_subobject(morphism, subobject):
     r"""Construct the pullback/preimage as the source image of ``ker(f,-i)``."""
     if subobject.inclusion().codomain() is not morphism.codomain():
-        raise ValueError("the subobject is not in the morphism codomain")
+        raise ValueError(
+            f"the preimage f^-1(A) needs A to be a subobject of the codomain {morphism.codomain()} of "
+            f"f = {morphism}, but {subobject} is a subobject of {subobject.inclusion().codomain()}"
+        )
 
     direct_sum = Modules(morphism.domain().base_ring()).biproduct(
         (morphism.domain(), subobject)

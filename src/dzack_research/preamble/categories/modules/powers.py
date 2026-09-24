@@ -108,11 +108,17 @@ class _PowerModuleParentMethods:
         r"""Read an ambient homogeneous element back in this power module."""
         algebra = self.ambient_power_algebra()
         if getattr(element, "parent", lambda: None)() is not algebra:
-            raise TypeError("the element belongs to a different ambient algebra")
+            raise TypeError(
+                f"cannot read {element!r} in the degree-{self.power_degree()} piece {self}: it is not an "
+                f"element of the graded algebra {algebra}"
+            )
         degree = self.power_degree()
         component = algebra.homogeneous_component(element, degree)
         if algebra.from_graded_piece(degree, component) != element:
-            raise ValueError("the ambient element has support outside this homogeneous degree")
+            raise ValueError(
+                f"{element} is not in the degree-{degree} piece {self} of {algebra}: it has nonzero "
+                f"components in other degrees"
+            )
         return self(component)
 
     def __contains__(self, element) -> bool:
@@ -232,7 +238,8 @@ class QuadraticModuleMorphism(ModuleMorphism):
         values = self._lift_coordinate_values
         if values is None:
             raise TypeError(
-                "this quadratic map has no selected bilinear coordinate presentation"
+                f"{self} has no chosen bilinear lift: it was not constructed from a matrix of values "
+                f"b(e_i, e_j) on a basis of {self.module()}"
             )
         return values
 
@@ -245,7 +252,10 @@ class QuadraticModuleMorphism(ModuleMorphism):
 
         module = self.module()
         if left not in module or right not in module:
-            raise TypeError(f"the coordinate lift pairs elements of {module}")
+            raise TypeError(
+                f"cannot evaluate the bilinear lift of {self} on ({left}, {right}): both arguments must "
+                f"be elements of {module}"
+            )
         left_coefficients = module.framing_coefficients(left)
         right_coefficients = module.framing_coefficients(right)
         target = self.codomain()
@@ -263,11 +273,16 @@ class QuadraticModuleMorphism(ModuleMorphism):
     def gram_tensor(self):
 
         if self.codomain() not in OwnedRings():
-            raise TypeError("a Gram tensor here requires scalar-valued lift entries")
+            raise TypeError(
+                f"{self} has no Gram matrix: its values lie in {self.codomain()}, which is not a ring"
+            )
         labels = self.module().module_generating_set()
         size = labels.cardinality()
         if not size.is_finite():
-            raise TypeError("a finite Gram tensor requires a finite module framing")
+            raise TypeError(
+                f"{self} has no finite Gram matrix: the chosen generating set {labels} of "
+                f"{self.module()} is not finite"
+            )
         rank = int(size.finite_value())
         return tensor(
             self.codomain(),
@@ -296,7 +311,10 @@ class QuadraticModuleMorphism(ModuleMorphism):
 
     def pullback(self, morphism):
         if morphism.codomain() is not self.module():
-            raise ValueError("the pullback map must land in the form's module")
+            raise ValueError(
+                f"cannot pull {self} back along {morphism}: its codomain {morphism.codomain()} is not "
+                f"the module {self.module()} of the quadratic map"
+            )
         induced = morphism.divided_square()
         result = self * induced
         values = self._lift_coordinate_values
@@ -330,7 +348,10 @@ class QuadraticModuleMor(ModuleMor):
 
     def _from_classifying_morphism(self, morphism, *, lift_coordinate_values=None):
         if morphism.domain() is not self.domain() or morphism.codomain() is not self.codomain():
-            raise ValueError("the quadratic classifier has the wrong endpoints")
+            raise ValueError(
+                f"{morphism} is not an element of {self}: it goes from {morphism.domain()} to "
+                f"{morphism.codomain()}, not from {self.domain()} to {self.codomain()}"
+            )
         return self.element_class(
             self,
             morphism,
@@ -383,7 +404,9 @@ class QuadraticModuleMor(ModuleMor):
                 rl = indices(lambda index: right if int(index) == 0 else left)
                 if values[lr] != values[rl]:
                     raise ValueError(
-                        "the bilinear lift of a quadratic form must be symmetric"
+                        f"the given values do not define a quadratic map on {source}: the value "
+                        f"{values[lr]} at ({left}, {right}) differs from the value {values[rl]} at "
+                        f"({right}, {left}), but the bilinear lift must be symmetric"
                     )
 
         def quadratic(element):
@@ -508,7 +531,7 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
 def _degree(degree) -> int:
     value = int(degree)
     if value < 0:
-        raise ValueError("a graded degree is nonnegative")
+        raise ValueError(f"{degree} is not a degree: a degree must be a nonnegative integer")
     return value
 
 
@@ -518,7 +541,9 @@ def _free_degree_labels(source_labels, degree: int, flavor: str):
         return source_labels.multisets_of_size(degree)
     if flavor == "alternating":
         return source_labels.ordered_subsets_of_size(degree)
-    raise ValueError(f"unknown power flavor {flavor!r}")
+    raise ValueError(
+        f"{flavor!r} is not a kind of power: expected 'symmetric', 'alternating' or 'divided'"
+    )
 
 
 def _symmetric_relation_rows(
@@ -669,12 +694,17 @@ def _presented_degree_power(
         return ring.free_module(labels)
 
     assert module in ModulesWithChosenFinitePresentation(ring), (
-        f"the represented {flavor} power backend requires a free module or a chosen finite presentation"
+        f"cannot compute the degree-{degree} {flavor} power of {module}: this algorithm needs a free "
+        f"module or a finitely presented module with a chosen finite presentation, but {module} is in "
+        f"{module.category()}"
     )
 
 
     if not source_labels.cardinality().is_finite():
-        raise TypeError("a chosen finite presentation must have a finite framing")
+        raise TypeError(
+            f"cannot compute the degree-{degree} {flavor} power of {module}: its chosen generating set "
+            f"{source_labels} is not finite"
+        )
 
 
     relation_rows = _presentation_rows(module)
@@ -703,7 +733,9 @@ def _presented_degree_power(
             ring,
         )
     else:
-        raise ValueError(f"unknown power flavor {flavor!r}")
+        raise ValueError(
+            f"{flavor!r} is not a kind of power: expected 'symmetric', 'alternating' or 'divided'"
+        )
 
 
     relation_matrix = ring.matrix_space(len(rows), int(labels.cardinality())).from_rows(tuple(tuple(row) for row in rows))
@@ -855,7 +887,10 @@ def _tensor_power_permutation(module, degree, positions):
         int(positions.cardinality()) != degree
         or any(int(position) < 0 or int(position) >= degree for position in positions)
     ):
-        raise ValueError("positions must be a permutation of the tensor slots")
+        raise ValueError(
+            f"cannot permute the factors of the tensor power {module}^(tensor {degree}): {positions} "
+            f"is not a permutation of 0, ..., {degree - 1}"
+        )
     power = module.tensor_power(degree)
 
     if degree == 0:
@@ -1124,7 +1159,9 @@ def _ordered_coefficient_support(module, coefficients):
             )
             if preceding == requested:
                 return label
-        raise IndexError(requested)
+        raise IndexError(
+            f"no generator of {module} at position {requested} of the support {tuple(coefficients)}"
+        )
 
     return FiniteOrderedSets().from_indexed(
         positions,

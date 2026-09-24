@@ -76,13 +76,18 @@ class FunctorImageMor(CategoricalMor):
             self.codomain().underlying_image(),
             arrow,
         ):
-            raise ValueError("the arrow is not a morphism between the underlying functor images")
+            raise ValueError(
+                f"{arrow} is not a morphism {self.domain().underlying_image()} -> "
+                f"{self.codomain().underlying_image()} in {self.image_category().functor().codomain()}"
+            )
         return FunctorImageMorphism(self, arrow)
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only for an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         underlying = self.domain().underlying_image()
         category = self.image_category().functor().codomain()
         return self(_category_mor_parent(category, underlying, underlying).identity())
@@ -90,9 +95,15 @@ class FunctorImageMor(CategoricalMor):
     def compose(self, second, first):
         r"""Compose two presented-image arrows through their codomain arrows."""
         if first.codomain() is not second.domain():
-            raise ValueError("the functor-image arrows are not composable")
+            raise ValueError(
+                f"cannot compose {second} o {first}: {first} ends at {first.codomain()}, but {second} starts "
+                f"at {second.domain()}"
+            )
         if first.domain() is not self.domain() or second.codomain() is not self.codomain():
-            raise ValueError("the composite does not have this Mor object's endpoints")
+            raise ValueError(
+                f"the composite {second} o {first} is a morphism {first.domain()} -> {second.codomain()}, not "
+                f"a morphism {self.domain()} -> {self.codomain()}"
+            )
         composite = second * first
         if composite.parent() is not self:
             return self(composite)
@@ -159,7 +170,10 @@ class ImageOfFunctor(OwnedCategory):
     def object(self, preimage):
         r"""``F(X)`` presented by ``X``: this category's one entry, one object per preimage."""
         if preimage not in self.functor().domain():
-            raise TypeError("a presented image starts from an object of the functor domain")
+            raise TypeError(
+                f"the image F(X) under F = {self.functor()} needs X an object of {self.functor().domain()}, "
+                f"but {preimage} is not one"
+            )
         # The image is computed here, so a preimage the functor does not send
         # anywhere is refused at construction rather than when first read.
         self.functor()(preimage)
@@ -169,7 +183,9 @@ class ImageOfFunctor(OwnedCategory):
 
     def Mor(self, domain: Parent, codomain: Parent):
         if domain not in self or codomain not in self:
-            raise TypeError("a functor-image Mor requires two presentations of this image category")
+            raise TypeError(
+                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     def identity(self, obj):

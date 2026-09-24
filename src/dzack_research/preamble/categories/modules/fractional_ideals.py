@@ -133,21 +133,29 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             its coordinates are a choice this representation does not make.
             """
             assert _engine_ring(self.base_ring()) is SageZZ, (
-                "coordinates in the spanning family of a fractional ideal are read over the "
-                "integers, where it is principal; over an order they are not unique"
+                f"coordinates of an element of {self} in its generators are computed only over ZZ, where "
+                f"a fractional ideal is principal; {self} is over {self.base_ring()}, where the "
+                f"generators need not be a basis and coordinates are not unique"
             )
             element = self(element)
             value = element._inclusion_value()
             if not self._module_generator_values:
-                assert value == 0, "a nonzero element has no coordinates in the zero ideal"
+                assert value == 0, (
+                    f"{value} has no coordinates in {self}: that is the zero ideal, and {value} is nonzero"
+                )
                 return {}
             labels = self.module_generating_set()
             (principal,) = self._module_generator_values
             if principal == 0:
-                assert value == 0, "a nonzero element has no coordinates in the zero ideal"
+                assert value == 0, (
+                    f"{value} has no coordinates in {self}: that is the zero ideal, and {value} is nonzero"
+                )
                 return {}
             coefficient = SageQQ(value / principal)
-            assert coefficient.denominator() == 1, "the element is not in this integral ideal"
+            assert coefficient.denominator() == 1, (
+                f"{value} has no coordinates in {self}: it is {coefficient} times the generator "
+                f"{principal}, and {coefficient} is not an integer"
+            )
             integers = self.base_ring()
             return (
                 {}
@@ -251,10 +259,10 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             r"""Return ``I^{-1}={x in K : xI subseteq R}`` for an invertible ideal."""
             if _engine_ring(self.base_ring()) is SageZZ:
                 value = self.principal_generator()
-                assert value != 0, "the zero fractional ideal is not invertible"
+                assert value != 0, f"{self} has no inverse: it is the zero ideal, and only nonzero fractional ideals are invertible"
                 return self.base_ring().fractional_ideal(value**-1)
             assert any(value != 0 for value in self._module_generator_values), (
-                "the zero fractional ideal is not invertible"
+                f"{self} has no inverse: it is the zero ideal, and only nonzero fractional ideals are invertible"
             )
             return _inverse_order_fractional_ideal(self)
 
@@ -264,7 +272,10 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
 
         def sum(self, other):
             r"""Return ``I+J`` inside the common fraction field."""
-            assert self.base_ring() is other.base_ring(), "fractional-ideal sum requires the same base ring"
+            assert self.base_ring() is other.base_ring(), (
+                f"the sum {self} + {other} is not defined: both must be fractional ideals of one ring, "
+                f"but they are over {self.base_ring()} and {other.base_ring()}"
+            )
             other = _in_fraction_field(self.base_ring(), other)
             field = self.fraction_field()
             values = tuple(
@@ -285,7 +296,8 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         def intersection(self, other):
             r"""Return ``I intersect J`` inside the common fraction field."""
             assert self.base_ring() is other.base_ring(), (
-                "fractional-ideal intersection requires the same base ring"
+                f"the intersection of {self} and {other} is not defined: both must be fractional ideals "
+                f"of one ring, but they are over {self.base_ring()} and {other.base_ring()}"
             )
             other = _in_fraction_field(self.base_ring(), other)
             if _engine_ring(self.base_ring()) is SageZZ:
@@ -427,14 +439,18 @@ class FractionalIdealInclusion(ModuleEmbedding):
     def is_primitive(self) -> bool:
 
         assert self.codomain() in FramedModules(self.domain().base_ring()), (
-            "represented primitivity for a fractional-ideal inclusion requires a framed ambient module"
+            f"primitivity of the inclusion {self.domain()} -> {self.codomain()} is computed here only when "
+            f"{self.codomain()} has chosen module generators over {self.domain().base_ring()}, but it is in "
+            f"{self.codomain().category()}"
         )
         return super().is_primitive()
 
     def index(self):
 
         assert self.codomain() in FramedModules(self.domain().base_ring()), (
-            "represented index for a fractional-ideal inclusion requires a framed ambient module"
+            f"the index of the inclusion {self.domain()} -> {self.codomain()} is computed here only when "
+            f"{self.codomain()} has chosen module generators over {self.domain().base_ring()}, but it is in "
+            f"{self.codomain().category()}"
         )
         return super().index()
 
@@ -648,7 +664,9 @@ def _inverse_order_fractional_ideal(ideal):
         for value in ideal._module_generator_values
         if field(value) != 0
     )
-    assert nonzero_values, "the zero fractional ideal is not invertible"
+    assert nonzero_values, (
+        f"{ideal} has no inverse: it is the zero ideal, and only nonzero fractional ideals are invertible"
+    )
 
     inverse_integer_submodule = _integer_coordinate_submodule(
         ring.fractional_ideal(nonzero_values[0] ** -1)
@@ -692,7 +710,8 @@ def _fractional_ideal(ring, values):
     if engine is SageZZ:
         return _fractional_ideal_from_backend(ring, _zz_fractional_generator(values))
     assert ring in OwnedOrders(), (
-        "the represented nonprincipal fractional-ideal engine requires ZZ or a number-field order"
+        f"fractional ideals of {ring} are constructed here only for ZZ and for orders in number fields, "
+        f"but {ring} is in {ring.category()}"
     )
     field_values = tuple(
         _fraction_field_backend_value(ring, value) for value in values

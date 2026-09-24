@@ -169,7 +169,8 @@ def _glued_relative_spectrum(
     structure = glued.Mor(base_scheme)(local_maps)
     atlas = glued.gluing_datum()
     assert all(structure * atlas.chart_embedding(index) == local_maps[index] for index in indices), (
-        "the relative-Spec structure map does not restrict to its affine chart maps"
+        f"the structure morphism {structure} of the relative spectrum over {base_scheme} does "
+        "not restrict on each affine chart to Spec of that chart's algebra structure map"
     )
     return glued.scheme_category().SliceOver(base_scheme)(structure)
 
@@ -221,7 +222,9 @@ def _relative_spectrum_morphism(morphism):
     }
     induced = target_scheme.Mor(source_scheme)(local_maps)
     assert source_relative.arrow() * induced == target_relative.arrow(), (
-        "relative Spec of an algebra map does not lie over the base scheme"
+        f"the morphism {induced} of relative spectra induced by {morphism} is not a morphism "
+        f"over the base scheme: it does not commute with the structure morphisms to "
+        f"{source_relative.arrow().codomain()}"
     )
     return induced
 

@@ -60,13 +60,15 @@ class _ProjectiveActionEngine:
 
     def coordinate_weights(self):
         assert self._coordinate_weights is not None, (
-            "this represented projective action carries no coordinate-weight datum"
+            f"the action of {self.acting_group()} on {self} is not given by scalar weights on "
+            "the homogeneous coordinates"
         )
         return self._coordinate_weights
 
     def local_automorphisms(self):
         assert self._local_automorphisms is not None, (
-            "this represented projective action carries no affine-chart automorphism datum"
+            f"the action of {self.acting_group()} on {self} is not given by automorphisms of "
+            "its standard affine charts"
         )
         return self._local_automorphisms
 
@@ -118,7 +120,10 @@ def _line_bundle_scalar_isomorphism(line_bundle, scalar):
     r"""The scalar automorphism of a represented trivialized line bundle."""
 
     scalar = line_bundle.scheme().scheme_base_ring()(scalar)
-    assert scalar.is_unit(), "a line-bundle linearization scalar is a unit"
+    assert scalar.is_unit(), (
+        f"multiplication by {scalar} is not an automorphism of {line_bundle}: "
+        f"{scalar} is not a unit of {scalar.parent()}"
+    )
     sheaves = QuasiCoherentSheaves(line_bundle.scheme())
     forward = _line_bundle_scalar_morphism(line_bundle, scalar)
     inverse = _line_bundle_scalar_morphism(line_bundle, scalar.inverse_of_unit())
@@ -141,27 +146,36 @@ def _line_bundle_linearization(line_bundle, scheme_action, character):
     scheme = scheme_action.action_functor().underlying_object()
     base = scheme.scheme_base_ring()
     assert scheme_action in GObjects(group, Schemes(base)), (
-        "a line-bundle linearization requires an owned G-scheme"
+        f"cannot linearize {line_bundle} along {scheme_action}: a linearization needs an "
+        f"action of {group} on the scheme {scheme}, and this is not a {group}-scheme"
     )
     match scheme:
         case _ if scheme in ProjectiveSpaces(base):
             assert line_bundle.projective_space() is scheme, (
-                "a projective linearization belongs to a line bundle on the acted projective space"
+                f"cannot linearize {line_bundle} along the action of {group} on {scheme}: the "
+                f"line bundle lives on {line_bundle.projective_space()}, not on {scheme}"
             )
             engine = _ProjectiveLineBundleLinearization
         case _ if scheme in ProductProjectiveSpaces(base):
             assert line_bundle.projective_product() is scheme, (
-                "a multiprojective linearization belongs to a line bundle on the acted product"
+                f"cannot linearize {line_bundle} along the action of {group} on {scheme}: the "
+                f"line bundle lives on {line_bundle.projective_product()}, not on {scheme}"
             )
             engine = _ProductProjectiveLineBundleLinearization
         case _:
-            assert False, f"the represented linearization engines do not cover {scheme}"
+            assert False, (
+                f"cannot linearize {line_bundle} on {scheme}: linearizations are implemented "
+                "only on projective spaces and products of projective spaces"
+            )
 
     sheaves = QuasiCoherentSheaves(scheme)
 
     def lift(group_element):
         scalar = base(character(group(group_element)))
-        assert scalar.is_unit(), "a linearization character takes values in scalar units"
+        assert scalar.is_unit(), (
+            f"the character does not take values in the units of {base}: it sends "
+            f"{group_element} to {scalar}"
+        )
         return _line_bundle_scalar_morphism(line_bundle, scalar)
 
     action = GroupActionFunctor(group, sheaves, line_bundle, lift)
@@ -253,13 +267,17 @@ class _ProjectiveLineBundleLinearization:
         scheme_action_functor = scheme_action.action_functor()
         group = scheme_action.acting_group()
         assert scheme_action in GObjects(group, Schemes(base)), (
-            "a projective linearization requires an owned G-scheme"
+            f"cannot linearize {line_bundle} along {scheme_action}: a linearization needs an "
+            f"action of {group} on {scheme}, and this is not a {group}-scheme"
         )
         assert scheme_action_functor.underlying_object() is scheme, (
-            "the projective action acts on the line bundle's scheme"
+            f"cannot linearize {line_bundle} along the action of {group}: the group acts on "
+            f"{scheme_action_functor.underlying_object()}, but the line bundle lives on {scheme}"
         )
         assert group.is_finite() is True, (
-            "character-twist validation is represented here for a finite acting group"
+            f"cannot linearize {line_bundle} along the action of {group}: checking that the "
+            "twist is a character is implemented only for finite groups, and this group is "
+            "not known to be finite"
         )
         self._group = group
         self._character = character
@@ -294,21 +312,28 @@ class _ProjectiveLineBundleLinearization:
     def character_value(self, group_element):
         base = self.section_scheme().scheme_base_ring()
         value = base(self._character(self.acting_group()(group_element)))
-        assert value.is_unit(), "a linearization character takes values in scalar units"
+        assert value.is_unit(), (
+            f"the character of {self} does not take values in the units of {base}: it "
+            f"sends {group_element} to {value}"
+        )
         return value
 
     def _validate_character(self) -> None:
         group = self.acting_group()
         base = self.section_scheme().scheme_base_ring()
         assert self.character_value(group.one()) == base.one(), (
-            "a linearization character sends the identity to one"
+            f"the twist of {self} is not a character of {group}: it sends the identity to "
+            f"{self.character_value(group.one())}, not to 1"
         )
         elements = tuple(group)
         for left in elements:
             for right in elements:
                 assert self.character_value(left * right) == (
                     self.character_value(left) * self.character_value(right)
-                ), "the selected linearization twist is not a character"
+                ), (
+                    f"the twist of {self} is not a character of {group}: it is not "
+                    f"multiplicative on the pair {left}, {right}"
+                )
 
     def scheme_action_of(self, group_element):
         group_element = self.acting_group()(group_element)
@@ -377,15 +402,17 @@ class _ProjectiveLineBundleLinearization:
         """
         degree = int(degree)
         if degree < 0:
-            raise ValueError("a coherent cohomology degree is nonnegative")
+            raise ValueError(
+                f"H^{degree}({self.line_bundle()}) is undefined: cohomology degrees are nonnegative"
+            )
         supported_h1 = (
             int(self.projective_space().relative_dimension()) == 1
             and degree == 1
             and self.line_bundle().degree() >= 0
         )
         assert degree == 0 or supported_h1, (
-            "coherent cohomology actions are represented here on H^0 and on the vanishing H^1 "
-            "of nonnegative O(d) on P^1"
+            f"the action of {self.acting_group()} on H^{degree}({self.line_bundle()}) is "
+            "implemented only on H^0, and on H^1 of O(d) with d >= 0 on P^1, where it vanishes"
         )
         if degree == 0:
             return self.section_group_module()
@@ -403,7 +430,11 @@ class _ProjectiveLineBundleLinearization:
         stability of the kernel makes that independent of the preimage.
         """
         if not self.is_eigensection_divisor(divisor):
-            raise ValueError("equivariant restriction here requires an invariant eigensection divisor of this linearization")
+            raise ValueError(
+                f"cannot restrict sections of {self.line_bundle()} equivariantly to {divisor}: "
+                "equivariant restriction is implemented only to the zero divisor of an "
+                "eigensection of this linearization"
+            )
         restriction = self.line_bundle().restriction_map(divisor)
         source = self.section_group_module()
         target_unacted = restriction.codomain()
@@ -437,7 +468,8 @@ class _ProjectiveLineBundleLinearization:
         sections = self.line_bundle().global_sections()
         section = sections(section)
         assert self.is_eigensection(section, character), (
-            "the selected section does not transform through this character"
+            f"{section} is not an eigensection of {self} for the given character, so its zero "
+            "divisor is not known to be invariant"
         )
         polynomial = sections.homogeneous_polynomial(section)
         return self.projective_space().closed_subscheme(
@@ -457,7 +489,7 @@ class _ProjectiveLineBundleLinearization:
                 return divisor
             case _:
                 assert False, (
-                    "this divisor was not constructed from an eigensection of this linearization"
+                    f"{divisor} is not the zero divisor of an eigensection of {self}"
                 )
 
     def is_eigensection_divisor(self, divisor) -> bool:
@@ -477,13 +509,19 @@ class _ProjectiveLineBundleLinearization:
             None,
         )
         if pivot is None:
-            raise ValueError("projective point coordinates cannot all vanish")
+            raise ValueError(
+                f"{point} is not a point of projective space: its homogeneous coordinates "
+                f"{coordinates} all vanish"
+            )
         inverse = pivot.inverse_of_unit()
         return tuple(coordinate * inverse for coordinate in coordinates)
 
     def point_is_fixed(self, point) -> bool:
         if point.codomain() is not self.projective_space():
-            raise ValueError("fixed-point evaluation requires a point of the acted projective space")
+            raise ValueError(
+                f"cannot ask whether {point} is fixed by {self.acting_group()}: it is a point "
+                f"of {point.codomain()}, not of {self.projective_space()}"
+            )
         selected = self._normalized_projective_coordinates(point)
         for group_element in self.acting_group():
             image = self.scheme_action_of(group_element).image_of_point(point)
@@ -495,7 +533,10 @@ class _ProjectiveLineBundleLinearization:
     def fixed_point_fiber_evaluation(self, point):
         r"""Return the equivariant evaluation ``H^0(P,L) -> L|_p`` at a fixed point."""
         if not self.point_is_fixed(point):
-            raise ValueError("equivariant fiber evaluation requires a fixed point")
+            raise ValueError(
+                f"cannot evaluate sections of {self.line_bundle()} equivariantly at {point}: "
+                f"the point is not fixed by {self.acting_group()}"
+            )
         source = self.section_group_module()
         sections = source.unformed_module()
         evaluation = self.line_bundle().jet_evaluation(point, 1)
@@ -541,11 +582,15 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
         super().__init__(line_bundle, scheme_action, character, **rest)
         scheme = self.projective_product()
         assert int(self.acting_group().order()) == 2, (
-            "the represented coordinate-weight specialization is the C2 action"
+            f"cannot linearize {line_bundle} along the action of {self.acting_group()}: "
+            "coordinate-weight linearizations of products of projective spaces are "
+            "implemented only for groups of order 2"
         )
         weights = scheme_action.coordinate_weights()
         assert weights.index_set() is scheme.factors().index_set(), (
-            "the product action retains coordinate weights on the exact factor index set"
+            f"the coordinate weights of the action on {scheme} are indexed by "
+            f"{weights.index_set()}, not by the factors {scheme.factors().index_set()} of "
+            "the product"
         )
         self._coordinate_action = scheme_action
 
@@ -624,9 +669,12 @@ class _ProductProjectiveLineBundleLinearization(_ProjectiveLineBundleLinearizati
         r"""Return the represented action on ``H^0`` of this multiprojective line bundle."""
         degree = int(degree)
         if degree < 0:
-            raise ValueError("a coherent cohomology degree is nonnegative")
+            raise ValueError(
+                f"H^{degree}({self.line_bundle()}) is undefined: cohomology degrees are nonnegative"
+            )
         assert degree == 0, (
-            "higher multiprojective coherent cohomology actions belong to the general product-projective cohomology owner"
+            f"the action of {self.acting_group()} on H^{degree}({self.line_bundle()}) is "
+            "implemented only in degree 0 on a product of projective spaces"
         )
         return self.section_group_module()
 
@@ -644,10 +692,17 @@ def _c2_diagonal_product_projective_action(projective_product, group=None):
     indices = factors.index_set()
     for label in indices:
         if int(factors[label].relative_dimension()) != 1:
-            raise TypeError("the diagonal sign action is represented here on products of projective lines")
+            raise TypeError(
+                f"the diagonal sign action is defined only on products of projective lines, "
+                f"but the factor {factors[label]} of {projective_product} has dimension "
+                f"{factors[label].relative_dimension()}"
+            )
     group = OwnedGroups().C(2) if group is None else group
     if int(group.order()) != 2:
-        raise ValueError("the diagonal sign action requires a group of order two")
+        raise ValueError(
+            f"the diagonal sign action on {projective_product} needs a group of order 2, "
+            f"but {group} has order {group.order()}"
+        )
     weights = finite_indexed_family(
         indices,
         lambda _label: (base.one(), -base.one()),
@@ -726,14 +781,23 @@ def _projective_line_coordinate_swap_action(projective_line, group=None):
     r"""Return the ``C2`` action on ``P^1`` interchanging its two coordinates."""
     base = projective_line.scheme_base_ring()
     if int(projective_line.relative_dimension()) != 1:
-        raise TypeError("the coordinate-swap action is defined on a projective line")
+        raise TypeError(
+            f"the coordinate-swap action is defined only on P^1, but {projective_line} has "
+            f"dimension {projective_line.relative_dimension()}"
+        )
     group = OwnedGroups().C(2) if group is None else group
     if int(group.order()) != 2:
-        raise ValueError("the coordinate-swap action requires a group of order two")
+        raise ValueError(
+            f"the coordinate-swap action on {projective_line} needs a group of order 2, "
+            f"but {group} has order {group.order()}"
+        )
     ring = projective_line.O(1).global_sections().homogeneous_coordinate_ring()
     labels = tuple(ring.algebra_generating_set())
     if len(labels) != 2:
-        raise ArithmeticError("a projective line has two homogeneous coordinates")
+        raise ArithmeticError(
+            f"{projective_line} should have 2 homogeneous coordinates, but its coordinate "
+            f"ring {ring} has {len(labels)}"
+        )
     left = ring.algebra_generator(labels[0])
     right = ring.algebra_generator(labels[1])
     identity = projective_line.projective_morphism_from_coordinates(

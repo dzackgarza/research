@@ -87,7 +87,8 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
                 None,
             )
             assert refined is not None, (
-                "star subdivision keeps every ray of the source fan"
+                f"the ray {source_ray} of the original fan is missing from the fan of the blowup "
+                f"{self}, but a star subdivision keeps every ray"
             )
             return refined
 
@@ -147,7 +148,8 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
         def del_pezzo_degree(self):
             r"""Return ``(-K)^2`` for a represented toric del Pezzo blowup."""
             assert self.is_del_pezzo(), (
-                "the degree (-K)^2 is taken of a del Pezzo surface"
+                f"the degree (-K)^2 of a del Pezzo surface is undefined for {self}: its "
+                "anticanonical divisor is not ample"
             )
             anticanonical = -self.canonical_divisor()
             return self.divisor_intersection(anticanonical, anticanonical)
@@ -162,20 +164,25 @@ def _toric_fixed_point_blowup(surface, center_cone):
     """
     base = surface.scheme_base_ring()
     assert surface in ToricSchemes(base), (
-        "a torus-fixed point blowup is taken of a toric surface"
+        f"the blowup at a torus-fixed point needs a toric variety over {base}, but {surface} "
+        f"is in {surface.category()}"
     )
     fan = surface.fan()
     assert int(fan.dimension()) == 2, (
-        "the torus-fixed point blowup is constructed for surfaces"
+        f"the blowup at a torus-fixed point is implemented only for toric surfaces, but "
+        f"{surface} has dimension {fan.dimension()}"
     )
     assert fan.is_smooth(), (
-        "the torus-fixed point blowup is constructed on a smooth source fan"
+        f"the blowup at a torus-fixed point is implemented only for smooth toric surfaces, but "
+        f"the fan of {surface} is not smooth"
     )
     assert center_cone in fan.maximal_cones(), (
-        "the blowup center is a maximal cone of the source fan"
+        f"the center of the blowup of {surface} must be a torus-fixed point, that is a maximal "
+        f"cone of its fan, but {center_cone} is not a maximal cone"
     )
     assert center_cone.rays().cardinality() == 2, (
-        "a torus-fixed point of a smooth toric surface is indexed by a two-ray cone"
+        f"the maximal cone {center_cone} of the smooth toric surface {surface} should have 2 "
+        f"rays, but it has {center_cone.rays().cardinality()}"
     )
     first, second = tuple(center_cone.rays())
     new_ray_vector = first + second
@@ -193,10 +200,11 @@ def _toric_fixed_point_blowup(surface, center_cone):
         )
     )
     assert refined_fan.is_smooth(), (
-        "the star subdivision of a smooth surface cone is smooth"
+        f"the star subdivision of the fan of {surface} at {center_cone} is not smooth, although "
+        "the star subdivision of a smooth two-dimensional cone at the sum of its rays is smooth"
     )
     assert refined_fan.is_complete() or not fan.is_complete(), (
-        "the star subdivision of a complete fan is complete"
+        f"the star subdivision of the complete fan of {surface} at {center_cone} is not complete"
     )
     exceptional = next(
         (
@@ -207,7 +215,8 @@ def _toric_fixed_point_blowup(surface, center_cone):
         None,
     )
     assert exceptional is not None, (
-        "the star subdivision contains the ray u+v"
+        f"the star subdivision of the fan of {surface} at {center_cone} does not contain the new "
+        f"ray u + v = {new_ray_vector}"
     )
     return refined_fan.toric_variety(
         base,

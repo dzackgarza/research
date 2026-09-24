@@ -160,10 +160,16 @@ class SparseFreeAlgebraMorphism(Morphism):
             )
         elif isinstance(images, dict):
             if not labels.cardinality().is_finite():
-                raise TypeError("an infinite generator assignment is specified by a callable or indexed family")
+                raise TypeError(
+                    f"a dictionary of generator images needs finitely many algebra generators of {domain}, but it "
+                    f"has {labels.cardinality()}; give a function or an indexed family"
+                )
             missing = [label for label in labels if label not in images]
             if missing:
-                raise ValueError(f"algebra-generator assignment omits {missing}")
+                raise ValueError(
+                    f"the images of the algebra generators of {domain} must be given for every generator, but "
+                    f"{missing} are missing"
+                )
             self._generator_images = indexed_family(
                 labels,
                 lambda label: self.codomain()(images[label]),
@@ -176,7 +182,9 @@ class SparseFreeAlgebraMorphism(Morphism):
                 name="Generator images",
             )
         else:
-            raise TypeError("an algebra morphism is specified on its algebra generators")
+            raise TypeError(
+                f"a morphism out of {domain} is given by the images of its algebra generators, but got {images!r}"
+            )
         self._raw_image = self._generator_images.value
         self._component_maps: dict[Any, Any] = {}
 
@@ -241,7 +249,8 @@ class SparseFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
 
     def __init__(self, mor_family, domain, codomain) -> None:
         assert domain in TensorAlgebras(domain.base_ring()) or domain in SymmetricAlgebras(domain.base_ring()), (
-            "the word-map domain is a tensor or symmetric algebra"
+            f"a morphism given on words needs a tensor algebra or a symmetric algebra as domain, but "
+            f"{domain} is neither"
         )
         CategoricalMor.__init__(
             self,
@@ -255,7 +264,9 @@ class SparseFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         return self(lambda label: self.domain().algebra_generator(label))
 
 

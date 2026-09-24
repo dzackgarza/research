@@ -102,7 +102,7 @@ class NonNegativeReals(UniqueRepresentation, Parent):
         if value is Infinity:
             return self.element_class(self, Infinity)
         if value is minus_infinity:
-            raise ValueError(f"{value} is negative")
+            raise ValueError(f"{value} is not in [0, +Infinity]: it is negative")
         if sage_parent(value) is self:
             return value
         real = RR(value)
@@ -113,14 +113,15 @@ class NonNegativeReals(UniqueRepresentation, Parent):
         if atom is Infinity:
             return self.element_class(self, Infinity)
         if atom is minus_infinity:
-            raise ValueError(f"{value} is negative")
+            raise ValueError(f"{value} is not in [0, +Infinity]: it is negative")
         nonnegative = real >= RR.zero()
         if nonnegative is True:
             return self.element_class(self, real)
         if nonnegative is False:
-            raise ValueError(f"{value} is negative")
+            raise ValueError(f"{value} is not in [0, +Infinity]: it is negative")
         raise TypeError(
-            f"nonnegativity of {value} is undecided; use ask({real} >= 0)"
+            f"cannot decide whether {value} is in [0, +Infinity]: it is undecided whether {real} >= 0; "
+            f"use ask({real} >= 0)"
         )
 
     def __contains__(self, value) -> bool:

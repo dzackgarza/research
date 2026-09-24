@@ -72,17 +72,22 @@ def _projective_complete_intersection(ambient, equations, placements=(), **level
     """
     base = ambient.scheme_base_ring()
     assert ambient in ProjectiveSpaces(base), (
-        "the represented complete-intersection criterion requires a projective-space ambient"
+        f"a complete intersection V_+(f_1, ..., f_r) is constructed here only inside projective "
+        f"space P^n over {base}, but {ambient} is in {ambient.category()}"
     )
     assert _complete_intersection_base_supported(base), (
-        "the represented complete-intersection criterion requires a field, a localization of a "
-        "represented base, or a polynomial parameter algebra over a field"
+        f"the regular-sequence test for a complete intersection in {ambient} is implemented only "
+        f"over a field, a localization of a supported ring, or a polynomial ring over a field, "
+        f"but the base ring is {base}"
     )
     family = _projective_equation_family(_equation_family(equations))
-    assert family.cardinality() > 0, "a selected regular sequence is nonempty"
+    assert family.cardinality() > 0, (
+        f"a complete intersection in {ambient} needs at least one equation, but none were given"
+    )
     engine = _engine_projective_subscheme(_engine_scheme(ambient), family)
     assert _is_regular_sequence(engine), (
-        "the selected homogeneous equations do not form a regular sequence"
+        f"the equations {family} do not form a regular sequence in the homogeneous coordinate "
+        f"ring of {ambient}, so V_+ of them is not a complete intersection"
     )
     return _projective_closed_subscheme(
         ambient, family, placements=(ProjectiveCompleteIntersections(base), *placements),
@@ -140,7 +145,8 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         The equations are given one by one or as one finite family.
         """
         assert ambient.scheme_base_ring() is self.base_ring(), (
-            "a complete intersection is constructed in a projective space over this category's base ring"
+            f"cannot construct a complete intersection of {self} in {ambient}: it lies over "
+            f"{ambient.scheme_base_ring()}, not over {self.base_ring()}"
         )
         return _projective_complete_intersection(ambient, equations)
 
@@ -183,14 +189,16 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         def base_change_source_complete_intersection(self):
             r"""``X`` for ``X_{R'} = X x_{Spec R} Spec R'``: the domain of the left cospan leg."""
             assert self in FiberProductSchemes(self.scheme_base_ring()), (
-                "this complete intersection was not constructed as a scalar base change"
+                f"{self} was not constructed as a base change X x_(Spec R) Spec R', so it has "
+                "no original complete intersection X"
             )
             return self.fiber_product_cospan()[0].domain()
 
         def base_change_projection(self):
             r"""The projection ``X_{R'} -> X`` of the scalar base-change pullback."""
             assert self in FiberProductSchemes(self.scheme_base_ring()), (
-                "this complete intersection was not constructed as a scalar base change"
+                f"{self} was not constructed as a base change X x_(Spec R) Spec R', so it has "
+                "no projection to an original complete intersection X"
             )
             return self.left_projection()
 
@@ -232,11 +240,12 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             """
             base = self.scheme_base_ring()
             assert base in OwnedFields(), (
-                "the represented complete-intersection normality criterion applies to a selected field fibre, "
-                "not a relative family inferred only from its equations"
+                f"normality of the complete intersection {self} is decided here only over a field, "
+                f"but its base ring {base} is not a field"
             )
             assert int(_engine_ring(base).characteristic()) == 0, (
-                "the represented complete-intersection normality criterion requires characteristic zero"
+                f"normality of the complete intersection {self} is decided here only in "
+                f"characteristic zero, but {base} has characteristic {_engine_ring(base).characteristic()}"
             )
             dimension = int(self.expected_dimension())
             if dimension == 0:
@@ -303,7 +312,8 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             ampleness question is delegated to that line-bundle object.
             """
             assert self.scheme_base_ring() in OwnedFields(), (
-                "the del Pezzo predicate is a fibrewise projective-surface question over a field"
+                f"whether {self} is a del Pezzo surface is decided here only over a field, but its "
+                f"base ring {self.scheme_base_ring()} is not a field"
             )
             if int(self.expected_dimension()) != 2:
                 return False
@@ -332,7 +342,10 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
 
         def del_pezzo_degree(self):
             r"""Return ``(-K_X)^2 = (n + 1 - sum d_i)^2 prod d_i`` for a del Pezzo complete intersection."""
-            assert self.is_del_pezzo(), "the represented complete intersection is not a del Pezzo surface"
+            assert self.is_del_pezzo(), (
+                f"the degree (-K)^2 of a del Pezzo surface is undefined for {self}: it is not a "
+                "del Pezzo surface"
+            )
             coefficient = self.anticanonical_twist_degree()
             return coefficient**2 * self.projective_degree()
 

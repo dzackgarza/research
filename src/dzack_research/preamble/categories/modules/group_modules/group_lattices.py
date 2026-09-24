@@ -54,15 +54,22 @@ class GroupLatticeMor(LatticeMor):
 
     def __init__(self, mor_family, domain, codomain) -> None:
         if domain.group() != codomain.group():
-            raise ValueError("a group-lattice Mor has one acting group")
+            raise ValueError(
+                f"no equivariant lattice morphisms {domain} -> {codomain}: the domain is acted on by "
+                f"{domain.group()} but the codomain by {codomain.group()}; both must carry an action of one group"
+            )
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("a group-lattice Mor has one coefficient ring")
+            raise ValueError(
+                f"no equivariant lattice morphisms {domain} -> {codomain}: the domain is a lattice over "
+                f"{domain.base_ring()} but the codomain over {codomain.base_ring()}; both must have one base ring"
+            )
         super().__init__(mor_family, domain, codomain)
 
     def _check_equivariance(self, morphism) -> None:
         group = self.domain().group()
         assert group in OwnedGroups().Framed(), (
-            "verifying a group-lattice morphism requires a represented finite generating set of the acting group"
+            f"cannot check that a morphism {domain} -> {codomain} is {group}-equivariant: this needs a chosen "
+            f"generating set of {group}, but {group} is only known to be in {group.category()}"
         )
         domain = self.domain()
         codomain = self.codomain()
@@ -72,7 +79,10 @@ class GroupLatticeMor(LatticeMor):
                 if morphism(domain.act(group_generator, vector)) != codomain.act(
                     group_generator, morphism(vector)
                 ):
-                    raise ValueError("a group-lattice morphism must be G-equivariant")
+                    raise ValueError(
+                        f"{morphism} is not {group}-equivariant: it does not commute with the action of "
+                        f"the group generator {group_generator} on the lattice generator {vector} of {domain}"
+                    )
 
     def _element_constructor_(self, images):
         morphism = super()._element_constructor_(images)
@@ -136,7 +146,10 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         left, right = plane.module_generators()
         swap = plane.Aut()({labels[0]: right, labels[1]: left})
         group = self.acting_group()
-        assert group.cardinality() == 2, "the sample action is a swap, an action of C_2"
+        assert group.cardinality() == 2, (
+            f"the sample object of {self} is the hyperbolic plane with its swap, which needs a group of order 2, "
+            f"but {group} has order {group.cardinality()}"
+        )
         return self(plane, lambda g, vector: vector if g == group.one() else swap(vector))
 
     def _call_(self, lattice, action):
@@ -156,7 +169,8 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             """
             module = source_group_module.unformed_module()
             assert source_form.module() is module, (
-                "a group lattice's action and form are stated on one lattice"
+                f"cannot equip one lattice with both an action and a form: the {source_group_module.group()}-action "
+                f"is on {module} but the form {source_form} is on {source_form.module()}"
             )
             self._preamble_source_group_module = source_group_module
             super().__init__(
@@ -248,7 +262,10 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         def act(self, group_element, vector):
 
             if vector.parent() is not self:
-                raise TypeError(f"the action is on elements of {self}")
+                raise TypeError(
+                    f"{vector} is not an element of the lattice {self}, so {group_element} cannot act on it; "
+                    f"its parent is {vector.parent()}"
+                )
             return self.action()(group_element)(vector)
 
         def action_of(self, group_element):
@@ -272,7 +289,8 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             """
             group = self.group()
             assert group in OwnedGroups().Framed(), (
-                "constructing an invariant lattice requires a chosen finite group generating set"
+                f"cannot compute the invariant lattice of {self}: this needs a chosen finite generating set of "
+                f"{group}, but {group} is only known to be in {group.category()}"
             )
             generators = tuple(group.group_generators())
             if not generators:
@@ -312,7 +330,8 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             component_module = module_inclusion.domain()
             if module_inclusion.codomain() is not self.unformed_module():
                 raise ArithmeticError(
-                    "the isotypic module component is not embedded in the retained lattice module"
+                    f"the {character}-isotypic component of {self} is not a submodule of its underlying module "
+                    f"{self.unformed_module()}: its inclusion has codomain {module_inclusion.codomain()}"
                 )
             embedded_basis = tuple(
                 self(module_inclusion(component_module.module_generator(label)))

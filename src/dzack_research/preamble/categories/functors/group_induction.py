@@ -60,7 +60,8 @@ def _subgroup_data(ring_map):
     subgroup = _owned_ring(ring_map.domain()).group()
     supergroup = _owned_ring(ring_map.codomain()).group()
     assert supergroup.is_finite() is True, (
-        "the transversal realization of induction and coinduction requires a finite containing group"
+        f"induction and coinduction along {ring_map} are computed from coset representatives, which "
+        f"needs the group {supergroup} to be finite, but it is not known to be finite"
     )
     return subgroup, supergroup, subgroup.inclusion()
 
@@ -214,7 +215,9 @@ class _InductionFunctor(_ScalarExtensionFunctor):
                 coset for coset in self._left_cosets if coset[0] == representative
             ):
                 return representative
-        raise AssertionError("the subgroup coset must contain the identity")
+        raise AssertionError(
+            "no left coset of the subgroup contains the identity, so the cosets were computed wrongly"
+        )
 
     def _decompose_left(self, group_element):
         for coset in self._left_cosets:
@@ -224,7 +227,9 @@ class _InductionFunctor(_ScalarExtensionFunctor):
                     representative**-1 * group_element
                 )
                 return representative, subgroup_element
-        raise AssertionError("finite left cosets partition the containing group")
+        raise AssertionError(
+            f"{group_element} lies in no left coset of the subgroup, so the cosets do not partition the group"
+        )
 
     def _apply_object(self, group_module):
         module = _finite_coset_sum(group_module, self.representatives())
@@ -313,7 +318,9 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
                 coset for coset in self._right_cosets if coset[0] == representative
             ):
                 return representative
-        raise AssertionError("the subgroup coset must contain the identity")
+        raise AssertionError(
+            "no right coset of the subgroup contains the identity, so the cosets were computed wrongly"
+        )
 
     def _decompose_right(self, group_element):
         for coset in self._right_cosets:
@@ -323,7 +330,9 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
                     group_element * representative**-1
                 )
                 return subgroup_element, representative
-        raise AssertionError("finite right cosets partition the containing group")
+        raise AssertionError(
+            f"{group_element} lies in no right coset of the subgroup, so the cosets do not partition the group"
+        )
 
     def _apply_object(self, group_module):
         module = _finite_coset_sum(group_module, self.representatives())

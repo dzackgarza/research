@@ -79,29 +79,37 @@ class FiniteGluedInvariantQuotient(SageObject):
         quotient_scheme_data=None,
     ) -> None:
         assert acting_group in FiniteGroups(), (
-            "glued invariant quotients are represented here for a finite acting group"
+            f"the quotient of a glued scheme by {acting_group} is constructed only for a finite "
+            f"group, but {acting_group} is not known to be finite; it is in {acting_group.category()}"
         )
         assert acting_group in GroupsWithChosenFiniteGeneratingSet(), (
-            "equivariance of the gluing is checked on a chosen finite generating set of the group"
+            f"equivariance of the gluing maps is checked on a finite generating set of the group, "
+            f"but {acting_group} was given without one; it is in {acting_group.category()}"
         )
-        assert acted_charts.cardinality().is_finite() is True, "a glued invariant quotient requires finitely many affine charts"
+        assert acted_charts.cardinality().is_finite() is True, (
+            f"the quotient by {acting_group} is glued only from finitely many affine charts, but "
+            f"{acting_group} acts on {acted_charts.cardinality()} charts"
+        )
         self._base_ring = base_ring
         self._group = acting_group
         self._chart_index_set = finite_ordered_set(acted_charts.index_set())
         self._acted_charts = acted_charts
         for index in self.chart_index_set():
             assert acted_charts[index] in AffineGSchemes(acting_group, base_ring), (
-                f"the chart {index} of a glued invariant quotient carries an affine {acting_group}-scheme over {base_ring}"
+                f"chart {index} must be an affine scheme over {base_ring} with an action of "
+                f"{acting_group}, but it is {acted_charts[index]}, in {acted_charts[index].category()}"
             )
         assert int(self.chart_index_set().cardinality().finite_value()) > 0, (
-            "a glued invariant quotient requires at least one affine chart"
+            f"the quotient by {acting_group} is glued from affine charts, but no charts were given"
         )
         self._pair_index_set = finite_ordered_set(tuple(combinations(tuple(self.chart_index_set()), 2)))
         assert tuple(source_transitions.index_set()) == tuple(self._pair_index_set), (
-            "source transitions must be indexed by the unordered chart pairs"
+            f"the gluing maps of the charts must be indexed by the pairs of charts "
+            f"{tuple(self._pair_index_set)}, but they are indexed by {tuple(source_transitions.index_set())}"
         )
         assert tuple(quotient_transitions.index_set()) == tuple(self._pair_index_set), (
-            "source and quotient transitions are indexed by the same chart pairs"
+            f"the gluing maps of the quotient charts must be indexed by the pairs of charts "
+            f"{tuple(self._pair_index_set)}, but they are indexed by {tuple(quotient_transitions.index_set())}"
         )
         self._source_transitions = source_transitions
         self._quotient_transitions = quotient_transitions
@@ -113,18 +121,24 @@ class FiniteGluedInvariantQuotient(SageObject):
             case _:
                 datum = source_scheme.gluing_datum()
                 assert source_scheme.scheme_base_ring() is base_ring, (
-                    "the supplied glued source has the quotient's scalar base"
+                    f"the glued scheme {source_scheme} lies over {source_scheme.scheme_base_ring()}, "
+                    f"but its quotient by {acting_group} is taken over {base_ring}"
                 )
                 assert tuple(datum.chart_indices()) == tuple(self.chart_index_set()), (
-                    "the supplied glued source has a different chart index set"
+                    f"the glued scheme {source_scheme} has charts {tuple(datum.chart_indices())}, "
+                    f"but the acted charts are {tuple(self.chart_index_set())}"
                 )
                 assert all(
                     (datum.transition_between(left, right).forward()
                      == self.source_transition_between(left, right).forward()) is True
                     for left, right in self.pair_index_set()
-                ), "the supplied glued source has different overlap transitions"
+                ), (
+                    f"the glued scheme {source_scheme} is glued along different maps of overlaps "
+                    "than the given gluing maps of the acted charts"
+                )
                 assert all(datum.chart(index) is self.source_chart(index) for index in self.chart_index_set()), (
-                    "the supplied glued source does not use the acted affine charts"
+                    f"the charts of the glued scheme {source_scheme} are not the given affine "
+                    f"schemes with an action of {acting_group}"
                 )
                 self._source_scheme = source_scheme
         self._verify_source_transition_equivariance()
@@ -252,7 +266,8 @@ class FiniteGluedInvariantQuotient(SageObject):
                 source_action = self.source_overlap_action(source_index, target_index, group_generator)
                 target_action = self.source_overlap_action(target_index, source_index, group_generator)
                 assert transition * source_action == target_action * transition, (
-                    f"the overlap transition ({source_index}, {target_index}) is not {self.acting_group()}-equivariant"
+                    f"the gluing map of charts {source_index} and {target_index} does not commute "
+                    f"with the action of the generator {group_generator} of {self.acting_group()}"
                 )
 
     def local_quotient_morphism(self, index):
@@ -285,7 +300,9 @@ class FiniteGluedInvariantQuotient(SageObject):
             source_factor = self.quotient_overlap_factor(source_index, target_index)
             target_factor = self.quotient_overlap_factor(target_index, source_index)
             assert quotient_transition * source_factor == target_factor * transition, (
-                f"the descended quotient transition ({source_index}, {target_index}) fails its quotient descent square"
+                f"the gluing map of the quotient charts {source_index} and {target_index} is not "
+                "induced by the gluing map of the original charts: the square with the quotient "
+                "maps does not commute"
             )
 
     def action_of(self, group_element):
@@ -362,18 +379,24 @@ class FiniteGluedInvariantQuotient(SageObject):
     def factor_invariant_affine_morphism(self, morphism):
         r"""The unique factor ``X/G -> Y`` of an invariant morphism ``X -> Y`` to an affine ``Y``."""
         source = self.source_scheme()
-        assert morphism.domain() is source, "the invariant morphism starts at the glued source"
+        assert morphism.domain() is source, (
+            f"to factor through the quotient by {self.acting_group()}, the morphism {morphism} "
+            f"must start at {source}, but it starts at {morphism.domain()}"
+        )
         target = morphism.codomain()
         base = self.base_ring()
         assert target in Schemes(base).Affine(), (
-            "the universal property of a glued invariant quotient is represented for an affine target"
+            f"factoring {morphism} through the quotient by {self.acting_group()} is implemented "
+            f"only for an affine target, but {target} is in {target.category()}"
         )
         represented = source.Mor(target)(morphism)
         indices = self.chart_index_set()
         for index in indices:
             for group_generator in self.acting_group().group_generators():
                 assert represented.local_map(index) * self.source_chart_action(index, group_generator) == represented.local_map(index), (
-                    "the morphism is not invariant under the action on the glued source"
+                    f"{morphism} is not invariant under {self.acting_group()}: on chart {index} it "
+                    f"changes under the generator {group_generator}, so it does not factor through "
+                    "the quotient"
                 )
         local_factors = {
             index: self.acted_chart(index).factor_through_affine_quotient(
@@ -388,11 +411,15 @@ class FiniteGluedInvariantQuotient(SageObject):
             assert (
                 local_factors[source_index] * transition.domain().inclusion()
                 == local_factors[target_index] * transition.codomain().inclusion() * transition
-            ), "the local affine quotient factors do not agree through the quotient overlaps"
+            ), (
+                f"the factorizations of {morphism} through the quotient charts {source_index} and "
+                f"{target_index} do not agree on their overlap"
+            )
         factor = self.quotient_scheme().Mor(target)(local_factors)
         for index in indices:
             assert factor.local_map(index) * self.local_source_quotient_morphism(index) == represented.local_map(index), (
-                "an affine quotient factor fails its defining local triangle"
+                f"the factorization of {morphism} through the quotient does not recover {morphism} "
+                f"on chart {index} after composing with the quotient map"
             )
         return factor
 
@@ -424,7 +451,8 @@ def _c2_invariant_localization_lift(
     """
     group = acted_chart.acting_group()
     assert int(group.order()) == 2, (
-        "the represented stable-principal-open invariant descent is the C2 specialization"
+        f"invariants of a distinguished open D(d) descend to the quotient here only for a group "
+        f"of order 2, but {group} has order {group.order()}"
     )
     generator = next(iter(group.group_generators()))
     overlap_ring = source_overlap.coordinate_algebra()
@@ -439,7 +467,8 @@ def _c2_invariant_localization_lift(
     localization = quotient_overlap.coordinate_algebra().localization_map()
     denominator_image = localization(denominator_lift)
     assert denominator_image.is_unit(), (
-        "the norm of an overlap denominator is not invertible on the descended quotient open"
+        f"the norm d g(d) = {denominator * conjugate_denominator} of the denominator is not "
+        f"invertible on {quotient_overlap}, so {element} does not descend to it"
     )
     return localization(numerator_lift) * denominator_image.inverse_of_unit()
 
@@ -476,7 +505,10 @@ def _c2_quotient_overlap_transition(
     def pullback(element):
         numerator, denominator = target_quotient_ring.localization_fraction_data(element)
         denominator_image = map_invariant(denominator)
-        assert denominator_image.is_unit(), "a descended quotient-overlap denominator is not invertible"
+        assert denominator_image.is_unit(), (
+            f"the denominator {denominator} of {element} is not a unit on {source_quotient_open}, "
+            "so the element does not descend to the quotient overlap"
+        )
         return map_invariant(numerator) * denominator_image.inverse_of_unit()
 
     return source_quotient_open.Mor(target_quotient_open)(
@@ -502,12 +534,14 @@ def _c2_chartwise_glued_invariant_quotient(
     invariant algebra via the invariant-ring certificate.
     """
     assert int(acting_group.order()) == 2, (
-        "automatic chartwise invariant-quotient descent is represented here for C2"
+        f"the quotient of {source_scheme} chart by chart is implemented only for a group of "
+        f"order 2, but {acting_group} has order {acting_group.order()}"
     )
     datum = source_scheme.gluing_datum()
     indices = datum.chart_index_set()
     assert tuple(local_actions.index_set()) == tuple(indices), (
-        "the local action family must use the source chart labels"
+        f"the local actions must be indexed by the charts {tuple(indices)} of {source_scheme}, "
+        f"but they are indexed by {tuple(local_actions.index_set())}"
     )
     base = source_scheme.scheme_base_ring()
     group_generator = next(iter(acting_group.group_generators()))

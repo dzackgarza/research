@@ -286,7 +286,8 @@ class CategoryWithAxiom_singleton(
 
     def __init__(self, base_category: SageCategory | None = None) -> None:
         assert base_category is not None, (
-            "singleton axiom initialization requires a resolved base category"
+            f"cannot construct the category {type(self).__name__}: a category with an "
+            f"axiom needs the base category the axiom is added to, and none was given"
         )
         self._init_cat_object()
         SageCategoryWithAxiomSingleton.__init__(self, base_category)

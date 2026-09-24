@@ -57,8 +57,8 @@ class WeilDivisorGroups(Category):
 
             scheme = self.divisor_scheme()
             assert scheme in Schemes(scheme.scheme_base_ring()).Affine(), (
-                "the prime divisors of a Weil divisor group are read off an affine "
-                "coordinate ring; this group's scheme is not affine"
+                f"{self} has no affine coordinate ring: its scheme {scheme} is not known to "
+                f"be affine"
             )
             return scheme.coordinate_algebra()
 
@@ -66,7 +66,8 @@ class WeilDivisorGroups(Category):
             r"""The generator \(1 \cdot P\) of the prime divisor at the height-one point ``point``."""
             point = self.affine_divisor_coordinate_ring().spectrum()(point)
             assert point in self.prime_divisor_locus(), (
-                "a Weil prime divisor is a height-one point framing this group"
+                f"{point} is not a prime divisor of {self.divisor_scheme()}: a prime Weil "
+                f"divisor is a point of height one, and {point} is not one"
             )
             return self.module_generator(point)
 
@@ -88,7 +89,8 @@ class WeilDivisorGroups(Category):
             spectrum = self.affine_divisor_coordinate_ring().spectrum()
             prime = spectrum(prime)
             assert prime in self.prime_divisor_locus(), (
-                "the Cartier test requires a height-one prime divisor framing this group"
+                f"cannot test whether {prime} is Cartier at {point}: {prime} is not a prime "
+                f"divisor of {self.divisor_scheme()}, i.e. not a point of height one"
             )
             point = spectrum(point)
             prime_ideal = prime.ideal()

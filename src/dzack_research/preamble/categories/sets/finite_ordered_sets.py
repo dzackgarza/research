@@ -64,7 +64,9 @@ class OrderedEnumeratedSets(OwnedCategory):
         name: str | None = None,
     ) -> Parent:
         r"""Construct an ordered enumerated set from its chosen enumeration."""
-        assert index_set in EnumeratedSets(), "an enumeration is indexed by an enumerated set"
+        assert index_set in EnumeratedSets(), (
+            f"an ordered set is indexed by an enumerated set, but {index_set} is not enumerated"
+        )
         if index_set in FiniteSets():
             return FiniteOrderedSets().from_indexed(
                 index_set, element_at, index_of=index_of, contains=contains, name=name
@@ -91,12 +93,12 @@ class OrderedEnumeratedSets(OwnedCategory):
             **rest,
         ) -> None:
             assert callable(element_at), (
-                "an ordered enumerated set requires a map from its index set"
+                f"an ordered set needs a map from its index set {index_set} to its points, but "
+                f"{element_at!r} is not callable"
             )
             assert callable(index_of), (
-                "an enumerated set states both directions of its enumeration: a "
-                "map out of an index set with no inverse presents a family, "
-                "which is not a set with a ranking"
+                f"an ordered set needs the map from points back to positions in {index_set}, but "
+                f"{index_of!r} is not callable; without it the data is a family, not a set with an order"
             )
             self._index_set = index_set
             self._element_at_function = element_at
@@ -180,7 +182,7 @@ class OrderedEnumeratedSets(OwnedCategory):
             r"""Return the first point of a nonempty enumeration."""
             for point in self:
                 return point
-            raise ValueError("the empty ordered enumerated set has no element")
+            raise ValueError(f"{self} is empty, so it has no element")
 
         def _repr_(self) -> str:
             size = cardinal(self.cardinality())
@@ -232,7 +234,9 @@ class FiniteOrderedSets(OwnedCategory):
     def _on_finite_set(self, source: Parent) -> Parent:
         r"""The finite ordered set on the points of the finite set ``source``."""
         size = cardinal(source.cardinality())
-        assert size.is_finite(), "a finite ordered set requires a finite source set"
+        assert size.is_finite(), (
+            f"a finite ordered set needs a finite set of points, but {source} has cardinality {size}"
+        )
         index_set = finite_ordinal_set(size.finite_value())
         match source:
             case _ if source in EnumeratedSets():
@@ -282,9 +286,11 @@ class FiniteOrderedSets(OwnedCategory):
         the points.  Neither searches the enumeration.
         """
         assert cardinal(index_set.cardinality()).is_finite(), (
-            "a finite ordered set requires a finite index set"
+            f"a finite ordered set needs a finite index set, but {index_set} is not finite"
         )
-        assert index_set in EnumeratedSets(), "the finite index set has a chosen enumeration"
+        assert index_set in EnumeratedSets(), (
+            f"a finite ordered set needs an enumerated index set, but {index_set} is not enumerated"
+        )
         if index_of is None or contains is None:
             indices = tuple(index_set)
             points = tuple(element_at(index) for index in indices)
@@ -312,7 +318,9 @@ class FiniteOrderedSets(OwnedCategory):
             Ordered as this set, followed by the points of ``other`` not
             already present, in the order of ``other``.
             """
-            assert other in FiniteSets(), "the union is taken with a finite set"
+            assert other in FiniteSets(), (
+                f"the union with {self} is taken here only with a finite set, but {other} is not known to be finite"
+            )
             return FiniteOrderedSets()(chain(self, other))
 
         def intersection(self, other):
@@ -380,7 +388,8 @@ class _FilteredOrderedSet(FiniteOrderedSets().ObjectType):
         name: str | None = None,
     ) -> None:
         assert universe in FiniteSets() and universe in EnumeratedSets(), (
-            "a finite ordered filter requires a finite enumerated source set"
+            f"the subset of {universe} cut out by a condition is an ordered set only when {universe} is "
+            "finite and enumerated"
         )
         self._universe = universe
         self._predicate = predicate

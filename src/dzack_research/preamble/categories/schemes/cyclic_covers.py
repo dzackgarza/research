@@ -169,7 +169,10 @@ def _relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
         relative.arrow().local_map(index) * local_automorphisms[index]
         == relative.arrow().local_map(index)
         for index in indices
-    ), "the deck transformation does not lie over the cyclic-cover base"
+    ), (
+        f"the deck transformation z -> {root} z of the cyclic cover {glued} does not commute "
+        "with the cover map to the base on some chart"
+    )
     return automorphism
 
 
@@ -236,9 +239,17 @@ class _CyclicCoverBaseChangeSquare(CommutativeSquare):
 
     def lift_commutes(self, source_lift, changed_lift) -> bool:
         if source_lift.cyclic_algebra() is not self.source_cyclic_algebra():
-            raise ValueError("the source lift belongs to a different cyclic cover")
+            raise ValueError(
+                f"the lift {source_lift} is an automorphism of the cyclic cover of "
+                f"{source_lift.cyclic_algebra()}, not of the original cover "
+                f"{self.source_cyclic_algebra()} of this base change"
+            )
         if changed_lift.cyclic_algebra() is not self.changed_cyclic_algebra():
-            raise ValueError("the changed lift belongs to a different cyclic cover")
+            raise ValueError(
+                f"the lift {changed_lift} is an automorphism of the cyclic cover of "
+                f"{changed_lift.cyclic_algebra()}, not of the base-changed cover "
+                f"{self.changed_cyclic_algebra()}"
+            )
         return all(
             source_lift.local_automorphism(index) * self.local_projection(index)
             == self.local_projection(index) * changed_lift.local_automorphism(index)
@@ -340,7 +351,9 @@ def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
         for source_index in cyclic_algebra.chart_index_set()
     ):
         raise ArithmeticError(
-            "the scalar-changed cyclic-cover projection does not commute with the base projection"
+            f"the projection {projection} from the base-changed cyclic cover {changed_cover} to "
+            f"{source_cover} does not commute with the base-change projection {base_projection} "
+            "of the bases"
         )
 
     from dzack_research.preamble.categories.sets.indexed_families import (
@@ -485,7 +498,9 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
     equation is checked before the local maps are glued.
     """
     assert linearization.line_bundle() is cyclic_algebra.line_bundle(), (
-        "a cyclic-cover lift requires a linearization of its defining line bundle"
+        f"cannot lift the action to the cyclic cover of {cyclic_algebra}: {linearization} "
+        f"linearizes {linearization.line_bundle()}, not the line bundle "
+        f"{cyclic_algebra.line_bundle()} defining the cover"
     )
     group_element = linearization.acting_group()(group_element)
     base_automorphism = linearization.scheme_action_of(group_element)
@@ -503,7 +518,9 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
         scalar = local_base.algebra_structure_morphism()(fiber_scalar)
         branch = cyclic_algebra.local_branch_coefficient(index)
         assert base_pullback(branch) == scalar ** int(cyclic_algebra.degree()) * branch, (
-            "the selected line-bundle lift does not preserve the cyclic-cover branch equation"
+            f"the automorphism {group_element} does not preserve the branch equation z^n = f of "
+            f"the cyclic cover on chart {index}: it sends f = {branch} to {base_pullback(branch)}, "
+            f"not to {scalar ** int(cyclic_algebra.degree())} * f"
         )
         basis_labels = local_algebra.module_generating_set()
         ranking = basis_labels.ranking_map()
@@ -548,7 +565,10 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
         relative.arrow().local_map(index) * local_family[index]
         == base_automorphism * relative.arrow().local_map(index)
         for index in cyclic_algebra.chart_index_set()
-    ), "the cyclic-cover lift does not commute with the cover morphism"
+    ), (
+        f"the lift of {group_element} to the cyclic cover {cover} does not commute with the "
+        f"cover map and the automorphism {base_automorphism} of the base"
+    )
     return RelativeCyclicCoverLift(
         cyclic_algebra,
         linearization,
@@ -570,8 +590,8 @@ def _primitive_root_of_unity(scalars, degree):
     """
     engine = _engine_ring(scalars)
     assert engine.is_field(), (
-        f"{scalars} is not a field, so the roots of unity acting on a cyclic "
-        "cover are not selected by this construction"
+        f"a primitive {degree}-th root of unity is chosen here only in a field, but "
+        f"{scalars} is not a field"
     )
     characteristic = int(engine.characteristic())
     assert characteristic == 0 or degree % characteristic != 0, (
@@ -587,9 +607,9 @@ def _primitive_root_of_unity(scalars, degree):
         if int(root.multiplicative_order()) == degree
     ]
     assert primitive, (
-        f"{scalars} holds no primitive {degree}-th root of unity, so the deck "
+        f"{scalars} contains no primitive {degree}-th root of unity, so the deck "
         f"group of a degree-{degree} cyclic cover over it is the group scheme "
-        "mu_n, which the preamble does not own"
+        f"mu_{degree}, not the constant cyclic group C_{degree}; that case is not implemented"
     )
     return _owned_engine_element(scalars, primitive[0])
 
@@ -613,7 +633,9 @@ class CyclicCovers(OwnedCategory):
         return Category.__classcall__(cls, _own_ring(base_algebra), int(degree))
 
     def __init__(self, base_algebra, degree) -> None:
-        assert degree >= 1, "a cyclic cover has degree at least one"
+        assert degree >= 1, (
+            f"a cyclic cover z^n = f of Spec({base_algebra}) needs degree n >= 1, got n = {degree}"
+        )
         self._base_algebra = base_algebra
         self._degree = degree
         OwnedCategory.__init__(self)
@@ -782,7 +804,8 @@ class CyclicCovers(OwnedCategory):
             characteristic = int(self.scheme_base_ring().characteristic())
             assert characteristic == 0 or self.cover_degree() % characteristic != 0, (
                 f"the characteristic {characteristic} divides the degree {self.cover_degree()}: the "
-                "represented ramification comparison requires the cyclic degree to be invertible on the base"
+                f"ramification of {self} is compared with the branch locus only when the degree is "
+                f"invertible in {self.scheme_base_ring()}"
             )
 
         @cached_method

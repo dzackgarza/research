@@ -322,7 +322,9 @@ def _restrict_algebra_scalars(algebra, ring_map):
     ``B/S`` along the selected structure map of ``S``.
     """
     if not isinstance(ring_map, Map):
-        raise TypeError("algebra scalar restriction is specified by a ring morphism")
+        raise TypeError(
+            f"restriction of scalars of {algebra} is along a ring morphism, but {ring_map!r} is not a map"
+        )
 
     cache_key = (id(algebra), id(ring_map))
     cached = _RESTRICTED_SCALAR_ALGEBRAS.get(cache_key)

@@ -40,7 +40,7 @@ def _selection_integer(value: SupportsIndex) -> int:
     """
     result = index(value)
     if value != result:
-        raise TypeError("selection integer data cannot be truncated")
+        raise TypeError(f"a selection index must be an integer, but {value!r} is not")
     return result
 
 
@@ -101,7 +101,9 @@ class FixedSizeSelectionElement(Element):
             for position, source_position in enumerate(self._source_positions()):
                 if position == requested:
                     return self.parent().source()[source_position]
-            raise IndexError(requested)
+            raise IndexError(
+                f"position {requested} is out of range for the selection {self} of size {self.degree()}"
+            )
 
         return indexed_family(indices, value, name="Selection word")
 
@@ -134,7 +136,9 @@ class FixedSizeSelectionElement(Element):
             for offset, position in enumerate(distinct_positions()):
                 if offset == requested:
                     return self.parent().source()[position]
-            raise IndexError(requested)
+            raise IndexError(
+                f"position {requested} is out of range for the distinct labels of the selection {self}"
+            )
 
         return FiniteOrderedSets().from_indexed(
             indices,
@@ -146,7 +150,9 @@ class FixedSizeSelectionElement(Element):
         target = self.parent().with_size(self.degree() + 1)
         position = int(self.parent().source().ranking_map()(label))
         if not self.allows_repetition() and self.multiplicity(label):
-            raise ValueError("a subset cannot contain one label twice")
+            raise ValueError(
+                f"cannot add {label} to the subset {self}: it already contains {label}"
+            )
         return target.from_source_rank_positions(
             merge(self._source_positions(), (position,))
         )
@@ -154,14 +160,16 @@ class FixedSizeSelectionElement(Element):
     def merged_with(self, other: FixedSizeSelectionElement) -> FixedSizeSelectionElement:
         r"""The union of two selections over one source, as a selection of the summed size."""
         assert element_parent(other) is self.parent().with_size(other.degree()), (
-            "selections are merged only with selections from one source set "
-            "under one repetition rule"
+            f"cannot merge the selection {self} of {self.parent()} with {other} of {element_parent(other)}: "
+            "they must come from one source set with one repetition rule"
         )
         target = self.parent().with_size(self.degree() + other.degree())
         if not self.allows_repetition():
             for label in self.support():
                 if other.multiplicity(label):
-                    raise ValueError("the two subsets are not disjoint")
+                    raise ValueError(
+                        f"cannot merge the subsets {self} and {other}: they are not disjoint, both contain {label}"
+                    )
         return target.from_source_rank_positions(
             merge(self._source_positions(), other._source_positions())
         )
@@ -170,10 +178,13 @@ class FixedSizeSelectionElement(Element):
         self, other: FixedSizeSelectionElement
     ) -> tuple[FixedSizeSelectionElement, int] | None:
         assert element_parent(other) is self.parent().with_size(other.degree()), (
-            "a wedge of subset indices is taken over one enumerated source"
+            f"cannot form the wedge of {self} and {other}: they must be subsets of one enumerated set, but "
+            f"{other} lies in {element_parent(other)}"
         )
         if self.allows_repetition() or other.allows_repetition():
-            raise TypeError("wedge is defined here for subset indices")
+            raise TypeError(
+                f"the wedge of {self} and {other} is defined here for subsets, not multisets"
+            )
         for label in self.support():
             if other.multiplicity(label):
                 return None
@@ -238,8 +249,10 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
         repetition: bool,
     ) -> None:
         size = _selection_integer(selection_size)
-        assert size >= 0, "a selection size is a natural number"
-        assert source in EnumeratedSets(), "fixed-size selections require an enumerated source set"
+        assert size >= 0, f"the selection size k must be a natural number, but k = {selection_size}"
+        assert source in EnumeratedSets(), (
+            f"selections of fixed size need an enumerated source set, but {source} is not enumerated"
+        )
         self._source = source
         self._selection_size = size
         self._repetition = repetition
@@ -302,7 +315,9 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
             position = _selection_integer(position)
             size = self.cardinality()
             if position < 0 or (size.is_finite() and position >= int(size)):
-                raise IndexError(position)
+                raise IndexError(
+                    f"position {position} is out of range for {self}, which has {size} elements"
+                )
             # For a finite source the cardinality bound is precisely the
             # combinadic range in which every selected position lies in
             # the source.
@@ -328,7 +343,8 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
         if datum in self:
             return datum
         raise TypeError(
-            "a fixed-size selection is constructed by rank, source positions, or multiplicities"
+            f"{datum!r} is not an element of {self}; build one from its rank, from its source positions, "
+            "or from its multiplicities"
         )
 
     def from_source_rank_positions(
@@ -343,13 +359,21 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
         for offset, source_position in enumerate(positions):
             source_position = _selection_integer(source_position)
             if source_position < 0:
-                raise ValueError("source ranks are nonnegative")
+                raise ValueError(
+                    f"the source position {source_position} is negative, but source positions are natural numbers"
+                )
             if not first:
                 if self.allows_repetition():
                     if source_position < previous:
-                        raise ValueError("multiset source ranks must be nondecreasing")
+                        raise ValueError(
+                            f"the source positions of a multiset must be nondecreasing, but {source_position} follows "
+                            f"{previous}"
+                        )
                 elif source_position <= previous:
-                    raise ValueError("subset source ranks must be strictly increasing")
+                    raise ValueError(
+                        f"the source positions of a subset must be strictly increasing, but {source_position} follows "
+                        f"{previous}"
+                    )
             strict_position = (
                 source_position + offset
                 if self.allows_repetition()
@@ -361,7 +385,7 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
             first = False
         if count_positions != degree:
             raise ValueError(
-                f"a member of {self} requires exactly {degree} source positions"
+                f"an element of {self} needs exactly {degree} source positions, but {count_positions} were given"
             )
         return self[rank]
 
@@ -375,16 +399,22 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
         multiplicities: Mapping[PointT, SupportsIndex],
     ) -> FixedSizeSelectionElement:
         if any(_selection_integer(value) < 0 for value in multiplicities.values()):
-            raise ValueError("selection multiplicities are nonnegative integers")
+            raise ValueError(
+                f"multiplicities must be natural numbers, but {dict(multiplicities)} has a negative value"
+            )
         total = sum(_selection_integer(value) for value in multiplicities.values())
         if total != self.selection_size():
             raise ValueError(
-                f"the multiplicities must have total degree {self.selection_size()}"
+                f"an element of {self} needs multiplicities summing to {self.selection_size()}, but they sum "
+                f"to {total}"
             )
         if not self.allows_repetition() and any(
             _selection_integer(value) not in (0, 1) for value in multiplicities.values()
         ):
-            raise ValueError("subset multiplicities are zero or one")
+            raise ValueError(
+                f"an element of {self} is a subset, so its multiplicities are 0 or 1, but they are "
+                f"{dict(multiplicities)}"
+            )
         rank = 0
         for label, raw_multiplicity in multiplicities.items():
             multiplicity = _selection_integer(raw_multiplicity)
@@ -409,7 +439,9 @@ class FixedSizeSelections(EnumeratedSets().ObjectType):
 
     def singleton_power(self, label: PointT) -> FixedSizeSelectionElement:
         if self.selection_size() == 0:
-            raise ValueError("the degree-zero selection has no singleton label")
+            raise ValueError(
+                f"{self} has selection size 0, so it has no element of the form {{{label}}}"
+            )
         return self.from_multiplicities({label: self.selection_size()})
 
     def _repr_(self) -> str:

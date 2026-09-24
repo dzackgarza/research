@@ -155,7 +155,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
 
         base = generating_module.base_ring()
         assert generating_module in FramedFreeModules(base), (
-            "a native free algebra is presented on a free generating module"
+            f"a free algebra is built on a free module, but {generating_module} is not a free module over {base}"
         )
         self._generating_module = generating_module
         self._native_free_flavor = flavor
@@ -168,7 +168,9 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                 basis = labels.finite_multisets()
                 algebra_category = SymmetricAlgebras(base)
             case _:
-                raise ValueError("the native free algebra is tensor or symmetric")
+                raise ValueError(
+                    f"a free algebra here is a tensor algebra or a symmetric algebra, but got flavor {flavor!r}"
+                )
         self._native_module_basis = _NativeModuleBasis(
             base.free_module(basis),
             self._native_basis_image,
@@ -320,7 +322,10 @@ def _relations_to_ideal(presentation_ring, relations):
     engine = _engine_ring(presentation_ring)
     if isinstance(relations, Ideal_generic):
         if relations.ring() is not engine:
-            raise ValueError("the relation ideal belongs to a different presenting algebra")
+            raise ValueError(
+                f"the relations of a quotient of {presentation_ring} must form an ideal of it, but {relations} "
+                f"is an ideal of {relations.ring()}"
+            )
         backend_by_position = {
             position: relation for position, relation in enumerate(relations.gens())
         }
@@ -337,7 +342,9 @@ def _relations_to_ideal(presentation_ring, relations):
     if hasattr(relations, "index_set") and callable(getattr(relations, "value", None)):
         size = cardinal(relations.cardinality())
         if not size.is_finite():
-            raise TypeError("a chosen finite algebra presentation requires finitely many relations")
+            raise TypeError(
+                f"an algebra given by generators and relations needs finitely many relations, but got {size}"
+            )
         selected_relations = indexed_family(
             relations.index_set(),
             lambda index: presentation_ring(relations.value(index)),
@@ -354,7 +361,9 @@ def _relations_to_ideal(presentation_ring, relations):
     elif hasattr(relations, "cardinality"):
         size = cardinal(relations.cardinality())
         if not size.is_finite():
-            raise TypeError("a chosen finite algebra presentation requires finitely many relations")
+            raise TypeError(
+                f"an algebra given by generators and relations needs finitely many relations, but got {size}"
+            )
         selected_relations = indexed_family(
             relations,
             lambda relation: presentation_ring(relation),
@@ -362,7 +371,8 @@ def _relations_to_ideal(presentation_ring, relations):
         )
     else:
         raise TypeError(
-            "relations are a finite indexed family/set or explicit finite ingress"
+            f"the relations of a quotient of {presentation_ring} are given as a finite indexed family, a "
+            f"finite set, or a list, but got {relations!r}"
         )
 
     backend_relations = [
@@ -374,10 +384,13 @@ def _relations_to_ideal(presentation_ring, relations):
 
 def _base_change_commutative_presentation(algebra, ring_map):
     if not isinstance(ring_map, Map):
-        raise TypeError("algebra base change is specified by a ring morphism")
+        raise TypeError(
+            f"base change of {algebra} is along a ring morphism, but {ring_map!r} is not a map"
+        )
     if _engine_ring(ring_map.domain()) is not _engine_ring(algebra.base_ring()):
         raise ValueError(
-            f"the scalar map starts at {ring_map.domain()}, not {algebra.base_ring()}"
+            f"base change of {algebra} along {ring_map} needs a ring map starting at {algebra.base_ring()}, "
+            f"but it starts at {ring_map.domain()}"
         )
     target_base = _owned_ring(ring_map.codomain())
     target_presentation_ring = target_base.free_module(algebra.algebra_generating_set()).symmetric_algebra()
@@ -503,7 +516,8 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         if presentation_flattening is not None:
             if selected_generator_values is not None:
                 raise ValueError(
-                    "a flattened presentation computes its algebra-generator values canonically"
+                    f"the algebra over {base} given by the relations {selected_relations} computes its generator "
+                    "values itself, so they cannot also be given"
                 )
             presentation_engine = _engine_ring(presentation_ring)
             # The flattened engine lists parameter variables before these
@@ -564,7 +578,8 @@ class _NativeLinearRelationAlgebra(_NativeMonomialEvaluation, _PresentedAlgebraP
                 self._native_free_flavor = "tensor"
             case _:
                 assert presentation_ring in SymmetricAlgebras(base), (
-                    "a linear-relation free algebra is tensor or symmetric"
+                    f"a free algebra with linear relations is a quotient of a tensor algebra or a symmetric algebra, "
+                    f"but {presentation_ring} is neither"
                 )
                 self._native_free_flavor = "symmetric"
         # Fix the native images before any lower constructor can evaluate a
@@ -618,7 +633,8 @@ def _presented_algebra_on_engine(
     base = presentation_ring.base_ring()
     if presentation_ring not in SymmetricAlgebras(base):
         raise TypeError(
-            "an authoritative-engine algebra requires a commutative polynomial presentation"
+            f"this algebra must be a quotient of a commutative polynomial ring, but {presentation_ring} is "
+            "not a symmetric algebra"
         )
     presentation_ideal, selected_relations = _relations_to_ideal(
         presentation_ring, relations
@@ -733,7 +749,8 @@ def _localized_coefficient_presentation_backend(
             multiplier, remainder = common_denominator.quo_rem(denominator)
             if remainder != coefficient_source_engine.zero():
                 raise ArithmeticError(
-                    "the selected common denominator does not clear a presentation coefficient"
+                    f"cannot clear denominators of {element}: the common denominator {common_denominator} is not "
+                    f"divisible by {denominator}"
                 )
             cleared[exponent] = (
                 coefficient_source_engine(represented_coefficient.numerator())
@@ -832,7 +849,8 @@ def _finitely_presented_algebra_from_data(
         presentation_ring in AlgebrasWithChosenFinitePresentation(base)
         or presentation_ring in SymmetricAlgebras(base)
     ), (
-        "a selected finite commutative-algebra presentation is represented by a polynomial algebra or an algebra already carrying such a presentation"
+        f"an algebra given by generators and relations must be a quotient of a polynomial algebra or of "
+        f"an algebra given by generators and relations, but {presentation_ring} is neither"
     )
     if presentation_ring in AlgebrasWithChosenFinitePresentation(base):
         # A quotient of a quotient is one quotient of the same polynomial
@@ -1002,7 +1020,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             degree = int(degree)
             if degree < 0:
-                raise ValueError("a graded degree is nonnegative")
+                raise ValueError(f"graded pieces of {self} are in degrees n >= 0, but n = {degree}")
             if degree == 0:
                 return self.one()
             if degree == 1:
@@ -1030,7 +1048,10 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                         result *= self.algebra_generator(source_label)
                 return result
 
-            raise TypeError(f"the graded-piece basis of {self} has no represented realization")
+            raise TypeError(
+                f"{self} is neither a tensor algebra nor a symmetric algebra, so the basis element {label} of "
+                f"its degree-{degree} piece cannot be computed"
+            )
 
         def from_graded_piece(self, degree, element):
             r"""Include an element of the canonical degree piece into this algebra."""
@@ -1060,7 +1081,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             degree = int(degree)
             if degree < 0:
-                raise ValueError("a graded degree is nonnegative")
+                raise ValueError(f"graded pieces of {self} are in degrees n >= 0, but n = {degree}")
             if degree == 0:
                 labels = finite_ordered_set((0,))
             else:
@@ -1085,10 +1106,12 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             degree = int(degree)
             if degree < 0:
-                raise ValueError("a graded degree is nonnegative")
+                raise ValueError(f"graded pieces of {self} are in degrees n >= 0, but n = {degree}")
             selected = tuple(self(relation) for relation in relations)
             if any(self.homogeneous_degree(relation) != 1 for relation in selected):
-                raise ValueError("these graded-ideal generators must lie in degree one")
+                raise ValueError(
+                    f"the generators of this graded ideal of {self} must lie in degree 1, but {selected} do not all"
+                )
             if degree == 0:
                 return finite_family((), name=f"Degree-{degree} ideal generators")
 
@@ -1128,7 +1151,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             not build a second model of those modules.
             """
             degree = int(degree)
-            assert degree >= 0, "a graded degree is nonnegative"
+            assert degree >= 0, f"graded pieces of {self} are in degrees n >= 0, but n = {degree}"
 
             ring = self.algebra_base_ring()
             match self:
@@ -1148,7 +1171,8 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 case _ if self in SymmetricAlgebras(ring):
                     return self.generating_module().symmetric_power(degree)
             raise TypeError(
-                f"the graded free-algebra flavor of {self} is not represented"
+                f"{self} is neither a tensor algebra nor a symmetric algebra, so its degree-{degree} piece "
+                "cannot be computed"
             )
 
 
@@ -1187,7 +1211,7 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             """
             element = self(element)
             if element == self.zero():
-                raise ValueError("zero has no selected homogeneous degree here")
+                raise ValueError(f"the zero element of {self} has no degree")
             backend = _engine_element(self, element)
             degrees = {
                 len(word)
@@ -1195,7 +1219,9 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
                 if coefficient
             }
             if len(degrees) != 1:
-                raise ValueError("the algebra element is not homogeneous")
+                raise ValueError(
+                    f"{element} is not homogeneous in {self}: it has components in degrees {sorted(degrees)}"
+                )
             return self.grading_monoid()(degrees.pop())
 
         def from_component(self, degree, component):
@@ -1218,7 +1244,8 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
                 entries = tuple(monomial.monomial_coefficients().items())
                 if len(entries) != 1 or entries[0][1] != 1:
                     raise ArithmeticError(
-                        "a tensor-power basis element did not realize as one monomial"
+                        f"the basis element {label} of the degree-{degree} piece of {self} did not compute as one "
+                        "monomial"
                     )
                 word_to_label[entries[0][0]] = label
             ring = self.algebra_base_ring()
@@ -1342,7 +1369,8 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
                 entries = tuple(monomial.monomial_coefficients().items())
                 if len(entries) != 1 or entries[0][1] != 1:
                     raise ArithmeticError(
-                        "a symmetric-power basis element did not realize as one monomial"
+                        f"the basis element {label} of the degree-{degree} piece of {self} did not compute as one "
+                        "monomial"
                     )
                 exponent_to_label[entries[0][0]] = label
             ring = self.algebra_base_ring()
@@ -1436,7 +1464,10 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
     def _call_(self, module):
         from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
 
-        assert module.base_ring() is self.base_ring(), "the power construction uses its module's scalars"
+        assert module.base_ring() is self.base_ring(), (
+            f"the power algebra over {self.base_ring()} needs a module over {self.base_ring()}, but "
+            f"{module} is over {module.base_ring()}"
+        )
         return _power_algebra_of(module, "alternating")
 
     class ParentMethods(_PowerAlgebra):
@@ -1463,7 +1494,7 @@ def _presentation_data(algebra):
         or is_free_polynomial
         or (has_quotient_presentation and quotient_source in SymmetricAlgebras(base))
     ), (
-        "the active commutative-algebra backend requires a free polynomial or selected finite presentation"
+        f"{algebra} must be a polynomial algebra or a quotient of one given by finitely many relations"
     )
     if has_selected_presentation:
         return algebra.presentation_ring(), tuple(algebra.relations())
@@ -1488,12 +1519,18 @@ def _transport_relations(presentation_ring, relations, target, tag):
 def _commutative_algebra_coproduct_backend(left, right):
     base = left.base_ring()
     if right.base_ring() is not base:
-        raise ValueError("commutative-algebra coproducts require one scalar base")
+        raise ValueError(
+            f"the coproduct {left} (x) {right} of commutative algebras needs one base ring, but they are "
+            f"over {base} and {right.base_ring()}"
+        )
     category = Algebras(base).Associative().Unital().Commutative()
     if left not in category or right not in category:
-        raise TypeError("both factors must be commutative algebras over the common base")
+        raise TypeError(
+            f"the coproduct {left} (x) {right} needs both factors to be commutative algebras over {base}"
+        )
     assert left in FramedAlgebras(base) and right in FramedAlgebras(base), (
-        "the active finite-presentation coproduct backend requires finite algebra framings"
+        f"the coproduct {left} (x) {right} is computed only when both factors have finitely many "
+        "chosen algebra generators"
     )
 
     left_presentation, left_relations = _presentation_data(left)
@@ -1541,7 +1578,8 @@ def _quotient_by_algebra_elements_backend(
         algebra, "relations"
     )
     assert has_selected_presentation or algebra in SymmetricAlgebras(base), (
-        "quotienting by represented algebra elements requires a selected polynomial presentation"
+        f"the quotient of {algebra} by {elements} is computed only for a polynomial algebra or a "
+        "quotient of one given by relations"
     )
     if has_selected_presentation:
         presentation = algebra.presentation_ring()
@@ -1573,22 +1611,28 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         right = right_map.codomain()
     except AttributeError as error:
         raise TypeError(
-            "a commutative-algebra pushout is specified by represented algebra morphisms"
+            f"a pushout of commutative algebras needs two algebra morphisms, but got {left_map!r} and "
+            f"{right_map!r}"
         ) from error
     if common is not right_common:
-        raise ValueError("pushout maps require one common domain")
+        raise ValueError(
+            f"a pushout needs a span B <- A -> C, but the maps start at {common} and {right_common}"
+        )
     base = common.base_ring()
     if left.base_ring() is not base or right.base_ring() is not base:
-        raise ValueError("the pushout span must lie over one scalar base")
+        raise ValueError(
+            f"the pushout of {left} <- {common} -> {right} needs all three over one base ring {base}"
+        )
     if left_map.parent() is not common.Mor(left) or right_map.parent() is not common.Mor(
         right
     ):
         raise TypeError(
-            "the pushout span maps must belong to the represented algebra Mors "
-            "of their endpoints"
+            f"the pushout maps {left_map} and {right_map} must be algebra morphisms {common} -> {left} and "
+            f"{common} -> {right}"
         )
     assert common in FramedAlgebras(base), (
-        "the active pushout backend requires a finite algebra framing on the common source"
+        f"the pushout of {left} <- {common} -> {right} is computed only when {common} has finitely many "
+        "chosen algebra generators"
     )
 
     tensor = _commutative_algebra_coproduct_backend(left, right)
@@ -1624,7 +1668,10 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
     def _call_(self, module):
         from dzack_research.preamble.categories.algebras.power_algebras import _power_algebra_of
 
-        assert module.base_ring() is self.base_ring(), "the power construction uses its module's scalars"
+        assert module.base_ring() is self.base_ring(), (
+            f"the power algebra over {self.base_ring()} needs a module over {self.base_ring()}, but "
+            f"{module} is over {module.base_ring()}"
+        )
         return _power_algebra_of(module, "divided")
 
     class ParentMethods(_PowerAlgebra):
@@ -1653,12 +1700,15 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         elif isinstance(images, dict):
             if not labels.cardinality().is_finite():
                 raise TypeError(
-                    "dictionary algebra-generator syntax requires a finite framing; "
-                    "use a callable or indexed family for an infinite framing"
+                    f"a dictionary of generator images needs finitely many algebra generators of {domain}, but it "
+                    f"has {labels.cardinality()}; give a function or an indexed family"
                 )
             missing = [label for label in labels if label not in images]
             if missing:
-                raise ValueError(f"algebra-generator assignment omits {missing}")
+                raise ValueError(
+                    f"the images of the algebra generators of {domain} must be given for every generator, but "
+                    f"{missing} are missing"
+                )
             self._images = indexed_family(
                 labels,
                 lambda label: self.codomain()(images[label]),
@@ -1668,13 +1718,13 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
             size = labels.cardinality()
             if not size.is_finite():
                 raise TypeError(
-                    "sequence algebra-generator syntax requires a finite framing; "
-                    "use a callable or indexed family for an infinite framing"
+                    f"a list of generator images needs finitely many algebra generators of {domain}, but it has "
+                    f"{size}; give a function or an indexed family"
                 )
             values = tuple(images)
             if len(values) != int(size.finite_value()):
                 raise ValueError(
-                    "the number of algebra-generator images must equal the framing size"
+                    f"{domain} has {size} algebra generators, but {len(values)} images were given"
                 )
             self._images = indexed_family(
                 labels,
@@ -1689,7 +1739,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
             )
         else:
             raise TypeError(
-                "an algebra morphism is specified on its algebra generators"
+                f"a morphism out of {domain} is given by the images of its algebra generators, but got {images!r}"
             )
         self._generator_images = self._images
         self._engine_morphism = None
@@ -1760,7 +1810,8 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
     def _finite_engine_generator_labels(self):
         labels = self.domain().algebra_generating_set()
         assert labels.cardinality().is_finite(), (
-            "the private free-algebra engine realization requires a finite generator framing"
+            f"cannot compute with {self}: its domain {self.domain()} needs finitely many algebra generators, "
+            f"but it has {labels.cardinality()}"
         )
         return tuple(labels)
 
@@ -1815,7 +1866,9 @@ class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         identity = self(lambda label: self.domain().algebra_generator(label))
         identity._preamble_is_identity = True
         return identity

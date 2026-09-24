@@ -82,7 +82,10 @@ class _OrderNumberFieldAdjunction(Adjunction):
             return source.Mor(field)(field.primitive_element())
         embeddings = source.Mor(field).embeddings()
         if len(embeddings) != 1:
-            raise ValueError("the counit requires the canonical identification Frac(O_K) = K")
+            raise ValueError(
+                f"the counit Frac(O_K) -> K at {field} needs exactly one embedding {source} -> {field}, but "
+                f"there are {len(embeddings)}"
+            )
         return embeddings[0]
 
 

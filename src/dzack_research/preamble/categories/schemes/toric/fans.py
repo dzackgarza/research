@@ -157,7 +157,8 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         values = pairing.codomain()
         labels = values.module_generating_set()
         assert labels.cardinality() == 1, (
-            "the character-cocharacter pairing takes values in the rank-one integer module"
+            f"the pairing of characters with cocharacters of {self} must take values in ZZ, a "
+            f"free module of rank 1, but it takes values in {values} of rank {labels.cardinality()}"
         )
         (label,) = labels
         integers = _integers()
@@ -195,7 +196,9 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
     def _from_engine_fan(self, engine_fan):
         r"""Adopt one engine fan whose lattice rank matches ``N``."""
         assert int(engine_fan.lattice_dim()) == int(self.lattice().module_rank()), (
-            "the engine fan lives in a lattice of the wrong rank"
+            f"a fan in {self} lives in the lattice N = {self.lattice()} of rank "
+            f"{self.lattice().module_rank()}, but this fan lives in a lattice of rank "
+            f"{engine_fan.lattice_dim()}"
         )
         return _object_of(self, engine_fan=engine_fan)
 
@@ -239,10 +242,13 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             tuple(enumerate(int(weight) for weight in weights))
         )
         assert all(weight > 0 for _, weight in homogeneous_weights), (
-            "the weights of a weighted projective space are positive"
+            f"the weights of a weighted projective space P(q_0, ..., q_n) must be positive, but "
+            f"they are {tuple(weights)}"
         )
         assert homogeneous_weights.cardinality() == int(self.lattice().module_rank()) + 1, (
-            "P(q_0,...,q_n) has dimension n, one less than the number of weights"
+            f"P(q_0, ..., q_n) in the lattice {self.lattice()} of rank "
+            f"{self.lattice().module_rank()} needs {int(self.lattice().module_rank()) + 1} weights, "
+            f"but {homogeneous_weights.cardinality()} were given"
         )
         return self._from_engine_fan(
             toric_varieties.WP(
@@ -259,7 +265,10 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         ``F_1`` is the blow-up of ``P^2`` at one point.
         """
         lattice = self.lattice()
-        assert int(lattice.module_rank()) == 2, "a Hirzebruch surface is a toric surface"
+        assert int(lattice.module_rank()) == 2, (
+            f"a Hirzebruch surface F_a is a toric surface, so its fan lives in a lattice of rank 2, "
+            f"but {lattice} has rank {lattice.module_rank()}"
+        )
         integers = _integers()
         twist = integers(twist)
         first, second = tuple(lattice.module_generating_set())
@@ -468,7 +477,10 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             )
 
         def is_face_of(self, other) -> bool:
-            assert other.parent() is self.parent(), "faces are compared within one fan"
+            assert other.parent() is self.parent(), (
+                f"whether {self} is a face of {other} is decided for cones of one fan, but they "
+                f"lie in {self.parent()} and {other.parent()}"
+            )
             return bool(self._engine_cone().is_face_of(other._engine_cone()))
 
         def intersection(self, other):
@@ -478,7 +490,10 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             of two of its cones is a face of each, so this is the common face
             along which their two affine charts are glued.
             """
-            assert other.parent() is self.parent(), "cones are intersected within one fan"
+            assert other.parent() is self.parent(), (
+                f"the intersection of {self} and {other} is taken for cones of one fan, but they "
+                f"lie in {self.parent()} and {other.parent()}"
+            )
             return self.parent()._cone(
                 self._engine_cone().intersection(other._engine_cone())
             )
@@ -526,7 +541,8 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             one is Sage's ``Cone.Hilbert_coefficients``.
             """
             assert self.dual_cone_contains(character), (
-                "a semigroup expansion is taken of a character of S_sigma"
+                f"the character {character} is not in the dual cone of {self}, so it is not in "
+                "the semigroup S_sigma and has no expansion in its generators"
             )
             integers = _integers()
             generators = self.semigroup_generators()

@@ -173,7 +173,10 @@ def _engine_manifold_chart(chart):
     adapters in this module.  The raw chart never becomes mathematical output.
     """
     if not isinstance(chart, ManifoldAtlasChart):
-        raise TypeError("a manifold chart crossing requires an owned atlas chart")
+        raise TypeError(
+            f"{chart!r} is not a chart of a manifold's atlas: coordinates, transition "
+            f"maps and open submanifolds are taken only in a chart of the atlas"
+        )
     return chart._engine_chart()
 
 
@@ -255,8 +258,9 @@ class _ManifoldTopologyData(SageObject):
                 return True
             case _:
                 assert False, (
-                    "openness of an arbitrary represented subset of a manifold "
-                    "requires a selected native open-submanifold presentation"
+                    f"cannot decide whether {selected} is open in the manifold {space}: "
+                    f"openness is decided only for the empty set, the whole manifold, "
+                    f"and open submanifolds constructed as such"
                 )
 
 
@@ -276,7 +280,10 @@ class TopologicalManifolds(OwnedCategory):
     def _call_(self, dimension, name):
         dimension = int(dimension)
         if dimension <= 0:
-            raise ValueError("a represented manifold here has positive dimension")
+            raise ValueError(
+                f"cannot construct a topological manifold {name} of dimension {dimension}: "
+                f"the dimension must be positive"
+            )
         engine = _SageManifold(
             dimension,
             str(name),
@@ -388,7 +395,10 @@ class TopologicalManifolds(OwnedCategory):
         def differentiability_degree(self):
             degree = self._preamble_differentiability_degree
             if degree is None:
-                raise TypeError("a merely topological manifold has no differentiability degree")
+                raise TypeError(
+                    f"{self} has no differentiability degree: it is a topological "
+                    f"manifold with no differentiable structure"
+                )
             return degree
 
         def is_smooth(self) -> bool:
@@ -403,7 +413,10 @@ class TopologicalManifolds(OwnedCategory):
         def _register_chart(self, label, engine_chart):
             r"""Record the chart ``engine_chart`` of this manifold's engine under ``label``."""
             if label in self._preamble_charts:
-                raise ValueError(f"the chart label {label!r} is already used")
+                raise ValueError(
+                    f"cannot add a chart labelled {label!r} to {self}: its atlas already "
+                    f"has a chart with that label"
+                )
             chart = ManifoldAtlasChart(self, label, engine_chart)
             self._preamble_charts[label] = chart
             return chart
@@ -420,7 +433,11 @@ class TopologicalManifolds(OwnedCategory):
                 case _:
                     coordinates = tuple(datum)
                     if len(coordinates) != self.dimension():
-                        raise ValueError("a manifold point has one coordinate per dimension")
+                        raise ValueError(
+                            f"{coordinates} are not the coordinates of a point of {self}: a "
+                            f"point of a manifold of dimension {self.dimension()} has "
+                            f"{self.dimension()} coordinates, not {len(coordinates)}"
+                        )
                     return self.element_class(self, coordinates, chart_label)
 
         def point(self, coordinates, chart_label="standard"):
@@ -455,9 +472,17 @@ class TopologicalManifolds(OwnedCategory):
                 name=f"Coordinate change {target_label} to {source_label}",
             )
             if int(forward_expressions.cardinality()) != self.dimension():
-                raise ValueError("a coordinate change has one target expression per coordinate")
+                raise ValueError(
+                    f"the coordinate change {source_label} -> {target_label} on {self} must "
+                    f"give {self.dimension()} coordinate expressions, one per dimension, but "
+                    f"{forward_expressions.cardinality()} were given"
+                )
             if int(inverse_expressions.cardinality()) != self.dimension():
-                raise ValueError("an inverse coordinate change has one source expression per coordinate")
+                raise ValueError(
+                    f"the inverse coordinate change {target_label} -> {source_label} on "
+                    f"{self} must give {self.dimension()} coordinate expressions, one per "
+                    f"dimension, but {inverse_expressions.cardinality()} were given"
+                )
             engine_transition = _engine_manifold_chart(source).transition_map(
                 _engine_manifold_chart(target),
                 tuple(
@@ -485,7 +510,8 @@ class TopologicalManifolds(OwnedCategory):
 
         def transition(self, source_label, target_label):
             assert (source_label, target_label) in self._preamble_transitions, (
-                "no represented atlas transition joins those labels"
+                f"{self} has no transition map from the chart {source_label!r} to the "
+                f"chart {target_label!r}: none was defined with transition_map"
             )
             return self._preamble_transitions[source_label, target_label]
 
@@ -526,9 +552,15 @@ class DifferentiableManifolds(OwnedCategory):
         dimension = int(dimension)
         degree = int(differentiability_degree)
         if dimension <= 0:
-            raise ValueError("a represented manifold here has positive dimension")
+            raise ValueError(
+                f"cannot construct a differentiable manifold {name} of dimension "
+                f"{dimension}: the dimension must be positive"
+            )
         if degree <= 0:
-            raise ValueError("a finite differentiability degree is a positive integer")
+            raise ValueError(
+                f"cannot construct a C^{degree} manifold {name}: a finite "
+                f"differentiability degree must be a positive integer"
+            )
         engine = _SageManifold(
             dimension,
             str(name),
@@ -564,7 +596,10 @@ class SmoothManifolds(OwnedCategory):
     def _call_(self, dimension, name):
         dimension = int(dimension)
         if dimension <= 0:
-            raise ValueError("a represented manifold here has positive dimension")
+            raise ValueError(
+                f"cannot construct a smooth manifold {name} of dimension {dimension}: "
+                f"the dimension must be positive"
+            )
         engine = _SageManifold(
             dimension,
             str(name),
@@ -712,7 +747,9 @@ class ComplexManifoldMor(CategoricalMor):
     def _unique_chart(manifold):
         labels = tuple(manifold.chart_labels())
         assert len(labels) == 1, (
-            "the represented polynomial holomorphic-map constructor requires one selected global chart"
+            f"cannot write a holomorphic map on {manifold} by polynomial formulas: the "
+            f"formulas are taken in a single global chart, but {manifold} has the charts "
+            f"{labels}"
         )
         return manifold.atlas()[labels[0]]
 
@@ -725,7 +762,12 @@ class ComplexManifoldMor(CategoricalMor):
             name="Holomorphic-map coordinate expressions",
         )
         if int(expressions.cardinality()) != self.codomain().dimension():
-            raise ValueError("a holomorphic coordinate map has one expression per target coordinate")
+            raise ValueError(
+                f"{coordinate_expressions} do not define a holomorphic map {self.domain()} -> "
+                f"{self.codomain()}: it needs one expression per coordinate of the codomain, "
+                f"that is {self.codomain().dimension()}, but {expressions.cardinality()} "
+                f"were given"
+            )
         engine_variables = tuple(
             _engine_manifold_expression(variable)
             for variable in source.coordinates()
@@ -738,7 +780,12 @@ class ComplexManifoldMor(CategoricalMor):
             not all(expression.is_polynomial(variable) for variable in engine_variables)
             for expression in engine_expressions
         ):
-            raise ValueError("this constructor certifies holomorphicity only for polynomial coordinate formulas")
+            raise ValueError(
+                f"cannot conclude that {coordinate_expressions} define a holomorphic map "
+                f"{self.domain()} -> {self.codomain()}: holomorphicity is known here only "
+                f"for formulas polynomial in the coordinates {source.coordinates()}, and "
+                f"some formula is not"
+            )
         engine = _engine_manifold(self.domain()).diff_map(
             _engine_manifold(self.codomain()),
             engine_expressions if len(engine_expressions) != 1 else engine_expressions[0],
@@ -764,7 +811,10 @@ class ComplexManifoldMor(CategoricalMor):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only for equal complex-manifold endpoints")
+            raise ValueError(
+                f"there is no identity map from {self.domain()} to {self.codomain()}: an "
+                f"identity needs its domain and codomain to be the same complex manifold"
+            )
         chart = self._unique_chart(self.domain())
         return self.polynomial(chart.coordinates())
 
@@ -792,7 +842,10 @@ class ComplexManifolds(OwnedCategory):
     def _call_(self, dimension, name):
         dimension = int(dimension)
         if dimension <= 0:
-            raise ValueError("a complex manifold has positive complex dimension")
+            raise ValueError(
+                f"cannot construct a complex manifold {name} of complex dimension "
+                f"{dimension}: the dimension must be positive"
+            )
         engine = _SageManifold(
             dimension,
             str(name),
@@ -819,7 +872,11 @@ class ComplexManifolds(OwnedCategory):
             coordinate_names = tuple(f"z{index}" for index in range(dimension))
         coordinate_names = tuple(str(name) for name in coordinate_names)
         if len(coordinate_names) != dimension:
-            raise ValueError("a complex affine chart has one coordinate name per dimension")
+            raise ValueError(
+                f"cannot construct complex affine space {name} of dimension {dimension} "
+                f"with the coordinates {coordinate_names}: it needs {dimension} coordinate "
+                f"names, one per dimension, but {len(coordinate_names)} were given"
+            )
         manifold = self(dimension, name)
         manifold.chart("standard", " ".join(coordinate_names))
         return manifold
@@ -827,11 +884,15 @@ class ComplexManifolds(OwnedCategory):
     def _open_submanifold_data(self, containing_manifold, name, restriction):
         r"""The construction data of the open subset ``{restriction}`` of ``containing_manifold``, cut out in its one chart."""
         assert containing_manifold in self, (
-            "a complex analytic open submanifold is open in a complex manifold"
+            f"cannot cut out the open submanifold {name} of {containing_manifold}: it "
+            f"must be an open subset of a complex manifold, and {containing_manifold} is "
+            f"in {containing_manifold.category()}"
         )
         labels = tuple(containing_manifold.chart_labels())
         assert len(labels) == 1, (
-            "represented analytic opens are cut out in the one selected global chart"
+            f"cannot cut out the open submanifold {name} of {containing_manifold} by "
+            f"{restriction}: the condition is read in a single global chart, but "
+            f"{containing_manifold} has the charts {labels}"
         )
         chart = containing_manifold.atlas()[labels[0]]
         engine_open = _engine_manifold(containing_manifold).open_subset(
@@ -867,13 +928,18 @@ class ComplexManifolds(OwnedCategory):
         """
         radius = float(radius)
         if radius <= 0:
-            raise ValueError("an analytic disc has positive radius")
+            raise ValueError(
+                f"cannot construct the disc {name} of radius {radius}: the radius must be "
+                f"positive"
+            )
         if containing_manifold is None:
             containing_manifold = self.affine_space(
                 1, name=f"{name}_line", coordinate_names=("z",)
             )
         assert containing_manifold.dimension() == 1, (
-            "a disc is cut out in a one-dimensional complex chart"
+            f"cannot cut out the disc {name} in {containing_manifold}: a disc lies in a "
+            f"complex manifold of dimension one, and {containing_manifold} has dimension "
+            f"{containing_manifold.dimension()}"
         )
         z = containing_manifold.atlas()[
             tuple(containing_manifold.chart_labels())[0]

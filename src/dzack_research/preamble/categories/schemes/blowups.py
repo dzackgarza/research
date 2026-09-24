@@ -56,7 +56,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
     def _call_(self, point):
         r"""``Bl_p(P^2)`` for a rational point ``p: Spec R -> P^2_R``."""
         assert point.codomain().scheme_base_ring() is self.base_ring(), (
-            "the blown-up plane lies over this category's base ring"
+            f"cannot blow up at {point} in {self}: the plane {point.codomain()} lies over "
+            f"{point.codomain().scheme_base_ring()}, not over {self.base_ring()}"
         )
         return _projective_point_blowup(point.codomain(), point)
 
@@ -109,14 +110,17 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
         def _source_hypersurface_equation_in_graph_ring(self, hypersurface):
             assert hypersurface in ClosedSubschemes(self.scheme_base_ring()), (
-                "a transform starts from a represented closed hypersurface"
+                f"the transform under the blowup {self} needs a closed subscheme of "
+                f"{self.blowup_source()}, but {hypersurface} is in {hypersurface.category()}"
             )
             assert hypersurface.inclusion().codomain() is self.blowup_source(), (
-                "the transformed hypersurface belongs to a different source"
+                f"{hypersurface} is a closed subscheme of {hypersurface.inclusion().codomain()}, "
+                f"not of the blown-up plane {self.blowup_source()}"
             )
             equations = hypersurface.defining_equations()
             assert int(equations.cardinality()) == 1, (
-                "the represented divisor transform requires one hypersurface equation"
+                f"the transform under {self} is computed only for a hypersurface V(f) cut out by "
+                f"one equation, but {hypersurface} has {equations.cardinality()} defining equations"
             )
             source_ring = self.source_coordinate_embedding().domain()
             raised = hypersurface.homogeneous_defining_equations(source_ring)
@@ -147,7 +151,9 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         def curve_multiplicity_at_center(self, curve):
             equations = curve.defining_equations()
             assert int(equations.cardinality()) == 1, (
-                "curve multiplicity here requires one plane hypersurface equation"
+                f"the multiplicity of {curve} at the center of {self} is computed only for a plane "
+                f"curve V(f) cut out by one equation, but it has {equations.cardinality()} "
+                "defining equations"
             )
             degree = int(next(iter(equations)).degree())
             bundle = self.blowup_source().O(degree)
@@ -192,7 +198,10 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         def picard_pullback_morphism(self):
             source = self.source_picard_group()
             labels = source.module_generating_set()
-            assert int(labels.cardinality()) == 1, "Pic(P^2) over a field has one selected generator"
+            assert int(labels.cardinality()) == 1, (
+                f"Pic(P^2) = ZZ H should have one module generator, but {source} has "
+                f"{labels.cardinality()}"
+            )
             return source.module_category().Mor(source, self.picard_group())(
                 {next(iter(labels)): self.hyperplane_picard_class()}
             )
@@ -214,7 +223,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         def curve_degree(self, curve):
             equations = curve.defining_equations()
             assert int(equations.cardinality()) == 1, (
-                "the represented plane divisor class requires one equation"
+                f"the degree of {curve} as a plane divisor is computed only for a curve V(f) cut "
+                f"out by one equation, but it has {equations.cardinality()} defining equations"
             )
             return _integers()(int(next(iter(equations)).degree()))
 
@@ -231,7 +241,8 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
         def pullback_line_bundle(self, source_bundle):
             r"""``pi^* O_{P^2}(d) = O_{P^2 x P^1}(d, 0)|_B``."""
             assert source_bundle.projective_space() is self.blowup_source(), (
-                "the pulled-back line bundle is O(d) on the blown-up plane"
+                f"{source_bundle} is not a line bundle O(d) on the blown-up plane "
+                f"{self.blowup_source()}; it lives on {source_bundle.projective_space()}"
             )
             return self.graph_ambient_product().O(
                 source_bundle.degree(),
@@ -278,7 +289,10 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 
         def del_pezzo_degree(self):
             r"""``(-K_B)^2 = (3H - E)^2``."""
-            assert self.is_del_pezzo(), "the represented blowup is not del Pezzo"
+            assert self.is_del_pezzo(), (
+                f"the degree (-K)^2 of a del Pezzo surface is undefined for {self}: its "
+                "anticanonical bundle is not ample"
+            )
             anticanonical = (
                 3 * self.hyperplane_picard_class()
                 - self.exceptional_picard_class()
@@ -292,12 +306,17 @@ class ProjectivePointBlowups(OwnedCategoryOverBaseRing):
 def _projective_point_blowup(projective_plane, point):
     r"""Return ``Bl_point(P^2)`` from its regular-center Rees graph in ``P^2 x P^1``."""
     base = projective_plane.scheme_base_ring()
-    assert base in OwnedFields(), "the represented projective point blowup requires a field base"
+    assert base in OwnedFields(), (
+        f"the blowup of {projective_plane} at a point is implemented only over a field, but "
+        f"its base ring {base} is not a field"
+    )
     assert projective_plane in ProjectiveSpaces(base) and int(projective_plane.relative_dimension()) == 2, (
-        "the represented projective point blowup requires P^2"
+        f"the blowup at a point is implemented only for the projective plane P^2, but "
+        f"{projective_plane} is not P^2 over {base}"
     )
     assert point.codomain() is projective_plane and point.domain() is projective_plane.base_scheme(), (
-        "the blowup center must be a represented rational point of this P^2"
+        f"the blowup center {point} must be a rational point Spec {base} -> {projective_plane}, "
+        f"but it is a morphism {point.domain()} -> {point.codomain()}"
     )
 
     direction = ProjectiveSpaces(base)(1, names=("U", "V"))
@@ -309,7 +328,10 @@ def _projective_point_blowup(projective_plane, point):
     source_labels = tuple(source_ring.algebra_generating_set())
     coordinates = tuple(point.point_coordinates())
     nonzero = tuple(index for index, coordinate in enumerate(coordinates) if coordinate != base.zero())
-    assert nonzero, "projective point coordinates cannot all vanish"
+    assert nonzero, (
+        f"the point {point} has all coordinates {coordinates} zero, so it is not a point of "
+        f"{projective_plane}"
+    )
     pivot = nonzero[0]
     scalar_map = source_ring.algebra_structure_morphism()
     pivot_variable = source_ring.algebra_generator(source_labels[pivot])

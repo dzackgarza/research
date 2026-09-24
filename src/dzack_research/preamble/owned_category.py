@@ -455,10 +455,15 @@ class CatConstructionsMixin:
         subcategories must not be handed the constructions.
         """
         category = self
-        assert isinstance(category, Category), "OwnedCategoryMixin is mixed into a Category"
+        assert isinstance(category, Category), (
+            f"{category!r} is not a category, so it has no subcategory class"
+        )
         cat_constructions = _cat_constructions()
         provider, inherited = declared_implementation_types(type(category), (method_provider,))
-        assert not inherited, "subcategory implementation declarations must have one owner"
+        assert not inherited, (
+            f"the category {category} declares its subcategory methods ({method_provider}) "
+            f"in more than one class: {inherited}; they must be declared once"
+        )
         if provider is cat_constructions:
             return super()._make_named_class(  # type: ignore[misc]
                 "subcategory_class",
@@ -611,11 +616,9 @@ class OwnedCategoryMixin(CatConstructionsMixin):
                 name, method_provider, cache=cache, picklable=picklable
             )
         assert cache is False, (
-            "the three tied names are built by lazy attributes on the category "
-            "(Category.parent_class / element_class / morphism_class), none of "
-            "which passes a cache argument; only subcategory_class does, and "
-            "that is delegated above.  If a caller ever passes one, it needs a "
-            "cache here rather than being silently dropped."
+            f"building {name} of the category {self} was asked to cache the class, "
+            f"but {name} is built without a cache; add a cache here rather than "
+            f"dropping the request"
         )
         category = self
         declaring_class = type(category)
@@ -936,7 +939,9 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
     data are passed to the resulting object, never stored on this type.
     """
     assert issubclass(implementation, owner), (
-        "an object engine realizes a declared owner in the selected category"
+        f"cannot insert the computation class {engine.__name__} for objects of type "
+        f"{implementation.__name__}: that type is not a subclass of "
+        f"{owner.__name__}, the object type of the category the computation serves"
     )
     match implementation is owner:
         case True:
@@ -1012,7 +1017,9 @@ def _object_of(
             implementation = category.ObjectType
         case (owner, object_engine, element_engine):
             assert category.is_subcategory(owner), (
-                "the object's mathematical category contains the engine's owner"
+                f"cannot construct an object of {category} with the computation class "
+                f"{object_engine.__name__}: that class serves {owner}, and {category} is "
+                f"not a subcategory of {owner}"
             )
             implementation = _engine_object_type(
                 category.ObjectType, owner.ObjectType, object_engine,

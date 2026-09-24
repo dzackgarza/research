@@ -53,7 +53,7 @@ class GroupActionFunctor(Functor):
 
     def _apply_object(self, obj):
         if obj is not self.domain().an_object():
-            raise ValueError("BG has one object")
+            raise ValueError(f"the classifying category BG has one object, and {obj} is not it")
         return self.underlying_object()
 
     def _apply_morphism(self, morphism):
@@ -75,7 +75,10 @@ def _action_functor_of(acted, group, category):
         return acted.arrow().functor()
     functor = acted.action_functor()
     if functor.domain() != group.classifying_category() or functor.codomain() != category:
-        raise ValueError("the represented action functor has the wrong endpoints")
+        raise ValueError(
+            f"the action of {group} on an object of {category} must be a functor BG -> {category}, but "
+            f"{functor} is a functor {functor.domain()} -> {functor.codomain()}"
+        )
     return functor
 
 
@@ -361,7 +364,9 @@ class _CoinvariantsTrivialAdjunction(_BaseChangeAdjunction):
     def _counit_component(self, module):
         coinvariants = self.left_adjoint()(self.right_adjoint()(module))
         if coinvariants is not module:
-            raise ValueError("coinvariants of the trivial action must be the original module")
+            raise ValueError(
+                f"the coinvariants of {module} with the trivial action are {coinvariants}, which is not {module} itself"
+            )
         return module.module_category().Mor(module, module).identity()
 
     def _repr_(self):

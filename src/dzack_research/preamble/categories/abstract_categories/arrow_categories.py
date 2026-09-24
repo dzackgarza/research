@@ -80,7 +80,9 @@ class _ArrowAsFunctor(Functor):
             case 1:
                 return self.arrow().codomain()
             case _:
-                raise ValueError("the walking-arrow category has exactly two objects")
+                raise ValueError(
+                    f"the walking arrow 0 -> 1 has only the objects 0 and 1, but got {obj}"
+                )
 
     def _apply_morphism(self, morphism: Map) -> Map:
         left = morphism.domain().position()
@@ -90,7 +92,7 @@ class _ArrowAsFunctor(Functor):
             return _category_mor_parent(self.codomain(), endpoint, endpoint).identity()
         if left == 0 and right == 1:
             return self.arrow()
-        raise ValueError("the walking-arrow category has no decreasing morphism")
+        raise ValueError(f"the walking arrow 0 -> 1 has no morphism {left} -> {right}")
 
 
 @cached_function(key=lambda category, arrow: (id(category), id(arrow)))
@@ -182,7 +184,10 @@ class ArrowMor(NaturalTransformationMor):
                 if left.parent() is self:
                     return left
                 if left.domain() is not self.domain() or left.codomain() is not self.codomain():
-                    raise ValueError("the square has the wrong arrow objects")
+                    raise ValueError(
+                        f"cannot view {left} as a morphism {self.domain()} -> {self.codomain()} in the arrow category: "
+                        f"it is a square {left.domain()} -> {left.codomain()}"
+                    )
                 left, right = left.left(), left.right()
             case NaturalTransformation() if right is None:
                 walking_arrow = left.source().domain()
@@ -204,16 +209,25 @@ class ArrowMor(NaturalTransformationMor):
         source = self.domain().arrow()
         target = self.codomain().arrow()
         if left.domain() is not source.domain() or left.codomain() is not target.domain():
-            raise ValueError("the left edge has the wrong square endpoints")
+            raise ValueError(
+                f"a square from {source} to {target} needs its left edge to be a map {source.domain()} -> "
+                f"{target.domain()}, but {left} is a map {left.domain()} -> {left.codomain()}"
+            )
         if right.domain() is not source.codomain() or right.codomain() is not target.codomain():
-            raise ValueError("the right edge has the wrong square endpoints")
+            raise ValueError(
+                f"a square from {source} to {target} needs its right edge to be a map {source.codomain()} -> "
+                f"{target.codomain()}, but {right} is a map {right.domain()} -> {right.codomain()}"
+            )
         base = self._edge_category()
         if not _category_accepts_morphism(base, source.domain(), target.domain(), left):
-            raise ValueError("the left edge is not a morphism of the base category")
+            raise ValueError(f"the left edge {left} of the square is not a morphism of {base}")
         if not _category_accepts_morphism(base, source.codomain(), target.codomain(), right):
-            raise ValueError("the right edge is not a morphism of the base category")
+            raise ValueError(f"the right edge {right} of the square is not a morphism of {base}")
         if verify and (right * source == target * left) is not True:
-            raise ValueError("the supplied edges do not establish a commuting square")
+            raise ValueError(
+                f"the square with left edge {left} and right edge {right} does not commute: "
+                f"{right} o {source} != {target} o {left}"
+            )
         edges = {0: left, 1: right}
         transformation = NaturalTransformation(
             self.source(),
@@ -229,7 +243,9 @@ class ArrowMor(NaturalTransformationMor):
 
     def identity(self) -> CommutativeSquare:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         arrow = self.domain().arrow()
         category = self._edge_category()
         return self._from_commuting_edges(
@@ -307,7 +323,9 @@ class _WalkingArrowFunctorCategory(_FunctorCategory):
             case Functor():
                 return super().object(value)
         if not self.admits_arrow(value):
-            raise TypeError("the supplied morphism is not an object of this arrow category")
+            raise TypeError(
+                f"{value} is not an object of {self}: it is not an arrow of the base category"
+            )
         return super().object(_walking_arrow_functor(self.codomain_category(), value))
 
     __call__ = object
@@ -327,7 +345,10 @@ class _WalkingArrowFunctorCategory(_FunctorCategory):
         first: CommutativeSquare,
     ) -> CommutativeSquare:
         if first.codomain() is not second.domain():
-            raise ValueError("arrow-category squares are not composable")
+            raise ValueError(
+                f"cannot compose the squares {second} o {first}: {first} ends at {first.codomain()}, but "
+                f"{second} starts at {second.domain()}"
+            )
         return second * first
 
     def _repr_(self) -> str:
@@ -368,7 +389,9 @@ class _SubcategoryOfArrows(OwnedCategory):
 
     def object(self, arrow: Morphism) -> Parent:
         if not self.admits_arrow(arrow):
-            raise TypeError("the supplied morphism is not an object of this arrow category")
+            raise TypeError(
+                f"{arrow} is not an object of {self}: it is not an arrow of the base category"
+            )
         return self._object_on(_walking_arrow_functor(self.base_category(), arrow))
 
     __call__ = object
@@ -379,7 +402,9 @@ class _SubcategoryOfArrows(OwnedCategory):
 
     def Mor(self, source: Parent, target: Parent) -> ArrowMor:
         if source not in self or target not in self:
-            raise TypeError("a Mor here requires two arrow objects of this category")
+            raise TypeError(
+                f"a morphism in {self} needs two objects of {self}, but got {source} and {target}"
+            )
         return self.MorCategory().Of(source, target)
 
     def morphism(
@@ -400,7 +425,10 @@ class _SubcategoryOfArrows(OwnedCategory):
         first: CommutativeSquare,
     ) -> CommutativeSquare:
         if first.codomain() is not second.domain():
-            raise ValueError("arrow-category squares are not composable")
+            raise ValueError(
+                f"cannot compose the squares {second} o {first}: {first} ends at {first.codomain()}, but "
+                f"{second} starts at {second.domain()}"
+            )
         return second * first
 
 
@@ -429,7 +457,10 @@ class _EndofunctorAlgebraMor(ArrowMor):
                 if left.parent() is self:
                     return left
                 if left.domain() is not self.domain() or left.codomain() is not self.codomain():
-                    raise ValueError("the algebra morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {left} as a morphism of algebras {self.domain()} -> {self.codomain()}: it is a "
+                        f"square {left.domain()} -> {left.codomain()}"
+                    )
                 left, right = left.left(), left.right()
         if right is None:
             right = left
@@ -438,7 +469,8 @@ class _EndofunctorAlgebraMor(ArrowMor):
             expected = category.endofunctor()(right)
             if (left == expected) is not True:
                 raise ValueError(
-                    "the left edge of an endofunctor-algebra map must be the image of its underlying morphism"
+                    f"a morphism of algebras for {category.endofunctor()} with underlying map {right} needs left "
+                    f"edge T({right}) = {expected}, but the left edge is {left}"
                 )
             left = expected
         return self._square(left, right, verify=True)
@@ -480,7 +512,10 @@ class _EndofunctorAlgebraCategory(_SubcategoryOfArrows):
 
     def __init__(self, endofunctor: Functor) -> None:
         if endofunctor.domain() is not endofunctor.codomain():
-            raise ValueError("an endofunctor must have one common domain and codomain")
+            raise ValueError(
+                f"an endofunctor must have equal domain and codomain, but {endofunctor} is a functor "
+                f"{endofunctor.domain()} -> {endofunctor.codomain()}"
+            )
         self._endofunctor = endofunctor
         super().__init__()
 
@@ -516,21 +551,31 @@ class _EndofunctorAlgebraCategory(_SubcategoryOfArrows):
         same object.
         """
         if underlying_object not in self.base_category():
-            raise TypeError("the underlying object is not an object of the endofunctor's category")
+            raise TypeError(
+                f"an algebra for {self.endofunctor()} needs an object of {self.base_category()}, but "
+                f"{underlying_object} is not one"
+            )
         if structure.domain() is not self.endofunctor()(underlying_object):
-            raise ValueError("the structure morphism must start at T(X)")
+            raise ValueError(
+                f"an algebra structure on {underlying_object} for T = {self.endofunctor()} is a map "
+                f"T(X) -> X starting at {self.endofunctor()(underlying_object)}, but {structure} starts at "
+                f"{structure.domain()}"
+            )
         if structure.codomain() is not underlying_object:
-            raise ValueError("the structure morphism must end at its exact supplied object")
+            raise ValueError(
+                f"an algebra structure on {underlying_object} is a map T(X) -> X ending at {underlying_object}, "
+                f"but {structure} ends at {structure.codomain()}"
+            )
         return self.object(structure)
 
     def underlying_object(self, algebra: Parent):
         if algebra not in self:
-            raise TypeError("the object is not an algebra of this endofunctor")
+            raise TypeError(f"{algebra} is not an algebra for {self.endofunctor()}")
         return algebra.target_object()
 
     def structure(self, algebra: Parent) -> Morphism:
         if algebra not in self:
-            raise TypeError("the object is not an algebra of this endofunctor")
+            raise TypeError(f"{algebra} is not an algebra for {self.endofunctor()}")
         return algebra.arrow()
 
     def homomorphism(
@@ -559,14 +604,22 @@ class SliceMor(ArrowMor):
                 if factor.parent() is self:
                     return factor
                 if factor.domain() is not self.domain() or factor.codomain() is not self.codomain():
-                    raise ValueError("the slice morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {factor} as a morphism {self.domain()} -> {self.codomain()} in the slice "
+                        f"category: it is a morphism {factor.domain()} -> {factor.codomain()}"
+                    )
                 factor, right = factor.left(), factor.right()
         fixed = self.domain().arrow().codomain()
         if self.codomain().arrow().codomain() is not fixed:
-            raise ValueError("slice objects require one fixed codomain")
+            raise ValueError(
+                f"a morphism in a slice category C/X needs both objects over one X, but {self.domain()} lies "
+                f"over {fixed} and {self.codomain()} lies over {self.codomain().arrow().codomain()}"
+            )
         identity = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
         if right is not None and (right == identity) is not True:
-            raise ValueError("the fixed edge of a slice morphism is the identity")
+            raise ValueError(
+                f"in a slice category C/X the edge on X must be the identity of {fixed}, but it is {right}"
+            )
         return self._square(factor, identity, verify=True)
 
     def canonical_morphism(self) -> CommutativeSquare:
@@ -641,7 +694,9 @@ class SliceCategory(_SubcategoryOfArrows):
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:
         if base_object not in base_category:
-            raise TypeError("the slice base must be an object of its base category")
+            raise TypeError(
+                f"the slice category C/X needs X an object of C = {base_category}, but {base_object} is not one"
+            )
         self._base_category = base_category
         self._base_object = base_object
         super().__init__()
@@ -664,7 +719,9 @@ class SliceCategory(_SubcategoryOfArrows):
     ) -> Parent:
         r"""Construct an object of ``C/X``, optionally with a private realization."""
         if not self.admits_arrow(arrow):
-            raise TypeError("the supplied morphism is not an object of this slice")
+            raise TypeError(
+                f"{arrow} is not an object of {self}: it is not an arrow of the base category ending at the base object"
+            )
         functor = _walking_arrow_functor(self.base_category(), arrow)
         if _engine is None and construction_data is None:
             return self._object_on(functor)
@@ -708,21 +765,31 @@ class CosliceMor(ArrowMor):
                 if left.parent() is self:
                     return left
                 if left.domain() is not self.domain() or left.codomain() is not self.codomain():
-                    raise ValueError("the coslice morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {left} as a morphism {self.domain()} -> {self.codomain()} in the coslice "
+                        f"category: it is a morphism {left.domain()} -> {left.codomain()}"
+                    )
                 left, right = left.left(), left.right()
         fixed = self.domain().arrow().domain()
         if self.codomain().arrow().domain() is not fixed:
-            raise ValueError("coslice objects require one fixed domain")
+            raise ValueError(
+                f"a morphism in a coslice category X/C needs both objects under one X, but {self.domain()} lies "
+                f"under {fixed} and {self.codomain()} lies under {self.codomain().arrow().domain()}"
+            )
         identity = _category_mor_parent(self._edge_category(), fixed, fixed).identity()
         if right is None:
             right = left
         elif (left == identity) is not True:
-            raise ValueError("the fixed edge of a coslice morphism is the identity")
+            raise ValueError(
+                f"in a coslice category X/C the edge on X must be the identity of {fixed}, but it is {left}"
+            )
         return self._square(identity, right, verify=True)
 
     def identity(self) -> CommutativeSquare:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         target = self.domain().target_object()
         source = self.domain().source_object()
         category = self._edge_category()
@@ -751,7 +818,9 @@ class CosliceCategory(_SubcategoryOfArrows):
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:
         if base_object not in base_category:
-            raise TypeError("the coslice base must be an object of its base category")
+            raise TypeError(
+                f"the coslice category X/C needs X an object of C = {base_category}, but {base_object} is not one"
+            )
         self._base_category = base_category
         self._base_object = base_object
         super().__init__()
@@ -929,9 +998,15 @@ class SubobjectMorphism(Morphism):
     ) -> None:
         Morphism.__init__(self, parent)
         if factor_morphism.domain() is not _subobject_source(self.domain()):
-            raise ValueError("the subobject factor has the wrong domain")
+            raise ValueError(
+                f"a morphism of subobjects {self.domain()} -> {self.codomain()} needs a map starting at "
+                f"{_subobject_source(self.domain())}, but {factor_morphism} starts at {factor_morphism.domain()}"
+            )
         if factor_morphism.codomain() is not _subobject_source(self.codomain()):
-            raise ValueError("the subobject factor has the wrong codomain")
+            raise ValueError(
+                f"a morphism of subobjects {self.domain()} -> {self.codomain()} needs a map ending at "
+                f"{_subobject_source(self.codomain())}, but {factor_morphism} ends at {factor_morphism.codomain()}"
+            )
         base = parent.subobject_category().base_category()
         if not _category_accepts_morphism(
             base,
@@ -939,7 +1014,10 @@ class SubobjectMorphism(Morphism):
             _subobject_source(self.codomain()),
             factor_morphism,
         ):
-            raise ValueError("the subobject factor is not a morphism of the base category")
+            raise ValueError(
+                f"{factor_morphism} is not a morphism of the base category, so it is not a morphism of "
+                f"subobjects {self.domain()} -> {self.codomain()}"
+            )
         if verify:
             parent._slice_mor()(factor_morphism)
         self._factor_morphism = factor_morphism
@@ -1006,7 +1084,9 @@ class SubobjectMor(CategoricalMor):
             self.codomain().inclusion()
         )
         if factor is None:
-            raise ValueError("the first subobject is not contained in the second")
+            raise ValueError(
+                f"the subobject {self.domain()} is not contained in the subobject {self.codomain()}"
+            )
         return factor
 
     def has_morphism(self) -> bool:
@@ -1026,7 +1106,10 @@ class SubobjectMor(CategoricalMor):
                 if factor_morphism.parent() is self:
                     return factor_morphism
                 if factor_morphism.domain() is not self.domain() or factor_morphism.codomain() is not self.codomain():
-                    raise ValueError("the subobject morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {factor_morphism} as a morphism of subobjects {self.domain()} -> {self.codomain()}: "
+                        f"it is a morphism {factor_morphism.domain()} -> {factor_morphism.codomain()}"
+                    )
                 factor_morphism = factor_morphism.factor_morphism()
             case None:
                 return self.canonical_morphism()
@@ -1034,7 +1117,9 @@ class SubobjectMor(CategoricalMor):
 
     def identity(self) -> SubobjectMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         return SubobjectMorphism(self, self._slice_mor().identity().left(), verify=False)
 
 
@@ -1084,7 +1169,9 @@ class SubobjectCategory(OwnedCategoryBase):
 
     def __init__(self, base_category: Category, base_object: Parent) -> None:
         if base_object not in base_category:
-            raise TypeError("the subobject base must lie in its base category")
+            raise TypeError(
+                f"subobjects of X in C need X an object of C = {base_category}, but {base_object} is not one"
+            )
         self._base_category = base_category
         self._base_object = base_object
         super().__init__()
@@ -1118,12 +1205,14 @@ class SubobjectCategory(OwnedCategoryBase):
     @cached_method(key=lambda self, subobject: id(subobject))
     def as_slice_object(self, subobject: Parent) -> Parent:
         if subobject not in self:
-            raise TypeError("the object is not a represented subobject of the fixed base")
+            raise TypeError(f"{subobject} is not a subobject in {self}")
         return self.slice_category()(subobject.inclusion())
 
     def Mor(self, domain: Parent, codomain: Parent) -> SubobjectMor:
         if domain not in self or codomain not in self:
-            raise TypeError("both objects must be subobjects of the fixed base object")
+            raise TypeError(
+                f"a morphism in {self} needs two subobjects of its base object, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     def leq(self, left: Parent, right: Parent) -> bool:
@@ -1167,7 +1256,9 @@ class SetSubobjectCategory(SliceCategory):
     ):
         r"""Construct this represented subset, optionally with stronger owned structure or a private realization."""
         if not self.admits_arrow(arrow):
-            raise TypeError("the supplied morphism is not a monomorphism into this base set")
+            raise TypeError(
+                f"{arrow} is not an object of {self}: it is not a monomorphism into the base set"
+            )
         category = Cat().meet((self, *tuple(categories)))
         return _object_of(
             category,
@@ -1407,7 +1498,10 @@ class _WideSubcategory(OwnedCategoryBase):
 
     def __init__(self, base_category: Category, arrow_category: _SubcategoryOfArrows) -> None:
         if arrow_category.base_category() is not base_category:
-            raise ValueError("the selected arrows must belong to the stated base category")
+            raise ValueError(
+                f"the arrows of a wide subcategory of {base_category} must be arrows of {base_category}, but "
+                f"they are arrows of {arrow_category.base_category()}"
+            )
         self._base_category = base_category
         self._arrow_category = arrow_category
         super().__init__()
@@ -1446,7 +1540,9 @@ class _WideSubcategory(OwnedCategoryBase):
     def object(self, obj: _Object) -> _Object:
         r"""Retain an already-placed base object, without copying or refining it."""
         if obj not in self:
-            raise TypeError("a wide subcategory has exactly the objects of its base category")
+            raise TypeError(
+                f"{obj} is not an object of {self}, which has exactly the objects of {self.base_category()}"
+            )
         return obj
 
     __call__ = object
@@ -1465,19 +1561,26 @@ class _WideSubcategory(OwnedCategoryBase):
     def identity(self, obj: Parent) -> Morphism:
         identity = _category_mor_parent(self.base_category(), obj, obj).identity()
         if not _category_accepts_morphism(self, obj, obj, identity):
-            raise ValueError("the selected arrow class omits an identity")
+            raise ValueError(
+                f"{self} does not contain the identity of {obj}, so it is not a subcategory"
+            )
         return identity
 
     def compose(self, second: Morphism, first: Morphism) -> Morphism:
         if first.codomain() is not second.domain():
-            raise ValueError("the arrows are not composable")
+            raise ValueError(
+                f"cannot compose {second} o {first}: {first} ends at {first.codomain()}, but {second} starts "
+                f"at {second.domain()}"
+            )
         if not _category_accepts_morphism(self, first.domain(), first.codomain(), first):
-            raise ValueError("the first arrow is outside this wide subcategory")
+            raise ValueError(f"{first} is not a morphism of {self}")
         if not _category_accepts_morphism(self, second.domain(), second.codomain(), second):
-            raise ValueError("the second arrow is outside this wide subcategory")
+            raise ValueError(f"{second} is not a morphism of {self}")
         composite = second * first
         if not _category_accepts_morphism(self, first.domain(), second.codomain(), composite):
-            raise ValueError("the selected arrow class is not closed under this composition")
+            raise ValueError(
+                f"{self} is not closed under composition: {second} o {first} is not one of its morphisms"
+            )
         return composite
 
     def _repr_(self) -> str:
@@ -1515,9 +1618,14 @@ class CoreMor(CategoricalMor):
     def _require_base_morphisms(self, forward: Morphism, inverse: Morphism) -> None:
         base = self.core_category().base_category()
         if not _category_accepts_morphism(base, self.domain(), self.codomain(), forward):
-            raise ValueError("the forward map is not a morphism of the core's base category")
+            raise ValueError(
+                f"the isomorphism {self.domain()} -> {self.codomain()} needs {forward} to be a morphism of {base}"
+            )
         if not _category_accepts_morphism(base, self.codomain(), self.domain(), inverse):
-            raise ValueError("the inverse map is not a morphism of the core's base category")
+            raise ValueError(
+                f"the isomorphism {self.domain()} -> {self.codomain()} needs the inverse {inverse} to be a "
+                f"morphism of {base}"
+            )
 
     def _from_known_inverse_pair(self, forward, inverse):
         r"""Construct an isomorphism from an inverse pair proved by its owner."""
@@ -1526,7 +1634,9 @@ class CoreMor(CategoricalMor):
 
     def identity(self) -> CategoricalIsomorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         base = self.core_category().base_category()
         identity = _category_mor_parent(base, self.domain(), self.domain()).identity()
         return self._from_known_inverse_pair(identity, identity)

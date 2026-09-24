@@ -53,7 +53,8 @@ class _CardinalityFunctor(Functor):
     def cartesian_product_comparison(self, product):
         r"""Return ``prod_i #X_i -> #(prod_i X_i)`` for a represented set product."""
         assert product in CartesianProductsOfSets(), (
-            "the product comparison is taken at a represented Cartesian product of sets"
+            f"the comparison prod_i #X_i -> #(prod_i X_i) needs a Cartesian product of sets, but {product} "
+            "is not one"
         )
         expected = self.codomain().indexed_product(
             product.index_set(), lambda index: self(product.factor(index))
@@ -63,7 +64,7 @@ class _CardinalityFunctor(Functor):
     def coproduct_comparison(self, coproduct):
         r"""Return ``sum_i #X_i -> #(coprod_i X_i)`` for a represented set coproduct."""
         assert coproduct in CoproductsOfSets(), (
-            "the coproduct comparison is taken at a represented coproduct of sets"
+            f"the comparison sum_i #X_i -> #(coprod_i X_i) needs a coproduct of sets, but {coproduct} is not one"
         )
         expected = self.codomain().indexed_sum(
             coproduct.index_set(), lambda index: self(coproduct.cofactor(index))
@@ -73,7 +74,7 @@ class _CardinalityFunctor(Functor):
     def power_set_comparison(self, power_set):
         r"""Return ``2^(#X) -> #P(X)`` for a represented power set."""
         assert power_set in PowerSets(), (
-            "the power-set comparison is taken at a represented power set"
+            f"the comparison 2^#X -> #P(X) needs a power set P(X), but {power_set} is not one"
         )
         expected = self.codomain().power(cardinal(2), self(power_set.base_set()))
         return self.codomain().Mor(expected, self(power_set)).unique_morphism()

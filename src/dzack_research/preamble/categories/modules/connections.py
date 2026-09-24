@@ -73,7 +73,10 @@ class ModulesWithConnection(OwnedParameterizedCategory):
     def Mor(self, domain, codomain):
         r"""Return horizontal module maps between two objects with connection."""
         if domain not in self or codomain not in self:
-            raise TypeError("a connection Mor requires two modules with connection over this algebra")
+            raise TypeError(
+                f"{self}.Mor({domain}, {codomain}) needs two modules with connection over {self.algebra()}, "
+                f"but {domain} is in {domain.category()} and {codomain} is in {codomain.category()}"
+            )
         return ConnectionMorphismCategoryConstruction(Modules(self.algebra())).Of(
             domain,
             codomain,
@@ -82,13 +85,21 @@ class ModulesWithConnection(OwnedParameterizedCategory):
     def _call_(self, connection):
         r"""Equip the source module with the selected connection."""
         if not isinstance(connection, Connection):
-            raise TypeError("a module with connection is specified by a Connection")
+            raise TypeError(
+                f"an object of {self} is constructed from a connection E -> E tensor_A Omega^1, "
+                f"but got {connection!r}"
+            )
         source = connection.module()
         algebra = connection.algebra()
         if algebra is not self.algebra():
-            raise ValueError("the connection belongs to a different coefficient algebra")
+            raise ValueError(
+                f"{connection} cannot equip an object of {self}: it is a connection over {algebra}, "
+                f"not over {self.algebra()}"
+            )
         assert source in FramedModules(algebra), (
-            "a represented connection is equipped on the framed module carrying its generator-indexed datum"
+            f"{connection} cannot equip {source} with a connection: the connection is given by its values on "
+            f"module generators, so {source} must have chosen generators over {algebra}, but it is in "
+            f"{source.category()}"
         )
         categories = [self]
         match connection.is_flat():
@@ -107,7 +118,8 @@ class ModulesWithConnection(OwnedParameterizedCategory):
     class ParentMethods:
         def __init__(self, source_connection, unformed_module, **rest) -> None:
             assert source_connection.module() is unformed_module, (
-                "a module with connection retains the exact module on which its connection was stated"
+                f"{unformed_module} cannot carry {source_connection}: that is a connection on "
+                f"{source_connection.module()}, a different module"
             )
             self._preamble_source_connection = source_connection
             self._preamble_unformed_module = unformed_module
@@ -197,12 +209,16 @@ class Connection(Element):
                 finite = False
             if not finite:
                 raise TypeError(
-                    "a dictionary connection assignment requires a finite framing; "
-                    "use a callable for an arbitrary indexed framing"
+                    f"a connection on {self.module()} given as a dictionary of generator images needs "
+                    f"finitely many module generators, but its generating set has cardinality {size}; "
+                    f"give the images as a function of the generator instead"
                 )
             missing = [label for label in labels if label not in generator_images]
             if missing:
-                raise ValueError(f"connection assignment omits {missing}")
+                raise ValueError(
+                    f"a connection on {self.module()} needs an image for every module generator, "
+                    f"but none is given for {missing}"
+                )
             raw_image = generator_images.__getitem__
         elif callable(generator_images):
             raw_image = generator_images
@@ -214,10 +230,14 @@ class Connection(Element):
                 finite_size = None
             if finite_size is None:
                 raise TypeError(
-                    "sequence connection syntax requires a finite framing"
+                    f"a connection on {self.module()} given as a sequence of generator images needs "
+                    f"finitely many module generators, but its generating set has cardinality {size}"
                 )
             if len(generator_images) != finite_size:
-                raise ValueError("a connection needs one image for each module generator")
+                raise ValueError(
+                    f"a connection on {self.module()} needs one image for each of its {finite_size} "
+                    f"module generators, but {len(generator_images)} were given"
+                )
             by_position = {
                 position: generator_images[position]
                 for position in range(len(generator_images))
@@ -226,7 +246,8 @@ class Connection(Element):
                 return by_position[int(labels.ranking_map()(label))]
         else:
             raise TypeError(
-                "a connection is specified by a generator-indexed function or finite assignment"
+                f"a connection on {self.module()} is given by the images of its module generators, as a "
+                f"function, a dictionary or a sequence, but got {generator_images!r}"
             )
 
         def image(label):
@@ -291,7 +312,8 @@ class Connection(Element):
             )
             if value != self.target_module().zero():
                 raise ValueError(
-                    "the proposed connection does not descend through a module relation"
+                    f"the proposed connection is not well defined on {module}: it must send every relation "
+                    f"among the module generators to zero, but it sends the relation {row} to {value}"
                 )
 
     def __call__(self, element):
@@ -434,7 +456,8 @@ class ConnectionSpace(RestrictedMorCategoryParent):
         algebra = module.base_ring()
         if algebra not in Algebras(algebra.base_ring()).Associative().Unital().Commutative():
             raise TypeError(
-                "an algebraic connection here requires a module over a commutative algebra"
+                f"{module} has no algebraic connections here: they are defined for modules over a "
+                f"commutative algebra, but its base ring {algebra} is in {algebra.category()}"
             )
         self._module = module
         self._algebra = algebra
@@ -445,7 +468,10 @@ class ConnectionSpace(RestrictedMorCategoryParent):
             (module, self._one_forms)
         )
         if self._target_module is not expected_target:
-            raise ValueError("the restricted connection target is not E tensor_A Omega^1")
+            raise ValueError(
+                f"a connection on {module} takes values in {expected_target} = E tensor_A Omega^1, "
+                f"but the given target is {self._target_module}"
+            )
         # A connection is an R-linear map E -> E (x) Omega satisfying Leibniz,
         # so this is the subcategory of the existing R-linear Mor category cut
         # out by that rule.
@@ -483,10 +509,14 @@ class ConnectionSpace(RestrictedMorCategoryParent):
                 generator_images.domain() is not self.domain_object()
                 or generator_images.codomain() is not self.codomain_object()
             ):
-                raise ValueError("the linear map has the wrong connection endpoints")
+                raise ValueError(
+                    f"{generator_images} is a map {generator_images.domain()} -> {generator_images.codomain()}, "
+                    f"but a connection in {self} is a map {self.domain_object()} -> {self.codomain_object()}"
+                )
             if not isinstance(generator_images, ConnectionUnderlyingLinearMorphism):
                 raise ValueError(
-                    "an arbitrary R-linear map alone does not supply the Leibniz rule required of a connection"
+                    f"{generator_images} is not known to satisfy the Leibniz rule, so it is not a connection "
+                    f"in {self}; construct it from the images of the module generators instead"
                 )
             connection = generator_images.connection()
             if connection.parent() is self:
@@ -513,7 +543,8 @@ def _connections(module) -> ConnectionSpace:
     algebra = module.base_ring()
     if algebra not in Algebras(algebra.base_ring()).Associative().Unital().Commutative():
         raise TypeError(
-            "an algebraic connection here requires a module over a commutative algebra"
+            f"{module} has no algebraic connections here: they are defined for modules over a "
+            f"commutative algebra, but its base ring {algebra} is in {algebra.category()}"
         )
     one_forms = algebra.kahler_differentials()
     target = Modules(module.base_ring()).tensor_product((module, one_forms))
@@ -533,13 +564,19 @@ class ConnectionMorphism(Element):
         Element.__init__(self, parent)
         underlying = parent.arrow_set()(images)
         if underlying.linearity_decision() is not True:
-            raise ValueError("a connection morphism requires an established underlying linear map")
+            raise ValueError(
+                f"{underlying} is not a morphism of modules with connection: it must be linear over "
+                f"{underlying.domain().base_ring()}, and that is not known"
+            )
         self._underlying_morphism = underlying
         match self._horizontality_derivation():
             case True:
                 pass
             case False:
-                raise ValueError("the module map is not horizontal for the selected connections")
+                raise ValueError(
+                    f"{underlying} is not a morphism of modules with connection: it must commute with the "
+                    f"connections of {parent.domain_object()} and {parent.codomain_object()}, and it does not"
+                )
             case _:
                 self._check_connection_square()
         self._underlying_morphism = HorizontalConnectionUnderlyingMorphism(
@@ -587,7 +624,11 @@ class ConnectionMorphism(Element):
         domain_connection = self.domain().connection()
         codomain_connection = self.codomain().connection()
         if domain_connection.algebra() is not codomain_connection.algebra():
-            raise ValueError("horizontal morphisms require one coefficient algebra")
+            raise ValueError(
+                f"there are no morphisms of modules with connection {self.domain()} -> {self.codomain()}: "
+                f"the connections must be over one algebra, but they are over "
+                f"{domain_connection.algebra()} and {codomain_connection.algebra()}"
+            )
         omega = domain_connection.one_forms()
         identity_omega = omega.module_category().Mor(omega, omega).identity()
 
@@ -607,7 +648,9 @@ class ConnectionMorphism(Element):
 
         ring = domain_module.base_ring()
         assert domain_module in ModulesWithChosenFinitePresentation(ring), (
-            "horizontality by generator verification requires a selected finite framing"
+            f"whether {underlying} commutes with the connections is checked here on module generators, "
+            f"so {domain_module} must have a chosen finite presentation over {ring}, but it is in "
+            f"{domain_module.category()}"
         )
         for label in domain_module.module_generating_set():
             generator = domain_module.module_generator(label)
@@ -616,7 +659,8 @@ class ConnectionMorphism(Element):
                     pass
                 case _:
                     raise ValueError(
-                        "the module map is not horizontal for the selected connections"
+                        f"{underlying} is not a morphism of modules with connection: it must commute with "
+                        f"the connections, but it fails on the generator {generator} of {domain_module}"
                     )
 
 
@@ -684,7 +728,10 @@ class ConnectionMor(RestrictedMorCategoryParent):
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("connection morphisms require one coefficient algebra")
+            raise ValueError(
+                f"there are no morphisms of modules with connection {domain} -> {codomain}: both must be "
+                f"over one algebra, but they are over {domain.base_ring()} and {codomain.base_ring()}"
+            )
         RestrictedMorCategoryParent.__init__(
             self,
             family,
@@ -706,7 +753,10 @@ class ConnectionMor(RestrictedMorCategoryParent):
 
     def identity(self):
         if self.domain_object() is not self.codomain_object():
-            raise ValueError("identity belongs to a connection endomorphism Mor")
+            raise ValueError(
+                f"{self} has no identity: an identity map needs domain = codomain, but these are "
+                f"{self.domain_object()} and {self.codomain_object()}"
+            )
         return self._from_horizontal_morphism(self.arrow_set().identity())
 
 
@@ -882,7 +932,10 @@ class ConnectionDeRhamModule:
             case True:
                 pass
             case _:
-                raise ValueError("a DG-module de Rham differential requires an established flat connection")
+                raise ValueError(
+                    f"{connection} has no de Rham complex: the de Rham differential squares to zero only "
+                    f"for a flat connection, and {connection} is not known to be flat"
+                )
         coefficient_module = connection.module()
         algebra = connection.algebra()
         dga = algebra.de_rham_algebra()
@@ -891,7 +944,10 @@ class ConnectionDeRhamModule:
             case True:
                 pass
             case False:
-                raise ValueError("the connection de Rham DG-module requires the integer grading of its de Rham algebra")
+                raise ValueError(
+                    f"the de Rham complex of {connection} needs the de Rham algebra {dga} to be graded by "
+                    f"the integers, but it is graded by {dga.grading_monoid()}"
+                )
 
         pieces = indexed_family(
             integers,

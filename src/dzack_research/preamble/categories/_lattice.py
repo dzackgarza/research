@@ -137,7 +137,7 @@ def _as_generating_set(keys, rank):
     size = cardinal(rank)
     key_cardinality = cardinal(selected.cardinality())
     assert key_cardinality == size, (
-        f"the generating set has cardinality {key_cardinality}, not the free-module rank {size}"
+        f"{selected} cannot be a basis of a free module of rank {size}: it has cardinality {key_cardinality}"
     )
     return selected
 
@@ -220,25 +220,25 @@ def _normalized_lattice_names(names, rank):
             return normalize_names(count, names)
         case 1:
             assert len(written) == 3 and written[1] == "Ellipsis", (
-                "lattice generator ellipsis syntax has the form a1, ..., an"
+                f"cannot read the generator names {names}: names with an ellipsis must have the form a1, ..., an"
             )
             first = re.fullmatch(r"(.*?)(\d+)", written[0])
             last = re.fullmatch(r"(.*?)(\d+)", written[2])
             assert first is not None and last is not None, (
-                "lattice generator ellipsis endpoints must end in integers"
+                f"cannot read the generator names {names}: in a1, ..., an both endpoints must end in an integer"
             )
             assert first.group(1) == last.group(1), (
-                "lattice generator ellipsis endpoints require one common prefix"
+                f"cannot read the generator names {names}: in a1, ..., an both endpoints must have the same prefix, but they are {written[0]} and {written[2]}"
             )
             start = int(first.group(2))
             stop = int(last.group(2))
-            assert start <= stop, "lattice generator ellipsis endpoints are increasing"
+            assert start <= stop, f"cannot read the generator names {names}: in a1, ..., an the first index must not exceed the last, but {start} > {stop}"
             return normalize_names(
                 count,
                 tuple(f"{first.group(1)}{index}" for index in range(start, stop + 1)),
             )
         case _:
-            raise ValueError("lattice generator names contain more than one ellipsis")
+            raise ValueError(f"cannot read the generator names {names}: they contain more than one ellipsis")
 
 
 def _block_offsets(ranks):
@@ -578,7 +578,7 @@ class _PairingGram(ModuleElement, Tensor):
         r"""Materialize the inverse finite Gram; sparse infinite rules override it."""
         rank = _gram_rank(self)
         assert rank.is_finite(), (
-            "materializing the inverse of a general pairing requires finite rank; an infinite metric dual needs a defining rule"
+            f"cannot compute the dual form of {self} as an inverse Gram matrix: it has rank {rank}, and an inverse matrix exists only in finite rank"
         )
         ring = self.base_ring()
         size = int(rank)
@@ -602,11 +602,11 @@ class _PairingGram(ModuleElement, Tensor):
                 return self.scaled_by(other)
         rank = _gram_rank(self)
         assert rank.is_finite(), (
-            "contraction of a lazy infinite-rank Gram tensor requires a represented dual covector"
+            f"cannot contract the form {self} of rank {rank} with {other}: contraction with a vector is computed only in finite rank"
         )
         size = int(rank)
         assert other in TensorModule(ring, (size,), ()), (
-            f"a Gram tensor of rank {size} contracts a type-(1,0) vector of rank {size} or scales by a scalar"
+            f"cannot multiply the form {self} of rank {size} by {other}: it is neither a scalar in {ring} nor a vector of rank {size} over {ring}"
         )
         return tensor(
             ring,
@@ -670,7 +670,7 @@ class _ScaledGram(_PairingGram):
     def dual_gram_on(self, dual_module):
         r"""The dual of \(sb\) is \(s^{-1}b^\vee\), for a unit \(s\)."""
         assert self._scalar.is_unit(), (
-            f"the metric dual of a scaled form needs a unit scalar; {self._scalar} is not one"
+            f"the scaled form {self} has no dual form: the scalar {self._scalar} must be a unit of {self.base_ring()}, and it is not"
         )
         return _ScaledGram(self._gram.dual_gram_on(dual_module), self._scalar.inverse_of_unit())
 
@@ -775,7 +775,7 @@ class _DiagonalGram(_PairingGram):
         exceptional value keeps its label.
         """
         assert self._default.is_unit() and all(value.is_unit() for value in self._exceptions.values()), (
-            "the represented finite-support metric dual has unit diagonal values"
+            f"the diagonal form {self} has no dual form: every diagonal entry must be a unit of {self.base_ring()}, and some is not"
         )
         return _DiagonalGram(
             dual_module,
@@ -1072,7 +1072,7 @@ class _ColimitGram(_PairingGram):
     def _stage_at(self, n):
         stage = self._stage(int(n))
         assert stage.module_rank() == cardinal(n), (
-            f"stage(n) must have rank n, got stage({n}) of rank {stage.module_rank()}"
+            f"the directed system of lattices is not well formed: stage {n} must have rank {n}, but it is {stage} of rank {stage.module_rank()}"
         )
         return stage
 
@@ -1092,7 +1092,7 @@ class _ColimitGram(_PairingGram):
         if not coefficients:
             return {}
         assert self._row_support is not None, (
-            "enumerating every nonzero generator pairing of this colimit needs stated finite row supports"
+            f"cannot list the pairings of {vector} with all basis vectors of {self}: the colimit form does not state which basis vectors pair nontrivially with each basis vector"
         )
         labels = _basis_keys(self._module)
         ranking = labels.ranking_map()
@@ -1211,16 +1211,15 @@ def _orthogonal_sum(summands):
 
     summands = _finite_factor_family(summands, name="Orthogonal summands")
     blocks = tuple(summands)
-    assert blocks, "an orthogonal sum is taken over a nonempty family of summands"
+    assert blocks, f"cannot form the orthogonal sum of {summands}: the family of summands is empty"
     ring = blocks[0].base_ring()
     category = Lattices(ring)
     assert all(block in category for block in blocks), (
-        "an orthogonal sum requires lattices over one common base ring"
+        f"cannot form the orthogonal sum of {summands}: every summand must be a lattice over {ring}, the base ring of the first summand {blocks[0]}"
     )
     ranks = tuple(cardinal(block.module_rank()) for block in blocks)
     assert all(rank.is_finite() for rank in ranks[:-1]), (
-        "the orthogonal sum concatenates the bases in index order, so only "
-        "the summand at the last index may have infinite rank"
+        f"cannot form the orthogonal sum of {summands} with ranks {ranks}: only the last summand may have infinite rank, because the bases are concatenated in order"
     )
     offsets = _block_offsets(ranks)
     total = ranks[-1] if not ranks[-1].is_finite() else cardinal(offsets[-1] + int(ranks[-1]))
@@ -1252,11 +1251,11 @@ def _tensor_product_lattice(factors):
 
     factors = _finite_factor_family(factors, name="Lattice tensor factors")
     values = tuple(factors)
-    assert values, "a lattice tensor product is taken over a nonempty family of factors"
+    assert values, f"cannot form the tensor product of {factors}: the family of factors is empty"
     ring = values[0].base_ring()
     category = Lattices(ring)
     assert all(lattice_factor in category for lattice_factor in values), (
-        "a lattice tensor product requires lattices over one ring"
+        f"cannot form the tensor product of {factors}: every factor must be a lattice over {ring}, the base ring of the first factor {values[0]}"
     )
     module = Modules(ring).tensor_product(factors)
     return _lattice_object(
@@ -1276,7 +1275,7 @@ def _colimit_lattice(stage, *, category, row_support=None):
     """
     ring = category.base_ring()
     probe = stage(2)
-    assert probe in category, "stage(n) must be a lattice in this category"
+    assert probe in category, f"the directed system of lattices is not well formed: stage 2 is {probe}, which is not in {category}"
     assert probe.module_rank() == cardinal(2), (
         f"stage(n) must have rank n, got stage(2) of rank {probe.module_rank()}"
     )
@@ -1342,7 +1341,7 @@ def _signature_pair_of_gram(gram: Tensor):
 def _discriminant_of_gram(gram: Tensor):
     r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$."""
     rank = _gram_rank(gram)
-    assert rank.is_finite(), "the discriminant is the signed determinant of a finite Gram"
+    assert rank.is_finite(), f"the form {gram} has no discriminant: the discriminant is a signed determinant, and the form has rank {rank}"
     n = int(rank)
     negative_sign = (n * (n - 1) // 2) % 2 == 1
     determinant = _gram_determinant(gram, gram.base_ring())
@@ -1499,7 +1498,7 @@ def _lattice_from_gram_tensor(
     match rank.is_finite():
         case False:
             assert module_generators is None, (
-                "a pairing rule already determines the generating set"
+                f"cannot choose the module generators {module_generators} for the lattice of the form {gram_tensor}: it has rank {rank}, and its generating set is fixed by the form"
             )
             return _lattice_on_gram(
                 category,
@@ -1541,7 +1540,7 @@ def _owned_free_module(data, ring, module_generators=None, names=None):
         f"Lattices({ring}) takes a free module over {ring}, got {data}"
     )
     assert module_generators is None, (
-        "equipping a selected free module retains its framing; construct a reframed module first"
+        f"cannot choose the module generators {module_generators} when making {data} a lattice: the lattice keeps the basis of {data}; construct the free module on the new basis first"
     )
     return data
 
@@ -1570,15 +1569,14 @@ def _root_lattice(cartan_type, ring, names, module_generators, category):
 def _lattice_with_form(data, form, ring, names, module_generators, category):
     r"""The free module ``data`` equipped with the finite Gram presentation ``form``."""
     assert data in FramedFreeModules(ring), (
-        "form= equips a free module given as the first argument"
+        f"cannot put the form {form} on {data}: form= needs a free module over {ring} with a basis, and {data} is in {data.category()}"
     )
-    assert form.tensor_valence() == (NN**2)((0, 2)), "form= takes a type-(0,2) tensor"
+    assert form.tensor_valence() == (NN**2)((0, 2)), f"{form} cannot be the form of a lattice: a bilinear form is a tensor of type (0, 2), but it has type {form.tensor_valence()}"
     assert form.base_ring() is ring, (
         f"Lattices({ring}) takes an {ring}-valued form, got a form over {form.base_ring()}"
     )
     assert _gram_rank(form).is_finite(), (
-        "form= states a finite Gram on a free module; a pairing rule determines "
-        "its own lattice, Lattices(R)(G)"
+        f"cannot put the form {form} on {data}: form= takes a Gram matrix of finite rank, and {form} has rank {_gram_rank(form)}; construct the lattice of that form with Lattices({ring})({form})"
     )
     selected_names = _normalized_lattice_names(names, data.module_rank())
     module = _owned_free_module(
@@ -1614,7 +1612,7 @@ def _lattice(
     crystallographic Cartan type, a Euclidean rank) are Gram tensors.
     """
     assert basis is None, (
-        "Lattices(R) does not take a spanning basis; construct the free module and the Gram in this category"
+        f"{category} cannot construct a lattice from the spanning vectors {basis}: construct the free module and its Gram matrix instead"
     )
     ring = category.base_ring()
     match form:
@@ -1630,7 +1628,7 @@ def _lattice(
             )
             return _lattice_from_gram_tensor(data, ring, names, module_generators, category)
         case Tensor() | Matrix():
-            raise TypeError("a matrix is a type-(1,1) tensor (a linear map); a Gram is a type-(0,2) tensor")
+            raise TypeError(f"{data} cannot be the Gram matrix of a lattice: it is a linear map, a tensor of type (1, 1), but a bilinear form is a tensor of type (0, 2)")
         case _ if data in FramedFreeModules(ring):
             return _identity_lattice(data, ring, names, module_generators, category)
         case "U" | "H":

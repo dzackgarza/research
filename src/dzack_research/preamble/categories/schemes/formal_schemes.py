@@ -19,7 +19,8 @@ class _FormalThickeningSystem(Functor):
 
     def __init__(self, source_ring, ideal_of_definition) -> None:
         assert ideal_of_definition.ring() is source_ring, (
-            "an ideal of definition belongs to the formal source ring"
+            f"the ideal of definition {ideal_of_definition} is an ideal of "
+            f"{ideal_of_definition.ring()}, not of the ring {source_ring} being completed"
         )
         self._source_ring = source_ring
         self._ideal = ideal_of_definition
@@ -51,7 +52,9 @@ class _FormalThickeningSystem(Functor):
 
     def thickening_ring(self, exponent):
         exponent = int(exponent)
-        assert exponent > 0, "an infinitesimal thickening exponent is positive"
+        assert exponent > 0, (
+            f"the thickening A/I^n of {self.source_ring()} needs an exponent n >= 1, got {exponent}"
+        )
         return self.source_ring().quotient_ring(
             self.ideal_of_definition().power(exponent)
         )
@@ -60,7 +63,8 @@ class _FormalThickeningSystem(Functor):
         higher_exponent = int(higher_exponent)
         lower_exponent = int(lower_exponent)
         assert higher_exponent >= lower_exponent > 0, (
-            "formal transition exponents satisfy higher >= lower > 0"
+            f"the transition map A/I^m -> A/I^n needs m >= n >= 1, got m = {higher_exponent} "
+            f"and n = {lower_exponent}"
         )
         higher = self.thickening_ring(higher_exponent)
         lower = self.thickening_ring(lower_exponent)
@@ -115,7 +119,9 @@ class _FormalSpectrumEngine:
     def thickening(self, exponent):
         r"""Return the finite stage ``Spec(A/I^exponent)`` from the owned directed system."""
         exponent = int(exponent)
-        assert exponent > 0, "an infinitesimal thickening exponent is positive"
+        assert exponent > 0, (
+            f"the thickening Spec(A/I^n) of {self} needs an exponent n >= 1, got {exponent}"
+        )
         return self.stage(self.base_index_category()(NN(exponent - 1)))
 
     def transition_ring_map(self, higher_exponent, lower_exponent):
@@ -200,17 +206,25 @@ class _FormalAffineNaturalTransformation(NaturalTransformationMorphism):
 def FormalAffineMorphism(domain, codomain, coordinate_ring_morphism):
     r"""Return the same-power formal morphism as a natural transformation of thickenings."""
     assert coordinate_ring_morphism.domain() is codomain.source_ring(), (
-        "a formal affine morphism has the wrong coordinate-ring source"
+        f"the ring map {coordinate_ring_morphism} cannot define a formal morphism "
+        f"{domain} -> {codomain}: its domain must be {codomain.source_ring()}, the ring of the "
+        f"codomain, but it is {coordinate_ring_morphism.domain()}"
     )
     assert coordinate_ring_morphism.codomain() is domain.source_ring(), (
-        "a formal affine morphism has the wrong coordinate-ring target"
+        f"the ring map {coordinate_ring_morphism} cannot define a formal morphism "
+        f"{domain} -> {codomain}: its codomain must be {domain.source_ring()}, the ring of the "
+        f"domain, but it is {coordinate_ring_morphism.codomain()}"
     )
     assert all(
         domain.ideal_of_definition().contains_ambient_element(
             coordinate_ring_morphism(generator)
         )
         for generator in codomain.ideal_of_definition().ideal_generators()
-    ), "the same-power formal presentation requires phi(J) contained in I"
+    ), (
+        f"the ring map {coordinate_ring_morphism} does not send the ideal of definition "
+        f"{codomain.ideal_of_definition()} into {domain.ideal_of_definition()}, so it does not "
+        "induce maps A/J^n -> B/I^n of thickenings"
+    )
 
     def component(index):
         exponent = domain.functor().exponent(index)

@@ -39,7 +39,8 @@ class LogPairs(OwnedCategoryOverBaseRing):
     def _call_(self, log_scheme, boundary_divisor):
         r"""The log pair ``(X, Delta)`` of a scheme over this base and a divisor on it."""
         assert log_scheme.scheme_base_ring() == self.base_ring(), (
-            f"the scheme of an object of {self} lies over {self.base_ring()}"
+            f"{log_scheme} cannot be the scheme of a log pair in {self}: it lies over "
+            f"{log_scheme.scheme_base_ring()}, not over {self.base_ring()}"
         )
         return _scheme_with_structure(
             log_scheme,
@@ -110,10 +111,12 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
     ):
         r"""The toric log pair of a toric variety and a torus-invariant boundary."""
         assert toric_variety.scheme_base_ring() == self.base_ring(), (
-            f"the variety of an object of {self} lies over {self.base_ring()}"
+            f"{toric_variety} cannot be the variety of a toric log pair in {self}: it lies over "
+            f"{toric_variety.scheme_base_ring()}, not over {self.base_ring()}"
         )
         assert boundary_divisor.parent() is toric_variety.torus_invariant_divisor_group(), (
-            "the boundary of a toric log pair is a torus-invariant divisor"
+            f"the boundary {boundary_divisor} of a toric log pair on {toric_variety} must be a "
+            f"torus-invariant divisor on it, but it lies in {boundary_divisor.parent()}"
         )
         data = {
             "log_scheme": toric_variety,

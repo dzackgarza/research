@@ -27,10 +27,17 @@ class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
         r"""The represented \(H^{\mathrm{degree}}(X, \mathcal{O}_X(D))\) of the stated dimension."""
         degree = int(degree)
         dimension = int(dimension)
-        assert degree >= 0, "cohomological degree is nonnegative"
-        assert dimension >= 0, "a cohomology dimension is nonnegative"
+        assert degree >= 0, (
+            f"there is no cohomology group H^{degree}(X, O_X(D)) of {scheme}: the "
+            f"cohomological degree must be nonnegative"
+        )
+        assert dimension >= 0, (
+            f"cannot form H^{degree}(X, O_X({divisor})) of dimension {dimension}: a vector "
+            f"space dimension must be nonnegative"
+        )
         assert scheme.scheme_base_ring() is self.base_ring(), (
-            "line-bundle cohomology is placed over this category's base ring"
+            f"cannot form H^{degree}(X, O_X({divisor})) as a {self.base_ring()}-vector space: "
+            f"{scheme} is a scheme over {scheme.scheme_base_ring()}, not over {self.base_ring()}"
         )
         return self.base_ring()._fresh_free_module_on(
             finite_ordinal_set(dimension),

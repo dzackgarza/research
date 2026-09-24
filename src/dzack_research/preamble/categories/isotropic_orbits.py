@@ -116,7 +116,7 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
 
     def __init__(self, group, locus, **rest) -> None:
         if group.lattice() is not locus.universe():
-            raise ValueError("the orbit group and primitive-isotropic locus require one lattice")
+            raise ValueError(f"{group} cannot act on {locus}: the group acts on {group.lattice()}, but the primitive isotropic vectors lie in {locus.universe()}")
         self._group = group
         self._locus = locus
         representatives = []
@@ -144,18 +144,18 @@ class _PrimitiveIsotropicVectorOrbitDecompositionEngine(_FiniteOrbitDecompositio
 
     def orbit_of(self, vector):
         if vector not in self.locus():
-            raise ValueError("orbit_of expects a primitive isotropic vector of this lattice")
+            raise ValueError(f"{vector} has no orbit in {self}: it is not a primitive isotropic vector of {self.locus().universe()}")
         for orbit in self:
             if vector in orbit:
                 return orbit
-        raise ArithmeticError("the exact isotropic orbit list did not cover the primitive isotropic locus")
+        raise ArithmeticError(f"the primitive isotropic vector {vector} lies in none of the computed orbits {tuple(self)}, so the orbit decomposition is incomplete")
 
     def stabilizer(self, representative):
         return self.orbit_of(representative).stabilizer()
 
     def transporter(self, source, target):
         if source not in self.locus() or target not in self.locus():
-            raise ValueError("a primitive-isotropic transporter requires two vectors in the locus")
+            raise ValueError(f"cannot find an isometry carrying {source} to {target}: both must be primitive isotropic vectors of {self.locus().universe()}")
         return self.group().vector_equivalence_witness(source, target)
 
 
@@ -174,7 +174,7 @@ class _IsotropicSublatticeLocusEngine:
     def __init__(self, lattice, rank, *, primitive=False, **rest) -> None:
         rank = int(rank)
         if rank <= 0:
-            raise ValueError("an isotropic sublattice rank must be positive")
+            raise ValueError(f"there are no isotropic sublattices of rank {rank} in {lattice}: the rank must be positive")
         self._lattice = lattice
         self._rank = NN(rank)
         self._primitive = bool(primitive)
@@ -224,7 +224,7 @@ class _PrimitiveIsotropicSublatticeOrbitDecompositionEngine(_FiniteOrbitDecompos
 
     def __init__(self, group, locus, **rest) -> None:
         if group.supergroup().domain() is not locus.lattice():
-            raise ValueError("the orbit group and isotropic-sublattice locus require one lattice")
+            raise ValueError(f"{group} cannot act on {locus}: the group acts on {group.supergroup().domain()}, but the isotropic sublattices lie in {locus.lattice()}")
         self._group = group
         self._locus = locus
         self._orbits = group.cusps(rank=locus.rank())
@@ -243,18 +243,18 @@ class _PrimitiveIsotropicSublatticeOrbitDecompositionEngine(_FiniteOrbitDecompos
 
     def orbit_of(self, sublattice):
         if sublattice not in self.locus():
-            raise ValueError("orbit_of expects a primitive isotropic sublattice in this locus")
+            raise ValueError(f"{sublattice} has no orbit in {self}: it is not one of the primitive isotropic sublattices {self.locus()}")
         for cusp in self:
             if sublattice in cusp:
                 return cusp
-        raise ArithmeticError("the exact cusp list did not cover the isotropic-sublattice locus")
+        raise ArithmeticError(f"the primitive isotropic sublattice {sublattice} lies in none of the computed cusps {tuple(self)}, so the cusp decomposition is incomplete")
 
     def stabilizer(self, sublattice):
         return self.orbit_of(sublattice).stabilizer()
 
     def transporter(self, source, target):
         if source not in self.locus() or target not in self.locus():
-            raise ValueError("an isotropic-sublattice transporter requires two locus members")
+            raise ValueError(f"cannot find an isometry carrying {source} to {target}: both must be among the primitive isotropic sublattices {self.locus()}")
         return self.group().isotropic_equivalence_witness(source, target)
 
 
@@ -273,9 +273,9 @@ class _IsotropicFlagLocusEngine:
     def __init__(self, lattice, ranks, **rest) -> None:
         ranks = tuple(int(rank) for rank in ranks)
         if not ranks or any(rank <= 0 for rank in ranks):
-            raise ValueError("an isotropic flag requires positive term ranks")
+            raise ValueError(f"there are no isotropic flags in {lattice} with ranks {ranks}: a flag needs at least one term, and every rank must be positive")
         if any(left >= right for left, right in zip(ranks, ranks[1:])):
-            raise ValueError("isotropic flag ranks must be strictly increasing")
+            raise ValueError(f"there are no isotropic flags in {lattice} with ranks {ranks}: the ranks of a flag must be strictly increasing")
         self._lattice = lattice
         self._ranks = ranks
         super().__init__(facade=True, **rest)
@@ -353,7 +353,7 @@ class IsotropicFlag:
         self._lattice = lattice
         self._basis = tuple(_held(lattice, element) for element in basis)
         if not self._basis:
-            raise ValueError("an isotropic flag requires a nonempty basis")
+            raise ValueError(f"cannot form an isotropic flag in {lattice} from an empty basis")
         self._terms = tuple(
             lattice.primitive_isotropic_subobject(*self._basis[: rank + 1])
             for rank in range(len(self._basis))
@@ -481,7 +481,7 @@ class _ArithmeticCuspEngine:
     def __init__(self, subgroup, representative, **rest) -> None:
         if subgroup.supergroup().domain() is not representative.ambient_lattice():
             raise ValueError(
-                "an arithmetic cusp subgroup and representative must belong to the same lattice"
+                f"{representative} cannot represent a cusp of {subgroup}: the group acts on {subgroup.supergroup().domain()}, but {representative} lies in {representative.ambient_lattice()}"
             )
         self._subgroup = subgroup
         self._representative = representative
@@ -588,9 +588,9 @@ class CuspIncidence(SageObject):
     ) -> None:
         terms = tuple(flag.terms())
         if len(terms) != 2:
-            raise ValueError("a cusp incidence is represented by a two-step isotropic flag")
+            raise ValueError(f"the isotropic flag {flag} cannot be a cusp incidence: it must have exactly two terms, a line and a plane, but it has {len(terms)}")
         if int(terms[0].module_rank()) != 1 or int(terms[1].module_rank()) != 2:
-            raise ValueError("a cusp incidence has ranks one and two")
+            raise ValueError(f"the isotropic flag {flag} cannot be a cusp incidence: its terms must have ranks one and two, but they have ranks {terms[0].module_rank()} and {terms[1].module_rank()}")
         terms[0].inclusion().factor_through(terms[1].inclusion())
         self._flag = flag
         self._line_cusp = line_cusp
@@ -645,26 +645,26 @@ class ArithmeticCuspIncidence(SageObject):
         terms = tuple(flag.terms())
         if len(terms) != 2:
             raise ValueError(
-                "an arithmetic cusp incidence is represented by a two-step isotropic flag"
+                f"the isotropic flag {flag} cannot be a cusp incidence of {subgroup}: it must have exactly two terms, a line and a plane, but it has {len(terms)}"
             )
         line, plane = terms
         if int(line.module_rank()) != 1 or int(plane.module_rank()) != 2:
-            raise ValueError("an arithmetic cusp incidence has ranks one and two")
+            raise ValueError(f"the isotropic flag {flag} cannot be a cusp incidence of {subgroup}: its terms must have ranks one and two, but they have ranks {line.module_rank()} and {plane.module_rank()}")
         line.inclusion().factor_through(plane.inclusion())
         if line_cusp.subgroup() is not subgroup or plane_cusp.subgroup() is not subgroup:
-            raise ValueError("both cusp vertices must belong to the selected subgroup quotient")
+            raise ValueError(f"the cusps {line_cusp} and {plane_cusp} cannot both be vertices of a cusp incidence of {subgroup}: each must be a cusp of {subgroup}")
         if line_transporter not in subgroup or plane_transporter not in subgroup:
-            raise ValueError("cusp transporters must lie in the selected arithmetic subgroup")
+            raise ValueError(f"the isometries {line_transporter} and {plane_transporter} cannot carry the flag {flag} to cusps of {subgroup}: both must be elements of {subgroup}")
         if not _same_subobject(
             line_transporter.transport_isotropic_object(line),
             line_cusp.representative(),
         ):
-            raise ValueError("the retained line transporter has the wrong target cusp")
+            raise ValueError(f"the isometry {line_transporter} does not carry the line {line} of the flag {flag} to the representative {line_cusp.representative()} of the cusp {line_cusp}")
         if not _same_subobject(
             plane_transporter.transport_isotropic_object(plane),
             plane_cusp.representative(),
         ):
-            raise ValueError("the retained plane transporter has the wrong target cusp")
+            raise ValueError(f"the isometry {plane_transporter} does not carry the plane {plane} of the flag {flag} to the representative {plane_cusp.representative()} of the cusp {plane_cusp}")
         self._subgroup = subgroup
         self._flag = flag
         self._line_cusp = line_cusp
@@ -782,7 +782,7 @@ def _isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
     lattice = orthogonal_group.domain()
     rank = lattice.base_ring()(rank)
     if rank <= lattice.base_ring().zero():
-        raise ValueError("an isotropic orbit rank must be positive")
+        raise ValueError(f"there are no isotropic sublattices of rank {rank} in {lattice}: the rank must be positive")
     nature = "flag" if flag else "plane"
     result = []
     for block in engine_capabilities.compute(
@@ -804,7 +804,7 @@ def _isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
             for row in block
         )
         if len(basis) != int(rank):
-            raise ArithmeticError("the isotropic-orbit backend returned a basis of the wrong rank")
+            raise ArithmeticError(f"the computed orbit representative of isotropic sublattices of rank {rank} in {lattice} has a basis of {len(basis)} vectors, not {rank}")
         result.append(
             IsotropicFlag(lattice, basis)
             if flag
@@ -851,7 +851,7 @@ def _isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False)
         not _same_subobject(isometry.transport_isotropic_object(source), target)
         for source, target in zip(checked_left, checked_right, strict=True)
     ):
-        raise ArithmeticError("the isotropic-equivalence backend returned a witness with the wrong subobject action")
+        raise ArithmeticError(f"the computed isometry {isometry} of {lattice} does not carry {left} to {right}")
     return isometry
 
 
@@ -877,7 +877,7 @@ def _isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
         for isometry in isometries
         for term in checked
     ):
-        raise ArithmeticError("an isotropic-stabilizer backend isometry moves a subobject it must preserve")
+        raise ArithmeticError(f"a computed stabilizer generator of {obj} in the orthogonal group of {lattice} does not map {obj} onto itself")
     return isometries
 
 

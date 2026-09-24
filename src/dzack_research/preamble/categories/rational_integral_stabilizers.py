@@ -101,11 +101,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 _ABSENCE = (
-    "the structural finite quotient exists, but a prescribed proper rational "
-    "group must either be the T2 RationalMatrixGroup supplied by "
-    "sage-indefinite-port or have another exact integralization provider.  "
-    "Predicate-only subgroups with no represented generating family cannot be "
-    "recovered by bounding denominators or filtering ambient generators"
+    "the finite quotient L/dL exists, but the integral structure of a proper "
+    "subgroup of O(V) is computed only for a RationalMatrixGroup from "
+    "sage-indefinite-port.  A subgroup given only by a predicate, with no "
+    "generating set, cannot be integralized by bounding denominators or by "
+    "filtering generators of O(V)"
 )
 
 
@@ -122,7 +122,8 @@ def _ported_integral_structure(rational_group, lattice_inclusion):
     r"""Reach T2 through the registered lazy provider without importing it here."""
     selected = _ported_rational_group(rational_group)
     assert selected is not None, (
-        f"integral-structure transport/coset computation requires the registered T2 rational-group provider: {_ABSENCE}"
+        f"cannot compute transporters or cosets of {rational_group} acting on the lattice "
+        f"{lattice_inclusion.domain()}: {_ABSENCE}"
     )
     return engine_capabilities.compute(
         "lattice.rational_integral_structure",
@@ -168,12 +169,14 @@ class IntegralStructureAction(SageObject):
         space = lattice_inclusion.codomain()
         ring = lattice.base_ring()
         assert space in RestrictedScalarsModules(ring), (
-            f"a lattice in a rational space is a monomorphism into a restriction of "
-            f"scalars, and {space} is not one"
+            f"{lattice} is not given as a lattice in a rational space: its inclusion "
+            f"must land in a {ring}-module obtained by restriction of scalars, but it "
+            f"lands in {space}, which is in {space.category()}"
         )
         assert space.extension_ring() is ring.fraction_field(), (
-            f"the rational space is {ring} read along its fraction field, and "
-            f"{space} restricts {space.extension_ring()}"
+            f"{lattice} is not a lattice in a rational space: {space} must be a "
+            f"module over the fraction field of {ring} with scalars restricted to "
+            f"{ring}, but it is a module over {space.extension_ring()}"
         )
 
         rational_generators = tuple(
@@ -233,7 +236,9 @@ class IntegralStructureAction(SageObject):
         )
         if subgroup.supergroup() is not rational_group:
             raise ValueError(
-                "the left subgroup must have the selected rational group as supergroup"
+                f"cannot form the double cosets {subgroup} \\ G / G_L for G = "
+                f"{rational_group}: {subgroup} must be a subgroup of G, but it is a "
+                f"subgroup of {subgroup.supergroup()}"
             )
         return action.double_cosets(subgroup)
 
@@ -268,7 +273,10 @@ class FiniteCommensurabilityQuotient(SageObject):
         ring = lattice.base_ring()
         self._modulus = ring(modulus)
         if self._modulus <= ring.zero():
-            raise ValueError("a commensurability modulus is positive")
+            raise ValueError(
+                f"cannot form the quotient M/dM of {lattice} with d = {self._modulus}: "
+                f"the modulus d must be positive"
+            )
 
     def rational_group(self):
         return self._rational_group
@@ -321,7 +329,10 @@ class FiniteCommensurabilityQuotient(SageObject):
     def restricted_automorphism(self, automorphism):
         r"""Restrict one ``g in G`` to the stable reference lattice ``M``."""
         if automorphism not in self.reference_stabilizer():
-            raise ValueError("the selected automorphism does not stabilize the reference lattice")
+            raise ValueError(
+                f"cannot restrict {automorphism} to the lattice {self.reference_lattice()}: "
+                f"restriction needs g(M) = M, and this automorphism does not preserve M"
+            )
         lattice = self.reference_lattice()
         inclusion = self.reference_inclusion()
         space = self.ambient_restricted_space()
@@ -365,7 +376,11 @@ class FiniteCommensurabilityQuotient(SageObject):
         ``L -> M -> M/dM`` and therefore retains its inclusion in ``F_M``.
         """
         if lattice_inclusion.codomain() is not self.ambient_restricted_space():
-            raise ValueError("an intermediate lattice lies in the same restricted rational space")
+            raise ValueError(
+                f"{lattice_inclusion.domain()} cannot lie between dM and M for M = "
+                f"{self.reference_lattice()}: it lies in {lattice_inclusion.codomain()}, not "
+                f"in the rational space {self.ambient_restricted_space()} containing M"
+            )
         into_reference = lattice_inclusion.factor_through(self.reference_inclusion())
         scaled_reference = self.reference_inclusion() * self.scaling_morphism()
         scaled_reference.factor_through(lattice_inclusion)
@@ -385,25 +400,39 @@ def _full_orthogonal_integral_transporter(
     ``V``; the owned orthogonal-group constructor verifies form preservation.
     """
     if source_inclusion.codomain() is not target_inclusion.codomain():
-        raise ValueError("an integral transporter compares lattices in one rational space")
+        raise ValueError(
+            f"no element of {rational_group} can carry {source_inclusion.domain()} to "
+            f"{target_inclusion.domain()}: they lie in different rational spaces, "
+            f"{source_inclusion.codomain()} and {target_inclusion.codomain()}"
+        )
     space = source_inclusion.codomain()
     source = source_inclusion.domain()
     target = target_inclusion.domain()
     ring = source.base_ring()
     assert target.base_ring() is ring and ring is _own_ring(SageZZ), (
-        "the maintained OSCAR integral-isometry transporter is represented for ZZ-lattices"
+        f"cannot search for an isometry carrying {source} to {target}: the search "
+        f"(through OSCAR) works only for lattices over ZZ, and these are over {ring} "
+        f"and {target.base_ring()}"
     )
     if space not in RestrictedScalarsModules(ring):
-        raise TypeError("the two lattices must lie in a restriction of a rational quadratic space")
+        raise TypeError(
+            f"cannot compare {source} and {target} as lattices in a rational quadratic "
+            f"space: they must lie in a {ring}-module obtained by restriction of scalars, "
+            f"but {space} is in {space.category()}"
+        )
     ambient = space.module_over_extension()
     assert rational_group is ambient.Aut(), (
-        "the maintained OSCAR witness represents the full orthogonal-group transporter; "
-        "a prescribed proper rational subgroup requires the registered integral-structure provider"
+        f"cannot search {rational_group} for an element carrying {source} to {target}: "
+        f"this search (through OSCAR) finds isometries in the full orthogonal group "
+        f"O(V) of {ambient} only, and a proper subgroup needs the integral structure "
+        f"of that subgroup"
     )
     assert int(source.module_rank()) == int(ambient.module_rank()) and int(
         target.module_rank()
     ) == int(ambient.module_rank()), (
-        "the maintained OSCAR specialization represents full-rank lattice transport"
+        f"cannot search for an isometry of {ambient} carrying {source} to {target}: "
+        f"the search needs lattices of full rank {ambient.module_rank()}, but they "
+        f"have ranks {source.module_rank()} and {target.module_rank()}"
     )
 
     def embedded_basis(inclusion):
@@ -439,7 +468,10 @@ def _full_orthogonal_integral_transporter(
     source_labels = tuple(source_rational.module_generating_set())
     target_labels = tuple(target_rational.module_generating_set())
     if len(witness_rows) != len(source_labels):
-        raise ArithmeticError("the OSCAR transporter witness has the wrong source rank")
+        raise ArithmeticError(
+            f"OSCAR returned an isometry from {source} to {target} with "
+            f"{len(witness_rows)} rows, but {source} has rank {len(source_labels)}"
+        )
 
     source_span = source_rational.module_category().Mor(source_rational, ambient)(
         {
@@ -476,10 +508,16 @@ def _full_orthogonal_integral_transporter(
     inverse = ~candidate
     for vector in source_basis:
         if not target_inclusion.is_in_image(space.wrap(candidate(vector))):
-            raise ArithmeticError("the OSCAR transporter does not carry the source lattice into the target")
+            raise ArithmeticError(
+                f"the isometry {candidate} of {ambient} obtained from OSCAR does not "
+                f"carry {source} into {target}: it sends {vector} outside {target}"
+            )
     for vector in target_basis:
         if not source_inclusion.is_in_image(space.wrap(inverse(vector))):
-            raise ArithmeticError("the OSCAR transporter does not carry the target lattice back to the source")
+            raise ArithmeticError(
+                f"the isometry {candidate} of {ambient} obtained from OSCAR does not "
+                f"carry {source} onto {target}: its inverse sends {vector} outside {source}"
+            )
     return candidate
 
 

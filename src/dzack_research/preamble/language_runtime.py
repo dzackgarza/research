@@ -57,7 +57,10 @@ def matrix(rows):
     if rows:
         width = len(rows[0])
         if any(len(row) != width for row in rows):
-            raise ValueError("matrix rows must have one common length")
+            raise ValueError(
+                f"a matrix needs rows of one common length, but the given rows have "
+                f"lengths {tuple(len(row) for row in rows)}"
+            )
     else:
         width = 0
 

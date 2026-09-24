@@ -12,12 +12,22 @@ class ChamberAdjacency(SageObject):
 
     def __init__(self, source, target, wall_root, transporter) -> None:
         if transporter.domain() is not source.ambient_lattice():
-            raise ValueError("a chamber adjacency transporter has the wrong domain")
+            raise ValueError(
+                f"{transporter} cannot carry the chamber {source} across a wall: its domain "
+                f"{transporter.domain()} is not the lattice containing that chamber"
+            )
         if transporter.codomain() is not target.ambient_lattice():
-            raise ValueError("a chamber adjacency transporter has the wrong codomain")
+            raise ValueError(
+                f"{transporter} cannot carry a chamber onto {target}: its codomain "
+                f"{transporter.codomain()} is not the lattice containing that chamber"
+            )
         transported = source.transport(transporter)
         if tuple(transported.wall_roots()) != tuple(target.wall_roots()):
-            raise ValueError("the chamber adjacency transporter does not carry the source walls to the target walls")
+            raise ValueError(
+                f"{source} and {target} are not adjacent across {wall_root} by {transporter}: "
+                f"it carries the walls of {source} to the roots {tuple(transported.wall_roots())}, "
+                f"not to the walls {tuple(target.wall_roots())} of {target}"
+            )
         self._source = source
         self._target = target
         self._wall_root = wall_root
@@ -60,7 +70,10 @@ class WeylChamberComplexes(OwnedCategory):
     class ParentMethods:
         def __init__(self, fundamental_chamber, **rest) -> None:
             if fundamental_chamber.wall_roots() is None:
-                raise ValueError("a Weyl chamber complex needs retained simple roots")
+                raise ValueError(
+                    f"{fundamental_chamber} cannot be the fundamental chamber of a Weyl chamber "
+                    f"complex: its walls are not given by simple roots"
+                )
             self._fundamental_chamber = fundamental_chamber
             super().__init__(**rest)
 

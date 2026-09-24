@@ -87,8 +87,8 @@ def _integral_left_solver(system, ring):
 
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
-    assert ring in OwnedRings(), "integral solving requires an owned coefficient ring"
-    assert system.parent() in MatrixSpaces(ring), f"an integral linear system over {ring} is an element of a matrix mor over it, and {system.parent()} is not one"
+    assert ring in OwnedRings(), f"cannot solve a linear system integrally over {ring}: the coefficients must lie in a ring, but {ring} is not a ring"
+    assert system.parent() in MatrixSpaces(ring), f"cannot solve the linear system {system} over {ring}: its matrix must have entries in {ring}, but it lies in {system.parent()}"
 
     transposed = system.transpose()
     smith, left, right = transposed.smith_form()
@@ -99,7 +99,8 @@ def _integral_left_solver(system, ring):
     def solve(target):
         target_values = tuple(ring(value) for value in target)
         assert len(target_values) == int(target_labels.cardinality()), (
-            "the target has the length of this linear system"
+            f"cannot solve a * A = t for t = {target}: t must have {target_labels.cardinality()} entries, "
+            f"one per column of A, but it has {len(target_values)}"
         )
         target_vector = left.domain().linear_combination({label: target_values[position] for position, label in enumerate(target_labels) if target_values[position]})
         shifted_vector = left(target_vector)
@@ -223,7 +224,8 @@ class ModuleMorphism(Morphism):
 
         Morphism.__init__(self, parent)
         assert (scalar_extension_of is None) == (scalar_extension_functor is None), (
-            "a scalar-extension image names both the morphism and the functor it is the image under"
+            f"cannot construct the base change {scalar_extension_of} along {scalar_extension_functor}: "
+            "a map S tensor_R f must be given together with both f and the scalar-extension functor"
         )
         self._scalar_extension_of = scalar_extension_of
         self._scalar_extension_functor = scalar_extension_functor
@@ -233,7 +235,7 @@ class ModuleMorphism(Morphism):
         if lift is not None:
             lift_derivation = self._selected_lift_derivation()
             if lift_derivation is False:
-                raise ValueError("the selected lift is refuted by its construction data")
+                raise ValueError(f"the given lift through the map in {parent} is not a section of it: its own construction shows it fails f(lift(y)) = y")
             if lift_derivation is True:
                 self._selected_lift_exactness = True
         self._element_function = None
@@ -252,7 +254,7 @@ class ModuleMorphism(Morphism):
             elementwise = True
         if elementwise or domain not in FramedModules(domain.base_ring()):
             if not callable(images):
-                raise TypeError("a morphism from an unframed module must be supplied as an exact element map")
+                raise TypeError(f"cannot define a linear map {domain} -> {codomain} from {images!r}: {domain} has no chosen generators, so the map must be given as a function on elements")
             self._element_function = images
             self._generator_image = None
             self._generator_morphism = None
@@ -261,7 +263,7 @@ class ModuleMorphism(Morphism):
                 case None:
                     self._linearity_decision = self._verify_elementwise_linearity_when_decidable()
                 case False:
-                    raise ValueError("the supplied elementwise map is not module-linear")
+                    raise ValueError(f"the given map {domain} -> {codomain} is not {domain.base_ring()}-linear")
                 case _:
                     self._linearity_decision = derivation
             self._refute_invalid_selected_lift_when_decidable()
@@ -270,7 +272,7 @@ class ModuleMorphism(Morphism):
         set_mor = Sets().Mor(labels, self.codomain())
         if isinstance(images, SetMorphism):
             if images.domain() is not labels or images.codomain() is not self.codomain():
-                raise ValueError("the generator map has the wrong framing or codomain")
+                raise ValueError(f"cannot define a linear map {domain} -> {codomain} from the generator images {images}: they must be a map {labels} -> {codomain}, but they are a map {images.domain()} -> {images.codomain()}")
             self._generator_images = indexed_family(
                 labels,
                 images,
@@ -294,7 +296,7 @@ class ModuleMorphism(Morphism):
         elif isinstance(images, dict):
             size = labels.cardinality()
             if not size.is_finite():
-                raise TypeError("dictionary generator-image syntax requires a finite framing; use a callable or indexed family for an infinite framing")
+                raise TypeError(f"cannot define a linear map {domain} -> {codomain} by a dictionary of generator images: {domain} has infinitely many generators {labels}; give the images as a function or an indexed family")
             if labels in EnumeratedSets():
                 ranking = labels.ranking_map()
                 missing_value = object()
@@ -308,7 +310,7 @@ class ModuleMorphism(Morphism):
                     if normalized_values[position] is missing_value
                 ]
                 if missing:
-                    raise ValueError(f"generator assignment omits {missing}")
+                    raise ValueError(f"cannot define a linear map {domain} -> {codomain}: the images of the generators {missing} of {domain} are not given")
                 self._generator_images = indexed_family(
                     labels,
                     lambda label: normalized_values[int(ranking(label))],
@@ -321,7 +323,7 @@ class ModuleMorphism(Morphism):
                     normalized_images[normalized_label] = value
                 missing = [label for label in labels if label not in normalized_images]
                 if missing:
-                    raise ValueError(f"generator assignment omits {missing}")
+                    raise ValueError(f"cannot define a linear map {domain} -> {codomain}: the images of the generators {missing} of {domain} are not given")
                 self._generator_images = indexed_family(
                     labels,
                     normalized_images.__getitem__,
@@ -333,11 +335,11 @@ class ModuleMorphism(Morphism):
             values = tuple(images)
             size = labels.cardinality()
             if not size.is_finite():
-                raise TypeError("sequence generator-image syntax requires a finite framing; use a callable or indexed family for an infinite framing")
+                raise TypeError(f"cannot define a linear map {domain} -> {codomain} by a list of generator images: {domain} has infinitely many generators {labels}; give the images as a function or an indexed family")
             if len(values) != int(size.finite_value()):
-                raise ValueError("the number of generator images must equal the framing size")
+                raise ValueError(f"cannot define a linear map {domain} -> {codomain}: {domain} has {size} generators, but {len(values)} images were given")
             if labels not in EnumeratedSets():
-                raise TypeError("sequence generator-image syntax requires a ranked framing")
+                raise TypeError(f"cannot define a linear map {domain} -> {codomain} by a list of generator images: the generators {labels} of {domain} have no enumeration order, so give the images as a dictionary")
             self._generator_images = indexed_family(
                 labels,
                 lambda label: values[int(labels.ranking_map()(label))],
@@ -354,7 +356,7 @@ class ModuleMorphism(Morphism):
             self._generator_image = self._generator_images.value
             self._generator_morphism = set_mor(self._generator_image)
         else:
-            raise TypeError("a module morphism is specified on the domain framing")
+            raise TypeError(f"cannot define a linear map {domain} -> {codomain} from {images!r}: give the images of the generators of {domain} as a dictionary, list, indexed family or function")
         self._linearity_decision = self._check_selected_domain_relations()
         self._refute_invalid_selected_lift_when_decidable()
 
@@ -395,7 +397,7 @@ class ModuleMorphism(Morphism):
             candidate = self.domain()(candidate)
             section_equation = self(candidate) == target
             if section_equation is False:
-                raise ValueError("the selected lift does not satisfy the section equation")
+                raise ValueError(f"the given lift through {self.domain()} -> {codomain} is not a section: for y = {target} it returns x = {candidate}, but f(x) != y")
 
     def linearity_decision(self):
         r"""Return ``True`` when linearity is established, otherwise ``Unknown``.
@@ -411,7 +413,8 @@ class ModuleMorphism(Morphism):
         r"""Require the linearity premise consumed by a linear-algebra conclusion."""
         if self.linearity_decision() is not True:
             raise ValueError(
-                f"{operation} requires established module-linearity; this map retains an unresolved linearity hypothesis"
+                f"{operation} requires a linear map, but the map {self.domain()} -> {self.codomain()} was given as a "
+                f"function on elements and is not known to be {self.domain().base_ring()}-linear"
             )
 
     def _verify_elementwise_linearity_when_decidable(self):
@@ -482,7 +485,7 @@ class ModuleMorphism(Morphism):
             for right in generators:
                 additive = function(left + right) == function(left) + function(right)
                 if additive is False:
-                    raise ValueError("the supplied elementwise map is not additive")
+                    raise ValueError(f"the given map {self.domain()} -> {self.codomain()} is not additive: f(x + y) != f(x) + f(y) for x = {left}, y = {right}")
 
         scalars = _scalar_linearity_generating_scalars(self.domain().base_ring())
         if scalars is None:
@@ -494,7 +497,7 @@ class ModuleMorphism(Morphism):
                     == self.codomain().scalar_multiple(scalar, function(generator))
                 )
                 if scalar_linear is False:
-                    raise ValueError("the supplied elementwise map is not scalar-linear")
+                    raise ValueError(f"the given map {self.domain()} -> {self.codomain()} is not {self.domain().base_ring()}-linear: f(r x) != r f(x) for r = {scalar}, x = {generator}")
 
     def _finite_source_elements_for_verification(self):
         r"""Enumerate a finitely generated module over a finite ring via its framing.
@@ -553,14 +556,14 @@ class ModuleMorphism(Morphism):
         decision = True
         zero_holds = function(zero) == codomain.zero()
         if zero_holds is False:
-            raise ValueError("an elementwise module morphism must send zero to zero")
+            raise ValueError(f"the given map {domain} -> {codomain} is not linear: it sends 0 to {function(zero)}, not to 0")
         if zero_holds is not True:
             decision = Unknown
         for left in source_elements:
             for right in source_elements:
                 additive = function(left + right) == function(left) + function(right)
                 if additive is False:
-                    raise ValueError("the supplied elementwise map is not additive")
+                    raise ValueError(f"the given map {domain} -> {codomain} is not additive: f(x + y) != f(x) + f(y) for x = {left}, y = {right}")
                 if additive is not True:
                     decision = Unknown
 
@@ -587,7 +590,7 @@ class ModuleMorphism(Morphism):
                     == codomain.scalar_multiple(scalar, function(element))
                 )
                 if scalar_linear is False:
-                    raise ValueError("the supplied elementwise map is not scalar-linear")
+                    raise ValueError(f"the given map {domain} -> {codomain} is not {ring}-linear: f(r x) != r f(x) for r = {scalar}, x = {element}")
                 if scalar_linear is not True:
                     decision = Unknown
         return decision
@@ -596,7 +599,7 @@ class ModuleMorphism(Morphism):
         r"""A linear map sends zero to zero."""
         zero_holds = self._element_function(self.domain().zero()) == self.codomain().zero()
         if zero_holds is False:
-            raise ValueError("an elementwise module morphism must send zero to zero")
+            raise ValueError(f"the given map {self.domain()} -> {self.codomain()} is not linear: it does not send 0 to 0")
         return True if zero_holds is True else Unknown
 
     def _check_selected_domain_relations(self):
@@ -619,20 +622,20 @@ class ModuleMorphism(Morphism):
             relation_image = self._linear_combination_of_generator_images({label: coefficient for label, coefficient in zip(labels, row, strict=True) if coefficient})
             relation_holds = relation_image == zero
             if relation_holds is False:
-                raise ValueError("the selected module-generator images do not kill the domain relations")
+                raise ValueError(f"the generator images do not define a linear map {domain} -> {self.codomain()}: the relation {row} of {domain} is sent to {relation_image}, not to 0")
             if relation_holds is not True:
                 decision = Unknown
         return decision
 
     def module_generator_morphism(self):
         assert self._generator_morphism is not None, (
-            "module_generator_morphism requires a selected module generating map on the domain"
+            f"the map {self.domain()} -> {self.codomain()} has no generator images: it was given as a function on elements, not by images of chosen generators of {self.domain()}"
         )
         return self._generator_morphism
 
     def module_generator_images(self):
         assert self._generator_morphism is not None and self._generator_images is not None, (
-            "module_generator_images requires a selected module generating map on the domain"
+            f"the map {self.domain()} -> {self.codomain()} has no generator images: it was given as a function on elements, not by images of chosen generators of {self.domain()}"
         )
         return self._generator_images
 
@@ -826,7 +829,10 @@ class ModuleMorphism(Morphism):
 
     def stack(self, other):
         r"""Return ``(self,other)`` into the biproduct of the codomains."""
-        assert other.domain() is self.domain(), "stacking module maps requires one common domain"
+        assert other.domain() is self.domain(), (
+            f"cannot form the map into the product from f: {self.domain()} -> {self.codomain()} and "
+            f"g: {other.domain()} -> {other.codomain()}: f and g must have the same domain"
+        )
 
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
@@ -861,7 +867,8 @@ class ModuleMorphism(Morphism):
         match extended_ring:
             case _ if extended_ring in AdicCompletions():
                 assert extended_ring.is_flat_over_source(), (
-                    "the completion a completed morphism retains is flat over its Noetherian source"
+                    f"cannot use exactness of completion for {self.domain()} -> {self.codomain()}: "
+                    f"the completion {extended_ring} must be flat over its source ring, and it is not known to be"
                 )
                 return extended_ring
             case _ if extended_ring in LocalizationRings():
@@ -900,13 +907,15 @@ class ModuleMorphism(Morphism):
                 source_morphism = self._scalar_extension_of
                 extension = self._scalar_extension_functor
                 assert extension(source_morphism.domain()) is domain, (
-                    "the completed morphism domain is the retained scalar-extension image of its source"
+                    f"kernel of {domain} -> {codomain}: {domain} should be the completion of "
+                    f"{source_morphism.domain()}, but {extension} sends it elsewhere"
                 )
                 source_kernel = source_morphism.kernel()
                 extension(source_kernel)
                 completed_inclusion = extension(source_kernel.inclusion())
                 assert completed_inclusion.codomain() is domain, (
-                    "the completed source-kernel inclusion lands in the completed domain"
+                    f"kernel of {domain} -> {codomain}: the completed inclusion of the kernel should land in "
+                    f"{domain}, but lands in {completed_inclusion.codomain()}"
                 )
                 return completed_inclusion.image()
             case _:
@@ -915,13 +924,16 @@ class ModuleMorphism(Morphism):
                 localized_kernel = localization_functor(source_kernel)
                 localized_inclusion = localization_functor(source_kernel.inclusion())
                 assert localized_inclusion.codomain() is domain, (
-                    "the localized kernel inclusion lands in the localized domain"
+                    f"kernel of {domain} -> {codomain}: the localized inclusion of the kernel should land in "
+                    f"{domain}, but lands in {localized_inclusion.codomain()}"
                 )
                 assert localized_kernel in ModuleSubobjects(domain.base_ring()), (
-                    "localization preserves the source-kernel subobject"
+                    f"kernel of {domain} -> {codomain}: the localization {localized_kernel} of the kernel "
+                    f"should be a submodule of {domain}, but it is not"
                 )
                 assert localized_kernel.inclusion() is localized_inclusion, (
-                    "the localized kernel carries the localized inclusion"
+                    f"kernel of {domain} -> {codomain}: the inclusion of the submodule {localized_kernel} "
+                    f"is not the localization of the inclusion of the kernel"
                 )
                 return localized_kernel
 
@@ -957,7 +969,8 @@ class ModuleMorphism(Morphism):
                 localized_kernel = functor(source_kernel)
                 localized_inclusion = functor(source_kernel.inclusion())
                 assert localized_inclusion.codomain() is domain, (
-                    "the descended local kernel inclusion returns to the local domain"
+                    f"kernel of {domain} -> {codomain}: the localized inclusion of the kernel should land in "
+                    f"{domain}, but lands in {localized_inclusion.codomain()}"
                 )
                 return localized_kernel
 
@@ -967,7 +980,8 @@ class ModuleMorphism(Morphism):
             if represented is not NotImplemented:
                 return represented
         assert represented is not NotImplemented, (
-            "kernel construction requires a represented finite-free or general polynomial-presentation backend"
+            f"cannot compute the kernel of {domain} -> {codomain}: no algorithm is available for these modules "
+            f"(domain in {domain.category()}, codomain in {codomain.category()})"
         )
         return represented
 
@@ -984,7 +998,9 @@ class ModuleMorphism(Morphism):
         self._require_established_linearity("image construction")
         labels = self.domain().module_generating_set()
         assert labels.cardinality().is_finite(), (
-            "the represented image-subobject backend requires a finite domain framing"
+            f"cannot compute the image of {self.domain()} -> {self.codomain()}: the image is computed as the span of "
+            f"the images of generators of {self.domain()}, which must be finitely generated, but its generating set "
+            f"{labels} is infinite"
         )
         return self.codomain().subobject_on(
             finite_indexed_family(
@@ -1019,11 +1035,12 @@ class ModuleMorphism(Morphism):
                 pass
             case _:
                 assert domain in Modules(domain.base_ring()).FinitelyPresented().Torsion() and domain.cardinality().is_finite(), (
-                    "represented preimages require a finitely framed free domain or a finite torsion domain"
+                    f"cannot compute a preimage of {element} under {domain} -> {codomain}: the domain must be a "
+                    f"finitely generated free module or a finite torsion module, but {domain} is in {domain.category()}"
                 )
                 found = next((candidate for candidate in domain.elements() if self(candidate) == element), None)
                 if found is None:
-                    raise ValueError("the selected element does not lie in the represented image")
+                    raise ValueError(f"{element} is not in the image of {domain} -> {codomain}")
                 return found
         if self.is_surjective() and codomain.is_free():
             return self.section()(element)
@@ -1033,7 +1050,8 @@ class ModuleMorphism(Morphism):
         coefficients = image.framing_coefficients(image_element)
         domain_labels = domain.module_generating_set()
         assert all(label in domain_labels for label in coefficients), (
-            "the represented image framing records the source-generator labels"
+            f"preimage of {element} under {domain} -> {codomain}: the generators of the image should be indexed "
+            f"by the generators {domain_labels} of {domain}, but the image returned coefficients on {tuple(coefficients)}"
         )
         return domain.linear_combination({label: coefficient for label, coefficient in coefficients.items() if coefficient})
 
@@ -1051,10 +1069,17 @@ class ModuleMorphism(Morphism):
         r"""Return ``f tensor_R k`` for a morphism of finite modules over a local ring."""
 
         ring = self.domain().base_ring()
-        assert self.codomain().base_ring() is ring, "a residue morphism requires one common base ring"
-        assert ring in LocalRings(), "reduction modulo the maximal ideal requires a local ring"
+        assert self.codomain().base_ring() is ring, (
+            f"cannot reduce {self.domain()} -> {self.codomain()} modulo the maximal ideal: both modules must be over "
+            f"the same ring, but they are over {ring} and {self.codomain().base_ring()}"
+        )
+        assert ring in LocalRings(), (
+            f"cannot reduce {self.domain()} -> {self.codomain()} modulo the maximal ideal: the base ring must be local, "
+            f"but {ring} is not known to be local"
+        )
         assert self.domain().is_finitely_generated() and self.codomain().is_finitely_generated(), (
-            "Nakayama's lemma is stated for finitely generated source and target"
+            f"cannot reduce {self.domain()} -> {self.codomain()} modulo the maximal ideal of {ring}: "
+            "Nakayama's lemma needs both modules finitely generated, and at least one is not"
         )
         return self.base_change(ring.residue_map())
 
@@ -1082,7 +1107,10 @@ class ModuleMorphism(Morphism):
         For ``i:S -> M`` this is the kernel of
         ``M -> M/S -> (M/S)/Tor(M/S)``.
         """
-        assert self.is_injective(), "saturation is defined for a monomorphism"
+        assert self.is_injective(), (
+            f"cannot saturate the image of {self.domain()} -> {self.codomain()}: saturation is defined for an "
+            f"injective map, and this map has nonzero kernel"
+        )
         quotient = self.cokernel()
         projection = quotient.torsion_free_quotient_projection()
         composite = projection * quotient.presentation_projection()
@@ -1109,19 +1137,20 @@ class ModuleMorphism(Morphism):
                 if self._selected_lift_exactness is True:
                     return None
                 raise ValueError(
-                    "the selected lift returned no candidate, but its exactness is unresolved"
+                    f"cannot decide whether {element} is in the image of {self.domain()} -> {self.codomain()}: "
+                    "the given lift returned no preimage, but that lift is not known to find every preimage"
                 )
             candidate = self.domain()(candidate)
             target = element if element.parent() is self.codomain() else self.codomain()(element)
             section_equation = self(candidate) == target
             if section_equation is False:
-                raise ValueError("the selected lift does not satisfy the section equation on this element")
+                raise ValueError(f"the given lift through {self.domain()} -> {self.codomain()} is not a section: for y = {target} it returns x = {candidate}, but f(x) != y")
             if section_equation is not True:
-                raise ValueError("the selected lift section equation is undecidable on this element")
+                raise ValueError(f"cannot verify the given lift through {self.domain()} -> {self.codomain()}: for y = {target} it returns x = {candidate}, and whether f(x) = y cannot be decided")
             return candidate
         self._require_established_linearity("represented preimage computation")
         ring = self.domain().base_ring()
-        assert _has_finite_free_framing(self.domain()), f"a lift is solved for the coefficients of a framing, and {self.domain()} has none"
+        assert _has_finite_free_framing(self.domain()), f"cannot compute a preimage of {element} under {self.domain()} -> {self.codomain()}: the domain must be a finitely generated free module with a chosen basis, but {self.domain()} is in {self.domain().category()}"
         if not _has_finite_free_framing(self.codomain()):
             return self._preimage_through_the_extension_framing(element)
         if element.parent() is not self.codomain():
@@ -1171,14 +1200,15 @@ class ModuleMorphism(Morphism):
         """
         factor = self.factor_through_or_none(target_embedding)
         if factor is None:
-            raise ValueError("the morphism image is not contained in the target subobject")
+            raise ValueError(f"{self.domain()} -> {self.codomain()} does not factor through {target_embedding.domain()} -> {target_embedding.codomain()}: its image is not contained in the submodule")
         return factor
 
     def factor_through_or_none(self, target_embedding):
         r"""Return the unique represented factor, or None when containment fails."""
         self._require_established_linearity("factorization through a module subobject")
         assert target_embedding.codomain() is self.codomain(), (
-            "module factorization through a subobject requires one common codomain"
+            f"cannot factor {self.domain()} -> {self.codomain()} through {target_embedding.domain()} -> "
+            f"{target_embedding.codomain()}: both maps must have the same codomain"
         )
         source = self.domain()
         target = target_embedding.domain()
@@ -1222,7 +1252,8 @@ class ModuleMorphism(Morphism):
         target = self.codomain()
         ring = source.base_ring()
         assert source in ModulesWithChosenFinitePresentation(ring) and target in ModulesWithChosenFinitePresentation(ring), (
-            "a selected-presentation morphism requires presented source and target"
+            f"cannot lift {source} -> {target} to a map of finite presentations: both modules must have a chosen "
+            f"finite presentation, but they are in {source.category()} and {target.category()}"
         )
 
         source_presentation = source.presentation()
@@ -1271,14 +1302,14 @@ class ModuleMorphism(Morphism):
 
         domain, codomain = self.domain(), self.codomain()
         ring = domain.base_ring()
-        assert codomain in RestrictedScalarsModules(ring), f"an unframed lift is stated here for a restriction of scalars, and {codomain} is not one"
+        assert codomain in RestrictedScalarsModules(ring), f"cannot compute a preimage under {domain} -> {codomain}: {codomain} has no chosen generators, and a preimage is computed here only when it is a module over a larger ring restricted to {ring}, which {codomain} is not"
         fractions = codomain.extension_ring()
         assert fractions is ring.fraction_field(), (
-            f"the integrality test reads denominators in {ring}, so the restricted scalars must be its fraction field; {codomain} restricts {fractions}"
+            f"cannot compute a preimage under {domain} -> {codomain}: {codomain} must be a module over the fraction field of {ring} restricted to {ring}, but it is a module over {fractions}"
         )
         extension = codomain.module_over_extension()
         assert extension in FramedModules(fractions) and extension in FinitelyGeneratedModules(fractions), (
-            f"the span is read in a finite framing of {extension} over {fractions}, and it has none"
+            f"cannot compute a preimage under {domain} -> {codomain}: the {fractions}-module {extension} must be finitely generated with chosen generators, but it is in {extension.category()}"
         )
 
         if element.parent() is not codomain:
@@ -1308,7 +1339,7 @@ class ModuleMorphism(Morphism):
         codomain = self.codomain()
         ring = codomain.base_ring()
         if codomain.value_module() is not ring:
-            raise TypeError("this orthogonal-complement construction requires a scalar-valued form")
+            raise TypeError(f"cannot form the orthogonal complement of the image of {self.domain()} -> {codomain}: the form on {codomain} must take values in {ring}, but it takes values in {codomain.value_module()}")
 
         source_generators = tuple(self.domain().module_generators())
         labels = Sets.Δ[len(source_generators) - 1]
@@ -1336,7 +1367,7 @@ class ModuleMorphism(Morphism):
     def then(self, other):
         r"""Return ``other ∘ self``."""
         if other.domain() is not self.codomain():
-            raise ValueError("the first codomain must equal the second domain")
+            raise ValueError(f"cannot compose g . f for f: {self.domain()} -> {self.codomain()} and g: {other.domain()} -> {other.codomain()}: the codomain of f must be the domain of g")
         return other * self
 
     def tor_map(self, other, degree=0, *, argument=1, lift=None):
@@ -1401,7 +1432,8 @@ class ModuleMorphism(Morphism):
         """
         ring = self.domain().base_ring()
         assert self.codomain().base_ring() is ring and ring_map.domain() is ring, (
-            "module-morphism base change requires one source scalar ring"
+            f"cannot base change {self.domain()} -> {self.codomain()} along {ring_map}: both modules and the ring map "
+            f"must have source ring {ring}, but they have {self.codomain().base_ring()} and {ring_map.domain()}"
         )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
@@ -1415,16 +1447,28 @@ class ModuleMorphism(Morphism):
         images before transporting this morphism.
         """
         ring = self.domain().base_ring()
-        assert self.codomain().base_ring() is ring, "adic completion of a module morphism requires one scalar ring"
-        assert ideal.ring() is ring, "the completion ideal belongs to the morphism scalar ring"
+        assert self.codomain().base_ring() is ring, (
+            f"cannot complete {self.domain()} -> {self.codomain()}: both modules must be over the same ring, "
+            f"but they are over {ring} and {self.codomain().base_ring()}"
+        )
+        assert ideal.ring() is ring, (
+            f"cannot complete {self.domain()} -> {self.codomain()} at {ideal}: the ideal must lie in {ring}, "
+            f"but it lies in {ideal.ring()}"
+        )
         completion = ring.adic_completion(ideal, precision=precision)
         return self.base_change_to_completion(completion)
 
     def base_change_to_completion(self, completion):
         r"""Return ``self tensor_R R_hat`` for one already selected completion."""
         ring = self.domain().base_ring()
-        assert self.codomain().base_ring() is ring, "adic completion of a module morphism requires one scalar ring"
-        assert completion.completion_source() is ring, "the completion has the source ring of this morphism"
+        assert self.codomain().base_ring() is ring, (
+            f"cannot complete {self.domain()} -> {self.codomain()}: both modules must be over the same ring, "
+            f"but they are over {ring} and {self.codomain().base_ring()}"
+        )
+        assert completion.completion_source() is ring, (
+            f"cannot base change {self.domain()} -> {self.codomain()} to {completion}: it must be a completion of "
+            f"{ring}, but it is a completion of {completion.completion_source()}"
+        )
         source = self.domain().base_change_to_completion(completion)
         target = self.codomain().base_change_to_completion(completion)
 
@@ -1433,7 +1477,8 @@ class ModuleMorphism(Morphism):
         extension = Modules(ring).scalar_extension(completion.completion_map())
         completed = extension(self)
         assert completed.domain() is source and completed.codomain() is target, (
-            "scalar extension reuses the selected completed endpoint images"
+            f"completion of {self.domain()} -> {self.codomain()}: the completed map should go {source} -> {target}, "
+            f"but goes {completed.domain()} -> {completed.codomain()}"
         )
         return completed
 
@@ -1448,14 +1493,19 @@ class ModuleMorphism(Morphism):
         """
         ring = self.domain().base_ring()
         completion = ring.adic_completion(ideal, precision=precision)
-        assert completion.is_flat_over_source(), "the comparison uses flatness of the Noetherian completion"
+        assert completion.is_flat_over_source(), (
+            f"cannot identify the completed cokernel of {self.domain()} -> {self.codomain()}: the completion "
+            f"{completion} must be flat over {ring}, and it is not known to be"
+        )
         completed_morphism = self.base_change_to_completion(completion)
         completed_cokernel = self.cokernel().base_change_to_completion(completion)
         cokernel_after_completion = completed_morphism.cokernel()
         left_labels = completed_cokernel.module_generating_set()
         right_labels = cokernel_after_completion.module_generating_set()
         assert left_labels.cardinality() == right_labels.cardinality(), (
-            "completion preserves the selected cokernel framing cardinality"
+            f"cannot identify the completed cokernel of {self.domain()} -> {self.codomain()}: {completed_cokernel} and "
+            f"{cokernel_after_completion} should have equally many generators, but have {left_labels.cardinality()} "
+            f"and {right_labels.cardinality()}"
         )
 
         forward = completed_cokernel.module_category().Mor(completed_cokernel, cokernel_after_completion)(
@@ -1522,7 +1572,8 @@ class ModuleMorphism(Morphism):
         if quotient is NotImplemented:
             quotient = self.domain()._represented_cokernel_of_morphism(self)
         assert quotient is not NotImplemented, (
-            "cokernel construction requires a represented quotient-module backend on one endpoint owner"
+            f"cannot compute the cokernel of {self.domain()} -> {self.codomain()}: no algorithm is available for these "
+            f"modules (domain in {self.domain().category()}, codomain in {self.codomain().category()})"
         )
         return quotient
 
@@ -1551,8 +1602,14 @@ class ModuleMorphism(Morphism):
 
         self._require_established_linearity("splitting an epimorphism")
         codomain = self.codomain()
-        assert self.is_surjective(), "only an epimorphism has a section"
-        assert _has_finite_free_framing(codomain), "independent generator lifts define a section in the selected finite basis"
+        assert self.is_surjective(), (
+            f"{self.domain()} -> {codomain} has no section: a section exists only for a surjective map, and this "
+            "map has nonzero cokernel"
+        )
+        assert _has_finite_free_framing(codomain), (
+            f"cannot construct a section of {self.domain()} -> {codomain}: a section is built by lifting a basis, "
+            f"so {codomain} must be finitely generated free with a chosen basis, but it is in {codomain.category()}"
+        )
         return codomain.module_category().Mor(codomain, self.domain())(
             lambda label: self.lift(codomain.module_generator(label))
         )
@@ -1570,7 +1627,10 @@ class ModuleMorphism(Morphism):
         """
 
         self._require_established_linearity("splitting a monomorphism")
-        assert self.is_injective(), "only a monomorphism has a retraction"
+        assert self.is_injective(), (
+            f"{self.domain()} -> {self.codomain()} has no retraction: a retraction exists only for an injective map, "
+            "and this map has nonzero kernel"
+        )
         quotient_map = self.cokernel_projection()
         splitting = quotient_map.section()
         codomain = self.codomain()
@@ -1596,7 +1656,7 @@ class ModuleMorphism(Morphism):
             coordinate_parent = self.domain().base_ring().matrix_space(len(codomain_labels), len(domain_labels))
             if self.parent() is coordinate_parent:
                 if len(domain_labels) != len(codomain_labels):
-                    raise ValueError("a matrix inverse requires a square matrix")
+                    raise ValueError(f"the {len(codomain_labels)} x {len(domain_labels)} matrix {self} has no inverse: only a square matrix is invertible")
                 from dzack_research.preamble.categories.modules.pure.modules import (
                     _engine_matrix,
                 )
@@ -1617,8 +1677,12 @@ class ModuleMorphism(Morphism):
                     )
                 )
 
-        assert self.is_injective(), "only a bijection has a two-sided inverse"
-        assert self.is_surjective(), "only a bijection has a two-sided inverse"
+        assert self.is_injective(), (
+            f"{self.domain()} -> {self.codomain()} has no inverse: it is not injective"
+        )
+        assert self.is_surjective(), (
+            f"{self.domain()} -> {self.codomain()} has no inverse: it is not surjective"
+        )
         codomain = self.codomain()
         inverse_image = self.lift if _has_finite_free_framing(self.domain()) else self.preimage
         return codomain.module_category().Mor(codomain, self.domain())(
@@ -1636,7 +1700,9 @@ class ModuleMorphism(Morphism):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         module = self.domain()
-        assert self.codomain() is module, "an automorphism is an endomorphism"
+        assert self.codomain() is module, (
+            f"{module} -> {self.codomain()} is not an automorphism: its domain and codomain must be the same module"
+        )
         return Modules(module.base_ring()).Aut(module)._from_known_inverse_pair(
             self,
             self.inverse(),
@@ -1842,9 +1908,9 @@ class FramingMorphism(ModuleMorphism):
     def __init__(self, parent, generator_morphism) -> None:
         codomain = parent.codomain()
         if parent.domain() is not codomain.framing_source():
-            raise ValueError("a framing morphism has the module's selected free source")
+            raise ValueError(f"cannot form the projection from the free module onto the chosen generators of {codomain}: its domain must be the free module {codomain.framing_source()}, but it is {parent.domain()}")
         if generator_morphism is not codomain.module_generator_morphism():
-            raise ValueError("a framing morphism realizes the module's selected generator map")
+            raise ValueError(f"cannot form the projection from the free module onto the chosen generators of {codomain}: it must send each basis vector to the chosen generator of {codomain}, but {generator_morphism} does not")
         super().__init__(parent, generator_morphism)
 
     def lift(self, element):
@@ -1854,7 +1920,7 @@ class FramingMorphism(ModuleMorphism):
             self.codomain().framing_coefficients(target)
         )
         if self(candidate) != target:
-            raise ValueError("the selected framing coefficients do not lift this element")
+            raise ValueError(f"the coefficients of {target} on the chosen generators of {self.codomain()} do not recombine to {target}")
         return candidate
 
     def is_surjective(self) -> bool:
@@ -1872,7 +1938,7 @@ class ModuleEmbedding(ModuleMorphism):
     def __init__(self, parent, images, **options) -> None:
         ModuleMorphism.__init__(self, parent, images, **options)
         if self.linearity_decision() is not True:
-            raise ValueError("linearity is not established for this proposed module embedding")
+            raise ValueError(f"cannot accept {self.domain()} -> {self.codomain()} as an injective linear map: it is not known to be {self.domain().base_ring()}-linear")
         decision = self._injectivity_derivation()
         if decision is None:
             try:
@@ -1880,9 +1946,9 @@ class ModuleEmbedding(ModuleMorphism):
             except (AssertionError, AttributeError, TypeError, ValueError):
                 decision = Unknown
         if decision is False:
-            raise ValueError("the supplied module morphism is not injective")
+            raise ValueError(f"{self.domain()} -> {self.codomain()} is not an injective linear map: its kernel is nonzero")
         if decision is not True:
-            raise ValueError("injectivity is not established for this module morphism")
+            raise ValueError(f"cannot accept {self.domain()} -> {self.codomain()} as an injective linear map: its injectivity cannot be decided")
         self._injectivity_decision = True
 
     def is_injective(self) -> bool:
@@ -1955,20 +2021,21 @@ class ModuleEmbeddingMor(CategoricalMor):
     def __init__(self, mor_family, domain, codomain) -> None:
         modules = domain.module_category()
         assert domain in modules and codomain in modules, (
-            "a module embedding Mor requires two modules over one scalar ring"
+            f"cannot form the injective linear maps {domain} -> {codomain}: both must be modules in {modules}, "
+            f"but they are in {domain.category()} and {codomain.category()}"
         )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, images, *, lift=None):
         if isinstance(images, ModuleEmbedding):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError("the module embedding has the wrong endpoints")
+                raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
             return _TransportedModuleEmbedding(self, images, lift=lift)
         if isinstance(images, ModuleMorphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError("the module morphism has the wrong embedding endpoints")
+                raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             return _ModuleMorphismProposedAsEmbedding(self, images, lift=lift)
         return self.element_class(
             self,
@@ -2029,7 +2096,7 @@ def _initialize_module_mor_parent(
     modules = mor_family.base_category()
     ring = modules.base_ring()
     assert domain in modules and codomain in modules, (
-        f"a Mor of {modules} has two of its objects as endpoints; got {domain} and {codomain}"
+        f"cannot form the linear maps {domain} -> {codomain} in {modules}: both must be objects of {modules}, but they are in {domain.category()} and {codomain.category()}"
     )
     placement = domain.module_category()._mor_parent_placement(
         domain,
@@ -2129,7 +2196,7 @@ class _ModuleMorCommonMethods:
             return self.from_rows(images)
         if isinstance(images, ModuleMorphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError("the morphism has the wrong Mor source or target")
+                raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
             if images.linearity_decision() is not True:
@@ -2139,7 +2206,7 @@ class _ModuleMorCommonMethods:
             images = {label: images(self.domain().module_generator(label)) for label in self.domain().module_generating_set()}
         elif isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError("the morphism has the wrong Mor source or target")
+                raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             return self.elementwise(lambda element: images(element))
         base_ring = self.base_ring()
         if self.domain() is self.codomain() and (images in base_ring or images in _engine_ring(base_ring)):
@@ -2213,7 +2280,7 @@ class _ModuleMorCommonMethods:
         is linear by construction and presentation relations are checked.
         """
         if not callable(function):
-            raise TypeError("an elementwise module map must be callable")
+            raise TypeError(f"cannot define a linear map {self.domain()} -> {self.codomain()} elementwise from {function!r}: it must be a function on elements")
         return self.element_class(
             self,
             function,
@@ -2258,7 +2325,7 @@ class _ModuleMorCommonMethods:
         not decidable without a chosen finite presentation of the source.
         """
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism Mor")
+            raise ValueError(f"there is no identity map {self.domain()} -> {self.codomain()}: the domain and codomain are different modules")
         return self._scalar_identity(self.base_ring().one())
 
     def one(self):
@@ -2397,7 +2464,7 @@ class TensorProductModuleMorphism(ModuleMorphism):
 
     def module(self):
         if self.left_module() is not self.right_module():
-            raise TypeError("a pairing of distinct modules is not a bilinear form on one module")
+            raise TypeError(f"the pairing {self.left_module()} x {self.right_module()} -> {self.codomain()} is not a bilinear form on one module: its two arguments lie in different modules")
         return self.left_module()
 
     def __call__(self, *arguments):
@@ -2405,7 +2472,7 @@ class TensorProductModuleMorphism(ModuleMorphism):
             return self._call_(arguments[0])
         if len(arguments) == 2:
             return self._call_(self.domain().pure_tensor(*arguments))
-        raise TypeError("a tensor-product morphism takes one tensor or two factor elements")
+        raise TypeError(f"the bilinear map on {self.domain()} takes one element of the tensor product or two elements, one from each factor, but was given {len(arguments)} arguments")
 
     def coordinate_values(self):
 
@@ -2439,14 +2506,14 @@ class TensorProductModuleMorphism(ModuleMorphism):
 
     def norm(self, element):
         if self.left_module() is not self.right_module():
-            raise TypeError("a norm requires a diagonal bilinear form")
+            raise TypeError(f"cannot evaluate b(x, x) for the pairing {self.left_module()} x {self.right_module()} -> {self.codomain()}: its two arguments lie in different modules")
         return self(element, element)
 
     def pullback(self, morphism):
         if self.left_module() is not self.right_module():
-            raise TypeError("this pullback syntax is for a diagonal bilinear form")
+            raise TypeError(f"cannot pull back the pairing {self.left_module()} x {self.right_module()} -> {self.codomain()} along one map: its two arguments lie in different modules")
         if morphism.codomain() is not self.left_module():
-            raise ValueError("the pullback map must land in the form's module")
+            raise ValueError(f"cannot pull back the bilinear form on {self.left_module()} along {morphism.domain()} -> {morphism.codomain()}: the map must land in {self.left_module()}")
 
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
@@ -2463,7 +2530,7 @@ class TensorProductModuleMorphism(ModuleMorphism):
 
     def polar_form(self):
         if self.left_module() is not self.right_module():
-            raise TypeError("polar form syntax requires a diagonal bilinear form")
+            raise TypeError(f"cannot form the polar form of the pairing {self.left_module()} x {self.right_module()} -> {self.codomain()}: its two arguments lie in different modules")
         return self.parent().scalar_multiple(self.domain().base_ring()(2), self)
 
 
@@ -2531,7 +2598,8 @@ class ModuleAutomorphism(CategoricalIsomorphism):
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
         assert linear.parent() in MatrixSpaces(linear.parent().base_ring()), (
-            "represented automorphism order currently requires a finite framed-free module"
+            f"cannot compute the order of the automorphism of {forward.domain()}: the order is computed from a matrix, "
+            f"so the module must be finitely generated free with a chosen basis, but it is in {forward.domain().category()}"
         )
         return linear.multiplicative_order()
 
@@ -2577,12 +2645,12 @@ class _ConstructedModuleAutomorphism(ModuleAutomorphism):
             case (True, True):
                 pass
             case _:
-                raise ValueError("the forward module map has the wrong endpoints")
+                raise ValueError(f"cannot form an automorphism of {self.domain()} from {forward.domain()} -> {forward.codomain()}: the map must go {self.domain()} -> {self.codomain()}")
         match (inverse.domain() is self.codomain(), inverse.codomain() is self.domain()):
             case (True, True):
                 pass
             case _:
-                raise ValueError("the inverse module map has the wrong endpoints")
+                raise ValueError(f"cannot form an automorphism of {self.domain()} with inverse {inverse.domain()} -> {inverse.codomain()}: the inverse must go {self.codomain()} -> {self.domain()}")
         self._forward = forward
         self._inverse = inverse
 
@@ -2751,9 +2819,9 @@ class TensorProductModuleMor(ModuleMor):
             left_size = left_labels.cardinality()
             right_size = right_labels.cardinality()
             if not left_size.is_finite() or not right_size.is_finite():
-                raise TypeError("coordinate-array pairing syntax requires finite framings")
+                raise TypeError(f"cannot define a pairing {left} x {right} -> {self.codomain()} by an array of values: both modules must be finitely generated, but they have {left_size} and {right_size} generators")
             if len(images) != int(left_size.finite_value()) or any(len(row) != int(right_size.finite_value()) for row in images):
-                raise ValueError("the pairing coordinate array has the wrong shape")
+                raise ValueError(f"cannot define a pairing {left} x {right} -> {self.codomain()} by the array {images}: it must have {left_size} rows of {right_size} entries")
             # The array is read in the two framings' enumerations once, keyed
             # by the pair of labels it belongs to.
             by_labels = {
@@ -2776,4 +2844,4 @@ class TensorProductModuleMor(ModuleMor):
             case True:
                 return _FramedTensorBilinearEvaluationMorphism(self, evaluation)
             case False:
-                raise TypeError("a bilinear evaluation must be callable")
+                raise TypeError(f"cannot define a bilinear map on {self.domain()} from {evaluation!r}: it must be a function of two arguments")

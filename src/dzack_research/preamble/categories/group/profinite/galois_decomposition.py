@@ -25,7 +25,11 @@ class _PrimeProlongationEngine:
 
     def __init__(self, base_prime, at_stage, **rest) -> None:
         if not callable(at_stage):
-            raise TypeError("a prolongation must supply a finite-stage prime function")
+            raise TypeError(
+                f"a prolongation of the prime {base_prime} needs a function assigning to each "
+                f"finite Galois extension L/K a prime of L above {base_prime}, but {at_stage} "
+                f"is not callable"
+            )
         self._base_prime = base_prime
         self._at_stage = at_stage
         super().__init__(**rest)
@@ -36,7 +40,10 @@ class _PrimeProlongationEngine:
     def at(self, extension):
         prime = self._at_stage(extension)
         if prime is None:
-            raise ValueError("the prolongation supplies no prime at this finite stage")
+            raise ValueError(
+                f"the prolongation of {self._base_prime} gives no prime of {extension} above "
+                f"{self._base_prime}"
+            )
         return prime
 
     def _repr_(self) -> str:
@@ -97,11 +104,16 @@ def FiniteGaloisSubgroup(supergroup, elements, description):
     """
     element_set = frozenset(elements)
     assert all(element in supergroup for element in element_set), (
-        "the selected subgroup elements belong to the containing group"
+        f"the elements chosen for the subgroup '{description}' are not all elements of "
+        f"{supergroup}"
     )
-    assert supergroup.one() in element_set, "a represented subgroup contains the identity"
+    assert supergroup.one() in element_set, (
+        f"the element set chosen for '{description}' is not a subgroup of {supergroup}: "
+        f"it does not contain the identity"
+    )
     assert all(left * right in element_set for left in element_set for right in element_set), (
-        "the selected finite elements are closed under multiplication"
+        f"the element set chosen for '{description}' is not a subgroup of {supergroup}: "
+        f"it is not closed under multiplication"
     )
     return PredicateSubgroups(supergroup)(lambda element: element in element_set, description)
 
@@ -133,7 +145,10 @@ def _finite_inertia_group(quotient, prime_above):
 
 def _finite_frobenius_class(quotient, base_prime, prime_above):
     r"""The Frobenius class at an unramified ``P``: the ``sigma in D_P`` with ``sigma(x) = x^q`` mod ``P``."""
-    assert quotient.inertia_group(prime_above).cardinality() == 1, "Frobenius is defined here only at a relatively unramified prime"
+    assert quotient.inertia_group(prime_above).cardinality() == 1, (
+        f"the Frobenius class at {prime_above} in {quotient} is defined only when "
+        f"{prime_above} is unramified, but its inertia group is nontrivial"
+    )
     residue_order = _residue_field_order(base_prime)
     owned_field = quotient.top_field()
     order = owned_field.ring_of_integers()
@@ -151,7 +166,9 @@ def _finite_frobenius_class(quotient, base_prime, prime_above):
         automorphism for automorphism in quotient.decomposition_group(prime_above) if acts_as_frobenius(automorphism)
     )
     assert len(candidates) == 1, (
-        "at an unramified prime the finite quotient has exactly one Frobenius element"
+        f"at the unramified prime {prime_above}, the decomposition group in {quotient} "
+        f"should hold exactly one element acting as x -> x^{residue_order} on the residue "
+        f"field, but {len(candidates)} elements do"
     )
     return FiniteElementConjugacyClass(quotient, candidates[0])
 
@@ -161,7 +178,10 @@ class _AbsoluteDecompositionGroupEngine:
 
     def __init__(self, prime, prolongation, **rest) -> None:
         if prolongation.base_prime() != prime:
-            raise ValueError("the prolongation lies over a different base prime")
+            raise ValueError(
+                f"the prolongation {prolongation} lies over {prolongation.base_prime()}, "
+                f"not over the prime {prime}"
+            )
         self._prime = prime
         self._prolongation = prolongation
         super().__init__(**rest)
@@ -194,9 +214,9 @@ class _AbsoluteDecompositionGroupEngine:
         if element == ambient.one():
             return True
         assert False, (
-            "membership in an absolute decomposition subgroup is the compatible "
-            "stabilizer condition over every finite quotient; finitely many realized "
-            "coordinates do not decide it"
+            f"cannot decide whether {element} lies in the decomposition group {self}: "
+            f"membership means fixing the prime in every finite Galois quotient, which "
+            f"is known only for the identity"
         )
 
     def _element_constructor_(self, datum):
@@ -205,8 +225,8 @@ class _AbsoluteDecompositionGroupEngine:
         if element == ambient.one():
             return element
         assert False, (
-            "constructing a nonidentity element of an absolute decomposition subgroup "
-            "requires a complete compatible prolongation-stabilizer witness"
+            f"cannot make {element} an element of the decomposition group {self}: only the "
+            f"identity is known to fix the prime in every finite Galois quotient"
         )
 
     def _repr_(self) -> str:
@@ -229,7 +249,10 @@ class _AbsoluteInertiaGroupEngine:
 
     def __init__(self, prime, prolongation, **rest) -> None:
         if prolongation.base_prime() != prime:
-            raise ValueError("the prolongation lies over a different base prime")
+            raise ValueError(
+                f"the prolongation {prolongation} lies over {prolongation.base_prime()}, "
+                f"not over the prime {prime}"
+            )
         self._prime = prime
         self._prolongation = prolongation
         super().__init__(**rest)
@@ -262,9 +285,9 @@ class _AbsoluteInertiaGroupEngine:
         if element == ambient.one():
             return True
         assert False, (
-            "membership in an absolute inertia subgroup is the compatible residue-"
-            "triviality condition over every finite quotient; finitely many realized "
-            "coordinates do not decide it"
+            f"cannot decide whether {element} lies in the inertia group {self}: membership "
+            f"means acting trivially on the residue field in every finite Galois "
+            f"quotient, which is known only for the identity"
         )
 
     def _element_constructor_(self, datum):
@@ -273,8 +296,9 @@ class _AbsoluteInertiaGroupEngine:
         if element == ambient.one():
             return element
         assert False, (
-            "constructing a nonidentity element of an absolute inertia subgroup "
-            "requires a complete compatible inertia witness"
+            f"cannot make {element} an element of the inertia group {self}: only the "
+            f"identity is known to act trivially on the residue field in every finite "
+            f"Galois quotient"
         )
 
     def _repr_(self) -> str:
@@ -324,7 +348,8 @@ class _DecompositionGroupConjugacyClassEngine:
     def _element_constructor_(self, candidate):
         if candidate not in self:
             raise ValueError(
-                "the subgroup is not in this decomposition-group conjugacy class"
+                f"{candidate} is not a decomposition group at {self._prime} in "
+                f"{self._supergroup}"
             )
         return candidate
 
@@ -384,7 +409,8 @@ class _InertiaGroupConjugacyClassEngine:
     def _element_constructor_(self, candidate):
         if candidate not in self:
             raise ValueError(
-                "the subgroup is not in this inertia-group conjugacy class"
+                f"{candidate} is not an inertia group at {self._prime} in "
+                f"{self._supergroup}"
             )
         return candidate
 

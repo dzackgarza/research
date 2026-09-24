@@ -113,7 +113,10 @@ def _closed_exact_real_expression(value) -> Expression:
         pass
 
     if isinstance(value, float):
-        raise TypeError("a floating-point approximation is not an exact real")
+        raise TypeError(
+            f"{value!r} is a floating-point number, not an exact real number; "
+            "give the exact expression it approximates"
+        )
 
     value_parent = None
     try:
@@ -127,13 +130,15 @@ def _closed_exact_real_expression(value) -> Expression:
         value = AA(value.real())
     elif value_parent in (RLF, CLF):
         raise TypeError(
-            "a lazy numerical real/complex value is not an exact real expression; "
-            "coerce its original exact expression instead"
+            f"{value} is a numerical approximation in {value_parent}, not an exact real number; "
+            "give the exact expression it approximates"
         )
     elif value_parent is not None and value_parent is not SR:
         try:
             if not value_parent.is_exact():
-                raise TypeError(f"{value} is an approximation, not an exact real")
+                raise TypeError(
+                    f"{value} lies in the inexact ring {value_parent}, so it is an approximation, not an exact real number"
+                )
         except AttributeError:
             pass
 
@@ -190,7 +195,9 @@ def _relation_from_sign(sign: int, relation) -> bool:
         return sign > 0
     if relation is operator.ge:
         return sign >= 0
-    raise TypeError(f"unsupported real relation {relation}")
+    raise TypeError(
+        f"{relation} is not one of the order relations <, <=, >, >=, ==, != on the real numbers"
+    )
 
 
 def _decide_relation(
@@ -362,9 +369,11 @@ class ExactRealNumber(FieldElement):
 
         decision = ask(nonzero) if nonzero in Propositions else nonzero
         if decision is False:
-            raise ZeroDivisionError("division by zero")
+            raise ZeroDivisionError(f"cannot divide {self} by {other}: the denominator is zero")
         if decision is Unknown:
-            raise ValueError("the denominator's zero predicate is undecided")
+            raise ValueError(
+                f"cannot divide {self} by {other}: it is undecided whether {other} is zero"
+            )
         return self.parent()(self._expression / other._expression)
 
     def _neg_(self):
@@ -375,7 +384,10 @@ class ExactRealNumber(FieldElement):
 
     def __pow__(self, exponent, modulus=None):
         if modulus is not None:
-            raise TypeError("modular exponentiation is not defined in the real field")
+            raise TypeError(
+                f"cannot compute {self}^{exponent} mod {modulus}: modular exponentiation is not defined "
+                "on the real numbers"
+            )
         return self.parent()(self._expression ** _closed_exact_real_expression(exponent))
 
     def __rpow__(self, base):
@@ -421,7 +433,7 @@ class ExactRealNumber(FieldElement):
         r"""The Riemann zeta function at this real number, which must exceed 1."""
         from sage.functions.transcendental import zeta
 
-        assert self > 1, "the Riemann zeta function is summed here only for real arguments above 1"
+        assert self > 1, f"zeta(s) is computed here only for real s > 1, but s = {self} is not > 1"
         return self.parent()(zeta(self._expression))
 
     def sgn(self):
@@ -430,7 +442,9 @@ class ExactRealNumber(FieldElement):
         if self.is_zero() is True:
             return integers(0)
         positive = self.is_positive()
-        assert positive is True or positive is False, "the sign of this real number is undecided"
+        assert positive is True or positive is False, (
+            f"the sign of the real number {self} is undecided: it is not decided whether {self} > 0"
+        )
         return integers(1 if positive else -1)
 
     def __abs__(self):
@@ -457,25 +471,33 @@ class ExactRealNumber(FieldElement):
     def __lt__(self, other):
         other = self._coerce_for_relation(other)
         if other is None:
-            raise TypeError(f"{other!r} is not a real number")
+            raise TypeError(
+                f"cannot compare the real number {self} by <: the other argument is not a real number"
+            )
         return self.parent().relation(self, other, operator.lt)
 
     def __le__(self, other):
         other = self._coerce_for_relation(other)
         if other is None:
-            raise TypeError(f"{other!r} is not a real number")
+            raise TypeError(
+                f"cannot compare the real number {self} by <=: the other argument is not a real number"
+            )
         return self.parent().relation(self, other, operator.le)
 
     def __gt__(self, other):
         other = self._coerce_for_relation(other)
         if other is None:
-            raise TypeError(f"{other!r} is not a real number")
+            raise TypeError(
+                f"cannot compare the real number {self} by >: the other argument is not a real number"
+            )
         return self.parent().relation(self, other, operator.gt)
 
     def __ge__(self, other):
         other = self._coerce_for_relation(other)
         if other is None:
-            raise TypeError(f"{other!r} is not a real number")
+            raise TypeError(
+                f"cannot compare the real number {self} by >=: the other argument is not a real number"
+            )
         return self.parent().relation(self, other, operator.ge)
 
     def is_zero(self):
@@ -494,7 +516,10 @@ class ExactRealNumber(FieldElement):
         relation = self != self.parent().zero()
         if relation is True or relation is False:
             return relation
-        raise TypeError("nonzeroness is undecided; use ask(x != 0)")
+        raise TypeError(
+            f"the truth value of {self} is undecided: it is not decided whether {self} != 0; "
+            "use ask(x != 0)"
+        )
 
 
 RealNumber = ExactRealNumber

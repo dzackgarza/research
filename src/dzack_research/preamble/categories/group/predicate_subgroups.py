@@ -133,9 +133,9 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 if supergroup_cardinality.is_countably_infinite():
                     return supergroup_cardinality
             assert supergroup_cardinality.is_finite(), (
-                "cardinality is defined for every predicate subgroup, but the current "
-                "exact computation requires represented finite-character data or a "
-                "finite supergroup"
+                f"cannot compute the order of the subgroup {self}: its group "
+                f"{self.supergroup()} has order {supergroup_cardinality}, which is not finite, "
+                f"and the subgroup is not known as the preimage of a subgroup of a finite quotient"
             )
             return cardinal(sum(1 for _element in self))
 
@@ -143,8 +143,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             r"""The elements of the finite supergroup satisfying the predicate."""
             supergroup = self.supergroup()
             assert supergroup.is_finite() is True, (
-                "listing a predicate subgroup reads the elements of its supergroup, "
-                "which is not decided finite"
+                f"cannot list the elements of the subgroup {self}: its group {supergroup} "
+                f"is not known to be finite"
             )
             return (element for element in supergroup if self._predicate(element))
 
@@ -155,20 +155,27 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             supergroup = self.supergroup()
             element = datum if datum in supergroup else supergroup(datum)
             if element not in self:
-                raise ValueError(f"{element} does not satisfy {self._description}")
+                raise ValueError(
+                    f"{element} is not an element of the subgroup {self}: it does not "
+                    f"satisfy {self._description}"
+                )
             return element
 
         def one(self):
             identity = self.supergroup().one()
             if identity not in self:
                 raise ValueError(
-                    f"{self._description} does not contain the identity; this is not a subgroup"
+                    f"{self} is not a subgroup of {self.supergroup()}: the identity {identity} "
+                    f"does not satisfy {self._description}"
                 )
             return identity
 
         def intersection(self, other):
             if other.supergroup() is not self.supergroup():
-                raise ValueError("predicate-subgroup intersections require one ambient group")
+                raise ValueError(
+                    f"cannot intersect {self} and {other}: they are subgroups of different "
+                    f"groups, {self.supergroup()} and {other.supergroup()}"
+                )
             left = self._character_data_snapshot()
             right = other._character_data_snapshot()
             data = {
@@ -191,7 +198,9 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def finite_character_quotient(self):
             if not self.character_data_is_complete():
                 raise ValueError(
-                    "the retained finite characters do not define this whole subgroup"
+                    f"{self} has no finite character quotient: it is not known to be the full "
+                    f"preimage of a subgroup of a finite quotient of {self.supergroup()} by "
+                    f"determinant, spinor norm and discriminant characters"
                 )
             return OrthogonalCharacterQuotient(self)
 
@@ -268,7 +277,9 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
                 if len(line_vertices) != 1 or len(plane_vertices) != 1:
                     raise ArithmeticError(
-                        "an arithmetic flag term does not determine a unique subgroup cusp orbit"
+                        f"the isotropic flag {flag} of {lattice} lies in {len(line_vertices)} "
+                        f"line cusps and {len(plane_vertices)} plane cusps of {self}; each "
+                        f"term of a flag must lie in exactly one cusp"
                     )
                 line_cusp = line_vertices[0]
                 plane_cusp = plane_vertices[0]
@@ -276,7 +287,9 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 plane_transporter = plane_cusp.transporter_witness(plane)
                 if line_transporter is None or plane_transporter is None:
                     raise ArithmeticError(
-                        "an arithmetic flag term lies in a cusp with no subgroup transporter"
+                        f"the isotropic flag {flag} of {lattice} lies in the cusps "
+                        f"{line_cusp} and {plane_cusp} of {self}, but no element of {self} "
+                        f"carries the cusp representatives to its terms"
                     )
                 incidences.append(
                     ArithmeticCuspIncidence(
@@ -290,7 +303,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 )
             if any(incidence.lattice() is not lattice for incidence in incidences):
                 raise ArithmeticError(
-                    "an arithmetic cusp incidence changed its ambient lattice"
+                    f"the Tits building incidence of {self} has a cusp incidence in a lattice "
+                    f"other than {lattice}, the lattice {self.supergroup()} acts on"
                 )
             return finite_ordered_set(tuple(incidences))
 
@@ -319,7 +333,10 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         r"""Construct the kernel subgroup retaining its defining morphism."""
         group = self.base()
         if morphism.domain() is not group:
-            raise ValueError("the kernel morphism has the wrong domain group")
+            raise ValueError(
+                f"{morphism} has no kernel in {group}: its domain is "
+                f"{morphism.domain()}, not {group}"
+            )
         identity = morphism.codomain().one()
         return _object_of(
             self,
@@ -356,8 +373,9 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
                     self.kernel_morphism()
                 )
             assert False, (
-                "kernel abelianity is mathematically defined generally, but the current "
-                "exact computation requires a finite ambient group with a GAP-backed morphism"
+                f"cannot decide whether the kernel {self} of {self.kernel_morphism()} is "
+                f"abelian: this is decided only when the domain {self.supergroup()} is known "
+                f"to be finite"
             )
 
 
@@ -381,7 +399,10 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
         r"""Construct the inverse image of ``subgroup`` along ``morphism``."""
         group = self.base()
         if morphism.domain() is not group:
-            raise ValueError("the preimage morphism has the wrong domain group")
+            raise ValueError(
+                f"cannot take the preimage of {subgroup} along {morphism} as a subgroup of "
+                f"{group}: the domain of {morphism} is {morphism.domain()}, not {group}"
+            )
         if predicate is None:
             def predicate(element):
                 return morphism(element) in subgroup
@@ -472,7 +493,10 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
         r"""Construct the centralizer of ``element`` in the ambient group."""
         group = self.base()
         if element not in group:
-            raise ValueError(f"{element} is not in {group}")
+            raise ValueError(
+                f"cannot form the centralizer of {element} in {group}: {element} is not an "
+                f"element of {group}"
+            )
         return _object_of(
             self,
             supergroup=group,
@@ -511,7 +535,11 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
         group = self.base()
         subgroups = tuple(subgroups)
         if any(subgroup.supergroup() is not group for subgroup in subgroups):
-            raise ValueError("an intersection requires subgroups of one ambient group")
+            raise ValueError(
+                f"cannot form the intersection in {group}: the subgroups "
+                f"{[subgroup for subgroup in subgroups if subgroup.supergroup() is not group]} "
+                f"are not subgroups of {group}"
+            )
         return _object_of(
             self,
             supergroup=group,

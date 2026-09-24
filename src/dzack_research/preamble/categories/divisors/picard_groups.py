@@ -67,9 +67,14 @@ class PicardGroups(Category):
         space is projective.  The result is the biproduct itself, placed here
         with ``projective_space`` as its scheme.
         """
-        assert base_picard_group in self, "the projective bundle formula starts from a Picard group"
+        assert base_picard_group in self, (
+            f"cannot apply Pic(P^n_S) = Pic(S) + Z[O(1)] to {base_picard_group}: the second "
+            f"argument must be the Picard group Pic(S) of the base, but it is not a Picard group"
+        )
         assert base_picard_group.picard_scheme() is projective_space.base_scheme(), (
-            "the supplied Picard group is not attached to the projective base"
+            f"cannot apply Pic(P^n_S) = Pic(S) + Z[O(1)] to {projective_space}: the given "
+            f"Picard group is Pic({base_picard_group.picard_scheme()}), not the Picard group "
+            f"of the base {projective_space.base_scheme()}"
         )
         integers = _integers()
         hyperplane = integers.free_module(finite_ordered_set(("O(1)",)))
@@ -100,20 +105,29 @@ class PicardGroups(Category):
         """
         principal = principal_to_cartier.domain()
         assert principal_to_weil.domain() is principal, (
-            "the Cartier and Weil principal-divisor morphisms have one source"
+            f"cannot induce Pic({scheme}) -> Cl({scheme}): the principal Cartier divisors "
+            f"are indexed by {principal}, but the principal Weil divisors by "
+            f"{principal_to_weil.domain()}; both must come from the same group of rational functions"
         )
         cartier = principal_to_cartier.codomain()
         assert cartier_to_weil.domain() is cartier, (
-            "the Cartier-to-Weil morphism starts at the Cartier divisors"
+            f"cannot induce Pic({scheme}) -> Cl({scheme}): the map from Cartier to Weil "
+            f"divisors has domain {cartier_to_weil.domain()}, not the Cartier divisor group {cartier}"
         )
         assert cartier_to_weil.codomain() is principal_to_weil.codomain(), (
-            "the Cartier-to-Weil morphism ends at the Weil divisors"
+            f"cannot induce Pic({scheme}) -> Cl({scheme}): the map from Cartier to Weil "
+            f"divisors has codomain {cartier_to_weil.codomain()}, not the Weil divisor group "
+            f"{principal_to_weil.codomain()}"
         )
         assert all(
             cartier_to_weil(principal_to_cartier(principal.module_generator(label)))
             == principal_to_weil(principal.module_generator(label))
             for label in principal.module_generating_set()
-        ), "the principal/Cartier/Weil triangle does not commute"
+        ), (
+            f"cannot induce Pic({scheme}) -> Cl({scheme}): the Cartier-to-Weil map "
+            f"{cartier_to_weil} does not send the Cartier divisor of each rational function "
+            f"to its Weil divisor"
+        )
         picard = self(scheme, principal_to_cartier)
         classes = ClassGroups()(scheme, principal_to_weil)
         weil_class_projection = classes.cokernel_projection()
@@ -135,17 +149,29 @@ class PicardGroups(Category):
 
         def projective_base_picard_group(self):
             r"""The summand \(\operatorname{Pic}(S)\) of \(\operatorname{Pic}(\mathbb{P}^n_S) = \operatorname{Pic}(S) \oplus \mathbb{Z}[\mathcal{O}(1)]\)."""
-            assert self in BiproductModules(_integers()), _NOT_A_PROJECTIVE_BUNDLE
+            assert self in BiproductModules(_integers()), (
+                f"{self} has no base summand Pic(S): it was not built as "
+                f"Pic(P^n_S) = Pic(S) + Z[O(1)], so it is not a direct sum of a base Picard "
+                f"group and the hyperplane class"
+            )
             return self.biproduct_factor(0)
 
         def projective_hyperplane_factor(self):
             r"""The summand \(\mathbb{Z}[\mathcal{O}(1)]\) of the projective-bundle presentation."""
-            assert self in BiproductModules(_integers()), _NOT_A_PROJECTIVE_BUNDLE
+            assert self in BiproductModules(_integers()), (
+                f"{self} has no hyperplane summand Z[O(1)]: it was not built as "
+                f"Pic(P^n_S) = Pic(S) + Z[O(1)], so it is not a direct sum of a base Picard "
+                f"group and the hyperplane class"
+            )
             return self.biproduct_factor(1)
 
         def base_picard_inclusion(self):
             r"""The inclusion \(\operatorname{Pic}(S) \to \operatorname{Pic}(\mathbb{P}^n_S)\) of the base summand."""
-            assert self in BiproductModules(_integers()), _NOT_A_PROJECTIVE_BUNDLE
+            assert self in BiproductModules(_integers()), (
+                f"{self} has no inclusion Pic(S) -> Pic(P^n_S): it was not built as "
+                f"Pic(P^n_S) = Pic(S) + Z[O(1)], so it is not a direct sum of a base Picard "
+                f"group and the hyperplane class"
+            )
             return self.injection(0)
 
         def hyperplane_class(self):
@@ -153,13 +179,6 @@ class PicardGroups(Category):
             factor = self.projective_hyperplane_factor()
             label = factor.module_generating_set()[0]
             return self.injection(1)(factor.module_generator(label))
-
-
-_NOT_A_PROJECTIVE_BUNDLE = (
-    "the projective-bundle presentation of a Picard group is the biproduct of the "
-    "base Picard group with the hyperplane factor; this Picard group was not built "
-    "by the projective bundle formula"
-)
 
 
 __all__ = ["PicardGroups"]

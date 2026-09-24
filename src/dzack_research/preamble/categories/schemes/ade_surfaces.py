@@ -110,12 +110,14 @@ def _affine_polygon_data(letter, rank, parameter):
         return (((0, 2), (0, 0), (2 * parameter, 0), (parameter, 2)), (SageQQ(parameter) / 2, 1))
     if letter == "D":
         return (((0, 2), (0, 0), (2 * parameter - 4, 0), (4, 2)), (2, 2))
-    assert letter == "E", "the affine ADE families are A, D and E"
+    assert letter == "E", (
+        f"an affine ADE type has letter A, D or E, but the letter is {letter!r}"
+    )
     if rank == 6:
         return (((0, 3), (0, 0), (3, 0)), (1, 1))
     if rank == 7:
         return (((0, 4), (0, 0), (4, 0)), (2, 2))
-    assert rank == 8, "the affine E family has rank 6, 7 or 8"
+    assert rank == 8, f"the affine type tilde E_n has n = 6, 7 or 8, but n = {rank}"
     return (((0, 3), (0, 0), (6, 0)), (2, 2))
 
 
@@ -166,7 +168,7 @@ def _d_family_polygon_data(rank, variant, parameter):
 
 
 def _e_family_polygon_data(rank):
-    assert rank in (6, 7, 8), "the E family has rank 6, 7 or 8"
+    assert rank in (6, 7, 8), f"the type E_n has n = 6, 7 or 8, but n = {rank}"
     last = {6: 3, 7: 4, 8: 5}[rank]
     return (((2, 2), (0, 3), (0, 0), (last, 0)), (2, 2))
 
@@ -183,25 +185,30 @@ def _ade_polygon_data(letter, rank, variant, affine):
     if letter == "D":
         vertices, point = _d_family_polygon_data(rank, variant, parameter)
         return (vertices, point, empty)
-    assert letter == "E", "an ADE type has letter A, D or E"
+    assert letter == "E", f"an ADE type has letter A, D or E, but the letter is {letter!r}"
     vertices, point = _e_family_polygon_data(rank)
     return (vertices, point, empty)
 
 
 def _validated_at21_low_level_variant(letter, rank, variant, affine):
     if letter not in ("A", "D", "E"):
-        raise ValueError("an AT21 ADE shape has type A, D or E")
+        raise ValueError(f"an ADE type has letter A, D or E, but the letter is {letter!r}")
     if rank < 1:
-        raise ValueError("an AT21 ADE rank is positive")
+        raise ValueError(f"an ADE type {letter}_n needs rank n >= 1, but n = {rank}")
     if affine:
         if variant != "pure":
-            raise ValueError("the represented toric affine shapes are the pure source shapes")
+            raise ValueError(
+                f"the affine type tilde {letter}_{rank} has only the pure toric polygon of "
+                f"Alexeev-Thompson (AT21), not the variant {variant!r}"
+            )
         if letter == "D" and rank >= 4 and rank % 2 == 0:
             return ()
         if letter == "E" and rank in (7, 8):
             return ()
         raise ValueError(
-            "AT21 toric affine shapes represented here are tilde D_even, tilde E7 and tilde E8; tilde A is nontoric"
+            f"the affine type tilde {letter}_{rank} has no toric polygon in Alexeev-Thompson "
+            "(AT21): the toric affine types are tilde D_n for even n >= 4, tilde E_7 and "
+            "tilde E_8; tilde A_n is not toric"
         )
     if letter == "A":
         if variant == "pure" and rank % 2 == 1:
@@ -213,7 +220,9 @@ def _validated_at21_low_level_variant(letter, rank, variant, affine):
         if variant == "prime":
             return ("prime",)
         raise ValueError(
-            "finite toric A shapes use odd pure A, even one-short A, odd both-short A, or the AT21 toric priming"
+            f"type A_{rank} has no toric polygon of variant {variant!r} in Alexeev-Thompson "
+            "(AT21): the toric A shapes are pure A_n for odd n, one-short A_n for even n, "
+            "both-short A_n for odd n, and the primed A_n"
         )
     if letter == "D":
         if variant == "pure" and rank >= 4 and rank % 2 == 0:
@@ -223,10 +232,15 @@ def _validated_at21_low_level_variant(letter, rank, variant, affine):
         if variant == "prime" and rank >= 4 and rank % 2 == 0:
             return ("prime",)
         raise ValueError(
-            "finite toric D shapes use even D, odd one-short D, or the even toric priming of AT21 Lemma 3.25"
+            f"type D_{rank} has no toric polygon of variant {variant!r} in Alexeev-Thompson "
+            "(AT21): the toric D shapes are pure D_n for even n >= 4, one-short D_n for odd n, "
+            "and primed D_n for even n >= 4 (AT21 Lemma 3.25)"
         )
     if rank not in (6, 7, 8) or variant != "pure":
-        raise ValueError("finite toric E shapes are the source E6, E7 and E8 pure shapes")
+        raise ValueError(
+            f"type E_{rank} of variant {variant!r} has no toric polygon in Alexeev-Thompson "
+            "(AT21): the toric E shapes are pure E_6, E_7 and E_8"
+        )
     return ()
 
 
@@ -240,9 +254,11 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
     def _call_(self, dynkin_letter, dynkin_rank, variant=(), affine=False):
         r"""Construct the base log pair of one ADE type over this category's base."""
         letter = str(dynkin_letter).upper()
-        assert letter in ("A", "D", "E"), "an ADE type has letter A, D or E"
+        assert letter in ("A", "D", "E"), (
+            f"an ADE type has letter A, D or E, but the letter is {letter!r}"
+        )
         rank = int(dynkin_rank)
-        assert rank >= 1, "an ADE type has positive rank"
+        assert rank >= 1, f"an ADE type {letter}_n needs rank n >= 1, but n = {rank}"
         variant = tuple(variant)
 
         vertices, point, decorations = _ade_polygon_data(
@@ -293,8 +309,8 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         expected = _own_ring(SageZZ)(2) * pair.complementary_divisor()
         if branch_class != expected:
             raise ArithmeticError(
-                "the selected polygon does not satisfy AT21 Lemma 3.4: "
-                "L=-2(K_Y+C)=2C'"
+                f"the log pair {pair} of type {letter}_{rank} does not satisfy AT21 Lemma 3.4: "
+                f"the branch class L = -2(K_Y + C) is {branch_class}, not 2C' = {expected}"
             )
         branch_line_bundle = pair.log_scheme().invertible_sheaf_of_divisor(branch_class)
         return ToricLogPairs(self.base_ring())(
@@ -639,8 +655,9 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             r"""``V_P``, the toric threefold the double cover is cut out of."""
             pyramid = self.pyramid()
             assert pyramid.is_lattice_polytope(), (
-                "V_P is the toric variety of the pyramid, which needs an "
-                "integral apex; this ADE type places p* at a non-lattice point"
+                f"the toric threefold V_P of {self} is the toric variety of the pyramid over its "
+                f"polygon, but the pyramid's apex over p* = {self.distinguished_point()} is not a "
+                "lattice point, so the pyramid is not a lattice polytope"
             )
             return pyramid.toric_variety(self.log_scheme().scheme_base_ring())
 
@@ -747,7 +764,10 @@ class _AT21ToricADEPairEngine:
         for coordinates, coefficient in dict(character_coefficients).items():
             key = tuple(int(value) for value in coordinates)
             if key not in characters:
-                raise ValueError(f"{key} is not a lattice point of the ADE branch polytope")
+                raise ValueError(
+                    f"{key} is not a lattice point of the branch polytope of {self}, so it is "
+                    "not the character of a branch section"
+                )
             value = self.scheme().scheme_base_ring()(coefficient)
             if value != self.scheme().scheme_base_ring().zero():
                 coefficients[characters[key]] = value
@@ -775,7 +795,10 @@ class _AT21ToricADEPairEngine:
             if coefficient != sections.base_ring().zero()
         )
         if len(support) < 3:
-            raise ValueError("a branch Newton polygon requires two-dimensional support")
+            raise ValueError(
+                f"the Newton polygon of the branch section needs a two-dimensional support, but "
+                f"the section has only {len(support)} monomials"
+            )
         return LatticePolygons(self.scheme().character_lattice())(support)
 
     def source_normal_form_section(self, *, constant=1):
@@ -790,7 +813,8 @@ class _AT21ToricADEPairEngine:
         normalization and is deliberately not guessed here.
         """
         assert not self.is_affine_type(), (
-            "the represented Table 5 normal forms require a finite D/E shape"
+            f"the normal forms of AT21 Table 5 are for finite types D and E, but {self} is of "
+            "affine type"
         )
         rank = int(self.dynkin_rank())
         if self.dynkin_letter() == "D":
@@ -809,8 +833,8 @@ class _AT21ToricADEPairEngine:
             }
         else:
             assert self.dynkin_letter() in ("D", "E"), (
-                "the represented Table 5 branch normal form is the D/E source normalization; "
-                "type A uses its separate affine-chart normalization"
+                f"the normal forms of AT21 Table 5 are implemented for types D and E, but {self} "
+                f"has type {self.dynkin_letter()}"
             )
         return self.branch_section(terms)
 
@@ -950,13 +974,19 @@ class _AT21ADEDoubleCoverEngine:
             local_cover_maps[cone] * local_deck[cone] != local_cover_maps[cone]
             for cone in cover.gluing_datum().chart_indices()
         ):
-            raise ArithmeticError("the pyramid deck involution does not lie over the ADE base")
+            raise ArithmeticError(
+                f"the deck involution of the double cover {cover} does not commute with the "
+                f"cover map to {base_pair.scheme()} on some chart"
+            )
         if any(
             local_deck[cone] * local_deck[cone]
             != local_deck[cone].domain().categorical_identity_morphism()
             for cone in cover.gluing_datum().chart_indices()
         ):
-            raise ArithmeticError("the pyramid deck map is not an involution")
+            raise ArithmeticError(
+                f"the deck map of the double cover {cover} does not square to the identity on "
+                "some chart"
+            )
 
         ramification = cover.chartwise_fixed_subscheme(local_deck_family)
         base_boundary = base_pair.scheme().torus_invariant_divisor_support_subscheme(
@@ -1055,7 +1085,9 @@ class _AT21ADEDoubleCoverEngine:
         )
 
         assert self.base_pair().dynkin_letter() == "E" and int(self.base_pair().dynkin_rank()) == 8, (
-            "the represented AT21 local/global singularity specimen is the E8 specialization"
+            f"the local and global singularity comparison is implemented only for type E_8, "
+            f"but {self.base_pair()} has type {self.base_pair().dynkin_letter()}_"
+            f"{self.base_pair().dynkin_rank()}"
         )
         ring = self.base_scheme().scheme_base_ring().polynomial_ring(("x", "y", "z"))
         x, y, z = tuple(ring.algebra_generators())
@@ -1095,14 +1127,20 @@ def _at21_ade_double_cover(base_pair, branch_section):
     for character, coefficient in branch_coefficients.items():
         key = (*tuple(int(value) for value in character), 0)
         if key not in ambient_by_coordinates:
-            raise ArithmeticError("a branch character is absent from the pyramid hyperplane section")
+            raise ArithmeticError(
+                f"the branch character {character} of {base_pair} is not a lattice point of the "
+                f"height-0 face of the pyramid, so the branch section does not extend to {ambient}"
+            )
         coefficients[ambient_by_coordinates[key]] = coefficient
     apex = (
         *tuple(int(value) for value in base_pair.distinguished_point()),
         2,
     )
     if apex not in ambient_by_coordinates:
-        raise ArithmeticError("the pyramid apex is absent from its polarizing section space")
+        raise ArithmeticError(
+            f"the apex {apex} of the pyramid over {base_pair} is not a lattice point of the "
+            f"polytope of the polarizing divisor of {ambient}"
+        )
     coefficients[ambient_by_coordinates[apex]] = base_pair.scheme().scheme_base_ring().one()
     ambient_section = ambient_sections.linear_combination(coefficients)
 
@@ -1111,7 +1149,11 @@ def _at21_ade_double_cover(base_pair, branch_section):
     source_labels = tuple(source_lattice.module_generating_set())
     target_labels = tuple(target_lattice.module_generating_set())
     if len(source_labels) != 3 or len(target_labels) != 2:
-        raise ArithmeticError("the ADE pyramid projection expects ranks three and two")
+        raise ArithmeticError(
+            f"the projection from the pyramid's toric threefold to the ADE surface needs "
+            f"cocharacter lattices of ranks 3 and 2, but they have ranks {len(source_labels)} and "
+            f"{len(target_labels)}"
+        )
     projection_lattice_map = source_lattice.module_category().Mor(source_lattice, target_lattice)(
         {
             source_labels[0]: target_lattice.module_generator(target_labels[0]),

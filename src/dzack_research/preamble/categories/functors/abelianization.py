@@ -60,10 +60,15 @@ class _AbelianizationFunctor(Functor):
             or stored[0] is not group
             or stored[1] is not quotient
         ):
-            raise KeyError("the group has no retained abelianization quotient projection")
+            raise KeyError(
+                f"the quotient map {group} -> {quotient} onto the abelianization is missing for {group}"
+            )
         projection = stored[2]
         if projection.domain() is not group or projection.codomain() is not quotient:
-            raise ValueError("the retained abelianization quotient projection has the wrong endpoints")
+            raise ValueError(
+                f"the quotient map onto the abelianization of {group} must be {group} -> {quotient}, but it is "
+                f"{projection.domain()} -> {projection.codomain()}"
+            )
         return projection
 
     def _apply_morphism(self, morphism):
@@ -97,7 +102,10 @@ class _AbelianizationFunctor(Functor):
             list(images),
         )
         if induced.is_bool():
-            raise ValueError("the group morphism did not induce a map on abelianizations")
+            raise ValueError(
+                f"the group morphism {morphism} does not induce a map of abelianizations "
+                f"{source_abelianization} -> {target_abelianization}"
+            )
         return source_abelianization.Mor(target_abelianization)(induced)
 
     def _repr_(self):
@@ -154,7 +162,10 @@ class _AbelianizationAdjunction(Adjunction):
             list(images),
         )
         if engine.is_bool():
-            raise ValueError("the abelianization of an abelian group did not canonically identify with it")
+            raise ValueError(
+                f"the abelian group {abelian_group} is not isomorphic to its abelianization {abelianization} "
+                "through the quotient map"
+            )
         return abelianization.Mor(abelian_group)(engine)
 
 

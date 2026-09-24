@@ -111,7 +111,10 @@ class _FixedCardinalitySubsetFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         if not self.domain().admits(morphism):
-            raise TypeError("fixed-cardinality direct image requires an injective set map")
+            raise TypeError(
+                f"the direct image on k-element subsets needs an injective map, but {morphism} is not known to "
+                "be injective"
+            )
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return Sets().Mor(source, target)(

@@ -60,9 +60,15 @@ class SemilinearModuleMorphism(Morphism):
     def __init__(self, parent, scalar_map, restricted_morphism) -> None:
         Morphism.__init__(self, parent)
         if scalar_map.domain() is not self.domain().base_ring():
-            raise ValueError("a semilinear scalar map starts at the source module base ring")
+            raise ValueError(
+                f"a semilinear map out of {self.domain()} lies over a ring map out of its base ring "
+                f"{self.domain().base_ring()}, but {scalar_map} starts at {scalar_map.domain()}"
+            )
         if scalar_map.codomain() is not self.codomain().base_ring():
-            raise ValueError("a semilinear scalar map ends at the target module base ring")
+            raise ValueError(
+                f"a semilinear map into {self.codomain()} lies over a ring map into its base ring "
+                f"{self.codomain().base_ring()}, but {scalar_map} ends at {scalar_map.codomain()}"
+            )
         restricted = parent.restricted_codomain(scalar_map)
         linear_mor = Modules(self.domain().base_ring()).Mor(self.domain(), restricted)
         restricted_morphism = linear_mor(restricted_morphism)
@@ -175,7 +181,10 @@ class SemilinearModuleMorphism(Morphism):
         source = morphism.domain()
         target = morphism.codomain()
         if source.base_ring() is not target.base_ring():
-            raise ValueError("a linear map has one scalar ring")
+            raise ValueError(
+                f"{morphism} is not a linear map: its domain and codomain must be modules over one ring, "
+                f"but they are over {source.base_ring()} and {target.base_ring()}"
+            )
         morphism = Modules(source.base_ring()).Mor(source, target)(morphism)
         mor = ModulesOverCommutativeRings().Mor(source, target)
         scalar_map = source.base_ring().Mor(source.base_ring()).identity()
@@ -197,7 +206,10 @@ class SemilinearModuleMor(CategoricalMor):
         source_ring = self.domain().base_ring()
         target_ring = self.codomain().base_ring()
         if scalar_map not in CommutativeRings().Mor(source_ring, target_ring):
-            raise TypeError("a semilinear module arrow lies over a morphism of commutative rings")
+            raise TypeError(
+                f"a semilinear map {self.domain()} -> {self.codomain()} lies over a morphism of commutative "
+                f"rings {source_ring} -> {target_ring}, but {scalar_map} is not one"
+            )
 
     @cached_method(key=lambda self, scalar_map: id(scalar_map))
     def base_change_adjunction(self, scalar_map):
@@ -266,7 +278,10 @@ class SemilinearModuleMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism Mor")
+            raise ValueError(
+                f"{self} has no identity: an identity map needs domain = codomain, but these are "
+                f"{self.domain()} and {self.codomain()}"
+            )
         module = self.domain()
         ring = module.base_ring()
         scalar_map = ring.Mor(ring).identity()
@@ -322,34 +337,48 @@ class ModulesOverCommutativeRings(OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("semilinear Mor endpoints must be modules over commutative rings")
+            raise TypeError(
+                f"{self}.Mor({domain}, {codomain}) needs two modules over commutative rings, but {domain} "
+                f"is in {domain.category()} and {codomain} is in {codomain.category()}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     def fiber(self, ring):
         r"""Return the fixed-base fibre ``Modules(R)`` over a commutative ring ``R``."""
         if ring not in CommutativeRings():
-            raise TypeError("the module fibration is based on commutative rings")
+            raise TypeError(
+                f"{self} has fibres Modules(R) only over commutative rings R, but {ring} is in {ring.category()}"
+            )
         return Modules(ring)
 
     def cocartesian_transport(self, ring_map):
         r"""Return scalar extension ``S tensor_R -`` along ``R -> S``."""
         source, target = ring_map.domain(), ring_map.codomain()
         if ring_map not in CommutativeRings().Mor(source, target):
-            raise TypeError("cocartesian module transport lies over a commutative-ring morphism")
+            raise TypeError(
+                f"scalar extension along {ring_map} is not defined: it needs a morphism of commutative rings, "
+                f"but {ring_map} is not in CommutativeRings().Mor({source}, {target})"
+            )
         return self.base_change_adjunction(ring_map).left_adjoint()
 
     def cartesian_transport(self, ring_map):
         r"""Return restriction of scalars ``Res_f : Modules(S) -> Modules(R)``."""
         source, target = ring_map.domain(), ring_map.codomain()
         if ring_map not in CommutativeRings().Mor(source, target):
-            raise TypeError("cartesian module transport lies over a commutative-ring morphism")
+            raise TypeError(
+                f"restriction of scalars along {ring_map} is not defined: it needs a morphism of commutative rings, "
+                f"but {ring_map} is not in CommutativeRings().Mor({source}, {target})"
+            )
         return self.base_change_adjunction(ring_map).right_adjoint()
 
     def base_change_adjunction(self, ring_map):
         r"""Return the existing ``S tensor_R - dashv Res_f`` transport adjunction."""
         source, target = ring_map.domain(), ring_map.codomain()
         if ring_map not in CommutativeRings().Mor(source, target):
-            raise TypeError("module base change lies over a commutative-ring morphism")
+            raise TypeError(
+                f"the base-change adjunction along {ring_map} is not defined: it needs a morphism of commutative rings, "
+                f"but {ring_map} is not in CommutativeRings().Mor({source}, {target})"
+            )
         return self.fiber(source).base_change_adjunction(ring_map)
 
     def projection(self):

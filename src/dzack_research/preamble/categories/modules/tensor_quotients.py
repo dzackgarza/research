@@ -96,7 +96,10 @@ class _TensorClasses:
         for coefficient, values in terms:
             coefficient = ring(coefficient)
             values = tuple(values)
-            assert len(values) == len(self._factors), "a tensor has one entry in every slot"
+            assert len(values) == len(self._factors), (
+                f"{values} is not a pure tensor in {self}: it needs one entry for each of the "
+                f"{len(self._factors)} factors"
+            )
             values = tuple(module(value) for module, value in zip(self._factors, values, strict=True))
             if (coefficient == ring.zero()) is True or any(
                 (value == module.zero()) is True
@@ -208,12 +211,18 @@ class _TensorQuotientModule:
             case True:
                 pass
             case False:
-                raise TypeError("the tensor classifier has an R-module codomain")
+                raise TypeError(
+                    f"cannot induce a linear map {self} -> {codomain}: the target must be in "
+                    f"{self.module_category()}, but {codomain} is in {codomain.category()}"
+                )
         match callable(bilinear):
             case True:
                 pass
             case False:
-                raise TypeError("a bilinear evaluation must be callable")
+                raise TypeError(
+                    f"cannot induce a linear map {self} -> {codomain}: {bilinear!r} is not a "
+                    "function of two arguments"
+                )
         return _TensorQuotientClassifierMorphism(
             self.module_category().Mor(self, codomain),
             bilinear,
@@ -222,7 +231,10 @@ class _TensorQuotientModule:
 
 def _tensor_quotient(factors, *, extra_categories=(), extra_construction_data=None):
     ring = next(iter(factors)).base_ring()
-    assert ring in OwnedRings().Commutative(), "tensor products of left modules use a commutative scalar ring"
+    assert ring in OwnedRings().Commutative(), (
+        f"cannot form the tensor product of {tuple(factors)} over {ring}: the tensor product of "
+        f"two left modules needs a commutative ring, but {ring} is in {ring.category()}"
+    )
     classes = _object_of(
         Sets(), _engine=(Sets(), _TensorClasses, _TensorClass),
         scalar_ring=ring, factors=factors,

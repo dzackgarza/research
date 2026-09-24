@@ -87,7 +87,9 @@ class ChowGroups(OwnedCategoryOverBaseRing):
     def _call_(self, scheme, cycle_dimension, rational_equivalence):
         r"""\(Z_k/\operatorname{im}(\rho)\) for the rational-equivalence morphism ``rational_equivalence`` \(\rho\)."""
         assert rational_equivalence.codomain().base_ring() is self.base_ring(), (
-            "a Chow group uses the base ring of the cycles it is presented on"
+            f"cannot form the Chow group A_{cycle_dimension}({scheme}) over {self.base_ring()} as the "
+            f"cokernel of the rational-equivalence map {rational_equivalence}: its cycle group "
+            f"is over {rational_equivalence.codomain().base_ring()}, a different ring"
         )
         return _cokernel_in_category(
             rational_equivalence,
@@ -115,10 +117,15 @@ class ChowGroups(OwnedCategoryOverBaseRing):
         principal_to_weil = class_group.principal_to_weil_morphism()
         finite_weil = principal_to_weil.codomain()
         assert weil_presentation_into_full_weil.domain() is finite_weil, (
-            "the Weil presentation embedding has the wrong source"
+            f"cannot identify Cl({scheme}) with A_(dim - 1)({scheme}): the embedding "
+            f"{weil_presentation_into_full_weil} should start at the Weil-divisor group "
+            f"{finite_weil} of the class group, but starts at "
+            f"{weil_presentation_into_full_weil.domain()}"
         )
         assert weil_presentation_into_full_weil.codomain().divisor_scheme() is scheme, (
-            "the full Weil-divisor group belongs to a different scheme"
+            f"cannot identify Cl({scheme}) with A_(dim - 1)({scheme}): the embedding "
+            f"{weil_presentation_into_full_weil} lands in the Weil divisors of "
+            f"{weil_presentation_into_full_weil.codomain().divisor_scheme()}, not of {scheme}"
         )
         into_full_cycles = (
             scheme.weil_cycle_isomorphism().forward() * weil_presentation_into_full_weil
@@ -214,15 +221,18 @@ def _affine_cycle_group(scheme, cycle_dimension):
     from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
 
     assert scheme in AffineSchemes(scheme.scheme_base_ring()), (
-        "this cycle-group construction requires a represented affine scheme"
+        f"cannot form the cycle group Z_{cycle_dimension}({scheme}): cycle groups are "
+        "implemented only for affine schemes, and this scheme is not known to be affine"
     )
     ring = scheme.coordinate_algebra()
     assert ring in OwnedNoetherianRings(), (
-        "this cycle-group construction requires a Noetherian coordinate ring"
+        f"cannot form the cycle group Z_{cycle_dimension}({scheme}): its coordinate ring "
+        f"{ring} must be Noetherian, but it is not known to be"
     )
     cycle_dimension = int(cycle_dimension)
     assert 0 <= cycle_dimension <= int(scheme.dimension()), (
-        "cycle dimension lies between zero and the scheme dimension"
+        f"cannot form the cycle group Z_{cycle_dimension}({scheme}): the cycle dimension must "
+        f"lie between 0 and dim {scheme} = {scheme.dimension()}"
     )
     return AlgebraicCycleGroups(_own_ring(SageZZ))(
         scheme,
@@ -265,17 +275,22 @@ def _serre_intersection(left, right, point):
 
     ambient = left.inclusion().codomain()
     assert right.inclusion().codomain() is ambient, (
-        "a local intersection is taken inside one ambient scheme"
+        f"cannot intersect {left} and {right}: they are closed subschemes of different "
+        f"schemes, {ambient} and {right.inclusion().codomain()}"
     )
     assert ambient in AffineSpaces(ambient.scheme_base_ring()), (
-        "the represented Serre intersection currently requires a smooth affine space"
+        f"cannot compute the Serre intersection of {left} and {right}: Tor intersection is "
+        f"implemented only inside an affine space, and {ambient} is not known to be one"
     )
     point = ambient.underlying_space()(point)
     assert point.ideal().is_maximal(), (
-        "the represented Serre intersection is supported at a closed point"
+        f"cannot compute the Serre intersection of {left} and {right} at {point}: the "
+        f"point must be closed, but its ideal {point.ideal()} is not maximal"
     )
     assert left.intersection(right).defining_ideal_owned().radical() == point.ideal(), (
-        "the represented Tor intersection must be supported only at the selected closed point"
+        f"cannot compute the Serre intersection of {left} and {right} at {point}: the "
+        "intersection must be supported only at that point, but the radical of its ideal "
+        f"is not {point.ideal()}"
     )
     left_module = left.defining_ideal_owned().inclusion().cokernel()
     right_module = right.defining_ideal_owned().inclusion().cokernel()
@@ -316,10 +331,12 @@ def _closed_immersion_cycle_pushforward(closed_subscheme, cycle):
     """
     source = cycle.parent()
     assert source in AlgebraicCycleGroups(_own_ring(SageZZ)), (
-        "proper cycle pushforward starts with a represented algebraic cycle"
+        f"cannot push {cycle} forward along the closed immersion {closed_subscheme}: "
+        f"it is not an algebraic cycle, its parent is {source}"
     )
     assert source.cycle_scheme() is closed_subscheme, (
-        "the cycle belongs to a different source scheme"
+        f"cannot push {cycle} forward along the closed immersion of {closed_subscheme}: "
+        f"the cycle lives on {source.cycle_scheme()}, not on {closed_subscheme}"
     )
     ambient = closed_subscheme.inclusion().codomain()
     target = ambient.cycle_group(source.cycle_dimension())
@@ -343,14 +360,19 @@ def _distinguished_open_cycle_pullback(open_subscheme, cycle):
     """
     source = cycle.parent()
     assert source in AlgebraicCycleGroups(_own_ring(SageZZ)), (
-        "flat cycle pullback starts with a represented algebraic cycle"
+        f"cannot pull {cycle} back to the open subscheme {open_subscheme}: it is not an "
+        f"algebraic cycle, its parent is {source}"
     )
     ambient = open_subscheme.inclusion().codomain()
-    assert source.cycle_scheme() is ambient, "the cycle belongs to a different target scheme"
+    assert source.cycle_scheme() is ambient, (
+        f"cannot pull {cycle} back to the open subscheme {open_subscheme}: the cycle lives "
+        f"on {source.cycle_scheme()}, not on the scheme {ambient} that contains the open"
+    )
     assert open_subscheme.is_distinguished_open(), (
-        "the represented flat cycle pullback is computed along a distinguished open "
-        "immersion, where the pullback of a prime is the extension of its ideal to the "
-        "localization; other open immersions are outside this computation"
+        f"cannot pull {cycle} back to {open_subscheme}: flat pullback of cycles is "
+        "implemented only along a distinguished open immersion D(f), where a prime pulls "
+        "back to the extension of its ideal to the localization, and this open is not "
+        "known to be distinguished"
     )
     target = open_subscheme.cycle_group(source.cycle_dimension())
     localization_map = open_subscheme.inclusion().coordinate_algebra_morphism()

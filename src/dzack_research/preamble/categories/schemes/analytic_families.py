@@ -72,7 +72,8 @@ class _AffineSpaceAnalytificationFunctor(Functor):
         source = _own_ring(scalar_embedding.domain())
         target = _own_ring(scalar_embedding.codomain())
         assert _engine_ring(target) is SageCC, (
-            "the represented affine analytification uses the selected embedding into Sage CC"
+            f"analytification along {scalar_embedding} needs an embedding into the complex "
+            f"numbers CC, but its codomain is {target}"
         )
         super().__init__(AffineSpaces(source), ComplexManifolds())
 
@@ -91,7 +92,9 @@ class _AffineSpaceAnalytificationFunctor(Functor):
     @cached_method
     def _apply_morphism(self, morphism):
         assert morphism.domain() in self.domain() and morphism.codomain() in self.domain(), (
-            "affine analytification maps morphisms between affine spaces over the embedding source"
+            f"analytification over {self.domain().base_ring()} cannot be applied to {morphism}: "
+            f"its domain {morphism.domain()} and codomain {morphism.codomain()} must both be "
+            f"affine spaces in {self.domain()}"
         )
         analytic_source = self.object_image(morphism.domain())
         analytic_target = self.object_image(morphism.codomain())
@@ -235,7 +238,9 @@ def AnalyticDiscFamily(radius=1):
     )
 
     assert analytic_base.open_inclusion() * analytic_family == analytified_family * analytic_total.open_inclusion(), (
-        "the analytic disc family does not commute with its algebraic analytification square"
+        f"the analytic family {analytic_family} over the disc of radius {radius} is not the "
+        f"restriction of the analytification {analytified_family}: the square with the open "
+        "inclusions of the disc and of its preimage does not commute"
     )
 
     return ComplexManifolds().SliceOver(analytic_base).object(

@@ -111,7 +111,7 @@ class Functor:
         recorded = self._object_images.get(key)
         if recorded is not None and recorded[0] is preimage and recorded[1] is not image:
             raise ValueError(
-                "this functor instance already selected a different image for the same preimage"
+                f"the functor {self} already sends {preimage} to {recorded[1]}, so it cannot also send it to {image}"
             )
         self._object_images[key] = (preimage, image)
         return image
@@ -127,7 +127,7 @@ class Functor:
         recorded = self._morphism_images.get(key)
         if recorded is not None and recorded[0] is preimage and recorded[1] is not image:
             raise ValueError(
-                "this functor instance already selected a different image for the same preimage"
+                f"the functor {self} already sends {preimage} to {recorded[1]}, so it cannot also send it to {image}"
             )
         self._morphism_images[key] = (preimage, image)
         return image
@@ -157,7 +157,10 @@ class Functor:
     def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
         r"""Use the stated exact object as this functor instance's forward image of ``preimage``."""
         if preimage not in self.domain() or image not in self.codomain():
-            raise TypeError("an adopted functor image has endpoints outside the functor")
+            raise TypeError(
+                f"cannot set F({preimage}) = {image} for F = {self}: F is a functor {self.domain()} -> "
+                f"{self.codomain()}, and {preimage} or {image} is not in the right category"
+            )
         return self._record_object_image(preimage, image)
 
     def on_object(self, obj: Parent) -> Parent:
@@ -176,7 +179,10 @@ class Functor:
         )
 
         if not _category_accepts_morphism(self.domain(), morphism.domain(), morphism.codomain(), morphism):
-            raise TypeError("the supplied map is not a morphism of the functor's domain")
+            raise TypeError(
+                f"cannot apply {self} to {morphism}: it is not a morphism {morphism.domain()} -> "
+                f"{morphism.codomain()} of {self.domain()}"
+            )
         cached = self._cached_morphism_image(morphism)
         if cached is not None:
             return cached
@@ -184,7 +190,10 @@ class Functor:
         codomain = self.object_image(morphism.codomain())
         image = self._apply_morphism(morphism)
         if not _category_accepts_morphism(self.codomain(), domain, codomain, image):
-            raise TypeError("the image is not a morphism of the functor's codomain")
+            raise TypeError(
+                f"the image of {morphism} under {self} is {image}, which is not a morphism {domain} -> "
+                f"{codomain} of {self.codomain()}"
+            )
         return self._record_morphism_image(morphism, image)
 
     def on_morphism(self, morphism: Map) -> Map:
@@ -216,7 +225,10 @@ class Functor:
         factors is dropped.
         """
         if self.codomain() != other.domain():
-            raise ValueError("functor composition requires matching middle categories")
+            raise ValueError(
+                f"cannot compose {other} after {self}: {self} ends at {self.codomain()}, but {other} starts at "
+                f"{other.domain()}"
+            )
         if self.factors().cardinality() == 0:
             return other
         if other.factors().cardinality() == 0:
@@ -293,7 +305,10 @@ class Functor:
     def natural_transformations_to(self, target: Functor):
         r"""Return the Mor of natural transformations ``self ⇒ target``."""
         if self.domain() != target.domain() or self.codomain() != target.codomain():
-            raise ValueError("natural transformations require parallel functors")
+            raise ValueError(
+                f"natural transformations {self} => {target} need parallel functors, but {self} is "
+                f"{self.domain()} -> {self.codomain()} and {target} is {target.domain()} -> {target.codomain()}"
+            )
         category = self.functor_category()
         return category.Mor(self, target)
 
@@ -415,7 +430,10 @@ class _CompositeFunctor(Functor):
 
     def __init__(self, first: Functor, second: Functor) -> None:
         if first.codomain() != second.domain():
-            raise ValueError("functor composition requires matching middle categories")
+            raise ValueError(
+                f"cannot compose {second} after {first}: {first} ends at {first.codomain()}, but {second} starts "
+                f"at {second.domain()}"
+            )
         self._first = first
         self._second = second
         super().__init__(first.domain(), second.codomain())
@@ -428,17 +446,23 @@ class _CompositeFunctor(Functor):
 
     def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
         if preimage not in self.domain() or image not in self.codomain():
-            raise TypeError("an adopted composite image has endpoints outside the functor")
+            raise TypeError(
+                f"cannot set F({preimage}) = {image} for the composite F = {self}: F is a functor "
+                f"{self.domain()} -> {self.codomain()}, and {preimage} or {image} is not in the right category"
+            )
         chosen = self._cached_object_image(preimage)
         if chosen is not None:
             if chosen is not image:
-                raise ValueError("the composite already selected a different image of this source")
+                raise ValueError(
+                    f"the composite functor {self} already sends {preimage} to {chosen}, so it cannot also send it "
+                    f"to {image}"
+                )
             return chosen
         middle = self._first(preimage)
         target = self._second(middle)
         if target is not image:
             raise ValueError(
-                "the supplied image is not the composite's selected forward image of this source"
+                f"the composite functor {self} sends {preimage} to {target}, not to {image}"
             )
         return super().adopt_object_image(preimage, image)
 
@@ -469,9 +493,15 @@ class NaturalTransformation:
         component: Callable[[Parent], Morphism],
     ) -> None:
         if source.domain() != target.domain() or source.codomain() != target.codomain():
-            raise ValueError("a natural transformation requires parallel functors")
+            raise ValueError(
+                f"a natural transformation {source} => {target} needs parallel functors, but {source} is "
+                f"{source.domain()} -> {source.codomain()} and {target} is {target.domain()} -> {target.codomain()}"
+            )
         if not callable(component):
-            raise TypeError("a natural transformation requires a component map")
+            raise TypeError(
+                f"a natural transformation {source} => {target} needs a component at each object, but "
+                f"{component!r} is not callable"
+            )
         self._source = source
         self._target = target
         self._component = component
@@ -499,8 +529,8 @@ class NaturalTransformation:
         arrow = self._component(obj)
         if not _category_accepts_morphism(self.source().codomain(), domain, codomain, arrow):
             raise TypeError(
-                "a natural-transformation component at an object X is an arrow "
-                "F(X) -> G(X) of the common codomain category"
+                f"the component of {self} at {obj} must be a morphism {domain} -> {codomain} of "
+                f"{self.source().codomain()}, but it is {arrow}"
             )
         return arrow
 
@@ -572,9 +602,15 @@ class _UnitCounitPresentation:
             case (True, True):
                 pass
             case (False, _):
-                raise ValueError("the right adjoint must return to the left adjoint's domain")
+                raise ValueError(
+                    f"an adjunction F -| G needs G to end where F starts, but F = {left_adjoint} starts at "
+                    f"{left_adjoint.domain()} and G = {right_adjoint} ends at {right_adjoint.codomain()}"
+                )
             case (_, False):
-                raise ValueError("the adjoints must run between the same two categories")
+                raise ValueError(
+                    f"an adjunction F -| G needs G to start where F ends, but F = {left_adjoint} ends at "
+                    f"{left_adjoint.codomain()} and G = {right_adjoint} starts at {right_adjoint.domain()}"
+                )
         self._left_adjoint = left_adjoint
         self._right_adjoint = right_adjoint
         self._unit_component = unit_component
@@ -596,14 +632,18 @@ class _UnitCounitPresentation:
             case True:
                 pass
             case False:
-                raise TypeError("a unit component is indexed by an object of the left-adjoint domain")
+                raise TypeError(
+                    f"the unit X -> GF(X) of {self} is defined at objects of {category}, but {obj} is not one"
+                )
         target = self.right_adjoint()(self.left_adjoint()(obj))
         arrow = self._unit_component(obj)
         match _category_accepts_morphism(category, obj, target, arrow):
             case True:
                 pass
             case False:
-                raise TypeError("the selected unit component has the wrong adjunction endpoints")
+                raise TypeError(
+                    f"the unit of {self} at {obj} must be a morphism {obj} -> {target} of {category}, but it is {arrow}"
+                )
         return arrow
 
     def counit(self, obj: Parent) -> Morphism:
@@ -616,14 +656,18 @@ class _UnitCounitPresentation:
             case True:
                 pass
             case False:
-                raise TypeError("a counit component is indexed by an object of the right-adjoint domain")
+                raise TypeError(
+                    f"the counit FG(Y) -> Y of {self} is defined at objects of {category}, but {obj} is not one"
+                )
         source = self.left_adjoint()(self.right_adjoint()(obj))
         arrow = self._counit_component(obj)
         match _category_accepts_morphism(category, source, obj, arrow):
             case True:
                 pass
             case False:
-                raise TypeError("the selected counit component has the wrong adjunction endpoints")
+                raise TypeError(
+                    f"the counit of {self} at {obj} must be a morphism {source} -> {obj} of {category}, but it is {arrow}"
+                )
         return arrow
 
 
@@ -671,8 +715,9 @@ class Adjunction:
             case _:
                 names = ", ".join(sorted(independently_supplied))
                 raise TypeError(
-                    f"an adjunction subclass supplies only _unit_component and _counit_component; "
-                    f"the equivalent public data are derived ({names})"
+                    f"the adjunction {cls.__name__} defines {names}, but an adjunction is given "
+                    "only by its unit and counit components; the unit, counit and hom-set "
+                    "bijections are derived from them"
                 )
 
     def __init__(self, left_adjoint: Functor, right_adjoint: Functor) -> None:
@@ -737,9 +782,15 @@ class Adjunction:
         because a left-adjoint image ``F(A)`` need not determine ``A``.
         """
         if source not in self.left_adjoint().domain():
-            raise TypeError("the stated adjunction source is outside the left-adjoint domain")
+            raise TypeError(
+                f"the bijection Mor(F(A), B) = Mor(A, G(B)) of {self} needs A in {self.left_adjoint().domain()}, "
+                f"but {source} is not in it"
+            )
         if self.left_adjoint()(source) is not morphism.domain():
-            raise ValueError("the morphism domain is not the left-adjoint image of the stated source")
+            raise ValueError(
+                f"the bijection Mor(F(A), B) = Mor(A, G(B)) of {self} needs a morphism starting at "
+                f"F(A) = {self.left_adjoint()(source)}, but {morphism} starts at {morphism.domain()}"
+            )
         return self.right_adjoint()(morphism) * self.unit(source)
 
     @final
@@ -753,9 +804,15 @@ class Adjunction:
         Derived from the counit; a subclass never supplies it.
         """
         if codomain not in self.right_adjoint().domain():
-            raise TypeError("the stated adjunction codomain is outside the right-adjoint domain")
+            raise TypeError(
+                f"the bijection Mor(A, G(B)) = Mor(F(A), B) of {self} needs B in {self.right_adjoint().domain()}, "
+                f"but {codomain} is not in it"
+            )
         if self.right_adjoint()(codomain) is not morphism.codomain():
-            raise ValueError("the morphism codomain is not the right-adjoint image of the stated codomain")
+            raise ValueError(
+                f"the bijection Mor(A, G(B)) = Mor(F(A), B) of {self} needs a morphism ending at "
+                f"G(B) = {self.right_adjoint()(codomain)}, but {morphism} ends at {morphism.codomain()}"
+            )
         return self.counit(codomain) * self.left_adjoint()(morphism)
 
     @final
@@ -786,7 +843,10 @@ class _CompositeAdjunction(Adjunction):
 
     def __init__(self, first: Adjunction, second: Adjunction) -> None:
         if first.left_adjoint().codomain() != second.left_adjoint().domain():
-            raise ValueError("adjunction composition requires matching middle categories")
+            raise ValueError(
+                f"cannot compose the adjunctions {first} and {second}: the left adjoint of the first ends at "
+                f"{first.left_adjoint().codomain()}, but that of the second starts at {second.left_adjoint().domain()}"
+            )
         self._first = first
         self._second = second
         super().__init__(

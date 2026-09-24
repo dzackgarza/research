@@ -118,7 +118,8 @@ class _RepresentablePresheaf(Functor):
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
         assert representing_object in category, (
-            "a representable presheaf is represented by an object of its category"
+            f"the representable presheaf Mor(-, X) on {category} needs X an object of {category}, but "
+            f"{representing_object} is not one"
         )
         self._category = category
         self._representing_object = representing_object
@@ -230,7 +231,9 @@ def _finite_family(values, *, name: str) -> IndexedFamily:
     match values:
         case IndexedFamily():
             if not values.cardinality().is_finite():
-                raise TypeError(f"{name} must be a finite indexed family")
+                raise TypeError(
+                    f"{name} must be finite, but it is a family of cardinality {values.cardinality()}"
+                )
             return values
         case Mapping():
             labels = finite_ordered_set(tuple(values))
@@ -250,7 +253,10 @@ def _family_on_index_set(index_set, values, *, name: str) -> IndexedFamily:
     match values:
         case IndexedFamily():
             if values.cardinality() != index_set.cardinality():
-                raise ValueError(f"{name} has the wrong number of entries")
+                raise ValueError(
+                    f"{name} must have one entry for each of the {index_set.cardinality()} elements of "
+                    f"{index_set}, but it has {values.cardinality()}"
+                )
             if set(values.index_set()) == set(index_set):
                 return finite_indexed_family(index_set, values.__getitem__, name=name)
             return finite_indexed_family(
@@ -260,11 +266,16 @@ def _family_on_index_set(index_set, values, *, name: str) -> IndexedFamily:
             )
         case Mapping():
             if set(values) != set(index_set):
-                raise ValueError(f"{name} has exactly the selected index set")
+                raise ValueError(
+                    f"{name} must be keyed by exactly the elements of {index_set}, but its keys are {set(values)}"
+                )
             return finite_indexed_family(index_set, values.__getitem__, name=name)
     entries = tuple(values)
     if len(entries) != int(index_set.cardinality().finite_value()):
-        raise ValueError(f"{name} has the wrong number of entries")
+        raise ValueError(
+            f"{name} must have one entry for each of the {index_set.cardinality()} elements of "
+            f"{index_set}, but it has {len(entries)}"
+        )
     ranking = index_set.ranking_map()
     return finite_indexed_family(
         index_set,
@@ -343,7 +354,10 @@ class _CoverPresentationDiagram(Functor):
             case "overlap":
                 return self._overlaps[self._pair(position)].apex()
             case _:
-                raise ValueError("unknown vertex of a covering-family presentation")
+                raise ValueError(
+                    f"{obj} is not a vertex of the diagram of the covering family: it is neither the target, a "
+                    f"member, nor an overlap (its kind is {kind!r})"
+                )
 
     def _apply_morphism(self, morphism: Map) -> Map:
         source_kind, source_position = self._label(morphism.domain())
@@ -366,7 +380,9 @@ class _CoverPresentationDiagram(Functor):
             pair = self._pair(source_position)
             span = self._overlaps[pair]
             return self._members[pair[0]] * span.left_leg()
-        raise ValueError("the covering-family presentation has no such nonidentity arrow")
+        raise ValueError(
+            f"the diagram of the covering family has no arrow {morphism.domain()} -> {morphism.codomain()}"
+        )
 
 
 class CoveringFamilyMorphism(Morphism):
@@ -389,7 +405,10 @@ class CoveringFamilyMorphism(Morphism):
         source = self.domain()
         target = self.codomain()
         if source.site_category() is not target.site_category():
-            raise ValueError("a covering-family comparison uses one site category")
+            raise ValueError(
+                f"a morphism of covering families needs both families in one site, but {source} lies in "
+                f"{source.site_category()} and {target} lies in {target.site_category()}"
+            )
         site = source.site_category()
         self._index_map = _family_on_index_set(
             source.index_set(),
@@ -406,10 +425,15 @@ class CoveringFamilyMorphism(Morphism):
         )
         if target_map is None:
             if source.target() is not target.target():
-                raise ValueError("a comparison of covers with different targets needs its target map")
+                raise ValueError(
+                    f"the covering families {source} and {target} cover different objects {source.target()} and "
+                    f"{target.target()}, so a map between their targets must be given"
+                )
             target_map = _category_mor_parent(site, source.target(), source.target()).identity()
         if target_map not in site.Mor(source.target(), target.target()):
-            raise TypeError("the target comparison is a morphism of the site category")
+            raise TypeError(
+                f"the map of targets {target_map} is not a morphism {source.target()} -> {target.target()} of {site}"
+            )
         self._target_map = target_map
         for label in source.index_set():
             coarse_label = self.index_map(label)
@@ -417,9 +441,15 @@ class CoveringFamilyMorphism(Morphism):
             fine_member = source.member(label)
             coarse_member = target.member(coarse_label)
             if component not in site.Mor(fine_member.domain(), coarse_member.domain()):
-                raise TypeError("a cover-comparison component has the wrong site Mor")
+                raise TypeError(
+                    f"the component {component} for {label} is not a morphism {fine_member.domain()} -> "
+                    f"{coarse_member.domain()} of {site}"
+                )
             if coarse_member * component != self.target_map() * fine_member:
-                raise ValueError("a cover-comparison component does not commute over the target map")
+                raise ValueError(
+                    f"the component {component} for {label} does not commute over the targets: "
+                    f"{coarse_member} o {component} != {self.target_map()} o {fine_member}"
+                )
 
     def index_map(self, fine_index):
         return self._index_map[self.domain().index_set()(fine_index)]
@@ -475,7 +505,10 @@ class CoveringFamilyMor(CategoricalMor):
         match index_map:
             case CoveringFamilyMorphism() if member_maps is None:
                 if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
-                    raise ValueError("the covering-family comparison has the wrong endpoints")
+                    raise ValueError(
+                        f"cannot view {index_map} as a morphism {self.domain()} -> {self.codomain()} of covering "
+                        f"families: it is a morphism {index_map.domain()} -> {index_map.codomain()}"
+                    )
                 if index_map.parent() is self:
                     return index_map
                 if target_map is None:
@@ -489,7 +522,10 @@ class CoveringFamilyMor(CategoricalMor):
                     for label in self.domain().index_set()
                 }
         if member_maps is None:
-            raise TypeError("a covering-family comparison requires component maps")
+            raise TypeError(
+                f"a morphism of covering families {self.domain()} -> {self.codomain()} needs a component map "
+                "for each member, but none were given"
+            )
         return self.element_class(
             self,
             index_map,
@@ -500,7 +536,9 @@ class CoveringFamilyMor(CategoricalMor):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only for one covering family")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(U, U), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         cover = self.domain()
         site = cover.site_category()
         return self(
@@ -535,20 +573,31 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
     """
     site = category.site_category()
     if target not in site:
-        raise TypeError("a covering family target must be an object of the site category")
+        raise TypeError(
+            f"a covering family needs its target to be an object of the site {site}, but {target} is not one"
+        )
     family = _finite_family(members, name="Cover arrows")
     if int(family.cardinality().finite_value()) == 0:
-        raise ValueError("the represented covering-family construction is nonempty")
+        raise ValueError(
+            f"a covering family of {target} needs at least one member, but none was given"
+        )
     for arrow in family:
         match arrow:
             case Morphism():
                 pass
             case _:
-                raise TypeError("a covering family consists of site morphisms")
+                raise TypeError(
+                    f"the members of a covering family of {target} are morphisms of {site}, but {arrow!r} is not a morphism"
+                )
         if arrow.codomain() is not target or arrow.domain() not in site:
-            raise ValueError("a cover arrow has the wrong target or leaves the site")
+            raise ValueError(
+                f"the member {arrow} of a covering family of {target} must be a morphism of {site} ending at "
+                f"{target}, but it is a map {arrow.domain()} -> {arrow.codomain()}"
+            )
         if arrow not in site.Mor(arrow.domain(), target):
-            raise ValueError("a cover arrow is not a morphism of the site category")
+            raise ValueError(
+                f"the member {arrow} of a covering family of {target} is not a morphism of {site}"
+            )
 
     ranking = family.index_set().ranking_map()
     expected_pairs = tuple(combinations(tuple(family.index_set()), 2))
@@ -562,7 +611,10 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
             overlap_object, left_map, right_map = datum
         normalized[left_index, right_index] = (overlap_object, left_map, right_map)
     if set(normalized) != set(expected_pairs):
-        raise ValueError("a covering family requires one represented overlap for each pair")
+        raise ValueError(
+            f"a covering family needs one overlap for each pair of members {expected_pairs}, but the "
+            f"overlaps given are for {tuple(normalized)}"
+        )
 
     spans = {}
     for pair in expected_pairs:
@@ -570,21 +622,32 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
         left = family[pair[0]]
         right = family[pair[1]]
         if overlap_object not in site:
-            raise TypeError("a covering overlap must be an object of the site category")
+            raise TypeError(
+                f"the overlap {overlap_object} of the members {left} and {right} is not an object of {site}"
+            )
         if (
             left_map.domain() is not overlap_object
             or left_map.codomain() is not left.domain()
             or left_map not in site.Mor(overlap_object, left.domain())
         ):
-            raise ValueError("the left overlap map has the wrong site endpoints")
+            raise ValueError(
+                f"the left map of the overlap {overlap_object} must be a morphism {overlap_object} -> "
+                f"{left.domain()} of {site}, but it is {left_map}"
+            )
         if (
             right_map.domain() is not overlap_object
             or right_map.codomain() is not right.domain()
             or right_map not in site.Mor(overlap_object, right.domain())
         ):
-            raise ValueError("the right overlap map has the wrong site endpoints")
+            raise ValueError(
+                f"the right map of the overlap {overlap_object} must be a morphism {overlap_object} -> "
+                f"{right.domain()} of {site}, but it is {right_map}"
+            )
         if (left * left_map == right * right_map) is not True:
-            raise ValueError("the overlap maps do not commute with the two cover arrows")
+            raise ValueError(
+                f"the overlap {overlap_object} of {left} and {right} does not commute: "
+                f"{left} o {left_map} != {right} o {right_map}"
+            )
         spans[pair] = site.span(left_map, right_map)
     overlap_family = finite_indexed_family(
         finite_ordered_set(expected_pairs),
@@ -809,7 +872,10 @@ class TrivialCoveringFamilies(OwnedCategoryBase):
     def family(self, target: Parent):
         r"""The singleton identity cover of ``target``, one for each target."""
         if target not in self.site_category():
-            raise TypeError("a trivial cover target must be an object of the site")
+            raise TypeError(
+                f"the trivial cover of {target} needs {target} to be an object of the site "
+                f"{self.site_category()}, but it is not"
+            )
         identity = _category_mor_parent(self.site_category(), target, target).identity()
         return _covering_family(self, target, (identity,), {})
 
@@ -830,7 +896,8 @@ def Coverage(site_category: Category, covering_families: Category) -> Category:
     """
     if not covering_families.is_subcategory(CoveringFamilies(site_category)):
         raise TypeError(
-            "a coverage is selected by a subcategory of the site's covering families"
+            f"a coverage on {site_category} is a subcategory of its covering families, but "
+            f"{covering_families} is not one"
         )
     return covering_families
 
@@ -873,7 +940,9 @@ class DescentDataOnCover(OwnedCategoryBase):
 
     def __init__(self, coverage: Category, covering_family) -> None:
         if covering_family not in coverage:
-            raise TypeError("descent data are attached to a covering family of the coverage")
+            raise TypeError(
+                f"descent data are defined for a covering family of {coverage}, but {covering_family} is not one"
+            )
         self._coverage = coverage
         self._covering_family = covering_family
         OwnedCategoryBase.__init__(self)
@@ -961,10 +1030,15 @@ class DescentEqualizer(SageObject):
         self._covering_family = covering_family
         self._equalizer_selector = equalizer_selector
         if covering_family not in coverage:
-            raise TypeError("descent is stated only for a covering family of the coverage")
+            raise TypeError(
+                f"descent is defined for a covering family of {coverage}, but {covering_family} is not one"
+            )
         site = coverage.site_category()
         if self._presheaf.domain() != site.opposite():
-            raise ValueError("the presheaf has the wrong site for this coverage")
+            raise ValueError(
+                f"descent along {covering_family} needs a presheaf on {site}, but {presheaf} is a functor on "
+                f"{self._presheaf.domain()}, not on {site.opposite()}"
+            )
         self._value_category = self._presheaf.codomain()
         self._build()
 
@@ -1054,7 +1128,10 @@ class DescentEqualizer(SageObject):
         else:
             common = self._left * self._restriction_to_product
             if (common == self._right * self._restriction_to_product) is not True:
-                raise ValueError("presheaf restrictions do not form a cone over the Čech pair")
+                raise ValueError(
+                    f"the restrictions of {self._presheaf} to the cover {self.covering_family()} do not form a "
+                    "cone over the two Cech maps: the two composites differ"
+                )
         global_equalizer_cone = equalizer_diagram.Cones().cone(
             global_value,
             lambda index: (
@@ -1217,7 +1294,10 @@ class DescentData(SageObject):
         self._inverse_for = inverse_for
         self._equalizer_for = equalizer_for
         if self._presheaf.domain() != coverage.site_category().opposite():
-            raise ValueError("descent data and presheaf have different sites")
+            raise ValueError(
+                f"descent data for {coverage} need a presheaf on its site, but {presheaf} is a functor on "
+                f"{self._presheaf.domain()}, not on {coverage.site_category().opposite()}"
+            )
 
     @staticmethod
     def trivial(presheaf):
@@ -1296,7 +1376,9 @@ class DescentData(SageObject):
     @cached_method(key=lambda self, covering_family: id(covering_family))
     def comparison(self, covering_family: Parent) -> DescentEqualizerComparison:
         if covering_family not in self.coverage():
-            raise TypeError("the requested family is outside this descent datum's coverage")
+            raise TypeError(
+                f"{covering_family} is not a covering family of the coverage {self.coverage()}"
+            )
         equalizer = DescentEqualizer(
             self.coverage(),
             self.presheaf(),
@@ -1311,7 +1393,10 @@ class DescentData(SageObject):
                     or selected.presheaf() is not self.presheaf()
                     or selected.covering_family() is not covering_family
                 ):
-                    raise ValueError("the supplied descent comparison belongs to different data")
+                    raise ValueError(
+                        f"the descent comparison given for {covering_family} belongs to a different coverage, "
+                        "presheaf, or covering family"
+                    )
                 comparison = selected
             case _:
                 comparison = DescentEqualizerComparison(equalizer, selected)
@@ -1387,13 +1472,24 @@ class Sheaves(OwnedCategoryBase):
         r"""The sheaf on ``presheaf`` with ``descent_data``: this category's one entry."""
         functor = _presheaf_functor(presheaf)
         if functor.domain() != self.site_category().opposite():
-            raise ValueError("the presheaf has the wrong site for this sheaf category")
+            raise ValueError(
+                f"a sheaf in {self} needs a presheaf on {self.site_category()}, but {presheaf} is a functor on "
+                f"{functor.domain()}"
+            )
         if functor.codomain() != self.value_category():
-            raise ValueError("the presheaf has the wrong value category")
+            raise ValueError(
+                f"a sheaf in {self} needs a presheaf with values in {self.value_category()}, but {presheaf} "
+                f"takes values in {functor.codomain()}"
+            )
         if descent_data.coverage() is not self.coverage():
-            raise ValueError("the descent datum belongs to a different coverage")
+            raise ValueError(
+                f"the descent data {descent_data} belong to the coverage {descent_data.coverage()}, not to "
+                f"{self.coverage()}"
+            )
         if descent_data.presheaf() is not functor:
-            raise ValueError("the descent datum belongs to a different presheaf")
+            raise ValueError(
+                f"the descent data {descent_data} belong to the presheaf {descent_data.presheaf()}, not to {presheaf}"
+            )
         if categories or construction_data is not None or _engine is not None:
             category = Cat().meet((self, *tuple(categories)))
             data = dict(construction_data or {})
@@ -1415,7 +1511,9 @@ class Sheaves(OwnedCategoryBase):
 
     def Mor(self, domain: Parent, codomain: Parent):
         if domain not in self or codomain not in self:
-            raise TypeError("a sheaf Mor requires two sheaves for this coverage")
+            raise TypeError(
+                f"a morphism in {self} needs two sheaves in it, but got {domain} and {codomain}"
+            )
         return self.presheaf_category().Mor(domain, codomain)
 
     def identity(self, obj: Parent):

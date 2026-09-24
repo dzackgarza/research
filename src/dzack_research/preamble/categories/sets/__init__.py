@@ -128,7 +128,7 @@ __all__ = [ 'PowerSets',
 
 def __getattr__(name):
     if name not in _EXPORTS:
-        raise AttributeError(name)
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
     module_name, attribute = _EXPORTS[name]
     value = getattr(_import_module(module_name), attribute)
     globals()[name] = value

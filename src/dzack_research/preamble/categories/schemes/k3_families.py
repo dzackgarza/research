@@ -57,7 +57,8 @@ class HorikawaK3Family(SageObject):
     def __init__(self, base_ring=None) -> None:
         base = _own_ring(SageQQ) if base_ring is None else _own_ring(base_ring)
         assert int(base.characteristic()) == 0, (
-            "the represented Horikawa eigenspace family requires a base of characteristic zero"
+            f"the Horikawa family of K3 double covers of P^1 x P^1 needs a base ring of "
+            f"characteristic zero, but {base} has characteristic {base.characteristic()}"
         )
         labels = finite_ordered_set(("left", "right"))
         line = ProjectiveSpaces(base)(1, names=("x0", "x1"))
@@ -146,7 +147,11 @@ class HorikawaK3Family(SageObject):
         nontrivial = tuple(
             self.branch_isotypic_decomposition().nontrivial_components()
         )
-        assert len(nontrivial) == 1, "a C2 representation has one nontrivial character"
+        assert len(nontrivial) == 1, (
+            f"the space of (4,4) branch sections under the involution of order 2 should split "
+            f"into the invariant part and one anti-invariant part, but it has "
+            f"{len(nontrivial)} nontrivial isotypic components"
+        )
         return nontrivial[0]
 
     @cached_method
@@ -170,7 +175,8 @@ class HorikawaK3Family(SageObject):
         )
         trivial = lambda _element: self.base_ring().one()
         assert self.branch_linearization().is_eigensection(section, trivial), (
-            "the selected Horikawa branch is not invariant"
+            f"the default Horikawa branch section {section} is not invariant under the "
+            "involution of P^1 x P^1"
         )
         return section
 
@@ -182,7 +188,8 @@ class HorikawaK3Family(SageObject):
         )
         trivial = lambda _element: self.base_ring().one()
         assert self.branch_linearization().is_eigensection(section, trivial), (
-            "a Horikawa double cover in this family requires a tau-invariant branch section"
+            f"the branch section {section} is not invariant under the involution tau of "
+            "P^1 x P^1, so its double cover is not a member of the Horikawa family"
         )
         return _horikawa_k3_double_cover(self, section)
 
@@ -317,7 +324,9 @@ class _HorikawaK3DoubleCoverEngine:
             -self.base_ring().one()
         )
         assert coefficients.get(z_label, local.base_ring().zero()) == expected, (
-            "the represented deck map does not negate the cover coordinate"
+            f"the deck transformation of {self} does not send the cover coordinate z to -z "
+            f"on chart {index}: the coefficient of z in its image is "
+            f"{coefficients.get(z_label, local.base_ring().zero())}, expected {expected}"
         )
         return -self.base_ring().one()
 

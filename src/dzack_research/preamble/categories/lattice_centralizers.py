@@ -54,7 +54,10 @@ def _equivariant_lattice(lattice, isometry):
 
     isometry = lattice.O()(isometry)
     if isometry.domain() is not lattice or isometry.codomain() is not lattice:
-        raise ValueError("an equivariant lattice is equipped by an automorphism of that lattice")
+        raise ValueError(
+            f"cannot make {lattice} a lattice with isometry via {isometry}: f must be an "
+            f"automorphism L -> L, but it maps {isometry.domain()} -> {isometry.codomain()}"
+        )
     group = _equivariant_lattice_acting_group()
     orthogonal_group = lattice.O()
     generator = next(iter(group.group_generators()))
@@ -63,7 +66,8 @@ def _equivariant_lattice(lattice, isometry):
         result = orthogonal_group.one()
         for letter in group.reduced_word(group_element):
             assert letter == generator or letter == ~generator, (
-                "the equivariant-lattice acting group has one signed generator"
+                f"the letter {letter} of the word for {group_element} is neither the "
+                f"generator {generator} of the free group {group} of rank one nor its inverse"
             )
             step = isometry if letter == generator else ~isometry
             result = step * result
@@ -78,19 +82,29 @@ def _restrict_isometry(isometry, sublattice):
     r"""Return the restriction of ``isometry`` to one stable represented sublattice."""
     lattice = isometry.domain()
     if isometry.codomain() is not lattice:
-        raise ValueError("an equivariant sublattice restriction requires a lattice automorphism")
+        raise ValueError(
+            f"cannot restrict {isometry} to {sublattice}: restriction needs an "
+            f"automorphism L -> L, but {isometry} maps {lattice} -> {isometry.codomain()}"
+        )
     assert sublattice in ModuleSubobjects(lattice.base_ring()), (
-        "an equivariant sublattice is a represented lattice subobject"
+        f"cannot restrict {isometry} to {sublattice}: it is not a submodule over "
+        f"{lattice.base_ring()} (it is in {sublattice.category()})"
     )
     inclusion = sublattice.inclusion()
     if inclusion.codomain() is not lattice:
-        raise ValueError("the selected sublattice is a subobject of another lattice")
+        raise ValueError(
+            f"cannot restrict {isometry} to {sublattice}: it is a sublattice of "
+            f"{inclusion.codomain()}, not of {lattice}"
+        )
     images = {}
     for label in sublattice.module_generating_set():
         embedded = inclusion(sublattice.module_generator(label))
         moved = isometry(embedded)
         if not inclusion.is_in_image(moved):
-            raise ValueError("the selected sublattice is not stable under the equipped isometry")
+            raise ValueError(
+                f"cannot restrict {isometry} to {sublattice}: the sublattice is not "
+                f"f-stable, since f sends {embedded} to {moved}, which is outside it"
+            )
         images[label] = inclusion.lift(moved)
     return sublattice.O()(images)
 
@@ -128,7 +142,10 @@ class _EquivariantVectorOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
         self._isometry = isometry
         lattice = isometry.domain()
         if isometry.codomain() is not lattice:
-            raise ValueError("centralizer vector orbits require a lattice automorphism")
+            raise ValueError(
+                f"cannot form vector orbits under the centralizer of {isometry}: it must "
+                f"be an automorphism L -> L, but it maps {lattice} -> {isometry.codomain()}"
+            )
         self._square = lattice.base_ring()(square)
         centralizer = isometry.centralizer_group()
         points = finite_ordered_set(
@@ -161,7 +178,10 @@ class _EquivariantVectorOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
         if vector.parent() is not lattice:
             vector = lattice(vector)
         if vector.q() != self.square():
-            raise ValueError("the vector is not in the selected square shell")
+            raise ValueError(
+                f"{vector} has square {vector.q()}, so it is not in the shell of vectors "
+                f"of square {self.square()} in {lattice}"
+            )
         return self.action()(vector)
 
     def representatives(self):
@@ -203,14 +223,21 @@ class EquivariantSublatticeFlag(SageObject):
     def __init__(self, isometry, terms) -> None:
         terms = tuple(terms)
         if not terms:
-            raise ValueError("an equivariant sublattice flag has at least one term")
+            raise ValueError(
+                f"a flag of f-stable sublattices for {isometry} needs at least one term; "
+                f"none was given"
+            )
         previous = None
         for term in terms:
             _restrict_isometry(isometry, term)
             if previous is not None:
                 previous.inclusion().factor_through(term.inclusion())
                 if int(previous.module_rank()) >= int(term.module_rank()):
-                    raise ValueError("an equivariant flag has strictly increasing ranks")
+                    raise ValueError(
+                        f"the flag of sublattices for {isometry} must have strictly "
+                        f"increasing ranks, but {previous} of rank {previous.module_rank()} "
+                        f"is followed by {term} of rank {term.module_rank()}"
+                    )
             previous = term
         self._isometry = isometry
         self._terms = terms
@@ -252,7 +279,10 @@ class _EquivariantFiniteOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
     def __init__(self, isometry, candidates, action, equality, **rest) -> None:
         candidates = tuple(candidates)
         if not candidates:
-            raise ValueError("an equivariant finite orbit decomposition needs candidates")
+            raise ValueError(
+                f"cannot decompose into orbits of the centralizer of {isometry}: the "
+                f"finite set of points is empty"
+            )
         self._isometry = isometry
         self._candidate_action = action
         self._equality = equality
@@ -262,7 +292,10 @@ class _EquivariantFiniteOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
             image = self.act(automorphism, candidate)
             matches = tuple(target for target in self._points if self.same(image, target))
             assert len(matches) == 1, (
-                "the supplied finite family is not a stable family of distinct mathematical points under the full centralizer"
+                f"the centralizer element {automorphism} sends {candidate} to {image}, "
+                f"which equals {len(matches)} points of the set, not exactly one: the "
+                f"set is not stable under the centralizer of {isometry}, or it repeats "
+                f"a point"
             )
             return matches[0]
 
@@ -291,7 +324,10 @@ class _EquivariantFiniteOrbitDecompositionEngine(_CentralizerOrbitDecompositionE
     def point(self, candidate):
         matches = tuple(point for point in self._points if self.same(candidate, point))
         if len(matches) != 1:
-            raise ValueError("the selected object is not one unique point of the represented finite family")
+            raise ValueError(
+                f"{candidate} equals {len(matches)} points of the finite set acted on "
+                f"by the centralizer of {self.isometry()}, not exactly one"
+            )
         return matches[0]
 
     def representatives(self):
@@ -324,7 +360,10 @@ def _isometry_power(isometry, exponent):
     r"""Return an exact nonnegative power of one lattice automorphism."""
     exponent = int(exponent)
     if exponent < 0:
-        raise ValueError("an isometry power exponent is nonnegative here")
+        raise ValueError(
+            f"cannot form the power {isometry}^{exponent}: this power is taken only "
+            f"for nonnegative exponents"
+        )
     result = isometry.domain().O().one()
     for _step in range(exponent):
         result = isometry * result
@@ -346,18 +385,30 @@ class CyclotomicDecomposition(SageObject):
         self._isometry = isometry
         self._order = int(order)
         if self._order <= 0:
-            raise ValueError("the order of a finite-order isometry is positive")
+            raise ValueError(
+                f"cannot use {self._order} as the order of {isometry}: the order of an "
+                f"isometry of finite order is a positive integer"
+            )
         lattice = isometry.domain()
         if isometry.codomain() is not lattice:
-            raise ValueError("a cyclotomic decomposition requires a lattice automorphism")
+            raise ValueError(
+                f"cannot form the cyclotomic decomposition of {isometry}: it must be an "
+                f"automorphism L -> L, but it maps {lattice} -> {isometry.codomain()}"
+            )
         identity = lattice.O().one()
         if _isometry_power(isometry, self._order) != identity:
-            raise ValueError("the supplied integer does not annihilate the equipped isometry")
+            raise ValueError(
+                f"{isometry} does not have order {self._order}: its "
+                f"{self._order}-th power is not the identity of {lattice}"
+            )
         for proper_divisor in divisors(self._order):
             if proper_divisor == self._order:
                 continue
             if _isometry_power(isometry, proper_divisor) == identity:
-                raise ValueError("the supplied integer is not the exact order of the equipped isometry")
+                raise ValueError(
+                    f"{isometry} does not have order {self._order}: already its "
+                    f"{proper_divisor}-th power is the identity of {lattice}"
+                )
 
         self._divisors = finite_ordered_set(tuple(divisors(self._order)))
         self._summands = finite_indexed_family(
@@ -367,13 +418,21 @@ class CyclotomicDecomposition(SageObject):
         )
         nonzero = tuple(divisor for divisor in self._divisors if int(self._summands[divisor].module_rank()) != 0)
         if not nonzero:
-            raise ArithmeticError("a finite-order isometry has no nonzero cyclotomic summand")
+            raise ArithmeticError(
+                f"every cyclotomic summand ker(Phi_d(f)) of {isometry}, for d dividing "
+                f"{self._order}, has rank zero; for an isometry of finite order they "
+                f"span L tensor QQ"
+            )
         self._nonzero_divisors = finite_ordered_set(nonzero)
 
         lattice = self.lattice()
         total_rank = sum(int(self._summands[divisor].module_rank()) for divisor in self._nonzero_divisors)
         if total_rank != int(lattice.module_rank()):
-            raise ArithmeticError("the cyclotomic summands do not span the ambient rational lattice")
+            raise ArithmeticError(
+                f"the cyclotomic summands ker(Phi_d(f)) of {isometry} have total rank "
+                f"{total_rank}, but {lattice} has rank {lattice.module_rank()}: they do "
+                f"not span L tensor QQ"
+            )
         ring = lattice.base_ring()
         zero = ring.zero()
         for left_position, left_divisor in enumerate(self._nonzero_divisors):
@@ -383,7 +442,11 @@ class CyclotomicDecomposition(SageObject):
                 if any(
                     lattice.b(left_vector, right_vector) != zero for left_vector in left.embedded_module_generators() for right_vector in right.embedded_module_generators()
                 ):
-                    raise ArithmeticError("distinct cyclotomic summands are not orthogonal")
+                    raise ArithmeticError(
+                        f"the cyclotomic summands ker(Phi_{left_divisor}(f)) and "
+                        f"ker(Phi_{right_divisor}(f)) of {isometry} are not orthogonal in "
+                        f"{lattice}"
+                    )
 
     def lattice(self):
         return self.isometry().domain()
@@ -465,7 +528,11 @@ class CyclotomicDecomposition(SageObject):
         cyclotomic divisors and retains the actual component isometries.
         """
         if automorphism not in self.centralizer_group():
-            raise ValueError("a cyclotomic restriction requires an element of the ambient centralizer")
+            raise ValueError(
+                f"cannot restrict {automorphism} to the cyclotomic summands of "
+                f"{self.isometry()}: it does not lie in the centralizer "
+                f"{self.centralizer_group()}"
+            )
         restrictions = self.component_isometries()
         centralizers = self.component_centralizers()
 
@@ -474,9 +541,17 @@ class CyclotomicDecomposition(SageObject):
             inclusion = summand.inclusion()
             component = summand.O()({label: inclusion.lift(automorphism(inclusion(summand.module_generator(label)))) for label in summand.module_generating_set()})
             if component * restrictions[divisor] != restrictions[divisor] * component:
-                raise ArithmeticError("an ambient centralizer restriction does not commute with f_d")
+                raise ArithmeticError(
+                    f"the restriction of {automorphism} to the cyclotomic summand "
+                    f"ker(Phi_{divisor}(f)) does not commute with f restricted there, "
+                    f"although {automorphism} centralizes {self.isometry()}"
+                )
             if component not in centralizers[divisor]:
-                raise ArithmeticError("an ambient centralizer restriction left its component centralizer")
+                raise ArithmeticError(
+                    f"the restriction of {automorphism} to the cyclotomic summand "
+                    f"ker(Phi_{divisor}(f)) commutes with f there but is not in the "
+                    f"centralizer {centralizers[divisor]}"
+                )
             return component
 
         return finite_indexed_family(
@@ -543,11 +618,19 @@ class CyclotomicDecomposition(SageObject):
         """
         components = self._component_tuple(component_isometries)
         if not self._components_commute(components):
-            raise ValueError("a component isometry does not commute with the cyclotomic action")
+            raise ValueError(
+                f"cannot lift {component_isometries} to the centralizer of "
+                f"{self.isometry()}: some component does not commute with f restricted to "
+                f"its cyclotomic summand"
+            )
         scaling, scaled_image = self._scaled_extension(components)
         lifted = self.lattice().O()(lambda label: scaling.lift(scaled_image(label)))
         if lifted * self.isometry() != self.isometry() * lifted:
-            raise ArithmeticError("the lifted component tuple does not centralize the equipped isometry")
+            raise ArithmeticError(
+                f"the lift {lifted} of the components {component_isometries} does not "
+                f"commute with {self.isometry()}, although each component commutes with "
+                f"f on its cyclotomic summand"
+            )
         return lifted
 
     def component_isometries_extend(self, component_isometries) -> bool:
@@ -580,12 +663,21 @@ class PolarizedEquivariantLattice(SageObject):
     def __init__(self, isometry, polarization) -> None:
         lattice = isometry.domain()
         if isometry.codomain() is not lattice:
-            raise ValueError("a polarized equivariant lattice requires a lattice automorphism")
+            raise ValueError(
+                f"cannot polarize via {isometry}: it must be an automorphism L -> L, but "
+                f"it maps {lattice} -> {isometry.codomain()}"
+            )
         polarization = lattice(polarization)
         if isometry(polarization) != polarization:
-            raise ValueError("a polarization of (L,f) must lie in the invariant lattice")
+            raise ValueError(
+                f"{polarization} is not a polarization of ({lattice}, f): f sends it to "
+                f"{isometry(polarization)}, so it is not in the invariant lattice L^f"
+            )
         if polarization == lattice.zero():
-            raise ValueError("a polarization is nonzero")
+            raise ValueError(
+                f"the zero vector of {lattice} is not a polarization: a polarization is "
+                f"nonzero"
+            )
         self._isometry = isometry
         self._polarization = polarization
 
@@ -606,7 +698,10 @@ class PolarizedEquivariantLattice(SageObject):
         invariant = self.primitive_extension().invariant
         inclusion = invariant.inclusion()
         if not inclusion.is_in_image(self.polarization()):
-            raise ArithmeticError("an f-invariant polarization did not lie in L^f")
+            raise ArithmeticError(
+                f"the polarization {self.polarization()} is fixed by {self.isometry()} but "
+                f"is not in the image of the invariant lattice {invariant}"
+            )
         return inclusion.lift(self.polarization())
 
     def centralizer_group(self):
@@ -635,12 +730,21 @@ class IsometryPrimitiveExtension:
 
     def __init__(self, isometry) -> None:
         lattice = isometry.domain()
-        assert isometry.codomain() is lattice, "a primitive extension is cut out by an automorphism of one lattice"
-        assert lattice.module_rank().is_finite() and lattice.is_nondegenerate(), "the invariant lattice and its orthogonal complement span L only when L is a finite nondegenerate lattice"
+        assert isometry.codomain() is lattice, (
+            f"cannot form L^f + (L^f)^perp -> L for {isometry}: f must be an "
+            f"automorphism L -> L, but it maps {lattice} -> {isometry.codomain()}"
+        )
+        assert lattice.module_rank().is_finite() and lattice.is_nondegenerate(), (
+            f"cannot form L^f + (L^f)^perp -> L for {lattice}: the invariant lattice "
+            f"and its orthogonal complement span L only when L has finite rank and a "
+            f"nondegenerate form; {lattice} has rank {lattice.module_rank()}"
+        )
         invariant = isometry.invariant_lattice()
         orthogonal_complement = isometry.formed_coinvariants()
         assert invariant.module_rank() + orthogonal_complement.module_rank() == lattice.module_rank(), (
-            "the invariant lattice and its orthogonal complement do not have complementary rank; f is not of finite order on this lattice"
+            f"for {isometry}, L^f has rank {invariant.module_rank()} and (L^f)^perp has "
+            f"rank {orthogonal_complement.module_rank()}, which do not add up to the rank "
+            f"{lattice.module_rank()} of {lattice}: f is not of finite order"
         )
 
         self.isometry = isometry
@@ -687,10 +791,16 @@ class IsometryPrimitiveExtension:
         glue_source = glue.domain()
         glue_target = glue.codomain()
         assert glue_source.cardinality() == invariant_form.cardinality(), (
-            "the represented discriminant conjugation requires the primitive extension to glue the full invariant discriminant form"
+            f"the glue subgroup of L^f for {self.isometry} has order "
+            f"{glue_source.cardinality()}, but the discriminant group of L^f has order "
+            f"{invariant_form.cardinality()}: this construction needs L to glue the whole "
+            f"discriminant group of L^f"
         )
         assert glue_target.cardinality() == coinvariant_form.cardinality(), (
-            "the represented discriminant conjugation requires the primitive extension to glue the full coinvariant discriminant form"
+            f"the glue subgroup of (L^f)^perp for {self.isometry} has order "
+            f"{glue_target.cardinality()}, but the discriminant group of (L^f)^perp has "
+            f"order {coinvariant_form.cardinality()}: this construction needs L to glue "
+            f"the whole discriminant group of (L^f)^perp"
         )
         return glue, invariant_form, coinvariant_form, glue_source, glue_target
 
@@ -711,7 +821,8 @@ class IsometryPrimitiveExtension:
         centralizer.
         """
         assert self.acts_as_negation_on_coinvariants(), (
-            "the represented coinvariant extension subgroup is the involution case where the coinvariant action is -1"
+            f"{self.isometry} does not act as -1 on (L^f)^perp in {self.lattice}: this "
+            f"subgroup of O((L^f)^perp) is computed only when f is an involution"
         )
 
         _glue, invariant_form, coinvariant_form, _glue_source, _glue_target = (
@@ -770,7 +881,11 @@ class IsometryPrimitiveExtension:
         """
         subgroup = self.coinvariant_extension_subgroup()
         if coinvariant_part not in subgroup:
-            raise ValueError("the selected coinvariant isometry does not preserve the primitive gluing")
+            raise ValueError(
+                f"{coinvariant_part} does not extend to an isometry of {self.lattice} "
+                f"commuting with {self.isometry}: its discriminant action does not "
+                f"preserve the glue of L^f + (L^f)^perp in L"
+            )
         coinvariant_part = self.orthogonal_complement.O()(coinvariant_part)
         target_action = coinvariant_part.discriminant_morphism()
         invariant_group = self.invariant.O()
@@ -784,11 +899,19 @@ class IsometryPrimitiveExtension:
             if invariant_part is not None:
                 break
         if invariant_part is None:
-            raise ArithmeticError("a glue-compatible coinvariant action had no retained invariant discriminant lift")
+            raise ArithmeticError(
+                f"{coinvariant_part} preserves the glue, but no isometry of L^f in "
+                f"{self.lattice} induces the matching action on the discriminant group "
+                f"of L^f"
+            )
 
         lifted = self.centralizer_element(invariant_part, coinvariant_part)
         if self.coinvariant_restriction(lifted) != coinvariant_part:
-            raise ArithmeticError("the ambient centralizer lift restricts to the wrong coinvariant isometry")
+            raise ArithmeticError(
+                f"the lift {lifted} of {coinvariant_part} to the centralizer of "
+                f"{self.isometry} restricts to {self.coinvariant_restriction(lifted)} on "
+                f"(L^f)^perp, not to {coinvariant_part}"
+            )
         return lifted
 
     def coinvariant_isotropic_orbit_representatives(self, rank, *, flag=False):
@@ -816,9 +939,14 @@ class IsometryPrimitiveExtension:
         return self.lift_coinvariant_extension_element(coinvariant_witness)
 
     def _restriction(self, automorphism, subobject):
-        assert automorphism.domain() is self.lattice, "a restriction of the centralizer is taken of an automorphism of L"
+        assert automorphism.domain() is self.lattice, (
+            f"cannot restrict {automorphism} to {subobject}: it is an automorphism of "
+            f"{automorphism.domain()}, not of {self.lattice}"
+        )
         assert automorphism * self.isometry == self.isometry * automorphism, (
-            "restriction along this decomposition is defined on O(L,f); the stated automorphism does not commute with f"
+            f"cannot restrict {automorphism} to {subobject}: restriction is defined on "
+            f"the centralizer O(L, f), and {automorphism} does not commute with "
+            f"f = {self.isometry}"
         )
         inclusion = subobject.inclusion()
         summand = inclusion.domain()
@@ -954,14 +1082,24 @@ class IsometryPrimitiveExtension:
         coinvariant_inclusion = self.orthogonal_complement_inclusion()
         invariant_summand = invariant_inclusion.domain()
         coinvariant_summand = coinvariant_inclusion.domain()
-        assert invariant_part.parent() is invariant_summand.Aut(), "the invariant half of the pair is an element of O(L^f)"
-        assert coinvariant_part.parent() is coinvariant_summand.Aut(), "the coinvariant half of the pair is an element of O((L^f)^perp)"
+        assert invariant_part.parent() is invariant_summand.Aut(), (
+            f"{invariant_part} lies in {invariant_part.parent()}, not in the orthogonal "
+            f"group O(L^f) of the invariant lattice {invariant_summand}"
+        )
+        assert coinvariant_part.parent() is coinvariant_summand.Aut(), (
+            f"{coinvariant_part} lies in {coinvariant_part.parent()}, not in the "
+            f"orthogonal group O((L^f)^perp) of {coinvariant_summand}"
+        )
         coinvariant_isometry = self.coinvariant_restriction(self.isometry)
         assert coinvariant_part * coinvariant_isometry == coinvariant_isometry * coinvariant_part, (
-            "an element of O(L,f) restricts on (L^f)^perp to the centralizer of f there; the stated g_- does not commute with f"
+            f"({invariant_part}, {coinvariant_part}) does not give an element of O(L, f) "
+            f"for f = {self.isometry}: the second component does not commute with f on "
+            f"(L^f)^perp"
         )
         assert self.pair_preserves_glue_graph(invariant_part, coinvariant_part), (
-            "the stated pair does not preserve the graph of the glue anti-isometry, so it is an isometry of L^f + (L^f)^perp that does not extend to L"
+            f"({invariant_part}, {coinvariant_part}) does not extend to an isometry of "
+            f"{lattice}: it does not preserve the graph of the glue anti-isometry, "
+            f"which is Nikulin's criterion for extending across L^f + (L^f)^perp -> L"
         )
 
         ring = lattice.base_ring()

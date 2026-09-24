@@ -86,8 +86,9 @@ class Curves(_DimensionSubcategoryOfVarieties):
             case None:
                 source = equation.parent()
                 assert source in FramedAlgebras(base), (
-                    "Curves(R).from_equation(f) requires f in a polynomial algebra over R with "
-                    "chosen algebra generators; otherwise supply the ambient scheme explicitly"
+                    f"cannot cut a curve over {base} out of {equation} without a given scheme to "
+                    f"contain it: {equation} must lie in a polynomial ring over {base} with named "
+                    f"variables, but it lies in {source}, which is in {source.category()}"
                 )
                 labels = tuple(source.algebra_generating_set())
                 ambient = AffineSpaces(base)(
@@ -103,21 +104,27 @@ class Curves(_DimensionSubcategoryOfVarieties):
                         ambient_equation = source.Mor(target)(images)(equation)
             case _:
                 assert ambient.scheme_base_ring() is base, (
-                    f"the ambient scheme is over {ambient.scheme_base_ring()}, not the curve base {base}"
+                    f"a curve over {base} cannot be cut out of {ambient}: {ambient} lies over "
+                    f"{ambient.scheme_base_ring()}, not over {base}"
                 )
                 ambient_equation = equation
         assert ambient in Schemes(base).Separated() and ambient in Schemes(base).FiniteType(), (
-            f"a curve over {base} is cut out of a separated scheme of finite type over {base}"
+            f"a curve over {base} must be cut out of a separated scheme of finite type over "
+            f"{base}, but {ambient} is not known to be both; it is in {ambient.category()}"
         )
         match ambient:
             case _ if ambient in Schemes(base).Affine():
                 algebra = ambient.coordinate_algebra()
                 ideal = algebra.ideal(ambient_equation)
-                assert ideal.is_prime(), "the equation must define an integral curve"
+                assert ideal.is_prime(), (
+                    f"V({ambient_equation}) in {ambient} is not an integral curve: the ideal "
+                    f"{ideal} is not prime"
+                )
                 quotient_data = algebra._quotient_by_algebra_elements((ambient_equation,))
                 quotient, _ = quotient_data
                 assert quotient.krull_dimension() - base.krull_dimension() == 1, (
-                    "the equation must define a curve of relative dimension one"
+                    f"V({ambient_equation}) in {ambient} is not a curve: its relative dimension over "
+                    f"{base} is {quotient.krull_dimension() - base.krull_dimension()}, not 1"
                 )
                 return ambient.closed_subscheme(
                     ambient_equation, placements=(self, *placements),
@@ -125,13 +132,18 @@ class Curves(_DimensionSubcategoryOfVarieties):
                 )
             case _:
                 assert ambient in Schemes(base).Projective(), (
-                    "the equation entry uses an affine or projective ambient scheme"
+                    f"cannot cut a curve out of {ambient} by the equation {ambient_equation}: the "
+                    f"scheme must be affine or projective over {base}, but it is in {ambient.category()}"
                 )
                 equations = _projective_equation_family((ambient_equation,))
                 engine = _engine_projective_subscheme(_engine_scheme(ambient), equations)
-                assert engine.defining_ideal().is_prime(), "the equation must define an integral curve"
+                assert engine.defining_ideal().is_prime(), (
+                    f"V({ambient_equation}) in {ambient} is not an integral curve: its homogeneous "
+                    "ideal is not prime"
+                )
                 assert engine.dimension_relative() == 1, (
-                    "the equation must define a curve of relative dimension one"
+                    f"V({ambient_equation}) in {ambient} is not a curve: its relative dimension over "
+                    f"{base} is {engine.dimension_relative()}, not 1"
                 )
                 return _projective_closed_subscheme(
                     ambient, equations, placements=(self, *placements),
@@ -156,7 +168,8 @@ class Curves(_DimensionSubcategoryOfVarieties):
             """
             base = self.scheme_base_ring()
             assert self in Schemes(base).Projective(), (
-                "arithmetic genus here requires a represented projective curve"
+                f"the arithmetic genus 1 - P(0) from the Hilbert polynomial is computed only for "
+                f"projective curves, but {self} is not known to be projective over {base}"
             )
             integers = _own_ring(SageZZ)
             if self in ProjectiveSpaces(base):
@@ -188,13 +201,13 @@ class Curves(_DimensionSubcategoryOfVarieties):
 
         def normalization_curve(self):
             assert self._normalization_curve is not None, (
-                "this curve requires a selected normalization presentation"
+                f"no normalization was given when {self} was constructed"
             )
             return self._normalization_curve
 
         def local_delta_contributions(self):
             assert self._local_delta_contributions is not None, (
-                "the selected genus comparison requires its local delta contributions"
+                f"no local delta invariants of the singular points were given when {self} was constructed"
             )
             return self._local_delta_contributions
 
@@ -227,12 +240,14 @@ class Curves(_DimensionSubcategoryOfVarieties):
         def geometric_genus(self):
             r"""The genus of the normalization, or the arithmetic genus when smooth."""
             assert self in Schemes(self.scheme_base_ring()).Projective(), (
-                "geometric genus here requires a projective curve"
+                f"the geometric genus is computed only for projective curves, but {self} is not "
+                f"known to be projective over {self.scheme_base_ring()}"
             )
             match self._normalization_curve:
                 case None:
                     assert self.is_smooth(), (
-                        "the geometric genus of a singular curve requires its normalization"
+                        f"the geometric genus of {self} needs its normalization: {self} is not "
+                        "known to be smooth and no normalization was given"
                     )
                     return self.arithmetic_genus()
                 case _:

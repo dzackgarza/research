@@ -125,7 +125,10 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
     @cached_method
     def reynolds_isomorphism(self):
         assert self.reynolds_hypothesis_holds(), (
-            "invariant base change is promoted to an isomorphism here when the finite group order is invertible in the target field"
+            f"the comparison X_(k')/G -> (X/G)_(k') for {self.source_acted_scheme()} along "
+            f"{self.ring_map()} is proved an isomorphism only when the acting group "
+            f"{self.source_acted_scheme().acting_group()} is finite and its order is invertible "
+            "in the target field (Reynolds operator)"
         )
 
         forward = self.comparison_morphism()
@@ -168,7 +171,9 @@ class _AffineInvariantQuotientBaseChangeMorphism(_RepresentedAffineSchemeMorphis
             )
             if certificate is None:
                 raise ArithmeticError(
-                    "Reynolds base-change theorem applies but the exact invariant-algebra computation failed to express a new invariant in the base-changed old generators"
+                    f"the Reynolds operator makes the comparison along {self.ring_map()} an "
+                    f"isomorphism, but the invariant {invariant} of the base-changed ring could not "
+                    "be written as a polynomial in the base changes of the original invariants"
                 )
             inverse_images[label] = _evaluate_polynomial_in_algebra(
                 certificate,
@@ -196,12 +201,20 @@ def AffineInvariantQuotientBaseChangeComparison(acted_scheme, ring_map):
     source = acted_scheme.scheme_base_ring()
     target = _own_ring(ring_map.codomain())
     if ring_map.domain() is not source:
-        raise ValueError("quotient base change starts at the acted scheme's scalar field")
+        raise ValueError(
+            f"cannot base change the quotient of {acted_scheme} along {ring_map}: the map "
+            f"starts at {ring_map.domain()}, but {acted_scheme} lies over {source}"
+        )
     assert source in OwnedFields() and target in OwnedFields(), (
-        "the represented invariant-quotient base-change comparison requires a field extension"
+        f"the invariant-quotient base-change comparison along {ring_map} needs a field "
+        f"extension, but its domain is {source} and its codomain is {target}"
     )
     if acted_scheme not in AffineGSchemes(acted_scheme.acting_group(), source):
-        raise TypeError("the represented quotient base-change comparison requires an affine G-scheme")
+        raise TypeError(
+            f"the invariant-quotient base-change comparison needs an affine scheme with an "
+            f"action of {acted_scheme.acting_group()}, but {acted_scheme} is in "
+            f"{acted_scheme.category()}"
+        )
 
     group = acted_scheme.acting_group()
     change = acted_scheme.scheme_category().base_change_functor(ring_map)

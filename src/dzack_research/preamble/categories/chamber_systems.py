@@ -96,14 +96,23 @@ class ChamberSystemMor(CategoricalMor):
 
     def _verify(self, morphism) -> None:
         if self.domain().type_set() != self.codomain().type_set():
-            raise ValueError("a chamber-system morphism here preserves the type set")
+            raise ValueError(
+                f"there are no morphisms of chamber systems from {self.domain()} to "
+                f"{self.codomain()}: a morphism preserves types, but the type sets "
+                f"{self.domain().type_set()} and {self.codomain().type_set()} differ"
+            )
         for type_ in self.domain().type_set():
             for left in self.domain().chambers():
                 for right in self.domain().chambers():
                     if self.domain().is_adjacent(left, type_, right) and not self.codomain().is_adjacent(
                         morphism(left), type_, morphism(right)
                     ):
-                        raise ValueError("a chamber-system morphism must preserve typed adjacency")
+                        raise ValueError(
+                            f"{morphism} is not a morphism of chamber systems: the chambers "
+                            f"{left} and {right} are {type_}-adjacent in {self.domain()}, but "
+                            f"their images {morphism(left)} and {morphism(right)} are not "
+                            f"{type_}-adjacent in {self.codomain()}"
+                        )
 
     def _element_constructor_(self, datum):
         if element_parent(datum) is self:
@@ -119,7 +128,10 @@ class ChamberSystemMor(CategoricalMor):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on one chamber system")
+            raise ValueError(
+                f"there is no identity morphism from {self.domain()} to {self.codomain()}: "
+                f"an identity needs its domain and codomain to be the same chamber system"
+            )
         return self._from_chamber_map(
             Sets().Mor(self.domain(), self.domain()).identity()
         )
@@ -164,17 +176,26 @@ class ChamberSystems(OwnedCategory):
                 pair[0] not in chambers or pair[1] not in chambers
                 for pair in relation
             ):
-                raise ValueError("a typed chamber adjacency relates two chambers")
+                raise ValueError(
+                    f"the {type_}-adjacency relation {relation} is not a relation on the "
+                    f"chambers {chambers}: some pair contains an element that is not a chamber"
+                )
             if any(
                 chamber_pair_space((chamber, chamber)) not in relation
                 for chamber in chambers
             ):
-                raise ValueError("typed chamber adjacency is reflexive")
+                raise ValueError(
+                    f"the {type_}-adjacency relation {relation} on {chambers} is not "
+                    f"reflexive: adjacency of each type must be an equivalence relation"
+                )
             if any(
                 chamber_pair_space((right, left)) not in relation
                 for left, right in relation
             ):
-                raise ValueError("typed chamber adjacency is symmetric")
+                raise ValueError(
+                    f"the {type_}-adjacency relation {relation} on {chambers} is not "
+                    f"symmetric: adjacency of each type must be an equivalence relation"
+                )
             if any(
                 chamber_pair_space((left, right)) in relation
                 and chamber_pair_space((right, third)) in relation
@@ -183,7 +204,10 @@ class ChamberSystems(OwnedCategory):
                 for right in chambers
                 for third in chambers
             ):
-                raise ValueError("typed chamber adjacency is transitive")
+                raise ValueError(
+                    f"the {type_}-adjacency relation {relation} on {chambers} is not "
+                    f"transitive: adjacency of each type must be an equivalence relation"
+                )
         return _object_of(
             self,
             _engine=(self, _FiniteChamberSystemEngine, None),

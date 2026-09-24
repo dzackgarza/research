@@ -74,16 +74,22 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
             for row in generator_coordinates
         )
         if not coordinates:
-            raise ValueError("an affine semigroup presentation requires at least one generator")
+            raise ValueError("an affine semigroup needs at least one generator, but none was given")
         ambient_rank = len(coordinates[0])
         if any(len(row) != ambient_rank for row in coordinates):
-            raise ValueError("affine semigroup generators must lie in one lattice")
+            raise ValueError(
+                f"the generators of an affine semigroup must lie in one lattice Z^{ambient_rank}, but their "
+                f"lengths are {tuple(len(row) for row in coordinates)}"
+            )
         if names is None:
             names = tuple(f"s{position}" for position in range(len(coordinates)))
         else:
             names = tuple(names)
         if len(names) != len(coordinates):
-            raise ValueError("an affine semigroup presentation needs one variable per generator")
+            raise ValueError(
+                f"an affine semigroup with {len(coordinates)} generators needs {len(coordinates)} variable "
+                f"names, but got {len(names)}"
+            )
 
         base = self.base_ring()
         presentation = base.polynomial_ring(names)

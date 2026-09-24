@@ -61,7 +61,10 @@ class DirectSumObjects(OwnedCategory):
         match summands:
             case IndexedFamily():
                 if summand_index_set is not None and summands.index_set() is not summand_index_set:
-                    raise ValueError("an indexed summand family already owns its index set")
+                    raise ValueError(
+                        f"the summands {summands} are indexed by {summands.index_set()}, so they cannot also be "
+                        f"indexed by {summand_index_set}"
+                    )
                 family = summands
                 labels = family.index_set()
             case _:
@@ -72,7 +75,10 @@ class DirectSumObjects(OwnedCategory):
                     else finite_ordered_set(summand_index_set)
                 )
                 if labels.cardinality() != cardinal(len(values)):
-                    raise ValueError("the summand family and its index set have different cardinalities")
+                    raise ValueError(
+                        f"a direct sum of {len(values)} summands needs an index set of {len(values)} labels, but "
+                        f"{labels} has cardinality {labels.cardinality()}"
+                    )
                 family = indexed_family(
                     labels,
                     lambda label: values[int(labels.ranking_map()(label))],
@@ -81,16 +87,20 @@ class DirectSumObjects(OwnedCategory):
 
         if underlying_object not in self:
             raise ValueError(
-                "direct-sum decomposition data must be supplied by the object's constructor"
+                f"{underlying_object} is not in {self}: it was not constructed as a direct sum"
             )
         # An object placed here answers its decomposition by this category's
         # own accessors; the decomposition is its constructor datum.
         selected = underlying_object.summands()
         selected_labels = underlying_object.summand_index_set()
         if labels != selected_labels:
-            raise ValueError("the stated summand labels differ from the constructor-owned labels")
+            raise ValueError(
+                f"{underlying_object} is a direct sum indexed by {selected_labels}, not by {labels}"
+            )
         if any(selected[label] is not family[label] for label in labels):
-            raise ValueError("the stated summands differ from the constructor-owned summands")
+            raise ValueError(
+                f"the summands {family} differ from the summands {selected} of the direct sum {underlying_object}"
+            )
         return underlying_object
 
     class ParentMethods:
@@ -99,7 +109,9 @@ class DirectSumObjects(OwnedCategory):
                 case IndexedFamily():
                     pass
                 case _:
-                    raise TypeError("a selected direct-sum decomposition is an indexed family")
+                    raise TypeError(
+                        f"the summands of a direct sum are an indexed family, but {summands!r} is not one"
+                    )
             self._summands = summands
             super().__init__(**rest)
 
@@ -112,7 +124,9 @@ class DirectSumObjects(OwnedCategory):
         def summand(self, label: LabelT) -> Parent:
             labels = self.summand_index_set()
             if label not in labels:
-                raise ValueError(f"{label!r} is not a summand label")
+                raise ValueError(
+                    f"{label!r} is not a label of a summand of {self}; the labels are {labels}"
+                )
             return self.summands()[label]
 
         def number_of_summands(self) -> Parent:

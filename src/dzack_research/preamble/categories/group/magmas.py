@@ -85,7 +85,10 @@ class Monoids(OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a monoid Mor requires two monoids")
+            raise TypeError(
+                f"cannot form Mor({domain}, {codomain}) in {self}: the domain and the "
+                f"codomain must both be monoids"
+            )
         return self.MorCategory().Of(domain, codomain)
 
 
@@ -150,7 +153,11 @@ class MonoidMorphism(Morphism):
     def __init__(self, parent, function) -> None:
         Morphism.__init__(self, parent)
         if not callable(function):
-            raise TypeError("a monoid morphism requires an exact element map")
+            raise TypeError(
+                f"cannot build a morphism in {parent} from {function}: a monoid morphism "
+                f"is given by a map sending each element of the domain to the codomain, "
+                f"and {function} is not a map"
+            )
         self._function = function
 
     def __call__(self, element):
@@ -182,7 +189,10 @@ class MonoidMor(CategoricalMor):
     def _element_constructor_(self, function):
         if isinstance(function, MonoidMorphism):
             if function.domain() is not self.domain() or function.codomain() is not self.codomain():
-                raise ValueError("the monoid morphism has the wrong source or target")
+                raise ValueError(
+                    f"{function} is a monoid morphism {function.domain()} -> "
+                    f"{function.codomain()}, not a morphism {self.domain()} -> {self.codomain()}"
+                )
             if function.parent() is self:
                 return function
             function = function.__call__
@@ -190,5 +200,8 @@ class MonoidMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on a monoid endomorphism Mor object")
+            raise ValueError(
+                f"there is no identity morphism {self.domain()} -> {self.codomain()}: an "
+                f"identity exists only when the domain and codomain are the same monoid"
+            )
         return self(lambda element: element)

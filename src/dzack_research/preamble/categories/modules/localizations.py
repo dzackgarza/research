@@ -41,8 +41,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 pass
             case False:
                 raise TypeError(
-                    f"{localization_ring} is not a represented localization, so no module "
-                    "over it is a localization of a module over its source"
+                    f"{self} has no example localized module: its base ring {localization_ring} is not "
+                    f"constructed as a localization S^(-1)R of a ring R, but is in {localization_ring.category()}"
                 )
         source = localization_ring.localization_source().free_module(finite_ordinal_set(2))
         return localization_ring.localize_module(source)
@@ -196,11 +196,13 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     pass
                 case False:
                     raise ValueError(
-                        f"{denominator} does not become invertible in {self.localization_ring()}"
+                        f"{numerator}/{denominator} is not an element of {self}: the denominator {denominator} "
+                        f"does not become a unit in {self.localization_ring()}"
                     )
                 case _:
                     raise ValueError(
-                        f"invertibility of {denominator} in {self.localization_ring()} is unresolved"
+                        f"cannot form {numerator}/{denominator} in {self}: it is not known whether the "
+                        f"denominator {denominator} becomes a unit in {self.localization_ring()}"
                     )
             return self.element_class(self, numerator, denominator)
 

@@ -47,7 +47,7 @@ def _natural_position(value, *, error_type: type[LookupError] | type[ValueError]
         case _ if value in SageZZ and SageZZ(value) >= 0:
             return int(SageZZ(value))
         case _:
-            raise error_type(value)
+            raise error_type(f"{value!r} is not a natural number, so it is not a position")
 
 
 def integer_from_natural(n: SupportsIndex):
@@ -131,7 +131,7 @@ def index_of_symbol(
     r"""Return \(n\) when ``elt`` is the indexed symbol of this prefix."""
     index = _symbol_index(elt, prefix, latex_prefix)
     if index is None:
-        raise ValueError(elt)
+        raise ValueError(f"{elt!r} is not an indexed symbol {prefix}_n")
     return _integers()(index)
 
 
@@ -210,7 +210,7 @@ class IndexedSymbolicFunctionSet:
 
         def position_of(element):
             if element not in self:
-                raise ValueError(element)
+                raise ValueError(f"{element!r} is not an element of {self}")
             return self._rank_from_index(self._index_of_element(element))
 
         return self._ranking_isomorphism(

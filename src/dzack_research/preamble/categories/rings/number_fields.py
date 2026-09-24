@@ -65,7 +65,10 @@ def QuadraticField(discriminant, *args, **kwargs):
 def _number_field(polynomial, *args, **kwargs):
     parent = getattr(polynomial, "parent", lambda: None)()
     if parent not in OwnedRings():
-        raise TypeError("number-field construction expects a polynomial in an owned polynomial ring")
+        raise TypeError(
+            f"cannot construct a number field from {polynomial!r}: it must be a polynomial in a "
+            f"polynomial ring of this session, but its parent is {parent!r}"
+        )
     backend_polynomial = _engine_element(parent, polynomial)
     field = _own_number_field(_SageNumberField(backend_polynomial, *args, **kwargs))
     _set_owned_ring_display(field, f"Number field defined by {polynomial}")
@@ -96,7 +99,10 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a number-field embedding requires two number fields")
+            raise TypeError(
+                f"embeddings of number fields need a number field as domain and codomain, but got "
+                f"{domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
     class ParentMethods:
@@ -152,7 +158,8 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             polynomial_ring = getattr(polynomial, "parent", lambda: None)()
             if polynomial_ring is None or polynomial_ring.base_ring() is not self:
                 raise TypeError(
-                    "a relative number-field extension requires a polynomial over this field"
+                    f"cannot form the extension of {self} defined by {polynomial!r}: it must be a polynomial "
+                    f"with coefficients in {self}, but its parent is {polynomial_ring!r}"
                 )
 
             backend_polynomial = _engine_element(polynomial_ring, polynomial)
@@ -190,7 +197,9 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
         def order_generated_by(self, *generators):
             r"""Return the order ``ZZ[generators]`` inside this number field."""
             if not generators:
-                raise ValueError("an order construction needs at least one field generator")
+                raise ValueError(
+                    f"the order ZZ[a_1, ..., a_n] of {self} needs at least one element a_i of {self}, but none was given"
+                )
 
             engine = _engine_ring(self)
             backend_generators = tuple(
@@ -220,7 +229,10 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             """
 
             if target not in OwnedRings().Division().Commutative():
-                raise TypeError("number-field embeddings require an owned target field")
+                raise TypeError(
+                    f"cannot list the embeddings of {self} into {target}: the target must be a field, "
+                    f"but {target} is not in the category of commutative division rings"
+                )
             if target in OwnedNumberFields():
                 return self.Mor(target).embeddings()
 
@@ -262,12 +274,15 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                     getattr(embedding, "domain", lambda: None)() is not self
                     or getattr(embedding, "codomain", lambda: None)() is not target
                 ):
-                    raise ValueError(embedding)
+                    raise ValueError(f"{embedding} is not an embedding {self} -> {target}")
                 primitive_image = embedding(primitive)
                 for position in positions:
                     if embedding_at(position)(primitive) == primitive_image:
                         return position
-                raise ValueError(embedding)
+                raise ValueError(
+                    f"{embedding} is not one of the embeddings {self} -> {target}: it sends the primitive "
+                    f"element {primitive} to {primitive_image}, which matches no embedding"
+                )
 
             return FiniteOrderedSets().from_indexed(
                 positions,
@@ -285,7 +300,8 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             r"""Return ``Gal(K/QQ)``; this name is reserved for Galois ``K``."""
             if not self.is_galois():
                 raise ValueError(
-                    "K/QQ is not Galois; use normal_closure_galois_group() for the Galois group of its normal closure"
+                    f"{self} is not Galois over QQ, so Gal({self}/QQ) is not defined; "
+                    "normal_closure_galois_group() gives the Galois group of its normal closure"
                 )
             engine = _engine_ring(self)
 
@@ -331,7 +347,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                     return self.as_algebra()
                 case _:
                     assert base_ring is integers or base_ring is rationals, (
-                        "the selected number-field integral/algebra form is represented over ZZ or QQ"
+                        f"the underlying algebra of the number field {self} is defined here only over ZZ or QQ, not over {base_ring}"
                     )
 
         def base_change_functor(self, base_ring=None):
@@ -359,7 +375,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                     ring_map = rationals.Mor(rationals).identity()
                 case _:
                     assert base_ring is integers or base_ring is rationals, (
-                        "number-field base change is represented from ZZ or QQ"
+                        f"base change of the number field {self} is defined here only from ZZ or QQ, not from {base_ring}"
                     )
             return Algebras(base_ring).Associative().Unital().Commutative().base_change_adjunction(ring_map).left_adjoint()
 
@@ -589,7 +605,10 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
 
         def base_change(self, ring_map):
             if _engine_ring(ring_map.domain()) is not SageZZ:
-                raise ValueError("an order is a ZZ-algebra, so scalar extension starts at ZZ")
+                raise ValueError(
+                    f"cannot base change the order {self} along {ring_map}: an order is a ZZ-algebra, "
+                    f"so the ring map must start at ZZ, but it starts at {ring_map.domain()}"
+                )
             target = _engine_ring(ring_map.codomain())
             if target is SageZZ:
                 return self
@@ -598,7 +617,8 @@ class OrdersWithChosenIntegralBasis(OwnedCategory):
                 field = _own_number_field(_engine_ring(self).fraction_field())
                 return field.as_algebra()
             assert target is SageZZ or target is SageQQ, (
-                "the represented order algebra base-change adapter constructs ZZ -> ZZ and ZZ -> QQ"
+                f"base change of the order {self} is computed only along ZZ -> ZZ and ZZ -> QQ, "
+                f"not along ZZ -> {ring_map.codomain()}"
             )
 
         def integral_basis(self):

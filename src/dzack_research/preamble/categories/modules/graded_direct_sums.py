@@ -119,7 +119,10 @@ class GradedDirectSumElement(ModuleElement):
         if not self._components:
             return _grading_identity(self.parent().grading_monoid())
         if len(self._components) != 1:
-            raise ValueError("a nonhomogeneous element has no single degree")
+            raise ValueError(
+                f"{self} has no degree: it is not homogeneous, having nonzero components in degrees "
+                f"{sorted(self._components, key=str)}"
+            )
         return next(iter(self._components))
 
     def monomial_coefficients(self):
@@ -217,7 +220,10 @@ class _DirectSumOfModules:
 
     def graded_piece(self, degree):
         piece = self._summand_family[self.normalize_degree(degree)]
-        assert piece in Modules(self.base_ring()), "every summand is a module over the common ring"
+        assert piece in Modules(self.base_ring()), (
+            f"{self} is not a direct sum of {self.base_ring()}-modules: its summand {piece} in degree "
+            f"{degree} is in {piece.category()}"
+        )
         return piece
 
     def from_components(self, components):
@@ -236,7 +242,10 @@ class _DirectSumOfModules:
             return self.from_components(value.homogeneous_components())
         if isinstance(value, dict):
             return self.from_components(value)
-        raise TypeError("a direct-sum element is a finite family of homogeneous components")
+        raise TypeError(
+            f"{value!r} is not an element of {self}: an element of a direct sum is a finite family "
+            "of homogeneous components, given as a dict from degrees to elements of the summands"
+        )
 
     def __call__(self, value):
         return self._element_constructor_(value)
@@ -271,12 +280,17 @@ class _DirectSumOfModules:
 
     def from_maps(self, codomain, maps):
         r"""The unique linear map whose restrictions to the summands are ``maps``."""
-        assert maps.index_set() is self.degree_index_set(), "the maps use the summand index set"
+        assert maps.index_set() is self.degree_index_set(), (
+            f"cannot induce a map out of {self}: the maps must be indexed by the summand index set "
+            f"{self.degree_index_set()}, but they are indexed by {maps.index_set()}"
+        )
 
         for degree in maps.index_set() if maps.index_set().cardinality().is_finite() else ():
             morphism = maps[degree]
             assert morphism.domain() is self.graded_piece(degree) and morphism.codomain() is codomain, (
-                "a coproduct cocone has the stated summands and common codomain"
+                f"cannot induce a map {self} -> {codomain}: the map {morphism} in degree {degree} must go "
+                f"from the summand {self.graded_piece(degree)} to {codomain}, but it goes from "
+                f"{morphism.domain()} to {morphism.codomain()}"
             )
         return _DirectSumFactorMorphism(
             Modules(self.base_ring()).Mor(self, codomain),
@@ -361,7 +375,10 @@ def _direct_sum_of_modules(
     _realization=None,
 ):
     graded = GradedModules(ring, grading_monoid)
-    assert pieces.index_set() is grading_monoid, "the grading indexes the summands"
+    assert pieces.index_set() is grading_monoid, (
+        f"cannot form a direct sum graded by {grading_monoid}: the summands are indexed by "
+        f"{pieces.index_set()}, not by the grading monoid"
+    )
     category = Cat().meet((graded, *extra_categories))
     match _realization:
         case None:

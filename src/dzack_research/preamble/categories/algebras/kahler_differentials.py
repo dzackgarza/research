@@ -37,7 +37,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         """
         if algebra is not self.base_ring():
             raise ValueError(
-                "KahlerDifferentialModules(A) constructs the differentials of that same algebra A"
+                f"KahlerDifferentialModules(A) builds the differentials of A = {self.base_ring()}, but got {algebra}"
             )
         return _cached_kahler_differentials(algebra)
 
@@ -71,7 +71,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
             conormal = self._conormal_module
             assert conormal is not None, (
-                "conormal_module requires selected quotient-presentation conormal data"
+                f"{self} has no conormal module I/I^2: its algebra is not given as a quotient P/I"
             )
             return conormal
 
@@ -80,7 +80,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
             ambient = self._ambient_differentials
             assert ambient is not None, (
-                "ambient_differentials requires selected quotient-presentation differential data"
+                f"{self} has no module Omega^1_(P/R) (x)_P A: its algebra is not given as a quotient P/I"
             )
             return ambient
 
@@ -89,7 +89,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
             morphism = self._conormal_morphism
             assert morphism is not None, (
-                "conormal_morphism requires selected quotient-presentation conormal data"
+                f"{self} has no map I/I^2 -> Omega^1_(P/R) (x)_P A: its algebra is not given as a quotient P/I"
             )
             return morphism
 
@@ -161,9 +161,14 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
         def from_derivation(self, derivation):
             if not isinstance(derivation, Derivation):
-                raise TypeError("the universal factorization starts from a derivation")
+                raise TypeError(
+                    f"the universal property of {self} factors a derivation, but {derivation!r} is not one"
+                )
             if derivation.domain() is not self.source_algebra():
-                raise ValueError("the derivation has the wrong source algebra")
+                raise ValueError(
+                    f"the universal property of {self} factors derivations of {self.source_algebra()}, but "
+                    f"{derivation} is a derivation of {derivation.domain()}"
+                )
 
             return self.module_category().Mor(self, derivation.codomain())(
                 {
@@ -202,16 +207,20 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
             algebra = self.source_algebra()
             if target_module.base_ring() is not algebra:
-                raise TypeError("the Kähler representing property targets an A-module")
+                raise TypeError(
+                    f"Mor(Omega^1, M) = Der(A, M) needs M to be a module over A = {algebra}, but {target_module} is "
+                    f"a module over {target_module.base_ring()}"
+                )
             classifiers = self.module_category().Mor(self, target_module)
             assert classifiers in ModulesWithChosenFinitePresentation(algebra), (
-                "the represented Kähler Hom-Der isomorphism requires a selected finite presentation of Hom_A(Omega^1,M)"
+                f"Mor(Omega^1, M) = Der(A, M) is computed only when Mor({self}, {target_module}) is finitely "
+                "presented with chosen generators and relations"
             )
             derivations = algebra.derivations(target_module)
             if derivations not in ModulesWithChosenFinitePresentation(algebra):
                 raise TypeError(
-                    "the represented Kähler classifier must construct Der_R(A,M) "
-                    "with its chosen finite presentation"
+                    f"Mor(Omega^1, M) = Der(A, M) is computed only when {derivations} is finitely presented with "
+                    "chosen generators and relations"
                 )
 
             forward = classifiers.module_category().Mor(classifiers, derivations)(
@@ -223,7 +232,8 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             result = Modules(algebra).Core().Mor(classifiers, derivations)(forward, inverse)
             if result not in Modules(algebra).Iso(classifiers, derivations):
                 raise ArithmeticError(
-                    "the represented Kähler classifier maps failed to define an A-module isomorphism"
+                    f"the maps between Mor({self}, {target_module}) and {derivations} are not inverse isomorphisms "
+                    f"of {algebra}-modules"
                 )
             return result
 
@@ -241,7 +251,8 @@ def _construct_kahler_differentials(algebra):
         source = algebra.localization_source()
         if source.base_ring() is not algebra.base_ring():
             raise ValueError(
-                "localization of differentials requires the localization to preserve the algebra base"
+                f"the differentials of the localization {algebra} are built from those of {source}, which must "
+                f"be over {algebra.base_ring()}, but it is over {source.base_ring()}"
             )
         source_omega = source.kahler_differentials()
         from dzack_research.preamble.categories.modules.localizations import (

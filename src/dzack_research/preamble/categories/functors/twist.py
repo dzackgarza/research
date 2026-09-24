@@ -24,7 +24,9 @@ class TwistFunctor(Functor):
         integers = _own_ring(SageZZ)
         self._scale = integers(scale)
         if self._scale == integers.zero():
-            raise ValueError("a lattice twist uses a nonzero integer scale")
+            raise ValueError(
+                f"the twist L(n) of a lattice needs a nonzero integer n, but n = {scale}"
+            )
         category = Lattices(integers)
         super().__init__(category, category)
 

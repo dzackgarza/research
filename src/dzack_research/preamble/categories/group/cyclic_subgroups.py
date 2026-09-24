@@ -111,7 +111,8 @@ class CyclicGroups(OwnedCategory):
         def _finite_elements(self):
             r"""The powers ``1, g, g^2, ...`` of the generator up to its order."""
             assert self.is_finite() is True, (
-                "enumerating a cyclic subgroup requires its order to be decided finite"
+                f"cannot list the elements of {self}: it is not known to be finite, since the "
+                f"order of its generator {self.group_generator()} is not known to be finite"
             )
             ambient = self.supergroup()
             identity = ambient.one()
@@ -128,7 +129,10 @@ class CyclicGroups(OwnedCategory):
                 if current == identity:
                     return tuple(elements)
                 elements.append(current)
-            raise ArithmeticError("a subgroup generator did not close within the ambient group order")
+            raise ArithmeticError(
+                f"the powers of {generator} in {ambient} did not return to the identity within "
+                f"{bound} steps, although {bound} bounds the order of {generator}"
+            )
 
         def order(self):
             if self.is_finite() is True:
@@ -142,8 +146,8 @@ class CyclicGroups(OwnedCategory):
             if self.is_finite() is True:
                 return cardinal(self.order())
             assert False, (
-                "cardinality is defined for every cyclic subgroup, but this represented "
-                "subgroup does not decide whether its order is finite"
+                f"cannot compute the cardinality of {self}: it is not known whether its "
+                f"generator {self.group_generator()} has finite order"
             )
 
         def __iter__(self):
@@ -158,8 +162,9 @@ class CyclicGroups(OwnedCategory):
             if element == ambient.one() or element == self.group_generator():
                 return True
             assert False, (
-                "membership in an infinite cyclic subgroup beyond the identity and its "
-                "generator is the discrete-logarithm question, and no decision is represented here"
+                f"cannot decide whether {element} lies in {self}: that asks whether {element} "
+                f"is a power of {self.group_generator()} (a discrete logarithm problem), and "
+                f"no algorithm for it is available when the generator's order is not known finite"
             )
 
         def _element_constructor_(self, datum):

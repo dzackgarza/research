@@ -44,8 +44,14 @@ class PointedAnalyticFundamentalGroup(SageObject):
     r"""A represented pointed ``pi_1`` with its actual group and base point."""
 
     def __init__(self, space, base_point, group, generator) -> None:
-        assert base_point.manifold() is space, "a pointed fundamental group requires a point of its space"
-        assert generator.parent() is group, "the loop generator belongs to the selected fundamental group"
+        assert base_point.manifold() is space, (
+            f"the base point {base_point} of a pointed fundamental group of {space} must be a "
+            f"point of {space}, but it is a point of {base_point.manifold()}"
+        )
+        assert generator.parent() is group, (
+            f"the loop {generator} is not an element of the fundamental group {group} of {space}; "
+            f"it lies in {generator.parent()}"
+        )
         self._space = space
         self._base_point = base_point
         self._group = group
@@ -139,7 +145,8 @@ class LegendreMonodromyFamily(SageObject):
             result = cohomology.Mor(cohomology).identity()
             for letter in pi_one.reduced_word(loop):
                 assert letter == generator or letter == ~generator, (
-                    "the punctured-disc fundamental group has one signed generator"
+                    f"the fundamental group {pi_one} of the punctured disc is infinite cyclic on "
+                    f"{generator}, but the reduced word of {loop} contains the letter {letter}"
                 )
                 result = (forward if letter == generator else inverse) * result
             return result
@@ -197,7 +204,8 @@ class LegendreMonodromyFamily(SageObject):
 
     def fiber_cohomology(self, point):
         assert point is self.base_point(), (
-            "the represented Legendre H^1 module is materialized at t=1/2"
+            f"the fiber cohomology H^1 of the Legendre family is computed only at the base point "
+            f"{self.base_point()} (t = 1/2), not at {point}"
         )
         return self._fiber_h1
 
@@ -237,7 +245,9 @@ class LegendreMonodromyFamily(SageObject):
         r"""Topological proper-base-change comparison at the selected smooth point."""
         point = self.base_point()
         assert self.proper_base_change_hypotheses_hold(point), (
-            "topological proper base change requires a proper family over the selected smooth point"
+            f"proper base change does not apply at {point}: it needs {point} to be the base "
+            f"point {self.base_point()} of the smooth locus and the family {self.family_scheme()} "
+            f"to be projective over {self.parameter_algebra()}"
         )
         representation = self.monodromy_representation()
         stalk = representation(representation.domain().an_object())

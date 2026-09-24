@@ -78,7 +78,10 @@ class CoxRings(OwnedParameterizedCategory):
         def homogeneous_degree(self, element):
             r"""Return the class-group degree of a nonzero homogeneous Cox polynomial."""
             element = self(element)
-            assert element != self.zero(), "zero has no selected homogeneous Cox degree"
+            assert element != self.zero(), (
+                f"the zero element of {self} has no degree in the class group: every "
+                f"homogeneous component contains 0, so its degree is not defined"
+            )
             backend = _engine_element(self, element)
             degrees = []
             labels = tuple(self.algebra_generating_set())
@@ -97,7 +100,8 @@ class CoxRings(OwnedParameterizedCategory):
                 degrees.append(degree)
             selected = degrees[0]
             assert all(degree == selected for degree in degrees[1:]), (
-                "the Cox-ring element is not homogeneous"
+                f"{element} in {self} has no class-group degree: it is not homogeneous, since "
+                f"its monomials have the different degrees {degrees}"
             )
             return selected
 

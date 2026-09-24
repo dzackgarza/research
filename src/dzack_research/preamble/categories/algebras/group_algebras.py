@@ -90,8 +90,8 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             """
             group = self.group()
             assert group in FiniteGroups(), (
-                "the represented conjugacy-class-sum basis of a group-algebra center "
-                "requires a finite group"
+                f"the centre of {self} is computed from conjugacy-class sums, which needs a finite group, but "
+                f"{group} is not known to be finite"
             )
             class_sums = finite_ordered_set(
                 [
@@ -149,7 +149,9 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             """
             ring = self.base_ring()
             order = self.group().cardinality()
-            assert order.is_finite(), "Maschke's theorem concerns a finite group"
+            assert order.is_finite(), (
+                f"Maschke's theorem concerns a finite group, but {self.group()} has order {order}"
+            )
             match ring:
                 case _ if ring in OwnedFields():
                     return bool(ring(int(order.finite_value())).is_unit())
@@ -213,9 +215,15 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
         source = self.domain()
         target = self.codomain()
         if group_morphism.domain() is not source.group():
-            raise ValueError("the group map has the wrong source group algebra")
+            raise ValueError(
+                f"the group algebra morphism {self.domain()} -> {self.codomain()} needs a group map starting "
+                f"at {source.group()}, but {group_morphism} starts at {group_morphism.domain()}"
+            )
         if group_morphism.codomain() is not target.group():
-            raise ValueError("the group map has the wrong target group algebra")
+            raise ValueError(
+                f"the group algebra morphism {self.domain()} -> {self.codomain()} needs a group map ending at "
+                f"{target.group()}, but {group_morphism} ends at {group_morphism.codomain()}"
+            )
 
         linear = source.module_category().Mor(source, target)(
             lambda label: target.module_generator(group_morphism(label))

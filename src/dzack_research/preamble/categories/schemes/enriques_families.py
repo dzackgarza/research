@@ -54,7 +54,8 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
 
     def __init__(self, enriques_surface) -> None:
         assert enriques_surface.is_enriques(), (
-            "the Enriques cohomology marking requires the proved quotient hypotheses"
+            f"cannot mark the integral cohomology of {enriques_surface} by E10: it is not known "
+            "to be an Enriques surface (the quotient of a K3 surface by a free involution)"
         )
         k3_lattice = NamedLattices.LK3
         involution = Involutions.I_En
@@ -65,7 +66,9 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
         quotient_labels = tuple(quotient_free.module_generating_set())
         invariant_labels = tuple(invariant.module_generating_set())
         assert len(quotient_labels) == len(invariant_labels), (
-            "the Enriques free cohomology and K3 invariant lattice have different ranks"
+            f"the free part E10 of H^2 of an Enriques surface has rank {len(quotient_labels)}, "
+            f"but the invariant lattice of the involution on the K3 lattice has rank "
+            f"{len(invariant_labels)}; they must agree"
         )
         pullback = quotient_free.module_category().Mor(quotient_free, k3_lattice)(
             {
@@ -79,11 +82,17 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
             pullback(left).b(pullback(right)) == 2 * left.b(right)
             for left in quotient_free.module_generators()
             for right in quotient_free.module_generators()
-        ), "the marked Enriques pullback does not scale the intersection form by two"
+        ), (
+            f"the pullback {pullback} from E10 to the K3 lattice does not multiply the "
+            "intersection form by 2, as pullback along a degree-2 cover must"
+        )
         assert all(
             involution(pullback(generator)) == pullback(generator)
             for generator in quotient_free.module_generators()
-        ), "the marked quotient pullback does not land in the invariant K3 lattice"
+        ), (
+            f"the pullback {pullback} from E10 does not land in the sublattice of the K3 lattice "
+            f"fixed by the involution {involution}"
+        )
         torsion = _cyclic_two_module()
         torsion_pullback = torsion.module_category().Mor(torsion, k3_lattice)(
             {
@@ -237,13 +246,14 @@ def HorikawaEnriquesSurface(k3_member=None):
     if k3_member is None:
         k3_member = HorikawaK3Family().member()
     assert k3_member.is_k3(), (
-        "the quotient source has not satisfied the K3 double-cover hypotheses"
+        f"{k3_member} is not known to be a K3 surface, so its Enriques quotient is not defined"
     )
     assert int(k3_member.base_ring().characteristic()) != 2, (
-        "the fixed-free involution quotient requires characteristic not two"
+        f"the Enriques quotient of {k3_member} is constructed only in characteristic other than 2, "
+        f"but its base ring {k3_member.base_ring()} has characteristic 2"
     )
     assert k3_member.enriques_lift_is_fixed_point_free(), (
-        "the selected K3 involution is not fixed-point-free"
+        f"the involution of {k3_member} has fixed points, so its quotient is not an Enriques surface"
     )
     group = k3_member.family().acting_group()
     quotient_data = k3_member.c2_chartwise_invariant_quotient(
@@ -256,10 +266,12 @@ def HorikawaEnriquesSurface(k3_member=None):
         },
     )
     assert quotient_data.source_scheme() is k3_member, (
-        "the Enriques quotient did not retain the actual K3 source"
+        f"the quotient was computed from {quotient_data.source_scheme()}, not from the K3 "
+        f"surface {k3_member}"
     )
     assert quotient_data.action_is_free(), (
-        "the descended K3 action is not free on its affine cover"
+        f"the involution does not act freely on {k3_member} on its affine charts, so the "
+        "quotient is not an Enriques surface"
     )
     return quotient_data.quotient_scheme()
 
@@ -324,7 +336,11 @@ class _HorikawaEnriquesBaseChangeComparison(SageObject):
             lambda index: local_quotient_projections[index],
             name="Local projections of a scalar-changed Enriques quotient",
         )
-        assert self.quotient_square_commutes(), "the scalar-changed Enriques quotient square does not commute"
+        assert self.quotient_square_commutes(), (
+            f"base change of the Enriques quotient {source} along {ring_map} does not commute "
+            "with taking the quotient: the square of quotient maps and base-change projections "
+            "does not commute"
+        )
 
     def source(self):
         return self._source

@@ -33,7 +33,10 @@ from dzack_research.preamble.tensors.tensor import _engine_component_matrix, ten
 
 def _definite_sign(lattice):
     if not lattice.module_rank().is_finite():
-        raise TypeError("definiteness algorithms here require finite rank")
+        raise TypeError(
+            f"cannot run a definite-lattice algorithm on {lattice}: it needs a lattice of "
+            f"finite rank, and {lattice} has rank {lattice.module_rank()}"
+        )
     _signature = lattice.signature_pair()
     positive, negative = _signature.first(), _signature.second()
     rank = lattice.module_rank()
@@ -42,7 +45,10 @@ def _definite_sign(lattice):
         return ring.one()
     if negative == rank and positive == 0:
         return -ring.one()
-    raise ValueError("this algorithm requires a positive- or negative-definite lattice")
+    raise ValueError(
+        f"cannot run a definite-lattice algorithm on {lattice}: it must be positive or "
+        f"negative definite, but its signature is ({positive}, {negative}) in rank {rank}"
+    )
 
 
 def _positive_gram(lattice):
@@ -106,7 +112,10 @@ def _reduction_from_backend_rows(lattice, backend_rows):
 def _reduction_from_transformation(lattice, basis_map):
 
     if basis_map.parent() not in MatrixSpaces(lattice.base_ring()):
-        raise TypeError("a lattice reframing is an owned matrix-Mor morphism")
+        raise TypeError(
+            f"{basis_map} cannot change the basis of {lattice}: a change of basis must be "
+            f"a matrix over {lattice.base_ring()}, but it lies in {basis_map.parent()}"
+        )
     original_generators = tuple(lattice.module_generators())
     images = tuple(
         sum(
@@ -138,7 +147,9 @@ def _reduction_from_transformation(lattice, basis_map):
         )
         if reduced.gram_tensor() != reduced_gram:
             raise ArithmeticError(
-                "the reduced subobject framing does not have the pulled-back Gram form"
+                f"the reduced basis of the sublattice {lattice} of {ambient} was computed "
+                f"wrongly: its Gram matrix {reduced.gram_tensor()} is not the pullback "
+                f"{reduced_gram} of the form along the change of basis"
             )
     else:
         reduced = lattice.lattice_category()(reduced_gram)
@@ -270,7 +281,12 @@ def _root_sublattice(lattice):
             if isomorphic:
                 break
         else:
-            raise RuntimeError("a simply-laced finite root component must have ADE type")
+            raise RuntimeError(
+                f"a connected component of the root system of {lattice}, with "
+                f"{size} simple roots, was not recognized as type A, D or E; every "
+                f"finite simply-laced root system is of ADE type, so the simple roots "
+                f"were computed wrongly"
+            )
         by_label = {certificate[vertex]: vertex for vertex in component}
         ordered.extend(simple[by_label[label]] for label in candidate_type.index_set())
         component_types.append(candidate_type)
@@ -307,7 +323,11 @@ def _target_coordinates(lattice, target):
     rationals = lattice.base_ring().fraction_field()
     point = tensor.vector(rationals, target)
     if point.tensor_shape()[0] != int(lattice.module_rank()):
-        raise ValueError("a closest-vector target has one coordinate per lattice generator")
+        raise ValueError(
+            f"{target} is not a point of {lattice} tensor QQ: it must have "
+            f"{lattice.module_rank()} coordinates, one per basis vector, but has "
+            f"{point.tensor_shape()[0]}"
+        )
     return point
 
 
@@ -385,7 +405,9 @@ def _close_vectors(lattice, target, square_bound):
     positive_bound = rationals(sign) * bound
     if positive_bound < rationals.zero():
         raise ValueError(
-            "a close-vector bound has the sign of the definite lattice form"
+            f"no vectors of {lattice} can satisfy the bound {square_bound} on "
+            f"q(x - target): the bound must have the sign of the form, which is "
+            f"{'positive' if sign > 0 else 'negative'} definite"
         )
 
     engine_gram = _engine_component_matrix(positive_gram)
@@ -507,7 +529,11 @@ def _voronoi_region(lattice, bound=None):
     if bound is not None:
         initial_bound = max(initial_bound, SageQQ(bound).ceil())
     outer = region_from_bound(initial_bound)
-    assert outer.is_compact(), "the signed basis inequalities bound the initial Voronoi polytope"
+    assert outer.is_compact(), (
+        f"the first approximation to the Voronoi cell of {lattice}, cut out by the "
+        f"vectors of square at most {initial_bound}, is not bounded; it must be, since "
+        f"it contains the inequalities of a basis and its negative"
+    )
     gram_engine_q = engine_gram.change_ring(SageQQ)
     radius_squared = max(
         engine_vector(SageQQ, vertex) * gram_engine_q * engine_vector(SageQQ, vertex)
@@ -552,7 +578,9 @@ def _relevant_vector_of_inequality(lattice, inequality):
     scalar = rationals(2) * constant / square
     vector_coordinates = tuple(scalar * coordinate for coordinate in direction)
     assert all(coordinate in ring for coordinate in vector_coordinates), (
-        "each exact Voronoi facet recovers an integral lattice vector"
+        f"the facet inequality {inequality} of the Voronoi cell of {lattice} gives the "
+        f"coordinates {vector_coordinates}, which are not all in {ring}; a facet of the "
+        f"Voronoi cell comes from a vector of the lattice"
     )
     return _element_from_coordinates(lattice, tuple(ring(coordinate) for coordinate in vector_coordinates))
 
@@ -584,11 +612,16 @@ def _voronoi_facets(lattice):
         )
         if len(inequalities) != 1:
             raise ArithmeticError(
-                "a Voronoi facet must have one ambient supporting inequality"
+                f"the facet {face} of the Voronoi cell of {lattice} lies on "
+                f"{len(inequalities)} of the defining inequalities; a facet lies on "
+                f"exactly one"
             )
         relevant_vector = _relevant_vector_of_inequality(lattice, inequalities[0])
         if relevant_vector is None or relevant_vector == lattice.zero():
-            raise ArithmeticError("a Voronoi facet has a nonzero relevant lattice vector")
+            raise ArithmeticError(
+                f"the facet {face} of the Voronoi cell of {lattice} gives the relevant "
+                f"vector {relevant_vector}; a facet comes from a nonzero lattice vector"
+            )
         facets[relevant_vector] = ConvexPolytopes(lattice)(
             face.as_polyhedron().vertices_list()
         )
@@ -654,7 +687,11 @@ def _successive_minima(lattice):
             if len(independent) == rank:
                 break
     if len(independent) != rank:
-        raise RuntimeError("short-vector enumeration did not span the lattice space")
+        raise RuntimeError(
+            f"the successive minima of {lattice} were computed wrongly: the vectors of "
+            f"square at most {bound} span a space of dimension {len(independent)}, not "
+            f"{rank}, but they contain an LLL-reduced basis"
+        )
 
     return finite_family(
         tuple(
@@ -684,7 +721,10 @@ def _gaussian_heuristic(lattice, *, exact_form=False):
     _definite_sign(lattice)
     rank = int(lattice.module_rank())
     if rank == 0:
-        raise ValueError("the zero lattice has no Gaussian-heuristic radius")
+        raise ValueError(
+            f"{lattice} has no Gaussian-heuristic radius: it has rank 0, and the "
+            f"radius is defined only for positive rank"
+        )
     ring = lattice.base_ring()
     covolume = SR(_engine_element(ring, abs(lattice.determinant()))).sqrt()
     dimension = SageQQ(rank)
@@ -702,7 +742,10 @@ def _hadamard_ratio(lattice):
     _sign, gram = _positive_gram(lattice)
     rank = int(gram.tensor_shape()[0])
     if rank == 0:
-        raise ValueError("the zero lattice has no framing ratio")
+        raise ValueError(
+            f"{lattice} has no Hadamard ratio: it has rank 0, and the ratio is defined "
+            f"only for positive rank"
+        )
     ring = lattice.base_ring()
     product_of_norms = prod(
         SR(_engine_element(ring, gram[index, index])).sqrt()
@@ -767,7 +810,10 @@ def _center_density(lattice):
     _sign, gram = _positive_gram(lattice)
     rank = int(gram.tensor_shape()[0])
     if rank == 0:
-        raise ValueError("the zero lattice has no sphere packing")
+        raise ValueError(
+            f"{lattice} has no center density: it has rank 0, and the sphere packing "
+            f"density is defined only for positive rank"
+        )
     determinant_length = RR(
         _engine_element(lattice.base_ring(), abs(lattice.determinant()))
     ).sqrt()

@@ -78,17 +78,19 @@ class _PowerAlgebra:
 
     def divided_power(self, value, exponent):
         if self.flavor() != "divided":
-            raise TypeError("divided powers are defined on a divided-power algebra")
+            raise TypeError(
+                f"divided powers are defined on a divided power algebra, but {self} is a {self.flavor()} power algebra"
+            )
         exponent = int(exponent)
         if exponent < 0:
-            raise ValueError("a divided-power exponent is nonnegative")
+            raise ValueError(f"the divided power x^[n] needs n >= 0, but n = {exponent}")
         if exponent == 0:
             return self.one()
         value = self(value)
         if value == self.zero():
             return value
         assert value.is_homogeneous() and value.degree() == 1, (
-            "the represented canonical divided-power operation is evaluated on homogeneous degree-one elements"
+            f"the divided power x^[n] is computed here only for homogeneous x of degree 1, but x = {value}"
         )
         return self.from_component(
             exponent,
@@ -120,7 +122,10 @@ class PowerAlgebraMorphism(Morphism):
         target_module = self.codomain().generating_module()
         if isinstance(degree_one_map, ModuleMorphism):
             if degree_one_map.domain() is not source_module or degree_one_map.codomain() is not target_module:
-                raise ValueError("the degree-one module map has the wrong endpoints")
+                raise ValueError(
+                    f"cannot view {degree_one_map} as the degree-one part {source_module} -> {target_module} of a "
+                    f"power algebra morphism: it is a map {degree_one_map.domain()} -> {degree_one_map.codomain()}"
+                )
             self._degree_one_map = degree_one_map
             return
 
@@ -128,10 +133,14 @@ class PowerAlgebraMorphism(Morphism):
             image = degree_one_map[label] if isinstance(degree_one_map, dict) else degree_one_map(label)
             if element_parent(image) is self.codomain():
                 if not image.is_homogeneous() or image.degree() != 1:
-                    raise ValueError("power-algebra generator images must lie in degree one")
+                    raise ValueError(
+                        f"the image {image} of the generator {label} must lie in degree 1 of {self.codomain()}"
+                    )
                 return image.homogeneous_component(1)
             if image not in target_module:
-                raise ValueError("power-algebra generator images must lie in the target degree-one module")
+                raise ValueError(
+                    f"the image {image} of the generator {label} must lie in {target_module}"
+                )
             return target_module(image)
 
         self._degree_one_map = source_module.module_category().Mor(source_module, target_module)(target_component)
@@ -174,11 +183,19 @@ class PowerAlgebraMor(CategoricalMor):
 
     def __init__(self, mor_family, domain, codomain) -> None:
         category = mor_family.base_category()
-        assert domain in category and codomain in category, "power-algebra arrows use the stated category"
+        assert domain in category and codomain in category, (
+            f"a morphism in {category} needs two of its objects, but got {domain} and {codomain}"
+        )
         if domain.flavor() != codomain.flavor():
-            raise ValueError("power-algebra morphisms preserve the construction flavor")
+            raise ValueError(
+                f"morphisms of power algebras preserve the flavor, but {domain} is {domain.flavor()} and "
+                f"{codomain} is {codomain.flavor()}"
+            )
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("power-algebra morphisms require one common base ring")
+            raise ValueError(
+                f"morphisms of power algebras {domain} -> {codomain} need one base ring, but they are over "
+                f"{domain.base_ring()} and {codomain.base_ring()}"
+            )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def _element_constructor_(self, degree_one_map):
@@ -186,7 +203,9 @@ class PowerAlgebraMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Mor object")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         module = self.domain().generating_module()
         identity = self(module.module_category().Mor(module, module).identity())
         identity._preamble_is_identity = True
@@ -209,7 +228,9 @@ def PowerAlgebra(module, flavor):
         case "divided":
             return DividedPowerAlgebras(module.base_ring())(module)
         case _:
-            raise ValueError("power algebra flavor must be alternating or divided")
+            raise ValueError(
+                f"a power algebra is alternating or divided, but got flavor {flavor!r}"
+            )
 
 
 @cached_function(key=lambda source, flavor: (id(source), flavor))
@@ -235,7 +256,9 @@ def _power_algebra_of(source, flavor):
             power = source.divided_power_module
             product = source.divided_power_product
         case _:
-            raise ValueError("power algebra flavor must be alternating or divided")
+            raise ValueError(
+                f"a power algebra is alternating or divided, but got flavor {flavor!r}"
+            )
 
     def piece(degree):
         match degree < 0:
@@ -294,16 +317,22 @@ def _alternating_extension(module_morphism):
     )
 
     if not isinstance(module_morphism, ModuleMorphism):
-        raise TypeError("an alternating extension starts from a represented module morphism")
+        raise TypeError(
+            f"the extension Lambda(M) -> A starts from a module morphism M -> A, but {module_morphism!r} "
+            "is not one"
+        )
     module = module_morphism.domain()
     target = module_morphism.codomain()
     base = module.base_ring()
     if target not in Algebras(base).Associative().Unital():
-        raise TypeError("an alternating extension requires a unital associative algebra target")
+        raise TypeError(
+            f"the extension Lambda(M) -> A needs A to be a unital associative algebra, but {target} is not one"
+        )
     labels = module.module_generating_set()
     cardinality = labels.cardinality()
     assert cardinality.is_finite(), (
-        "verification of the exterior-algebra relations currently requires a finite selected framing"
+        f"the extension Lambda(M) -> A is checked on finitely many generators of M = {module}, but it "
+        f"has {cardinality}"
     )
     labels = tuple(labels)
     images = {
@@ -312,13 +341,19 @@ def _alternating_extension(module_morphism):
     }
     zero = target.zero()
     if any(image * image != zero for image in images.values()):
-        raise ValueError("alternating generator images must square to zero")
+        raise ValueError(
+            f"{module_morphism} does not extend to Lambda(M) -> A: some generator image does not square to "
+            f"0 in {target}"
+        )
     if any(
         images[left] * images[right] + images[right] * images[left] != zero
         for position, left in enumerate(labels)
         for right in labels[position + 1 :]
     ):
-        raise ValueError("alternating generator images must anticommute")
+        raise ValueError(
+            f"{module_morphism} does not extend to Lambda(M) -> A: some generator images do not "
+            f"anticommute in {target}"
+        )
 
     source = module.exterior_algebra()
 

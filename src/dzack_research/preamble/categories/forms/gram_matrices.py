@@ -74,12 +74,14 @@ class _GramTensorGraphEngine:
 def _gram_tensor_graph(gram):
     r"""Return the owned weighted graph presented by a symmetric Gram tensor."""
     if gram.tensor_valence() != (NN**2)((0, 2)):
-        raise TypeError("a Gram object is a type-(0,2) tensor")
+        raise TypeError(
+            f"a Gram tensor has type (0, 2), but {gram} has type {gram.tensor_valence()}"
+        )
     n, m = gram.tensor_shape()
     if n != m:
-        raise ValueError("a Gram tensor is square")
+        raise ValueError(f"a Gram tensor is square, but {gram} has shape {n} x {m}")
     if any(gram[i, j] != gram[j, i] for i in range(n) for j in range(i, n)):
-        raise ValueError("a Gram tensor is symmetric")
+        raise ValueError(f"a Gram tensor is symmetric, but {gram} is not")
     vertices = finite_ordered_set(tuple(range(n)))
     edge_space = vertices**2
     edges = finite_ordered_set(
@@ -111,7 +113,10 @@ def _tensor_connected_component_cuts(gram):
     integer positions leave this function.
     """
     if gram.tensor_order() != 2:
-        raise TypeError("connected block cuts require a two-index tensor")
+        raise TypeError(
+            f"cutting a Gram tensor into connected blocks needs a tensor with two indices, but {gram} has "
+            f"{gram.tensor_order()}"
+        )
     return gram.gram_graph().connected_component_cuts()
 
 

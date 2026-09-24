@@ -24,7 +24,9 @@ class OwnedMor(SageHomset):
 
     def identity_at(self, obj: Parent) -> Morphism:
         if obj is not self.domain() or obj is not self.codomain():
-            raise ValueError("this Mor parent does not represent endomorphisms of the stated object")
+            raise ValueError(
+                f"the identity of {obj} is not in Mor({self.domain()}, {self.codomain()})"
+            )
         return self.identity()
 
 
@@ -41,17 +43,24 @@ class UnderlyingSetMor(OwnedMor):
     def _element_constructor_(self, datum):
         if isinstance(datum, SetMorphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
-                raise ValueError("the set morphism has the wrong endpoints")
+                raise ValueError(
+                    f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
+                    f"{datum.domain()} -> {datum.codomain()}"
+                )
             if datum.parent() is self:
                 return datum
             datum = datum._call_
         if not callable(datum):
-            raise TypeError("an underlying set map is supplied by a callable")
+            raise TypeError(
+                f"a map {self.domain()} -> {self.codomain()} needs a function on points, but {datum!r} is not callable"
+            )
         return SetMorphism(self, datum)
 
     def identity(self) -> SetMorphism:
         if self.domain() is not self.codomain():
-            raise ValueError("identity requires equal endpoints")
+            raise ValueError(
+                f"the identity map exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         return SetMorphism(self, lambda element: element)
 
 

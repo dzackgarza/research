@@ -104,18 +104,25 @@ def _convolution_representative(space, left, right):
     if symbolic is not None:
         expression, variable = symbolic
         assert expression not in (sympy.oo, -sympy.oo, sympy.zoo, sympy.nan), (
-            "the supplied representatives violate their stated Young integrability hypotheses"
+            f"the convolution {left} * {right} is infinite ({expression}): the two functions do not satisfy "
+            "the integrability hypotheses of Young's inequality"
         )
         if _engine_global_continuous_formula(expression, variable):
             formula = SR(expression).subs({SR(str(variable)): space.indeterminate()})
 
     def evaluate(point):
-        assert symbolic is not None, "this integral evaluator requires formulas for the two supplied measurable maps"
+        assert symbolic is not None, (
+            f"cannot evaluate the convolution {left} * {right} at {point}: both functions must be given by "
+            "formulas"
+        )
         expression, variable = symbolic
         value = expression.subs(variable, RR(point).expression()._sympy_()).doit()
         if value in (sympy.oo, -sympy.oo, sympy.zoo, sympy.nan):
             return RR.zero()
-        assert not value.has(sympy.Integral), "the exact convolution integral is not evaluated by the selected symbolic engine"
+        assert not value.has(sympy.Integral), (
+            f"cannot evaluate the convolution {left} * {right} at {point}: the integral {value} has no "
+            "closed form"
+        )
         return _owned_real_from_engine_expression(SR(value))
 
     return space.element_class(space, evaluate=evaluate, expression=formula)

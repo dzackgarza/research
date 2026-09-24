@@ -87,7 +87,10 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         def discriminant_class(self, dual_lattice_element):
             r"""Return the class of an element of ``L^#`` in ``A_L``."""
             if dual_lattice_element not in self.dual_lattice():
-                raise TypeError(f"a discriminant class is represented by an element of {self.dual_lattice()}")
+                raise TypeError(
+                    f"a class in the discriminant group {self} is the image of an element of the dual lattice "
+                    f"{self.dual_lattice()}, but {dual_lattice_element} is not in it"
+                )
             return self.projection()(dual_lattice_element)
 
         def subgroup_on(self, generators):
@@ -189,14 +192,19 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
         def b(self, left, right):
             if left not in self or right not in self:
-                raise TypeError("the discriminant form pairs two classes in one module")
+                raise TypeError(
+                    f"the discriminant form on {self} pairs two of its elements, but {left} or {right} is not in {self}"
+                )
             value = self.dual_lattice().b(self.dual_lattice_lift(left), self.dual_lattice_lift(right))
             return self.bilinear_value_module()(value)
 
         def orthogonal_subgroup(self, subgroup):
             r"""Return ``H^perp`` for a subgroup ``H <= A``."""
             if subgroup.ambient_discriminant_module() is not self:
-                raise ValueError("orthogonality requires a subgroup of this discriminant module")
+                raise ValueError(
+                    f"the orthogonal complement in {self} is taken of a subgroup of {self}, but {subgroup} "
+                    f"is a subgroup of {subgroup.ambient_discriminant_module()}"
+                )
 
             generators = subgroup.embedded_module_generators()
             zero = self.bilinear_value_module().zero()
@@ -257,7 +265,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             r"""Return one Lagrangian subgroup, refusing a nonmetabolic form."""
             lagrangians = self.lagrangian_subgroups()
             if int(lagrangians.cardinality()) == 0:
-                raise ValueError("this bilinear discriminant form is not metabolic")
+                raise ValueError(f"the bilinear discriminant form {self} is not metabolic: it has no Lagrangian subgroup")
             return lagrangians[0]
 
         def associated_quadratic_form(self):
@@ -273,7 +281,8 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             lattice = self.source_lattice()
             if not lattice.is_even():
                 raise ValueError(
-                    "the discriminant quadratic refinement exists only for an even source lattice"
+                    f"the discriminant quadratic form of {self} requires an even lattice, "
+                    f"but its lattice {lattice} is not even"
                 )
             return lattice.discriminant_quadratic_form()
 
@@ -285,10 +294,15 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             is descended from the restriction to ``H^perp``.
             """
             if subgroup.ambient_discriminant_module() is not self:
-                raise ValueError("an orthogonal quotient uses a subgroup of this discriminant module")
+                raise ValueError(
+                    f"H^perp/H in {self} is taken for a subgroup H of {self}, but {subgroup} "
+                    f"is a subgroup of {subgroup.ambient_discriminant_module()}"
+                )
             embedded = tuple(subgroup.embedded_elements())
             if not self.form_vanishes_on(embedded):
-                raise ValueError("H^perp/H requires a totally isotropic subgroup")
+                raise ValueError(
+                    f"H^perp/H in {self} requires H totally isotropic for b, but b does not vanish on {subgroup}"
+                )
             perpendicular = self.orthogonal_subgroup(subgroup)
             quotient = _subquotient_module(subgroup, perpendicular)
             generators = tuple(perpendicular.module_generators())
@@ -299,10 +313,16 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         def overlattice_from_isotropic_subobject(self, subgroup):
             r"""Return ``L -> L'`` for bilinear-isotropic glue ``H <= A_L``."""
             if subgroup.ambient_discriminant_module() is not self:
-                raise ValueError("overlattice glue is a subgroup of this discriminant module")
+                raise ValueError(
+                    f"an overlattice of {self.source_lattice()} is glued from a subgroup of {self}, but "
+                    f"{subgroup} is a subgroup of {subgroup.ambient_discriminant_module()}"
+                )
             embedded = tuple(subgroup.embedded_elements())
             if not self.form_vanishes_on(embedded):
-                raise ValueError("integral overlattice glue must be bilinear-isotropic")
+                raise ValueError(
+                    f"an integral overlattice of {self.source_lattice()} needs a subgroup isotropic for b, "
+                    f"but b does not vanish on {subgroup}"
+                )
             return self.source_lattice().overlattice(*tuple(subgroup.embedded_module_generators()))
 
         def discriminant_form_of_overlattice(self, subgroup):
@@ -438,7 +458,9 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
 
         def q(self, element):
             if element not in self:
-                raise TypeError("the discriminant quadratic form is defined on this module")
+                raise TypeError(
+                    f"the discriminant quadratic form on {self} is defined on its elements, but {element} is not in {self}"
+                )
             return self.quadratic_value_module()(self.dual_lattice().norm(self.dual_lattice_lift(element)))
 
         @cached_method
@@ -499,7 +521,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             r"""Return one Lagrangian subgroup, refusing a nonmetabolic form."""
             lagrangians = self.lagrangian_subgroups()
             if int(lagrangians.cardinality()) == 0:
-                raise ValueError("this quadratic discriminant form is not metabolic")
+                raise ValueError(f"the quadratic discriminant form {self} is not metabolic: it has no Lagrangian subgroup")
             return lagrangians[0]
 
         def form_vanishes_on(self, elements) -> bool:
@@ -541,10 +563,15 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def orthogonal_quotient(self, subgroup):
             r"""Return ``H^perp/H`` with its descended quadratic form."""
             if subgroup.ambient_discriminant_module() is not self:
-                raise ValueError("an orthogonal quotient uses a subgroup of this discriminant module")
+                raise ValueError(
+                    f"H^perp/H in {self} is taken for a subgroup H of {self}, but {subgroup} "
+                    f"is a subgroup of {subgroup.ambient_discriminant_module()}"
+                )
             embedded = tuple(subgroup.embedded_elements())
             if not self.form_vanishes_on(embedded):
-                raise ValueError("H^perp/H requires a q-isotropic subgroup")
+                raise ValueError(
+                    f"H^perp/H in {self} requires H isotropic for q, but q does not vanish on {subgroup}"
+                )
             perpendicular = DiscriminantBilinearModules.ParentMethods.orthogonal_subgroup(self, subgroup)
             quotient = _subquotient_module(subgroup, perpendicular)
             generators = tuple(perpendicular.module_generators())
@@ -565,9 +592,15 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         def overlattice_from_isotropic_subobject(self, subgroup):
             r"""Return ``L -> L'`` for q-isotropic glue ``H <= A_L``."""
             if subgroup.ambient_discriminant_module() is not self:
-                raise ValueError("overlattice glue is a subgroup of this discriminant module")
+                raise ValueError(
+                    f"an overlattice of {self.source_lattice()} is glued from a subgroup of {self}, but "
+                    f"{subgroup} is a subgroup of {subgroup.ambient_discriminant_module()}"
+                )
             if not subgroup.is_isotropic():
-                raise ValueError("an even overlattice requires q-isotropic glue")
+                raise ValueError(
+                    f"an even overlattice of {self.source_lattice()} needs a subgroup isotropic for q, "
+                    f"but q does not vanish on {subgroup}"
+                )
             return self.source_lattice().overlattice(*tuple(subgroup.embedded_module_generators()))
 
         def discriminant_form_of_overlattice(self, subgroup):
@@ -685,7 +718,8 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                 if total == scale * zeta8**residue:
                     return residues(residue)
             raise ArithmeticError(
-                "the normalized Gauss sum is not an eighth root of unity; the form may be degenerate"
+                f"the Brown invariant of {self} is undefined: its normalized Gauss sum {total / scale} "
+                "is not an eighth root of unity, so the form is degenerate"
             )
 
     class ElementMethods:
@@ -747,13 +781,19 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
         def q(self, element):
             ambient = self.ambient_discriminant_module()
             if ambient not in DiscriminantQuadraticModules(ambient.base_ring()):
-                raise TypeError("the ambient discriminant module has no quadratic form")
+                raise TypeError(
+                    f"q is not defined on the subgroup {self}: {ambient} is a bilinear discriminant form "
+                    f"without a quadratic form, in {ambient.category()}"
+                )
             return ambient.q(self.inclusion()(element))
 
         def is_isotropic(self) -> bool:
             ambient = self.ambient_discriminant_module()
             if ambient not in DiscriminantQuadraticModules(ambient.base_ring()):
-                raise TypeError("isotropy here requires a discriminant quadratic module")
+                raise TypeError(
+                    f"isotropy of the subgroup {self} is decided for q, but {ambient} has no quadratic form; "
+                    f"it is in {ambient.category()}"
+                )
             zero = ambient.quadratic_value_module().zero()
             return all(ambient.q(element) == zero for element in self.embedded_elements())
 
@@ -785,7 +825,10 @@ def _through_formed_copy(module, formed, normalization):
 def _subquotient_module(subgroup, larger):
     r"""Return the literal cokernel of ``subgroup -> larger`` inside one ambient module."""
     if subgroup.ambient_discriminant_module() is not larger.ambient_discriminant_module():
-        raise ValueError("a discriminant subquotient requires one ambient module")
+        raise ValueError(
+            f"the subquotient {larger}/{subgroup} needs both subgroups in one discriminant group, but they "
+            f"lie in {subgroup.ambient_discriminant_module()} and {larger.ambient_discriminant_module()}"
+        )
 
     larger_inclusion = larger.inclusion()
     subgroup_inclusion = subgroup.inclusion()
@@ -794,7 +837,10 @@ def _subquotient_module(subgroup, larger):
         for candidate in larger.elements():
             if larger_inclusion(candidate) == element:
                 return candidate
-        raise ValueError("the smaller subgroup is not contained in the proposed larger subgroup")
+        raise ValueError(
+            f"the subquotient {larger}/{subgroup} needs {subgroup} contained in {larger}, "
+            f"but {element} is not in {larger}"
+        )
 
     images = {label: lift_into_larger(subgroup_inclusion(subgroup.module_generator(label))) for label in subgroup.module_generating_set()}
     return subgroup.module_category().Mor(subgroup, larger)(images).cokernel()
@@ -861,7 +907,8 @@ def _all_discriminant_subgroups(ambient):
 
     smith_engine = ambient._smith_engine()
     assert smith_engine is not None, (
-        "discriminant subgroup enumeration requires the integral Smith engine"
+        f"the subgroups of {ambient} are enumerated from its invariant factor decomposition, "
+        f"which has not been computed for {ambient}, in {ambient.category()}"
     )
     additive_group = AbelianGroupGap(smith_engine.invariants())
     return finite_ordered_set(

@@ -58,7 +58,10 @@ class _UnitInterval:
         def admissible(pair):
             value = pair.component(0).as_extended_real() + pair.component(1).as_extended_real()
             decision = ask(value >= RR.one())
-            assert decision is True or decision is False, "Young admissibility of this exact pair is undecided"
+            assert decision is True or decision is False, (
+                f"cannot decide whether {pair} is a Young pair (p, q) with 1/p + 1/q >= 1: "
+                f"it is undecided whether {value} >= 1"
+            )
             return decision
 
         return Sets().condition_set(self.degree_pairs(), admissible)

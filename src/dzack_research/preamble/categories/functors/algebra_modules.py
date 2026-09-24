@@ -67,7 +67,8 @@ class _AlgebraUnderlyingModuleFunctor(Functor):
             Algebras(self._base_ring) if algebra_category is None else algebra_category
         )
         assert domain.is_subcategory(Algebras(self._base_ring)), (
-            f"the underlying-module functor starts on a category of {self._base_ring}-algebras"
+            f"the underlying-module functor starts at a category of {self._base_ring}-algebras, but "
+            f"{domain} is not a subcategory of {Algebras(self._base_ring)}"
         )
         super().__init__(domain, Modules(self._base_ring))
 

@@ -212,7 +212,9 @@ class GeneralProjectivizationBaseChangeComparison(SageObject):
         )
         if ring_map.domain() is not source_module.base_ring():
             raise ValueError(
-                "relative-Proj base change starts at the affine source coordinate ring"
+                f"cannot base change the projectivization {projectivization} along {ring_map}: the "
+                f"map starts at {ring_map.domain()}, but the base ring of the sheaf's module is "
+                f"{source_module.base_ring()}"
             )
         changed_ring = ring_map.codomain()
         changed_scheme = changed_ring.affine_spectrum(
@@ -250,7 +252,8 @@ class GeneralProjectivizationBaseChangeComparison(SageObject):
             != self.base_morphism() * changed_total.projectivization_projection()
         ):
             raise ArithmeticError(
-                "the exact relative-Proj base-change square does not commute"
+                f"the base change of the projectivization {projectivization} along {ring_map} "
+                "does not commute with the projections to the bases"
             )
 
     def projectivization(self):
@@ -291,7 +294,9 @@ class ExactProjectivizationBaseChangeComparison(SageObject):
         source_scheme = source_sheaf.scheme()
         if ring_map.domain() is not source_scheme.scheme_base_ring():
             raise ValueError(
-                "relative-Proj scalar base change starts at the scheme base ring"
+                f"cannot base change the projectivization {projectivization} along {ring_map}: the "
+                f"map starts at {ring_map.domain()}, but {source_scheme} lies over "
+                f"{source_scheme.scheme_base_ring()}"
             )
 
         changed_base = source_scheme.base_change(ring_map)
@@ -328,7 +333,8 @@ class ExactProjectivizationBaseChangeComparison(SageObject):
             != self.base_projection() * changed_total.projectivization_projection()
         ):
             raise ArithmeticError(
-                "the exact relative-Proj base-change square does not commute"
+                f"the base change of the projectivization {projectivization} along {ring_map} "
+                "does not commute with the projections to the bases"
             )
 
     def projectivization(self):
@@ -375,7 +381,9 @@ class ExactFiniteAtlasProjectivizationBaseChangeComparison(SageObject):
         source_scheme = source_sheaf.scheme()
         if ring_map.domain() is not source_scheme.scheme_base_ring():
             raise ValueError(
-                "finite-atlas relative-Proj scalar base change starts at the scheme base ring"
+                f"cannot base change the projectivization {projectivization} along {ring_map}: the "
+                f"map starts at {ring_map.domain()}, but {source_scheme} lies over "
+                f"{source_scheme.scheme_base_ring()}"
             )
 
         changed_base = source_scheme.base_change(ring_map)
@@ -420,7 +428,8 @@ class ExactFiniteAtlasProjectivizationBaseChangeComparison(SageObject):
             * changed_total.projectivization_projection()
         ):
             raise ArithmeticError(
-                "the exact finite-atlas relative-Proj base-change square does not commute"
+                f"the base change of the projectivization {projectivization} along {ring_map} "
+                "does not commute with the projections to the bases"
             )
 
     def projectivization(self):
@@ -559,7 +568,10 @@ class RelativeProjectivizationQuasiCoherentMor(CategoricalMor):
                 return datum
             case RelativeProjectivizationQuasiCoherentMorphism():
                 if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
-                    raise ValueError("the relative-projectivization QCoh morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"the morphism {datum} of quasi-coherent sheaves goes from {datum.domain()} to "
+                        f"{datum.codomain()}, not from {self.domain()} to {self.codomain()}"
+                    )
                 return self.element_class(
                     self,
                     datum.relative_projectivization(),
@@ -571,14 +583,24 @@ class RelativeProjectivizationQuasiCoherentMor(CategoricalMor):
                     and self.codomain() is datum.tautological_line_bundle().module_sheaf()
                 ):
                     return self.element_class(self, datum)
-                raise ValueError("this relative Proj does not define the requested QCoh endpoints")
+                raise ValueError(
+                    f"the projectivization {datum} gives the universal quotient from "
+                    f"{datum.pulled_source_sheaf()} to O(1), not a morphism from {self.domain()} to "
+                    f"{self.codomain()}"
+                )
             case _:
-                raise TypeError("this exact QCoh Mor accepts its relative-Proj universal quotient datum")
+                raise TypeError(
+                    f"a morphism from {self.domain()} to {self.codomain()} is given here by a "
+                    f"projectivization and its universal quotient, but {datum} is neither"
+                )
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor")
+            raise ValueError(
+                f"there is no identity morphism from {self.domain()} to the different sheaf "
+                f"{self.codomain()}; the identity exists only when domain and codomain agree"
+            )
         scheme = self.domain().scheme()
         return self.element_class(self, scheme, identity=True)
 
@@ -613,7 +635,10 @@ class RelativeProjectivizations(OwnedCategoryOverBaseRing):
         """
         source_scheme = source_sheaf.scheme()
         if source_scheme.scheme_base_ring() is not self.base_ring():
-            raise ValueError("a relative projectivization belongs to the base ring of its source scheme")
+            raise ValueError(
+                f"the projectivization of {source_sheaf} lies over {source_scheme.scheme_base_ring()}, "
+                f"not over the base ring {self.base_ring()} of {self}"
+            )
         return _object_of(
             self,
             scheme_base_ring=self.base_ring(),
@@ -1128,7 +1153,9 @@ def _chart_base_change_pullback(source_chart, target_chart, ring_map):
         target_labels = target.algebra_generating_set()
         if source_labels != target_labels:
             raise ValueError(
-                "projectivization base change must preserve the standard ratio generators"
+                f"the base change of the chart algebra {source} has variables {source_labels}, but "
+                f"the chart algebra {target} of the base-changed projectivization has variables "
+                f"{target_labels}; they must agree"
             )
         comparison = target_algebras.Mor(extended, target)(
             {
@@ -1155,7 +1182,9 @@ class AffineProjectivizationBaseChangeComparison(SageObject):
         source_module = projectivization.projectivization_module()
         if ring_map.domain() is not source_module.base_ring():
             raise ValueError(
-                "projectivization base change starts at the affine source coordinate ring"
+                f"cannot base change the projectivization {projectivization} along {ring_map}: the "
+                f"map starts at {ring_map.domain()}, but the base ring of the sheaf's module is "
+                f"{source_module.base_ring()}"
             )
         changed_ring = ring_map.codomain()
         changed_scheme = changed_ring.affine_spectrum(
@@ -1170,7 +1199,9 @@ class AffineProjectivizationBaseChangeComparison(SageObject):
         changed_atlas = changed_total.finite_affine_atlas()
         if source_atlas.chart_index_set() != changed_atlas.chart_index_set():
             raise ValueError(
-                "projectivization base change must retain the standard chart index set"
+                f"the base change of the projectivization {projectivization} along {ring_map} has "
+                f"charts {tuple(changed_atlas.chart_index_set())}, but the original has charts "
+                f"{tuple(source_atlas.chart_index_set())}; they must agree"
             )
         local_maps = finite_indexed_family(
             changed_atlas.chart_index_set(),
@@ -1198,7 +1229,8 @@ class AffineProjectivizationBaseChangeComparison(SageObject):
             != base_morphism * changed_projection
         ):
             raise ArithmeticError(
-                "the projectivization base-change comparison does not commute over the affine base"
+                f"the base change of the projectivization {projectivization} along {ring_map} "
+                f"does not commute with the projections to {changed_scheme} and {source_scheme}"
             )
 
         self._changed_source_sheaf = changed_sheaf
@@ -1407,7 +1439,9 @@ class FiniteAtlasProjectivizationBaseChangeComparison(SageObject):
                 pass
             case False:
                 raise ValueError(
-                    "finite-atlas projectivization scalar base change starts at the scheme base ring"
+                    f"cannot base change the projectivization {projectivization} along {ring_map}: "
+                    f"the map starts at {ring_map.domain()}, but {source_scheme} lies over "
+                    f"{source_scheme.scheme_base_ring()}"
                 )
         changed_base = source_scheme.base_change(ring_map)
         changed_atlas = changed_base.selected_finite_affine_atlas()
@@ -1428,7 +1462,9 @@ class FiniteAtlasProjectivizationBaseChangeComparison(SageObject):
                 pass
             case False:
                 raise ValueError(
-                    "finite-atlas projectivization base change must retain the Proj chart index set"
+                    f"the base change of the projectivization {projectivization} along {ring_map} "
+                    f"has charts {tuple(changed_total_atlas.chart_index_set())}, but the original "
+                    f"has charts {tuple(source_total_atlas.chart_index_set())}; they must agree"
                 )
 
         def local_total_projection(role):
@@ -1468,7 +1504,8 @@ class FiniteAtlasProjectivizationBaseChangeComparison(SageObject):
                 pass
             case False:
                 raise ArithmeticError(
-                    "the finite-atlas projectivization base-change square does not commute"
+                    f"the base change of the projectivization {projectivization} along {ring_map} "
+                    "does not commute with the projections to the bases"
                 )
 
         self._changed_base = changed_base
@@ -1778,7 +1815,8 @@ def _empty_affine_scheme_morphism(domain, codomain):
             pass
         case _:
             raise ValueError(
-                "the initial affine-scheme map requires an empty affine domain and affine codomain"
+                f"the unique morphism from the empty scheme needs an empty affine domain and an "
+                f"affine codomain, but the domain is {domain} and the codomain is {codomain}"
             )
     zero_ring = domain.coordinate_algebra()
     pullback = OwnedRings().Mor(
@@ -1863,7 +1901,10 @@ def _projectivization_map(sheaf_morphism):
         case True:
             pass
         case False:
-            raise ValueError("projectivization of a sheaf map requires one base scheme")
+            raise ValueError(
+                f"cannot projectivize {sheaf_morphism}: its domain and codomain are sheaves on "
+                f"different schemes, {source_sheaf.scheme()} and {target_sheaf.scheme()}"
+            )
 
     source_family = source_sheaf.projectivization()
     target_family = target_sheaf.projectivization()
@@ -1892,7 +1933,9 @@ def _projectivization_map(sheaf_morphism):
                     local_map = sheaf_morphism.global_sections_map()
                 case _:
                     raise TypeError(
-                        "the represented affine projectivization map requires a quasi-coherent morphism with its module map"
+                        f"projectivizing {sheaf_morphism} on the affine scheme {scheme} needs a "
+                        "morphism of quasi-coherent sheaves given by a map of modules, but it is "
+                        f"in {sheaf_morphism.parent()}"
                     )
             source_labels = tuple(source_module.module_generating_set())
             target_labels = tuple(target_module.module_generating_set())
@@ -1925,7 +1968,9 @@ def _projectivization_map(sheaf_morphism):
                     pass
                 case _:
                     raise TypeError(
-                        "the represented finite-atlas projectivization map requires compatible local quasi-coherent maps"
+                        f"projectivizing {sheaf_morphism} on {scheme} needs a morphism of "
+                        "quasi-coherent sheaves given by compatible maps of modules on affine charts, "
+                        f"but it is in {sheaf_morphism.parent()}"
                     )
             source_datum = _finite_atlas_module_datum(source_sheaf)
             target_datum = _finite_atlas_module_datum(target_sheaf)
@@ -1934,7 +1979,8 @@ def _projectivization_map(sheaf_morphism):
                     pass
                 case False:
                     raise ValueError(
-                        "finite-atlas projectivization of a sheaf map requires one base atlas"
+                        f"cannot projectivize {sheaf_morphism}: its domain and codomain are given on "
+                        f"different affine covers of {scheme}"
                     )
             match all(
                 not tuple(target_datum.local_module(index).module_generating_set())
@@ -2103,15 +2149,18 @@ def _free_projectivization_projective_space_comparison(
             pass
         case (False, _, _):
             raise ValueError(
-                "the absolute projective-space comparison starts from a free sheaf on Spec(R)"
+                f"the isomorphism P(R^r) = P^(r-1) needs a free sheaf on Spec({base}), but "
+                f"{source_sheaf} is a sheaf on {source_scheme}"
             )
         case (_, False, _):
             raise TypeError(
-                "the projective-space comparison requires a represented finite free module"
+                f"the isomorphism P(R^r) = P^(r-1) needs a free module of finite rank with a basis, "
+                f"but {module} is in {module.category()}"
             )
         case (_, _, False):
             raise TypeError(
-                "the comparison target is a represented projective space over the same base"
+                f"the isomorphism P(R^r) = P^(r-1) needs projective space over {base}, but "
+                f"{projective_space} is in {projective_space.category()}"
             )
 
     labels = tuple(module.module_generating_set())
@@ -2120,7 +2169,8 @@ def _free_projectivization_projective_space_comparison(
             pass
         case False:
             raise ValueError(
-                "the projective-space dimension must be one less than the free-module rank"
+                f"P(R^r) is P^(r-1), but {module} has rank {len(labels)} and {projective_space} has "
+                f"dimension {projective_space.relative_dimension()}"
             )
     ranking = module.module_generating_set().ranking_map()
     source_atlas = projectivization.finite_affine_atlas()
@@ -2259,7 +2309,8 @@ def _base_changed_finite_atlas_module_datum(
     source_atlas = module_datum.gluing_datum()
     if source_atlas.chart_index_set() != changed_atlas.chart_index_set():
         raise ValueError(
-            "finite-atlas scalar base change must retain the chart index set"
+            f"the base change along {ring_map} has charts {tuple(changed_atlas.chart_index_set())}, "
+            f"but the original cover has charts {tuple(source_atlas.chart_index_set())}; they must agree"
         )
 
     chart_ring_maps = {
@@ -2644,7 +2695,8 @@ def _trivial_finite_atlas_relative_projective_space_comparison(projectivization)
             pass
         case False:
             raise AssertionError(
-                "the represented relative-projective-space comparison presently uses a projective-space base with its standard atlas"
+                f"the isomorphism of P(O^r) with X x P^(r-1) is implemented only over a projective "
+                f"space X, but {source_scheme} is in {source_scheme.category()}"
             )
     module_datum = projectivization.projectivization_module_datum()
     base_atlas = module_datum.gluing_datum()
@@ -2653,7 +2705,8 @@ def _trivial_finite_atlas_relative_projective_space_comparison(projectivization)
             pass
         case False:
             raise ValueError(
-                "the trivial-bundle comparison uses the source projective space's selected standard affine atlas"
+                f"the isomorphism of P(O^r) with {source_scheme} x P^(r-1) needs the sheaf given on "
+                f"the standard affine cover of {source_scheme}, but it is given on {base_atlas}"
             )
 
     first_index = next(iter(base_atlas.chart_indices()))
@@ -2661,7 +2714,10 @@ def _trivial_finite_atlas_relative_projective_space_comparison(projectivization)
     labels = tuple(first_module.module_generating_set())
     match labels:
         case ():
-            raise ValueError("the zero bundle has empty projectivization, not a relative projective space")
+            raise ValueError(
+                f"the sheaf {source_sheaf} on {source_scheme} has rank 0, so its projectivization is "
+                "empty, not a projective space bundle"
+            )
         case _:
             pass
     for index in base_atlas.chart_indices():
@@ -2674,7 +2730,9 @@ def _trivial_finite_atlas_relative_projective_space_comparison(projectivization)
                 pass
             case _:
                 raise TypeError(
-                    "the relative-projective-space comparison requires one finite free basis on every chart"
+                    f"the isomorphism of P(O^r) with {source_scheme} x P^(r-1) needs the sheaf to be "
+                    f"free with the same basis {labels} on every chart, but on chart {index} it is "
+                    f"{local}, in {local.category()}"
                 )
     for source_index, target_index in base_atlas.transition_index_set():
         source_pair = module_datum.pair_module(source_index, target_index)
@@ -2691,7 +2749,9 @@ def _trivial_finite_atlas_relative_projective_space_comparison(projectivization)
                 pass
             case False:
                 raise ValueError(
-                    "the finite-atlas module descent is not the trivial bundle in the selected bases"
+                    f"the sheaf {source_sheaf} is not the trivial bundle O^r in the given bases: its "
+                    f"transition from chart {source_index} to chart {target_index} does not send "
+                    "each basis vector to the basis vector of the same name"
                 )
 
     fiber = ProjectiveSpaces(base)(len(labels) - 1)
@@ -2701,7 +2761,8 @@ def _trivial_finite_atlas_relative_projective_space_comparison(projectivization)
             pass
         case False:
             raise AssertionError(
-                "the represented projective-base relative space must be the existing product of projective spaces"
+                f"{source_scheme} x P^{len(labels) - 1} should be a product of projective spaces, "
+                f"but it was constructed as {relative_space}, in {relative_space.category()}"
             )
     source_atlas = projectivization.finite_affine_atlas()
     target_atlas = relative_space.standard_affine_atlas()
@@ -2816,7 +2877,8 @@ def _trivial_finite_atlas_relative_projective_space_comparison(projectivization)
             pass
         case False:
             raise ArithmeticError(
-                "the trivial-bundle projective-space comparison does not commute over its base scheme"
+                f"the isomorphism of P(O^r) with {source_scheme} x P^(r-1) does not commute with the "
+                f"projections to {source_scheme}"
             )
     return _scheme_isomorphism(forward, inverse)
 
@@ -2844,7 +2906,8 @@ def _finite_atlas_module_datum(sheaf):
     datum = candidate.gluing_datum()
     if datum.gluing_datum() is not atlas:
         raise ValueError(
-            "the quasi-coherent sheaf presentation and its selected finite atlas disagree"
+            f"the sheaf {sheaf} is given on the affine cover {datum.gluing_datum()}, not on the "
+            f"cover {atlas} of its scheme"
         )
     return datum
 
@@ -2865,7 +2928,10 @@ def _finite_atlas_projectivization(sheaf):
     module_datum = _finite_atlas_module_datum(sheaf)
     base_atlas = module_datum.gluing_datum()
     if base_atlas.scheme() is not sheaf.scheme():
-        raise ValueError("the finite-atlas module datum belongs to a different base scheme")
+        raise ValueError(
+            f"the modules of {sheaf} are given on an affine cover of {base_atlas.scheme()}, not "
+            f"of {sheaf.scheme()}"
+        )
     materializable = all(
         local in FramedFreeModules(local.base_ring())
         or local in ModulesWithChosenFinitePresentation(local.base_ring())
@@ -2904,7 +2970,10 @@ def _affine_projectivization(sheaf):
     scheme = sheaf.scheme()
     base = scheme.scheme_base_ring()
     if scheme not in Schemes(base).Affine():
-        raise TypeError("the affine projectivization constructor requires an affine base scheme")
+        raise TypeError(
+            f"this projectivization of {sheaf} needs an affine base scheme, but {scheme} is in "
+            f"{scheme.category()}"
+        )
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
         QuasiCoherentSheaves,
     )

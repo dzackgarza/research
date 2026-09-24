@@ -58,7 +58,11 @@ def _exact_quasi_coherent_pullback(scheme_morphism, sheaf):
     represented action on arbitrary non-affine sheaf morphisms.
     """
     if sheaf not in QuasiCoherentSheaves(scheme_morphism.codomain()):
-        raise TypeError("quasi-coherent pullback starts from a sheaf on the morphism codomain")
+        raise TypeError(
+            f"cannot pull back {sheaf} along {scheme_morphism}: the pullback f^*F needs a "
+            f"quasi-coherent sheaf on the codomain {scheme_morphism.codomain()}, but {sheaf} is in "
+            f"{sheaf.category()}"
+        )
     return QuasiCoherentSheaves(scheme_morphism.domain()).object(
         construction_data={
             "scheme_morphism": scheme_morphism,
@@ -128,9 +132,17 @@ class AffineQuasiCoherentAdjunction(Adjunction):
         self._scheme_morphism = scheme_morphism
         ring_map = scheme_morphism.coordinate_algebra_morphism()
         if ring_map.domain() is not scheme_morphism.codomain().coordinate_algebra():
-            raise ValueError("the scheme pullback has the wrong affine codomain algebra")
+            raise ValueError(
+                f"the ring map {ring_map} of {scheme_morphism} must start at the coordinate ring "
+                f"{scheme_morphism.codomain().coordinate_algebra()} of its codomain, but it starts "
+                f"at {ring_map.domain()}"
+            )
         if ring_map.codomain() is not scheme_morphism.domain().coordinate_algebra():
-            raise ValueError("the scheme pullback has the wrong affine domain algebra")
+            raise ValueError(
+                f"the ring map {ring_map} of {scheme_morphism} must end at the coordinate ring "
+                f"{scheme_morphism.domain().coordinate_algebra()} of its domain, but it ends at "
+                f"{ring_map.codomain()}"
+            )
         self._module_adjunction = Modules(ring_map.domain()).base_change_adjunction(ring_map)
         self._pullback = AffineQuasiCoherentPullbackFunctor(
             scheme_morphism,
@@ -161,7 +173,10 @@ class AffineQuasiCoherentAdjunction(Adjunction):
         pushed = self.right_adjoint().on_object(pulled)
         unit = self.underlying_module_adjunction().unit(sheaf.module())
         if unit.domain() is not sheaf.module() or unit.codomain() is not pushed.module():
-            raise ArithmeticError("the affine sheaf adjunction unit has the wrong module endpoints")
+            raise ArithmeticError(
+                f"the unit M -> f_* f^* M of base change of modules at {sheaf.module()} is the map "
+                f"{unit.domain()} -> {unit.codomain()}, not {sheaf.module()} -> {pushed.module()}"
+            )
         return self.left_adjoint().domain().Mor(sheaf, pushed)(unit)
 
     def _counit_component(self, sheaf):
@@ -170,7 +185,10 @@ class AffineQuasiCoherentAdjunction(Adjunction):
         pulled = self.left_adjoint().on_object(pushed)
         counit = self.underlying_module_adjunction().counit(sheaf.module())
         if counit.domain() is not pulled.module() or counit.codomain() is not sheaf.module():
-            raise ArithmeticError("the affine sheaf adjunction counit has the wrong module endpoints")
+            raise ArithmeticError(
+                f"the counit f^* f_* N -> N of base change of modules at {sheaf.module()} is the map "
+                f"{counit.domain()} -> {counit.codomain()}, not {pulled.module()} -> {sheaf.module()}"
+            )
         return self.left_adjoint().codomain().Mor(pulled, sheaf)(counit)
 
     def _repr_(self):
@@ -206,7 +224,8 @@ def _projective_closed_immersion_module_pullback(scheme_morphism, sheaf):
             )
         case _:
             raise AssertionError(
-                "projective closed-immersion pullback is presently realized for standard O(d) objects"
+                f"pullback of {sheaf} along the closed immersion {scheme_morphism} is implemented "
+                f"only for the line bundles O(d) on {scheme_morphism.codomain()}"
             )
 
 

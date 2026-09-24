@@ -65,7 +65,10 @@ class DiscreteMorphism(Morphism):
     def __init__(self, parent: DiscreteMor) -> None:
         Morphism.__init__(self, parent)
         if self.domain() is not self.codomain():
-            raise ValueError("a discrete category has no arrow between distinct objects")
+            raise ValueError(
+                f"a discrete category has no morphism between distinct objects, but {self.domain()} is not "
+                f"{self.codomain()}"
+            )
 
     def __mul__(self, other):
         # A discrete Mor on one object holds its identity only, so the
@@ -106,10 +109,16 @@ class DiscreteMor(CategoricalMor):
 
     def _element_constructor_(self, value=None):
         if self.domain() is not self.codomain():
-            raise ValueError("there is no arrow between distinct discrete objects")
+            raise ValueError(
+                f"a discrete category has no morphism between distinct objects, but {self.domain()} is not "
+                f"{self.codomain()}"
+            )
         if value is not None:
             if parent(value) is not self:
-                raise ValueError("a discrete Mor contains only its identity")
+                raise ValueError(
+                    f"Mor({self.domain()}, {self.domain()}) in a discrete category contains only the identity, "
+                    f"but got {value}"
+                )
             return value
         return DiscreteMorphism(self)
 
@@ -179,7 +188,9 @@ class DiscreteCategory(OwnedCategory):
 
     def __init__(self, object_set: Parent) -> None:
         if object_set not in Sets():
-            raise TypeError("a discrete category is constructed from a set")
+            raise TypeError(
+                f"a discrete category is built on a set of objects, but {object_set} is not in the category of sets"
+            )
         self._object_set = object_set
         self._objects = indexed_family(
             object_set, lambda value: _object_of(self, value=value),
@@ -210,7 +221,9 @@ class DiscreteCategory(OwnedCategory):
 
     def Mor(self, domain: Parent, codomain: Parent) -> DiscreteMor:
         if domain not in self or codomain not in self:
-            raise TypeError("a discrete Mor requires two objects of the discrete category")
+            raise TypeError(
+                f"a morphism in the discrete category {self} needs two of its objects, but got {domain} and {codomain}"
+            )
         return self.MorCategory().Of(domain, codomain)
 
 
@@ -248,7 +261,11 @@ class _DiscreteFunctor(Functor):
                 object_map.domain() is not domain.object_set()
                 or object_map.codomain() is not codomain.object_set()
             ):
-                raise ValueError("the object map has the wrong discrete-category endpoints")
+                raise ValueError(
+                    f"a functor {domain} -> {codomain} of discrete categories needs a map of object sets "
+                    f"{domain.object_set()} -> {codomain.object_set()}, but {object_map} is a map "
+                    f"{object_map.domain()} -> {object_map.codomain()}"
+                )
         # The set Mor between the object sets builds a map from a rule and
         # keeps a map it already represents.
         self._object_map = Sets().Mor(domain.object_set(), codomain.object_set())(object_map)
@@ -290,7 +307,9 @@ class _DiscreteDiagram(Functor):
         values: IndexedFamily,
     ) -> None:
         if index_category not in DiscreteCategories():
-            raise TypeError("a discrete diagram requires a discrete index category")
+            raise TypeError(
+                f"a discrete diagram needs a discrete index category, but {index_category} is not discrete"
+            )
         self._values = values
         super().__init__(index_category, codomain)
 
@@ -310,7 +329,10 @@ class _ConstantDiagram(Functor):
 
     def __init__(self, index_category: Category, codomain: Category, value: Parent) -> None:
         if value not in codomain:
-            raise TypeError("the constant value lies outside the codomain")
+            raise TypeError(
+                f"the constant functor {index_category} -> {codomain} needs its value in {codomain}, but "
+                f"{value} is not an object of it"
+            )
         self._value = value
         super().__init__(index_category, codomain)
 

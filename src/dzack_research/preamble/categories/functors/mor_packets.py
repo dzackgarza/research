@@ -84,12 +84,15 @@ class _InducedMorFunctor(Functor):
                         self._two_morphism_action = lambda arrow: arrow
                     case _:
                         raise TypeError(
-                            "a non-discrete induced Mor functor requires on_two_morphism"
+                            f"the functor induced on Mor-categories by {self.base_functor()} needs its action on "
+                            "2-morphisms (on_two_morphism), because the source Mor-categories are not discrete"
                         )
             case _ if callable(action):
                 self._two_morphism_action = action
             case _:
-                raise TypeError("on_two_morphism must be callable")
+                raise TypeError(
+                    f"the action on 2-morphisms must be a function, but {action!r} is not callable"
+                )
 
     def _discrete_two_morphism_image(self, morphism: Morphism) -> Morphism:
         r"""Map the identity supplied by the declared discrete source Mor."""

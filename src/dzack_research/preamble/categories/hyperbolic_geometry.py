@@ -72,7 +72,10 @@ def _positive_component_contains(lattice, ambient, timelike, vector, *, closure=
 
 def _timelike_witness(lattice):
     r"""Find an integral vector in the nonempty positive cone of a ``(1,n)`` lattice."""
-    assert lattice.module_rank().is_finite(), "a represented positive-cone component requires finite rank"
+    assert lattice.module_rank().is_finite(), (
+        f"cannot search {lattice} for a vector of positive square: the search needs a "
+        f"lattice of finite rank, and {lattice} has rank {lattice.module_rank()}"
+    )
     rank = int(lattice.module_rank())
     for height in count(1):
         for coordinates in product(range(-height, height + 1), repeat=rank):
@@ -106,8 +109,9 @@ class _HyperbolicTopologyData(SageObject):
                 return True
             case _:
                 assert False, (
-                    "openness of an arbitrary subset of the represented rational-ray "
-                    "hyperbolic space requires a selected geometric open presentation"
+                    f"cannot decide whether {selected} is open in the hyperbolic space "
+                    f"{space}: openness is decided only for the empty set and the whole "
+                    f"space"
                 )
 
 
@@ -120,7 +124,10 @@ def _primitive_on_selected_ray(lattice, vector, timelike):
     )
     nonzero_coordinates = tuple(abs(entry) for entry in coordinates if entry)
     if not nonzero_coordinates:
-        raise ValueError("a projective ray is represented by a nonzero vector")
+        raise ValueError(
+            f"the zero vector of {lattice} spans no ray: a point of a projective space is "
+            f"the ray of a nonzero vector"
+        )
     content = gcd(nonzero_coordinates)
     primitive = lattice(tuple(entry // content for entry in coordinates))
     if lattice.b(primitive, timelike) < 0:
@@ -134,7 +141,8 @@ class PositiveConeComponents(OwnedParameterizedCategory):
     def __init__(self, lattice) -> None:
         signature = lattice.signature_pair()
         assert int(signature.first()) == 1 and int(signature.second()) >= 1, (
-            "positive-cone components are parameterized here by a lattice of signature (1,n)"
+            f"{lattice} has no category of positive-cone components: it must have "
+            f"signature (1, n) with n >= 1, but its signature is {signature}"
         )
         super().__init__(lattice)
 
@@ -164,10 +172,17 @@ class PositiveConeComponents(OwnedParameterizedCategory):
         def __init__(self, lattice, timelike, **rest) -> None:
             signature = lattice.signature_pair()
             if int(signature.first()) != 1 or int(signature.second()) < 1:
-                raise ValueError("a positive-cone component is selected here in signature (1,n)")
+                raise ValueError(
+                    f"cannot select a component of the positive cone of {lattice}: the "
+                    f"lattice must have signature (1, n) with n >= 1, but its signature "
+                    f"is {signature}"
+                )
             timelike = lattice(timelike)
             if lattice.q(timelike) <= 0:
-                raise ValueError("the selected component requires a positive-square vector")
+                raise ValueError(
+                    f"{timelike} cannot select a component of the positive cone of "
+                    f"{lattice}: it must have positive square, but q = {lattice.q(timelike)}"
+                )
             self._lattice = lattice
             self._timelike = timelike
             super().__init__(**rest)
@@ -288,8 +303,9 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
                     return datum
                 case _:
                     assert self._component.contains(datum), (
-                        "a rational point of a hyperbolic space is the ray of a "
-                        "positive vector in the selected component"
+                        f"{datum} does not define a point of {self}: a rational point is "
+                        f"the ray of a vector of positive square in {self._component}, "
+                        f"and {datum} is not in that component"
                     )
                     return self.element_class(
                         self,
@@ -315,7 +331,9 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
             lattice = self.lattice()
             vector = lattice(vector)
             assert lattice.q(vector) == 0 and self._component.closure_contains(vector) and vector != lattice.zero(), (
-                "an ideal point is the ray of a nonzero isotropic vector in the closed component"
+                f"{vector} does not define an ideal point of {self}: an ideal point is the "
+                f"ray of a nonzero isotropic vector in the closure of {self._component}, "
+                f"and {vector} has square {lattice.q(vector)}"
             )
             primitive = _primitive_on_selected_ray(
                 lattice, vector, self._component.timelike_vector()
@@ -324,9 +342,16 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
 
         def projectivize_cone(self, cone):
             if cone.ambient_lattice() is not self.lattice():
-                raise ValueError("a hyperbolic polyhedron cone must live in the space's lattice")
+                raise ValueError(
+                    f"cannot projectivize {cone} into {self}: the cone lies in "
+                    f"{cone.ambient_lattice()}, not in {self.lattice()}"
+                )
             if not cone.lies_in_closed_positive_cone(self._component.timelike_vector()):
-                raise ValueError("the cone is not contained in the selected closed positive cone")
+                raise ValueError(
+                    f"cannot projectivize {cone} into {self}: a hyperbolic polyhedron comes "
+                    f"from a cone in the closure of {self._component}, and {cone} is not "
+                    f"contained in it"
+                )
             category = HyperbolicPolyhedra(self)
             subset = self.condition_set(
                 lambda point: cone.contains(point.representative())
@@ -406,7 +431,11 @@ class HyperbolicPolyhedra(OwnedParameterizedCategory):
 
         def is_compact(self) -> bool:
             if self.cone().is_complete_wall_set() is not True:
-                raise ValueError("compactness of a chamber requires a complete wall set")
+                raise ValueError(
+                    f"cannot decide whether {self} is compact: compactness is read from the "
+                    f"ideal vertices, which requires every wall of {self.cone()} to be known, "
+                    f"and its wall set is not known to be complete"
+                )
             return self.ideal_vertices().cardinality() == 0
 
         def _repr_(self):

@@ -11,10 +11,14 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 def _base_change_codomain(module, ring_map):
     r"""Validate ``R -> S`` against ``module`` and return the owned ring ``S``."""
     if not isinstance(ring_map, Map):
-        raise TypeError("base change is specified by a ring morphism")
+        raise TypeError(
+            f"cannot extend scalars of {module} along {ring_map!r}: base change needs a ring "
+            f"morphism {module.base_ring()} -> S, and {ring_map!r} is not a morphism"
+        )
     if _engine_ring(ring_map.domain()) is not _engine_ring(module.base_ring()):
         raise ValueError(
-            f"the scalar map starts at {ring_map.domain()}, not {module.base_ring()}"
+            f"cannot extend scalars of {module} along {ring_map}: {module} is a module over "
+            f"{module.base_ring()}, but the ring morphism starts at {ring_map.domain()}"
         )
     return _owned_ring(ring_map.codomain())
 

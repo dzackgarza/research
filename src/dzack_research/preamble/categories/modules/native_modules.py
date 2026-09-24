@@ -32,7 +32,8 @@ class _NativeModuleFrame:
 
     def __init__(self, source, images, coordinates):
         assert source in FramedModules(source.base_ring()), (
-            "a native frame is evaluated from an actual framed module"
+            f"{source} cannot index a generating family: it must be a module with a chosen "
+            f"generating family over {source.base_ring()}, but it is in {source.category()}"
         )
         self._source = source
         self._images = images
@@ -54,7 +55,8 @@ class _NativeModuleBasis(_NativeModuleFrame):
 
     def __init__(self, source, images, coordinates):
         assert source in FramedFreeModules(source.base_ring()), (
-            "a native basis is evaluated from an actual framed free module"
+            f"{source} cannot index a basis: it must be a free module with a chosen basis "
+            f"over {source.base_ring()}, but it is in {source.category()}"
         )
         super().__init__(source, images, coordinates)
 
@@ -98,10 +100,21 @@ class _RingModulePresentation:
 
     def construct(self, category):
         module = self.module()
-        assert category.base_ring() is self.base_ring(), "the native action has the constructor's scalar ring"
-        assert module in AdditiveGroups().AdditiveCommutative(), "the action is on the supplied owned additive group"
-        assert module.base_ring() is self.base_ring(), "native scalar structure cannot overwrite another chosen base"
-        assert Modules.ParentMethods._native_module_presentation(module) is None, "the native module is constructed once"
+        assert category.base_ring() is self.base_ring(), (
+            f"{module} cannot be made an object of {category}: its scalar action is by "
+            f"{self.base_ring()}, not by {category.base_ring()}"
+        )
+        assert module in AdditiveGroups().AdditiveCommutative(), (
+            f"{module} cannot be made an {self.base_ring()}-module: a module's addition must be commutative, "
+            f"but {module} is only known to be in {module.category()}"
+        )
+        assert module.base_ring() is self.base_ring(), (
+            f"{module} cannot be made an {self.base_ring()}-module: it is already a module over "
+            f"{module.base_ring()}"
+        )
+        assert Modules.ParentMethods._native_module_presentation(module) is None, (
+            f"{module} already has a scalar action by {self.base_ring()}; it cannot be given a second one"
+        )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
         match module in category:
             case True:
@@ -109,13 +122,18 @@ class _RingModulePresentation:
             case False:
                 refine(module, category)
         if self.is_regular():
-            assert self._basis is None, "the canonical regular frame is supplied by its unit"
+            assert self._basis is None, (
+                f"{module} is the regular module over itself; its basis is {{1}}, and no other basis may be given"
+            )
             free = self.base_ring().free_module(1)
             label = next(iter(free.module_generating_set()))
             self._basis = _NativeModuleBasis(free, lambda _: self.unit(), lambda value: {label: module(value)})
         if self._basis is not None:
             source = self._basis.source()
-            assert source.base_ring() is self.base_ring(), "the basis uses the native action's exact scalars"
+            assert source.base_ring() is self.base_ring(), (
+                f"the basis of {module} is indexed by {source}, a module over {source.base_ring()}, "
+                f"but {module} is a module over {self.base_ring()}"
+            )
             labels = source.module_generating_set()
             _fix_selected_module_framing(
                 module,
@@ -145,7 +163,10 @@ class _RingModulePresentation:
         return self._basis
 
     def coefficients(self, element):
-        assert self._basis is not None, "coordinates require the native construction's chosen basis"
+        assert self._basis is not None, (
+            f"cannot take coordinates of {element} in {self.module()}: no basis of {self.module()} "
+            f"over {self.base_ring()} was chosen"
+        )
         return self._basis.coefficients(self.module()(element))
 
     @cached_method

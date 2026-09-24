@@ -97,12 +97,16 @@ class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
 
         def cohomology_weight_inclusion(self, weight):
             weight = self.cohomology_scheme().character_lattice()(weight)
-            assert weight in self.cohomology_weight_support(), "this weight has zero cohomology in the selected degree"
+            assert weight in self.cohomology_weight_support(), (
+                f"the weight-{weight} summand of the cohomology {self} is zero, so it has no inclusion"
+            )
             return self.injection(weight)
 
         def cohomology_weight_projection(self, weight):
             weight = self.cohomology_scheme().character_lattice()(weight)
-            assert weight in self.cohomology_weight_support(), "this weight has zero cohomology in the selected degree"
+            assert weight in self.cohomology_weight_support(), (
+                f"the weight-{weight} summand of the cohomology {self} is zero, so it has no projection"
+            )
             return self.projection(weight)
 
 
@@ -157,16 +161,20 @@ def _affine_geometric_cohomology_complex(sheaf, cover=None):
 
     scheme = sheaf.scheme()
     assert scheme in Schemes(scheme.scheme_base_ring()).Affine() and sheaf in QuasiCoherentSheaves(scheme), (
-        "affine geometric cohomology is taken of a quasi-coherent sheaf on an affine scheme"
+        f"the Cech complex of {sheaf} is computed here only for a quasi-coherent sheaf on an "
+        f"affine scheme, but {scheme} is in {scheme.category()} and {sheaf} is in {sheaf.category()}"
     )
     match cover:
         case None:
             pass
         case _:
-            assert cover.ambient_scheme() is scheme, "the selected affine cover belongs to a different scheme"
+            assert cover.ambient_scheme() is scheme, (
+                f"the cover {cover} is a cover of {cover.ambient_scheme()}, not of {scheme}"
+            )
             one = scheme.coordinate_algebra().one()
             assert all(cover.defining_element(index) == one for index in cover.atlas()), (
-                "the represented contracted Cech comparison requires the selected unit charts D(1)"
+                f"the Cech complex of {sheaf} is computed here only for covers of {scheme} by the "
+                f"chart D(1) = {scheme}, but {cover} has a chart D(f) with f not equal to 1"
             )
     module = sheaf.global_sections()
     base = module.base_ring()
@@ -196,7 +204,10 @@ def _affine_cover_refinement_cochain_map(refinement, sheaf):
     Its cohomology image in degree ``d`` is
     ``CochainComplexes(R).cohomology(d)`` applied to this map.
     """
-    assert refinement.ambient_scheme() is sheaf.scheme(), "the cover refinement belongs to a different affine scheme"
+    assert refinement.ambient_scheme() is sheaf.scheme(), (
+        f"the refinement {refinement} is a refinement of covers of {refinement.ambient_scheme()}, "
+        f"not of {sheaf.scheme()}, the scheme of {sheaf}"
+    )
     source = _affine_geometric_cohomology_complex(sheaf, cover=refinement.coarse_cover())
     target = _affine_geometric_cohomology_complex(sheaf, cover=refinement.fine_cover())
     source_degree_zero = source.graded_piece(0)
@@ -326,7 +337,10 @@ class GeometricFundamentalGroups(OwnedCategory):
 
 def _geometric_fundamental_group(generator, scheme, base_point, realization):
     r"""``pi_1(X(CC), x)``, built as the cyclic group of ``generator`` placed with its pointed realization."""
-    assert base_point.codomain() is scheme, "a pointed fundamental group requires a point of its scheme"
+    assert base_point.codomain() is scheme, (
+        f"the base point {base_point} of pi_1({scheme}) must be a point of {scheme}, but it is "
+        f"a point of {base_point.codomain()}"
+    )
     return CyclicGroups()(
         generator,
         placements=(GeometricFundamentalGroups(),),
@@ -416,7 +430,10 @@ class _ToricHodgeData(SageObject):
     def degree_hodge_numbers(self, degree):
         degree = int(degree)
         dimension = int(self.scheme().dimension())
-        assert 0 <= degree <= 2 * dimension, "Hodge degree lies between zero and twice the complex dimension"
+        assert 0 <= degree <= 2 * dimension, (
+            f"the Hodge numbers of {self.scheme()} are defined in degrees 0 through "
+            f"{2 * dimension} (twice its dimension), but degree {degree} was requested"
+        )
         return _degree_hodge_number_family(self, degree, range(degree + 1), dimension)
 
     def _repr_(self):
@@ -434,7 +451,10 @@ def _toric_weight_cohomology_complex(scheme, divisor, weight):
     """
     base = scheme.scheme_base_ring()
     divisor = scheme.weil_divisor_group()(divisor)
-    assert scheme.is_cartier(divisor), "the represented toric weight complex requires a Cartier divisor"
+    assert scheme.is_cartier(divisor), (
+        f"the weight-{weight} cohomology complex of O(D) on {scheme} needs D Cartier, but "
+        f"D = {divisor} is not Cartier"
+    )
     weight = scheme.character_lattice()(weight)
     pieces, differentials = scheme._weight_cohomology_presentation(divisor, weight)
     return CochainComplexes(base)(
@@ -480,10 +500,19 @@ def _toric_line_bundle_cohomology(scheme, divisor, degree):
     from dzack_research.preamble.categories.modules.pure.modules import Modules
 
     degree = int(degree)
-    assert 0 <= degree <= int(scheme.dimension()), "cohomological degree lies outside the scheme dimension"
-    assert scheme.fan().is_complete(), "finite-dimensional toric line-bundle cohomology requires a complete fan"
+    assert 0 <= degree <= int(scheme.dimension()), (
+        f"the cohomology H^i(O(D)) of {scheme} is computed in degrees 0 through "
+        f"{scheme.dimension()} (its dimension), but degree {degree} was requested"
+    )
+    assert scheme.fan().is_complete(), (
+        f"the cohomology of O(D) on {scheme} is finite-dimensional, and computed here, only when "
+        "the fan is complete, but the fan of this toric variety is not complete"
+    )
     divisor = scheme.weil_divisor_group()(divisor)
-    assert scheme.is_cartier(divisor), "the represented geometric cohomology requires a Cartier divisor"
+    assert scheme.is_cartier(divisor), (
+        f"the cohomology of O(D) on {scheme} is computed here only for Cartier D, but "
+        f"D = {divisor} is not Cartier"
+    )
 
     candidate_weights = tuple(
         scheme._line_bundle_cohomology_candidate_weights(divisor)
@@ -530,11 +559,20 @@ def _require_smooth_quartic_k3_complex_realization(scheme):
 
     base = scheme.scheme_base_ring()
     assert _engine_ring(base) is SageQQ, (
-        "the selected quartic K3 integral realization uses the specified QQ-to-CC embedding"
+        f"the integral cohomology of the quartic K3 surface {scheme} is computed only over QQ, "
+        f"embedded in CC, but its base ring is {base}"
     )
-    assert scheme in ProjectiveCompleteIntersections(base), "the represented quartic K3 topology requires a projective complete intersection"
-    assert int(scheme.expected_dimension()) == 2 and tuple(scheme.defining_degrees()) == (4,), "the represented K3 topology here is for a quartic surface in P^3"
-    assert bool(scheme.is_smooth()), "the quartic K3 integral realization requires a smooth surface"
+    assert scheme in ProjectiveCompleteIntersections(base), (
+        f"{scheme} must be a complete intersection in projective space to be a quartic K3 "
+        f"surface, but it is in {scheme.category()}"
+    )
+    assert int(scheme.expected_dimension()) == 2 and tuple(scheme.defining_degrees()) == (4,), (
+        f"{scheme} is not a quartic surface in P^3: it has dimension {scheme.expected_dimension()} "
+        f"and equations of degrees {tuple(scheme.defining_degrees())}"
+    )
+    assert bool(scheme.is_smooth()), (
+        f"the quartic surface {scheme} is singular, so it is not a K3 surface"
+    )
 
 
 class _QuarticK3IntegralTopology(SageObject):
@@ -567,7 +605,9 @@ class _QuarticK3IntegralTopology(SageObject):
     @cached_method
     def integral_cohomology(self, degree):
         degree = int(degree)
-        assert degree >= 0, "a singular-cohomology degree is nonnegative"
+        assert degree >= 0, (
+            f"singular cohomology of {self.scheme()} is defined in degrees >= 0, not in degree {degree}"
+        )
         integers = _own_ring(SageZZ)
         if degree == 2:
             return self.middle_cohomology_lattice()
@@ -582,7 +622,10 @@ class _QuarticK3IntegralTopology(SageObject):
         r"""Return the graded cup product in the selected K3 marking."""
         left_degree = int(left_degree)
         right_degree = int(right_degree)
-        assert left_degree >= 0 and right_degree >= 0, "cup-product degrees are nonnegative"
+        assert left_degree >= 0 and right_degree >= 0, (
+            f"the cup product H^{left_degree} x H^{right_degree} of {self.scheme()} needs both "
+            "degrees >= 0"
+        )
         left = self.integral_cohomology(left_degree)
         right = self.integral_cohomology(right_degree)
         target = self.integral_cohomology(left_degree + right_degree)
@@ -641,8 +684,14 @@ class _QuarticK3IntegralTopology(SageObject):
         middle = self.middle_cohomology_lattice()
         e1, f1 = tuple(middle.module_generators())[:2]
         hyperplane = e1 + 2 * f1
-        assert middle.q(hyperplane) == _own_ring(SageZZ)(4), "the selected K3 marking does not give the quartic hyperplane square four"
-        assert hyperplane.is_primitive(), "the selected quartic hyperplane class is not primitive"
+        assert middle.q(hyperplane) == _own_ring(SageZZ)(4), (
+            f"the hyperplane class {hyperplane} of the quartic {self.scheme()} must have square "
+            f"H^2 = 4 in the K3 lattice, but it has square {middle.q(hyperplane)}"
+        )
+        assert hyperplane.is_primitive(), (
+            f"the hyperplane class {hyperplane} of the quartic {self.scheme()} is not primitive "
+            "in the K3 lattice"
+        )
         return hyperplane
 
     @cached_method
@@ -660,7 +709,10 @@ class _QuarticK3IntegralTopology(SageObject):
         The represented line bundles on the quartic are the restrictions
         ``O_X(d)``; other classes of ``Pic(X)`` are not constructed.
         """
-        assert line_bundle.scheme() is self.scheme(), "the first Chern class belongs to a line bundle on this K3 surface"
+        assert line_bundle.scheme() is self.scheme(), (
+            f"cannot take c_1 of {line_bundle} in the cohomology of {self.scheme()}: it is a "
+            f"line bundle on {line_bundle.scheme()}"
+        )
         return int(line_bundle.degree()) * self.hyperplane_first_chern_class()
 
     @cached_method
@@ -725,7 +777,10 @@ class _QuarticK3HodgeData(SageObject):
 
     def degree_hodge_numbers(self, degree):
         degree = int(degree)
-        assert 0 <= degree <= 4, "a K3 surface has Hodge degrees zero through four"
+        assert 0 <= degree <= 4, (
+            f"the Hodge numbers of the K3 surface {self.scheme()} are defined in degrees 0 "
+            f"through 4, but degree {degree} was requested"
+        )
         return _degree_hodge_number_family(self, degree, range(3), 2)
 
     def middle_betti_number(self):
@@ -823,7 +878,9 @@ def NodalCubicNormalization():
 def _nodal_cubic_fundamental_group(scheme=None, base_point=None):
     r"""Return the pointed ``pi_1`` of the rational nodal cubic, an infinite cyclic group."""
     selected = NodalCubic() if scheme is None else scheme
-    assert selected is NodalCubic(), "this fundamental-group model is attached to the represented nodal cubic"
+    assert selected is NodalCubic(), (
+        f"this fundamental group is computed only for the nodal cubic {NodalCubic()}, not for {selected}"
+    )
     point = selected.point_morphism((0, 1, 0)) if base_point is None else base_point
     generator = next(iter(OwnedGroups().Free(1).group_generators()))
     return _geometric_fundamental_group(
@@ -859,7 +916,9 @@ class NodalCubicIntegralTopology(SageObject):
 
     def __init__(self, scheme=None) -> None:
         selected = NodalCubic() if scheme is None else scheme
-        assert selected is NodalCubic(), "this topology comparison is attached to the represented nodal cubic"
+        assert selected is NodalCubic(), (
+            f"this topology of X(CC) is computed only for the nodal cubic {NodalCubic()}, not for {selected}"
+        )
         self._scheme = selected
 
     def scheme(self):
@@ -880,7 +939,10 @@ class NodalCubicIntegralTopology(SageObject):
     def normalization_base_point(self):
         point = self.normalization_scheme().point_morphism((1, 0))
         image = self.normalization_morphism().image_of_point(point)
-        assert tuple(image.point_coordinates()) == tuple(self.base_point().point_coordinates()), "the selected normalization basepoint does not map to the selected nodal basepoint"
+        assert tuple(image.point_coordinates()) == tuple(self.base_point().point_coordinates()), (
+            f"the normalization P^1 -> {self.scheme()} sends [1:0] to {image}, not to the base "
+            f"point {self.base_point()} of the nodal cubic"
+        )
         return point
 
     @cached_method
@@ -905,7 +967,9 @@ class NodalCubicIntegralTopology(SageObject):
     @cached_method
     def ordinary_cohomology(self, degree):
         degree = int(degree)
-        assert degree >= 0, "a cohomological degree is nonnegative"
+        assert degree >= 0, (
+            f"singular cohomology of {self.scheme()} is defined in degrees >= 0, not in degree {degree}"
+        )
         rank = 1 if degree in (0, 1, 2) else 0
         return _free_integral_topology_group(
             self.scheme(),
@@ -919,7 +983,10 @@ class NodalCubicIntegralTopology(SageObject):
     @cached_method
     def resolution_cohomology(self, degree):
         degree = int(degree)
-        assert degree >= 0, "a cohomological degree is nonnegative"
+        assert degree >= 0, (
+            f"singular cohomology of the normalization of {self.scheme()} is defined in degrees "
+            f">= 0, not in degree {degree}"
+        )
         rank = 1 if degree in (0, 2) else 0
         return _free_integral_topology_group(
             self.scheme(),
@@ -965,7 +1032,9 @@ def ProjectiveGeneralLinearGroup2():
 def _pgl2_fundamental_group(scheme=None, base_point=None):
     r"""Return the pointed ``pi_1(PGL_2(C)) ~= C_2``."""
     selected = ProjectiveGeneralLinearGroup2() if scheme is None else scheme
-    assert selected is ProjectiveGeneralLinearGroup2(), "this fundamental-group model is attached to represented PGL_2"
+    assert selected is ProjectiveGeneralLinearGroup2(), (
+        f"this fundamental group is computed only for PGL_2, not for {selected}"
+    )
     point = selected.point_morphism((1, 0, 0, 1)) if base_point is None else base_point
     generator = next(iter(OwnedGroups().C(2).group_generators()))
     return _geometric_fundamental_group(
@@ -989,7 +1058,9 @@ class PGL2IntegralTopology(SageObject):
 
     def __init__(self, scheme=None) -> None:
         selected = ProjectiveGeneralLinearGroup2() if scheme is None else scheme
-        assert selected is ProjectiveGeneralLinearGroup2(), "the selected ordinary-topology model is the represented PGL_2 scheme"
+        assert selected is ProjectiveGeneralLinearGroup2(), (
+            f"this topology of X(CC) is computed only for PGL_2, not for {selected}"
+        )
         self._scheme = selected
 
     def scheme(self):
@@ -1009,7 +1080,10 @@ class PGL2IntegralTopology(SageObject):
     @cached_method
     def integral_cohomology(self, degree):
         degree = int(degree)
-        assert 0 <= degree <= 6, "PGL_2 has complex dimension three, so singular cohomology lies in degrees zero through six"
+        assert 0 <= degree <= 6, (
+            f"PGL_2(CC) has complex dimension 3, so its singular cohomology is computed in "
+            f"degrees 0 through 6, but degree {degree} was requested"
+        )
         if degree == 2:
             return _zmod2_integral_topology_group(self.scheme(), degree, self.realization_description())
         if degree in (0, 3):
@@ -1037,9 +1111,14 @@ class PGL2IntegralTopology(SageObject):
 
 def _require_smooth_complete_rational_toric_realization(scheme):
     assert _engine_ring(scheme.scheme_base_ring()) is SageQQ, (
-        "the selected integral singular-cohomology comparison uses the specified QQ-to-CC realization"
+        f"the integral singular cohomology of the toric variety {scheme} is computed only over "
+        f"QQ, embedded in CC, but its base ring is {scheme.scheme_base_ring()}"
     )
-    assert scheme.fan().is_smooth() and scheme.fan().is_complete(), "the Jurkiewicz-Danilov integral comparison requires a smooth complete toric variety"
+    assert scheme.fan().is_smooth() and scheme.fan().is_complete(), (
+        f"the Jurkiewicz-Danilov theorem computing H^*({scheme}(CC), ZZ) needs a smooth complete "
+        f"toric variety, but its fan is smooth: {scheme.fan().is_smooth()}, complete: "
+        f"{scheme.fan().is_complete()}"
+    )
 
 
 def _toric_integral_singular_cohomology(scheme, degree):
@@ -1053,7 +1132,10 @@ def _toric_integral_singular_cohomology(scheme, degree):
     _require_smooth_complete_rational_toric_realization(scheme)
     degree = int(degree)
     dimension = int(scheme.dimension())
-    assert 0 <= degree <= 2 * dimension, "singular cohomological degree lies between zero and twice the complex dimension"
+    assert 0 <= degree <= 2 * dimension, (
+        f"singular cohomology of {scheme}(CC) is computed in degrees 0 through {2 * dimension} "
+        f"(twice its dimension), but degree {degree} was requested"
+    )
     integers = _own_ring(SageZZ)
     construction_data = _integral_topology_construction_data(
         scheme,
@@ -1082,7 +1164,10 @@ def _toric_cycle_class_isomorphism(scheme, codimension):
     _require_smooth_complete_rational_toric_realization(scheme)
     codimension = int(codimension)
     dimension = int(scheme.dimension())
-    assert 0 <= codimension <= dimension, "cycle codimension lies between zero and the scheme dimension"
+    assert 0 <= codimension <= dimension, (
+        f"cycles on {scheme} have codimension 0 through {dimension} (its dimension), but "
+        f"codimension {codimension} was requested"
+    )
     chow = scheme.chow_group(dimension - codimension)
     cohomology = scheme.integral_singular_cohomology(2 * codimension)
     forward = chow.module_category().Mor(chow, cohomology)({label: cohomology.module_generator(label) for label in chow.module_generating_set()})
@@ -1093,7 +1178,10 @@ def _toric_cycle_class_isomorphism(scheme, codimension):
 def _toric_picard_to_chow_isomorphism(scheme):
     r"""Return ``Pic(X) -> CH^1(X)`` for a smooth complete toric surface."""
     _require_smooth_complete_rational_toric_realization(scheme)
-    assert int(scheme.dimension()) == 2, "the represented Picard-to-Chow comparison is currently used on surfaces"
+    assert int(scheme.dimension()) == 2, (
+        f"the isomorphism Pic -> CH^1 is constructed here only for toric surfaces, but {scheme} "
+        f"has dimension {scheme.dimension()}"
+    )
     picard = scheme.picard_group()
     chow = scheme.chow_group(1)
     cycles = scheme.torus_invariant_cycle_group(1)
@@ -1105,7 +1193,10 @@ def _toric_picard_to_chow_isomorphism(scheme):
 def _toric_middle_cohomology_form(scheme):
     r"""Return ``H^2(X(CC),ZZ)`` with its cup-product intersection form."""
     _require_smooth_complete_rational_toric_realization(scheme)
-    assert int(scheme.dimension()) == 2, "the represented middle-cohomology form is for surfaces"
+    assert int(scheme.dimension()) == 2, (
+        f"the intersection form on H^2 is constructed here only for toric surfaces, but {scheme} "
+        f"has dimension {scheme.dimension()}"
+    )
     cohomology = scheme.integral_singular_cohomology(2)
     cycle_class = scheme.cycle_class_isomorphism(1)
     picard_to_chow = scheme.picard_to_chow_isomorphism()
@@ -1130,7 +1221,10 @@ def _toric_fundamental_group(scheme, base_point_cone=None):
     maximal = scheme.fan().maximal_cones()
     if base_point_cone is None:
         base_point_cone = next(iter(maximal))
-    assert base_point_cone in maximal, "the selected torus-fixed basepoint is indexed by a maximal cone"
+    assert base_point_cone in maximal, (
+        f"the base point of pi_1({scheme}) must be the torus-fixed point of a maximal cone, but "
+        f"{base_point_cone} is not a maximal cone of the fan"
+    )
     return CyclicGroups()(
         OwnedGroups().C(1).one(),
         placements=(ToricFundamentalGroups(),),

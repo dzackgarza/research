@@ -64,9 +64,14 @@ class ClassGroups(Category):
         itself, placed here with ``projective_space`` as its scheme; its
         injections are the pullback of base classes and the hyperplane class.
         """
-        assert base_class_group in self, "the projective bundle formula starts from a class group"
+        assert base_class_group in self, (
+            f"cannot apply Cl(P^n_S) = Cl(S) + Z[H] to {base_class_group}: the second "
+            f"argument must be the class group Cl(S) of the base, but it is not a class group"
+        )
         assert base_class_group.class_group_scheme() is projective_space.base_scheme(), (
-            "the supplied class group is not attached to the projective base"
+            f"cannot apply Cl(P^n_S) = Cl(S) + Z[H] to {projective_space}: the given class "
+            f"group is Cl({base_class_group.class_group_scheme()}), not the class group of "
+            f"the base {projective_space.base_scheme()}"
         )
         integers = _integers()
         hyperplane = integers.free_module(finite_ordered_set(("H",)))

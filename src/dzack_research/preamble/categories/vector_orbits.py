@@ -17,7 +17,10 @@ def _rank_one_coefficient(element):
     parent = element.parent()
     labels = tuple(parent.module_generating_set())
     if len(labels) != 1:
-        raise ValueError("rank-one coefficient extraction requires one framing generator")
+        raise ValueError(
+            f"cannot read {element} as a multiple of a basis vector of {parent}: that "
+            f"lattice must have rank one, but its basis has {len(labels)} vectors"
+        )
     return parent.framing_coefficients(element).get(
         labels[0], parent.base_ring().zero()
     )
@@ -42,16 +45,30 @@ class VectorPrimitiveExtension:
             else lattice(element)
         )
         if vector.q() == 0:
-            raise ValueError("VectorPrimitiveExtension requires an anisotropic vector")
+            raise ValueError(
+                f"cannot decompose {lattice} along {vector}: the vector must have nonzero "
+                f"square so that Zv + v^perp has finite index, but q = {vector.q()}"
+            )
         if not lattice.module_rank().is_finite() or not lattice.is_nondegenerate():
-            raise ValueError("VectorPrimitiveExtension requires a finite nondegenerate lattice")
+            raise ValueError(
+                f"cannot decompose {lattice} along {vector}: the lattice must have finite rank "
+                f"and a nondegenerate form, and it has rank {lattice.module_rank()} and is "
+                f"not known to be nondegenerate"
+            )
 
         line = lattice.subobject_on((vector,))
         if not line.is_primitive():
-            raise ValueError("VectorPrimitiveExtension is normalized to a primitive vector")
+            raise ValueError(
+                f"cannot decompose {lattice} along {vector}: the vector must be primitive, and "
+                f"it is not"
+            )
         complement = line.orthogonal_complement()
         if line.module_rank() + complement.module_rank() != lattice.module_rank():
-            raise ArithmeticError("the anisotropic line does not have complementary orthogonal rank")
+            raise ArithmeticError(
+                f"the line spanned by {vector} (rank {line.module_rank()}) and its orthogonal "
+                f"complement (rank {complement.module_rank()}) do not have total rank "
+                f"{lattice.module_rank()}, the rank of {lattice}"
+            )
         line_lattice = line.inclusion().domain()
         complement_lattice = complement.inclusion().domain()
         sum_lattice = line_lattice + complement_lattice
@@ -68,7 +85,10 @@ class VectorPrimitiveExtension:
         ring = lattice.base_ring()
         index = ring(int(inclusion.index().finite_value()))
         if index <= ring.zero():
-            raise ArithmeticError("the line and complement do not span a finite-index sublattice")
+            raise ArithmeticError(
+                f"Zv + v^perp for v = {vector} does not have finite positive index in {lattice}: "
+                f"the computed index is {index}"
+            )
 
         sum_generators = tuple(sum_lattice.module_generators())
         split = int(line_lattice.module_rank())
@@ -96,19 +116,28 @@ class VectorPrimitiveExtension:
             gluing_classes.append(sum_form.projection()(dual_element))
         gluing_subgroup = sum_form.subgroup_on(tuple(gluing_classes))
         if int(gluing_subgroup.cardinality()) != int(index):
-            raise ArithmeticError("the gluing subgroup does not have order [L:M]")
+            raise ArithmeticError(
+                f"the gluing subgroup L/M for L = {lattice} and M = Zv + v^perp, v = {vector}, "
+                f"has order {gluing_subgroup.cardinality()}, not the index [L:M] = {index}"
+            )
         gluing_images = gluing_subgroup.embedded_elements()
         if any(
             sum_form.b(left, right) != sum_form.bilinear_value_module().zero()
             for left in gluing_images
             for right in gluing_images
         ):
-            raise ArithmeticError("L/M is not isotropic for the discriminant bilinear form of M")
+            raise ArithmeticError(
+                f"the gluing subgroup L/M for L = {lattice} and M = Zv + v^perp, v = {vector}, "
+                f"is not isotropic for the discriminant bilinear form of M"
+            )
         if lattice.is_even() and any(
             sum_form.q(element) != sum_form.quadratic_value_module().zero()
             for element in gluing_images
         ):
-            raise ArithmeticError("L/M is not isotropic for the discriminant quadratic form of M")
+            raise ArithmeticError(
+                f"the gluing subgroup L/M for the even lattice L = {lattice} and M = Zv + v^perp, "
+                f"v = {vector}, is not isotropic for the discriminant quadratic form of M"
+            )
 
         discriminant_form = lattice.discriminant_group()
         dual_restriction = _module_matrix(inclusion).transpose()
@@ -129,7 +158,10 @@ class VectorPrimitiveExtension:
             for representative in discriminant_representatives
             for glued in gluing_images
         ):
-            raise ArithmeticError("the representatives of A_L do not lie in H^perp")
+            raise ArithmeticError(
+                f"the chosen representatives of A_L for L = {lattice} do not all lie in H^perp, "
+                f"where H is the gluing subgroup of M = Zv + v^perp, v = {vector}"
+            )
 
         self.lattice = lattice
         self.vector = vector
@@ -176,14 +208,18 @@ class VectorPrimitiveExtension:
                 previous = table.get(key)
                 if previous is not None and previous != discriminant_class:
                     raise ArithmeticError(
-                        "two classes of A_L define the same coset in H^perp/H"
+                        f"the classes {previous} and {discriminant_class} of A_L for L = {self.lattice} "
+                        f"give the same coset {key} of H^perp/H, so H^perp/H -> A_L is not injective"
                     )
                 table[key] = discriminant_class
         expected = int(self.discriminant_form.cardinality()) * int(
             self.gluing_subgroup.cardinality()
         )
         if len(table) != expected:
-            raise ArithmeticError("the selected representatives do not fill H^perp")
+            raise ArithmeticError(
+                f"the representatives of A_L for L = {self.lattice} give {len(table)} elements of "
+                f"H^perp, not |A_L| * |H| = {expected}"
+            )
         return table
 
     def class_of_representative(self, element):
@@ -192,7 +228,10 @@ class VectorPrimitiveExtension:
         try:
             return self._representative_table()[key]
         except KeyError as error:
-            raise ValueError("the element lies outside H^perp and represents no class of A_L") from error
+            raise ValueError(
+                f"{element} does not lie in H^perp for L = {self.lattice}, so it represents no "
+                f"class of A_L"
+            ) from error
 
     def complement_is_definite(self) -> bool:
         r"""Return whether the orthogonal complement is definite."""
@@ -208,7 +247,8 @@ def _isometries_between_definite_lattices(source, target):
     if empty is True:
         return
     assert empty is False, (
-        "the definite complement isometry Mor must be decided exactly before enumerating its torsor"
+        f"cannot list the isometries {source} -> {target}: whether there is any isometry was "
+        f"not decided (the answer was {empty})"
     )
     first = mor.an_element()
     for automorphism in target.O():
@@ -235,7 +275,9 @@ def _definite_complement_extensions(lattice, left, right):
         return ()
     if not source.complement_is_definite() or not target.complement_is_definite():
         raise ValueError(
-            "definite_complement_extensions requires definite orthogonal complements"
+            f"cannot list isometries of {lattice} carrying {left} to {right} by extending "
+            f"isometries of their orthogonal complements: both complements must be "
+            f"definite, and at least one is not"
         )
     source_complement = source.complement.inclusion().domain()
     target_complement = target.complement.inclusion().domain()
@@ -259,7 +301,11 @@ def _definite_complement_extensions(lattice, left, right):
     source_coefficient = _rank_one_coefficient(source_line_vector)
     target_coefficient = _rank_one_coefficient(target_line_vector)
     if source_coefficient not in (ring.one(), -ring.one()) or target_coefficient not in (ring.one(), -ring.one()):
-        raise ArithmeticError("a primitive rank-one line vector must be a signed selected generator")
+        raise ArithmeticError(
+            f"the primitive vectors {source.vector} and {target.vector} are not plus or minus "
+            f"the basis vector of the lines they span: their coefficients are "
+            f"{source_coefficient} and {target_coefficient}"
+        )
     line_isometry = source_line.Isom(target_line)(
         (
             target_line.scalar_multiple(
@@ -268,7 +314,10 @@ def _definite_complement_extensions(lattice, left, right):
         )
     )
     if line_isometry(source_line_vector) != target_line_vector:
-        raise ArithmeticError("the rank-one block does not carry the source vector to the target vector")
+        raise ArithmeticError(
+            f"the isometry {line_isometry} of lines does not send {source.vector} to "
+            f"{target.vector}"
+        )
     line_matrix = _module_matrix(line_isometry).change_ring(rationals)
     extensions = []
     for restriction in _isometries_between_definite_lattices(
@@ -311,7 +360,8 @@ def _definite_complement_extensions(lattice, left, right):
         isometry = lattice.O()(images)
         if isometry(source.vector) != target.vector:
             raise ArithmeticError(
-                "an assembled definite-complement extension does not carry the source vector to the target vector"
+                f"the isometry {isometry} of {lattice} built from the line and its complement "
+                f"sends {source.vector} to {isometry(source.vector)}, not to {target.vector}"
             )
         extensions.append(isometry)
     return tuple(extensions)
@@ -326,12 +376,19 @@ def _line_isometry(source, target):
     target_coefficient = _rank_one_coefficient(target_vector)
     target_generator = target_line.module_generators()[0]
     if source_coefficient not in (1, -1) or target_coefficient not in (1, -1):
-        raise ArithmeticError("primitive rank-one line vectors must be signed selected generators")
+        raise ArithmeticError(
+            f"the primitive vectors {source.vector} and {target.vector} are not plus or minus "
+            f"the basis vector of the lines they span: their coefficients are "
+            f"{source_coefficient} and {target_coefficient}"
+        )
     isometry = source_line.Isom(target_line)(
         (source_coefficient * target_coefficient * target_generator,)
     )
     if isometry(source_vector) != target_vector:
-        raise ArithmeticError("the line isometry does not carry the source vector to the target vector")
+        raise ArithmeticError(
+            f"the isometry {isometry} of lines does not send {source.vector} to "
+            f"{target.vector}"
+        )
     return isometry
 
 
@@ -364,14 +421,19 @@ def _gluing_route_discriminant_classes(lattice, left, right):
     the image of the discriminant representation and is not assumed here.
     """
     if not lattice.is_even():
-        raise ValueError("the current gluing route is implemented for even lattices and discriminant quadratic forms")
+        raise ValueError(
+            f"cannot compare {left} and {right} by gluing in {lattice}: this method uses "
+            f"the discriminant quadratic form, so the lattice must be even, and it is not"
+        )
     source = VectorPrimitiveExtension(lattice, left)
     target = VectorPrimitiveExtension(lattice, right)
     if source.vector.q() != target.vector.q():
         return ()
     if source.complement_is_definite() or target.complement_is_definite():
         raise ValueError(
-            "the gluing route is the indefinite-complement regime; use definite_complement_extensions otherwise"
+            f"cannot compare {left} and {right} by gluing in {lattice}: this method needs both "
+            f"orthogonal complements to be indefinite, and at least one is definite; list the "
+            f"isometries of the definite complements instead"
         )
 
     source_complement = source.complement.inclusion().domain()
@@ -381,7 +443,9 @@ def _gluing_route_discriminant_classes(lattice, left, right):
     if complement_empty is True:
         return ()
     assert complement_empty is False, (
-        "the complement isometry class must be decided exactly before the discriminant gluing route chooses its torsor"
+        f"cannot compare {left} and {right} by gluing in {lattice}: whether their orthogonal "
+        f"complements {source_complement} and {target_complement} are isometric was not "
+        f"decided (the answer was {complement_empty})"
     )
     complement_start = complement_mor.an_element().discriminant_isometry()
     line_start = _line_isometry(source, target).discriminant_isometry()
@@ -391,12 +455,21 @@ def _gluing_route_discriminant_classes(lattice, left, right):
     source_complement_form = source.complement_discriminant_inclusion.domain()
     target_complement_form = target.complement_discriminant_inclusion.domain()
     if line_start.domain() is not source_line_form or line_start.codomain() is not target_line_form:
-        raise ArithmeticError("the line discriminant isometry has the wrong endpoints")
+        raise ArithmeticError(
+            f"the induced isometry {line_start} of discriminant forms goes "
+            f"{line_start.domain()} -> {line_start.codomain()}, not from the discriminant form "
+            f"{source_line_form} of the line of {left} to that {target_line_form} of {right}"
+        )
     if (
         complement_start.domain() is not source_complement_form
         or complement_start.codomain() is not target_complement_form
     ):
-        raise ArithmeticError("the complement discriminant isometry has the wrong endpoints")
+        raise ArithmeticError(
+            f"the induced isometry {complement_start} of discriminant forms goes "
+            f"{complement_start.domain()} -> {complement_start.codomain()}, not "
+            f"{source_complement_form} -> {target_complement_form} between the discriminant "
+            f"forms of the orthogonal complements"
+        )
 
 
     source_sum_labels = tuple(source.sum_form.module_generating_set())
@@ -465,7 +538,8 @@ def _stable_complement_root_reflections(lattice, element):
     extension = VectorPrimitiveExtension(lattice, element)
     if extension.complement_is_definite():
         raise ValueError(
-            "stable_complement_root_reflections is the indefinite-complement orbit-representative construction"
+            f"cannot list root reflections of the orthogonal complement of {element} in "
+            f"{lattice}: the complement must be indefinite, and it is definite"
         )
     complement = extension.complement.inclusion().domain()
     inclusion = extension.complement.inclusion()
@@ -477,7 +551,8 @@ def _stable_complement_root_reflections(lattice, element):
             reflection = lattice.reflection(embedded_root)
             if reflection(extension.vector) != extension.vector:
                 raise ArithmeticError(
-                    "a reflection in a root of the orthogonal complement does not fix the vector"
+                    f"the reflection in {embedded_root}, a root of the orthogonal complement of "
+                    f"{extension.vector}, does not fix {extension.vector}"
                 )
             if reflection in stable:
                 reflections.append(reflection)

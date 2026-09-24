@@ -8,7 +8,10 @@ from dzack_research.preamble.categories.algebras.algebras import Algebras
 def _constructed_algebra_morphism(domain, codomain, evaluator):
     r"""Return a theorem-supplied map through the ordinary unital algebra Mor."""
     if domain.base_ring() is not codomain.base_ring():
-        raise ValueError("construction algebra maps require one common base ring")
+        raise ValueError(
+            f"a morphism of algebras {domain} -> {codomain} needs one base ring, but they are over "
+            f"{domain.base_ring()} and {codomain.base_ring()}"
+        )
     mor = Algebras(domain.base_ring()).Associative().Unital().Mor(
         domain,
         codomain,
@@ -79,11 +82,13 @@ def _divided_to_symmetric(module):
                     scalar = coefficient / denominator_scalar
                 except (TypeError, ZeroDivisionError) as error:
                     raise ValueError(
-                        "Gamma(M) -> Sym(M) requires all relevant factorials invertible"
+                        f"the map Gamma(M) -> Sym(M) needs the factorial {denominator_scalar} to be invertible, but it "
+                        f"does not divide {coefficient}"
                     ) from error
                 if scalar * denominator_scalar != coefficient:
                     raise ValueError(
-                        "Gamma(M) -> Sym(M) requires all relevant factorials invertible"
+                        f"the map Gamma(M) -> Sym(M) needs the factorial {denominator_scalar} to be invertible, but it "
+                        f"does not divide {coefficient}"
                     )
                 result += scalar * monomial
         return result

@@ -42,7 +42,10 @@ def _rational_positive_vector(gram):
     the transformation matrix itself is never public API.
     """
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
-        raise TypeError("a positive vector is computed from a bilinear-form tensor")
+        raise TypeError(
+            f"cannot find a vector of positive square for {gram}: it must be the Gram tensor "
+            f"of a bilinear form, a tensor of type (0, 2)"
+        )
     engine_gram = _engine_component_matrix(gram).change_ring(SageQQ)
     diagonal, change = QuadraticForm(
         SageQQ,
@@ -56,7 +59,8 @@ def _rational_positive_vector(gram):
     ]
     if len(positive) != 1:
         raise ValueError(
-            "a two-component positive cone requires exactly one positive direction"
+            f"the form with Gram tensor {gram} has {len(positive)} positive directions, but its "
+            f"positive cone has two components only for signature (1, n), with exactly one"
         )
     column = change.column(positive[0])
     rationals = gram.base_ring().fraction_field()
@@ -68,7 +72,10 @@ def _rational_positive_vector(gram):
 
 def _integer_engine_matrix(value, *, transpose=False):
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
-        raise TypeError("the lattice engine seam requires a two-index tensor")
+        raise TypeError(
+            f"{value} cannot be passed to OSCAR as an integer matrix: it must be a tensor with "
+            f"two indices"
+        )
     engine = _engine_component_matrix(value).change_ring(SageZZ)
     return engine.transpose() if transpose else engine
 
@@ -288,7 +295,10 @@ class _OscarLatticeAdapter:
             )
         )
         if value == 0:
-            raise ArithmeticError("the spinor norm of an isometry is a nonzero square class")
+            raise ArithmeticError(
+                f"OSCAR computed spinor norm 0 for the isometry {isometry} of the form {gram}, but "
+                f"a spinor norm is a nonzero square class"
+            )
         return SageZZ.one() if value > 0 else -SageZZ.one()
 
     def centralizer_discriminant_image(self, gram, isometry):
@@ -298,7 +308,10 @@ class _OscarLatticeAdapter:
             _integer_engine_matrix(isometry, transpose=True),
         )
         if not isinstance(result, list) or len(result) != 4:
-            raise RuntimeError("OSCAR returned malformed centralizer-image data")
+            raise RuntimeError(
+                f"the image of the centralizer of {isometry} in O(A_L) for the form {gram} came "
+                f"back from OSCAR as {result!r}, not a list of four entries"
+            )
         engine_generators, order, invariant_rank, coinvariant_rank = result
         generators = tuple(
             tensor.matrix(
@@ -313,7 +326,10 @@ class _OscarLatticeAdapter:
             generator.tensor_shape()[0] != generator.tensor_shape()[1]
             for generator in generators
         ):
-            raise ArithmeticError("an OSCAR centralizer-image generator is not square")
+            raise ArithmeticError(
+                f"OSCAR returned generators {generators} for the image of the centralizer of "
+                f"{isometry} in O(A_L), and some are not square matrices"
+            )
         return (
             generators,
             SageZZ(order),
@@ -329,7 +345,11 @@ class _OscarLatticeAdapter:
             int(negative),
         )
         if not isinstance(result, list) or len(result) != 2:
-            raise RuntimeError("OSCAR returned malformed primitive-embedding data")
+            raise RuntimeError(
+                f"the primitive embedding of the form {gram} into an even unimodular lattice of "
+                f"signature ({positive}, {negative}) came back from OSCAR as {result!r}, not a "
+                f"list of two entries"
+            )
         target_engine, embedding_engine = result
         ring = gram.base_ring()
         target_shape = (target_engine.nrows(), target_engine.ncols())
@@ -356,12 +376,19 @@ class _OscarLatticeAdapter:
         )
         if not target_gram.pullback(embedding).is_equal_tensor(gram):
             raise ArithmeticError(
-                "OSCAR's primitive embedding does not pull back the target form"
+                f"OSCAR's embedding {embedding} of the form {gram} into {target_gram} is not an "
+                f"isometric embedding: it pulls back {target_gram.pullback(embedding)}"
             )
         if abs(target_gram.det()) != 1:
-            raise ArithmeticError("OSCAR's primitive-embedding target is not unimodular")
+            raise ArithmeticError(
+                f"OSCAR embedded the form {gram} into {target_gram}, which is not unimodular: its "
+                f"determinant is {target_gram.det()}"
+            )
         if any(target_gram[index, index] % 2 for index in range(target_shape[0])):
-            raise ArithmeticError("OSCAR's primitive-embedding target is not even")
+            raise ArithmeticError(
+                f"OSCAR embedded the form {gram} into {target_gram}, which is not even: some "
+                f"diagonal entry is odd"
+            )
         return target_gram, embedding
 
     def target_primitive_embedding(self, source_gram, target_gram):
@@ -371,15 +398,24 @@ class _OscarLatticeAdapter:
             _integer_engine_matrix(target_gram),
         )
         if not isinstance(result, list) or not result:
-            raise RuntimeError("OSCAR returned malformed target-embedding data")
+            raise RuntimeError(
+                f"the primitive embedding of the form {source_gram} into {target_gram} came back "
+                f"from OSCAR as {result!r}, not a nonempty list"
+            )
         if int(result[0]) == 0:
             return None
         if len(result) < 2:
-            raise RuntimeError("OSCAR omitted the target-embedding existence flag")
+            raise RuntimeError(
+                f"the primitive embedding of the form {source_gram} into {target_gram} came back "
+                f"from OSCAR as {result!r}, without the entry saying whether one exists"
+            )
         if int(result[1]) == 0:
             return False
         if len(result) != 5:
-            raise RuntimeError("OSCAR returned malformed target-embedding witness data")
+            raise RuntimeError(
+                f"the primitive embedding of the form {source_gram} into {target_gram} came back "
+                f"from OSCAR as {result!r}, not a list of five entries"
+            )
         target_engine, source_engine, embedding_engine = result[2:]
         ring = source_gram.base_ring()
 
@@ -407,7 +443,9 @@ class _OscarLatticeAdapter:
         )
         if not target_prime_gram.pullback(embedding).is_equal_tensor(source_prime_gram):
             raise ArithmeticError(
-                "OSCAR's target primitive embedding does not preserve the source-prime form"
+                f"OSCAR's embedding {embedding} of the form {source_gram} into {target_gram} is not "
+                f"isometric: it pulls {target_prime_gram} back to "
+                f"{target_prime_gram.pullback(embedding)}, not {source_prime_gram}"
             )
         return target_prime_gram, source_prime_gram, embedding
 
@@ -424,17 +462,26 @@ class _OscarLatticeAdapter:
             str(classification),
         )
         if not isinstance(result, list) or not result:
-            raise RuntimeError("OSCAR returned malformed primitive-embedding class data")
+            raise RuntimeError(
+                f"the classes of primitive embeddings of {source_gram} into {target_gram} came back "
+                f"from OSCAR as {result!r}, not a nonempty list"
+            )
         if int(result[0]) == 0:
             return None
         if len(result) != 3:
-            raise RuntimeError("OSCAR returned malformed primitive-embedding class header")
+            raise RuntimeError(
+                f"the classes of primitive embeddings of {source_gram} into {target_gram} came back "
+                f"from OSCAR as {result!r}, not a list of three entries"
+            )
         if int(result[1]) == 0:
             return ()
         representatives = []
         for record in result[2]:
             if not isinstance(record, list) or len(record) != 3:
-                raise RuntimeError("OSCAR returned a malformed primitive-embedding class")
+                raise RuntimeError(
+                    f"a class of primitive embeddings of {source_gram} into {target_gram} came back "
+                    f"from OSCAR as {record!r}, not a list of three entries"
+                )
             target_engine, source_engine, embedding_engine = record
             ring = source_gram.base_ring()
 
@@ -462,7 +509,9 @@ class _OscarLatticeAdapter:
             )
             if not target_prime_gram.pullback(embedding).is_equal_tensor(source_prime_gram):
                 raise ArithmeticError(
-                    "an OSCAR primitive-embedding class does not preserve the source-prime form"
+                    f"OSCAR's embedding {embedding} of the form {source_gram} into {target_gram} is "
+                    f"not isometric: it pulls {target_prime_gram} back to "
+                    f"{target_prime_gram.pullback(embedding)}, not {source_prime_gram}"
                 )
             representatives.append((target_prime_gram, source_prime_gram, embedding))
         return tuple(representatives)
@@ -472,17 +521,31 @@ class _OscarLatticeAdapter:
             "DzackResearchOscarLatticeAdapter.leech_gram_rows"
         )
         if not isinstance(rows, list) or len(rows) != 24:
-            raise RuntimeError("OSCAR returned malformed Leech Gram data")
+            raise RuntimeError(
+                f"the Gram matrix of the Leech lattice came back from OSCAR as {rows!r}, not a "
+                f"list of 24 rows"
+            )
         matrix_rows = tuple(tuple(SageZZ(entry) for entry in row) for row in rows)
         if any(len(row) != 24 for row in matrix_rows):
-            raise RuntimeError("OSCAR returned a non-square Leech Gram matrix")
+            raise RuntimeError(
+                f"the Gram matrix of the Leech lattice from OSCAR has row lengths "
+                f"{tuple(len(row) for row in matrix_rows)}, not 24 each"
+            )
         gram = engine_matrix(SageZZ, matrix_rows)
         if not gram.is_symmetric():
-            raise ArithmeticError("OSCAR returned a nonsymmetric Leech Gram matrix")
+            raise ArithmeticError(
+                f"the Gram matrix of the Leech lattice from OSCAR is not symmetric:\n{gram}"
+            )
         if abs(gram.det()) != 1:
-            raise ArithmeticError("OSCAR returned a non-unimodular Leech Gram matrix")
+            raise ArithmeticError(
+                f"the Gram matrix of the Leech lattice from OSCAR is not unimodular: its "
+                f"determinant is {gram.det()}"
+            )
         if any(gram[index, index] % 2 for index in range(24)):
-            raise ArithmeticError("OSCAR returned an odd Leech Gram matrix")
+            raise ArithmeticError(
+                f"the Gram matrix of the Leech lattice from OSCAR is not even: some diagonal "
+                f"entry is odd"
+            )
         return matrix_rows
 
     def integral_isometry_witness(self, source_gram, target_gram):
@@ -492,18 +555,30 @@ class _OscarLatticeAdapter:
             _integer_engine_matrix(target_gram),
         )
         if not isinstance(result, list) or not result:
-            raise RuntimeError("OSCAR returned malformed lattice-isometry data")
+            raise RuntimeError(
+                f"the isometry between the forms {source_gram} and {target_gram} came back from "
+                f"OSCAR as {result!r}, not a nonempty list"
+            )
         if int(result[0]) == 0:
             return None
         if len(result) != 2:
-            raise RuntimeError("OSCAR returned malformed lattice-isometry witness data")
+            raise RuntimeError(
+                f"the isometry between the forms {source_gram} and {target_gram} came back from "
+                f"OSCAR as {result!r}, not a list of two entries"
+            )
         witness = result[1]
         if witness.nrows() != witness.ncols():
-            raise ArithmeticError("an OSCAR lattice isometry matrix is not square")
+            raise ArithmeticError(
+                f"OSCAR returned a {witness.nrows()} x {witness.ncols()} matrix as an isometry "
+                f"between the forms {source_gram} and {target_gram}; an isometry matrix is square"
+            )
         source_engine = _integer_engine_matrix(source_gram)
         target_engine = _integer_engine_matrix(target_gram)
         if witness * target_engine * witness.transpose() != source_engine:
-            raise ArithmeticError("an OSCAR lattice isometry does not preserve the Gram form")
+            raise ArithmeticError(
+                f"OSCAR's matrix {witness} is not an isometry between the forms {source_gram} and "
+                f"{target_gram}: it does not carry one Gram matrix to the other"
+            )
         return tuple(
             tuple(SageZZ(entry) for entry in row)
             for row in witness.rows()

@@ -147,7 +147,10 @@ def _restricted_graded_algebra(algebra, ring_map, *, extra_categories=(), constr
     """
     ring = ring_map.domain()
     extension = algebra.base_ring()
-    assert ring_map.codomain() is extension, "scalar restriction uses a map into the original coefficient ring"
+    assert ring_map.codomain() is extension, (
+        f"restricting the scalars of {algebra} along {ring_map} needs a ring map ending at {extension}, "
+        f"but it ends at {ring_map.codomain()}"
+    )
     monoid = algebra.grading_monoid()
 
     def piece(degree):

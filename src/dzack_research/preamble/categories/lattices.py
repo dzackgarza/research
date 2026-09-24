@@ -216,7 +216,7 @@ def _register_indecomposable_gram(name, gram):
 def _register_indecomposable(name, lattice):
     r"""Register an indecomposable live lattice by exact Gram equality."""
     if lattice.is_decomposable():
-        raise ValueError("only an indecomposable lattice can name one Gram block")
+        raise ValueError(f"cannot register {lattice!r} under the name {name!r}: only an indecomposable lattice names a single Gram block, and this lattice decomposes as an orthogonal sum")
     _register_indecomposable_gram(name, lattice.gram_tensor())
 
 
@@ -322,7 +322,7 @@ class LocalGenusSymbol:
         integers = _own_ring(SageZZ)
         self._prime = integers(prime)
         if not self._prime.is_prime():
-            raise ValueError("a local genus symbol is attached to a prime")
+            raise ValueError(f"cannot form a local genus symbol at {prime!r}: a local genus symbol is taken at a prime p, and {prime!r} is not prime")
         self._jordan_blocks = tuple(tuple(integers(entry) for entry in block) for block in jordan_blocks)
 
     def prime(self):
@@ -404,7 +404,7 @@ class Genus:
         )
         engine_form = TorsionQuadraticForm(_engine_component_matrix(written))
         if int(engine_form.cardinality()) != int(form.cardinality()):
-            raise ArithmeticError("reconstructing the genus engine changed the discriminant-group cardinality")
+            raise ArithmeticError(f"the torsion quadratic form rebuilt from the discriminant form {form!r} has order {engine_form.cardinality()}, but the discriminant group has order {form.cardinality()}; the rebuilt form is not isomorphic to the discriminant form")
         return engine_form
 
     def _engine_signature_pair(self):
@@ -478,7 +478,7 @@ class Genus:
 
         positive, negative = _signature.first(), _signature.second()
         if positive != 0 and negative != 0:
-            raise ValueError("the finite orthogonal-group mass is defined here for definite genera")
+            raise ValueError(f"the Smith--Minkowski--Siegel mass of {self!r} is not defined: the mass is a finite sum only for a definite genus, and this genus has signature ({positive}, {negative})")
         rationals = _own_ring(SageQQ)
         return _owned_engine_element(rationals, SageQQ(self._engine().mass()))
 
@@ -578,9 +578,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         ``Lattices(R)(data)``.
         """
         if len(args) != 1:
-            raise TypeError("Lattices(R) takes a ring R; construct an object as Lattices(R)(data)")
+            raise TypeError(f"Lattices(R) takes exactly one argument, a ring R, but received {len(args)} arguments {args!r}; a lattice itself is constructed as Lattices(R)(data)")
         ring = _own_ring(args[0])
-        assert ring in _Rings, "Lattices(R) takes a ring R; construct an object as Lattices(R)(data)"
+        assert ring in _Rings, f"Lattices(R) takes a ring R, but {args[0]!r} is not a ring; a lattice itself is constructed as Lattices(R)(data)"
         from dzack_research.preamble.categories.modules.pure.modules import _is_group_algebra
 
         if cls is Lattices and _is_group_algebra(ring):
@@ -596,7 +596,7 @@ class Lattices(OwnedCategoryOverBaseRing):
     def twist_functor(self, scale):
         r"""Return the integral-lattice endofunctor ``L |-> L(scale)``."""
         if _engine_ring(self.base_ring()) is not SageZZ:
-            raise TypeError("the represented lattice twist functor is integral")
+            raise TypeError(f"the twist functor L |-> L({scale}) is defined here only for lattices over ZZ, but {self} has base ring {self.base_ring()}")
         from dzack_research.preamble.categories.functors.twist import TwistFunctor
 
         return TwistFunctor(scale)
@@ -708,7 +708,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         stated on.
         """
         ring = self.base_ring()
-        assert lattice in self, f"a specialization of {self} is built on a lattice of {self}"
+        assert lattice in self, f"cannot specialize {lattice!r} in {self}: it is not a lattice of {self}"
         stated_on = lattice.unformed_module() if unformed_module is None else unformed_module
         carried_categories = []
         carried_data = {}
@@ -783,7 +783,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         rank = int(rank)
         if kind == "H":
             if rank not in (3, 4):
-                raise ValueError("the finite H root systems are H3 and H4")
+                raise ValueError(f"there is no root system H{rank}: the finite noncrystallographic root systems of type H are H3 and H4")
             from dzack_research.preamble.categories.rings.number_fields import QuadraticField
 
             field = QuadraticField(5, "sqrt5")
@@ -826,7 +826,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         positive = int(positive)
         negative = int(negative)
         if positive < 0 or negative < 0 or positive + negative == 0:
-            raise ValueError("I_(p,q) requires p,q >= 0 and positive total rank")
+            raise ValueError(f"I_({positive},{negative}) is not defined: the odd unimodular lattice I_(p,q) requires p, q >= 0 and p + q > 0")
         diagonal = [1] * positive + [-1] * negative
         gram = [
             [entry if row == column else 0 for column, entry in enumerate(diagonal)]
@@ -846,9 +846,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         positive = int(positive)
         negative = int(negative)
         if positive < 1 or negative < 1:
-            raise ValueError("II_(p,q) here denotes an indefinite even unimodular lattice")
+            raise ValueError(f"II_({positive},{negative}) is not defined here: II_(p,q) denotes an indefinite even unimodular lattice, which requires p >= 1 and q >= 1")
         if (positive - negative) % 8:
-            raise ValueError("an even unimodular lattice has signature divisible by eight")
+            raise ValueError(f"no even unimodular lattice II_({positive},{negative}) exists: the signature p - q = {positive - negative} of an even unimodular lattice is divisible by eight")
         integers = _own_ring(SageZZ)
         category = Lattices(integers)
         summands = [category("U") for _ in range(min(positive, negative))]
@@ -870,7 +870,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         r"""Return ``<-2d> + U^2 + E8^2``, the degree-``2d`` K3 complement lattice."""
         degree = int(degree)
         if degree < 1:
-            raise ValueError("the polarized K3 degree parameter d is positive")
+            raise ValueError(f"no K3 lattice of degree 2d with d = {degree}: a polarization has positive degree, so d >= 1")
         integers = _own_ring(SageZZ)
         category = Lattices(integers)
         return _orthogonal_sum(
@@ -901,13 +901,13 @@ class Lattices(OwnedCategoryOverBaseRing):
         hyperbolic = (category("U"), category("U"), category("U"))
         if deformation_type == "K3":
             if n < 2:
-                raise ValueError("the K3^[n] series here requires n >= 2")
+                raise ValueError(f"no BBF lattice of K3^[{n}]-type: the K3^[n] series requires n >= 2")
             return _orthogonal_sum(
                 (*hyperbolic, category("E8"), category("E8"), category(1).twist(2 - 2 * n))
             )
         if deformation_type == "Kum":
             if n < 2:
-                raise ValueError("the generalized Kummer series here requires n >= 2")
+                raise ValueError(f"no BBF lattice of generalized Kummer type Kum_{n}: the series requires n >= 2")
             return _orthogonal_sum((*hyperbolic, category(1).twist(-2 - 2 * n)))
         if deformation_type == "OG6":
             minus_two = category(1).twist(-2)
@@ -1064,7 +1064,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def ambient_lattice(self):
             r"""Return the ambient lattice of a represented lattice subobject."""
             if self not in ModuleSubobjects(self.base_ring()):
-                raise TypeError("ambient_lattice() requires a represented lattice subobject")
+                raise TypeError(f"{self!r} is not included in a larger lattice: it is not a sublattice with an inclusion into a lattice, only an object of {self.category()}")
             return self.inclusion().codomain()
 
         def lattice_basis(self):
@@ -1078,7 +1078,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def saturation(self):
             r"""Return the primitive closure as a lattice subobject of the same ambient lattice."""
             if self not in ModuleSubobjects(self.base_ring()):
-                raise TypeError("saturation() requires a represented lattice subobject")
+                raise TypeError(f"cannot saturate {self!r}: saturation is taken of a sublattice with an inclusion into a lattice, but {self!r} is only an object of {self.category()}")
             ambient = self.inclusion().codomain()
             saturated_module = self.inclusion().saturation()
             embedded_basis = tuple(saturated_module.inclusion()(generator) for generator in saturated_module.module_generators())
@@ -1093,13 +1093,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             if sublattice is None:
                 if self not in ModuleSubobjects(self.base_ring()):
-                    raise TypeError("orthogonal_complement() without an argument requires a represented lattice subobject")
+                    raise TypeError(f"{self!r}.orthogonal_complement() with no argument needs {self!r} to be a sublattice with an inclusion into a lattice, but it is only an object of {self.category()}; pass the sublattice whose orthogonal complement is wanted")
                 return self.inclusion().orthogonal_complement()
             if sublattice not in ModuleSubobjects(self.base_ring()):
-                raise TypeError("the orthogonal complement is taken from a represented lattice subobject")
+                raise TypeError(f"cannot take the orthogonal complement of {sublattice!r} in {self!r}: it is not a sublattice with an inclusion into a lattice")
             inclusion = sublattice.inclusion()
             if inclusion.codomain() is not self:
-                raise ValueError("the selected sublattice has the wrong ambient lattice")
+                raise ValueError(f"cannot take the orthogonal complement of {sublattice!r} in {self!r}: it is a sublattice of {inclusion.codomain()!r}, not of {self!r}")
             return inclusion.orthogonal_complement()
 
         def perp(self, sublattice=None):
@@ -1227,7 +1227,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             positive, negative = _signature.first(), _signature.second()
             integers = positive.parent()
             if positive != integers.one() or negative < integers.one():
-                raise ValueError(f"the component character is defined in signature (1,n); got {(positive, negative)}")
+                raise ValueError(f"{self!r} has no positive-cone component character: the cone b(v,v) > 0 has two components only in signature (1,n) with n >= 1, but this lattice has signature {(positive, negative)}")
 
             target = OwnedGroups().C(2)
             exchange = target.group_generators()[0]
@@ -1242,7 +1242,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             positive, negative = _signature.first(), _signature.second()
             integers = positive.parent()
             if positive != integers.one() or negative < integers.one():
-                raise ValueError(f"positive_cone_subgroup requires signature (1,n); got {(positive, negative)}")
+                raise ValueError(f"{self!r} has no positive-cone-preserving subgroup of O(L): the positive cone has two components only in signature (1,n) with n >= 1, but this lattice has signature {(positive, negative)}")
 
             return self.Aut().predicate_subgroup(lambda automorphism: automorphism.preserves_positive_cone(), "g preserves the positive cone")
 
@@ -1321,7 +1321,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case True:
                     return None
             assert empty is not Unknown, (
-                "the isometry Mor is not decided by the available exact classifiers"
+                f"cannot decide whether {self!r} and {other!r} are isometric: no available exact classification algorithm decides this pair"
             )
             return mor.an_element()
 
@@ -1334,7 +1334,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             decision = self.is_isometric(other)
             assert decision is not Unknown, (
-                "the isometry question is not decided by the available exact classifiers"
+                f"cannot decide whether {self!r} and {other!r} are isometric: no available exact classification algorithm decides this pair"
             )
             return bool(decision)
 
@@ -1434,11 +1434,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 selected = tuple(basis)
                 for vector in selected:
                     if vector.parent() is not self:
-                        raise ValueError("a Gram matrix basis consists of vectors of this lattice")
+                        raise ValueError(f"cannot form the Gram matrix of {self!r} on {vector!r}: the vector lies in {vector.parent()!r}, not in this lattice")
                 size = len(selected)
                 return self.base_ring().matrix_space(size, size).from_rows(tuple(tuple(self.b(left, right) for right in selected) for left in selected))
             assert self.module_rank().is_finite(), (
-                "the default Gram matrix requires finite rank; use gram_tensor() for an infinite form or pass a finite list of vectors"
+                f"{self!r} has rank {self.module_rank()}, so it has no Gram matrix on a basis; a Gram matrix needs finite rank. Pass a finite family of vectors to take their Gram matrix"
             )
             correlation = self.algebraic_correlation_morphism()
             linear = correlation.domain().module_category().Mor(
@@ -1474,7 +1474,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             signature = _signature_pair_of_gram(self.gram_tensor())
             assert signature is not Unknown, (
-                "the exact signature of this infinite lattice is not determined by its represented Gram rule"
+                f"cannot determine the signature of {self!r}: it has rank {self.module_rank()}, and its Gram rule does not determine the indices of inertia"
             )
             return signature
 
@@ -1502,7 +1502,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def determinant(self):
             r"""Return the determinant of a finite-rank lattice form."""
-            assert self.module_rank().is_finite(), "the determinant requires a finite-rank lattice"
+            assert self.module_rank().is_finite(), f"{self!r} has no determinant: it has rank {self.module_rank()}, and a determinant needs finite rank"
 
             rank = int(self.module_rank())
             gram = self.gram_tensor()
@@ -1518,7 +1518,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             decision = _gram_is_even(self.gram_tensor(), self.base_ring())
             assert decision is not Unknown, (
-                "exact evenness of this infinite lattice is not determined by its represented Gram rule"
+                f"cannot decide whether {self!r} is even: it has rank {self.module_rank()}, and its Gram rule does not decide whether b(x,x) lies in 2R for all x"
             )
             return decision
 
@@ -1533,10 +1533,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             discriminant group ``ZZ/2`` but level ``4``.
             """
             assert _engine_ring(self.base_ring()) is SageZZ, (
-                "lattice level is currently implemented for integral ZZ-lattices"
+                f"cannot compute the level of {self!r}: the level is implemented only for lattices over ZZ, and this lattice is over {self.base_ring()}"
             )
             if not self.module_rank().is_finite() or not self.is_nondegenerate():
-                raise ValueError("lattice level requires a finite nondegenerate lattice")
+                raise ValueError(f"{self!r} has no level: the level is defined for a nondegenerate lattice of finite rank, and this lattice has rank {self.module_rank()} or is degenerate")
 
             discriminant = self.discriminant_module()
             generators = tuple(discriminant.module_generators())
@@ -1556,19 +1556,19 @@ class Lattices(OwnedCategoryOverBaseRing):
             nondegenerate ``ZZ`` case, where these data determine the genus.
             """
             assert _engine_ring(self.base_ring()) is SageZZ, (
-                "the live genus object currently implements integral ZZ-lattices"
+                f"cannot compute the genus of {self!r}: the genus is implemented only for lattices over ZZ, and this lattice is over {self.base_ring()}"
             )
             if not self.module_rank().is_finite() or not self.is_nondegenerate():
-                raise ValueError("a genus here requires a finite nondegenerate lattice")
+                raise ValueError(f"cannot compute the genus of {self!r}: the genus is implemented for a nondegenerate lattice of finite rank, and this lattice has rank {self.module_rank()} or is degenerate")
             assert self.is_even(), (
-                "the current genus reconstruction from a discriminant quadratic form requires an even lattice"
+                f"cannot compute the genus of {self!r}: the genus is computed from the discriminant quadratic form, which exists only for an even lattice, and {self!r} is odd"
             )
             return Genus(self.signature_pair(), self.discriminant_quadratic_form())
 
         def is_locally_isometric(self, other, prime) -> bool:
             r"""Return whether ``self`` and ``other`` are isometric over ``ZZ_p``."""
             if other not in Lattices(self.base_ring()):
-                raise TypeError("local lattice isometry compares lattices over one base ring")
+                raise TypeError(f"cannot compare {self!r} and {other!r} over ZZ_{prime}: {other!r} is not a lattice over {self.base_ring()}")
             return bool(self.genus().local_symbol(prime) == other.genus().local_symbol(prime))
 
         def divisibility_ideal(self, element):
@@ -1584,7 +1584,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: L.divisibility_ideal(L.basis_vector(1)) == ZZ.ideal(6)
                 True
             """
-            assert element.parent() is self, "the divisibility ideal is defined for an element of this lattice"
+            assert element.parent() is self, f"cannot form the divisibility ideal b(v, L) of {element!r} in {self!r}: the vector lies in {element.parent()!r}, not in this lattice"
             ring = self.base_ring()
             pairings = tuple(self.generator_pairings(element).values())
             if not pairings:
@@ -1598,7 +1598,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             pairing rule of the Gram presentation returns the finitely many
             nonzero pairings.
             """
-            assert element.parent() is self, "generator pairings require an element of this lattice"
+            assert element.parent() is self, f"cannot pair {element!r} against the generators of {self!r}: the vector lies in {element.parent()!r}, not in this lattice"
             match self.module_rank().is_finite():
                 case True:
                     return {
@@ -1620,7 +1620,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: U.subobject_on((U.basis_vector(0),)).is_totally_isotropic()
                 True
             """
-            assert self.module_rank().is_finite(), "total isotropy is decided here on a finite generating set"
+            assert self.module_rank().is_finite(), f"cannot decide whether {self!r} is totally isotropic: it has rank {self.module_rank()}, and total isotropy is decided here only at finite rank"
             zero = self.base_ring().zero()
             return all(
                 value == zero
@@ -1631,10 +1631,10 @@ class Lattices(OwnedCategoryOverBaseRing):
         def div(self, element):
             r"""Return the divisibility ``gcd{b(element,x): x in L}`` over ``ZZ``."""
             if element.parent() is not self:
-                raise TypeError("divisibility is defined for an element of this lattice")
+                raise TypeError(f"cannot compute the divisibility of {element!r} in {self!r}: the vector lies in {element.parent()!r}, not in this lattice")
 
             ring = self.base_ring()
-            assert _engine_ring(ring) is SageZZ, "integer divisibility is the ZZ specialization"
+            assert _engine_ring(ring) is SageZZ, f"cannot compute the divisibility of {element!r} as an integer: {self!r} is over {ring}, not ZZ; use divisibility_ideal for the ideal b(v, L)"
             pairings = tuple(
                 abs(ring(value)) for value in self.generator_pairings(element).values()
             )
@@ -1666,7 +1666,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             ring = self.base_ring()
             assert self in FormModules(ring).Nondegenerate(), (
-                "the metric dual requires nondegeneracy established by the lattice construction"
+                f"{self!r} has no metric dual: the dual lattice is defined for a nondegenerate form, and {self!r} is not known to be nondegenerate; it is an object of {self.category()}"
             )
             match self.module_rank().is_finite():
                 case False:
@@ -1747,13 +1747,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             coordinate of the correlation image is divisible by it.
             """
             if element.parent() is not self:
-                raise TypeError("primitive_dual expects an element of this lattice")
+                raise TypeError(f"cannot form the primitive dual correlation(v)/div(v) of {element!r} in {self!r}: the vector lies in {element.parent()!r}, not in this lattice")
             correlation_image = self.correlation_morphism()(element)
             if element.is_zero():
                 return correlation_image
             divisibility = self.div(element)
             if divisibility <= self.base_ring().zero():
-                raise ArithmeticError("a nonzero integral vector has positive divisibility")
+                raise ArithmeticError(f"the nonzero vector {element!r} of {self!r} has divisibility {divisibility}, but the divisibility of a nonzero vector is a positive integer")
             dual_lattice = self.dual_lattice()
             divided_coefficients = {}
             for label, coefficient in dual_lattice.framing_coefficients(correlation_image).items():
@@ -1761,17 +1761,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                     continue
                 quotient = coefficient // divisibility
                 if divisibility * quotient != coefficient:
-                    raise ArithmeticError("the correlation coordinates are not divisible by the vector divisibility")
+                    raise ArithmeticError(f"the dual coordinate {coefficient} of correlation({element!r}) in {self!r} is not divisible by div(v) = {divisibility}, but div(v) generates the ideal of all pairings b(v, L)")
                 divided_coefficients[label] = quotient
             return dual_lattice.linear_combination(divided_coefficients)
 
         def divided_discriminant_class(self, element):
             r"""Return the class represented by ``correlation(element)/div(element)``."""
             if element.parent() is not self:
-                raise TypeError("divided_discriminant_class expects an element of this lattice")
+                raise TypeError(f"cannot form the discriminant class of correlation(v)/div(v) for {element!r} in {self!r}: the vector lies in {element.parent()!r}, not in this lattice")
             divisibility = self.div(element)
             if divisibility == 0:
-                raise ValueError("the zero vector has no divided discriminant class")
+                raise ValueError(f"{element!r} has divisibility 0 in {self!r}, so correlation(v)/div(v) is undefined; the discriminant class [v/div(v)] needs a vector with nonzero pairing against the lattice")
             return self.discriminant_class(self.primitive_dual(element))
 
         def get_isotropic_type(self, element) -> str:
@@ -1785,18 +1785,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             the explicit quadratic-form hypothesis.
             """
             if element.parent() is not self:
-                raise TypeError("isotropic type is defined for a vector of this lattice")
+                raise TypeError(f"cannot classify the isotropic type of {element!r} in {self!r}: the vector lies in {element.parent()!r}, not in this lattice")
             if not element.is_isotropic():
-                raise ValueError("isotropic type requires an isotropic vector")
+                raise ValueError(f"cannot classify the isotropic type of {element!r} in {self!r}: the vector is not isotropic, q(v) = {element.q()}")
             if not element.is_primitive():
-                raise ValueError("isotropic type requires a primitive vector")
+                raise ValueError(f"cannot classify the isotropic type of {element!r} in {self!r}: the vector is not primitive")
             if not self.is_even() or not self.is_p_elementary(self.base_ring()(2)):
-                raise ValueError("the selected cusp-type classification requires an even 2-elementary lattice")
+                raise ValueError(f"cannot classify the isotropic type of {element!r}: the classification by divisibility and [v/2] holds for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary")
             divisibility = self.div(element)
             if divisibility == self.base_ring().one():
                 return "Odd"
             if divisibility != self.base_ring()(2):
-                raise ValueError("a primitive isotropic vector in the selected 2-elementary regime must have divisibility one or two")
+                raise ValueError(f"the primitive isotropic vector {element!r} of the 2-elementary lattice {self!r} has divisibility {divisibility}, but in a 2-elementary lattice a primitive vector has divisibility 1 or 2")
             divided_class = self.divided_discriminant_class(element)
             if divided_class.is_characteristic():
                 return "Even characteristic"
@@ -1810,7 +1810,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return ``S^perp/S`` when this lattice is represented as a subobject."""
 
             if self not in ModuleSubobjects(self.base_ring()):
-                raise TypeError("isotropic reduction requires a chosen lattice inclusion")
+                raise TypeError(f"cannot form S^perp/S for {self!r}: the isotropic reduction is taken of a sublattice with an inclusion into a lattice, but {self!r} is only an object of {self.category()}")
             return self.inclusion().isotropic_reduction()
 
         def I_perp_mod_I(self, vectors):
@@ -1885,7 +1885,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             basis_map = rationals.matrix_space(rank, rank).from_rows(tuple(tuple(basis_rows[column, row] for column in range(rank)) for row in range(rank)))
             gram = self.gram_tensor().change_ring(rationals).pullback(basis_map)
             if not all(gram[i, j] in ring for i in range(rank) for j in range(rank)):
-                raise ValueError("the selected discriminant classes do not define an integral overlattice")
+                raise ValueError(f"the discriminant classes {discriminant_classes!r} of {self!r} do not give an integral overlattice: the form is not integral on the span of L and their lifts, so the classes do not span an isotropic subgroup of the discriminant form")
             integral_entries = [[ring(gram[i, j]) for j in range(rank)] for i in range(rank)]
 
             labels = finite_ordered_set(range(rank))
@@ -1924,18 +1924,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             maximal overlattice.  No uniqueness is asserted.
             """
             if not self.is_nondegenerate():
-                raise ValueError("maximal overlattices require a finite discriminant form")
+                raise ValueError(f"{self!r} has no maximal overlattice by Nikulin's correspondence: that needs a finite discriminant form, and {self!r} is degenerate")
             form = self.discriminant_group()
             maximal = form.maximal_isotropic_subgroups()
             if maximal.cardinality() == 0:
-                raise ArithmeticError("a finite discriminant form has no maximal isotropic subgroup")
+                raise ArithmeticError(f"the discriminant form {form!r} of {self!r} returned no maximal isotropic subgroup, but every finite discriminant form has one (the zero subgroup is isotropic)")
             subgroup = maximal[0]
             inclusion = form.overlattice_from_isotropic_subobject(subgroup)
             for larger in form.isotropic_subgroups():
                 if int(larger.cardinality()) <= int(subgroup.cardinality()):
                     continue
                 if all(element in larger for element in subgroup.embedded_elements()):
-                    raise ArithmeticError("the selected glue subgroup is not maximal isotropic")
+                    raise ArithmeticError(f"the isotropic subgroup {subgroup!r} of the discriminant form of {self!r} was returned as maximal, but it lies in the larger isotropic subgroup {larger!r}")
             return inclusion
 
         def local_modification(self, prime, *discriminant_classes):
@@ -1947,13 +1947,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             prime = self.base_ring()(prime)
             if not prime.is_prime():
-                raise ValueError("a local modification is indexed by a prime")
+                raise ValueError(f"cannot take a local modification of {self!r} at {prime}: a local modification is taken at a prime p, and {prime} is not prime")
             form = self.discriminant_group()
             classes = tuple(element if element.parent() is form else form(element) for element in discriminant_classes)
             for element in classes:
                 order = element.additive_order()
                 if order != prime ** int(order.valuation(prime)):
-                    raise ValueError(f"local modification at p={prime} requires p-primary glue; the class {element} has order {order}")
+                    raise ValueError(f"cannot take the local modification of {self!r} at p={prime}: every glue class must lie in the {prime}-primary part of the discriminant group, but the class {element} has order {order}")
             subgroup = form.subgroup_on(classes)
             return form.overlattice_from_isotropic_subobject(subgroup)
 
@@ -1966,10 +1966,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             therefore contributes the identity extension.
             """
             assert _engine_ring(self.base_ring()) is SageZZ, (
-                "even overlattice enumeration is currently implemented for integral ZZ-lattices"
+                f"cannot enumerate the even overlattices of {self!r}: this is implemented only for lattices over ZZ, and this lattice is over {self.base_ring()}"
             )
             if not self.is_even() or not self.module_rank().is_finite() or not self.is_nondegenerate():
-                raise ValueError("even overlattice enumeration requires a finite nondegenerate even lattice")
+                raise ValueError(f"cannot enumerate the even overlattices of {self!r}: Nikulin's correspondence with isotropic subgroups of the discriminant quadratic form needs an even nondegenerate lattice of finite rank, and {self!r} fails one of these")
             form = self.discriminant_quadratic_form()
             return finite_ordered_set(
                 tuple(
@@ -1989,10 +1989,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             positive = ring(positive)
             negative = ring(negative)
             assert _engine_ring(ring) is SageZZ, (
-                "the current Nikulin primitive-embedding criterion is for integral ZZ-lattices"
+                f"cannot decide whether {self!r} embeds primitively in II_({positive},{negative}): Nikulin's criterion is implemented only for lattices over ZZ, and this lattice is over {ring}"
             )
             if not self.is_even() or not self.module_rank().is_finite() or not self.is_nondegenerate():
-                raise ValueError("Nikulin's primitive-embedding criterion requires a finite nondegenerate even lattice")
+                raise ValueError(f"cannot decide whether {self!r} embeds primitively in II_({positive},{negative}): Nikulin's criterion needs an even nondegenerate lattice of finite rank, and {self!r} fails one of these")
             _signature = self.signature_pair()
             source_positive, source_negative = _signature.first(), _signature.second()
             if (positive - negative) % 8 != 0:
@@ -2011,7 +2011,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def embed_in_even_unimodular(self, positive, negative):
             r"""Return one primitive embedding into an even unimodular lattice."""
             if not self.embeds_in_even_unimodular(positive, negative):
-                raise ValueError(f"no primitive embedding into II_{{{positive},{negative}}} exists")
+                raise ValueError(f"{self!r} has no primitive embedding into II_{{{positive},{negative}}}: by Nikulin's criterion no even lattice of the complementary signature has discriminant form -q_L")
 
             target_gram, embedding_matrix = lattice_engines._even_unimodular_primitive_embedding(self.gram_tensor(), positive, negative)
             target = Lattices(self.base_ring())(target_gram)
@@ -2029,9 +2029,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             embedding = self.Emb(target)(images)
             if not embedding.is_primitive():
-                raise ArithmeticError("OSCAR returned a nonprimitive embedding")
+                raise ArithmeticError(f"the embedding of {self!r} into II_{{{positive},{negative}}} computed by OSCAR is not primitive: its cokernel has torsion")
             if target.signature_pair() != signature_pair(positive, negative):
-                raise ArithmeticError("OSCAR's primitive-embedding target has the wrong signature")
+                raise ArithmeticError(f"the target lattice {target!r} computed by OSCAR for a primitive embedding of {self!r} has signature {target.signature_pair()}, not ({positive}, {negative})")
             return embedding
 
         def glue_map(self, first, second):
@@ -2080,13 +2080,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             bilinear-isotropic and not quadratic-isotropic.
             """
             ring = self.base_ring()
-            assert _engine_ring(ring) is SageZZ, "primitive-extension glue is currently implemented over ZZ"
+            assert _engine_ring(ring) is SageZZ, f"cannot compute the glue map of {self!r} along {first!r} and {second!r}: glue maps are implemented only for lattices over ZZ, and this lattice is over {ring}"
             for subobject in (first, second):
-                assert subobject in ModuleSubobjects(ring) and subobject.inclusion().codomain() is self, "a glue map is taken between two subobjects of this lattice"
-                assert subobject.is_primitive(), "a primitive extension is presented by primitive sublattices"
-            assert first.module_rank() + second.module_rank() == self.module_rank(), "a primitive extension of L needs rk(S)+rk(R)=rk(L)"
+                assert subobject in ModuleSubobjects(ring) and subobject.inclusion().codomain() is self, f"cannot compute the glue map of {self!r}: {subobject!r} is not a sublattice of {self!r} with an inclusion into it"
+                assert subobject.is_primitive(), f"cannot compute the glue map of {self!r}: the sublattice {subobject!r} is not primitive, but L is a primitive extension of S + R only for primitive S and R"
+            assert first.module_rank() + second.module_rank() == self.module_rank(), f"cannot compute the glue map of {self!r}: a primitive extension needs rk(S) + rk(R) = rk(L), but rk(S) = {first.module_rank()}, rk(R) = {second.module_rank()} and rk(L) = {self.module_rank()}"
             assert all(self.b(left, right) == ring.zero() for left in first.embedded_module_generators() for right in second.embedded_module_generators()), (
-                "a primitive extension is presented by mutually orthogonal sublattices"
+                f"cannot compute the glue map of {self!r}: the sublattices {first!r} and {second!r} are not orthogonal, but a primitive extension of S + R needs b(S, R) = 0"
             )
 
             quadratic = self.is_even()
@@ -2136,11 +2136,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
                 if first_class == first_discriminant.zero():
                     if second_class != second_discriminant.zero():
-                        raise ArithmeticError("primitive-extension data send the zero class of A_S to a nonzero class of A_R")
+                        raise ArithmeticError(f"the glue relation of {self!r} along {first!r} and {second!r} sends the zero class of A_S to the nonzero class {second_class!r} of A_R, so it is not the graph of a group homomorphism H_S -> H_R")
                     continue
                 previous = graph.get(first_class)
                 if previous is not None and previous != second_class:
-                    raise ArithmeticError("primitive-extension data do not define a function H_S -> H_R")
+                    raise ArithmeticError(f"the glue relation of {self!r} along {first!r} and {second!r} sends the class {first_class!r} of A_S to both {previous!r} and {second_class!r} in A_R, so it is not the graph of a function H_S -> H_R")
                 graph[first_class] = second_class
 
             source_classes = tuple(graph)
@@ -2189,9 +2189,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             extension_index = first.sum(second).index()
             if source_form.cardinality() != extension_index:
-                raise ArithmeticError("the recovered glue subgroup does not have order [L:S+R]")
+                raise ArithmeticError(f"the glue subgroup H_S of {self!r} along {first!r} has order {source_form.cardinality()}, but a primitive extension has |H_S| = [L:S+R] = {extension_index}")
             if target_subgroup.cardinality() != extension_index:
-                raise ArithmeticError("the two primitive-extension glue subgroups have different orders")
+                raise ArithmeticError(f"the glue subgroup H_R of {self!r} along {second!r} has order {target_subgroup.cardinality()}, but the glue map is a bijection H_S -> H_R with |H_S| = [L:S+R] = {extension_index}")
 
             forward = source_form.module_category().Mor(source_form, target_form)({label: target_form.module_generator(label) for label in labels})
             inverse = target_form.module_category().Mor(target_form, source_form)({label: source_form.module_generator(label) for label in labels})
@@ -2211,7 +2211,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return ``A_L`` with its ``K/2R``-valued quadratic form when ``L`` is even."""
 
             if not self.is_even():
-                raise ValueError("a discriminant quadratic form requires an even lattice")
+                raise ValueError(f"{self!r} has no discriminant quadratic form: q_L: A_L -> Q/2Z is defined only for an even lattice, and {self!r} is odd; use discriminant_bilinear_form")
             module = self.discriminant_module()
             assert module in DiscriminantQuadraticModules(self.base_ring())
             return module
@@ -2219,24 +2219,24 @@ class Lattices(OwnedCategoryOverBaseRing):
         def discriminant_group(self):
             r"""Return the ``ZZ`` discriminant group with every form supported by ``L``."""
             if _engine_ring(self.base_ring()) is not SageZZ:
-                raise TypeError("discriminant_group is the ZZ specialization; use discriminant_module")
+                raise TypeError(f"{self!r} is over {self.base_ring()}, not ZZ, so it has no discriminant group; use discriminant_module for the discriminant module over its base ring")
             return self.discriminant_quadratic_form() if self.is_even() else self.discriminant_bilinear_form()
 
         def discriminant_length(self):
             r"""Return the minimal number of generators of ``A_L`` over ``ZZ``."""
             if _engine_ring(self.base_ring()) is not SageZZ:
-                raise TypeError("discriminant length is currently the integral-lattice invariant")
+                raise TypeError(f"cannot compute the length of the discriminant group of {self!r}: it is implemented only for lattices over ZZ, and this lattice is over {self.base_ring()}")
             ring = self.base_ring()
             return ring(len(tuple(invariant for invariant in self.discriminant_module().invariant_factors() if abs(invariant) > ring.one())))
 
         def is_p_elementary(self, prime) -> bool:
             r"""Return whether ``A_L`` is an elementary abelian ``prime``-group."""
             if _engine_ring(self.base_ring()) is not SageZZ:
-                raise TypeError("p-elementarity is currently the integral-lattice invariant")
+                raise TypeError(f"cannot decide whether {self!r} is {prime}-elementary: it is implemented only for lattices over ZZ, and this lattice is over {self.base_ring()}")
             ring = self.base_ring()
             prime = ring(prime)
             if not prime.is_prime():
-                raise ValueError("p-elementarity requires a prime p")
+                raise ValueError(f"cannot decide whether {self!r} is p-elementary for p = {prime}: {prime} is not prime")
             invariants = tuple(abs(invariant) for invariant in self.discriminant_module().invariant_factors() if abs(invariant) > ring.one())
             return all(invariant == prime for invariant in invariants)
 
@@ -2250,9 +2250,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``q(x+y)`` is integral.
             """
             if _engine_ring(self.base_ring()) is not SageZZ:
-                raise TypeError("Nikulin's delta is an integral-lattice invariant")
+                raise TypeError(f"{self!r} has no Nikulin invariant delta: delta is defined for lattices over ZZ, and this lattice is over {self.base_ring()}")
             if not self.is_even() or not self.is_p_elementary(self.base_ring()(2)):
-                raise ValueError("Nikulin's delta requires an even 2-elementary lattice")
+                raise ValueError(f"{self!r} has no Nikulin invariant delta: delta is defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary")
             discriminant_form = self.discriminant_quadratic_form()
             ring = self.base_ring()
             return ring(
@@ -2273,11 +2273,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             checked in the finite discriminant quadratic module.
             """
             if _engine_ring(self.base_ring()) is not SageZZ:
-                raise TypeError("coevenness is currently the integral-lattice invariant")
+                raise TypeError(f"cannot decide whether {self!r} is coeven: it is implemented only for lattices over ZZ, and this lattice is over {self.base_ring()}")
             if not self.is_even():
-                raise ValueError("coevenness uses the discriminant quadratic form of an even lattice")
+                raise ValueError(f"cannot decide whether {self!r} is coeven: coevenness is a property of the discriminant quadratic form, which exists only for an even lattice, and {self!r} is odd")
             if not self.is_nondegenerate():
-                raise ValueError("coevenness requires a finite discriminant quadratic module")
+                raise ValueError(f"cannot decide whether {self!r} is coeven: coevenness needs a finite discriminant quadratic form, and {self!r} is degenerate")
             discriminant_form = self.discriminant_quadratic_form()
             ring = self.base_ring()
             return all(
@@ -2297,7 +2297,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             \(\mathbb N^3\).
             """
             if not self.is_p_elementary(self.base_ring()(2)) or not self.is_even():
-                raise ValueError("the lattice is not even and 2-elementary")
+                raise ValueError(f"{self!r} has no Nikulin invariants (r, a, delta): they are defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary")
             return nikulin_invariants(self.module_rank(), self.discriminant_length(), self.delta())
 
         def two_u_eichler_model(self):
@@ -2353,9 +2353,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 -e_1
             """
             if root.parent() is not self:
-                raise TypeError("the reflecting vector must belong to this lattice")
+                raise TypeError(f"cannot reflect {self!r} in {root!r}: the vector lies in {root.parent()!r}, not in this lattice")
             if not root.is_root():
-                raise ValueError(f"{root} does not define an integral lattice reflection")
+                raise ValueError(f"the reflection of {self!r} in {root} is not an isometry of the lattice: 2 b(x, r)/b(r, r) is not in {self.base_ring()} for every x, so {root} is not a root")
             ring = self.base_ring()
             fraction_field = ring.fraction_field()
             norm = fraction_field(root.q())
@@ -2397,18 +2397,18 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: t(e) == e and t(f) == f + a + e
                 True
             """
-            assert isotropic.parent() is self and orthogonal.parent() is self, "an Eichler transvection is built from two vectors of this lattice"
+            assert isotropic.parent() is self and orthogonal.parent() is self, f"cannot form the Eichler transvection t(e, a) of {self!r} with e = {isotropic!r}, a = {orthogonal!r}: they lie in {isotropic.parent()!r} and {orthogonal.parent()!r}, not both in this lattice"
             ring = self.base_ring()
             zero = ring.zero()
-            assert isotropic.q() == zero, f"an Eichler transvection is taken in an isotropic vector; q(e)={isotropic.q()}"
-            assert isotropic.b(orthogonal) == zero, f"an Eichler transvection needs a in e^perp; b(e,a)={isotropic.b(orthogonal)}"
+            assert isotropic.q() == zero, f"cannot form the Eichler transvection t(e, a) of {self!r}: e = {isotropic!r} must be isotropic, but q(e) = {isotropic.q()}"
+            assert isotropic.b(orthogonal) == zero, f"cannot form the Eichler transvection t(e, a) of {self!r}: a = {orthogonal!r} must lie in e^perp for e = {isotropic!r}, but b(e, a) = {isotropic.b(orthogonal)}"
             fraction_field = ring.fraction_field()
             half_norm = fraction_field(orthogonal.q()) / fraction_field(ring(2))
 
             def image(label):
                 x = self.module_generator(label)
                 half_coefficient = half_norm * fraction_field(x.b(isotropic))
-                assert half_coefficient in ring, f"t(e,a) does not preserve the lattice: q(a) b(e,{x})/2 = {half_coefficient} is not integral"
+                assert half_coefficient in ring, f"the Eichler transvection t(e, a) with e = {isotropic!r}, a = {orthogonal!r} does not preserve {self!r}: q(a) b(e, {x})/2 = {half_coefficient} is not in {ring}"
                 return (
                     x
                     - self.scalar_multiple(x.b(orthogonal), isotropic)
@@ -2588,11 +2588,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 element if element_parent(element) is self else self(element)
                 for element in basis
             )
-            assert elements, "an isotropic sublattice is spanned by a nonempty family"
+            assert elements, f"cannot form a primitive isotropic sublattice of {self!r} from the empty family: a primitive isotropic sublattice is spanned by a nonempty family of vectors"
             subobject = self.subobject_on(elements)
             assert subobject.is_primitive(), (
-                "a primitive isotropic subobject has torsion-free cokernel; the stated "
-                "span is not saturated in its lattice"
+                f"the span of {elements!r} in {self!r} is not primitive: its inclusion has a "
+                f"cokernel with torsion, so it is not a primitive isotropic sublattice; saturate it first"
             )
             zero = self.base_ring().zero()
             embedded = subobject.embedded_module_generators()
@@ -2601,14 +2601,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 self.b(embedded[left], embedded[right]) == zero
                 for left in labels
                 for right in labels
-            ), "the stated span is not totally isotropic for the lattice form"
+            ), f"the span of {elements!r} in {self!r} is not totally isotropic: b(x, y) is nonzero for some pair of these vectors"
             subobject = refine(
                 subobject,
                 PrimitiveIsotropicSubobjects(self.base_ring()),
             )
             assert subobject.module_rank() == finite_ordered_set(elements).cardinality(), (
-                "the stated isotropic family is linearly dependent, so it does not "
-                "frame the sublattice it spans"
+                f"the vectors {elements!r} in {self!r} are linearly dependent: they span a sublattice "
+                f"of rank {subobject.module_rank()}, so they are not a basis of it"
             )
             return subobject
 
@@ -2675,18 +2675,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             this represented lattice.
             """
             assert left.parent() is self and right.parent() is self, (
-                "an orbit comparison is between two vectors of this lattice"
+                f"cannot compare the orbits of {left!r} and {right!r} in {self!r}: they lie in "
+                f"{left.parent()!r} and {right.parent()!r}, not both in this lattice"
             )
             assert self.eichler_criterion_applies(), (
-                "Eichler's criterion classifies primitive-vector orbits for an even "
-                "lattice splitting two hyperbolic planes; this lattice does not "
-                "present such a decomposition, and the orbit question is then a "
-                "computation for the exact indefinite backend rather than a "
-                "comparison of invariants"
+                f"cannot decide the orbits of {left!r} and {right!r} under ker(O(L) -> O(A_L)) "
+                f"by Eichler's criterion: the criterion needs an even lattice with a given "
+                f"orthogonal decomposition containing two copies of U, and {self!r} is odd or has "
+                f"no such decomposition"
             )
             for vector in (left, right):
                 assert self.subobject_on((vector,)).is_primitive(), (
-                    "Eichler's criterion compares primitive vectors"
+                    f"cannot apply Eichler's criterion to {vector!r} in {self!r}: the criterion classifies primitive vectors, and this vector is not primitive"
                 )
             return (
                 left.q() == right.q()
@@ -2937,7 +2937,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 (3, 3)
             """
             count = int(exponent)
-            assert count >= 0, "an orthogonal power L^n takes a natural number n"
+            assert count >= 0, f"cannot form the orthogonal power {self!r}^{count}: the exponent of an orthogonal power L^n is a natural number n >= 0"
             category = Lattices(self.base_ring())
             if count == 0:
                 return category(0)
@@ -3041,7 +3041,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def __pow__(self, exponent):
             r"""``v^2`` is \(q(v)\)."""
-            assert exponent == 2, f"v^n on a lattice vector is q(v) at n=2, got {exponent}"
+            assert exponent == 2, f"{self!r}^{exponent} is not defined: on a lattice vector only v^2 = q(v) is defined"
             return self.q()
 
         __xor__ = __pow__
@@ -3092,7 +3092,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def discriminant_class(self):
             r"""Return ``[v/div(v)]`` in the discriminant module for primitive ``v``."""
             if not self.is_primitive():
-                raise ValueError("the associated primitive discriminant class requires a primitive lattice vector")
+                raise ValueError(f"{self!r} has no discriminant class [v/div(v)] here: this class is defined for a primitive vector, and {self!r} is not primitive in {self.parent()!r}")
             return self.divided_discriminant_class()
 
         def to_covector(self):
@@ -3155,7 +3155,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             parent = self.parent()
             ring = parent.base_ring()
-            assert ring.is_integral_domain(), "roots are defined here over an integral domain"
+            assert ring.is_integral_domain(), f"cannot decide whether {self!r} is a root: roots are defined here for lattices over an integral domain, and {ring} is not one"
             norm = ring(self.q())
             if norm == ring.zero():
                 return False
@@ -3251,17 +3251,17 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
             factors = self.biproduct_factors()
             legs = _finite_factor_family(legs, name="Coproduct cocone legs")
             assert legs.index_set() == factors.index_set(), (
-                "a cocone under a biproduct has one leg per factor"
+                f"the cocone {legs!r} under {self!r} does not have one leg per factor: legs are indexed by {legs.index_set()!r}, factors by {factors.index_set()!r}"
             )
             first = factors.index_set().ranking_map().inverse()(0)
             target = legs[first].codomain()
             assert all(leg.codomain() is target for leg in legs), (
-                "a cocone has one apex"
+                f"the legs of the cocone {legs!r} under {self!r} do not all have the codomain {target!r}, so they have no common apex"
             )
             assert all(
                 legs.value(index).domain() is factors.value(index)
                 for index in factors.index_set()
-            ), "each leg of the cocone starts at its own factor"
+            ), f"some leg of the cocone {legs!r} under {self!r} does not start at its factor of the biproduct"
             offsets = self._biproduct_block_offsets()
             source_labels = self.module_generating_set()
 
@@ -3284,15 +3284,15 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
             factors = self.biproduct_factors()
             legs = _finite_factor_family(legs, name="Product cone legs")
             assert legs.index_set() == factors.index_set(), (
-                "a cone over a biproduct has one leg per factor"
+                f"the cone {legs!r} over {self!r} does not have one leg per factor: legs are indexed by {legs.index_set()!r}, factors by {factors.index_set()!r}"
             )
             first = factors.index_set().ranking_map().inverse()(0)
             source = legs[first].domain()
-            assert all(leg.domain() is source for leg in legs), "a cone has one apex"
+            assert all(leg.domain() is source for leg in legs), f"the legs of the cone {legs!r} over {self!r} do not all have the domain {source!r}, so they have no common apex"
             assert all(
                 legs.value(index).codomain() is factors.value(index)
                 for index in factors.index_set()
-            ), "each leg of the cone lands in its own factor"
+            ), f"some leg of the cone {legs!r} over {self!r} does not land in its factor of the biproduct"
 
             def image(label):
                 generator = source.module_generator(label)
@@ -3474,10 +3474,10 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         target = isotropic_embedding.codomain()
         ring = target.base_ring()
         assert ring is self.base_ring(), (
-            f"an isotropic reduction in {self} reduces a lattice over {self.base_ring()}"
+            f"cannot form I^perp/I in {self} along {isotropic_embedding!r}: its codomain {target!r} is a lattice over {ring}, not over {self.base_ring()}"
         )
         assert source.is_totally_isotropic(), (
-            "an isotropic reduction is taken along a totally isotropic sublattice"
+            f"cannot form I^perp/I along {isotropic_embedding!r}: the sublattice I = {source!r} is not totally isotropic in {target!r}"
         )
 
         perpendicular = isotropic_embedding.orthogonal_complement()
@@ -3488,8 +3488,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             )
         )
         assert into_perpendicular.is_primitive(), (
-            "the isotropic quotient is not free over the base ring; the selected "
-            "isotropic sublattice is not primitive in its orthogonal complement"
+            f"I^perp/I is not a free {ring}-module for I = {source!r} in {target!r}: I is not "
+            f"primitive in its orthogonal complement I^perp, so the quotient has torsion"
         )
         quotient = into_perpendicular.cokernel()
         normalization = quotient.invariant_factor_form()
@@ -3592,11 +3592,11 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             """
             line = self.isotropic_sublattice()
             if int(line.module_rank()) != 1:
-                raise ValueError("the selected rational Witt construction currently starts from an isotropic line")
+                raise ValueError(f"cannot form the rational Witt decomposition of {self!r}: it is implemented for an isotropic sublattice I of rank 1, and I = {line!r} has rank {line.module_rank()}")
             ambient = self.isotropic_embedding().codomain()
             ring = ambient.base_ring()
             if _engine_ring(ring) is not SageZZ:
-                raise ValueError("the selected Bezout Witt construction currently uses an integral ZZ-lattice")
+                raise ValueError(f"cannot form the rational Witt decomposition of {self!r}: the Bezout partner of e is computed only in a lattice over ZZ, and {ambient!r} is over {ring}")
             line_generator = line.module_generators()[0]
             isotropic = self.isotropic_embedding()(line_generator)
             labels = tuple(ambient.module_generating_set())
@@ -3613,10 +3613,10 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 coefficients = [-coefficient for coefficient in coefficients]
                 gcd_value = -gcd_value
             if gcd_value != divisibility:
-                raise ArithmeticError("the Bezout pairing witness has the wrong divisibility")
+                raise ArithmeticError(f"the Bezout combination of the pairings b(e, e_i) of e = {isotropic!r} in {ambient!r} has gcd {gcd_value}, but div(e) = {divisibility}")
             bezout_partner = ambient.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
             if ambient.b(isotropic, bezout_partner) != divisibility:
-                raise ArithmeticError("the selected integral Witt partner has the wrong pairing")
+                raise ArithmeticError(f"the Bezout partner h = {bezout_partner!r} of e = {isotropic!r} in {ambient!r} has b(e, h) = {ambient.b(isotropic, bezout_partner)}, but it must equal div(e) = {divisibility}")
 
             fraction_map = ring.fraction_field_map()
             rational = ambient.base_change(fraction_map)
@@ -3633,13 +3633,13 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             correction = rational.q(rational_bezout) / (two * d * d)
             rational_partner = rational.scalar_multiple(field.one() / d, rational_bezout) - rational.scalar_multiple(correction, rational_isotropic)
             if rational.q(rational_partner) != field.zero():
-                raise ArithmeticError("the rational Witt partner is not isotropic")
+                raise ArithmeticError(f"the rational Witt partner f = {rational_partner!r} of e = {rational_isotropic!r} in {rational!r} is not isotropic: q(f) = {rational.q(rational_partner)}")
             if rational.b(rational_isotropic, rational_partner) != field.one():
-                raise ArithmeticError("the rational Witt hyperbolic pair does not pair to one")
+                raise ArithmeticError(f"the pair e = {rational_isotropic!r}, f = {rational_partner!r} in {rational!r} is not a hyperbolic pair: b(e, f) = {rational.b(rational_isotropic, rational_partner)}, not 1")
             hyperbolic_plane = rational.subobject_on((rational_isotropic, rational_partner))
             orthogonal_summand = hyperbolic_plane.orthogonal_complement()
             if int(orthogonal_summand.module_rank()) + 2 != int(rational.module_rank()):
-                raise ArithmeticError("the rational Witt orthogonal summand has the wrong rank")
+                raise ArithmeticError(f"the orthogonal complement of the hyperbolic plane <e, f> in {rational!r} has rank {orthogonal_summand.module_rank()}, but it must have rank {rational.module_rank()} - 2")
             return RankOneRationalWittDecomposition(
                 self,
                 bezout_partner,
@@ -3716,7 +3716,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def _parabolic_levi_generator_pairs(self):
             r"""Return paired generators ``(g, gbar)`` for ``P_I -> O(K_I)``."""
             if not self.is_definite():
-                raise ValueError("the exact represented Levi image currently requires a definite isotropic reduction")
+                raise ValueError(f"cannot compute the image of P_I -> O(K_I) for K_I = {self!r}: it is computed only when K_I is definite, so that O(K_I) is finite, and {self!r} is indefinite")
             embedding = self.isotropic_embedding()
             source = embedding.domain()
             ambient = embedding.codomain()
@@ -3746,7 +3746,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             r"""Return lifts indexed by ``(action on I, action on K_I)`` for rank one."""
             line = self.isotropic_sublattice()
             if int(line.module_rank()) != 1:
-                raise ValueError("the selected combined Levi table currently treats an isotropic line")
+                raise ValueError(f"cannot tabulate the lifts to P_I for K_I = {self!r}: this is implemented for an isotropic sublattice I of rank 1, and I = {line!r} has rank {line.module_rank()}")
             embedding = self.isotropic_embedding()
             line_label = line.module_generating_set()[0]
             embedded = embedding(line.module_generator(line_label))
@@ -3757,7 +3757,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 coefficients = line.framing_coefficients(preimage)
                 scalar = coefficients.get(line_label, ring.zero())
                 if scalar not in (ring.one(), -ring.one()):
-                    raise ArithmeticError("a rank-one parabolic generator does not act on I by a unit")
+                    raise ArithmeticError(f"the parabolic isometry {isometry!r} of {embedding.codomain()!r} acts on the isotropic line I by {scalar}, but an isometry stabilizing I acts on it by a unit +1 or -1")
                 return scalar
 
             levi = self.levi_action()
@@ -3789,15 +3789,15 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def pointwise_levi_lift(self, isometry):
             r"""Return a lift in ``P_I^1`` exactly when ``isometry`` lies in its Levi image."""
             if isometry.parent() is not self.Aut():
-                raise ValueError("a pointwise Levi lift starts with an element of O(K_I)")
+                raise ValueError(f"cannot lift {isometry!r} to P_I^1: it lies in {isometry.parent()!r}, not in O(K_I) for K_I = {self!r}")
             if isometry not in self.pointwise_levi_image():
                 return None
             ring = self.isotropic_embedding().codomain().base_ring()
             lifted = self._rank_one_combined_levi_lift_table()[ring.one(), isometry]
             if lifted not in self.pointwise_parabolic_subgroup():
-                raise ArithmeticError("the retained pointwise Levi lift does not fix I")
+                raise ArithmeticError(f"the lift {lifted!r} of {isometry!r} from O(K_I) to P_I^1, K_I = {self!r}, does not fix I pointwise")
             if self.levi_action()(lifted) != isometry:
-                raise ArithmeticError("the retained pointwise Levi lift descends incorrectly")
+                raise ArithmeticError(f"the lift {lifted!r} of {isometry!r} to P_I^1 descends to {self.levi_action()(lifted)!r} in O(K_I), K_I = {self!r}, not to {isometry!r}")
             return lifted
 
         @cached_method
@@ -3819,7 +3819,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 image_bound=int(image.cardinality()),
             )
             if len(witnesses) != int(image.cardinality()):
-                raise ArithmeticError("the paired parabolic generators did not enumerate the represented Levi image")
+                raise ArithmeticError(f"the generators of P_I lift only {len(witnesses)} elements of the image of P_I -> O(K_I) for K_I = {self!r}, but the image has order {image.cardinality()}")
             return witnesses
 
         def levi_lift(self, isometry):
@@ -3831,14 +3831,14 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             through the retained arithmetic parabolic and returns ``None``.
             """
             if isometry.parent() is not self.Aut():
-                raise ValueError("a Levi lift starts with an element of O(K_I)")
+                raise ValueError(f"cannot lift {isometry!r} to P_I: it lies in {isometry.parent()!r}, not in O(K_I) for K_I = {self!r}")
             if isometry not in self.levi_image():
                 return None
             lifted = self._levi_lift_table()[isometry]
             if lifted not in self.parabolic_subgroup():
-                raise ArithmeticError("a retained Levi lift is not parabolic")
+                raise ArithmeticError(f"the lift {lifted!r} of {isometry!r} from O(K_I) to P_I, K_I = {self!r}, does not stabilize I")
             if self.levi_action()(lifted) != isometry:
-                raise ArithmeticError("a retained Levi lift descends incorrectly")
+                raise ArithmeticError(f"the lift {lifted!r} of {isometry!r} to P_I descends to {self.levi_action()(lifted)!r} in O(K_I), K_I = {self!r}, not to {isometry!r}")
             return lifted
 
         @cached_method
@@ -3865,7 +3865,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             applied to \(b(x,-)|_M\).
             """
             automorphisms = self.Aut()
-            assert isometry.parent() is automorphisms, "the isometry to lift is an element of O(K_I)"
+            assert isometry.parent() is automorphisms, f"cannot lift {isometry!r} to P_I: it lies in {isometry.parent()!r}, not in O(K_I) for K_I = {self!r}"
             lattice = self.isotropic_embedding().codomain()
             perpendicular_inclusion = self.orthogonal_complement().inclusion()
             lifts = self.reduction_lifts()
@@ -3878,7 +3878,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             complement = lattice.subobject_on(embedded_lifts)
             unimodular_summand = complement.orthogonal_complement()
             assert complement.is_primitive() and unimodular_summand.is_unimodular(), (
-                "no represented splitting L = M perp K' along the chosen lifts; the Levi quotient need not lift"
+                f"cannot lift {isometry!r} from O(K_I) to P_I by id_M + sigma for K_I = {self!r}: the lifts of K_I span a sublattice K' of {lattice!r} that is not primitive or whose orthogonal complement M is not unimodular, so {lattice!r} does not split as M + K'"
             )
             complement_inclusion = complement.inclusion()
             summand_inclusion = unimodular_summand.inclusion()
@@ -3909,8 +3909,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 return embedded_fixed + complement_inclusion(into_complement(isometry(moved_part)))
 
             lifted = lattice.O()(image)
-            assert lifted in self.parabolic_subgroup(), "the assembled map does not stabilize I; the chosen lifts do not span a splitting"
-            assert self.levi_action()(lifted) == isometry, "the assembled map descends to the wrong isometry of I^perp/I"
+            assert lifted in self.parabolic_subgroup(), f"the isometry id_M + sigma of {lattice!r} built from {isometry!r} does not stabilize I, so it is not in P_I for K_I = {self!r}"
+            assert self.levi_action()(lifted) == isometry, f"the isometry id_M + sigma of {lattice!r} descends to {self.levi_action()(lifted)!r} on I^perp/I = {self!r}, not to {isometry!r}"
             return lifted
 
 
@@ -3977,7 +3977,7 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
         def coxeter_number(self):
             family, rank = self.coxeter_type()
             if family != "H" or rank not in (3, 4):
-                raise ValueError("the represented noncrystallographic Coxeter number is for H3 and H4")
+                raise ValueError(f"{self!r} has Coxeter type {family}{rank}, but the Coxeter number is implemented here only for the noncrystallographic types H3 and H4")
             return self.base_ring().base_ring()(10 if rank == 3 else 30)
 
         def simple_reflections(self):
@@ -4015,14 +4015,14 @@ class RootLattices(OwnedCategory):
         def coxeter_number(self):
             cartan_type = self.cartan_type()
             if not cartan_type.is_irreducible():
-                raise ValueError("a reducible root system has one Coxeter number per irreducible component")
+                raise ValueError(f"{self!r} has no single Coxeter number: its root system of type {cartan_type} is reducible, and each irreducible component has its own Coxeter number")
             return cartan_type.coxeter_number()
 
         def highest_root(self):
             r"""Return the highest root in the selected simple-root framing."""
             cartan_type = self.cartan_type()
             if not cartan_type.is_irreducible():
-                raise ValueError("a reducible root system has one highest root per irreducible component")
+                raise ValueError(f"{self!r} has no single highest root: its root system of type {cartan_type} is reducible, and each irreducible component has its own highest root")
             coefficients = tuple(RootSystem(cartan_type).root_lattice().highest_root().to_vector())
             return sum(
                 (
@@ -4044,7 +4044,7 @@ class RootLattices(OwnedCategory):
 
             norm = self.simple_roots()[0].norm()
             if norm not in (2, -2):
-                raise ValueError(f"a simply-laced root framing has simple-root square +/-2, got {norm}")
+                raise ValueError(f"cannot form the fundamental weights of {self!r}: its simple roots must have square +2 or -2 in a simply-laced root lattice, but the first has square {norm}")
             sign = norm // self.base_ring()(2)
             return FiniteOrderedSets().from_indexed(
                 self.dual_basis(),
@@ -4068,7 +4068,7 @@ class RootLattices(OwnedCategory):
             r"""Return ``alpha^vee = 2*b(alpha,-)/b(alpha,alpha)`` in ``L^#``."""
             parent = self.parent()
             if not self.is_root():
-                raise ValueError("the coroot in this lattice is defined for an integral root")
+                raise ValueError(f"{self!r} has no coroot in {parent!r}: the coroot 2 b(alpha, -)/b(alpha, alpha) is defined for a root, and {self!r} is not a root")
             norm = self.norm()
             two = parent.base_ring()(2)
             dual_lattice = parent.dual_lattice()

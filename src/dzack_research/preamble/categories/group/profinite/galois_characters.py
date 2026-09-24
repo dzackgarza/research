@@ -26,13 +26,19 @@ def _unit_group_element(unit_group, residue):
     for element in unit_group:
         if element.value() == residue:
             return element
-    raise ValueError(f"{residue} is not represented in {unit_group}")
+    raise ValueError(
+        f"the residue {residue} is not an element of the unit group {unit_group}"
+    )
 
 
 class RestrictedProfiniteCharacter(Morphism):
     def __init__(self, character, subgroup) -> None:
         if subgroup.supergroup() is not character.domain():
-            raise ValueError("the subgroup does not lie in this character's domain")
+            raise ValueError(
+                f"cannot restrict {character} to {subgroup}: a restriction needs a subgroup "
+                f"of the character's domain {character.domain()}, but {subgroup} is a "
+                f"subgroup of {subgroup.supergroup()}"
+            )
         self._character = character
         Morphism.__init__(
             self,
@@ -79,11 +85,13 @@ def _finite_root_at_stage(root, stage):
     field, value, embedding = lifted.as_finite_field_element()
     if field is not _engine_ring(stage.field()):
         raise ValueError(
-            "the canonical finite stage does not contain the required root"
+            f"the finite field {stage.field()} does not contain the root of unity {root}, "
+            f"which lies in {field}"
         )
     if embedding(value) != root:
         raise ValueError(
-            "the finite-stage root does not realize the chosen closure root"
+            f"the element {value} of {field} does not map to the chosen root {root} "
+            f"of the algebraic closure"
         )
     return _owned_engine_element(stage.field(), value)
 
@@ -94,10 +102,15 @@ class CyclotomicCharacter(ProfiniteCharacter):
     def __init__(self, domain, n) -> None:
         n = ZZ(n)
         if n < 2:
-            raise ValueError("the finite cyclotomic character requires n >= 2")
+            raise ValueError(
+                f"the cyclotomic character chi_n needs n >= 2, but n = {n}"
+            )
         characteristic = ZZ(int(domain.characteristic()))
         if characteristic and gcd(int(n), int(characteristic)) != 1:
-            raise ValueError("n must be invertible in the base field")
+            raise ValueError(
+                f"the cyclotomic character chi_{n} of {domain} needs n prime to the "
+                f"characteristic, but the base field has characteristic {characteristic}"
+            )
         self._modulus = n
         target = Integers(n).unit_group()
         closure = _engine_ring(domain.algebraic_closure())
@@ -128,8 +141,8 @@ class CyclotomicCharacter(ProfiniteCharacter):
                 self._root_at_stage = _owned_engine_element(owned_field, field.gen())
         else:
             assert False, (
-                "the cyclotomic character exists over every field of characteristic prime to n; "
-                "the exact stage K(mu_n) is constructed here for finite fields and QQ"
+                f"the cyclotomic character chi_{n} of {domain} is computed only when the "
+                f"base field is finite or QQ, but it is {domain.base_field()}"
             )
         super().__init__(domain, target, stage)
 
@@ -165,7 +178,9 @@ class CyclotomicCharacter(ProfiniteCharacter):
             None,
         )
         assert residue is not None, (
-            "an automorphism of the closure sends a primitive n-th root of unity to a primitive one"
+            f"{element} sends the primitive {modulus}-th root of unity {self._root} to {image}, "
+            f"which is not a primitive {modulus}-th root of unity, so {element} is not a "
+            f"field automorphism"
         )
         return _unit_group_element(self.codomain(), residue)
 
@@ -180,14 +195,18 @@ class QuadraticCharacter(ProfiniteCharacter):
         characteristic = ZZ(int(domain.characteristic()))
         if characteristic == 2:
             raise ValueError(
-                "quadratic Kummer characters require characteristic different from two"
+                f"the quadratic character of K(sqrt({a}))/K for {domain} needs "
+                f"characteristic different from 2, but the base field has characteristic 2"
             )
         base_field = domain.base_field()
         base = _engine_ring(base_field)
         owned_a = base_field(a)
         backend_a = base(_engine_element(base_field, owned_a))
         if not backend_a:
-            raise ValueError("a quadratic character requires a nonzero square class")
+            raise ValueError(
+                f"the quadratic character of K(sqrt(a))/K needs a nonzero a in {base_field}, "
+                f"but a = {owned_a}"
+            )
         self._square_class = owned_a
         closure = _engine_ring(domain.algebraic_closure())
         embedded_a = domain.base_embedding()(owned_a)
@@ -236,7 +255,9 @@ class QuadraticCharacter(ProfiniteCharacter):
         if image == -self._root:
             return self.codomain().group_generators()[0]
         raise ValueError(
-            "the represented automorphism does not preserve the quadratic extension"
+            f"{element} sends sqrt({self._square_class}) = {self._root} to {image}, which is "
+            f"neither sqrt({self._square_class}) nor its negative, so {element} does not "
+            f"preserve the quadratic extension"
         )
 
     def _repr_(self) -> str:

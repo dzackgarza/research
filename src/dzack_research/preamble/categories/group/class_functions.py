@@ -24,7 +24,9 @@ class FiniteGroupClassFunction(SetMorphism):
         supplied = tuple(values)
         if len(supplied) != int(representatives.cardinality()):
             raise ValueError(
-                "a finite-group class function needs one value per conjugacy representative"
+                f"cannot build a class function on {group} from {len(supplied)} values: a "
+                f"class function takes one value per conjugacy class, and {group} has "
+                f"{representatives.cardinality()} conjugacy classes"
             )
         values_by_position = {
             position: codomain(value) for position, value in enumerate(supplied)
@@ -52,7 +54,8 @@ class FiniteGroupClassFunction(SetMorphism):
         element = element if element in group else group(element)
         if element not in self._value_table:
             raise ValueError(
-                f"{element} lies outside the conjugacy classes on which this class function is defined"
+                f"cannot evaluate a class function on {group} at {element}: {element} is not an "
+                f"element of its domain group {group}"
             )
         return self._value_table[element]
 

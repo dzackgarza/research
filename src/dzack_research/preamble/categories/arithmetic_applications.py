@@ -169,12 +169,19 @@ class EnriquesEquivariantK3Application(SageObject):
         inclusion = invariant.inclusion()
         labels = invariant.module_generating_set()
         if len(labels) < 2:
-            raise ArithmeticError("the represented invariant lattice has no two-generator polarization specimen")
+            raise ArithmeticError(
+                f"cannot choose a polarization in the invariant lattice {invariant}: the "
+                f"polarization is the sum of two module generators, but it has only "
+                f"{len(labels)}"
+            )
         vector = inclusion(invariant.module_generator(labels[0])) + inclusion(
             invariant.module_generator(labels[1])
         )
         if vector.q() == 0 or self.involution()(vector) != vector:
-            raise ArithmeticError("the selected polarization is not a non-isotropic invariant vector")
+            raise ArithmeticError(
+                f"{vector} cannot be a polarization: a polarization must be invariant under "
+                f"{self.involution()} and have nonzero square, but its square is {vector.q()}"
+            )
         return vector
 
     @cached_method

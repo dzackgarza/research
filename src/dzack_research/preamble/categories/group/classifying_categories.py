@@ -60,7 +60,10 @@ class ClassifyingMor(CategoricalMor):
 
     def _element_constructor_(self, datum):
         if isinstance(datum, ClassifyingMorphism):
-            assert datum.parent() is self, "the arrow belongs to a different classifying category"
+            assert datum.parent() is self, (
+                f"{datum} is an arrow of {datum.parent()}, not of {self}: an element of "
+                f"B(G) must be an arrow of the classifying category of that same group G"
+            )
             return datum
         return self.element_class(self, datum)
 

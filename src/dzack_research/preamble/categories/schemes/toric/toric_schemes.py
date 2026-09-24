@@ -236,7 +236,8 @@ def _character_on_overlap(character, face, cone, base_ring):
     localized = _face_localization(face, cone, base_ring).coordinate_algebra()
     supporting = _face_supporting_character(face, cone)
     assert face.dual_cone_contains(character), (
-        "a character of the overlap is nonnegative on the common face"
+        f"the character {character} is not in the dual cone of the face {face} of {cone}, so "
+        "chi^m is not a regular function on the chart of the face"
     )
     shifted = character
     exponent = 0
@@ -290,10 +291,12 @@ def _face_transition(source_cone, target_cone, base_ring):
     localizing at it says nothing.
     """
     assert not source_cone.is_face_of(target_cone), (
-        "a transition joins two cones neither of which is a face of the other"
+        f"the charts of {source_cone} and {target_cone} are glued along their common face only "
+        f"when neither is a face of the other, but {source_cone} is a face of {target_cone}"
     )
     assert not target_cone.is_face_of(source_cone), (
-        "a transition joins two cones neither of which is a face of the other"
+        f"the charts of {source_cone} and {target_cone} are glued along their common face only "
+        f"when neither is a face of the other, but {target_cone} is a face of {source_cone}"
     )
     face = source_cone.intersection(target_cone)
     forward = _face_transition_morphism(face, source_cone, target_cone, base_ring)
@@ -428,7 +431,8 @@ class ToricSchemeMorphism(SchemeMorphism):
         target_group = codomain.weil_divisor_group()
         divisor = target_group(divisor)
         assert codomain.is_cartier(divisor), (
-            "the pullback of a torus-invariant divisor is constructed for a Cartier divisor"
+            f"the pullback along {self} is defined for Cartier divisors, but {divisor} is not "
+            f"Cartier on {codomain}"
         )
         target_rays = codomain.fan().cones(1)
         target_coefficients = target_group.framing_coefficients(divisor)
@@ -451,7 +455,8 @@ class ToricSchemeMorphism(SchemeMorphism):
     def pullback_line_bundle(self, bundle):
         r"""Return ``f^* O_Y(D) = O_X(f^*D)`` for a selected toric divisor bundle."""
         assert bundle.scheme() is self.codomain(), (
-            "a line bundle is pulled back from the codomain of the morphism"
+            f"cannot pull back {bundle} along {self}: it is a line bundle on {bundle.scheme()}, "
+            f"not on the codomain {self.codomain()}"
         )
         return self.domain().invertible_sheaf_of_divisor(
             self.pullback_divisor(bundle.associated_divisor())
@@ -581,7 +586,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             of the atlas this variety is glued from, the same object
             ``chart(cone)`` answers with.
             """
-            assert cone in self.fan(), "an affine chart is taken of a cone of this fan"
+            assert cone in self.fan(), (
+                f"the affine chart U_sigma of {self} is taken of a cone sigma of its fan, but "
+                f"{cone} is not a cone of {self.fan()}"
+            )
             return _affine_chart(cone, self.scheme_base_ring())
 
         def affine_cover(self):
@@ -601,7 +609,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             (CLS Prop. 1.3.16).  These are the maps the charts are glued along.
             """
             assert face.is_face_of(cone), (
-                "a face localization is indexed by a face of the cone"
+                f"the open U_tau of U_sigma is defined for a face tau of sigma, but {face} is not "
+                f"a face of {cone}"
             )
             return _face_localization(face, cone, self.scheme_base_ring())
 
@@ -641,7 +650,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             returned by :meth:`cartier_divisor_group`.
             """
             assert self.fan().is_smooth(), (
-                "the represented torus-invariant Cartier group is identified with Div_T(X) only for a smooth fan"
+                f"the torus-invariant Cartier divisors of {self} equal Div_T(X) only for a smooth "
+                "fan, and its fan is not smooth"
             )
             return self.weil_divisor_group()
 
@@ -651,19 +661,24 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             cartier = self.torus_invariant_cartier_divisor_group()
             weil = self.weil_divisor_group()
             assert cartier is weil, (
-                "on the represented smooth toric regime CDiv_T(X) and Div_T(X) are one subgroup"
+                f"for the smooth toric variety {self}, the torus-invariant Cartier divisors "
+                f"{cartier} should be all of Div_T(X) = {weil}"
             )
             return weil.module_category().Mor(weil, weil).identity()
 
         def torus_invariant_prime_divisor(self, ray):
             r"""The prime divisor ``D_rho`` of one ray of the fan."""
-            assert ray in self.fan(), "a torus-invariant prime divisor is indexed by a ray"
+            assert ray in self.fan(), (
+                f"the prime divisor D_rho of {self} is defined for a ray rho of its fan, but "
+                f"{ray} is not a cone of {self.fan()}"
+            )
             return self.torus_invariant_divisor_group().module_generator(ray)
 
         def weil_multiplicity(self, divisor, ray):
             r"""Return the coefficient of ``D_rho`` in a torus-invariant Weil divisor."""
             assert ray in self.fan().cones(1), (
-                "a toric Weil multiplicity is indexed by a ray of the fan"
+                f"the coefficient of D_rho in {divisor} is defined for a ray rho of the fan of "
+                f"{self}, but {ray} is not a ray of it"
             )
             group = self.weil_divisor_group()
             coefficients = group.framing_coefficients(group(divisor))
@@ -673,7 +688,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""Return ``ord_{D_rho}(chi^m)=<m,u_rho>`` (CLS Prop. 4.1.2)."""
             character = self.character_lattice()(character)
             assert ray in self.fan().cones(1), (
-                "a toric valuation is indexed by a ray of the fan"
+                f"the order of vanishing along D_rho on {self} is defined for a ray rho of its fan, "
+                f"but {ray} is not a ray of it"
             )
             return _pairing_on_ray(self.fan(), character, ray)
 
@@ -695,7 +711,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             coefficients = group.framing_coefficients(divisor)
             zero = _integers().zero()
             assert all(coefficient >= zero for coefficient in coefficients.values()), (
-                "the support subscheme is constructed for an effective torus-invariant divisor"
+                f"the support of {divisor} as a closed subscheme of {self} is defined here only for "
+                "an effective divisor, but it has a negative coefficient"
             )
             selected = tuple(
                 ray for ray in self.fan().cones(1)
@@ -889,7 +906,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             it is unique when ``sigma`` is full-dimensional.
             """
             assert self.is_cartier(divisor), (
-                "the Cartier datum of a divisor exists where the divisor is Cartier"
+                f"the local character m_sigma of {divisor} on the chart of {cone} exists only for a "
+                f"Cartier divisor, but {divisor} is not Cartier on {self}"
             )
             return self.local_character_divisor_morphism(cone).lift(
                 self.local_divisor_restriction(divisor, cone)
@@ -903,7 +921,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             cone ``sigma`` and every ray ``rho`` of the fan.
             """
             assert self.fan().is_complete(), (
-                "convexity of a support function is stated on a complete fan"
+                f"nefness of {divisor} by convexity of its support function is decided here only "
+                f"on a complete fan, but the fan of {self} is not complete"
             )
             if not self.is_cartier(divisor):
                 return False
@@ -929,7 +948,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             ``sigma``.
             """
             assert self.fan().is_complete(), (
-                "strict convexity of a support function is stated on a complete fan"
+                f"ampleness of {divisor} by strict convexity of its support function is decided "
+                f"here only on a complete fan, but the fan of {self} is not complete"
             )
             if not self.is_cartier(divisor):
                 return False
@@ -961,10 +981,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             module layer represents kernels only between free modules.
             """
             assert self.fan().is_smooth(), (
-                "the Picard group is constructed on a smooth fan, where every "
-                "Weil divisor is Cartier; on a singular fan ask is_cartier of "
-                "the divisors in question, since the group of torus-invariant "
-                "Cartier divisors has no represented construction"
+                f"the Picard group of {self} is computed only for a smooth fan, where every Weil "
+                "divisor is Cartier; its fan is not smooth, so test the divisors in question "
+                "with is_cartier instead"
             )
             return PicardGroups()(self.character_divisor_morphism().cokernel())
 
@@ -1013,7 +1032,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             )
 
             assert self.fan().is_complete(), (
-                "the polytope of a divisor is bounded on a complete fan"
+                f"the polytope P_D of {divisor} is computed here only on a complete fan, where it "
+                f"is bounded, but the fan of {self} is not complete"
             )
             group = self.torus_invariant_divisor_group()
             coefficients = group.framing_coefficients(divisor)
@@ -1039,7 +1059,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             chosen lattice polytope.
             """
             assert self.is_polarized(), (
-                "a polarizing divisor is read from the polytope selected at construction"
+                f"{self} was constructed from a fan, not from a lattice polytope, so it has no "
+                "polarizing divisor"
             )
             polytope = self.polarizing_polytope()
             characters = self.character_lattice()
@@ -1053,7 +1074,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 coefficients[ray] = -min(values)
             divisor = group.linear_combination(coefficients)
             assert self.is_cartier(divisor), (
-                "the support numbers of a polytope with normal fan Sigma give a Cartier divisor"
+                f"the divisor {divisor} of the polytope {polytope} of {self} is not Cartier, "
+                "although a polytope with normal fan Sigma always gives a Cartier divisor"
             )
             return divisor
 
@@ -1067,14 +1089,16 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             divisor = self.torus_invariant_divisor_group()(divisor)
             assert self.is_cartier(divisor), (
-                "a character section descends to the atlas of a Cartier divisor"
+                f"sections of O(D) are glued from characters on the charts only for Cartier D, "
+                f"but {divisor} is not Cartier on {self}"
             )
             selected_line = self.invertible_sheaf_of_divisor(divisor) if line_bundle is None else line_bundle
             assert selected_line.scheme() is self, (
-                "the selected line bundle is a line bundle on this toric scheme"
+                f"the line bundle {selected_line} lives on {selected_line.scheme()}, not on {self}"
             )
             assert selected_line.associated_divisor() == divisor, (
-                "the selected line bundle is the invertible sheaf of the stated divisor"
+                f"the line bundle {selected_line} is O({selected_line.associated_divisor()}), not "
+                f"O({divisor})"
             )
             sections = self.divisor_section_space(divisor)
             section = sections(section)
@@ -1090,7 +1114,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 for character, coefficient in coefficients.items():
                     shifted = self.character_lattice()(character) - cartier
                     assert cone.dual_cone_contains(shifted), (
-                        "a lattice point of P_D is regular in every Cartier trivialization"
+                        f"the character {character} of the section is not regular on the chart of "
+                        f"{cone} after shifting by m_sigma = {cartier}, so it is not a lattice "
+                        f"point of the polytope P_D of {divisor}"
                     )
                     local_coefficient += scalar_map(coefficient) * _character_monomial(
                         shifted,
@@ -1163,7 +1189,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             as its basis labels rather than replacing them by positions.
             """
             assert self.is_cartier(divisor), (
-                "the character basis of P_D cap M spans H^0(X,O_X(D)) for a Cartier divisor"
+                f"H^0(X, O(D)) of {self} is computed from the lattice points of P_D only for Cartier "
+                f"D, but {divisor} is not Cartier"
             )
             return self.scheme_base_ring().free_module(self.divisor_section_characters(divisor))
 
@@ -1178,7 +1205,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             character = self.character_lattice()(character)
             sections = self.divisor_section_characters(divisor)
             assert character in sections, (
-                "a Cox monomial of a section is taken of a lattice point of P_D"
+                f"the character {character} is not a lattice point of the polytope P_D of "
+                f"{divisor}, so it is not a section of O(D) on {self}"
             )
             cox = self.cox_ring()
             coefficients = self.weil_divisor_group().framing_coefficients(divisor)
@@ -1189,7 +1217,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 exponent = self.order_of_character_along_prime_divisor(character, ray)
                 exponent += coefficients.get(ray, zero)
                 assert exponent >= zero, (
-                    "membership in P_D is nonnegativity of every Cox exponent"
+                    f"the Cox monomial of {character} as a section of O({divisor}) has the negative "
+                    f"exponent {exponent} at the ray {ray}, so {character} is not in P_D"
                 )
                 monomial *= cox.algebra_generator(label) ** int(exponent)
             return monomial
@@ -1265,7 +1294,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             divisor = self.weil_divisor_group()(divisor)
             assert self.is_basepoint_free(divisor), (
-                "the associated projective map is a morphism only for a basepoint-free divisor"
+                f"the map to projective space given by |{divisor}| on {self} is a morphism only "
+                "when the divisor is basepoint-free, and this one is not"
             )
             system = self.complete_linear_system(divisor)
             line = self.invertible_sheaf_of_divisor(divisor)
@@ -1490,7 +1520,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
             divisor = self.weil_divisor_group()(divisor)
             assert self.is_cartier(divisor), (
-                "the invertible sheaf O_X(D) is constructed for a Cartier divisor"
+                f"O(D) is an invertible sheaf only for Cartier D, but {divisor} is not Cartier on {self}"
             )
             datum = self.finite_affine_atlas()
             units = {}
@@ -1528,7 +1558,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             first ray gives one distinguished representative of that class.
             """
             assert self.is_projective_space(), (
-                "the hyperplane divisor constructor is supported on a toric projective space"
+                f"a hyperplane divisor is defined here only on projective space, but {self} is not "
+                "a toric projective space"
             )
             ray = next(iter(self.fan().cones(1)))
             return self.torus_invariant_prime_divisor(ray)
@@ -1549,13 +1580,17 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             decided by the toric support-function criterion above.
             """
             assert int(self.dimension()) == 2, (
-                "this intersection-number specialization is for toric surfaces"
+                f"the self-intersection D^2 as a polytope volume is computed for toric surfaces, but "
+                f"{self} has dimension {self.dimension()}"
             )
             assert self.fan().is_smooth() and self.fan().is_complete(), (
-                "polytope self-intersection is represented here on a smooth complete toric surface"
+                f"the self-intersection D^2 as a polytope volume is computed on a smooth complete "
+                f"toric surface, but the fan of {self} is smooth: {self.fan().is_smooth()}, "
+                f"complete: {self.fan().is_complete()}"
             )
             assert self.is_ample(divisor), (
-                "the represented polytope intersection formula currently requires an ample divisor"
+                f"the self-intersection D^2 is computed as the volume of P_D only for ample D, but "
+                f"{divisor} is not ample on {self}"
             )
             return self.divisor_polytope(divisor).normalized_volume()
 
@@ -1565,7 +1600,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             left = group(left)
             right = group(right)
             assert self.is_ample(left) and self.is_ample(right), (
-                "the represented mixed intersection currently requires two ample Cartier divisors"
+                f"the intersection number D.E is computed by polarization only for ample D and E, "
+                f"but {left} or {right} is not ample on {self}"
             )
             numerator = (
                 self.ample_divisor_self_intersection(left + right)
@@ -1574,7 +1610,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             )
             quotient, remainder = numerator.quo_rem(_integers()(2))
             assert remainder == _integers().zero(), (
-                "the polarization of an integral symmetric intersection form is even"
+                f"(D+E)^2 - D^2 - E^2 = {numerator} for D = {left} and E = {right} on {self} is "
+                "odd, but it must equal 2 D.E"
             )
             return quotient
 
@@ -1586,10 +1623,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             owned integer ring; smoothness guarantees integrality.
             """
             assert int(self.dimension()) == 2, (
-                "the divisor intersection pairing is constructed on a surface"
+                f"the intersection pairing of divisors is computed for toric surfaces, but {self} "
+                f"has dimension {self.dimension()}"
             )
             assert self.fan().is_smooth() and self.fan().is_complete(), (
-                "the divisor intersection pairing is constructed on a smooth complete toric surface"
+                f"the intersection pairing of divisors is computed on a smooth complete toric "
+                f"surface, but the fan of {self} is smooth: {self.fan().is_smooth()}, complete: "
+                f"{self.fan().is_complete()}"
             )
             group = self.weil_divisor_group()
             left = group(left)
@@ -1614,10 +1654,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         def picard_intersection_pairing(self):
             r"""Return the integral intersection pairing on ``Pic(X)`` for a smooth complete toric surface."""
             assert int(self.dimension()) == 2, (
-                "the Picard intersection pairing is constructed on a surface"
+                f"the intersection pairing on Pic is computed for toric surfaces, but {self} has "
+                f"dimension {self.dimension()}"
             )
             assert self.fan().is_smooth() and self.fan().is_complete(), (
-                "the Picard intersection pairing is constructed on a smooth complete toric surface"
+                f"the intersection pairing on Pic is computed on a smooth complete toric surface, "
+                f"but the fan of {self} is smooth: {self.fan().is_smooth()}, complete: "
+                f"{self.fan().is_complete()}"
             )
             picard = self.picard_group()
             weil = self.weil_divisor_group()
@@ -1648,7 +1691,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             cycle_dimension = int(cycle_dimension)
             dimension = int(self.dimension())
             assert 0 <= cycle_dimension <= dimension, (
-                "a Chow-group degree lies between zero and the scheme dimension"
+                f"the Chow group CH_k of {self} is defined for 0 <= k <= {dimension}, but k = "
+                f"{cycle_dimension}"
             )
             engine = _engine_scheme(self).Chow_group().degree(cycle_dimension).module()
             invariants = tuple(int(value) for value in engine.invariants())
@@ -1680,7 +1724,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             cycle_dimension = int(cycle_dimension)
             dimension = int(self.dimension())
             assert 0 <= cycle_dimension <= dimension, (
-                "a cycle degree lies between zero and the scheme dimension"
+                f"torus-invariant cycles of dimension k on {self} exist for 0 <= k <= {dimension}, "
+                f"but k = {cycle_dimension}"
             )
             cone_dimension = dimension - cycle_dimension
             return TorusInvariantCycleGroups(_integers())(
@@ -1703,8 +1748,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             def image(cone):
                 coordinates = tuple(engine_degree(engine_chow(_engine_cone(cone))).vector())
                 assert len(coordinates) == len(target_labels), (
-                    "the Chow class of an orbit closure is read in the invariant-factor "
-                    "coordinates chow_group presented the target in"
+                    f"the class of the orbit closure of {cone} in CH_{cycle_dimension} has "
+                    f"{len(coordinates)} coordinates, but the Chow group has "
+                    f"{len(target_labels)} generators"
                 )
                 return target.linear_combination(
                     {
@@ -1764,8 +1810,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             asserts when the variety came from a bare fan.
             """
             assert self.is_polarized(), (
-                "this toric variety was constructed from a fan, so no polytope "
-                "was chosen; build it from a lattice polytope to carry one"
+                f"{self} was constructed from a fan, not from a lattice polytope, so it has no "
+                "polarizing polytope; construct it from a lattice polytope to have one"
             )
             return self._polarizing_polytope
 
@@ -1776,7 +1822,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             other induces an isomorphism of the toric varieties over any base.
             """
             assert self.scheme_base_ring() is other.scheme_base_ring(), (
-                "an isomorphism of varieties is over one base"
+                f"{self} and {other} lie over different base rings, {self.scheme_base_ring()} and "
+                f"{other.scheme_base_ring()}, so they are not isomorphic as varieties over one base"
             )
             return self.fan().is_isomorphic(other.fan())
 
@@ -1815,8 +1862,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             codomain_fan = codomain.fan()
             assert self.fan().is_compatible_with(lattice_morphism, codomain_fan), (
-                "a toric morphism is induced by a lattice map carrying every cone "
-                "of the domain fan into a cone of the codomain fan (CLS Def. 3.3.1)"
+                f"the lattice map {lattice_morphism} does not induce a toric morphism "
+                f"{self} -> {codomain}: it does not carry every cone of the fan of {self} into a "
+                "cone of the fan of the codomain (CLS Def. 3.3.1)"
             )
             base = self.scheme_base_ring()
             maximal_cones = self.fan().maximal_cones()
@@ -1866,10 +1914,12 @@ def _engine_fan_morphism(lattice_morphism, domain_fan, codomain_fan):
     domain_lattice = domain_fan.cocharacter_lattice()
     codomain_lattice = codomain_fan.cocharacter_lattice()
     assert lattice_morphism.domain() is domain_lattice, (
-        "a toric morphism is induced by a map out of the domain's lattice"
+        f"the lattice map {lattice_morphism} must start at the lattice N = {domain_lattice} of "
+        f"the domain fan, but it starts at {lattice_morphism.domain()}"
     )
     assert lattice_morphism.codomain() is codomain_lattice, (
-        "a toric morphism is induced by a map into the codomain's lattice"
+        f"the lattice map {lattice_morphism} must end at the lattice N' = {codomain_lattice} of "
+        f"the codomain fan, but it ends at {lattice_morphism.codomain()}"
     )
     rows = _engine_matrix(
         SageZZ,
@@ -1902,10 +1952,10 @@ def _toric_variety(fan, base_ring, polarizing_polytope=None, placements=(), **le
     """
     base = _own_ring(base_ring)
     assert fan in RationalPolyhedralFans(fan.cocharacter_lattice()), (
-        "a toric variety is built from a rational polyhedral fan"
+        f"a toric variety is built from a rational polyhedral fan, but {fan} is in {fan.category()}"
     )
     assert bool(_engine_ring(base).is_field()), (
-        "the semigroup algebras of the charts are algebras over a field"
+        f"toric varieties are constructed here only over a field, but {base} is not a field"
     )
     decided = [ToricSchemes(base)]
     if fan.is_smooth():

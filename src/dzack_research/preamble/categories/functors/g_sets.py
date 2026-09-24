@@ -151,8 +151,8 @@ class FreeGSetFunctor(Functor):
     def __init__(self, group) -> None:
         self._group = _owned_group(group)
         assert self._group.is_finite() is True, (
-            "G x S is a finite G-set for every finite set S exactly when G is finite; "
-            "the acting group is not established finite"
+            f"G x S is a finite G-set for every finite set S only when G is finite, but {self._group} is not "
+            "known to be finite"
         )
         super().__init__(FiniteSets(), FiniteGSets(self._group))
 
@@ -228,8 +228,8 @@ class CofreeGSetFunctor(Functor):
     def __init__(self, group) -> None:
         self._group = _owned_group(group)
         assert self._group.is_finite() is True, (
-            "Map(G, S) is a finite G-set for every finite set S exactly when G is finite; "
-            "the acting group is not established finite"
+            f"Map(G, S) is a finite G-set for every finite set S only when G is finite, but {self._group} is "
+            "not known to be finite"
         )
         self._group_points = finite_ordered_set(self._group)
         super().__init__(FiniteSets(), FiniteGSets(self._group))
@@ -261,7 +261,7 @@ class CofreeGSetFunctor(Functor):
 
     def function_value(self, cofree_g_set, function_point, group_element):
         if function_point not in cofree_g_set:
-            raise TypeError("the function point belongs to a different cofree G-set")
+            raise TypeError(f"{function_point} is not a point of the cofree G-set {cofree_g_set}")
         return self._function_value_in_point_set(function_point, group_element)
 
     def function_point(self, cofree_g_set, function):

@@ -70,13 +70,17 @@ class _WordPresentation:
     r"""The selected word cover and its componentwise module quotient."""
 
     def __init__(self, source_module, flavor):
-        assert flavor in ("tensor", "symmetric"), "the word presentation is tensor or symmetric"
+        assert flavor in ("tensor", "symmetric"), (
+            f"cannot build an algebra of words on {source_module}: {flavor!r} is not 'tensor' or 'symmetric'"
+        )
         assert (
             _has_component_presentation(source_module)
             or source_module in FramedFreeModules(source_module.base_ring())
             or source_module in ModulesWithChosenFinitePresentation(source_module.base_ring())
         ), (
-            "relationful words use the source's finite presentation or selected finite module components"
+            f"cannot build the {flavor} algebra of {source_module}: this algorithm needs a free module, "
+            f"a finitely presented module with a chosen finite presentation, or a direct sum of such "
+            f"modules, but {source_module} is in {source_module.category()}"
         )
         self._source_module = source_module
         self._flavor = flavor
@@ -179,7 +183,9 @@ class _WordPresentation:
         r"""The exact degree summand of the selected word cover's label set."""
         degree = int(degree)
         if degree < 0:
-            raise ValueError("a graded degree is nonnegative")
+            raise ValueError(
+                f"{self} has no degree-{degree} piece: a degree must be a nonnegative integer"
+            )
         return self.module_generating_set().cofactor(NN(degree))
 
     def _degree_set(self, degree):
@@ -380,7 +386,10 @@ class _WordPresentation:
                     case True:
                         return self._label_from_homogeneous(key, label)
                     case False:
-                        assert label == 0, "the free component has its rank-one generator"
+                        assert label == 0, (
+                            f"the summand of {self} indexed by the word {key} is free of rank one, "
+                            f"so its only generator is 0, not {label}"
+                        )
                         return self.module_generating_set()(key)
 
 
@@ -596,7 +605,10 @@ class _WordModule:
             for label in self.framing_coefficients(self(element)).index_set()
         }
         if len(degrees) != 1:
-            raise ValueError("a nonzero homogeneous element has exactly one degree")
+            raise ValueError(
+                f"{element} has no degree in {self}: it is not a nonzero homogeneous element, since its "
+                f"components lie in degrees {sorted(degrees)}"
+            )
         return self.grading_monoid()(next(iter(degrees)))
 
     def degree_on_module_generator(self, element):
@@ -604,7 +616,10 @@ class _WordModule:
             int(label.summand_index())
             for label in self.framing_coefficients(self(element)).index_set()
         }
-        assert len(degrees) == 1, "a nonzero homogeneous framing element has one degree"
+        assert len(degrees) == 1, (
+            f"{element} is not a generator of {self}: a generator is a single word and has one "
+            f"degree, but its components lie in degrees {sorted(degrees)}"
+        )
         return self.grading_monoid()(next(iter(degrees)))
 
     def degree_index_set(self):

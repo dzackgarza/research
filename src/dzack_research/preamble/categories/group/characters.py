@@ -69,9 +69,15 @@ class CharacterSets(OwnedParameterizedCategory):
             if class_function in self:
                 return class_function
             if not isinstance(class_function, FiniteGroupClassFunction):
-                raise TypeError("a character is represented by an owned finite-group class function")
+                raise TypeError(
+                    f"{class_function} is not a character of {self.group()}: a character is a "
+                    f"class function on a finite group, and {class_function} is not a class function"
+                )
             if class_function.domain() is not self.group():
-                raise ValueError("a character belongs to the character set of its domain group")
+                raise ValueError(
+                    f"{class_function} is a class function on {class_function.domain()}, so it "
+                    f"is not a character of {self.group()}"
+                )
             return self.element_class(self, class_function)
 
         def __contains__(self, candidate) -> bool:
@@ -128,7 +134,10 @@ class CharacterSets(OwnedParameterizedCategory):
 
         def _inner_product(self, other):
             r"""``<chi, psi> = |G|^-1 sum_g chi(g) psi(g^-1)``, summed class by class."""
-            assert other in self.parent(), "character inner products use one finite group"
+            assert other in self.parent(), (
+                f"cannot form the inner product <{self}, {other}>: both must be characters of "
+                f"{self.group()}, but {other} is not"
+            )
             group = self.group()
             representatives = self.conjugacy_class_representatives()
             class_sizes = tuple(
@@ -167,7 +176,10 @@ def _character_set(group):
     r"""Return the owned character set ``Char(G)`` of a finite group."""
     group = _owned_group(group)
     if group not in FiniteGroups():
-        raise TypeError("ordinary finite character sets require a finite group")
+        raise TypeError(
+            f"cannot form the ordinary characters of {group}: the group must be finite, but "
+            f"{group} is only known to be in {group.category()}"
+        )
     return _object_of(CharacterSets(group), group=group)
 
 

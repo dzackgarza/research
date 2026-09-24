@@ -53,14 +53,17 @@ class EichlerCoveringOrbitDatum(SageObject):
                 pass
             case False:
                 raise ValueError(
-                    "the retained transporter moves the covering vector to the wrong orbit representative"
+                    f"{transporter} does not carry the covering vector {representative} to the orbit "
+                    f"representative {full_orbit_representative}: it sends it to "
+                    f"{transporter(representative)}"
                 )
         match any(generator(representative) != representative for generator in stabilizer_generators):
             case False:
                 pass
             case True:
                 raise ValueError(
-                    "a retained covering stabilizer generator does not fix its vector"
+                    f"the stabilizer generators {stabilizer_generators} of the covering vector "
+                    f"{representative} are not all in its stabilizer: some generator moves it"
                 )
         self._discriminant_class = discriminant_class
         self._representative = representative
@@ -98,9 +101,17 @@ class EichlerRecursiveStabilizerDatum(SageObject):
 
     def __init__(self, vector, perpendicular, stabilizer_generators, restrictions) -> None:
         if vector.q() == vector.parent().base_ring().zero():
-            raise ValueError("the nonisotropic Witt recursion requires a nonzero vector square")
+            raise ValueError(
+                f"cannot split off {vector} as an orthogonal summand of {vector.parent()}: the "
+                f"vector must have nonzero square, but q = {vector.q()}"
+            )
         if int(perpendicular.module_rank()) + 1 != int(vector.parent().module_rank()):
-            raise ValueError("a nonisotropic orthogonal complement must lower rank by one")
+            raise ValueError(
+                f"{perpendicular} is not the orthogonal complement of {vector} in "
+                f"{vector.parent()}: the complement of a vector of nonzero square has rank "
+                f"{int(vector.parent().module_rank()) - 1}, but {perpendicular} has rank "
+                f"{perpendicular.module_rank()}"
+            )
         self._vector = vector
         self._perpendicular = perpendicular
         self._stabilizer_generators = stabilizer_generators
@@ -137,11 +148,21 @@ class EichlerOrthogonalFactorizationDatum(SageObject):
 
     def __init__(self, isometry, stable_factor, discriminant_lift) -> None:
         if stable_factor * discriminant_lift != isometry:
-            raise ValueError("the retained orthogonal factors do not reconstruct the isometry")
+            raise ValueError(
+                f"{stable_factor} and {discriminant_lift} do not factor {isometry}: their product "
+                f"is {stable_factor * discriminant_lift}"
+            )
         if stable_factor not in isometry.domain().stable_orthogonal_group():
-            raise ValueError("the residual orthogonal factor is not stable")
+            raise ValueError(
+                f"{stable_factor} is not in the stable orthogonal group of "
+                f"{isometry.domain()}: it acts nontrivially on the discriminant group"
+            )
         if discriminant_lift.discriminant_morphism() != isometry.discriminant_morphism():
-            raise ValueError("the quotient lift induces the wrong discriminant action")
+            raise ValueError(
+                f"{discriminant_lift} does not lift the discriminant action of {isometry}: it "
+                f"induces {discriminant_lift.discriminant_morphism()} on the discriminant group "
+                f"instead of {isometry.discriminant_morphism()}"
+            )
         self._isometry = isometry
         self._stable_factor = stable_factor
         self._discriminant_lift = discriminant_lift
@@ -251,9 +272,15 @@ class TwoUEichlerModel(SageObject):
 
         ZZ = _own_ring(SageZZ)
         if orthogonal_complement.base_ring() is not ZZ:
-            raise ValueError("the 2U Eichler model is currently integral over ZZ")
+            raise ValueError(
+                f"cannot form 2U + K with K = {orthogonal_complement}: the Eichler model needs K "
+                f"to be a lattice over ZZ, but its base ring is {orthogonal_complement.base_ring()}"
+            )
         if not orthogonal_complement.is_even():
-            raise ValueError("the Eichler model requires an even orthogonal complement")
+            raise ValueError(
+                f"cannot form 2U + K with K = {orthogonal_complement}: the Eichler model needs K "
+                f"to be even, and it is not"
+            )
         category = Lattices(ZZ)
         plane = category("U")
         self._orthogonal_complement = orthogonal_complement
@@ -486,7 +513,10 @@ class TwoUEichlerModel(SageObject):
                     )
                     return self.eichler_transvection(isotropic_vectors[position], orthogonal)
                 case _:
-                    raise ValueError(f"unknown Eichler approximate-generator label {kind!r}")
+                    raise ValueError(
+                        f"{label!r} does not name a generator of the Eichler approximate family of "
+                        f"{self}: its kind {kind!r} is not a known kind of generator"
+                    )
 
         return finite_indexed_family(
             labels,
@@ -532,7 +562,9 @@ class TwoUEichlerModel(SageObject):
             coefficient = numerator // denominator
             if denominator * coefficient != numerator:
                 raise ArithmeticError(
-                    "a covering discriminant class did not produce the required integral hyperbolic coefficient"
+                    f"cannot build a covering vector of square {square} for the discriminant class "
+                    f"{discriminant_class}: the coefficient ({square} - q(x))/(2 * {order}^2) = "
+                    f"{numerator}/{denominator} is not an integer"
                 )
             vector = (
                 lattice.scalar_multiple(order, e)
@@ -540,13 +572,25 @@ class TwoUEichlerModel(SageObject):
                 + complement_inclusion(complement_vector)
             )
             if vector.q() != square:
-                raise ArithmeticError("the constructed covering vector has the wrong square")
+                raise ArithmeticError(
+                    f"the covering vector {vector} built for the discriminant class "
+                    f"{discriminant_class} has square {vector.q()}, not {square}"
+                )
             if vector.div() != order:
-                raise ArithmeticError("the constructed covering vector has the wrong divisibility")
+                raise ArithmeticError(
+                    f"the covering vector {vector} built for the discriminant class "
+                    f"{discriminant_class} has divisibility {vector.div()}, not the class order {order}"
+                )
             if not vector.is_primitive():
-                raise ArithmeticError("the constructed covering vector is not primitive")
+                raise ArithmeticError(
+                    f"the covering vector {vector} built for the discriminant class "
+                    f"{discriminant_class} is not primitive"
+                )
             if complement.discriminant_class(dual_lift) != discriminant_class:
-                raise ArithmeticError("the selected dual lift represents the wrong discriminant class")
+                raise ArithmeticError(
+                    f"{dual_lift} does not lift the discriminant class {discriminant_class}: it "
+                    f"represents {complement.discriminant_class(dual_lift)}"
+                )
             return vector
 
         return finite_indexed_family(
@@ -576,11 +620,15 @@ class TwoUEichlerModel(SageObject):
         def lift(generator):
             witness = lattice.O().discriminant_lift(generator)
             assert witness is not None, (
-                "discriminant-generator lifting requires the represented map O(L) -> O(A_L) "
-                "to be surjective on the selected generators"
+                f"cannot lift {generator} from O(A_L) to O(L) for L = {lattice}: no isometry of "
+                f"L was found that induces it, so O(L) -> O(A_L) is not known to be surjective "
+                f"on the generators of O(A_L)"
             )
             if witness.discriminant_morphism() != generator:
-                raise ArithmeticError("a discriminant lift induces the wrong finite-form automorphism")
+                raise ArithmeticError(
+                    f"{witness} does not lift {generator}: it induces "
+                    f"{witness.discriminant_morphism()} on the discriminant group of {lattice}"
+                )
             return witness
 
         return finite_indexed_family(
@@ -608,12 +656,15 @@ class TwoUEichlerModel(SageObject):
         quotient_lift = orthogonal_group.discriminant_lift(quotient_action)
         if quotient_lift is None:
             raise ArithmeticError(
-                "the discriminant action of a live orthogonal isometry was absent from the generated image"
+                f"cannot factor {isometry}: its action {quotient_action} on the discriminant group "
+                f"of {self.lattice()} was not found in the image of O(L) -> O(A_L), although it "
+                f"is the image of {isometry}"
             )
         stable_factor = isometry * ~quotient_lift
         if stable_factor not in self.stable_kernel():
             raise ArithmeticError(
-                "removing an equal discriminant lift did not leave the stable orthogonal group"
+                f"cannot factor {isometry}: dividing by the lift {quotient_lift} of its discriminant "
+                f"action leaves {stable_factor}, which is not in the stable orthogonal group"
             )
         return EichlerOrthogonalFactorizationDatum(
             isometry,
@@ -668,7 +719,10 @@ class TwoUEichlerModel(SageObject):
                 case "discriminant-lift":
                     return discriminant_lifts[datum]
                 case _:
-                    raise ValueError(f"unknown 2U source-generator label {kind!r}")
+                    raise ValueError(
+                        f"{label!r} does not name a generator of O(2U + K) for {self}: its kind "
+                        f"{kind!r} is not a known kind of generator"
+                    )
 
         return finite_indexed_family(
             labels,
@@ -715,7 +769,8 @@ class TwoUEichlerModel(SageObject):
                             transporter,
                         )
             raise ArithmeticError(
-                "an explicit covering vector did not belong to any full orthogonal-group orbit represented by the exact orbit computation"
+                f"the covering vector {vector} of square {square} lies in none of the O(L)-orbits "
+                f"{full_orbits} of vectors of square {square} in {lattice}"
             )
 
         return finite_indexed_family(
@@ -750,7 +805,10 @@ class TwoUEichlerModel(SageObject):
 
             def restrict(generator):
                 if generator(vector) != vector:
-                    raise ArithmeticError("a recursive stabilizer generator does not fix its vector")
+                    raise ArithmeticError(
+                        f"{generator} is not in the stabilizer of {vector}: it sends it to "
+                        f"{generator(vector)}"
+                    )
                 return perpendicular.O()(
                     {
                         label: inclusion.lift(
@@ -799,7 +857,10 @@ class TwoUEichlerModel(SageObject):
         orthogonal_group = lattice.O()
         representatives = self.covering_vector_representatives(square)
         if int(representatives.cardinality()) == 0:
-            raise ValueError("the selected square has no primitive approximate-orbit representative")
+            raise ValueError(
+                f"cannot generate O(L) for L = {lattice} from vectors of square {square}: L has no "
+                f"primitive covering vector of that square"
+            )
         base_label = next(iter(representatives.index_set()))
         base_vector = representatives[base_label]
         selected_labels = []
@@ -842,7 +903,10 @@ class TwoUEichlerModel(SageObject):
                 case "transporter":
                     return orbit_transporters[datum]
                 case _:
-                    raise ValueError(f"unknown full-generation label {kind!r}")
+                    raise ValueError(
+                        f"{label!r} does not name a generator of O(L) for {self}: its kind "
+                        f"{kind!r} is not a known kind of generator"
+                    )
 
         generating_family = finite_indexed_family(
             generation_labels,
@@ -871,7 +935,10 @@ class TwoUEichlerModel(SageObject):
         not assert the separate generation theorem for ``O(2U+K)``.
         """
         if not isinstance(other, TwoUEichlerModel):
-            raise TypeError("a represented 2U recursion compares two TwoUEichlerModel objects")
+            raise TypeError(
+                f"cannot compare {self} with {other}: an isometry of 2U + K models is sought "
+                f"only between two such models"
+            )
         source = self.lattice()
         target = other.lattice()
         if source.base_ring() is not target.base_ring():
@@ -901,7 +968,10 @@ class TwoUEichlerModel(SageObject):
             )
         )
         if len(images) != int(source.module_rank()):
-            raise ArithmeticError("the recursive 2U isometry does not specify one image per source generator")
+            raise ArithmeticError(
+                f"the map {source} -> {target} built from 2U + K gives {len(images)} images for "
+                f"the {source.module_rank()} basis vectors of {source}"
+            )
         result = source.Isom(target)(images)
         if any(
             result(left) != right
@@ -909,14 +979,20 @@ class TwoUEichlerModel(SageObject):
                 self.hyperbolic_basis(), other.hyperbolic_basis(), strict=True
             )
         ):
-            raise ArithmeticError("the recursive 2U isometry moves a selected hyperbolic basis")
+            raise ArithmeticError(
+                f"the isometry {result} of 2U + K does not send the hyperbolic basis "
+                f"{self.hyperbolic_basis()} of {source} to {other.hyperbolic_basis()}"
+            )
         source_complement_inclusion = source.injection(2)
         if any(
             result(source_complement_inclusion(generator))
             != complement_inclusion(complement_isometry(generator))
             for generator in self.orthogonal_complement().module_generators()
         ):
-            raise ArithmeticError("the recursive 2U isometry disagrees with its complement witness")
+            raise ArithmeticError(
+                f"the isometry {result} of 2U + K does not restrict to {complement_isometry} "
+                f"on the orthogonal complement {self.orthogonal_complement()}"
+            )
         return result
 
     def is_isometric_to(self, other) -> bool:

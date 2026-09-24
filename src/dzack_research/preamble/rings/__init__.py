@@ -108,7 +108,9 @@ from dzack_research.preamble.rings.unit_interval import UnitInterval
 
 def _public_commutative_ring(ring):
     if ring not in OwnedRings().Commutative():
-        raise TypeError("the public commutative-ring surface requires an owned commutative ring")
+        raise TypeError(
+            f"expected a commutative ring, but {ring!r} is not in the category of commutative rings"
+        )
     return ring
 
 

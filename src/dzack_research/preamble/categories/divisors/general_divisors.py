@@ -41,12 +41,17 @@ def _affine_normal_weil_divisor_group(scheme):
     """
     ring = scheme.coordinate_algebra()
     assert ring in OwnedIntegralDomains(), (
-        "Weil divisors in this construction require an integral affine scheme"
+        f"cannot form the Weil divisor group of {scheme}: the scheme must be integral, but "
+        f"its coordinate ring {ring} is not known to be an integral domain"
     )
     assert ring in OwnedNoetherianRings(), (
-        "Weil divisors in this construction require a Noetherian coordinate ring"
+        f"cannot form the Weil divisor group of {scheme}: the scheme must be Noetherian, but "
+        f"its coordinate ring {ring} is not known to be Noetherian"
     )
-    assert ring.is_normal(), "Weil divisors in this construction require a normal coordinate ring"
+    assert ring.is_normal(), (
+        f"cannot form the Weil divisor group of {scheme}: the scheme must be normal, but its "
+        f"coordinate ring {ring} is not integrally closed"
+    )
     return WeilDivisorGroups()(
         scheme,
         ring.spectrum().condition_set(lambda point: point.height() == 1),
@@ -63,7 +68,9 @@ def _effective_principal_coefficients(group, function):
     """
     ring = group.affine_divisor_coordinate_ring()
     function = ring(function)
-    assert not function.is_zero(), "the divisor of the zero rational function is not a Weil divisor"
+    assert not function.is_zero(), (
+        f"the zero function in {ring} has no divisor: div(f) is defined only for nonzero f"
+    )
     engine_ideal = _engine_ideal(ring, ring.ideal(function))
     coefficients = {}
     for primary in engine_ideal.primary_decomposition():
@@ -73,7 +80,10 @@ def _effective_principal_coefficients(group, function):
         local_ring = prime.local_ring()
         uniformizers = local_ring.maximal_ideal().minimal_module_generators()
         assert uniformizers.cardinality() == 1, (
-            "a height-one local ring of a normal Noetherian domain is a discrete valuation ring"
+            f"cannot compute the order of vanishing of {function} along {prime}: the local "
+            f"ring {local_ring} should be a discrete valuation ring (height one in a normal "
+            f"Noetherian domain), but its maximal ideal needs {uniformizers.cardinality()} "
+            f"generators, not 1"
         )
         uniformizer = next(iter(uniformizers))
         multiplicity = local_ring(function).valuation(uniformizer)
@@ -98,7 +108,9 @@ def _principal_weil_divisor(group, rational_function):
             coefficients.pop(prime, None)
     framing = group.prime_divisor_locus()
     assert all(prime in framing for prime in coefficients), (
-        "div(f) is supported on prime divisors outside the framing of this Weil divisor group"
+        f"div({rational_function}) has support "
+        f"{[prime for prime in coefficients if prime not in framing]} outside the prime "
+        f"divisors of {group}"
     )
     return group.linear_combination(coefficients)
 
@@ -123,10 +135,14 @@ def _projective_space_picard_to_class_group_morphism(
     nontrivial base contribution by zero.
     """
     assert base_picard_to_class.domain() is base_picard_group, (
-        "the base Picard-to-class morphism has the wrong domain"
+        f"cannot build Pic({projective_space}) -> Cl({projective_space}): the base map "
+        f"Pic(S) -> Cl(S) has domain {base_picard_to_class.domain()}, not the base Picard "
+        f"group {base_picard_group}"
     )
     assert base_picard_to_class.codomain() is base_class_group, (
-        "the base Picard-to-class morphism has the wrong codomain"
+        f"cannot build Pic({projective_space}) -> Cl({projective_space}): the base map "
+        f"Pic(S) -> Cl(S) has codomain {base_picard_to_class.codomain()}, not the base class "
+        f"group {base_class_group}"
     )
     picard = PicardGroups().projective_bundle(projective_space, base_picard_group)
     classes = ClassGroups().projective_bundle(projective_space, base_class_group)
@@ -147,7 +163,8 @@ def _projective_space_picard_to_class_group_morphism(
     )
     weil_hyperplane = classes.injection(1)(class_hyperplane.module_generator(class_hyperplane_label))
     assert comparison(picard.hyperplane_class()) == weil_hyperplane, (
-        "the hyperplane class did not map to the Weil hyperplane class"
+        f"the map Pic({projective_space}) -> Cl({projective_space}) sends [O(1)] to "
+        f"{comparison(picard.hyperplane_class())}, not to the hyperplane class {weil_hyperplane}"
     )
     return comparison
 

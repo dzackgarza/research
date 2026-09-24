@@ -126,7 +126,8 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                 canonical_to_source[canonical_position] = positions[source_position]
             if any(position is None for position in canonical_to_source):
                 raise ArithmeticError(
-                    "the graph canonization certificate is not a permutation of the framing positions"
+                    f"the canonical labelling of the pairing graph of {self} is not a "
+                    f"permutation of its {size} basis positions: the certificate is {certificate}"
                 )
 
             canonical_basis = tuple(
@@ -173,8 +174,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             preserved, which is asserted.
             """
             assert self.preserves_every_pairing(position_map), (
-                "a configuration isometry comes from a permutation preserving "
-                "every square and every pairing of the framing"
+                f"{position_map} does not define an isometry of {self}: a permutation of "
+                f"the basis vectors is an isometry only if it preserves every square and "
+                f"every pairing, and this one does not"
             )
             return self.Aut()(
                 {
@@ -198,9 +200,10 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             """
             lattice = self.inclusion().codomain()
             assert self.frames_its_lattice(), (
-                "this configuration frames a proper sublattice, so its "
-                "permutations are isometries of that sublattice only; extending "
-                "one to the lattice is a question about the primitive extension"
+                f"cannot lift a permutation of {self} to an isometry of {lattice}: the "
+                f"configuration is not a basis of {lattice}, only of a sublattice of rank "
+                f"{self.module_rank()}, and whether its isometries extend to {lattice} is a "
+                f"question about the primitive extension"
             )
             inclusion = self.inclusion()
             restricted = self.configuration_isometry(position_map)
@@ -225,7 +228,8 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             automorphisms = self.configuration_automorphism_group()
             if getattr(automorphism, "parent", lambda: None)() is not automorphisms:
                 raise ValueError(
-                    "the permutation to lift must lie in this configuration's automorphism group"
+                    f"cannot lift {automorphism} to an isometry of {self}: it is not an "
+                    f"element of the automorphism group {automorphisms} of the configuration"
                 )
             positions = self.configuration_positions()
             def position_map(label):
@@ -240,7 +244,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             automorphisms = self.configuration_automorphism_group()
             if getattr(automorphism, "parent", lambda: None)() is not automorphisms:
                 raise ValueError(
-                    "the permutation to lift must lie in this configuration's automorphism group"
+                    f"cannot lift {automorphism} to an isometry of the lattice framed by "
+                    f"{self}: it is not an element of the automorphism group {automorphisms} "
+                    f"of the configuration"
                 )
             positions = self.configuration_positions()
             def position_map(label):

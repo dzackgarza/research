@@ -62,7 +62,8 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
         """
         if algebra not in Algebras(self.base_ring()).Associative().Unital().Commutative():
             raise TypeError(
-                "an algebraic de Rham algebra is constructed from a commutative algebra over the same base ring"
+                f"the de Rham algebra over {self.base_ring()} is built from a commutative algebra over "
+                f"{self.base_ring()}, but {algebra} is not one"
             )
         return _de_rham_algebra_from_source(algebra)
 

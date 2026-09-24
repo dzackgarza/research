@@ -41,7 +41,9 @@ class _FiniteTopologyData(SageObject):
 
     def __init__(self, point_set, open_subsets) -> None:
         assert point_set in FiniteSets() and point_set in EnumeratedSets(), (
-            "the explicit topology constructor currently verifies a finite enumerated point set"
+            f"cannot check the topology axioms for a topology on {point_set}: they are "
+            f"checked only for a finite enumerated set of points, and {point_set} is in "
+            f"{point_set.category()}"
         )
         opens = []
         for candidate in open_subsets:
@@ -74,13 +76,22 @@ class _FiniteTopologyData(SageObject):
         empty = ()
         whole = tuple(self.point_set())
         if empty not in opens or whole not in opens:
-            raise ValueError("a topology contains the empty set and the whole space")
+            raise ValueError(
+                f"the subsets {opens} of {self.point_set()} are not a topology: a topology "
+                f"must contain the empty set and the whole space"
+            )
         for left in opens:
             for right in opens:
                 if self._intersection(left, right) not in opens:
-                    raise ValueError("the selected opens are not closed under finite intersections")
+                    raise ValueError(
+                        f"the subsets {opens} of {self.point_set()} are not a topology: the "
+                        f"intersection of the open sets {left} and {right} is not open"
+                    )
                 if self._union(left, right) not in opens:
-                    raise ValueError("the selected opens are not closed under unions")
+                    raise ValueError(
+                        f"the subsets {opens} of {self.point_set()} are not a topology: the "
+                        f"union of the open sets {left} and {right} is not open"
+                    )
 
     def open_subsets(self, space):
         power = space.power_set()
@@ -130,7 +141,11 @@ class ContinuousMap(Morphism):
             set_morphism.domain() is not self.domain()
             or set_morphism.codomain() is not self.codomain()
         ):
-            raise ValueError("a continuous map has the wrong underlying set-map endpoints")
+            raise ValueError(
+                f"{set_morphism} cannot underlie a continuous map {self.domain()} -> "
+                f"{self.codomain()}: it is a map {set_morphism.domain()} -> "
+                f"{set_morphism.codomain()}"
+            )
         self._set_morphism = set_morphism
 
     def underlying_set_morphism(self):
@@ -168,7 +183,9 @@ class TopologicalSpaceMor(CategoricalMor):
     def _verify_continuity(self, set_morphism) -> None:
         target_opens = self.codomain().open_subsets()
         assert target_opens in FiniteSets() and target_opens in EnumeratedSets(), (
-            "continuity of an arbitrary represented map is currently decided when the target topology has finitely enumerable opens"
+            f"cannot decide whether {set_morphism} is continuous: continuity is decided "
+            f"here only when the topology of the codomain {self.codomain()} has a finite "
+            f"enumerated set of open sets, and its open sets are in {target_opens.category()}"
         )
         source_power = self.domain().power_set()
         for open_subset in target_opens:
@@ -176,7 +193,10 @@ class TopologicalSpaceMor(CategoricalMor):
                 lambda point, selected=open_subset: set_morphism(point) in selected
             )
             if self.domain().is_open_subset(inverse_image) is not True:
-                raise ValueError("the supplied set map is not continuous")
+                raise ValueError(
+                    f"{set_morphism} is not continuous from {self.domain()} to "
+                    f"{self.codomain()}: the preimage of the open set {open_subset} is not open"
+                )
 
     def _element_constructor_(self, datum):
         if element_parent(datum) is self:
@@ -196,7 +216,10 @@ class TopologicalSpaceMor(CategoricalMor):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on one topological space")
+            raise ValueError(
+                f"there is no identity map from {self.domain()} to {self.codomain()}: an "
+                f"identity needs its domain and codomain to be the same topological space"
+            )
         return self._from_continuous_set_map(
             Sets().Mor(self.domain(), self.domain()).identity()
         )

@@ -83,12 +83,18 @@ class _FiniteDigraphEngine:
 
     def vertex_label(self, vertex):
         if self._vertex_labels is None:
-            raise ValueError("this graph has no selected vertex labels")
+            raise ValueError(
+                f"the vertex {vertex} has no label: this graph was constructed without "
+                f"vertex labels"
+            )
         return self._vertex_labels[vertex]
 
     def edge_label(self, left, right):
         if self._edge_labels is None:
-            raise ValueError("this graph has no selected edge labels")
+            raise ValueError(
+                f"the edge ({left}, {right}) has no label: this graph was constructed "
+                f"without edge labels"
+            )
         edge = self.edge_space()((left, right))
         reverse = self.edge_space()((right, left))
         match edge in self._edge_labels:
@@ -97,7 +103,10 @@ class _FiniteDigraphEngine:
             case False if self._symmetric and reverse in self._edge_labels:
                 return self._edge_labels[reverse]
             case False:
-                raise ValueError("the selected vertices are not joined by a labelled edge")
+                raise ValueError(
+                    f"the vertices {left} and {right} have no edge label: they are not "
+                    f"joined by an edge"
+                )
 
 
 @cached_function
@@ -155,7 +164,11 @@ class DigraphMor(CategoricalMor):
     def _verify_graph_map(self, morphism) -> None:
         for left, right in self.domain().edges():
             if not self.codomain().has_edge(morphism(left), morphism(right)):
-                raise ValueError("a digraph morphism must preserve directed adjacency")
+                raise ValueError(
+                    f"{morphism} is not a graph morphism {self.domain()} -> "
+                    f"{self.codomain()}: it sends the edge ({left}, {right}) to "
+                    f"({morphism(left)}, {morphism(right)}), which is not an edge"
+                )
 
     def _element_constructor_(self, datum):
         if element_parent(datum) is self:
@@ -171,7 +184,10 @@ class DigraphMor(CategoricalMor):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on one graph")
+            raise ValueError(
+                f"there is no identity morphism from {self.domain()} to {self.codomain()}: "
+                f"an identity needs its domain and codomain to be the same graph"
+            )
         return self._from_graph_map(
             Sets().Mor(self.domain(), self.domain()).identity()
         )
@@ -186,12 +202,22 @@ class LabelledDigraphMor(DigraphMor):
             if self.domain().vertex_label(vertex) != self.codomain().vertex_label(
                 morphism(vertex)
             ):
-                raise ValueError("a labelled-graph morphism must preserve vertex labels")
+                raise ValueError(
+                    f"{morphism} is not a morphism of labelled graphs: it sends the vertex "
+                    f"{vertex}, labelled {self.domain().vertex_label(vertex)}, to "
+                    f"{morphism(vertex)}, labelled "
+                    f"{self.codomain().vertex_label(morphism(vertex))}"
+                )
         for left, right in self.domain().edges():
             if self.domain().edge_label(left, right) != self.codomain().edge_label(
                 morphism(left), morphism(right)
             ):
-                raise ValueError("a labelled-graph morphism must preserve edge labels")
+                raise ValueError(
+                    f"{morphism} is not a morphism of labelled graphs: it sends the edge "
+                    f"({left}, {right}), labelled {self.domain().edge_label(left, right)}, "
+                    f"to an edge labelled "
+                    f"{self.codomain().edge_label(morphism(left), morphism(right))}"
+                )
 
 
 class DigraphMorCategoryConstruction(MorCategoryConstruction):
@@ -225,7 +251,10 @@ class Digraphs(OwnedCategory):
             edge[0] not in vertices or edge[1] not in vertices
             for edge in normalized
         ):
-            raise ValueError("a directed edge has two endpoints in the vertex set")
+            raise ValueError(
+                f"the edges {normalized} do not define a directed graph on the vertices "
+                f"{vertices}: some edge has an endpoint that is not a vertex"
+            )
         return _object_of(
             self,
             _engine=(self, _FiniteDigraphEngine, None),
@@ -258,7 +287,10 @@ class Graphs(OwnedCategory):
             edge[0] not in vertices or edge[1] not in vertices
             for edge in normalized
         ):
-            raise ValueError("an edge has two endpoints in the vertex set")
+            raise ValueError(
+                f"the edges {normalized} do not define a graph on the vertices "
+                f"{vertices}: some edge has an endpoint that is not a vertex"
+            )
         return _object_of(
             self,
             _engine=(self, _FiniteDigraphEngine, None),
@@ -296,14 +328,23 @@ class LabelledDigraphs(OwnedCategory):
             edge[0] not in vertices or edge[1] not in vertices
             for edge in edges
         ):
-            raise ValueError("a directed edge has two endpoints in the vertex set")
+            raise ValueError(
+                f"the edges {edges} do not define a directed graph on the vertices "
+                f"{vertices}: some edge has an endpoint that is not a vertex"
+            )
         if set(vertex_labels) != set(vertices):
-            raise ValueError("a labelled digraph has one vertex label per vertex")
+            raise ValueError(
+                f"the vertex labels {vertex_labels} do not label the vertices {vertices}: "
+                f"a labelled directed graph has exactly one label per vertex"
+            )
         normalized_edge_labels = {
             edge_space(edge): label for edge, label in edge_labels.items()
         }
         if set(normalized_edge_labels) != set(edges):
-            raise ValueError("a labelled digraph has one edge label per edge")
+            raise ValueError(
+                f"the edge labels {edge_labels} do not label the edges {edges}: a "
+                f"labelled directed graph has exactly one label per edge"
+            )
         return _object_of(
             self,
             _engine=(self, _FiniteDigraphEngine, None),
@@ -359,14 +400,23 @@ class LabelledGraphs(OwnedCategory):
             edge[0] not in vertices or edge[1] not in vertices
             for edge in edges
         ):
-            raise ValueError("an edge has two endpoints in the vertex set")
+            raise ValueError(
+                f"the edges {edges} do not define a graph on the vertices {vertices}: "
+                f"some edge has an endpoint that is not a vertex"
+            )
         if set(vertex_labels) != set(vertices):
-            raise ValueError("a labelled graph has one vertex label per vertex")
+            raise ValueError(
+                f"the vertex labels {vertex_labels} do not label the vertices {vertices}: "
+                f"a labelled graph has exactly one label per vertex"
+            )
         normalized_edge_labels = {
             edge_space(edge): label for edge, label in edge_labels.items()
         }
         if set(normalized_edge_labels) != set(edges):
-            raise ValueError("a labelled graph has one edge label per edge")
+            raise ValueError(
+                f"the edge labels {edge_labels} do not label the edges {edges}: a "
+                f"labelled graph has exactly one label per edge"
+            )
         category = Cat().meet((self, *tuple(categories)))
         realization = (
             _FiniteDigraphEngine

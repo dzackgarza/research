@@ -63,8 +63,10 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
         """
         if not isinstance(pieces, dict) or not isinstance(differentials, dict):
             raise TypeError(
-                "the ordinary cochain-complex constructor requires dictionaries; "
-                "use CochainComplexes(R).from_family for a lazy integer family"
+                f"{self}(pieces, differentials) takes a dictionary degree -> module of pieces and a "
+                f"dictionary degree -> morphism of differentials, but got pieces {pieces!r} and "
+                f"differentials {differentials!r}; for pieces given in every integer degree use "
+                f"{self}.from_family"
             )
         return _cochain_complex(
             self,
@@ -95,11 +97,14 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
             differentials, IndexedFamily
         ):
             raise TypeError(
-                "a family cochain complex requires indexed families of pieces and differentials"
+                f"{self}.from_family takes integer-indexed families of pieces and of differentials, "
+                f"but got pieces {pieces!r} and differentials {differentials!r}"
             )
         if pieces.index_set() is not differentials.index_set():
             raise ValueError(
-                "the piece and differential families require one degree index set"
+                f"a cochain complex indexes its pieces and its differentials by the same set of degrees, "
+                f"but the pieces are indexed by {pieces.index_set()} and the differentials by "
+                f"{differentials.index_set()}"
             )
         return _cochain_complex(
             self,
@@ -227,7 +232,10 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
             outgoing = complex_.differential_component(degree)
             target = outgoing.codomain()
             if outgoing(cycle) != target.zero():
-                raise ValueError("a cohomology class can only be formed from a cycle")
+                raise ValueError(
+                    f"{cycle} has no class in {self}: only a cocycle has a cohomology class, "
+                    f"but d^{degree}({cycle}) = {outgoing(cycle)} is nonzero"
+                )
 
             cycles = self._preamble_cohomology_cycles
             cycle_in_cycles = cycles.inclusion().lift(cycle)
@@ -290,7 +298,8 @@ class _CochainComplexDirectSum(_DirectSumOfModules):
     def selected_degrees(self):
         if not self._finite_support:
             raise TypeError(
-                "an infinite represented complex has no finite selected-degree list; use degree_index_set()"
+                f"{self} may be nonzero in infinitely many degrees, so it has no finite list of "
+                f"nonzero degrees; use degree_index_set()"
             )
         return self._selected_degrees
 
@@ -321,7 +330,8 @@ class _CochainComplexDirectSum(_DirectSumOfModules):
         selected = self._raw_differential_component(degree)
         if selected.domain() is not source or selected.codomain() is not target:
             raise ValueError(
-                f"the selected degree-{degree} differential has the wrong endpoints"
+                f"the differential d^{degree} of {self} must be a map C^{degree} -> C^{degree + 1}, "
+                f"i.e. {source} -> {target}, but it is {selected.domain()} -> {selected.codomain()}"
             )
         if not self._finite_support:
             following = self._raw_differential_component(degree + 1)
@@ -332,14 +342,20 @@ class _CochainComplexDirectSum(_DirectSumOfModules):
                 or following.codomain() is not following_target
             ):
                 raise ValueError(
-                    f"the selected degree-{degree + 1} differential has the wrong endpoints"
+                    f"the differential d^{degree + 1} of {self} must be a map "
+                    f"{following_source} -> {following_target}, but it is "
+                    f"{following.domain()} -> {following.codomain()}"
                 )
             labels = source.module_generating_set()
             if labels.cardinality().is_finite():
                 for label in labels:
                     generator = source.module_generator(label)
                     if following(selected(generator)) != following.codomain().zero():
-                        raise ValueError(f"d^2 is nonzero in degree {degree}")
+                        raise ValueError(
+                            f"{self} is not a cochain complex: d^{degree + 1} d^{degree} must be zero, "
+                            f"but it sends the generator {generator} of C^{degree} to "
+                            f"{following(selected(generator))}"
+                        )
         return selected
 
     def _validate_differentials(self) -> None:
@@ -351,7 +367,11 @@ class _CochainComplexDirectSum(_DirectSumOfModules):
             for label in first.domain().module_generating_set():
                 generator = first.domain().module_generator(label)
                 if second(first(generator)) != second.codomain().zero():
-                    raise ValueError(f"d^2 is nonzero in degree {degree}")
+                    raise ValueError(
+                        f"{self} is not a cochain complex: d^{degree + 1} d^{degree} must be zero, "
+                        f"but it sends the generator {generator} of C^{degree} to "
+                        f"{second(first(generator))}"
+                    )
 
     def _repr_(self):
         return self._cochain_name or "Cochain complex"
@@ -377,7 +397,10 @@ def _cochain_complex(
                 case dict():
                     pass
                 case _:
-                    raise TypeError("a finite-support cochain complex uses a dictionary of differentials")
+                    raise TypeError(
+                        f"a cochain complex over {ring} with pieces given by a dictionary takes its "
+                        f"differentials as a dictionary degree -> morphism, but got {differentials!r}"
+                    )
             selected_pieces = {int(degree): module for degree, module in pieces.items()}
             selected_differentials = {
                 int(degree): morphism for degree, morphism in differentials.items()
@@ -396,19 +419,28 @@ def _cochain_complex(
                 case IndexedFamily():
                     pass
                 case _:
-                    raise TypeError("a family cochain complex requires an indexed family of differentials")
+                    raise TypeError(
+                        f"a cochain complex over {ring} with pieces given by an indexed family takes its "
+                        f"differentials as an indexed family, but got {differentials!r}"
+                    )
             match (pieces.index_set() is integers, differentials.index_set() is integers):
                 case (True, True):
                     pass
                 case _:
-                    raise ValueError("a represented cochain complex is indexed by the owned integers")
+                    raise ValueError(
+                        f"a cochain complex is graded by the integers ZZ, but its pieces are indexed by "
+                        f"{pieces.index_set()} and its differentials by {differentials.index_set()}"
+                    )
             family = pieces
             finite_support = False
             selected_degrees = ()
             selected_differentials = {}
             differential_family = differentials
         case _:
-            raise TypeError("cochain-complex pieces are a finite dictionary or an integer-indexed family")
+            raise TypeError(
+                f"the pieces of a cochain complex over {ring} are a dictionary degree -> module or an "
+                f"integer-indexed family of modules, but got {pieces!r}"
+            )
 
     data = dict(extra_construction_data or {})
     data.update(
@@ -451,7 +483,10 @@ class CochainMorphism(Morphism):
         target = self.codomain().graded_piece(degree)
         selected = self._raw_component(degree)
         if selected.domain() is not source or selected.codomain() is not target:
-            raise ValueError(f"the degree-{degree} component has the wrong endpoints")
+            raise ValueError(
+                f"the degree-{degree} component of the cochain map {self} must be a map "
+                f"{source} -> {target}, but it is {selected.domain()} -> {selected.codomain()}"
+            )
         if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
             following = self._raw_component(degree + 1)
             following_source = self.domain().graded_piece(degree + 1)
@@ -461,7 +496,9 @@ class CochainMorphism(Morphism):
                 or following.codomain() is not following_target
             ):
                 raise ValueError(
-                    f"the degree-{degree + 1} component has the wrong endpoints"
+                    f"the degree-{degree + 1} component of the cochain map {self} must be a map "
+                    f"{following_source} -> {following_target}, but it is "
+                    f"{following.domain()} -> {following.codomain()}"
                 )
             left = self.codomain().differential_component(degree)
             right = self.domain().differential_component(degree)
@@ -471,7 +508,9 @@ class CochainMorphism(Morphism):
                     generator = source.module_generator(label)
                     if left(selected(generator)) != following(right(generator)):
                         raise ValueError(
-                            f"the cochain square does not commute in degree {degree}"
+                            f"{self} is not a cochain map: it must commute with the differentials, "
+                            f"but d f^{degree} and f^{degree + 1} d differ on the generator {generator} "
+                            f"of degree {degree}"
                         )
         return selected
 
@@ -487,7 +526,11 @@ class CochainMorphism(Morphism):
             for label in component.domain().module_generating_set():
                 generator = component.domain().module_generator(label)
                 if left(component(generator)) != right_component(right(generator)):
-                    raise ValueError(f"the cochain square does not commute in degree {degree}")
+                    raise ValueError(
+                        f"{self} is not a cochain map: it must commute with the differentials, "
+                        f"but d f^{degree} and f^{degree + 1} d differ on the generator {generator} "
+                        f"of degree {degree}"
+                    )
 
     def _call_(self, element):
         element = self.domain()(element)
@@ -533,15 +576,23 @@ class CochainMor(CategoricalMor):
 
     def __init__(self, mor_family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
-            raise ValueError("cochain morphisms require one common base ring")
+            raise ValueError(
+                f"there are no cochain maps {domain} -> {codomain}: both complexes must be over one ring, "
+                f"but they are over {domain.base_ring()} and {codomain.base_ring()}"
+            )
         if domain.degree_index_set() is not codomain.degree_index_set():
-            raise ValueError("cochain morphisms require one common degree index set")
+            raise ValueError(
+                f"there are no cochain maps {domain} -> {codomain}: both complexes must be graded by one "
+                f"set of degrees, but they are graded by {domain.degree_index_set()} and "
+                f"{codomain.degree_index_set()}"
+            )
         _initialize_module_mor_parent(self, mor_family, domain, codomain)
 
     def _degrees(self):
         if not self.domain().has_finite_support() or not self.codomain().has_finite_support():
             raise TypeError(
-                "an infinite represented cochain Mor has no finite degree list"
+                f"{self.domain()} or {self.codomain()} may be nonzero in infinitely many degrees, "
+                f"so the cochain maps between them have no finite list of degrees"
             )
         return tuple(
             sorted(
@@ -553,7 +604,10 @@ class CochainMor(CategoricalMor):
     def _element_constructor_(self, components):
         if isinstance(components, CochainMorphism):
             if components.domain() is not self.domain() or components.codomain() is not self.codomain():
-                raise ValueError("the cochain morphism has the wrong endpoints")
+                raise ValueError(
+                    f"{components} is a cochain map {components.domain()} -> {components.codomain()}, "
+                    f"not an element of {self}"
+                )
             if components.parent() is self:
                 return components
             components = indexed_family(
@@ -563,7 +617,10 @@ class CochainMor(CategoricalMor):
             )
         elif isinstance(components, Morphism):
             if components.domain() is not self.domain() or components.codomain() is not self.codomain():
-                raise ValueError("the morphism has the wrong cochain endpoints")
+                raise ValueError(
+                    f"{components} is a map {components.domain()} -> {components.codomain()}, "
+                    f"not an element of {self}"
+                )
             component = getattr(components, "component", None)
             if component is not None:
                 components = indexed_family(
@@ -599,14 +656,23 @@ class CochainMor(CategoricalMor):
                 name="Declared cochain-morphism components",
             )
         if not isinstance(components, IndexedFamily):
-            raise TypeError("a cochain morphism is specified by a degree-indexed family")
+            raise TypeError(
+                f"an element of {self} is given by its components, a family of maps indexed by degree, "
+                f"but got {components!r}"
+            )
         if components.index_set() is not self.domain().degree_index_set():
-            raise ValueError("the cochain-morphism family has the wrong degree index set")
+            raise ValueError(
+                f"the components of an element of {self} are indexed by {self.domain().degree_index_set()}, "
+                f"but the given family is indexed by {components.index_set()}"
+            )
         return self.element_class(self, components)
 
     def elementwise(self, function):
         if not callable(function):
-            raise TypeError("an elementwise cochain map must be callable")
+            raise TypeError(
+                f"an element of {self} given elementwise needs a function on {self.domain()}, "
+                f"but got {function!r}"
+            )
         def component_at(degree):
             degree = int(degree)
             source = self.domain().graded_piece(degree)
@@ -640,7 +706,10 @@ class CochainMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a cochain endomorphism Mor")
+            raise ValueError(
+                f"{self} has no identity: an identity map needs domain = codomain, "
+                f"but these are {self.domain()} and {self.codomain()}"
+            )
         domain = self.domain()
 
         def identity_component(degree):

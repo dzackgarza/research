@@ -87,8 +87,9 @@ class _SchemeUnderlyingSpaceTopologyData(SageObject):
                 return True
             case _:
                 assert False, (
-                    "openness of an arbitrary subset of a non-affine underlying "
-                    "scheme space requires a represented open-immersion presentation"
+                    f"whether {subset} is open in {space} is decided only for the empty set, the "
+                    f"whole space, and subsets of the spectrum of an affine scheme; {space} is "
+                    "the space of a non-affine scheme"
                 )
 
 
@@ -115,8 +116,8 @@ class _SchemeUnderlyingSpaceEngine:
                 return point
             case False:
                 assert False, (
-                    "a point of a non-affine underlying scheme space requires a "
-                    "represented affine-chart point and its gluing identification"
+                    f"{point} is not a point of {self}: points of the space of the non-affine "
+                    f"scheme {self.ringed_space()} are constructed only from points of its affine charts"
                 )
 
     def _repr_(self) -> str:
@@ -263,7 +264,10 @@ class _StructureSheafEngine:
     def module_descent_datum(self, cover):
         r"""The rank-one module descent presentation of ``O_X`` on ``cover``."""
         if cover.ambient_scheme() is not self.ringed_space():
-            raise ValueError("structure-sheaf descent requires a cover of this ringed space")
+            raise ValueError(
+                f"the structure sheaf of {self.ringed_space()} can be described only on a cover of "
+                f"{self.ringed_space()}, but {cover} is a cover of {cover.ambient_scheme()}"
+            )
         from dzack_research.preamble.categories.schemes.gluing import ModuleGluingData
 
         return ModuleGluingData(cover).an_object()
@@ -286,7 +290,8 @@ class _StructureSheafEngine:
     def sections_on_distinguished_open(self, distinguished_open):
         r"""Return ``O_X(D(f)) = O(D(f))`` for a represented distinguished open."""
         assert _is_distinguished_open_of(distinguished_open, self.ringed_space()), (
-            "structure-sheaf sections are requested on a distinguished open of this affine scheme"
+            f"the sections of the structure sheaf of {self.ringed_space()} are computed on its "
+            f"distinguished opens D(f), but {distinguished_open} is not one of them"
         )
         return distinguished_open.coordinate_algebra()
 
@@ -317,22 +322,35 @@ class _StructureSheafEngine:
         elif _is_distinguished_open_of(source_open, ambient):
             source_sections = self.sections_on_distinguished_open(source_open)
         else:
-            raise ValueError("the restriction source is not a represented distinguished open of this affine scheme")
+            raise ValueError(
+                f"restriction of functions on {ambient} starts at the whole scheme or a "
+                f"distinguished open D(f) of it, but {source_open} is neither"
+            )
 
         if target_open is ambient:
             if source_open is not ambient:
-                raise ValueError("a restriction map is contravariant in open-set inclusion")
+                raise ValueError(
+                    f"there is no restriction map from {source_open} to the larger open {ambient}: "
+                    "restriction goes from an open set to an open subset of it"
+                )
 
 
             return remember(source_sections.Mor(source_sections).identity())
         if not _is_distinguished_open_of(target_open, ambient):
-            raise ValueError("the restriction target is not a represented distinguished open of this affine scheme")
+            raise ValueError(
+                f"restriction of functions on {ambient} ends at the whole scheme or a "
+                f"distinguished open D(f) of it, but {target_open} is neither"
+            )
         target_sections = self.sections_on_distinguished_open(target_open)
 
         if source_open is ambient:
             restriction = target_open.inclusion().coordinate_algebra_morphism()
             if restriction.domain() is not source_sections or restriction.codomain() is not target_sections:
-                raise ArithmeticError("the distinguished-open inclusion has the wrong represented pullback")
+                raise ArithmeticError(
+                    f"the inclusion of {target_open} into {ambient} pulls back functions along a map "
+                    f"{restriction.domain()} -> {restriction.codomain()}, not "
+                    f"{source_sections} -> {target_sections}"
+                )
             return remember(restriction)
         if source_open is target_open:
 
@@ -348,7 +366,8 @@ class _StructureSheafEngine:
     def stalk(self, point):
         r"""Return ``O_{X,p}`` for a represented affine prime point."""
         assert point.parent() is self.ringed_space().underlying_space(), (
-            "a structure-sheaf stalk is taken at a point of this affine scheme"
+            f"the stalk of the structure sheaf of {self.ringed_space()} is taken at a point of "
+            f"its spectrum, but {point} is a point of {point.parent()}"
         )
         return point.local_ring()
 
@@ -396,7 +415,8 @@ class _AffineStructurePresheaf(Functor):
 
         base = scheme.scheme_base_ring()
         assert scheme in Schemes(base).Affine(), (
-            "the represented structure presheaf currently uses the affine slice over X"
+            f"the structure presheaf on affine schemes over X is constructed only for affine X, "
+            f"but {scheme} is in {scheme.category()}"
         )
         self._scheme = scheme
         self._scalar_ring = scheme.coordinate_algebra()
@@ -475,14 +495,25 @@ def _localization_restriction_map(source, target):
     if source is target:
         return source.Mor(source).identity()
     if source not in LocalizationRings() or target not in LocalizationRings():
-        raise TypeError("principal-open restriction between proper opens requires represented localizations")
+        raise TypeError(
+            f"restriction from D(f) to D(g) is computed between localizations of the coordinate "
+            f"ring, but the rings are {source} and {target}"
+        )
     if source.localization_source() is not target.localization_source():
-        raise ValueError("principal-open restriction requires localizations of one affine coordinate ring")
+        raise ValueError(
+            f"restriction from D(f) to D(g) needs both to be opens of one affine scheme, but "
+            f"{source} is a localization of {source.localization_source()} and {target} is a "
+            f"localization of {target.localization_source()}"
+        )
 
     target_unit = target.localization_map()
     generators = tuple(source.localization_submonoid().monoid_generators())
     if any(not target_unit(generator).is_unit() for generator in generators):
-        raise ValueError("the target distinguished open is not contained in the source distinguished open")
+        raise ValueError(
+            f"there is no restriction from {source} to {target}: the target open is not "
+            "contained in the source open, since some inverted element of the source is not a "
+            "unit on the target"
+        )
 
     def restrict(element):
         element = source(element)
@@ -611,7 +642,8 @@ class ZariskiCoveringFamilies(OwnedParameterizedCategory):
                     pass
                 case False:
                     raise ValueError(
-                        "a Zariski covering family of X has target id_X in Sch_R/X"
+                        f"a Zariski cover of {scheme} must be a family of maps into {scheme} over "
+                        f"the identity of {scheme}, but its target is {target_arrow}"
                     )
             embeddings = tuple(
                 self.member(index).left()
@@ -625,14 +657,15 @@ class ZariskiCoveringFamilies(OwnedParameterizedCategory):
                     pass
                 case False:
                     raise TypeError(
-                        "a Zariski covering family consists of open immersions"
+                        f"a Zariski cover of {scheme} must consist of open immersions, but one of "
+                        f"the maps {embeddings} is not an open immersion"
                     )
             match scheme.is_covered_by_open_immersions(embeddings):
                 case True:
                     pass
                 case False:
                     raise ValueError(
-                        "the represented open immersions do not jointly cover the scheme"
+                        f"the open immersions {embeddings} do not cover {scheme}"
                     )
 
     def _repr_object_names(self):
@@ -683,7 +716,9 @@ class DistinguishedAffineCovers(OwnedCategory):
     def site_category(self):
         scheme = self.scheme()
         if scheme is None:
-            raise ValueError("the global cover catalogue has no single site category")
+            raise ValueError(
+                f"{self} is not attached to one scheme, so it has no single site of affine schemes over it"
+            )
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
         affine_schemes = Schemes(scheme.scheme_base_ring()).Affine()
@@ -692,7 +727,9 @@ class DistinguishedAffineCovers(OwnedCategory):
     def coverage(self):
         scheme = self.scheme()
         if scheme is None:
-            raise ValueError("the global cover catalogue does not select one coverage")
+            raise ValueError(
+                f"{self} is not attached to one scheme, so it has no single Zariski coverage"
+            )
         return distinguished_affine_coverage(scheme)
 
     @cached_method
@@ -725,12 +762,18 @@ class DistinguishedAffineCovers(OwnedCategory):
     def _call_(self, elements):
         r"""Construct ``{D(f_i) -> X}`` through the covering-family entry."""
         scheme = self.scheme()
-        assert scheme is not None, "a distinguished cover is constructed over its specified scheme"
+        assert scheme is not None, (
+            f"a cover by distinguished opens D(f_i) is built on one scheme, but {self} is not "
+            "attached to a scheme"
+        )
         algebra = scheme.coordinate_algebra()
         values = tuple(algebra(element) for element in elements)
-        assert values, "a represented distinguished cover has at least one open"
+        assert values, (
+            f"a cover of {scheme} by distinguished opens D(f_i) needs at least one f_i, but none were given"
+        )
         assert algebra.ideal(*values).contains_ambient_element(algebra.one()), (
-            "the defining elements of a distinguished affine cover generate the unit ideal"
+            f"the opens D(f_i) for f_i in {values} do not cover {scheme}: these elements do not "
+            f"generate the unit ideal of {algebra}"
         )
         labels = finite_ordered_set(range(len(values)))
         defining_elements = finite_indexed_family(
@@ -778,18 +821,24 @@ class DistinguishedAffineCovers(OwnedCategory):
             scheme = self.ambient_scheme()
             algebra = scheme.coordinate_algebra()
             assert defining_elements.index_set() is self.index_set(), (
-                "the defining elements and cover arrows have one indexing set"
+                f"the elements f_i defining the opens D(f_i) of {scheme} are indexed by "
+                f"{defining_elements.index_set()}, but the charts are indexed by {self.index_set()}"
             )
             assert self.target().arrow() == scheme.categorical_identity_morphism(), (
-                "a distinguished cover of X has target id_X in the slice"
+                f"a cover of {scheme} must map into {scheme} over its identity, but its target is "
+                f"{self.target().arrow()}"
             )
             assert algebra.ideal(*defining_elements).contains_ambient_element(algebra.one()), (
-                "the defining elements generate the unit ideal"
+                f"the opens D(f_i) do not cover {scheme}: the elements {tuple(defining_elements)} "
+                f"do not generate the unit ideal of {algebra}"
             )
             assert all(
                 self.open(label) is scheme.distinguished_open(self.defining_element(label))
                 for label in self.index_set()
-            ), "each selected chart is the distinguished open of its defining element"
+            ), (
+                f"some chart of the cover of {scheme} is not the distinguished open D(f_i) of its "
+                "element f_i"
+            )
 
         def _cache_key(self) -> int:
             return id(self)
@@ -831,7 +880,9 @@ class DistinguishedAffineCovers(OwnedCategory):
         def intersection_indices(self, *indices):
             r"""Read the stated chart labels, deduplicated and in the atlas order."""
             labels = {self.chart_label(index) for index in indices}
-            assert labels, "an affine-cover intersection requires at least one chart"
+            assert labels, (
+                f"an intersection of charts of {self} needs at least one chart, but none were named"
+            )
             return finite_ordered_set(
                 tuple(sorted(labels, key=self.atlas().ranking_map()))
             )
@@ -920,7 +971,10 @@ class DistinguishedAffineCovers(OwnedCategory):
 
             chart = self.open(chart_index)
             chart_ring = chart.coordinate_algebra()
-            assert module.base_ring() is chart_ring, "a local module is defined over the selected affine chart"
+            assert module.base_ring() is chart_ring, (
+                f"the module {module} on chart {chart_index} must be a module over its coordinate "
+                f"ring {chart_ring}, but it is a module over {module.base_ring()}"
+            )
             target = self.intersection(chart_index, *intersection_indices)
             match module:
                 case _ if target is chart:
@@ -931,7 +985,8 @@ class DistinguishedAffineCovers(OwnedCategory):
                     ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
                     restricted = module.base_change(ring_map)
                     assert restricted.base_ring() is target.coordinate_algebra(), (
-                        "module base change did not land over the intersection section ring"
+                        f"the restriction of {module} to {target} is a module over "
+                        f"{restricted.base_ring()}, not over {target.coordinate_algebra()}"
                     )
                     return restricted
 
@@ -942,14 +997,18 @@ class DistinguishedAffineCovers(OwnedCategory):
 
             chart = self.open(chart_index)
             chart_ring = chart.coordinate_algebra()
-            assert algebra in Algebras(chart_ring).Associative().Unital(), "a local algebra is defined over the selected affine chart"
+            assert algebra in Algebras(chart_ring).Associative().Unital(), (
+                f"the algebra {algebra} on chart {chart_index} must be an algebra over its "
+                f"coordinate ring {chart_ring}, but it is in {algebra.category()}"
+            )
             target = self.intersection(chart_index, *intersection_indices)
             if target is chart:
                 return algebra
             ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
             restricted = Algebras(chart_ring).Associative().Unital().scalar_extension(ring_map)(algebra)
             assert restricted in Algebras(target.coordinate_algebra()).Associative().Unital(), (
-                "algebra scalar extension did not land over the intersection section ring"
+                f"the restriction of {algebra} to {target} is not an algebra over "
+                f"{target.coordinate_algebra()}; it is in {restricted.category()}"
             )
             return restricted
 
@@ -973,7 +1032,10 @@ class DistinguishedAffineCovers(OwnedCategory):
             Its apex is the common refinement; its two legs are actual
             :class:`DistinguishedAffineCoverRefinement` morphisms.
             """
-            assert other.ambient_scheme() is self.ambient_scheme(), "covers of one scheme are refined together"
+            assert other.ambient_scheme() is self.ambient_scheme(), (
+                f"a common refinement needs two covers of one scheme, but {self} covers "
+                f"{self.ambient_scheme()} and {other} covers {other.ambient_scheme()}"
+            )
             category = self.category()
             index_pairs = tuple(
                 (left, right)
@@ -1031,7 +1093,10 @@ class _AffineModuleSheafEngine:
     def __init__(self, scheme, module, **rest) -> None:
         algebra = scheme.coordinate_algebra()
         if module.base_ring() is not algebra:
-            raise ValueError("an affine module sheaf requires a module over the scheme coordinate ring")
+            raise ValueError(
+                f"the sheaf M~ on {scheme} needs a module M over its coordinate ring {algebra}, but "
+                f"{module} is a module over {module.base_ring()}"
+            )
         self._scheme = scheme
         self._module = module
         self._local_sections = {}
@@ -1076,12 +1141,18 @@ class _AffineModuleSheafEngine:
     def stalk(self, point):
         r"""``M~_p = M_p``, the module localized at the prime of the point."""
         spectrum = self.scheme().underlying_space()
-        assert point.parent() is spectrum, "a stalk is taken at a point of the scheme's own spectrum"
+        assert point.parent() is spectrum, (
+            f"the stalk of {self} is taken at a point of the spectrum of {self.scheme()}, but "
+            f"{point} is a point of {point.parent()}"
+        )
         return self.module().localize_at_prime(point.ideal())
 
     def sections_on_distinguished_open(self, distinguished_open):
         if not _is_distinguished_open_of(distinguished_open, self.scheme()):
-            raise ValueError("module sections are requested on a different affine scheme")
+            raise ValueError(
+                f"the sections of {self} are computed on distinguished opens D(f) of {self.scheme()}, "
+                f"but {distinguished_open} is not one of them"
+            )
         key = id(distinguished_open)
         selected = self._local_sections.get(key)
         if selected is not None and selected.base_ring() is distinguished_open.coordinate_algebra():
@@ -1114,7 +1185,11 @@ class _AffineModuleSheafEngine:
         if source_open is ambient:
             localization = target_sections.localization_functor()
             if localization.ring_map() is not structure_restriction:
-                raise ArithmeticError("module and function restriction selected different localization maps")
+                raise ArithmeticError(
+                    f"restriction of {self} to {target_open} localizes along "
+                    f"{localization.ring_map()}, but restriction of functions uses "
+                    f"{structure_restriction}; they must agree"
+                )
             return localization.unit(self.module(), localized=target_sections)
         if source_open is target_open:
             return source_sections.module_category().Mor(source_sections, source_sections).identity()
@@ -1214,7 +1289,11 @@ class AffineQuasiCoherentSheafMor(CategoricalMor):
                     module_morphism.domain() is not self.domain()
                     or module_morphism.codomain() is not self.codomain()
                 ):
-                    raise ValueError("the quasi-coherent sheaf morphism has the wrong endpoints")
+                    raise ValueError(
+                        f"the morphism {module_morphism} of quasi-coherent sheaves goes from "
+                        f"{module_morphism.domain()} to {module_morphism.codomain()}, not from "
+                        f"{self.domain()} to {self.codomain()}"
+                    )
                 module_morphism = module_morphism.underlying_module_morphism()
             case _:
                 pass
@@ -1223,7 +1302,10 @@ class AffineQuasiCoherentSheafMor(CategoricalMor):
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined only on an endomorphism Mor")
+            raise ValueError(
+                f"there is no identity morphism from {self.domain()} to the different sheaf "
+                f"{self.codomain()}; the identity exists only when domain and codomain agree"
+            )
         module = self.domain().module()
         return self(module.module_category().Mor(module, module).identity())
 
@@ -1292,10 +1374,12 @@ class QuasiCoherentSheafMorCategoryConstruction(MorCategoryConstruction):
                 atlas = _finite_atlas_of_sheaf_placement(domain)
                 represented = _finite_atlas_quasi_coherent_sheaves(atlas)
                 assert domain.category().is_subcategory(represented), (
-                    "a represented non-affine quasi-coherent source must carry its concrete sheaf placement"
+                    f"morphisms out of the sheaf {domain} on the non-affine scheme {scheme} are "
+                    f"computed on the affine cover {atlas}, but {domain} is not given on that cover"
                 )
                 assert codomain.category().is_subcategory(represented), (
-                    "a finite-atlas quasi-coherent Mor requires endpoints on the same represented Čech site"
+                    f"morphisms from {domain} to {codomain} are computed on the affine cover "
+                    f"{atlas} of {scheme}, but {codomain} is not given on that cover"
                 )
                 return FiniteAtlasModuleSheafMor
 
@@ -1396,8 +1480,8 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
 
         scheme = self.scheme()
         assert scheme in Schemes(scheme.scheme_base_ring()).Affine(), (
-            "the equivalence with a module category is stated on an affine scheme; on a glued "
-            "scheme a quasi-coherent sheaf is gluing data over an affine cover"
+            f"quasi-coherent sheaves on X are equivalent to modules over one ring only for affine "
+            f"X, but {scheme} is in {scheme.category()}"
         )
         return Modules(scheme.coordinate_algebra())
 
@@ -1405,7 +1489,8 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
     def associated_sheaf(self, module):
         r"""``M |-> M~``, the equivalence out of ``Modules(A)``."""
         assert module in self.module_category(), (
-            "the associated sheaf is taken of a module over the coordinate algebra"
+            f"the sheaf M~ on {self.scheme()} is defined for a module over its coordinate ring, "
+            f"but {module} is in {module.category()}"
         )
         return self.object(
             construction_data={"scheme": self.scheme(), "module": module},
@@ -1414,7 +1499,9 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
 
     def global_sections(self, sheaf):
         r"""``M~ |-> M``, the inverse equivalence."""
-        assert sheaf in self, "global sections are taken of a sheaf on this scheme"
+        assert sheaf in self, (
+            f"{sheaf} is not a quasi-coherent sheaf on {self.scheme()}; it is in {sheaf.category()}"
+        )
         return sheaf.global_sections()
 
     def local_presentation(self, sheaf):
@@ -1431,8 +1518,8 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
 
         module = self.global_sections(sheaf)
         assert module in ModulesWithChosenFinitePresentation(module.base_ring()), (
-            "a local presentation of a quasi-coherent sheaf requires a chosen finite "
-            "presentation of the module it comes from"
+            f"an exact sequence O^m -> O^n -> {sheaf} -> 0 needs the module of global sections to "
+            f"be given by finitely many generators and relations, but {module} is in {module.category()}"
         )
         return module.presentation()
 
@@ -1477,12 +1564,14 @@ class InvertibleSheavesWithChosenTrivialization(OwnedParameterizedCategory):
         rank-one datum by its transition units.
         """
         assert gluing_datum.scheme() is self.scheme(), (
-            "a chosen trivialization belongs to an invertible sheaf on this scheme"
+            f"an invertible sheaf on {self.scheme()} must be glued on a cover of {self.scheme()}, "
+            f"but the gluing data is on a cover of {gluing_datum.scheme()}"
         )
         match transition_units:
             case None:
                 assert section_space is None and associated_divisor is None, (
-                    "section-space and divisor data belong to finite-atlas trivializations"
+                    "a space of global sections or an associated divisor can be given only with "
+                    "transition units on a finite affine cover, but no transition units were given"
                 )
                 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
                     _DistinguishedCoverInvertibleSheafEngine,
@@ -1511,7 +1600,8 @@ class InvertibleSheavesWithChosenTrivialization(OwnedParameterizedCategory):
         from dzack_research.preamble.categories.schemes.gluing import ModuleGluingData
 
         assert cover.ambient_scheme() is self.scheme(), (
-            "a trivialized structure sheaf uses a cover of this scheme"
+            f"the structure sheaf of {self.scheme()} is trivialized on a cover of it, but "
+            f"{cover} is a cover of {cover.ambient_scheme()}"
         )
         return self(ModuleGluingData(cover).an_object())
 

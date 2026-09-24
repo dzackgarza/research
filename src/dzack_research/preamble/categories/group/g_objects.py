@@ -78,7 +78,8 @@ def _verify_relators(action, group, endomorphisms) -> None:
         for left in group:
             for right in group:
                 assert action(left * right) == action(left) * action(right), (
-                    f"the stated maps do not define a left action of {group}"
+                    f"the given automorphisms do not define a left action of {group}: "
+                    f"rho({left} * {right}) differs from rho({left}) rho({right})"
                 )
 
 
@@ -161,25 +162,31 @@ class InternalGroupObjectMor(CategoricalMor):
             != target.multiplication() * arrow_times_arrow
         ):
             raise ValueError(
-                "the underlying morphism does not preserve internal-group multiplication"
+                f"{arrow} is not a morphism of group objects from {source} to {target}: "
+                f"it does not commute with the multiplications"
             )
         if arrow * source.unit_morphism() != target.unit_morphism():
             raise ValueError(
-                "the underlying morphism does not preserve the internal-group unit"
+                f"{arrow} is not a morphism of group objects from {source} to {target}: "
+                f"it does not send the unit of {source} to the unit of {target}"
             )
         if (
             arrow * source.inverse_morphism()
             != target.inverse_morphism() * arrow
         ):
             raise ValueError(
-                "the underlying morphism does not preserve internal-group inversion"
+                f"{arrow} is not a morphism of group objects from {source} to {target}: "
+                f"it does not commute with the inverse maps"
             )
         return self.element_class(self, arrow)
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an internal-group endomorphism Mor")
+            raise ValueError(
+                f"no identity morphism from {self.domain()} to {self.codomain()}: "
+                f"they are different group objects"
+            )
         return self(self.underlying_mor().identity())
 
 
@@ -239,7 +246,10 @@ class _InternalGroupObjectEngine:
     def __init__(self, underlying_object, multiplication, unit, inverse, **rest) -> None:
         category = rest["category"].underlying_category()
         if underlying_object not in category:
-            raise TypeError("an internal group object must be an object of its underlying category")
+            raise TypeError(
+                f"cannot form a group object in {category} on {underlying_object}: it is "
+                f"not an object of {category}"
+            )
         self._underlying_object = underlying_object
         self._square_construction = category.product_construction(
             (underlying_object, underlying_object)
@@ -312,7 +322,10 @@ class _InternalGroupObjectEngine:
             (first, second_product),
         )
         if multiply_first != multiply_second:
-            raise ValueError("internal-group multiplication is not associative")
+            raise ValueError(
+                f"{multiplication} does not make {group} a group object in {category}: "
+                f"the multiplication is not associative"
+            )
 
         identity = category.Mor(group, group).identity()
         unit_on_group = self.unit_morphism() * _terminal_map(category, group)
@@ -327,7 +340,10 @@ class _InternalGroupObjectEngine:
             (identity, unit_on_group),
         )
         if left_unit != identity or right_unit != identity:
-            raise ValueError("internal-group multiplication does not satisfy the unit laws")
+            raise ValueError(
+                f"{self.unit_morphism()} is not a two-sided unit for {multiplication} on "
+                f"{group} in {category}"
+            )
 
         inverse = self.inverse_morphism()
         left_inverse = multiplication * _factor_selected_product(
@@ -341,7 +357,10 @@ class _InternalGroupObjectEngine:
             (identity, inverse),
         )
         if left_inverse != unit_on_group or right_inverse != unit_on_group:
-            raise ValueError("internal-group inverse does not satisfy the inverse laws")
+            raise ValueError(
+                f"{inverse} is not a two-sided inverse for {multiplication} on {group} "
+                f"in {category}"
+            )
 
     def actions(self):
         return InternalGroupActions(self)
@@ -400,13 +419,19 @@ class InternalGroupActionMor(CategoricalMor):
             arrow * source.action_morphism()
             != target.action_morphism() * identity_times_arrow
         ):
-            raise ValueError("the underlying morphism is not equivariant for the internal-group actions")
+            raise ValueError(
+                f"{arrow} is not equivariant from {source} to {target}: it does not "
+                f"commute with the actions of {source.group_object()}"
+            )
         return self.element_class(self, arrow)
 
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an internal-action endomorphism Mor")
+            raise ValueError(
+                f"no identity morphism from {self.domain()} to {self.codomain()}: "
+                f"they are different objects with an action"
+            )
         return self(self.underlying_mor().identity())
 
 
@@ -460,7 +485,10 @@ class _InternalGroupActionEngine:
         group = rest["category"].group_object()
         category = group.underlying_category()
         if underlying_object not in category:
-            raise TypeError("an internal group acts on an object of its underlying category")
+            raise TypeError(
+                f"{group} cannot act on {underlying_object}: it is not an object of "
+                f"{category}"
+            )
         self._underlying_object = underlying_object
         self._action_product_construction = category.product_construction(
             (group.underlying_object(), underlying_object)
@@ -515,7 +543,10 @@ class _InternalGroupActionEngine:
             (first, inner_action),
         )
         if via_multiplication != via_action:
-            raise ValueError("the internal-group action is not associative")
+            raise ValueError(
+                f"{action} is not an action of {group} on {acted}: acting by a product "
+                f"differs from acting by the factors in turn"
+            )
 
         identity = category.Mor(acted, acted).identity()
         unit_on_acted = group.unit_morphism() * _terminal_map(category, acted)
@@ -525,7 +556,10 @@ class _InternalGroupActionEngine:
             (unit_on_acted, identity),
         )
         if via_unit != identity:
-            raise ValueError("the internal-group unit does not act as the identity")
+            raise ValueError(
+                f"{action} is not an action of {group} on {acted}: the unit does not act "
+                f"as the identity"
+            )
 
     def Mor(self, target):
         return self.category().Mor(self, target)
@@ -612,7 +646,10 @@ class GObjectMor(CategoricalMor):
     Element = EquivariantMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        assert domain.acting_group() is codomain.acting_group(), "equivariant morphisms require one acting group"
+        assert domain.acting_group() is codomain.acting_group(), (
+            f"no equivariant morphisms from {domain} to {codomain}: they are acted on by "
+            f"different groups, {domain.acting_group()} and {codomain.acting_group()}"
+        )
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def underlying_mor(self):
@@ -655,11 +692,17 @@ class GObjectMor(CategoricalMor):
     def _element_constructor_(self, datum):
         arrow = self.underlying_mor()(datum)
         if self.is_equivariant(arrow) is not True:
-            raise ValueError(f"{arrow} does not commute with the {self.domain().acting_group()}-actions")
+            raise ValueError(
+                f"{arrow} is not equivariant from {self.domain()} to {self.codomain()}: it "
+                f"is not known to commute with the {self.domain().acting_group()}-actions"
+            )
         return self._from_equivariant_arrow(arrow)
 
     def identity(self):
-        assert self.domain() is self.codomain(), "identity belongs to an endomorphism Mor object"
+        assert self.domain() is self.codomain(), (
+            f"no identity morphism from {self.domain()} to {self.codomain()}: they are "
+            f"different objects"
+        )
         return self._from_equivariant_arrow(self.underlying_mor().identity())
 
     def _repr_(self) -> str:
@@ -739,10 +782,15 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         """
         if self.underlying_category() is not Sets():
             raise TypeError(
-                "comparison with an internal action requires a represented constant internal group object; the current generic construction supplies it only in Set"
+                f"cannot compare {acted_object} with an action of a group object in "
+                f"{self.underlying_category()}: {self.acting_group()} is realized as a "
+                f"group object only in the category of sets"
             )
         if acted_object not in self:
-            raise TypeError("the compared object must carry this external group action")
+            raise TypeError(
+                f"{acted_object} is not an object of {self}: it has no action of "
+                f"{self.acting_group()}"
+            )
 
         group = self.acting_group()
         product = Sets().product((group, group))
@@ -785,7 +833,10 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             TransportGroupActionFunctor,
         )
 
-        assert functor.domain() == self.underlying_category(), "transport must start in the underlying category"
+        assert functor.domain() == self.underlying_category(), (
+            f"cannot transport {self.acting_group()}-actions along {functor}: its domain "
+            f"is {functor.domain()}, not {self.underlying_category()}"
+        )
         return TransportGroupActionFunctor(self.acting_group(), functor)
 
     def restriction(self, group_morphism):
@@ -824,7 +875,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             case Schemes():
                 return AffineQuotientFunctor(self.acting_group(), category.base_ring())
             case other:
-                assert False, f"the affine quotient functor is a construction on schemes; {other} has no owned quotient by a group action"
+                assert False, f"no affine quotient functor on {self}: quotients by {self.acting_group()} are constructed for schemes, and the underlying category is {other}"
 
     def an_object(self):
         r"""The trivial action on an object of the underlying category."""
@@ -839,7 +890,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 return FiniteGSets(self.acting_group()).trivial(sample)
             case Schemes():
                 return AffineGSchemes(self.acting_group(), category.base_ring()).an_object()
-        assert category.is_subcategory(Modules(category.base_ring())), f"no owned constructor equips an object of {category} with a group action"
+        assert category.is_subcategory(Modules(category.base_ring())), f"cannot build a sample object of {self}: trivial actions of {self.acting_group()} are constructed on sets, schemes and modules, and {category} is none of these"
         ring = category.base_ring()
         group = self.acting_group()
         trivial = Modules(ring).trivial_action(group)(sample)
@@ -928,7 +979,8 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                     )
                 case other:
                     assert False, (
-                        f"the fixed locus of a single group element is constructed for schemes; {other} supplies no owned equalizer of an automorphism with the identity"
+                        f"cannot form the fixed locus of {group_element} on {self}: it is "
+                        f"constructed only for schemes, and {self} lies in {other}"
                     )
 
         def fixed_subobject_of(self, group_element):
@@ -952,7 +1004,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             where a quotient singularity of the orbit space can appear.
             """
             group = self.acting_group()
-            assert group.is_finite() is True, f"the union of the fixed loci of {group} is taken over its nonidentity elements, which requires a group decided finite"
+            assert group.is_finite() is True, f"cannot form the locus of points of {self} with nontrivial stabilizer: {group} is not known to be finite"
             identity = group.one()
             ideal = None
             for group_element in group:

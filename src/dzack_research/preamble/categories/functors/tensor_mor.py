@@ -15,7 +15,10 @@ class _TensorByFunctor(Functor):
         ring = _owned_ring(fixed_module.base_ring())
         category = ModulesWithChosenFinitePresentation(ring)
         if fixed_module not in category:
-            raise TypeError("the fixed tensor factor must carry a chosen finite presentation")
+            raise TypeError(
+                f"the functor - (x) M needs M to be finitely presented with chosen generators and relations, but "
+                f"{fixed_module} is not"
+            )
         super().__init__(category, category)
 
     def fixed_module(self):
@@ -43,7 +46,10 @@ class _InternalMorFromFunctor(Functor):
         ring = _owned_ring(fixed_source.base_ring())
         category = ModulesWithChosenFinitePresentation(ring)
         if fixed_source not in category:
-            raise TypeError("the fixed internal-Mor source must carry a chosen finite presentation")
+            raise TypeError(
+                f"the internal Mor functor Mor(M, -) needs M to be finitely presented with chosen generators and relations, "
+                f"but {fixed_source} is not"
+            )
         super().__init__(category, category)
 
     def fixed_source(self):

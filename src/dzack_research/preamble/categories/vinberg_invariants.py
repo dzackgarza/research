@@ -105,7 +105,10 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             edge[0] not in vertices or edge[1] not in vertices
             for edge in normalized_edges
         ):
-            raise ValueError("a projectively weighted edge has two endpoints in the vertex set")
+            raise ValueError(
+                f"the weighted edges {tuple(normalized_edges)} are not edges of a graph on "
+                f"the vertices {vertices}: some edge has an endpoint that is not a vertex"
+            )
         if vertex_weights is None:
             normalized_vertices = {
                 vertex: projective_line([1, 1]) for vertex in vertices
@@ -116,14 +119,19 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
                 for vertex, weight in dict(vertex_weights).items()
             }
         if set(normalized_vertices) != set(vertices):
-            raise ValueError("a projectively weighted graph requires one vertex weight per vertex")
+            raise ValueError(
+                f"a weighted graph on the vertices {vertices} needs exactly one weight per "
+                f"vertex, but weights were given for {tuple(normalized_vertices)}"
+            )
         if symmetric:
             for left, right in normalized_edges:
                 reverse = edge_space((right, left))
                 if reverse in normalized_edges:
                     if normalized_edges[edge_space((left, right))] != normalized_edges[reverse]:
                         raise ValueError(
-                            "a symmetric projective weighting has equal reverse edge weights"
+                            f"the weighting is not symmetric: the edge ({left}, {right}) has "
+                            f"weight {normalized_edges[edge_space((left, right))]}, but the "
+                            f"reverse edge has weight {normalized_edges[reverse]}"
                         )
         return _object_of(
             self,
@@ -187,7 +195,10 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
 
         def vertex_weight(self, vertex):
             if vertex not in self._vertices:
-                raise ValueError("a vertex weight is indexed by a vertex of the graph")
+                raise ValueError(
+                    f"{vertex} has no weight in {self}: it is not one of the vertices "
+                    f"{self._vertices}"
+                )
             return self._vertex_weights[vertex]
 
         vertex_label = vertex_weight
@@ -208,7 +219,10 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
                 return self._edge_weights[edge]
             if self._symmetric and reverse in self._edge_weights:
                 return self._edge_weights[reverse]
-            raise ValueError("the selected vertices are not joined by an edge")
+            raise ValueError(
+                f"the pair ({left}, {right}) has no edge weight in {self}: the vertices are "
+                f"not joined by an edge"
+            )
 
         edge_label = edge_weight
 
@@ -228,7 +242,10 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             """
             selected = finite_ordered_set(tuple(vertices))
             if any(vertex not in self._vertices for vertex in selected):
-                raise ValueError("an induced weighted subgraph uses vertices of the ambient graph")
+                raise ValueError(
+                    f"cannot form the subgraph of {self} induced on {selected}: some of these "
+                    f"are not vertices of the graph, whose vertices are {self._vertices}"
+                )
             edge_weights = {
                 tuple(edge): weight
                 for edge, weight in self._edge_weights.items()
@@ -261,7 +278,8 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             """
             if self.is_directed() or not self.is_symmetric():
                 raise ValueError(
-                    "a Vinberg invariant matrix is reconstructed from a symmetric undirected weighted graph"
+                    f"{self} does not determine a Vinberg invariant matrix: the matrix is "
+                    f"symmetric, so the graph must be undirected with symmetric weights"
                 )
             vertices = tuple(self.vertices())
             ring = self.base_ring()
@@ -463,7 +481,10 @@ class VinbergInvariantMatrices(OwnedCategory):
 
         def edge_label(self, left, right):
             if not self.has_edge(left, right):
-                raise ValueError("the selected mirrors are not joined by a Vinberg edge")
+                raise ValueError(
+                    f"the mirrors {left} and {right} of {self} are orthogonal, so they are "
+                    f"not joined by an edge of the Vinberg diagram and the edge has no label"
+                )
             return self.vinberg_invariant(left, right)
 
         def cardinality(self):
@@ -498,8 +519,9 @@ class VinbergInvariantMatrices(OwnedCategory):
             i, j = self._positions(left, right)
             denominator = self._denominators[i][j]
             assert denominator != 0, (
-                "a mirror has a non-isotropic normal, so the Vinberg invariant "
-                "of a pair of mirrors has a nonzero denominator"
+                f"the Vinberg invariant of the mirrors {left} and {right} in {self} has "
+                f"denominator q(r)q(s) = 0, so one of their normals is isotropic and is "
+                f"not the normal of a mirror"
             )
             return self._numerators[i][j] / denominator
 
@@ -690,8 +712,9 @@ class VinbergInvariantMatrices(OwnedCategory):
             index_set = range(rank)
         squares = [gram[i, i] for i in range(rank)]
         assert all(square != 0 for square in squares), (
-            "a mirror has a non-isotropic normal; a Gram with an isotropic "
-            "diagonal entry does not present a family of mirrors"
+            f"the Gram matrix {gram} is not the Gram matrix of the normals of a family of "
+            f"mirrors: its diagonal {tuple(squares)} has a zero, and the normal of a "
+            f"mirror is not isotropic"
         )
         return _vinberg_invariant_matrix(
             gram.base_ring(),
@@ -740,7 +763,9 @@ class VinbergInvariantMatrices(OwnedCategory):
         )
         mirrors = row_positions if index_set is None else finite_ordered_set(index_set)
         assert mirrors.cardinality() == row_positions.cardinality(), (
-            "an invariant matrix has one mirror per row of invariants"
+            f"the mirrors {mirrors} cannot index the invariant matrix: there are "
+            f"{mirrors.cardinality()} of them, but the matrix has "
+            f"{row_positions.cardinality()} rows"
         )
         return _vinberg_invariant_matrix(
             base_ring,

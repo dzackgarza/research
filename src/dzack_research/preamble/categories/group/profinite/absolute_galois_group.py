@@ -77,7 +77,8 @@ class AbsoluteGaloisGroupElement(Element):
         )
         if self._exact_action is None and self._frobenius_exponent is None:
             raise TypeError(
-                "an absolute Galois element requires a globally exact action"
+                f"an element of {parent} must be given either as an automorphism of the "
+                f"algebraic closure or as a power of Frobenius, but neither was given"
             )
 
     @cached_method
@@ -122,11 +123,15 @@ class AbsoluteGaloisGroupElement(Element):
             if old_stage is stage:
                 if old_coordinate != coordinate:
                     raise ValueError(
-                        "the new coordinate contradicts the realized coordinate"
+                        f"{self} already restricts to {old_coordinate} on {stage.field()}, "
+                        f"not to {coordinate}"
                     )
                 return
         if restriction_map(self) != coordinate:
-            raise ValueError("the new coordinate contradicts the global automorphism")
+            raise ValueError(
+                f"{self} restricts to {restriction_map(self)} on {stage.field()}, "
+                f"not to {coordinate}"
+            )
         self._coordinates.append((stage, coordinate))
 
     def frobenius_exponent(self):
@@ -267,7 +272,8 @@ def ElementConjugacyClass(supergroup, representative):
 
     def is_conjugate(element):
         assert supergroup.is_abelian() is True, (
-            "conjugacy membership is represented here when the absolute Galois group is abelian"
+            f"conjugacy to {representative} in {supergroup} is decided only when "
+            f"{supergroup} is known to be abelian, and it is not"
         )
         return supergroup(element) == representative
 
@@ -416,7 +422,10 @@ class _AbsoluteGaloisGroupEngine:
 
     def base_field_order(self):
         if not self._is_finite_field():
-            raise TypeError("q is defined here only for a finite base field")
+            raise TypeError(
+                f"the base field order q of {self} is defined only for a finite base "
+                f"field, but the base field is {self._field}"
+            )
         return _owned_engine_element(
             ZZ,
             ZZ(_engine_ring(self._field).cardinality()),
@@ -427,7 +436,7 @@ class _AbsoluteGaloisGroupEngine:
             if datum.parent() is self:
                 return datum
             raise ValueError(
-                "the automorphism belongs to a different realized absolute Galois group"
+                f"{datum} is an element of {datum.parent()}, not of {self}"
             )
         if isinstance(datum, ExactFieldMorphism):
             if (
@@ -435,14 +444,19 @@ class _AbsoluteGaloisGroupEngine:
                 or datum.codomain() is not self._closure
             ):
                 raise ValueError(
-                    "a global automorphism must be an endomorphism of the chosen closure"
+                    f"an element of {self} is an automorphism of the algebraic closure "
+                    f"{self._closure}, but {datum} is a map {datum.domain()} -> {datum.codomain()}"
                 )
             element = AbsoluteGaloisGroupElement(self, exact_action=datum)
         else:
-            raise TypeError("an element requires an exact closure automorphism")
+            raise TypeError(
+                f"an element of {self} is an automorphism of the algebraic closure "
+                f"{self._closure}, but {datum} is not a field morphism"
+            )
         if not element.fixes_base_field():
             raise ValueError(
-                "the closure automorphism does not fix the embedded base field"
+                f"{datum} is not an element of {self}: it does not fix the base field "
+                f"{self._field}"
             )
         return element
 
@@ -475,14 +489,16 @@ class _AbsoluteGaloisGroupEngine:
             return FrobeniusElement(self, ZZ.one())
         if prime is None:
             raise TypeError(
-                "a non-finite field has Frobenius only at a specified prime"
+                f"the base field {self._field} of {self} is not finite, so a Frobenius "
+                f"class exists only at a prime; give `prime`"
             )
 
         return FrobeniusConjugacyClass(self, prime)
 
     def topological_group_generators(self):
         assert self._is_finite_field(), (
-            "a selected topological generating family is represented here for finite-field absolute Galois groups"
+            f"topological generators of {self} are known only when the base field is "
+            f"finite, but it is {self._field}"
         )
         from dzack_research.preamble.categories.sets.finite_ordered_sets import (
             finite_ordered_set,
@@ -496,7 +512,10 @@ class _AbsoluteGaloisGroupEngine:
 
     def _finite_frobenius_image(self, element, exponent):
         if not self._is_finite_field():
-            raise TypeError("q-Frobenius acts only for a finite base field")
+            raise TypeError(
+                f"the q-Frobenius x -> x^q exists only over a finite base field, but the "
+                f"base field of {self} is {self._field}"
+            )
         exponent = ZZ(exponent)
         if exponent == 0:
             return element
@@ -524,8 +543,8 @@ class _AbsoluteGaloisGroupEngine:
         left_action = left.exact_action()
         right_action = right.exact_action()
         assert left_action is not None and right_action is not None, (
-            "composing a Frobenius power with an automorphism given by an exact map "
-            "requires the Frobenius power as an exact map of the closure, which is not represented"
+            f"cannot compose {left} and {right} in {self}: a Frobenius power cannot be "
+            f"composed with an automorphism given as a field map of {self._closure}"
         )
         return self(left_action * right_action)
 
@@ -550,7 +569,8 @@ class _AbsoluteGaloisGroupEngine:
                 or extension.embedding() * extension.base_embedding() != self._embedding
             ):
                 raise ValueError(
-                    "the finite extension belongs to a different realization"
+                    f"{extension} is not an intermediate field of {self._field} -> "
+                    f"{self._closure} for the embedding of {self}"
                 )
             return extension
         extension_field = extension
@@ -581,7 +601,10 @@ class _AbsoluteGaloisGroupEngine:
             if candidate_closure * candidate_base == self._embedding
         ]
         if not compatible_pairs:
-            raise ValueError("K -> L -> Kbar does not equal the chosen base embedding")
+            raise ValueError(
+                f"{extension_field} has no embeddings {self._field} -> {extension_field} -> "
+                f"{self._closure} whose composite is the embedding {self._embedding} of {self}"
+            )
         base_embedding, closure_embedding = compatible_pairs[0]
         return FiniteGaloisExtension(
             self._field,
@@ -604,10 +627,13 @@ class _AbsoluteGaloisGroupEngine:
         truncating with ``int`` would admit a nonintegral degree on a cache hit.
         """
         assert self._is_finite_field(), (
-            "degree-indexed canonical stages are specific to finite fields"
+            f"the extension of degree {degree} is unique only over a finite field, but "
+            f"the base field of {self} is {self._field}"
         )
         degree = ZZ(degree)
-        assert degree > 0, "an extension degree must be positive"
+        assert degree > 0, (
+            f"an extension of {self._field} has positive degree, but degree = {degree}"
+        )
         total_degree = ZZ(_engine_ring(self._field).degree()) * degree
         field_engine, embedding_engine = _engine_ring(self._closure).subfield(
             total_degree
@@ -649,11 +675,13 @@ class _AbsoluteGaloisGroupEngine:
                 if finite_automorphism(generator) == generator ** (q**exponent):
                     return FrobeniusElement(self, exponent)
             raise ValueError(
-                "the finite automorphism is not a relative q-Frobenius power"
+                f"{finite_automorphism} is not a power of the q-Frobenius of "
+                f"{stage.field()} over {self._field}, so it is not an automorphism of a "
+                f"finite field extension"
             )
         raise ValueError(
-            "a finite automorphism determines an extension coset, not a canonical "
-            "absolute automorphism; use lifts()"
+            f"{finite_automorphism} has no canonical lift to {self} when the base field "
+            f"{self._field} is not finite; lifts() gives the coset of all lifts"
         )
 
     def lifts(self, finite_automorphism):
@@ -758,7 +786,8 @@ class OpenSubgroupInclusion(Morphism):
     def __init__(self, parent) -> None:
         Morphism.__init__(self, parent)
         assert self.domain().supergroup() is self.codomain(), (
-            "an open-subgroup inclusion must target its represented supergroup"
+            f"the inclusion of {self.domain()} must land in {self.domain().supergroup()}, "
+            f"but its codomain is {self.codomain()}"
         )
 
     def _call_(self, element):
@@ -812,13 +841,15 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
         ):
             if datum not in self:
                 raise ValueError(
-                    "the supergroup automorphism does not fix this subgroup's field"
+                    f"{datum} is not an element of {self}: it does not fix "
+                    f"{self.fixed_field()}"
                 )
             exponent = datum.frobenius_exponent()
             if exponent is not None and self.supergroup()._is_finite_field():
                 if exponent % self.index():
                     raise ValueError(
-                        "the Frobenius power is outside this open subgroup"
+                        f"{datum} is not an element of {self}: its Frobenius exponent "
+                        f"{exponent} is not a multiple of the index {self.index()}"
                     )
                 return FrobeniusElement(self, exponent // self.index())
             return super()._element_constructor_(datum.exact_action())
@@ -836,8 +867,9 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
         base = _engine_ring(self.supergroup().base_field())
         defining_base = field.base_field()
         assert defining_base is base or base.absolute_degree() == 1, (
-            "the represented open-subgroup core requires a relative defining polynomial over "
-            "the supergroup base field, or an absolute degree-one base"
+            f"the core of {self} is computed only when {self.fixed_field()} is defined by a "
+            f"polynomial over {self.supergroup().base_field()} or over QQ, but it is "
+            f"defined over {defining_base}"
         )
         if defining_base is base:
             polynomial = field.relative_polynomial()
@@ -872,7 +904,9 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
         )
         if not compatible_closure_embeddings:
             raise ValueError(
-                "the normal closure could not be placed compatibly inside the chosen algebraic closure"
+                f"the normal closure {normal_field} of {self.fixed_field()} has no embedding "
+                f"into {self.supergroup().algebraic_closure()} extending the embedding of "
+                f"{self.fixed_field()}"
             )
         stage = self.supergroup().extension_data(
             normal_field,
@@ -905,11 +939,12 @@ class _OpenAbsoluteGaloisSubgroupEngine(_AbsoluteGaloisGroupEngine):
     def intersection(self, other):
         if other not in OpenAbsoluteGaloisSubgroups(self.supergroup()):
             raise ValueError(
-                "open-subgroup intersection requires one supergroup Galois group"
+                f"cannot intersect {self} with {other}: {other} is not an open subgroup "
+                f"of {self.supergroup()}"
             )
         assert _engine_ring(self.fixed_field()) in FiniteFields(), (
-            "the represented open-subgroup intersection computes the compositum canonically "
-            "for finite fields; other bases require explicit compositum closure data"
+            f"the intersection of {self} and {other} is computed only over a finite "
+            f"field, but {self.fixed_field()} is not finite"
         )
         degree = ZZ(self.index()).lcm(ZZ(other.index()))
         return self.supergroup().open_subgroup(self.supergroup().finite_extension(degree))
@@ -990,7 +1025,9 @@ class _OpenGaloisSubgroupConjugacyClassEngine:
             ]
             if not candidates:
                 raise ValueError(
-                    "the K-extension has no compatible embedding in the chosen closure"
+                    f"{self._extension_field} has no embedding into "
+                    f"{self._supergroup.algebraic_closure()} over "
+                    f"{self._supergroup.base_field()}"
                 )
             embedding = candidates[0]
         stage = self._supergroup.extension_data(
@@ -1015,7 +1052,8 @@ class _OpenGaloisSubgroupConjugacyClassEngine:
     def _element_constructor_(self, candidate):
         if candidate not in self:
             raise ValueError(
-                "the subgroup is not in this open-subgroup conjugacy class"
+                f"{candidate} is not conjugate in {self._supergroup} to the open subgroup "
+                f"fixing {self._extension_field}"
             )
         return candidate
 
@@ -1046,7 +1084,10 @@ def OpenGaloisSubgroupConjugacyClass(supergroup, extension_field):
     r"""Construct the conjugacy orbit of an open subgroup as a represented set."""
     if extension_field not in OwnedRings():
         if extension_field.base_field() is not supergroup.base_field():
-            raise ValueError("the extension has the wrong supergroup base field")
+            raise ValueError(
+                f"{extension_field} is an extension of {extension_field.base_field()}, "
+                f"not of the base field {supergroup.base_field()} of {supergroup}"
+            )
         field = extension_field.field()
         base_embedding = extension_field.base_embedding()
     else:
@@ -1054,7 +1095,9 @@ def OpenGaloisSubgroupConjugacyClass(supergroup, extension_field):
         base_embeddings = supergroup.base_field().exact_embeddings(field)
         if len(base_embeddings) != 1:
             raise ValueError(
-                "the K-structure must be supplied as finite extension data"
+                f"{field} has {len(base_embeddings)} embeddings of "
+                f"{supergroup.base_field()}, so its structure as an extension of "
+                f"{supergroup.base_field()} is ambiguous; give it as an extension K -> L"
             )
         base_embedding = base_embeddings[0]
     return _object_of(

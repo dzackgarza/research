@@ -247,7 +247,11 @@ def _signature_at_real_embedding(lattice, embedding):
     negative = sum(value < 0 for value in eigenvalues)
     radical = sum(value == 0 for value in eigenvalues)
     if radical:
-        raise ValueError("a Vinberg lattice must be nondegenerate at every real place")
+        raise ValueError(
+            f"{lattice} is degenerate at the real place {embedding}: the form has {radical} "
+            f"zero eigenvalues there, and Vinberg's algorithm needs a nondegenerate form "
+            f"at every real place"
+        )
     return signature_pair(int(positive), int(negative))
 
 
@@ -267,26 +271,41 @@ class NumberFieldVinbergLattice(SageObject):
         field = order.fraction_field()
         real_algebraics = _own_ring(SageAA)
         assert int(field.degree()) == 2, (
-            "Vinberg's algorithm is stated over any totally real field; the "
-            "registered VinbergsAlgorithmNF crossing realizes it for real "
-            "quadratic fields only"
+            f"cannot run Vinberg's algorithm on {lattice} over {field}: the algorithm "
+            f"holds over any totally real field, but the available implementation "
+            f"(VinbergsAlgorithmNF) handles real quadratic fields only, and {field} has "
+            f"degree {field.degree()}"
         )
         signature = field.signature()
         if int(signature.second()) != 0:
-            raise ValueError("VinbergsAlgorithmNF requires a totally real number field")
+            raise ValueError(
+                f"cannot run Vinberg's algorithm on {lattice}: its field of fractions "
+                f"{field} must be totally real, but it has signature {signature}"
+            )
         assert int(field.class_number()) == 1, (
-            "the pinned VinbergsAlgorithmNF realization takes gcds of "
-            "elements, which is correct when O_K is a principal ideal domain; "
-            "over a field of class number greater than one it needs ideal gcds"
+            f"cannot run Vinberg's algorithm on {lattice} over {field}: the available "
+            f"implementation (VinbergsAlgorithmNF) takes gcds of elements, which is "
+            f"correct only when O_K is a principal ideal domain, and {field} has class "
+            f"number {field.class_number()}"
         )
         if _engine_ring(order) != _engine_ring(field).ring_of_integers():
-            raise ValueError("the Vinberg lattice must be defined over the maximal order O_K")
+            raise ValueError(
+                f"cannot run Vinberg's algorithm on {lattice}: it must be a lattice over "
+                f"the ring of integers of {field}, but its base ring is {order}"
+            )
         if real_embedding.domain() is not field or real_embedding.codomain() is not real_algebraics:
-            raise ValueError("the distinguished place is an exact embedding K -> AA")
+            raise ValueError(
+                f"{real_embedding} cannot be the hyperbolic real place of {lattice}: it "
+                f"must be an embedding {field} -> {real_algebraics}, but it is a map "
+                f"{real_embedding.domain()} -> {real_embedding.codomain()}"
+            )
 
         embeddings = field.embeddings(real_algebraics)
         if real_embedding not in embeddings:
-            raise ValueError("the distinguished real place is not an embedding of this field")
+            raise ValueError(
+                f"{real_embedding} cannot be the hyperbolic real place of {lattice}: it is "
+                f"not one of the real embeddings {embeddings} of {field}"
+            )
         selected_position = embeddings.ranking_map()(real_embedding)
         selected_signature = _signature_at_real_embedding(lattice, real_embedding)
         rank = int(lattice.module_rank())
@@ -295,7 +314,8 @@ class NumberFieldVinbergLattice(SageObject):
             or selected_signature.second() != 1
         ):
             raise ValueError(
-                "the distinguished real place must give signature (rank-1, 1)"
+                f"{lattice} is not hyperbolic at the real place {real_embedding}: it must "
+                f"have signature ({rank - 1}, 1) there, but has {selected_signature}"
             )
         other_signatures = finite_ordered_set(tuple(
             _signature_at_real_embedding(lattice, embeddings[position])
@@ -307,7 +327,10 @@ class NumberFieldVinbergLattice(SageObject):
             for other in other_signatures
         ):
             raise ValueError(
-                "every conjugate away from the distinguished place must be positive definite"
+                f"cannot run Vinberg's algorithm on {lattice} with hyperbolic place "
+                f"{real_embedding}: at every other real place the form must be positive "
+                f"definite, of signature ({rank}, 0), but the signatures there are "
+                f"{other_signatures}"
             )
 
         self._lattice = lattice
@@ -386,13 +409,19 @@ class NumberFieldVinbergLattice(SageObject):
             coefficients.append(_owned_engine_element(order, integral))
         root = lattice(tuple(coefficients))
         if root.q() <= 0:
-            raise ArithmeticError("VinbergsAlgorithmNF returned a non-positive root")
+            raise ArithmeticError(
+                f"VinbergsAlgorithmNF returned {root} as a root of {lattice}, but a root must "
+                f"have positive square and q({root}) = {root.q()}"
+            )
         return root
 
     def vinberg_simple_roots(self, *, count):
         r"""Return ``(complete, roots)`` from the pinned number-field Vinberg engine."""
         if int(count) <= 0:
-            raise ValueError("a number-field Vinberg search asks for a positive root count")
+            raise ValueError(
+                f"cannot ask Vinberg's algorithm on {self.lattice()} for {count} simple "
+                f"roots: the number of roots must be positive"
+            )
         complete, rows = engine_capabilities.compute(
             "number_field_vinberg_root_enumeration",
             self._serialized_field(),
@@ -463,14 +492,20 @@ def _polyhedral_common_edgewalk(gram):
         square = (root * gram * root.transpose())[0, 0]
         match square == 0:
             case True:
-                raise ArithmeticError("an edgewalk simple root is isotropic")
+                raise ArithmeticError(
+                    f"Allcock's edgewalk returned the simple root {row} for the Gram matrix "
+                    f"{gram.rows()}, but it is isotropic, and a root must have nonzero square"
+                )
             case False:
                 pass
         pairings = gram * root.transpose()
         match any((2 * entry[0]) % square != 0 for entry in pairings.rows()):
             case True:
                 raise ArithmeticError(
-                    "an edgewalk simple root does not define an integral lattice reflection"
+                    f"Allcock's edgewalk returned the simple root {row} of square {square} "
+                    f"for the Gram matrix {gram.rows()}, but its reflection does not "
+                    f"preserve the lattice: 2 b(x, r) / q(r) is not an integer for every "
+                    f"basis vector x"
                 )
             case False:
                 pass
@@ -496,7 +531,9 @@ def _polyhedral_common_edgewalk(gram):
                 pass
             case False:
                 raise ArithmeticError(
-                    "an edgewalk polyhedron-isometry generator does not preserve the lattice form"
+                    f"Allcock's edgewalk returned {rows} as an isometry of the Coxeter "
+                    f"polyhedron, but it does not preserve the form with Gram matrix "
+                    f"{gram.rows()}"
                 )
     return {
         "simple_root_rows": simple_root_rows,
@@ -600,8 +637,9 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
         signature = lattice.signature_pair()
         positive, negative = signature.first(), signature.second()
         assert 1 in (positive, negative), (
-            f"a hyperbolic lattice has exactly one index of inertia equal to "
-            f"one; this lattice has signature ({positive}, {negative})"
+            f"{lattice} is not a hyperbolic lattice: a hyperbolic lattice has "
+            f"signature (1, n) or (n, 1), but {lattice} has signature "
+            f"({positive}, {negative})"
         )
         return refine(lattice, self)
 
@@ -623,9 +661,9 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             correlation = _engine_component_matrix(self.gram_tensor())
             invariant_factors = correlation.elementary_divisors()
             assert invariant_factors[-1] != 0, (
-                "the root-length bound needs a nondegenerate correlation; this "
-                "lattice has a radical, so its discriminant group is infinite "
-                "and no finite set of lengths bounds its roots"
+                f"the possible root lengths of {self} are not bounded: the bound needs a "
+                f"nondegenerate form, but {self} has a nonzero radical, so its "
+                f"discriminant group is infinite"
             )
             return finite_ordered_set(
                 tuple(
@@ -650,8 +688,8 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                     return _engine_component_matrix(self.twist(-1).gram_tensor()), True
                 case _:
                     assert False, (
-                        f"the reflection algorithms need signature (1, n) or "
-                        f"(n, 1); this lattice has ({positive}, {negative})"
+                        f"cannot run a reflection algorithm on {self}: it needs signature "
+                        f"(1, n) or (n, 1), but {self} has signature ({positive}, {negative})"
                     )
 
         @cached_method
@@ -665,12 +703,11 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             stated absence rather than a silent coercion.
             """
             assert self.base_ring() is _own_ring(SageZZ), (
-                "the available realization of Vinberg's algorithm works over "
-                "the integers; over a totally real ring of integers the "
-                "algorithm is the same and the root rows carry entries of that "
-                "ring.  Bottinelli's VinbergsAlgorithmNF "
-                "(github.com/bottine/VinbergsAlgorithmNF) computes them, and "
-                "no realization registered here does"
+                f"cannot run Vinberg's algorithm on {self} over {self.base_ring()}: the "
+                f"algorithm holds over any totally real ring of integers, but the "
+                f"available implementation works over ZZ only.  Bottinelli's "
+                f"VinbergsAlgorithmNF (github.com/bottine/VinbergsAlgorithmNF) handles "
+                f"the wider case, and it is not connected here"
             )
             gram, negated = self._engine_gram_of_signature_n_1()
             coordinates = (
@@ -745,9 +782,9 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             signature = self.signature_pair()
             positive, negative = signature.first(), signature.second()
             assert (positive, negative) != (1, 1), (
-                "in signature (1,1) the fundamental domain is a half-line in "
-                "H^1, of infinite volume, so no polyhedron criterion decides "
-                "reflectivity"
+                f"cannot decide whether {self} is reflective: it has signature (1, 1), "
+                f"where the fundamental domain is a half-line in H^1 of infinite "
+                f"volume, so no polyhedron criterion applies"
             )
             complete, _roots = self._vinberg_search(
                 controlling_vector, max_roots, max_decompositions
@@ -956,18 +993,26 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             """
             integers = _own_ring(SageZZ)
             assert self.base_ring() is integers, (
-                "the exact height enumeration currently uses integral shells over ZZ"
+                f"cannot enumerate isotropic vectors of {self} by height: the "
+                f"enumeration works only over ZZ, and {self} is over {self.base_ring()}"
             )
             if timelike.parent() is not self:
                 timelike = self(timelike)
             height = integers(height)
-            assert height >= integers.zero(), "a height bound is nonnegative"
+            assert height >= integers.zero(), (
+                f"cannot enumerate isotropic vectors of {self} below height {height}: "
+                f"the height bound must be nonnegative"
+            )
 
             square = timelike.q()
-            assert square != integers.zero(), "a timelike vector has nonzero square"
+            assert square != integers.zero(), (
+                f"{timelike} is not timelike in {self}: a timelike vector has nonzero "
+                f"square, and q({timelike}) = 0"
+            )
             complement = timelike.orthogonal_complement()
             assert complement.is_definite(), (
-                "the chosen vector is timelike exactly when its orthogonal complement is definite"
+                f"{timelike} is not timelike in {self}: a vector is timelike exactly when "
+                f"its orthogonal complement is definite, and {complement} is not definite"
             )
             inclusion = complement.inclusion()
 
@@ -990,11 +1035,16 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                     )
                     if candidate.q() != integers.zero():
                         raise ArithmeticError(
-                            "the height-shell reconstruction produced a non-isotropic vector"
+                            f"the isotropic vectors of {self} at height {pairing} from "
+                            f"{timelike} were computed wrongly: the candidate {candidate} "
+                            f"has square {candidate.q()}, not 0"
                         )
                     if self.b(candidate, timelike) != pairing:
                         raise ArithmeticError(
-                            "the height-shell reconstruction produced the wrong pairing"
+                            f"the isotropic vectors of {self} at height {pairing} from "
+                            f"{timelike} were computed wrongly: the candidate {candidate} "
+                            f"has pairing {self.b(candidate, timelike)} with {timelike}, "
+                            f"not {pairing}"
                         )
                     isotropic.append(candidate)
             return finite_ordered_set(tuple(isotropic))
@@ -1013,10 +1063,8 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             :meth:`_vinberg_search`.
             """
             assert self.base_ring() is _own_ring(SageZZ), (
-                "the available realization of the edgewalk carries its root "
-                "coordinates in a fixed integral type, so it walks the "
-                "polyhedron of an integral lattice; no realization registered "
-                "here walks one over a wider ring"
+                f"cannot run Allcock's edgewalk on {self}: the available implementation "
+                f"works only for lattices over ZZ, and {self} is over {self.base_ring()}"
             )
             gram, negated = self._engine_gram_of_signature_n_1()
             record = engine_capabilities.compute(

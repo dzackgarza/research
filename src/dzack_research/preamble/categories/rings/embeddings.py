@@ -24,11 +24,20 @@ class NumberFieldEmbedding(Morphism):
     def __init__(self, parent, engine_morphism) -> None:
         Morphism.__init__(self, parent)
         if not isinstance(engine_morphism, Map):
-            raise TypeError("a number-field embedding is represented by an exact ring morphism")
+            raise TypeError(
+                f"cannot form the embedding {self.domain()} -> {self.codomain()} from {engine_morphism!r}: "
+                f"an embedding of number fields must be a ring morphism, but this is a {type(engine_morphism).__name__}"
+            )
         if _engine_ring(engine_morphism.domain()) is not _engine_ring(self.domain()):
-            raise ValueError("the engine embedding has the wrong domain")
+            raise ValueError(
+                f"cannot form an embedding {self.domain()} -> {self.codomain()} from {engine_morphism}: "
+                f"its domain is {engine_morphism.domain()}, not {self.domain()}"
+            )
         if _engine_ring(engine_morphism.codomain()) is not _engine_ring(self.codomain()):
-            raise ValueError("the engine embedding has the wrong codomain")
+            raise ValueError(
+                f"cannot form an embedding {self.domain()} -> {self.codomain()} from {engine_morphism}: "
+                f"its codomain is {engine_morphism.codomain()}, not {self.codomain()}"
+            )
         self._engine_morphism = engine_morphism
 
     def __call__(self, element):
@@ -123,7 +132,9 @@ class NumberFieldMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism Mor")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         engine = _engine_ring(self.domain())
         if engine is SageQQ:
             return self(engine.mor(engine))
@@ -153,9 +164,15 @@ class OrderEmbedding(Morphism):
         source_field = self.domain().fraction_field()
         target_field = self.codomain().fraction_field()
         if _engine_ring(field_embedding.domain()) is not _engine_ring(source_field):
-            raise ValueError("the field embedding does not extend this source order")
+            raise ValueError(
+                f"cannot restrict {field_embedding} to the order {self.domain()}: "
+                f"its domain is {field_embedding.domain()}, not the fraction field {source_field} of that order"
+            )
         if _engine_ring(field_embedding.codomain()) is not _engine_ring(target_field):
-            raise ValueError("the field embedding does not land in this target order's field")
+            raise ValueError(
+                f"cannot restrict {field_embedding} to a morphism into the order {self.codomain()}: "
+                f"its codomain is {field_embedding.codomain()}, not the fraction field {target_field} of that order"
+            )
         for basis_element in self.domain().integral_basis():
             source_owned = source_field(basis_element)
             image = field_embedding(source_owned)
@@ -163,7 +180,8 @@ class OrderEmbedding(Morphism):
                 self.codomain()(image)
             except (TypeError, ValueError) as error:
                 raise ValueError(
-                    "the field embedding does not carry the source order into the target order"
+                    f"{field_embedding} does not restrict to a morphism of orders {self.domain()} -> {self.codomain()}: "
+                    f"it sends the basis element {basis_element} to {image}, which is not in {self.codomain()}"
                 ) from error
         self._field_embedding = field_embedding
 
@@ -217,7 +235,9 @@ class OrderMor(CategoricalMor):
 
     def identity(self):
         if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism Mor")
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
         field = self.domain().fraction_field()
         return self(field.Mor(field).identity())
 
