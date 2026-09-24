@@ -120,10 +120,7 @@ def _galois_orbits_of_irreducible_characters(group):
     if not characters:
         return tuple()
     field = group.character_table().base_ring()
-    try:
-        automorphisms = tuple(field.galois_group())
-    except (AttributeError, NotImplementedError, TypeError):
-        automorphisms = tuple()
+    automorphisms = tuple(field.galois_group())
     if not automorphisms:
         return tuple(IsotypicCharacter((character,)) for character in characters)
 
