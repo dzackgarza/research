@@ -2643,7 +2643,8 @@ Intended owners: `categories/spectra/morava_k.py` ($K(n) : \mathsf{CAlg}(\mathsf
 
 Operationalize framed manifolds, factorization homology, $(*)^{hG}$ and $(*)_{hG}$ functors, $\mathrm{MString}$ and $\mathrm{tmf}$ spectra.
 
-* Framed $n$-manifold is $M : \mathsf{Mfld}^{\mathrm{fr}}_n$ with $M : \mathsf{Man}$ smooth $n$-manifold and framing $\varphi: TM \cong M\times R^n$ as $\mathsf{Vect}$ trivialization, equivalently a lift of the classifying map $M \to \mathrm{BGL}_n(\mathbb{R})$ through the whole Whitehead tower $\ast \to \cdots \to \mathrm{BString}(n) \to \mathrm{BSpin}(n) \to \mathrm{BSO}(n) \to \mathrm{BO}(n) \to \mathrm{BGL}_n(\mathbb{R})$, whose intermediate lifts are Riemannian, orientation, spin and string structures.
+* Framed $n$-manifold is $M : \mathsf{Mfld}^{\mathrm{fr}}_n$ with $M : \mathsf{Man}$ smooth $n$-manifold and framing $\varphi: TM \cong M\times R^n$ as $\mathsf{Vect}$ trivialization, equivalently a $\{e\}$-structure: a lift of the classifying map $M \to \mathrm{BGL}_n(\mathbb{R})$ along $\ast = B\{e\} \to \mathrm{BGL}_n(\mathbb{R})$, i.e. a null-homotopy of it.
+  The Whitehead tower $\cdots \to \mathrm{BString}(n) \to \mathrm{BSpin}(n) \to \mathrm{BSO}(n) \to \mathrm{BO}(n) \simeq \mathrm{BGL}_n(\mathbb{R})$ has contractible limit and its stages classify orientation, spin and string structures, so a framing induces each of them; a Riemannian metric is the contractible choice of lift along $\mathrm{BO}(n) \simeq \mathrm{BGL}_n(\mathbb{R})$.
   actually $\mathrm{BO}(n)$ via $\mathrm{EO}(n)$, with $\mathsf{Mfld}^{\mathrm{fr}}_n : \mathsf{Cat}$ with morphisms embeddings $M\hookrightarrow N$ preserving framing.
   Need `FramedManifold` with $TM$ framing.
 
