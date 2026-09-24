@@ -1776,9 +1776,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 """
                 super().__init__(**rest)
                 if module_generating_set is None:
-                    if Modules(self.base_ring()) not in self.__dict__.get(
-                        "_selected_framings", {}
-                    ):
+                    if Modules(self.base_ring()) not in self._selected_framing_registry():
                         raise ValueError(
                             "a framed module requires selected framing data at construction"
                         )

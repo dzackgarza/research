@@ -80,7 +80,7 @@ def _fix_selected_framing(
     framing_morphism_factory,
 ):
     r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
-    selected_by_owner = target.__dict__.setdefault("_selected_framings", {})
+    selected_by_owner = target._selected_framing_registry()
     if owner in selected_by_owner:
         raise ValueError(f"{target} already has a selected framing in {owner}")
     selected = _SelectedFraming(
@@ -206,6 +206,10 @@ class Objects(OwnedCategory):
         threads into this one with a cooperative ``super().__init__(**rest)``.
         """
 
+        @cached_method
+        def _selected_framing_registry(self):
+            return {}
+
         def __call__(self, *arguments, **options):
             r"""Construct an element of this object, without coercion discovery.
 
@@ -241,7 +245,7 @@ class Objects(OwnedCategory):
         class ParentMethods:
             def selected_framing(self, owner):
                 r"""Return the constructor-owned 1-framing in ``owner``."""
-                selected = self.__dict__.get("_selected_framings", {}).get(owner)
+                selected = self._selected_framing_registry().get(owner)
                 assert selected is not None, (
                     f"{self} was constructed without selected framing data in {owner}"
                 )

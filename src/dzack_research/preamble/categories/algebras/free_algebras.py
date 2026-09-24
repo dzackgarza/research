@@ -183,6 +183,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category, *categories),
             construction_data=construction_data,
             law_decisions=(("grading", True),),
+            algebra_framing_source=self,
         )
 
     def _specialized_algebra_with_structure(
@@ -511,6 +512,8 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             generator_values=selected_generator_values,
             categories=tuple(placement),
             law_decisions=law_decisions,
+            algebra_framing_source=presentation_ring,
+            algebra_framing_morphism_factory=presentation_morphism,
         )
         self._preamble_commutative_algebra_coproduct_backend = (
             (lambda left, right: _commutative_algebra_coproduct_backend(left, right))

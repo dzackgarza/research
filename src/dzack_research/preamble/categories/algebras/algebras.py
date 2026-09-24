@@ -1243,6 +1243,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         algebra_framing_owner=None,
                         **rest,
                     ) -> None:
+                        self._algebra_framing_owner = None
                         super().__init__(**rest)
                         if algebra_generating_family is None:
                             return
@@ -1277,7 +1278,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         )
 
                     def algebra_framing_owner(self):
-                        owner = self.__dict__.get("_algebra_framing_owner")
+                        owner = self._algebra_framing_owner
                         assert owner is not None, (
                             f"{self} was constructed without its algebra framing owner"
                         )
@@ -1738,7 +1739,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         def __init_extra__(self) -> None:
             r"""Retain the canonical matrix-unit algebra framing at refinement."""
             owner = Algebras(self.base_ring()).Associative().Unital()
-            if owner in self.__dict__.get("_selected_framings", {}):
+            if owner in self._selected_framing_registry():
                 return
             labels = self.module_generating_set()
             generator_morphism = Sets().Mor(labels, self)(
@@ -2667,6 +2668,8 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         categories=(),
         construction_data=(),
         law_decisions=(),
+        algebra_framing_source=None,
+        algebra_framing_morphism_factory=None,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -2744,19 +2747,8 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
         generator_morphism = Sets().Mor(selected_labels, self)(value)
         self._algebra_framing_owner = framing_owner
-        selected_presentation = self.__dict__.get("_selected_algebra_presentation")
-        if selected_presentation is not None:
-            source = selected_presentation.presentation_ring()
-
-            def framing_morphism():
-                return selected_presentation.presentation_morphism()
-
-        elif self.__dict__.get("_native_free_flavor") is not None:
-            source = self
-
-            def framing_morphism():
-                return source.Mor(self)(generator_morphism)
-
+        if algebra_framing_source is not None:
+            source = algebra_framing_source
         else:
             generating_module = base.free_module(selected_labels)
             match framing_owner is associative:
@@ -2765,8 +2757,11 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 case False:
                     source = generating_module.symmetric_algebra()
 
+        if algebra_framing_morphism_factory is None:
             def framing_morphism():
                 return source.Mor(self)(generator_morphism)
+        else:
+            framing_morphism = algebra_framing_morphism_factory
 
         _fix_selected_framing(
             self,
