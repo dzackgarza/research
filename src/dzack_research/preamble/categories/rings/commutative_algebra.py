@@ -2799,11 +2799,20 @@ def _fraction_field_localization(source, submonoid):
     placements = [OwnedRings().Commutative().NoZeroDivisors(), OwnedRings().Division().Commutative()]
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
+    base = source.base_ring()
+    algebra_source = (
+        source
+        if base is not None and source in Algebras(base).Associative().Unital().Commutative()
+        else None
+    )
+    if algebra_source is not None:
+        placements.append(Algebras(base).Associative().Unital().Commutative())
     return _object_of(
         Category.join((LocalizationRings(), *placements)),
         source=source,
         submonoid=submonoid,
         _engine_ring=fraction_engine,
+        algebra_source=algebra_source,
         fraction_field_realization=field,
     )
 

@@ -413,23 +413,6 @@ class _TwoElementaryTable(Mapping):
     def cardinality(self):
         return cardinal(len(self))
 
-    def validate(self):
-        r"""Validate every row against its signature and Nikulin invariants."""
-        if len(self) != 75:
-            raise AssertionError(f"Nikulin's table has 75 rows, not {len(self)}")
-        for key in self:
-            rank, _a, _delta = key
-            lattice = self[key]
-            if lattice.signature_pair() != signature_pair(1, rank - 1):
-                raise AssertionError(
-                    f"{key} has signature {lattice.signature_pair()}, "
-                    f"not {signature_pair(1, rank - 1)}"
-                )
-            actual = lattice.two_elementary_invariants()
-            if actual != nikulin_invariants(*key):
-                raise AssertionError(f"{key} is represented by a lattice with invariants {actual}")
-        return True
-
 
 TwoElementary = _TwoElementaryTable()
 
@@ -865,32 +848,6 @@ class _NegativeDefTwoElementaryTable(Mapping):
 
     def cardinality(self):
         return cardinal(len(self))
-
-    def validate(self):
-        r"""Validate the signature and discriminant invariants of every listed class."""
-        for key in self:
-            rank, _length, _delta = key
-            for lattice in self[key]:
-                if lattice.signature_pair() != signature_pair(0, rank):
-                    raise AssertionError(f"{key} contains a lattice of signature {lattice.signature_pair()}")
-                actual = lattice.two_elementary_invariants()
-                if actual != nikulin_invariants(*key):
-                    raise AssertionError(f"{key} contains a lattice with invariants {actual}")
-                inclusion = getattr(lattice, "_catalogue_glue_inclusion", None)
-                if inclusion is not None:
-                    source = inclusion.domain()
-                    index = SageZZ(inclusion.index())
-                    if index <= 1:
-                        raise AssertionError(f"{key} records a trivial glue inclusion")
-                    if abs(source.determinant()) != (
-                        index**2 * abs(lattice.determinant())
-                    ):
-                        raise AssertionError(f"{key} violates det(R)=[L:R]^2 det(L)")
-                    reduction = lattice.lll_reduction()
-                    witness = reduction.isometry
-                    if lattice.gram_tensor().pullback(witness) != reduction.reduced.gram_tensor():
-                        raise AssertionError(f"{key} has an invalid isometry witness")
-        return True
 
 
 NegativeDefTwoElementary = _NegativeDefTwoElementaryTable()

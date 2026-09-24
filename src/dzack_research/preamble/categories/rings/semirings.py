@@ -56,7 +56,7 @@ class OwnedRngs(OwnedCategory):
         return _own_ring(SageZZ)
 
     def super_categories(self):
-        return [Semigroups(), AdditiveGroups()]
+        return [Semigroups(), AdditiveGroups().AdditiveCommutative()]
 
 
 __all__ = ["OwnedRngs", "OwnedSemirings", "RingMorCategoryConstruction"]
