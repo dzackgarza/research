@@ -1963,15 +1963,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             if cover is presentation_engine:
                 algebra_variables = tuple(presentation_engine.gens())
             else:
-                flattening_factory = getattr(
-                    presentation_engine,
-                    "flattening_morphism",
-                    None,
-                )
-                assert callable(flattening_factory), (
-                    "the selected relative presentation requires a canonical polynomial flattening"
-                )
-                flattening = flattening_factory()
+                flattening = presentation_engine.flattening_morphism()
                 assert flattening.codomain() is cover, (
                     "the selected quotient cover must be the codomain of the canonical presentation flattening"
                 )
@@ -2064,10 +2056,10 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             engine_base = _engine_ring(base)
             terms = {}
             for exponent, coefficient in backend.monomial_coefficients().items():
-                try:
-                    powers = tuple(int(value) for value in exponent)
-                except TypeError:
+                if len(labels) == 1:
                     powers = (int(exponent),)
+                else:
+                    powers = tuple(int(value) for value in exponent)
                 monomial = presentation.one()
                 for label, power in zip(labels, powers, strict=True):
                     if power:
