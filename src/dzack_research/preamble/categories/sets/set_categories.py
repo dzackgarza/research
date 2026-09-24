@@ -2816,6 +2816,35 @@ class CoproductsOfSets(OwnedCategory):
             r"""Return the unique map out of the coproduct extending the stated maps."""
             return Sets().Mor(self, target)(lambda element: maps(element.summand_index())(element.summand_element()))
 
+        def __contains__(self, element) -> bool:
+            return element_parent(element) is self
+
+        is_parent_of = __contains__
+
+        def _repr_(self) -> str:
+            return f"Coproduct of the family over {self.index_set()}"
+
+    def an_object(self) -> Parent:
+        r"""The disjoint union of the ordinal 2 with itself."""
+        return Sets().coproduct((finite_ordinal_set(2), finite_ordinal_set(2)))
+
+    def super_categories(self):
+        return [Sets()]
+
+
+class EnumeratedCoproductsOfSets(OwnedCategory):
+    r"""Coproducts of finitely many enumerated sets over an enumerated index, ranked by layer.
+
+    The \(k\)-th layer holds the \(k\)-th point of every summand that has one,
+    in the order of the index set; a countably indexed family is
+    diagonalized instead.  A coproduct of arbitrary sets has no such
+    enumeration and stays in :class:`CoproductsOfSets`.
+    """
+
+    def super_categories(self):
+        return [CoproductsOfSets(), EnumeratedSets()]
+
+    class ParentMethods:
         def _finite_index_count(self):
             r"""The number of summands as an ``int`` when the index set is finite, else ``None``."""
             size = cardinals.cardinal(self.index_set().cardinality())
@@ -2925,26 +2954,12 @@ class CoproductsOfSets(OwnedCategory):
 
             return self._ranking_isomorphism(position_of, point_at)
 
-        def __contains__(self, element) -> bool:
-            return element_parent(element) is self
-
-        is_parent_of = __contains__
-
         def __iter__(self):
             finite_size = self._known_finite_size()
             positions = range(finite_size) if finite_size is not None else count()
             point_at = self.ranking_map().inverse()
             return (point_at(position) for position in positions)
 
-        def _repr_(self) -> str:
-            return f"Coproduct of the family over {self.index_set()}"
-
-    def an_object(self) -> Parent:
-        r"""The disjoint union of the ordinal 2 with itself."""
-        return Sets().coproduct((finite_ordinal_set(2), finite_ordinal_set(2)))
-
-    def super_categories(self):
-        return [Sets()]
 
 
 DisjointUnionsOfSets = CoproductsOfSets
@@ -2993,7 +3008,7 @@ def _finite_words(alphabet, *, commutative):
         case False:
             size_category = CountablyInfiniteSets()
     return _object_of(
-        Category.join((CoproductsOfSets(), EnumeratedSets(), size_category)),
+        Category.join((EnumeratedCoproductsOfSets(), size_category)),
         _engine=(CoproductsOfSets(), _FiniteWordSet, None),
         alphabet=alphabet, commutative=commutative,
     )
@@ -3035,7 +3050,26 @@ def _coproduct_of_finite_family(family: IndexedFamily) -> Parent:
 
 @cached_function(key=lambda family: id(family))
 def _coproduct_of_indexed_family(family: IndexedFamily) -> Parent:
-    return _object_of(CoproductsOfSets(), family=family)
+    r"""Build the coproduct of the family of sets ``family`` in the category its summands decide.
+
+    A disjoint union of finitely many enumerated sets over an enumerated index
+    set is enumerated by rank layer (``EnumeratedCoproductsOfSets``); it is
+    finite when every summand is, and countably infinite otherwise.  Any
+    other coproduct is placed as a set, with no enumeration claimed.
+    """
+    index_set = family.index_set()
+    placements = [CoproductsOfSets()]
+    if (
+        index_set in FiniteSets()
+        and index_set in EnumeratedSets()
+        and all(family(index) in EnumeratedSets() for index in index_set)
+    ):
+        placements.append(EnumeratedCoproductsOfSets())
+        if all(family(index) in FiniteSets() for index in index_set):
+            placements.append(FiniteSets())
+        else:
+            placements.append(CountablyInfiniteSets())
+    return _object_of(Category.join(placements), family=family)
 
 
 def _coproduct_morphism[IndexT](
