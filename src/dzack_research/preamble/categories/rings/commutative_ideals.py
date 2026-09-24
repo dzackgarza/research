@@ -828,9 +828,6 @@ def _owned_engine_value(ring, value):
     r"""Cross one private engine value back into the owned ring."""
     source = _own_ring(ring)
     engine_value = _engine_ring(source)(value)
-    ambient_ring = getattr(source, "ambient_ring", None)
-    if callable(ambient_ring):
-        return source(_owned_engine_element(ambient_ring(), engine_value))
     return _owned_engine_element(source, engine_value)
 
 
