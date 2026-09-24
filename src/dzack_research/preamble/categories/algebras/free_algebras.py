@@ -10,10 +10,8 @@ from sage.all import (
 from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
-from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.rings.ideal import Ideal_generic
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
@@ -324,22 +322,6 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
 def _relations_to_ideal(presentation_ring, relations):
     r"""Return the backend ideal and the owned finite relation family."""
     engine = _engine_ring(presentation_ring)
-    if isinstance(relations, Ideal_generic):
-        if relations.ring() is not engine:
-            raise ValueError("the relation ideal belongs to a different presenting algebra")
-        backend_by_position = {
-            position: relation for position, relation in enumerate(relations.gens())
-        }
-        indices = Sets.Δ[len(backend_by_position) - 1]
-        selected_relations = indexed_family(
-            indices,
-            lambda index: _owned_engine_element(presentation_ring,
-                backend_by_position[int(index)]
-            ),
-            name="Defining relation family",
-        )
-        return relations, selected_relations
-
     if isinstance(relations, IndexedFamily):
         size = cardinal(relations.cardinality())
         if not size.is_finite():
@@ -376,15 +358,10 @@ def _relations_to_ideal(presentation_ring, relations):
 
 
 def _base_change_commutative_presentation(algebra, ring_map):
-    if not isinstance(ring_map, Map):
-        raise TypeError("algebra base change is specified by a ring morphism")
-    if _engine_ring(ring_map.domain()) is not _engine_ring(algebra.base_ring()):
-        raise ValueError(
-            f"the scalar map starts at {ring_map.domain()}, not {algebra.base_ring()}"
-        )
-    target_base = _owned_ring(ring_map.codomain())
-    target_presentation_ring = target_base.free_module(algebra.algebra_generating_set()).symmetric_algebra()
     source_base = algebra.base_ring()
+    target_base = _owned_ring(ring_map.codomain())
+    ring_map = source_base.Mor(target_base)(ring_map)
+    target_presentation_ring = target_base.free_module(algebra.algebra_generating_set()).symmetric_algebra()
     source_engine = _engine_ring(source_base)
     target_base_engine = _engine_ring(target_base)
     target_engine = _engine_ring(target_presentation_ring)
@@ -1059,10 +1036,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             if degree == 0:
                 labels = finite_ordered_set((0,))
             else:
-                try:
-                    labels = self.graded_piece(degree).module_generating_set()
-                except ValueError:
-                    labels = finite_ordered_set(())
+                labels = self.graded_piece(degree).module_generating_set()
             return indexed_family(
                 labels,
                 lambda label: self._realize_graded_piece_basis_label(degree, label),
@@ -1544,10 +1518,6 @@ def _quotient_by_algebra_elements_backend(
 
 @cached_function
 def _commutative_algebra_pushout_backend(left_map, right_map):
-    if not isinstance(left_map, Morphism) or not isinstance(right_map, Morphism):
-        raise TypeError(
-            "a commutative-algebra pushout is specified by represented algebra morphisms"
-        )
     common = left_map.domain()
     left = left_map.codomain()
     right_common = right_map.domain()
@@ -1753,15 +1723,6 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
 
     def is_identity(self) -> bool:
         return self._preamble_is_identity
-
-    def __mul__(self, other):
-        if not isinstance(other, FramedFreeAlgebraMorphism) or other.codomain() is not self.domain():
-            return super().__mul__(other)
-        if self.is_identity():
-            return other
-        if other.is_identity():
-            return self
-        return super().__mul__(other)
 
 
 class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
