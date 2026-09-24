@@ -139,7 +139,11 @@ class RingMorphism(Morphism):
         return self._engine_morphism
 
     def __mul__(self, other):
-        if not isinstance(other, RingMorphism) or other.codomain() is not self.domain():
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        if element_parent(other) is not OwnedRings().Mor(
+            other.domain(), other.codomain()
+        ):
             return NotImplemented
         if self.is_identity():
             return other
@@ -205,7 +209,7 @@ class RingMorphism(Morphism):
         """
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        if not isinstance(other, RingMorphism) or other.parent() is not self.parent():
+        if element_parent(other) is not self.parent():
             return op == op_NE
         equal = _ring_morphisms_equal(self, other)
         from sage.misc.unknown import Unknown
@@ -318,7 +322,9 @@ def _selected_engine_ring_morphism(morphism):
     that adapter and mathematical values are raised through owned endpoints.
     Reconstructible maps need no crossing and return None here.
     """
-    if not isinstance(morphism, RingMorphism):
+    if element_parent(morphism) is not OwnedRings().Mor(
+        morphism.domain(), morphism.codomain()
+    ):
         return None
     return morphism._engine_morphism
 
