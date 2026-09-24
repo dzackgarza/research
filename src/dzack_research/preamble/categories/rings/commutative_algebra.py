@@ -11,6 +11,7 @@ from sage.all import (
 from sage.all import (
     Zp as _SageZp,
 )
+from sage.categories.fields import Fields as SageFields
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
@@ -542,9 +543,8 @@ def _engine_ideal(ring, ideal):
 
 
 def _engine_coefficient_ring(engine):
-    r"""Return an optional coefficient ring of a private engine realization."""
-    base_ring = getattr(engine, "base_ring", None)
-    return None if base_ring is None else base_ring()
+    r"""Return the coefficient ring declared by a private ring realization."""
+    return engine.base_ring()
 
 
 def _owned_ideal(ring, ideal):
@@ -926,24 +926,15 @@ class QuotientRings(OwnedCategory):
                 )
                 return _owned_engine_element(SageZZ, generator)
             coefficient_ring = _engine_coefficient_ring(source_engine)
-            if coefficient_ring is not None:
-                try:
-                    if bool(coefficient_ring.is_field()):
-                        return _owned_engine_element(
-                            SageZZ,
-                            SageZZ(coefficient_ring.characteristic()),
-                        )
-                except (AttributeError, NotImplementedError, TypeError, ValueError):
-                    pass
-            try:
+            if coefficient_ring in SageFields():
                 return _owned_engine_element(
                     SageZZ,
-                    SageZZ(_engine_ring(self).characteristic()),
+                    SageZZ(coefficient_ring.characteristic()),
                 )
-            except NotImplementedError as error:
-                raise AssertionError(
-                    "characteristic of this quotient requires contraction of the defining ideal to the prime subring"
-                ) from error
+            return _owned_engine_element(
+                SageZZ,
+                SageZZ(_engine_ring(self).characteristic()),
+            )
 
         @cached_method
         def _affine_normalization_data(self):
