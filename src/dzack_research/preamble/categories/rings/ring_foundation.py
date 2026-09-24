@@ -2715,10 +2715,13 @@ def _engine_multiplicative_generator(engine):
 
 
 def _owned_monomial_text(variable_names, exponent):
-    if isinstance(exponent, tuple):
-        powers = exponent
-    else:
-        powers = (exponent,)
+    # A univariate polynomial keys its terms by an integer exponent, a
+    # multivariate one by an exponent vector (Sage's ETuple).
+    match len(variable_names):
+        case 1:
+            powers = (exponent,)
+        case _:
+            powers = tuple(exponent)
     factors = []
     for variable, power in zip(variable_names, powers, strict=False):
         power = int(power)

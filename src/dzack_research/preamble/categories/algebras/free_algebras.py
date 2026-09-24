@@ -557,18 +557,21 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
 
 
 
-class _NativeLinearRelationAlgebra(_NativeMonomialEvaluation, _PresentedAlgebraParent):
-    r"""A native tensor/symmetric quotient on its actual module of words.
+class _WordFramedPresentedAlgebra(_NativeMonomialEvaluation, _PresentedAlgebraParent):
+    r"""A presented algebra framed as a module by its words.
 
-    If M = F/N, maps from T(F)/(N) to any associative algebra are exactly
-    linear maps from F that vanish on N, hence maps from M.  Thus its
-    degree-d module is M tensor ... tensor M.  The same argument with
-    commutative targets gives Sym^d(M).  The word-module owner constructs
-    these quotients; native multiplication only realizes that same module.
+    The forgetful functor U: Alg_R -> Mod_R carries the algebra framing
+    Free_Alg(S) -> A to the module framing Free_Mod(Mon(S)) -> U(A): the
+    words in the chosen generators span A.  For relations linear in
+    M = F/N, maps from T(F)/(N) to any associative algebra are exactly
+    linear maps from F that vanish on N, so the degree-d module is
+    M tensor ... tensor M, and Sym^d(M) for commutative targets; the word
+    module is then U(A) itself.  For other relations it is the word module
+    of the free algebra, and the framing is a surjection, not a basis.
     """
 
     def __init__(self, engine, base, labels, presentation_ring, relations,
-                 presentation_ideal, *, generating_module, **options):
+                 presentation_ideal, *, generating_module, relations_are_linear=True, **options):
         from dzack_research.preamble.categories.modules.native_modules import _NativeModuleFrame
         from dzack_research.preamble.categories.modules.word_modules import _module_on_word_quotient
 
@@ -597,6 +600,7 @@ class _NativeLinearRelationAlgebra(_NativeMonomialEvaluation, _PresentedAlgebraP
         word_module = _module_on_word_quotient(generating_module, self._native_free_flavor)
         self._native_module_basis = _NativeModuleFrame(
             word_module, self._native_basis_image, self._native_basis_coefficients,
+            injective=relations_are_linear,
         )
         super().__init__(
             engine, base, labels, presentation_ring, relations, presentation_ideal,
@@ -937,11 +941,17 @@ def _finitely_presented_algebra_from_data(
         if degree > 0:
             finite_free_degree = degree
 
-    match _generating_module, finite_free_degree:
-        case (None, _) | (_, int()):
+    word_frame = {}
+    match finite_free_degree:
+        case int():
             constructor = _PresentedAlgebraParent
-        case _:
-            constructor = _NativeLinearRelationAlgebra
+        case None:
+            constructor = _WordFramedPresentedAlgebra
+            # A caller supplies M = F/N exactly when the relations are linear
+            # in the generators; otherwise the words of the free algebra span.
+            word_frame["relations_are_linear"] = _generating_module is not None
+            if _generating_module is None:
+                _generating_module = presentation_ring.generating_module()
     return constructor(
         quotient_engine,
         base,
@@ -961,6 +971,7 @@ def _finitely_presented_algebra_from_data(
         presentation_flattening=presentation_flattening,
         generator_values=generator_values,
         presentation_lift=presentation_lift,
+        **word_frame,
     )
 
 

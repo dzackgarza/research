@@ -28,9 +28,13 @@ class _NativeModuleFrame:
     relations.  Images of its generators and inverse coordinates identify
     it with the native realization.  Normalization is the model's, so a
     word quotient is not mistaken for the free module on its monomials.
+
+    ``injective`` states whether the map from the source is also injective.
+    When it is not, the source only spans, and the inverse coordinates of an
+    element are those of one chosen preimage.
     """
 
-    def __init__(self, source, images, coordinates):
+    def __init__(self, source, images, coordinates, *, injective=True):
         assert source in FramedModules(source.base_ring()), (
             f"{source} cannot index a generating family: it must be a module with a chosen "
             f"generating family over {source.base_ring()}, but it is in {source.category()}"
@@ -38,6 +42,7 @@ class _NativeModuleFrame:
         self._source = source
         self._images = images
         self._coordinates = coordinates
+        self._injective = injective
 
     def source(self):
         return self._source
@@ -48,6 +53,10 @@ class _NativeModuleFrame:
     def coefficients(self, element):
         source = self.source()
         return source.framing_coefficients(source.linear_combination(self._coordinates(element)))
+
+    def is_basis(self):
+        r"""Whether the source is free and its map onto the module is also injective."""
+        return self._injective and self._source in FramedFreeModules(self._source.base_ring())
 
 
 class _NativeModuleBasis(_NativeModuleFrame):
@@ -147,8 +156,8 @@ class _RingModulePresentation:
                     pass
                 case False:
                     refine(module, FramedModules(self.base_ring()))
-            match source:
-                case _ if source in FramedFreeModules(self.base_ring()):
+            match self._basis.is_basis():
+                case True:
                     placement = FramedFreeModules(self.base_ring())
                     if labels.cardinality().is_finite():
                         placement = placement.FinitelyGenerated()

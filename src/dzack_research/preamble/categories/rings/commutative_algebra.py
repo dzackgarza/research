@@ -2593,17 +2593,19 @@ def _generated_submonoid_contains_zero_in_domain(source, submonoid):
 
     In an integral domain a finite product is zero exactly when one factor is
     zero.  Thus a submonoid given by generators contains zero exactly when one
-    chosen generator is zero.  Predicate-defined submonoids keep their own
-    membership decision, and an unrepresented case remains unknown.
+    chosen generator is zero.  A predicate-defined submonoid decides
+    membership by its own predicate.
     """
-    try:
-        return source.zero() in submonoid
-    except NotImplementedError:
-        try:
-            generators = tuple(submonoid.monoid_generators())
-        except NotImplementedError:
-            return None
-        return any(generator == source.zero() for generator in generators)
+    assert source in OwnedRings().Commutative().NoZeroDivisors(), (
+        f"cannot decide whether 0 lies in {submonoid} by its generators: {source} is not "
+        f"known to be an integral domain, and outside a domain a product of nonzero "
+        f"elements can vanish"
+    )
+    match submonoid._structure_data().get("kind"):
+        case "finitely_generated":
+            return any(generator == source.zero() for generator in submonoid.monoid_generators())
+        case _:
+            return source.zero() in submonoid
 
 
 def _localization_size_placements(source, submonoid):

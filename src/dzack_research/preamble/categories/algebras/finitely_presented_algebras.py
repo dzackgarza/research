@@ -10,7 +10,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     TensorAlgebras,
-    _NativeLinearRelationAlgebra,
+    _WordFramedPresentedAlgebra,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
@@ -152,7 +152,7 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
     )
     quotient_engine = engine.quotient(presentation_ideal)
     labels = presentation_ring.algebra_generating_set()
-    presented = _NativeLinearRelationAlgebra(
+    presented = _WordFramedPresentedAlgebra(
         quotient_engine,
         base,
         labels,
