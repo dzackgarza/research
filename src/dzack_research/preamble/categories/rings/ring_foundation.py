@@ -2668,30 +2668,23 @@ def _owned_ring_element_text(element) -> str:
         return repr(float(value))
     if kind == "complex":
         return repr(complex(value))
-    if parent._preamble_is_number_field() or parent._preamble_is_number_field_order():
-        try:
-            polynomial = value.polynomial()
-            owned_parent = _own_ring(polynomial.parent())
-            return repr(_owned_engine_element(owned_parent, polynomial))
-        except (AttributeError, TypeError, ValueError):
-            try:
-                coefficients = tuple(value.list())
-                owned = tuple(_cross_engine_ring_value(coefficient) for coefficient in coefficients)
-                return f"coordinates {owned} in {parent}"
-            except (AttributeError, TypeError, ValueError):
-                pass
+    if parent._preamble_is_number_field():
+        polynomial = value.polynomial()
+        owned_parent = _own_ring(polynomial.parent())
+        return repr(_owned_engine_element(owned_parent, polynomial))
+    if parent._preamble_is_number_field_order():
+        coefficients = tuple(value.list())
+        owned = tuple(_cross_engine_ring_value(coefficient) for coefficient in coefficients)
+        return f"coordinates {owned} in {parent}"
     if kind == "padic":
-        try:
-            valuation = value.valuation()
-            precision = value.precision_absolute()
-            residue = value.residue()
-            return f"p-adic element with residue {int(residue)}, valuation {valuation}, precision {precision}"
-        except (AttributeError, TypeError, ValueError):
-            return f"p-adic element of {parent}"
-    try:
-        return f"element of {parent} of additive order {element.additive_order()}"
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        return f"element of {parent}"
+        valuation = value.valuation()
+        precision = value.precision_absolute()
+        residue = value.residue()
+        return (
+            f"p-adic element with residue {int(residue)}, "
+            f"valuation {valuation}, precision {precision}"
+        )
+    return f"element of {parent} of additive order {element.additive_order()}"
 
 
 class _OwnedRingElement(RingElement):
