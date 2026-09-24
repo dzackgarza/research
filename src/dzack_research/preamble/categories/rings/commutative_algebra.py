@@ -2352,10 +2352,10 @@ def _quotient_ring(source, defining_ideal):
     else:
         engine = _engine_ring(source)
         defining = _engine_ideal(source, defining_ideal)
-        try:
+        if isinstance(engine, QuotientRing_generic):
             lifted = _engine_quotient_cover_ideal(source, defining)
             quotient_engine = lifted.ring().quotient(lifted)
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        else:
             try:
                 quotient_engine = engine.quotient(defining)
             except (AttributeError, NotImplementedError, TypeError, ValueError):
