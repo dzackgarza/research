@@ -3275,8 +3275,32 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._from_engine_element(self._engine(value))
 
     def __contains__(self, value) -> bool:
-        r"""Return whether ``value`` is an element of this owned ring."""
-        return element_parent(value) is self
+        r"""Decide whether ``value`` represents an element of this ring.
+
+        Sage distinguishes set membership from ``is_parent_of``: membership
+        asks whether the value lies in the represented set, not whether this
+        exact parent already owns its current representation.  Keep that
+        distinction while making the admissible routes explicit.  Owned ring
+        elements are lowered at the ring adapter and the selected Sage ring
+        decides membership of the represented value; raw Sage elements remain
+        outside the public owned universe.
+        """
+        source = element_parent(value)
+        if source is self:
+            return True
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        if source in Modules(self.base_ring()) and source.unformed_module() is self:
+            return True
+        if source in OwnedRings():
+            return _engine_element(source, value) in self._engine
+        from dzack_research.preamble.categories.sets.set_categories import NN
+
+        if source is NN:
+            return True
+        if source in SageRings() or isinstance(value, SageObject):
+            return False
+        return value in self._engine
 
     def zero(self):
         return self._from_engine_element(self._engine.zero())
