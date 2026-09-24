@@ -191,11 +191,7 @@ class Connection(Element):
 
         if isinstance(generator_images, dict):
             size = labels.cardinality()
-            try:
-                finite = size.is_finite()
-            except NotImplementedError:
-                finite = False
-            if not finite:
+            if not size.is_finite():
                 raise TypeError(
                     "a dictionary connection assignment requires a finite framing; "
                     "use a callable for an arbitrary indexed framing"
@@ -208,10 +204,7 @@ class Connection(Element):
             raw_image = generator_images
         elif isinstance(generator_images, (tuple, list)):
             size = labels.cardinality()
-            try:
-                finite_size = int(size.finite_value()) if size.is_finite() else None
-            except NotImplementedError:
-                finite_size = None
+            finite_size = int(size.finite_value()) if size.is_finite() else None
             if finite_size is None:
                 raise TypeError(
                     "sequence connection syntax requires a finite framing"
