@@ -651,6 +651,262 @@ def _parallel_pair_diagram(left: Morphism, right: Morphism, target_category: Cat
     return ParallelPairDiagram(left, right, target_category)
 
 
+_MISSING_PARALLEL_FAMILY_LABEL = object()
+
+
+class ParallelFamilyMorphism(Morphism):
+    r"""One arrow of the walking category for an indexed parallel family."""
+
+    def __init__(self, parent, label=_MISSING_PARALLEL_FAMILY_LABEL) -> None:
+        Morphism.__init__(self, parent)
+        self._label = label
+
+    def is_identity(self) -> bool:
+        return self.domain() is self.codomain()
+
+    def label(self):
+        if self.is_identity():
+            raise ValueError(f"the identity {self} has no parallel-family label")
+        return self._label
+
+    def __mul__(self, other):
+        if not _precomposable(self, other):
+            return NotImplemented
+        if self.is_identity():
+            return other
+        if other.is_identity():
+            return self
+        raise ValueError(
+            f"the walking parallel-family category has no composite {self} o {other} of two non-identity arrows"
+        )
+
+    def __eq__(self, other) -> bool:
+        if parent(other) is not self.parent():
+            return False
+        if self.is_identity():
+            return True
+        return (self.label() == other.label()) is True
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        # Labels of an owned set need not themselves be hashable.  Equal arrows
+        # already have the same fixed Mor parent, so the parent identity is a
+        # valid (deliberately coarse) hash.
+        return hash(id(self.parent()))
+
+
+class ParallelFamilyMor(CategoricalMor):
+    r"""A fixed Mor in the walking category for an indexed parallel family."""
+
+    Element = ParallelFamilyMorphism
+
+    def parallel_family_category(self):
+        return self.base_category()
+
+    def cardinality(self):
+        category = self.parallel_family_category()
+        if self.domain() is self.codomain():
+            return cardinal(1)
+        if self.domain() is category.source() and self.codomain() is category.target():
+            return cardinal(category.index_set().cardinality())
+        return cardinal(0)
+
+    def _element_constructor_(self, label=_MISSING_PARALLEL_FAMILY_LABEL):
+        category = self.parallel_family_category()
+        if self.domain() is self.codomain():
+            if label is not _MISSING_PARALLEL_FAMILY_LABEL:
+                raise ValueError(
+                    f"Mor({self.domain()}, {self.domain()}) in the walking parallel-family category contains "
+                    f"only the identity, but got the label {label!r}"
+                )
+            return ParallelFamilyMorphism(self)
+        if self.domain() is category.source() and self.codomain() is category.target():
+            if label is _MISSING_PARALLEL_FAMILY_LABEL:
+                raise ValueError(
+                    f"an arrow {self.domain()} -> {self.codomain()} in the walking parallel-family category "
+                    "needs its family label"
+                )
+            return ParallelFamilyMorphism(self, category.index_set()(label))
+        raise ValueError(
+            f"the walking parallel-family category has no arrow {self.domain()} -> {self.codomain()}"
+        )
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"the identity arrow exists only on Mor(x, x), but this is Mor({self.domain()}, {self.codomain()})"
+            )
+        return self()
+
+
+class ParallelFamilyMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = ParallelFamilyMor
+
+
+class ParallelFamilyCategory(OwnedCategory):
+    r"""The walking category ``0 ⇉_I 1`` for a represented indexing set ``I``.
+
+    Its nonidentity arrows are indexed by ``I`` itself.  The indexing set may
+    be infinite or nonenumerable; finiteness belongs to a particular realization
+    of a wide (co)equalizer, not to the diagram that defines it.
+    """
+
+    _MorCategory = ParallelFamilyMorCategoryConstruction
+
+    @staticmethod
+    @cached_function(key=lambda cls, index_set: (cls, id(index_set)))
+    def __classcall__(cls, index_set: Parent):
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(index_set)
+        return typecall(cls, index_set)
+
+    class ParentMethods:
+        def __init__(self, position, **rest) -> None:
+            self._position = int(position)
+            super().__init__(**rest)
+
+        def position(self) -> int:
+            return self._position
+
+        def _repr_(self) -> str:
+            return str(self.position())
+
+    def __init__(self, index_set: Parent) -> None:
+        if index_set not in Sets():
+            raise TypeError(
+                f"a parallel-family category is indexed by a set, but {index_set} is not a set"
+            )
+        self._index_set = index_set
+        self._positions = finite_ordered_set((0, 1))
+        self._objects = indexed_family(
+            self._positions,
+            lambda position: _object_of(self, position=position),
+            name="Objects of the walking parallel-family category",
+        )
+        super().__init__()
+
+    def _make_named_class_key(self, name):
+        return id(self._index_set)
+
+    def super_categories(self):
+        return [OwnedObjects()]
+
+    def index_set(self):
+        return self._index_set
+
+    def object_set(self):
+        return self._positions
+
+    def objects(self):
+        return self._objects
+
+    def source(self):
+        return self._objects[0]
+
+    def target(self):
+        return self._objects[1]
+
+    def __call__(self, position):
+        return self._objects[int(position)]
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError(
+                f"a morphism in {self} needs two of its objects, but got {domain} and {codomain}"
+            )
+        return self.MorCategory().Of(domain, codomain)
+
+    def arrow(self, label):
+        return self.Mor(self.source(), self.target())(label)
+
+    def identity(self, obj):
+        return self.Mor(obj, obj).identity()
+
+
+class ParallelFamilyDiagram(Functor):
+    r"""A diagram ``A ⇉_I B`` retaining its indexed family of parallel arrows."""
+
+    def __init__(self, morphisms: IndexedFamily, target_category: Category) -> None:
+        if morphisms.cardinality() == cardinal(0):
+            raise ValueError(
+                "a parallel-family diagram needs a nonempty family: an empty family does not retain its "
+                "common source and target"
+            )
+        reference = morphisms.value(morphisms.index_set().an_element())
+        match reference:
+            case Morphism():
+                pass
+            case _:
+                raise TypeError(
+                    f"a parallel-family diagram needs morphisms as its values, but the family contains {reference}"
+                )
+        if not _category_accepts_morphism(
+            target_category,
+            reference.domain(),
+            reference.codomain(),
+            reference,
+        ):
+            raise TypeError(
+                f"a parallel-family diagram in {target_category} needs arrows of that category, but contains {reference}"
+            )
+        self._morphisms = morphisms
+        self._reference = reference
+        self._shape = ParallelFamilyCategory(morphisms.index_set())
+        super().__init__(self._shape, target_category)
+
+    def morphisms(self) -> IndexedFamily:
+        return self._morphisms
+
+    def reference(self) -> Morphism:
+        return self._reference
+
+    def source_object(self):
+        return self.reference().domain()
+
+    def target_object(self):
+        return self.reference().codomain()
+
+    def _apply_object(self, obj):
+        if obj is self.domain().source():
+            return self.source_object()
+        if obj is self.domain().target():
+            return self.target_object()
+        raise ValueError(f"{obj} is not an object of the walking parallel-family category")
+
+    def _apply_morphism(self, morphism):
+        if morphism.is_identity():
+            image = self(morphism.domain())
+            return _category_mor_parent(self.codomain(), image, image).identity()
+        image = self.morphisms().value(morphism.label())
+        match image:
+            case Morphism() if (
+                image.domain() is self.source_object()
+                and image.codomain() is self.target_object()
+                and _category_accepts_morphism(
+                    self.codomain(), image.domain(), image.codomain(), image
+                )
+            ):
+                return image
+            case _:
+                raise ValueError(
+                    f"the family defining {self} is not parallel in {self.codomain()}: the arrow at "
+                    f"{morphism.label()!r} is {image}"
+                )
+
+
+@cached_function(key=lambda morphisms, target_category: (id(morphisms), id(target_category)))
+def _parallel_family_diagram(
+    morphisms: IndexedFamily,
+    target_category: Category,
+) -> ParallelFamilyDiagram:
+    r"""Return the selected diagram object for one represented parallel family."""
+    return ParallelFamilyDiagram(morphisms, target_category)
+
+
 class RestrictedDiagram(Functor):
     r"""The precomposition ``D ∘ u`` retaining ``D`` and the indexing functor ``u``."""
 
@@ -1818,6 +2074,8 @@ __all__ = [
     "FiniteOrdinalCategory",
     "FiniteSequenceDiagram",
     "InverseSystem",
+    "ParallelFamilyCategory",
+    "ParallelFamilyDiagram",
     "ParallelPairCategory",
     "ParallelPairDiagram",
     "PosetCategory",
