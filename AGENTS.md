@@ -98,13 +98,12 @@ There is one line of work, `origin/main`, one DAG, and one `TODO.md`.  This
 repository is cloned on more than one host (this workstation and `rack`),
 and each clone's local `main` is only a copy.  So:
 
-- Before selecting work, `git pull origin main`.  A session that has been
-  running for hours pulls again before each new node.
-- Push to `origin main` as work lands, with `git push --no-verify origin
-  main`.  Syncing the two clones is not a verification event and never
-  waits on the push gate; verification belongs to the node that closes.
-  A refused push means the other host has committed, and the next act is
-  `git pull origin main` and a merge, not more commits.
+- Push on milestones, through the push gate.
+- While work is split between machines, sync by hand without the gate:
+  `git push --no-verify origin main` from the host that committed, then
+  `git pull origin main` on the other, before either selects its next
+  node.  Syncing is not a verification event.  A refused push means the
+  other host has committed; pull and merge before committing more.
 - Never trim, fork or keep a host-local `TODO.md`.  A node closed on one
   host is closed by the commit that reaches `origin/main`.
 
