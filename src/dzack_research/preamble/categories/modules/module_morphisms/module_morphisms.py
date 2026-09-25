@@ -1612,13 +1612,16 @@ class ModuleMorphism(Morphism):
         return codomain.module_category().Mor(codomain, quotient)(lambda label: quotient.module_generator(label))
 
     def section(self):
-        r"""Return ``s`` with ``self . s`` the identity, for an epimorphism onto a free module.
+        r"""Return ``s`` with ``self . s`` the identity when the represented codomain is projective.
 
         A section chooses one preimage of each generator of the codomain.
         Those choices assemble into a morphism exactly when the codomain is
         free on those generators, since then there is no relation for them to
-        respect: this is projectivity of a free module, and the construction
-        exhibits the splitting rather than asserting that one exists.
+        respect.  A represented finitely presented projective module over a PID
+        is first carried through its existing finite-free trivialization; this
+        is the same projectivity argument in a basis supplied by the module's
+        invariant-factor presentation, rather than an assumption that its
+        selected presentation generators are a basis.
         """
 
         self._require_established_linearity("splitting an epimorphism")
@@ -1627,13 +1630,25 @@ class ModuleMorphism(Morphism):
             f"{self.domain()} -> {codomain} has no section: a section exists only for a surjective map, and this "
             "map has nonzero cokernel"
         )
-        assert _has_finite_free_framing(codomain), (
-            f"cannot construct a section of {self.domain()} -> {codomain}: a section is built by lifting a basis, "
-            f"so {codomain} must be finitely generated free with a chosen basis, but it is in {codomain.category()}"
-        )
-        return codomain.module_category().Mor(codomain, self.domain())(
-            lambda label: self.lift(codomain.module_generator(label))
-        )
+        match codomain:
+            case _ if _has_finite_free_framing(codomain):
+                return codomain.module_category().Mor(codomain, self.domain())(
+                    lambda label: self.lift(codomain.module_generator(label))
+                )
+            case _:
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                    _SelectedFinitePresentationModules,
+                )
+
+                represented_presentations = _SelectedFinitePresentationModules(codomain.base_ring())
+                assert codomain in represented_presentations and codomain.is_projective(), (
+                    f"cannot construct a section of {self.domain()} -> {codomain}: the codomain must carry either "
+                    "a chosen finite free basis or a represented finite projective presentation, "
+                    f"but {codomain} is in {codomain.category()}"
+                )
+                trivialization = codomain.finite_free_trivialization()
+                transported = trivialization.forward() * self
+                return transported.section() * trivialization.forward()
 
     def retraction(self):
         r"""Return ``r`` with ``r . self`` the identity, for a split monomorphism.
