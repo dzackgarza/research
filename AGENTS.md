@@ -100,8 +100,10 @@ and each clone's local `main` is only a copy.  So:
 
 - Before selecting work, `git pull origin main`.  A session that has been
   running for hours pulls again before each new node.
-- Push every commit to `origin main` as soon as it is made.  A refused push
-  means the other host has committed, and the next act is
+- Push to `origin main` as work lands, with `git push --no-verify origin
+  main`.  Syncing the two clones is not a verification event and never
+  waits on the push gate; verification belongs to the node that closes.
+  A refused push means the other host has committed, and the next act is
   `git pull origin main` and a merge, not more commits.
 - Never trim, fork or keep a host-local `TODO.md`.  A node closed on one
   host is closed by the commit that reaches `origin/main`.
