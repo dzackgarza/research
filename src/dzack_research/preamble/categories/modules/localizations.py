@@ -1,6 +1,5 @@
 r"""Modules equipped as localizations of modules over the source ring."""
 
-from sage.categories.category import Category
 from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -22,7 +21,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 
 
 
@@ -451,7 +450,7 @@ def _localized_module(
             )
         data["framing_source"] = framing_source
 
-    return _object_of(Category.join(placement), **data)
+    return _object_of(owned_category_join(placement), **data)
 
 
 def _transported_presentation(numerator_module, localization_ring):
