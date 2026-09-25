@@ -94,8 +94,12 @@ def _canonical_pid_associate(ring, element):
     canonical_associate = getattr(backend, "canonical_associate", None)
     if canonical_associate is None:
         return element
-    canonical, _unit = canonical_associate()
-    return _owned_engine_element(ring, canonical)
+    canonical, unit = canonical_associate()
+    owned_canonical = _owned_engine_element(ring, canonical)
+    owned_unit = _owned_engine_element(ring, unit)
+    if not owned_unit.is_unit() or owned_canonical * owned_unit != element:
+        return element
+    return owned_canonical
 
 
 def _finite_generating_family(module_generators):

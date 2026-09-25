@@ -2,6 +2,7 @@
 
 from sage.categories.category import Category
 from sage.categories.rings import Rings as SageRings
+from sage.matrix.constructor import matrix
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
 from sage.misc.cachefunc import cached_function, cached_method
