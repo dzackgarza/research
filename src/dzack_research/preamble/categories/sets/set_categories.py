@@ -570,8 +570,11 @@ class Sets(OwnedCategory):
     constructions the preamble adds; Sage remains the implementation of
     ordinary set maps.
 
-    Sage remains an implementation substrate for concrete parent and coercion
-    behavior, but the mathematical supercategory edge is entirely owned.
+    ``Objects()`` is the owned mathematical root.  Sage's ``Sets()`` is also a
+    required runtime root edge: ``Parent._init_category_`` and Sage's coercion
+    machinery rebuild parents and Hom objects through that category, so every
+    owned set parent must also be a Sage set parent at the implementation
+    boundary.
     """
 
     _MorCategory = SetMorCategoryConstruction
@@ -585,7 +588,7 @@ class Sets(OwnedCategory):
         return finite_ordinal_set(2)
 
     def super_categories(self):
-        return [Objects()]
+        return [Objects(), SageSets()]
 
     def _call_(self, source):
         r"""Construct ``source`` as a represented set when syntactic ingress is needed."""
