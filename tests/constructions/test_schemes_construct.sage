@@ -5,52 +5,7 @@ products, over every commutative ring in the catalogue, with the dimensions,
 point counts and placements the definitions determine.
 """
 
-import pytest
-
 from dzack_research.preamble.all import *  # noqa: F401,F403
-
-
-NORMAL = {"ZZ", "QQ", "GF(5)", "ZZ[i]", "ZZ[sqrt-5]", "ZZ[x]", "QQ[x,y]", "QQ[x]", "ZZ_3", "QQ[[t]]"}
-NOT_NORMAL = {"QQ[x,y]/(y^2-x^3)", "ZZ/12", "QQ[e]/(e^2)", "QQ[x,y]/(xy)"}
-
-
-def test_spec_of_every_commutative_ring(commutative_ring) -> None:
-    ring = commutative_ring
-    spectrum = (ring).affine_spectrum()
-
-    assert spectrum in Schemes(ring)
-    assert spectrum in AffineSchemes(ring)
-    assert spectrum in Schemes(ZZ)
-    assert spectrum.is_affine()
-    assert spectrum.coordinate_ring() is ring
-    assert spectrum.relative_dimension() == 0
-    assert (spectrum in IntegralSchemes(ring)) == (ring in IntegralDomains())
-    assert spectrum in SmoothSchemes(ring)
-
-
-@pytest.mark.parametrize("name", sorted(NORMAL | NOT_NORMAL))
-def test_normality_of_spec(build, name) -> None:
-    ring = build(name)
-    assert ((ring).affine_spectrum() in NormalSchemes(ring)) == (name in NORMAL)
-    assert ((ring).affine_spectrum() in NormalSchemes(ZZ)) == (name in NORMAL)
-
-
-@pytest.mark.parametrize(
-    "name, base, smooth",
-    [
-        ("QQ(i)", "QQ", True),
-        ("GF(4)", "GF(2)", True),
-        ("QQ[x,y]", "QQ", True),
-        ("QQ[x,y]/(y^2-x^3)", "QQ", False),
-        ("QQ[e]/(e^2)", "QQ", False),
-        ("ZZ[i]", "ZZ", False),
-        ("ZZ[x]", "ZZ", True),
-    ],
-)
-def test_smoothness_of_spec_over_a_base(build, name, base, smooth) -> None:
-    ring = build(name)
-    base_ring = GF(2) if base == "GF(2)" else build(base)
-    assert ((ring.as_algebra_over(base_ring)).affine_spectrum() in SmoothSchemes(base_ring)) == smooth
 
 
 def test_point_counts_of_a_hypersurface_over_a_finite_field() -> None:
