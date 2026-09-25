@@ -558,6 +558,32 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
                 name="Semigroup multiplicities of a character",
             )
 
+        @cached_method
+        def face_supporting_generators(self, face):
+            r"""The chosen generators of ``S_sigma`` that vanish on the face ``tau`` (CLS Prop. 1.3.16).
+
+            They generate the face \(\sigma^\vee\cap\tau^\perp\) of \(\sigma^\vee\).  The
+            set is determined by the two cones, so it is computed once per face.
+            """
+            assert face.is_face_of(self), f"{face} is not a face of {self}"
+            return finite_ordered_set(
+                tuple(
+                    generator
+                    for generator in self.semigroup_generators()
+                    if face.orthogonal_contains(generator)
+                )
+            )
+
+        @cached_method
+        def face_supporting_character(self, face):
+            r"""The character ``m`` with ``sigma cap m^perp = tau`` (CLS Prop. 1.3.16).
+
+            The sum of the chosen generators of \(S_\sigma\) that vanish on
+            \(\tau\): their sum lies in the relative interior of
+            \(\sigma^\vee\cap\tau^\perp\), so \(\sigma\cap m^\perp=\tau\).
+            """
+            return sum(self.face_supporting_generators(face), self.character_lattice().zero())
+
         def pair_with(self, character):
             r"""The evaluation ``<m, -> `` of a character on this cone's rays.
 

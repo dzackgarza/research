@@ -64,7 +64,6 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Schemes,
     _engine_scheme,
     _engine_scheme_morphism,
-    _native_scheme_mor,
     _scheme_mor_category,
 )
 from dzack_research.preamble.categories.schemes.toric.fans import (
@@ -136,50 +135,19 @@ def _semigroup_algebra(cone, base_ring):
     )
 
 
-def _face_supporting_generator_positions(face, cone):
-    r"""The positions of the chosen generators of ``S_sigma`` vanishing on ``tau``.
-
-    Those generators generate the face \(\sigma^\vee\cap\tau^\perp\) of
-    \(\sigma^\vee\), so any character supported on exactly this selection cuts
-    \(\tau\) out of \(\sigma\).
-    """
-    zero = _integers().zero()
-    return tuple(
-        position
-        for position, generator in enumerate(cone.semigroup_generators())
-        if all(value == zero for value in face.pair_with(generator))
-    )
-
-
-def _face_supporting_character(face, cone):
-    r"""The character ``m`` with ``sigma cap m^perp = tau`` (CLS Prop. 1.3.16).
-
-    The sum of the chosen semigroup generators of \(S_\sigma\) that vanish on
-    \(\tau\): their sum lies in the relative interior of
-    \(\sigma^\vee\cap\tau^\perp\), so \(\sigma\cap m^\perp=\tau\).  This is the
-    lattice point whose character is inverted to reach \(U_\tau\) inside
-    \(U_\sigma\), and ``_face_supporting_character_monomial`` is its monomial.
-    """
-    characters = cone.character_lattice()
-    generators = cone.semigroup_generators()
-    supporting = characters.zero()
-    for position in _face_supporting_generator_positions(face, cone):
-        supporting = supporting + generators[position]
-    return supporting
-
-
 def _face_supporting_character_monomial(face, cone, chart):
     r"""The monomial ``chi^m`` cutting ``face`` out of ``cone`` (CLS Prop. 1.3.16).
 
-    ``m`` is ``_face_supporting_character(face, cone)``, a sum of chosen
+    ``m`` is ``cone.face_supporting_character(face)``, a sum of chosen
     semigroup generators, so in \(k[S_\sigma]\) the character \(\chi^m\) is the
     product of the corresponding variables with no integer program to solve.
     """
     algebra = chart.coordinate_algebra()
     labels = tuple(algebra.algebra_generating_set())
+    ranking = cone.semigroup_generators().ranking_map()
     monomial = algebra.one()
-    for position in _face_supporting_generator_positions(face, cone):
-        monomial = monomial * algebra.algebra_generator(labels[position])
+    for generator in cone.face_supporting_generators(face):
+        monomial = monomial * algebra.algebra_generator(labels[int(ranking(generator))])
     return monomial
 
 
@@ -234,7 +202,7 @@ def _character_on_overlap(character, face, cone, base_ring):
     """
     chart = _affine_chart(cone, base_ring)
     localized = _face_localization(face, cone, base_ring).coordinate_algebra()
-    supporting = _face_supporting_character(face, cone)
+    supporting = cone.face_supporting_character(face)
     assert face.dual_cone_contains(character), (
         f"the character {character} is not in the dual cone of the face {face} of {cone}, so "
         "chi^m is not a regular function on the chart of the face"
