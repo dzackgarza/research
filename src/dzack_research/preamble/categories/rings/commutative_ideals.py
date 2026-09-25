@@ -237,9 +237,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     selected = backend
             selected_ring = selected.ring()
             match selected_ring:
-                case PolynomialRing_generic() | MPolynomialRing_base() if bool(
-                    selected_ring.base_ring().is_field()
-                ):
+                case PolynomialRing_generic() if bool(selected_ring.base_ring().is_field()):
+                    return bool(selected.is_maximal())
+                case MPolynomialRing_base() if bool(selected_ring.base_ring().is_field()):
                     return bool(selected.is_prime() and selected.dimension() == 0)
                 case _:
                     return bool(selected.is_maximal())
