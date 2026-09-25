@@ -891,9 +891,8 @@ class QuotientRings(OwnedCategory):
             )
 
         def is_field(self):
-            if self._preamble_engine_ring is None:
-                return False
-            return bool(self._preamble_engine_ring.is_field())
+            r"""Return whether R/I is a field, equivalently whether I is maximal."""
+            return bool(self.defining_ideal().is_maximal())
 
         def is_integral_domain(self):
             return bool(self.defining_ideal().is_prime())
@@ -901,7 +900,11 @@ class QuotientRings(OwnedCategory):
         def krull_dimension(self):
             if self._preamble_engine_ring is not None:
                 return _engine_krull_dimension(self)
-            backend = _engine_ideal(self.quotient_source(), self.defining_ideal())
+            source = self.quotient_source()
+            backend = _engine_ideal(source, self.defining_ideal())
+            source_engine = _engine_ring(source)
+            if isinstance(source_engine, SageNumberFieldOrder) and not backend.is_zero():
+                return _owned_engine_element(SageZZ, SageZZ.zero())
             return _owned_engine_element(SageZZ, SageZZ(backend.dimension()))
 
         def _repr_(self):
@@ -2465,12 +2468,21 @@ def _quotient_ring(source, defining_ideal):
     ideal to the unit ideal, and it gives every represented localization the
     same construction rule without probing backend quotient capabilities.
     """
+    finite_order_quotient = False
     if source in LocalizationRings():
         quotient_engine = None
     else:
         engine = _engine_ring(source)
         defining = _engine_ideal(source, defining_ideal)
         match engine:
+            case SageNumberFieldOrder():
+                # Sage's generic QuotientRing order branch attempts to replace an
+                # order ideal I by K.ideal(I), treating the ideal itself as a field
+                # element.  The owned quotient already has the exact class model:
+                # equality is membership modulo I and a nonzero ideal of an order
+                # has finite index equal to its ideal norm.
+                quotient_engine = None
+                finite_order_quotient = not defining.is_zero()
             case QuotientRing_generic():
                 lifted = _engine_quotient_cover_ideal(source, defining)
                 quotient_engine = lifted.ring().quotient(lifted)
@@ -2485,7 +2497,9 @@ def _quotient_ring(source, defining_ideal):
 
     dimension = None
     # R/R is the zero ring, whose empty spectrum has no Krull dimension.
-    if quotient_engine is not None and source in OwnedRings().Noetherian() and not defining.is_one():
+    if finite_order_quotient:
+        dimension = 0
+    elif quotient_engine is not None and source in OwnedRings().Noetherian() and not defining.is_one():
         dimension = _krull_dimension_of_engine(quotient_engine)
 
     quotient_is_field = False
@@ -2502,7 +2516,11 @@ def _quotient_ring(source, defining_ideal):
         placements.append(OwnedRings().Division().Commutative())
     elif quotient_is_domain:
         placements.append(OwnedRings().Commutative().NoZeroDivisors())
-    if source in FiniteSets() or isinstance(quotient_engine, IntegerModRing_generic):
+    if (
+        source in FiniteSets()
+        or isinstance(quotient_engine, IntegerModRing_generic)
+        or finite_order_quotient
+    ):
         placements.append(FiniteSets())
     if dimension == 0:
         placements.append(OwnedRings().Artinian())

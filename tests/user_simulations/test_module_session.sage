@@ -103,7 +103,8 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     rendered(extended)
     assert extended in VectorSpaces(fractions)
     assert extended.module_rank() == 1
-    prime = ring.spectrum()(ring.ideal(ring(2))) if ring(2) != ring.zero() and not ring(2).is_unit() else None
+    two_ideal = ring.ideal(ring(2))
+    prime = ring.spectrum()(two_ideal) if ring(2) != ring.zero() and not ring(2).is_unit() and two_ideal.is_prime() else None
     if prime is not None:
         localized = quotient.localize_at_prime(prime)
         rendered(localized)

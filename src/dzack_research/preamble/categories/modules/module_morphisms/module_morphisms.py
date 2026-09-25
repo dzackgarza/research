@@ -119,10 +119,9 @@ def _integral_left_solver(system, ring):
                 if value != 0:
                     return None
                 continue
-            quotient, remainder = value.quo_rem(divisor)
-            if remainder != 0:
+            if value not in ring.ideal(divisor):
                 return None
-            solution[index] = quotient
+            solution[index] = ring(value / divisor)
 
         normalized_solution = right.domain().linear_combination(
             {label: solution[position] for position, label in enumerate(right.domain().module_generating_set()) if solution[position]}

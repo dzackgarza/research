@@ -94,8 +94,12 @@ def _canonical_pid_associate(ring, element):
     canonical_associate = getattr(backend, "canonical_associate", None)
     if canonical_associate is None:
         return element
-    canonical, _unit = canonical_associate()
-    return _owned_engine_element(ring, canonical)
+    canonical, unit = canonical_associate()
+    owned_canonical = _owned_engine_element(ring, canonical)
+    owned_unit = _owned_engine_element(ring, unit)
+    if not owned_unit.is_unit() or owned_canonical * owned_unit != element:
+        return element
+    return owned_canonical
 
 
 def _finite_generating_family(module_generators):
@@ -1766,11 +1770,13 @@ class _GeneralPresentedModule:
                 lambda label: coefficients.get(label, zero),
                 name="Cover coordinates",
             )
-        native = self._free_module.coordinate_vector(lift)
         ring = self.base_ring()
         return indexed_family(
             labels,
-            lambda label: _owned_engine_element(ring, native[int(labels.ranking_map()(label))]),
+            lambda label: _owned_engine_element(
+                ring,
+                lift[int(labels.ranking_map()(label))],
+            ),
             name="Cover coordinates",
         )
 
@@ -2362,7 +2368,23 @@ def _pid_presentation_kernel(morphism):
     if source_rank == 0:
         preimage = free_cover.zero_submodule()
     else:
-        kernel_pairs = augmented.right_kernel().basis_matrix().rows()
+        diagonal, _left_change, right_change = augmented.smith_form()
+        diagonal_rank = min(int(augmented.nrows()), int(augmented.ncols()))
+        kernel_columns = tuple(
+            column
+            for column in range(int(augmented.ncols()))
+            if column >= diagonal_rank or diagonal[column, column] == 0
+        )
+        # If D = U A V is the Smith form of the augmented matrix A, then
+        # A(V e_j) = 0 exactly for the zero diagonal coordinates of D.
+        # Since V is invertible, those columns of V are a basis of ker(A).
+        kernel_pairs = tuple(
+            tuple(
+                right_change[row, column]
+                for row in range(int(right_change.nrows()))
+            )
+            for column in kernel_columns
+        )
         projected = [free_cover(tuple(row[position] for position in range(source_rank))) for row in kernel_pairs if any(row[position] != 0 for position in range(source_rank))]
         preimage = free_cover.submodule(projected) if projected else free_cover.zero_submodule()
 
