@@ -436,6 +436,39 @@ The first full execution of the suite since the tree stopped importing (2026-09-
   With generators of `O(S,h)` and `O(T)` (and relations, if any), it answers generators (and a presentation) of `Gamma_{h,T}`. The theory and its leads (Peters–Sterk 15.1; Nikulin 1979) are in `docs/theory/glue-stabilizers.md`.
   **Closure specimens:** for `L = U + U` with `S = U` and `T = U`, the stabilizer of `S` is `O(U) x O(U)`. For `L` unimodular, `Gamma_{h,T} = rho_T^{-1}(gamma rho_S(O(S,h)) gamma^{-1})`. For a rank-one `S = <h>` with `h^2 = 2` in `II_{1,9}`, the pullback description reconstructs the stabilizer of `h`.
 
+- [ ] **`coxeter-group-structure`**. **Needs:** `lattice-reflection-groups`, `operations-sited-where-defined`.
+  **Owner and delta:** the category of Coxeter systems `(W, S)` owns:
+  - word length and reduced words;
+  - simple systems, positive roots and the fundamental chamber;
+  - for finite `W`, the longest element `w_0` and the degrees `d_i`;
+  - the ring of invariants `k[V]^W`, with its Molien series, toward GIT quotients `V // W`;
+  - the Poincaré series `W(t)` as a rational function in general (Steinberg's formula from the finite parabolic subgroups; the product formula and Solomon's identity for finite `W`; Bott's formula for affine `W`);
+  - `chi(W) = 1/W(1)`;
+  - the growth rate of infinite `W`, as a Perron or Salem number. These two classes of real algebraic integers are owned if not already present.
+  Crystallographic groups are constructed as stabilizers `GL(V)_L` of lattices `L <= V`. The existing chamber code (`categories/chamber_complexes.py`) and the Vinberg route thread into this owner. Theory and leads: `docs/theory/coxeter-groups-complexes-and-cell-structures.md`.
+  **Closure specimens:** `W(E_8)` has degrees 2, 8, 12, 14, 18, 20, 24, 30 and `W(1) = 696729600`. `W(A_2)(t) = 1 + 2t + 2t^2 + t^3`. The affine `A_1` group has `W(t) = (1 + t)/(1 - t)`. The `(2,3,7)` triangle group has a Salem growth rate (Lehmer's number; check it against the source).
+
+- [ ] **`simplicial-and-cw-foundations`**. **Needs:** `pullbacks-in-every-category`.
+  **Owner and delta:**
+  - Owned categories of simplicial complexes, Δ-complexes and simplicial sets, each with its face poset. The nerve of a poset (the order complex), and the nerve of the category of simplices of a simplicial set (the barycentric subdivision).
+  - CW complexes built by attaching cells along maps `S^{n-1} -> X^{n-1}`, whose homotopy classes lie in the known range of the homotopy groups of spheres. Beyond that range, cells attach along explicitly given continuous or simplicial maps.
+  - Predicates for regular, simplicial and Δ-complex structures.
+  - Regularization, by induction up the skeleta, replacing each attaching map that is not an embedding with its mapping cylinder.
+  - Deciding homotopy of maps and weak equivalence through simplicial approximation and effective homology (Kenzo, which Sage interfaces), assertion-gated where no algorithm applies.
+  Sage's `SimplicialComplex`, `DeltaComplex` and `SimplicialSet` are private engines. Theory and leads: `docs/theory/coxeter-groups-complexes-and-cell-structures.md`.
+  **Closure specimens:** the boundary of the 3-simplex realizes `S^2`, and the Δ-complex with one vertex and one edge realizes `S^1`. The CW structure on `RP^2` with one cell in each dimension is not regular, and its regularization is. The order complex of the face poset of a simplicial complex is its barycentric subdivision.
+
+- [ ] **`coxeter-complexes-and-buildings`**. **Needs:** `coxeter-group-structure`, `simplicial-and-cw-foundations`.
+  **Owner and delta:**
+  - The poset of parabolic subgroups `W_J`.
+  - The Coxeter complex `Sigma(W, S)`, as an honest simplicial complex whose face poset is the poset of cosets `wW_J` (`J` proper), with its chamber set `W` as a `W`-set.
+  - The Tits cone.
+  - Buildings as chamber complexes with apartment systems of Coxeter complexes, including those from BN-pairs.
+  - The Tits complex. Confirm the intended notion (the spherical building of a BN-pair) before building it.
+  - The Davis complex of `W 𝒮^f`.
+  Each is a construction on its owner, with the maps that relate them: chambers to group elements, apartments into buildings, and the Coxeter complex into the Tits cone. Theory and leads: `docs/theory/coxeter-groups-complexes-and-cell-structures.md`.
+  **Closure specimens:** `Sigma(A_2)` is a hexagon, a triangulated `S^1` with 6 chambers. `Sigma` of the affine `A_1` group is a triangulated line. The Davis complex of the infinite dihedral group is a line. The building of `SL_3(F_2)` has 21 chambers and apartments that are hexagons.
+
 ## Common categorical authority and public boundaries
 
 - [ ] **`genera-are-finite-sets-of-isometry-classes`**. **Needs:** none.
