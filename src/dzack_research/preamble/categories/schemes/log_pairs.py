@@ -22,7 +22,7 @@ class LogPairs(OwnedCategoryOverBaseRing):
     r"""Pairs ``(X, Delta)`` of a variety and a chosen boundary divisor."""
 
     def an_object(self):
-        r"""The projective plane with its toric boundary, a log Calabi--Yau pair."""
+        r"""The projective line with its toric boundary, the two torus-fixed points: a log Calabi--Yau pair."""
         from sage.rings.integer_ring import ZZ as SageZZ
 
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -30,11 +30,11 @@ class LogPairs(OwnedCategoryOverBaseRing):
             RationalPolyhedralFans,
         )
 
-        cocharacters = _own_ring(SageZZ).free_module(2)
-        plane = RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(
+        cocharacters = _own_ring(SageZZ).free_module(1)
+        line = RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(
             self.base_ring()
         )
-        return plane.log_pair()
+        return line.log_pair()
 
     def _call_(self, log_scheme, boundary_divisor):
         r"""The log pair ``(X, Delta)`` of a scheme over this base and a divisor on it."""
@@ -98,7 +98,7 @@ class ToricLogPairs(OwnedCategoryOverBaseRing):
     r"""Log pairs whose variety is toric and whose boundary is torus-invariant."""
 
     def an_object(self):
-        r"""The projective plane with the sum of its three invariant lines."""
+        r"""The projective line with the sum of its two torus-fixed points."""
         return LogPairs(self.base_ring()).an_object()
 
     def _call_(

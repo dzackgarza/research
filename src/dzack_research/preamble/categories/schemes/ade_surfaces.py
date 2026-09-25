@@ -247,8 +247,8 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
     r"""Toric log pairs equipped with an ADE type, its polygon and ``p*``."""
 
     def an_object(self):
-        r"""The base log pair of the ``A_2`` polygon."""
-        return self("A", 2)
+        r"""The base log pair of the ``A_1`` polygon."""
+        return self("A", 1)
 
     def _call_(self, dynkin_letter, dynkin_rank, variant=(), affine=False):
         r"""Construct the base log pair of one ADE type over this category's base."""

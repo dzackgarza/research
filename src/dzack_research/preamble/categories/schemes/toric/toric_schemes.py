@@ -493,9 +493,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
     """
 
     def an_object(self):
-        r"""The projective plane, as the toric variety of the fan of ``P^2``."""
+        r"""The projective line, as the toric variety of the fan of ``P^1``."""
 
-        cocharacters = _integers().free_module(2)
+        cocharacters = _integers().free_module(1)
         return RationalPolyhedralFans(cocharacters).projective_space_fan().toric_variety(
             self.base_ring()
         )

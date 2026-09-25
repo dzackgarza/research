@@ -135,9 +135,10 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
     """
 
     def an_object(self):
-        plane = ProjectiveSpaces(self.base_ring())(2)
-        x, y, z = plane.homogeneous_coordinate_generators()
-        return self(plane, x * z - y**2)
+        r"""The point ``V_+(x) <= P^1``, cut out by one linear form."""
+        line = ProjectiveSpaces(self.base_ring())(1)
+        x, _y = line.homogeneous_coordinate_generators()
+        return self(line, x)
 
     def _call_(self, ambient, *equations):
         r"""``V_+(f_1, ..., f_r) <= P^n_R`` for a regular sequence of homogeneous equations.

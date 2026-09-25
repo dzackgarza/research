@@ -2787,13 +2787,16 @@ def _engine_multiplicative_generator(engine):
 
 
 def _owned_monomial_text(variable_names, exponent):
-    # A univariate polynomial keys its terms by an integer exponent, a
-    # multivariate one by an exponent vector (Sage's ETuple).
-    match len(variable_names):
-        case 1:
-            powers = (exponent,)
-        case _:
+    # A univariate engine polynomial keys its terms by an integer exponent, a
+    # multivariate one by an exponent vector (Sage's ETuple), including a
+    # multivariate ring in one variable; the key's representation decides.
+    from sage.rings.polynomial.polydict import ETuple
+
+    match exponent:
+        case ETuple():
             powers = tuple(exponent)
+        case _:
+            powers = (exponent,)
     factors = []
     for variable, power in zip(variable_names, powers, strict=False):
         power = int(power)

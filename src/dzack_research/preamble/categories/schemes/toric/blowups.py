@@ -4,7 +4,7 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
-from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes
+from dzack_research.preamble.categories.schemes.toric.toric_schemes import ToricSchemes, _integers
 
 
 class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
@@ -22,8 +22,14 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
     """
 
     def an_object(self):
-        surface = ToricSchemes(self.base_ring()).an_object()
-        return surface.toric_fixed_point_blowup(surface.fan().maximal_cones()[0])
+        r"""The affine plane blown up at the origin, its one torus-fixed point.
+
+        The fan of ``A^2`` is the single cone spanned by ``e_1`` and ``e_2``;
+        its star subdivision at ``e_1 + e_2`` is the blowup described above.
+        """
+        cocharacters = _integers().free_module(2)
+        plane = RationalPolyhedralFans(cocharacters)(([[1, 0], [0, 1]],)).toric_variety(self.base_ring())
+        return plane.toric_fixed_point_blowup(plane.fan().maximal_cones()[0])
 
     def super_categories(self):
         return [ToricSchemes(self.base_ring())]
