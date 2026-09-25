@@ -1608,6 +1608,141 @@ class _CoproductsOfCategory(_ColimitsOfCategory):
     pass
 
 
+def _discrete_common_object_of_finite_family(category, factors, *, construction: str):
+    r"""Return the forced apex of a finite discrete (co)product, when it exists."""
+    family = _finite_factor_family(
+        factors,
+        name=f"{construction.capitalize()} factors",
+    )
+    if any(factor not in category for factor in family):
+        raise TypeError(
+            f"a {construction} in {category} needs every factor to be one of its objects, but the factors are {family}"
+        )
+    labels = tuple(family.index_set())
+    if labels:
+        apex = family.value(labels[0])
+        for label in labels[1:]:
+            factor = family.value(label)
+            if factor is not apex:
+                raise ValueError(
+                    f"the {construction} of {family} does not exist in {category}: a discrete category has a morphism "
+                    f"between two objects only when they are the same object, but the factors include {apex} and {factor}"
+                )
+        return family, apex
+
+    object_set = category.object_set()
+    if cardinal(object_set.cardinality()) != cardinal(1):
+        extremum = "terminal" if construction == "product" else "initial"
+        raise ValueError(
+            f"the empty {construction} does not exist in {category}: it would be a {extremum} object, and a discrete "
+            f"category has a {extremum} object exactly when it has one object"
+        )
+    return family, category.object(object_set.an_element())
+
+
+def _discrete_product_construction(category, factors):
+    r"""Return the selected finite product in a represented discrete category."""
+    family, product = _discrete_common_object_of_finite_family(
+        category,
+        factors,
+        construction="product",
+    )
+    diagram = _discrete_diagram(family, category)
+    universal_cone = diagram.ProductCones().cone(
+        product,
+        lambda index: category.Mor(product, diagram(index)).identity(),
+    )
+
+    def factorizer(cone):
+        return category.Mor(cone.apex(), product).identity()
+
+    return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+
+def _discrete_coproduct_construction(category, factors):
+    r"""Return the selected finite coproduct in a represented discrete category."""
+    family, coproduct = _discrete_common_object_of_finite_family(
+        category,
+        factors,
+        construction="coproduct",
+    )
+    diagram = _discrete_diagram(family, category)
+    universal_cocone = diagram.CoproductCocones().cocone(
+        coproduct,
+        lambda index: category.Mor(diagram(index), coproduct).identity(),
+    )
+
+    def factorizer(cocone):
+        return category.Mor(coproduct, cocone.apex()).identity()
+
+    return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
+
+
+def _require_parallel_discrete_pair(category, left_morphism, right_morphism) -> None:
+    if (
+        left_morphism.domain() is not right_morphism.domain()
+        or left_morphism.codomain() is not right_morphism.codomain()
+    ):
+        raise ValueError(
+            f"a parallel pair in {category} needs common endpoints, but {left_morphism} is "
+            f"{left_morphism.domain()} -> {left_morphism.codomain()} and {right_morphism} is "
+            f"{right_morphism.domain()} -> {right_morphism.codomain()}"
+        )
+    mor = category.Mor(left_morphism.domain(), left_morphism.codomain())
+    if parent(left_morphism) is not mor or parent(right_morphism) is not mor:
+        raise TypeError(
+            f"an equalizer or coequalizer in {category} needs a parallel pair of its morphisms, but got "
+            f"{left_morphism} and {right_morphism}"
+        )
+
+
+def _discrete_equalizer_construction(category, left_morphism, right_morphism):
+    r"""Return the selected equalizer of a represented discrete parallel pair."""
+    _require_parallel_discrete_pair(category, left_morphism, right_morphism)
+    equalizer = left_morphism.domain()
+    diagram = _parallel_pair_diagram(left_morphism, right_morphism, category)
+    universal_cone = diagram.Cones().cone(
+        equalizer,
+        lambda index: category.Mor(equalizer, diagram(index)).identity(),
+    )
+
+    def factorizer(cone):
+        return category.Mor(cone.apex(), equalizer).identity()
+
+    return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+
+def _discrete_coequalizer_construction(category, left_morphism, right_morphism):
+    r"""Return the selected coequalizer of a represented discrete parallel pair."""
+    _require_parallel_discrete_pair(category, left_morphism, right_morphism)
+    coequalizer = left_morphism.codomain()
+    diagram = _parallel_pair_diagram(left_morphism, right_morphism, category)
+    universal_cocone = diagram.Cocones().cocone(
+        coequalizer,
+        lambda index: category.Mor(diagram(index), coequalizer).identity(),
+    )
+
+    def factorizer(cocone):
+        return category.Mor(coequalizer, cocone.apex()).identity()
+
+    return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
+
+
+def _nonempty_discrete_morphism_family_reference(category, morphisms):
+    r"""Return one arrow of a nonempty represented parallel family in a discrete category."""
+    if morphisms.cardinality() == cardinal(0):
+        raise ValueError(
+            f"a wide equalizer or coequalizer in {category} needs a nonempty family of parallel morphisms"
+        )
+    reference = morphisms.value(morphisms.index_set().an_element())
+    mor = category.Mor(reference.domain(), reference.codomain())
+    if parent(reference) is not mor:
+        raise TypeError(
+            f"a wide equalizer or coequalizer in {category} needs a family of its morphisms, but the family contains {reference}"
+        )
+    return reference
+
+
 def _factor_family(factors, *, name="Selected factors"):
     r"""Return the indexed family a construction is taken over.
 

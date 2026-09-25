@@ -240,37 +240,6 @@ class DiscreteCategory(OwnedCategory):
             )
         return self.MorCategory().Of(domain, codomain)
 
-    def _common_object_of_finite_family(self, factors, *, construction: str):
-        r"""Return the forced apex of a finite discrete (co)product, when it exists."""
-        from dzack_research.preamble.categories.abstract_categories.products import (
-            _finite_factor_family,
-        )
-
-        family = _finite_factor_family(factors, name=f"{construction.capitalize()} factors")
-        if any(factor not in self for factor in family):
-            raise TypeError(
-                f"a {construction} in {self} needs every factor to be one of its objects, but the factors are {family}"
-            )
-        labels = tuple(family.index_set())
-        if labels:
-            apex = family.value(labels[0])
-            for label in labels[1:]:
-                factor = family.value(label)
-                if factor is not apex:
-                    raise ValueError(
-                        f"the {construction} of {family} does not exist in {self}: a discrete category has a morphism "
-                        f"between two objects only when they are the same object, but the factors include {apex} and {factor}"
-                    )
-            return family, apex
-
-        if cardinal(self.object_set().cardinality()) != cardinal(1):
-            extremum = "terminal" if construction == "product" else "initial"
-            raise ValueError(
-                f"the empty {construction} does not exist in {self}: it would be a {extremum} object, and a discrete "
-                f"category has a {extremum} object exactly when it has one object"
-            )
-        return family, self.an_object()
-
     def product(self, factors):
         r"""Return the finite product when its universal cone exists."""
         return self._categorical_product_construction(factors).object()
@@ -287,62 +256,17 @@ class DiscreteCategory(OwnedCategory):
 
     def _categorical_product_construction(self, factors):
         from dzack_research.preamble.categories.abstract_categories.products import (
-            SelectedLimitConstruction,
-            _discrete_diagram,
+            _discrete_product_construction,
         )
 
-        family, product = self._common_object_of_finite_family(
-            factors,
-            construction="product",
-        )
-        diagram = _discrete_diagram(family, self)
-        universal_cone = diagram.ProductCones().cone(
-            product,
-            lambda index: self.Mor(product, diagram(index)).identity(),
-        )
-
-        def factorizer(cone):
-            return self.Mor(cone.apex(), product).identity()
-
-        return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+        return _discrete_product_construction(self, factors)
 
     def _categorical_coproduct_construction(self, factors):
         from dzack_research.preamble.categories.abstract_categories.products import (
-            SelectedColimitConstruction,
-            _discrete_diagram,
+            _discrete_coproduct_construction,
         )
 
-        family, coproduct = self._common_object_of_finite_family(
-            factors,
-            construction="coproduct",
-        )
-        diagram = _discrete_diagram(family, self)
-        universal_cocone = diagram.CoproductCocones().cocone(
-            coproduct,
-            lambda index: self.Mor(diagram(index), coproduct).identity(),
-        )
-
-        def factorizer(cocone):
-            return self.Mor(coproduct, cocone.apex()).identity()
-
-        return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
-
-    def _require_parallel_discrete_pair(self, left_morphism, right_morphism) -> None:
-        if (
-            left_morphism.domain() is not right_morphism.domain()
-            or left_morphism.codomain() is not right_morphism.codomain()
-        ):
-            raise ValueError(
-                f"a parallel pair in {self} needs common endpoints, but {left_morphism} is "
-                f"{left_morphism.domain()} -> {left_morphism.codomain()} and {right_morphism} is "
-                f"{right_morphism.domain()} -> {right_morphism.codomain()}"
-            )
-        mor = self.Mor(left_morphism.domain(), left_morphism.codomain())
-        if parent(left_morphism) is not mor or parent(right_morphism) is not mor:
-            raise TypeError(
-                f"an equalizer or coequalizer in {self} needs a parallel pair of its morphisms, but got "
-                f"{left_morphism} and {right_morphism}"
-            )
+        return _discrete_coproduct_construction(self, factors)
 
     def _categorical_equalizer(self, left_morphism, right_morphism):
         return self._categorical_equalizer_construction(
@@ -352,22 +276,10 @@ class DiscreteCategory(OwnedCategory):
 
     def _categorical_equalizer_construction(self, left_morphism, right_morphism):
         from dzack_research.preamble.categories.abstract_categories.products import (
-            SelectedLimitConstruction,
-            _parallel_pair_diagram,
+            _discrete_equalizer_construction,
         )
 
-        self._require_parallel_discrete_pair(left_morphism, right_morphism)
-        equalizer = left_morphism.domain()
-        diagram = _parallel_pair_diagram(left_morphism, right_morphism, self)
-        universal_cone = diagram.Cones().cone(
-            equalizer,
-            lambda index: self.Mor(equalizer, diagram(index)).identity(),
-        )
-
-        def factorizer(cone):
-            return self.Mor(cone.apex(), equalizer).identity()
-
-        return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+        return _discrete_equalizer_construction(self, left_morphism, right_morphism)
 
     def _categorical_coequalizer(self, left_morphism, right_morphism):
         return self._categorical_coequalizer_construction(
@@ -377,43 +289,26 @@ class DiscreteCategory(OwnedCategory):
 
     def _categorical_coequalizer_construction(self, left_morphism, right_morphism):
         from dzack_research.preamble.categories.abstract_categories.products import (
-            SelectedColimitConstruction,
-            _parallel_pair_diagram,
+            _discrete_coequalizer_construction,
         )
 
-        self._require_parallel_discrete_pair(left_morphism, right_morphism)
-        coequalizer = left_morphism.codomain()
-        diagram = _parallel_pair_diagram(left_morphism, right_morphism, self)
-        universal_cocone = diagram.Cocones().cocone(
-            coequalizer,
-            lambda index: self.Mor(diagram(index), coequalizer).identity(),
-        )
-
-        def factorizer(cocone):
-            return self.Mor(coequalizer, cocone.apex()).identity()
-
-        return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
-
-    def _nonempty_discrete_morphism_family_reference(self, morphisms):
-        if morphisms.cardinality() == cardinal(0):
-            raise ValueError(
-                f"a wide equalizer or coequalizer in {self} needs a nonempty family of parallel morphisms"
-            )
-        reference = morphisms.value(morphisms.index_set().an_element())
-        mor = self.Mor(reference.domain(), reference.codomain())
-        if parent(reference) is not mor:
-            raise TypeError(
-                f"a wide equalizer or coequalizer in {self} needs a family of its morphisms, but the family contains {reference}"
-            )
-        return reference
+        return _discrete_coequalizer_construction(self, left_morphism, right_morphism)
 
     def _categorical_equalizer_family(self, morphisms):
         r"""Return the source of a nonempty parallel family, whose arrows are forced equal."""
-        return self._nonempty_discrete_morphism_family_reference(morphisms).domain()
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _nonempty_discrete_morphism_family_reference,
+        )
+
+        return _nonempty_discrete_morphism_family_reference(self, morphisms).domain()
 
     def _categorical_coequalizer_family(self, morphisms):
         r"""Return the target of a nonempty parallel family, whose arrows are forced equal."""
-        return self._nonempty_discrete_morphism_family_reference(morphisms).codomain()
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _nonempty_discrete_morphism_family_reference,
+        )
+
+        return _nonempty_discrete_morphism_family_reference(self, morphisms).codomain()
 
     def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
         return self.Mor(source, target).identity()

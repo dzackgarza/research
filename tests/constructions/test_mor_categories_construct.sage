@@ -8,6 +8,8 @@ that every Mor category is discrete; functor categories, for example, have
 natural transformations as their morphisms.
 """
 
+import pytest
+
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
@@ -34,7 +36,10 @@ def test_fixed_mor_category_retains_family_endpoints_and_underlying_mor() -> Non
     assert end.underlying_mor() is point.Mor(point)
     assert end.accepts(identity)
     assert end.object(identity) is arrow
+    assert end.object_set() is end.arrow_set()
     assert end.objects().value(identity) is arrow
+    assert end.arrows().cardinality() == cardinal(1)
+    assert end.arrows().value(identity) == end.identity(arrow)
     assert end.end_family() is Sets().category_packet().Ends()
     assert end.identity_endomorphism() == identity
     assert end.one() == identity
@@ -121,12 +126,17 @@ def test_fixed_mor_limit_and_colimit_categories_and_functors_fix_the_only_object
     coproducts = end.Coproducts(end)
     limit = end.limit_functor(end)
     colimit = end.colimit_functor(end)
+    limit_construction = limits.construction(diagram)
+    colimit_construction = colimits.construction(diagram)
 
     for constructions in (limits, colimits, products, coproducts):
         assert constructions.index_category() is end
         assert constructions.target_category() is end
     assert limit(diagram_object) is arrow
     assert colimit(diagram_object) is arrow
+    for index in end.objects():
+        assert limit_construction.structure_morphism(index) == end.identity(arrow)
+        assert colimit_construction.costructure_morphism(index) == end.identity(arrow)
 
 
 def test_fixed_mor_universal_constructions_return_the_only_object() -> None:
@@ -141,6 +151,8 @@ def test_fixed_mor_universal_constructions_return_the_only_object() -> None:
     assert isinstance(end.ElementType, type)
     assert product.object() is arrow
     assert coproduct.object() is arrow
+    assert end.product(()) is arrow
+    assert end.coproduct(()) is arrow
     assert equalizer.object() is arrow
     assert coequalizer.object() is arrow
     assert end.equalizer(identity_2, identity_2) is arrow
@@ -155,6 +167,62 @@ def test_fixed_mor_universal_constructions_return_the_only_object() -> None:
     assert span.apex() is arrow
     assert span.left_leg() == identity_2
     assert span.right_leg() == identity_2
+
+
+def test_fixed_mor_universal_maps_are_the_forced_identity_two_morphisms() -> None:
+    _point, end, _identity, arrow = _identity_object()
+    identity_2 = arrow.Mor(arrow).identity()
+    product = end.product_construction((arrow, arrow))
+    coproduct = end.coproduct_construction((arrow, arrow))
+    equalizer = end.equalizer_construction(identity_2, identity_2)
+    coequalizer = end.coequalizer_construction(identity_2, identity_2)
+    product_shape = product.diagram().domain()
+    coproduct_shape = coproduct.diagram().domain()
+
+    assert product.structure_morphism(product_shape(0)) == identity_2
+    assert product.structure_morphism(product_shape(1)) == identity_2
+    assert coproduct.costructure_morphism(coproduct_shape(0)) == identity_2
+    assert coproduct.costructure_morphism(coproduct_shape(1)) == identity_2
+    assert product.factor(product.cone()).apex_map() == identity_2
+    assert coproduct.factor(coproduct.cocone()).apex_map() == identity_2
+    assert equalizer.factor(equalizer.cone()).apex_map() == identity_2
+    assert coequalizer.factor(coequalizer.cocone()).apex_map() == identity_2
+
+
+def test_distinct_arrow_objects_of_a_fixed_mor_have_no_product_or_coproduct() -> None:
+    two = Sets.Δ[1]
+    end = two.End()
+    identity = two.Mor(two).identity()
+    constant = two.Mor(two)(lambda _point: two(0))
+    identity_object = end(identity)
+    constant_object = end(constant)
+
+    assert identity_object is not constant_object
+    with pytest.raises(ValueError, match="does not exist"):
+        end.product((identity_object, constant_object))
+    with pytest.raises(ValueError, match="does not exist"):
+        end.coproduct((identity_object, constant_object))
+
+
+def test_restricted_fixed_mor_object_set_is_the_admitted_arrow_subobject() -> None:
+    two = Sets.Δ[1]
+    identity = two.Mor(two).identity()
+    constant = two.Mor(two)(lambda _point: two(0))
+    monos = Sets().Mono(two, two)
+
+    assert identity in monos.object_set()
+    assert constant not in monos.object_set()
+
+
+def test_functor_category_keeps_natural_transformations_as_two_morphisms() -> None:
+    functor_category = Cat().Mor(Sets(), Sets())
+    identity = Sets().identity_functor()
+    identity_object = functor_category.object(identity)
+    transformations = identity.natural_transformations_to(identity)
+    three = Sets.Δ[2]
+
+    assert identity_object.Mor(identity_object) is transformations
+    assert transformations.identity().component(three) == Sets().Mor(three, three).identity()
 
 
 def test_fixed_mor_opposite_presheaves_and_yoneda_have_the_standard_shapes() -> None:
