@@ -2217,20 +2217,18 @@ def _cartesian_product_of(family: IndexedFamily) -> Sets().ObjectType:
 
         if all(family(index) in AdditiveMonoids() for index in index_set):
             placements.append(CartesianProductsOfAdditiveMonoids())
-        factor_cardinalities = tuple(
-            cardinal(family(index).cardinality()) for index in index_set
-        )
-        product_cardinality = _cardinalities().product(*factor_cardinalities)
-        if product_cardinality.is_finite():
-            if all(
-                family(index) in FiniteSets() and family(index) in EnumeratedSets()
-                for index in index_set
-            ):
+        factors = tuple(family(index) for index in index_set)
+        if all(factor in FiniteSets() for factor in factors):
+            if all(factor in EnumeratedSets() for factor in factors):
                 placements.insert(0, FiniteEnumeratedCartesianProductsOfSets())
             else:
                 placements.append(FiniteSets())
-        elif product_cardinality.is_countably_infinite():
-            placements.append(Sets().Countable().Infinite())
+        elif all(factor in CountableSets() for factor in factors):
+            # A finite product of countable sets is countable.  Do not demand
+            # exact cardinalities merely to construct the product: some owned
+            # factors (for example matrix Mor objects) know their structural
+            # category before exposing a cardinality computation.
+            placements.append(CountableSets())
     return _object_of(Category.join(placements), family=family)
 
 

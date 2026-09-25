@@ -2395,19 +2395,19 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
             generator assignments; its endpoints determine it.
             """
             from dzack_research.preamble.categories.modules.internal_mor import (
-                __internal_mor_model_data,
+                _internal_mor_model_data,
             )
 
-            model, _inclusion, _relations, _presentation = __internal_mor_model_data(self)
+            model, _inclusion, _relations, _presentation = _internal_mor_model_data(self)
             return model
 
         def inclusion_into_generator_maps(self):
             r"""The inclusion of the presented model of ``Hom(M, N)`` into ``N^{gens(M)}``."""
             from dzack_research.preamble.categories.modules.internal_mor import (
-                __internal_mor_model_data,
+                _internal_mor_model_data,
             )
 
-            _model, inclusion, _relations, _presentation = __internal_mor_model_data(self)
+            _model, inclusion, _relations, _presentation = _internal_mor_model_data(self)
             return inclusion
 
         def _morphism_from_internal_model(self, model_element):
@@ -4546,16 +4546,17 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
         return "matrix endomorphism objects"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.algebras import (
-            Algebras,
+        from dzack_research.preamble.categories.group.additive_mors import (
+            AdditiveEndomorphismRings,
         )
 
-        # ``MatrixSpaces`` states only the linear half; the ring structure of
-        # End_R(F) under composition arrives with the associative unital
-        # algebras.
+        # MatrixSpaces states only the linear half.  The multiplication of
+        # End_R(F) is the same composition owned by AdditiveEndomorphismRings;
+        # the matrix realization specializes that object rather than carrying
+        # a parallel generic algebra datum.
         return [
             MatrixSpaces(self.base_ring()),
-            Algebras(self.base_ring()).Associative().Unital(),
+            AdditiveEndomorphismRings(self.base_ring()),
         ]
 
     # The two above state two different morphisms, so this names which of
@@ -4563,6 +4564,10 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
     _MorCategory = AssociativeAlgebraMorCategoryConstruction
 
     class ParentMethods:
+        def _compose_endomorphisms(self, left, right):
+            r"""Compose matrix endomorphisms as linear maps, not merely additive maps."""
+            return self._compose_module_endomorphisms(left, right)
+
         def is_commutative(self):
             r"""Return whether \(\operatorname{End}_R(F)\cong M_n(R)\) commutes.
 

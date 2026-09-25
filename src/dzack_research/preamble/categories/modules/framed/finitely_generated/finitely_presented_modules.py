@@ -184,7 +184,16 @@ def _fix_selected_module_presentation(module, base_ring, relation_matrix, presen
     module, relation matrix and presentation morphism; downstream consumers
     read them through the presentation operations rather than this storage.
     """
-    if module._selected_module_presentation is not None:
+    try:
+        selected = object.__getattribute__(
+            module,
+            "_selected_module_presentation",
+        )
+    except AttributeError:
+        # Mor parents fix selected data before cooperative Parent initialization
+        # has refined their runtime class with this owner's ParentMethods.
+        selected = None
+    if selected is not None:
         raise ValueError(f"{module} already has a selected presentation")
     module._selected_module_presentation = _SelectedModulePresentationData(
         base_ring,
@@ -1065,11 +1074,30 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
             presentation = self.presentation()
             relation_rows = tuple(_matrix_coordinate_rows(self.presentation_matrix()))
-            if all(
+            diagonal = all(
                 row_index == column_index or coefficient == ring.zero()
                 for row_index, row in enumerate(relation_rows)
                 for column_index, coefficient in enumerate(row)
-            ):
+            )
+            diagonal_entries = tuple(
+                _canonical_pid_associate(ring, relation_rows[position][position])
+                for position in range(
+                    min(
+                        len(relation_rows),
+                        len(relation_rows[0]) if relation_rows else 0,
+                    )
+                )
+            )
+            already_invariant = diagonal and all(
+                right == ring.zero()
+                or (left != ring.zero() and left.divides(right))
+                for left, right in zip(
+                    diagonal_entries,
+                    diagonal_entries[1:],
+                    strict=False,
+                )
+            )
+            if already_invariant:
                 arrows = Modules(ring).ArrowCategory()
                 original_object = arrows(presentation)
                 identity = arrows.Mor(original_object, original_object).identity()

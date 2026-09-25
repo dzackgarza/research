@@ -67,7 +67,7 @@ def _native_fgp_morphism(morphism):
         ).lift()
         for generator in smith_generators
     ]
-    native_linear = optimized.V().mor(lifted_images, codomain_engine.V())
+    native_linear = optimized.V().hom(lifted_images, codomain_engine.V())
     return FGP_Morphism(FGP_Homset(domain_engine, codomain_engine), native_linear)
 
 

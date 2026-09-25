@@ -883,13 +883,17 @@ def _declared_category_is_subcategory(category: Category, target: Category) -> b
     # parameter inclusions which are not inheritance edges.  The distinction is
     # essential when only part of the source refinement survives the parameter
     # change: declaring a raw supercategory edge would make Sage propagate every
-    # axiom through it.  Ask each declared ancestor's unaxiomatized owner for such
-    # a relation before falling back to ordinary graph ancestry.
+    # axiom through it.  Ask each declared ancestor directly for such a relation:
+    # the unaxiomatized owner is already among those ancestors, while forcing
+    # _without_axioms here can recursively normalize unrelated categories.
     sources = (category, *category._set_of_super_categories)
     for source in sources:
-        owner = source._without_axioms(named=True)
-        relation = getattr(owner, "_declared_parameter_subcategory_relation", None)
-        if relation is not None and relation(source, target) is True:
+        relation = getattr(
+            type(source),
+            "_declared_parameter_subcategory_relation",
+            None,
+        )
+        if relation is not None and relation(source, source, target) is True:
             return True
     return target in category._set_of_super_categories
 
