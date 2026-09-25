@@ -479,8 +479,10 @@ def _ring_morphisms_equal(left, right):
         return _ring_morphisms_equal(left * quotient_map, right * quotient_map)
 
     engine = _engine_ring(domain)
-    if engine is SageZZ or engine is SageQQ:
-        # A unital map out of Z, or out of Q when it exists, is unique.
+    if engine is SageZZ or domain in PrimeFields():
+        # A unital map out of Z, or out of a prime field when it exists, is
+        # unique.  This includes Q and F_p; proper finite-field extensions are
+        # deliberately excluded because they can have distinct embeddings.
         return True
 
     if domain.is_framed_algebra():
