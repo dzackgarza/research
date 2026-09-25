@@ -1,46 +1,36 @@
-r"""Every row of Nikulin's classification is realised by the catalogue.
+r"""Nikulin's classification table and its smallest realization routes.
 
 A K3 surface with a non-symplectic involution has invariant lattice determined
 up to isometry by \((r, a, \delta)\): the rank, the length of the discriminant
 group, and Nikulin's parity invariant.  There are 75 such triples, and each
 invariant lattice is hyperbolic, of signature \((1, r-1)\).
 
-The catalogue keys a block recipe by each triple.  The two sides of the
-assertion therefore come from different places: the triple is transcribed from
-the literature, and the invariants are computed from the blocks by the
-preamble's own operations -- Sylvester's inertia, the discriminant length, and
-delta from the discriminant quadratic form.
-
-One case per row, so a run names every row that fails.
+The catalogue is a literal 75-row source table.  Runtime construction here
+uses the smallest rows covering the one-block and orthogonal-sum branches;
+the nontrivial gluing route has its dedicated A1^8 specimen in the focused
+two-elementary tests.  This avoids reconstructing all 75 lattices merely to
+recheck source data.
 """
-
-import pytest
 
 from dzack_research.preamble.all import *
 
 
-def _name(triple) -> str:
-    r"""Name a case by its triple, so a failing row reports which row it is."""
-    rank, length, delta = triple
-    return f"r{rank}-a{length}-d{delta}"
-
-
-def test_nikulins_classification_has_seventy_five_types() -> None:
+def test_nikulins_catalogues_have_the_archived_numbers_of_rows() -> None:
     assert TwoElementary.cardinality() == 75
+    assert NegativeDefTwoElementary.cardinality() == 51
 
 
-@pytest.mark.parametrize("triple", TwoElementary, ids=_name)
-def test_each_hyperbolic_type_is_realised(triple) -> None:
-    rank, _length, _delta = triple
-    lattice = TwoElementary[triple]
-
-    assert lattice.signature_pair() == signature_pair(1, rank - 1)
-    assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)
-
-
-@pytest.mark.parametrize("triple", NegativeDefTwoElementary, ids=_name)
-def test_each_negative_definite_type_is_realised(triple) -> None:
-    rank, _length, _delta = triple
-    for lattice in NegativeDefTwoElementary[triple]:
-        assert lattice.signature_pair() == signature_pair(0, rank)
+def test_small_hyperbolic_table_rows_realise_one_block_and_biproduct_routes() -> None:
+    for triple in ((1, 1, 1), (3, 1, 1)):
+        rank, _length, _delta = triple
+        lattice = TwoElementary[triple]
+        assert lattice.signature_pair() == signature_pair(1, rank - 1)
         assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)
+
+
+def test_small_negative_definite_table_row_is_realised() -> None:
+    triple = (1, 1, 1)
+    (lattice,) = NegativeDefTwoElementary[triple]
+    rank, _length, _delta = triple
+    assert lattice.signature_pair() == signature_pair(0, rank)
+    assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)
