@@ -3561,8 +3561,15 @@ def Zp(*args, **kwargs):
     prime_value = args[0] if args else kwargs.get("p")
     owned_prime = source(prime_value)
     prime = SageZZ(_engine_element(source, owned_prime))
-    engine_args = (prime, *args[1:]) if args else args
     engine_kwargs = dict(kwargs)
+    # The precision is a session integer, which Sage's factory cannot read;
+    # it crosses as the Sage integer it names.
+    match args[1:2]:
+        case (precision,):
+            args = (args[0], SageZZ(_engine_element(source, source(precision))), *args[2:])
+    if "prec" in engine_kwargs:
+        engine_kwargs["prec"] = SageZZ(_engine_element(source, source(engine_kwargs["prec"])))
+    engine_args = (prime, *args[1:]) if args else args
     if not args and "p" in engine_kwargs:
         engine_kwargs["p"] = prime
     parser = _SageZp(*engine_args, **engine_kwargs)

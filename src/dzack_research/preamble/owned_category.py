@@ -1387,7 +1387,14 @@ def _object_of(
     its own ``base`` when it calls ``super().__init__``, the way the module
     Mor does, because a level may name a base its category does not -- and
     injecting one here would arrive twice at the levels that already do.
+
+    A join reaching here from ``Category.join`` is realized as the owned join
+    of the same branches: its implementation type then composes the branches'
+    declared providers directly, which is what inserting a computation class
+    before its owner's providers requires.
     """
+    if isinstance(category, JoinCategory) and not isinstance(category, OwnedJoinCategory):
+        category = owned_category_join(category.super_categories())
     match _engine:
         case None:
             implementation = category.ObjectType
