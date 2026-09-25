@@ -1363,7 +1363,8 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
         f"and {group} is not known to be finite"
     )
     group_model = _gap_model(group)
-    assert bool(normal_subgroup.IsNormal(group_model)), (
+    # GAP's IsNormal(G, U) asks whether G normalizes U.
+    assert bool(group_model.IsNormal(normal_subgroup)), (
         f"the quotient of {group} by {normal_subgroup} is not a group: {normal_subgroup} is not a normal subgroup of {group}"
     )
     gap_projection = libgap.NaturalMorphismByNormalSubgroup(
@@ -1412,13 +1413,12 @@ class SubgroupInclusion(SetMorphism):
             raise ValueError(f"the inclusion of {self.domain()} does not factor through {target_inclusion.domain()}: {self.domain()} is not contained in {target_inclusion.domain()}")
         return factor
 
-    @cached_method
-    def _cokernel_data(self):
-        r"""Return the quotient by the normal closure of this subgroup image."""
+    def _finite_subgroup_model(self):
+        r"""Return the GAP model of the subgroup, inside the model of its finite ambient group."""
         subgroup = self.domain()
         ambient = self.codomain()
         assert ambient in OwnedFiniteGroups(), (
-            f"the cokernel of the inclusion {subgroup} -> {ambient} is computed here only for finite groups, "
+            f"the subgroup {subgroup} of {ambient} is computed here only inside a finite group, "
             f"and {ambient} is not known to be finite"
         )
         from dzack_research.preamble.categories.group.predicate_subgroups import (
@@ -1428,16 +1428,31 @@ class SubgroupInclusion(SetMorphism):
 
         match subgroup:
             case _ if subgroup in KernelSubgroups(ambient):
-                subgroup_model = (
-                    subgroup.kernel_morphism()._gap_morphism_crossing().Kernel()
-                )
+                return subgroup.kernel_morphism()._gap_morphism_crossing().Kernel()
             case _:
                 assert subgroup not in PredicateSubgroups(ambient), (
-                    f"the cokernel of the inclusion {subgroup} -> {ambient} cannot be computed: {subgroup} is defined "
-                    f"by a predicate, and is computable here only when it is the kernel of a group homomorphism"
+                    f"the subgroup {subgroup} of {ambient} cannot be computed: it is defined by a "
+                    f"predicate, and is computable here only when it is the kernel of a group homomorphism"
                 )
-                subgroup_model = _gap_model(subgroup)
-        normal_closure = libgap.NormalClosure(_gap_model(ambient), subgroup_model)
+                return _gap_model(subgroup)
+
+    def is_normal(self) -> bool:
+        r"""Whether the subgroup ``H`` is normal in ``G``: ``g H g^{-1} = H`` for every ``g`` in ``G``.
+
+        Decided for a finite ``G`` by GAP's ``IsNormal``.  ``G/H`` is a group,
+        and ``H -> G -> G/H`` exact, exactly when this holds; otherwise
+        :meth:`cokernel` is ``G`` modulo the normal closure of ``H``.
+        """
+        return bool(_gap_model(self.codomain()).IsNormal(self._finite_subgroup_model()))
+
+    @cached_method
+    def _cokernel_data(self):
+        r"""Return the quotient by the normal closure of this subgroup image."""
+        ambient = self.codomain()
+        normal_closure = libgap.NormalClosure(
+            _gap_model(ambient),
+            self._finite_subgroup_model(),
+        )
         return _finite_group_quotient_by_gap_normal_subgroup(
             ambient,
             normal_closure,
