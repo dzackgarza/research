@@ -12,5 +12,10 @@ def test_cubics_with_a_double_coordinate_point() -> None:
     assert system in ImposedMultiplicityLinearSystems(QQ)
     assert system.ambient_section_space().dimension() == 10
     assert system.constrained_section_space().dimension() == 7
+    evaluation = system.imposed_jet_evaluation()
+    assert evaluation.domain() is system.ambient_section_space()
+    assert evaluation.kernel() is system.constrained_section_space()
+    assert evaluation.codomain().jet_order() == 2
+    assert evaluation.codomain().jet_point() is point
     assert system.imposed_vanishing_order() == 2
     assert system.projective_dimension() == 6
