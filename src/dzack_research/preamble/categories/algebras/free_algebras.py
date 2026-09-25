@@ -30,8 +30,8 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FinitelyPresentedAlgebras,
     _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
-    _SelectedFiniteAlgebraPresentation,
     _algebra_with_structure,
+    _fix_selected_algebra_presentation,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
@@ -463,20 +463,6 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
                 representative = unflatten(representative)
             return _owned_engine_element(presentation_ring, representative)
 
-        def presentation_morphism():
-            return Algebras(
-                presentation_ring.base_ring()
-            ).Associative().Unital().Mor(presentation_ring, self)(
-                lambda label: self.algebra_generator(label)
-            )
-
-        self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
-            presentation_ring,
-            selected_relations,
-            presentation_ideal,
-            lift_to_presentation,
-            presentation_morphism,
-        )
         if generating_module is not None:
             self._generating_module = generating_module
 
@@ -546,7 +532,13 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             categories=tuple(placement),
             law_decisions=law_decisions,
             algebra_framing_source=presentation_ring,
-            algebra_framing_morphism_factory=lambda: self._selected_algebra_presentation.presentation_morphism(),
+        )
+        _fix_selected_algebra_presentation(
+            self,
+            presentation_ring,
+            selected_relations,
+            presentation_ideal,
+            lift_to_presentation,
         )
         self._preamble_commutative_algebra_coproduct_backend = (
             (lambda left, right: _commutative_algebra_coproduct_backend(left, right))

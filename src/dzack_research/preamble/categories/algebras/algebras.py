@@ -588,8 +588,8 @@ def _fix_selected_algebra_resolution(
     owner,
     source,
     labels,
-    generator_morphism_factory,
-    augmentation_factory,
+    generator_morphism,
+    augmentation,
 ) -> None:
     r"""Retain one chosen degree-zero free-algebra resolution."""
 
@@ -603,8 +603,6 @@ def _fix_selected_algebra_resolution(
 
         ordinary = Algebras(algebra.base_ring()).Associative().Unital()
         free = FreeAlgebras(algebra.base_ring())
-        generator_morphism = generator_morphism_factory()
-        augmentation = augmentation_factory()
         return Resolutions(ordinary, free, 0, free).selected_degree_zero(
             algebra,
             source,
@@ -652,8 +650,123 @@ def _install_selected_algebra_generators(
         owner,
         source,
         labels,
-        lambda: generator_morphism,
-        lambda: source.Mor(algebra)(generator_morphism),
+        generator_morphism,
+        source.Mor(algebra)(generator_morphism),
+    )
+
+
+class _SelectedFiniteAlgebraPresentationBackend:
+    r"""Computational data derived from one selected finite algebra resolution."""
+
+    def __init__(self, presentation_ideal, lift_to_presentation) -> None:
+        self._presentation_ideal = presentation_ideal
+        self._lift_to_presentation = lift_to_presentation
+
+    def presentation_ideal(self):
+        return self._presentation_ideal
+
+    def lift(self, element):
+        return self._lift_to_presentation(element)
+
+
+def _fix_selected_algebra_presentation(
+    algebra,
+    presentation_ring,
+    relations,
+    presentation_ideal,
+    lift_to_presentation,
+) -> None:
+    r"""Promote selected algebra generators to one truncation-one resolution."""
+    owner = algebra.algebra_framing_owner()
+    degree_zero = algebra.selected_algebra_resolution()
+    match degree_zero.truncation():
+        case 0:
+            pass
+        case _:
+            raise ValueError(
+                f"{algebra} already carries a selected algebra resolution through degree "
+                f"{degree_zero.truncation()}; its finite presentation cannot be fixed a second time"
+            )
+    match degree_zero.level(0) is presentation_ring:
+        case False:
+            raise ValueError(
+                f"the selected presentation of {algebra} is on {presentation_ring}, but its "
+                f"degree-zero free algebra is {degree_zero.level(0)}"
+            )
+        case True:
+            pass
+    labels = degree_zero.generating_set()
+    relation_labels = finite_ordered_set(tuple(relations.index_set()))
+
+    def selected_resolution():
+        degree_one_labels = finite_ordered_set(
+            tuple(("generator", label) for label in labels)
+            + tuple(("relation", index) for index in relation_labels)
+        )
+        base = algebra.base_ring()
+        degree_one = base.free_module(degree_one_labels).tensor_algebra()
+        relation_source = base.free_module(relation_labels).tensor_algebra()
+
+        def first_face_value(tagged):
+            match tagged[0]:
+                case "generator":
+                    return presentation_ring.algebra_generator(tagged[1])
+                case "relation":
+                    return presentation_ring.zero()
+
+        def second_face_value(tagged):
+            match tagged[0]:
+                case "generator":
+                    return presentation_ring.algebra_generator(tagged[1])
+                case "relation":
+                    return relations.value(tagged[1])
+
+        first_face = degree_one.Mor(presentation_ring)(
+            Sets().Mor(degree_one_labels, presentation_ring)(first_face_value)
+        )
+        second_face = degree_one.Mor(presentation_ring)(
+            Sets().Mor(degree_one_labels, presentation_ring)(second_face_value)
+        )
+        degeneracy = presentation_ring.Mor(degree_one)(
+            Sets().Mor(
+                labels,
+                degree_one,
+            )(
+                lambda label: degree_one.algebra_generator(("generator", label))
+            )
+        )
+        resolution_category = (
+            Algebras(base)
+            .Associative()
+            .Unital()
+            .FinitelyPresentedAsAlgebra()
+            .resolution_category()
+        )
+        return resolution_category.selected_presentation(
+            algebra,
+            presentation_ring,
+            degree_one,
+            degree_zero.augmentation(),
+            first_face,
+            second_face,
+            degeneracy,
+            generating_set=labels,
+            generator_morphism=degree_zero.generator_morphism(),
+            relation_source=relation_source,
+            relations=relations,
+        )
+
+    _fix_selected_resolution(
+        algebra,
+        owner,
+        selected_resolution,
+        replace=True,
+    )
+    algebra._selected_algebra_presentation_backend = (
+        _SelectedFiniteAlgebraPresentationBackend(
+            presentation_ideal,
+            lift_to_presentation,
+        )
     )
 
 
@@ -2038,8 +2151,8 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
                 owner,
                 source,
                 labels,
-                lambda: generator_morphism,
-                lambda: source.Mor(self)(generator_morphism),
+                generator_morphism,
+                source.Mor(self)(generator_morphism),
             )
 
         def algebra_base_ring(self):
@@ -2074,62 +2187,6 @@ def _require_matrix_algebra(mor):
             f"but {mor} is not in {MatrixAlgebras(ring)}"
         )
     return mor
-
-
-class _SelectedFiniteAlgebraPresentation:
-    r"""The chosen polynomial presentation defining a presented algebra.
-
-    The presenting algebra, relation family, defining ideal, quotient map, and
-    selected lift are one mathematical choice.  The quotient-map realization
-    is fixed at construction and may be evaluated later; its cache is not a
-    second mathematical datum.  Keep them together so the
-    chosen-presentation category does not infer that choice from unrelated
-    private attributes on its objects.
-    """
-
-    def __init__(
-        self,
-        presentation_ring,
-        relations,
-        presentation_ideal,
-        lift_to_presentation,
-        presentation_morphism_factory,
-    ) -> None:
-        self._presentation_ring = presentation_ring
-        self._relations = relations
-        self._presentation_ideal = presentation_ideal
-        self._lift_to_presentation = lift_to_presentation
-        if not callable(presentation_morphism_factory):
-            raise TypeError(
-                f"writing an algebra as R[x_1, ..., x_n]/I needs a function producing its quotient map, "
-                f"but {presentation_morphism_factory!r} is not callable"
-            )
-        self._presentation_morphism_factory = presentation_morphism_factory
-        self._realized_presentation_morphism = None
-
-    def presentation_ring(self):
-        return self._presentation_ring
-
-    def relations(self):
-        return self._relations
-
-    def presentation_ideal(self):
-        return self._presentation_ideal
-
-    def lift(self, element):
-        return self._lift_to_presentation(element)
-
-    def presentation_morphism(self):
-        morphism = self._realized_presentation_morphism
-        if morphism is None:
-            morphism = self._presentation_morphism_factory()
-            if morphism.domain() is not self.presentation_ring():
-                raise ValueError(
-                    f"the quotient map R[x_1, ..., x_n] -> R[x_1, ..., x_n]/I must start at {self.presentation_ring()}, but it "
-                    f"starts at {morphism.domain()}"
-                )
-            self._realized_presentation_morphism = morphism
-        return morphism
 
 
 class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
@@ -2182,16 +2239,19 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return PresentedAlgebraMor
 
         def selected_algebra_presentation(self):
-            r"""Return the one chosen polynomial-presentation datum for this algebra."""
-            selected = self._selected_algebra_presentation
-            assert selected.presentation_ring() is self.algebra_framing_source(), (
-                f"{self} must be written as a quotient of the free algebra on its chosen generators, "
-                f"but its polynomial ring is {selected.presentation_ring()}"
-            )
-            return selected
+            r"""Return the one chosen truncation-one algebra resolution."""
+            selected = self.selected_algebra_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected
+                case _:
+                    raise TypeError(
+                        f"{self} has no chosen finite algebra presentation: its selected resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
 
         def presentation_ring(self):
-            return self.selected_algebra_presentation().presentation_ring()
+            return self.selected_algebra_presentation().level(0)
 
         def generating_module(self):
             r"""Return the exact module on which the selected free algebra is built."""
@@ -2221,7 +2281,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return self.selected_algebra_presentation().relations()
 
         def presentation_ideal(self):
-            return self.selected_algebra_presentation().presentation_ideal()
+            return self._selected_algebra_presentation_backend.presentation_ideal()
 
         def presentation(self):
             labels = finite_ordered_set(("presentation_ring", "relations"))
@@ -2317,14 +2377,10 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return variable_count - 1
 
         def algebra_presentation_morphism(self):
-            selected = self.selected_algebra_presentation().presentation_morphism()
-            assert selected is self.algebra_framing_morphism(), (
-                f"the quotient map R[x_1, ..., x_n] -> {self} is not its chosen surjection from the free algebra"
-            )
-            return selected
+            return self.selected_algebra_presentation().augmentation()
 
         def lift_to_presentation(self, element):
-            return self.selected_algebra_presentation().lift(element)
+            return self._selected_algebra_presentation_backend.lift(element)
 
         def presentation_normal_form_terms(self, element):
             r"""Return the selected reduced presentation representative as owned monomial terms.
@@ -3049,7 +3105,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         construction_data=(),
         law_decisions=(),
         algebra_framing_source=None,
-        algebra_framing_morphism_factory=None,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -3148,18 +3203,14 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 case False:
                     source = generating_module.symmetric_algebra()
 
-        if algebra_framing_morphism_factory is None:
-            def framing_morphism():
-                return source.Mor(self)(generator_morphism)
-        else:
-            framing_morphism = algebra_framing_morphism_factory
+        framing_morphism = source.Mor(self)(generator_morphism)
 
         _fix_selected_algebra_resolution(
             self,
             framing_owner,
             source,
             selected_labels,
-            lambda: generator_morphism,
+            generator_morphism,
             framing_morphism,
         )
 

@@ -93,6 +93,25 @@ def test_one_generator_polynomial_algebra_resolution_transports_to_its_monomial_
     assert module_resolution.augmentation().codomain() is algebra
 
 
+def test_presented_algebra_stores_its_chosen_presentation_as_a_resolution() -> None:
+    presentation_ring = ZZ.free_module(("x",)).symmetric_algebra()
+    algebra = presentation_ring.quotient_by_relations((presentation_ring.algebra_generator("x") ** 2,))
+    selected = algebra.selected_algebra_resolution()
+    resolutions = (
+        Algebras(ZZ)
+        .Associative()
+        .Unital()
+        .FinitelyPresentedAsAlgebra()
+        .resolution_category()
+    )
+
+    assert selected.resolution_category() is resolutions
+    assert selected.truncation() == 1
+    assert selected.level(0) is algebra.presentation_ring()
+    assert selected.augmentation() is algebra.algebra_presentation_morphism()
+    assert selected.relations() is algebra.relations()
+
+
 def test_a_framed_free_module_is_a_length_zero_resolution() -> None:
     free = ZZ.free_module(("e",))
     selected = free.selected_module_resolution()
