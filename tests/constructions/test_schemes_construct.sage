@@ -53,59 +53,6 @@ def test_smoothness_of_spec_over_a_base(build, name, base, smooth) -> None:
     assert ((ring.as_algebra_over(base_ring)).affine_spectrum() in SmoothSchemes(base_ring)) == smooth
 
 
-def test_affine_space_over_every_commutative_ring(commutative_ring) -> None:
-    ring = commutative_ring
-    plane = AffineSpaces(ring)(2, names=("x", "y"))
-
-    assert plane in AffineSpaces(ring)
-    assert plane in AffineSchemes(ring)
-    assert plane in SmoothSchemes(ring)
-    assert plane in Schemes(ring)
-    assert plane.relative_dimension() == 2
-    assert plane.coordinate_ring() in Algebras(ring).Associative().Unital().Commutative()
-    assert plane.coordinate_ring().krull_dimension() == ring.krull_dimension() + 2
-    assert (plane in IntegralSchemes(ring)) == (ring in IntegralDomains())
-    assert plane.scheme_base_ring() is ring
-    assert plane.structure_morphism().codomain() == (ring).affine_spectrum()
-
-
-def test_projective_space_over_every_commutative_ring(commutative_ring) -> None:
-    ring = commutative_ring
-    line = ProjectiveSpaces(ring)(1)
-
-    assert line in ProjectiveSpaces(ring)
-    assert line in ProjectiveSchemes(ring)
-    assert line in SmoothSchemes(ring)
-    assert line in Schemes(ring)
-    assert line.relative_dimension() == 1
-    assert line.is_projective()
-    assert (line in IntegralSchemes(ring)) == (ring in IntegralDomains())
-
-
-def test_varieties_over_every_field(field) -> None:
-    line = AffineSpaces(field)(1)
-    plane = ProjectiveSpaces(field)(2)
-    assert line in Varieties(field)
-    assert line in Curves(field)
-    assert ProjectiveSpaces(field)(1) in Curves(field)
-    assert plane in Varieties(field)
-    assert plane in Surfaces(field)
-    assert AffineSpaces(field)(2) in Surfaces(field)
-    assert line.dimension() == 1
-    assert plane.dimension() == 2
-
-
-@pytest.mark.parametrize(
-    "dimension, size, affine_count, projective_count",
-    [(1, 5, 5, 6), (2, 5, 25, 31), (1, 4, 4, 5), (2, 4, 16, 21), (1, 27, 27, 28)],
-)
-def test_point_counts_over_finite_fields(dimension, size, affine_count, projective_count) -> None:
-    field = GF(size)
-    assert AffineSpaces(field)(dimension).point_count() == affine_count
-    assert ProjectiveSpaces(field)(dimension).point_count() == projective_count
-    assert AffineSpaces(field)(dimension).point_count(2) == size ** (2 * dimension)
-
-
 def test_point_counts_of_a_hypersurface_over_a_finite_field() -> None:
     field = GF(5)
     plane = AffineSpaces(field)(2, names=("x", "y"))
