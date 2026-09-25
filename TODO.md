@@ -456,16 +456,16 @@ These are not prerequisites for the required mathematics, complaint remediation,
 - [ ] **`optional-moduli-of-stable-curves`**. **Needs:** `terminal-session`.
   **Goal:** the moduli of stable pointed curves over the owned scheme categories. The category of stable graphs of type `(g, n)` with contractions and automorphisms, the stratification of `Mbar_{g,n}` by dual graphs, and charts for `M_{0,n}`, `Mbar_{0,n}`, `M_{1,n}`, `M_{2,n}`. The cited values (Harris-Morrison, Arbarello-Cornalba, Chan) become rows of `tests/test_known_mathematics.sage` with their citations. Prior art: `archives/dm-moduli-spike/`.
 
-- [ ] **`optional-sage-categories-property-layer`**. **Needs:** `terminal-session`, `categories-of-resolutions`.
+- [ ] **`optional-sage-categories-property-layer`**. **Needs:** `terminal-session`.
   **Goal:** adopt the property and axiom layer of `sage-categories` (github.com/dzackgarza/sage-categories) in place of the preamble's Sage joins, meets and axiom closure, once that library's `kernel-cat-complete` milestone closes. An assessment against its `21041b20` (2026-09-25) found its design avoids four of the preamble's failures:
   - an axiom requires a membership predicate, so no stored datum becomes an axiom;
   - intersections are pullbacks;
   - hom objects are owned categories;
   - a public name defined by two incomparable owners is an error.
-  It also found blockers:
+  sage-categories is the core that abstracts the Python and Sage class machinery away, so that leaves are only mathematics and backend CAS wiring. Mathematics it does not yet have -- resolutions, chain complexes, projective classes, lattices, forms, number fields -- are leaves to write on it, not gaps in it. The blockers are in the core:
   - its own milestone A is open;
-  - it has no resolutions, chain complexes or projective classes;
-  - it has no coercion model;
+  - owned objects are not Sage parents, so the canonical maps a session uses as coercions (`ZZ -> QQ`) need the core's arrow machinery to supply them;
+  - its own top complaint says leaf authors still need kernel internals, which is the premise of the core;
   - membership is an uncached graph search plus SymPy;
   - an import costs about 15 s and 1 GB, and it depends on Julia, GAP, Rust, Maude and OSCAR;
   - its suite does not collect in the research Sage environment without that provisioning.
