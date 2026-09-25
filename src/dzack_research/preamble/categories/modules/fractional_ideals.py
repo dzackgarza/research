@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleEmbedding,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     Modules,
     ModuleSubobjects,
 )
@@ -64,7 +63,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         consume it.
         """
         ring = self.base_ring()
-        return [FramedModules(ring), ModuleSubobjects(ring)]
+        return [Modules(ring), ModuleSubobjects(ring)]
 
     class ElementMethods(ModuleElement):
         def __init__(self, parent, value) -> None:
@@ -439,7 +438,7 @@ class FractionalIdealInclusion(ModuleEmbedding):
 
     def is_primitive(self) -> bool:
 
-        assert self.codomain() in FramedModules(self.domain().base_ring()), (
+        assert self.codomain().has_selected_module_resolution(), (
             f"primitivity of the inclusion {self.domain()} -> {self.codomain()} is computed here only when "
             f"{self.codomain()} has chosen module generators over {self.domain().base_ring()}, but it is in "
             f"{self.codomain().category()}"
@@ -448,7 +447,7 @@ class FractionalIdealInclusion(ModuleEmbedding):
 
     def index(self):
 
-        assert self.codomain() in FramedModules(self.domain().base_ring()), (
+        assert self.codomain().has_selected_module_resolution(), (
             f"the index of the inclusion {self.domain()} -> {self.codomain()} is computed here only when "
             f"{self.codomain()} has chosen module generators over {self.domain().base_ring()}, but it is in "
             f"{self.codomain().category()}"

@@ -58,7 +58,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModules,
-    FramedModules,
     LinearEndCategoryConstruction,
     LinearMorModules,
     Modules,
@@ -469,7 +468,7 @@ class ModulesOverGroupAlgebra(Modules):
         def is_invariant(self, element):
             r"""Decide ``g . element = element`` for every ``g``, on the chosen group generators."""
             group = self.group()
-            if group not in OwnedGroups().Framed():
+            if not group.has_selected_group_resolution():
                 return Unknown
             return all(self.act(generator, element) == element for generator in group.group_generators())
 
@@ -491,7 +490,7 @@ class ModulesOverGroupAlgebra(Modules):
                 return bool(self.group().cardinality() == 1)
 
             group = self.group()
-            assert group in OwnedGroups().Framed(), (
+            assert group.has_selected_group_resolution(), (
                 f"cannot decide whether {group} acts trivially on {self}: this needs a chosen finite generating "
                 f"set of {group}, but {group} is only known to be in {group.category()}"
             )
@@ -579,7 +578,7 @@ class ModulesOverGroupAlgebra(Modules):
             the universal-construction spelling.
             """
             group = self.group()
-            assert group in OwnedGroups().Framed(), (
+            assert group.has_selected_group_resolution(), (
                 f"cannot form the invariants or coinvariants of {self}: this needs a chosen finite generating "
                 f"set of {group}, but {group} is only known to be in {group.category()}"
             )
@@ -1182,7 +1181,7 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def is_equivariant(self, arrow):
         group = self.domain().group()
-        if group not in OwnedGroups().Framed():
+        if not group.has_selected_group_resolution():
             return Unknown
         underlying = _coefficient_morphism_from_images(
             self,
@@ -1375,7 +1374,7 @@ def _equip_action(module, group_or_action, action=None):
                     functor(classifying_arrows(group_element))
                 )
 
-    match group in OwnedGroups().Framed():
+    match group.has_selected_group_resolution():
         case True:
             identity = coefficient_endomorphisms.identity()
             match admitted_action_morphism(group.one()) == identity:
@@ -1461,7 +1460,7 @@ def _equip_action(module, group_or_action, action=None):
     )
     framing_source = group_algebra.free_module(labels)
     return _object_of(
-        Cat().meet((GeneralModules(group_algebra), FramedModules(group_algebra))),
+        GeneralModules(group_algebra),
         _engine=(Modules(group_algebra), _CoefficientModuleEngine, None),
         base_ring=group_algebra,
         rho=scalar_action,

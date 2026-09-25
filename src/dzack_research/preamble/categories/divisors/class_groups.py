@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.divisors.divisor_groups import (
     _integers,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -37,7 +36,7 @@ class ClassGroups(Category):
         return "class groups"
 
     def super_categories(self):
-        return [FramedModules(_own_ring(SageZZ))]
+        return [Modules(_own_ring(SageZZ))]
 
     def _call_(self, scheme, principal_divisors):
         r"""\(\operatorname{Div}/\operatorname{im}(\rho)\) for the principal-divisor morphism ``principal_divisors`` \(\rho\)."""

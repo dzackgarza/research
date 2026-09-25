@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
     _direct_sum_of_modules,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     MatrixSpaces,
     Modules,
 )
@@ -1846,7 +1845,6 @@ def _mixed_tensor_algebra(module):
         ring,
         bigrades,
         pieces,
-        extra_categories=(FramedModules(ring),),
         construction_data={"mixed_tensor_module": module},
         _realization=(_MixedTensorDirectSum, MixedTensorAlgebraElement),
     )

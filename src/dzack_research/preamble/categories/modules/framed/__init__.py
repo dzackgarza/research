@@ -2,7 +2,7 @@
 
 from importlib import import_module as _import_module
 
-_EXPORTS = {'FramedModules': ('dzack_research.preamble.categories.modules.pure.modules', 'FramedModules'),
+_EXPORTS = {
  'FractionFieldQuotients': ('dzack_research.preamble.categories.modules.framed.fraction_field_quotients',
                             'FractionFieldQuotients'),
  'FramedFreeModules': ('dzack_research.preamble.categories.modules.framed.framed_free_modules',
@@ -10,7 +10,7 @@ _EXPORTS = {'FramedModules': ('dzack_research.preamble.categories.modules.pure.m
 
 __all__ = ['FractionFieldQuotients',
  'FramedFreeModules',
- 'FramedModules']
+]
 
 def __getattr__(name):
     try:

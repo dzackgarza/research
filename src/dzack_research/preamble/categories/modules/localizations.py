@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
     FinitelyPresentedModules,
-    FramedModules,
     Modules,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
@@ -430,8 +429,7 @@ def _localized_module(
         )
 
     source_ring = localization_ring.localization_source()
-    if numerator_module in FramedModules(source_ring):
-        placement.append(FramedModules(localization_ring))
+    if numerator_module.has_selected_module_resolution():
         framing_source = localization_ring.free_module(
             numerator_module.module_generating_set()
         )

@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
-    FramedModules,
     VectorSpaces,
     _biproduct_label,
     _engine_matrix,
@@ -292,7 +291,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 cokernel_morphism,
             )
             super().__init__(**rest)
-            if self.selected_framing_source(Modules(self.base_ring())) is not presentation.codomain():
+            if self.selected_module_resolution().level(0) is not presentation.codomain():
                 raise ValueError(
                     f"{self}: the codomain {presentation.codomain()} of the relation map "
                     "must be the free module on its chosen generators"
@@ -2769,7 +2768,7 @@ def _presented_module_from_morphism(
     )(presentation)
     codomain = presentation.codomain()
     base_ring = codomain.base_ring()
-    assert presentation.domain() in FramedModules(base_ring), (
+    assert presentation.domain().has_selected_module_resolution(), (
         f"cannot form the cokernel of {presentation}: its domain must be a {base_ring}-module "
         f"with chosen generators, but it is in {presentation.domain().category()}"
     )

@@ -34,7 +34,6 @@ from dzack_research.preamble.categories.algebras.graded_algebras import (
     _graded_multiplication_from_components,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -207,7 +206,7 @@ def _cohomology_algebra_from_dga(dga):
     ring = dga.base_ring()
     graded = GradedModules(ring)
     pieces = indexed_family(graded.grading_monoid(), dga.cohomology)
-    module = graded(pieces, placements=(FramedModules(ring),))
+    module = graded(pieces)
 
     def component_product(s, x, t, y):
         left_cycle = module.graded_piece(s).cycle_representative(x)

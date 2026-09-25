@@ -33,7 +33,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
     _module_tensor_product_with_data,
@@ -328,7 +327,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
         pulled_values = None
         pullback_domain = morphism.domain()
         has_finite_framing = (
-            pullback_domain in FramedModules(pullback_domain.base_ring())
+            pullback_domain.has_selected_module_resolution()
             and pullback_domain.module_generating_set().cardinality().is_finite()
         )
         if values is not None and has_finite_framing:

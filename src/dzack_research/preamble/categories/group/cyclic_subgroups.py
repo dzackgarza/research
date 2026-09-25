@@ -5,17 +5,15 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
-    _fix_selected_framing,
 )
 from dzack_research.preamble.categories.group.groups import (
     FiniteAbelianGroups,
     FiniteGroups,
     Groups,
-    GroupsWithChosenFiniteGeneratingSet,
     OwnedAbelianGroups,
     OwnedGroups,
     Subgroups,
-    _group_framing_morphism,
+    _fix_selected_group_resolution_data,
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -48,7 +46,7 @@ class CyclicGroups(OwnedCategory):
         return "cyclic groups"
 
     def super_categories(self):
-        return [OwnedAbelianGroups(), GroupsWithChosenFiniteGeneratingSet()]
+        return [OwnedAbelianGroups()]
 
     def _call_(self, generator, *, placements=(), **level_data):
         r"""Construct the cyclic subgroup from its selected generator.
@@ -80,15 +78,8 @@ class CyclicGroups(OwnedCategory):
             )
             source = Groups.Free(index_set=generators)
             generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
-            _fix_selected_framing(
-                self,
-                OwnedGroups(),
-                source,
-                generators,
-                lambda: generator_morphism,
-                lambda: _group_framing_morphism(
-                    self, source, generators, generator_morphism
-                ),
+            _fix_selected_group_resolution_data(
+                self, source, generators, generator_morphism
             )
 
         def group_generator(self):

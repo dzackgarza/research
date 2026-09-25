@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
     FinitelyPresentedAlgebras,
-    FramedAlgebras,
     _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
     _SelectedFiniteAlgebraPresentation,
@@ -983,7 +982,7 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         return "free algebras"
 
     def super_categories(self):
-        return [FramedAlgebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
         def is_free(self) -> bool:
@@ -1479,7 +1478,7 @@ def _presentation_data(algebra):
     match algebra:
         case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
             return algebra.presentation_ring(), tuple(algebra.relations())
-        case _ if algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base):
+        case _ if algebra in SymmetricAlgebras(base) and algebra.is_framed_algebra():
             return algebra, ()
         case _ if algebra in QuotientRings():
             quotient_source = algebra.quotient_source()
@@ -1515,7 +1514,7 @@ def _commutative_algebra_coproduct_backend(left, right):
         raise TypeError(
             f"the coproduct {left} (x) {right} needs both factors to be commutative algebras over {base}"
         )
-    assert left in FramedAlgebras(base) and right in FramedAlgebras(base), (
+    assert left.is_framed_algebra() and right.is_framed_algebra(), (
         f"the coproduct {left} (x) {right} is computed only when both factors have finitely many "
         "chosen algebra generators"
     )
@@ -1610,7 +1609,7 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
             f"the pushout maps {left_map} and {right_map} must be algebra morphisms {common} -> {left} and "
             f"{common} -> {right}"
         )
-    assert common in FramedAlgebras(base), (
+    assert common.is_framed_algebra(), (
         f"the pushout of {left} <- {common} -> {right} is computed only when {common} has finitely many "
         "chosen algebra generators"
     )

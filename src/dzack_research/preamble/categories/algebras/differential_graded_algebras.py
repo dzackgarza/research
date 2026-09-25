@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.algebras.graded_algebras import (
     GradedAlgebras,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -61,7 +60,7 @@ class DegreewiseLinearMorphism(Morphism):
         source = self.domain()
         target = self.codomain()
         ring = source.base_ring()
-        assert source in FramedModules(ring) and target in FramedModules(ring), (
+        assert source.has_selected_module_resolution() and target.has_selected_module_resolution(), (
             f"the differential component {self} is a module morphism only when {source} and {target} have "
             "chosen generating sets"
         )

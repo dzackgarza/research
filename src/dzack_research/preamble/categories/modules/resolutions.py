@@ -415,7 +415,7 @@ class ModuleResolutions(OwnedCategory):
                     f"a chosen generating epimorphism supplies truncation zero, but {self} has "
                     f"truncation {self.truncation()}"
                 )
-        match module in Modules(self.base_ring()).Framed():
+        match module.has_selected_module_resolution():
             case False:
                 raise TypeError(
                     f"{module} has no selected module generating set over {self.base_ring()}"

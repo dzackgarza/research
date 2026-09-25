@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.modules.powers import (
     QuadraticModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     InternalMorModules,
     Modules,
     ModulesWithChosenFinitePresentation,
@@ -504,7 +503,7 @@ class _CallableFormMethods:
         left_module = self.left_module()
         right_module = self.right_module()
         ring = left_module.base_ring()
-        framed = left_module in FramedModules(ring) and right_module in FramedModules(ring)
+        framed = left_module.has_selected_module_resolution() and right_module.has_selected_module_resolution()
         if not framed:
             return Unknown
         left_labels = left_module.module_generating_set()

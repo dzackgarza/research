@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
-    FramedModules,
     FreeResolution,
     Modules,
     ModuleSubobjects,
@@ -325,7 +324,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
 
-        return [Modules(self.base_ring()).Free(), FramedModules(self.base_ring())]
+        return [Modules(self.base_ring()).Free()]
 
     class ParentMethods:
         def _represented_cokernel_of_morphism(self, morphism):
@@ -346,7 +345,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     f"cannot form morphisms {self} -> {codomain} in {category}: "
                     f"it is not a subcategory of {Modules(self.base_ring())}"
                 )
-            if codomain not in FramedModules(self.base_ring()):
+            if not codomain.has_selected_module_resolution():
                 raise TypeError(
                     f"cannot form {self}.Mor({codomain}): the target must be a "
                     f"{self.base_ring()}-module with chosen generators, but it is in {codomain.category()}"

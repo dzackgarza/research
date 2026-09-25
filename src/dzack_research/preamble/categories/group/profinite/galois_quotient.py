@@ -8,13 +8,10 @@ from sage.structure.element import Element
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    _fix_selected_framing,
-)
 from dzack_research.preamble.categories.group.groups import (
     Groups,
     OwnedGroups,
-    _group_framing_morphism,
+    _fix_selected_group_resolution_data,
 )
 from dzack_research.preamble.categories.rings.field_morphisms import (
     ExactFieldMorphism,
@@ -436,22 +433,15 @@ class _FiniteFieldAutomorphismEngine:
 def FiniteExtensionAutomorphismGroup(extension):
     r"""Aut_K(L) for the exact extension diagram, using the finite-group entry."""
     group = _object_of(
-        Cat().meet((OwnedGroups().Finite(), OwnedGroups().Framed())),
+        OwnedGroups().Finite(),
         _engine=(OwnedGroups(), _FiniteFieldAutomorphismEngine, FiniteGaloisAutomorphism),
         extension=extension,
     )
     generators = group._computed_group_generators()
     source = Groups.Free(index_set=generators)
     generator_morphism = Sets().Mor(generators, group)(lambda generator: generator)
-    _fix_selected_framing(
-        group,
-        OwnedGroups(),
-        source,
-        generators,
-        lambda: generator_morphism,
-        lambda: _group_framing_morphism(
-            group, source, generators, generator_morphism
-        ),
+    _fix_selected_group_resolution_data(
+        group, source, generators, generator_morphism
     )
     return group
 

@@ -59,11 +59,11 @@ def _finite_generating_elements(module):
     the supplied unformed module's family through its existing coercion.
     No infinite family or point sample is used to infer equality.
     """
-    from dzack_research.preamble.categories.modules.pure.modules import FramedModules, TensorProductModules
+    from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
 
     ring = module.base_ring()
     match module:
-        case _ if module in FramedModules(ring) and Cardinalities().lt(module.module_generating_set().cardinality(), aleph0):
+        case _ if module.has_selected_module_resolution() and Cardinalities().lt(module.module_generating_set().cardinality(), aleph0):
             return iter(module.module_generators())
         case _ if module in TensorProductModules(ring) and module.tensor_factors().cardinality() == 2:
             left = _finite_generating_elements(module.tensor_factor(0))
@@ -173,14 +173,12 @@ def _scalar_linearity_generating_scalars(ring):
     which is what decides an infinite ring such as ``GF(q)[x]``.  Returns
     ``None`` where neither presentation is represented.
     """
-    from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
-
     elements = _enumerated_ring_elements(ring)
     if elements is not None:
         return elements
 
     base = ring.base_ring()
-    if base is ring or ring not in FramedAlgebras(base):
+    if base is ring or not ring.is_framed_algebra():
         return None
     base_elements = _enumerated_ring_elements(base)
     if base_elements is None:
@@ -237,8 +235,6 @@ class ModuleMorphism(Morphism):
         scalar_extension_functor=None,
         lift=None,
     ) -> None:
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-
         Morphism.__init__(self, parent)
         assert (scalar_extension_of is None) == (scalar_extension_functor is None), (
             f"cannot construct the base change {scalar_extension_of} along {scalar_extension_functor}: "
@@ -269,7 +265,7 @@ class ModuleMorphism(Morphism):
                 self._direct_linearity_premise = source_morphism
             images = lambda element: source_morphism(element)
             elementwise = True
-        if elementwise or domain not in FramedModules(domain.base_ring()):
+        if elementwise or not domain.has_selected_module_resolution():
             if not callable(images):
                 raise TypeError(f"cannot define a linear map {domain} -> {codomain} from {images!r}: {domain} has no chosen generators, so the map must be given as a function on elements")
             self._element_function = images
@@ -522,11 +518,9 @@ class ModuleMorphism(Morphism):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             FramedFreeModules,
         )
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-
         domain = self.domain()
         ring = domain.base_ring()
-        if domain not in FramedModules(ring):
+        if not domain.has_selected_module_resolution():
             return None
         label_set = domain.module_generating_set()
         if not label_set.cardinality().is_finite():
@@ -1312,7 +1306,6 @@ class ModuleMorphism(Morphism):
         """
         from dzack_research.preamble.categories.modules.pure.modules import (
             FinitelyGeneratedModules,
-            FramedModules,
             RestrictedScalarsModules,
         )
 
@@ -1324,7 +1317,7 @@ class ModuleMorphism(Morphism):
             f"cannot compute a preimage under {domain} -> {codomain}: {codomain} must be a module over the fraction field of {ring} restricted to {ring}, but it is a module over {fractions}"
         )
         extension = codomain.module_over_extension()
-        assert extension in FramedModules(fractions) and extension in FinitelyGeneratedModules(fractions), (
+        assert extension.has_selected_module_resolution() and extension in FinitelyGeneratedModules(fractions), (
             f"cannot compute a preimage under {domain} -> {codomain}: the {fractions}-module {extension} must be finitely generated with chosen generators, but it is in {extension.category()}"
         )
 
@@ -1913,14 +1906,18 @@ class _EqualizerFactorModuleMorphism(ModuleMorphism):
 
 
 class FramingMorphism(ModuleMorphism):
-    r"""The selected framing epimorphism from a free module."""
+    r"""A constructor-selected generating epimorphism from a free module."""
 
     def __init__(self, parent, generator_morphism) -> None:
-        codomain = parent.codomain()
-        if parent.domain() is not codomain.framing_source():
-            raise ValueError(f"cannot form the projection from the free module onto the chosen generators of {codomain}: its domain must be the free module {codomain.framing_source()}, but it is {parent.domain()}")
-        if generator_morphism is not codomain.module_generator_morphism():
-            raise ValueError(f"cannot form the projection from the free module onto the chosen generators of {codomain}: it must send each basis vector to the chosen generator of {codomain}, but {generator_morphism} does not")
+        match generator_morphism.codomain() is parent.codomain():
+            case False:
+                raise ValueError(
+                    f"the generator map inducing {parent.domain()} -> {parent.codomain()} "
+                    f"must land in {parent.codomain()}, but it lands in "
+                    f"{generator_morphism.codomain()}"
+                )
+            case True:
+                pass
         super().__init__(parent, generator_morphism)
 
     def lift(self, element):
@@ -2457,11 +2454,9 @@ class SubFramingMorphism(ModuleEmbedding):
         return self.domain().linear_combination(self.codomain().framing_coefficients(element))
 
 
-def _framing_morphism(codomain) -> FramingMorphism:
-    domain = codomain.framing_source()
+def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
     mor = domain.module_category().Mor(domain, codomain)
-    framing = FramingMorphism(mor, codomain.module_generator_morphism())
-    return framing
+    return FramingMorphism(mor, generator_morphism)
 
 
 class TensorProductModuleMorphism(ModuleMorphism):
@@ -2807,9 +2802,7 @@ class TensorProductModuleMor(ModuleMor):
                 return False
 
     def _element_constructor_(self, images):
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-
-        if self.domain() not in FramedModules(self.domain().base_ring()):
+        if not self.domain().has_selected_module_resolution():
             if self._is_two_argument_callable(images):
                 return self.domain().from_bilinear_map(self.codomain(), images)
             return super()._element_constructor_(images)

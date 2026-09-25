@@ -13,13 +13,12 @@ from sage.structure.element import parent as element_parent
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
-from dzack_research.preamble.categories.algebras.algebras import Algebras, FramedAlgebras, _algebra_on_module
+from dzack_research.preamble.categories.algebras.algebras import Algebras, _algebra_on_module
 from dzack_research.preamble.categories.algebras.graded_algebras import _graded_multiplication_from_components
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
@@ -268,7 +267,7 @@ def _power_algebra_of(source, flavor):
             case False:
                 return power(degree)
 
-    module = graded(indexed_family(graded.grading_monoid(), piece), placements=(FramedModules(ring),))
+    module = graded(indexed_family(graded.grading_monoid(), piece))
     multiplication = _graded_multiplication_from_components(module, product)
     unit = module.from_component(0, module.graded_piece(0).module_generator(0))
     law_decisions = {"associativity": True, "unit": True, "grading": True}
@@ -285,7 +284,7 @@ def _power_algebra_of(source, flavor):
                 lambda label: module.from_component(1, source.module_generator(label)),
             )
     return _algebra_on_module(
-        module, multiplication, placement=(category, FramedAlgebras(ring)), unit=unit,
+        module, multiplication, placement=(category,), unit=unit,
         construction_data={
             "generating_module": source,
             "power_flavor": flavor,

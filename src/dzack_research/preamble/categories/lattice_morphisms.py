@@ -15,15 +15,12 @@ from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    _fix_selected_framing,
-)
 from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGroups
 from dzack_research.preamble.categories.group.groups import (
     Groups,
     OwnedFiniteGroups,
     OwnedGroups,
-    _group_framing_morphism,
+    _fix_selected_group_resolution_data,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
@@ -1519,7 +1516,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
                 and domain.is_definite()
             ):
                 categories.append(OwnedFiniteGroups())
-                categories.append(OwnedGroups().Framed())
         LatticeEmbeddingMor.__init__(
             self,
             mor_family,
@@ -1527,7 +1523,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
             codomain,
             category=Cat().meet(tuple(categories)) if categories else None,
         )
-        if domain is codomain and self in OwnedGroups().Framed():
+        if (
+            domain is codomain
+            and _engine_ring(domain.base_ring()) is SageZZ
+            and domain.module_rank().is_finite()
+            and domain.is_definite()
+        ):
             self._retain_group_framing(self._computed_group_generators())
 
     def _element_constructor_(self, images):
@@ -2018,23 +2019,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor):
         r"""Retain one computed exact generating family as this group's framing."""
         source = Groups.Free(index_set=generators)
         generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
-        _fix_selected_framing(
-            self,
-            OwnedGroups(),
-            source,
-            generators,
-            lambda: generator_morphism,
-            lambda: _group_framing_morphism(
-                self, source, generators, generator_morphism
-            ),
+        _fix_selected_group_resolution_data(
+            self, source, generators, generator_morphism
         )
 
     def framing(self):
         r"""Explicitly select and retain the represented generator framing of ``O(L)``."""
-        if self in OwnedGroups().Framed():
+        if self.has_selected_group_resolution():
             return self
         self._retain_group_framing(self._computed_group_generators())
-        return refine(self, OwnedGroups().Framed())
+        return self
 
     def structure_description(self):
         r"""Return GAP's descriptive structure label for a finite ``O(L)``.

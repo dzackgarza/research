@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
     FinitelyPresentedAlgebras,
-    FramedAlgebras,
     _OwnedAlgebraParent,
     _SelectedFiniteAlgebraPresentation,
 )
@@ -151,7 +150,6 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
         if presentation_data is not None:
             categories.extend(
                 (
-                    FramedAlgebras(base_ring),
                     FinitelyPresentedAlgebras(base_ring),
                     AlgebrasWithChosenFinitePresentation(base_ring),
                 )

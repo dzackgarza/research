@@ -19,16 +19,13 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     IsoCategoryConstruction,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    _fix_selected_framing,
-)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.group.groups import (
     Groups,
     OwnedFiniteGroups,
     OwnedGroups,
-    _group_framing_morphism,
+    _fix_selected_group_resolution_data,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     _matrix_coordinate_rows,
@@ -1047,7 +1044,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             mor_family,
             form,
             form,
-            category=Category.join((OwnedFiniteGroups(), OwnedGroups().Framed())),
+            category=OwnedFiniteGroups(),
         )
         realize_owned_category(self)
         engine_generators = tuple(self._engine_group_parent.gens())
@@ -1056,15 +1053,8 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         )
         source = Groups.Free(index_set=generators)
         generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
-        _fix_selected_framing(
-            self,
-            OwnedGroups(),
-            source,
-            generators,
-            lambda: generator_morphism,
-            lambda: _group_framing_morphism(
-                self, source, generators, generator_morphism
-            ),
+        _fix_selected_group_resolution_data(
+            self, source, generators, generator_morphism
         )
 
     def is_quadratic(self) -> bool:

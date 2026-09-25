@@ -534,14 +534,16 @@ class Resolutions(OwnedCategory):
             model="degree-zero",
         )
 
-    def from_selected_framing(self, target, owner):
-        r"""Use an existing selected free-source epimorphism as truncation zero.
-
-        This is the property-to-data bridge required while the legacy selected
-        framing store is being migrated to resolution objects.  Its defining
-        datum is already a chosen epimorphism; no categorical epi predicate is
-        guessed from an arbitrary morphism.
-        """
+    def selected_degree_zero(
+        self,
+        target,
+        source,
+        augmentation,
+        *,
+        generating_set,
+        generator_morphism,
+    ):
+        r"""Store one constructor-selected generating epimorphism as resolution data."""
         match self.truncation():
             case 0:
                 pass
@@ -557,13 +559,151 @@ class Resolutions(OwnedCategory):
                 )
             case True:
                 pass
-        augmentation = target.selected_framing_morphism(owner)
+        match source in self.level_category():
+            case False:
+                raise TypeError(
+                    f"the selected source {source} must lie in the level category "
+                    f"{self.level_category()}"
+                )
+            case True:
+                pass
+        match augmentation.domain() is source and augmentation.codomain() is target:
+            case False:
+                raise ValueError(
+                    f"the selected augmentation of {target} must be a map {source} -> {target}, "
+                    f"but got {augmentation.domain()} -> {augmentation.codomain()}"
+                )
+            case True:
+                pass
+        match generator_morphism.domain() is generating_set and generator_morphism.codomain() is target:
+            case False:
+                raise ValueError(
+                    f"the selected generator map of {target} must be a map from "
+                    f"{generating_set} to {target}"
+                )
+            case True:
+                pass
         return self._object(
             target,
-            lambda degree: augmentation.domain(),
+            lambda degree: source,
             augmentation,
             length=Unknown,
-            model="selected-framing",
+            model="selected-generators",
+            resolution_generating_set=generating_set,
+            resolution_generator_morphism=generator_morphism,
+        )
+
+    def selected_presentation(
+        self,
+        target,
+        degree_zero_source,
+        degree_one_source,
+        augmentation,
+        first_face,
+        second_face,
+        degeneracy,
+        *,
+        generating_set,
+        generator_morphism,
+        relation_source=None,
+        relations=None,
+    ):
+        r"""Store a chosen presentation as a 1-truncated reflexive resolution."""
+        match self.truncation():
+            case 1:
+                pass
+            case _:
+                raise ValueError(
+                    f"a selected presentation supplies truncation one, but {self} has "
+                    f"truncation {self.truncation()}"
+                )
+        for degree, source in ((0, degree_zero_source), (1, degree_one_source)):
+            match source in self.level_category():
+                case False:
+                    raise TypeError(
+                        f"degree {degree} of a selected presentation in {self} must lie in "
+                        f"{self.level_category()}, but it is {source}"
+                    )
+                case True:
+                    pass
+        base = self.base_category()
+        for name, domain, codomain, morphism in (
+            ("augmentation", degree_zero_source, target, augmentation),
+            ("first face", degree_one_source, degree_zero_source, first_face),
+            ("second face", degree_one_source, degree_zero_source, second_face),
+            ("degeneracy", degree_zero_source, degree_one_source, degeneracy),
+        ):
+            match _category_accepts_morphism(base, domain, codomain, morphism):
+                case False:
+                    raise TypeError(
+                        f"the {name} of a selected presentation in {self} must be a morphism "
+                        f"{domain} -> {codomain} of {base}, but it is {morphism}"
+                    )
+                case True:
+                    pass
+        identity = _category_mor_parent(
+            base, degree_zero_source, degree_zero_source
+        ).identity()
+        for face in (first_face, second_face):
+            match face * degeneracy == identity:
+                case False:
+                    raise ValueError(
+                        f"the selected presentation of {target} is not reflexive: {face} does not split "
+                        f"the stated degeneracy {degeneracy}"
+                    )
+                case _:
+                    pass
+            match augmentation * face == augmentation * second_face:
+                case False:
+                    raise ValueError(
+                        f"the selected presentation of {target} does not coequalize its two degree-one faces"
+                    )
+                case _:
+                    pass
+
+        def level(degree):
+            match int(degree):
+                case 0:
+                    return degree_zero_source
+                case 1:
+                    return degree_one_source
+                case _:
+                    raise ValueError(
+                        f"a selected presentation in {self} has represented levels only in degrees 0 and 1"
+                    )
+
+        def face(degree, index):
+            match int(degree), int(index):
+                case (1, 0):
+                    return first_face
+                case (1, 1):
+                    return second_face
+                case _:
+                    raise ValueError(
+                        f"the selected presentation of {target} has only the two degree-one faces"
+                    )
+
+        def degeneracy_map(degree, index):
+            match int(degree), int(index):
+                case (0, 0):
+                    return degeneracy
+                case _:
+                    raise ValueError(
+                        f"the selected presentation of {target} has only the degree-zero degeneracy"
+                    )
+
+        return self._object(
+            target,
+            level,
+            augmentation,
+            face_function=face,
+            degeneracy_function=degeneracy_map,
+            length=1,
+            model="selected-presentation",
+            resolution_generating_set=generating_set,
+            resolution_generator_morphism=generator_morphism,
+            resolution_relation_source=relation_source,
+            resolution_relations=relations,
         )
 
     def constant(self, projective_object):
@@ -698,6 +838,10 @@ class Resolutions(OwnedCategory):
             resolution_degeneracy_function=None,
             resolution_length=Unknown,
             resolution_model="simplicial",
+            resolution_generating_set=None,
+            resolution_generator_morphism=None,
+            resolution_relation_source=None,
+            resolution_relations=None,
             **rest,
         ) -> None:
             self._resolution_target = resolution_target
@@ -707,6 +851,10 @@ class Resolutions(OwnedCategory):
             self._resolution_degeneracy_function = resolution_degeneracy_function
             self._resolution_length = resolution_length
             self._resolution_model = resolution_model
+            self._resolution_generating_set = resolution_generating_set
+            self._resolution_generator_morphism = resolution_generator_morphism
+            self._resolution_relation_source = resolution_relation_source
+            self._resolution_relations = resolution_relations
             super().__init__(**rest)
 
         def resolution_category(self) -> Category:
@@ -744,6 +892,70 @@ class Resolutions(OwnedCategory):
 
         def augmentation(self):
             return self._resolution_augmentation
+
+        def generating_set(self):
+            r"""Return the selected generator labels carried by degree-zero data."""
+            selected = self._resolution_generating_set
+            match selected:
+                case None:
+                    raise TypeError(
+                        f"{self} carries no selected generator indexing set"
+                    )
+                case _:
+                    return selected
+
+        def generator_morphism(self):
+            r"""Return the selected map from generator labels to the target."""
+            selected = self._resolution_generator_morphism
+            match selected:
+                case None:
+                    raise TypeError(
+                        f"{self} carries no selected map from generator labels"
+                    )
+                case _:
+                    return selected
+
+        def generator(self, label):
+            labels = self.generating_set()
+            match label in labels:
+                case False:
+                    raise ValueError(
+                        f"{label!r} is not a selected generator label of {self.target()}; "
+                        f"the labels are {labels}"
+                    )
+                case True:
+                    return self.generator_morphism()(labels(label))
+
+        @cached_method
+        def generators(self, *, name):
+            from dzack_research.preamble.categories.sets.indexed_families import (
+                indexed_family,
+            )
+
+            return indexed_family(
+                self.generating_set(),
+                self.generator,
+                name=name,
+            )
+
+        def generator_count(self):
+            return self.generating_set().cardinality()
+
+        def relation_source(self):
+            selected = self._resolution_relation_source
+            match selected:
+                case None:
+                    raise TypeError(f"{self} carries no selected relation source")
+                case _:
+                    return selected
+
+        def relations(self):
+            selected = self._resolution_relations
+            match selected:
+                case None:
+                    raise TypeError(f"{self} carries no selected relation family")
+                case _:
+                    return selected
 
         def length(self):
             r"""Return the resolution length, independently of truncation."""

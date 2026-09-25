@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     _ModuleMorCommonMethods,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     LinearEndCategoryConstruction,
     Modules,
 )
@@ -182,7 +181,7 @@ class GradedModuleMorphism(ModuleMorphism):
     def _check_selected_degrees(self) -> None:
 
         domain = self.domain()
-        if domain not in FramedModules(domain.base_ring()):
+        if not domain.has_selected_module_resolution():
             return
         labels = domain.module_generating_set()
         if not labels.cardinality().is_finite():
@@ -423,7 +422,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
 
         def module_generators_of_degree(self, degree):
             r"""Return the selected framing generators lying in ``degree``."""
-            if self not in FramedModules(self.base_ring()):
+            if not self.has_selected_module_resolution():
                 raise TypeError(
                     f"cannot list the generators of {self} in degree {degree}: {self} has no chosen "
                     f"generating set; it is in {self.category()}"
@@ -448,7 +447,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             a more intrinsic degree-piece owner, such as tensor or symmetric
             powers, override this method and remain authoritative.
             """
-            if self not in FramedModules(self.base_ring()):
+            if not self.has_selected_module_resolution():
                 raise TypeError(
                     f"cannot form the degree-{degree} piece of {self}: {self} has no chosen generating set; "
                     f"it is in {self.category()}"

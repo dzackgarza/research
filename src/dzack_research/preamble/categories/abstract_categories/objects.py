@@ -4,7 +4,6 @@ from typing import Any
 
 from sage.categories.category import Category
 from sage.categories.map import Map
-from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import Element
@@ -24,99 +23,43 @@ from dzack_research.preamble.owned_category_bases import (
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
 
-if "Framed" not in all_axioms:
-    all_axioms.add("Framed")
+class _PendingResolution:
+    r"""A lazily realized chosen resolution fixed during target construction.
 
+    A target can receive its resolution datum before its parent chain has
+    finished constructing. The registry therefore holds this zero-argument
+    construction until the first read; after realization the actual resolution
+    object replaces it. The mathematical datum stored by the target is the
+    object of the resolution category, not a second framing record.
+    """
 
-class _SelectedFraming:
-    r"""One category-relative chosen epimorphism from a selected free source."""
-
-    def __init__(
-        self,
-        owner,
-        target,
-        source,
-        generating_set,
-        generator_morphism_factory,
-        framing_morphism_factory,
-    ) -> None:
-        self._generator_morphism_factory = generator_morphism_factory
-        self._generator_morphism = None
-        self._owner = owner
-        self._target = target
-        self._source = source
-        self._generating_set = generating_set
-        self._framing_morphism_factory = framing_morphism_factory
-        self._framing_morphism = None
-
-    def owner(self):
-        return self._owner
-
-    def source(self):
-        return self._source
-
-    def framing_generating_set(self):
-        return self._generating_set
-
-    def generator_morphism(self):
-        r"""The chosen map from the generating set into the framed object.
-
-        Realized on first use: a framing is fixed before its object finishes
-        construction, when the object is not yet a set that a map can land in.
-        """
-        selected = self._generator_morphism
-        if selected is None:
-            selected = self._generator_morphism_factory()
-            if selected.domain() is not self._generating_set:
-                raise ValueError(
-                    f"the map from the chosen generating set of {self._target} must start at "
-                    f"{self._generating_set}, but {selected} starts at {selected.domain()}"
+    def __init__(self, resolution_factory) -> None:
+        match callable(resolution_factory):
+            case True:
+                pass
+            case False:
+                raise TypeError(
+                    f"a selected resolution must be supplied by a zero-argument construction, "
+                    f"but {resolution_factory!r} is not callable"
                 )
-            if selected.codomain() is not self._target:
-                raise ValueError(
-                    f"the map from the chosen generating set must end at {self._target}, but {selected} ends at "
-                    f"{selected.codomain()}"
-                )
-            self._generator_morphism = selected
-        return selected
+        self._resolution_factory = resolution_factory
 
-    def framing_morphism(self):
-        selected = self._framing_morphism
-        if selected is None:
-            selected = self._framing_morphism_factory()
-            if selected.domain() is not self.source() or selected.codomain() is not self._target:
-                raise ValueError(
-                    f"the chosen surjection F(S) -> X onto {self._target} must be a map {self.source()} -> "
-                    f"{self._target}, but {selected} is a map {selected.domain()} -> {selected.codomain()}"
-                )
-            self._framing_morphism = selected
-        return selected
+    def realize(self):
+        return self._resolution_factory()
 
 
-def _fix_selected_framing(
-    target,
-    owner,
-    source,
-    generating_set,
-    generator_morphism_factory,
-    framing_morphism_factory,
-):
-    r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
-    selected_by_owner = target._selected_framing_registry()
-    if owner in selected_by_owner:
-        raise ValueError(
-            f"{target} already has a chosen generating surjection in {owner}; it cannot be given a second one"
-        )
-    selected = _SelectedFraming(
-        owner,
-        target,
-        source,
-        generating_set,
-        generator_morphism_factory,
-        framing_morphism_factory,
-    )
-    selected_by_owner[owner] = selected
-    return selected
+def _fix_selected_resolution(target, owner, resolution_factory, *, replace=False):
+    r"""Fix one chosen resolution of target relative to owner."""
+    selected_by_owner = target._selected_resolution_registry()
+    match owner in selected_by_owner, replace:
+        case (True, False):
+            raise ValueError(
+                f"{target} already has a chosen resolution relative to {owner}; "
+                "it cannot be given a second one"
+            )
+        case _:
+            pass
+    selected_by_owner[owner] = _PendingResolution(resolution_factory)
 
 
 class OwnedCategory(OwnedCategoryBase):
@@ -238,10 +181,6 @@ class Objects(OwnedCategory):
 
         return Sets().an_object()
 
-    class SubcategoryMethods:
-        def Framed(self):
-            r"""Return this category with the global selected-framing axiom."""
-            return self._with_axiom("Framed")
 
     class ParentMethods(OwnedParent, Parent):
         r"""The owned root of every object chain.
@@ -252,8 +191,28 @@ class Objects(OwnedCategory):
         """
 
         @cached_method
-        def _selected_framing_registry(self):
+        def _selected_resolution_registry(self):
             return {}
+
+        def has_selected_resolution(self, owner) -> bool:
+            r"""Whether a chosen resolution relative to owner is stored."""
+            return owner in self._selected_resolution_registry()
+
+        def selected_resolution(self, owner):
+            r"""Return the chosen resolution relative to owner."""
+            registry = self._selected_resolution_registry()
+            selected = registry.get(owner)
+            match selected:
+                case None:
+                    raise ValueError(
+                        f"{self} has no chosen resolution relative to {owner}"
+                    )
+                case _PendingResolution():
+                    resolution = selected.realize()
+                    registry[owner] = resolution
+                    return resolution
+                case _:
+                    return selected
 
         def __call__(self, *arguments, **options):
             r"""Construct an element of this object, without coercion discovery.
@@ -270,79 +229,6 @@ class Objects(OwnedCategory):
     class ElementMethods(Element):
         r"""The owned root of every element chain: the host element runtime."""
 
-    class Framed(CategoryWithAxiom):
-        r"""Objects carrying one chosen generating epimorphism from a free object.
-
-        This is the single data contract for selected 1-framings.  A framing is
-        relative to an ambient category: the same represented parent may carry
-        its module framing and a different algebra framing.  Both are instances
-        of this one contract, keyed by the category whose free functor supplies
-        the source; neither specialization owns a second framing data model.
-        """
-
-        def an_object(self):
-            r"""A rank-one free integer module with its canonical framing."""
-            from sage.rings.integer_ring import ZZ as SageZZ
-
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                _own_ring,
-            )
-
-            return _own_ring(SageZZ).free_module(1)
-
-        class ParentMethods:
-            def selected_framing(self, owner):
-                r"""Return the constructor-owned 1-framing in ``owner``."""
-                selected = self._selected_framing_registry().get(owner)
-                assert selected is not None, (
-                    f"{self} has no chosen generating surjection in {owner}"
-                )
-                return selected
-
-            def selected_framing_source(self, owner):
-                r"""Return the exact selected free source in ``owner``."""
-                return self.selected_framing(owner).source()
-
-            def selected_framing_generating_set(self, owner):
-                r"""Return the set indexing the selected free source in ``owner``."""
-                return self.selected_framing(owner).framing_generating_set()
-
-            def selected_framing_generator_morphism(self, owner):
-                r"""Return the selected map from framing labels into this object."""
-                return self.selected_framing(owner).generator_morphism()
-
-            def selected_framing_generator(self, owner, label):
-                r"""Return the image of one selected free generator."""
-                labels = self.selected_framing_generating_set(owner)
-                if label not in labels:
-                    raise ValueError(
-                        f"{label!r} is not a label of a generator of {self} in {owner}; the labels are {labels}"
-                    )
-                return self.selected_framing_generator_morphism(owner)(labels(label))
-
-            @cached_method
-            def selected_framing_generators(self, owner, *, name):
-                r"""Return the selected generator family ``s |-> x_s``."""
-                from dzack_research.preamble.categories.sets.indexed_families import (
-                    indexed_family,
-                )
-
-                return indexed_family(
-                    self.selected_framing_generating_set(owner),
-                    lambda label: self.selected_framing_generator(owner, label),
-                    name=name,
-                )
-
-            def selected_framing_generator_count(self, owner):
-                return self.selected_framing_generating_set(owner).cardinality()
-
-            def selected_framing_morphism(self, owner):
-                r"""Return the selected generating epimorphism in ``owner``."""
-                return self.selected_framing(owner).framing_morphism()
-
-            def is_framed(self) -> bool:
-                return True
-
     def super_categories(self):
         return []
 
@@ -355,5 +241,5 @@ __all__ = [
     "Objects",
     "OwnedCategory",
     "OwnedParameterizedCategory",
-    "_fix_selected_framing",
+    "_fix_selected_resolution",
 ]

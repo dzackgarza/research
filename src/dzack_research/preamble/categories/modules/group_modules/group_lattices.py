@@ -67,7 +67,7 @@ class GroupLatticeMor(LatticeMor):
 
     def _check_equivariance(self, morphism) -> None:
         group = self.domain().group()
-        assert group in OwnedGroups().Framed(), (
+        assert group.has_selected_group_resolution(), (
             f"cannot check that a morphism {domain} -> {codomain} is {group}-equivariant: this needs a chosen "
             f"generating set of {group}, but {group} is only known to be in {group.category()}"
         )
@@ -249,7 +249,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                     lambda label: transported_image(group_element, label)
                 ),
             )
-            assert group in OwnedGroups().Framed()
+            assert group.has_selected_group_resolution()
             for group_generator in group.group_generators():
                 action(group_generator)
             return action
@@ -273,7 +273,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def is_invariant(self, vector) -> bool:
             group = self.group()
-            assert group in OwnedGroups().Framed()
+            assert group.has_selected_group_resolution()
             return all(self.act(group_generator, vector) == vector for group_generator in group.group_generators())
 
         def module_invariants(self):
@@ -288,7 +288,7 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             codomain is the unformed underlying module.
             """
             group = self.group()
-            assert group in OwnedGroups().Framed(), (
+            assert group.has_selected_group_resolution(), (
                 f"cannot compute the invariant lattice of {self}: this needs a chosen finite generating set of "
                 f"{group}, but {group} is only known to be in {group.category()}"
             )
@@ -371,7 +371,7 @@ def _group_lattice(lattice, group, action):
         construction_data=tuple(construction_data),
         unformed_module=lattice,
     )
-    assert group in OwnedGroups().Framed()
+    assert group.has_selected_group_resolution()
     for group_generator in group.group_generators():
         result.action()(group_generator)
     return result
