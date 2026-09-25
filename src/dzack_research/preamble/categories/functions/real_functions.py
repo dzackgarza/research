@@ -140,6 +140,51 @@ def _exponent_key(exponent):
     return ("infinity",) if exponent is Infinity else ("finite", RR(exponent).expression())
 
 
+def _decided_nonzero(expression) -> bool:
+    r"""Whether the exact symbolic expression is decided to be nonzero."""
+    from dzack_research.preamble.logic import ask
+
+    return ask(SR(expression) != SR.zero()) is True
+
+
+def _affine_nonconstant(expression, variable) -> bool:
+    r"""Whether ``expression`` is an affine polynomial with nonzero slope."""
+    return (
+        expression.is_polynomial(variable)
+        and expression.degree(variable) == 1
+        and _decided_nonzero(expression.coefficient(variable, 1))
+    )
+
+
+def _lebesgue_nonmembership_reason(expression, variable, exponent):
+    r"""Return a theorem-backed reason that ``expression`` is not in this ``L^p``, else ``None``."""
+    if expression.is_polynomial(variable) and expression.degree(variable) >= 1:
+        return "a nonconstant polynomial is unbounded and has nonintegrable tails"
+
+    if expression.operator() is exp and _affine_nonconstant(expression.operands()[0], variable):
+        return "an exponential with nonzero affine exponent grows on one tail"
+
+    if exponent is not Infinity and expression.operator() in (sin, cos):
+        argument = expression.operands()[0]
+        if _affine_nonconstant(argument, variable):
+            return "a nonzero periodic wave has the same positive p-mass on infinitely many periods"
+
+    return None
+
+
+def _sequence_nonmembership_reason(expression, variable, exponent):
+    r"""Return a theorem-backed reason that ``expression`` is not in this ``ell^p``, else ``None``."""
+    if not expression.is_polynomial(variable):
+        return None
+    if exponent is Infinity:
+        if expression.degree(variable) >= 1:
+            return "a nonconstant polynomial sequence is unbounded"
+        return None
+    if _decided_nonzero(expression):
+        return "a nonzero polynomial sequence does not tend to zero"
+    return None
+
+
 def _l2_real_polynomial(expression, variable):
     r"""Return ``expression`` as an exact real-algebraic polynomial, or ``None``."""
     if not expression.is_polynomial(variable):
@@ -1136,6 +1181,12 @@ class _LebesgueSpace(_FunctionSpace):
                 raise ValueError(
                     f"the nonzero constant {formula} is not in {self}: its p-th power has infinite integral over RR"
                 )
+        if formula is not None:
+            reason = _lebesgue_nonmembership_reason(
+                formula, self.indeterminate(), exponent
+            )
+            if reason is not None:
+                raise ValueError(f"{formula} is not in {self}: {reason}")
         if (exponent == 2) is not True:
             return element
         formula = element._formula()
@@ -1256,6 +1307,18 @@ class _SequenceSpace(_FunctionSpace):
     def __init__(self, exponent, **rest) -> None:
         self._exponent = exponent
         super().__init__(**rest)
+
+    def _element_constructor_(self, value):
+        element = super()._element_constructor_(value)
+        formula = element._formula()
+        if formula is None:
+            return element
+        reason = _sequence_nonmembership_reason(
+            formula, self.indeterminate(), self.integrability_exponent()
+        )
+        if reason is not None:
+            raise ValueError(f"{formula} is not in {self}: {reason}")
+        return element
 
     def integrability_exponent(self):
         return self._exponent
