@@ -126,7 +126,7 @@ class GradedDirectSumElement(ModuleElement):
             )
         return next(iter(self._components))
 
-    def monomial_coefficients(self):
+    def _coefficient_data(self):
         coefficients = {}
         labels = self.parent().module_generating_set()
         for degree, component in self._components.items():

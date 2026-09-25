@@ -88,13 +88,28 @@ class _SparseFreeModuleElement(ModuleElement):
             if ring(coefficient) != ring.zero()
         }
 
-    def monomial_coefficients(self):
-        support = finite_ordered_set(tuple(self._coefficients))
-        return finite_indexed_family(
-            support,
-            self._coefficients.__getitem__,
-            name="Nonzero module coefficients",
-        )
+    def __call__(self, label):
+        r"""The value ``a(i)`` of this finitely supported function ``a : I -> R`` at ``i``.
+
+        An element of the free module \(R^{(I)}\) on \(I\) is a finitely
+        supported function \(I\to R\), and its value at a basis label is the
+        coefficient of that basis element.
+        """
+        labels = self.parent().module_generating_set()
+        assert label in labels, f"{label!r} is not a basis label of {self.parent()}; the basis is indexed by {labels}"
+        return self._coefficients.get(labels(label), self.parent().base_ring().zero())
+
+    def support(self):
+        r"""The support ``{i in I : a(i) != 0}``, a finite subset of the basis with its inclusion.
+
+        This is the support of a divisor when the free module is a group of
+        cycles or divisors.
+        """
+        return self.parent().module_generating_set().finite_subsets()(tuple(self._coefficients))
+
+    def _coefficient_data(self):
+        r"""Protected storage read of ``Modules._selected_module_coefficients``: label to nonzero coefficient."""
+        return self._coefficients
 
     def __iter__(self):
         r"""Iterate coordinates when the selected framing is finite and ordered."""
@@ -303,8 +318,9 @@ class _SparseFreeModuleParent:
             },
         )
 
-    def _selected_module_coefficients(self, element):
-        return self._element_constructor_(element).monomial_coefficients()
+    def _framing_lift(self, element):
+        r"""A free module on ``I`` is its own framing source, and the framing is the identity."""
+        return self._element_constructor_(element)
 
     def _repr_(self):
         return f"Free module on {self.module_generating_set()} over {self.base_ring()}"
@@ -326,6 +342,18 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
 
         return [Modules(self.base_ring()).Free(), FramedModules(self.base_ring())]
+
+    class ElementMethods:
+        def to_vector(self):
+            r"""The coordinates of this element in the chosen basis ``I``.
+
+            The finitely supported function \(a_v\colon I\to R\) with
+            \(v=\sum_i a_v(i)\,e_i\): an element of \(R^{(I)}\), the free
+            module on \(I\), which is the framing source of this module.  Its
+            value at ``i`` is ``v.to_vector()(i)`` and its support is
+            ``v.to_vector().support()``.
+            """
+            return self.parent().framing_morphism().lift(self)
 
     class ParentMethods:
         def _represented_cokernel_of_morphism(self, morphism):

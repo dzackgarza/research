@@ -1484,26 +1484,25 @@ class Modules(OwnedCategoryOverBaseRing):
             return None
 
         def _selected_module_coefficients(self, element):
-            r"""Read the coordinates of ``element`` in the selected framing.
+            r"""Read the coefficients of the chosen preimage of ``element`` under the framing.
 
             Protected contract of ``Modules(R)``: the one caller is
-            :meth:`framing_coefficients`, and a level whose elements are not
-            stored as their own finite support in the framing -- a localized
-            module, a quotient, a restriction of scalars -- implements it for
-            the representation it constructs.  It takes an element of this
-            module and returns the finite-support coefficients, keyed by the
-            labels of ``module_generating_set()``.  The default reads an
-            element that stores its own finite support.
+            :meth:`_framing_lift`, and a level whose elements are not stored as
+            their own finite support -- a localized module, a quotient, a
+            restriction of scalars -- implements it for the representation it
+            constructs.  It returns private label-to-coefficient data keyed by
+            ``module_generating_set()``.  The default reads an element that
+            stores its own finite support.
             """
-            return element.monomial_coefficients()
+            return element._coefficient_data()
 
-        def framing_coefficients(self, element):
-            r"""Return the finite-support coefficients in this module's selected framing.
+        def _framing_lift(self, element):
+            r"""The chosen preimage of ``element`` under the framing ``F_R(S) ->> M``.
 
-            The framing is the mathematical owner of this coordinate map. In
-            particular, facade elements such as number-field order elements may
-            have a different concrete Sage parent without changing which module
-            supplies their selected coefficients.
+            Protected contract of ``Modules(R)`` behind
+            ``framing_morphism().lift``.  On a basis the preimage is unique and
+            it is the coordinate vector of ``element``; on a quotient it is the
+            preimage the construction chose.
             """
             native = self._native_module_presentation()
             if native is not None and native.module_basis() is not None:
@@ -1530,25 +1529,14 @@ class Modules(OwnedCategoryOverBaseRing):
                         }
                     case _:
                         selected = self._selected_module_coefficients(element)
-
-            if isinstance(selected, IndexedFamily):
-                support = selected.index_set()
-                assert support.cardinality().is_finite(), (
-                    f"{element} is not a finite linear combination of the generators of {self}: "
-                    f"its coefficients have support of cardinality {support.cardinality()}"
-                )
-                return finite_indexed_family(
-                    support,
-                    lambda label: self.base_ring()(selected[label]),
-                    name="Nonzero framing coefficients",
-                )
-
-            support = finite_ordered_set(tuple(selected))
-            return finite_indexed_family(
-                support,
-                lambda label: self.base_ring()(selected[label]),
-                name="Nonzero framing coefficients",
-            )
+            source = self.framing_source()
+            match selected:
+                case _ if element_parent(selected) is source:
+                    return selected
+                case IndexedFamily():
+                    return source({label: selected[label] for label in selected.index_set()})
+                case _:
+                    return source(dict(selected))
 
         def _represented_kernel_of_morphism(self, morphism):
             _ = morphism

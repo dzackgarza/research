@@ -450,13 +450,13 @@ def _word_class_set(presentation):
 
 
 class _WordModuleElement:
-    def monomial_coefficients(self):
+    def _coefficient_data(self):
         return self.parent().framing_coefficients(self)
 
     def homogeneous_components(self):
         degrees = {
             int(label.summand_index())
-            for label in self.monomial_coefficients().index_set()
+            for label in self._coefficient_data().index_set()
         }
         return {degree: self.parent().homogeneous_component(self, degree) for degree in degrees}
 

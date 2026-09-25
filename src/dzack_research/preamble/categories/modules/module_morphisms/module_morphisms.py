@@ -1909,14 +1909,14 @@ class FramingMorphism(ModuleMorphism):
         super().__init__(parent, generator_morphism)
 
     def lift(self, element):
-        r"""Lift through the selected framing using its constructor-owned coefficients."""
-        target = self.codomain()(element)
-        candidate = self.domain().linear_combination(
-            self.codomain().framing_coefficients(target)
-        )
-        if self(candidate) != target:
-            raise ValueError(f"the coefficients of {target} on the chosen generators of {self.codomain()} do not recombine to {target}")
-        return candidate
+        r"""The preimage of ``element`` in the free module that the codomain's construction chose.
+
+        On a basis it is the unique preimage, the coordinate vector.  The
+        construction that produced the codomain's elements chose it, so it is
+        not recombined and compared here.
+        """
+        codomain = self.codomain()
+        return codomain._framing_lift(codomain(element))
 
     def is_surjective(self) -> bool:
         r"""True: the codomain's framing coefficients supply a preimage in the selected free source."""
