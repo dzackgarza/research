@@ -8544,13 +8544,13 @@ arbitrary set has no elementwise GAP model, so no GAP morphism is used.
 A character factoring through one represented finite Galois quotient.
 
 - **defined at** `src/dzack_research/preamble/categories/group/profinite/galois_characters.py:49`
-- **built by** `ProfiniteCharacter(domain, codomain, extension: <function FiniteGaloisExtension at 0x7a0c06d13ab0>)`
+- **built by** `ProfiniteCharacter(domain, codomain, extension: <function FiniteGaloisExtension>)`
 
 **Operations**
 
-- `extension() -> <function FiniteGaloisExtension at 0x7a0c06d13ab0>`
+- `extension() -> <function FiniteGaloisExtension>`
   - Return the finite Galois extension through which this character factors.
-- `factor_extension() -> <function FiniteGaloisExtension at 0x7a0c06d13ab0>`
+- `factor_extension() -> <function FiniteGaloisExtension>`
 - `factorization()`
 - `is_continuous() -> bool`
 - `kernel()`
@@ -9920,12 +9920,12 @@ Distinguished open subsets of one prime spectrum, retaining `f`.
 - `coordinate_ring()`
 - `function()`
 
-#### `OwnedCategoryOverBaseRing(R)` {#cat-ownedcategoryoverbasering}
+#### `OwnedCategoryOverBaseRing` {#cat-ownedcategoryoverbasering}
 
 A category over a ring, normalized to the session's owned ring.
 
 - **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:2529`
-- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7a0c6660ea30>
+- **abstract declaration base**: not a concrete category to instantiate
 
 #### `ZariskiClosedSubobjects` {#cat-zariskiclosedsubobjects}
 
@@ -15036,7 +15036,7 @@ A set morphism whose surjectivity is decided or construction-derived.
 
 A family `(x_i)_{i in I}` retaining its indexing set.
 
-- **is** Indexed family over Subset of Product of the family over {0,...,1} cut out by <function _UnitInterval.young_pairs.<locals>.admissible at 0x7a0c10a02fb0>
+- **is** Indexed family over Subset of Product of the family over {0,...,1} cut out by <function _UnitInterval.young_pairs.<locals>.admissible>
 - **in** Category of represented mathematical objects
 
 #### `NN` <sub>LIVE OBJECT</sub>
