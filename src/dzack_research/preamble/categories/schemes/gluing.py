@@ -36,7 +36,6 @@ from dzack_research.preamble.categories.abstract_categories.products import (
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
     _algebra_structure_view,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -4803,7 +4802,7 @@ def _algebra_maps_agree_on_generators(left, right) -> bool:
 
 
 def _finite_algebra_framing(algebra):
-    if algebra not in FramedAlgebras(algebra.base_ring()):
+    if not algebra.is_framed_algebra():
         raise TypeError("affine algebra descent currently requires finitely framed local algebras")
     labels = algebra.algebra_generating_set()
     if not labels.cardinality().is_finite():

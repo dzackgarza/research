@@ -441,10 +441,8 @@ def _ring_morphisms_equal(left, right):
         # A unital map out of Z, or out of Q when it exists, is unique.
         return True
 
-    from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
-
     base = domain.base_ring()
-    if domain in FramedAlgebras(base):
+    if domain.is_framed_algebra():
         labels = domain.algebra_generating_set()
         if not labels.cardinality().is_finite():
             return Unknown

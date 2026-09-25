@@ -175,7 +175,7 @@ def _restricted_graded_algebra(algebra, ring_map, *, extra_categories=(), constr
     data = dict(construction_data or {})
     law_decisions = _root_algebra_law_decisions(algebra)
     law_decisions["grading"] = algebra.grading_compatibility_decision()
-    if (extension in FramedAlgebras(ring) and algebra in FramedAlgebras(extension)
+    if (extension.is_framed_algebra() and algebra.is_framed_algebra()
             and ring_map is extension.algebra_structure_morphism()):
         labels = Sets().coproduct(indexed_family(Sets.Δ[1], lambda i:
             extension.algebra_generating_set() if int(i) == 0 else algebra.algebra_generating_set()))

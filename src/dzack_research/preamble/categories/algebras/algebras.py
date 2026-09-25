@@ -148,6 +148,10 @@ class MultiplicativeAlgebraMorphism(Morphism):
     hypothesis the arrow is stated under (``CON-16``, ``DEV-52``).
     """
 
+    def _multiplicativity_derivation(self):
+        r"""Return a construction-derived multiplicativity decision, or ``None``."""
+        return None
+
     def __init__(self, parent, underlying_morphism) -> None:
         Morphism.__init__(self, parent)
         domain = self.domain()
@@ -160,7 +164,12 @@ class MultiplicativeAlgebraMorphism(Morphism):
             source=source_multiplication.domain(),
             target=target_multiplication.domain(),
         )
-        preserved = linear * source_multiplication == target_multiplication * tensor_square
+        derived = self._multiplicativity_derivation()
+        preserved = (
+            linear * source_multiplication == target_multiplication * tensor_square
+            if derived is None
+            else derived
+        )
         assert preserved is not False, "the stated linear map does not preserve the multiplication"
         self._underlying_morphism = linear
         self._tensor_square_morphism = tensor_square
@@ -264,9 +273,18 @@ class MultiplicativeAlgebraMor(CategoricalMor):
 class UnitalMultiplicativeAlgebraMorphism(MultiplicativeAlgebraMorphism):
     r"""A morphism of unital algebras: multiplicative and \(f(1) = 1\)."""
 
+    def _unit_preservation_derivation(self):
+        r"""Return a construction-derived unit-preservation decision, or ``None``."""
+        return None
+
     def __init__(self, parent, underlying_morphism) -> None:
         super().__init__(parent, underlying_morphism)
-        self._preserves_unit = self(self.domain().one()) == self.codomain().one()
+        derived = self._unit_preservation_derivation()
+        self._preserves_unit = (
+            self(self.domain().one()) == self.codomain().one()
+            if derived is None
+            else derived
+        )
         assert self._preserves_unit is not False, "the stated linear map does not preserve the unit"
 
     def preserves_unit(self):
@@ -1014,7 +1032,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             return True
 
         def is_framed_algebra(self) -> bool:
-            return False
+            return getattr(self, "_algebra_framing_owner", None) is not None
 
         def is_commutative(self):
             r"""Whether ``xy = yx``: decided on module generators of ``M`` against ``m``, else ``Unknown``.
@@ -1358,7 +1376,11 @@ class Algebras(OwnedCategoryOverBaseRing):
 
                     def _algebra_mor_class(self):
                         r"""A framed algebra states its morphisms on its selected generators."""
-                        return AlgebraMor
+                        return (
+                            AlgebraMor
+                            if self.is_framed_algebra()
+                            else UnitalMultiplicativeAlgebraMor
+                        )
 
                     def finite_algebra_generators(self):
                         r"""Return the selected algebra generators as a finite ordered family."""
@@ -2275,7 +2297,7 @@ class AlgebraMorphism(Morphism):
         codomain = self.codomain()
         engine_domain = _engine_ring(domain)
         engine_codomain = _engine_ring(codomain)
-        framed_domain = domain in FramedAlgebras(domain.base_ring())
+        framed_domain = domain.is_framed_algebra()
         self._engine_morphism = None
         self._element_function = None
 
@@ -2445,7 +2467,7 @@ class AlgebraMorphism(Morphism):
         if self is other:
             return op == op_EQ
         domain = self.domain()
-        if domain not in FramedAlgebras(domain.base_ring()):
+        if not domain.is_framed_algebra():
             return Unknown
         equal = self.algebra_generator_images() == other.algebra_generator_images()
         if equal is Unknown:
@@ -2457,7 +2479,7 @@ class AlgebraMorphism(Morphism):
             return NotImplemented
         source = other.domain()
         target = self.codomain()
-        if source in FramedAlgebras(source.base_ring()):
+        if source.is_framed_algebra():
             return source.Mor(target)(
                 lambda label: self(other(source.algebra_generator(label)))
             )
@@ -2569,7 +2591,7 @@ class PresentedAlgebraMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        if other.domain() not in FramedAlgebras(other.domain().base_ring()):
+        if not other.domain().is_framed_algebra():
             return NotImplemented
         return (Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain()))(
             lambda label: self(other(other.domain().algebra_generator(label)))
@@ -2598,7 +2620,7 @@ def _corestrict_algebra_morphism_to_center(morphism):
     domain = morphism.domain()
     codomain = morphism.codomain()
     base = domain.base_ring()
-    assert domain in FramedAlgebras(base), (
+    assert domain.is_framed_algebra(), (
         "corestriction to the centre requires a chosen algebra generating set of the source"
     )
     labels = domain.algebra_generating_set()
@@ -2639,7 +2661,7 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism Mor")
         domain = self.domain()
-        if domain in FramedAlgebras(domain.base_ring()):
+        if domain.is_framed_algebra():
             return self(lambda label: domain.algebra_generator(label))
         engine = _engine_ring(domain)
         return self(engine.mor(engine))
@@ -3159,9 +3181,9 @@ def _engine_algebra_morphism(morphism):
     public method on the mathematical morphism.
     """
     domain = morphism.domain()
-    if domain not in FramedAlgebras(domain.base_ring()):
+    if not domain.is_framed_algebra():
         return morphism._engine_morphism_crossing()
-    assert domain in FramedAlgebras(domain.base_ring()), (
+    assert domain.is_framed_algebra(), (
         "a private Sage realization of an owned algebra morphism requires a selected algebra generating family"
     )
     images = {label: morphism(domain.algebra_generator(label)) for label in domain.algebra_generating_set()}

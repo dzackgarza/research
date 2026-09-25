@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
@@ -697,7 +696,7 @@ class GradedDerivation(ModuleElement):
         """
         algebra = self.algebra()
         target = self.target()
-        if algebra not in FramedAlgebras(algebra.base_ring()):
+        if not algebra.is_framed_algebra():
             return Unknown
         labels = algebra.algebra_generating_set()
         finite = labels.cardinality().is_finite()
