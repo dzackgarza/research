@@ -64,6 +64,26 @@ test in construction admission.
 were found only where profiling of the star import led. The audit of the
 whole preamble for engine behaviour re-implemented locally is the TODO node
 `engine-wiring-audit`.
+### A ring is not placed as a framed algebra over itself
+
+A commutative ring `R` is an `R`-algebra, and it is framed as one by the
+empty generating set: the free `R`-algebra on no generators is `R`, and its
+unit map onto `R` is surjective. The algebra-framing contract separated from
+module framing (`09215fd7e`) places an algebra in
+`Algebras(R).Associative().Unital().Framed()` only when a constructor fixes
+that framing, and the ring constructors never fix it for `R` over itself.
+Sage's category meet does not know about the gap. The meet of `ZZ.category()`
+and `RR.category()` contains the framed-algebra category over `ZZ`, so
+coercion discovery builds a Hom in a category that `ZZ` fails, and
+`RR.coerce_map_from(ZZ)` raises `ValueError`.
+
+**Consumers:** every coercion of the session integers into the owned reals
+(`4 / pi**2`), the Lebesgue-space and convolution tests under
+`tests/functions/`, and the D4 Gaussian heuristic.
+**Coverage boundary:** observed for `ZZ` into `RR` on `main` and on rack's
+head `72650e04f`. Other pairs of rings were not surveyed. Repair:
+`rings-are-framed-algebras-over-themselves` in [TODO.md](TODO.md).
+
 ## Workflow Papercuts
 
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
