@@ -142,10 +142,17 @@ def test_base_change_of_a_form(build) -> None:
 
 @pytest.mark.parametrize(
     "name, modulus, size",
-    [("ZZ", 2, 2), ("ZZ", 12, 12), ("ZZ", 1, 1), ("QQ[x]", None, aleph0), ("ZZ[i]", 3, 9), ("ZZ_3", 9, 9)],
+    [("ZZ", 2, aleph0), ("ZZ", 12, aleph0), ("ZZ", 1, aleph0), ("QQ[x]", None, aleph0), ("ZZ[i]", 3, aleph0), ("ZZ_3", 9, aleph0)],
 )
 def test_fraction_field_quotients(build, name, modulus, size) -> None:
-    r"""$\tfrac{1}{m}R/R \cong R/mR$ inside $K/R$."""
+    r"""For a domain $R$ with fraction field $K$, ``FractionFieldQuotients(R)(m)`` is $K/mR$.
+
+    Each listed $K/mR$ is countably infinite: for number fields and rational
+    function fields this follows because $K$ is countable and the quotient has
+    elements of unbounded additive order; for $\mathbb Q_3/9\mathbb Z_3$ use
+    $\mathbb Q_3=\bigcup_{k\ge0}3^{-k}\mathbb Z_3$, whose successive quotients
+    by $9\mathbb Z_3$ are finite.
+    """
     ring = build(name)
     element = ring.algebra_generator("x") ** 2 if modulus is None else ring(modulus)
     quotient = FractionFieldQuotients(ring)(element)
@@ -156,8 +163,7 @@ def test_fraction_field_quotients(build, name, modulus, size) -> None:
     assert quotient.fraction_field() is ring.fraction_field()
     assert quotient.cardinality() == size
     assert quotient.modulus() == element
-    generator = quotient.module_generator(0)
-    assert element * generator == quotient.zero()
+    assert quotient(element) == quotient.zero()
 
 
 def test_discriminant_forms_from_relations_and_gram() -> None:
