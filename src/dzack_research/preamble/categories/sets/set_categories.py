@@ -507,7 +507,30 @@ class SetMorCategory(CategoricalMor):
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        CategoricalMor.__init__(self, mor_family, domain, codomain)
+        placement = (
+            FinitelySupportedFunctionSets()
+            if domain in FiniteSets()
+            else FunctionSets()
+        )
+        CategoricalMor.__init__(
+            self,
+            mor_family,
+            domain,
+            codomain,
+            category=placement,
+        )
+
+    def base(self) -> Sets().ObjectType:
+        r"""Return the codomain Y of the function set Y^X."""
+        return self.codomain()
+
+    def exponent(self) -> Sets().ObjectType:
+        r"""Return the domain X of the function set Y^X."""
+        return self.domain()
+
+    def mor(self) -> SetMorCategory:
+        r"""Return this same object as Mor_Set(X,Y)."""
+        return self
 
     def _element_constructor_(self, datum):
         r"""Admit an arrow: a set map between these endpoints, or a callable.
@@ -1995,67 +2018,49 @@ def _power_set(base_set: Parent) -> Sets().ObjectType:
 
 
 def _function_set_of(codomain, exponent):
-    r"""Build \(Y^X\) in the category its exponent decides.
+    r"""Return Y^X as the canonical Mor_Set(X,Y).
 
-    Over a finite exponent every function is finitely supported, whatever
-    base point of \(Y\) support is measured against, and over an infinite one
-    that is exactly what fails.  That is a fact of the datum, so the object
-    is built in the finer category rather than refined into it afterwards.
+    The Mor parent is already the set whose elements are the functions X -> Y.
+    Its construction chooses the function-set placement from X, so the
+    exponential spelling allocates no second parent.
     """
-    match exponent:
-        case _ if exponent in FiniteSets():
-            return _object_of(FinitelySupportedFunctionSets(), codomain=codomain, exponent=exponent)
-        case _:
-            return _object_of(FunctionSets(), codomain=codomain, exponent=exponent)
+    return Sets().Mor(exponent, codomain)
 
 
 class FunctionSets(OwnedCategory):
-    r"""Exponentials \(Y^X=\operatorname{Hom}_{Set}(X,Y)\)."""
+    r"""The essential image of Mor_Set: Set^op x Set -> Set.
+
+    Its objects are exactly the canonical parents Mor_Set(X,Y)=Y^X, not
+    wrappers around those parents.  Each is simultaneously a discrete
+    category and a set.
+    """
 
     def an_object(self) -> ObjectOfCategory:
         r"""\(\Delta_2^{\Delta_1}\)."""
         return Sets.Δ[2].exponential(Sets.Δ[1])
 
     def super_categories(self):
-        return [Sets()]
+        return [Mors()]
 
     def _call_(self, codomain, exponent):
-        r"""Construct the exponential ``codomain^exponent``."""
+        r"""Construct the exponential codomain-to-the-exponent."""
         return _function_set_of(codomain, exponent)
 
-    class ParentMethods:
-        def __init__(self, codomain: Parent, exponent: Parent, **rest) -> None:
-            assert codomain in Sets() and exponent in Sets(), (
-                f"the exponential Y^X needs X and Y sets, but got X = {exponent} and Y = {codomain}"
-            )
-            self._codomain = codomain
-            self._exponent = exponent
-            super().__init__(**rest)
 
-        def base(self) -> Sets().ObjectType:
-            return self._codomain
+class FinitelySupportedFunctionSets(OwnedCategory):
+    r"""Exponentials Y^X over a finite exponent X.
 
-        def exponent(self) -> Sets().ObjectType:
-            return self._exponent
+    Every function out of a finite set has finite support, whichever base
+    point of Y support is measured against, so these are the function sets
+    on which finite support is a theorem rather than a hypothesis.
+    """
 
-        def mor(self) -> SetMorCategory:
-            return Sets().Mor(self.exponent(), self.base())
+    def an_object(self) -> ObjectOfCategory:
+        r"""Functions from the ordinal 2 to itself, all of finite support."""
+        return finite_ordinal_set(2).exponential(finite_ordinal_set(2))
 
-        def __call__(self, *args, **kwargs):
-            r"""Construct through the owned set representation directly."""
-            return self._element_constructor_(*args, **kwargs)
-
-        def _element_constructor_(self, definition):
-            mor = self.mor()
-            if definition in mor:
-                return definition
-            return mor(definition)
-
-        def __contains__(self, function) -> bool:
-            return function in self.mor()
-
-        def _repr_(self) -> str:
-            return f"{self.base()}^{self.exponent()}"
+    def super_categories(self):
+        return [FunctionSets()]
 
 
 @cached_function
@@ -3375,24 +3380,6 @@ class TotallyOrderedSets(OwnedCategory):
 
 
 NN = _object_of(NaturalNumberSets())
-
-
-class FinitelySupportedFunctionSets(OwnedCategory):
-    r"""Exponentials \(Y^X\) over a finite exponent \(X\).
-
-    Every function out of a finite set has finite support, whichever base
-    point of \(Y\) support is measured against, so these are the function
-    sets on which finite support is a theorem rather than a hypothesis.  A
-    finitely supported function set is a function set: that is its one
-    immediate supercategory.
-    """
-
-    def an_object(self) -> ObjectOfCategory:
-        r"""Functions from the ordinal 2 to itself, all of finite support."""
-        return finite_ordinal_set(2).exponential(finite_ordinal_set(2))
-
-    def super_categories(self):
-        return [FunctionSets()]
 
 
 def register_set_axioms() -> None:
