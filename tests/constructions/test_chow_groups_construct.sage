@@ -12,3 +12,5 @@ def test_projective_plane_curve_chow_group() -> None:
     assert chow.cycle_dimension() == 1
     assert chow.cycle_codimension() == 1
     assert chow.module_rank() == 1
+    rational_equivalence = chow.rational_equivalence_morphism()
+    assert rational_equivalence.codomain() is chow.cokernel_projection().domain()
