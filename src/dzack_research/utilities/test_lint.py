@@ -11,7 +11,7 @@ The checks read each file's syntax tree, and resolve the names it uses against
 the live session namespace and the file's own bindings; they do not match
 text. Rules, each with a code:
 
-- ``TL01`` an import other than the session, ``pytest`` or ``__future__``;
+- ``TL01`` an explicit session import, or an import other than the session, ``pytest`` or ``__future__``;
 - ``TL02`` a private attribute (``x._y``) or an underscored imported name;
 - ``TL03`` introspection: ``getattr``, ``isinstance``, ``type``, ``vars``,
   ``__dict__``, ``__class__``, and the like;
@@ -55,6 +55,11 @@ import pytest
 SESSION_MODULE = "dzack_research.preamble.all"
 ALLOWED_IMPORTS = frozenset({SESSION_MODULE, "pytest", "__future__"})
 PROTECTED = ("tests/constructions/", "tests/user_simulations/", "tests/conftest.py")
+EXPLICIT_SESSION_IMPORT_EXCEPTIONS = frozenset({
+    "tests/constructions/test_direct_sum_objects_archive.sage",
+    "tests/constructions/test_slice_coslice_archive.sage",
+    "tests/constructions/test_products_archive_reconciliation.sage",
+})
 
 INTROSPECTION_CALLS = frozenset({
     "getattr", "hasattr", "setattr", "delattr", "isinstance", "issubclass", "type",
@@ -242,7 +247,13 @@ def lint_file(path: Path, session_names: frozenset[str], axioms: frozenset[str])
                     if alias.name not in ALLOWED_IMPORTS:
                         flag(node, "TL01", f"import {alias.name}: take every name from the session")
             case ast.ImportFrom(module=module, names=names):
-                if module not in ALLOWED_IMPORTS:
+                if (
+                    module == SESSION_MODULE
+                    and not (len(names) == 1 and names[0].name == "*")
+                    and shown not in EXPLICIT_SESSION_IMPORT_EXCEPTIONS
+                ):
+                    flag(node, "TL01", "import the complete session with from dzack_research.preamble.all import *")
+                elif module not in ALLOWED_IMPORTS:
                     flag(node, "TL01", f"from {module} import ...: take every name from the session")
                 for alias in names:
                     if alias.name.startswith("_"):

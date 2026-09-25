@@ -1,16 +1,6 @@
 r"""Archive reconciliation for cardinality comparison maps of set constructions."""
 
-from dzack_research.preamble.all import (
-    CC,
-    QQ,
-    RR,
-    ZZ,
-    QQbar,
-    Sets,
-    aleph0,
-    cardinal,
-    continuum,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 

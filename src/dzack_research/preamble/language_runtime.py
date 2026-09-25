@@ -8,6 +8,8 @@ the functions below and every backend value is crossed back before return.
 from __future__ import annotations
 
 from sage.structure.element import parent as element_parent
+from sageparse import Context, Node, splice
+from sageparse.extensions.research import EXTENSION as _RESEARCH_EXTENSION
 
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -122,12 +124,70 @@ _IMPORTS = {
     name: f"from dzack_research.preamble.language_runtime import {name}"
     for name in _RUNTIME
 }
-_EXTENSION = {}
+_SESSION_MODULE = "dzack_research.preamble.all"
+_SESSION_NAMES: frozenset[str] = frozenset()
+_RESEARCH_ASSIGNMENT = _RESEARCH_EXTENSION["assignment"]
 
 
-def install() -> None:
+def _root(node: Node) -> Node:
+    while node.parent is not None:
+        node = node.parent
+    return node
+
+
+def _has_session_star_import(node: Node, context: Context) -> bool:
+    """Whether this source imports the complete preamble session."""
+    stack = [_root(node)]
+    expected = f"from{_SESSION_MODULE}import*"
+    while stack:
+        current = stack.pop()
+        if current.type == "import_from_statement":
+            written = "".join(context.text(current).split())
+            if written == expected:
+                return True
+        stack.extend(current.children)
+    return False
+
+
+def _assignment_uses_session_name(node: Node, context: Context) -> bool:
+    right = node.child_by_field_name("right")
+    if right is None or right.type != "subscript":
+        return False
+    return any(
+        child.type == "identifier" and context.text(child) in _SESSION_NAMES
+        for child in right.children_by_field_name("subscript")
+    )
+
+
+def _lower_session_assignment(node: Node, context: Context) -> str | None:
+    """Keep a subscript ordinary when its index comes from the session star import.
+
+    The upstream research dialect interprets R = A[x] as a generator
+    declaration when x is unbound in the file. A star import binds names at
+    runtime but contributes no identifier nodes to that static bound-name
+    scan. The preamble owns exactly which names its star import supplies, so
+    it resolves that one missing binding fact here. Every other assignment is
+    delegated unchanged to the upstream research lowering.
+    """
+    if (
+        _SESSION_NAMES
+        and _has_session_star_import(node, context)
+        and _assignment_uses_session_name(node, context)
+    ):
+        return splice(node, context)
+    return _RESEARCH_ASSIGNMENT(node, context)
+
+
+_EXTENSION = {"assignment": _lower_session_assignment}
+
+
+def install(session_namespace: dict[str, object]) -> None:
     from sageparse.preparser import register_extension
 
+    global _SESSION_NAMES
+    _SESSION_NAMES = frozenset(
+        name for name in session_namespace if not name.startswith("_")
+    )
     register_extension(_EXTENSION, runtime=_RUNTIME, imports=_IMPORTS)
 
 

@@ -543,9 +543,6 @@ from dzack_research.preamble.utilities import (
     zipsum as zipsum,
 )
 
-_language_runtime.install()
-
-
 def load(filename: str, globals: dict | None = None, attach: bool = False) -> None:
     r"""Load a Sage file and restore this session's owned scalar vocabulary."""
     scope = _sys._getframe(1).f_globals if globals is None else globals
@@ -582,3 +579,6 @@ from dzack_research.preamble.catalogue import (  # noqa: E402,F401
 )
 from dzack_research.preamble.coble import Coble  # noqa: E402,F401
 from dzack_research.preamble.sterk import Sterk  # noqa: E402,F401
+
+
+_language_runtime.install(globals())
