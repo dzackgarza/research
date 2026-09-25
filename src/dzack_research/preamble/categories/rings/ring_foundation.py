@@ -74,6 +74,7 @@ from dzack_research.preamble.categories.rings.semirings import (
     OwnedRngs,
     OwnedSemirings,
     RingMorCategoryConstruction,
+    SemiringMorphism,
 )
 from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
@@ -102,17 +103,11 @@ if "Prime" not in all_axioms:
     all_axioms.add("Prime")
 
 
-class RingMorphism(Morphism):
+class RingMorphism(SemiringMorphism):
     r"""A unital ring morphism in the owned ring category."""
 
     def __init__(self, parent, function, *, engine_morphism=None) -> None:
-        Morphism.__init__(self, parent)
-        if not callable(function):
-            raise TypeError(
-                f"a ring morphism {self.domain()} -> {self.codomain()} needs a map on elements, but "
-                f"{function!r} is not callable"
-            )
-        self._function = function
+        SemiringMorphism.__init__(self, parent, function)
         self._engine_morphism = engine_morphism
         self._preamble_is_identity = False
 
@@ -3552,17 +3547,19 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return value in self._engine
 
     def _coerce_map_from_(self, source):
-        r"""The owned rings that coerce into this one: those whose engine ring coerces into this ring's.
+        r"""Return the represented canonical scalar map into this ring.
 
-        A coercion is the canonical ring morphism, and the owned rings
-        realize their engine rings, so the canonical morphisms between them
-        are the engine's: \(\mathbb{Z}\to\mathbb{Q}\), \(R\to R[x]\),
-        \(\mathcal{O}_K\to K\).  Sage builds the map from this ring's element
-        constructor, which reads the source element through its engine.
+        Between owned rings the engine decides whether its canonical ring map
+        exists.  The other canonical source is the initial semiring NN: every
+        unital ring receives its unique unital semiring morphism, represented
+        by the semiring category itself rather than by a ring-specific
+        exception.
         """
         match source:
             case _ if source in OwnedRings():
                 return self._engine.has_coerce_map_from(_engine_ring(source))
+            case _ if source is OwnedSemirings().initial_object():
+                return OwnedSemirings().initial_morphism(self)
             case _:
                 return None
 

@@ -3207,7 +3207,7 @@ class NaturalNumberSets(OwnedCategory):
         return NN
 
     def super_categories(self):
-        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+        from dzack_research.preamble.categories.rings.semirings import OwnedSemirings
 
         # The identity ranking is the chosen enumeration.  Declared by the
         # category rather than joined for the one object.
@@ -3215,7 +3215,7 @@ class NaturalNumberSets(OwnedCategory):
             EnumeratedSets(),
             Sets().Infinite(),
             WellOrderedSets(),
-            AdditiveMonoids(),
+            OwnedSemirings(),
         ]
 
     class ElementMethods(Element):
@@ -3263,13 +3263,52 @@ class NaturalNumberSets(OwnedCategory):
             other = self.parent()(other)
             return self._value >= other._value
 
+        def _semiring_operand(self, other):
+            r"""Read another natural here, or defer to a larger semiring.
+
+            NN is initial among semirings.  When the other operand already
+            belongs to a different represented semiring, arithmetic belongs
+            there along the unique map from NN rather than by pulling that
+            element back into NN.
+            """
+            other_parent = element_parent(other)
+            if other_parent is self.parent():
+                return other
+            from dzack_research.preamble.categories.rings.semirings import (
+                OwnedSemirings,
+            )
+
+            if isinstance(other_parent, Parent) and other_parent in OwnedSemirings():
+                return NotImplemented
+            if other not in self.parent():
+                return NotImplemented
+            return self.parent()(other)
+
         def __add__(self, other):
-            other = self.parent()(other)
+            other = self._semiring_operand(other)
+            if other is NotImplemented:
+                return NotImplemented
             return self.parent()(self._value + int(other))
 
         __radd__ = __add__
 
+        def __mul__(self, other):
+            other = self._semiring_operand(other)
+            if other is NotImplemented:
+                return NotImplemented
+            return self.parent()(self._value * int(other))
+
+        __rmul__ = __mul__
+
         def __sub__(self, other):
+            other_parent = element_parent(other)
+            if isinstance(other_parent, Parent):
+                from dzack_research.preamble.categories.rings.ring_foundation import (
+                    OwnedRings,
+                )
+
+                if other_parent in OwnedRings():
+                    return NotImplemented
             other = self.parent()(other)
             return self.parent()(self._value - int(other))
 
@@ -3344,6 +3383,9 @@ class NaturalNumberSets(OwnedCategory):
 
         def zero(self) -> NN.ElementType:
             return self(0)
+
+        def one(self) -> NN.ElementType:
+            return self(1)
 
         def _repr_(self):
             return "NN = {0, 1, 2, ...}"
