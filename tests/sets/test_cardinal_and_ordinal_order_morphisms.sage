@@ -72,4 +72,26 @@ def test_natural_sums_of_initial_ordinals_commute_and_omega_one_follows_omega() 
     assert first.ordinal_sum(second) == second
     assert second > first
     assert second.initial_index() == Ordinals()(1)
-    assert Ordinals().Mor(Ordinals()).identity()(second) == second
+    assert Ord.Mor(first, second).unique_morphism().domain() is first
+    assert Ord.Mor(second, second).identity().is_identity()
+
+
+def test_order_type_is_a_functor_from_well_orders_to_ord() -> None:
+    labels = finite_ordered_set(("a", "b", "c"))
+    standard = Sets.Δ[2]
+    well_orders = WellOrderedSets()
+
+    forward = well_orders.Mor(labels, standard)(
+        lambda point: labels.ranking_map()(point)
+    )
+    inverse = well_orders.Mor(standard, labels)(
+        lambda position: labels.ranking_map().inverse()(position)
+    )
+    isomorphism = well_orders.Core().Mor(labels, standard)(forward, inverse)
+    order_type = well_orders.order_type_functor()
+
+    assert standard in AugmentedSimplexCategory()
+    assert labels in WellOrderedSets()
+    assert order_type(labels) is Ordinals()(3)
+    assert order_type(standard) is Ordinals()(3)
+    assert order_type(isomorphism) == Ord.Mor(3, 3).identity()

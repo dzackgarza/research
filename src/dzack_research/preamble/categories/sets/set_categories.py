@@ -108,12 +108,12 @@ class EnumeratedSets(OwnedCategory):
     class ParentMethods:
         @abstract_method
         def ranking_map(self) -> CategoricalIsomorphism:
-            r"""Return the isomorphism onto the ordinal counting this set.
+            r"""Return the isomorphism onto the standard well-order counting this set.
 
-            An enumeration is a bijection $X \xrightarrow{\ \sim\ }
-            \operatorname{Ord}(|X|)$, so both directions a caller wants are
-            this one arrow: it takes a point to its position, and its
-            :meth:`inverse` takes a position back to the point there.
+            An enumeration is a bijection from ``X`` to ``[n]`` for a
+            finite set and to ``NN`` for a countably infinite set.  This is
+            an isomorphism of underlying sets carrying the chosen ranking; it
+            is not an object of the ordinal category ``Ord``.
             """
 
         def __getitem__(self, position):
@@ -127,15 +127,15 @@ class EnumeratedSets(OwnedCategory):
 
         def _ranking_isomorphism(self, position_of, point_at):
             r"""Build the represented enumeration from its mutually inverse directions."""
-            ordinal = self.counting_ordinal()
-            forward = Sets().Mor(self, ordinal)(
+            counting_order = self.counting_well_order()
+            forward = Sets().Mor(self, counting_order)(
                 lambda element: NN(position_of(element))
             )
-            backward = Sets().Mor(ordinal, self)(
+            backward = Sets().Mor(counting_order, self)(
                 lambda position: point_at(int(position))
             )
             return CategoricalIsomorphism(
-                _set_core().Mor(self, ordinal),
+                _set_core().Mor(self, counting_order),
                 forward,
                 backward,
                 verify=False,
@@ -162,8 +162,15 @@ class EnumeratedSets(OwnedCategory):
             return self.fixed_size_selections(size, repetition=True)
 
 
-class FiniteOrdinalSets(OwnedCategory):
-    r"""The standard finite ordered sets \([n] = \{0 < 1 < \dots < n-1\}\), one for each finite ordinal \(n\), their order type."""
+class AugmentedSimplexCategory(OwnedCategory):
+    r"""The standard finite linear orders \([n] = \{0 < \dots < n-1\}\).
+
+    With order-preserving maps these form the augmented simplex category: the
+    skeleton of finite linear orders that also contains the empty order.  An
+    individual object is the von Neumann finite ordinal ``n``, but this
+    category is not ``Ord``: its objects are represented finite ordered
+    sets, not ordinal order types.
+    """
 
     def an_object(self) -> ObjectOfCategory:
         r"""\(\{0,1,2\}\)."""
@@ -199,12 +206,10 @@ class FiniteOrdinalSets(OwnedCategory):
             )
 
         def order_type(self) -> Ordinal:
-            r"""The ordinal ``n`` this well-ordered set is isomorphic to: itself.
+            r"""The ordinal order type ``n`` of this standard well-order.
 
             The finite ordinal ``{0, ..., n-1}`` is the von Neumann ordinal
-            ``n``, so its order type is the datum it was built from.  The
-            cardinality of the set is the cardinality of that ordinal, which
-            is how ``Sets`` answers it.
+            ``n``, so its order type is the datum it was built from.
             """
             return ordinal(self._size)
 
@@ -283,7 +288,7 @@ def finite_ordinal_set(size: int) -> Sets().ObjectType:
     counts: two sets of the same cardinality must reach the *same* codomain
     or their enumerations do not compose.
     """
-    return FiniteOrdinalSets()(size)
+    return AugmentedSimplexCategory()(size)
 
 
 @cached_function
@@ -1153,7 +1158,7 @@ class Sets(OwnedCategory):
             )
 
             match self:
-                case _ if self in FiniteOrdinalSets():
+                case _ if self in AugmentedSimplexCategory():
                     return self.order_type().cardinality()
                 case _ if self in OrderedEnumeratedSets():
                     return cardinal(self.index_set().cardinality())
@@ -1205,8 +1210,8 @@ class Sets(OwnedCategory):
             r"""All finite multisets in this alphabet, including the empty multiset."""
             return _finite_words(self, commutative=True)
 
-        def counting_ordinal(self):
-            r"""Return the represented ordinal that counts this set when it is countable."""
+        def counting_well_order(self):
+            r"""Return the standard finite or countable well-order indexing this enumeration."""
             size = cardinal(self.cardinality())
             if size.is_finite():
                 return finite_ordinal_set(size.finite_value())
@@ -3209,7 +3214,7 @@ class NaturalNumberSets(OwnedCategory):
         return [
             EnumeratedSets(),
             Sets().Infinite(),
-            TotallyOrderedSets(),
+            WellOrderedSets(),
             AdditiveMonoids(),
         ]
 
@@ -3331,6 +3336,12 @@ class NaturalNumberSets(OwnedCategory):
             r"""The identity: $\mathbb N$ is the ordinal $\omega$ that counts it."""
             return self._ranking_isomorphism(lambda value: int(self(value)), self)
 
+        def order_type(self):
+            r"""The order type of the natural numbers, namely ``omega``."""
+            from dzack_research.preamble.categories.sets.cardinals import omega
+
+            return omega(0)
+
         def zero(self) -> NN.ElementType:
             return self(0)
 
@@ -3379,6 +3390,143 @@ class TotallyOrderedSets(OwnedCategory):
         return [PartiallyOrderedSets()]
 
 
+class WellOrderedSetMorphism(Morphism):
+    r"""An order-preserving map between represented well-ordered sets."""
+
+    def __init__(self, parent, set_morphism) -> None:
+        Morphism.__init__(self, parent)
+        if (
+            set_morphism.domain() is not self.domain()
+            or set_morphism.codomain() is not self.codomain()
+        ):
+            raise ValueError(
+                f"{set_morphism} cannot underlie a map {self.domain()} -> {self.codomain()}: it is a set map "
+                f"{set_morphism.domain()} -> {set_morphism.codomain()}"
+            )
+        self._set_morphism = set_morphism
+
+    def underlying_set_morphism(self):
+        return self._set_morphism
+
+    def __call__(self, point):
+        return self.underlying_set_morphism()(point)
+
+    def __eq__(self, other):
+        if element_parent(other) is not self.parent():
+            return False
+        return self.underlying_set_morphism() == other.underlying_set_morphism()
+
+    def __ne__(self, other):
+        equal = self == other
+        return Unknown if equal is Unknown else not equal
+
+    __hash__ = None
+
+    def is_identity(self):
+        if self.domain() is not self.codomain():
+            return False
+        return self.underlying_set_morphism().is_identity()
+
+    def __mul__(self, other):
+        match other:
+            case WellOrderedSetMorphism() if other.codomain() is self.domain():
+                pass
+            case _:
+                return NotImplemented
+        parent = WellOrderedSets().Mor(other.domain(), self.codomain())
+        return parent._from_order_preserving_set_map(
+            self.underlying_set_morphism() * other.underlying_set_morphism()
+        )
+
+
+class WellOrderedSetMor(CategoricalMor):
+    r"""Order-preserving maps between two represented well-orders.
+
+    Arbitrary ingress is decided exactly on finite enumerated sources.  Maps
+    known order-preserving by construction -- identities and composites -- use
+    the private theorem-backed entry instead.  This is the same separation
+    between mathematical ownership and finite verification used by the other
+    structured set categories.
+    """
+
+    Element = WellOrderedSetMorphism
+
+    def _verify_order_preserving(self, set_morphism) -> None:
+        domain = self.domain()
+        assert domain in FiniteSets() and domain in EnumeratedSets(), (
+            f"cannot decide whether {set_morphism} preserves the well-order: arbitrary order preservation is "
+            f"decided here only on finite enumerated domains, but {domain} lies in {domain.category()}"
+        )
+        for left in domain:
+            for right in domain:
+                if domain.le(left, right) and self.codomain().le(
+                    set_morphism(left), set_morphism(right)
+                ) is not True:
+                    raise ValueError(
+                        f"{set_morphism} is not order-preserving: {left} <= {right} in {domain}, but "
+                        f"{set_morphism(left)} is not <= {set_morphism(right)} in {self.codomain()}"
+                    )
+
+    def _element_constructor_(self, datum):
+        if element_parent(datum) is self:
+            return datum
+        set_morphism = Sets().Mor(self.domain(), self.codomain())(datum)
+        self._verify_order_preserving(set_morphism)
+        return self.element_class(self, set_morphism)
+
+    def _from_order_preserving_set_map(self, set_morphism):
+        if (
+            set_morphism.domain() is not self.domain()
+            or set_morphism.codomain() is not self.codomain()
+        ):
+            raise ValueError(
+                f"the known order-preserving set map for {self} has endpoints {set_morphism.domain()} -> "
+                f"{set_morphism.codomain()}"
+            )
+        return self.element_class(self, set_morphism)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError(
+                f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
+            )
+        return self._from_order_preserving_set_map(
+            Sets().Mor(self.domain(), self.domain()).identity()
+        )
+
+
+class WellOrderedSetMorCategoryConstruction(MorCategoryConstruction):
+    def fixed_category_class(self):
+        return WellOrderedSetMor
+
+
+class WellOrderedSets(OwnedCategory):
+    r"""Well-ordered sets with order-preserving maps."""
+
+    _MorCategory = WellOrderedSetMorCategoryConstruction
+
+    def an_object(self) -> ObjectOfCategory:
+        return finite_ordinal_set(3)
+
+    def super_categories(self):
+        return [TotallyOrderedSets()]
+
+    class ParentMethods:
+        @abstract_method
+        def order_type(self):
+            r"""Return the ordinal represented by this well-order."""
+
+    @cached_method
+    def order_type_functor(self):
+        r"""The functor from well-orders and their isomorphisms to ``Ord``."""
+        from dzack_research.preamble.categories.functors.order_type import (
+            _order_type_functor,
+        )
+
+        return _order_type_functor()
+
+
 NN = _object_of(NaturalNumberSets())
 
 
@@ -3392,13 +3540,13 @@ class SetSubcategoryMethods:
 
 
 __all__ = [
+    "AugmentedSimplexCategory",
     "CartesianProductsOfSets",
     "CountableSets",
     "CountablyInfiniteSets",
     "CoproductsOfSets",
     "DisjointUnionsOfSets",
     "EnumeratedSets",
-    "FiniteOrdinalSets",
     "FinitePowerSets",
     "FiniteSets",
     "FinitelySupportedFunctionSets",
@@ -3418,6 +3566,9 @@ __all__ = [
     "Sets",
     "TotallyOrderedSets",
     "UncountableSets",
+    "WellOrderedSetMor",
+    "WellOrderedSetMorphism",
+    "WellOrderedSets",
     "finite_ordinal_set",
     "register_set_axioms",
 ]

@@ -414,6 +414,7 @@ from dzack_research.preamble.categories.schemes.cyclic_covers import (  # noqa: 
     CyclicCovers,
 )
 from dzack_research.preamble.categories.sets import (  # noqa: F401
+    AugmentedSimplexCategory,
     NN,
     CardinalComparison,
     Cardinalities,
@@ -434,8 +435,8 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     InfiniteSets,
     LaurentMonomials,
     ObjectSetsOfDiscreteCategories,
+    Ord,
     Ordinals,
-    OrdinalSemirings,
     PartiallyOrderedSets,
     PowerSets,
     Set,
@@ -446,6 +447,7 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     SincTranslates,
     TotallyOrderedSets,
     UncountableSets,
+    WellOrderedSets,
     aleph,
     aleph0,
     cardinal,

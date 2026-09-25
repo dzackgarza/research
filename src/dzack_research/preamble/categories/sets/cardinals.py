@@ -1,8 +1,8 @@
 r"""Cardinal and ordinal arithmetic in the owned set-theoretic number hierarchy.
 
 A cardinal is an object of :class:`Cardinalities` whose defining datum is a
-term of cardinal arithmetic, and an ordinal is an element of the ordinal
-semiring whose defining datum is a term of ordinal arithmetic.  Each term form
+term of cardinal arithmetic, and an ordinal is an object of :class:`Ordinals`
+whose defining datum is a term of ordinal arithmetic.  Each term form
 answers the structural questions about itself -- whether it is finite, how it
 is displayed, which law of exponentiation or comparison applies to it -- so
 an operation asks the datum and never inspects which form it has.
@@ -18,13 +18,11 @@ from typing import SupportsInt, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
-from sage.categories.semirings import Semirings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import AnInfinity, Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
-from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 
@@ -36,7 +34,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
 )
-from dzack_research.preamble.categories.rings.semirings import OwnedSemirings
 from dzack_research.preamble.owned_category import _object_of
 
 IndexT = TypeVar("IndexT")
@@ -998,57 +995,36 @@ class _OrdinalPower(_OrdinalExpression):
         return Cardinalities().supremum(self.base.cardinality(), self.exponent.cardinality())
 
 
-class OrdinalSemiringMorphism(Morphism):
-    r"""A declared homomorphism between represented ordinal semirings."""
+class OrdinalMorphism(Morphism):
+    r"""The unique comparison arrow ``alpha -> beta`` when ``alpha <= beta``."""
 
-    def __init__(
-        self,
-        parent: OrdinalSemiringMor,
-        function: Callable[[Ordinal], Ordinal],
-    ) -> None:
+    def __init__(self, parent: OrdinalMor) -> None:
         Morphism.__init__(self, parent)
-        if not callable(function):
-            raise TypeError(
-                f"a morphism of ordinal semirings {self.domain()} -> {self.codomain()} needs a map on "
-                f"elements, but {function!r} is not callable"
-            )
-        self._function = function
 
-    def _call_(self, element):
-        return self.codomain()(self._function(self.domain()(element)))
-
-    def __call__(self, element):
-        return self._call_(element)
+    def is_identity(self) -> bool:
+        return self.domain() is self.codomain()
 
     def __mul__(self, other):
-        r"""Compose ``self ∘ other``.
-
-        The right operand is arbitrary, which is Python's binary-operator
-        protocol: like ``__eq__``, this decides about anything and answers
-        ``NotImplemented`` for what is not a composable semiring morphism.
-        """
+        r"""Compose two ordinal comparisons."""
         other_parent = element_parent(other)
         match other_parent:
             case CategoricalMor() if (
-                other_parent.mor_category().is_subcategory(OrdinalSemirings())
+                other_parent.mor_category().is_subcategory(Ordinals())
                 and other.codomain() is self.domain()
             ):
                 pass
             case _:
                 return NotImplemented
-        if self.is_identity():
-            return other
-        if other.is_identity():
-            return self
-        return OrdinalSemirings().Mor(other.domain(), self.codomain())(lambda element: self(other(element)))
+        return Ordinals().Mor(other.domain(), self.codomain()).unique_morphism()
 
-    def is_identity(self) -> bool:
-        r"""Whether this is the identity arrow its endomorphism Mor object interns."""
-        return self.domain() is self.codomain() and self is self.parent().identity()
+    def _repr_(self) -> str:
+        return f"{self.domain()} <= {self.codomain()}"
 
 
-class OrdinalSemiringMor(CategoricalMor):
-    Element = OrdinalSemiringMorphism
+class OrdinalMor(CategoricalMor):
+    r"""The zero-or-one-element Mor object of the ordinal order."""
+
+    Element = OrdinalMorphism
 
     def __init__(
         self,
@@ -1058,121 +1034,196 @@ class OrdinalSemiringMor(CategoricalMor):
     ) -> None:
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
-    def _element_constructor_(self, function):
-        if isinstance(function, OrdinalSemiringMorphism):
-            if function.domain() is not self.domain() or function.codomain() is not self.codomain():
-                raise ValueError(
-                    f"cannot view {function} as a morphism {self.domain()} -> {self.codomain()}: it is a morphism "
-                    f"{function.domain()} -> {function.codomain()}"
-                )
-            if function.parent() is self:
-                return function
-            morphism = function
+    def is_empty(self):
+        comparison = Ordinals().le(self.domain(), self.codomain())
+        if comparison is True:
+            return False
+        reverse = Ordinals().le(self.codomain(), self.domain())
+        if reverse is True:
+            return True
+        return Unknown
 
-            def function(element):
-                return morphism(element)
-
-        return self.element_class(self, function)
+    def cardinality(self) -> Cardinal:
+        empty = self.is_empty()
+        assert empty is not Unknown, (
+            f"cannot compute the cardinality of {self}: it is undecided whether {self.domain()} <= "
+            f"{self.codomain()}, so it is undecided whether this set of morphisms is empty"
+        )
+        return cardinal(0 if empty else 1)
 
     @cached_method
-    def identity(self) -> OrdinalSemiringMorphism:
-        r"""The identity arrow, interned: ``is_identity`` reads it by identity."""
+    def unique_morphism(self) -> OrdinalMorphism:
+        empty = self.is_empty()
+        if empty is True:
+            raise ValueError(
+                f"there is no morphism {self.domain()} -> {self.codomain()} of ordinals: "
+                f"{self.domain()} is not <= {self.codomain()}"
+            )
+        assert empty is False, (
+            f"cannot give the morphism {self.domain()} -> {self.codomain()} of ordinals: it is "
+            f"undecided whether {self.domain()} <= {self.codomain()}"
+        )
+        return self.element_class(self)
+
+    def _element_constructor_(self, morphism=None):
+        if morphism is not None and morphism.parent() is not self:
+            raise ValueError(f"{morphism} is not in {self}")
+        return self.unique_morphism()
+
+    def identity(self) -> OrdinalMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
-        return self(lambda element: element)
+        return self.unique_morphism()
 
 
-class OrdinalSemiringMorCategoryConstruction(MorCategoryConstruction):
-    def fixed_category_class(self) -> type[OrdinalSemiringMor]:
-        return OrdinalSemiringMor
+class OrdinalMorCategoryConstruction(MorCategoryConstruction):
+    def fixed_category_class(self) -> type[OrdinalMor]:
+        return OrdinalMor
 
 
-class OrdinalSemirings(OwnedCategory):
-    r"""The category containing the ordinal semiring under natural operations."""
+class Ordinals(OwnedCategory):
+    r"""The thin category ``Ord`` of represented ordinals under ``<=``.
 
-    class ElementMethods(Element):
-        r"""What an ordinal is."""
+    Ordinals are objects, not elements of a distinguished semiring object.
+    Natural (Hessenberg) sum and product are the commutative-semiring
+    operations on these objects.  Ordinary ordinal sum, product and power
+    remain object operations because they are not that commutative semiring
+    structure.
+    """
 
-        def __init__(self, parent: Parent, expression: _OrdinalExpression) -> None:
-            Element.__init__(self, parent)
+    _MorCategory = OrdinalMorCategoryConstruction
+
+    def an_object(self) -> Ordinal:
+        return self(3)
+
+    def super_categories(self):
+        return [Objects()]
+
+    def _repr_(self) -> str:
+        return "Ord: ordinals with a unique morphism alpha -> beta exactly when alpha <= beta"
+
+    def _call_(self, value: Ordinal | Cardinal | SupportsInt) -> Ordinal:
+        if value in self:
+            return value
+        match value:
+            case _ if value in Cardinalities():
+                if not value.is_finite():
+                    raise ValueError(
+                        f"the cardinal {value} is not itself an ordinal in this literal ingress: only finite "
+                        "cardinals identify canonically with their finite initial ordinals"
+                    )
+                integer = value.finite_value()
+            case _ if _is_session_integer(value):
+                integer = int(value)
+            case _:
+                raise ValueError(
+                    f"{value!r} does not name an ordinal here: use an ordinal, a finite cardinal, or an exact "
+                    "nonnegative integer"
+                )
+        if integer < 0:
+            raise ValueError(f"an ordinal is nonnegative, but {integer} is negative")
+        return _ordinal_with_expression(_FiniteOrdinal(ZZ(integer)))
+
+    def from_expression(self, expression: _OrdinalExpression) -> Ordinal:
+        return _ordinal_with_expression(expression)
+
+    def Mor(
+        self,
+        domain: Ordinal | Cardinal | SupportsInt,
+        codomain: Ordinal | Cardinal | SupportsInt,
+    ) -> OrdinalMor:
+        return OrdinalMorCategoryConstruction(self).Of(self(domain), self(codomain))
+
+    class ParentMethods:
+        def __init__(self, expression: _OrdinalExpression, **rest) -> None:
             self._expression = expression
+            super().__init__(**rest)
 
         def expression(self) -> _OrdinalExpression:
             return self._expression
 
+        def _repr_(self) -> str:
+            return self.expression().display()
+
         def __hash__(self) -> int:
+            if self.expression().is_finite():
+                return hash(int(self.expression().value))
             return hash(self.expression())
 
         def __eq__(self, other) -> bool:
-            r"""Equality of the defining terms, with a literal read as the ordinal it names."""
-            if other not in self.parent():
-                return False
-            return self.expression() == self.parent()(other).expression()
+            r"""Equality of the defining terms, with finite literals read as their ordinals."""
+            match other:
+                case _ if other in Ordinals():
+                    return self.expression() == other.expression()
+                case _ if other in Cardinalities() and other.is_finite():
+                    return self.expression() == Ordinals()(other).expression()
+                case _ if _is_session_integer(other) and int(other) >= 0:
+                    return self.expression() == Ordinals()(other).expression()
+                case _:
+                    return False
 
         def __ne__(self, other) -> bool:
             return not self == other
 
-        def __le__(self, other) -> bool:
-            return self.parent().proves_le(self, other)
+        def __le__(self, other):
+            return Ordinals().le(self, other)
 
-        def __lt__(self, other) -> bool:
-            target = self.parent()(other)
-            return self != target and self <= target
+        def __lt__(self, other):
+            return Ordinals().lt(self, other)
 
-        def __ge__(self, other) -> bool:
-            return self.parent().proves_le(other, self)
+        def __ge__(self, other):
+            return Ordinals().ge(self, other)
 
-        def __gt__(self, other) -> bool:
-            source = self.parent()(other)
-            return self != source and self >= source
+        def __gt__(self, other):
+            return Ordinals().gt(self, other)
 
-        def _add_(self, other):
-            return self.parent().natural_sum(self, other)
-
-        def _mul_(self, other):
-            return self.parent().natural_product(self, other)
+        def __add__(self, other):
+            return Ordinals().natural_sum(self, other)
 
         def __radd__(self, other):
-            return self.parent().natural_sum(other, self)
+            return Ordinals().natural_sum(other, self)
+
+        def __mul__(self, other):
+            return Ordinals().natural_product(self, other)
 
         def __rmul__(self, other):
-            return self.parent().natural_product(other, self)
+            return Ordinals().natural_product(other, self)
 
         def ordinal_sum(self, other: Ordinal | SupportsInt) -> Ordinal:
-            right = self.parent()(other)
+            right = Ordinals()(other)
             if self.expression().is_finite() and right.expression().is_finite():
-                return self.parent()(self.expression().value + right.expression().value)
+                return Ordinals()(self.expression().value + right.expression().value)
             if right == 0:
                 return self
             if self == 0:
                 return right
-            return self.parent().from_expression(_OrdinalSum(self, right))
+            return Ordinals().from_expression(_OrdinalSum(self, right))
 
         def ordinal_product(self, other: Ordinal | SupportsInt) -> Ordinal:
-            right = self.parent()(other)
+            right = Ordinals()(other)
             if self.expression().is_finite() and right.expression().is_finite():
-                return self.parent()(self.expression().value * right.expression().value)
+                return Ordinals()(self.expression().value * right.expression().value)
             if self == 0 or right == 0:
-                return self.parent().zero()
+                return Ordinals().zero()
             if right == 1:
                 return self
             if self == 1:
                 return right
-            return self.parent().from_expression(_OrdinalProduct(self, right))
+            return Ordinals().from_expression(_OrdinalProduct(self, right))
 
         def ordinal_power(self, exponent: Ordinal | SupportsInt) -> Ordinal:
-            power = self.parent()(exponent)
+            power = Ordinals()(exponent)
             if self.expression().is_finite() and power.expression().is_finite():
-                return self.parent()(self.expression().value ** power.expression().value)
+                return Ordinals()(self.expression().value ** power.expression().value)
             if power == 0:
-                return self.parent().one()
+                return Ordinals().one()
             if self == 0:
-                return self.parent().zero()
+                return Ordinals().zero()
             if self == 1:
                 return self
-            return self.parent().from_expression(_OrdinalPower(self, power))
+            return Ordinals().from_expression(_OrdinalPower(self, power))
 
         def is_initial(self) -> bool:
             return self.expression().is_initial()
@@ -1185,163 +1236,138 @@ class OrdinalSemirings(OwnedCategory):
             r"""``|alpha|``, the cardinality of the von Neumann ordinal ``alpha``."""
             return self.expression().denoted_cardinality()
 
-        def _repr_(self) -> str:
-            return self.expression().display()
-
-    def an_object(self) -> OrdinalSemiring:
-        r"""The semiring of ordinals."""
-        return Ordinals()
-
-    _MorCategory = OrdinalSemiringMorCategoryConstruction
-
-    def __init__(self) -> None:
-        # Sage semiring classes provide Python arithmetic plumbing only; they
-        # are not mathematical ancestors in the owned graph.
-        self._super_categories_for_classes = [OwnedSemirings(), Semirings().Commutative()]
-        super().__init__()
-
-    def super_categories(self):
-        return [OwnedSemirings()]
-
-    def Mor(
-        self,
-        domain: OrdinalSemiring,
-        codomain: OrdinalSemiring,
-    ) -> OrdinalSemiringMor:
-        if domain not in self or codomain not in self:
-            raise TypeError(
-                f"a morphism of ordinal semirings needs an ordinal semiring as domain and codomain, but got "
-                f"{domain} and {codomain}"
-            )
-        return OrdinalSemiringMorCategoryConstruction(self).Of(domain, codomain)
-
-    class ParentMethods:
-        def __init__(self, **rest) -> None:
-            super().__init__(**rest)
-
-        def _repr_(self) -> str:
-            return "Ordinal semiring"
-
-        def from_expression(self, expression: _OrdinalExpression) -> Ordinal:
-            return self.element_class(self, expression)
-
-        def __contains__(self, value) -> bool:
-            r"""Whether ``value`` names an ordinal: an ordinal of this semiring, a finite cardinal, or an exact nonnegative integer."""
-            match value:
-                case _ if element_parent(value) is self:
-                    return True
-                case _ if value in Cardinalities():
-                    return value.is_finite()
-                case _ if _is_session_integer(value):
-                    return int(value) >= 0
-                case _:
-                    return False
-
-        def _element_constructor_(self, value):
-            if element_parent(value) is self:
-                return value
-            if value not in self:
-                raise ValueError(
-                    f"{value!r} is not an ordinal: an ordinal is an element of {self} or a nonnegative integer"
-                )
-            return self.from_expression(_FiniteOrdinal(ZZ(int(value))))
-
-        def zero(self) -> Ordinal:
-            return self(0)
-
-        def one(self) -> Ordinal:
-            return self(1)
-
-        def initial(self, index: Ordinal | SupportsInt) -> Ordinal:
-            return self.from_expression(_InitialOrdinal(self(index)))
-
-        def natural_sum(self, *summands) -> Ordinal:
-            terms: list[Ordinal] = []
-            finite_part = ZZ.zero()
-            for summand in map(self, summands):
-                expression = summand.expression()
-                if expression.is_finite():
-                    finite_part += expression.value
-                else:
-                    terms.extend(expression.natural_sum_terms(summand))
-            if finite_part:
-                terms.append(self(finite_part))
-            if not terms:
-                return self.zero()
-            terms.sort(key=repr)
-            if len(terms) == 1:
-                return terms[0]
-            return self.from_expression(_NaturalSum(tuple(terms)))
-
-        def natural_product(self, *factors) -> Ordinal:
-            r"""Distribute over a natural sum, otherwise multiply the factors directly."""
-            normalized = tuple(map(self, factors))
-            for position, factor in enumerate(normalized):
-                terms = factor.expression().natural_sum_terms(factor)
-                match terms:
-                    case (term,) if term is factor:
-                        continue
-                    case _:
-                        return self.natural_sum(*(
-                            self.natural_product(*normalized[:position], term, *normalized[position + 1:])
-                            for term in terms
-                        ))
-            return self._natural_product_without_sums(normalized)
-
-        def _natural_product_without_sums(self, factors: tuple[Ordinal, ...]) -> Ordinal:
-            normalized: list[Ordinal] = []
-            finite_part = ZZ.one()
-            for factor in factors:
-                expression = factor.expression()
-                if expression.is_finite():
-                    if expression.value == 0:
-                        return self.zero()
-                    finite_part *= expression.value
-                else:
-                    normalized.extend(expression.natural_product_factors(factor))
-            if finite_part != 1 or not normalized:
-                normalized.append(self(finite_part))
-            normalized.sort(key=repr)
-            if len(normalized) == 1:
-                return normalized[0]
-            return self.from_expression(_NaturalProduct(tuple(normalized)))
-
-        def proves_le(
-            self,
-            left: Ordinal | SupportsInt,
-            right: Ordinal | SupportsInt,
-        ) -> bool:
-            source = self(left)
-            target = self(right)
-            if source == target:
-                return True
-            if source.expression().is_finite():
-                return not target.expression().is_finite() or source.expression().value <= target.expression().value
-            if target.expression().is_finite():
-                return False
-            if source.is_initial() and target.is_initial():
-                return self.proves_le(source.initial_index(), target.initial_index())
-            return False
-
         def Mor(
             self,
-            codomain: OrdinalSemiring,
+            codomain: Ordinal | Cardinal | SupportsInt,
             category: Category | None = None,
-        ) -> OrdinalSemiringMor:
-            if category is not None and category is not OrdinalSemirings():
+        ) -> OrdinalMor:
+            if category is not None and category is not Ordinals():
                 raise TypeError(
-                    f"a morphism of ordinal semirings lies in the category of ordinal semirings, not in {category}"
+                    f"a morphism of ordinals lies in the category of ordinals, not in {category}"
                 )
-            return OrdinalSemirings().Mor(self, codomain)
+            return Ordinals().Mor(self, codomain)
+
+    def zero(self) -> Ordinal:
+        return self(0)
+
+    def one(self) -> Ordinal:
+        return self(1)
+
+    def initial(self, index: Ordinal | SupportsInt) -> Ordinal:
+        return self.from_expression(_InitialOrdinal(self(index)))
+
+    def natural_sum(self, *summands) -> Ordinal:
+        terms: list[Ordinal] = []
+        finite_part = ZZ.zero()
+        for summand in map(self, summands):
+            expression = summand.expression()
+            if expression.is_finite():
+                finite_part += expression.value
+            else:
+                terms.extend(expression.natural_sum_terms(summand))
+        if finite_part:
+            terms.append(self(finite_part))
+        if not terms:
+            return self.zero()
+        terms.sort(key=repr)
+        if len(terms) == 1:
+            return terms[0]
+        return self.from_expression(_NaturalSum(tuple(terms)))
+
+    def natural_product(self, *factors) -> Ordinal:
+        r"""Distribute over a natural sum, otherwise multiply the factors directly."""
+        normalized = tuple(map(self, factors))
+        for position, factor in enumerate(normalized):
+            terms = factor.expression().natural_sum_terms(factor)
+            match terms:
+                case (term,) if term is factor:
+                    continue
+                case _:
+                    return self.natural_sum(*(
+                        self.natural_product(*normalized[:position], term, *normalized[position + 1:])
+                        for term in terms
+                    ))
+        return self._natural_product_without_sums(normalized)
+
+    def _natural_product_without_sums(self, factors: tuple[Ordinal, ...]) -> Ordinal:
+        normalized: list[Ordinal] = []
+        finite_part = ZZ.one()
+        for factor in factors:
+            expression = factor.expression()
+            if expression.is_finite():
+                if expression.value == 0:
+                    return self.zero()
+                finite_part *= expression.value
+            else:
+                normalized.extend(expression.natural_product_factors(factor))
+        if finite_part != 1 or not normalized:
+            normalized.append(self(finite_part))
+        normalized.sort(key=repr)
+        if len(normalized) == 1:
+            return normalized[0]
+        return self.from_expression(_NaturalProduct(tuple(normalized)))
+
+    def natural_sum_morphism(self, *morphisms: OrdinalMorphism) -> OrdinalMorphism:
+        source = self.natural_sum(*(morphism.domain() for morphism in morphisms))
+        target = self.natural_sum(*(morphism.codomain() for morphism in morphisms))
+        return self.Mor(source, target).unique_morphism()
+
+    def natural_product_morphism(self, *morphisms: OrdinalMorphism) -> OrdinalMorphism:
+        source = self.natural_product(*(morphism.domain() for morphism in morphisms))
+        target = self.natural_product(*(morphism.codomain() for morphism in morphisms))
+        return self.Mor(source, target).unique_morphism()
+
+    def le(
+        self,
+        left: Ordinal | Cardinal | SupportsInt,
+        right: Ordinal | Cardinal | SupportsInt,
+    ):
+        source = self(left)
+        target = self(right)
+        if source == target:
+            return True
+        if source.expression().is_finite():
+            if target.expression().is_finite():
+                return source.expression().value <= target.expression().value
+            return True
+        if target.expression().is_finite():
+            return False
+        if source.is_initial() and target.is_initial():
+            return self.le(source.initial_index(), target.initial_index())
+        return Unknown
+
+    def lt(
+        self,
+        left: Ordinal | Cardinal | SupportsInt,
+        right: Ordinal | Cardinal | SupportsInt,
+    ):
+        source = self(left)
+        target = self(right)
+        if source == target:
+            return False
+        return self.le(source, target)
+
+    def ge(self, left, right):
+        return self.le(right, left)
+
+    def gt(self, left, right):
+        return self.lt(right, left)
+
+    def proves_le(
+        self,
+        left: Ordinal | Cardinal | SupportsInt,
+        right: Ordinal | Cardinal | SupportsInt,
+    ) -> bool:
+        return self.le(left, right) is True
 
 
-OrdinalSemiring = OrdinalSemirings().ObjectType
-Ordinal = OrdinalSemirings().ElementType
+Ordinal = Ordinals().ObjectType
+Ord = Ordinals()
 
 
 @cached_function
-def Ordinals() -> OrdinalSemiring:
-    return _object_of(OrdinalSemirings())
+def _ordinal_with_expression(expression: _OrdinalExpression) -> Ordinal:
+    return _object_of(Ordinals(), expression=expression)
 
 
 def ordinal(value: Ordinal | SupportsInt) -> Ordinal:
@@ -1380,7 +1406,9 @@ __all__ = [
     "Cardinalities",
     "CardinalityMor",
     "CardinalityMorphism",
-    "OrdinalSemirings",
+    "Ord",
+    "OrdinalMor",
+    "OrdinalMorphism",
     "Ordinals",
     "aleph",
     "aleph0",

@@ -45,7 +45,7 @@ hand-rolls what the engines above compute:
 | `PowerSets`, `FixedCardinalitySubsetSets`, `FinitePowerSets` | hand-written through subobject placement (iteration already uses `Subsets`) | `Subsets(X)`, `Subsets(X, k)` |
 | `FunctionSets` | membership in the owned Mor | `FiniteSetMaps(X, Y)` |
 | `_ConditionSet` | the predicate (correct in shape) | `ConditionSet(universe, predicate)` |
-| `FiniteOrdinalSets`, `NN` | bounds checks (correct in shape) | `IntegerRange(n)`, `NonNegativeIntegers()` |
+| `AugmentedSimplexCategory`, `NN` | bounds checks (correct in shape) | `IntegerRange(n)`, `NonNegativeIntegers()` |
 
 The set layer is one instance. The same afternoon found an owned matrix
 algebra, with its tensor-algebra framing, built for every lattice in order to

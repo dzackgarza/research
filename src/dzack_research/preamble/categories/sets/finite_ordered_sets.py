@@ -13,12 +13,12 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import cardinal, omega, ordinal
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
     Sets,
-    TotallyOrderedSets,
+    WellOrderedSets,
     finite_ordinal_set,
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -43,7 +43,7 @@ class OrderedEnumeratedSets(OwnedCategory):
         return finite_ordered_set((0, 1, 2))
 
     def super_categories(self):
-        return [EnumeratedSets(), TotallyOrderedSets()]
+        return [EnumeratedSets(), WellOrderedSets()]
 
     def __call__(self, index_set, element_at, **datum):
         r"""Construct from an enumeration even when ``index_set`` is itself in this category.
@@ -145,6 +145,17 @@ class OrderedEnumeratedSets(OwnedCategory):
                 return int(index_ranking(index))
 
             return self._ranking_isomorphism(position_of, point_at)
+
+        def order_type(self):
+            r"""Return the ordinal order type of this ranked well-order."""
+            size = cardinal(self.index_set().cardinality())
+            if size.is_finite():
+                return ordinal(size.finite_value())
+            assert size.is_countably_infinite(), (
+                f"the represented ordered enumeration {self} has cardinality {size}; its order type is implemented "
+                "here only for finite or countably infinite enumerations"
+            )
+            return omega(0)
 
         def __iter__(self):
             return (self._element_at_function(index) for index in self.index_set())
