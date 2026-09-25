@@ -1142,7 +1142,10 @@ class ModuleMorphism(Morphism):
             element = self.codomain()(element)
         codomain_labels = tuple(self.codomain().module_generating_set())
         coefficients = self.codomain().framing_coefficients(element)
-        target = [coefficients[label] if label in coefficients else self.codomain().base_ring().zero() for label in codomain_labels]
+        target = [
+            coefficients.get(label, ring.zero())
+            for label in codomain_labels
+        ]
         coordinate_map = self.domain().module_category().Mor(
             self.domain(), self.codomain()
         )(self)

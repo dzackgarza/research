@@ -2420,9 +2420,20 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
                 {
                     source_label: self.codomain().linear_combination(
                         {
-                            target_label: coefficients[pair]
+                            target_label: coefficient
                             for target_label in self.codomain().module_generating_set()
-                            if (pair := assignment_labels(lambda index: source_label if int(index) == 0 else target_label)) in coefficients
+                            if (
+                                coefficient := coefficients.get(
+                                    assignment_labels(
+                                        lambda index: (
+                                            source_label
+                                            if int(index) == 0
+                                            else target_label
+                                        )
+                                    ),
+                                    self.codomain().base_ring().zero(),
+                                )
+                            )
                         }
                     )
                     for source_label in self.domain().module_generating_set()

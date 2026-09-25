@@ -209,9 +209,14 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
             cycles = projection.domain()
             representative = cycles.linear_combination(
                 {
-                    label: coefficients[label]
+                    label: coefficient
                     for label in cycles.module_generating_set()
-                    if label in coefficients and coefficients[label]
+                    if (
+                        coefficient := coefficients.get(
+                            label,
+                            cycles.base_ring().zero(),
+                        )
+                    )
                 }
             )
             return cycles.inclusion()(representative)
