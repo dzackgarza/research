@@ -4770,6 +4770,10 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             r"""Compose matrix endomorphisms as linear maps, not merely additive maps."""
             return self._compose_module_endomorphisms(left, right)
 
+        def _owned_scalar_multiple(self, scalar, morphism):
+            r"""Scale matrix endomorphisms as linear maps, not merely additive maps."""
+            return self._module_scalar_multiple(scalar, morphism)
+
         def is_commutative(self):
             r"""Return whether \(\operatorname{End}_R(F)\cong M_n(R)\) commutes.
 

@@ -2265,7 +2265,7 @@ class _ModuleMorCommonMethods:
     def _compose_endomorphisms(self, left, right):
         return self._compose_module_endomorphisms(left, right)
 
-    def _owned_scalar_multiple(self, scalar, morphism):
+    def _module_scalar_multiple(self, scalar, morphism):
         r"""Realize the pointwise action defining this Mor's scalar enrichment."""
         if morphism.parent() is not self:
             morphism = self(morphism)
@@ -2276,6 +2276,9 @@ class _ModuleMorCommonMethods:
         if coefficient is not None:
             return self._scalar_identity(scalar * coefficient)
         return _PointwiseScalarMultipleModuleMorphism(self, scalar, morphism)
+
+    def _owned_scalar_multiple(self, scalar, morphism):
+        return self._module_scalar_multiple(scalar, morphism)
 
     def elementwise(self, function):
         r"""Construct a declared linear map from its action on arbitrary elements.

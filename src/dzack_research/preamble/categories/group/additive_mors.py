@@ -169,13 +169,15 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
 
             h(rx)=r h(x) proves the assertion without enumerating h. For
             additive endomorphisms the scalars are integers and the same
-            equation follows by repeated addition. Other cases are undecided.
+            equation follows by repeated addition. Other cases go to the next
+            owner: an endomorphism ring framed as an algebra (matrix units on a
+            finite free module) decides them on its algebra generators.
             See Mathlib Algebra/Module/LinearMap/End, Module.toModuleEnd.
             """
             morphism = self(morphism)
             if _scalar_identity_coefficient(morphism) is not None:
                 return True
-            return Unknown
+            return super().is_central(morphism)
 
         def scalar_multiple(self, scalar, morphism):
             return self._owned_scalar_multiple(scalar, morphism)

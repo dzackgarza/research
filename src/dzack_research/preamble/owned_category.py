@@ -1371,6 +1371,17 @@ def _engine_object_type(object_type, owner_object_type, object_engine, element_t
     return result
 
 
+def _owned_realization_of_join(category: Category) -> Category:
+    r"""A Sage join of owned categories, as the owned join of the same branches; any other category unchanged."""
+    match category:
+        case OwnedJoinCategory():
+            return category
+        case JoinCategory():
+            return owned_category_join(category.super_categories())
+        case _:
+            return category
+
+
 def _object_of(
     category: Category,
     *,
@@ -1400,12 +1411,12 @@ def _object_of(
     declared providers directly, which is what inserting a computation class
     before its owner's providers requires.
     """
-    if isinstance(category, JoinCategory) and not isinstance(category, OwnedJoinCategory):
-        category = owned_category_join(category.super_categories())
+    category = _owned_realization_of_join(category)
     match _engine:
         case None:
             implementation = category.ObjectType
-        case (owner, object_engine, element_engine):
+        case (declared_owner, object_engine, element_engine):
+            owner = _owned_realization_of_join(declared_owner)
             assert category is owner or owner in category._set_of_super_categories, (
                 f"cannot construct an object of {category} with the computation class "
                 f"{object_engine.__name__}: that class serves {owner}, and {category} is "
