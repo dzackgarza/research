@@ -14,10 +14,12 @@ def test_z_mod_6_finite_presentation_is_a_degree_one_resolution_object() -> None
     resolutions = Modules(ZZ).FinitelyPresented().resolution_category()
     resolution = resolutions.from_selected_presentation(M)
 
+    assert resolution is M.selected_module_resolution()
     assert resolutions.target_functor()(resolution) is M
     assert resolution.truncation() == 1
     assert resolution.level(0) in FinitelyGeneratedFreeModules(ZZ)
     assert resolution.level(1) in FinitelyGeneratedFreeModules(ZZ)
+    assert resolution.differential(1) == M.presentation()
     assert resolution.augmentation().codomain() is M
 
 

@@ -32,10 +32,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     FreeResolution,
     Modules,
-    ModulesWithChosenFinitePresentation,
     _module_subobjects_agree,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.owned_category import _object_of
 
 
@@ -374,6 +374,100 @@ class ModuleResolutions(OwnedCategory):
             module_differential_function=differential,
         )
 
+    def selected_presentation(
+        self,
+        target,
+        presentation,
+        augmentation,
+        *,
+        generating_set,
+        generator_morphism,
+    ):
+        r"""Retain a constructor-selected finite presentation as truncation one.
+
+        The quotient constructor already knows that ``target`` is the cokernel
+        of ``presentation``.  This entry therefore records that chosen exact
+        datum without asking the generic ``chain`` constructor to recompute its
+        exactness.  The degree-zero generator data are retained on the same
+        resolution object, so there is no second framing record beside it.
+        """
+        match self.truncation():
+            case 1:
+                pass
+            case _:
+                raise ValueError(
+                    f"a selected finite presentation supplies truncation one, but {self} has "
+                    f"truncation {self.truncation()}"
+                )
+        degree_one = presentation.domain()
+        degree_zero = presentation.codomain()
+        for degree, term in ((0, degree_zero), (1, degree_one)):
+            match term in self.level_category():
+                case False:
+                    raise TypeError(
+                        f"degree {degree} of a selected presentation in {self} must lie in "
+                        f"{self.level_category()}, but it is {term}"
+                    )
+                case True:
+                    pass
+        base = self.base_category()
+        match _category_accepts_morphism(base, degree_zero, target, augmentation):
+            case False:
+                raise TypeError(
+                    f"the augmentation of a selected presentation in {self} must be a morphism "
+                    f"{degree_zero} -> {target}, but it is {augmentation}"
+                )
+            case True:
+                pass
+        match _category_accepts_morphism(base, degree_one, degree_zero, presentation):
+            case False:
+                raise TypeError(
+                    f"the relation map of a selected presentation in {self} must be a morphism "
+                    f"{degree_one} -> {degree_zero}, but it is {presentation}"
+                )
+            case True:
+                pass
+        match generator_morphism.domain() is generating_set and generator_morphism.codomain() is target:
+            case False:
+                raise ValueError(
+                    f"the selected generator map of {target} must be a map from "
+                    f"{generating_set} to {target}"
+                )
+            case True:
+                pass
+
+        def term(degree):
+            match int(degree):
+                case 0:
+                    return degree_zero
+                case 1:
+                    return degree_one
+                case _:
+                    raise ValueError(
+                        f"a selected finite presentation in {self} has represented terms only in degrees 0 and 1"
+                    )
+
+        def differential(degree):
+            match int(degree):
+                case 1:
+                    return presentation
+                case _:
+                    raise ValueError(
+                        f"a selected finite presentation in {self} has only the degree-one differential"
+                    )
+
+        return _object_of(
+            self,
+            resolution_target=target,
+            resolution_level_function=term,
+            resolution_augmentation=augmentation,
+            resolution_length=Unknown,
+            resolution_model="selected-presentation",
+            module_differential_function=differential,
+            resolution_generating_set=generating_set,
+            resolution_generator_morphism=generator_morphism,
+        )
+
     def from_selected_presentation(self, module):
         r"""The degree-one partial free resolution selected by a presentation."""
         match self.truncation():
@@ -384,8 +478,7 @@ class ModuleResolutions(OwnedCategory):
                     f"a selected finite presentation supplies truncation one, but {self} has "
                     f"truncation {self.truncation()}"
                 )
-        chosen = ModulesWithChosenFinitePresentation(self.base_ring())
-        match module in chosen:
+        match module.has_selected_module_resolution():
             case False:
                 raise TypeError(
                     f"{module} has no selected finite module presentation over "
@@ -393,17 +486,15 @@ class ModuleResolutions(OwnedCategory):
                 )
             case True:
                 pass
-        presentation = module.presentation()
-        return self.chain(
-            module,
-            {
-                0: presentation.codomain(),
-                1: presentation.domain(),
-            },
-            {1: presentation},
-            module.presentation_projection(),
-            length=Unknown,
-        )
+        selected = module.selected_module_resolution()
+        match selected.resolution_category() is self:
+            case False:
+                raise TypeError(
+                    f"the selected resolution of {module} lies in {selected.resolution_category()}, "
+                    f"not in the finite-presentation classifier {self}"
+                )
+            case True:
+                return selected
 
     def from_selected_generators(self, module):
         r"""The degree-zero partial free resolution selected by a framing."""
@@ -464,6 +555,8 @@ class ModuleResolutions(OwnedCategory):
             resolution_length=Unknown,
             resolution_model="chain",
             module_differential_function=None,
+            resolution_generating_set=None,
+            resolution_generator_morphism=None,
             **rest,
         ) -> None:
             self._resolution_target = resolution_target
@@ -472,6 +565,8 @@ class ModuleResolutions(OwnedCategory):
             self._resolution_length = resolution_length
             self._resolution_model = resolution_model
             self._module_differential_function = module_differential_function
+            self._resolution_generating_set = resolution_generating_set
+            self._resolution_generator_morphism = resolution_generator_morphism
             super().__init__(**rest)
 
         def resolution_category(self):
@@ -509,6 +604,44 @@ class ModuleResolutions(OwnedCategory):
 
         def augmentation(self):
             return self._resolution_augmentation
+
+        def generating_set(self):
+            selected = self._resolution_generating_set
+            match selected:
+                case None:
+                    raise TypeError(f"{self} carries no selected generator indexing set")
+                case _:
+                    return selected
+
+        def generator_morphism(self):
+            selected = self._resolution_generator_morphism
+            match selected:
+                case None:
+                    raise TypeError(f"{self} carries no selected map from generator labels")
+                case _:
+                    return selected
+
+        def generator(self, label):
+            labels = self.generating_set()
+            match label in labels:
+                case False:
+                    raise ValueError(
+                        f"{label!r} is not a selected generator label of {self.target()}; "
+                        f"the labels are {labels}"
+                    )
+                case True:
+                    return self.generator_morphism()(labels(label))
+
+        @cached_method
+        def generators(self, *, name):
+            return indexed_family(
+                self.generating_set(),
+                self.generator,
+                name=name,
+            )
+
+        def generator_count(self):
+            return self.generating_set().cardinality()
 
         def length(self):
             return self._resolution_length
