@@ -11,3 +11,5 @@ def test_projective_plane_integral_topological_cohomology_data() -> None:
     assert degree_two.cohomological_degree() == 2
     assert degree_two.cohomology_coefficients() is ZZ
     assert degree_two.topological_scheme() is plane
+    assert degree_two.cohomology_topology() == "singular cohomology of the complex analytic realization"
+    assert "complex analytic realization" in degree_two.realization_description()

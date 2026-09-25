@@ -14,3 +14,12 @@ def test_sections_of_o_one_on_projective_plane() -> None:
         cohomology.cohomology_weight_piece(weight).dimension() == 1
         for weight in cohomology.cohomology_weight_support()
     )
+    for weight in cohomology.cohomology_weight_support():
+        piece = cohomology.cohomology_weight_piece(weight)
+        inclusion = cohomology.cohomology_weight_inclusion(weight)
+        projection = cohomology.cohomology_weight_projection(weight)
+        assert inclusion.domain() is piece
+        assert inclusion.codomain() is cohomology
+        assert projection.domain() is cohomology
+        assert projection.codomain() is piece
+        assert projection * inclusion == piece.Mor(piece).identity()
