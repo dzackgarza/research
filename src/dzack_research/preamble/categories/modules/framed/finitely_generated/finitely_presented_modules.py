@@ -1799,7 +1799,7 @@ class _GeneralPresentedModule:
                 coefficient_field,
                 engine.variable_names(),
             )
-            to_singular = engine.mor([singular_ring.gen(0)], singular_ring)
+            to_singular = engine.hom([singular_ring.gen(0)], singular_ring)
         else:
             singular_ring = engine
             to_singular = singular_ring
