@@ -604,20 +604,6 @@ def _computed_finitely_presented_engine(group):
             assert False, f"no finite presentation of {group} can be computed: this is available only for permutation groups, finite abelian groups, and finite matrix groups"
 
 
-class _SelectedGroupPresentation:
-    r"""The chosen free source and relators defining one presented group."""
-
-    def __init__(self, free_group, relations) -> None:
-        self._free_group = free_group
-        self._relations = relations
-
-    def free_group(self):
-        return self._free_group
-
-    def relations(self):
-        return self._relations
-
-
 def _group_framing_morphism(group, source, labels, generator_morphism):
     r"""Realize one selected set-of-generators map as the induced group morphism."""
     assert source.free_basis() is labels, (
@@ -750,9 +736,6 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
         OwnedGroups(),
         selected_resolution,
         replace=True,
-    )
-    group._selected_group_presentation = _SelectedGroupPresentation(
-        source, selected_relations
     )
 
 
@@ -3404,23 +3387,27 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             self._presentation_source_group = selected_source_group
 
         def presenting_free_group(self):
-            selected = self._selected_group_presentation
-            assert selected is not None, (
-                f"{self} has no chosen finite presentation, so it has no presenting free group"
-            )
-            assert selected.free_group() is self.selected_group_resolution().level(0), (
-                f"the presentation of {self} is on the free group {selected.free_group()}, but the chosen generating set "
-                f"of {self} is indexed by a different free group; the two must agree"
-            )
-            return selected.free_group()
+            selected = self.selected_group_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected.level(0)
+                case _:
+                    raise TypeError(
+                        f"{self} has no chosen finite presentation: its selected group resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
 
         def defining_relations(self):
             r"""The chosen relators, as elements of the presenting free group."""
-            selected = self._selected_group_presentation
-            assert selected is not None, (
-                f"{self} has no chosen finite presentation, so it has no defining relations"
-            )
-            return selected.relations()
+            selected = self.selected_group_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected.relations()
+                case _:
+                    raise TypeError(
+                        f"{self} has no chosen finite presentation: its selected group resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
 
         def presentation_source_group(self):
             r"""Return the exact group for which this presentation was selected."""
