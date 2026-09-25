@@ -20,6 +20,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -74,7 +75,7 @@ class Functor:
         TypeError: the image is not a morphism of the functor's codomain
     """
 
-    _faithful = False
+    _faithful = Unknown
 
     def __init__(self, domain: Category, codomain: Category) -> None:
         self._domain = domain
@@ -375,8 +376,9 @@ class Functor:
     def factors(self):
         return _functor_factor_family((self,))
 
-    def is_faithful(self) -> bool:
-        return bool(self._faithful)
+    def is_faithful(self) -> bool | UnknownClass:
+        r"""Return the declared faithfulness decision, or ``Unknown`` when none is declared."""
+        return self._faithful
 
     def _repr_(self) -> str:
         r"""The functor's standard name; a functor with none is named only by its endpoints."""
@@ -484,8 +486,19 @@ class _CompositeFunctor(Functor):
         factors = tuple(self._first.factors()) + tuple(self._second.factors())
         return _functor_factor_family(factors)
 
-    def is_faithful(self) -> bool:
-        return self._first.is_faithful() and self._second.is_faithful()
+    def is_faithful(self) -> bool | UnknownClass:
+        r"""Return what the factors' declarations prove about faithfulness of the composite."""
+        first = self._first.is_faithful()
+        second = self._second.is_faithful()
+        if first is False:
+            # Equal arrows already identified by the first factor remain
+            # identified after applying the second factor.
+            return False
+        if first is True and second is True:
+            return True
+        # Nonfaithfulness of the second factor need not occur on the image of
+        # the first, and an undeclared factor supplies no missing theorem.
+        return Unknown
 
     def _repr_(self):
         return f"{self._second} ∘ {self._first}"

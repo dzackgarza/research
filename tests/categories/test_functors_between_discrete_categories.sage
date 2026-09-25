@@ -20,6 +20,28 @@ def _three_letters():
     return DiscreteCategory(Sets()(("a", "b", "c")))
 
 
+class _UndeclaredSetEndofunctor(Functor):
+    r"""An identity action whose faithfulness has deliberately not been declared."""
+
+    def __init__(self):
+        super().__init__(Sets(), Sets())
+
+    def _apply_object(self, obj):
+        return obj
+
+    def _apply_morphism(self, morphism):
+        return morphism
+
+
+def test_a_functor_with_no_faithfulness_declaration_does_not_claim_nonfaithfulness() -> None:
+    undeclared = _UndeclaredSetEndofunctor()
+    faithful = Sets().power_set_functor()
+
+    assert undeclared.is_faithful() is Unknown
+    assert undeclared.then(faithful).is_faithful() is Unknown
+    assert faithful.then(undeclared).is_faithful() is Unknown
+
+
 def test_a_discrete_category_has_only_identity_arrows() -> None:
     letters = _two_letters()
     identity = letters.identity(letters("p"))
