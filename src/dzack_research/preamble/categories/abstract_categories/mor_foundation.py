@@ -29,10 +29,10 @@ class OwnedMor(SageHomset):
     """
 
     @cached_method
-    def _selected_framing_registry(self):
-        r"""The chosen framings of this Mor object, by ambient category.
+    def _selected_resolution_registry(self):
+        r"""The chosen resolutions of this Mor object, by ambient category.
 
-        A Mor object fixes its framing before its category is set, so the
+        A Mor object fixes such data before its category is set, so the
         ``Objects`` registry cannot reach it yet; this is the same registry
         at the Mor objects' own host root.
         """

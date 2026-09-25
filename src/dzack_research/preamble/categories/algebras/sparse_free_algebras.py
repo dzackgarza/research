@@ -10,13 +10,13 @@ from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import CategoricalMor
-from dzack_research.preamble.categories.algebras.algebras import Algebras, FramedAlgebras, _AlgebraMorCommonMethods, _algebra_on_module
+from dzack_research.preamble.categories.algebras.algebras import Algebras, _AlgebraMorCommonMethods, _algebra_on_module
 from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebras, GradedFreeAlgebras, TensorAlgebras, SymmetricAlgebras
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules, Modules, ModulesWithChosenComponentPresentation,
+    Modules, ModulesWithChosenComponentPresentation,
 )
 from dzack_research.preamble.categories.modules.word_modules import (
     _WordModule, _WordModuleElement, _module_on_word_quotient, _has_component_presentation,
@@ -318,11 +318,22 @@ def _sparse_free_algebra_of(source, flavor):
     tensor = Modules(ring).tensor_product((module, module))
     multiplication = tensor.from_bilinear_map(module, lambda x, y: _word_product(module, x, y))
     flavor_category = TensorAlgebras(ring) if flavor == "tensor" else SymmetricAlgebras(ring)
-    categories = (flavor_category, FramedAlgebras(ring))
+    categories = (flavor_category,)
+    match source.module_generating_set().cardinality().is_finite():
+        case True:
+            categories = (
+                *categories,
+                Algebras(ring)
+                .Associative()
+                .Unital()
+                .FinitelyGeneratedAsAlgebra(),
+            )
+        case False:
+            pass
     if source in FramedFreeModules(ring):
         categories = (*categories, FreeAlgebras(ring), GradedFreeAlgebras(ring))
     realization_owner = Cat().meet((
-        GeneralModules(ring), FramedModules(ring), GradedModules(ring),
+        GeneralModules(ring), GradedModules(ring),
         ModulesWithChosenComponentPresentation(ring), Algebras(ring), *categories,
     ))
     unit_piece = module.graded_piece(0)

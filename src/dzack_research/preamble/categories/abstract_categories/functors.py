@@ -181,6 +181,10 @@ class DiscreteCategory(OwnedCategory):
         def discrete_category(self) -> DiscreteCategory:
             return self.category()
 
+        def Mor(self, codomain):
+            r"""Return the Mor in this discrete category to ``codomain``."""
+            return self.discrete_category().Mor(self, codomain)
+
         def value(self):
             return self._value
 
@@ -220,12 +224,96 @@ class DiscreteCategory(OwnedCategory):
     def objects(self) -> IndexedFamily:
         return self._objects
 
+    @cached_method
+    def arrows(self) -> IndexedFamily:
+        r"""Return the object-indexed family of identity arrows."""
+        return indexed_family(
+            self.object_set(),
+            lambda value: self.identity(self(value)),
+            name=f"Arrows of {self}",
+        )
+
     def Mor(self, domain: Parent, codomain: Parent) -> DiscreteMor:
         if domain not in self or codomain not in self:
             raise TypeError(
                 f"a morphism in the discrete category {self} needs two of its objects, but got {domain} and {codomain}"
             )
         return self.MorCategory().Of(domain, codomain)
+
+    def product(self, factors):
+        r"""Return the finite product when its universal cone exists."""
+        return self._categorical_product_construction(factors).object()
+
+    def coproduct(self, factors):
+        r"""Return the finite coproduct when its universal cocone exists."""
+        return self._categorical_coproduct_construction(factors).object()
+
+    def _categorical_product(self, left, right):
+        return self.product((left, right))
+
+    def _categorical_coproduct(self, left, right):
+        return self.coproduct((left, right))
+
+    def _categorical_product_construction(self, factors):
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _discrete_product_construction,
+        )
+
+        return _discrete_product_construction(self, factors)
+
+    def _categorical_coproduct_construction(self, factors):
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _discrete_coproduct_construction,
+        )
+
+        return _discrete_coproduct_construction(self, factors)
+
+    def _categorical_equalizer(self, left_morphism, right_morphism):
+        return self._categorical_equalizer_construction(
+            left_morphism,
+            right_morphism,
+        ).object()
+
+    def _categorical_equalizer_construction(self, left_morphism, right_morphism):
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _discrete_equalizer_construction,
+        )
+
+        return _discrete_equalizer_construction(self, left_morphism, right_morphism)
+
+    def _categorical_coequalizer(self, left_morphism, right_morphism):
+        return self._categorical_coequalizer_construction(
+            left_morphism,
+            right_morphism,
+        ).object()
+
+    def _categorical_coequalizer_construction(self, left_morphism, right_morphism):
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _discrete_coequalizer_construction,
+        )
+
+        return _discrete_coequalizer_construction(self, left_morphism, right_morphism)
+
+    def _categorical_equalizer_family(self, morphisms):
+        r"""Return the source of a nonempty parallel family, whose arrows are forced equal."""
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _nonempty_discrete_morphism_family_reference,
+        )
+
+        return _nonempty_discrete_morphism_family_reference(self, morphisms).domain()
+
+    def _categorical_coequalizer_family(self, morphisms):
+        r"""Return the target of a nonempty parallel family, whose arrows are forced equal."""
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _nonempty_discrete_morphism_family_reference,
+        )
+
+        return _nonempty_discrete_morphism_family_reference(self, morphisms).codomain()
+
+    def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
+        return self.Mor(source, target).identity()
+
+    _categorical_coproduct_morphism = _categorical_product_morphism
 
 
     def identity(self, obj: Parent) -> DiscreteMorphism:

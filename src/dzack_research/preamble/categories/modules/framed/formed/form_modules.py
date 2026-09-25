@@ -74,7 +74,6 @@ from dzack_research.preamble.categories.modules.framed.fraction_field_quotients 
     FractionFieldQuotients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
     TensorProductModules,
@@ -113,7 +112,7 @@ def _is_quadratic_form(form) -> bool:
 def _has_finite_framing(module) -> bool:
     ring = module.base_ring()
     return (
-        module in FramedModules(ring)
+        module.has_selected_module_resolution()
         and module.module_generating_set().cardinality().is_finite()
     )
 

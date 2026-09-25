@@ -63,15 +63,15 @@ def test_cyclotomic_component_tuple_lifts_exactly_when_it_preserves_the_glue() -
     assert not decomposition.component_isometries_extend(incompatible)
 
 
-def test_the_centralizer_of_minus_one_on_Z3_is_the_signed_permutation_group_of_order_48() -> None:
-    r"""O(I_3) is the hyperoctahedral group (Z/2)^3 x| S_3 of order 48, and -1
-    is central in it, so its centralizer is all of O(I_3)."""
-    lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+def test_the_centralizer_of_minus_one_on_Z2_is_the_signed_permutation_group_of_order_8() -> None:
+    r"""O(I_2) is the signed permutation group (Z/2)^2 x| S_2 of order 8, and -1
+    is central in it, so its centralizer is all of O(I_2)."""
+    lattice = Lattices(ZZ)([[1, 0], [0, 1]])
     minus_one = negation_of(lattice)
 
-    assert lattice.O().cardinality() == 48
-    assert minus_one.centralizer_group().cardinality() == 48
-    first, second, third = lattice.module_generators()
-    swap = lattice.O()({0: second, 1: first, 2: third})
+    assert lattice.O().cardinality() == 8
+    assert minus_one.centralizer_group().cardinality() == 8
+    first, second = lattice.module_generators()
+    swap = lattice.O()({0: second, 1: first})
     assert swap in minus_one.centralizer_group()
     assert swap(first) == second

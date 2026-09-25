@@ -71,6 +71,16 @@ def test_rationals_in_lowest_terms_and_their_inverses() -> None:
     assert abs(QQ(-3) / QQ(4)) == q
 
 
+def test_the_owned_integers_coerce_canonically_into_the_rationals_and_reals() -> None:
+    rational_coercion = QQ.coerce_map_from(ZZ)
+    real_coercion = RR.coerce_map_from(ZZ)
+
+    assert rational_coercion is not None
+    assert real_coercion is not None
+    assert rational_coercion(ZZ(4)) == QQ(4)
+    assert real_coercion(ZZ(4)) == RR(4)
+
+
 def test_three_is_a_primitive_root_modulo_seven() -> None:
     field = GF(7)
     three = field(3)

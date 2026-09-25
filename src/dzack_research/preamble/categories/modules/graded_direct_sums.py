@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.modules.graded_modules import (
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     Modules,
     ModulesWithChosenComponentPresentation,
 )
@@ -352,9 +351,7 @@ class _FramedDirectSumOfModules(_DirectSumOfModules):
                 return super()._element_constructor_(value)
 
     def _module_with_structure(self, categories, construction_data):
-        return super()._module_with_structure(
-            (FramedModules(self.base_ring()), *categories), construction_data,
-        )
+        return super()._module_with_structure(categories, construction_data)
 
     def _direct_sum_realization(self):
         return _FramedDirectSumOfModules, GradedDirectSumElement
@@ -382,7 +379,7 @@ def _direct_sum_of_modules(
         f"{pieces.index_set()}, not by the grading monoid"
     )
     category = Cat().meet((graded, *extra_categories))
-    framed = category.is_subcategory(FramedModules(ring))
+    framed = all(piece.has_selected_module_resolution() for piece in pieces)
     if framed:
         category = Cat().meet((
             category,

@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _SelectedFinitePresentationModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules, Modules, ModuleSubobjects,
+    Modules, ModuleSubobjects,
     ModulesWithChosenComponentPresentation, ModulesWithChosenFinitePresentation,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -661,7 +661,6 @@ def _word_degree_module(module, degree):
     ring = module.base_ring()
     placements = (
         GeneralModules(ring),
-        FramedModules(ring),
         ModuleSubobjects(ring),
         Modules(ring).Subobjects(module),
     )
@@ -694,7 +693,6 @@ def _word_module(presentation, *, extra_categories=(), construction_data=None):
     data = dict(construction_data or {})
     category = Cat().meet((
         GeneralModules(ring),
-        FramedModules(ring),
         GradedModules(ring),
         ModulesWithChosenComponentPresentation(ring),
         *extra_categories,

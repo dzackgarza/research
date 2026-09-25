@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
-    FramedModules,
     FreeResolution,
     Modules,
     ModuleSubobjects,
@@ -238,7 +237,10 @@ class _SparseFreeModuleParent:
         return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
-        labels = self.module_generating_set()
+        # The basis is this level's construction datum.  Reading it through
+        # module_generating_set() realizes the selected resolution, whose
+        # augmentation constructs elements of this module.
+        labels = self._module_generating_set
         ring = self.base_ring()
         source = element_parent(value)
         match value:
@@ -342,7 +344,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
 
-        return [Modules(self.base_ring()).Free(), FramedModules(self.base_ring())]
+        return [Modules(self.base_ring()).Free()]
 
     class ElementMethods:
         def to_vector(self):
@@ -353,8 +355,13 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             module on \(I\), which is the framing source of this module.  Its
             value at ``i`` is ``v.to_vector()(i)`` and its support is
             ``v.to_vector().support()``.
+
+            Read through the module's chosen preimage, not through
+            ``framing_morphism().lift``: the augmentation of a module that is
+            its own framing source is its identity, whose general preimage
+            solver reads coordinates.
             """
-            return self.parent().framing_morphism().lift(self)
+            return self.parent()._framing_lift(self)
 
     class ParentMethods:
         def _represented_cokernel_of_morphism(self, morphism):
@@ -375,7 +382,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     f"cannot form morphisms {self} -> {codomain} in {category}: "
                     f"it is not a subcategory of {Modules(self.base_ring())}"
                 )
-            if codomain not in FramedModules(self.base_ring()):
+            if not codomain.has_selected_module_resolution():
                 raise TypeError(
                     f"cannot form {self}.Mor({codomain}): the target must be a "
                     f"{self.base_ring()}-module with chosen generators, but it is in {codomain.category()}"

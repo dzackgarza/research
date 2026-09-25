@@ -16,6 +16,8 @@ _EXPORTS = {
     "FiniteOrdinalCategory": ("dzack_research.preamble.categories.abstract_categories.products", "FiniteOrdinalCategory"),
     "FiniteSequenceDiagram": ("dzack_research.preamble.categories.abstract_categories.products", "FiniteSequenceDiagram"),
     "InverseSystem": ("dzack_research.preamble.categories.abstract_categories.products", "InverseSystem"),
+    "ParallelFamilyCategory": ("dzack_research.preamble.categories.abstract_categories.products", "ParallelFamilyCategory"),
+    "ParallelFamilyDiagram": ("dzack_research.preamble.categories.abstract_categories.products", "ParallelFamilyDiagram"),
     "ParallelPairCategory": ("dzack_research.preamble.categories.abstract_categories.products", "ParallelPairCategory"),
     "ParallelPairDiagram": ("dzack_research.preamble.categories.abstract_categories.products", "ParallelPairDiagram"),
     "PosetCategory": ("dzack_research.preamble.categories.abstract_categories.products", "PosetCategory"),
@@ -44,6 +46,8 @@ _EXPORTS = {
     "Sheaves": ("dzack_research.preamble.categories.abstract_categories.presheaves", "Sheaves"),
     "TrivialCoveringFamilies": ("dzack_research.preamble.categories.abstract_categories.presheaves", "TrivialCoveringFamilies"),
     "trivial_coverage": ("dzack_research.preamble.categories.abstract_categories.presheaves", "trivial_coverage"),
+    "ResolutionMorphism": ("dzack_research.preamble.categories.abstract_categories.resolutions", "ResolutionMorphism"),
+    "Resolutions": ("dzack_research.preamble.categories.abstract_categories.resolutions", "Resolutions"),
 }
 
 __all__ = [
@@ -55,6 +59,8 @@ __all__ = [
     "FiniteOrdinalCategory",
     "FiniteSequenceDiagram",
     "InverseSystem",
+    "ParallelFamilyCategory",
+    "ParallelFamilyDiagram",
     "ParallelPairCategory",
     "ParallelPairDiagram",
     "PosetCategory",
@@ -83,6 +89,8 @@ __all__ = [
     "Sheaves",
     "TrivialCoveringFamilies",
     "trivial_coverage",
+    "ResolutionMorphism",
+    "Resolutions",
 ]
 
 

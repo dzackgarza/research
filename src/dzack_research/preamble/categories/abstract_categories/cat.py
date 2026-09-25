@@ -571,8 +571,16 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return this category's represented equalizer of an indexed arrow family."""
 
         @abstract_method(optional=True)
+        def _categorical_equalizer_family_construction(self, morphisms: IndexedFamily):
+            r"""Return the selected wide equalizer with its diagram, cone and factorization."""
+
+        @abstract_method(optional=True)
         def _categorical_coequalizer_family(self, morphisms: IndexedFamily) -> ObjectOfCategory:
             r"""Return this category's represented coequalizer of an indexed arrow family."""
+
+        @abstract_method(optional=True)
+        def _categorical_coequalizer_family_construction(self, morphisms: IndexedFamily):
+            r"""Return the selected wide coequalizer with its diagram, cocone and factorization."""
 
         def product_construction(self, factors):
             r"""Return this category's selected product construction on ``factors``."""
@@ -671,7 +679,14 @@ class Cat(CategoryPacketMethods, Category):
             return construction(left_morphism, right_morphism)
 
         def equalizer_of_family(self, morphisms) -> ObjectOfCategory:
-            r"""Return this category's represented wide equalizer."""
+            r"""Return this category's represented wide equalizer.
+
+            ``morphisms`` is a nonempty indexed family of parallel arrows
+            ``f_i : X -> Y``.  An :class:`IndexedFamily` retains its actual
+            index set; a bare iterable is finite ingress on the canonical
+            finite ordinal.  The selected construction is responsible for the
+            common equalizing map and universal factorization.
+            """
             from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
             match morphisms:
@@ -689,8 +704,40 @@ class Cat(CategoryPacketMethods, Category):
             )
             return construction(family)
 
+        def equalizer_of_family_construction(self, morphisms):
+            r"""Return the selected wide equalizer with its indexed diagram and universal cone.
+
+            The construction retains the family of parallel arrows rather than
+            replacing it by a binary fold.  Its apex is
+            :meth:`equalizer_of_family`; its structure map and ``factor`` record
+            the universal property.
+            """
+            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+            match morphisms:
+                case IndexedFamily():
+                    family = morphisms
+                case _:
+                    from dzack_research.preamble.categories.sets.finite_families import (
+                        finite_family,
+                    )
+
+                    family = finite_family(tuple(morphisms))
+            construction = self._categorical_equalizer_family_construction
+            assert construction is not NotImplemented, (
+                f"no selected construction of wide equalizers is available in {self}"
+            )
+            return construction(family)
+
         def coequalizer_of_family(self, morphisms) -> ObjectOfCategory:
-            r"""Return this category's represented wide coequalizer."""
+            r"""Return this category's represented wide coequalizer.
+
+            ``morphisms`` is a nonempty indexed family of parallel arrows
+            ``f_i : X -> Y``.  An :class:`IndexedFamily` retains its actual
+            index set; a bare iterable is finite ingress on the canonical
+            finite ordinal.  The selected construction is responsible for the
+            common coequalizing map and universal factorization.
+            """
             from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
             match morphisms:
@@ -705,6 +752,31 @@ class Cat(CategoryPacketMethods, Category):
             construction = self._categorical_coequalizer_family
             assert construction is not NotImplemented, (
                 f"no construction of wide coequalizers is available in {self}"
+            )
+            return construction(family)
+
+        def coequalizer_of_family_construction(self, morphisms):
+            r"""Return the selected wide coequalizer with its indexed diagram and universal cocone.
+
+            The construction retains the family of parallel arrows rather than
+            replacing it by a binary fold.  Its apex is
+            :meth:`coequalizer_of_family`; its costructure map and ``factor``
+            record the universal property.
+            """
+            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+            match morphisms:
+                case IndexedFamily():
+                    family = morphisms
+                case _:
+                    from dzack_research.preamble.categories.sets.finite_families import (
+                        finite_family,
+                    )
+
+                    family = finite_family(tuple(morphisms))
+            construction = self._categorical_coequalizer_family_construction
+            assert construction is not NotImplemented, (
+                f"no selected construction of wide coequalizers is available in {self}"
             )
             return construction(family)
 
@@ -741,10 +813,11 @@ class Cat(CategoryPacketMethods, Category):
                 f"a fiber product needs a cospan X -> Z <- Y, but {left_leg} ends at {left_leg.codomain()} "
                 f"and {right_leg} ends at {right_leg.codomain()}"
             )
-            total = self.product([left_leg.domain(), right_leg.domain()])
+            product = self.product_construction((left_leg.domain(), right_leg.domain()))
+            shape = product.diagram().domain()
             return self.equalizer(
-                left_leg * total.left_projection(),
-                right_leg * total.right_projection(),
+                left_leg * product.structure_morphism(shape(0)),
+                right_leg * product.structure_morphism(shape(1)),
             )
 
         def span(self, left_leg: Morphism, right_leg: Morphism) -> ObjectOfCategory:
@@ -799,11 +872,13 @@ class Cat(CategoryPacketMethods, Category):
                 f"a pushout needs a span X <- Z -> Y, but {left_leg} starts at {left_leg.domain()} "
                 f"and {right_leg} starts at {right_leg.domain()}"
             )
-            total = self.coproduct([left_leg.codomain(), right_leg.codomain()])
-            labels = total.index_set()
+            coproduct = self.coproduct_construction(
+                (left_leg.codomain(), right_leg.codomain())
+            )
+            shape = coproduct.diagram().domain()
             return self.coequalizer(
-                total.injection(labels(0)) * left_leg,
-                total.injection(labels(1)) * right_leg,
+                coproduct.costructure_morphism(shape(0)) * left_leg,
+                coproduct.costructure_morphism(shape(1)) * right_leg,
             )
 
         def opposite(self) -> Category:
@@ -1369,6 +1444,7 @@ class _FunctorCategory(FixedMorCategory):
             self,
             _engine=None if _engine is None else (self, _engine, None),
             functor=functor,
+            fixed_mor_category=self,
             **dict(construction_data or {}),
         )
 
@@ -1386,7 +1462,7 @@ class _FunctorCategory(FixedMorCategory):
 
     @cached_method(key=lambda self, functor: id(functor))
     def _object_on(self, functor: Functor):
-        return _object_of(self, functor=functor)
+        return _object_of(self, functor=functor, fixed_mor_category=self)
 
     __call__ = object
 

@@ -8,7 +8,6 @@ from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
     _algebra_on_module,
     _root_algebra_law_decisions,
 )
@@ -190,7 +189,6 @@ def _restricted_graded_algebra(algebra, ring_map, *, extra_categories=(), constr
                 case 1:
                     return module.from_realization(algebra.algebra_generator(label.summand_element()))
 
-        categories = (*categories, FramedAlgebras(ring))
         data["algebra_generating_family"] = indexed_family(labels, generator)
     return _algebra_on_module(
         module, multiplication, placement=categories,

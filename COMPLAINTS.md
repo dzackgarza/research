@@ -14,6 +14,73 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Fixed Mor categories with discrete 2-Morphisms do not realize their discrete universal constructions
+
+For an ordinary represented fixed Mor category `Mor_C(A,B)` whose selected
+2-Mor family is discrete, the objects are the represented arrows `A -> B` and
+there is only an identity 2-morphism on each object.  Its finite universal
+constructions are therefore exactly those of the discrete category on that
+arrow set.  In particular `Mor_Set(*,*)` for a singleton set has one object and
+is the terminal category, so every represented finite diagram into it has the
+unique arrow object as both limit and colimit.  This statement does not apply
+to special fixed Mor categories that declare a non-discrete 2-Mor, such as
+functor categories with natural transformations.
+
+Observed during `category-method-coverage-sweep` on 2026-09-25:
+`FixedMorCategory`/`CategoricalMor`
+(`categories/abstract_categories/mor_categories.py`) select
+`_DiscreteTwoMorCategoryOf` for their ordinary 2-Mor, but source search finds no
+`_categorical_product`, `_categorical_coproduct`, `_categorical_equalizer`,
+`_categorical_coequalizer`, or family realization on that discrete fixed-Mor
+route.  Consequently even the one-object `End_Set(*)` cannot answer the
+universal operations inherited from `Cat`.  `_FunctorCategory` is explicitly
+excluded: it overrides the 2-Mor with natural transformations and therefore is
+not evidence that `MorCategories()` as a whole is discrete.  This is source
+evidence; pre-T execution remains suspended by `DEV-58`.
+
+**Dependency path:** fixed Mor with `_DiscreteTwoMorCategoryOf` -> discrete
+category on represented arrows -> selected universal construction with forced
+identity 2-morphisms -> the inherited `Cat` product/(co)equalizer and
+`Limits`/`Colimits` operations.
+**Consumers:** `test_mor_categories_construct.sage`, induced functors between
+ordinary fixed Mor categories, and any construction using such a Mor category
+as a diagram target.
+**Coverage boundary:** the ordinary discrete fixed-Mor route and the singleton
+set specimen were inspected; no claim is made about non-discrete specializations.
+Repair: `discrete-fixed-mor-universal-constructions` in [TODO.md](TODO.md).
+
+### Discrete categories do not realize universal constructions that exist
+
+The discrete category on one object is the terminal category.  Every diagram
+into it has exactly one cone and one cocone, hence its limit and colimit are the
+unique object.  More generally, a finite product, coproduct, equalizer or
+coequalizer in a represented discrete category exists exactly when the
+corresponding universal cone/cocone exists; when it exists its structure maps
+are forced identities.  Nonexistence for other discrete diagrams is part of
+the mathematics and should be reported as such, not conflated with an absent
+implementation.
+
+Observed during `category-method-coverage-sweep` on 2026-09-25:
+`DiscreteCategory` (`categories/abstract_categories/functors.py`) represents
+objects and their identity-only Mor correctly, but defines none of the
+`_categorical_product`, `_categorical_coproduct`, `_categorical_equalizer`,
+`_categorical_coequalizer`, or family construction hooks inherited from
+`Cat.ParentMethods`.  Thus even `Disc({*})` cannot realize the finite universal
+constructions that are mathematically forced.  The same omission prevents the
+generic selected `Limits`/`Colimits` reduction from reaching its valid answer.
+This is source evidence; pre-T execution remains suspended by `DEV-58`.
+
+**Dependency path:** represented discrete category -> existence criterion for
+the relevant universal cone/cocone -> selected universal construction with its
+identity structure maps -> generic product/(co)equalizer reduction ->
+`Limits`/`Colimits` and their functors.
+**Consumers:** `test_discrete_categories_construct.sage`, finite diagram
+constructions, and every consumer using a discrete target as an actual
+category rather than merely as an indexing shape.
+**Coverage boundary:** the one-object case and the missing construction hooks
+were inspected. Repair: `discrete-category-universal-constructions` in
+[TODO.md](TODO.md).
+
 ### Set-theoretic behaviour is re-implemented instead of wired to a set engine
 
 A set is determined by its membership condition. A finite set of listed points
@@ -45,7 +112,7 @@ hand-rolls what the engines above compute:
 | `PowerSets`, `FixedCardinalitySubsetSets`, `FinitePowerSets` | hand-written through subobject placement (iteration already uses `Subsets`) | `Subsets(X)`, `Subsets(X, k)` |
 | `FunctionSets` | membership in the owned Mor | `FiniteSetMaps(X, Y)` |
 | `_ConditionSet` | the predicate (correct in shape) | `ConditionSet(universe, predicate)` |
-| `FiniteOrdinalSets`, `NN` | bounds checks (correct in shape) | `IntegerRange(n)`, `NonNegativeIntegers()` |
+| `AugmentedSimplexCategory`, `NN` | bounds checks (correct in shape) | `IntegerRange(n)`, `NonNegativeIntegers()` |
 
 The set layer is one instance. The same afternoon found an owned matrix
 algebra, with its tensor-algebra framing, built for every lattice in order to

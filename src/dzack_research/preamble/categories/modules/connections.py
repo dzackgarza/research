@@ -28,7 +28,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
@@ -96,7 +95,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
                 f"{connection} cannot equip an object of {self}: it is a connection over {algebra}, "
                 f"not over {self.algebra()}"
             )
-        assert source in FramedModules(algebra), (
+        assert source.has_selected_module_resolution(), (
             f"{connection} cannot equip {source} with a connection: the connection is given by its values on "
             f"module generators, so {source} must have chosen generators over {algebra}, but it is in "
             f"{source.category()}"

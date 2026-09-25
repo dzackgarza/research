@@ -156,7 +156,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 return permutation(point)
 
             match group:
-                case _ if group in OwnedGroups().Framed():
+                case _ if group.has_selected_group_resolution():
                     determining = group.group_generators()
                 case _ if group.is_finite() is True:
                     determining = group
@@ -459,7 +459,7 @@ class OrbitSets(OwnedCategory):
             self._g_set = g_set
             group = g_set.acting_group()
             match group:
-                case _ if group in OwnedGroups().Framed():
+                case _ if group.has_selected_group_resolution():
                     action_generators = group.group_generators()
                 case _ if group.is_finite() is True:
                     action_generators = group
@@ -612,7 +612,7 @@ def _finite_g_set_from_action(group, point_set, action):
     permutations = _own_group(SymmetricGroup(backend_points))
     mor = group.Mor(permutations)
     match group:
-        case _ if group in OwnedGroups().Framed():
+        case _ if group.has_selected_group_resolution():
             permutation_representation = mor(
                 {
                     group_generator: _permutation_from_point_map(

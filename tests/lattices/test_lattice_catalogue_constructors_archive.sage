@@ -74,7 +74,9 @@ def test_leech_lattice_uses_the_rootless_even_unimodular_archive_contract() -> N
     assert signature.second() == 24
     assert leech.is_even()
     assert abs(leech.gram_matrix().determinant()) == 1
-    assert leech.roots().cardinality() == 0
+    # Rootlessness is the minimum-four condition; asking for all roots would
+    # enumerate vectors in rank 24 merely to discover that there are none.
+    assert abs(leech.minimum()) == 4
 
 
 def test_non_simply_laced_root_lattices_use_the_integral_cartan_symmetrizer() -> None:

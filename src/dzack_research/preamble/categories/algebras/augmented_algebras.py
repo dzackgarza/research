@@ -5,7 +5,6 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
     UnitalMultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _root_algebra_law_decisions,
@@ -209,11 +208,6 @@ def _graded_algebra_placement(domain, base):
             placement.append(algebras.Commutative())
         case False:
             pass
-    match domain.is_framed_algebra():
-        case True:
-            placement.append(FramedAlgebras(base))
-        case False:
-            pass
     graded = _declared_graded_algebra_category(domain)
     if graded is None:
         return placement
@@ -276,7 +270,7 @@ def _augmented_algebra(augmentation):
     if domain.is_framed_algebra():
         framing_owner = domain.algebra_framing_owner()
         data["algebra_generating_family"] = domain.algebra_generators()
-        data["algebra_framing_source"] = domain.selected_framing_source(framing_owner)
+        data["algebra_framing_source"] = domain.algebra_framing_source()
         data["algebra_framing_owner"] = framing_owner
     return _algebra_on_module(
         domain,

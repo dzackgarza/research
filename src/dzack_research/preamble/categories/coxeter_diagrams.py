@@ -325,8 +325,16 @@ class CoxeterDiagrams(OwnedCategory):
         def num_vertices(self):
             return self.cardinality()
 
-        def mor(self, images, codomain):
-            return CoxeterDiagrams().Mor(self, codomain)(images)
+        def Mor(self, codomain, category=None):
+            r"""Return the Coxeter-entry-preserving Mor into ``codomain``.
+
+            Naming a coarser category is the explicit request to forget the
+            complete Coxeter matrix, as in ``D.Mor(E, category=LabelledGraphs())``.
+            """
+            diagrams = CoxeterDiagrams()
+            if category is None or category.is_subcategory(diagrams):
+                return diagrams.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
 
         def vertex_weight(self, vertex):
             return self.vinberg_invariant_matrix().vertex_weight(vertex)
@@ -631,7 +639,7 @@ class CoxeterDiagrams(OwnedCategory):
             from elliptic to parabolic.
             """
             normalized = _engine_component_matrix(self.schlafli_tensor())
-            return (2 * normalized).determinant()
+            return _cross_engine_ring_value((2 * normalized).determinant())
 
         def vinberg_invariant_matrix(self):
             r"""Return the Vinberg invariant matrix of this diagram.

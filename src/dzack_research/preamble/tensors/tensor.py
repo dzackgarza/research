@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
     _direct_sum_of_modules,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     MatrixSpaces,
     Modules,
 )
@@ -51,7 +50,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_engi
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    SageRings,
     _engine_element,
+    _engine_numeral,
     _engine_ring,
     _own_ring,
 )
@@ -63,6 +64,7 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.static_types import ProductOfNaturalNumbers
 
 _Rings = OwnedRings()
+_SageRings = SageRings()
 
 
 def index_rank_family(ranks):
@@ -848,9 +850,12 @@ class Tensor:
         r"""Dualize a nondegenerate pairing or copairing.
 
         For a nondegenerate pairing ``g`` of type ``(0,2)``, duality through
-        its correlation isomorphism produces the contravariant tensor
-        ``g^vee`` of type ``(2,0)`` on the dual module.  Conversely a
-        nondegenerate type-``(2,0)`` tensor dualizes to type ``(0,2)``.
+        its correlation isomorphism produces the inverse metric, the
+        contravariant tensor ``g^{-1}`` of type ``(2,0)`` on the original
+        module.  Equivalently, those same inverse components define the
+        covariant dual pairing on the algebraic dual; :meth:`dual_pairing`
+        returns that type-``(0,2)`` presentation.  Conversely a nondegenerate
+        type-``(2,0)`` tensor dualizes to type ``(0,2)``.
         """
         valence = self.tensor_valence()
         first_rank, second_rank = self._index_ranks()
@@ -874,6 +879,31 @@ class Tensor:
             f"cannot dualize a type-{valence} tensor: dual_tensor is defined for a "
             f"nondegenerate pairing (type (0, 2)) or copairing (type (2, 0))"
         )
+
+    def dual_pairing(self):
+        r"""Return the covariant pairing induced on the algebraic dual.
+
+        If ``g`` is a nondegenerate pairing on ``M``, then ``g^{-1}`` is a
+        type-``(2,0)`` tensor on ``M``.  Via
+        ``(M^*)^* \cong M`` its components are the Gram components of the
+        induced pairing on ``M^*``; relative to the dual framing that pairing
+        is again type ``(0,2)``.
+        """
+        valence = self.tensor_valence()
+        match valence == (NN**2)((0, 2)):
+            case False:
+                raise TypeError(
+                    f"cannot form the dual pairing of a type-{valence} tensor: "
+                    "a pairing on M must have type (0, 2)"
+                )
+            case True:
+                inverse = self.dual_tensor()
+                return tensor(
+                    self.base_ring(),
+                    (),
+                    inverse._upper_index_ranks(),
+                    inverse._component_array(),
+                )
 
     def pullback(self, morphism):
         r"""Pull this covariant tensor back along an owned linear morphism.
@@ -955,6 +985,59 @@ class Tensor:
             (source_rank,) * q,
             _nested(tuple(entries), (source_rank,) * q),
         )
+
+
+def _covariant_bilinear_coordinate_rows(value, left_rank, right_rank):
+    r"""Read a finite type-``(0,2)`` tensor as bilinear coordinate data.
+
+    This is the tensor owner's boundary from a tensor presentation to the
+    rectangular values used by the universal bilinear classifier.  Variance
+    is part of the tensor datum: a copairing of type ``(2,0)`` is not accepted
+    as a form merely because its component array is rectangular.
+    """
+    match isinstance(value, Tensor):
+        case False:
+            raise TypeError(f"{value!r} is not a tensor")
+        case True:
+            pass
+    valence = value.tensor_valence()
+    match valence == (NN**2)((0, 2)):
+        case False:
+            raise TypeError(
+                f"a bilinear form is a covariant 2-tensor of type (0, 2), "
+                f"but {value!r} has type {valence}"
+            )
+        case True:
+            shape = tuple(cardinal(rank) for rank in value.tensor_shape())
+            left_rank = cardinal(left_rank)
+            right_rank = cardinal(right_rank)
+            match (
+                all(rank.is_finite() for rank in shape),
+                left_rank.is_finite(),
+                right_rank.is_finite(),
+            ):
+                case (True, True, True):
+                    rows, columns = map(int, shape)
+                    expected = (int(left_rank), int(right_rank))
+                    match (rows, columns) == expected:
+                        case False:
+                            raise ValueError(
+                                f"the type-(0, 2) tensor has shape {(rows, columns)}, but "
+                                f"this pairing needs shape {expected}"
+                            )
+                        case True:
+                            return tuple(
+                                tuple(
+                                    value[row, column]
+                                    for column in range(columns)
+                                )
+                                for row in range(rows)
+                            )
+                case _:
+                    raise TypeError(
+                        "a tensor supplies bilinear coordinate data only when its "
+                        "two slots and the two selected module framings are finite"
+                    )
 
 
 
@@ -1509,6 +1592,18 @@ def _coordinate_component_repr(tensor_value) -> str:
     return repr(tensor_value._component_array())
 
 
+def _owned_coordinate_component(ring, value):
+    r"""Admit one tensor component, crossing raw Sage ring data only at ingress."""
+    parent = element_parent(value)
+    match parent:
+        case Parent() if parent in _Rings:
+            return ring(value)
+        case Parent() if parent in _SageRings:
+            return _owned_engine_element(ring, _engine_numeral(ring, value))
+        case _:
+            return ring(value)
+
+
 def _normalized_rank(rank):
     r"""The rank of one tensor slot: an ``int``, or ``Infinity`` for an infinite slot."""
     return Infinity if rank == Infinity else int(cardinal(rank).finite_value())
@@ -1630,7 +1725,10 @@ class _CoordinateTensorModule:
                 f"components; got {len(entries)}"
             )
         ring = self.base_ring()
-        return self.element_class(self, tuple(ring(entry) for entry in entries))
+        return self.element_class(
+            self,
+            tuple(_owned_coordinate_component(ring, entry) for entry in entries),
+        )
 
     def zero(self):
         assert Infinity not in self._index_ranks(), (
@@ -1846,7 +1944,6 @@ def _mixed_tensor_algebra(module):
         ring,
         bigrades,
         pieces,
-        extra_categories=(FramedModules(ring),),
         construction_data={"mixed_tensor_module": module},
         _realization=(_MixedTensorDirectSum, MixedTensorAlgebraElement),
     )

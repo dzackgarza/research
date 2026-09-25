@@ -265,6 +265,17 @@ class TopologicalSpaces(OwnedCategory):
             self._represented_topology_data = topology_data
             super().__init__(**rest)
 
+        def Mor(self, codomain, category=None):
+            r"""Return the continuous maps into ``codomain``.
+
+            Naming a coarser category is the explicit request to forget the
+            topology, as in ``X.Mor(Y, category=Sets())``.
+            """
+            spaces = TopologicalSpaces()
+            if category is None or category.is_subcategory(spaces):
+                return spaces.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
+
         def _topology_data(self):
             return self._represented_topology_data
 

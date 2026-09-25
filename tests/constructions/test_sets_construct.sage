@@ -39,8 +39,16 @@ def test_a_finite_set_and_its_constructions() -> None:
 def test_function_sets_between_finite_sets() -> None:
     three = _three()
     two = _two()
-    assert three.exponential(two).cardinality() == cardinal(9)
-    assert Sets().Mor(two, three).cardinality() == cardinal(9)
+    functions = Sets().Mor(two, three)
+    assert three.exponential(two) is functions
+    assert functions in Sets()
+    assert functions in Sets().Mors()
+    assert functions in FunctionSets()
+    assert functions in FinitelySupportedFunctionSets()
+    assert functions.base() is three
+    assert functions.exponent() is two
+    assert functions.mor() is functions
+    assert functions.cardinality() == cardinal(9)
     assert Sets().Mor(three, two).cardinality() == cardinal(8)
     assert Sets().Mono(two, three).cardinality() == cardinal(6)
     assert Sets().Mono(three, two).cardinality() == cardinal(0)
@@ -78,7 +86,11 @@ def test_infinite_sets_and_their_constructions() -> None:
     assert Sets().coproduct((NN, _three())).cardinality() == aleph0
     assert NN.subsets_of_size(2).cardinality() == aleph0
     assert NN.exponential(_two()).cardinality() == aleph0
-    assert _two().exponential(NN).cardinality() == continuum
+    binary_sequences = _two().exponential(NN)
+    assert binary_sequences is Sets().Mor(NN, _two())
+    assert binary_sequences in FunctionSets()
+    assert binary_sequences not in FinitelySupportedFunctionSets()
+    assert binary_sequences.cardinality() == continuum
     assert Sets().Mor(NN, NN).cardinality() == continuum
     assert NN.condition_set(lambda n: n % 2 == 0).cardinality() == aleph0
     assert Sets.Δ[aleph0] is NN

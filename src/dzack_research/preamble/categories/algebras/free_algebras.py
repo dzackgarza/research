@@ -28,11 +28,10 @@ from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
     FinitelyPresentedAlgebras,
-    FramedAlgebras,
     _AlgebraMorCommonMethods,
     _OwnedAlgebraParent,
-    _SelectedFiniteAlgebraPresentation,
     _algebra_with_structure,
+    _fix_selected_algebra_presentation,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
@@ -177,8 +176,23 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                     f"a free algebra here is a tensor algebra or a symmetric algebra, but got flavor {flavor!r}"
                 )
         module_placement = FramedFreeModules(base)
-        if basis.cardinality().is_finite():
-            module_placement = FinitelyGeneratedFreeModules(base)
+        match basis.cardinality().is_finite():
+            case True:
+                module_placement = FinitelyGeneratedFreeModules(base)
+            case False:
+                pass
+        match labels.cardinality().is_finite():
+            case True:
+                algebra_placements = (
+                    (
+                        Algebras(base)
+                        .Associative()
+                        .Unital()
+                        .FinitelyGeneratedAsAlgebra()
+                    ),
+                )
+            case False:
+                algebra_placements = ()
         self._native_module_basis = _NativeModuleBasis(
             base.free_module(basis),
             self._native_basis_image,
@@ -191,6 +205,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                 GradedFreeAlgebras(base),
                 algebra_category,
                 module_placement,
+                *algebra_placements,
                 *categories,
             ),
             construction_data=construction_data,
@@ -448,20 +463,6 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
                 representative = unflatten(representative)
             return _owned_engine_element(presentation_ring, representative)
 
-        def presentation_morphism():
-            return Algebras(
-                presentation_ring.base_ring()
-            ).Associative().Unital().Mor(presentation_ring, self)(
-                lambda label: self.algebra_generator(label)
-            )
-
-        self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
-            presentation_ring,
-            selected_relations,
-            presentation_ideal,
-            lift_to_presentation,
-            presentation_morphism,
-        )
         if generating_module is not None:
             self._generating_module = generating_module
 
@@ -531,7 +532,13 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             categories=tuple(placement),
             law_decisions=law_decisions,
             algebra_framing_source=presentation_ring,
-            algebra_framing_morphism_factory=lambda: self._selected_algebra_presentation.presentation_morphism(),
+        )
+        _fix_selected_algebra_presentation(
+            self,
+            presentation_ring,
+            selected_relations,
+            presentation_ideal,
+            lift_to_presentation,
         )
         self._preamble_commutative_algebra_coproduct_backend = (
             (lambda left, right: _commutative_algebra_coproduct_backend(left, right))
@@ -967,7 +974,7 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         return "free algebras"
 
     def super_categories(self):
-        return [FramedAlgebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
         def is_free(self) -> bool:
@@ -1461,7 +1468,7 @@ def _presentation_data(algebra):
     match algebra:
         case _ if algebra in AlgebrasWithChosenFinitePresentation(base):
             return algebra.presentation_ring(), tuple(algebra.relations())
-        case _ if algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base):
+        case _ if algebra in SymmetricAlgebras(base) and algebra.is_framed_algebra():
             return algebra, ()
         case _ if algebra in QuotientRings():
             quotient_source = algebra.quotient_source()
@@ -1497,7 +1504,7 @@ def _commutative_algebra_coproduct_backend(left, right):
         raise TypeError(
             f"the coproduct {left} (x) {right} needs both factors to be commutative algebras over {base}"
         )
-    assert left in FramedAlgebras(base) and right in FramedAlgebras(base), (
+    assert left.is_framed_algebra() and right.is_framed_algebra(), (
         f"the coproduct {left} (x) {right} is computed only when both factors have finitely many "
         "chosen algebra generators"
     )
@@ -1592,7 +1599,7 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
             f"the pushout maps {left_map} and {right_map} must be algebra morphisms {common} -> {left} and "
             f"{common} -> {right}"
         )
-    assert common in FramedAlgebras(base), (
+    assert common.is_framed_algebra(), (
         f"the pushout of {left} <- {common} -> {right} is computed only when {common} has finitely many "
         "chosen algebra generators"
     )

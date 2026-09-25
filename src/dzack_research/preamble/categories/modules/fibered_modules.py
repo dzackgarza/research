@@ -31,7 +31,7 @@ from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules, Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     CommutativeRings,
 )
@@ -134,7 +134,7 @@ class SemilinearModuleMorphism(Morphism):
         if scalar_equal is not True:
             return Unknown
         source = self.domain()
-        if source in FramedModules(source.base_ring()):
+        if source.has_selected_module_resolution():
             return all(
                 self(source.module_generator(label))
                 == other(source.module_generator(label))

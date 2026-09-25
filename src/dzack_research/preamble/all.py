@@ -36,6 +36,8 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     OppositeMorphism,
     PosetCategory,
     ProductMorphism,
+    ResolutionMorphism,
+    Resolutions,
     Sheaves,
     SubobjectMor,
     SubobjectMorphism,
@@ -73,7 +75,6 @@ from dzack_research.preamble.categories.algebras import (
     DifferentialGradedAlgebras,
     DividedPowerAlgebras,
     FinitelyPresentedAlgebras,
-    FramedAlgebras,
     FreeAlgebras,
     GradedAlgebraMor,
     GradedAlgebraMorphism,
@@ -197,7 +198,6 @@ from dzack_research.preamble.groups import (
     GroupAutomorphismGroup,
     GroupMor,
     Groups,
-    GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
     GSetMor,
     GSetMorphism,
@@ -290,7 +290,6 @@ from dzack_research.preamble.categories.modules import (
     FractionalIdeals,
     FractionFieldQuotients,
     FramedFreeModules,
-    FramedModules,
     FreeFormModules,
     FreeModules,
     FreeResolution,
@@ -304,6 +303,7 @@ from dzack_research.preamble.categories.modules import (
     LocalizedModules,
     ModuleBaseRingProjection,
     ModuleEmbedding,
+    ModuleResolutions,
     Modules,
     ModulesOverCommutativeRings,
     ModuleSubobjects,
@@ -414,6 +414,7 @@ from dzack_research.preamble.categories.schemes.cyclic_covers import (  # noqa: 
     CyclicCovers,
 )
 from dzack_research.preamble.categories.sets import (  # noqa: F401
+    AugmentedSimplexCategory,
     NN,
     CardinalComparison,
     Cardinalities,
@@ -434,8 +435,8 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     InfiniteSets,
     LaurentMonomials,
     ObjectSetsOfDiscreteCategories,
+    Ord,
     Ordinals,
-    OrdinalSemirings,
     PartiallyOrderedSets,
     PowerSets,
     Set,
@@ -446,6 +447,7 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     SincTranslates,
     TotallyOrderedSets,
     UncountableSets,
+    WellOrderedSets,
     aleph,
     aleph0,
     cardinal,
@@ -541,9 +543,6 @@ from dzack_research.preamble.utilities import (
     zipsum as zipsum,
 )
 
-_language_runtime.install()
-
-
 def load(filename: str, globals: dict | None = None, attach: bool = False) -> None:
     r"""Load a Sage file and restore this session's owned scalar vocabulary."""
     scope = _sys._getframe(1).f_globals if globals is None else globals
@@ -580,3 +579,6 @@ from dzack_research.preamble.catalogue import (  # noqa: E402,F401
 )
 from dzack_research.preamble.coble import Coble  # noqa: E402,F401
 from dzack_research.preamble.sterk import Sterk  # noqa: E402,F401
+
+
+_language_runtime.install(globals())

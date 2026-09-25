@@ -9,7 +9,6 @@ corresponding full subcategory; membership never recomputes them afterwards.
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
@@ -85,7 +84,7 @@ class Curves(_DimensionSubcategoryOfVarieties):
         match ambient:
             case None:
                 source = equation.parent()
-                assert source in FramedAlgebras(base), (
+                assert source.is_framed_algebra(), (
                     f"cannot cut a curve over {base} out of {equation} without a given scheme to "
                     f"contain it: {equation} must lie in a polynomial ring over {base} with named "
                     f"variables, but it lies in {source}, which is in {source.category()}"

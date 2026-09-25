@@ -64,12 +64,57 @@ def test_ordinal_sum_product_and_power_are_not_commutative() -> None:
     assert not ordinals.proves_le(first_infinite, 3)
 
 
+def test_ordinary_ordinal_arithmetic_is_canonical_order_type_arithmetic() -> None:
+    two = Ordinals()(2)
+    first = omega(0)
+    second = omega(1)
+
+    assert Ordinals()(1).ordinal_sum(first) == first
+    assert two.ordinal_product(first) == first
+    assert two.ordinal_power(first) == first
+
+    omega_plus_one = first.ordinal_sum(1)
+    omega_times_two = first.ordinal_product(2)
+    omega_squared = first.ordinal_power(2)
+    assert omega_plus_one.ordinal_sum(first) == omega_times_two
+    assert omega_plus_one.ordinal_product(first) == omega_squared
+    assert two.ordinal_power(omega_times_two) == omega_squared
+
+    assert two.ordinal_product(second) == second
+    assert two.ordinal_power(second) == second
+    assert first < omega_plus_one < omega_times_two < omega_squared < second
+
+
 def test_natural_sums_of_initial_ordinals_commute_and_omega_one_follows_omega() -> None:
     first = omega(0)
     second = omega(1)
 
     assert first + second == second + first
+    assert first + second == second.ordinal_sum(first)
+    assert first * second == second.ordinal_product(first)
     assert first.ordinal_sum(second) == second
     assert second > first
     assert second.initial_index() == Ordinals()(1)
-    assert Ordinals().Mor(Ordinals()).identity()(second) == second
+    assert Ord.Mor(first, second).unique_morphism().domain() is first
+    assert Ord.Mor(second, second).identity().is_identity()
+
+
+def test_order_type_is_a_functor_from_well_orders_to_ord() -> None:
+    labels = finite_ordered_set(("a", "b", "c"))
+    standard = Sets.Δ[2]
+    well_orders = WellOrderedSets()
+
+    forward = well_orders.Mor(labels, standard)(
+        lambda point: labels.ranking_map()(point)
+    )
+    inverse = well_orders.Mor(standard, labels)(
+        lambda position: labels.ranking_map().inverse()(position)
+    )
+    isomorphism = well_orders.Core().Mor(labels, standard)(forward, inverse)
+    order_type = well_orders.order_type_functor()
+
+    assert standard in AugmentedSimplexCategory()
+    assert labels in WellOrderedSets()
+    assert order_type(labels) is Ordinals()(3)
+    assert order_type(standard) is Ordinals()(3)
+    assert order_type(isomorphism) == Ord.Mor(3, 3).identity()

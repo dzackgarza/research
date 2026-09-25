@@ -28,15 +28,21 @@ def test_the_invariants_of_the_k3_lattice() -> None:
     assert lattice.summands().cardinality() == 5
 
 
-def test_an_embedded_hyperbolic_plane_splits_off() -> None:
-    r"""A unimodular sublattice is an orthogonal summand, so $U \hookrightarrow L_{K3}$ is primitive with complement $U^2\oplus E_8^2$."""
-    embedding = Lattices(ZZ)("U").Emb(k3()).an_element()
-    complement = embedding.orthogonal_complement()
-    assert embedding.is_injective()
-    assert embedding.is_primitive()
+def test_the_displayed_hyperbolic_plane_splits_off_the_k3_lattice() -> None:
+    r"""The displayed first U block is primitive and orthogonal to the remaining rank-20 block."""
+    lattice = k3()
+    generators = tuple(lattice.module_generators())
+    hyperbolic = lattice.subobject_on(generators[:2])
+    complement = lattice.subobject_on(generators[2:])
+
+    assert hyperbolic.is_primitive()
+    assert hyperbolic.gram_matrix() == Lattices.U.gram_matrix()
     assert complement.module_rank() == 20
     assert complement.signature_pair() == signature_pair(2, 18)
     assert complement.is_unimodular()
+    for left in hyperbolic.embedded_module_generators():
+        for right in complement.embedded_module_generators():
+            assert lattice.b(left, right) == 0
 
 
 def test_the_k3_lattice_has_one_endomorphism_category() -> None:

@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
-    _fix_selected_framing,
+    _fix_selected_resolution,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     SelectedColimitConstruction,
@@ -71,6 +71,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
+    _matrix_group,
     _row_normal_form,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -379,6 +380,29 @@ class Modules(OwnedCategoryOverBaseRing):
         def Projective(self):
             r"""Return this category with the axiom that its objects are projective."""
             return self._with_axiom("Projective")
+
+        def resolutions(self, truncation=0, projective_class=None):
+            r"""Return the category of chosen truncated projective resolutions.
+
+            This is a data category over Modules(R).  It does not choose a
+            resolution of an object merely because the object lies in a
+            property subcategory.
+            """
+            from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                Resolutions,
+            )
+
+            modules = Modules(self.base_ring())
+            match projective_class:
+                case None:
+                    projective_class = modules.Projective()
+                case _:
+                    pass
+            return Resolutions(
+                modules,
+                projective_class,
+                truncation,
+            )
 
         def Torsion(self):
             r"""Return this category with the axiom that its objects are torsion."""
@@ -1089,10 +1113,28 @@ class Modules(OwnedCategoryOverBaseRing):
             self._preamble_native_module_presentation = presentation
 
 
-        def __init__(self, base_ring, **rest) -> None:
+        def __init__(
+            self,
+            base_ring,
+            module_generating_set=None,
+            module_generator_function=None,
+            framing_source=None,
+            **rest,
+        ) -> None:
             ring = _owned_ring(base_ring)
             self._preamble_base_ring = ring
             super().__init__(base=ring, **rest)
+            match module_generating_set:
+                case None:
+                    pass
+                case labels:
+                    _fix_selected_module_resolution(
+                        self,
+                        ring,
+                        labels,
+                        module_generator_function,
+                        framing_source,
+                    )
 
         def __init_extra__(self) -> None:
             r"""Register the action of this module's ring on its own elements.
@@ -1133,6 +1175,93 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def module_category(self):
             return Modules(self.base_ring())
+
+        def has_selected_module_resolution(self) -> bool:
+            return self.has_selected_resolution(self.module_category())
+
+        def selected_module_resolution(self):
+            return self.selected_resolution(self.module_category())
+
+        def module_generating_set(self):
+            return self.selected_resolution_generating_set(self.module_category())
+
+        def module_generator_morphism(self):
+            return self.selected_module_resolution().generator_morphism()
+
+        def module_generator(self, label):
+            return self.selected_module_resolution().generator(label)
+
+        def module_generators(self):
+            return self.selected_module_resolution().generators(
+                name="Module generators"
+            )
+
+        def number_of_module_generators(self):
+            return self.selected_module_resolution().generator_count()
+
+        def sub_framing_morphism(self, codomain):
+            r"""Return the inclusion induced by the selected generators."""
+            match codomain.has_selected_module_resolution():
+                case False:
+                    raise TypeError(
+                        f"the inclusion of the generators of {self} into {codomain} is not defined: "
+                        f"{codomain} has no chosen module resolution"
+                    )
+                case True:
+                    return SubFramingMorphism(
+                        self.Mono(codomain),
+                        codomain.module_generator,
+                    )
+
+        def framing_source(self):
+            r"""Return the free degree-zero term of the selected module resolution."""
+            return self.selected_module_resolution().level(0)
+
+        @cached_method
+        def framing_morphism(self):
+            r"""Return the selected degree-zero augmentation."""
+            return self.selected_module_resolution().augmentation()
+
+        def framing_object(self):
+            r"""Return the selected module augmentation as an arrow object."""
+            return self.module_category().ArrowCategory()(self.framing_morphism())
+
+        def linear_combination(self, coefficients):
+            r"""Return the linear combination of the selected module generators."""
+            return sum(
+                (
+                    self.scalar_multiple(
+                        coefficient,
+                        self.module_generator(label),
+                    )
+                    for label, coefficient in coefficients.items()
+                ),
+                self.zero(),
+            )
+
+        def inject_variables(self, scope=None, verbose=True):
+            assert scope is not None, (
+                f"the generators of {self} can be defined as variables only in a given namespace, but none was given"
+            )
+            assert self.module_generating_set().cardinality().is_finite(), (
+                f"the generators of {self} can be defined as variables only when there are finitely many, "
+                f"but its generating set has cardinality {self.module_generating_set().cardinality()}"
+            )
+            names = tuple(self.variable_names())
+            generators = tuple(self.module_generators())
+            match len(names) == len(generators):
+                case False:
+                    raise ValueError(
+                        f"{self} has {len(generators)} generators but {len(names)} variable names {names}"
+                    )
+                case True:
+                    pass
+            match verbose:
+                case True:
+                    print(f"Defining {', '.join(names)}")
+                case False:
+                    pass
+            scope.update(zip(names, generators, strict=True))
 
         def tensor_product(self, other):
             r"""Return this module tensored with ``other`` over the common base ring."""
@@ -1500,7 +1629,8 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""The chosen preimage of ``element`` under the framing ``F_R(S) ->> M``.
 
             Protected contract of ``Modules(R)``.  Its callers are
-            ``FramingMorphism.lift`` and ``ModuleMorphism._call_``, which
+            ``FramingMorphism.lift``, ``FramedFreeModules`` elements'
+            ``to_vector``, and ``ModuleMorphism._call_``, which
             evaluates ``f(v) = sum_s a(s) f(m_s)`` on this preimage ``a``:
             evaluation must not construct the framing morphism, whose Mor set
             evaluates morphisms while it is built.  On a basis the preimage is
@@ -1832,131 +1962,22 @@ class Modules(OwnedCategoryOverBaseRing):
 
         localization_at_prime = localize_at_prime
 
-    class Framed(CategoryWithAxiom):
-        r"""Modules carrying the global selected-framing datum in ``R-Mod``."""
-
-        @cached_method
-        def framing_category(self):
-            r"""Return the arrow category containing selected module framings."""
-            return Modules(self.base_ring()).ArrowCategory()
-
-        class ParentMethods:
-            def __init__(
-                self,
-                module_generating_set=None,
-                module_generator_function=None,
-                framing_source=None,
-                **rest,
-            ) -> None:
-                r"""Retain one selected epimorphism ``F_R(S) -> M``.
-
-                The global ``Framed`` owner retains the source, label set,
-                generator map and epimorphism.  This specialization supplies
-                only the module Mor realization of those data.
-                """
-                super().__init__(**rest)
-                if module_generating_set is None:
-                    if Modules(self.base_ring()) not in self._selected_framing_registry():
-                        raise ValueError(
-                            f"{self} was constructed as a module with chosen generators, but no generating set was given"
-                        )
-                    return
-                _fix_selected_module_framing(
-                    self,
-                    self.base_ring(),
-                    module_generating_set,
-                    module_generator_function,
-                    framing_source,
-                )
-
-            def module_generating_set(self):
-                return self.selected_framing_generating_set(
-                    Modules(self.base_ring())
-                )
-
-            def module_generator_morphism(self):
-                return self.selected_framing_generator_morphism(
-                    Modules(self.base_ring())
-                )
-
-            def module_generator(self, label):
-                return self.selected_framing_generator(
-                    Modules(self.base_ring()), label
-                )
-
-            def module_generators(self):
-                return self.selected_framing_generators(
-                    Modules(self.base_ring()),
-                    name="Module generators",
-                )
-
-            def number_of_module_generators(self):
-                return self.selected_framing_generator_count(
-                    Modules(self.base_ring())
-                )
-
-            def sub_framing_morphism(self, codomain):
-                r"""Return the inclusion induced by this framing inside another one."""
-                if codomain not in Modules(self.base_ring()).Framed():
-                    raise TypeError(
-                        f"the inclusion of the generators of {self} into {codomain} is not defined: {codomain} "
-                        f"must be a module over {self.base_ring()} with chosen generators"
-                    )
-                return SubFramingMorphism(
-                    self.Mono(codomain),
-                    codomain.module_generator,
-                )
-
-            def framing_source(self):
-                r"""Return the exact free module realizing this selected framing."""
-                return self.selected_framing_source(Modules(self.base_ring()))
-
-            @cached_method
-            def framing_morphism(self):
-                r"""Return the module epimorphism induced by the global generator datum."""
-                return self.selected_framing_morphism(Modules(self.base_ring()))
-
-            def framing_object(self):
-                r"""Return this selected module framing as an object of ``Arr(R-Mod)``."""
-                category = Modules(self.base_ring()).Framed().framing_category()
-                return category(self.framing_morphism())
-
-            def linear_combination(self, coefficients):
-                r"""Return ``sum_s c_s m_s`` in the selected module framing."""
-                return sum(
-                    (
-                        self.scalar_multiple(
-                            coefficient,
-                            self.module_generator(label),
-                        )
-                        for label, coefficient in coefficients.items()
-                    ),
-                    self.zero(),
-                )
-
-            def inject_variables(self, scope=None, verbose=True):
-                assert scope is not None, (
-                    f"the generators of {self} can be defined as variables only in a given namespace, but none was given"
-                )
-                assert self.module_generating_set().cardinality().is_finite(), (
-                    f"the generators of {self} can be defined as variables only when there are finitely many, "
-                    f"but its generating set has cardinality {self.module_generating_set().cardinality()}"
-                )
-                names = tuple(self.variable_names())
-                generators = tuple(self.module_generators())
-                if len(names) != len(generators):
-                    raise ValueError(
-                        f"{self} has {len(generators)} generators but {len(names)} variable names {names}"
-                    )
-                if verbose:
-                    print(f"Defining {', '.join(names)}")
-                scope.update(zip(names, generators, strict=True))
-
-            def is_framed_module(self) -> bool:
-                return True
-
     class FinitelyGenerated(CategoryWithAxiom):
         r"""Modules admitting a finite generating set."""
+
+        @cached_method
+        def resolution_category(self):
+            r"""Finite-free degree-zero resolutions whose target image is this property."""
+            from dzack_research.preamble.categories.modules.resolutions import (
+                finitely_generated_resolution_category,
+            )
+
+            return finitely_generated_resolution_category(self.base_ring())
+
+        @cached_method
+        def resolution_classifier(self):
+            r"""The target projection from finite-free degree-zero resolution data."""
+            return self.resolution_category().target_functor()
 
         def an_object(self):
             r"""The free module of rank one."""
@@ -2064,6 +2085,20 @@ class Modules(OwnedCategoryOverBaseRing):
 
     class FinitelyPresented(CategoryWithAxiom):
         r"""Modules admitting a finite presentation."""
+
+        @cached_method
+        def resolution_category(self):
+            r"""Finite-free degree-one partial resolutions whose target image is this property."""
+            from dzack_research.preamble.categories.modules.resolutions import (
+                finitely_presented_resolution_category,
+            )
+
+            return finitely_presented_resolution_category(self.base_ring())
+
+        @cached_method
+        def resolution_classifier(self):
+            r"""The target projection from finite-free degree-one resolution data."""
+            return self.resolution_category().target_functor()
 
         def an_object(self):
             r"""The free module of rank one, presented by no relations."""
@@ -2238,7 +2273,9 @@ class Modules(OwnedCategoryOverBaseRing):
                     raise ValueError(
                         f"{group} is not a finite torsion ZZ-module: the group is not finite"
                     )
-                if group not in Objects().Framed():
+                from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+                if not group.has_selected_resolution(OwnedGroups()):
                     raise TypeError(
                         f"{group} cannot be read as a ZZ-module with chosen generators: the group has no chosen "
                         f"generating set; it is only known to be in {group.category()}"
@@ -2770,7 +2807,7 @@ class ModulesWithChosenComponentPresentation(OwnedCategoryOverBaseRing):
         return "modules with a chosen component presentation"
 
     def super_categories(self):
-        return [FramedModules(self.base_ring())]
+        return [Modules(self.base_ring())]
 
 
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
@@ -2813,7 +2850,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         )
 
         ring = self.base_ring()
-        assert morphism.domain() in FramedModules(ring), (
+        assert morphism.domain().has_selected_module_resolution(), (
             f"the cokernel of {morphism} with a finite presentation needs a chosen generating set of "
             f"its domain {morphism.domain()}, which is only known to be in {morphism.domain().category()}"
         )
@@ -2835,10 +2872,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         )
 
     def super_categories(self):
-        return [
-            Modules(self.base_ring()).FinitelyPresented(),
-            FramedModules(self.base_ring()),
-        ]
+        return [Modules(self.base_ring()).FinitelyPresented()]
 
     @cached_method
     def presentation_category(self):
@@ -2968,6 +3002,12 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
 
+def _module_subobjects_agree(image, kernel, term) -> bool:
+    r"""Whether two represented subobjects of term are equal."""
+    subobjects = Modules(term.base_ring()).Subobjects(term)
+    return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
+
+
 @dataclass(frozen=True)
 class FreeResolution:
     r"""The exact resolution ``0 -> F_n -> ... -> F_0 -> M -> 0`` by free modules.
@@ -3041,18 +3081,14 @@ class FreeResolution:
         if not self.differential(length).is_injective():
             return False
 
-        def agree(image, kernel, term):
-            subobjects = Modules(term.base_ring()).Subobjects(term)
-            return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
-
-        if not agree(
+        if not _module_subobjects_agree(
             self.differential(1).image(),
             self.augmentation().kernel(),
             self.term(0),
         ):
             return False
         return all(
-            agree(
+            _module_subobjects_agree(
                 self.differential(int(degree) + 1).image(),
                 self.differential(degree).kernel(),
                 self.term(degree),
@@ -3258,38 +3294,76 @@ class FreeResolutionMorotopy:
         return source.module_category().Mor(source, target).zero()
 
 
-def _fix_selected_module_framing(module, base_ring, labels, generator_function, source=None) -> None:
-    r"""Realize the global selected framing in the module Mor category."""
-    if source is None:
-        source = base_ring.free_module(labels)
-    if source.base_ring() is not base_ring:
-        raise ValueError(
-            f"the generators of {module} over {base_ring} cannot be given by a map from {source}: "
-            f"it must be a free module over {base_ring}, but it is over {source.base_ring()}"
+def _fix_selected_module_resolution(
+    module,
+    base_ring,
+    labels,
+    generator_function,
+    source=None,
+) -> None:
+    r"""Retain one chosen degree-zero free resolution of a module."""
+    match source:
+        case None:
+            source = base_ring.free_module(labels)
+        case _:
+            pass
+    match source.base_ring() is base_ring:
+        case False:
+            raise ValueError(
+                f"the generators of {module} over {base_ring} cannot be given by a map from {source}: "
+                f"it must be a free module over {base_ring}, but it is over {source.base_ring()}"
+            )
+        case True:
+            pass
+    match source is module:
+        case True:
+            pass
+        case False:
+            match source.module_generating_set() == labels:
+                case False:
+                    raise ValueError(
+                        f"the free module {source} cannot give the generators of {module}: it is free on "
+                        f"{source.module_generating_set()}, not on {labels}"
+                    )
+                case True:
+                    pass
+    match callable(generator_function):
+        case False:
+            raise TypeError(
+                f"the generators of {module} must be given by a function from {labels} to {module}, "
+                f"but {generator_function} is not callable"
+            )
+        case True:
+            pass
+
+    def selected_resolution():
+        generator_morphism = Sets().Mor(labels, module)(
+            lambda label: module(generator_function(label))
         )
-    if source is not module and source.module_generating_set() != labels:
-        raise ValueError(
-            f"the free module {source} cannot give the generators of {module}: it is free on "
-            f"{source.module_generating_set()}, not on {labels}"
+        augmentation = _framing_morphism(module, source, generator_morphism)
+        match source is module, labels.cardinality().is_finite():
+            case (True, True):
+                return Modules(base_ring).FinitelyPresented().resolution_category().selected_constant(
+                    module,
+                    generating_set=labels,
+                    generator_morphism=generator_morphism,
+                )
+            case _:
+                pass
+        return Modules(base_ring).resolutions(0).selected_degree_zero(
+            module,
+            source,
+            augmentation,
+            generating_set=labels,
+            generator_morphism=generator_morphism,
         )
-    if not callable(generator_function):
-        raise TypeError(
-            f"the generators of {module} must be given by a function from {labels} to {module}, "
-            f"but {generator_function} is not callable"
-        )
-    _fix_selected_framing(
+
+    _fix_selected_resolution(
         module,
         Modules(base_ring),
-        lambda: source,
-        labels,
-        lambda: Sets().Mor(labels, module)(lambda label: module(generator_function(label))),
-        lambda: _framing_morphism(module),
+        selected_resolution,
+        generating_set=labels,
     )
-
-
-def FramedModules(base_ring):
-    r"""The global ``Framed`` axiom specialized to ``R``-modules."""
-    return Modules(base_ring).Framed()
 
 
 class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
@@ -3565,7 +3639,7 @@ def _restricted_scalars_view(
     data = {"module_over_extension": module, "ring_map": ring_map}
 
     framed_over_finite_free_scalars = (
-        module in FramedModules(extension_ring)
+        module.has_selected_module_resolution()
         and module in Modules(extension_ring).FinitelyGenerated()
         and extension_ring in FinitelyGeneratedFreeModules(base_ring)
     )
@@ -3583,7 +3657,7 @@ def _restricted_scalars_view(
                 framing_source=presentation.codomain(),
             )
         case _ if framed_over_finite_free_scalars:
-            placement.extend((FramedModules(base_ring), Modules(base_ring).FinitelyGenerated()))
+            placement.append(Modules(base_ring).FinitelyGenerated())
             data["framing_source"] = base_ring._fresh_free_module_on(
                 _restricted_scalar_framing_labels(module)
             )
@@ -3641,7 +3715,7 @@ def BilinearMap(left, right, codomain, generator_images):
                 f"a bilinear map {left} x {right} -> {codomain} is not defined over {ring}: {right} and "
                 f"{codomain} must be modules over {ring} as {left} is"
             )
-    match left in FramedModules(ring), right in FramedModules(ring):
+    match left.has_selected_module_resolution(), right.has_selected_module_resolution():
         case True, True:
             pass
         case _:
@@ -3686,7 +3760,7 @@ def BilinearMap(left, right, codomain, generator_images):
             )
 
     tensor_product = Modules(ring).tensor_product(factor_family)
-    match tensor_product in FramedModules(ring):
+    match tensor_product.has_selected_module_resolution():
         case True:
             labels = tensor_product.module_generating_set()
             images = indexed_family(
@@ -4556,13 +4630,19 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         det = determinant
 
         def multiplicative_order(self):
-            r"""Return the exact multiplicative order of this square matrix when finite."""
+            r"""Return the exact multiplicative order of this square matrix when finite.
+
+            The order is the order of the cyclic matrix group generated by this
+            matrix.  Sage's raw-matrix ``multiplicative_order`` supports fewer
+            coefficient rings (notably excluding rational matrices), while its
+            matrix-group engine owns the corresponding group computation.
+            """
             if self.parent().nrows() != self.parent().ncols():
                 raise ValueError(
                     f"the multiplicative order of {self} is not defined: the matrix has shape "
                     f"{self.parent().matrix_shape()}, not square"
                 )
-            order = _engine_matrix(self).multiplicative_order()
+            order = _matrix_group((_engine_matrix(self),)).order()
             from sage.rings.infinity import Infinity
             from sage.rings.integer_ring import ZZ as SageZZ
 

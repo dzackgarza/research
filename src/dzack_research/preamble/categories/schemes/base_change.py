@@ -27,7 +27,6 @@ the universal property of the fibre product read in the two slices).
 
 from sage.misc.cachefunc import cached_function, cached_method
 
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
     AlgebrasWithChosenFinitePresentation,
 )
@@ -92,7 +91,7 @@ def _base_changed_algebra(algebra, ring_map):
             return target
         case _ if algebra in AlgebrasWithChosenFinitePresentation(source):
             return algebra.base_change(ring_map)
-        case _ if algebra in SymmetricAlgebras(source) and algebra in FramedAlgebras(source):
+        case _ if algebra in SymmetricAlgebras(source) and algebra.is_framed_algebra():
             return target.free_module(algebra.algebra_generating_set()).symmetric_algebra()
         case _:
             assert False, (

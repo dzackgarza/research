@@ -35,7 +35,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _category_mor_parent,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
-    _fix_selected_framing,
+    _fix_selected_resolution,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
@@ -51,7 +51,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BilinearMap,
-    FramedModules,
     MatrixEndomorphismSpaces,
     Modules,
     ModulesWithChosenFinitePresentation,
@@ -99,9 +98,10 @@ class _StructuredAlgebraModuleTransportMorphism(ModuleMorphism):
 if "Lie" not in all_axioms:
     all_axioms.add("Lie")
 
-# Qualified as Sage qualifies ``FinitelyGeneratedAsMagma``: an axiom name is
-# global and propagates to every declared supercategory defining it, and a
-# finitely presented algebra is not a finitely presented module.
+# Qualified relative finiteness properties of the algebra structure are
+# distinct from the corresponding module properties.
+if "FinitelyGeneratedAsAlgebra" not in all_axioms:
+    all_axioms.add("FinitelyGeneratedAsAlgebra")
 if "FinitelyPresentedAsAlgebra" not in all_axioms:
     all_axioms.add("FinitelyPresentedAsAlgebra")
 
@@ -583,6 +583,201 @@ def _algebra_tensor_square_functor(base_ring):
     return _AlgebraTensorSquareFunctor(ring)
 
 
+def _fix_selected_algebra_resolution(
+    algebra,
+    owner,
+    source_factory,
+    labels,
+    generator_morphism,
+    augmentation_factory,
+) -> None:
+    r"""Retain one chosen degree-zero free-algebra resolution.
+
+    The free source and the augmentation out of it are built when the
+    resolution is first asked for, as the resolution itself is: an algebra
+    whose construction registers its resolution (the matrix algebra
+    ``End_R(F)``) must not build a tensor algebra while it is constructed.
+    ``augmentation_factory`` receives the source.
+    """
+
+    def selected_resolution():
+        from dzack_research.preamble.categories.abstract_categories.resolutions import (
+            Resolutions,
+        )
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            FreeAlgebras,
+        )
+
+        ordinary = Algebras(algebra.base_ring()).Associative().Unital()
+        free = FreeAlgebras(algebra.base_ring())
+        source = source_factory()
+        return Resolutions(ordinary, free, 0, free).selected_degree_zero(
+            algebra,
+            source,
+            augmentation_factory(source),
+            generating_set=labels,
+            generator_morphism=generator_morphism,
+        )
+
+    _fix_selected_resolution(algebra, owner, selected_resolution, generating_set=labels)
+
+
+def _install_selected_algebra_generators(
+    algebra,
+    generating_family,
+    *,
+    source=None,
+    owner=None,
+) -> None:
+    r"""Turn constructor-selected algebra generators into resolution data."""
+    associative = Algebras(algebra.base_ring()).Associative().Unital()
+    match owner:
+        case None:
+            match algebra in associative.Commutative():
+                case True:
+                    owner = associative.Commutative()
+                case False:
+                    owner = associative
+        case _:
+            pass
+    labels = generating_family.index_set()
+    values = generating_family.map(algebra)
+    match source:
+        case None:
+            module = algebra.base_ring().free_module(labels)
+            match owner is associative:
+                case True:
+                    source = module.tensor_algebra()
+                case False:
+                    source = module.symmetric_algebra()
+        case _:
+            pass
+    generator_morphism = Sets().Mor(labels, algebra)(values.value)
+    _fix_selected_algebra_resolution(
+        algebra,
+        owner,
+        lambda: source,
+        labels,
+        generator_morphism,
+        lambda free_source: free_source.Mor(algebra)(generator_morphism),
+    )
+
+
+class _SelectedFiniteAlgebraPresentationBackend:
+    r"""Computational data derived from one selected finite algebra resolution."""
+
+    def __init__(self, presentation_ideal, lift_to_presentation) -> None:
+        self._presentation_ideal = presentation_ideal
+        self._lift_to_presentation = lift_to_presentation
+
+    def presentation_ideal(self):
+        return self._presentation_ideal
+
+    def lift(self, element):
+        return self._lift_to_presentation(element)
+
+
+def _fix_selected_algebra_presentation(
+    algebra,
+    presentation_ring,
+    relations,
+    presentation_ideal,
+    lift_to_presentation,
+) -> None:
+    r"""Promote selected algebra generators to one truncation-one resolution."""
+    owner = algebra.algebra_framing_owner()
+    degree_zero = algebra.selected_algebra_resolution()
+    match degree_zero.truncation():
+        case 0:
+            pass
+        case _:
+            raise ValueError(
+                f"{algebra} already carries a selected algebra resolution through degree "
+                f"{degree_zero.truncation()}; its finite presentation cannot be fixed a second time"
+            )
+    match degree_zero.level(0) is presentation_ring:
+        case False:
+            raise ValueError(
+                f"the selected presentation of {algebra} is on {presentation_ring}, but its "
+                f"degree-zero free algebra is {degree_zero.level(0)}"
+            )
+        case True:
+            pass
+    labels = degree_zero.generating_set()
+    relation_labels = finite_ordered_set(tuple(relations.index_set()))
+
+    def selected_resolution():
+        degree_one_labels = finite_ordered_set(
+            tuple(("generator", label) for label in labels)
+            + tuple(("relation", index) for index in relation_labels)
+        )
+        base = algebra.base_ring()
+        degree_one = base.free_module(degree_one_labels).tensor_algebra()
+        relation_source = base.free_module(relation_labels).tensor_algebra()
+
+        def first_face_value(tagged):
+            match tagged[0]:
+                case "generator":
+                    return presentation_ring.algebra_generator(tagged[1])
+                case "relation":
+                    return presentation_ring.zero()
+
+        def second_face_value(tagged):
+            match tagged[0]:
+                case "generator":
+                    return presentation_ring.algebra_generator(tagged[1])
+                case "relation":
+                    return relations.value(tagged[1])
+
+        first_face = degree_one.Mor(presentation_ring)(
+            Sets().Mor(degree_one_labels, presentation_ring)(first_face_value)
+        )
+        second_face = degree_one.Mor(presentation_ring)(
+            Sets().Mor(degree_one_labels, presentation_ring)(second_face_value)
+        )
+        degeneracy = presentation_ring.Mor(degree_one)(
+            Sets().Mor(
+                labels,
+                degree_one,
+            )(
+                lambda label: degree_one.algebra_generator(("generator", label))
+            )
+        )
+        resolution_category = (
+            Algebras(base)
+            .Associative()
+            .Unital()
+            .FinitelyPresentedAsAlgebra()
+            .resolution_category()
+        )
+        return resolution_category.selected_presentation(
+            algebra,
+            presentation_ring,
+            degree_one,
+            degree_zero.augmentation(),
+            first_face,
+            second_face,
+            degeneracy,
+            generating_set=labels,
+            generator_morphism=degree_zero.generator_morphism(),
+            relation_source=relation_source,
+            relations=relations,
+        )
+
+    _fix_selected_resolution(
+        algebra,
+        owner,
+        selected_resolution,
+        replace=True,
+    )
+    algebra._selected_algebra_presentation_backend = (
+        _SelectedFiniteAlgebraPresentationBackend(
+            presentation_ideal,
+            lift_to_presentation,
+        )
+    )
+
+
 # ---------------------------------------------------------------------------
 # Identities of a multiplication, decided on module generators.
 # ---------------------------------------------------------------------------
@@ -620,7 +815,7 @@ def _decide_on_module_generators(module, identity, arity):
     """
     ring = module.base_ring()
     match module:
-        case _ if module in FramedModules(ring) and module.module_generating_set().cardinality().is_finite():
+        case _ if module.has_selected_module_resolution() and module.module_generating_set().cardinality().is_finite():
             labels = module.module_generating_set()
             return _all_identity_decisions(
                 identity(*(module.module_generator(label) for label in labels_tuple))
@@ -889,8 +1084,20 @@ class Algebras(OwnedCategoryOverBaseRing):
             _ = (base_ring, labels, categories, construction_data)
             return None
 
-        def __init__(self, unformed_module=None, multiplication=None, *, algebra_law_decisions=None,
-                     _engine_product=None, _engine_scalar_action=None, _native_unit_factory=None, **rest) -> None:
+        def __init__(
+            self,
+            unformed_module=None,
+            multiplication=None,
+            *,
+            algebra_law_decisions=None,
+            algebra_generating_family=None,
+            algebra_framing_source=None,
+            algebra_framing_owner=None,
+            _engine_product=None,
+            _engine_scalar_action=None,
+            _native_unit_factory=None,
+            **rest,
+        ) -> None:
             r"""Construct the algebra from its exact module and tensor multiplication.
 
             Native cooperative realizations supply primitive ring operations;
@@ -917,6 +1124,16 @@ class Algebras(OwnedCategoryOverBaseRing):
                     assert callable(product) and callable(_engine_scalar_action) and callable(_native_unit_factory)
                     super().__init__(**rest)
                     _algebra_from_native_ring(self, product, _native_unit_factory(self), _engine_scalar_action)
+            match algebra_generating_family:
+                case None:
+                    pass
+                case family:
+                    _install_selected_algebra_generators(
+                        self,
+                        family,
+                        source=algebra_framing_source,
+                        owner=algebra_framing_owner,
+                    )
 
         def _retain_algebra_law_decisions(self, decisions):
             r"""Retain the exact admission decision supporting each algebra axiom placement."""
@@ -988,7 +1205,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             """
             module = self.unformed_module()
             match self:
-                case _ if self in FramedModules(self.algebra_base_ring()):
+                case _ if self.has_selected_module_resolution():
                     coordinates = self._framing_lift(self(element))
                     return module.linear_combination(
                         {label: coordinates(label) for label in coordinates.support().domain()}
@@ -1000,7 +1217,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             r"""The element of this algebra on the data of an element of :meth:`unformed_module`."""
             module = self.unformed_module()
             match self:
-                case _ if self in FramedModules(self.algebra_base_ring()):
+                case _ if self.has_selected_module_resolution():
                     coordinates = module.framing_morphism().lift(element)
                     return self.linear_combination(
                         {label: coordinates(label) for label in coordinates.support().domain()}
@@ -1086,8 +1303,79 @@ class Algebras(OwnedCategoryOverBaseRing):
         def is_algebra(self) -> bool:
             return True
 
+        def algebra_framing_owner(self):
+            r"""Return the algebra owner relative to which the chosen resolution is stored."""
+            associative = Algebras(self.base_ring()).Associative().Unital()
+            commutative = associative.Commutative()
+            match self.has_selected_resolution(commutative):
+                case True:
+                    return commutative
+                case False:
+                    match self.has_selected_resolution(associative):
+                        case True:
+                            return associative
+                        case False:
+                            raise ValueError(
+                                f"{self} has no chosen generating resolution as an algebra"
+                            )
+
         def is_framed_algebra(self) -> bool:
-            return getattr(self, "_algebra_framing_owner", None) is not None
+            associative = Algebras(self.base_ring()).Associative().Unital()
+            return (
+                self.has_selected_resolution(associative)
+                or self.has_selected_resolution(associative.Commutative())
+            )
+
+        def selected_algebra_resolution(self):
+            return self.selected_resolution(self.algebra_framing_owner())
+
+        def algebra_framing_source(self):
+            return self.selected_algebra_resolution().level(0)
+
+        def algebra_framing_morphism(self):
+            return self.selected_algebra_resolution().augmentation()
+
+        def algebra_generating_set(self):
+            return self.selected_resolution_generating_set(self.algebra_framing_owner())
+
+        def algebra_generator_morphism(self):
+            return self.selected_algebra_resolution().generator_morphism()
+
+        def algebra_generator(self, label):
+            return self.selected_algebra_resolution().generator(label)
+
+        def algebra_generators(self):
+            return self.selected_algebra_resolution().generators(
+                name="Algebra generators"
+            )
+
+        def number_of_algebra_generators(self):
+            return self.selected_algebra_resolution().generator_count()
+
+        def finite_algebra_generators(self):
+            labels = self.algebra_generating_set()
+            assert labels.cardinality().is_finite(), (
+                f"{self} has no finite chosen set of algebra generators: it has {labels.cardinality()}"
+            )
+            return FiniteOrderedSets().from_indexed(
+                labels,
+                self.algebra_generator,
+                name=f"Selected algebra generators of {self}",
+            )
+
+        def product_on_algebra_generators(self, left, right):
+            return self.algebra_generator(left) * self.algebra_generator(right)
+
+        def is_central(self, element):
+            match element in self:
+                case False:
+                    return False
+                case True:
+                    return all(
+                        element * self.algebra_generator(label)
+                        == self.algebra_generator(label) * element
+                        for label in self.algebra_generating_set()
+                    )
 
         def is_commutative(self):
             r"""Whether ``xy = yx``: decided on module generators of ``M`` against ``m``, else ``Unknown``.
@@ -1367,112 +1655,47 @@ class Algebras(OwnedCategoryOverBaseRing):
             _MorCategory = UnitalAlgebraMorCategoryConstruction
 
             class SubcategoryMethods:
+                def FinitelyGeneratedAsAlgebra(self):
+                    r"""Return the refinement whose objects admit finitely many algebra generators."""
+                    return self._with_axiom("FinitelyGeneratedAsAlgebra")
+
                 def FinitelyPresentedAsAlgebra(self):
                     r"""Return the refinement whose objects admit a finite algebra presentation."""
                     return self._with_axiom("FinitelyPresentedAsAlgebra")
 
-            class Framed(CategoryWithAxiom):
-                r"""Associative unital algebras carrying the global framing datum."""
+            class FinitelyGeneratedAsAlgebra(CategoryWithAxiom):
+                r"""Algebras that admit a finite algebra generating set."""
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "finitely generated algebras"
+
+                def an_object(self):
+                    return self.base_ring().free_module(("x",)).symmetric_algebra()
+
+                @cached_method
+                def resolution_category(self):
+                    from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                        Resolutions,
+                    )
+                    from dzack_research.preamble.categories.algebras.free_algebras import (
+                        FreeAlgebras,
+                    )
+
+                    ordinary = Algebras(self.base_ring()).Associative().Unital()
+                    free = FreeAlgebras(self.base_ring())
+                    finite_free = Cat().meet(
+                        (free, ordinary.FinitelyGeneratedAsAlgebra())
+                    )
+                    return Resolutions(ordinary, free, 0, finite_free)
+
+                @cached_method
+                def resolution_classifier(self):
+                    return self.resolution_category().target_functor()
 
                 class ParentMethods:
-                    def __init__(
-                        self,
-                        algebra_generating_family=None,
-                        algebra_framing_source=None,
-                        algebra_framing_owner=None,
-                        **rest,
-                    ) -> None:
-                        self._algebra_framing_owner = None
-                        super().__init__(**rest)
-                        if algebra_generating_family is None:
-                            return
-                        associative = Algebras(self.base_ring()).Associative().Unital()
-                        owner = algebra_framing_owner
-                        if owner is None:
-                            owner = (
-                                associative.Commutative()
-                                if self in associative.Commutative()
-                                else associative
-                            )
-                        self._algebra_framing_owner = owner
-                        labels = algebra_generating_family.index_set()
-                        values = algebra_generating_family.map(self)
-                        if algebra_framing_source is None:
-                            module = self.base_ring().free_module(labels)
-                            match owner is associative:
-                                case True:
-                                    source = module.tensor_algebra()
-                                case False:
-                                    source = module.symmetric_algebra()
-                        else:
-                            source = algebra_framing_source
-                        generator_morphism = Sets().Mor(labels, self)(values.value)
-                        _fix_selected_framing(
-                            self,
-                            owner,
-                            lambda: source,
-                            labels,
-                            lambda: generator_morphism,
-                            lambda: source.Mor(self)(generator_morphism),
-                        )
-
-                    def algebra_framing_owner(self):
-                        owner = self._algebra_framing_owner
-                        assert owner is not None, (
-                            f"{self} has no chosen generating set as an algebra"
-                        )
-                        return owner
-
-                    def algebra_generating_set(self):
-                        return self.selected_framing_generating_set(self.algebra_framing_owner())
-
-                    def algebra_generator_morphism(self):
-                        return self.selected_framing_generator_morphism(self.algebra_framing_owner())
-
-                    def algebra_generator(self, label):
-                        return self.selected_framing_generator(self.algebra_framing_owner(), label)
-
-                    def algebra_generators(self):
-                        return self.selected_framing_generators(
-                            self.algebra_framing_owner(),
-                            name="Algebra generators",
-                        )
-
-                    def number_of_algebra_generators(self):
-                        return self.selected_framing_generator_count(self.algebra_framing_owner())
-
-                    def _algebra_mor_class(self):
-                        r"""A framed algebra states its morphisms on its selected generators."""
-                        return (
-                            AlgebraMor
-                            if self.is_framed_algebra()
-                            else UnitalMultiplicativeAlgebraMor
-                        )
-
-                    def finite_algebra_generators(self):
-                        r"""Return the selected algebra generators as a finite ordered family."""
-                        labels = self.algebra_generating_set()
-                        assert labels.cardinality().is_finite(), (
-                            f"{self} has no finite chosen set of algebra generators: it has {labels.cardinality()}"
-                        )
-                        return FiniteOrderedSets().from_indexed(
-                            labels,
-                            self.algebra_generator,
-                            name=f"Selected algebra generators of {self}",
-                        )
-
-                    def product_on_algebra_generators(self, left, right):
-                        return self.algebra_generator(left) * self.algebra_generator(right)
-
-                    def is_central(self, element):
-                        r"""Decide centrality from the selected algebra framing."""
-                        if element not in self:
-                            return False
-                        return all(
-                            element * self.algebra_generator(label)
-                            == self.algebra_generator(label) * element
-                            for label in self.algebra_generating_set()
-                        )
+                    def is_finitely_generated_as_algebra(self) -> bool:
+                        return True
 
             class FinitelyPresentedAsAlgebra(CategoryWithAxiom):
                 r"""Algebras that admit a finite algebra presentation.
@@ -1484,6 +1707,34 @@ class Algebras(OwnedCategoryOverBaseRing):
                 @classmethod
                 def _repr_object_names(cls):
                     return "finitely presented algebras"
+
+                def extra_super_categories(self):
+                    return [
+                        Algebras(self.base_ring())
+                        .Associative()
+                        .Unital()
+                        .FinitelyGeneratedAsAlgebra()
+                    ]
+
+                @cached_method
+                def resolution_category(self):
+                    from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                        Resolutions,
+                    )
+                    from dzack_research.preamble.categories.algebras.free_algebras import (
+                        FreeAlgebras,
+                    )
+
+                    ordinary = Algebras(self.base_ring()).Associative().Unital()
+                    free = FreeAlgebras(self.base_ring())
+                    finite_free = Cat().meet(
+                        (free, ordinary.FinitelyGeneratedAsAlgebra())
+                    )
+                    return Resolutions(ordinary, free, 1, finite_free)
+
+                @cached_method
+                def resolution_classifier(self):
+                    return self.resolution_category().target_functor()
 
                 def an_object(self):
                     r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
@@ -1666,8 +1917,13 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return _unit_morphism_from_element(self, self.one(), self.algebra_base_ring())
 
             def _algebra_mor_class(self):
-                r"""A unital algebra stated by ``(M, m)`` takes the multiplicative unit-preserving linear maps."""
-                return UnitalMultiplicativeAlgebraMor
+                r"""Choose generator-image morphisms exactly when selected algebra resolution data exists."""
+                match self.is_framed_algebra():
+                    case True:
+                        return AlgebraMor
+                    case False:
+                        return UnitalMultiplicativeAlgebraMor
+
 
     class Commutative(CategoryWithAxiom):
         r"""Algebras whose multiplication is commutative."""
@@ -1859,10 +2115,6 @@ def _center_algebra(algebra, submodule):
             )
 
 
-def FramedAlgebras(base_ring):
-    r"""The global ``Framed`` axiom specialized to associative unital algebras."""
-    return Algebras(base_ring).Associative().Unital().Framed()
-
 
 class MatrixAlgebras(OwnedCategoryOverBaseRing):
     r"""Finite matrix endomorphism Mor objects with their canonical algebra structure."""
@@ -1889,7 +2141,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
             )
         return [
             MatrixEndomorphismSpaces(self.base_ring()),
-            FramedAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital(),
         ]
 
     # M_n(R) is unital, so a morphism of matrix algebras preserves the unit.
@@ -1901,21 +2153,20 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         def __init_extra__(self) -> None:
             r"""Retain the canonical matrix-unit algebra framing at refinement."""
             owner = Algebras(self.base_ring()).Associative().Unital()
-            if owner in self._selected_framing_registry():
+            if self.has_selected_resolution(owner):
                 return
             labels = self.module_generating_set()
             generator_morphism = Sets().Mor(labels, self)(
                 lambda label: self.matrix_unit(label[0], label[1])
             )
             base_ring = self.base_ring()
-            self._algebra_framing_owner = owner
-            selected = _fix_selected_framing(
+            _fix_selected_algebra_resolution(
                 self,
                 owner,
                 lambda: base_ring.free_module(labels).tensor_algebra(),
                 labels,
-                lambda: generator_morphism,
-                lambda: selected.source().Mor(self)(generator_morphism),
+                generator_morphism,
+                lambda source: source.Mor(self)(generator_morphism),
             )
 
         def algebra_base_ring(self):
@@ -1952,62 +2203,6 @@ def _require_matrix_algebra(mor):
     return mor
 
 
-class _SelectedFiniteAlgebraPresentation:
-    r"""The chosen polynomial presentation defining a presented algebra.
-
-    The presenting algebra, relation family, defining ideal, quotient map, and
-    selected lift are one mathematical choice.  The quotient-map realization
-    is fixed at construction and may be evaluated later; its cache is not a
-    second mathematical datum.  Keep them together so the
-    chosen-presentation category does not infer that choice from unrelated
-    private attributes on its objects.
-    """
-
-    def __init__(
-        self,
-        presentation_ring,
-        relations,
-        presentation_ideal,
-        lift_to_presentation,
-        presentation_morphism_factory,
-    ) -> None:
-        self._presentation_ring = presentation_ring
-        self._relations = relations
-        self._presentation_ideal = presentation_ideal
-        self._lift_to_presentation = lift_to_presentation
-        if not callable(presentation_morphism_factory):
-            raise TypeError(
-                f"writing an algebra as R[x_1, ..., x_n]/I needs a function producing its quotient map, "
-                f"but {presentation_morphism_factory!r} is not callable"
-            )
-        self._presentation_morphism_factory = presentation_morphism_factory
-        self._realized_presentation_morphism = None
-
-    def presentation_ring(self):
-        return self._presentation_ring
-
-    def relations(self):
-        return self._relations
-
-    def presentation_ideal(self):
-        return self._presentation_ideal
-
-    def lift(self, element):
-        return self._lift_to_presentation(element)
-
-    def presentation_morphism(self):
-        morphism = self._realized_presentation_morphism
-        if morphism is None:
-            morphism = self._presentation_morphism_factory()
-            if morphism.domain() is not self.presentation_ring():
-                raise ValueError(
-                    f"the quotient map R[x_1, ..., x_n] -> R[x_1, ..., x_n]/I must start at {self.presentation_ring()}, but it "
-                    f"starts at {morphism.domain()}"
-                )
-            self._realized_presentation_morphism = morphism
-        return morphism
-
-
 class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented algebras carrying one selected finite presentation."""
 
@@ -2023,7 +2218,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [
             Algebras(self.base_ring()).Associative().Unital().FinitelyPresentedAsAlgebra(),
-            Algebras(self.base_ring()).Associative().Unital().Commutative().Framed(),
+            Algebras(self.base_ring()).Associative().Unital().Commutative(),
         ]
 
     def _call_(
@@ -2058,18 +2253,19 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return PresentedAlgebraMor
 
         def selected_algebra_presentation(self):
-            r"""Return the one chosen polynomial-presentation datum for this algebra."""
-            selected = self._selected_algebra_presentation
-            assert selected.presentation_ring() is self.selected_framing_source(
-                self.algebra_framing_owner()
-            ), (
-                f"{self} must be written as a quotient of the free algebra on its chosen generators, "
-                f"but its polynomial ring is {selected.presentation_ring()}"
-            )
-            return selected
+            r"""Return the one chosen truncation-one algebra resolution."""
+            selected = self.selected_algebra_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected
+                case _:
+                    raise TypeError(
+                        f"{self} has no chosen finite algebra presentation: its selected resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
 
         def presentation_ring(self):
-            return self.selected_algebra_presentation().presentation_ring()
+            return self.selected_algebra_presentation().level(0)
 
         def generating_module(self):
             r"""Return the exact module on which the selected free algebra is built."""
@@ -2099,7 +2295,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return self.selected_algebra_presentation().relations()
 
         def presentation_ideal(self):
-            return self.selected_algebra_presentation().presentation_ideal()
+            return self._selected_algebra_presentation_backend.presentation_ideal()
 
         def presentation(self):
             labels = finite_ordered_set(("presentation_ring", "relations"))
@@ -2195,16 +2391,10 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return variable_count - 1
 
         def algebra_presentation_morphism(self):
-            selected = self.selected_algebra_presentation().presentation_morphism()
-            assert selected is self.selected_framing_morphism(
-                self.algebra_framing_owner()
-            ), (
-                f"the quotient map R[x_1, ..., x_n] -> {self} is not its chosen surjection from the free algebra"
-            )
-            return selected
+            return self.selected_algebra_presentation().augmentation()
 
         def lift_to_presentation(self, element):
-            return self.selected_algebra_presentation().lift(element)
+            return self._selected_algebra_presentation_backend.lift(element)
 
         def presentation_normal_form_terms(self, element):
             r"""Return the selected reduced presentation representative as owned monomial terms.
@@ -2643,7 +2833,7 @@ class AlgebraMorphism(Morphism):
             return source.Mor(target)(
                 lambda label: self(other(source.algebra_generator(label)))
             )
-        if source in FramedModules(source.base_ring()):
+        if source.has_selected_module_resolution():
             module_map = source.module_category().Mor(source, target)(
                 lambda label: self(other(source.module_generator(label)))
             )
@@ -2929,7 +3119,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         construction_data=(),
         law_decisions=(),
         algebra_framing_source=None,
-        algebra_framing_morphism_factory=None,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -2950,8 +3139,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         if engine in SageCommutativeAlgebras(_engine_ring(base)):
             framing_owner = associative.Commutative()
             placement.append(framing_owner)
-        if labels is not None:
-            placement.append(framing_owner.Framed())
         placement.extend(categories)
         retained_laws = {"associativity": True, "unit": True}
         if framing_owner is not associative:
@@ -3020,30 +3207,24 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 )
 
         generator_morphism = Sets().Mor(selected_labels, self)(value)
-        self._algebra_framing_owner = framing_owner
-        if algebra_framing_source is not None:
-            source = algebra_framing_source
-        else:
+
+        def free_source():
+            if algebra_framing_source is not None:
+                return algebra_framing_source
             generating_module = base.free_module(selected_labels)
             match framing_owner is associative:
                 case True:
-                    source = generating_module.tensor_algebra()
+                    return generating_module.tensor_algebra()
                 case False:
-                    source = generating_module.symmetric_algebra()
+                    return generating_module.symmetric_algebra()
 
-        if algebra_framing_morphism_factory is None:
-            def framing_morphism():
-                return source.Mor(self)(generator_morphism)
-        else:
-            framing_morphism = algebra_framing_morphism_factory
-
-        _fix_selected_framing(
+        _fix_selected_algebra_resolution(
             self,
             framing_owner,
-            lambda: source,
+            free_source,
             selected_labels,
-            lambda: generator_morphism,
-            framing_morphism,
+            generator_morphism,
+            lambda source: source.Mor(self)(generator_morphism),
         )
 
 
@@ -3423,7 +3604,6 @@ __all__ = [
     "CommutativeAlgebraCoproducts",
     "CommutativeAlgebraPushouts",
     "FinitelyPresentedAlgebras",
-    "FramedAlgebras",
     "MatrixAlgebras",
     "MultiplicativeAlgebraMor",
     "UnitalMultiplicativeAlgebraMor",

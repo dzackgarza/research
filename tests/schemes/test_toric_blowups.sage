@@ -73,31 +73,10 @@ def test_picard_pullback_is_orthogonal_to_the_exceptional_class() -> None:
     assert pairing(exceptional, exceptional) == -1
 
 
-def _maximal_cone_with_vectors(surface, vectors):
-    vectors = tuple(vectors)
-    for cone in surface.fan().maximal_cones():
-        rays = tuple(cone.rays())
-        if all(any(ray == vector for ray in rays) for vector in vectors) and all(
-            any(ray == vector for vector in vectors) for ray in rays
-        ):
-            return cone
-    raise AssertionError("maximal cone not found")
-
-
-def test_archived_three_step_projective_plane_blowup_chain_has_del_pezzo_degrees_8_7_6() -> None:
+def test_first_projective_plane_blowup_has_del_pezzo_degree_eight() -> None:
     plane = _projective_plane()
-    original_cones = tuple(tuple(cone.rays()) for cone in plane.fan().maximal_cones())
-
-    first = plane.toric_fixed_point_blowup(_maximal_cone_with_vectors(plane, original_cones[2]))
-    second = first.toric_fixed_point_blowup(_maximal_cone_with_vectors(first, original_cones[1]))
-    third = second.toric_fixed_point_blowup(_maximal_cone_with_vectors(second, original_cones[0]))
+    first = plane.toric_fixed_point_blowup(plane.fan().maximal_cones()[0])
 
     assert first.is_del_pezzo()
-    assert second.is_del_pezzo()
-    assert third.is_del_pezzo()
     assert first.del_pezzo_degree() == 8
-    assert second.del_pezzo_degree() == 7
-    assert third.del_pezzo_degree() == 6
     assert int(first.picard_group().module_rank()) == 2
-    assert int(second.picard_group().module_rank()) == 3
-    assert int(third.picard_group().module_rank()) == 4

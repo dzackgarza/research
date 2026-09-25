@@ -30,7 +30,6 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.groups import (
     FiniteGroups,
-    GroupsWithChosenFiniteGeneratingSet,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
@@ -84,7 +83,7 @@ class FiniteGluedInvariantQuotient(SageObject):
             f"the quotient of a glued scheme by {acting_group} is constructed only for a finite "
             f"group, but {acting_group} is not known to be finite; it is in {acting_group.category()}"
         )
-        assert acting_group in GroupsWithChosenFiniteGeneratingSet(), (
+        assert acting_group.has_selected_finite_group_generating_set(), (
             f"equivariance of the gluing maps is checked on a finite generating set of the group, "
             f"but {acting_group} was given without one; it is in {acting_group.category()}"
         )

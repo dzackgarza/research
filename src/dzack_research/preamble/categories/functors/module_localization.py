@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     ModuleSubobjects,
 )
 
@@ -106,7 +105,7 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
         subobject_data = {}
         if (
             module in ModuleSubobjects(source_ring)
-            and module in FramedModules(source_ring)
+            and module.has_selected_module_resolution()
         ):
             source_inclusion = module.inclusion()
             localized_ambient = self(source_inclusion.codomain())
@@ -157,7 +156,7 @@ class ModuleLocalizationFunctor(_ScalarExtensionFunctor):
                             return target.scalar_multiple(denominator.inverse_of_unit(), numerator)
                 elementwise = True
             case _ if target in LocalizedModules(target.base_ring()):
-                match source in FramedModules(source.base_ring()):
+                match source.has_selected_module_resolution():
                     case True:
                         pass
                     case False:
@@ -238,9 +237,9 @@ def _localization_cokernel_comparison(functor, morphism):
     target_cokernel = localized_morphism.cokernel()
     localized_codomain = localized_morphism.codomain()
     assert (
-        localized_source_cokernel in FramedModules(functor.localization_ring())
-        and target_cokernel in FramedModules(functor.localization_ring())
-        and localized_codomain in FramedModules(functor.localization_ring())
+        localized_source_cokernel.has_selected_module_resolution()
+        and target_cokernel.has_selected_module_resolution()
+        and localized_codomain.has_selected_module_resolution()
     ), (
         f"the comparison of S^-1 coker({morphism}) with coker(S^-1 {morphism}) is computed only when "
         f"both cokernels and {localized_codomain} have chosen generating sets"

@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
-    _fix_selected_module_framing,
+    _fix_selected_module_resolution,
     _restricted_scalars_view,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -437,7 +437,7 @@ class DerivationSpace(RestrictedMorCategoryParent):
                 classifier_presentation.domain().module_generating_set(),
                 relation_matrix,
             )
-            _fix_selected_module_framing(
+            _fix_selected_module_resolution(
                 self,
                 algebra,
                 framing_labels,

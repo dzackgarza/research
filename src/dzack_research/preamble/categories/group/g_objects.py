@@ -41,7 +41,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.group.groups import (
-    GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
     OwnedFiniteGroups,
     OwnedGroups,
@@ -64,7 +63,7 @@ def _verify_relators(action, group, endomorphisms) -> None:
     """
     if group in GroupsWithChosenFinitePresentation():
         identity = endomorphisms.identity()
-        presentation_projection = group.selected_framing_morphism(OwnedGroups())
+        presentation_projection = group.selected_group_resolution().augmentation()
         for relator in group.defining_relations():
             composite = identity
             for letter in relator.parent().reduced_word(relator):
@@ -673,7 +672,7 @@ class GObjectMor(CategoricalMor):
         group = self.domain().acting_group()
         arrow = self.underlying_mor()(arrow)
         match group:
-            case _ if group in GroupsWithChosenFiniteGeneratingSet():
+            case _ if group.has_selected_finite_group_generating_set():
                 determining = group.group_generators()
             case _ if group.is_finite() is True:
                 determining = group
@@ -1048,7 +1047,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             r"""Decide ``g . element = element`` on a determining family of the acting group."""
             group = self.acting_group()
             match group:
-                case _ if group in GroupsWithChosenFiniteGeneratingSet():
+                case _ if group.has_selected_finite_group_generating_set():
                     determining = group.group_generators()
                 case _ if group.is_finite() is True:
                     determining = group

@@ -13,9 +13,8 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     Modules,
-    _fix_selected_module_framing,
+    _fix_selected_module_resolution,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.refine import refine
@@ -72,7 +71,7 @@ class _NativeModuleFrame:
     """
 
     def __init__(self, source, images, coordinates, *, injective=True):
-        assert source in FramedModules(source.base_ring()), (
+        assert source.has_selected_module_resolution(), (
             f"{source} cannot index a generating family: it must be a module with a chosen "
             f"generating family over {source.base_ring()}, but it is in {source.category()}"
         )
@@ -181,18 +180,13 @@ class _RingModulePresentation:
                 f"but {module} is a module over {self.base_ring()}"
             )
             labels = source.module_generating_set()
-            _fix_selected_module_framing(
+            _fix_selected_module_resolution(
                 module,
                 self.base_ring(),
                 labels,
                 self._basis.image,
                 source.framing_source(),
             )
-            match module in FramedModules(self.base_ring()):
-                case True:
-                    pass
-                case False:
-                    refine(module, FramedModules(self.base_ring()))
             match self._basis.is_basis():
                 case True:
                     placement = FramedFreeModules(self.base_ring())
@@ -219,7 +213,7 @@ class _RingModulePresentation:
     def multiplication(self):
         module = self.module()
         tensor = Modules(self.base_ring()).tensor_product((module, module))
-        match module in FramedModules(self.base_ring()):
+        match module.has_selected_module_resolution():
             case True:
                 return _NativeFramedRingProductClassifierMorphism(
                     tensor.module_category().Mor(tensor, module),

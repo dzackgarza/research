@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
-    FramedModules,
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -86,9 +85,9 @@ def _scalar_extension_comparison(source, direct, iterated):
     source_ring = source.base_ring()
     target_ring = direct.base_ring()
     match (
-        source in FramedModules(source_ring),
-        direct in FramedModules(target_ring),
-        iterated in FramedModules(target_ring),
+        source.has_selected_module_resolution(),
+        direct.has_selected_module_resolution(),
+        iterated.has_selected_module_resolution(),
     ):
         case (True, True, True):
             pass
@@ -142,11 +141,11 @@ class _ScalarExtensionFunctor(Functor):
                 pass
         source_module = morphism.domain()
         target_module = morphism.codomain()
-        assert source_module in FramedModules(source_module.base_ring()), (
+        assert source_module.has_selected_module_resolution(), (
             f"scalar extension of the morphism {morphism} needs a chosen generating set of its domain "
             f"{source_module}"
         )
-        assert target_module in FramedModules(target_module.base_ring()), (
+        assert target_module.has_selected_module_resolution(), (
             f"scalar extension of the morphism {morphism} needs a chosen generating set of its codomain "
             f"{target_module}"
         )
@@ -303,7 +302,7 @@ class _CoextensionOfScalarsFunctor(Functor):
         assert scalars in Modules(ring), (
             f"Mor_R(S, -) needs S = {scalars} to be a module over R = {ring}, but it is not one"
         )
-        assert scalars in FramedModules(ring) and scalars in FinitelyGeneratedModules(ring), (
+        assert scalars.has_selected_module_resolution() and scalars in FinitelyGeneratedModules(ring), (
             f"Mor_R(S, -) is computed only for S finitely generated over R with a chosen generating set, "
             f"but {scalars} is not one over {ring}"
         )

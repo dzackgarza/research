@@ -35,6 +35,11 @@ def test_a_gram_matrix_builds_a_lattice_over_every_ring(lattice_ring) -> None:
     assert lattice in FreeModules(ring)
     assert lattice in Modules(ring)
     assert lattice.base_ring() is ring
+    assert all(
+        lattice.gram_tensor()[row, column].parent() is ring
+        for row in range(2)
+        for column in range(2)
+    )
     assert lattice.module_rank() == cardinal(2)
     assert lattice.b(e0, e1) == ring.one()
     assert lattice.b(e0, e0) == 2 * ring.one()
@@ -202,8 +207,10 @@ def test_discriminant_forms_of_integral_lattices() -> None:
     a2 = Lattices(ZZ)("A2")
     form = a2.discriminant_quadratic_form()
     bilinear = a2.discriminant_bilinear_form()
+    generator = form.module_generator(0)
     assert form.cardinality() == cardinal(3)
     assert bilinear.cardinality() == cardinal(3)
+    assert generator.q() == form.value_module()(QQ(4) / 3)
     assert form.O().order() == 2
     assert a2.discriminant_representation().domain() is a2.O()
     assert a2.discriminant_representation_is_surjective()

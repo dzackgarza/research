@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.divisors.divisor_groups import (
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
-    FramedModules,
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
@@ -40,7 +39,7 @@ class PicardGroups(Category):
         return "Picard groups"
 
     def super_categories(self):
-        return [FramedModules(_own_ring(SageZZ))]
+        return [Modules(_own_ring(SageZZ))]
 
     def _call_(self, scheme, principal_divisors):
         r"""\(\operatorname{CDiv}/\operatorname{im}(\rho)\) for the principal Cartier divisor morphism ``principal_divisors`` \(\rho\)."""

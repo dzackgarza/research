@@ -59,11 +59,11 @@ def _finite_generating_elements(module):
     the supplied unformed module's family through its existing coercion.
     No infinite family or point sample is used to infer equality.
     """
-    from dzack_research.preamble.categories.modules.pure.modules import FramedModules, TensorProductModules
+    from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
 
     ring = module.base_ring()
     match module:
-        case _ if module in FramedModules(ring) and Cardinalities().lt(module.module_generating_set().cardinality(), aleph0):
+        case _ if module.has_selected_module_resolution() and Cardinalities().lt(module.module_generating_set().cardinality(), aleph0):
             return iter(module.module_generators())
         case _ if module in TensorProductModules(ring) and module.tensor_factors().cardinality() == 2:
             left = _finite_generating_elements(module.tensor_factor(0))
@@ -173,14 +173,12 @@ def _scalar_linearity_generating_scalars(ring):
     which is what decides an infinite ring such as ``GF(q)[x]``.  Returns
     ``None`` where neither presentation is represented.
     """
-    from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
-
     elements = _enumerated_ring_elements(ring)
     if elements is not None:
         return elements
 
     base = ring.base_ring()
-    if base is ring or ring not in FramedAlgebras(base):
+    if base is ring or not ring.is_framed_algebra():
         return None
     base_elements = _enumerated_ring_elements(base)
     if base_elements is None:
@@ -237,8 +235,6 @@ class ModuleMorphism(Morphism):
         scalar_extension_functor=None,
         lift=None,
     ) -> None:
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-
         Morphism.__init__(self, parent)
         assert (scalar_extension_of is None) == (scalar_extension_functor is None), (
             f"cannot construct the base change {scalar_extension_of} along {scalar_extension_functor}: "
@@ -269,7 +265,7 @@ class ModuleMorphism(Morphism):
                 self._direct_linearity_premise = source_morphism
             images = lambda element: source_morphism(element)
             elementwise = True
-        if elementwise or domain not in FramedModules(domain.base_ring()):
+        if elementwise or not domain.has_selected_module_resolution():
             if not callable(images):
                 raise TypeError(f"cannot define a linear map {domain} -> {codomain} from {images!r}: {domain} has no chosen generators, so the map must be given as a function on elements")
             self._element_function = images
@@ -522,11 +518,9 @@ class ModuleMorphism(Morphism):
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             FramedFreeModules,
         )
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-
         domain = self.domain()
         ring = domain.base_ring()
-        if domain not in FramedModules(ring):
+        if not domain.has_selected_module_resolution():
             return None
         label_set = domain.module_generating_set()
         if not label_set.cardinality().is_finite():
@@ -1312,7 +1306,6 @@ class ModuleMorphism(Morphism):
         """
         from dzack_research.preamble.categories.modules.pure.modules import (
             FinitelyGeneratedModules,
-            FramedModules,
             RestrictedScalarsModules,
         )
 
@@ -1324,7 +1317,7 @@ class ModuleMorphism(Morphism):
             f"cannot compute a preimage under {domain} -> {codomain}: {codomain} must be a module over the fraction field of {ring} restricted to {ring}, but it is a module over {fractions}"
         )
         extension = codomain.module_over_extension()
-        assert extension in FramedModules(fractions) and extension in FinitelyGeneratedModules(fractions), (
+        assert extension.has_selected_module_resolution() and extension in FinitelyGeneratedModules(fractions), (
             f"cannot compute a preimage under {domain} -> {codomain}: the {fractions}-module {extension} must be finitely generated with chosen generators, but it is in {extension.category()}"
         )
 
@@ -1617,13 +1610,16 @@ class ModuleMorphism(Morphism):
         return codomain.module_category().Mor(codomain, quotient)(lambda label: quotient.module_generator(label))
 
     def section(self):
-        r"""Return ``s`` with ``self . s`` the identity, for an epimorphism onto a free module.
+        r"""Return ``s`` with ``self . s`` the identity when the represented codomain is projective.
 
         A section chooses one preimage of each generator of the codomain.
         Those choices assemble into a morphism exactly when the codomain is
         free on those generators, since then there is no relation for them to
-        respect: this is projectivity of a free module, and the construction
-        exhibits the splitting rather than asserting that one exists.
+        respect.  A represented finitely presented projective module over a PID
+        is first carried through its existing finite-free trivialization; this
+        is the same projectivity argument in a basis supplied by the module's
+        invariant-factor presentation, rather than an assumption that its
+        selected presentation generators are a basis.
         """
 
         self._require_established_linearity("splitting an epimorphism")
@@ -1632,13 +1628,25 @@ class ModuleMorphism(Morphism):
             f"{self.domain()} -> {codomain} has no section: a section exists only for a surjective map, and this "
             "map has nonzero cokernel"
         )
-        assert _has_finite_free_framing(codomain), (
-            f"cannot construct a section of {self.domain()} -> {codomain}: a section is built by lifting a basis, "
-            f"so {codomain} must be finitely generated free with a chosen basis, but it is in {codomain.category()}"
-        )
-        return codomain.module_category().Mor(codomain, self.domain())(
-            lambda label: self.lift(codomain.module_generator(label))
-        )
+        match codomain:
+            case _ if _has_finite_free_framing(codomain):
+                return codomain.module_category().Mor(codomain, self.domain())(
+                    lambda label: self.lift(codomain.module_generator(label))
+                )
+            case _:
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                    _SelectedFinitePresentationModules,
+                )
+
+                represented_presentations = _SelectedFinitePresentationModules(codomain.base_ring())
+                assert codomain in represented_presentations and codomain.is_projective(), (
+                    f"cannot construct a section of {self.domain()} -> {codomain}: the codomain must carry either "
+                    "a chosen finite free basis or a represented finite projective presentation, "
+                    f"but {codomain} is in {codomain.category()}"
+                )
+                trivialization = codomain.finite_free_trivialization()
+                transported = trivialization.forward() * self
+                return transported.section() * trivialization.forward()
 
     def retraction(self):
         r"""Return ``r`` with ``r . self`` the identity, for a split monomorphism.
@@ -1903,14 +1911,18 @@ class _EqualizerFactorModuleMorphism(ModuleMorphism):
 
 
 class FramingMorphism(ModuleMorphism):
-    r"""The selected framing epimorphism from a free module."""
+    r"""A constructor-selected generating epimorphism from a free module."""
 
     def __init__(self, parent, generator_morphism) -> None:
-        codomain = parent.codomain()
-        if parent.domain() is not codomain.framing_source():
-            raise ValueError(f"cannot form the projection from the free module onto the chosen generators of {codomain}: its domain must be the free module {codomain.framing_source()}, but it is {parent.domain()}")
-        if generator_morphism is not codomain.module_generator_morphism():
-            raise ValueError(f"cannot form the projection from the free module onto the chosen generators of {codomain}: it must send each basis vector to the chosen generator of {codomain}, but {generator_morphism} does not")
+        match generator_morphism.codomain() is parent.codomain():
+            case False:
+                raise ValueError(
+                    f"the generator map inducing {parent.domain()} -> {parent.codomain()} "
+                    f"must land in {parent.codomain()}, but it lands in "
+                    f"{generator_morphism.codomain()}"
+                )
+            case True:
+                pass
         super().__init__(parent, generator_morphism)
 
     def lift(self, element):
@@ -2106,23 +2118,23 @@ def _initialize_module_mor_parent(
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
-        _fix_selected_module_presentation,
+        _fix_lazy_selected_module_presentation,
     )
     from dzack_research.preamble.categories.modules.pure.modules import (
         MatrixSpaces,
-        _fix_selected_module_framing,
+        _fix_selected_module_resolution,
         _matrix_unit,
     )
 
-    # Fix all chosen data before the mixed Sage Mor is initialized and then
-    # refined into its owned enrichment.  The generator-map callables below are
-    # representations of those fixed data and are evaluated only after the
-    # parent exists; no accessor can choose another framing or presentation.
+    # Fix the choice of every selected resolution before the mixed Sage Mor is
+    # initialized and refined.  A represented internal-Hom presentation is
+    # endpoint-determined but potentially expensive, so its factory is fixed
+    # here and its model is realized only on the first module-data read.
     match placement:
         case _ if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
             # ``Hom_R(F_R(S), F_R(T))`` is free on the matrix units ``T x S``.
             labels = codomain.module_generating_set().product_with(domain.module_generating_set())
-            _fix_selected_module_framing(
+            _fix_selected_module_resolution(
                 parent,
                 ring,
                 labels,
@@ -2130,28 +2142,27 @@ def _initialize_module_mor_parent(
                 ring._fresh_free_module_on(labels),
             )
         case _ if placement.is_subcategory(_SelectedFinitePresentationModules(ring)):
-            # ``Hom_R(M, N)`` between presented modules is presented by the
-            # model its endpoints determine (see ``internal_mor``).
-            from dzack_research.preamble.categories.modules.internal_mor import (
-                _internal_mor_model_data_from_endpoints,
-            )
+            def selected_presentation_data():
+                from dzack_research.preamble.categories.modules.internal_mor import (
+                    _internal_mor_model_data_from_endpoints,
+                )
 
-            model, _inclusion, relation_matrix, presentation = _internal_mor_model_data_from_endpoints(
-                domain,
-                codomain,
-            )
-            _fix_selected_module_framing(
+                model, _inclusion, relation_matrix, presentation = _internal_mor_model_data_from_endpoints(
+                    domain,
+                    codomain,
+                )
+                labels = model.module_generating_set()
+                generator_morphism = Sets().Mor(labels, parent)(
+                    lambda label: parent._morphism_from_internal_model(
+                        model.module_generator(label)
+                    )
+                )
+                return relation_matrix, presentation, labels, generator_morphism
+
+            _fix_lazy_selected_module_presentation(
                 parent,
                 ring,
-                model.module_generating_set(),
-                lambda label: parent._morphism_from_internal_model(model.module_generator(label)),
-                model.framing_source(),
-            )
-            _fix_selected_module_presentation(
-                parent,
-                ring,
-                relation_matrix,
-                presentation,
+                selected_presentation_data,
             )
 
     CategoricalMor.__init__(
@@ -2382,21 +2393,39 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def presentation_matrix(self):
         r"""Return the relation rows of the presented model of this Mor module."""
-        from dzack_research.preamble.categories.modules.internal_mor import (
-            _internal_mor_model_data,
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _SelectedFinitePresentationModules,
         )
 
-        _model, _inclusion, relation_matrix, _presentation = _internal_mor_model_data(self)
-        return relation_matrix
+        match self in _SelectedFinitePresentationModules(self.base_ring()):
+            case True:
+                self.selected_module_resolution()
+                return self._selected_module_presentation.relation_matrix()
+            case False:
+                from dzack_research.preamble.categories.modules.internal_mor import (
+                    _internal_mor_model_data,
+                )
+
+                _model, _inclusion, relation_matrix, _presentation = _internal_mor_model_data(self)
+                return relation_matrix
 
     def presentation(self):
         r"""Return the presentation of the presented model of this Mor module."""
-        from dzack_research.preamble.categories.modules.internal_mor import (
-            _internal_mor_model_data,
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _SelectedFinitePresentationModules,
         )
 
-        _model, _inclusion, _relation_matrix, presentation = _internal_mor_model_data(self)
-        return presentation
+        match self in _SelectedFinitePresentationModules(self.base_ring()):
+            case True:
+                selected = self.selected_module_resolution()
+                return selected.differential(1)
+            case False:
+                from dzack_research.preamble.categories.modules.internal_mor import (
+                    _internal_mor_model_data,
+                )
+
+                _model, _inclusion, _relation_matrix, presentation = _internal_mor_model_data(self)
+                return presentation
 
     def linear_combination(self, coefficients):
         result = self.zero()
@@ -2450,11 +2479,9 @@ class SubFramingMorphism(ModuleEmbedding):
         )
 
 
-def _framing_morphism(codomain) -> FramingMorphism:
-    domain = codomain.framing_source()
+def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
     mor = domain.module_category().Mor(domain, codomain)
-    framing = FramingMorphism(mor, codomain.module_generator_morphism())
-    return framing
+    return FramingMorphism(mor, generator_morphism)
 
 
 class TensorProductModuleMorphism(ModuleMorphism):
@@ -2824,9 +2851,7 @@ class TensorProductModuleMor(ModuleMor):
                 return False
 
     def _element_constructor_(self, images):
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-
-        if self.domain() not in FramedModules(self.domain().base_ring()):
+        if not self.domain().has_selected_module_resolution():
             if self._is_two_argument_callable(images):
                 return self.domain().from_bilinear_map(self.codomain(), images)
             return super()._element_constructor_(images)
@@ -2835,6 +2860,20 @@ class TensorProductModuleMor(ModuleMor):
         left_labels = left.module_generating_set()
         right_labels = right.module_generating_set()
 
+        from dzack_research.preamble.tensors.tensor import (
+            Tensor,
+            _covariant_bilinear_coordinate_rows,
+        )
+
+        match images:
+            case Tensor():
+                images = _covariant_bilinear_coordinate_rows(
+                    images,
+                    left_labels.cardinality(),
+                    right_labels.cardinality(),
+                )
+            case _:
+                pass
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             raw_family = images

@@ -146,6 +146,18 @@ class ChamberSystems(OwnedCategory):
 
     _MorCategory = ChamberSystemMorCategoryConstruction
 
+    class ParentMethods:
+        def Mor(self, codomain, category=None):
+            r"""Return the type- and adjacency-preserving Mor into ``codomain``.
+
+            Naming a coarser category is the explicit request to forget chamber
+            structure, as in ``X.Mor(Y, category=Sets())``.
+            """
+            chamber_systems = ChamberSystems()
+            if category is None or category.is_subcategory(chamber_systems):
+                return chamber_systems.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
+
     def super_categories(self):
         return [Sets()]
 

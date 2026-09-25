@@ -67,7 +67,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
-    _fix_selected_framing,
+    _fix_selected_resolution,
 )
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
@@ -604,20 +604,6 @@ def _computed_finitely_presented_engine(group):
             assert False, f"no finite presentation of {group} can be computed: this is available only for permutation groups, finite abelian groups, and finite matrix groups"
 
 
-class _SelectedGroupPresentation:
-    r"""The chosen free source and relators defining one presented group."""
-
-    def __init__(self, free_group, relations) -> None:
-        self._free_group = free_group
-        self._relations = relations
-
-    def free_group(self):
-        return self._free_group
-
-    def relations(self):
-        return self._relations
-
-
 def _group_framing_morphism(group, source, labels, generator_morphism):
     r"""Realize one selected set-of-generators map as the induced group morphism."""
     assert source.free_basis() is labels, (
@@ -626,41 +612,62 @@ def _group_framing_morphism(group, source, labels, generator_morphism):
     return source.Mor(group)(generator_morphism)
 
 
-def _fix_selected_group_framing(group, *, free_basis=None) -> None:
-    r"""Retain one chosen free-source epimorphism."""
+def _fix_selected_group_resolution_data(
+    group,
+    source,
+    labels,
+    generator_morphism,
+    *,
+    replace=False,
+) -> None:
+    r"""Retain one explicit free-group augmentation as truncation-zero data."""
+
+    def selected_resolution():
+        from dzack_research.preamble.categories.abstract_categories.resolutions import (
+            Resolutions,
+        )
+
+        augmentation = _group_framing_morphism(
+            group, source, labels, generator_morphism
+        )
+        free = GroupsWithChosenFreeBasis()
+        return Resolutions(OwnedGroups(), free, 0, free).selected_degree_zero(
+            group,
+            source,
+            augmentation,
+            generating_set=labels,
+            generator_morphism=generator_morphism,
+        )
+
+    _fix_selected_resolution(
+        group,
+        OwnedGroups(),
+        selected_resolution,
+        replace=replace,
+    )
+
+
+def _fix_selected_group_resolution(group, *, free_basis=None) -> None:
+    r"""Retain one chosen degree-zero free-group resolution."""
     if free_basis is not None:
         source = group
         labels = free_basis
         generator_morphism = Sets().Mor(labels, group)(group.free_generator)
-        _fix_selected_framing(
-            group,
-            OwnedGroups(),
-            lambda: source,
-            labels,
-            lambda: generator_morphism,
-            lambda: _group_framing_morphism(
-                group, source, labels, generator_morphism
-            ),
+        _fix_selected_group_resolution_data(
+            group, source, labels, generator_morphism
         )
         return
 
     generators = _engine_generators(group)
     source = Groups.Free(index_set=generators)
     generator_morphism = Sets().Mor(generators, group)(lambda generator: group(generator))
-    _fix_selected_framing(
-        group,
-        OwnedGroups(),
-        lambda: source,
-        generators,
-        lambda: generator_morphism,
-        lambda: _group_framing_morphism(
-            group, source, generators, generator_morphism
-        ),
+    _fix_selected_group_resolution_data(
+        group, source, generators, generator_morphism
     )
 
 
 def _fix_selected_group_presentation(group, source, relations) -> None:
-    r"""Install one constructor-selected presentation and its exact framing."""
+    r"""Install one constructor-selected presentation as a truncation-one resolution."""
     labels = source.free_basis()
     generators = _engine_generators(group)
     assert generators.cardinality() == labels.cardinality(), (
@@ -671,17 +678,64 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
     generator_morphism = Sets().Mor(labels, group)(
         lambda label: generators[int(ranking(label))]
     )
-    _fix_selected_framing(
+    selected_relations = finite_ordered_set(tuple(relations))
+
+    def selected_resolution():
+        relation_labels = finite_ordinal_set(int(selected_relations.cardinality()))
+        degree_one_labels = finite_ordered_set(
+            tuple(("generator", label) for label in labels)
+            + tuple(("relation", index) for index in relation_labels)
+        )
+        degree_one = Groups.Free(index_set=degree_one_labels)
+        relation_source = Groups.Free(index_set=relation_labels)
+
+        def first_face_value(tagged):
+            match tagged[0]:
+                case "generator":
+                    return source.free_generator(tagged[1])
+                case "relation":
+                    return source.one()
+
+        def second_face_value(tagged):
+            match tagged[0]:
+                case "generator":
+                    return source.free_generator(tagged[1])
+                case "relation":
+                    return selected_relations[int(tagged[1])]
+
+        first_face = degree_one.Mor(source)(
+            Sets().Mor(degree_one_labels, source)(first_face_value)
+        )
+        second_face = degree_one.Mor(source)(
+            Sets().Mor(degree_one_labels, source)(second_face_value)
+        )
+        degeneracy = source.Mor(degree_one)(
+            Sets().Mor(labels, degree_one)(
+                lambda label: degree_one.free_generator(("generator", label))
+            )
+        )
+        augmentation = _group_framing_morphism(
+            group, source, labels, generator_morphism
+        )
+        return OwnedGroups().FinitelyPresentedAsGroup().resolution_category().selected_presentation(
+            group,
+            source,
+            degree_one,
+            augmentation,
+            first_face,
+            second_face,
+            degeneracy,
+            generating_set=labels,
+            generator_morphism=generator_morphism,
+            relation_source=relation_source,
+            relations=selected_relations,
+        )
+
+    _fix_selected_resolution(
         group,
         OwnedGroups(),
-        lambda: source,
-        labels,
-        lambda: generator_morphism,
-        lambda: _group_framing_morphism(group, source, labels, generator_morphism),
-    )
-    group._selected_group_presentation = _SelectedGroupPresentation(
-        source,
-        finite_ordered_set(tuple(relations)),
+        selected_resolution,
+        replace=True,
     )
 
 
@@ -789,7 +843,6 @@ def _owned_group_category(engine) -> Category:
         (_is_abelian_witness(engine), OwnedGroups().Commutative()),
         (_is_finitely_generated_witness(engine), OwnedGroups().FinitelyGeneratedAsMagma()),
         (_is_finitely_presented_witness(engine), OwnedGroups().FinitelyPresentedAsGroup()),
-        (_has_chosen_generators(engine), OwnedGroups().Framed()),
         (_has_chosen_presentation(engine), GroupsWithChosenFinitePresentation()),
         (_encodes_as_permutations(engine), PermutationGroups()),
     )
@@ -890,9 +943,9 @@ class _GroupEngine:
         if supergroup is not self:
             return f"Subgroup of {supergroup}"
         match self:
-            case _ if self in GroupsWithChosenFiniteGeneratingSet() and self in OwnedFiniteGroups():
+            case _ if self.has_selected_group_resolution() and self in OwnedFiniteGroups():
                 return f"Group of order {self.cardinality()} generated by {self.group_generators()}"
-            case _ if self in GroupsWithChosenFiniteGeneratingSet():
+            case _ if self.has_selected_group_resolution():
                 return f"Group generated by {self.group_generators()}"
             case _:
                 return f"Group in {self.category()}"
@@ -902,7 +955,7 @@ class _GroupEngine:
             escaped = self._description.replace("_", r"\_")
             return rf"\text{{{escaped}}}"
         match self:
-            case _ if self in GroupsWithChosenFiniteGeneratingSet():
+            case _ if self.has_selected_group_resolution():
                 count = self.group_generators().cardinality()
                 return rf"\langle g_1,\ldots,g_{{{count}}}\rangle"
             case _:
@@ -1085,7 +1138,7 @@ def _own_group(
             else:
                 owned = _object_of(
                     Cat().meet(
-                        (*placement, GroupsWithChosenFreeBasis(), OwnedGroups().Framed())
+                        (*placement, GroupsWithChosenFreeBasis())
                     ),
                     _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
                     engine=group,
@@ -1094,9 +1147,9 @@ def _own_group(
                     **presentation_data,
                 )
             if free_basis is not None and not _has_chosen_presentation(group):
-                _fix_selected_group_framing(owned, free_basis=free_basis)
+                _fix_selected_group_resolution(owned, free_basis=free_basis)
             elif not _has_chosen_presentation(group) and _has_chosen_generators(group):
-                _fix_selected_group_framing(owned)
+                _fix_selected_group_resolution(owned)
             return owned
 
 
@@ -1311,8 +1364,12 @@ def _Euclidean(degree, ring):
 def _Heisenberg(degree=1, ring=0):
     from sage.groups.matrix_gps.catalog import Heisenberg
 
-    scalar_ring = ring if ring == 0 else _engine_ring(ring)
-    return _own_group(Heisenberg(_group_constructor_argument(degree), scalar_ring))
+    return _own_group(
+        Heisenberg(
+            _group_constructor_argument(degree),
+            _group_constructor_argument(ring),
+        )
+    )
 
 
 def _SemimonomialTransformation(ring, degree):
@@ -1824,7 +1881,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
     def _from_group_generator_images(self, images, check=True):
         domain = self.domain()
         codomain = self.codomain()
-        if domain not in OwnedGroups().Framed():
+        if not domain.has_selected_group_resolution():
             raise TypeError(
                 f"a homomorphism out of {domain} cannot be given by images of generators: {domain} has no chosen generating set"
             )
@@ -1984,7 +2041,7 @@ class GroupAutomorphismGroup(GroupMor):
     def __init__(self, mor_family, group):
         categories = [GroupAutomorphismGroups()]
         if group.is_finite() is True:
-            categories.extend((OwnedFiniteGroups(), OwnedGroups().Framed()))
+            categories.append(OwnedFiniteGroups())
         GroupMor.__init__(
             self,
             mor_family,
@@ -1999,15 +2056,8 @@ class GroupAutomorphismGroup(GroupMor):
             )
             source = Groups.Free(index_set=generators)
             generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
-            _fix_selected_framing(
-                self,
-                OwnedGroups(),
-                lambda: source,
-                generators,
-                lambda: generator_morphism,
-                lambda: _group_framing_morphism(
-                    self, source, generators, generator_morphism
-                ),
+            _fix_selected_group_resolution_data(
+                self, source, generators, generator_morphism
             )
 
     def super_categories(self):
@@ -2562,6 +2612,57 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return CyclicGroups()(self)
 
     class ParentMethods:
+        def has_selected_group_resolution(self) -> bool:
+            return self.has_selected_resolution(OwnedGroups())
+
+        def has_selected_finite_group_generating_set(self) -> bool:
+            r"""Whether the selected group resolution has finitely many degree-zero generators."""
+            match self.has_selected_group_resolution():
+                case False:
+                    return False
+                case True:
+                    return bool(
+                        self.selected_group_resolution()
+                        .generating_set()
+                        .cardinality()
+                        .is_finite()
+                    )
+
+        def selected_group_resolution(self):
+            return self.selected_resolution(OwnedGroups())
+
+        def group_generating_set(self):
+            return self.selected_group_resolution().generating_set()
+
+        def group_generator_morphism(self):
+            return self.selected_group_resolution().generator_morphism()
+
+        def group_generator(self, label):
+            return self.selected_group_resolution().generator(label)
+
+        def group_generators(self):
+            return self.selected_group_resolution().generators(
+                name="Group generators"
+            )
+
+        def number_of_group_generators(self):
+            return self.selected_group_resolution().generator_count()
+
+        def conjugation_morphism(self):
+            r"""The morphism ``G -> Aut(G)`` stated on the selected generators."""
+            automorphisms = self.Aut()
+            model = _gap_model(self)
+            images = {
+                generator: automorphisms(
+                    libgap.ConjugatorAutomorphism(
+                        model,
+                        _element_to_engine(self, generator),
+                    )
+                )
+                for generator in self.group_generators()
+            }
+            return self.Mor(automorphisms)(images)
+
         @cached_method
         def classifying_category(self):
             r"""Return ``BG``, with one object and this group's elements as arrows."""
@@ -2664,7 +2765,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             a generic graph traversal.
             """
             if generators is None:
-                assert self in OwnedGroups().Framed(), (
+                assert self.has_selected_group_resolution(), (
                     f"the image of {self} under {image} cannot be enumerated: {self} has no chosen generating set; "
                     f"pass generators explicitly"
                 )
@@ -3078,34 +3179,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             def is_finite(self):
                 return False
 
-    class Framed(CategoryWithAxiom):
-        r"""Groups carrying the global selected-framing datum in ``Grp``."""
-
-        class ParentMethods:
-            def group_generators(self):
-                return self.selected_framing_generators(
-                    OwnedGroups(),
-                    name="Group generators",
-                )
-
-            def number_of_group_generators(self):
-                return self.selected_framing_generator_count(OwnedGroups())
-
-            def conjugation_morphism(self):
-                r"""The morphism ``G -> Aut(G)`` stated on the selected framing generators."""
-                automorphisms = self.Aut()
-                model = _gap_model(self)
-                images = {
-                    generator: automorphisms(
-                        libgap.ConjugatorAutomorphism(
-                            model,
-                            _element_to_engine(self, generator),
-                        )
-                    )
-                    for generator in self.group_generators()
-                }
-                return self.Mor(automorphisms)(images)
-
     class FinitelyGeneratedAsMagma(CategoryWithAxiom):
         r"""Groups admitting some finite generating set."""
 
@@ -3116,6 +3189,22 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         @classmethod
         def _repr_object_names(cls):
             return "finitely generated groups"
+
+        @cached_method
+        def resolution_category(self):
+            from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                Resolutions,
+            )
+
+            free = GroupsWithChosenFreeBasis()
+            finite_free = Cat().meet(
+                (free, OwnedGroups().FinitelyGeneratedAsMagma())
+            )
+            return Resolutions(OwnedGroups(), free, 0, finite_free)
+
+        @cached_method
+        def resolution_classifier(self):
+            return self.resolution_category().target_functor()
 
         class ParentMethods:
             def is_finitely_generated(self):
@@ -3135,6 +3224,22 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def extra_super_categories(self) -> list[Category]:
             r"""The generating set of a finite presentation is finite."""
             return [OwnedGroups().FinitelyGeneratedAsMagma()]
+
+        @cached_method
+        def resolution_category(self):
+            from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                Resolutions,
+            )
+
+            free = GroupsWithChosenFreeBasis()
+            finite_free = Cat().meet(
+                (free, OwnedGroups().FinitelyGeneratedAsMagma())
+            )
+            return Resolutions(OwnedGroups(), free, 1, finite_free)
+
+        @cached_method
+        def resolution_classifier(self):
+            return self.resolution_category().target_functor()
 
         class ParentMethods:
             def is_finitely_presented(self):
@@ -3171,11 +3276,6 @@ class TopologicalGroups(OwnedCategory):
     class ParentMethods:
         def is_topological_group(self) -> bool:
             return True
-
-
-def GroupsWithChosenFiniteGeneratingSet():
-    r"""The global ``Framed`` axiom specialized to owned groups."""
-    return OwnedGroups().Framed()
 
 
 class GroupsWithChosenFreeBasis(OwnedCategory):
@@ -3281,7 +3381,6 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
     def super_categories(self):
         return [
             OwnedGroups().FinitelyPresentedAsGroup(),
-            OwnedGroups().Framed(),
         ]
 
     class ParentMethods:
@@ -3305,7 +3404,7 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             if selected_source_group is self:
                 pass
             else:
-                if selected_source_group not in OwnedGroups().Framed():
+                if not selected_source_group.has_selected_group_resolution():
                     raise ValueError(
                         f"{self} cannot be a finite presentation of {selected_source_group}: "
                         f"{selected_source_group} has no chosen generating set to match the presentation's generators"
@@ -3320,23 +3419,27 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
             self._presentation_source_group = selected_source_group
 
         def presenting_free_group(self):
-            selected = self._selected_group_presentation
-            assert selected is not None, (
-                f"{self} has no chosen finite presentation, so it has no presenting free group"
-            )
-            assert selected.free_group() is self.selected_framing_source(OwnedGroups()), (
-                f"the presentation of {self} is on the free group {selected.free_group()}, but the chosen generating set "
-                f"of {self} is indexed by a different free group; the two must agree"
-            )
-            return selected.free_group()
+            selected = self.selected_group_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected.level(0)
+                case _:
+                    raise TypeError(
+                        f"{self} has no chosen finite presentation: its selected group resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
 
         def defining_relations(self):
             r"""The chosen relators, as elements of the presenting free group."""
-            selected = self._selected_group_presentation
-            assert selected is not None, (
-                f"{self} has no chosen finite presentation, so it has no defining relations"
-            )
-            return selected.relations()
+            selected = self.selected_group_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected.relations()
+                case _:
+                    raise TypeError(
+                        f"{self} has no chosen finite presentation: its selected group resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
 
         def presentation_source_group(self):
             r"""Return the exact group for which this presentation was selected."""
@@ -3411,7 +3514,7 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
 
         def is_commutative(self):
             r"""``End(A)`` commutes when ``A`` is cyclic; a group on one generator is, and otherwise this is not decided here."""
-            if self._group not in OwnedGroups().Framed():
+            if not self._group.has_selected_group_resolution():
                 return Unknown
             generators = self._group.group_generators().cardinality()
             if generators.is_finite() and int(generators.finite_value()) <= 1:
@@ -3502,7 +3605,7 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
         return self.base().subgroup(())
 
     def super_categories(self):
-        return [Subgroups(self.base()), OwnedGroups().Framed()]
+        return [Subgroups(self.base())]
 
     @classmethod
     def _repr_object_names(cls):
@@ -3515,15 +3618,8 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
             labels = selected_subgroup_generators
             source = Groups.Free(index_set=labels)
             generator_morphism = Sets().Mor(labels, self)(lambda generator: self(generator))
-            _fix_selected_framing(
-                self,
-                OwnedGroups(),
-                lambda: source,
-                labels,
-                generator_morphism,
-                lambda: _group_framing_morphism(
-                    self, source, labels, generator_morphism
-                ),
+            _fix_selected_group_resolution_data(
+                self, source, labels, generator_morphism
             )
 
         def selected_subgroup_generators(self):

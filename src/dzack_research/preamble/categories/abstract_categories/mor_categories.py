@@ -253,6 +253,7 @@ def _fixed_mor_arrow_object(
     return _object_of(
         Category.join((arrows, category)),
         functor=represented.functor(),
+        fixed_mor_category=category,
     )
 
 
@@ -277,6 +278,133 @@ class MorArrowIdentity(Morphism):
         if other not in self.parent():
             return NotImplemented
         return self.parent().identity()
+
+
+class _DiscreteTwoMorConstructions:
+    r"""Universal constructions shared by fixed categories with only identity 2-morphisms."""
+
+    def object_set(self) -> SetObject:
+        r"""Return the represented arrows which are the objects of this fixed category."""
+        return self.arrow_set()
+
+    def objects(self) -> IndexedFamily:
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+        arrows = self.object_set()
+        return indexed_family(
+            arrows,
+            self.object,
+            name=f"Arrow objects of {self}",
+        )
+
+    def _require_discrete_two_morphisms(self) -> None:
+        r"""State the hypothesis under which this fixed category is discrete."""
+        if self._MorCategory is not _DiscreteTwoMorCategoryOf:
+            raise TypeError(
+                f"the fixed Mor category {self} has represented nonidentity 2-morphisms, so its universal "
+                "constructions are not the discrete fixed-Mor construction"
+            )
+
+    @cached_method
+    def arrows(self) -> IndexedFamily:
+        r"""Return the object-indexed family of identity 2-morphisms on the discrete route."""
+        self._require_discrete_two_morphisms()
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+        objects = self.objects()
+        return indexed_family(
+            self.object_set(),
+            lambda arrow: self.identity_2(objects.value(arrow)),
+            name=f"2-morphisms of {self}",
+        )
+
+    def product(self, factors):
+        r"""Return the finite product when this fixed category has discrete 2-morphisms."""
+        self._require_discrete_two_morphisms()
+        return self._categorical_product_construction(factors).object()
+
+    def coproduct(self, factors):
+        r"""Return the finite coproduct when this fixed category has discrete 2-morphisms."""
+        self._require_discrete_two_morphisms()
+        return self._categorical_coproduct_construction(factors).object()
+
+    def _categorical_product(self, left, right):
+        return self.product((left, right))
+
+    def _categorical_coproduct(self, left, right):
+        return self.coproduct((left, right))
+
+    def _categorical_product_construction(self, factors):
+        self._require_discrete_two_morphisms()
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _discrete_product_construction,
+        )
+
+        return _discrete_product_construction(self, factors)
+
+    def _categorical_coproduct_construction(self, factors):
+        self._require_discrete_two_morphisms()
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _discrete_coproduct_construction,
+        )
+
+        return _discrete_coproduct_construction(self, factors)
+
+    def _categorical_equalizer(self, left_morphism, right_morphism):
+        return self._categorical_equalizer_construction(
+            left_morphism,
+            right_morphism,
+        ).object()
+
+    def _categorical_equalizer_construction(self, left_morphism, right_morphism):
+        self._require_discrete_two_morphisms()
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _discrete_equalizer_construction,
+        )
+
+        return _discrete_equalizer_construction(self, left_morphism, right_morphism)
+
+    def _categorical_coequalizer(self, left_morphism, right_morphism):
+        return self._categorical_coequalizer_construction(
+            left_morphism,
+            right_morphism,
+        ).object()
+
+    def _categorical_coequalizer_construction(self, left_morphism, right_morphism):
+        self._require_discrete_two_morphisms()
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _discrete_coequalizer_construction,
+        )
+
+        return _discrete_coequalizer_construction(self, left_morphism, right_morphism)
+
+    def _categorical_equalizer_family(self, morphisms):
+        self._require_discrete_two_morphisms()
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _nonempty_discrete_morphism_family_reference,
+        )
+
+        return _nonempty_discrete_morphism_family_reference(self, morphisms).domain()
+
+    def _categorical_coequalizer_family(self, morphisms):
+        self._require_discrete_two_morphisms()
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _nonempty_discrete_morphism_family_reference,
+        )
+
+        return _nonempty_discrete_morphism_family_reference(self, morphisms).codomain()
+
+    def _categorical_product_morphism(
+        self,
+        left_morphism,
+        right_morphism,
+        source,
+        target,
+    ):
+        self._require_discrete_two_morphisms()
+        return self.Mor(source, target).identity()
+
+    _categorical_coproduct_morphism = _categorical_product_morphism
 
 
 class CategoricalMor(CategoryPacketMethods, OwnedMor, Category):
@@ -569,7 +697,7 @@ class MorArrowDiscreteMor(CategoricalMor):
         return self()
 
 
-class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
+class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, OwnedCategoryBase):
     r"""The category ``Hom_C(A,B)`` of arrows with fixed endpoints.
 
     Its objects are the objects of ``Ar(C)`` lying over ``(A, B)``; it owns
@@ -609,6 +737,22 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
     def category(self) -> Category:
         r"""A fixed Mor category is placed in ``MorCategories``, below ``Cat``."""
         return MorCategories()
+
+    class ParentMethods:
+        r"""An arrow, regarded as an object of one fixed Mor category."""
+
+        def __init__(self, fixed_mor_category, **rest) -> None:
+            self._fixed_mor_category = fixed_mor_category
+            super().__init__(**rest)
+
+        def Mor(self, codomain):
+            r"""Return the represented 2-Mor to ``codomain``.
+
+            The fixed Mor itself owns which 2-morphisms are represented:
+            ordinary fixed Mors are discrete, while specializations such as
+            functor categories may declare genuine natural transformations.
+            """
+            return self._fixed_mor_category.Mor(self, codomain)
 
     def _make_named_class_key(self, name):
         return (self._family, id(self._domain_object), id(self._codomain_object))
@@ -737,16 +881,6 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
     def __contains__(self, candidate: Any) -> bool:
         return Category.__contains__(self, candidate)
 
-    def objects(self) -> IndexedFamily:
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
-        arrows = self.arrow_set()
-        return indexed_family(
-            arrows,
-            self,
-            name=f"Arrow objects of {self}",
-        )
-
     def Mor(
         self,
         domain: Parent | Morphism,
@@ -799,6 +933,13 @@ class FixedEndCategory(FixedMorCategory):
 
 
 class FixedRestrictedMorCategory(FixedMorCategory):
+    @cached_method
+    def object_set(self) -> SetObject:
+        r"""Return the subobject of the underlying Mor cut out by this restriction."""
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        return Sets().condition_set(self.arrow_set(), self.accepts)
+
     def arrow_set(self) -> SetObject:
         r"""Return the existing ``Mor`` parent for these endpoints.
 

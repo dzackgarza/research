@@ -88,6 +88,14 @@ def test_the_inverse_pairing_has_the_inverse_gram_matrix() -> None:
     assert pairing.dual_tensor() == algebra.graded_piece((2, 0))([[1, -1], [-1, 2]])
 
 
+def test_the_dual_pairing_is_covariant_on_the_dual_module() -> None:
+    r"""The inverse matrix is contravariant on $M$ and covariant when read as the induced pairing on $M^*$."""
+    plane = QQ.free_module(2)
+    pairing = plane.mixed_tensor_algebra().graded_piece((0, 2))([[2, 1], [1, 1]])
+
+    assert pairing.dual_pairing() == tensor(QQ, (), (2, 2), [[1, -1], [-1, 2]])
+
+
 def test_the_inverse_pairing_raises_an_index() -> None:
     r"""Raising `c = (3, 5)` with `b^{-1}` gives `v = (3 - 5, -3 + 10) = (-2, 7)`, and
     lowering `v` with `b` returns `c`."""

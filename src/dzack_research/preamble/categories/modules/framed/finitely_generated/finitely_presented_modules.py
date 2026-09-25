@@ -20,6 +20,9 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    _fix_selected_resolution,
+)
 from dzack_research.preamble.categories.modules.base_change import _base_change_scalar
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
@@ -27,7 +30,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
-    FramedModules,
     VectorSpaces,
     _biproduct_label,
     _engine_matrix,
@@ -146,8 +148,8 @@ def _matrix_space_like(module, nrows, ncols):
     return source.module_category().Mor(source, target)
 
 
-class _SelectedModulePresentationData:
-    r"""The fixed relation arrow and coordinate realization of one chosen presentation."""
+class _SelectedModulePresentationBackend:
+    r"""Coordinate/backend data derived from one selected module resolution."""
 
     def __init__(self, base_ring, relation_matrix, presentation, cokernel_morphism=None) -> None:
         if presentation.domain().base_ring() is not base_ring or presentation.codomain().base_ring() is not base_ring:
@@ -198,35 +200,123 @@ class _SelectedModulePresentationData:
                     f"but its matrix row gives {represented}"
                 )
         self._relation_matrix = relation_matrix
-        self._presentation = presentation
         self._cokernel_morphism = cokernel_morphism
 
     def relation_matrix(self):
         return self._relation_matrix
-
-    def presentation(self):
-        return self._presentation
 
     def cokernel_morphism(self):
         return self._cokernel_morphism
 
 
 def _fix_selected_module_presentation(module, base_ring, relation_matrix, presentation, cokernel_morphism=None) -> None:
-    r"""Fix one chosen presentation at the presented-module owner.
+    r"""Promote the selected module resolution to the chosen finite presentation.
 
-    Protected module-storage contract under OWN-05. The permitted caller roles
-    are this module constructor, the derivation-module constructor, and the
-    represented morphism-kernel/cokernel constructor. They provide the owned
-    module, relation matrix and presentation morphism; downstream consumers
-    read them through the presentation operations rather than this storage.
+    The relation matrix and optional source cokernel morphism are retained only
+    as computational backend data.  The mathematical presentation itself is
+    the truncation-one resolution stored by ``Objects`` relative to ``R-Mod``.
     """
     if module._selected_module_presentation is not None:
         raise ValueError(f"{module} already has chosen generators and relations; they are fixed once")
-    module._selected_module_presentation = _SelectedModulePresentationData(
+    degree_zero = module.selected_module_resolution()
+    match degree_zero.truncation():
+        case 0:
+            pass
+        case _:
+            raise ValueError(
+                f"{module} already carries a selected module resolution through degree "
+                f"{degree_zero.truncation()}; its finite presentation cannot be fixed a second time"
+            )
+    match degree_zero.level(0) is presentation.codomain():
+        case False:
+            raise ValueError(
+                f"the relation map of {module} must land in its selected degree-zero free module "
+                f"{degree_zero.level(0)}, but it lands in {presentation.codomain()}"
+            )
+        case True:
+            pass
+    resolution_category = Modules(base_ring).FinitelyPresented().resolution_category()
+
+    def selected_resolution():
+        return resolution_category.selected_presentation(
+            module,
+            presentation,
+            degree_zero.augmentation(),
+            generating_set=degree_zero.generating_set(),
+            generator_morphism=degree_zero.generator_morphism(),
+        )
+
+    _fix_selected_resolution(
+        module,
+        Modules(base_ring),
+        selected_resolution,
+        replace=True,
+    )
+    module._selected_module_presentation = _SelectedModulePresentationBackend(
         base_ring,
         relation_matrix,
         presentation,
         cokernel_morphism,
+    )
+
+
+def _fix_lazy_selected_module_presentation(module, base_ring, realization_factory) -> None:
+    r"""Fix one endpoint-determined finite presentation without realizing it.
+
+    The factory is selected during construction but is not evaluated until the
+    chosen module resolution is first read.  It returns the relation matrix,
+    relation morphism, generating set and generator morphism of that fixed
+    presentation.  Thus the mathematical choice is made before exposure while
+    its computational model remains lazy.
+    """
+    match module._selected_module_presentation:
+        case None:
+            pass
+        case _:
+            raise ValueError(
+                f"{module} already has chosen generators and relations; they are fixed once"
+            )
+    match callable(realization_factory):
+        case True:
+            pass
+        case False:
+            raise TypeError(
+                f"a lazy selected presentation needs a zero-argument construction, "
+                f"but {realization_factory!r} is not callable"
+            )
+
+    resolution_category = Modules(base_ring).FinitelyPresented().resolution_category()
+
+    def selected_resolution():
+        relation_matrix, presentation, generating_set, generator_morphism = realization_factory()
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            _framing_morphism,
+        )
+
+        backend = _SelectedModulePresentationBackend(
+            base_ring,
+            relation_matrix,
+            presentation,
+        )
+        augmentation = _framing_morphism(
+            module,
+            presentation.codomain(),
+            generator_morphism,
+        )
+        resolution = resolution_category.selected_presentation(
+            module,
+            presentation,
+            augmentation,
+            generating_set=generating_set,
+            generator_morphism=generator_morphism,
+        )
+        module._selected_module_presentation = backend
+        return resolution
+
+    _fix_selected_resolution(
+        module,
+        Modules(base_ring),
+        selected_resolution,
     )
 
 
@@ -284,6 +374,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             cokernel_morphism=None,
             **rest,
         ) -> None:
+            super().__init__(**rest)
             _fix_selected_module_presentation(
                 self,
                 presentation.codomain().base_ring(),
@@ -291,12 +382,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 presentation,
                 cokernel_morphism,
             )
-            super().__init__(**rest)
-            if self.selected_framing_source(Modules(self.base_ring())) is not presentation.codomain():
-                raise ValueError(
-                    f"{self}: the codomain {presentation.codomain()} of the relation map "
-                    "must be the free module on its chosen generators"
-                )
 
         def _same_selected_presentation_as(self, other):
             r"""Return whether ``other`` is a module with the same selected presentation over this ring."""
@@ -557,11 +642,15 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation(self):
             r"""Return the selected relation morphism ``F_1 -> F_0``."""
-            selected = self._selected_module_presentation
-            assert selected is not None, (
-                f"{self} has no relation map F_1 -> F_0: it was not constructed from generators and relations"
-            )
-            return selected.presentation()
+            selected = self.selected_module_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected.differential(1)
+                case _:
+                    raise TypeError(
+                        f"{self} has no selected relation map F_1 -> F_0: its chosen module resolution "
+                        f"is truncated in degree {selected.truncation()}"
+                    )
 
         def presentation_matrix(self):
             r"""Return its relation rows in the selected target framing."""
@@ -1437,13 +1526,15 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def presentation_projection(self):
             r"""Return the selected quotient map ``F_0 -> M``."""
-            source = self.presentation().codomain()
-            framing = self.framing_morphism()
-            assert framing.domain() is source, (
-                f"{self}: the codomain {source} of the relation map is not the free module "
-                f"{framing.domain()} on its chosen generators"
-            )
-            return framing
+            selected = self.selected_module_resolution()
+            match selected.truncation():
+                case 1:
+                    return selected.augmentation()
+                case _:
+                    raise TypeError(
+                        f"{self} has no selected finite-presentation projection: its chosen module "
+                        f"resolution is truncated in degree {selected.truncation()}"
+                    )
 
         def torsion_free_quotient_projection(self):
             r"""Return ``M -> M/Tor(M)`` from invariant-factor coordinates."""
@@ -2768,7 +2859,7 @@ def _presented_module_from_morphism(
     )(presentation)
     codomain = presentation.codomain()
     base_ring = codomain.base_ring()
-    assert presentation.domain() in FramedModules(base_ring), (
+    assert presentation.domain().has_selected_module_resolution(), (
         f"cannot form the cokernel of {presentation}: its domain must be a {base_ring}-module "
         f"with chosen generators, but it is in {presentation.domain().category()}"
     )

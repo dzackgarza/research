@@ -1,10 +1,6 @@
 r"""Archived Cantor and iterated-power-set facts on the live owned set surface."""
 
-from dzack_research.preamble.all import (
-    Sets,
-    aleph0,
-    cardinal,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_cantor_strict_inequality_for_live_finite_countable_and_power_set_specimens() -> None:
@@ -17,5 +13,4 @@ def test_cantor_strict_inequality_for_live_finite_countable_and_power_set_specim
     assert families.base_set() is subsets
     for source in (finite, naturals, subsets):
         assert cardinal(source.cardinality()) < source.power_set().cardinality()
-
 

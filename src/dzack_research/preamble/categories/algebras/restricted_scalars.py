@@ -11,16 +11,14 @@ a second authoritative ring implementation.
 """
 
 from sage.categories.map import Map
-from sage.categories.morphism import SetMorphism
 from sage.misc.classcall_metaclass import typecall
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
     FinitelyPresentedAlgebras,
-    FramedAlgebras,
     _OwnedAlgebraParent,
-    _SelectedFiniteAlgebraPresentation,
+    _fix_selected_algebra_presentation,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -99,6 +97,7 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
         self._restricted_scalar_generator_labels = restricted_scalar_labels
         self._restricted_algebra_generator_labels = restricted_algebra_labels
         source_structure = algebra.algebra_structure_morphism()
+        presentation_ring = None
 
         if presentation_data is not None:
             (
@@ -108,50 +107,10 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
                 lift_to_presentation,
             ) = presentation_data
 
-            def presentation_morphism():
-                presentation_engine = _engine_ring(presentation_ring)
-                algebra_engine = _engine_ring(algebra)
-                engine_base = _engine_ring(base_ring)
-
-                def engine_base_image(scalar):
-                    owned_scalar = _owned_engine_element(base_ring, engine_base(scalar))
-                    return _engine_element(
-                        algebra,
-                        source_structure(ring_map(owned_scalar)),
-                    )
-
-                engine_base_map = SetMorphism(
-                    engine_base.Hom(algebra_engine),
-                    engine_base_image,
-                )
-                presentation_engine_map = presentation_engine.hom(
-                    [generator_values(label) for label in labels],
-                    algebra_engine,
-                    base_map=engine_base_map,
-                )
-                return presentation_ring.Mor(self)(
-                    lambda element: self._from_engine_element(
-                        algebra_engine(
-                            presentation_engine_map(
-                                _engine_element(presentation_ring, element)
-                            )
-                        )
-                    ),
-                )
-
-            self._selected_algebra_presentation = _SelectedFiniteAlgebraPresentation(
-                presentation_ring,
-                selected_relations,
-                presentation_ideal,
-                lift_to_presentation,
-                presentation_morphism,
-            )
-
         categories = [RestrictedScalarsAlgebras(base_ring)]
         if presentation_data is not None:
             categories.extend(
                 (
-                    FramedAlgebras(base_ring),
                     FinitelyPresentedAlgebras(base_ring),
                     AlgebrasWithChosenFinitePresentation(base_ring),
                 )
@@ -167,7 +126,16 @@ class _RestrictedScalarsAlgebraParent(_OwnedAlgebraParent):
             scalar_structure=lambda scalar: source_structure(ring_map(scalar)),
             generator_values=generator_values,
             categories=tuple(categories),
+            algebra_framing_source=presentation_ring,
         )
+        if presentation_data is not None:
+            _fix_selected_algebra_presentation(
+                self,
+                presentation_ring,
+                selected_relations,
+                presentation_ideal,
+                lift_to_presentation,
+            )
 
 
 def _lift_polynomial(relation, coefficient_lift, target_variables, target_ring):

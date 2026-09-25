@@ -23,7 +23,6 @@ from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
     Modules,
     _torsion_module_presented_by_matrix,
 )
@@ -141,7 +140,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
 
-        return [FramedModules(self.base_ring())]
+        return [Modules(self.base_ring())]
 
     class ParentMethods:
         _derived_construction_parameters = frozenset({"base_ring"})
