@@ -464,7 +464,8 @@ The first full execution of the suite since the tree stopped importing (2026-09-
   - The Coxeter complex `Sigma(W, S)`, as an honest simplicial complex whose face poset is the poset of cosets `wW_J` (`J` proper), with its chamber set `W` as a `W`-set.
   - The Tits cone.
   - Buildings as chamber complexes with apartment systems of Coxeter complexes, including those from BN-pairs.
-  - The Tits complex. Confirm the intended notion (the spherical building of a BN-pair) before building it.
+  - The Tits complex: the spherical building of a BN-pair (owner, 2026-09-26).
+  - The Iwahori–Hecke algebra `H(W, S)` over `ZZ[q^{±1/2}]`, with its standard basis `T_w`, the quadratic relations `(T_s − q)(T_s + 1) = 0` and the braid relations; its Kazhdan–Lusztig basis and polynomials; its specialization at `q = 1` to `ZZ[W]`; and, for a BN-pair over `F_q`, the isomorphism with the convolution algebra of `B`-bi-invariant functions on `G`, the endomorphism algebra of the permutation module on the chambers of the building.
   - The Davis complex of `W 𝒮^f`.
   Each is a construction on its owner, with the maps that relate them: chambers to group elements, apartments into buildings, and the Coxeter complex into the Tits cone. Theory and leads: `docs/theory/coxeter-groups-complexes-and-cell-structures.md`.
   **Closure specimens:** `Sigma(A_2)` is a hexagon, a triangulated `S^1` with 6 chambers. `Sigma` of the affine `A_1` group is a triangulated line. The Davis complex of the infinite dihedral group is a line. The building of `SL_3(F_2)` has 21 chambers and apartments that are hexagons.

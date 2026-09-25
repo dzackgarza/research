@@ -40,7 +40,9 @@ Leads:
   - Euclidean space tiled by alcoves for affine `W`;
   - in general, the interior of the Tits cone.
 - **Tits cone.** `U = ⋃_w w C̄` in the dual of the geometric representation. `W` is finite if and only if `U` is the whole space.
-- **Buildings.** A building is a chamber complex covered by apartments, each a Coxeter complex, subject to the building axioms. The Tits building of a reductive group arises from its BN-pair, and its apartments are Coxeter complexes of the Weyl group. "Tits complex" here should mean this spherical building; confirm the intended notion before building it.
+- **Buildings.** A building is a chamber complex covered by apartments, each a Coxeter complex, subject to the building axioms. The Tits building of a reductive group arises from its BN-pair, and its apartments are Coxeter complexes of the Weyl group. "Tits complex" means this spherical building (owner, 2026-09-26).
+- **Iwahori–Hecke algebra.** `H(W, S)` over `ZZ[q^{±1/2}]` has basis `T_w` for `w ∈ W`, the quadratic relations `(T_s − q)(T_s + 1) = 0` and the braid relations of `m`. At `q = 1` it specializes to `ZZ[W]`. It has the Kazhdan–Lusztig basis `C'_w` and polynomials `P_{y,w}`. For a finite group with BN-pair over `F_q`, `H(W, S)` at `q` is the convolution algebra of `B`-bi-invariant functions on `G`, which is `End_G` of the permutation module on the chambers of the building (Iwahori). The affine Hecke algebra plays the same role for `p`-adic groups and their Bruhat–Tits buildings (Iwahori–Matsumoto).
+  Leads: Humphreys ch. 7; Geck–Pfeiffer, *Characters of Finite Coxeter Groups and Iwahori–Hecke Algebras*; Kazhdan–Lusztig, "Representations of Coxeter groups and Hecke algebras" (1979); Iwahori (1964); Iwahori–Matsumoto (1965); Sage `IwahoriHeckeAlgebra` and `KazhdanLusztigPolynomial`.
 - **Davis complex.** The geometric realization of the poset `W 𝒮^f` of cosets of finite parabolic subgroups. It is contractible and CAT(0), and `W` acts on it properly and cocompactly.
 
 Leads:
