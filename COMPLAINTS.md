@@ -87,7 +87,8 @@ Rack's separation of algebra framing from module framing (`09215fd7e`) made
 framings relative to their category, which the global axiom cannot express.
 
 **Dependency path:** resolutions over `C` (`lean-categories` `FOUNDATIONS.md`
-§76-77 for the additive case; simplicial objects over a projective class in
+§76-77 for the additive case, extension filed as dzackgarza/lean-categories#62;
+simplicial objects over a projective class in
 general) -> truncations and finiteness properties -> chosen generators and
 presentations -> coercion and every consumer of chosen generators.
 **Consumers:** coercion of session integers into `QQ` and `RR`; algebra
