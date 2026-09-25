@@ -76,7 +76,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert ring(2) in invariant_factors
 
     # Hom and tensor.
-    homs = module.Hom(module)
+    homs = module.Mor(module)
     rendered(homs)
     assert homs.module_rank() == 9
     tensor = module.tensor_product(quotient)
@@ -85,7 +85,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert tensor.module_rank() == 3
     dual = module.dual_module()
     assert dual.module_rank() == 3
-    assert quotient.Hom(ring.regular_module()).module_rank() == 1
+    assert quotient.Mor(ring.regular_module()).module_rank() == 1
 
     # A morphism, its kernel, image and cokernel; the rank–nullity relation.
     morphism = module.Mor(module)({0: e1, 1: e2, 2: 2 * e0})
@@ -95,7 +95,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert morphism.kernel().module_rank() == 0
     assert morphism.image().module_rank() == 3
     assert morphism.cokernel().cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
-    assert (morphism * morphism)(e0) == 2 * e1
+    assert (morphism * morphism)(e0) == e2
     assert morphism.kernel().module_rank() + morphism.image().module_rank() == 3
 
     # Base change to the fraction field, and localization where it applies.

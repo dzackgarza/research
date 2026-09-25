@@ -1171,7 +1171,10 @@ class ModuleMorphism(Morphism):
             element = self.codomain()(element)
         codomain_labels = tuple(self.codomain().module_generating_set())
         coefficients = self.codomain().framing_coefficients(element)
-        target = [coefficients[label] if label in coefficients else self.codomain().base_ring().zero() for label in codomain_labels]
+        target = [
+            coefficients.get(label, ring.zero())
+            for label in codomain_labels
+        ]
         coordinate_map = self.domain().module_category().Mor(
             self.domain(), self.codomain()
         )(self)
@@ -2215,9 +2218,17 @@ class _ModuleMorCommonMethods:
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             return self.elementwise(lambda element: images(element))
         base_ring = self.base_ring()
-        if self.domain() is self.codomain() and (images in base_ring or images in _engine_ring(base_ring)):
-            scalar = base_ring(images)
-            return self.scalar_multiple(scalar, self.identity())
+        image_data = isinstance(
+            images,
+            (SetMorphism, IndexedFamily, dict, tuple, list),
+        )
+        if self.domain() is self.codomain() and not image_data:
+            try:
+                scalar = base_ring(images)
+            except (TypeError, ValueError):
+                pass
+            else:
+                return self.scalar_multiple(scalar, self.identity())
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
             _SelectedFinitePresentationModules,
         )

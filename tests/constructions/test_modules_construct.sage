@@ -114,7 +114,7 @@ def test_dual_of_a_free_module(commutative_ring) -> None:
 
 def test_internal_hom_between_free_modules(commutative_ring) -> None:
     ring = commutative_ring
-    homs = _free(ring, 2).Hom(_free(ring, 3))
+    homs = _free(ring, 2).Mor(_free(ring, 3))
     assert homs in Modules(ring)
     assert homs in FinitelyGeneratedFreeModules(ring)
     assert homs.module_rank() == 6

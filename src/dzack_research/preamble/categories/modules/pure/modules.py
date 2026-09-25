@@ -1134,6 +1134,10 @@ class Modules(OwnedCategoryOverBaseRing):
         def module_category(self):
             return Modules(self.base_ring())
 
+        def tensor_product(self, other):
+            r"""Return this module tensored with ``other`` over the common base ring."""
+            return self.module_category().tensor_product((self, other))
+
         def pairings_with(self, right_module, value_module):
             r"""Return bilinear pairings ``self x right_module -> value_module``."""
             from dzack_research.preamble.categories.forms.forms import _pairings
@@ -2513,9 +2517,20 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
                 {
                     source_label: self.codomain().linear_combination(
                         {
-                            target_label: coefficients[pair]
+                            target_label: coefficient
                             for target_label in self.codomain().module_generating_set()
-                            if (pair := assignment_labels(lambda index: source_label if int(index) == 0 else target_label)) in coefficients
+                            if (
+                                coefficient := coefficients.get(
+                                    assignment_labels(
+                                        lambda index: (
+                                            source_label
+                                            if int(index) == 0
+                                            else target_label
+                                        )
+                                    ),
+                                    self.codomain().base_ring().zero(),
+                                )
+                            )
                         }
                     )
                     for source_label in self.domain().module_generating_set()
@@ -2622,6 +2637,15 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
         def module_subobject_construction(self):
             r"""Return the selected construction defining this module subobject."""
             return self._module_subobject_construction
+
+        def __contains__(self, element) -> bool:
+            r"""Test ambient elements through the selected subobject inclusion."""
+            if element_parent(element) is self:
+                return True
+            inclusion = self.inclusion()
+            if element_parent(element) is inclusion.codomain():
+                return inclusion.is_in_image(element)
+            return super().__contains__(element)
 
         @cached_method
         def inclusion(self):

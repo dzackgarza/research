@@ -243,7 +243,7 @@ def test_the_tensor_hom_adjunction_over_every_commutative_ring(commutative_ring)
     tensored = adjunction.left_adjoint()(module)
     homs = adjunction.right_adjoint()(other)
     assert tensored == module.tensor_product(fixed)
-    assert homs == fixed.Hom(other)
+    assert homs == fixed.Mor(other)
     assert tensored.module_rank() == 6
     assert homs.module_rank() == 2
     assert adjunction.unit(module).domain() is module

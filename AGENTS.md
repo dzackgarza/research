@@ -1811,7 +1811,7 @@ Prefer **one clean export** for a catalogue surface: import `Lattices`, use `Lat
 
 - A functor is a method of its domain category, named by the construction, taking only what fixes the codomain: `Modules(ZZ[H]).induction(G)`, `FiniteGSets(G).orbits_functor()`, `Groups().abelianization()`, `Algebras(R).Associative().Unital().Commutative().spectrum()`.
 - An adjunction is a method of the left adjoint's domain category, named by the pair: `Modules(ZZ[H]).induction_restriction_adjunction(G)`, `FiniteSets().free_underlying_adjunction(G)`.
-- A construction on objects is a method of the category that owns them, or of the object when one argument is distinguished: `M.tensor_product(N)`, `M.Hom(N)`, `M.ext(N, n)`, `C.cohomology(n)`.
+- A construction on objects is a method of the category that owns them, or of the object when one argument is distinguished: `M.tensor_product(N)`, `M.Mor(N)`, `M.ext(N, n)`, `C.cohomology(n)`.
 - An object constructor is the category applied to the object's data: `FiniteGSets(G)(points, action)`, `Modules(ZZ[G])(M, action)`, `Subgroups(G)(predicate, description)`.
 
 A standalone `XFunctor(...)`, `x_adjunction(...)`, `Ext(n, M, N)` or `finite_g_set(...)` in the session surface is a placement defect; the name belongs on the category or object above and the function is retired, not aliased.

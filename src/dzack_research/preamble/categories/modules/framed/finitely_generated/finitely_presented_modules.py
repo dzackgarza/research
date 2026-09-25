@@ -12,6 +12,7 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.misc_c import prod
 from sage.misc.repr import repr_lincomb
 from sage.misc.unknown import Unknown
+from sage.all import PolynomialRing as _SagePolynomialRing
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.element import parent as element_parent
@@ -79,6 +80,16 @@ def _canonical_pid_associate(ring, element):
     element = ring(element)
     if element == ring.zero():
         return element
+    if ring in LocalizationRings():
+        source = ring.localization_source()
+        if source in PrincipalIdealDomains():
+            # A denominator in the localization submonoid is a unit, so
+            # (a/s) and a generate the same principal ideal in S^{-1}R.
+            # Canonicalize in the source PID rather than in the localization's
+            # fraction-field engine, where every nonzero scalar is a unit.
+            return ring.localization_map()(
+                _canonical_pid_associate(source, element.numerator())
+            )
     backend = _engine_element(ring, element)
     canonical_associate = getattr(backend, "canonical_associate", None)
     if canonical_associate is None:
@@ -413,9 +424,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return source.module_category().Mor(source, self)(
                 {label: self.module_generator(label) for label in source.module_generating_set()}
             )
-
-        def tensor_product(self, other):
-            return Modules(self.base_ring()).tensor_product((self, other))
 
         def free_resolution(self, steps=None):
             r"""Return a free resolution of the selected presentation.
@@ -984,6 +992,26 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 f"cannot compute the Smith normal form of the relation matrix of {self}: "
                 f"the base ring {ring} must be a principal ideal domain"
             )
+            if ring in LocalizationRings():
+                from dzack_research.preamble.categories.modules.localizations import (
+                    LocalizedModules,
+                )
+
+                if self in LocalizedModules(ring):
+                    source = self.numerator_module()
+                    source_ring = ring.localization_source()
+                    if (
+                        source in _SelectedFinitePresentationModules(source_ring)
+                        and source_ring in PrincipalIdealDomains()
+                    ):
+                        # The selected presentation of S^{-1}M is obtained by
+                        # applying R -> S^{-1}R coefficientwise to the selected
+                        # presentation of M.  Localize its unimodular Smith
+                        # basis changes as well; reducing the same matrix in the
+                        # fraction-field engine can introduce inverses of
+                        # nonunits of S^{-1}R and therefore does not describe
+                        # module automorphisms over the localization.
+                        return source._selected_presentation_smith_backend()
             backend_relation_matrix = _engine_matrix(self.presentation_matrix())
             return backend_relation_matrix.smith_form()
 
@@ -1440,6 +1468,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
             return normalized_projection * normalization.forward()
 
+        def torsion_submodule(self):
+            r"""Return Tor(M) from the invariant-factor quotient over a PID."""
+            if self.base_ring() not in PrincipalIdealDomains():
+                return super().torsion_submodule()
+            return self.torsion_free_quotient_projection().kernel()
+
         def torsion_free_quotient(self):
             r"""Return ``M/Tor(M)``."""
             return self.torsion_free_quotient_projection().codomain()
@@ -1826,7 +1860,10 @@ class _GeneralPresentedModule:
         coefficient_field = engine.base_ring()
 
         if engine.ngens() == 1 and "multi_polynomial" not in type(engine).__module__:
-            singular_ring = coefficient_field.polynomial_ring(1, engine.variable_names())
+            singular_ring = _SagePolynomialRing(
+                coefficient_field,
+                engine.variable_names(),
+            )
             to_singular = engine.hom([singular_ring.gen(0)], singular_ring)
         else:
             singular_ring = engine
@@ -2511,7 +2548,10 @@ def _singular_presentation_kernel(morphism):
     # Singular's syz entry point requires a multivariate polynomial parent,
     # even in one variable.  Cross only this backend representation.
     if presentation_ring.ngens() == 1 and "multi_polynomial" not in type(presentation_ring).__module__:
-        singular_ring = coefficient_field.polynomial_ring(1, presentation_ring.variable_names())
+        singular_ring = _SagePolynomialRing(
+            coefficient_field,
+            presentation_ring.variable_names(),
+        )
     else:
         singular_ring = presentation_ring
 

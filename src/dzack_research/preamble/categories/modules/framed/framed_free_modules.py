@@ -537,11 +537,16 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     coefficients = coordinate_domain.framing_coefficients(coordinate_vector)
                     return self.linear_combination(
                         {
-                            source_label: coefficients[coordinate_label]
+                            source_label: coefficient
                             for source_label, coordinate_label in zip(
                                 source_labels, coordinate_labels, strict=True
                             )
-                            if coordinate_label in coefficients
+                            if (
+                                coefficient := coefficients.get(
+                                    coordinate_label,
+                                    self.base_ring().zero(),
+                                )
+                            )
                         }
                     )
 

@@ -534,7 +534,7 @@ def test_initial_terminal_and_zero_objects_of_the_familiar_categories() -> None:
     assert Modules(QQ).has_kernels()
     assert Fields().is_subcategory(CommutativeRings())
     assert Sets().opposite() in Cat()
-    assert Sets().Hom(Sets.Δ[1], Sets.Δ[2]).cardinality() == 9
+    assert Sets.Δ[1].Mor(Sets.Δ[2]).cardinality() == 9
 
 
 def test_forgetful_and_free_functors_by_their_usual_names() -> None:

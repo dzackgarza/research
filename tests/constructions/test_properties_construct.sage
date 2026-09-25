@@ -253,7 +253,7 @@ def test_ranks_of_free_module_constructions(name, r, s) -> None:
     modules = Modules(ring)
     assert left.module_rank() == r
     assert left.tensor_product(right).module_rank() == r * s
-    assert left.Hom(right).module_rank() == r * s
+    assert left.Mor(right).module_rank() == r * s
     assert modules.biproduct((left, right)).module_rank() == r + s
     assert left.dual_module().module_rank() == r
     assert left.exterior_forms(2).module_rank() == binomial(r, 2)
@@ -281,7 +281,7 @@ def test_vector_spaces_over_catalogue_fields(name, r) -> None:
     space = field.free_module(r)
     assert space in VectorSpaces(field)
     assert space.module_rank() == r
-    assert space.Hom(space).module_rank() == r * r
+    assert space.Mor(space).module_rank() == r * r
     assert space.Aut().one() == space.Mor(space).identity()
     if field.cardinality().is_finite():
         q = field.cardinality()
