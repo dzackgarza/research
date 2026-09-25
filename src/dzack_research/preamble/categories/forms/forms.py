@@ -253,13 +253,9 @@ def _descended_bilinear_form(form, morphism, value_projection):
         )
 
     def selected_lift(element):
-        coefficients = quotient.framing_coefficients(element)
+        coordinates = quotient.framing_morphism().lift(element)
         return module.linear_combination(
-            {
-                label: coefficient
-                for label, coefficient in coefficients.items()
-                if coefficient
-            }
+            {label: coordinates(label) for label in coordinates.support().domain()}
         )
 
     return quotient.bilinear_forms(value_projection.codomain())(
@@ -639,14 +635,14 @@ class _CallableFormSpace:
         zero = self.codomain().zero()
 
         def bilinear(left, right):
-            left_coefficients = left_module.framing_coefficients(left)
-            right_coefficients = right_module.framing_coefficients(right)
+            left_coordinates = left_module.framing_morphism().lift(left)
+            right_coordinates = right_module.framing_morphism().lift(right)
             return sum(
                 (
                     scalar * _coordinate_pair(values, left_label, right_label)
-                    for left_label, left_coefficient in left_coefficients.items()
-                    for right_label, right_coefficient in right_coefficients.items()
-                    if (scalar := left_coefficient * right_coefficient)
+                    for left_label in left_coordinates.support().domain()
+                    for right_label in right_coordinates.support().domain()
+                    if (scalar := left_coordinates(left_label) * right_coordinates(right_label))
                 ),
                 start=zero,
             )

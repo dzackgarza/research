@@ -59,12 +59,12 @@ def _ambient_vector(lattice, ambient, vector):
         case parent if parent is ambient:
             return vector
         case parent if parent is lattice:
-            coefficients = lattice.framing_coefficients(vector)
+            coordinates = vector.to_vector()
             rationals = ambient.base_ring()
             return ambient.linear_combination(
                 {
-                    label: rationals(coefficient)
-                    for label, coefficient in coefficients.items()
+                    label: rationals(coordinates(label))
+                    for label in coordinates.support().domain()
                 }
             )
         case _:
@@ -76,13 +76,12 @@ def _evaluate_covector(lattice, ambient, covector, vector):
     covector = dual(covector)
     vector = _ambient_vector(lattice, ambient, vector)
     rationals = ambient.base_ring()
-    covector_coefficients = dual.framing_coefficients(covector)
-    vector_coefficients = ambient.framing_coefficients(vector)
+    covector_coordinates = covector.to_vector()
+    vector_coordinates = vector.to_vector()
     return sum(
         (
-            rationals(covector_coefficients.get(label, lattice.base_ring().zero()))
-            * vector_coefficients.get(label, rationals.zero())
-            for label in lattice.module_generating_set()
+            rationals(covector_coordinates(label)) * vector_coordinates(label)
+            for label in covector_coordinates.support().domain()
         ),
         rationals.zero(),
     )
@@ -172,11 +171,10 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
         """
         lattice = self.ambient_lattice()
         labels = tuple(lattice.module_generating_set())
-        zero = lattice.base_ring().zero()
 
         def engine_row(ray):
-            coefficients = lattice.framing_coefficients(lattice(ray))
-            return tuple(SageQQ(int(coefficients.get(label, zero))) for label in labels)
+            coordinates = lattice(ray).to_vector()
+            return tuple(SageQQ(int(coordinates(label))) for label in labels)
 
         rows = tuple(engine_row(ray) for ray in rays)
         return _cone_from_engine_polyhedron(
@@ -208,9 +206,9 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
             labels = tuple(dual.module_generating_set())
 
             def engine_row(covector):
-                coefficients = dual.framing_coefficients(covector)
+                coordinates = covector.to_vector()
                 return [SageQQ.zero()] + [
-                    SageQQ(int(coefficients.get(label, 0))) for label in labels
+                    SageQQ(int(coordinates(label))) for label in labels
                 ]
 
             rows = [engine_row(covector) for covector in self._halfspace_covectors]

@@ -111,12 +111,11 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             source_group = source.weil_divisor_group()
             target_group = self.weil_divisor_group()
             divisor = source_group(divisor)
-            coefficients = source_group.framing_coefficients(divisor)
+            coordinates = divisor.to_vector()
             return target_group.linear_combination(
                 {
-                    self._refined_ray_for_source_ray(ray): coefficient
-                    for ray, coefficient in coefficients.items()
-                    if coefficient != source_group.base_ring().zero()
+                    self._refined_ray_for_source_ray(ray): coordinates(ray)
+                    for ray in coordinates.support().domain()
                 }
             )
 
@@ -132,14 +131,15 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
             source_picard = source.picard_group()
             target_picard = self.picard_group()
             source_weil = source.weil_divisor_group()
-            target_weil = self.weil_divisor_group()
 
             def image(label):
                 pulled = self.blowup_morphism().pullback_divisor(
                     source_weil.module_generator(label)
                 )
-                coefficients = target_weil.framing_coefficients(pulled)
-                return target_picard.linear_combination(coefficients)
+                coordinates = pulled.to_vector()
+                return target_picard.linear_combination(
+                    {ray: coordinates(ray) for ray in coordinates.support().domain()}
+                )
 
             return source_picard.module_category().Mor(source_picard, target_picard)(image)
 

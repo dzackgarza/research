@@ -66,13 +66,13 @@ class GroupLatticeMor(LatticeMor):
         super().__init__(mor_family, domain, codomain)
 
     def _check_equivariance(self, morphism) -> None:
-        group = self.domain().group()
+        domain = self.domain()
+        codomain = self.codomain()
+        group = domain.group()
         assert group in OwnedGroups().Framed(), (
             f"cannot check that a morphism {domain} -> {codomain} is {group}-equivariant: this needs a chosen "
             f"generating set of {group}, but {group} is only known to be in {group.category()}"
         )
-        domain = self.domain()
-        codomain = self.codomain()
         for group_generator in group.group_generators():
             for label in domain.module_generating_set():
                 vector = domain.module_generator(label)
@@ -218,14 +218,16 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             ``Modules(R[G])``, whose reading through the underlying additive
             group describes a module built on that group, not a lattice.
             """
+            coordinates = self(element).to_vector()
             return self.unformed_module().linear_combination(
-                self.framing_coefficients(element)
+                {label: coordinates(label) for label in coordinates.support().domain()}
             )
 
         def _element_from_unformed_module(self, element):
             r"""The element of this group lattice with the coefficients ``element`` has in the lattice the action was stated on."""
+            coordinates = self.unformed_module()(element).to_vector()
             return self.linear_combination(
-                self.unformed_module().framing_coefficients(element)
+                {label: coordinates(label) for label in coordinates.support().domain()}
             )
 
         @cached_method
@@ -238,8 +240,9 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                     group_element,
                     source_group_module.module_generator(label),
                 )
+                coordinates = source_group_module.framing_morphism().lift(backing_image)
                 return self.linear_combination(
-                    source_group_module.framing_coefficients(backing_image)
+                    {label: coordinates(label) for label in coordinates.support().domain()}
                 )
 
             orthogonal_group = self.Aut()
@@ -455,13 +458,16 @@ class _LatticeLinearizationFunctor(Functor):
         target = self.object_image(arrow.codomain())
         component = _underlying_equivariant_arrow(arrow, self._group, self._coefficient_lattices)
         codomain_lattice = component.codomain()
-        return self.codomain().Mor(source, target)(
-            lambda label: target.linear_combination(
-                codomain_lattice.framing_coefficients(
-                    component(component.domain().module_generator(label))
-                )
+
+        def image(generator_label):
+            coordinates = codomain_lattice(
+                component(component.domain().module_generator(generator_label))
+            ).to_vector()
+            return target.linear_combination(
+                {label: coordinates(label) for label in coordinates.support().domain()}
             )
-        )
+
+        return self.codomain().Mor(source, target)(image)
 
     def _repr_(self):
         return f"Linearization of {self._group}-actions on lattices over {self._coefficient_lattices.base_ring()}"

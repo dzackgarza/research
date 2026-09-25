@@ -20,8 +20,8 @@ def _vector_field_scalar(vector_field, element):
             f"by one element, but {target} has {labels.cardinality()} generators"
         )
     label = labels[0]
-    coefficients = target.framing_coefficients(vector_field(element))
-    return vector_field.domain()(coefficients.get(label, target.base_ring().zero()))
+    coordinates = target.framing_morphism().lift(vector_field(element))
+    return vector_field.domain()(coordinates(label))
 
 
 def _lie_bracket(left, right):
@@ -126,8 +126,10 @@ def _interior_product(vector_field):
             source_piece = exterior.graded_piece(degree)
             target_piece = exterior.graded_piece(degree - 1)
             target_component = target_piece.zero()
-            for label, coefficient in source_piece.framing_coefficients(component).items():
-                word = _exterior_word(label, degree)
+            coordinates = source_piece.framing_morphism().lift(component)
+            for label in coordinates.support().domain():
+                coefficient = coordinates(label)
+                word =_exterior_word(label, degree)
                 for position, differential_label in enumerate(word):
                     if (
                         not isinstance(differential_label, tuple)

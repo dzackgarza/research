@@ -655,8 +655,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: e = I2.basis_vector(0)
             sage: e
             e_0
-            sage: I2.framing_coefficients(e)
-            {e_0: 1}
+            sage: e.to_vector()
+            e_0
             sage: e*e, e.b(I2.basis_vector(1))
             (1, 0)
             sage: I2((1, 0))
@@ -1757,9 +1757,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ArithmeticError(f"the nonzero vector {element!r} of {self!r} has divisibility {divisibility}, but the divisibility of a nonzero vector is a positive integer")
             dual_lattice = self.dual_lattice()
             divided_coefficients = {}
-            for label, coefficient in dual_lattice.framing_coefficients(correlation_image).items():
-                if not coefficient:
-                    continue
+            coordinates = correlation_image.to_vector()
+            for label in coordinates.support().domain():
+                coefficient = coordinates(label)
                 quotient = coefficient // divisibility
                 if divisibility * quotient != coefficient:
                     raise ArithmeticError(f"the dual coordinate {coefficient} of correlation({element!r}) in {self!r} is not divisible by div(v) = {divisibility}, but div(v) generates the ideal of all pairings b(v, L)")
@@ -1855,12 +1855,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             for discriminant_class in discriminant_classes:
                 element = discriminant_class if discriminant_class.parent() is discriminant_module else discriminant_module(discriminant_class)
                 lift = discriminant_module.dual_lattice_lift(element)
-                coefficients = discriminant_module.dual_lattice().framing_coefficients(lift)
+                lift_coordinates = lift.to_vector()
                 dual_coordinates = tensor(
                     rationals,
                     (),
                     (rank,),
-                    [coefficients.get(label, rationals.zero()) for label in dual_labels],
+                    [lift_coordinates(label) for label in dual_labels],
                 )
                 rational_rows.append(tuple(dual_gram * dual_coordinates))
 
@@ -2104,11 +2104,11 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             graph = {}
             for ambient_generator in self.module_generators():
-                coefficients = self.framing_coefficients(ambient_generator)
+                coordinates = ambient_generator.to_vector()
                 labels = tuple(self.module_generating_set())
                 ambient_vector = tensor.vector(
                     ring,
-                    [coefficients.get(label, ring.zero()) for label in labels],
+                    [coordinates(label) for label in labels],
                 )
                 ambient_covector = ambient_gram * ambient_vector
                 first_covector = ambient_covector * first_inclusion
@@ -3005,8 +3005,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         def _lattice_terms(self):
             r"""The nonzero coefficients of this vector, in the order of the framing's enumeration."""
             ranking = self.parent().module_generating_set().ranking_map()
+            coordinates = self.to_vector()
             return sorted(
-                self.monomial_coefficients().items(),
+                ((label, coordinates(label)) for label in coordinates.support().domain()),
                 key=lambda term: int(ranking(term[0])),
             )
 
@@ -3504,10 +3505,10 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
         def lift(position):
             quotient_generator = quotient_module_generators[int(position)]
-            coefficients = quotient_generator.parent().framing_coefficients(
-                quotient_generator
+            coordinates = quotient.framing_morphism().lift(quotient_generator)
+            return perpendicular.linear_combination(
+                {label: coordinates(label) for label in coordinates.support().domain()}
             )
-            return perpendicular.linear_combination(coefficients)
 
         lifts = finite_indexed_family(
             labels,
@@ -3628,8 +3629,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             field = rational.base_ring()
 
             def rationalize(vector):
-                coefficients = ambient.framing_coefficients(vector)
-                return rational.linear_combination({label: fraction_map(coefficient) for label, coefficient in coefficients.items() if coefficient})
+                coordinates = vector.to_vector()
+                return rational.linear_combination({label: fraction_map(coordinates(label)) for label in coordinates.support().domain()})
 
             rational_isotropic = rationalize(isotropic)
             rational_bezout = rationalize(bezout_partner)
@@ -3676,11 +3677,11 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
             def image(label):
                 normalized_element = normalization.forward()(presentation_projection(perpendicular.module_generator(label)))
+                coordinates = normalized.framing_morphism().lift(normalized_element)
                 return self.linear_combination(
                     {
-                        labels[int(normalized_labels.ranking_map()(normalized_label))]: coefficient
-                        for normalized_label, coefficient in normalized.framing_coefficients(normalized_element).items()
-                        if coefficient
+                        labels[int(normalized_labels.ranking_map()(normalized_label))]: coordinates(normalized_label)
+                        for normalized_label in coordinates.support().domain()
                     }
                 )
 
@@ -3759,8 +3760,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
             def line_scalar(isometry):
                 preimage = embedding.lift(isometry(embedded))
-                coefficients = line.framing_coefficients(preimage)
-                scalar = coefficients.get(line_label, ring.zero())
+                scalar = preimage.to_vector()(line_label)
                 if scalar not in (ring.one(), -ring.one()):
                     raise ArithmeticError(f"the parabolic isometry {isometry!r} of {embedding.codomain()!r} acts on the isotropic line I by {scalar}, but an isometry stabilizing I acts on it by a unit +1 or -1")
                 return scalar
@@ -4058,14 +4058,16 @@ class RootLattices(OwnedCategory):
 
     class ElementMethods:
         def is_positive_root(self) -> bool:
-            return bool(self.is_root() and all(coefficient >= 0 for coefficient in self.monomial_coefficients().values()))
+            coordinates = self.to_vector()
+            return bool(self.is_root() and all(coordinates(label) >= 0 for label in coordinates.support().domain()))
 
         def is_negative_root(self) -> bool:
             return bool((-self).is_positive_root())
 
         def height(self):
+            coordinates = self.to_vector()
             return sum(
-                self.monomial_coefficients().values(),
+                (coordinates(label) for label in coordinates.support().domain()),
                 self.parent().base_ring().zero(),
             )
 

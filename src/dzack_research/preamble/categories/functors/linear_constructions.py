@@ -33,10 +33,8 @@ class _DualizationFunctor(Functor):
         for codomain_label in morphism.codomain().module_generating_set():
             coefficients = {}
             for domain_label in morphism.domain().module_generating_set():
-                image_coefficients = morphism.codomain().framing_coefficients(morphism(morphism.domain().module_generator(domain_label)))
-                coefficient = image_coefficients.get(
-                    codomain_label, morphism.domain().base_ring().zero()
-                )
+                image_coordinates = morphism.codomain().framing_morphism().lift(morphism(morphism.domain().module_generator(domain_label)))
+                coefficient = image_coordinates(codomain_label)
                 if coefficient:
                     coefficients[domain_label] = coefficient
             images[codomain_label] = target_dual.linear_combination(coefficients)
@@ -165,13 +163,13 @@ class _OrthogonalDirectSumBifunctor(Functor):
 
     @staticmethod
     def _embed_summand(element, summand, target, offset):
-        coefficients = summand.framing_coefficients(element)
+        coordinates = element.to_vector()
         summand_labels = summand.module_generating_set()
         target_labels = target.module_generating_set()
         return target.linear_combination(
             {
-                target_labels[offset + int(summand_labels.ranking_map()(label))]: coefficient
-                for label, coefficient in coefficients.items()
+                target_labels[offset + int(summand_labels.ranking_map()(label))]: coordinates(label)
+                for label in coordinates.support().domain()
             }
         )
 

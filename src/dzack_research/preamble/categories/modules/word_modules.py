@@ -298,12 +298,12 @@ class _WordPresentation:
         inner = self.degree_basis(degree).from_multiplicities(counts)
         return self.basis_label(degree, inner)
 
-    def _normalize_component_relations(self, coefficients):
+    def _normalize_component_relations(self, representative):
         grouped = {}
         ring = self.base_ring()
-        for basis_label, coefficient in coefficients.items():
+        for basis_label in representative.support().domain():
+            coefficient = ring(representative(basis_label))
             basis_label = self.module_generating_set()(basis_label)
-            coefficient = ring(coefficient)
             if not coefficient:
                 continue
             key = self.component_key(basis_label)
@@ -318,9 +318,10 @@ class _WordPresentation:
 
             if component in _SelectedFinitePresentationModules(self.base_ring()):
                 element = component._smith_representative(element)
-            for component_label, coefficient in component.framing_coefficients(element).items():
+            lifted = component.framing_morphism().lift(element)
+            for component_label in lifted.support().domain():
                 basis_label = self.label_from_component(key, component_label)
-                normalized[basis_label] = normalized.get(basis_label, ring.zero()) + ring(coefficient)
+                normalized[basis_label] = normalized.get(basis_label, ring.zero()) + ring(lifted(component_label))
         return {label: coefficient for label, coefficient in normalized.items() if coefficient}
 
 
@@ -330,8 +331,7 @@ class _WordPresentation:
             case False:
                 return representative
             case True:
-                coefficients = self.cover().framing_coefficients(representative)
-                return self.cover().linear_combination(self._normalize_component_relations(coefficients))
+                return self.cover().linear_combination(self._normalize_component_relations(representative))
 
     def component_key(self, label):
         match self._source_has_component_protocol():
@@ -396,8 +396,7 @@ class _WordClass:
             return op == op_NE
         presentation = self.parent().presentation()
         difference = presentation.normalize(self._representative - other._representative)
-        coefficients = presentation.cover().framing_coefficients(difference)
-        decisions = tuple(value == presentation.base_ring().zero() for value in coefficients.values())
+        decisions = tuple(difference(label) == presentation.base_ring().zero() for label in difference.support().domain())
         match (all(value is True for value in decisions), any(value is False for value in decisions)):
             case (True, _):
                 equal = True
@@ -450,13 +449,10 @@ def _word_class_set(presentation):
 
 
 class _WordModuleElement:
-    def _coefficient_data(self):
-        return self.parent().framing_coefficients(self)
-
     def homogeneous_components(self):
         degrees = {
             int(label.summand_index())
-            for label in self._coefficient_data().index_set()
+            for label in self.parent().framing_morphism().lift(self).support().domain()
         }
         return {degree: self.parent().homogeneous_component(self, degree) for degree in degrees}
 
@@ -499,8 +495,7 @@ class _WordModule:
         return super()._element_constructor_(value)
 
     def _selected_module_coefficients(self, element):
-        representative = self(element).underlying_element()._representative
-        return self._word_presentation.cover().framing_coefficients(representative)
+        return self(element).underlying_element()._representative
 
     def degree_basis(self, degree):
         return self._word_presentation.degree_basis(degree)
@@ -541,23 +536,24 @@ class _WordModule:
             return self.zero()
         if degree > 1:
             return self(component.underlying_element())
-        coefficients = piece.framing_coefficients(component)
+        coordinates = piece.framing_morphism().lift(component)
         labels = self.degree_basis(degree)
         match (degree, self.word_flavor()):
             case (0, "tensor"):
-                return self({self.basis_label(0, labels(lambda _: None)): coefficients.get(0, self.base_ring().zero())})
+                return self({self.basis_label(0, labels(lambda _: None)): coordinates(0)})
             case (0, "symmetric"):
-                return self({self.basis_label(0, labels.from_multiplicities({})): coefficients.get(0, self.base_ring().zero())})
+                return self({self.basis_label(0, labels.from_multiplicities({})): coordinates(0)})
             case (1, "tensor"):
-                return self({self.basis_label(1, labels(lambda _, label=label: label)): value for label, value in coefficients.items()})
+                return self({self.basis_label(1, labels(lambda _, label=label: label)): coordinates(label) for label in coordinates.support().domain()})
             case (1, "symmetric"):
-                return self({self.basis_label(1, labels.from_multiplicities({label: 1})): value for label, value in coefficients.items()})
+                return self({self.basis_label(1, labels.from_multiplicities({label: 1})): coordinates(label) for label in coordinates.support().domain()})
 
     from_graded_piece = from_component
 
     def homogeneous_component(self, element, degree):
         degree = int(degree)
-        selected = {label: value for label, value in self.framing_coefficients(self(element)).items() if int(label.summand_index()) == degree}
+        coordinates = self.framing_morphism().lift(element)
+        selected = {label: coordinates(label) for label in coordinates.support().domain() if int(label.summand_index()) == degree}
         piece = self.graded_piece(degree)
         match degree:
             case value if value < 0:
@@ -576,7 +572,7 @@ class _WordModule:
         degrees = finite_ordered_set(
             tuple(
                 self.grading_monoid()(int(label.summand_index()))
-                for label in self.framing_coefficients(self(element)).index_set()
+                for label in self.framing_morphism().lift(element).support().domain()
             )
         )
         return finite_indexed_family(
@@ -591,7 +587,7 @@ class _WordModule:
     def homogeneous_degree(self, element):
         degrees = {
             int(label.summand_index())
-            for label in self.framing_coefficients(self(element)).index_set()
+            for label in self.framing_morphism().lift(element).support().domain()
         }
         if len(degrees) != 1:
             raise ValueError(
@@ -603,7 +599,7 @@ class _WordModule:
     def degree_on_module_generator(self, element):
         degrees = {
             int(label.summand_index())
-            for label in self.framing_coefficients(self(element)).index_set()
+            for label in self.framing_morphism().lift(element).support().domain()
         }
         assert len(degrees) == 1, (
             f"{element} is not a generator of {self}: a generator is a single word and has one "
@@ -625,7 +621,7 @@ class _WordDegreeModule:
         classes = word_module.underlying_set()
         subset = OwnedSets().condition_set(classes, lambda value: all(
             int(label.summand_index()) == word_degree
-            for label in classes.presentation().cover().framing_coefficients(value._representative).index_set()
+            for label in value._representative.support().domain()
         ))
         cover = word_module.base_ring().free_module(word_module.degree_basis(word_degree))
         super().__init__(
@@ -652,8 +648,8 @@ class _WordDegreeModule:
                 return super()._element_constructor_(value)
 
     def _selected_module_coefficients(self, element):
-        return {label.summand_element(): value for label, value in
-                self._word_module.framing_coefficients(self._word_module(self(element).underlying_element())).items()}
+        coordinates = self._word_module.framing_morphism().lift(self(element).underlying_element())
+        return {label.summand_element(): coordinates(label) for label in coordinates.support().domain()}
 
     def _repr_(self):
         return f"Degree-{self._word_degree} words on {self._word_module.generating_module()}"

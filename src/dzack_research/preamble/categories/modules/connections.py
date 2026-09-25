@@ -131,12 +131,12 @@ class ModulesWithConnection(OwnedParameterizedCategory):
 
         def _element_of_unformed_module(self, element):
             module = self.unformed_module()
-            return module.linear_combination(self.framing_coefficients(element))
+            coordinates = self.framing_morphism().lift(element)
+            return module.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
 
         def _element_from_unformed_module(self, element):
-            return self.linear_combination(
-                self.unformed_module().framing_coefficients(element)
-            )
+            coordinates = self.unformed_module().framing_morphism().lift(element)
+            return self.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
 
         @cached_method
         def connection(self):
@@ -312,7 +312,8 @@ class Connection(Element):
     def __call__(self, element):
         if element.parent() is not self.module():
             element = self.module()(element)
-        return self._from_coefficients(self.module().framing_coefficients(element))
+        coordinates = self.module().framing_morphism().lift(element)
+        return self._from_coefficients({label: coordinates(label) for label in coordinates.support().domain()})
 
     def _call_(self, element):
         return self.__call__(element)
@@ -339,7 +340,10 @@ class Connection(Element):
         omega_two = omega.exterior_power(2)
         target_two = self.curvature_target()
         result = target_two.zero()
-        for (module_label, form_label), coefficient in self.target_module().framing_coefficients(value).items():
+        coordinates = self.target_module().framing_morphism().lift(value)
+        for label in coordinates.support().domain():
+            module_label, form_label = label
+            coefficient = coordinates(label)
             wedge = omega.exterior_power_product(
                 1,
                 omega.module_generator(form_label),
@@ -362,7 +366,10 @@ class Connection(Element):
         target_two = self.curvature_target()
         universal = omega.universal_derivation()
         result = target_two.zero()
-        for (module_label, form_label), coefficient in self.target_module().framing_coefficients(self.generator_image(label)).items():
+        coordinates = self.target_module().framing_morphism().lift(self.generator_image(label))
+        for image_label in coordinates.support().domain():
+            module_label, form_label = image_label
+            coefficient = coordinates(image_label)
             one_form = omega.module_generator(form_label)
             result += target_two.scalar_multiple(
                 coefficient,
@@ -792,17 +799,20 @@ def _connection_de_rham_component(connection, degree, component, target):
     target_tensor = modules.tensor_product((coefficient_module, target_forms))
     result = target_tensor.zero()
     underlying = component.underlying_element()
-    for (module_label, form_label), coefficient in source_tensor.framing_coefficients(underlying).items():
+    coordinates = source_tensor.framing_morphism().lift(underlying)
+    for source_label in coordinates.support().domain():
+        module_label, form_label = source_label
+        coefficient = coordinates(source_label)
         coefficient_vector = coefficient_module.scalar_multiple(
             coefficient,
             coefficient_module.module_generator(module_label),
         )
         connection_value = connection(coefficient_vector)
         basis_form = source_forms.module_generator(form_label)
-        for (
-            output_module_label,
-            one_form_label,
-        ), connection_coefficient in connection.target_module().framing_coefficients(connection_value).items():
+        connection_coordinates = connection.target_module().framing_morphism().lift(connection_value)
+        for connection_label in connection_coordinates.support().domain():
+            output_module_label, one_form_label = connection_label
+            connection_coefficient = connection_coordinates(connection_label)
             wedge = omega.exterior_power_product(
                 1,
                 omega.module_generator(one_form_label),
@@ -842,12 +852,15 @@ def _connection_de_rham_right_action(module, module_element, algebra_element):
             target_forms = omega.exterior_power(target_degree)
             target_tensor = modules.tensor_product((coefficient_module, target_forms))
             target_value = target_tensor.zero()
-            for (
-                module_label,
-                left_form_label,
-            ), left_coefficient in left_tensor.framing_coefficients(left_underlying).items():
+            left_coordinates = left_tensor.framing_morphism().lift(left_underlying)
+            right_piece = exterior_algebra.graded_piece(right_degree)
+            right_coordinates = right_piece.framing_morphism().lift(right_component)
+            for left_label in left_coordinates.support().domain():
+                module_label, left_form_label = left_label
+                left_coefficient = left_coordinates(left_label)
                 left_form = left_forms.module_generator(left_form_label)
-                for right_form_label, right_coefficient in exterior_algebra.graded_piece(right_degree).framing_coefficients(right_component).items():
+                for right_form_label in right_coordinates.support().domain():
+                    right_coefficient = right_coordinates(right_form_label)
                     right_form = exterior_algebra.graded_piece(right_degree).module_generator(
                         right_form_label
                     )

@@ -1398,10 +1398,7 @@ class _FiniteAffineAtlasEngine:
             f"one, but it has {labels.cardinality()} chosen module generators"
         )
         label = next(iter(labels))
-        return module.framing_coefficients(module(element)).get(
-            label,
-            module.base_ring().zero(),
-        )
+        return module.framing_morphism().lift(module(element))(label)
 
     @cached_method
     def global_function_algebra(self):
@@ -3259,15 +3256,16 @@ class _FiniteAtlasModuleGluingDatumEngine:
             def images(label, _domain, codomain):
                 left_label = label.component(0)
                 right_label = label.component(1)
-                left_image = left_transition(left_source.module_generator(left_label))
-                right_image = right_transition(right_source.module_generator(right_label))
-                left_coefficients = left_target.framing_coefficients(left_image)
-                right_coefficients = right_target.framing_coefficients(right_image)
+                left_coordinates = left_target.framing_morphism().lift(
+                    left_transition(left_source.module_generator(left_label))
+                )
+                right_coordinates = right_target.framing_morphism().lift(
+                    right_transition(right_source.module_generator(right_label))
+                )
                 coefficients = {}
                 for tensor_label in codomain.module_generating_set():
-                    coefficient = (
-                        left_coefficients.get(tensor_label.component(0), codomain.base_ring().zero())
-                        * right_coefficients.get(tensor_label.component(1), codomain.base_ring().zero())
+                    coefficient = left_coordinates(tensor_label.component(0)) * right_coordinates(
+                        tensor_label.component(1)
                     )
                     if coefficient:
                         coefficients[tensor_label] = coefficient
@@ -3368,22 +3366,18 @@ class FiniteAtlasModuleGluingMorphism(Morphism):
                 f"over {ring_map.codomain()}, but they are modules over {source.base_ring()} and "
                 f"{target.base_ring()}"
             )
-        return source.module_category().Mor(source, target)(
-            {
-                label: target.linear_combination(
-                    {
-                        target_label: ring_map(coefficient)
-                        for target_label, coefficient in local_map.codomain()
-                        .framing_coefficients(
-                            local_map(local_map.domain().module_generator(label))
-                        )
-                        .items()
-                        if ring_map(coefficient) != target.base_ring().zero()
-                    }
-                )
-                for label in local_map.domain().module_generating_set()
-            }
-        )
+        framing = local_map.codomain().framing_morphism()
+        images = {}
+        for label in local_map.domain().module_generating_set():
+            coordinates = framing.lift(local_map(local_map.domain().module_generator(label)))
+            images[label] = target.linear_combination(
+                {
+                    target_label: ring_map(coordinates(target_label))
+                    for target_label in coordinates.support().domain()
+                    if ring_map(coordinates(target_label)) != target.base_ring().zero()
+                }
+            )
+        return source.module_category().Mor(source, target)(images)
 
     def kernel_datum(self):
         r"""Return the finite-atlas descent datum of the sheaf kernel.

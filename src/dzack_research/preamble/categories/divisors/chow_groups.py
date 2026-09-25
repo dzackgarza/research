@@ -342,8 +342,10 @@ def _closed_immersion_cycle_pushforward(closed_subscheme, cycle):
     target = ambient.cycle_group(source.cycle_dimension())
     quotient_map = closed_subscheme.inclusion().coordinate_algebra_morphism()
     ambient_spectrum = ambient.underlying_space()
+    coordinates = cycle.to_vector()
     coefficients = {}
-    for point, coefficient in source.framing_coefficients(cycle).items():
+    for point in coordinates.support().domain():
+        coefficient = coordinates(point)
         image_point = ambient_spectrum(quotient_map.contraction_of_ideal(point.ideal()))
         coefficients[image_point] = coefficients.get(
             image_point, target.base_ring().zero()
@@ -378,8 +380,10 @@ def _distinguished_open_cycle_pullback(open_subscheme, cycle):
     localization_map = open_subscheme.inclusion().coordinate_algebra_morphism()
     open_ring = open_subscheme.coordinate_algebra()
     open_spectrum = open_subscheme.underlying_space()
+    coordinates = cycle.to_vector()
     coefficients = {}
-    for point, coefficient in source.framing_coefficients(cycle).items():
+    for point in coordinates.support().domain():
+        coefficient = coordinates(point)
         extended = localization_map.extension_of_ideal(point.ideal())
         if extended.contains_ambient_element(open_ring.one()):
             continue

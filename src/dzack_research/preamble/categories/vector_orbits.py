@@ -22,9 +22,7 @@ def _rank_one_coefficient(element):
             f"cannot read {element} as a multiple of a basis vector of {parent}: that "
             f"lattice must have rank one, but its basis has {len(labels)} vectors"
         )
-    return parent.framing_coefficients(element).get(
-        labels[0], parent.base_ring().zero()
-    )
+    return element.to_vector()(labels[0])
 
 
 class VectorPrimitiveExtension:
@@ -183,16 +181,16 @@ class VectorPrimitiveExtension:
         r"""Return the selected representative in ``A_M`` of a class of ``A_L``."""
         discriminant_class = self.discriminant_form(discriminant_class)
 
-        coefficients = self.discriminant_form.framing_coefficients(discriminant_class)
+        coordinates = self.discriminant_form.framing_morphism().lift(discriminant_class)
         return sum(
             (
-                coefficients[label] * representative
+                coordinates(label) * representative
                 for label, representative in zip(
                     self.discriminant_form.module_generating_set(),
                     self.discriminant_representatives,
                     strict=True,
                 )
-                if label in coefficients and coefficients[label]
+                if label in coordinates.support()
             ),
             self.sum_form.zero(),
         )

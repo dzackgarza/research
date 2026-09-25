@@ -888,11 +888,11 @@ def _linear_form_numerator(
     projective_chart_label,
 ):
     r"""Clear overlap denominators from one transported projective coordinate."""
-    coefficients = pair_module.framing_coefficients(image)
+    coordinates = pair_module.framing_morphism().lift(image)
     fraction_data = []
-    for label, coefficient in coefficients.items():
+    for label in coordinates.support().domain():
         numerator, denominator = pair_module.base_ring().localization_fraction_data(
-            coefficient
+            coordinates(label)
         )
         fraction_data.append((label, numerator, denominator))
     result = projective_algebra.zero()
@@ -951,7 +951,9 @@ def _linear_form_on_projective_open(
     )
     restrict = projective_open.inclusion().coordinate_algebra_morphism()
     result = target.zero()
-    for label, coefficient in pair_module.framing_coefficients(image).items():
+    coordinates = pair_module.framing_morphism().lift(image)
+    for label in coordinates.support().domain():
+        coefficient = coordinates(label)
         match label == projective_chart_label:
             case True:
                 ratio = target.one()
@@ -1570,10 +1572,10 @@ def _projectivization_quotient_linear_form(
     target_algebra = target_projective_chart.coordinate_algebra()
     structure = target_algebra.algebra_structure_morphism()
     image = local_map(source_module.module_generator(source_label))
-    coefficients = target_module.framing_coefficients(image)
+    coordinates = target_module.framing_morphism().lift(image)
     value = target_algebra.zero()
-    for target_label, coefficient in coefficients.items():
-        value += structure(coefficient) * _chart_ratio(
+    for target_label in coordinates.support().domain():
+        value += structure(coordinates(target_label)) * _chart_ratio(
             target_module,
             target_algebra,
             target_chart_label,
@@ -2267,16 +2269,16 @@ def _symmetric_algebra_descent(module_datum):
         transition = module_datum.transition(source_index, target_index).pullback()
 
         def images(label, _domain, codomain):
-            vector = transition(target_pair.module_generator(label))
+            coordinates = source_pair.framing_morphism().lift(
+                transition(target_pair.module_generator(label))
+            )
             return sum(
                 (
                     codomain.scalar_multiple(
-                        coefficient,
+                        coordinates(source_label),
                         codomain.algebra_generator(source_label),
                     )
-                    for source_label, coefficient in source_pair.framing_coefficients(
-                        vector
-                    ).items()
+                    for source_label in coordinates.support().domain()
                 ),
                 codomain.zero(),
             )
@@ -2357,16 +2359,14 @@ def _base_changed_finite_atlas_module_datum(
             old_target_pair=old_target_pair,
             source_overlap_map=source_overlap_map,
         ):
-            image = old_transition.pullback()(
-                old_target_pair.module_generator(label)
+            coordinates = old_source_pair.framing_morphism().lift(
+                old_transition.pullback()(old_target_pair.module_generator(label))
             )
             return codomain.linear_combination(
                 {
-                    target_label: source_overlap_map(coefficient)
-                    for target_label, coefficient in old_source_pair.framing_coefficients(
-                        image
-                    ).items()
-                    if source_overlap_map(coefficient) != codomain.base_ring().zero()
+                    target_label: source_overlap_map(coordinates(target_label))
+                    for target_label in coordinates.support().domain()
+                    if source_overlap_map(coordinates(target_label)) != codomain.base_ring().zero()
                 }
             )
 
@@ -2379,16 +2379,14 @@ def _base_changed_finite_atlas_module_datum(
             old_target_pair=old_target_pair,
             target_overlap_map=target_overlap_map,
         ):
-            image = old_transition.inverse_pullback()(
-                old_source_pair.module_generator(label)
+            coordinates = old_target_pair.framing_morphism().lift(
+                old_transition.inverse_pullback()(old_source_pair.module_generator(label))
             )
             return codomain.linear_combination(
                 {
-                    target_label: target_overlap_map(coefficient)
-                    for target_label, coefficient in old_target_pair.framing_coefficients(
-                        image
-                    ).items()
-                    if target_overlap_map(coefficient) != codomain.base_ring().zero()
+                    target_label: target_overlap_map(coordinates(target_label))
+                    for target_label in coordinates.support().domain()
+                    if target_overlap_map(coordinates(target_label)) != codomain.base_ring().zero()
                 }
             )
 
@@ -2490,13 +2488,13 @@ def _pulled_module_transition_images(
     )
 
     def images(label, _domain, codomain):
-        vector = transition(target_pair.module_generator(label))
+        coordinates = source_pair.framing_morphism().lift(
+            transition(target_pair.module_generator(label))
+        )
         return codomain.linear_combination(
             {
-                source_module_label: pair_map(coefficient)
-                for source_module_label, coefficient in source_pair.framing_coefficients(
-                    vector
-                ).items()
+                source_module_label: pair_map(coordinates(source_module_label))
+                for source_module_label in coordinates.support().domain()
             }
         )
 

@@ -343,9 +343,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
 def _regular_module_coefficient(regular_module, element):
     r"""The scalar ``r`` with ``element = r * 1`` in a rank-one regular module."""
     (label,) = tuple(regular_module.module_generating_set())
-    return regular_module.framing_coefficients(element).get(
-        label, regular_module.base_ring().zero()
-    )
+    return element.to_vector()(label)
 
 
 def _fraction_field_value(fractional_ideal, element):
@@ -426,8 +424,7 @@ class FractionalIdealInclusion(ModuleEmbedding):
             element = target(element)
         extension_module = target.module_over_extension()
         (label,) = tuple(extension_module.module_generating_set())
-        coefficients = extension_module.framing_coefficients(element.underlying_element())
-        return coefficients.get(label, extension_module.base_ring().zero())
+        return extension_module.framing_morphism().lift(element.underlying_element())(label)
 
     def lift(self, element):
         r"""Return the ideal element mapping to ``element`` when it belongs to the ideal."""
@@ -638,10 +635,10 @@ def _principal_generator_from_order_values(base_ring, module_generator_values):
                 if backend_coordinates[position]
             }
         )
-        coordinates = basis_map.solve_right(target)
-        for coefficient in basis_map.domain().framing_coefficients(coordinates).values():
+        coordinates = basis_map.domain()(basis_map.solve_right(target)).to_vector()
+        for label in coordinates.support().domain():
             denominator = denominator.lcm(
-                _engine_element(rationals, coefficient).denominator()
+                _engine_element(rationals, coordinates(label)).denominator()
             )
 
     integral_values = tuple(

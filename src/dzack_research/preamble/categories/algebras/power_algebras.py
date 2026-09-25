@@ -105,8 +105,8 @@ class _PowerAlgebra:
     def augmentation(self, value):
         value = self(value)
         component = value.homogeneous_component(0)
-        coefficients = self.graded_piece(0).framing_coefficients(component)
-        return self.base_ring()(coefficients.get(0, self.base_ring().zero()))
+        coordinates = self.graded_piece(0).framing_morphism().lift(component)
+        return self.base_ring()(coordinates(0))
 
     def _repr_(self):
         symbol = "Lambda" if self.flavor() == "alternating" else "Gamma"
@@ -363,7 +363,9 @@ def _alternating_extension(module_morphism):
         result = target.zero()
         for degree, component in element.homogeneous_components().items():
             piece = source.graded_piece(degree)
-            for basis_label, coefficient in piece.framing_coefficients(component).items():
+            coordinates = piece.framing_morphism().lift(component)
+            for basis_label in coordinates.support().domain():
+                coefficient = coordinates(basis_label)
                 if degree == 0:
                     value = target.one()
                 elif degree == 1:

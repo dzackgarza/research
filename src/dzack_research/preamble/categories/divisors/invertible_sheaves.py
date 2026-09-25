@@ -171,12 +171,7 @@ class _DistinguishedCoverInvertibleSheafEngine(_ModuleGluingSheafEngine):
         source_generator = _rank_one_generator(source)
         target_labels = target.module_generating_set()
         target_label = next(iter(target_labels))
-        coefficients = target.framing_coefficients(transition(source_generator))
-        unit = (
-            coefficients[target_label]
-            if target_label in coefficients
-            else target.base_ring().zero()
-        )
+        unit = target.framing_morphism().lift(transition(source_generator))(target_label)
         if not unit.is_unit():
             raise ValueError(
                 f"the transition map {transition} sends the basis vector of {source} to "
@@ -576,9 +571,9 @@ class _LineBundleBaseChangeImage:
             source_module = source.local_module(source_index)
             target_module = changed_bundle.local_module(target_index)
             label = next(iter(source_module.module_generating_set()))
-            coefficient = source_module.framing_coefficients(
+            coefficient = source_module.framing_morphism().lift(
                 source_module_datum.compatible_section_component(section, source_index)
-            ).get(label, source_module.base_ring().zero())
+            )(label)
             return target_module.scalar_multiple(
                 pullback(coefficient), _rank_one_generator(target_module)
             )
@@ -1433,7 +1428,7 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
         """
         sections = self.global_sections()
         section = sections(section)
-        coefficients = sections.framing_coefficients(section)
+        coordinates = sections.framing_morphism().lift(section)
         atlas = self.gluing_datum()
         factors = self.projective_product().factors()
         factor_labels = tuple(factors.index_set())
@@ -1445,8 +1440,8 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
             chart_ring = chart.coordinate_algebra()
             scalar_map = chart_ring.algebra_structure_morphism()
             local_coefficient = chart_ring.zero()
-            for monomial, coefficient in coefficients.items():
-                term = scalar_map(coefficient)
+            for monomial in coordinates.support().domain():
+                term = scalar_map(coordinates(monomial))
                 blocks = sections.monomial_exponents(monomial)
                 for label, block in zip(factor_labels, blocks, strict=True):
                     selected = choice[positions[label]]

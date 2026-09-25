@@ -509,7 +509,8 @@ class DerivationSpace(RestrictedMorCategoryParent):
 
     def _selected_module_coefficients(self, derivation):
         classifiers = self._kahler_classifier_module()
-        return classifiers.framing_coefficients(self._to_kahler_classifier(derivation))
+        coordinates = classifiers.framing_morphism().lift(self._to_kahler_classifier(derivation))
+        return {label: coordinates(label) for label in coordinates.support().domain()}
 
     def __call__(self, generator_images):
         r"""Construct a derivation from its generator images, not an arrow object."""

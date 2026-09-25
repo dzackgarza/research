@@ -68,7 +68,10 @@ def _subgroup_data(ring_map):
 
 def _transport_element(element, source, target):
     r"""Transport one framed vector across equal selected module labels."""
-    return target.linear_combination(source.framing_coefficients(element))
+    coordinates = source.framing_morphism().lift(element)
+    return target.linear_combination(
+        {label: coordinates(label) for label in coordinates.support().domain()}
+    )
 
 
 def _equivariant_mor(domain, codomain, images):
@@ -237,7 +240,9 @@ class _InductionFunctor(_ScalarExtensionFunctor):
 
         def action(group_element, vector):
             output_coefficients = {}
-            for pair, coefficient in module.framing_coefficients(vector).items():
+            coordinates = module.framing_morphism().lift(vector)
+            for pair in coordinates.support().domain():
+                coefficient = coordinates(pair)
                 representative = pair.component(0)
                 label = pair.component(1)
                 target_representative, subgroup_element = self._decompose_left(
@@ -246,7 +251,9 @@ class _InductionFunctor(_ScalarExtensionFunctor):
                 acted = group_module.act(
                     subgroup_element, group_module.module_generator(label)
                 )
-                for target_label, acted_coefficient in group_module.framing_coefficients(acted).items():
+                acted_coordinates = group_module.framing_morphism().lift(acted)
+                for target_label in acted_coordinates.support().domain():
+                    acted_coefficient = acted_coordinates(target_label)
                     target_label_pair = _coset_label(
                         module.module_generating_set(),
                         target_representative,
@@ -267,7 +274,7 @@ class _InductionFunctor(_ScalarExtensionFunctor):
         for representative in self.representatives():
             for label in morphism.domain().module_generating_set():
                 image = morphism(morphism.domain().module_generator(label))
-                coefficients = morphism.codomain().framing_coefficients(image)
+                coordinates = morphism.codomain().framing_morphism().lift(image)
                 images[_coset_label(
                     source.module_generating_set(), representative, label
                 )] = target.linear_combination(
@@ -276,8 +283,8 @@ class _InductionFunctor(_ScalarExtensionFunctor):
                             target.module_generating_set(),
                             representative,
                             target_label,
-                        ): coefficient
-                        for target_label, coefficient in coefficients.items()
+                        ): coordinates(target_label)
+                        for target_label in coordinates.support().domain()
                     }
                 )
         return _equivariant_mor(source, target, images)
@@ -338,16 +345,12 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
         module = _finite_coset_sum(group_module, self.representatives())
 
         def value_at(vector, representative):
-            coefficients = module.framing_coefficients(vector)
+            coordinates = module.framing_morphism().lift(vector)
             module_labels = module.module_generating_set()
             return group_module.linear_combination(
                 {
-                    label: coefficients[
-                        _coset_label(module_labels, representative, label)
-                    ]
+                    label: coordinates(_coset_label(module_labels, representative, label))
                     for label in group_module.module_generating_set()
-                    if _coset_label(module_labels, representative, label)
-                    in coefficients
                 }
             )
 
@@ -360,27 +363,26 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
                 acted = group_module.act(
                     subgroup_element, value_at(vector, source_representative)
                 )
-                for label, coefficient in group_module.framing_coefficients(acted).items():
-                    if coefficient:
-                        output_coefficients[
-                            _coset_label(
-                                module.module_generating_set(),
-                                representative,
-                                label,
-                            )
-                        ] = coefficient
+                acted_coordinates = group_module.framing_morphism().lift(acted)
+                for label in acted_coordinates.support().domain():
+                    output_coefficients[
+                        _coset_label(
+                            module.module_generating_set(),
+                            representative,
+                            label,
+                        )
+                    ] = acted_coordinates(label)
             return module.linear_combination(output_coefficients)
 
         return self.codomain()(module, action)
 
     def value_at(self, source, coinduced, vector, representative):
-        coefficients = coinduced.framing_coefficients(vector)
+        coordinates = coinduced.framing_morphism().lift(vector)
         labels = coinduced.module_generating_set()
         return source.linear_combination(
             {
-                label: coefficients[_coset_label(labels, representative, label)]
+                label: coordinates(_coset_label(labels, representative, label))
                 for label in source.module_generating_set()
-                if _coset_label(labels, representative, label) in coefficients
             }
         )
 
@@ -388,15 +390,15 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
         coefficients = {}
         for representative in self.representatives():
             value = value_function(representative)
-            for label, coefficient in source.framing_coefficients(value).items():
-                if coefficient:
-                    coefficients[
-                        _coset_label(
-                            coinduced.module_generating_set(),
-                            representative,
-                            label,
-                        )
-                    ] = coefficient
+            coordinates = source.framing_morphism().lift(value)
+            for label in coordinates.support().domain():
+                coefficients[
+                    _coset_label(
+                        coinduced.module_generating_set(),
+                        representative,
+                        label,
+                    )
+                ] = coordinates(label)
         return coinduced.linear_combination(coefficients)
 
     def _apply_morphism(self, morphism):
@@ -405,7 +407,9 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
         images = {}
         for representative in self.representatives():
             for label in morphism.domain().module_generating_set():
-                image = morphism(morphism.domain().module_generator(label))
+                coordinates = morphism.codomain().framing_morphism().lift(
+                    morphism(morphism.domain().module_generator(label))
+                )
                 images[_coset_label(
                     source.module_generating_set(), representative, label
                 )] = target.linear_combination(
@@ -414,8 +418,8 @@ class _CoinductionFunctor(_CoextensionOfScalarsFunctor):
                             target.module_generating_set(),
                             representative,
                             target_label,
-                        ): coefficient
-                        for target_label, coefficient in morphism.codomain().framing_coefficients(image).items()
+                        ): coordinates(target_label)
+                        for target_label in coordinates.support().domain()
                     }
                 )
         return _equivariant_mor(source, target, images)

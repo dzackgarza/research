@@ -123,8 +123,8 @@ class _RestrictedGradedAlgebra(_DirectSumOfModules):
 
     def degree_zero_element(self, element):
         represented = self.realize(element)
-        coefficients = self.extension_algebra().graded_piece(0).framing_coefficients(represented.homogeneous_component(0))
-        return self.degree_zero_algebra()(coefficients.get(0, self.degree_zero_algebra().zero()))
+        coordinates = self.extension_algebra().graded_piece(0).framing_morphism().lift(represented.homogeneous_component(0))
+        return self.degree_zero_algebra()(coordinates(0))
 
     def _repr_(self):
         return f"{self.extension_algebra()} over {self.base_ring()}"

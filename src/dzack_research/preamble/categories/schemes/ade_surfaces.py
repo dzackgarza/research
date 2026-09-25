@@ -791,11 +791,9 @@ class _AT21ToricADEPairEngine:
         from dzack_research.preamble.categories.schemes.polytopes import LatticePolygons
 
         sections = self.branch_section_space()
-        coefficients = sections.framing_coefficients(sections(section))
         support = tuple(
             tuple(int(coordinate) for coordinate in character)
-            for character, coefficient in coefficients.items()
-            if coefficient != sections.base_ring().zero()
+            for character in sections(section).to_vector().support().domain()
         )
         if len(support) < 3:
             raise ValueError(
@@ -1126,15 +1124,15 @@ def _at21_ade_double_cover(base_pair, branch_section):
         for character in ambient_sections.module_generating_set()
     }
     coefficients = {}
-    branch_coefficients = base_pair.branch_section_space().framing_coefficients(selected_branch)
-    for character, coefficient in branch_coefficients.items():
+    branch_coordinates = selected_branch.to_vector()
+    for character in branch_coordinates.support().domain():
         key = (*tuple(int(value) for value in character), 0)
         if key not in ambient_by_coordinates:
             raise ArithmeticError(
                 f"the branch character {character} of {base_pair} is not a lattice point of the "
                 f"height-0 face of the pyramid, so the branch section does not extend to {ambient}"
             )
-        coefficients[ambient_by_coordinates[key]] = coefficient
+        coefficients[ambient_by_coordinates[key]] = branch_coordinates(character)
     apex = (
         *tuple(int(value) for value in base_pair.distinguished_point()),
         2,

@@ -289,11 +289,8 @@ def _coordinate_rows(form, generators):
     labels = module.module_generating_set()
     def coordinate_rows():
         for generator in generators:
-            coefficients = module.framing_coefficients(_underlying_element(form, generator))
-            yield (
-                coefficients.get(label, ring.zero())
-                for label in labels
-            )
+            coordinates = module.framing_morphism().lift(_underlying_element(form, generator))
+            yield (coordinates(label) for label in labels)
 
     return ring.matrix_space(len(generators), int(labels.cardinality())).from_rows(coordinate_rows())
 
@@ -681,20 +678,16 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
         ]
         solution = solve(target)
         generator_solution = system.codomain().left_projection()(solution)
-        generator_coefficients = lifts.codomain().framing_coefficients(generator_solution)
+        generator_coordinates = lifts.codomain()(generator_solution).to_vector()
         lift_labels = lifts.codomain().module_generating_set()
         forward_images[source_label] = sum(
             (
                 regenerated.scalar_multiple(
-                    generator_coefficients.get(
-                        lift_labels[index], ring.zero()
-                    ),
+                    generator_coordinates(lift_labels[index]),
                     generator,
                 )
                 for index, generator in enumerate(regenerated_generators)
-                if generator_coefficients.get(
-                    lift_labels[index], ring.zero()
-                )
+                if lift_labels[index] in generator_coordinates.support()
             ),
             regenerated.zero(),
         )
@@ -1221,12 +1214,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         for source_label in labels:
             original = inverse(normalized_form.module_generator(source_label))
             image = forward(morphism(original))
-            coefficients = normalized_form.framing_coefficients(image)
+            coordinates = normalized_form.framing_morphism().lift(image)
             engine_rows.append(
                 [
-                    _engine_element(
-                        ring, coefficients.get(target_label, ring.zero())
-                    )
+                    _engine_element(ring, coordinates(target_label))
                     for target_label in labels
                 ]
             )
@@ -1501,14 +1492,10 @@ class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
             r"""Return the selected lift of this class to the cokernel cover."""
             formed = self.parent()
             unformed = formed.unformed_module()
-            coordinates = unformed.framing_coefficients(unformed(self))
+            coordinates = unformed.framing_morphism().lift(unformed(self))
             cover = formed.cover()
             return cover.linear_combination(
-                {
-                    label: coordinates[label]
-                    for label in cover.module_generating_set()
-                    if label in coordinates
-                }
+                {label: coordinates(label) for label in coordinates.support().domain()}
             )
 
 

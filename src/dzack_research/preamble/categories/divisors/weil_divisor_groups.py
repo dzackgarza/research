@@ -102,7 +102,7 @@ class WeilDivisorGroups(Category):
         def multiplicity(self, divisor, point):
             r"""The coefficient of the prime divisor at ``point`` in ``divisor``."""
             point = self.affine_divisor_coordinate_ring().spectrum()(point)
-            return self.framing_coefficients(divisor).get(point, self.base_ring().zero())
+            return self(divisor).to_vector()(point)
 
         def principal_divisor(self, rational_function):
             r"""\(\operatorname{div}(f)\) of a nonzero rational function on the affine scheme."""

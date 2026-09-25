@@ -45,8 +45,9 @@ class TwistFunctor(Functor):
             original_image = morphism(
                 morphism.domain().module_generator(label)
             )
+            coordinates = original_target.framing_morphism().lift(original_image)
             return target.linear_combination(
-                original_target.framing_coefficients(original_image)
+                {basis_label: coordinates(basis_label) for basis_label in coordinates.support().domain()}
             )
 
         return source.Mor(target)(image)

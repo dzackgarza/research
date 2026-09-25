@@ -24,11 +24,11 @@ def _real_ambient_vector(lattice, ambient, vector):
         case parent if parent is ambient:
             return vector
         case parent if parent is lattice:
-            coefficients = lattice.framing_coefficients(vector)
+            coordinates = vector.to_vector()
             return ambient.linear_combination(
                 {
-                    label: RR(coefficient)
-                    for label, coefficient in coefficients.items()
+                    label: RR(coordinates(label))
+                    for label in coordinates.support().domain()
                 }
             )
         case _:
@@ -39,13 +39,13 @@ def _real_pairing(lattice, ambient, left, right):
     left = _real_ambient_vector(lattice, ambient, left)
     right = _real_ambient_vector(lattice, ambient, right)
     labels = tuple(lattice.module_generating_set())
-    left_coefficients = ambient.framing_coefficients(left)
-    right_coefficients = ambient.framing_coefficients(right)
+    left_coordinates = left.to_vector()
+    right_coordinates = right.to_vector()
     zero = RR.zero()
     return sum(
         (
-            left_coefficients.get(left_label, zero)
-            * right_coefficients.get(right_label, zero)
+            left_coordinates(left_label)
+            * right_coordinates(right_label)
             * RR(
                 lattice.b(
                     lattice.module_generator(left_label),
@@ -117,9 +117,9 @@ class _HyperbolicTopologyData(SageObject):
 
 def _primitive_on_selected_ray(lattice, vector, timelike):
     vector = lattice(vector)
-    coefficients = lattice.framing_coefficients(vector)
+    vector_coordinates = vector.to_vector()
     coordinates = tuple(
-        int(coefficients.get(label, lattice.base_ring().zero()))
+        int(vector_coordinates(label))
         for label in lattice.module_generating_set()
     )
     nonzero_coordinates = tuple(abs(entry) for entry in coordinates if entry)

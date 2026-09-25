@@ -138,13 +138,13 @@ def _volume_scalars(module, volume):
         )
     top = _unique_generator(determinant)
     one = _unique_generator(scalars)
-    forward_coefficients = scalars.framing_coefficients(volume(top))
-    inverse_coefficients = determinant.framing_coefficients(volume.inverse()(one))
+    forward_coordinates = scalars(volume(top)).to_vector()
+    inverse_coordinates = determinant.framing_morphism().lift(volume.inverse()(one))
     scalar_label = next(iter(scalars.module_generating_set()))
     determinant_label = next(iter(determinant.module_generating_set()))
     return (
-        forward_coefficients.get(scalar_label, module.base_ring().zero()),
-        inverse_coefficients.get(determinant_label, module.base_ring().zero()),
+        forward_coordinates(scalar_label),
+        inverse_coordinates(determinant_label),
     )
 
 

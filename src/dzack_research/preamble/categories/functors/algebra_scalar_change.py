@@ -89,7 +89,9 @@ def _base_change_free_algebra_element(algebra, element, target, ring_map):
     source_labels = algebra.module_generating_set()
     target_labels = target.module_generating_set()
     result = target.zero()
-    for label, coefficient in algebra.framing_coefficients(algebra(element)).items():
+    coordinates = algebra.framing_morphism().lift(element)
+    for label in coordinates.support().domain():
+        coefficient = coordinates(label)
         source_label = source_labels(label)
         target_label = target_labels(source_label)
         result += target.scalar_multiple(

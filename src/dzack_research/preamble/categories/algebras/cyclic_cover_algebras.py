@@ -73,8 +73,7 @@ def _rank_one_coefficient(
             f"but it has {labels.cardinality()} generators"
         )
     label = next(iter(labels))
-    coefficients = module.framing_coefficients(module(element))
-    return coefficients[label] if label in coefficients else module.base_ring().zero()
+    return module.framing_morphism().lift(element)(label)
 
 
 class CyclicCoverAlgebra(SageObject):

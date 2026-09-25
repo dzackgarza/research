@@ -1047,14 +1047,12 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             r"""Include an element of the canonical degree piece into this algebra."""
             degree = int(degree)
             piece = self.graded_piece(degree)
-            element = piece(element)
-            coefficients = piece.framing_coefficients(element)
+            coordinates = piece.framing_morphism().lift(element)
             return sum(
                 (
-                    coefficient
+                    coordinates(label)
                     * self._realize_graded_piece_basis_label(degree, label)
-                    for label, coefficient in coefficients.items()
-                    if coefficient
+                    for label in coordinates.support().domain()
                 ),
                 self.zero(),
             )

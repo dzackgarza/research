@@ -562,19 +562,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     )
 
                 def transport(coordinate_vector):
-                    coefficients = coordinate_domain.framing_coefficients(coordinate_vector)
+                    coordinates = coordinate_vector.to_vector()
                     return self.linear_combination(
                         {
                             source_label: coefficient
                             for source_label, coordinate_label in zip(
                                 source_labels, coordinate_labels, strict=True
                             )
-                            if (
-                                coefficient := coefficients.get(
-                                    coordinate_label,
-                                    self.base_ring().zero(),
-                                )
-                            )
+                            if (coefficient := coordinates(coordinate_label))
                         }
                     )
 
@@ -716,7 +711,7 @@ def _finite_support_labels(module, elements):
     support = []
     for candidate in elements:
         element = candidate if candidate.parent() is module else module(candidate)
-        for label in module.framing_coefficients(element).index_set():
+        for label in element.to_vector().support().domain():
             if not any(label == known for known in support):
                 support.append(label)
     return finite_ordered_set(support)
@@ -755,12 +750,12 @@ def _span_basis_elements(module, module_generating_set):
     engine_rows = []
     for candidate in generators:
         element = candidate if candidate.parent() is module else module(candidate)
-        coefficients = module.framing_coefficients(element)
+        coordinates = element.to_vector()
         engine_rows.append(
             [
                 _engine_element(
                     ring,
-                    coefficients.get(support_labels[position], ring.zero()),
+                    coordinates(support_labels[position]),
                 )
                 for position in range(support_count)
             ]
@@ -856,13 +851,12 @@ def _module_subobject_constructor_data(module, basis):
         coordinate_matrix = ring.matrix_space(source_rank, support_rank_count).from_rows(
             tuple(
                 tuple(
-                    module.framing_coefficients(basis[i]).get(
-                        support_labels[j],
-                        ring.zero(),
-                    )
+                    coordinates(support_labels[j])
                     for j in range(support_rank_count)
                 )
-                for i in range(source_rank)
+                for coordinates in (
+                    module(basis[i]).to_vector() for i in range(source_rank)
+                )
             )
         )
     else:
@@ -873,11 +867,11 @@ def _module_subobject_constructor_data(module, basis):
         r"""The preimage of ``element`` in the span, or ``None`` when ``element`` is outside it."""
         nonlocal coordinate_solver
         element = element if element.parent() is module else module(element)
-        coefficients = module.framing_coefficients(element)
-        if any(label not in support_labels for label in coefficients.index_set()):
+        coordinates = element.to_vector()
+        if any(label not in support_labels for label in coordinates.support().domain()):
             return None
         if source_rank == 0:
-            return None if coefficients else source.zero()
+            return None if coordinates else source.zero()
         if coordinate_solver is None:
             coordinate_solver = _integral_left_positional_solver(
                 coordinate_matrix,
@@ -885,7 +879,7 @@ def _module_subobject_constructor_data(module, basis):
             )
         solution = coordinate_solver(
             (
-                coefficients.get(support_labels[j], ring.zero())
+                coordinates(support_labels[j])
                 for j in range(support_rank_count)
             ),
         )

@@ -321,12 +321,12 @@ def CyclicCoverBaseChangeComparison(cyclic_algebra, ring_map):
             source_ranking=source_rank,
             target_labels=changed_labels,
         ):
-            coefficients = source_algebra.framing_coefficients(source_algebra(element))
+            coordinates = source_algebra.framing_morphism().lift(source_algebra(element))
             result = target_algebra.zero()
-            for label, coefficient in coefficients.items():
+            for label in coordinates.support().domain():
                 position = int(source_ranking(label))
                 result += target_algebra.scalar_multiple(
-                    coefficient_map(coefficient),
+                    coefficient_map(coordinates(label)),
                     target_algebra.module_generator(target_labels[position]),
                 )
             return result
@@ -533,12 +533,12 @@ def _relative_cyclic_cover_lift(cyclic_algebra, linearization, group_element):
             scale=scalar,
             rank=ranking,
         ):
-            coefficients = algebra.framing_coefficients(algebra(element))
+            coordinates = algebra.framing_morphism().lift(algebra(element))
             result = algebra.zero()
-            for label, coefficient in coefficients.items():
+            for label in coordinates.support().domain():
                 exponent = int(rank(label))
                 result += algebra.scalar_multiple(
-                    pullback(coefficient) * scale**exponent,
+                    pullback(coordinates(label)) * scale**exponent,
                     algebra.module_generator(label),
                 )
             return result

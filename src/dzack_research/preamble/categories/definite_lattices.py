@@ -315,9 +315,9 @@ def _shortest_vectors(lattice):
 def _target_coordinates(lattice, target):
     if element_parent(target) is lattice:
 
-        coefficients = lattice.framing_coefficients(target)
+        coordinates = target.to_vector()
         target = [
-            coefficients.get(label, lattice.base_ring().zero())
+            coordinates(label)
             for label in lattice.module_generating_set()
         ]
     rationals = lattice.base_ring().fraction_field()
@@ -774,8 +774,8 @@ def _contact_polytope(lattice):
 
 def _coordinate_tuple(lattice, element):
 
-    coefficients = lattice.framing_coefficients(element)
-    return tuple(coefficients.get(label, lattice.base_ring().zero()) for label in lattice.module_generating_set())
+    coordinates = lattice(element).to_vector()
+    return tuple(coordinates(label) for label in lattice.module_generating_set())
 
 
 def _covering_radius(lattice):

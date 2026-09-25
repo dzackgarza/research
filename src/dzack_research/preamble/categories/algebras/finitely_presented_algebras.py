@@ -79,31 +79,30 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         for degree, component in homogeneous_components.items():
             degree = int(degree)
             if degree == 0:
-                coefficients = component.parent().framing_coefficients(component)
-                scalar = next(
-                    iter(coefficients.values()),
+                coordinates = component.parent().framing_morphism().lift(component)
+                scalar = sum(
+                    (coordinates(label) for label in coordinates.support().domain()),
                     self._module.base_ring().zero(),
                 )
                 result += _engine_element(self._module.base_ring(), scalar)
                 continue
 
             tensor_power = self._tensor_power(degree)
-            source_power = component.parent()
+            source_coordinates = component.parent().framing_morphism().lift(component)
             tensor_element = tensor_power.linear_combination(
                 {
                     _nested_tensor_label(
                         self._module,
                         _flatten_tensor_label(source_label, degree),
-                    ): coefficient
-                    for source_label, coefficient in source_power.framing_coefficients(
-                        component
-                    ).items()
+                    ): source_coordinates(source_label)
+                    for source_label in source_coordinates.support().domain()
                 }
             )
             representative = tensor_power._smith_representative(tensor_element)
-            for tensor_label, coefficient in tensor_power.framing_coefficients(representative).items():
+            coordinates = tensor_power.framing_morphism().lift(representative)
+            for tensor_label in coordinates.support().domain():
                 result += _engine_element(
-                    tensor_power.base_ring(), coefficient
+                    tensor_power.base_ring(), coordinates(tensor_label)
                 ) * self._free_word(
                     _flatten_tensor_label(tensor_label, degree)
                 )

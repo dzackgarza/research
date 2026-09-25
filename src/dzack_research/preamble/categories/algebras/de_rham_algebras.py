@@ -92,7 +92,9 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
             continue
         target_piece = exterior_algebra.graded_piece(target_degree)
         target_component = target_piece.zero()
-        for label, coefficient in source_piece.framing_coefficients(component).items():
+        coordinates = source_piece.framing_morphism().lift(component)
+        for label in coordinates.support().domain():
+            coefficient = coordinates(label)
             d_coefficient = universal_derivation(coefficient)
             if d_coefficient == omega.zero():
                 continue

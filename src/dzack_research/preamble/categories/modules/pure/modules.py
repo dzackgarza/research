@@ -2499,7 +2499,7 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
             r"""Read an element of :meth:`_internal_mor_model` as the linear map it assigns."""
             assignment_space = self.inclusion_into_generator_maps().codomain()
             assignment = self.inclusion_into_generator_maps()(model_element)
-            coefficients = assignment_space.framing_coefficients(assignment)
+            coordinates = assignment_space.framing_morphism().lift(assignment)
             assignment_labels = assignment_space.module_generating_set()
             return self(
                 {
@@ -2508,15 +2508,14 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
                             target_label: coefficient
                             for target_label in self.codomain().module_generating_set()
                             if (
-                                coefficient := coefficients.get(
+                                coefficient := coordinates(
                                     assignment_labels(
                                         lambda index: (
                                             source_label
                                             if int(index) == 0
                                             else target_label
                                         )
-                                    ),
-                                    self.codomain().base_ring().zero(),
+                                    )
                                 )
                             )
                         }
@@ -2532,9 +2531,11 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
             power_labels = power.module_generating_set()
             coefficients = {}
             for source_label in self.domain().module_generating_set():
-                image = morphism(self.domain().module_generator(source_label))
-                for target_label, coefficient in self.codomain().framing_coefficients(image).items():
-                    coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = coefficient
+                image = self.codomain().framing_morphism().lift(
+                    morphism(self.domain().module_generator(source_label))
+                )
+                for target_label in image.support().domain():
+                    coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = image(target_label)
             assignment = power.linear_combination(coefficients)
             inclusion = self.inclusion_into_generator_maps()
             if inclusion.has_selected_lift():
@@ -2544,7 +2545,10 @@ class InternalMorModules(OwnedCategoryOverBaseRing):
         def _selected_module_coefficients(self, morphism):
             r"""Coordinates of a linear map in the framing of the presented model."""
             model = self._internal_mor_model()
-            return model.framing_coefficients(self._internal_model_from_morphism(self(morphism)))
+            coordinates = model.framing_morphism().lift(
+                self._internal_model_from_morphism(self(morphism))
+            )
+            return {label: coordinates(label) for label in coordinates.support().domain()}
 
 
 class ModuleSubobjectConstruction:
@@ -3443,15 +3447,19 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         def _selected_module_coefficients(self, element):
             r"""``m = sum_j t_j m_j`` and ``t_j = sum_i c_ij s_i`` give ``m = sum_ij c_ij s_i m_j``."""
             element = self(element)
-            extension_coefficients = self.module_over_extension().framing_coefficients(
+            module_coordinates = self.module_over_extension().framing_morphism().lift(
                 element.underlying_element()
             )
+            scalar_framing = self.extension_ring().framing_morphism()
             framing = self.module_generating_set()
-            return {
-                framing((scalar_label, module_label)): self.base_ring()(coefficient)
-                for module_label, scalar in extension_coefficients.items()
-                for scalar_label, coefficient in self.extension_ring().framing_coefficients(scalar).items()
-            }
+            coefficients = {}
+            for module_label in module_coordinates.support().domain():
+                scalar_coordinates = scalar_framing.lift(module_coordinates(module_label))
+                for scalar_label in scalar_coordinates.support().domain():
+                    coefficients[framing((scalar_label, module_label))] = self.base_ring()(
+                        scalar_coordinates(scalar_label)
+                    )
+            return coefficients
 
         def zero(self):
             return self.element_class(self, self.module_over_extension().zero())
@@ -3509,9 +3517,10 @@ def _restricted_scalar_presentation(module, ring_map, labels):
                 if not coefficient:
                     continue
                 product = extension_ring(scalar_generator * extension_ring(coefficient))
-                for output_scalar_label, output_coefficient in extension_ring.framing_coefficients(product).items():
+                product_coordinates = extension_ring.framing_morphism().lift(product)
+                for output_scalar_label in product_coordinates.support().domain():
                     column = labels.ranking_map()(labels(lambda index: output_scalar_label if int(index) == 0 else module_label))
-                    row[column] += ring(output_coefficient)
+                    row[column] += ring(product_coordinates(output_scalar_label))
             if any(row):
                 relation_rows.append(tuple(row))
     relations = ring.matrix_space(len(relation_rows), width).from_rows(tuple(relation_rows))
@@ -3685,12 +3694,13 @@ def BilinearMap(left, right, codomain, generator_images):
             return tensor_product.module_category().Mor(tensor_product, codomain)(images)
         case False:
             def evaluation(left_element, right_element):
-                left_coefficients = left.framing_coefficients(left_element)
-                right_coefficients = right.framing_coefficients(right_element)
+                left_coordinates = left.framing_morphism().lift(left_element)
+                right_coordinates = right.framing_morphism().lift(right_element)
+                right_support = right_coordinates.support().domain()
                 return sum(
                     (
-                        left_coefficient
-                        * right_coefficient
+                        left_coordinates(left_label)
+                        * right_coordinates(right_label)
                         * codomain(
                             raw_image(
                                 _tensor_pair(
@@ -3700,8 +3710,8 @@ def BilinearMap(left, right, codomain, generator_images):
                                 )
                             )
                         )
-                        for left_label, left_coefficient in left_coefficients.items()
-                        for right_label, right_coefficient in right_coefficients.items()
+                        for left_label in left_coordinates.support().domain()
+                        for right_label in right_support
                     ),
                     codomain.zero(),
                 )
@@ -3760,15 +3770,16 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             r"""Return the universal pure tensor of two elements."""
             left, right = self._two_factors()
 
-            left_coefficients = left.framing_coefficients(left_element)
-            right_coefficients = right.framing_coefficients(right_element)
+            left_coordinates = left.framing_morphism().lift(left_element)
+            right_coordinates = right.framing_morphism().lift(right_element)
+            right_support = right_coordinates.support().domain()
             labels = self.module_generating_set()
             return self.linear_combination(
                 {
-                    _tensor_pair(labels, left_label, right_label): left_coefficient * right_coefficient
-                    for left_label, left_coefficient in left_coefficients.items()
-                    for right_label, right_coefficient in right_coefficients.items()
-                    if left_coefficient * right_coefficient
+                    _tensor_pair(labels, left_label, right_label): product
+                    for left_label in left_coordinates.support().domain()
+                    for right_label in right_support
+                    if (product := left_coordinates(left_label) * right_coordinates(right_label))
                 }
             )
 
@@ -4243,8 +4254,9 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 generator = source.module_generator(source_label)
                 coefficients = {}
                 for index in factors.index_set():
-                    for target_label, coefficient in factors.value(index).framing_coefficients(legs.value(index)(generator)).items():
-                        coefficients[_biproduct_label(labels, index, target_label)] = coefficient
+                    leg_image = factors.value(index).framing_morphism().lift(legs.value(index)(generator))
+                    for target_label in leg_image.support().domain():
+                        coefficients[_biproduct_label(labels, index, target_label)] = leg_image(target_label)
                 return self.linear_combination(coefficients)
 
             return source.module_category().Mor(source, self)(image)
@@ -4488,19 +4500,17 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def _matrix_column_coefficients(self, column_label):
+        def _matrix_column_coordinates(self, column_label):
+            r"""The coordinates of the image of the basis vector ``e_s``: the column ``s`` as a function of the rows."""
             column_label = _matrix_index(self.parent().column_index_set(), column_label)
             generator_image = self._generator_image
             image = generator_image(column_label) if generator_image is not None else self(self.domain().module_generator(column_label))
-            return self.codomain().framing_coefficients(image)
+            return self.codomain()(image).to_vector()
 
         def matrix_entry(self, row_label, column_label):
             row_label = _matrix_index(self.parent().row_index_set(), row_label)
             column_label = _matrix_index(self.parent().column_index_set(), column_label)
-            return self._matrix_column_coefficients(column_label).get(
-                row_label,
-                self.parent().base_ring().zero(),
-            )
+            return self._matrix_column_coordinates(column_label)(row_label)
 
         def __getitem__(self, index):
             r"""The entry at ``(row, column)``."""
@@ -4569,10 +4579,10 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
             target = target if target.parent() is self.codomain() else self.codomain()(target)
             ring = self.parent().base_ring()
-            coefficients = self.codomain().framing_coefficients(target)
+            coordinates = target.to_vector()
             rhs = sage_vector(
                 _engine_ring(ring),
-                [_engine_element(ring, coefficients.get(label, ring.zero())) for label in self.parent().row_index_set()],
+                [_engine_element(ring, coordinates(label)) for label in self.parent().row_index_set()],
             )
             solution = _engine_matrix(self).solve_right(rhs)
             return self.domain().linear_combination(
@@ -4626,15 +4636,18 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 localized_domain = self.domain()
                 localization_map = ring.localization_map()
 
+                def localized_kernel_element(label):
+                    coordinates = inclusion(source_kernel.module_generator(label)).to_vector()
+                    return localized_domain.linear_combination(
+                        {
+                            column_label: localization_map(coordinates(column_label))
+                            for column_label in coordinates.support().domain()
+                        }
+                    )
+
                 return finite_indexed_family(
                     kernel_labels,
-                    lambda label: localized_domain.linear_combination(
-                        {
-                            column_label: localization_map(coefficient)
-                            for column_label, coefficient in source_domain.framing_coefficients(inclusion(source_kernel.module_generator(label))).items()
-                            if coefficient
-                        }
-                    ),
+                    localized_kernel_element,
                     name=f"Localized kernel spanning family of {self}",
                 )
 
@@ -4904,8 +4917,9 @@ def _matrix_coefficients(mor, morphism):
     labels = mor.module_generating_set()
     coefficients = {}
     for column_label in mor.column_index_set():
-        for row_label, coefficient in morphism._matrix_column_coefficients(column_label).items():
-            coefficients[labels((row_label, column_label))] = coefficient
+        column = morphism._matrix_column_coordinates(column_label)
+        for row_label in column.support().domain():
+            coefficients[labels((row_label, column_label))] = column(row_label)
     return coefficients
 
 

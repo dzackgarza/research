@@ -159,14 +159,13 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             ``m = sum_s c_s m_s`` in ``M`` gives ``m/s = sum_s (c_s/s) (m_s/1)``.
             """
             element = self(element)
-            source_coefficients = self.numerator_module().framing_coefficients(element.numerator())
+            source_coordinates = self.numerator_module().framing_morphism().lift(element.numerator())
             localization_map = self.localization_ring().localization_map()
             denominator = localization_map(element.denominator())
             denominator_inverse = denominator.inverse_of_unit()
             return {
-                label: localization_map(coefficient) * denominator_inverse
-                for label, coefficient in source_coefficients.items()
-                if coefficient != self.source_ring().zero()
+                label: localization_map(source_coordinates(label)) * denominator_inverse
+                for label in source_coordinates.support().domain()
             }
 
         def base_ring(self):

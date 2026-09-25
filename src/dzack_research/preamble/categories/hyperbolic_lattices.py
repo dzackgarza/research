@@ -176,10 +176,9 @@ def _rational_pair(value):
 def _framing_coordinates(element):
     r"""Return ordered framing coefficients at a private engine boundary."""
     parent = element.parent()
-    coefficients = parent.framing_coefficients(element)
-    zero = parent.base_ring().zero()
+    coordinates = element.to_vector()
     return tuple(
-        coefficients.get(label, zero)
+        coordinates(label)
         for label in parent.module_generating_set()
     )
 

@@ -89,7 +89,7 @@ class _NativeModuleFrame:
 
     def coefficients(self, element):
         source = self.source()
-        return source.framing_coefficients(source.linear_combination(self._coordinates(element)))
+        return source.framing_morphism().lift(source.linear_combination(self._coordinates(element)))
 
     def is_basis(self):
         r"""Whether the source is free and its map onto the module is also injective."""

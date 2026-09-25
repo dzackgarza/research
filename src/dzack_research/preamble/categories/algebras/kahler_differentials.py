@@ -299,12 +299,11 @@ def _construct_kahler_differentials(algebra):
 
         def conormal_image(label):
             differential = presentation_derivation(ideal_generators[label])
-            coefficients = presentation_omega.framing_coefficients(differential)
+            coordinates = presentation_omega.framing_morphism().lift(differential)
             return ambient_differentials.linear_combination(
                 {
-                    differential_label: quotient_map(coefficient)
-                    for differential_label, coefficient in coefficients.items()
-                    if coefficient
+                    differential_label: quotient_map(coordinates(differential_label))
+                    for differential_label in coordinates.support().domain()
                 }
             )
 

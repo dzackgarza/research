@@ -40,7 +40,9 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
         result = target_dga.zero()
         for degree, component in represented.homogeneous_components().items():
             source_piece = source_exterior.graded_piece(degree)
-            for label, coefficient in source_piece.framing_coefficients(component).items():
+            coordinates = source_piece.framing_morphism().lift(component)
+            for label in coordinates.support().domain():
+                coefficient = coordinates(label)
                 coefficient_image = target_dga.from_degree_zero(
                     algebra_morphism(source_algebra(coefficient))
                 )

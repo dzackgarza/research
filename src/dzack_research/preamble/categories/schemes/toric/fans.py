@@ -46,9 +46,9 @@ def _engine_lattice(module):
 
 def _engine_vector(module, element):
     r"""Coordinates of an owned free-module element in its chosen frame."""
-    coefficients = module.framing_coefficients(module(element))
+    coordinates = module(element).to_vector()
     return _engine_lattice(module)(
-        [int(coefficients.get(label, 0)) for label in module.module_generating_set()]
+        [int(coordinates(label)) for label in module.module_generating_set()]
     )
 
 
@@ -163,9 +163,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         )
         (label,) = labels
         integers = _integers()
-        paired = pairing(character, cocharacter)
-        coefficients = values.framing_coefficients(paired)
-        return integers(coefficients.get(label, integers.zero()))
+        return integers(pairing(character, cocharacter).to_vector()(label))
 
     def _repr_object_names(self):
         return f"rational polyhedral fans in {self.lattice()}"

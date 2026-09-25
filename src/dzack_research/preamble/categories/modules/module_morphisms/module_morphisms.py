@@ -109,11 +109,11 @@ def _integral_left_solver(system, ring):
         )
         target_vector = left.domain().linear_combination({label: target_values[position] for position, label in enumerate(target_labels) if target_values[position]})
         shifted_vector = left(target_vector)
-        shifted_coefficients = left.codomain().framing_coefficients(shifted_vector)
+        shifted_coordinates = shifted_vector.to_vector()
 
         solution = [ring.zero()] * width
         for index, shifted_label in enumerate(shifted_labels):
-            value = shifted_coefficients.get(shifted_label, ring.zero())
+            value = shifted_coordinates(shifted_label)
             divisor = smith[index, index] if index < min(int(shifted_labels.cardinality()), width) else ring.zero()
             if divisor == 0:
                 if value != 0:
@@ -145,9 +145,9 @@ def _integral_left_positional_solver(system, ring):
         original_solution = element_solver(target)
         if original_solution is None:
             return None
-        coefficients = original_solution.parent().framing_coefficients(original_solution)
+        coordinates = original_solution.to_vector()
         return tuple(
-            coefficients.get(label, ring.zero())
+            coordinates(label)
             for label in original_solution.parent().module_generating_set()
         )
 
@@ -632,7 +632,7 @@ class ModuleMorphism(Morphism):
         labels = domain.module_generating_set()
         decision = True
         for row in rows:
-            relation_image = self._linear_combination_of_generator_images({label: coefficient for label, coefficient in zip(labels, row, strict=True) if coefficient})
+            relation_image = self._linear_combination_of_generator_images(domain.framing_source()({label: coefficient for label, coefficient in zip(labels, row, strict=True) if coefficient}))
             relation_holds = relation_image == zero
             if relation_holds is False:
                 raise ValueError(f"the generator images do not define a linear map {domain} -> {self.codomain()}: the relation {row} of {domain} is sent to {relation_image}, not to 0")
@@ -755,8 +755,8 @@ class ModuleMorphism(Morphism):
             case _:
                 return None
 
-    def _linear_combination_of_generator_images(self, coefficients):
-        r"""Evaluate a linear combination through the codomain module interface.
+    def _linear_combination_of_generator_images(self, coordinates):
+        r"""Evaluate ``sum_s a(s) f(m_s)`` for ``a`` in the framing source ``F_R(S)`` of the domain.
 
         Owned ring facades deliberately do not require Sage's coercion model
         to identify native coefficient elements with the facade parent.  Raw
@@ -770,10 +770,10 @@ class ModuleMorphism(Morphism):
         return sum(
             (
                 codomain.scalar_multiple(
-                    ring(source_coefficient),
+                    ring(coordinates(source_label)),
                     self._generator_image(source_label),
                 )
-                for source_label, source_coefficient in coefficients.items()
+                for source_label in coordinates.support().domain()
             ),
             codomain.zero(),
         )
@@ -784,8 +784,9 @@ class ModuleMorphism(Morphism):
         if self._element_function is not None:
             image = self._element_function(element)
             return image if image.parent() is self.codomain() else self.codomain()(image)
-        coefficients = self.domain().framing_coefficients(element)
-        return self._linear_combination_of_generator_images(coefficients)
+        return self._linear_combination_of_generator_images(
+            self.domain().framing_morphism().lift(element)
+        )
 
     def alternating_extension(self):
         r"""Extend this linear map through the exterior-algebra universal property."""
@@ -1060,13 +1061,14 @@ class ModuleMorphism(Morphism):
 
         image = self.image()
         image_element = image.inclusion().lift(element)
-        coefficients = image.framing_coefficients(image_element)
+        coordinates = image.framing_morphism().lift(image_element)
+        support = coordinates.support().domain()
         domain_labels = domain.module_generating_set()
-        assert all(label in domain_labels for label in coefficients.index_set()), (
+        assert all(label in domain_labels for label in support), (
             f"preimage of {element} under {domain} -> {codomain}: the generators of the image should be indexed "
-            f"by the generators {domain_labels} of {domain}, but the image returned coefficients on {coefficients.index_set()}"
+            f"by the generators {domain_labels} of {domain}, but the image returned coefficients on {support}"
         )
-        return domain.linear_combination({label: coefficient for label, coefficient in coefficients.items() if coefficient})
+        return domain.linear_combination({label: coordinates(label) for label in support})
 
     def is_injective(self) -> bool:
         r"""Return whether ``ker(self)=0`` when the kernel is computable."""
@@ -1169,11 +1171,8 @@ class ModuleMorphism(Morphism):
         if element.parent() is not self.codomain():
             element = self.codomain()(element)
         codomain_labels = tuple(self.codomain().module_generating_set())
-        coefficients = self.codomain().framing_coefficients(element)
-        target = [
-            coefficients.get(label, ring.zero())
-            for label in codomain_labels
-        ]
+        coordinates = element.to_vector()
+        target = [coordinates(label) for label in codomain_labels]
         coordinate_map = self.domain().module_category().Mor(
             self.domain(), self.codomain()
         )(self)
@@ -1278,7 +1277,8 @@ class ModuleMorphism(Morphism):
         target_cover = target_presentation.codomain()
 
         def lift_target(element):
-            return target_cover.linear_combination(target.framing_coefficients(element))
+            coordinates = target.framing_morphism().lift(element)
+            return target_cover.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
 
         cover_map = source_cover.module_category().Mor(source_cover, target_cover)({label: lift_target(self(source.module_generator(label))) for label in source_cover.module_generating_set()})
         relation_source = source_presentation.domain()
@@ -1331,21 +1331,26 @@ class ModuleMorphism(Morphism):
         if element.parent() is not codomain:
             element = codomain(element)
 
+        extension_framing = extension.framing_morphism()
         image_coordinates = {
-            label: extension.framing_coefficients(self(domain.module_generator(label)).underlying_element())
+            label: extension_framing.lift(self(domain.module_generator(label)).underlying_element())
             for label in domain.module_generating_set()
         }
-        target_coordinates = extension.framing_coefficients(element.underlying_element())
+        target_coordinates = extension_framing.lift(element.underlying_element())
         denominator = reduce(
             lambda current, coefficient: current.lcm(coefficient.denominator()),
-            tuple(coefficient for coordinates in (*image_coordinates.values(), target_coordinates) for coefficient in coordinates.values()),
+            tuple(
+                coordinates(label)
+                for coordinates in (*image_coordinates.values(), target_coordinates)
+                for label in coordinates.support().domain()
+            ),
             ring.one(),
         )
         scale = codomain.ring_map()(denominator)
         cleared_module = ring._fresh_free_module_on(extension.module_generating_set())
 
         def cleared(coordinates):
-            return cleared_module.linear_combination({label: ring(scale * coefficient) for label, coefficient in coordinates.items()})
+            return cleared_module.linear_combination({label: ring(scale * coordinates(label)) for label in coordinates.support().domain()})
 
         cleared_span = domain.module_category().Mor(domain, cleared_module)({label: cleared(coordinates) for label, coordinates in image_coordinates.items()})
         return cleared_span._preimage_or_none(cleared(target_coordinates))
@@ -2433,13 +2438,16 @@ class SubFramingMorphism(ModuleEmbedding):
         source_labels = self.domain().module_generating_set()
         return all(
             label in source_labels
-            for label in self.codomain().framing_coefficients(element).index_set()
+            for label in element.to_vector().support().domain()
         )
 
     def lift(self, element):
         r"""Return the unique element of the smaller free module mapping here."""
         assert self.is_in_image(element), f"{element} is not in the image of {self}"
-        return self.domain().linear_combination(self.codomain().framing_coefficients(element))
+        coordinates = element.to_vector()
+        return self.domain().linear_combination(
+            {label: coordinates(label) for label in coordinates.support().domain()}
+        )
 
 
 def _framing_morphism(codomain) -> FramingMorphism:
@@ -2482,13 +2490,14 @@ class TensorProductModuleMorphism(ModuleMorphism):
         product, unbuilt.
         """
         codomain = self.codomain()
-        left_coefficients = self.left_module().framing_coefficients(left_element)
-        right_coefficients = self.right_module().framing_coefficients(right_element)
+        left_coordinates = self.left_module().framing_morphism().lift(left_element)
+        right_coordinates = self.right_module().framing_morphism().lift(right_element)
+        right_support = right_coordinates.support().domain()
         value = codomain.zero()
-        for left_label, left_coefficient in left_coefficients.items():
-            for right_label, right_coefficient in right_coefficients.items():
+        for left_label in left_coordinates.support().domain():
+            for right_label in right_support:
                 value = value + codomain.scalar_multiple(
-                    left_coefficient * right_coefficient,
+                    left_coordinates(left_label) * right_coordinates(right_label),
                     self._gram_entry(left_label, right_label),
                 )
         return value

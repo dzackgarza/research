@@ -403,10 +403,9 @@ class ToricSchemeMorphism(SchemeMorphism):
             f"Cartier on {codomain}"
         )
         target_rays = codomain.fan().cones(1)
-        target_coefficients = target_group.framing_coefficients(divisor)
-        zero = _integers().zero()
+        target_coordinates = divisor.to_vector()
         engine_divisor = _engine_scheme(codomain).divisor(
-            [int(target_coefficients.get(ray, zero)) for ray in target_rays]
+            [int(target_coordinates(ray)) for ray in target_rays]
         )
         pulled = _engine_scheme_morphism(self).pullback_divisor(engine_divisor)
         source = self.domain()
@@ -646,9 +645,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 f"the coefficient of D_rho in {divisor} is defined for a ray rho of the fan of "
                 f"{self}, but {ray} is not a ray of it"
             )
-            group = self.weil_divisor_group()
-            coefficients = group.framing_coefficients(group(divisor))
-            return coefficients.get(ray, _integers().zero())
+            return self.weil_divisor_group()(divisor).to_vector()(ray)
 
         def order_of_character_along_prime_divisor(self, character, ray):
             r"""Return ``ord_{D_rho}(chi^m)=<m,u_rho>`` (CLS Prop. 4.1.2)."""
@@ -674,16 +671,14 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             """
             group = self.torus_invariant_divisor_group()
             divisor = group(divisor)
-            coefficients = group.framing_coefficients(divisor)
+            coordinates = divisor.to_vector()
+            support = coordinates.support()
             zero = _integers().zero()
-            assert all(coefficient >= zero for coefficient in coefficients.values()), (
+            assert all(coordinates(ray) >= zero for ray in support.domain()), (
                 f"the support of {divisor} as a closed subscheme of {self} is defined here only for "
                 "an effective divisor, but it has a negative coefficient"
             )
-            selected = tuple(
-                ray for ray in self.fan().cones(1)
-                if coefficients.get(ray, zero) > zero
-            )
+            selected = tuple(ray for ray in self.fan().cones(1) if ray in support)
             local_closed = {}
             for cone in self.gluing_datum().chart_indices():
                 chart = self.affine_chart(cone)
@@ -838,12 +833,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             This is the right-hand side of the Cartier equations
             ``<m_sigma, u_rho> = -a_rho`` (CLS Thm. 4.2.8).
             """
-            group = self.torus_invariant_divisor_group()
-            coefficients = group.framing_coefficients(divisor)
-            zero = _integers().zero()
+            coordinates = self.torus_invariant_divisor_group()(divisor).to_vector()
             local = self.local_divisor_group(cone)
             return local.linear_combination(
-                {ray: -coefficients.get(ray, zero) for ray in cone.faces(1)}
+                {ray: -coordinates(ray) for ray in cone.faces(1)}
             )
 
         def is_cartier(self, divisor) -> bool:
@@ -893,15 +886,11 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             if not self.is_cartier(divisor):
                 return False
             fan = self.fan()
-            group = self.torus_invariant_divisor_group()
-            coefficients = group.framing_coefficients(divisor)
-            zero = _integers().zero()
+            coordinates = self.torus_invariant_divisor_group()(divisor).to_vector()
             for cone in fan.maximal_cones():
                 character = self.cartier_datum(divisor, cone)
                 for ray in fan.cones(1):
-                    if _pairing_on_ray(fan, character, ray) < -coefficients.get(
-                        ray, zero
-                    ):
+                    if _pairing_on_ray(fan, character, ray) < -coordinates(ray):
                         return False
             return True
 
@@ -920,17 +909,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             if not self.is_cartier(divisor):
                 return False
             fan = self.fan()
-            group = self.torus_invariant_divisor_group()
-            coefficients = group.framing_coefficients(divisor)
-            zero = _integers().zero()
+            coordinates = self.torus_invariant_divisor_group()(divisor).to_vector()
             for cone in fan.maximal_cones():
                 character = self.cartier_datum(divisor, cone)
                 for ray in fan.cones(1):
                     if ray.is_face_of(cone):
                         continue
-                    if _pairing_on_ray(fan, character, ray) <= -coefficients.get(
-                        ray, zero
-                    ):
+                    if _pairing_on_ray(fan, character, ray) <= -coordinates(ray):
                         return False
             return True
 
@@ -1001,13 +986,11 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 f"the polytope P_D of {divisor} is computed here only on a complete fan, where it "
                 f"is bounded, but the fan of {self} is not complete"
             )
-            group = self.torus_invariant_divisor_group()
-            coefficients = group.framing_coefficients(divisor)
-            zero = _integers().zero()
+            coordinates = self.torus_invariant_divisor_group()(divisor).to_vector()
             cocharacters = self.cocharacter_lattice()
             halfspaces = tuple(
                 (
-                    coefficients.get(ray, zero),
+                    coordinates(ray),
                     tuple(_engine_vector(cocharacters, _ray_generator(ray))),
                 )
                 for ray in self.fan().cones(1)
@@ -1077,7 +1060,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             )
             sections = self.divisor_section_space(divisor)
             section = sections(section)
-            coefficients = sections.framing_coefficients(section)
+            coordinates = section.to_vector()
             module_sheaf = selected_line.module_sheaf()
             local_components = {}
             for cone in self.gluing_datum().chart_indices():
@@ -1086,7 +1069,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 scalar_map = chart_ring.algebra_structure_morphism()
                 cartier = self.cartier_datum(divisor, cone)
                 local_coefficient = chart_ring.zero()
-                for character, coefficient in coefficients.items():
+                for character in coordinates.support().domain():
+                    coefficient = coordinates(character)
                     shifted = self.character_lattice()(character) - cartier
                     assert cone.dual_cone_contains(shifted), (
                         f"the character {character} of the section is not regular on the chart of "
@@ -1125,12 +1109,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             for cone in self.gluing_datum().chart_indices():
                 module = selected_line.module_sheaf().sections_on_chart(cone)
                 label = next(iter(module.module_generating_set()))
-                coefficient = module.framing_coefficients(
+                coefficient = module.framing_morphism().lift(
                     section_datum.compatible_section_component(compatible, cone)
-                ).get(
-                    label,
-                    module.base_ring().zero(),
-                )
+                )(label)
                 local_closed[cone] = self.affine_chart(cone).closed_subscheme(coefficient)
             return self.chartwise_closed_subscheme(
                 local_closed,
@@ -1184,13 +1165,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 f"{divisor}, so it is not a section of O(D) on {self}"
             )
             cox = self.cox_ring()
-            coefficients = self.weil_divisor_group().framing_coefficients(divisor)
+            coordinates = divisor.to_vector()
             zero = _integers().zero()
             monomial = cox.one()
             for label in cox.algebra_generating_set():
                 ray = cox.cox_rays()[label]
                 exponent = self.order_of_character_along_prime_divisor(character, ray)
-                exponent += coefficients.get(ray, zero)
+                exponent += coordinates(ray)
                 assert exponent >= zero, (
                     f"the Cox monomial of {character} as a section of O({divisor}) has the negative "
                     f"exponent {exponent} at the ray {ray}, so {character} is not in P_D"
@@ -1283,11 +1264,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             def local_map(index):
                 module = line.local_module(index)
                 label = next(iter(module.module_generating_set()))
-                zero = module.base_ring().zero()
                 coordinates = tuple(
-                    module.framing_coefficients(
+                    module.framing_morphism().lift(
                         section_datum.compatible_section_component(section, index)
-                    ).get(label, zero)
+                    )(label)
                     for section in sections
                 )
                 return datum.chart(index).projective_morphism_from_coordinates(system, coordinates)
@@ -1611,13 +1591,12 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             left = group(left)
             right = group(right)
             rays = self.fan().cones(1)
-            zero = _integers().zero()
             engine = _engine_scheme(self)
 
             def engine_divisor(divisor):
-                coefficients = group.framing_coefficients(divisor)
+                coordinates = divisor.to_vector()
                 return engine.divisor(
-                    [int(coefficients.get(ray, zero)) for ray in rays]
+                    [int(coordinates(ray)) for ray in rays]
                 )
 
             cohomology = engine.cohomology_ring()

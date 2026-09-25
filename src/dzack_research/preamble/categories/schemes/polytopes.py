@@ -281,10 +281,11 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             match point.parent():
                 case parent if parent is lattice:
                     rationals = _own_ring(SageQQ)
+                    coordinates = point.to_vector()
                     return ambient.linear_combination(
                         {
-                            label: rationals(coefficient)
-                            for label, coefficient in lattice.framing_coefficients(point).items()
+                            label: rationals(coordinates(label))
+                            for label in coordinates.support().domain()
                         }
                     )
                 case _:
@@ -294,10 +295,9 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             rationals = _own_ring(SageQQ)
             ambient = self.ambient_space()
             point = self.rational_point(point)
-            coefficients = ambient.framing_coefficients(point)
-            zero = rationals.zero()
+            coordinates = point.to_vector()
             return tuple(
-                _engine_element(rationals, coefficients.get(label, zero))
+                _engine_element(rationals, coordinates(label))
                 for label in ambient.module_generating_set()
             )
 
@@ -437,18 +437,16 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             need either the Sage polyhedron or its coordinate tuples.
             """
             rationals = _own_ring(SageQQ)
-            ambient = self.ambient_space()
             dual = self.ambient_lattice().dual_module()
             point = self.rational_point(point)
             normal = dual(normal)
-            point_coefficients = ambient.framing_coefficients(point)
-            normal_coefficients = dual.framing_coefficients(normal)
+            point_coordinates = point.to_vector()
+            normal_coordinates = normal.to_vector()
             zero = rationals.zero()
             return sum(
                 (
-                    rationals(normal_coefficients.get(label, zero))
-                    * rationals(point_coefficients.get(label, zero))
-                    for label in ambient.module_generating_set()
+                    rationals(normal_coordinates(label)) * rationals(point_coordinates(label))
+                    for label in normal_coordinates.support().domain()
                 ),
                 zero,
             )
@@ -859,13 +857,11 @@ def _convex_polytope(
         placement = placement.Polygon()
     ambient = ConvexPolytopes(lattice).ambient_space()
     labels = tuple(ambient.module_generating_set())
-    zero = rationals.zero()
 
     def contains(point):
-        point = ambient(point)
-        coefficients = ambient.framing_coefficients(point)
+        point_coordinates = ambient(point).to_vector()
         coordinates = tuple(
-            _engine_element(rationals, coefficients.get(label, zero))
+            _engine_element(rationals, point_coordinates(label))
             for label in labels
         )
         return bool(polyhedron.contains(coordinates))

@@ -91,7 +91,7 @@ class _SparseFreeAlgebra(_WordModule):
         element = self(element)
         if all(
             int(label.summand_index()) == 0
-            for label in self.framing_coefficients(element).index_set()
+            for label in self.framing_morphism().lift(element).support().domain()
         ):
             return True
         if self.is_commutative() is True:
@@ -133,10 +133,12 @@ def _word_product(module, left, right):
                 word = labels.from_multiplicities({label: left_word.multiplicity(label) + right_word.multiplicity(label) for label in support})
         return module.basis_label(s + t, word)
 
+    left_coordinates = module.framing_morphism().lift(left)
+    right_coordinates = module.framing_morphism().lift(right)
     return sum((
-        module.scalar_multiple(a * b, module.module_generator(product_label(x, y)))
-        for x, a in module.framing_coefficients(module(left)).items()
-        for y, b in module.framing_coefficients(module(right)).items()
+        module.scalar_multiple(left_coordinates(x) * right_coordinates(y), module.module_generator(product_label(x, y)))
+        for x in left_coordinates.support().domain()
+        for y in right_coordinates.support().domain()
     ), module.zero())
 
 
@@ -240,9 +242,9 @@ class SparseFreeAlgebraMorphism(Morphism):
         return prod(factors, start=self.codomain().one())
 
     def _call_(self, element):
-        element = self.domain()(element)
+        coordinates = self.domain().framing_morphism().lift(element)
         return sum(
-            (coefficient * self._basis_image(label) for label, coefficient in element.monomial_coefficients().items()),
+            (coordinates(label) * self._basis_image(label) for label in coordinates.support().domain()),
             self.codomain().zero(),
         )
 

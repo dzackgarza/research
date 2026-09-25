@@ -319,14 +319,14 @@ class _HorikawaK3DoubleCoverEngine:
             index, -self.base_ring().one()
         )
         z = local.algebra_generator("z")
-        coefficients = local.framing_coefficients(deck.coordinate_algebra_morphism()(z))
+        coordinates = local.framing_morphism().lift(deck.coordinate_algebra_morphism()(z))
         expected = local.base_ring().algebra_structure_morphism()(
             -self.base_ring().one()
         )
-        assert coefficients.get(z_label, local.base_ring().zero()) == expected, (
+        assert coordinates(z_label) == expected, (
             f"the deck transformation of {self} does not send the cover coordinate z to -z "
             f"on chart {index}: the coefficient of z in its image is "
-            f"{coefficients.get(z_label, local.base_ring().zero())}, expected {expected}"
+            f"{coordinates(z_label)}, expected {expected}"
         )
         return -self.base_ring().one()
 

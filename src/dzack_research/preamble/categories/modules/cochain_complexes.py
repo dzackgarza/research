@@ -209,20 +209,11 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
             if cohomology_class.parent() is not self:
                 cohomology_class = self(cohomology_class)
-            coefficients = self.framing_coefficients(cohomology_class)
+            coordinates = self.framing_morphism().lift(cohomology_class)
             projection = self.cokernel_projection()
             cycles = projection.domain()
             representative = cycles.linear_combination(
-                {
-                    label: coefficient
-                    for label in cycles.module_generating_set()
-                    if (
-                        coefficient := coefficients.get(
-                            label,
-                            cycles.base_ring().zero(),
-                        )
-                    )
-                }
+                {label: coordinates(label) for label in coordinates.support().domain()}
             )
             return cycles.inclusion()(representative)
 

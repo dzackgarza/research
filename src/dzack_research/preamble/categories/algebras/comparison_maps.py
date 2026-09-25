@@ -62,7 +62,9 @@ def _divided_to_symmetric(module):
         element = source(element)
         result = target.zero()
         for degree, component in element.homogeneous_components().items():
-            for label, coefficient in source.graded_piece(degree).framing_coefficients(component).items():
+            coordinates = source.graded_piece(degree).framing_morphism().lift(component)
+            for label in coordinates.support().domain():
+                coefficient = coordinates(label)
                 denominator = 1
                 monomial = target.one()
                 if degree == 1:

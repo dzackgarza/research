@@ -130,10 +130,11 @@ class GradedDirectSumElement(ModuleElement):
         coefficients = {}
         labels = self.parent().module_generating_set()
         for degree, component in self._components.items():
-            for label, coefficient in self.parent().graded_piece(degree).framing_coefficients(component).items():
+            coordinates = self.parent().graded_piece(degree).framing_morphism().lift(component)
+            for label in coordinates.support().domain():
                 coefficients[
                     labels(self.parent().degree_index_set()(degree), label)
-                ] = coefficient
+                ] = coordinates(label)
         return coefficients
 
     def _add_(self, other):

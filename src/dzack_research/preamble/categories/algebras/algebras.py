@@ -989,7 +989,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             module = self.unformed_module()
             match self:
                 case _ if self in FramedModules(self.algebra_base_ring()):
-                    return module.linear_combination(self.framing_coefficients(element))
+                    coordinates = self.framing_morphism().lift(element)
+                    return module.linear_combination(
+                        {label: coordinates(label) for label in coordinates.support().domain()}
+                    )
                 case _:
                     return module(self._underlying_additive_element(element))
 
@@ -998,7 +1001,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             module = self.unformed_module()
             match self:
                 case _ if self in FramedModules(self.algebra_base_ring()):
-                    return self.linear_combination(module.framing_coefficients(element))
+                    coordinates = module.framing_morphism().lift(element)
+                    return self.linear_combination(
+                        {label: coordinates(label) for label in coordinates.support().domain()}
+                    )
                 case _:
                     return self(module._underlying_additive_element(element))
 
@@ -3223,10 +3229,10 @@ def _unit_from_multiplication(multiplication):
                     module.module_generator(right_label),
                 )
             )
-            coefficients = module.framing_coefficients(product)
+            coordinates = module.framing_morphism().lift(product)
             for out_index in range(rank):
                 out_label = labels[out_index]
-                system_entries[right_index * rank + out_index][left_index] = _engine_element(ring, coefficients.get(out_label, ring.zero()))
+                system_entries[right_index * rank + out_index][left_index] = _engine_element(ring, coordinates(out_label))
     system = sage_matrix(engine, rank * rank, rank, system_entries)
     target = sage_vector(engine, target_entries)
     coefficients = system.solve_right(target)

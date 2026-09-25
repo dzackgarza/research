@@ -137,16 +137,15 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
         # A formal divisor is an element of the free module's engine, so the
         # group, not the element, answers questions about its terms.
         def terms(self, divisor):
-            coefficients = self.framing_coefficients(divisor)
-            support = finite_ordered_set(tuple(coefficients))
+            coordinates = self(divisor).to_vector()
             return finite_indexed_family(
-                support,
-                coefficients.__getitem__,
+                coordinates.support().domain(),
+                coordinates,
                 name="Divisor coefficients on the finite support",
             )
 
         def components(self, divisor):
-            return self.terms(divisor).index_set()
+            return self(divisor).to_vector().support().domain()
 
         def divisor_repr(self, divisor) -> str:
             terms = self.terms(divisor)

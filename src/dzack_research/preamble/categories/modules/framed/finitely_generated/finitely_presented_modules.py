@@ -626,7 +626,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             def lift_from_ambient(image, element):
                 element = element if element.parent() is self else self(element)
-                return image.linear_combination(self.framing_coefficients(element))
+                coordinates = self.framing_morphism().lift(element)
+                return image.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
 
             return _presented_module_from_morphism(
                 self.presentation(),
@@ -768,7 +769,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             kernel = multiplication.kernel()
             inclusion = kernel.inclusion()
             scalars = tuple(
-                line.framing_coefficients(inclusion(kernel.module_generator(kernel_label))).get(coordinate("r"), ring.zero())
+                inclusion(kernel.module_generator(kernel_label)).to_vector()(coordinate("r"))
                 for kernel_label in kernel.module_generating_set()
             )
             return ring.ideal(*(scalars or (ring.zero(),)))
@@ -1036,11 +1037,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     invariants.append(ring.zero())
                     continue
                 image = diagonal(source.module_generator(source_labels[position]))
-                coefficients = target.framing_coefficients(image)
                 invariants.append(
                     _canonical_pid_associate(
                         ring,
-                        coefficients.get(target_label, ring.zero()),
+                        target.framing_morphism().lift(image)(target_label),
                     )
                 )
             return tuple(invariants)
@@ -1763,11 +1763,10 @@ class _GeneralPresentedModule:
         labels = self.module_generating_set()
 
         if self._relation_submodule is None:
-            coefficients = self._free_module.framing_coefficients(lift)
-            zero = self.base_ring().zero()
+            coordinates = lift.to_vector()
             return indexed_family(
                 labels,
-                lambda label: coefficients.get(label, zero),
+                lambda label: coordinates(label),
                 name="Cover coordinates",
             )
         ring = self.base_ring()
@@ -1902,11 +1901,11 @@ class _GeneralPresentedModule:
             ring = self.base_ring()
             if diagonal is not None and ring in PrincipalIdealDomains():
                 labels = tuple(self.module_generating_set())
-                coefficients = self._free_module.framing_coefficients(vector)
+                coordinates = vector.to_vector()
                 return all(
-                    coefficients.get(label, ring.zero()) == ring.zero()
+                    coordinates(label) == ring.zero()
                     if scalar == ring.zero()
-                    else coefficients.get(label, ring.zero()) in ring.ideal(scalar)
+                    else coordinates(label) in ring.ideal(scalar)
                     for label, scalar in zip(labels, diagonal, strict=True)
                 )
             return Unknown
@@ -2245,7 +2244,7 @@ def _cap_presentation_kernel(morphism):
     target_relations = tuple(_matrix_coordinate_rows(_presentation_matrix(codomain)))
     morphism_rows = tuple(
         tuple(
-            codomain.framing_coefficients(morphism(domain.module_generator(source_label))).get(target_label, ring.zero())
+            codomain.framing_morphism().lift(morphism(domain.module_generator(source_label)))(target_label)
             for target_label in target_labels
         )
         for source_label in source_labels
@@ -2288,9 +2287,9 @@ def _cap_presentation_kernel(morphism):
             element = domain(element)
         if morphism(element) != codomain.zero():
             return None
-        coordinates = domain.framing_coefficients(element)
+        coordinates = domain.framing_morphism().lift(element)
         source_row = tuple(
-            coordinates.get(label, ring.zero()) for label in source_labels
+            coordinates(label) for label in source_labels
         )
         lifted = native.lift_row(source_row)
         return kernel.linear_combination(
@@ -2349,11 +2348,11 @@ def _pid_presentation_kernel(morphism):
     lift_entries = []
     for target_label in target_labels:
         for source_label in source_labels:
-            coefficients = codomain.framing_coefficients(morphism(domain.module_generator(source_label)))
+            coordinates = codomain.framing_morphism().lift(morphism(domain.module_generator(source_label)))
             lift_entries.append(
                 _engine_element(
                     ring,
-                    coefficients.get(target_label, ring.zero()),
+                    coordinates(target_label),
                 )
             )
     lift_matrix = matrix(
@@ -2434,12 +2433,12 @@ def _pid_presentation_kernel(morphism):
     def lift_from_domain(kernel, element):
         if element.parent() is not domain:
             element = domain(element)
-        coefficients = domain.framing_coefficients(element)
+        coordinates = domain.framing_morphism().lift(element)
         representative = free_cover(
             tuple(
                 _engine_element(
                     ring,
-                    coefficients.get(label, ring.zero()),
+                    coordinates(label),
                 )
                 for label in source_labels
             )
@@ -2633,8 +2632,8 @@ def _singular_presentation_kernel(morphism):
     coordinate_columns = []
     for source_label in source_labels:
         image = morphism(domain.module_generator(source_label))
-        coefficients = codomain.framing_coefficients(image)
-        coordinate_columns.append(tuple(to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in target_labels))
+        coordinates = codomain.framing_morphism().lift(image)
+        coordinate_columns.append(tuple(to_singular(lift_scalar(coordinates(label))) for label in target_labels))
     f_matrix = matrix(
         singular_ring,
         m,
@@ -2703,12 +2702,12 @@ def _singular_presentation_kernel(morphism):
             element = domain(element)
         if kernel_count == 0:
             return kernel.zero() if element == domain.zero() else None
-        coefficients = domain.framing_coefficients(element)
+        coordinates = domain.framing_morphism().lift(element)
         requested = matrix(
             singular_ring,
             1,
             n,
-            [to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in source_labels],
+            [to_singular(lift_scalar(coordinates(label))) for label in source_labels],
         )
         spanning = kernel_columns.augment(
             singular_module_matrix(source_relation_module, n)
@@ -2791,10 +2790,10 @@ def _presented_module_from_morphism(
     width = int(labels.cardinality())
     for source_label in presentation.domain().module_generating_set():
         image = presentation(presentation.domain().module_generator(source_label))
-        coefficients = codomain.framing_coefficients(image)
+        coordinates = codomain.framing_morphism().lift(image)
         row = [base_ring.zero()] * width
-        for label, coefficient in coefficients.items():
-            row[int(label_ranking(label))] = coefficient
+        for label in coordinates.support().domain():
+            row[int(label_ranking(label))] = coordinates(label)
         added_rows.append(tuple(row))
     from itertools import chain
 

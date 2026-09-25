@@ -22,10 +22,10 @@ def _base_change_scalar(ring_map, scalar):
 
 def _base_change_element(module, changed_module, ring_map, element):
     r"""Apply the represented scalar-extension unit to one framed-module element."""
-    coefficients = module.framing_coefficients(module(element))
+    coordinates = module.framing_morphism().lift(module(element))
     return changed_module.linear_combination(
         {
-            label: _base_change_scalar(ring_map, coefficient)
-            for label, coefficient in coefficients.items()
+            label: _base_change_scalar(ring_map, coordinates(label))
+            for label in coordinates.support().domain()
         }
     )

@@ -475,12 +475,13 @@ class GradedModules(OwnedCategoryOverBaseRing):
                     f"cannot give the top degree of {self}: its parent {parent} is graded by "
                     f"{parent.grading_monoid()}, and top degree is computed only for gradings by the integers"
                 )
-            support = parent.framing_coefficients(self)
-            if not support:
-                return -_Infinity
+            coordinates = parent.framing_morphism().lift(self)
             return max(
-                parent.degree_on_module_generator(parent.module_generator(label))
-                for label in support
+                (
+                    parent.degree_on_module_generator(parent.module_generator(label))
+                    for label in coordinates.support().domain()
+                ),
+                default=-_Infinity,
             )
 
         def is_homogeneous(self) -> bool:
@@ -488,7 +489,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             parent = self.parent()
             degrees = {
                 parent.degree_on_module_generator(parent.module_generator(label))
-                for label in parent.framing_coefficients(self).index_set()
+                for label in parent.framing_morphism().lift(self).support().domain()
             }
             return len(degrees) <= 1
 
@@ -496,12 +497,13 @@ class GradedModules(OwnedCategoryOverBaseRing):
             r"""Return the degree-indexed nonzero homogeneous components."""
             parent = self.parent()
             components = {}
-            for label, coefficient in parent.framing_coefficients(self).items():
+            coordinates = parent.framing_morphism().lift(self)
+            for label in coordinates.support().domain():
                 generator = parent.module_generator(label)
                 degree = parent.degree_on_module_generator(generator)
                 component = components.get(degree, parent.zero())
                 components[degree] = component + parent.scalar_multiple(
-                    coefficient, generator
+                    coordinates(label), generator
                 )
             return components
 
@@ -514,8 +516,9 @@ class GradedModules(OwnedCategoryOverBaseRing):
                     f"{parent.grading_monoid()}, and truncation is computed only for gradings by the integers"
                 )
             result = parent.zero()
-            for label, coefficient in parent.framing_coefficients(self).items():
+            coordinates = parent.framing_morphism().lift(self)
+            for label in coordinates.support().domain():
                 generator = parent.module_generator(label)
                 if parent.degree_on_module_generator(generator) < degree:
-                    result += parent.scalar_multiple(coefficient, generator)
+                    result += parent.scalar_multiple(coordinates(label), generator)
             return result

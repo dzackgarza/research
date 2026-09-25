@@ -734,10 +734,10 @@ def _basis_rows(obj, flag):
     rows = []
     for element in basis:
         parent = element.parent()
-        coefficients = parent.framing_coefficients(element)
+        coordinates = element.to_vector()
         rows.append(
             [
-                int(coefficients.get(label, parent.base_ring().zero()))
+                int(coordinates(label))
                 for label in parent.module_generating_set()
             ]
         )

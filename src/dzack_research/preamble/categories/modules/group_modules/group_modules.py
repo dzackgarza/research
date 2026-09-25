@@ -1246,9 +1246,10 @@ class _CoefficientModuleEngine:
             return super()._selected_module_coefficients(element)
         module = self.unformed_module()
         group_algebra = self.group_algebra()
+        coordinates = module.framing_morphism().lift(module(element))
         return {
-            label: group_algebra(coefficient)
-            for label, coefficient in module.framing_coefficients(module(element)).items()
+            label: group_algebra(coordinates(label))
+            for label in coordinates.support().domain()
         }
 
     def _selected_presentation_rows(self):
@@ -1434,14 +1435,14 @@ def _equip_action(module, group_or_action, action=None):
         return module._underlying_additive_element(module(module_element_value))
 
     def linearized_scalar(scalar):
-        coefficients = group_algebra.framing_coefficients(group_algebra(scalar))
+        coordinates = group_algebra.framing_morphism().lift(group_algebra(scalar))
 
         def apply(additive_vector):
             vector = module_element(additive_vector)
             result = module.zero()
-            for group_element, coefficient in coefficients.items():
+            for group_element in coordinates.support().domain():
                 result += module.scalar_multiple(
-                    coefficient,
+                    coordinates(group_element),
                     selected_action_morphism(group_element)(vector),
                 )
             return additive_element(result)

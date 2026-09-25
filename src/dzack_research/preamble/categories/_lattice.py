@@ -180,11 +180,6 @@ def _resolve_key(keys, index):
             return keys[int(index)]
 
 
-def _vector_coefficients(vector):
-    r"""The finite support of a module vector, as its coefficient on each framing label."""
-    return dict(vector.monomial_coefficients().items())
-
-
 def _lattice_vector_from_coefficients(lattice, coefficients):
     r"""The lattice vector with the given coefficients on labels or framing positions."""
     return sum(
@@ -715,8 +710,8 @@ class _DiagonalGram(_PairingGram):
         )
 
     def pairings_against(self, vector):
-        coefficients = _vector_coefficients(vector)
-        return {key: self._diagonal_entry(key) * value for key, value in coefficients.items()}
+        coordinates = vector.to_vector()
+        return {key: self._diagonal_entry(key) * coordinates(key) for key in coordinates.support().domain()}
 
     def _diagonal_entry(self, key):
         key = _resolve_key(_basis_keys(self._module), key)
@@ -733,13 +728,15 @@ class _DiagonalGram(_PairingGram):
         return self._diagonal_entry(i)
 
     def __call__(self, left, right):
-        coefficients_left = _vector_coefficients(left)
-        coefficients_right = _vector_coefficients(right)
-        keys = set(coefficients_left) | set(coefficients_right)
-        ring = self.base_ring()
+        coordinates_left = left.to_vector()
+        coordinates_right = right.to_vector()
         return sum(
-            (self._diagonal_entry(key) * coefficients_left.get(key, ring.zero()) * coefficients_right.get(key, ring.zero()) for key in keys),
-            ring.zero(),
+            (
+                self._diagonal_entry(key) * coordinates_left(key) * coordinates_right(key)
+                for key in coordinates_left.support().domain()
+                if key in coordinates_right.support()
+            ),
+            self.base_ring().zero(),
         )
 
     def signature_pair(self):
@@ -892,13 +889,13 @@ class _BiproductGram(_PairingGram):
         r"""The summand a concatenated position lies in, and its place there."""
         return _block_position(self._offsets, position)
 
-    def _by_block(self, coefficients):
-        r"""Split coefficients on the sum's basis into one part per summand."""
+    def _by_block(self, coordinates):
+        r"""Split coordinates on the sum's basis into one part per summand."""
         keys = _basis_keys(self._module)
         parts = {}
-        for key, value in coefficients.items():
+        for key in coordinates.support().domain():
             which, place = self._block_of(_basis_position(keys, key))
-            parts.setdefault(which, {})[place] = value
+            parts.setdefault(which, {})[place] = coordinates(key)
         return parts
 
     def __getitem__(self, index):
@@ -911,7 +908,7 @@ class _BiproductGram(_PairingGram):
     def pairings_against(self, vector):
         keys = _basis_keys(self._module)
         result = {}
-        for which, part in self._by_block(_vector_coefficients(vector)).items():
+        for which, part in self._by_block(vector.to_vector()).items():
             block = self._blocks[which]
             block_keys = block.module_generating_set()
             for label, value in block.generator_pairings(
@@ -922,8 +919,8 @@ class _BiproductGram(_PairingGram):
         return result
 
     def __call__(self, left, right):
-        left_parts = self._by_block(_vector_coefficients(left))
-        right_parts = self._by_block(_vector_coefficients(right))
+        left_parts = self._by_block(left.to_vector())
+        right_parts = self._by_block(right.to_vector())
         # Distinct summands pair to zero, so only the blocks both vectors
         # meet contribute.
         return sum(
@@ -1002,7 +999,9 @@ class _TensorProductGram(_PairingGram):
         factors = self._factors
         factor_indices = tuple(factors.index_set())
         result = {}
-        for source_label, source_coefficient in _vector_coefficients(vector).items():
+        coordinates = vector.to_vector()
+        for source_label in coordinates.support().domain():
+            source_coefficient = coordinates(source_label)
             pairing_data = tuple(
                 tuple(
                     factors[index].generator_pairings(
@@ -1029,15 +1028,15 @@ class _TensorProductGram(_PairingGram):
         return {label: value for label, value in result.items() if value != zero}
 
     def __call__(self, left, right):
-        left_coefficients = _vector_coefficients(left)
-        right_coefficients = _vector_coefficients(right)
+        left_coordinates = left.to_vector()
+        right_coordinates = right.to_vector()
         return sum(
             (
-                left_coefficient
-                * right_coefficient
+                left_coordinates(left_label)
+                * right_coordinates(right_label)
                 * self._basis_pairing(left_label, right_label)
-                for left_label, left_coefficient in left_coefficients.items()
-                for right_label, right_coefficient in right_coefficients.items()
+                for left_label in left_coordinates.support().domain()
+                for right_label in right_coordinates.support().domain()
             ),
             self.base_ring().zero(),
         )
@@ -1099,15 +1098,15 @@ class _ColimitGram(_PairingGram):
         nontrivially with arbitrarily late basis vectors.  Evaluation on two
         finite vectors does not need this additional row-finiteness datum.
         """
-        coefficients = _vector_coefficients(vector)
-        if not coefficients:
+        coordinates = vector.to_vector()
+        labels = _basis_keys(self._module)
+        ranking = labels.ranking_map()
+        positions = {int(ranking(label)): coordinates(label) for label in coordinates.support().domain()}
+        if not positions:
             return {}
         assert self._row_support is not None, (
             f"cannot list the pairings of {vector} with all basis vectors of {self}: the colimit form does not state which basis vectors pair nontrivially with each basis vector"
         )
-        labels = _basis_keys(self._module)
-        ranking = labels.ranking_map()
-        positions = {int(ranking(label)): value for label, value in coefficients.items()}
         support = {int(column) for row in positions for column in self._row_support(row)}
         return {
             labels[column]: sum((value * self[row, column] for row, value in positions.items()), self.base_ring().zero())
@@ -1116,15 +1115,15 @@ class _ColimitGram(_PairingGram):
 
     def __call__(self, left, right):
         generating_set = _basis_keys(self._module)
-        coefficients_left = _vector_coefficients(left)
-        coefficients_right = _vector_coefficients(right)
-        keys = set(coefficients_left) | set(coefficients_right)
-        if not keys:
-            return self.base_ring().zero()
+        coordinates_left = left.to_vector()
+        coordinates_right = right.to_vector()
         ranking = generating_set.ranking_map()
-        stage = self._stage_at(max(int(ranking(key)) for key in keys) + 1)
-        positions_left = {int(ranking(key)): value for key, value in coefficients_left.items()}
-        positions_right = {int(ranking(key)): value for key, value in coefficients_right.items()}
+        positions_left = {int(ranking(key)): coordinates_left(key) for key in coordinates_left.support().domain()}
+        positions_right = {int(ranking(key)): coordinates_right(key) for key in coordinates_right.support().domain()}
+        positions = positions_left.keys() | positions_right.keys()
+        if not positions:
+            return self.base_ring().zero()
+        stage = self._stage_at(max(positions) + 1)
         return _lattice_vector_from_coefficients(stage, positions_left).b(_lattice_vector_from_coefficients(stage, positions_right))
 
     def signature_pair(self):

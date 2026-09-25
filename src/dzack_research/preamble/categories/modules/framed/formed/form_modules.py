@@ -168,10 +168,9 @@ def _value_from_module_element(formed_module, element):
 
     extension = represented.module_over_extension()
     restricted_element = represented(element)
-    coefficients = extension.framing_coefficients(restricted_element.underlying_element())
+    coordinates = extension.framing_morphism().lift(restricted_element.underlying_element())
     unit_label = extension.module_generating_set()[0]
-    value_ring = formed_module.value_module()
-    return value_ring(coefficients.get(unit_label, value_ring.zero()))
+    return formed_module.value_module()(coordinates(unit_label))
 
 
 class FormedModuleMorphism(Morphism):
@@ -935,16 +934,16 @@ def _formed_module_base_change(self, ring_map):
             )
 
         def changed_bilinear_value(left, right):
-            left_coefficients = changed.framing_coefficients(left)
-            right_coefficients = changed.framing_coefficients(right)
+            left_coordinates = changed(left).to_vector()
+            right_coordinates = changed(right).to_vector()
             result = target_ring.zero()
-            for left_label, left_coefficient in left_coefficients.items():
+            for left_label in left_coordinates.support().domain():
                 source_left = source.module_generator(left_label)
-                for right_label, right_coefficient in right_coefficients.items():
+                for right_label in right_coordinates.support().domain():
                     source_right = source.module_generator(right_label)
                     result += (
-                        left_coefficient
-                        * right_coefficient
+                        left_coordinates(left_label)
+                        * right_coordinates(right_label)
                         * _base_change_scalar(
                             ring_map,
                             form(source_left, source_right),
@@ -973,22 +972,22 @@ def _formed_module_base_change(self, ring_map):
         )
 
     def changed_quadratic_value(element):
-        coefficients = changed.framing_coefficients(element)
+        coordinates = changed(element).to_vector()
         result = target_ring.zero()
-        for left_label, left_coefficient in coefficients.items():
+        for left_label in coordinates.support().domain():
             source_left = source.module_generator(left_label)
             result += (
-                left_coefficient**2
+                coordinates(left_label)**2
                 * _base_change_scalar(ring_map, form(source_left))
             )
             left_rank = source_labels.ranking_map()(left_label)
-            for right_label, right_coefficient in coefficients.items():
+            for right_label in coordinates.support().domain():
                 if source_labels.ranking_map()(right_label) <= left_rank:
                     continue
                 source_right = source.module_generator(right_label)
                 result += (
-                    left_coefficient
-                    * right_coefficient
+                    coordinates(left_label)
+                    * coordinates(right_label)
                     * _base_change_scalar(
                         ring_map,
                         form.b(source_left, source_right),
@@ -1093,14 +1092,16 @@ class FormModules(OwnedCategoryOverBaseRing):
             the same presentation.  So an element reads there with the same
             coefficients.
             """
+            coordinates = self.framing_morphism().lift(element)
             return self.unformed_module().linear_combination(
-                self.framing_coefficients(element)
+                {label: coordinates(label) for label in coordinates.support().domain()}
             )
 
         def _element_from_unformed_module(self, element):
             r"""The element of this module with the coefficients ``element`` has in :meth:`unformed_module`."""
+            coordinates = self.unformed_module().framing_morphism().lift(element)
             return self.linear_combination(
-                self.unformed_module().framing_coefficients(element)
+                {label: coordinates(label) for label in coordinates.support().domain()}
             )
 
         def pairing(self, left, right):
@@ -1133,12 +1134,6 @@ class FormModules(OwnedCategoryOverBaseRing):
         def fibered_formed_mor(self, codomain, ring_map):
             r"""Return formed morphisms from this module to ``codomain`` over ``ring_map``."""
             return FiberedFormedModuleMor(self, codomain, ring_map)
-
-        def fibered_formed_mor(self, codomain, ring_map, module_morphism, value_morphism):
-            r"""Construct a formed morphism over a coefficient-ring map."""
-            return self.fibered_formed_mor(codomain, ring_map)(
-                (module_morphism, value_morphism)
-            )
 
         def _Hom_(self, codomain, category=None):
             ring = self.base_ring()

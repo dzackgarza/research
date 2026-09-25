@@ -93,10 +93,7 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
         source_image = source_ideal.inclusion()(
             source_ideal.module_generator(label)
         )
-        coefficient = source_regular_module.framing_coefficients(source_image).get(
-            source_regular_label,
-            source_ideal.ring().zero(),
-        )
+        coefficient = source_regular_module.framing_morphism().lift(source_image)(source_regular_label)
         return target_regular_module.scalar_multiple(
             localization_map(coefficient),
             target_regular_module.module_generator(target_regular_label),
