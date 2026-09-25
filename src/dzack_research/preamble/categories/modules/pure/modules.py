@@ -2527,6 +2527,15 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             r"""Return the selected construction defining this module subobject."""
             return self._module_subobject_construction
 
+        def __contains__(self, element) -> bool:
+            r"""Test ambient elements through the selected subobject inclusion."""
+            if element_parent(element) is self:
+                return True
+            inclusion = self.inclusion()
+            if element_parent(element) is inclusion.codomain():
+                return inclusion.is_in_image(element)
+            return super().__contains__(element)
+
         @cached_method
         def inclusion(self):
             r"""Return the chosen monomorphism represented by constructor data."""
