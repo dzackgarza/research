@@ -209,7 +209,7 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
             if cohomology_class.parent() is not self:
                 cohomology_class = self(cohomology_class)
-            coordinates = self.framing_morphism().lift(cohomology_class)
+            coordinates = self._framing_lift(self(cohomology_class))
             projection = self.cokernel_projection()
             cycles = projection.domain()
             representative = cycles.linear_combination(

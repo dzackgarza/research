@@ -154,7 +154,7 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
             a set-theoretic section of :meth:`projection` on the chosen framing.
             """
 
-            coordinates = self.framing_morphism().lift(self(element))
+            coordinates = self._framing_lift(self(element))
             return self.dual_lattice().linear_combination(
                 {label: coordinates(label) for label in coordinates.support().domain()}
             )

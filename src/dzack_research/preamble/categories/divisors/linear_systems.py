@@ -143,7 +143,7 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         def homogeneous_polynomial(self, section):
             r"""Return the homogeneous polynomial represented by ``section``."""
             section = self(section)
-            coordinates = self.framing_morphism().lift(section)
+            coordinates = self._framing_lift(self(section))
             ring = self.homogeneous_coordinate_ring()
             scalar_map = ring.algebra_structure_morphism()
             return sum(

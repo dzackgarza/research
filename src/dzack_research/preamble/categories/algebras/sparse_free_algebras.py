@@ -91,7 +91,7 @@ class _SparseFreeAlgebra(_WordModule):
         element = self(element)
         if all(
             int(label.summand_index()) == 0
-            for label in self.framing_morphism().lift(element).support().domain()
+            for label in self._framing_lift(self(element)).support().domain()
         ):
             return True
         if self.is_commutative() is True:

@@ -989,7 +989,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             module = self.unformed_module()
             match self:
                 case _ if self in FramedModules(self.algebra_base_ring()):
-                    coordinates = self.framing_morphism().lift(element)
+                    coordinates = self._framing_lift(self(element))
                     return module.linear_combination(
                         {label: coordinates(label) for label in coordinates.support().domain()}
                     )

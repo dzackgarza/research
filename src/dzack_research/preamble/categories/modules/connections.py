@@ -131,7 +131,7 @@ class ModulesWithConnection(OwnedParameterizedCategory):
 
         def _element_of_unformed_module(self, element):
             module = self.unformed_module()
-            coordinates = self.framing_morphism().lift(element)
+            coordinates = self._framing_lift(self(element))
             return module.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
 
         def _element_from_unformed_module(self, element):

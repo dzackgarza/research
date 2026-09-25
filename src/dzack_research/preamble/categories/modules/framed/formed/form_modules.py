@@ -1092,7 +1092,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             the same presentation.  So an element reads there with the same
             coefficients.
             """
-            coordinates = self.framing_morphism().lift(element)
+            coordinates = self._framing_lift(self(element))
             return self.unformed_module().linear_combination(
                 {label: coordinates(label) for label in coordinates.support().domain()}
             )

@@ -552,7 +552,7 @@ class _WordModule:
 
     def homogeneous_component(self, element, degree):
         degree = int(degree)
-        coordinates = self.framing_morphism().lift(element)
+        coordinates = self._framing_lift(self(element))
         selected = {label: coordinates(label) for label in coordinates.support().domain() if int(label.summand_index()) == degree}
         piece = self.graded_piece(degree)
         match degree:
@@ -572,7 +572,7 @@ class _WordModule:
         degrees = finite_ordered_set(
             tuple(
                 self.grading_monoid()(int(label.summand_index()))
-                for label in self.framing_morphism().lift(element).support().domain()
+                for label in self._framing_lift(self(element)).support().domain()
             )
         )
         return finite_indexed_family(
@@ -587,7 +587,7 @@ class _WordModule:
     def homogeneous_degree(self, element):
         degrees = {
             int(label.summand_index())
-            for label in self.framing_morphism().lift(element).support().domain()
+            for label in self._framing_lift(self(element)).support().domain()
         }
         if len(degrees) != 1:
             raise ValueError(
@@ -599,7 +599,7 @@ class _WordModule:
     def degree_on_module_generator(self, element):
         degrees = {
             int(label.summand_index())
-            for label in self.framing_morphism().lift(element).support().domain()
+            for label in self._framing_lift(self(element)).support().domain()
         }
         assert len(degrees) == 1, (
             f"{element} is not a generator of {self}: a generator is a single word and has one "

@@ -626,7 +626,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             def lift_from_ambient(image, element):
                 element = element if element.parent() is self else self(element)
-                coordinates = self.framing_morphism().lift(element)
+                coordinates = self._framing_lift(self(element))
                 return image.linear_combination({label: coordinates(label) for label in coordinates.support().domain()})
 
             return _presented_module_from_morphism(
