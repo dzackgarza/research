@@ -9,4 +9,5 @@ def test_tetrahedron_from_its_schlaefli_symbol() -> None:
     assert tetrahedron in RegularPolytopes()
     assert tetrahedron.schlafli_symbol() == (3, 3)
     assert tetrahedron.dimension() == 3
+    assert tetrahedron.symmetry_coxeter_diagram().coxeter_group() == tetrahedron.symmetry_group()
     assert tetrahedron.symmetry_group().order() == 24
