@@ -3,6 +3,14 @@ r"""Homogeneous decomposition in the tensor algebra of $\mathbb Q^2$."""
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+def test_concentrated_graded_module_retains_its_selected_degree() -> None:
+    category = GradedModules(QQ)
+    graded = category.an_object()
+
+    assert graded in category
+    assert graded.concentrated_degree() == category.grading_monoid().zero()
+
+
 def test_x_plus_y_squared_in_the_tensor_algebra_has_components_of_degrees_one_and_two() -> None:
     r"""$T(\mathbb Q^2) = \bigoplus_n (\mathbb Q^2)^{\otimes n}$ is graded by tensor degree; $x + y \otimes y$
     is not homogeneous, has degree 2, and components $x$ in degree 1 and $y \otimes y$ in degree 2.

@@ -21,6 +21,21 @@ def test_ranks_of_the_powers_of_z2() -> None:
     assert M.divided_power_module(3).module_rank() == 4
 
 
+def test_power_modules_retain_the_source_and_degree_that_define_them() -> None:
+    M = ZZ**2
+
+    tensor_square = M.tensor_power(2)
+    symmetric_cube = M.symmetric_power(3)
+    divided_square = M.divided_square()
+
+    assert tensor_square.power_source() is M
+    assert tensor_square.power_degree() == 2
+    assert symmetric_cube.power_source() is M
+    assert symmetric_cube.power_degree() == 3
+    assert divided_square.power_source() is M
+    assert divided_square.power_degree() == 2
+
+
 def test_divided_powers_of_z_mod_2_differ_from_its_symmetric_powers() -> None:
     r"""$T^3 = \operatorname{Sym}^3 = \mathbb Z/2$ while $\Gamma^2 = \mathbb Z/4$, $\Gamma^3 = \mathbb Z/2$,
     $\Gamma^4 = \mathbb Z/8$ (orders $\gcd_k 2^k\binom nk$ = 4, 2, 8).
