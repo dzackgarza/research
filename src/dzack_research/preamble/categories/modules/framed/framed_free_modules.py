@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
+    aleph0,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
@@ -65,8 +66,11 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     assert module_generating_set in Sets(), (
         "a free module is constructed on an owned set of labels"
     )
-    if module_generating_set.cardinality().is_finite():
-        categories.append(FramedFreeModules(ring).FinitelyGenerated())
+    match Cardinalities().lt(module_generating_set.cardinality(), aleph0):
+        case True:
+            categories.append(FramedFreeModules(ring).FinitelyGenerated())
+        case False:
+            pass
     return categories
 
 
