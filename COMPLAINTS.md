@@ -64,6 +64,7 @@ test in construction admission.
 were found only where profiling of the star import led. The audit of the
 whole preamble for engine behaviour re-implemented locally is the TODO node
 `engine-wiring-audit`.
+
 ### Chosen generators are encoded as a global axiom instead of a resolution
 
 A chosen generating epimorphism, a chosen presentation and a chosen syzygy
