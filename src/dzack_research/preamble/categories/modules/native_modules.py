@@ -13,11 +13,30 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.pure.modules import (
+    BilinearMap,
     FramedModules,
     Modules,
     _fix_selected_module_framing,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+from dzack_research.preamble.categories.modules.tensor_quotients import (
+    _TensorQuotientClassifierMorphism,
+)
+
+
+class _NativeRingProductClassifierMorphism(_TensorQuotientClassifierMorphism):
+    r"""The tensor classifier of the product already supplied by a native ring.
+
+    ``_RingModulePresentation`` receives one ring's primitive product together
+    with the scalar action induced by the same ring datum.  Distributivity and
+    compatibility with those scalars are therefore construction data, not
+    properties inferred from sample equalities in the codomain.  In the
+    unframed case the tensor quotient still supplies the universal evaluator;
+    this named construction supplies the missing bilinearity derivation.
+    """
+
+    def _elementwise_linearity_derivation(self):
+        return True
 
 
 class _NativeModuleFrame:
@@ -150,4 +169,19 @@ class _RingModulePresentation:
     def multiplication(self):
         module = self.module()
         tensor = Modules(self.base_ring()).tensor_product((module, module))
-        return tensor.from_bilinear_map(module, self._product)
+        match module in FramedModules(self.base_ring()):
+            case True:
+                return BilinearMap(
+                    module,
+                    module,
+                    module,
+                    lambda left, right: self._product(
+                        module.module_generator(left),
+                        module.module_generator(right),
+                    ),
+                )
+            case False:
+                return _NativeRingProductClassifierMorphism(
+                    tensor.module_category().Mor(tensor, module),
+                    self._product,
+                )

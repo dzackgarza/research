@@ -48,6 +48,17 @@ def test_relative_native_ring_keeps_its_selected_scalar_action() -> None:
     assert ring.scalar_multiple(QQ(3), x) == x + x + x
 
 
+def test_unframed_native_completion_product_carries_its_bilinearity_derivation() -> None:
+    completion = ZZ.adic_completion(ZZ.ideal(2))
+    multiplication = completion.multiplication()
+
+    assert multiplication.domain() in TensorProductModules(ZZ)
+    assert multiplication.domain().tensor_factor(0) is completion
+    assert multiplication.domain().tensor_factor(1) is completion
+    assert multiplication.codomain() is completion
+    assert multiplication.linearity_decision() is True
+
+
 def test_alternate_product_on_real_scalars_preserves_both_element_readings() -> None:
     tensor = Modules(RR).tensor_product((RR, RR))
     product = tensor.from_bilinear_map(RR, lambda left, right: -(left * right))

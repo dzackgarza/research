@@ -1117,15 +1117,16 @@ def _alternating_power_product(module, left_degree, left, right_degree, right):
 def _ordered_coefficient_support(module, coefficients):
 
     source_labels = module.module_generating_set()
+    coefficient_labels = coefficients.index_set()
     positions = Sets.Δ[len(coefficients) - 1]
 
     def label_at(index):
         requested = int(index)
-        for label in coefficients:
+        for label in coefficient_labels:
             label_rank = int(source_labels.ranking_map()(label))
             preceding = sum(
                 1
-                for other in coefficients
+                for other in coefficient_labels
                 if int(source_labels.ranking_map()(other)) < label_rank
             )
             if preceding == requested:
