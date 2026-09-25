@@ -3102,6 +3102,22 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def _repr_object_names(cls):
             return "finitely generated groups"
 
+        @cached_method
+        def resolution_category(self):
+            from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                Resolutions,
+            )
+
+            free = GroupsWithChosenFreeBasis()
+            finite_free = Cat().meet(
+                (free, OwnedGroups().FinitelyGeneratedAsMagma())
+            )
+            return Resolutions(OwnedGroups(), free, 0, finite_free)
+
+        @cached_method
+        def resolution_classifier(self):
+            return self.resolution_category().target_functor()
+
         class ParentMethods:
             def is_finitely_generated(self):
                 return True
@@ -3120,6 +3136,22 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def extra_super_categories(self) -> list[Category]:
             r"""The generating set of a finite presentation is finite."""
             return [OwnedGroups().FinitelyGeneratedAsMagma()]
+
+        @cached_method
+        def resolution_category(self):
+            from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                Resolutions,
+            )
+
+            free = GroupsWithChosenFreeBasis()
+            finite_free = Cat().meet(
+                (free, OwnedGroups().FinitelyGeneratedAsMagma())
+            )
+            return Resolutions(OwnedGroups(), free, 1, finite_free)
+
+        @cached_method
+        def resolution_classifier(self):
+            return self.resolution_category().target_functor()
 
         class ParentMethods:
             def is_finitely_presented(self):

@@ -381,6 +381,29 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return this category with the axiom that its objects are projective."""
             return self._with_axiom("Projective")
 
+        def resolutions(self, truncation=0, projective_class=None):
+            r"""Return the category of chosen truncated projective resolutions.
+
+            This is a data category over Modules(R).  It does not choose a
+            resolution of an object merely because the object lies in a
+            property subcategory.
+            """
+            from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                Resolutions,
+            )
+
+            modules = Modules(self.base_ring())
+            match projective_class:
+                case None:
+                    projective_class = modules.Projective()
+                case _:
+                    pass
+            return Resolutions(
+                modules,
+                projective_class,
+                truncation,
+            )
+
         def Torsion(self):
             r"""Return this category with the axiom that its objects are torsion."""
             return self._with_axiom("Torsion")
@@ -1968,6 +1991,20 @@ class Modules(OwnedCategoryOverBaseRing):
     class FinitelyGenerated(CategoryWithAxiom):
         r"""Modules admitting a finite generating set."""
 
+        @cached_method
+        def resolution_category(self):
+            r"""Finite-free degree-zero resolutions whose target image is this property."""
+            from dzack_research.preamble.categories.modules.resolutions import (
+                finitely_generated_resolution_category,
+            )
+
+            return finitely_generated_resolution_category(self.base_ring())
+
+        @cached_method
+        def resolution_classifier(self):
+            r"""The target projection from finite-free degree-zero resolution data."""
+            return self.resolution_category().target_functor()
+
         def an_object(self):
             r"""The free module of rank one."""
             return self.base_ring().free_module(1)
@@ -2074,6 +2111,20 @@ class Modules(OwnedCategoryOverBaseRing):
 
     class FinitelyPresented(CategoryWithAxiom):
         r"""Modules admitting a finite presentation."""
+
+        @cached_method
+        def resolution_category(self):
+            r"""Finite-free degree-one partial resolutions whose target image is this property."""
+            from dzack_research.preamble.categories.modules.resolutions import (
+                finitely_presented_resolution_category,
+            )
+
+            return finitely_presented_resolution_category(self.base_ring())
+
+        @cached_method
+        def resolution_classifier(self):
+            r"""The target projection from finite-free degree-one resolution data."""
+            return self.resolution_category().target_functor()
 
         def an_object(self):
             r"""The free module of rank one, presented by no relations."""
@@ -2974,6 +3025,12 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
 
+def _module_subobjects_agree(image, kernel, term) -> bool:
+    r"""Whether two represented subobjects of term are equal."""
+    subobjects = Modules(term.base_ring()).Subobjects(term)
+    return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
+
+
 @dataclass(frozen=True)
 class FreeResolution:
     r"""The exact resolution ``0 -> F_n -> ... -> F_0 -> M -> 0`` by free modules.
@@ -3047,18 +3104,14 @@ class FreeResolution:
         if not self.differential(length).is_injective():
             return False
 
-        def agree(image, kernel, term):
-            subobjects = Modules(term.base_ring()).Subobjects(term)
-            return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
-
-        if not agree(
+        if not _module_subobjects_agree(
             self.differential(1).image(),
             self.augmentation().kernel(),
             self.term(0),
         ):
             return False
         return all(
-            agree(
+            _module_subobjects_agree(
                 self.differential(int(degree) + 1).image(),
                 self.differential(degree).kernel(),
                 self.term(degree),

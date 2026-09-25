@@ -99,9 +99,10 @@ class _StructuredAlgebraModuleTransportMorphism(ModuleMorphism):
 if "Lie" not in all_axioms:
     all_axioms.add("Lie")
 
-# Qualified as Sage qualifies ``FinitelyGeneratedAsMagma``: an axiom name is
-# global and propagates to every declared supercategory defining it, and a
-# finitely presented algebra is not a finitely presented module.
+# Qualified relative finiteness properties of the algebra structure are
+# distinct from the corresponding module properties.
+if "FinitelyGeneratedAsAlgebra" not in all_axioms:
+    all_axioms.add("FinitelyGeneratedAsAlgebra")
 if "FinitelyPresentedAsAlgebra" not in all_axioms:
     all_axioms.add("FinitelyPresentedAsAlgebra")
 
@@ -1361,6 +1362,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             _MorCategory = UnitalAlgebraMorCategoryConstruction
 
             class SubcategoryMethods:
+                def FinitelyGeneratedAsAlgebra(self):
+                    r"""Return the refinement whose objects admit finitely many algebra generators."""
+                    return self._with_axiom("FinitelyGeneratedAsAlgebra")
+
                 def FinitelyPresentedAsAlgebra(self):
                     r"""Return the refinement whose objects admit a finite algebra presentation."""
                     return self._with_axiom("FinitelyPresentedAsAlgebra")
@@ -1468,6 +1473,40 @@ class Algebras(OwnedCategoryOverBaseRing):
                             for label in self.algebra_generating_set()
                         )
 
+            class FinitelyGeneratedAsAlgebra(CategoryWithAxiom):
+                r"""Algebras that admit a finite algebra generating set."""
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "finitely generated algebras"
+
+                def an_object(self):
+                    return self.base_ring().free_module(("x",)).symmetric_algebra()
+
+                @cached_method
+                def resolution_category(self):
+                    from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                        Resolutions,
+                    )
+                    from dzack_research.preamble.categories.algebras.free_algebras import (
+                        FreeAlgebras,
+                    )
+
+                    ordinary = Algebras(self.base_ring()).Associative().Unital()
+                    free = FreeAlgebras(self.base_ring())
+                    finite_free = Cat().meet(
+                        (free, ordinary.FinitelyGeneratedAsAlgebra())
+                    )
+                    return Resolutions(ordinary, free, 0, finite_free)
+
+                @cached_method
+                def resolution_classifier(self):
+                    return self.resolution_category().target_functor()
+
+                class ParentMethods:
+                    def is_finitely_generated_as_algebra(self) -> bool:
+                        return True
+
             class FinitelyPresentedAsAlgebra(CategoryWithAxiom):
                 r"""Algebras that admit a finite algebra presentation.
 
@@ -1478,6 +1517,34 @@ class Algebras(OwnedCategoryOverBaseRing):
                 @classmethod
                 def _repr_object_names(cls):
                     return "finitely presented algebras"
+
+                def extra_super_categories(self):
+                    return [
+                        Algebras(self.base_ring())
+                        .Associative()
+                        .Unital()
+                        .FinitelyGeneratedAsAlgebra()
+                    ]
+
+                @cached_method
+                def resolution_category(self):
+                    from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                        Resolutions,
+                    )
+                    from dzack_research.preamble.categories.algebras.free_algebras import (
+                        FreeAlgebras,
+                    )
+
+                    ordinary = Algebras(self.base_ring()).Associative().Unital()
+                    free = FreeAlgebras(self.base_ring())
+                    finite_free = Cat().meet(
+                        (free, ordinary.FinitelyGeneratedAsAlgebra())
+                    )
+                    return Resolutions(ordinary, free, 1, finite_free)
+
+                @cached_method
+                def resolution_classifier(self):
+                    return self.resolution_category().target_functor()
 
                 def an_object(self):
                     r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""

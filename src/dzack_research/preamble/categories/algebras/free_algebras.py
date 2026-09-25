@@ -177,8 +177,23 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                     f"a free algebra here is a tensor algebra or a symmetric algebra, but got flavor {flavor!r}"
                 )
         module_placement = FramedFreeModules(base)
-        if basis.cardinality().is_finite():
-            module_placement = FinitelyGeneratedFreeModules(base)
+        match basis.cardinality().is_finite():
+            case True:
+                module_placement = FinitelyGeneratedFreeModules(base)
+            case False:
+                pass
+        match labels.cardinality().is_finite():
+            case True:
+                algebra_placements = (
+                    (
+                        Algebras(base)
+                        .Associative()
+                        .Unital()
+                        .FinitelyGeneratedAsAlgebra()
+                    ),
+                )
+            case False:
+                algebra_placements = ()
         self._native_module_basis = _NativeModuleBasis(
             base.free_module(basis),
             self._native_basis_image,
@@ -191,6 +206,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                 GradedFreeAlgebras(base),
                 algebra_category,
                 module_placement,
+                *algebra_placements,
                 *categories,
             ),
             construction_data=construction_data,

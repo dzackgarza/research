@@ -44,6 +44,8 @@ _EXPORTS = {
     "Sheaves": ("dzack_research.preamble.categories.abstract_categories.presheaves", "Sheaves"),
     "TrivialCoveringFamilies": ("dzack_research.preamble.categories.abstract_categories.presheaves", "TrivialCoveringFamilies"),
     "trivial_coverage": ("dzack_research.preamble.categories.abstract_categories.presheaves", "trivial_coverage"),
+    "ResolutionMorphism": ("dzack_research.preamble.categories.abstract_categories.resolutions", "ResolutionMorphism"),
+    "Resolutions": ("dzack_research.preamble.categories.abstract_categories.resolutions", "Resolutions"),
 }
 
 __all__ = [
@@ -83,6 +85,8 @@ __all__ = [
     "Sheaves",
     "TrivialCoveringFamilies",
     "trivial_coverage",
+    "ResolutionMorphism",
+    "Resolutions",
 ]
 
 

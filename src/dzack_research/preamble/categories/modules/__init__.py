@@ -109,6 +109,8 @@ _EXPORTS = {'BiproductModules': ('dzack_research.preamble.categories.modules.pur
  'SymmetricPowerModules': ('dzack_research.preamble.categories.modules.powers',
                            'SymmetricPowerModules'),
  'TensorPowerModules': ('dzack_research.preamble.categories.modules.powers', 'TensorPowerModules'),
+ 'ModuleResolutions': ('dzack_research.preamble.categories.modules.resolutions',
+                       'ModuleResolutions'),
  'FinitelyGeneratedModules': ('dzack_research.preamble.categories.modules.pure.modules',
                               'FinitelyGeneratedModules'),
  'FreeModules': ('dzack_research.preamble.categories.modules.pure.modules', 'FreeModules'),
@@ -207,6 +209,7 @@ __all__ = ['BilinearMap',
  'DividedPowerModules',
  'SymmetricPowerModules',
  'TensorPowerModules',
+ 'ModuleResolutions',
 ]
 
 def __getattr__(name):

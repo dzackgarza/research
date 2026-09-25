@@ -317,6 +317,17 @@ def _sparse_free_algebra_of(source, flavor):
     multiplication = tensor.from_bilinear_map(module, lambda x, y: _word_product(module, x, y))
     flavor_category = TensorAlgebras(ring) if flavor == "tensor" else SymmetricAlgebras(ring)
     categories = (flavor_category, FramedAlgebras(ring))
+    match source.module_generating_set().cardinality().is_finite():
+        case True:
+            categories = (
+                *categories,
+                Algebras(ring)
+                .Associative()
+                .Unital()
+                .FinitelyGeneratedAsAlgebra(),
+            )
+        case False:
+            pass
     if source in FramedFreeModules(ring):
         categories = (*categories, FreeAlgebras(ring), GradedFreeAlgebras(ring))
     realization_owner = Cat().meet((
