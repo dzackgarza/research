@@ -66,6 +66,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
@@ -102,6 +103,32 @@ if "Lie" not in all_axioms:
 # finitely presented algebra is not a finitely presented module.
 if "FinitelyPresentedAsAlgebra" not in all_axioms:
     all_axioms.add("FinitelyPresentedAsAlgebra")
+
+
+_SCALAR_RESTRICTION_STABLE_ALGEBRA_AXIOMS = frozenset(
+    ("AdditiveCommutative", "Associative", "Unital", "Commutative", "Lie")
+)
+
+
+def _selected_scalar_base_reaches(extension_ring, base_ring) -> bool:
+    r"""Return whether the selected scalar tower of ``extension_ring`` reaches ``base_ring``.
+
+    A ring with no proper selected base still has its canonical structure over
+    the initial ring ``ZZ``.  No other implicit scalar morphism is introduced:
+    intermediate steps are exactly the ``base_ring()`` data retained by ring
+    constructors.
+    """
+    current = extension_ring
+    seen = set()
+    while current is not base_ring and id(current) not in seen:
+        seen.add(id(current))
+        selected = current.base_ring()
+        match selected is None or selected is current:
+            case True:
+                return base_ring is _owned_integers()
+            case False:
+                current = _owned_ring(selected)
+    return current is base_ring
 
 
 # ---------------------------------------------------------------------------
@@ -675,6 +702,33 @@ class Algebras(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [Modules(self.base_ring())]
+
+    def _declared_parameter_subcategory_relation(self, source_category, target_category):
+        r"""Compare algebra categories through the selected scalar-restriction tower.
+
+        Restriction along a selected scalar map preserves the algebra structure
+        and the absolute associative, unital, commutative, and Lie identities.
+        Relative structure such as a chosen framing or finite presentation over
+        the source scalar ring does not automatically descend to a smaller base.
+        """
+        target_owner = target_category._without_axioms(named=True)
+        if not isinstance(target_owner, Algebras):
+            return NotImplemented
+        if target_owner.base_ring() is self.base_ring():
+            return NotImplemented
+
+        target_axioms = target_category.axioms()
+        source_axioms = source_category.axioms()
+        added_target_axioms = target_axioms.difference(target_owner.axioms())
+        if not added_target_axioms.issubset(
+            _SCALAR_RESTRICTION_STABLE_ALGEBRA_AXIOMS
+        ):
+            return False
+        if not target_axioms.issubset(source_axioms):
+            return False
+        return _selected_scalar_base_reaches(
+            self.base_ring(), target_owner.base_ring()
+        )
 
     def underlying_module(self):
         r"""Return the forgetful functor ``Alg_R -> Mod_R`` from this category."""
