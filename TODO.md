@@ -214,7 +214,7 @@ A wrong answer outranks every failure that raises: a false value is trusted, a r
 
 Each of these fails a whole population of constructions or tests; closing one unblocks many.
 
-- [ ] **`framed-axiom-retired`**. **Needs:** none.
+- [x] **`framed-axiom-retired`**. **Needs:** none.
   **Owner and delta:** the global `Framed` axiom (`objects.py`, registered in `all_axioms`) and its consumers, per `CAT-29`. The population is read by `rg '\.Framed\(\)|FramedModules|FramedAlgebras|FramedFreeModules|_with_axiom\("Framed"\)|class Framed\(' src/dzack_research/preamble` (52 files, 246 lines on 2026-09-25). Chosen generating sets and presentations become chosen truncations in the shared resolution category; the per-owner framing registry (`_selected_framing_registry`, `_fix_selected_framing`) becomes the store of those chosen truncations; `is_framed_algebra()` and every read of `_algebra_framing_owner` ask the resolution category instead of an attribute; `ModulesWithChosenFinitePresentation`, `GroupsWithChosenFinitePresentation` and `AlgebrasWithChosenFinitePresentation` become fibres of the truncation-1 resolutions. `FramedFreeModules(R)` (free modules with a chosen basis) is the length-0 case and stays, as the framed modules. No category declares `Framed` afterwards.
   **Closure:** the `rg` above matches only `FramedFreeModules` and its consumers; `Algebras(R).Associative().Unital().Framed()` no longer exists; the selected-framing consumers (algebra generators, presentation display, module generators, matrix units of `End_R(F)`) run through the resolution category.
 
