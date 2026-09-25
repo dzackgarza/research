@@ -95,6 +95,15 @@ def test_one_generator_polynomial_algebra_resolution_transports_to_its_monomial_
 
 def test_a_framed_free_module_is_a_length_zero_resolution() -> None:
     free = ZZ.free_module(("e",))
+    selected = free.selected_module_resolution()
+    finite_presentations = Modules(ZZ).FinitelyPresented().resolution_category()
+
+    assert selected.resolution_category() is finite_presentations
+    assert selected.truncation() == 1
+    assert selected.length() == 0
+    assert selected.level(0) is free
+    assert selected.level(1).is_zero()
+
     resolutions = Resolutions(
         Modules(ZZ),
         Modules(ZZ).Projective(),

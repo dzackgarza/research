@@ -3345,6 +3345,15 @@ def _fix_selected_module_resolution(
             lambda label: module(generator_function(label))
         )
         augmentation = _framing_morphism(module, source, generator_morphism)
+        match source is module, labels.cardinality().is_finite():
+            case (True, True):
+                return Modules(base_ring).FinitelyPresented().resolution_category().selected_constant(
+                    module,
+                    generating_set=labels,
+                    generator_morphism=generator_morphism,
+                )
+            case _:
+                pass
         return Modules(base_ring).resolutions(0).selected_degree_zero(
             module,
             source,

@@ -192,6 +192,75 @@ class ModuleResolutions(OwnedCategory):
             length=0,
         )
 
+    def selected_constant(
+        self,
+        projective_object,
+        *,
+        generating_set,
+        generator_morphism,
+    ):
+        r"""Retain a selected finite basis as the length-zero truncation-one resolution."""
+        match self.truncation():
+            case 1:
+                pass
+            case _:
+                raise ValueError(
+                    f"a selected finite basis supplies the canonical truncation-one presentation, "
+                    f"but {self} has truncation {self.truncation()}"
+                )
+        match projective_object in self.level_category():
+            case False:
+                raise TypeError(
+                    f"the selected basis object {projective_object} must lie in the finite-free "
+                    f"level category {self.level_category()}"
+                )
+            case True:
+                pass
+        match generator_morphism.domain() is generating_set and generator_morphism.codomain() is projective_object:
+            case False:
+                raise ValueError(
+                    f"the selected basis map of {projective_object} must be a map from "
+                    f"{generating_set} to {projective_object}"
+                )
+            case True:
+                pass
+        zero = self.base_ring().free_module(0)
+        identity = projective_object.module_category().Mor(
+            projective_object, projective_object
+        ).identity()
+
+        def term(degree):
+            match int(degree):
+                case 0:
+                    return projective_object
+                case 1:
+                    return zero
+                case _:
+                    raise ValueError(
+                        f"the canonical finite presentation of {projective_object} is represented only in degrees 0 and 1"
+                    )
+
+        def differential(degree):
+            match int(degree):
+                case 1:
+                    return zero.module_category().Mor(zero, projective_object).zero()
+                case _:
+                    raise ValueError(
+                        f"the canonical finite presentation of {projective_object} has only the degree-one differential"
+                    )
+
+        return _object_of(
+            self,
+            resolution_target=projective_object,
+            resolution_level_function=term,
+            resolution_augmentation=identity,
+            resolution_length=0,
+            resolution_model="selected-basis",
+            module_differential_function=differential,
+            resolution_generating_set=generating_set,
+            resolution_generator_morphism=generator_morphism,
+        )
+
     def chain(
         self,
         target,
