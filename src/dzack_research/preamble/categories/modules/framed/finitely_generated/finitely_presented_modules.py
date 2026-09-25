@@ -260,6 +260,66 @@ def _fix_selected_module_presentation(module, base_ring, relation_matrix, presen
     )
 
 
+def _fix_lazy_selected_module_presentation(module, base_ring, realization_factory) -> None:
+    r"""Fix one endpoint-determined finite presentation without realizing it.
+
+    The factory is selected during construction but is not evaluated until the
+    chosen module resolution is first read.  It returns the relation matrix,
+    relation morphism, generating set and generator morphism of that fixed
+    presentation.  Thus the mathematical choice is made before exposure while
+    its computational model remains lazy.
+    """
+    match module._selected_module_presentation:
+        case None:
+            pass
+        case _:
+            raise ValueError(
+                f"{module} already has chosen generators and relations; they are fixed once"
+            )
+    match callable(realization_factory):
+        case True:
+            pass
+        case False:
+            raise TypeError(
+                f"a lazy selected presentation needs a zero-argument construction, "
+                f"but {realization_factory!r} is not callable"
+            )
+
+    resolution_category = Modules(base_ring).FinitelyPresented().resolution_category()
+
+    def selected_resolution():
+        relation_matrix, presentation, generating_set, generator_morphism = realization_factory()
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            _framing_morphism,
+        )
+
+        backend = _SelectedModulePresentationBackend(
+            base_ring,
+            relation_matrix,
+            presentation,
+        )
+        augmentation = _framing_morphism(
+            module,
+            presentation.codomain(),
+            generator_morphism,
+        )
+        resolution = resolution_category.selected_presentation(
+            module,
+            presentation,
+            augmentation,
+            generating_set=generating_set,
+            generator_morphism=generator_morphism,
+        )
+        module._selected_module_presentation = backend
+        return resolution
+
+    _fix_selected_resolution(
+        module,
+        Modules(base_ring),
+        selected_resolution,
+    )
+
+
 class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
     r"""Implementation refinement for modules with a selected finite presentation."""
 

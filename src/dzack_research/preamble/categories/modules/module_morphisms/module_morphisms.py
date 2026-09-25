@@ -2113,23 +2113,23 @@ def _initialize_module_mor_parent(
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
-        _fix_selected_module_presentation,
+        _fix_lazy_selected_module_presentation,
     )
     from dzack_research.preamble.categories.modules.pure.modules import (
         MatrixSpaces,
-        _fix_selected_module_framing,
+        _fix_selected_module_resolution,
         _matrix_unit,
     )
 
-    # Fix all chosen data before the mixed Sage Mor is initialized and then
-    # refined into its owned enrichment.  The generator-map callables below are
-    # representations of those fixed data and are evaluated only after the
-    # parent exists; no accessor can choose another framing or presentation.
+    # Fix the choice of every selected resolution before the mixed Sage Mor is
+    # initialized and refined.  A represented internal-Hom presentation is
+    # endpoint-determined but potentially expensive, so its factory is fixed
+    # here and its model is realized only on the first module-data read.
     match placement:
         case _ if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
             # ``Hom_R(F_R(S), F_R(T))`` is free on the matrix units ``T x S``.
             labels = codomain.module_generating_set().product_with(domain.module_generating_set())
-            _fix_selected_module_framing(
+            _fix_selected_module_resolution(
                 parent,
                 ring,
                 labels,
@@ -2137,28 +2137,27 @@ def _initialize_module_mor_parent(
                 ring._fresh_free_module_on(labels),
             )
         case _ if placement.is_subcategory(_SelectedFinitePresentationModules(ring)):
-            # ``Hom_R(M, N)`` between presented modules is presented by the
-            # model its endpoints determine (see ``internal_mor``).
-            from dzack_research.preamble.categories.modules.internal_mor import (
-                _internal_mor_model_data_from_endpoints,
-            )
+            def selected_presentation_data():
+                from dzack_research.preamble.categories.modules.internal_mor import (
+                    _internal_mor_model_data_from_endpoints,
+                )
 
-            model, _inclusion, relation_matrix, presentation = _internal_mor_model_data_from_endpoints(
-                domain,
-                codomain,
-            )
-            _fix_selected_module_framing(
+                model, _inclusion, relation_matrix, presentation = _internal_mor_model_data_from_endpoints(
+                    domain,
+                    codomain,
+                )
+                labels = model.module_generating_set()
+                generator_morphism = Sets().Mor(labels, parent)(
+                    lambda label: parent._morphism_from_internal_model(
+                        model.module_generator(label)
+                    )
+                )
+                return relation_matrix, presentation, labels, generator_morphism
+
+            _fix_lazy_selected_module_presentation(
                 parent,
                 ring,
-                model.module_generating_set(),
-                lambda label: parent._morphism_from_internal_model(model.module_generator(label)),
-                model.framing_source(),
-            )
-            _fix_selected_module_presentation(
-                parent,
-                ring,
-                relation_matrix,
-                presentation,
+                selected_presentation_data,
             )
 
     CategoricalMor.__init__(
@@ -2389,21 +2388,39 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def presentation_matrix(self):
         r"""Return the relation rows of the presented model of this Mor module."""
-        from dzack_research.preamble.categories.modules.internal_mor import (
-            _internal_mor_model_data,
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _SelectedFinitePresentationModules,
         )
 
-        _model, _inclusion, relation_matrix, _presentation = _internal_mor_model_data(self)
-        return relation_matrix
+        match self in _SelectedFinitePresentationModules(self.base_ring()):
+            case True:
+                self.selected_module_resolution()
+                return self._selected_module_presentation.relation_matrix()
+            case False:
+                from dzack_research.preamble.categories.modules.internal_mor import (
+                    _internal_mor_model_data,
+                )
+
+                _model, _inclusion, relation_matrix, _presentation = _internal_mor_model_data(self)
+                return relation_matrix
 
     def presentation(self):
         r"""Return the presentation of the presented model of this Mor module."""
-        from dzack_research.preamble.categories.modules.internal_mor import (
-            _internal_mor_model_data,
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _SelectedFinitePresentationModules,
         )
 
-        _model, _inclusion, _relation_matrix, presentation = _internal_mor_model_data(self)
-        return presentation
+        match self in _SelectedFinitePresentationModules(self.base_ring()):
+            case True:
+                selected = self.selected_module_resolution()
+                return selected.differential(1)
+            case False:
+                from dzack_research.preamble.categories.modules.internal_mor import (
+                    _internal_mor_model_data,
+                )
+
+                _model, _inclusion, _relation_matrix, presentation = _internal_mor_model_data(self)
+                return presentation
 
     def linear_combination(self, coefficients):
         result = self.zero()
