@@ -938,14 +938,16 @@ def _declared_category_is_subcategory(category: Category, target: Category) -> b
     # essential when only part of the source refinement survives the parameter
     # change: declaring a raw supercategory edge would make Sage propagate every
     # axiom through it.  Ask each declared ancestor's unaxiomatized owner for such
-    # a relation before falling back to ordinary graph ancestry.
+    # a relation when ordinary graph ancestry does not already decide it.
+    if target in category._set_of_super_categories:
+        return True
     sources = (category, *category._set_of_super_categories)
     for source in sources:
         owner = source._without_axioms(named=True)
         relation = getattr(owner, "_declared_parameter_subcategory_relation", None)
         if relation is not None and relation(source, target) is True:
             return True
-    return target in category._set_of_super_categories
+    return False
 
 
 def _owned_flatten_categories(categories) -> tuple[Category, ...]:
