@@ -641,25 +641,6 @@ class Resolutions(OwnedCategory):
                     )
                 case True:
                     pass
-        identity = _category_mor_parent(
-            base, degree_zero_source, degree_zero_source
-        ).identity()
-        for face in (first_face, second_face):
-            match face * degeneracy == identity:
-                case False:
-                    raise ValueError(
-                        f"the selected presentation of {target} is not reflexive: {face} does not split "
-                        f"the stated degeneracy {degeneracy}"
-                    )
-                case _:
-                    pass
-            match augmentation * face == augmentation * second_face:
-                case False:
-                    raise ValueError(
-                        f"the selected presentation of {target} does not coequalize its two degree-one faces"
-                    )
-                case _:
-                    pass
 
         def level(degree):
             match int(degree):

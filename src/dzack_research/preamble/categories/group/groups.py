@@ -789,6 +789,10 @@ def _is_abelian_witness(engine) -> bool:
             return True
         case FreeGroup_class():
             return engine.ngens() <= 1
+        case IndexedFreeGroup():
+            # A free group is abelian exactly when its rank is at most one;
+            # Sage implements no is_abelian for the rank-zero indexed one.
+            return bool(engine.indices().cardinality() <= 1)
         case FinitelyPresentedGroup():
             # A bare finite presentation is not a cheap abelianity certificate:
             # Sage/GAP may launch a coset-table computation to decide it.
@@ -815,13 +819,31 @@ def _has_chosen_presentation(engine) -> bool:
             return False
 
 
+def _is_finite_rank_free(engine) -> bool:
+    r"""Whether ``engine`` is a free group on a finite set: finitely generated and presented with no relations."""
+    match engine:
+        case FreeGroup_class():
+            return True
+        case IndexedFreeGroup():
+            return bool(engine.indices().is_finite())
+        case _:
+            return False
+
+
 def _is_finitely_generated_witness(engine) -> bool:
-    return _engine_finiteness(engine) is True or _has_chosen_generators(engine) or _is_arithmetic_witness(engine)
+    return (
+        _engine_finiteness(engine) is True
+        or _has_chosen_generators(engine)
+        or _is_arithmetic_witness(engine)
+        or _is_finite_rank_free(engine)
+    )
 
 
 def _is_finitely_presented_witness(engine) -> bool:
     match engine:
-        case FreeGroup_class() | FinitelyPresentedGroup() | CoxeterMatrixGroup() | AbelianGroup_class():
+        case FinitelyPresentedGroup() | CoxeterMatrixGroup() | AbelianGroup_class():
+            return True
+        case _ if _is_finite_rank_free(engine):
             return True
         case _:
             return _engine_finiteness(engine) is True
