@@ -64,11 +64,34 @@ def test_ordinal_sum_product_and_power_are_not_commutative() -> None:
     assert not ordinals.proves_le(first_infinite, 3)
 
 
+def test_ordinary_ordinal_arithmetic_is_canonical_order_type_arithmetic() -> None:
+    two = Ordinals()(2)
+    first = omega(0)
+    second = omega(1)
+
+    assert Ordinals()(1).ordinal_sum(first) == first
+    assert two.ordinal_product(first) == first
+    assert two.ordinal_power(first) == first
+
+    omega_plus_one = first.ordinal_sum(1)
+    omega_times_two = first.ordinal_product(2)
+    omega_squared = first.ordinal_power(2)
+    assert omega_plus_one.ordinal_sum(first) == omega_times_two
+    assert omega_plus_one.ordinal_product(first) == omega_squared
+    assert two.ordinal_power(omega_times_two) == omega_squared
+
+    assert two.ordinal_product(second) == second
+    assert two.ordinal_power(second) == second
+    assert first < omega_plus_one < omega_times_two < omega_squared < second
+
+
 def test_natural_sums_of_initial_ordinals_commute_and_omega_one_follows_omega() -> None:
     first = omega(0)
     second = omega(1)
 
     assert first + second == second + first
+    assert first + second == second.ordinal_sum(first)
+    assert first * second == second.ordinal_product(first)
     assert first.ordinal_sum(second) == second
     assert second > first
     assert second.initial_index() == Ordinals()(1)
