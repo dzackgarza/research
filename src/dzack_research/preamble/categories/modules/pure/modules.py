@@ -2665,6 +2665,18 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "modules with a chosen finite presentation"
 
+    def __call__(self, morphism, category=None, **construction_data):
+        r"""Construct the presented module even when ``morphism`` is itself in this category.
+
+        Sage's generic category call returns its first argument whenever that
+        argument is already an object of the category.  A presentation between
+        finite free modules is a matrix Mor element, and matrix Mor objects are
+        themselves finitely presented modules.  Here the morphism is constructor
+        data, not a candidate presented module, so the call always constructs its
+        cokernel.
+        """
+        return self._call_(morphism, category=category, **construction_data)
+
     def _call_(self, morphism, category=None, **construction_data):
         r"""Construct ``coker(rho)`` for ``rho: A -> B`` into a module with a chosen finite presentation.
 
