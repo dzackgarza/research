@@ -2282,7 +2282,23 @@ def _pid_presentation_kernel(morphism):
     if source_rank == 0:
         preimage = free_cover.zero_submodule()
     else:
-        kernel_pairs = augmented.right_kernel().basis_matrix().rows()
+        diagonal, _left_change, right_change = augmented.smith_form()
+        diagonal_rank = min(int(augmented.nrows()), int(augmented.ncols()))
+        kernel_columns = tuple(
+            column
+            for column in range(int(augmented.ncols()))
+            if column >= diagonal_rank or diagonal[column, column] == 0
+        )
+        # If D = U A V is the Smith form of the augmented matrix A, then
+        # A(V e_j) = 0 exactly for the zero diagonal coordinates of D.
+        # Since V is invertible, those columns of V are a basis of ker(A).
+        kernel_pairs = tuple(
+            tuple(
+                right_change[row, column]
+                for row in range(int(right_change.nrows()))
+            )
+            for column in kernel_columns
+        )
         projected = [free_cover(tuple(row[position] for position in range(source_rank))) for row in kernel_pairs if any(row[position] != 0 for position in range(source_rank))]
         preimage = free_cover.submodule(projected) if projected else free_cover.zero_submodule()
 
