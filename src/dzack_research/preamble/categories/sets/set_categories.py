@@ -1381,6 +1381,30 @@ class _FiniteLiteralSet(Sets().ObjectType):
     def __iter__(self):
         return iter(self._points)
 
+    def union(self, other):
+        r"""The finite set of the points of this set and of the finite set ``other``."""
+        assert other in FiniteSets(), (
+            f"the union with {self} is taken here only with a finite set, but {other} is not known to be finite"
+        )
+        return _FiniteLiteralSet((*self, *other))
+
+    def intersection(self, other):
+        r"""The points of this set that lie in ``other``."""
+        return _FiniteLiteralSet(point for point in self if point in other)
+
+    def difference(self, other):
+        r"""The points of this set that do not lie in ``other``."""
+        return _FiniteLiteralSet(point for point in self if point not in other)
+
+    def __or__(self, other):
+        return self.union(other)
+
+    def __and__(self, other):
+        return self.intersection(other)
+
+    def __sub__(self, other):
+        return self.difference(other)
+
     def __eq__(self, other) -> bool:
         if self is other:
             return True
