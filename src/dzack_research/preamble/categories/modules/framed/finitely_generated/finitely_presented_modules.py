@@ -1705,11 +1705,13 @@ class _GeneralPresentedModule:
                 lambda label: coefficients.get(label, zero),
                 name="Cover coordinates",
             )
-        native = self._free_module.coordinate_vector(lift)
         ring = self.base_ring()
         return indexed_family(
             labels,
-            lambda label: _owned_engine_element(ring, native[int(labels.ranking_map()(label))]),
+            lambda label: _owned_engine_element(
+                ring,
+                lift[int(labels.ranking_map()(label))],
+            ),
             name="Cover coordinates",
         )
 
