@@ -73,7 +73,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert presented.module_rank() == 1
     invariant_factors = presented.invariant_factors()
     rendered(invariant_factors)
-    assert ring(2) in invariant_factors
+    assert (ring(2) in invariant_factors) == (not ring(2).is_unit())
 
     # Hom and tensor.
     homs = module.Mor(module)
