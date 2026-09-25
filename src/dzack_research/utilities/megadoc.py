@@ -64,6 +64,7 @@ class WrapsAFunction(Protocol):
 
     f: Callable[..., object]
 
+
 # What a class dictionary holds: a plain function, or one of the descriptors
 # Sage wraps one in.  The survey reads these to report a category's operations.
 type ClassMember = Callable[..., object] | CachedMethod | AbstractMethod | property
@@ -186,6 +187,7 @@ MERMAID_NODE_CAP: Final = 44
 # Naming a dozen specimens tells a reader what the category is for; naming
 # forty tells them nothing more and buries the entry.
 SPECIMEN_CAP: Final = 12
+RUNTIME_ADDRESS: Final = re.compile(r" at 0x[0-9A-Fa-f]+")
 
 
 def summarize(doc: str | None) -> str:
@@ -195,6 +197,11 @@ def summarize(doc: str | None) -> str:
     text = inspect.cleandoc(doc)
     text = text.split("\n\n", 1)[0].replace("\n", " ").strip()
     return re.sub(r"\s+", " ", text)
+
+
+def stable_runtime_text(text: str) -> str:
+    r"""Remove process-local object addresses from generated reference text."""
+    return RUNTIME_ADDRESS.sub("", text)
 
 
 def anchor(name: str) -> str:
@@ -244,7 +251,7 @@ def signature_of(obj: Inspectable, constructor: bool = False) -> str:
         parameters=kept,
         return_annotation=inspect.Signature.empty if constructor else signature.return_annotation,
     )
-    return str(signature)
+    return stable_runtime_text(str(signature))
 
 
 @dataclass
@@ -269,7 +276,7 @@ class CategoryDoc:
     source: str
     doc: str
     exported: bool
-    arity: str  # "nullary" | "parameterized" | "construction"
+    arity: str  # "nullary" | "parameterized" | "construction" | "abstract"
     instance_repr: str = ""
     call_signature: str = ""
     init_signature: str = ""
@@ -389,6 +396,15 @@ class Survey:
         return module.startswith("dzack_research.")
 
     @staticmethod
+    def is_abstract_declaration_base(klass: type) -> bool:
+        r"""Whether ``klass`` is public vocabulary for declaring categories only."""
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            OwnedCategoryOverBaseRing,
+        )
+
+        return klass is OwnedCategoryOverBaseRing
+
+    @staticmethod
     def build(factory: Callable[..., Built], arguments: tuple[Parent, ...]) -> Built | str:
         r"""Construct one, or report why it would not build.
 
@@ -399,7 +415,7 @@ class Survey:
         try:
             return factory(*arguments)
         except Exception as error:  # noqa: BLE001 - see the docstring
-            return f"{type(error).__name__}: {error}"
+            return stable_runtime_text(f"{type(error).__name__}: {error}")
 
     # ---- categories ---------------------------------------------------
 
@@ -417,6 +433,8 @@ class Survey:
         `LEX-12`).  Until it is written there, the category is reported as
         undeclared rather than placed on a guess that happened to work.
         """
+        if self.is_abstract_declaration_base(klass):
+            return (), "abstract"
         try:
             signature = inspect.signature(klass)
         except NO_SIGNATURE:
@@ -456,7 +474,10 @@ class Survey:
                 init_signature=signature_of(value, constructor=True),
             )
             self.categories[name] = doc
-            built = self.build(value, probe[0]) if probe is not None else None
+            if arity == "abstract" or probe is None:
+                built = None
+            else:
+                built = self.build(value, probe[0])
             if isinstance(built, Category):
                 self.describe(doc, built)
                 pending.append(built)
@@ -469,7 +490,7 @@ class Survey:
         self.invert_edges()
 
     def describe(self, doc: CategoryDoc, instance: Category) -> None:
-        doc.instance_repr = repr(instance)
+        doc.instance_repr = stable_runtime_text(repr(instance))
         doc.call_signature = signature_of(type(instance).__call__)
         for super_category in instance.super_categories():
             for part in self.expand(super_category):
@@ -616,7 +637,7 @@ class Survey:
     @staticmethod
     def name_functor(value: Functor) -> str:
         r"""A functor's own repr, or its class name when it has not got one."""
-        text = repr(value)
+        text = stable_runtime_text(repr(value))
         return type(value).__name__ if text.startswith("<") else text
 
     def collect_functors(self) -> None:
@@ -647,8 +668,8 @@ class Survey:
                 doc.domain = self.name_functor(built.left_adjoint())
                 doc.codomain = self.name_functor(built.right_adjoint())
             else:
-                doc.domain = repr(built.domain())
-                doc.codomain = repr(built.codomain())
+                doc.domain = stable_runtime_text(repr(built.domain()))
+                doc.codomain = stable_runtime_text(repr(built.codomain()))
         self.functors.sort(key=lambda f: f.name)
 
     # ---- catalogues and specimens --------------------------------------
@@ -668,7 +689,7 @@ class Survey:
         if not callable(method):
             return None
         try:
-            return show(method())
+            return stable_runtime_text(show(method()))
         except Exception as error:  # noqa: BLE001 - a specimen may raise anything
             return f"!{type(error).__name__}"
 
@@ -707,9 +728,9 @@ class Survey:
                 doc.specimens.append(
                     SpecimenDoc(
                         name=key,
-                        repr_text=repr(specimen),
+                        repr_text=stable_runtime_text(repr(specimen)),
                         invariants=self.invariants_of(specimen),
-                        category=str(self.category_of(specimen) or ""),
+                        category=stable_runtime_text(str(self.category_of(specimen) or "")),
                     )
                 )
             self.catalogues.append(doc)
@@ -754,8 +775,8 @@ class Survey:
                         subsystem=subsystem_of(type(value).__module__),
                         source=source_of(type(value)),
                         doc=summarize(inspect.getdoc(value)),
-                        signature=repr(value),
-                        category=str(self.category_of(value) or ""),
+                        signature=stable_runtime_text(repr(value)),
+                        category=stable_runtime_text(str(self.category_of(value) or "")),
                     )
                 )
             elif callable(value):
@@ -1049,11 +1070,10 @@ class Report:
             facts.append(f"- **probed as** `{doc.instance_repr}`")
         if doc.problem:
             facts.append(f"- **could not be built**: {doc.problem}")
+        if doc.arity == "abstract":
+            facts.append("- **abstract declaration base**: not a concrete category to instantiate")
         if doc.arity == "undeclared":
-            facts.append(
-                f"- **not placed**: `{doc.name}{doc.init_signature}` annotates no parameter,"
-                " so the survey has nothing to construct it from (`LEX-12`)"
-            )
+            facts.append(f"- **not placed**: `{doc.name}{doc.init_signature}` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)")
         if doc.supers:
             facts.append("- **above** " + ", ".join(self.link(s) for s in sorted(set(doc.supers))))
         if doc.subcategories:

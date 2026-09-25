@@ -14,22 +14,6 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
-
-The table's original source audit is based on `1cc95d7b3e59`. Its counts and line
-references belong to that snapshot unless an entry explicitly identifies a later
-inspection. They are discovery leads, not current measurements or closure criteria.
-Source inspection has not executed Sage, tests or notebooks under `DEV-58`.
-Recheck each complete owner and consumer family against its current TODO contract;
-retain unresolved obligations without rebuilding a source-proven repair.
-
-| Violation | Policies | Source evidence |
-| --- | --- | --- |
-| **19. The canonical notebook violates the notebook/session rules.** | `NB-01`, `NB-03`, `NB-04`, `ARC-07`, `LEX-10`, `DEV-40` | Of 51 code cells, **30 are currently unexecuted**. A committed cell retains a `NotImplementedError` traceback at `preamble.ipynb:802–822`. Markdown at `:1214–1216` says the algebra “should look like” a polynomial ring instead of asserting the claim. `:1254` states the exact substitution behavior only in prose. Session code uses `.generators()` (`1227`, `1269`), `A.Hom(P)` (`1239`), positional `P.gen(i)` (`1241`), bare global `Hom(...)` (`1267`, `1290`), low-level `module_homset`/`TensorAlgebraOf`/`DividedPowerAlgebraOf` around `977–980`, and `.hom(...)` for Coxeter diagrams around `1097`. The notebook also still names the retired coordinate escape hatches `e.to_tuple()/to_list()/to_vector()` and tensor `identity.components()`; those source edits belong to the required `canonical-notebook-contract`, since `DEV-58` forbids notebook work before that node. The heading “Coxeter diagrams as Sage parents and their morphisms” (`1080`) is also implementation-centered rather than a mathematical question (`NB-03`). |
-
-The generated megadoc predates some source changes. Its placement diagnostics
-require regeneration at T before they can establish additional current findings.
-Execution ordering and closure live only in [TODO.md](TODO.md).
-
 ### Set-theoretic behaviour is re-implemented instead of wired to a set engine
 
 A set is determined by its membership condition. A finite set of listed points
@@ -85,21 +69,3 @@ whole preamble for engine behaviour re-implemented locally is the TODO node
 Add concrete observed workflow friction here under a descriptive heading, with the user action, expected behavior, actual result, owning boundary and example.
 Use `DEV-59` for capture and resolution.
 Foundational mathematical gaps belong above even when first noticed as an inconvenient method or notebook interaction.
-### Intended research Sage runtime needs terminal verification
-
-- **User action:** run the repository's mandatory commit gate or regenerate the live preamble megadoc using the `SAGE_BIN` exported by the tracked `.envrc`.
-
-- **Expected:** the tracked `.envrc` selects the intended stable research-Sage runtime and its declared dependencies; the normal just recipes can preparse and import the public session.
-
-- **Observed:** on 2026-09-15 the source-checkout `sage`/`sage-preparse`
-  launcher resolved into `/home/dzack/sage-mypy-plugin/sage-stubs/sage-src` and
-  failed with `ModuleNotFoundError: No module named 'sage'`. Current `.envrc`
-  instead defaults to `/home/dzack/gitclones/sage-dev-allopts/.venv/bin/sage`.
-  Source inspection confirms that changed launch path, not its successful runtime
-  behavior. `research-sage-runtime` in TODO owns the terminal verification and
-  any reproduced repair; the historical launcher failure alone does not justify
-  another installation or reverting this path.
-
-- **Owner:** research-Sage runtime/environment provisioning and the tracked `.envrc` contract.
-
-- **Example:** observed when banking the resumed architecture-remediation DAG on 2026-09-15; the commit gate reached `_sage-syntax` and then failed inside the stub-tree `sage-preparse`.

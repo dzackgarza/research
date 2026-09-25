@@ -66,6 +66,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
+    _owned_integers,
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
@@ -105,6 +106,32 @@ if "FinitelyPresentedAsAlgebra" not in all_axioms:
     all_axioms.add("FinitelyPresentedAsAlgebra")
 
 
+_SCALAR_RESTRICTION_STABLE_ALGEBRA_AXIOMS = frozenset(
+    ("AdditiveCommutative", "Associative", "Unital", "Commutative", "Lie")
+)
+
+
+def _selected_scalar_base_reaches(extension_ring, base_ring) -> bool:
+    r"""Return whether the selected scalar tower of ``extension_ring`` reaches ``base_ring``.
+
+    A ring with no proper selected base still has its canonical structure over
+    the initial ring ``ZZ``.  No other implicit scalar morphism is introduced:
+    intermediate steps are exactly the ``base_ring()`` data retained by ring
+    constructors.
+    """
+    current = extension_ring
+    seen = set()
+    while current is not base_ring and id(current) not in seen:
+        seen.add(id(current))
+        selected = current.base_ring()
+        match selected is None or selected is current:
+            case True:
+                return base_ring is _owned_integers()
+            case False:
+                current = _owned_ring(selected)
+    return current is base_ring
+
+
 # ---------------------------------------------------------------------------
 # The algebra Mor: linear maps preserving the multiplication.
 # ---------------------------------------------------------------------------
@@ -122,35 +149,48 @@ class MultiplicativeAlgebraMorphism(Morphism):
     hypothesis the arrow is stated under (``CON-16``, ``DEV-52``).
     """
 
+    def _multiplicativity_derivation(self):
+        r"""Return a construction-derived multiplicativity decision, or ``None``."""
+        return None
+
     def __init__(self, parent, underlying_morphism) -> None:
         Morphism.__init__(self, parent)
         domain = self.domain()
         codomain = self.codomain()
         linear = domain.module_category().Mor(domain, codomain)(underlying_morphism)
-        source_multiplication = domain.multiplication_morphism()
-        target_multiplication = codomain.multiplication_morphism()
-        tensor_square = linear.tensor_product_map(
-            linear,
-            source=source_multiplication.domain(),
-            target=target_multiplication.domain(),
-        )
-        preserved = linear * source_multiplication == target_multiplication * tensor_square
+        self._underlying_morphism = linear
+        self._underlying_linearity = linear.linearity_decision()
+        derived = self._multiplicativity_derivation()
+        if derived is None:
+            source_multiplication = domain.multiplication_morphism()
+            target_multiplication = codomain.multiplication_morphism()
+            preserved = (
+                linear * source_multiplication
+                == target_multiplication * self.tensor_square_morphism()
+            )
+        else:
+            preserved = derived
         assert preserved is not False, (
             f"{underlying_morphism} is not an algebra morphism {domain} -> {codomain}: it does not "
             "preserve the multiplication, f(xy) != f(x) f(y)"
         )
-        self._underlying_morphism = linear
-        self._tensor_square_morphism = tensor_square
-        self._underlying_linearity = linear.linearity_decision()
         self._preserves_multiplication = preserved
 
     def underlying_morphism(self):
         r"""The linear map this algebra morphism is, in the module Mor."""
         return self._underlying_morphism
 
+    @cached_method
     def tensor_square_morphism(self):
         r"""\(f\otimes f\colon A\otimes_R A\to B\otimes_R B\)."""
-        return self._tensor_square_morphism
+        source_multiplication = self.domain().multiplication_morphism()
+        target_multiplication = self.codomain().multiplication_morphism()
+        linear = self.underlying_morphism()
+        return linear.tensor_product_map(
+            linear,
+            source=source_multiplication.domain(),
+            target=target_multiplication.domain(),
+        )
 
     def linearity_decision(self):
         r"""Return the retained linearity decision of the underlying module map."""
@@ -243,9 +283,18 @@ class MultiplicativeAlgebraMor(CategoricalMor):
 class UnitalMultiplicativeAlgebraMorphism(MultiplicativeAlgebraMorphism):
     r"""A morphism of unital algebras: multiplicative and \(f(1) = 1\)."""
 
+    def _unit_preservation_derivation(self):
+        r"""Return a construction-derived unit-preservation decision, or ``None``."""
+        return None
+
     def __init__(self, parent, underlying_morphism) -> None:
         super().__init__(parent, underlying_morphism)
-        self._preserves_unit = self(self.domain().one()) == self.codomain().one()
+        derived = self._unit_preservation_derivation()
+        self._preserves_unit = (
+            self(self.domain().one()) == self.codomain().one()
+            if derived is None
+            else derived
+        )
         assert self._preserves_unit is not False, (
             f"{underlying_morphism} is not a unital algebra morphism {self.domain()} -> {self.codomain()}: "
             "it does not send 1 to 1"
@@ -691,6 +740,33 @@ class Algebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Modules(self.base_ring())]
 
+    def _declared_parameter_subcategory_relation(self, source_category, target_category):
+        r"""Compare algebra categories through the selected scalar-restriction tower.
+
+        Restriction along a selected scalar map preserves the algebra structure
+        and the absolute associative, unital, commutative, and Lie identities.
+        Relative structure such as a chosen framing or finite presentation over
+        the source scalar ring does not automatically descend to a smaller base.
+        """
+        target_owner = target_category._without_axioms(named=True)
+        if not isinstance(target_owner, Algebras):
+            return NotImplemented
+        if target_owner.base_ring() is self.base_ring():
+            return NotImplemented
+
+        target_axioms = target_category.axioms()
+        source_axioms = source_category.axioms()
+        added_target_axioms = target_axioms.difference(target_owner.axioms())
+        if not added_target_axioms.issubset(
+            _SCALAR_RESTRICTION_STABLE_ALGEBRA_AXIOMS
+        ):
+            return False
+        if not target_axioms.issubset(source_axioms):
+            return False
+        return _selected_scalar_base_reaches(
+            self.base_ring(), target_owner.base_ring()
+        )
+
     def underlying_module(self):
         r"""Return the forgetful functor ``Alg_R -> Mod_R`` from this category."""
         from dzack_research.preamble.categories.functors.algebra_modules import (
@@ -1005,7 +1081,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             return True
 
         def is_framed_algebra(self) -> bool:
-            return False
+            return getattr(self, "_algebra_framing_owner", None) is not None
 
         def is_commutative(self):
             r"""Whether ``xy = yx``: decided on module generators of ``M`` against ``m``, else ``Unknown``.
@@ -1361,7 +1437,11 @@ class Algebras(OwnedCategoryOverBaseRing):
 
                     def _algebra_mor_class(self):
                         r"""A framed algebra states its morphisms on its selected generators."""
-                        return AlgebraMor
+                        return (
+                            AlgebraMor
+                            if self.is_framed_algebra()
+                            else UnitalMultiplicativeAlgebraMor
+                        )
 
                     def finite_algebra_generators(self):
                         r"""Return the selected algebra generators as a finite ordered family."""
@@ -2338,7 +2418,7 @@ class AlgebraMorphism(Morphism):
         codomain = self.codomain()
         engine_domain = _engine_ring(domain)
         engine_codomain = _engine_ring(codomain)
-        framed_domain = domain in FramedAlgebras(domain.base_ring())
+        framed_domain = domain.is_framed_algebra()
         self._engine_morphism = None
         self._element_function = None
 
@@ -2541,7 +2621,7 @@ class AlgebraMorphism(Morphism):
         if self is other:
             return op == op_EQ
         domain = self.domain()
-        if domain not in FramedAlgebras(domain.base_ring()):
+        if not domain.is_framed_algebra():
             return Unknown
         equal = self.algebra_generator_images() == other.algebra_generator_images()
         if equal is Unknown:
@@ -2553,7 +2633,7 @@ class AlgebraMorphism(Morphism):
             return NotImplemented
         source = other.domain()
         target = self.codomain()
-        if source in FramedAlgebras(source.base_ring()):
+        if source.is_framed_algebra():
             return source.Mor(target)(
                 lambda label: self(other(source.algebra_generator(label)))
             )
@@ -2678,7 +2758,7 @@ class PresentedAlgebraMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        if other.domain() not in FramedAlgebras(other.domain().base_ring()):
+        if not other.domain().is_framed_algebra():
             return NotImplemented
         return (Algebras(other.domain().base_ring()).Associative().Unital().Mor(other.domain(), self.codomain()))(
             lambda label: self(other(other.domain().algebra_generator(label)))
@@ -2706,8 +2786,7 @@ def _corestrict_algebra_morphism_to_center(morphism):
     """
     domain = morphism.domain()
     codomain = morphism.codomain()
-    base = domain.base_ring()
-    assert domain in FramedAlgebras(base), (
+    assert domain.is_framed_algebra(), (
         f"the corestriction of {morphism} to the centre of {codomain} needs chosen algebra generators "
         f"of {domain}"
     )
@@ -2755,7 +2834,7 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, CategoricalMor):
                 f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
             )
         domain = self.domain()
-        if domain in FramedAlgebras(domain.base_ring()):
+        if domain.is_framed_algebra():
             return self(lambda label: domain.algebra_generator(label))
         engine = _engine_ring(domain)
         return self(engine.hom(engine))
@@ -3307,9 +3386,9 @@ def _engine_algebra_morphism(morphism):
     public method on the mathematical morphism.
     """
     domain = morphism.domain()
-    if domain not in FramedAlgebras(domain.base_ring()):
+    if not domain.is_framed_algebra():
         return morphism._engine_morphism_crossing()
-    assert domain in FramedAlgebras(domain.base_ring()), (
+    assert domain.is_framed_algebra(), (
         f"cannot compute with the algebra morphism {morphism}: its domain {domain} has no chosen "
         "algebra generators"
     )

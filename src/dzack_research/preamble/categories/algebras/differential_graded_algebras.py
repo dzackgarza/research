@@ -10,7 +10,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
     _algebra_on_module,
     _root_algebra_law_decisions,
 )
@@ -373,7 +372,7 @@ class Differential(GradedDerivation):
 
     def _square_zero_on_generators(self):
         algebra = self.algebra()
-        if algebra not in FramedAlgebras(algebra.base_ring()):
+        if not algebra.is_framed_algebra():
             return Unknown
         labels = algebra.algebra_generating_set()
         finite = labels.cardinality().is_finite()
@@ -493,7 +492,7 @@ class DGAMorphism(Morphism):
     def _decide_differential_compatibility(self):
         source = self.domain()
         target = self.codomain()
-        if source not in FramedAlgebras(source.base_ring()):
+        if not source.is_framed_algebra():
             return Unknown
         labels = source.algebra_generating_set()
         finite = labels.cardinality().is_finite()

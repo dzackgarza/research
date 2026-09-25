@@ -3,7 +3,7 @@ r"""A represented category ``Cat`` of categories, functors, and natural transfor
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, overload
+from typing import TYPE_CHECKING, Any, overload
 
 from sage.categories.category import Category
 from sage.categories.map import Map
@@ -33,9 +33,11 @@ from dzack_research.preamble.categories.functors.core import (
     IdentityFunctor,
     NaturalTransformation,
 )
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 
 class CategoryObject(OwnedParent, Parent):
@@ -670,6 +672,8 @@ class Cat(CategoryPacketMethods, Category):
 
         def equalizer_of_family(self, morphisms) -> ObjectOfCategory:
             r"""Return this category's represented wide equalizer."""
+            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
             match morphisms:
                 case IndexedFamily():
                     family = morphisms
@@ -687,6 +691,8 @@ class Cat(CategoryPacketMethods, Category):
 
         def coequalizer_of_family(self, morphisms) -> ObjectOfCategory:
             r"""Return this category's represented wide coequalizer."""
+            from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
             match morphisms:
                 case IndexedFamily():
                     family = morphisms
@@ -949,21 +955,29 @@ class Cat(CategoryPacketMethods, Category):
         # branch.  A strict supercategory contributes no new mathematics to
         # an intersection once one of its subcategories is already present,
         # and retaining both can make Sage linearize the same inherited
-        # method provider twice.  Remove only strict supercategories; leave
-        # incomparable or merely equivalent categories intact.
+        # method provider twice.  Determine that redundancy only from the
+        # declared category ancestry.  Calling ``is_subcategory`` here can
+        # force ``parent_class`` construction while this meet is itself still
+        # assembling those implementation classes, making the redundancy
+        # check circular.  A relation known only through a runtime hook is
+        # therefore conservatively left unpruned.
         reduced = []
         for member in members:
             if any(
                 other is not member
-                and other.is_subcategory(member)
-                and not member.is_subcategory(other)
+                and member in other._set_of_super_categories
+                and other not in member._set_of_super_categories
                 for other in members
             ):
                 continue
             if all(member is not known for known in reduced):
                 reduced.append(member)
 
-        return reduced[0] if len(reduced) == 1 else Category.join(tuple(reduced))
+        if len(reduced) == 1:
+            return reduced[0]
+        from dzack_research.preamble.owned_category import owned_category_join
+
+        return owned_category_join(tuple(reduced))
 
     def join(self, categories: Iterable[Category]) -> Category:
         r"""Return the smallest category containing all of ``categories``.

@@ -6,6 +6,7 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
+    UnitalMultiplicativeAlgebraMorphism,
     _algebra_on_module,
     _root_algebra_law_decisions,
 )
@@ -40,6 +41,16 @@ class _SelectedAugmentationModuleMorphism(ModuleMorphism):
 
     def _elementwise_linearity_derivation(self):
         return self._selected_augmentation.linearity_decision()
+
+
+class _SelectedAugmentationAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
+    r"""An augmentation whose algebra laws are part of the selected augmentation datum."""
+
+    def _multiplicativity_derivation(self):
+        return True
+
+    def _unit_preservation_derivation(self):
+        return True
 
 
 class AugmentedAlgebras(OwnedCategoryOverBaseRing):
@@ -100,9 +111,10 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
                 selected,
                 source,
             )
-            return Algebras(self.base_ring()).Associative().Unital().Mor(
+            parent = Algebras(self.base_ring()).Associative().Unital().Mor(
                 self, target
-            )(linear)
+            )
+            return _SelectedAugmentationAlgebraMorphism(parent, linear)
 
 
 class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
@@ -197,7 +209,7 @@ def _graded_algebra_placement(domain, base):
             placement.append(algebras.Commutative())
         case False:
             pass
-    match domain in FramedAlgebras(base):
+    match domain.is_framed_algebra():
         case True:
             placement.append(FramedAlgebras(base))
         case False:
@@ -261,7 +273,7 @@ def _augmented_algebra(augmentation):
     if _declared_graded_algebra_category(domain) is not None:
         law_decisions["grading"] = domain.grading_compatibility_decision()
     data = {"selected_augmentation": selected}
-    if domain in FramedAlgebras(base):
+    if domain.is_framed_algebra():
         framing_owner = domain.algebra_framing_owner()
         data["algebra_generating_family"] = domain.algebra_generators()
         data["algebra_framing_source"] = domain.selected_framing_source(framing_owner)

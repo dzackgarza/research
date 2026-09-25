@@ -29,6 +29,15 @@ def test_the_group_inclusion_lands_in_the_units() -> None:
     assert inclusion(rotation * transposition) != inclusion(transposition) * inclusion(rotation)
 
 
+def test_group_algebra_module_framing_is_not_an_algebra_framing() -> None:
+    group_algebra = QQ[Groups.S(3)]
+    free_algebra = QQ.free_module(("x",)).tensor_algebra()
+
+    assert group_algebra.is_framed_module()
+    assert not group_algebra.is_framed_algebra()
+    assert free_algebra.is_framed_algebra()
+
+
 def test_the_augmentation_over_the_integers_lands_in_the_session_integers() -> None:
     symmetric = Groups.S(3)
     algebra = ZZ[symmetric]

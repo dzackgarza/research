@@ -2027,6 +2027,21 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
         """
         return self._exact_source_expression
 
+    def _cache_key(self):
+        r"""Return a conservative key for caches that accept completion elements.
+
+        Exact source expressions determine exact completion elements, so they
+        may key by that retained datum.  Without such an expression, finite
+        completion data need not decide equality; identity is then the only
+        sound cache key and deliberately does not merge two representatives.
+        """
+        source_expression = self.exact_source_expression()
+        match source_expression:
+            case None:
+                return (self.parent(), id(self))
+            case _:
+                return (self.parent(), source_expression)
+
     def _with_source_expression(self, backend_value, source_expression):
         return self.parent()._completion_element(
             backend_value,
@@ -2054,6 +2069,25 @@ class _AdicCompletionElement(_OwnedAlgebraElement):
             self._backend() * other._backend(),
             source_expression,
         )
+
+    def __mul__(self, other):
+        r"""Multiply while retaining exact source data for completion scalars."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        other_parent = element_parent(other)
+        if other_parent is not self.parent() and other_parent in Modules(self.parent()):
+            return other_parent.scalar_multiple(self, other)
+        other = self._operator_operand(other)
+        if other is NotImplemented:
+            return NotImplemented
+        return self._mul_(other)
+
+    def __rmul__(self, other):
+        r"""Multiply a coerced left scalar without dropping exact source data."""
+        other = self._operator_operand(other)
+        if other is NotImplemented:
+            return NotImplemented
+        return other._mul_(self)
 
     def _neg_(self):
         source_expression = self.exact_source_expression()
@@ -2327,6 +2361,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             value_parent is source
             or value_parent is source.base_ring()
             or value_parent is None
+            or not isinstance(value, SageObject)
         ):
             return completion_map(source(value))
         return super()._element_constructor_(value)
@@ -2830,13 +2865,19 @@ def _fraction_field_localization(source, submonoid):
     base = source.base_ring()
     algebra_source = (
         source
-        if base is not None and source in Algebras(base).Associative().Unital().Commutative()
+        if base is not None and source in Algebras(base).Associative().Unital()
         else None
     )
+    algebra_categories = []
     if algebra_source is not None:
-        placements.append(Algebras(base).Associative().Unital().Commutative())
+        algebra_base = algebra_source.base_ring()
+        algebra_categories = [Algebras(algebra_base).Associative().Unital()]
+        if algebra_source in Algebras(algebra_base).Associative().Unital().Commutative():
+            algebra_categories.append(
+                Algebras(algebra_base).Associative().Unital().Commutative()
+            )
     return _object_of(
-        Category.join((LocalizationRings(), *placements)),
+        Category.join((LocalizationRings(), *placements, *algebra_categories)),
         source=source,
         submonoid=submonoid,
         _engine_ring=fraction_engine,
@@ -3534,8 +3575,35 @@ def Zp(*args, **kwargs):
 class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
     r"""The dual-number quotient with its defining quotient data fixed at construction."""
 
+    def algebra_base_ring(self):
+        r"""Return the selected coefficient ring of the dual-number algebra."""
+        return self.base_ring()
+
     def __init__(self, engine, base, polynomial, defining_ideal, label) -> None:
+        from dzack_research.preamble.categories.modules.native_modules import (
+            _NativeModuleBasis,
+        )
+
         engine_map = engine.coerce_map_from(_engine_ring(polynomial))
+        basis_labels = finite_ordered_set((0, 1))
+        basis_source = base.free_module(basis_labels)
+
+        def basis_image(index):
+            value = engine.one() if index == 0 else engine.gen()
+            return self._from_engine_element(value)
+
+        def basis_coordinates(value):
+            lift = _engine_element(self, self(value)).lift()
+            return {
+                index: _owned_engine_element(base, lift[index])
+                for index in basis_labels
+            }
+
+        self._native_module_basis = _NativeModuleBasis(
+            basis_source,
+            basis_image,
+            basis_coordinates,
+        )
 
         def quotient_map():
             return _canonical_map(

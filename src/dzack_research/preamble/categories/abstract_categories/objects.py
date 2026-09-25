@@ -93,6 +93,16 @@ class _SelectedFraming:
         return selected
 
 
+def _selected_framing_registry(target):
+    r"""Return the framing registry, including during pre-Parent construction."""
+    name = "_preamble_selected_framings"
+    selected_by_owner = getattr(target, name, None)
+    if selected_by_owner is None:
+        selected_by_owner = {}
+        setattr(target, name, selected_by_owner)
+    return selected_by_owner
+
+
 def _fix_selected_framing(
     target,
     owner,
@@ -102,7 +112,7 @@ def _fix_selected_framing(
     framing_morphism_factory,
 ):
     r"""Fix one ``Framed`` datum for ``target`` in the stated ambient category."""
-    selected_by_owner = target._selected_framing_registry()
+    selected_by_owner = _selected_framing_registry(target)
     if owner in selected_by_owner:
         raise ValueError(
             f"{target} already has a chosen generating surjection in {owner}; it cannot be given a second one"
@@ -238,6 +248,11 @@ class Objects(OwnedCategory):
 
         return Sets().an_object()
 
+    class SubcategoryMethods:
+        def Framed(self):
+            r"""Return this category with the global selected-framing axiom."""
+            return self._with_axiom("Framed")
+
     class ParentMethods(OwnedParent, Parent):
         r"""The owned root of every object chain.
 
@@ -248,7 +263,7 @@ class Objects(OwnedCategory):
 
         @cached_method
         def _selected_framing_registry(self):
-            return {}
+            return _selected_framing_registry(self)
 
         def __call__(self, *arguments, **options):
             r"""Construct an element of this object, without coercion discovery.
@@ -263,12 +278,7 @@ class Objects(OwnedCategory):
             return self._element_constructor_(*arguments, **options)
 
     class ElementMethods(Element):
-        r"""The owned root of every element chain: the host element runtime, as ``ParentMethods`` is for objects."""
-
-    class SubcategoryMethods:
-        def Framed(self):
-            r"""The subcategory of objects carrying a chosen framing (the ``Framed`` axiom)."""
-            return self._with_axiom("Framed")
+        r"""The owned root of every element chain: the host element runtime."""
 
     class Framed(CategoryWithAxiom):
         r"""Objects carrying one chosen generating epimorphism from a free object.

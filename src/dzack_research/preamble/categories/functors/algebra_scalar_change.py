@@ -21,7 +21,6 @@ from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
     AlgebrasWithChosenFinitePresentation,
@@ -256,7 +255,7 @@ class _AlgebraRestrictionOfScalarsFunctor(Functor):
         # framing, state the map on that framing so its Mor constructor can
         # check the selected relations.
 
-        if source in FramedAlgebras(source.base_ring()):
+        if source.is_framed_algebra():
             return Algebras(source.base_ring()).Associative().Unital().Mor(source, target)(
                 {
                     label: target(

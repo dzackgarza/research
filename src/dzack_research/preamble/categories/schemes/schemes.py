@@ -72,7 +72,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
     _engine_algebra_morphism,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
@@ -308,7 +307,7 @@ def _engine_coordinate_pullback(pullback):
                 f"elements determines the ring maps out of the localization {source} over {base}"
             )
             return _engine_coercion_agreeing_on(pullback, determining)
-        case _ if source in FramedAlgebras(base):
+        case _ if source.is_framed_algebra():
             return _engine_algebra_morphism(pullback)
         case _:
             from dzack_research.preamble.categories.functors.algebra_scalar_change import _engine_ring_map
@@ -456,7 +455,7 @@ def _elements_determining_maps_out_of(algebra, base):
     if algebra is base:
         return ()
     match algebra:
-        case _ if algebra in FramedAlgebras(algebra.base_ring()):
+        case _ if algebra.is_framed_algebra():
             algebra_base = algebra.base_ring()
             labels = algebra.algebra_generating_set()
             if not labels.cardinality().is_finite():
@@ -840,7 +839,7 @@ class SchemeMorphism(Morphism):
         pullback = self.coordinate_algebra_morphism()
         source_algebra = pullback.domain()
         target_algebra = pullback.codomain()
-        assert source_algebra in FramedAlgebras(source_algebra.base_ring()), (
+        assert source_algebra.is_framed_algebra(), (
             f"cannot compute with the pullback {pullback} of {self} in Sage: {source_algebra} must have "
             f"a chosen set of algebra generators, but it is an object of {source_algebra.category()}"
         )
@@ -1811,7 +1810,7 @@ def _affine_scheme(algebra, base, placements=(), **level_data):
     """
     schemes = Schemes(base)
     categories = [schemes.Affine()]
-    if algebra is base or (algebra in FramedAlgebras(base) and algebra.algebra_generating_set().cardinality().is_finite()):
+    if algebra is base or (algebra.is_framed_algebra() and algebra.algebra_generating_set().cardinality().is_finite()):
         categories.extend((schemes.FiniteType(), schemes.QuasiProjective()))
     if algebra is base:
         categories.append(schemes.Smooth())
@@ -2021,7 +2020,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                 f"the codomain {target} an object of {target.category()}"
             )
             target_algebra = target.coordinate_algebra()
-            assert target_algebra in FramedAlgebras(target_algebra.base_ring()), (
+            assert target_algebra.is_framed_algebra(), (
                 f"cannot form the equalizer of {left} and {right}: the coordinate algebra "
                 f"{target_algebra} of the codomain must have a chosen set of algebra generators, but it "
                 f"is an object of {target_algebra.category()}"
@@ -2567,7 +2566,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             match self:
                 case _ if self in Schemes(base).Affine():
                     algebra = self.coordinate_algebra()
-                    assert algebra in FramedAlgebras(base), (
+                    assert algebra.is_framed_algebra(), (
                         f"cannot form the {base}-point of {self} with coordinates {owned_coordinates}: the "
                         f"coordinate algebra {algebra} must have a chosen set of algebra generators, but it is an "
                         f"object of {algebra.category()}"
@@ -3360,8 +3359,7 @@ class AffineGSchemes(OwnedCategory):
                 f"chosen finite set of group generators, but it is an object of {group.category()}"
             )
             algebra = self.coordinate_algebra()
-            base = self.scheme_base_ring()
-            assert algebra in FramedAlgebras(base), (
+            assert algebra.is_framed_algebra(), (
                 f"cannot form the ideal of the fixed locus of {group} on {self}: the coordinate algebra "
                 f"{algebra} must have a chosen set of algebra generators, but it is an object of "
                 f"{algebra.category()}"
@@ -3493,7 +3491,7 @@ class AffineGSchemes(OwnedCategory):
                 f"must be an affine scheme over {base}, but it is an object of {target.category()}"
             )
             target_algebra = target.coordinate_algebra()
-            assert target_algebra in FramedAlgebras(base), (
+            assert target_algebra.is_framed_algebra(), (
                 f"cannot factor {morphism} through the affine quotient of {self}: the coordinate algebra "
                 f"{target_algebra} of {target} must have a chosen set of algebra generators, but it is an "
                 f"object of {target_algebra.category()}"
@@ -3560,7 +3558,7 @@ def _affine_linear_invariant_algebra_data(
     )
     algebra = scheme.coordinate_algebra()
     base = scheme.scheme_base_ring()
-    assert algebra in SymmetricAlgebras(base) and algebra in FramedAlgebras(base), (
+    assert algebra in SymmetricAlgebras(base) and algebra.is_framed_algebra(), (
         f"cannot compute the invariant algebra of {group} acting on {scheme}: the coordinate "
         f"algebra {algebra} must be a polynomial algebra with chosen variables, but it is an "
         f"object of {algebra.category()}"

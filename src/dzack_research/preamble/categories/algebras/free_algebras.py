@@ -11,6 +11,7 @@ from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
 from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
@@ -175,6 +176,9 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
                 raise ValueError(
                     f"a free algebra here is a tensor algebra or a symmetric algebra, but got flavor {flavor!r}"
                 )
+        module_placement = FramedFreeModules(base)
+        if basis.cardinality().is_finite():
+            module_placement = FinitelyGeneratedFreeModules(base)
         self._native_module_basis = _NativeModuleBasis(
             base.free_module(basis),
             self._native_basis_image,
@@ -182,7 +186,13 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
         )
         super().__init__(
             engine, base, generating_module.module_generating_set(),
-            categories=(FreeAlgebras(base), GradedFreeAlgebras(base), algebra_category, *categories),
+            categories=(
+                FreeAlgebras(base),
+                GradedFreeAlgebras(base),
+                algebra_category,
+                module_placement,
+                *categories,
+            ),
             construction_data=construction_data,
             law_decisions=(("grading", True),),
             algebra_framing_source=self,
@@ -283,10 +293,11 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
 
 def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
     base = _owned_ring(base_ring)
+    engine_base = _engine_ring(base)
     if (
         algebra_generating_set in Sets()
         and not cardinal(algebra_generating_set.cardinality()).is_finite()
-    ):
+    ) or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_symmetric_algebra_of,
         )
@@ -297,17 +308,18 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=No
     labels = _finite_labels(algebra_generating_set)
     generating = base.free_module(labels) if source_module is None else source_module
     return _native_free_algebra(
-        _SagePolynomialRing(_engine_ring(base), _variable_names(labels)),
+        _SagePolynomialRing(engine_base, _variable_names(labels)),
         generating, "symmetric",
     )
 
 
 def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
     base = _owned_ring(base_ring)
+    engine_base = _engine_ring(base)
     if (
         algebra_generating_set in Sets()
         and not cardinal(algebra_generating_set.cardinality()).is_finite()
-    ):
+    ) or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_tensor_algebra_of,
         )
@@ -317,7 +329,7 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
         )
     labels = _finite_labels(algebra_generating_set)
     names = _variable_names(labels)
-    algebra = _SageFreeAlgebra(_engine_ring(base), len(labels), names=names)
+    algebra = _SageFreeAlgebra(engine_base, len(labels), names=names)
     generating = base.free_module(labels) if source_module is None else source_module
     return _native_free_algebra(algebra, generating, "tensor")
 

@@ -62,13 +62,14 @@ from __future__ import annotations
 import copyreg
 import hashlib
 from abc import ABCMeta
+from _abc import _abc_init
 from collections.abc import Hashable
 from dataclasses import dataclass
-from inspect import Parameter, signature
+from inspect import Parameter, isclass, ismethod, signature
 from typing import TYPE_CHECKING
 
-from sage.categories.category import Category, CategoryWithParameters
-from sage.misc.cachefunc import cached_function
+from sage.categories.category import Category, CategoryWithParameters, JoinCategory
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.constant_function import ConstantFunction
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.category_object import CategoryObject
@@ -79,12 +80,10 @@ from sage.structure.dynamic_class import (
 from sage.structure.parent import Parent as SageParent
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-
-if TYPE_CHECKING:
     from typing import Any
 
     from sage.structure.parent import Parent
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
     # The construction data one level of an owned chain hands to the levels
     # above it.  Genuinely open: each level consumes the datum it declares and
@@ -556,6 +555,91 @@ def declared_implementation_types(
     return declared[0], tuple(declared[1:])
 
 
+def _owned_implementation_bases(
+    category: Category,
+    provider_names: tuple[str, ...],
+) -> tuple[type, ...]:
+    r"""Return one cooperative implementation MRO for an owned category.
+
+    Sage flattens join-valued supercategories when it computes a category's
+    immediate supercategories.  Consequently the same C3 conflict that occurs
+    on an explicit join also occurs on an ordinary category such as
+    ``RootLattices`` whose one declared supercategory is a join.  Inheriting
+    already-composed ``parent_class`` objects can make individually valid MROs
+    impose a precedence cycle on shared providers.  The category linearization
+    already fixes the mathematical order, so every owned category composes the
+    declared providers from that linearization directly instead of nesting
+    dynamic implementation classes.
+    """
+    bases: list[type] = []
+    for level in category._all_super_categories:
+        provider, inherited = declared_implementation_types(
+            type(level), provider_names
+        )
+        candidates = (() if provider is None else (provider,)) + inherited
+        for candidate in candidates:
+            if any(
+                candidate is known or issubclass(known, candidate)
+                for known in bases
+            ):
+                continue
+            bases = [
+                known for known in bases if not issubclass(candidate, known)
+            ]
+            bases.append(candidate)
+
+    # A stronger construction can consume one datum and derive a lower-level
+    # constructor parameter before cooperative ``super()`` reaches that owner.
+    # Flattening branch implementation classes must retain that dependency,
+    # not merely the category comparison order.  ``BiproductModules`` is the
+    # canonical example: it consumes ``biproduct_factors`` and derives the
+    # ``summands`` parameter of ``DirectSumObjects``.  Put every such producer
+    # before the providers that explicitly consume its derived names, keeping
+    # the category-linearized order as the stable tie-breaker.
+    explicit_parameters: dict[type, frozenset[str]] = {}
+    for provider in bases:
+        initializer = provider.__dict__.get("__init__")
+        if initializer is None:
+            explicit_parameters[provider] = frozenset()
+            continue
+        parameters = signature(initializer).parameters.values()
+        explicit_parameters[provider] = frozenset(
+            parameter.name
+            for parameter in parameters
+            if parameter.name != "self"
+            and parameter.kind
+            not in (Parameter.VAR_POSITIONAL, Parameter.VAR_KEYWORD)
+        )
+
+    predecessors = {provider: set() for provider in bases}
+    for producer in bases:
+        derived = frozenset(
+            getattr(producer, "_derived_construction_parameters", ())
+        )
+        if not derived:
+            continue
+        for consumer in bases:
+            if producer is consumer:
+                continue
+            if derived.intersection(explicit_parameters[consumer]):
+                predecessors[consumer].add(producer)
+
+    pending = set(bases)
+    ordered: list[type] = []
+    while pending:
+        ready = tuple(
+            provider
+            for provider in bases
+            if provider in pending
+            and not predecessors[provider].intersection(pending)
+        )
+        assert ready, "constructor-data dependencies among implementation providers are acyclic"
+        selected = ready[0]
+        ordered.append(selected)
+        pending.remove(selected)
+    return tuple(ordered) or (object,)
+
+
 class OwnedCategoryMixin(CatConstructionsMixin):
     r"""Tie a category to its implementation classes.
 
@@ -592,6 +676,33 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     # categories.
     _cmp_key = _OwnedCategoryComparisonKey()
 
+    def is_subcategory(self, category):
+        r"""Compare owned categories through their declared mathematical graph.
+
+        Owned implementation classes are provider-linearized rather than
+        nested along the category graph, because the latter need not admit a
+        common Python C3 MRO.  They are therefore implementation vehicles, not
+        subcategory witnesses.  Category inclusion is the declared forgetful
+        graph itself, with the intersection rules handled by
+        :func:`_declared_category_is_subcategory`.
+        """
+        return _declared_category_is_subcategory(self, category)
+
+    def _subcategory_hook_(self, category):
+        r"""Answer incoming subcategory queries from the owned graph as well.
+
+        Sage calls the *target* category's hook before the source category's
+        ``is_subcategory`` implementation.  This matters for mixed host joins
+        such as the category of ``Sets.Δ[n]``: one branch is the owned finite
+        ordinal category and the other branches are Sage's finite/facade
+        implementation categories.  The intersection is still an owned set
+        because its owned branch forgets to :class:`Sets`; Python inheritance
+        between the mixed join's ``parent_class`` and the owned target is not
+        that mathematical statement.  Use the same declared join law for this
+        target-side query.
+        """
+        return _declared_category_is_subcategory(category, self)
+
     _IMPLEMENTATION_PROVIDER_NAMES = {
         "ParentMethods": ("ParentMethods",),
         "ElementMethods": ("ElementMethods",),
@@ -606,6 +717,64 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         itself a category, and its objects are the arrows.
         """
         return None
+
+    @cached_method
+    def _with_axiom_as_tuple(self, axiom):
+        r"""Return structural branches whose meet adds ``axiom``.
+
+        This follows Sage's ``Category._with_axiom_as_tuple`` construction,
+        but its final redundancy elimination is read from the declared
+        supercategory ancestry rather than ``is_subcategory``.  The latter
+        synthesizes ``parent_class`` objects and is therefore circular while
+        owned category implementation classes are still being assembled.
+        """
+        if axiom in self.axioms():
+            return (self,)
+        axiom_attribute = getattr(self.__class__, axiom, None)
+        if axiom_attribute is None:
+            return (self,)
+        if axiom in self.__class__.__base__.__dict__:
+            from sage.categories.category_with_axiom import CategoryWithAxiom
+
+            if isclass(axiom_attribute) and issubclass(
+                axiom_attribute, CategoryWithAxiom
+            ):
+                return (axiom_attribute(self),)
+            return (self,)
+
+        result = (self,) + tuple(
+            branch
+            for category in self._super_categories
+            for branch in category._with_axiom_as_tuple(axiom)
+        )
+        hook = getattr(self, axiom + "_extra_super_categories", None)
+        if hook is not None:
+            assert ismethod(hook)
+            result += tuple(hook())
+
+        reduced = []
+        for member in result:
+            if any(
+                other is not member
+                and member in other._set_of_super_categories
+                and other not in member._set_of_super_categories
+                for other in result
+            ):
+                continue
+            if all(member is not known for known in reduced):
+                reduced.append(member)
+        return tuple(reduced)
+
+    @cached_method
+    def _with_axiom(self, axiom):
+        r"""Return this owned category with ``axiom`` through the owned meet.
+
+        Sage's axiom closure still computes the mathematical branches through
+        :meth:`Category._with_axiom_as_tuple`.  Only their runtime join is
+        owned: its implementation types inherit the immediate branch types,
+        which already carry every indirect owned implementation.
+        """
+        return owned_category_join(self._with_axiom_as_tuple(axiom))
 
     def _make_named_class(
         self,
@@ -627,48 +796,22 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         declaring_class = type(category)
         if declaring_class.__name__.endswith("_with_category"):
             declaring_class = declaring_class.__base__
+        provider_names = self._IMPLEMENTATION_PROVIDER_NAMES[method_provider]
         match name:
             case "parent_class":
-                bases = tuple(super_category.parent_class for super_category in category._super_categories_for_classes)
+                bases = _owned_implementation_bases(category, provider_names)
                 reduction_function = _parent_class_of
             case "element_class":
-                bases = tuple(super_category.element_class for super_category in category._super_categories_for_classes)
+                bases = _owned_implementation_bases(category, provider_names)
                 reduction_function = _element_class_of
             case "morphism_class":
-                bases = tuple(super_category.morphism_class for super_category in category._super_categories_for_classes)
+                bases = _owned_implementation_bases(category, provider_names)
                 reduction_function = _morphism_class_of
             case _:
                 raise AssertionError(f"unsupported implementation type {name}")
-        provider, inherited = declared_implementation_types(
-            declaring_class,
-            self._IMPLEMENTATION_PROVIDER_NAMES[method_provider],
+        provider, _inherited = declared_implementation_types(
+            declaring_class, provider_names
         )
-        # Ahead of the super categories, behind the level's own declaration.
-        # The owned construction base states what being a subobject *is*, and
-        # Sage's ``Sets.Subquotients`` states the same names abstractly; a
-        # super category carries the abstract ones, so an owned declaration
-        # placed after them would be shadowed by exactly what it exists to
-        # replace.  A super category that already reached this declaration is
-        # skipped: it has it at the end of its own linearization, and asking
-        # for it earlier contradicts that order, which C3 refuses.
-        declared = () if provider is None or any(provider in base.mro() for base in bases) else (provider,)
-        carried = tuple(ancestor_provider for ancestor_provider in inherited if not any(ancestor_provider in base.mro() for base in bases))
-        providers = declared + carried
-        bases = providers + bases
-        # A base reached twice -- a join whose members share a super category --
-        # is one base, in the position it was first required.
-        seen: dict[type, None] = {}
-        for base in bases:
-            seen.setdefault(base, None)
-        bases = tuple(seen)
-        if len(bases) > 1 and object in bases:
-            # A super category with no methods class of its own contributes
-            # ``object``.  Left in place beside a real base it is a base that
-            # every other base already derives from, and C3 refuses the class:
-            # ``TypeError: Cannot create a consistent method resolution order
-            # (MRO) for bases object, Modules.parent_class,
-            # FreeModules.ParentMethods``.
-            bases = tuple(base for base in bases if base is not object)
         doccls = provider or declaring_class
         class_name = f"{declaring_class.__name__}.{name}"
         reduction = (reduction_function, (category,)) if picklable else None
@@ -684,7 +827,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         # and each object carries its own parameter as instance data.
         key: tuple[type, str, Hashable] | None = None
         if isinstance(category, CategoryWithParameters):
-            key = (declaring_class, name, category._make_named_class_key(name))
+            key = (declaring_class, name, bases)
             shared = category._make_named_class_cache.get(key)
             if shared is not None:
                 return shared
@@ -703,7 +846,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             # never asked for on this path, and its ``__slots__`` suppression,
             # which cannot fire because a provider is a plain Python class and
             # so always contributes a ``__dictoffset__``.
-            return _abc_metaclass_for(bases)(
+            result = _abc_metaclass_for(bases)(
                 class_name,
                 bases,
                 {
@@ -711,13 +854,21 @@ class OwnedCategoryMixin(CatConstructionsMixin):
                     "_doccls": (doccls,),
                     "__doc__": doccls.__doc__,
                     "__module__": doccls.__module__,
-                    "_owned_providers": tuple(provider for provider in providers if provider in bases),
                 },
             )
+            # Sage's dynamic/Classcall/InheritComparison metaclasses perform
+            # their required initialization when called above, but their type
+            # construction path precedes ``ABCMeta.__new__`` in the metaclass
+            # MRO.  Initialize CPython's ABC state explicitly after preserving
+            # that Sage lifecycle; otherwise ``isinstance`` reaches
+            # ``ABCMeta.__instancecheck__`` with no ``_abc_impl``.
+            _abc_init(result)
+            return result
 
         result = build()
         if key is not None:
-            if key[2] != category._make_named_class_key(name):
+            current_bases = _owned_implementation_bases(category, provider_names)
+            if key[2] != current_bases:
                 # The parameter's category was refined while we built, so the
                 # key we would store is stale.  Sage's own override handles
                 # this the same way: discard and recompute.
@@ -729,6 +880,172 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             if arrow_type is not None:
                 result.ObjectType = arrow_type
         return result
+
+
+class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
+    r"""The computed intersection of owned categories.
+
+    This is Sage's join mathematically.  The separate runtime class is needed
+    because owned implementation providers are bases rather than copied method
+    dictionaries; :class:`OwnedCategoryMixin` therefore linearizes the
+    immediate branch implementations directly.
+    """
+
+    def is_subcategory(self, category):
+        r"""Compare this intersection through its mathematical branches.
+
+        Sage's generic join implementation first asks the target category's
+        ``_subcategory_hook_`` about the join.  The default hook compares
+        ``parent_class`` objects.  Owned joins deliberately flatten their
+        implementation providers because the complete branch classes can have
+        no common C3 linearization, so that implementation-class comparison is
+        no longer a semantic test.  The declared category graph already
+        records the forgetful maps, including their concrete parameters, and
+        the join law supplies the intersection cases.  Use that graph only;
+        falling back to a branch's generic ``is_subcategory`` would simply
+        re-enter the same ``parent_class`` proxy through the target hook.
+        """
+        return _declared_category_is_subcategory(self, category)
+
+
+def _declared_category_is_subcategory(category: Category, target: Category) -> bool:
+    r"""Read category inclusion from the declared graph, without class synthesis.
+
+    This is the comparison used while an owned join is being normalized.  At
+    that point ``parent_class`` may not exist yet, so Sage's default
+    ``is_subcategory`` fallback to ``issubclass(parent_class, ...)`` is a
+    circular implementation test.  A join is an intersection: it lies below a
+    target when one branch does, and a category lies below a join when it lies
+    below every branch.  For ordinary nodes, the transitive declared
+    supercategory set is the forgetful-functor relation available before any
+    implementation classes are built.
+    """
+    if category is target:
+        return True
+    if isinstance(target, JoinCategory):
+        return all(
+            _declared_category_is_subcategory(category, branch)
+            for branch in target._super_categories
+        )
+    if isinstance(category, JoinCategory):
+        return any(
+            _declared_category_is_subcategory(branch, target)
+            for branch in category._super_categories
+        )
+
+    # Some parameterized families carry mathematically canonical change-of-
+    # parameter inclusions which are not inheritance edges.  The distinction is
+    # essential when only part of the source refinement survives the parameter
+    # change: declaring a raw supercategory edge would make Sage propagate every
+    # axiom through it.  Ask each declared ancestor's unaxiomatized owner for such
+    # a relation before falling back to ordinary graph ancestry.
+    sources = (category, *category._set_of_super_categories)
+    for source in sources:
+        owner = source._without_axioms(named=True)
+        relation = getattr(owner, "_declared_parameter_subcategory_relation", None)
+        if relation is not None and relation(source, target) is True:
+            return True
+    return target in category._set_of_super_categories
+
+
+def _owned_flatten_categories(categories) -> tuple[Category, ...]:
+    r"""Flatten join branches without invoking Sage's subcategory sorter."""
+    flattened = []
+    for category in categories:
+        if isinstance(category, JoinCategory):
+            flattened.extend(category._super_categories)
+        else:
+            flattened.append(category)
+    return tuple(flattened)
+
+
+def _owned_sort_uniq(categories) -> tuple[Category, ...]:
+    r"""Return the declared-antichain normalization of ``categories``."""
+    ordered = tuple(
+        sorted(
+            _owned_flatten_categories(categories),
+            key=lambda category: category._cmp_key,
+            reverse=True,
+        )
+    )
+    result = []
+    for category in ordered:
+        if any(
+            _declared_category_is_subcategory(known, category)
+            for known in result
+        ):
+            continue
+        result.append(category)
+    return tuple(result)
+
+
+def _owned_join_as_tuple(categories) -> tuple[Category, ...]:
+    r"""Canonicalize an owned intersection while propagating its axioms.
+
+    This is Sage's ``join_as_tuple`` algorithm with exactly one substitution:
+    every redundancy comparison uses the declared category graph above rather
+    than ``is_subcategory``.  The axiom propagation itself is unchanged in
+    substance; in particular an intersection of a free-form category with a
+    finite-generation refinement still produces the corresponding
+    ``FreeFormModules.FinitelyGenerated`` category and retains its methods.
+    """
+    categories = _owned_sort_uniq(categories)
+    axioms = set()
+    for category in categories:
+        axioms.update(category.axioms())
+
+    done = {category: category.axioms() for category in categories}
+    todo = {
+        (category, axiom)
+        for category, known_axioms in done.items()
+        for axiom in axioms.difference(known_axioms)
+    }
+    while todo:
+        category, axiom = todo.pop()
+        if category not in done:
+            continue
+        new_categories = tuple(
+            new_category
+            for new_category in _owned_flatten_categories(
+                category._with_axiom_as_tuple(axiom)
+            )
+            if not any(
+                _declared_category_is_subcategory(known, new_category)
+                for known in done
+            )
+        )
+        for known in tuple(done):
+            if any(
+                _declared_category_is_subcategory(new_category, known)
+                for new_category in new_categories
+            ):
+                del done[known]
+
+        new_axioms = {
+            new_axiom
+            for new_category in new_categories
+            for new_axiom in new_category.axioms()
+            if new_axiom not in axioms
+        }
+        axioms.update(new_axioms)
+        for known in done:
+            for new_axiom in new_axioms:
+                todo.add((known, new_axiom))
+        for new_category in new_categories:
+            known_axioms = new_category.axioms()
+            done[new_category] = known_axioms
+            for missing in axioms.difference(known_axioms):
+                todo.add((new_category, missing))
+    return _owned_sort_uniq(done)
+
+
+def owned_category_join(categories) -> Category:
+    r"""Return Sage's axiom-closed join realized as an owned join category."""
+    branches = _owned_join_as_tuple(tuple(categories))
+    assert branches, "the join of no owned categories is not represented"
+    if len(branches) == 1:
+        return branches[0]
+    return OwnedJoinCategory(branches)
 
 
 @dataclass(frozen=True)
@@ -941,17 +1258,65 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
     parameterized categories may share an implementation type.  Defining
     data are passed to the resulting object, never stored on this type.
     """
-    assert issubclass(implementation, owner), (
-        f"cannot insert the computation class {engine.__name__} for objects of type "
-        f"{implementation.__name__}: that type is not a subclass of "
-        f"{owner.__name__}, the object type of the category the computation serves"
-    )
+    if not issubclass(implementation, owner):
+        # An owned join linearizes the declared method providers directly, so
+        # its implementation type need not (and in the interesting C3 cases
+        # cannot) subclass the already-composed dynamic class of each branch.
+        # The owner's providers are nevertheless present among the join's
+        # direct bases.  Insert the private engine immediately before the first
+        # such base, preserving the same semantic precedence as the ordinary
+        # subclass path below: stronger providers first, engine computation,
+        # then the owner's defaults and the weaker structure underneath it.
+        owner_mro = frozenset(owner.__mro__)
+        anchors = tuple(
+            index
+            for index, base in enumerate(implementation.__bases__)
+            if base in owner_mro
+        )
+        assert anchors, (
+            f"cannot insert the computation class {engine.__name__} for objects of type "
+            f"{implementation.__name__}: none of its bases descends from "
+            f"{owner.__name__}, the object type of the category the computation serves"
+        )
+        anchor = anchors[0]
+        bases = (
+            implementation.__bases__[:anchor]
+            + (engine,)
+            + implementation.__bases__[anchor:]
+        )
+        reduction = (_implementation_with_engine, (implementation, owner, engine))
+        if not any(isinstance(base, ABCMeta) for base in bases):
+            return dynamic_class(
+                f"{implementation.__name__}[{engine.__name__}]",
+                bases,
+                implementation,
+                reduction=reduction,
+                doccls=engine,
+                prepend_cls_bases=False,
+                cache=False,
+            )
+        methods = dict(implementation.__dict__)
+        for key in ("__dict__", "__weakref__", "__slots__"):
+            methods.pop(key, None)
+        methods.update(
+            _reduction=reduction,
+            _doccls=(engine,),
+            __doc__=engine.__doc__,
+            __module__=engine.__module__,
+        )
+        result = _abc_metaclass_for(bases)(
+            f"{implementation.__name__}[{engine.__name__}]",
+            bases,
+            methods,
+        )
+        _abc_init(result)
+        return result
     match implementation is owner:
         case True:
             bases = (engine, owner)
         case False:
             bases = (implementation, _implementation_with_engine(owner, owner, engine))
-    return _abc_metaclass_for(bases)(
+    result = _abc_metaclass_for(bases)(
         f"{implementation.__name__}[{engine.__name__}]",
         bases,
         {
@@ -961,6 +1326,8 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
             "__module__": engine.__module__,
         },
     )
+    _abc_init(result)
+    return result
 
 
 @cached_function
@@ -984,11 +1351,17 @@ def _engine_object_type(object_type, owner_object_type, object_engine, element_t
             pass
         case _:
             # Sage Parent.element_class consumes Element; the owned public
-            # type protocol exposes the identical complete implementation.
+            # type protocol already has the complete implementation.  Expose
+            # it directly so Sage does not wrap it in a second dynamic class
+            # carrying the same category element base.
             elements = _implementation_with_engine(element_type, owner_element_type, element_engine)
             namespace["Element"] = elements
             namespace["ElementType"] = elements
-    return type(realized)(f"{realized.__name__}.ObjectType", (realized,), namespace)
+            namespace["element_class"] = elements
+    result = type(realized)(f"{realized.__name__}.ObjectType", (realized,), namespace)
+    if isinstance(type(result), type) and issubclass(type(result), ABCMeta):
+        _abc_init(result)
+    return result
 
 
 def _object_of(
@@ -1019,7 +1392,7 @@ def _object_of(
         case None:
             implementation = category.ObjectType
         case (owner, object_engine, element_engine):
-            assert category.is_subcategory(owner), (
+            assert category is owner or owner in category._set_of_super_categories, (
                 f"cannot construct an object of {category} with the computation class "
                 f"{object_engine.__name__}: that class serves {owner}, and {category} is "
                 f"not a subcategory of {owner}"

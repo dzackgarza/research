@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _enumerated_ring_elements,
     _owned_ring,
 )
+from dzack_research.preamble.categories.sets.cardinals import Cardinalities, aleph0
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
@@ -62,7 +63,7 @@ def _finite_generating_elements(module):
 
     ring = module.base_ring()
     match module:
-        case _ if module in FramedModules(ring) and module.module_generating_set().cardinality().is_finite():
+        case _ if module in FramedModules(ring) and Cardinalities().lt(module.module_generating_set().cardinality(), aleph0):
             return iter(module.module_generators())
         case _ if module in TensorProductModules(ring) and module.tensor_factors().cardinality() == 2:
             left = _finite_generating_elements(module.tensor_factor(0))
@@ -93,6 +94,9 @@ def _integral_left_solver(system, ring):
 
     transposed = system.transpose()
     smith, left, right = transposed.smith_form()
+    # smith_form() names the two maps by the sides of the presentation
+    # square: left is the codomain change applied to the target, while
+    # right is the inverse domain change applied after diagonal solving.
     target_labels = left.domain().module_generating_set()
     shifted_labels = left.codomain().module_generating_set()
     width = int(smith.domain().module_generating_set().cardinality())
@@ -134,13 +138,26 @@ def _solve_left_integrally_element(system, target, ring):
     return _integral_left_solver(system, ring)(target)
 
 
+def _integral_left_positional_solver(system, ring):
+    r"""Factor ``system`` once and return its positional integral row solver."""
+    element_solver = _integral_left_solver(system, ring)
+
+    def solve(target):
+        original_solution = element_solver(target)
+        if original_solution is None:
+            return None
+        coefficients = original_solution.parent().framing_coefficients(original_solution)
+        return tuple(
+            coefficients.get(label, ring.zero())
+            for label in original_solution.parent().module_generating_set()
+        )
+
+    return solve
+
+
 def _solve_left_integrally(system, target, ring):
     r"""Return positional coefficients ``a`` with ``a*system = target`` over a PID, or ``None``."""
-    original_solution = _solve_left_integrally_element(system, target, ring)
-    if original_solution is None:
-        return None
-    coefficients = original_solution.parent().framing_coefficients(original_solution)
-    return tuple(coefficients.get(label, ring.zero()) for label in original_solution.parent().module_generating_set())
+    return _integral_left_positional_solver(system, ring)(target)
 
 
 def _scalar_linearity_generating_scalars(ring):
@@ -1046,9 +1063,9 @@ class ModuleMorphism(Morphism):
         image_element = image.inclusion().lift(element)
         coefficients = image.framing_coefficients(image_element)
         domain_labels = domain.module_generating_set()
-        assert all(label in domain_labels for label in coefficients), (
+        assert all(label in domain_labels for label in coefficients.index_set()), (
             f"preimage of {element} under {domain} -> {codomain}: the generators of the image should be indexed "
-            f"by the generators {domain_labels} of {domain}, but the image returned coefficients on {tuple(coefficients)}"
+            f"by the generators {domain_labels} of {domain}, but the image returned coefficients on {coefficients.index_set()}"
         )
         return domain.linear_combination({label: coefficient for label, coefficient in coefficients.items() if coefficient})
 
@@ -1957,6 +1974,10 @@ class _SubobjectInclusionModuleMorphism(ModuleEmbedding):
         return True
 
     def _injectivity_derivation(self):
+        return True
+
+    def _selected_lift_derivation(self):
+        r"""A selected subobject lift is part of the constructor's exact data."""
         return True
 
 

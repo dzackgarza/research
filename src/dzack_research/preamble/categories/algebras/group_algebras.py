@@ -10,7 +10,6 @@ induced algebra morphism \(R[H]\to R[G]\).  Reference: Lam, *A First Course
 in Noncommutative Rings*, §1 and Theorem 6.1 (Maschke).
 """
 
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.algebras.algebras import (
@@ -115,16 +114,6 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             return Monoids().Mor(self.group(), self)(self.module_generator)
 
         @cached_method
-        def augmentation(self):
-            r"""The algebra morphism \(\varepsilon\colon R[G]\to R\), \(g\mapsto 1\)."""
-            ring = self.base_ring()
-            scalars = Algebras(ring).underlying_module()(ring)
-            counit = self.module_category().Mor(self, scalars)(
-                lambda label: scalars(ring.one())
-            )
-            return Algebras(ring).Associative().Unital().Mor(self, ring)(counit)
-
-        @cached_method
         def regular_representation(self):
             r"""``R[G]`` as a module over itself by left multiplication.
 
@@ -175,6 +164,10 @@ def _group_algebra(base_ring, group):
         module,
         lambda left, right: module.module_generator(left * right),
     )
+    scalars = Algebras(ring).underlying_module()(ring)
+    selected_augmentation = module.module_category().Mor(module, scalars)(
+        lambda _label: scalars(ring.one())
+    )
     # The group law decides the placement (Lam, A First Course in
     # Noncommutative Rings, §1): the multiplication extending an associative
     # law with identity e is associative with unit e, and R[G] is commutative
@@ -196,7 +189,10 @@ def _group_algebra(base_ring, group):
         multiplication,
         placement=(GroupAlgebras(ring), *commutative),
         unit=module.module_generator(group.one()),
-        construction_data={"group": group},
+        construction_data={
+            "group": group,
+            "selected_augmentation": selected_augmentation,
+        },
         law_decisions=law_decisions,
     )
 
@@ -211,7 +207,6 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
     """
 
     def __init__(self, parent, group_morphism) -> None:
-        Morphism.__init__(self, parent)
         source = self.domain()
         target = self.codomain()
         if group_morphism.domain() is not source.group():
@@ -228,15 +223,13 @@ class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
         linear = source.module_category().Mor(source, target)(
             lambda label: target.module_generator(group_morphism(label))
         )
-        source_multiplication = source.multiplication_morphism()
-        target_multiplication = target.multiplication_morphism()
-        self._underlying_morphism = linear
-        self._tensor_square_morphism = linear.tensor_product_map(
-            linear,
-            source=source_multiplication.domain(),
-            target=target_multiplication.domain(),
-        )
-        self._preserves_multiplication = True
+        super().__init__(parent, linear)
+
+    def _multiplicativity_derivation(self):
+        return True
+
+    def _unit_preservation_derivation(self):
+        return True
 
 
 class _GroupAlgebraFunctor(Functor):

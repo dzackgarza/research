@@ -224,7 +224,9 @@ def refine[SageObjectT: SageObject](
     category: Category | Iterable[Category],
 ) -> SageObjectT:
     r"""Add a verified property/axiom category to an already constructed object."""
-    target = category if isinstance(category, Category) else Category.join(tuple(category))
+    from dzack_research.preamble.owned_category import owned_category_join
+
+    target = category if isinstance(category, Category) else owned_category_join(tuple(category))
     _assert_certifying_predicates_hold(obj, target)
     if isinstance(obj, Morphism):
         # A morphism's mathematical membership is determined by its Mor
@@ -234,7 +236,9 @@ def refine[SageObjectT: SageObject](
         _rebuild_morphism_class(obj, target)
         return obj
     with construction_scope(obj) as reached:
-        CategoryObject._refine_category_(obj, target)
+        current = obj.category()
+        if current is not target:
+            CategoryObject._init_category_(obj, owned_category_join((current, target)))
         realized = realize_owned_category(obj)
         run_construction_hooks(obj, reached)
         return realized

@@ -131,25 +131,23 @@ docs-preview: docs-assets
 
 # Survey a live session into the preamble reference, its graph JSON, and the interactive graph
 preamble-megadoc:
-    # The survey imports the preamble, so it runs under Sage's own interpreter,
-    # which sits beside the real `sage` launcher.  Resolve wrapper symlinks
-    # before taking dirname: ~/.local/bin/sage may point into Sage's venv.
+    # The survey imports the preamble, so run it through the selected full Sage
+    # driver.  The checkout driver owns `-python`; its resolved target need not
+    # have a sibling `python3`.
     sage_launcher="${SAGE_BIN:-$(command -v sage)}"; \
     case "$sage_launcher" in */*) ;; *) sage_launcher="$(command -v "$sage_launcher")" ;; esac; \
-    sage_launcher="$(readlink -f "$sage_launcher")"; \
-    PYTHONPATH=src "$(dirname "$sage_launcher")/python3" \
+    PYTHONPATH=src "$sage_launcher" -python \
         -m dzack_research.utilities.megadoc -o "{{preamble_megadoc_file}}"
 
 # Every declared category and its declared supercategories, read from source
 # without importing it -- so it answers on a tree that does not currently load.
 # FORMAT: table (default), by-supercategory, foreign, audit, shape, cells, dot, json.
 category-graph format="table":
-    # The graph theory is Sage's, so this runs under Sage's interpreter,
-    # resolved the way `preamble-megadoc` resolves it.
+    # The graph theory is Sage's, so use the selected full Sage driver exactly
+    # as `preamble-megadoc` does.
     sage_launcher="${SAGE_BIN:-$(command -v sage)}"; \
     case "$sage_launcher" in */*) ;; *) sage_launcher="$(command -v "$sage_launcher")" ;; esac; \
-    sage_launcher="$(readlink -f "$sage_launcher")"; \
-    PYTHONPATH=src "$(dirname "$sage_launcher")/python3" \
+    PYTHONPATH=src "$sage_launcher" -python \
         -m dzack_research.utilities.category_graph --format {{format}}
 
 # The declared category graph as a rendered image, for reading the shape of it
@@ -259,6 +257,8 @@ sage-init-check: sage-init-install
 
 # Rebuild the Sage-owned research environment.
 sage-rebuild:
+    #!/usr/bin/env bash
+    set -euo pipefail
     sage_root="${SAGE_DEV_ROOT:-/home/dzack/gitclones/sage-dev-allopts}"
     just --justfile "${sage_root}/justfile" research-environment-sync
 

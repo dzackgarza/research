@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
     _algebra_on_module,
     _assert_not_refuted,
     _associativity,
@@ -135,7 +134,7 @@ class GradedAlgebraMorphism(Morphism):
         r"""Decide degree preservation on finite selected generators, else retain ``Unknown``."""
         domain = self.domain()
         codomain = self.codomain()
-        if domain not in FramedAlgebras(domain.base_ring()):
+        if not domain.is_framed_algebra():
             return Unknown
         labels = domain.algebra_generating_set()
         if labels.cardinality().is_finite() is not True:

@@ -25,7 +25,6 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.catalogue import Involutions, NamedLattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
@@ -53,6 +52,8 @@ class _EnriquesMarkedIntegralCohomology(SageObject):
     r"""A chosen equivariant marking of the quotient and K3 integral ``H^2`` data."""
 
     def __init__(self, enriques_surface) -> None:
+        from dzack_research.preamble.catalogue import Involutions, NamedLattices
+
         assert enriques_surface.is_enriques(), (
             f"cannot mark the integral cohomology of {enriques_surface} by E10: it is not known "
             "to be an Enriques surface (the quotient of a K3 surface by a free involution)"

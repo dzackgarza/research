@@ -15,6 +15,23 @@ measurement is made.
 
 ## Sage
 
+### Lazy Taylor series do not implement `is_field()`
+
+On SageMath 10.10.beta10, the lazy Taylor series parent used for `QQ[[t]]`
+raises `NotImplementedError` from `is_field()` rather than returning a Boolean.
+This is a single capability probe with no size parameter. Reproduce with the
+repository's selected full Sage driver:
+
+```bash
+/home/dzack/gitclones/sage-dev-allopts/sage -python -c \
+  "from sage.all import QQ; from sage.rings.lazy_series_ring import LazyPowerSeriesRing; print(LazyPowerSeriesRing(QQ, 't').is_field())"
+```
+
+Route chosen: the private ring-classification boundary treats this as an
+unrepresented field decision and retains only category facts the engine does
+establish. Depends on this: owned formal power-series/adically-complete ring
+construction.
+
 ### Importing `sage.all` costs about a second; one module costs a tenth of that
 
 Per-invocation tooling that needs one Sage module pays for the whole library

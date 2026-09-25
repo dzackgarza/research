@@ -114,14 +114,14 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
 )
-from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
-from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.owned_category import (
     OwnedCategoryMixin,
     OwnedCategoryObject,
 )
 
 if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
+    from dzack_research.preamble.lexicon.set_theory import SetObject
     from sage.categories.morphism import Morphism
     from sage.structure.category_object import CategoryObject
     from sage.structure.element import Element as CategoryElement
