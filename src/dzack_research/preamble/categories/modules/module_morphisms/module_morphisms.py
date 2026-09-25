@@ -2150,9 +2150,17 @@ class _ModuleMorCommonMethods:
                 raise ValueError("the morphism has the wrong Mor source or target")
             return self.elementwise(lambda element: images(element))
         base_ring = self.base_ring()
-        if self.domain() is self.codomain() and (images in base_ring or images in _engine_ring(base_ring)):
-            scalar = base_ring(images)
-            return self.scalar_multiple(scalar, self.identity())
+        image_data = isinstance(
+            images,
+            (SetMorphism, IndexedFamily, dict, tuple, list),
+        )
+        if self.domain() is self.codomain() and not image_data:
+            try:
+                scalar = base_ring(images)
+            except (TypeError, ValueError):
+                pass
+            else:
+                return self.scalar_multiple(scalar, self.identity())
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
             _SelectedFinitePresentationModules,
         )
