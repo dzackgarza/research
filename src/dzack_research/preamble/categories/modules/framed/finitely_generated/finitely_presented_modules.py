@@ -12,6 +12,7 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.misc_c import prod
 from sage.misc.repr import repr_lincomb
 from sage.misc.unknown import Unknown
+from sage.all import PolynomialRing as _SagePolynomialRing
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.element import parent as element_parent
@@ -1794,7 +1795,10 @@ class _GeneralPresentedModule:
         coefficient_field = engine.base_ring()
 
         if engine.ngens() == 1 and "multi_polynomial" not in type(engine).__module__:
-            singular_ring = coefficient_field.polynomial_ring(1, engine.variable_names())
+            singular_ring = _SagePolynomialRing(
+                coefficient_field,
+                engine.variable_names(),
+            )
             to_singular = engine.mor([singular_ring.gen(0)], singular_ring)
         else:
             singular_ring = engine
@@ -2455,7 +2459,10 @@ def _singular_presentation_kernel(morphism):
     # Singular's syz entry point requires a multivariate polynomial parent,
     # even in one variable.  Cross only this backend representation.
     if presentation_ring.ngens() == 1 and "multi_polynomial" not in type(presentation_ring).__module__:
-        singular_ring = coefficient_field.polynomial_ring(1, presentation_ring.variable_names())
+        singular_ring = _SagePolynomialRing(
+            coefficient_field,
+            presentation_ring.variable_names(),
+        )
     else:
         singular_ring = presentation_ring
 
