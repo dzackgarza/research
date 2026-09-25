@@ -30,3 +30,16 @@ def test_coordinate_multiplication_has_the_expected_cokernel_sheaf() -> None:
 
     assert generator != sections.zero()
     assert sections.scalar_multiple(x, generator) == sections.zero()
+
+
+def test_projectivization_commutes_with_scalar_extension() -> None:
+    field = QuadraticField(2, "s")
+    point = QQ.affine_spectrum()
+    sheaf = point.associated_module_sheaf(QQ.free_module(("u", "v")))
+    comparison = sheaf.projectivization_base_change(
+        QQ.Mor(field)(lambda element: field(element))
+    )
+
+    assert comparison.changed_projectivization().domain().is_isomorphic(
+        ProjectiveSpaces(field)(1)
+    )
