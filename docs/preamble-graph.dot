@@ -115,10 +115,12 @@ digraph preamble {
     label="Groups, Profinite Groups &amp; Galois Theory"; fontsize=13; color="#cbd5e1"; style=rounded;
     "AbsoluteGaloisGroups" [label="AbsoluteGaloisGroups", fillcolor="#e0e7ff"];
     "AbsoluteGaloisGroupsOfFiniteFields" [label="AbsoluteGaloisGroupsOfFiniteFields", fillcolor="#e0e7ff"];
+    "AdditiveEndomorphismRings" [label="AdditiveEndomorphismRings", fillcolor="#e0e7ff"];
     "AdditiveGroups" [label="AdditiveGroups", fillcolor="#e0e7ff"];
     "AdditiveGroups.AdditiveCommutative" [label="AdditiveGroups.AdditiveCommutative", fillcolor="#e0e7ff"];
     "AdditiveMagmas" [label="AdditiveMagmas", fillcolor="#e0e7ff"];
     "AdditiveMonoids" [label="AdditiveMonoids", fillcolor="#e0e7ff"];
+    "AdditiveMorGroups" [label="AdditiveMorGroups", fillcolor="#e0e7ff"];
     "AdditiveSemigroups" [label="AdditiveSemigroups", fillcolor="#e0e7ff"];
     "CyclicGroups" [label="CyclicGroups", fillcolor="#e0e7ff"];
     "Groups" [label="Groups", fillcolor="#e0e7ff"];
@@ -261,10 +263,13 @@ digraph preamble {
   "AbsoluteGaloisGroups" -> "ProfiniteGroups";
   "AbsoluteGaloisGroupsOfFiniteFields" -> "AbsoluteGaloisGroups";
   "AbsoluteGaloisGroupsOfFiniteFields" -> "OwnedGroups.Commutative";
+  "AdditiveEndomorphismRings" -> "AdditiveMorGroups";
+  "AdditiveEndomorphismRings" -> "Algebras.Associative.Unital";
   "AdditiveGroups" -> "AdditiveMonoids";
   "AdditiveGroups.AdditiveCommutative" -> "AdditiveGroups";
   "AdditiveMagmas" -> "Sets";
   "AdditiveMonoids" -> "AdditiveSemigroups";
+  "AdditiveMorGroups" -> "AdditiveGroups.AdditiveCommutative";
   "AdditiveSemigroups" -> "AdditiveMagmas";
   "AdicCompletions" -> "OwnedAdicallyCompleteRings";
   "AdicallyCompleteRings" -> "OwnedRings.Commutative";
@@ -395,7 +400,7 @@ digraph preamble {
   "Magmas" -> "Sets";
   "MatrixAlgebras" -> "Algebras.Associative.Unital.Framed";
   "MatrixAlgebras" -> "MatrixEndomorphismSpaces";
-  "MatrixEndomorphismSpaces" -> "Algebras.Associative.Unital";
+  "MatrixEndomorphismSpaces" -> "AdditiveEndomorphismRings";
   "MatrixEndomorphismSpaces" -> "MatrixSpaces";
   "MatrixSpaces" -> "FramedFreeModules.FinitelyGenerated";
   "MatrixSpaces" -> "InternalMorModules";
