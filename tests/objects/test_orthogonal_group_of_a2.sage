@@ -31,14 +31,25 @@ def test_the_special_orthogonal_group_of_a2() -> None:
 
 
 def test_the_spinor_kernel_of_a2() -> None:
-    r"""A reflection in a root of square $-2$ has spinor norm $-1$ (or $-2$) in $\mathbb Q^\times/\mathbb Q^{\times 2}$,
-    and $-1 = s_{v_1}s_{v_2}$ for the orthogonal pair $v_1 = e_0$, $v_2 = e_0 + 2e_1$ of squares $-2, -6$ has spinor norm $3$.
-    So the kernel is the rotations of order dividing $3$."""
+    r"""With Kneser's spinor norm $\theta(s_v) = (v,v)/2$, a reflection in a root of square $-2$ has spinor norm $-1$
+    in $\mathbb Q^\times/\mathbb Q^{\times 2}$, and $-1 = s_{v_1}s_{v_2}$ for the orthogonal pair $v_1 = e_0$,
+    $v_2 = e_0 + 2e_1$ of squares $-2, -6$ has spinor norm $3$.  So the kernel is the rotations of order dividing $3$."""
     lattice = a2()
-    kernel = lattice.spinor_kernel_subgroup()
+    kernel = lattice.spinor_kernel(form_multiplier=1/2)
     assert kernel.order() == 3
     assert kernel.is_isomorphic_to(Groups.C(3))
-    assert lattice.SO().intersection(kernel).order() == 3
+    assert lattice.spinorial_kernel().order() == 3
+
+
+def test_the_spinor_kernel_of_a2_depends_on_the_multiplier_off_so() -> None:
+    r"""With the spinor norm $-(v,v)/2$ of Gritsenko--Hulek--Sankaran (arXiv:0810.1614, §1), a root reflection has
+    spinor norm $1$ and a reflection in a vector of square $-6$ has $3$, so the kernel is $W(A_2)\cong S_3$.  On
+    $SO(A_2)$ both conventions agree, and the spinorial kernel is the same $C_3$."""
+    lattice = a2()
+    kernel = lattice.spinor_kernel()
+    assert kernel.order() == 6
+    assert kernel.is_isomorphic_to(Groups.S(3))
+    assert lattice.reflection(lattice.module_generator(0)) in kernel
 
 
 def test_the_stable_orthogonal_group_of_a2() -> None:

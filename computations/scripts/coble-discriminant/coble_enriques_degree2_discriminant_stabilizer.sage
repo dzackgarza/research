@@ -22,7 +22,7 @@ independent check on them rather than their implementation: ``O(A)`` is
 ``A.automorphism_group().stabilizer_of_element(x)``
 (``torsionform/torsion_modules_with_form.sage``, GAP orbit-stabilizer behind the
 engine).  Over there the degree-two Enriques group itself is one composition,
-``L.Aut().discriminant_preimage(stab).intersection(L.Aut().spinor_kernel_subgroup())``.
+``L.Aut().discriminant_preimage(stab).intersection(L.O_plus())``.
 What this script adds that the owned surface does not is the *bitmask* model of
 ``B/2B`` and the explicit integral-image generators, which is what makes the
 finite-container indices below computable here; the orders it prints are the

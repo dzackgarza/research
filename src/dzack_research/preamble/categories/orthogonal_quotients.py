@@ -12,7 +12,8 @@ class OrthogonalCharacterQuotient:
     r"""The finite image of ``O(L)`` under the characters defining a subgroup.
 
     Components are the discriminant representation and optional determinant /
-    real-spinor signs.  The finite image is generated from live ``O(L)``
+    real spinor norm (the character whose kernel is ``O^+(L)``, with values
+    in \(\mathbb R^\times/(\mathbb R^\times)^2=\{\pm1\}\)).  The finite image is generated from live ``O(L)``
     generators, retaining one live lattice isometry above every quotient
     element.  This avoids introducing a parallel matrix-group model of the
     infinite arithmetic group.
@@ -69,6 +70,9 @@ class OrthogonalCharacterQuotient:
             labels.append("determinant")
             factors["determinant"] = signs
         if self.spinor_kernel:
+            # The real spinor norm sn_RR of O^+(L), valued in RR^x/(RR^x)^2,
+            # read through its isomorphism [a] |-> sign(a) onto {-1, 1}.
+            self._real_spinor_norm = self.lattice.O_plus().preimage_morphism()
             labels.append("spinor")
             factors["spinor"] = signs
         self._image_labels = finite_ordered_set(tuple(labels))
@@ -92,8 +96,9 @@ class OrthogonalCharacterQuotient:
         if self.determinant_kernel:
             components["determinant"] = self.lattice.base_ring()(isometry.determinant())
         if self.spinor_kernel:
-            components["spinor"] = self.lattice.base_ring()(
-                isometry.real_spinor_norm_sign()
+            ring = self.lattice.base_ring()
+            components["spinor"] = (
+                ring.one() if self._real_spinor_norm(isometry).is_one() else -ring.one()
             )
         return self.image_space()(components.__getitem__)
 

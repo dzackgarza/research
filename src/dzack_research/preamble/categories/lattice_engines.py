@@ -80,6 +80,16 @@ def _integer_engine_matrix(value, *, transpose=False):
     return engine.transpose() if transpose else engine
 
 
+def _rational_engine_matrix(value, *, transpose=False):
+    if not isinstance(value, Tensor) or value.tensor_order() != 2:
+        raise TypeError(
+            f"{value} cannot be passed to OSCAR as a rational matrix: it must be a tensor with "
+            f"two indices"
+        )
+    engine = _engine_component_matrix(value).change_ring(SageQQ)
+    return engine.transpose() if transpose else engine
+
+
 _OSCAR_LATTICE_ADAPTER_SOURCE = r"""
 module DzackResearchOscarLatticeAdapter
 using Oscar
@@ -94,19 +104,50 @@ function _zz_matrix(entries)
     )
 end
 
-function rational_spinor_norm_sign(gram_entries, isometry_entries)
-    gram = _zz_matrix(gram_entries)
-    lattice = integer_lattice(; gram = change_base_ring(QQ, gram))
-    isometry = _zz_matrix(isometry_entries)
-    lattice_with_isometry = integer_lattice_with_isometry(
-        lattice,
-        change_base_ring(QQ, isometry);
+function _qq_matrix(entries)
+    rows, columns = size(entries)
+    return matrix(
+        QQ,
+        rows,
+        columns,
+        [QQ(entries[i, j]) for i in 1:rows for j in 1:columns],
+    )
+end
+
+function rational_spinor_norm_class(gram_entries, isometry_entries)
+    space = quadratic_space(QQ, _qq_matrix(gram_entries))
+    space_with_isometry = quadratic_space_with_isometry(
+        space,
+        _qq_matrix(isometry_entries);
         check = true,
     )
-    # Ask explicitly for the un-negated bilinear form.  Current OSCAR
-    # defaults to b=-1, whereas the owned convention applies the sign
-    # correction by the determinant at the category boundary.
-    return rational_spinor_norm(lattice_with_isometry; b = 1)
+    # Ask explicitly for the untwisted form b: OSCAR decomposes the isometry
+    # into reflections s_{v_1} ... s_{v_m} over a diagonalized Gram matrix and
+    # returns b(v_1, v_1) ... b(v_m, v_m), a representative of the whole square
+    # class (Oscar.spin).  Its default is b = -1; the owned spinor norm applies
+    # its own multiplier at the owning morphism.
+    return rational_spinor_norm(space_with_isometry; b = 1)
+end
+
+function rational_witt_index(gram_entries)
+    space = quadratic_space(QQ, _qq_matrix(gram_entries))
+    space_class = Oscar.Hecke.isometry_class(space)
+    plane = QQ[0 1; 1 0]
+    index = 0
+    # The Witt index is the number r of hyperbolic planes in a splitting
+    # V = H_1 + ... + H_r + V_0 with V_0 zero or anisotropic (O'Meara 42F), so
+    # it is the largest r with H^r a subspace of V.  Hecke decides whether the
+    # isometry class of V represents that of H^r from local invariants, the
+    # same decision its is_isotropic makes for r = 1.
+    while 2 * (index + 1) <= dim(space)
+        hyperbolic = quadratic_space(
+            QQ,
+            block_diagonal_matrix([plane for _ in 1:(index + 1)]),
+        )
+        Oscar.Hecke.represents(space_class, Oscar.Hecke.isometry_class(hyperbolic)) || break
+        index += 1
+    end
+    return index
 end
 
 function centralizer_discriminant_image(gram_entries, isometry_entries)
@@ -285,13 +326,14 @@ class _OscarLatticeAdapter:
             julia.eval(_OSCAR_LATTICE_ADAPTER_SOURCE)
         return julia
 
-    def rational_spinor_norm_sign(self, gram, isometry):
+    def rational_spinor_norm_class(self, gram, isometry):
+        r"""Return ``b(v_1,v_1)...b(v_m,v_m)`` for ``isometry = s_{v_1}...s_{v_m}`` of ``(QQ^n, gram)``."""
         bridge = self._bridge()
         value = SageQQ(
             bridge.call(
-                "DzackResearchOscarLatticeAdapter.rational_spinor_norm_sign",
-                _integer_engine_matrix(gram),
-                _integer_engine_matrix(isometry, transpose=True),
+                "DzackResearchOscarLatticeAdapter.rational_spinor_norm_class",
+                _rational_engine_matrix(gram),
+                _rational_engine_matrix(isometry, transpose=True),
             )
         )
         if value == 0:
@@ -299,7 +341,23 @@ class _OscarLatticeAdapter:
                 f"OSCAR computed spinor norm 0 for the isometry {isometry} of the form {gram}, but "
                 f"a spinor norm is a nonzero square class"
             )
-        return SageZZ.one() if value > 0 else -SageZZ.one()
+        return value
+
+    def rational_witt_index(self, gram):
+        r"""Return the Witt index of the quadratic space ``(QQ^n, gram)``."""
+        engine_gram = _rational_engine_matrix(gram)
+        index = SageZZ(
+            self._bridge().call(
+                "DzackResearchOscarLatticeAdapter.rational_witt_index",
+                engine_gram,
+            )
+        )
+        if not 0 <= 2 * index <= engine_gram.nrows():
+            raise ArithmeticError(
+                f"OSCAR computed Witt index {index} for the form {gram}, but a Witt index r "
+                f"satisfies 0 <= 2r <= the dimension"
+            )
+        return index
 
     def centralizer_discriminant_image(self, gram, isometry):
         result = self._bridge().call(
@@ -588,9 +646,16 @@ class _OscarLatticeAdapter:
 _oscar_lattices = _OscarLatticeAdapter()
 
 engine_capabilities.register(
-    "lattice.rational_spinor_norm_sign",
+    "lattice.rational_spinor_norm",
     _OSCAR_PROVIDER,
-    _oscar_lattices.rational_spinor_norm_sign,
+    _oscar_lattices.rational_spinor_norm_class,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
+    "lattice.rational_witt_index",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.rational_witt_index,
     available=_oscar_lattices.available,
     provisioning=_OSCAR_PROVISIONING,
 )
@@ -638,11 +703,18 @@ engine_capabilities.register(
 )
 
 
-def _rational_spinor_norm_sign(gram, isometry):
+def _rational_spinor_norm(gram, isometry):
     return engine_capabilities.compute(
-        "lattice.rational_spinor_norm_sign",
+        "lattice.rational_spinor_norm",
         gram,
         isometry,
+    )
+
+
+def _rational_witt_index(gram):
+    return engine_capabilities.compute(
+        "lattice.rational_witt_index",
+        gram,
     )
 
 
