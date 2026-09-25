@@ -1082,6 +1082,10 @@ class Modules(OwnedCategoryOverBaseRing):
         def module_category(self):
             return Modules(self.base_ring())
 
+        def tensor_product(self, other):
+            r"""Return this module tensored with ``other`` over the common base ring."""
+            return self.module_category().tensor_product((self, other))
+
         def pairings_with(self, right_module, value_module):
             r"""Return bilinear pairings ``self x right_module -> value_module``."""
             from dzack_research.preamble.categories.forms.forms import _pairings

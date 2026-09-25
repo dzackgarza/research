@@ -391,9 +391,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 {label: self.module_generator(label) for label in source.module_generating_set()}
             )
 
-        def tensor_product(self, other):
-            return Modules(self.base_ring()).tensor_product((self, other))
-
         def free_resolution(self, steps=None):
             r"""Return a free resolution of the selected presentation.
 
