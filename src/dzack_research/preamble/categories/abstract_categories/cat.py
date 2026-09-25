@@ -1369,6 +1369,7 @@ class _FunctorCategory(FixedMorCategory):
             self,
             _engine=None if _engine is None else (self, _engine, None),
             functor=functor,
+            fixed_mor_category=self,
             **dict(construction_data or {}),
         )
 
@@ -1386,7 +1387,7 @@ class _FunctorCategory(FixedMorCategory):
 
     @cached_method(key=lambda self, functor: id(functor))
     def _object_on(self, functor: Functor):
-        return _object_of(self, functor=functor)
+        return _object_of(self, functor=functor, fixed_mor_category=self)
 
     __call__ = object
 

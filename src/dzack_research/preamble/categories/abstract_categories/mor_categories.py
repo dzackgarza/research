@@ -253,6 +253,7 @@ def _fixed_mor_arrow_object(
     return _object_of(
         Category.join((arrows, category)),
         functor=represented.functor(),
+        fixed_mor_category=category,
     )
 
 
@@ -609,6 +610,22 @@ class FixedMorCategory(CategoryPacketMethods, OwnedCategoryBase):
     def category(self) -> Category:
         r"""A fixed Mor category is placed in ``MorCategories``, below ``Cat``."""
         return MorCategories()
+
+    class ParentMethods:
+        r"""An arrow, regarded as an object of one fixed Mor category."""
+
+        def __init__(self, fixed_mor_category, **rest) -> None:
+            self._fixed_mor_category = fixed_mor_category
+            super().__init__(**rest)
+
+        def Mor(self, codomain):
+            r"""Return the represented 2-Mor to ``codomain``.
+
+            The fixed Mor itself owns which 2-morphisms are represented:
+            ordinary fixed Mors are discrete, while specializations such as
+            functor categories may declare genuine natural transformations.
+            """
+            return self._fixed_mor_category.Mor(self, codomain)
 
     def _make_named_class_key(self, name):
         return (self._family, id(self._domain_object), id(self._codomain_object))
