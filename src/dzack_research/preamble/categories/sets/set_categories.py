@@ -1361,9 +1361,56 @@ def UncountableSets() -> Category:
     return Sets().Uncountable()
 
 
+class _FiniteLiteralSet(Sets().ObjectType):
+    r"""A finite set presented by finitely many points, with no chosen order."""
+
+    def __init__(self, points: Iterable[SourcePointT]) -> None:
+        self._points = SageSet(tuple(points))
+        super().__init__(category=FiniteSets(), facade=True)
+
+    def __contains__(self, point) -> bool:
+        return point in self._points
+
+    is_parent_of = __contains__
+
+    def _element_constructor_(self, point):
+        if point not in self:
+            raise ValueError(f"{point!r} is not in {self}")
+        return point
+
+    def __iter__(self):
+        return iter(self._points)
+
+    def __eq__(self, other) -> bool:
+        if self is other:
+            return True
+        if not isinstance(other, _FiniteLiteralSet):
+            return False
+        return self._points == other._points
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(self._points)
+
+    def _repr_(self) -> str:
+        return "{" + ", ".join(repr(point) for point in self) + "}"
+
+
 def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Sets().ObjectType:
-    r"""Notebook notation for construction through :class:`Sets`."""
-    return Sets()(source)
+    r"""Notebook notation for the set of the supplied points, with no chosen order.
+
+    ``Set`` is the ordinary-set constructor.  In particular, applying it to
+    a finite ordered set forgets that order instead of returning the ordered
+    object unchanged.  Constructions that require an order use
+    :func:`finite_ordered_set` explicitly.
+    """
+    if isinstance(source, _FiniteLiteralSet):
+        return source
+    if isinstance(source, Parent) and source in Sets() and source not in FiniteSets():
+        return source
+    return _FiniteLiteralSet(source)
 
 
 

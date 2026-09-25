@@ -1663,41 +1663,15 @@ class ModuleMorphism(Morphism):
         return codomain.module_category().Mor(codomain, self.domain())(image)
 
     def inverse(self):
-        r"""Return the two-sided inverse, with coordinate inversion on matrix objects.
+        r"""Return the two-sided inverse in the same module category.
 
-        A general module morphism must be an isomorphism.  The canonical
-        matrix Mor is also the coordinate-matrix object, where inversion is
-        the ordinary matrix operation and may extend coefficients to the
-        computed inverse's scalar ring (for example ``ZZ`` to ``QQ``).
+        An inverse of ``f : M -> N`` in ``R``-modules is a morphism
+        ``N -> M`` over the same coefficient ring ``R``.  A coordinate matrix
+        may be invertible after scalar extension without ``f`` being an
+        isomorphism in ``R``-modules; that fraction-field inverse is a different
+        construction and is never returned here.
         """
         self._require_established_linearity("module-morphism inversion")
-        if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
-            domain_labels = tuple(self.domain().module_generating_set())
-            codomain_labels = tuple(self.codomain().module_generating_set())
-            coordinate_parent = self.domain().base_ring().matrix_space(len(codomain_labels), len(domain_labels))
-            if self.parent() is coordinate_parent:
-                if len(domain_labels) != len(codomain_labels):
-                    raise ValueError(f"the {len(codomain_labels)} x {len(domain_labels)} matrix {self} has no inverse: only a square matrix is invertible")
-                from dzack_research.preamble.categories.modules.pure.modules import (
-                    _engine_matrix,
-                )
-                from dzack_research.preamble.categories.rings.ring_foundation import (
-                    _own_ring,
-                )
-
-                backend = _engine_matrix(self).inverse()
-                result_ring = _own_ring(backend.base_ring())
-                target = result_ring.matrix_space(backend.nrows(), backend.ncols())
-                return target.from_rows(
-                    tuple(
-                        tuple(
-                            _owned_engine_element(result_ring, backend[row, column])
-                            for column in range(backend.ncols())
-                        )
-                        for row in range(backend.nrows())
-                    )
-                )
-
         assert self.is_injective(), (
             f"{self.domain()} -> {self.codomain()} has no inverse: it is not injective"
         )
