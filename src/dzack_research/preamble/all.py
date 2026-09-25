@@ -198,7 +198,6 @@ from dzack_research.preamble.groups import (
     GroupAutomorphismGroup,
     GroupMor,
     Groups,
-    GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
     GSetMor,
     GSetMorphism,

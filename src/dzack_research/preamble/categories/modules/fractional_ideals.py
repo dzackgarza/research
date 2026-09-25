@@ -55,7 +55,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
     def super_categories(self):
         r"""A fractional ideal is a framed submodule of the fraction field.
 
-        ``FramedModules`` because this level chooses the spanning values and
+        a generic selected-generator category because this level chooses the spanning values and
         hands them up as the framing.  Declaring the level that consumes a
         datum is what puts it after this one in the linearization; listing it
         beside this category in a join leaves the order to C3, which ran the

@@ -3349,12 +3349,8 @@ class AffineGSchemes(OwnedCategory):
             ``s^*`` fixes the scalar image and every algebra generator, hence is
             the identity; since the ``s`` generate ``G``, so is every element.
             """
-            from dzack_research.preamble.categories.group.groups import (
-                GroupsWithChosenFiniteGeneratingSet,
-            )
-
             group = self.acting_group()
-            assert group in GroupsWithChosenFiniteGeneratingSet(), (
+            assert group.has_selected_finite_group_generating_set(), (
                 f"cannot form the ideal of the fixed locus of {group} on {self}: the group must have a "
                 f"chosen finite set of group generators, but it is an object of {group.category()}"
             )
@@ -3546,12 +3542,8 @@ def _affine_linear_invariant_algebra_data(
         PolynomialRing as SagePolynomialRing,
     )
 
-    from dzack_research.preamble.categories.group.groups import (
-        GroupsWithChosenFiniteGeneratingSet,
-    )
-
     group = scheme.acting_group()
-    assert group.is_finite() is True and group in GroupsWithChosenFiniteGeneratingSet(), (
+    assert group.is_finite() is True and group.has_selected_finite_group_generating_set(), (
         f"cannot compute the invariant algebra of {group} acting on {scheme}: the group must be "
         f"finite with a chosen finite set of group generators, but it is an object of "
         f"{group.category()}"
