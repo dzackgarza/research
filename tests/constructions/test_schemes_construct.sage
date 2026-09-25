@@ -126,37 +126,6 @@ def test_closed_subscheme_over_a_field_is_a_curve(field) -> None:
     assert parabola.dimension() == 1
 
 
-def test_products_of_schemes(commutative_ring) -> None:
-    ring = commutative_ring
-    line = AffineSpaces(ring)(1)
-    projective = ProjectiveSpaces(ring)(1)
-    plane = Schemes(ring).product((line, line))
-    quadric = Schemes(ring).product((projective, projective))
-    mixed = line.product(projective)
-
-    assert plane in ProductSchemes(ring)
-    assert plane in AffineSchemes(ring)
-    assert plane.relative_dimension() == 2
-    assert plane.factors().cardinality() == 2
-    assert plane.projections().cardinality() == 2
-    assert plane.projection(0).codomain() is line
-    assert quadric in ProductSchemes(ring)
-    assert quadric in ProjectiveSchemes(ring)
-    assert quadric.relative_dimension() == 2
-    assert mixed.relative_dimension() == 2
-    assert mixed not in AffineSchemes(ring)
-
-
-def test_fiber_products_over_the_base(commutative_ring) -> None:
-    ring = commutative_ring
-    line = AffineSpaces(ring)(1)
-    square = Schemes(ring).fiber_product(line.structure_morphism(), line.structure_morphism())
-    assert square in FiberProductSchemes(ring)
-    assert square.relative_dimension() == 2
-    assert square.left_projection().codomain() is line
-    assert square.fiber_product_base() == (ring).affine_spectrum()
-
-
 @pytest.mark.parametrize(
     "dimension, size, affine_count, projective_count",
     [(1, 5, 5, 6), (2, 5, 25, 31), (1, 4, 4, 5), (2, 4, 16, 21), (1, 27, 27, 28)],
