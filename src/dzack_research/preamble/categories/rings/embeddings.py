@@ -126,7 +126,7 @@ class NumberFieldMor(CategoricalMor):
         backend_image = _engine_element(self.codomain(), owned_image)
         return self.element_class(
             self,
-            engine_domain.mor([backend_image], engine_codomain),
+            engine_domain.hom([backend_image], engine_codomain),
         )
 
     def identity(self):
