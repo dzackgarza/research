@@ -1410,7 +1410,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         _fix_selected_framing(
                             self,
                             owner,
-                            source,
+                            lambda: source,
                             labels,
                             lambda: generator_morphism,
                             lambda: source.Mor(self)(generator_morphism),
@@ -1907,15 +1907,15 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
             generator_morphism = Sets().Mor(labels, self)(
                 lambda label: self.matrix_unit(label[0], label[1])
             )
-            source = self.base_ring().free_module(labels).tensor_algebra()
+            base_ring = self.base_ring()
             self._algebra_framing_owner = owner
-            _fix_selected_framing(
+            selected = _fix_selected_framing(
                 self,
                 owner,
-                source,
+                lambda: base_ring.free_module(labels).tensor_algebra(),
                 labels,
                 lambda: generator_morphism,
-                lambda: source.Mor(self)(generator_morphism),
+                lambda: selected.source().Mor(self)(generator_morphism),
             )
 
         def algebra_base_ring(self):
@@ -3040,7 +3040,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         _fix_selected_framing(
             self,
             framing_owner,
-            source,
+            lambda: source,
             selected_labels,
             lambda: generator_morphism,
             framing_morphism,

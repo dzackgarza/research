@@ -635,7 +635,7 @@ def _fix_selected_group_framing(group, *, free_basis=None) -> None:
         _fix_selected_framing(
             group,
             OwnedGroups(),
-            source,
+            lambda: source,
             labels,
             lambda: generator_morphism,
             lambda: _group_framing_morphism(
@@ -650,7 +650,7 @@ def _fix_selected_group_framing(group, *, free_basis=None) -> None:
     _fix_selected_framing(
         group,
         OwnedGroups(),
-        source,
+        lambda: source,
         generators,
         lambda: generator_morphism,
         lambda: _group_framing_morphism(
@@ -674,7 +674,7 @@ def _fix_selected_group_presentation(group, source, relations) -> None:
     _fix_selected_framing(
         group,
         OwnedGroups(),
-        source,
+        lambda: source,
         labels,
         lambda: generator_morphism,
         lambda: _group_framing_morphism(group, source, labels, generator_morphism),
@@ -2002,7 +2002,7 @@ class GroupAutomorphismGroup(GroupMor):
             _fix_selected_framing(
                 self,
                 OwnedGroups(),
-                source,
+                lambda: source,
                 generators,
                 lambda: generator_morphism,
                 lambda: _group_framing_morphism(
@@ -3518,7 +3518,7 @@ class GeneratedSubgroups(OwnedParameterizedCategory):
             _fix_selected_framing(
                 self,
                 OwnedGroups(),
-                source,
+                lambda: source,
                 labels,
                 generator_morphism,
                 lambda: _group_framing_morphism(

@@ -1052,7 +1052,7 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         _fix_selected_framing(
             self,
             OwnedGroups(),
-            source,
+            lambda: source,
             generators,
             lambda: generator_morphism,
             lambda: _group_framing_morphism(

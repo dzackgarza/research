@@ -35,7 +35,7 @@ class _SelectedFraming:
         self,
         owner,
         target,
-        source,
+        source_factory,
         generating_set,
         generator_morphism_factory,
         framing_morphism_factory,
@@ -44,7 +44,8 @@ class _SelectedFraming:
         self._generator_morphism = None
         self._owner = owner
         self._target = target
-        self._source = source
+        self._source_factory = source_factory
+        self._source = None
         self._generating_set = generating_set
         self._framing_morphism_factory = framing_morphism_factory
         self._framing_morphism = None
@@ -53,6 +54,9 @@ class _SelectedFraming:
         return self._owner
 
     def source(self):
+        r"""The free object of the chosen epimorphism, built on first use like its maps."""
+        if self._source is None:
+            self._source = self._source_factory()
         return self._source
 
     def framing_generating_set(self):
@@ -96,7 +100,7 @@ class _SelectedFraming:
 def _fix_selected_framing(
     target,
     owner,
-    source,
+    source_factory,
     generating_set,
     generator_morphism_factory,
     framing_morphism_factory,
@@ -110,7 +114,7 @@ def _fix_selected_framing(
     selected = _SelectedFraming(
         owner,
         target,
-        source,
+        source_factory,
         generating_set,
         generator_morphism_factory,
         framing_morphism_factory,

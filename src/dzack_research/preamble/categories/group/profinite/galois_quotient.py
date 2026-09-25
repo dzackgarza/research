@@ -446,7 +446,7 @@ def FiniteExtensionAutomorphismGroup(extension):
     _fix_selected_framing(
         group,
         OwnedGroups(),
-        source,
+        lambda: source,
         generators,
         lambda: generator_morphism,
         lambda: _group_framing_morphism(

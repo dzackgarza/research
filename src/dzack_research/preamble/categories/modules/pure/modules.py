@@ -3280,7 +3280,7 @@ def _fix_selected_module_framing(module, base_ring, labels, generator_function, 
     _fix_selected_framing(
         module,
         Modules(base_ring),
-        source,
+        lambda: source,
         labels,
         lambda: Sets().Mor(labels, module)(lambda label: module(generator_function(label))),
         lambda: _framing_morphism(module),
