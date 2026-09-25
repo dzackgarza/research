@@ -14,6 +14,38 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Discrete categories do not realize universal constructions that exist
+
+The discrete category on one object is the terminal category.  Every diagram
+into it has exactly one cone and one cocone, hence its limit and colimit are the
+unique object.  More generally, a finite product, coproduct, equalizer or
+coequalizer in a represented discrete category exists exactly when the
+corresponding universal cone/cocone exists; when it exists its structure maps
+are forced identities.  Nonexistence for other discrete diagrams is part of
+the mathematics and should be reported as such, not conflated with an absent
+implementation.
+
+Observed during `category-method-coverage-sweep` on 2026-09-25:
+`DiscreteCategory` (`categories/abstract_categories/functors.py`) represents
+objects and their identity-only Mor correctly, but defines none of the
+`_categorical_product`, `_categorical_coproduct`, `_categorical_equalizer`,
+`_categorical_coequalizer`, or family construction hooks inherited from
+`Cat.ParentMethods`.  Thus even `Disc({*})` cannot realize the finite universal
+constructions that are mathematically forced.  The same omission prevents the
+generic selected `Limits`/`Colimits` reduction from reaching its valid answer.
+This is source evidence; pre-T execution remains suspended by `DEV-58`.
+
+**Dependency path:** represented discrete category -> existence criterion for
+the relevant universal cone/cocone -> selected universal construction with its
+identity structure maps -> generic product/(co)equalizer reduction ->
+`Limits`/`Colimits` and their functors.
+**Consumers:** `test_discrete_categories_construct.sage`, finite diagram
+constructions, and every consumer using a discrete target as an actual
+category rather than merely as an indexing shape.
+**Coverage boundary:** the one-object case and the missing construction hooks
+were inspected. Repair: `discrete-category-universal-constructions` in
+[TODO.md](TODO.md).
+
 ### Wide equalizers and coequalizers are exposed on sets but have no set realization
 
 For an indexed family of parallel maps \((f_i:X\to Y)_{i\in I}\), the wide
