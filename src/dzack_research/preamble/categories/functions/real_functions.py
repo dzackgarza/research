@@ -141,10 +141,10 @@ def _exponent_key(exponent):
 
 
 def _decided_nonzero(expression) -> bool:
-    r"""Whether the exact symbolic expression is decided to be nonzero."""
+    r"""Whether the exact real constant ``expression`` is decided to be nonzero, as an owned real."""
     from dzack_research.preamble.logic import ask
 
-    return ask(SR(expression) != SR.zero()) is True
+    return ask(RR(expression) != RR.zero()) is True
 
 
 def _affine_nonconstant(expression, variable) -> bool:
