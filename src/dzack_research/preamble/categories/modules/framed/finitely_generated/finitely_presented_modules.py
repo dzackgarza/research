@@ -1863,6 +1863,7 @@ class _GeneralPresentedModule:
             singular_ring = _SagePolynomialRing(
                 coefficient_field,
                 engine.variable_names(),
+                implementation="singular",
             )
             to_singular = engine.hom([singular_ring.gen(0)], singular_ring)
         else:
@@ -2551,6 +2552,7 @@ def _singular_presentation_kernel(morphism):
         singular_ring = _SagePolynomialRing(
             coefficient_field,
             presentation_ring.variable_names(),
+            implementation="singular",
         )
     else:
         singular_ring = presentation_ring
