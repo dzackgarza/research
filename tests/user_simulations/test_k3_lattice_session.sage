@@ -30,17 +30,17 @@ INVOLUTIONS = {
 def test_the_k3_lattice_and_its_decomposition() -> None:
     k3 = NamedLattices.LK3
     rendered(k3)
-    assert k3.module_rank() == 22
+    assert k3.module_rank() == cardinal(22)
     assert k3.signature_pair() == signature_pair(3, 19)
     assert k3.is_even()
     assert k3.is_unimodular()
     assert k3 in EvenLattices(ZZ)
-    assert k3.discriminant_group().cardinality() == 1
-    assert k3.summands().cardinality() == 5
+    assert k3.discriminant_group().cardinality() == cardinal(1)
+    assert k3.summands().cardinality() == cardinal(5)
     assert k3.is_isometric(Lattices(ZZ)("U") ** 3 + Lattices(ZZ)("E8") ** 2)
     assert k3.is_isometric(NamedLattices.U + NamedLattices.U + NamedLattices.U + NamedLattices.E8 + NamedLattices.E8)
     assert not k3.is_isometric(NamedLattices.Mukai)
-    assert NamedLattices.Mukai.module_rank() == 24
+    assert NamedLattices.Mukai.module_rank() == cardinal(24)
     assert NamedLattices.Mukai.is_isometric(k3 + NamedLattices.U)
 
 
@@ -61,10 +61,10 @@ def test_a_catalogue_involution_session(name) -> None:
     coinvariant_lattice = acted.formed_coinvariants()
     rendered(invariant)
     rendered(coinvariant_lattice)
-    assert invariant.module_rank() == invariant_rank
+    assert invariant.module_rank() == cardinal(invariant_rank)
     assert invariant.signature_pair() == signature_pair(positive, negative)
-    assert coinvariant_lattice.module_rank() == coinvariant_rank
-    assert invariant.module_rank() + coinvariant_lattice.module_rank() == 22
+    assert coinvariant_lattice.module_rank() == cardinal(coinvariant_rank)
+    assert invariant.module_rank() + coinvariant_lattice.module_rank() == cardinal(22)
     assert invariant.is_even()
     assert coinvariant_lattice.is_even()
     assert coinvariant_lattice.is_isometric(coinvariant())
@@ -78,7 +78,7 @@ def test_a_catalogue_involution_session(name) -> None:
     r, a, delta = invariant.two_elementary_invariants()
     rendered(invariant.two_elementary_invariants())
     assert r == invariant_rank
-    assert invariant.discriminant_group().cardinality() == 2**a
+    assert invariant.discriminant_group().cardinality() == cardinal(2**a)
     assert invariant.delta() == delta
     assert nikulin_invariants(r, a, delta) == invariant.two_elementary_invariants()
 
@@ -97,7 +97,7 @@ def test_the_catalogue_embeddings_and_their_complements() -> None:
         assert embedding.is_primitive()
         complement = embedding.orthogonal_complement()
         rendered(complement)
-        assert complement.module_rank() == 22 - source.module_rank()
+        assert complement.module_rank() + source.module_rank() == cardinal(22)
         assert complement.signature_pair() == signature_pair(*complement_signature)
         assert complement.is_even()
         assert complement.discriminant_group().cardinality() == source.discriminant_group().cardinality()
@@ -112,17 +112,17 @@ def test_two_elementary_lattices_and_orthogonal_sums() -> None:
     e8_2 = NamedLattices.E8_2
     rendered(e8_2)
     assert e8_2.is_p_elementary(2)
-    assert e8_2.discriminant_group().cardinality() == 256
+    assert e8_2.discriminant_group().cardinality() == cardinal(256)
     assert e8_2.two_elementary_invariants() == nikulin_invariants(8, 8, 0)
     assert e8_2.discriminant_quadratic_form().brown_invariant() == 0
     assert NamedLattices.U_2.two_elementary_invariants() == nikulin_invariants(2, 2, 0)
     assert NamedLattices.Z_2.two_elementary_invariants() == nikulin_invariants(1, 1, 1)
     sums = two_elementary_orthogonal_sums(signature_pair(1, 9), 10, 0)
     rendered(sums)
-    assert sums.cardinality() >= 1
+    assert sums.cardinality() >= cardinal(1)
     for lattice in sums:
         assert lattice.signature_pair() == signature_pair(1, 9)
-        assert lattice.discriminant_group().cardinality() == 2**10
+        assert lattice.discriminant_group().cardinality() == cardinal(2**10)
         assert lattice.is_isometric(NamedLattices.SEn)
     assert NamedLattices.SEn.is_isometric(NamedLattices.U_2 + NamedLattices.E8_2)
     assert NamedLattices.E10.is_isometric(NamedLattices.U + NamedLattices.E8)

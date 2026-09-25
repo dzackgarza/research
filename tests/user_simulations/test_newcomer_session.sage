@@ -27,7 +27,7 @@ def test_a_newcomer_does_algebraic_number_theory(radicand) -> None:
     assert a**2 == radicand
     OK = K.ring_of_integers()
     rendered(OK)
-    assert OK.integral_basis().cardinality() == 2
+    assert OK.integral_basis().cardinality() == cardinal(2)
     assert K.discriminant() == OK.discriminant()
     h = K.class_number()
     Cl = K.class_group()
@@ -35,7 +35,7 @@ def test_a_newcomer_does_algebraic_number_theory(radicand) -> None:
     assert Cl.order() == h
     U = K.unit_group()
     rendered(U)
-    assert U.module_rank() == (1 if radicand > 0 else 0)
+    assert U.module_rank() == cardinal(1 if radicand > 0 else 0)
     G = K.galois_group()
     rendered(G)
     assert G.order() == 2
@@ -67,7 +67,7 @@ def test_a_newcomer_does_finite_group_theory(n) -> None:
     assert G.character_table().nrows() == G.conjugacy_classes().cardinality()
     H = G.stabilizer(1)
     assert H.order() == factorial(n - 1)
-    assert G.cosets(H).cardinality() == n
+    assert G.cosets(H).cardinality() == cardinal(n)
     assert H.is_isomorphic_to(SymmetricGroup(n - 1))
     P = G.sylow_subgroup(2)
     assert G.order() % P.order() == 0
@@ -80,7 +80,7 @@ def test_a_newcomer_does_finite_group_theory(n) -> None:
     rendered(V)
     assert V.dimension() == n
     assert V.character()(G.one()) == n
-    assert V.decompose().cardinality() == 2
+    assert V.decompose().cardinality() == cardinal(2)
     assert V.invariants().dimension() == 1
 
 
@@ -97,7 +97,7 @@ def test_a_newcomer_does_plane_curves(field_name) -> None:
     C = Curves(k).from_equation(y**2 - x**3)
     assert C.geometric_genus() == 0
     assert not C.is_smooth()
-    assert C.singular_points().cardinality() == 1
+    assert C.singular_points().cardinality() == cardinal(1)
     Ebar = E.projective_closure()
     rendered(Ebar)
     assert Ebar.genus() == 1
@@ -106,7 +106,7 @@ def test_a_newcomer_does_plane_curves(field_name) -> None:
         assert abs(Ebar.count_points() - (q + 1)) <= 2 * sqrt(q)
         assert Ebar.zeta_function().denominator().degree() == 2
     else:
-        assert Ebar.rational_points(bound=5).cardinality() >= 2
+        assert Ebar.rational_points(bound=5).cardinality() >= cardinal(2)
     J = Ebar.jacobian()
     assert J.dimension() == 1
     D = Ebar.divisor(Ebar.point((0, 0, 1)))
@@ -122,7 +122,7 @@ def test_a_newcomer_does_plane_curves(field_name) -> None:
 def test_a_newcomer_does_linear_algebra_over_a_pid(rank) -> None:
     M = ZZ**rank
     rendered(M)
-    assert M.module_rank() == rank
+    assert M.module_rank() == cardinal(rank)
     A = matrix(ZZ, rank, rank, lambda i, j: (i + 1) * (j + 1) + (1 if i == j else 0))
     rendered(A)
     f = M.hom(A)
@@ -136,16 +136,16 @@ def test_a_newcomer_does_linear_algebra_over_a_pid(rank) -> None:
     assert Q.invariants() == A.elementary_divisors()
     assert A.smith_form()["diagonal"].diagonal() == A.elementary_divisors()
     N = M.submodule([M.gen(0) * 2, M.gen(1)])
-    assert N.module_rank() == 2
+    assert N.module_rank() == cardinal(2)
     assert (M / N).torsion_subgroup().order() == 2
     assert M.tensor_product(Q).order() == Q.order() ** rank
-    assert Hom(M, ZZ).module_rank() == rank
+    assert Hom(M, ZZ).module_rank() == cardinal(rank)
     assert Hom(Q, ZZ).order() == 1
     assert Q.ext(ZZ, 1).order() == Q.order()
     assert Q.tor(Q, 1).order() == Q.order()
     L = IntegralLattice(A + A.transpose())
     rendered(L)
-    assert L.module_rank() == rank
+    assert L.module_rank() == cardinal(rank)
     assert L.determinant() == (A + A.transpose()).determinant()
     assert L.discriminant_group().order() == abs(L.determinant())
     assert L.automorphism_group().order() >= 2
@@ -158,14 +158,14 @@ def test_a_newcomer_does_commutative_algebra() -> None:
     I = R.ideal(x * y, y * z, x * z)
     rendered(I)
     assert I.dimension() == 1
-    assert I.primary_decomposition().cardinality() == 3
+    assert I.primary_decomposition().cardinality() == cardinal(3)
     assert I.radical() == I
     assert I.is_radical()
     assert not I.is_prime()
-    assert I.minimal_associated_primes().cardinality() == 3
+    assert I.minimal_associated_primes().cardinality() == cardinal(3)
     assert I.hilbert_polynomial()(10) == 31
     assert I.hilbert_series().numerator().degree() <= 3
-    assert I.groebner_basis().cardinality() == 3
+    assert I.groebner_basis().cardinality() == cardinal(3)
     assert R.quotient(I).krull_dimension() == 1
     assert R.quotient(I).is_reduced()
     assert not R.quotient(I).is_integral_domain()
@@ -182,10 +182,10 @@ def test_a_newcomer_does_commutative_algebra() -> None:
     assert S.dimension() == 3
     assert S.embedding_dimension() == 3
     assert R.completion(R.ideal(x, y, z)).is_complete()
-    assert R.derivation_module().module_rank() == 3
-    assert R.differentials().module_rank() == 3
+    assert R.derivation_module().module_rank() == cardinal(3)
+    assert R.differentials().module_rank() == cardinal(3)
     assert R.jacobian_matrix((x * y, y * z)).nrows() == 2
-    assert (R.quotient(I)).affine_spectrum().irreducible_components().cardinality() == 3
+    assert (R.quotient(I)).affine_spectrum().irreducible_components().cardinality() == cardinal(3)
     assert (R.quotient(I)).affine_spectrum().dimension() == 1
     assert Proj(R).dimension() == 2
     assert Proj(R / I).dimension() == 0

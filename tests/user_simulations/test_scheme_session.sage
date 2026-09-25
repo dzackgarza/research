@@ -49,7 +49,7 @@ def test_an_algebraic_geometry_session(name) -> None:
     assert plane in SmoothSchemes(base)
     assert plane in IntegralSchemes(base)
     assert plane in NormalSchemes(base)
-    assert plane.relative_dimension() == 2
+    assert plane.relative_dimension() == cardinal(2)
     assert line in ProjectiveSchemes(base)
     assert line in SmoothSchemes(base)
     assert line.relative_dimension() == 1
@@ -66,7 +66,7 @@ def test_an_algebraic_geometry_session(name) -> None:
     y = ring.algebra_generator("y")
     smooth = plane.closed_subscheme(y**2 - x**3 - x)
     node = plane.closed_subscheme(y**2 - x**3 - x**2)
-    two_points = plane.closed_subscheme(x * (x - 1), y)
+    two_points = plane.closed_subscheme(x * (x - ring.one()), y)
     for curve in (smooth, node, two_points):
         rendered(curve)
         assert curve in ClosedSubschemes(base)
@@ -156,5 +156,5 @@ def test_an_algebraic_geometry_session(name) -> None:
     changed = plane.base_change(base.Mor(extension)(lambda element: extension(element)))
     rendered(changed)
     assert changed in AffineSchemes(extension)
-    assert changed.relative_dimension() == 2
+    assert changed.relative_dimension() == cardinal(2)
     assert changed.coordinate_ring().krull_dimension() == 2

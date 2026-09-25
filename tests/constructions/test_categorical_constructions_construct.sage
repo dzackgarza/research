@@ -21,17 +21,17 @@ def test_products_and_coproducts_of_finite_sets() -> None:
     product = sets.product((two, three))
     coproduct = sets.coproduct((two, three))
 
-    assert product.cardinality() == 6
+    assert product.cardinality() == cardinal(6)
     assert product in Sets()
     assert product.projection(0).codomain() is two
     assert product.projection(1).codomain() is three
-    assert coproduct.cardinality() == 5
+    assert coproduct.cardinality() == cardinal(5)
     assert coproduct.injection(0).domain() is two
     assert coproduct.injection(1).domain() is three
-    assert sets.product((sets.product((three, three)), three)).cardinality() == 27
+    assert sets.product((sets.product((three, three)), three)).cardinality() == cardinal(27)
     one = Sets.Δ[0]
-    assert sets.product((one, three)).cardinality() == 3
-    assert sets.coproduct((one, three)).cardinality() == 4
+    assert sets.product((one, three)).cardinality() == cardinal(3)
+    assert sets.coproduct((one, three)).cardinality() == cardinal(4)
 
 
 def test_the_universal_property_of_the_product_of_sets() -> None:
@@ -57,12 +57,12 @@ def test_pushouts_and_fiber_products_of_finite_sets() -> None:
     into_two = Sets().Mor(one, two)(lambda point: two(0))
     into_three = Sets().Mor(one, three)(lambda point: three(0))
     glued = Sets().pushout(into_two, into_three)
-    assert glued.cardinality() == 4
+    assert glued.cardinality() == cardinal(4)
 
     onto_one_from_two = Sets().Mor(two, one)(lambda point: one(0))
     onto_one_from_three = Sets().Mor(three, one)(lambda point: one(0))
     pulled_back = Sets().fiber_product(onto_one_from_two, onto_one_from_three)
-    assert pulled_back.cardinality() == 6
+    assert pulled_back.cardinality() == cardinal(6)
     assert pulled_back.left_projection().codomain() is two
 
 
@@ -72,8 +72,8 @@ def test_subobjects_of_a_finite_set_form_its_power_set() -> None:
     singleton = three.power_set()((three(0),))
     pair = three.power_set()((three(0), three(1)))
     assert subobjects in Cat()
-    assert subobjects.cardinality() == 8
-    assert Sets().Subobjects(three).cardinality() == 8
+    assert subobjects.cardinality() == cardinal(8)
+    assert Sets().Subobjects(three).cardinality() == cardinal(8)
     assert singleton in subobjects
     assert singleton.inclusion().codomain() is three
     assert singleton.underlying_set() is singleton.inclusion().domain()
@@ -106,8 +106,8 @@ def test_products_coproducts_and_biproducts_of_modules(commutative_ring) -> None
         modules.biproduct((left, right)),
     ):
         assert both in Modules(ring)
-        assert both.module_rank() == 5
-    assert left.tensor_product(right).module_rank() == 6
+        assert both.module_rank() == cardinal(5)
+    assert left.tensor_product(right).module_rank() == cardinal(6)
     assert modules.product((left, right)) == modules.coproduct((left, right))
 
 
@@ -118,12 +118,12 @@ def test_kernels_and_cokernels_of_module_morphisms(commutative_ring) -> None:
     projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
 
-    assert projection.kernel().module_rank() == 1
+    assert projection.kernel().module_rank() == cardinal(1)
     assert projection.kernel().inclusion().codomain() is plane
-    assert projection.cokernel().cardinality() == 1
+    assert projection.cokernel().cardinality() == cardinal(1)
     assert doubling.cokernel().cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
     assert doubling.cokernel().projection().domain() is line
-    assert doubling.kernel().module_rank() == (1 if ring(2) == ring.zero() else 0)
+    assert doubling.kernel().module_rank() == cardinal(1 if ring(2) == ring.zero() else 0)
 
 
 def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
@@ -134,12 +134,12 @@ def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
     second_axis = line.Mor(plane)({0: plane.module_generator(1)})
     glued = Modules(ring).pushout(first_axis, first_axis)
     assert glued in Modules(ring)
-    assert glued.module_rank() == 3
+    assert glued.module_rank() == cardinal(3)
     first_projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
     pulled_back = Modules(ring).fiber_product(first_projection, first_projection)
     assert pulled_back in Modules(ring)
-    assert pulled_back.module_rank() == 3
-    assert Modules(ring).pushout(first_axis, second_axis).module_rank() == 3
+    assert pulled_back.module_rank() == cardinal(3)
+    assert Modules(ring).pushout(first_axis, second_axis).module_rank() == cardinal(3)
 
 
 def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
@@ -186,9 +186,9 @@ def test_subgroups_of_the_symmetric_group_form_a_category() -> None:
     symmetric = Groups.S(3)
     subgroups = Groups().Subobjects(symmetric)
     assert subgroups in Cat()
-    assert subgroups.cardinality() == 6
-    assert Groups().Subobjects(Groups.C(6)).cardinality() == 4
-    assert Groups().Subobjects(Groups.Q()).cardinality() == 6
+    assert subgroups.cardinality() == cardinal(6)
+    assert Groups().Subobjects(Groups.C(6)).cardinality() == cardinal(4)
+    assert Groups().Subobjects(Groups.Q()).cardinality() == cardinal(6)
 
 
 # ---------------------------------------------------------------------------
@@ -253,22 +253,22 @@ def test_isomorphisms_and_the_core() -> None:
     assert isomorphism in Sets().Iso(two, two)
     assert isomorphism in Sets().Core().Mor(two, two)
     assert isomorphism.inverse() * isomorphism == Sets().Iso(two, two).identity()
-    assert Sets().Iso(two, two).cardinality() == 2
-    assert Sets().Core().Mor(two, Sets.Δ[2]).cardinality() == 0
+    assert Sets().Iso(two, two).cardinality() == cardinal(2)
+    assert Sets().Core().Mor(two, Sets.Δ[2]).cardinality() == cardinal(0)
 
 
 def test_hom_end_aut_mono_epi_constructions_on_sets() -> None:
     two = Sets.Δ[1]
     three = Sets.Δ[2]
     assert Sets().Mor(two, three) is Sets().Mor(two, three)
-    assert Sets().Mor(two, three).cardinality() == 9
-    assert Sets().End(three).cardinality() == 27
+    assert Sets().Mor(two, three).cardinality() == cardinal(9)
+    assert Sets().End(three).cardinality() == cardinal(27)
     assert Sets().Aut(three).order() == 6
     assert Sets().Aut(three) in Groups()
-    assert Sets().Mono(two, three).cardinality() == 6
-    assert Sets().Epi(three, two).cardinality() == 6
-    assert Sets().Epi(two, three).cardinality() == 0
-    assert Sets().Iso(two, three).cardinality() == 0
+    assert Sets().Mono(two, three).cardinality() == cardinal(6)
+    assert Sets().Epi(three, two).cardinality() == cardinal(6)
+    assert Sets().Epi(two, three).cardinality() == cardinal(0)
+    assert Sets().Iso(two, three).cardinality() == cardinal(0)
 
 
 def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
@@ -280,7 +280,7 @@ def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
     assert endomorphisms.identity() in automorphisms
     if field.cardinality().is_finite():
         q = field.cardinality()
-        assert endomorphisms.cardinality() == q**4
+        assert endomorphisms.cardinality() == cardinal(q**4)
         assert automorphisms.order() == (q**2 - 1) * (q**2 - q)
     else:
         assert automorphisms.cardinality() == field.cardinality()
@@ -289,7 +289,7 @@ def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
 def test_direct_sum_objects_know_their_summands() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
     assert lattice in DirectSumObjects(Lattices(ZZ))
-    assert lattice.number_of_summands() == 2
-    assert lattice.summands().cardinality() == 2
-    assert lattice.summand(0).module_rank() == 2
+    assert lattice.number_of_summands() == cardinal(2)
+    assert lattice.summands().cardinality() == cardinal(2)
+    assert lattice.summand(0).module_rank() == cardinal(2)
     assert lattice.summand(1).determinant() == 3

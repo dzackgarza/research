@@ -160,7 +160,7 @@ def test_krull_dimension(build, name, dimension) -> None:
 )
 def test_finite_rings_have_their_cardinality(build, name, size) -> None:
     ring = build(name)
-    assert ring.cardinality() == size
+    assert ring.cardinality() == cardinal(size)
     assert ring in FiniteSets()
 
 
@@ -221,12 +221,12 @@ def test_polynomial_ring_over_every_commutative_ring(commutative_ring) -> None:
     assert polynomials in CommutativeRings()
     assert polynomials in Algebras(ring).Associative().Unital().Commutative()
     assert polynomials.base_ring() is ring
-    assert (x + 1) ** 2 == x**2 + 2 * x + 1
+    assert (x + polynomials.one()) ** 2 == x**2 + 2 * x + polynomials.one()
     assert (polynomials in IntegralDomains()) == (ring in IntegralDomains())
     assert (polynomials in NoetherianRings()) == (ring in NoetherianRings())
     assert (polynomials in PrincipalIdealDomains()) == (ring in Fields())
     assert polynomials not in LocalRings()
-    assert polynomials.cardinality() == max(ring.cardinality(), aleph0)
+    assert polynomials.cardinality() == cardinal(max(ring.cardinality(), aleph0))
 
 
 def test_polynomial_ring_in_two_variables_over_every_commutative_ring(commutative_ring) -> None:
@@ -305,7 +305,7 @@ def test_matrix_algebra_over_every_ring(ring) -> None:
 
 @pytest.mark.parametrize("name, size", [("GF(4)", 256), ("ZZ/12", 12**4), ("GF(5)", 625)])
 def test_matrix_algebra_over_a_finite_ring_is_finite(build, name, size) -> None:
-    assert build(name).matrix_space(2).cardinality() == size
+    assert build(name).matrix_space(2).cardinality() == cardinal(size)
 
 
 def test_a_commutative_ring_is_an_algebra_over_itself(commutative_ring) -> None:
@@ -325,7 +325,7 @@ def test_a_commutative_ring_is_an_algebra_over_the_integers(commutative_ring) ->
 def test_the_integers_are_initial(ring) -> None:
     r"""$\operatorname{Hom}_{\mathbf{Ring}}(\mathbb Z, R)$ is a point for every ring $R$."""
     homset = ZZ.Mor(ring)
-    assert homset.cardinality() == 1
+    assert homset.cardinality() == cardinal(1)
     unique = homset.an_element()
     assert unique(1) == ring.one()
     assert unique(7) == 7 * ring.one()
@@ -352,7 +352,7 @@ def test_identity_ring_morphism(ring) -> None:
     ],
 )
 def test_counting_ring_morphisms(build, source, target, count) -> None:
-    assert build(source).Mor(build(target)).cardinality() == count
+    assert build(source).Mor(build(target)).cardinality() == cardinal(count)
 
 
 # ---------------------------------------------------------------------------
@@ -380,7 +380,7 @@ def test_ideal_arithmetic_with_zero_and_unit_ideals(commutative_ring) -> None:
     assert zero.sum(unit) == unit
     assert zero.intersection(unit) == zero
     assert zero.product(unit) == zero
-    assert unit.quotient_ring().cardinality() == 1
+    assert unit.quotient_ring().cardinality() == cardinal(1)
 
 
 def test_ideal_arithmetic_in_the_integers() -> None:
@@ -390,7 +390,7 @@ def test_ideal_arithmetic_in_the_integers() -> None:
     assert four.intersection(six) == ZZ.ideal(12)
     assert four.product(six) == ZZ.ideal(24)
     assert ZZ.ideal(12).radical() == ZZ.ideal(6)
-    assert ZZ.ideal(12).quotient_ring().cardinality() == 12
+    assert ZZ.ideal(12).quotient_ring().cardinality() == cardinal(12)
     assert four.colon(six) == ZZ.ideal(2)
     assert ZZ.ideal(5).is_prime()
     assert ZZ.ideal(5).is_maximal()
@@ -434,7 +434,7 @@ def test_a_maximal_ideal_has_a_residue_field(build, name, generator, residue_siz
     assert maximal.is_maximal()
     residue = maximal.quotient_ring()
     assert residue in Fields()
-    assert residue.cardinality() == residue_size
+    assert residue.cardinality() == cardinal(residue_size)
 
 
 @pytest.mark.parametrize(
@@ -445,7 +445,7 @@ def test_a_composite_generator_gives_a_non_prime_ideal(build, name, generator) -
     ring = build(name)
     if generator is None:
         x = ring.algebra_generator("x")
-        element = x**2 - 1
+        element = x**2 - ring.one()
     else:
         element = ring(ZZ(generator))
     assert not ring.ideal(element).is_prime()
@@ -453,12 +453,13 @@ def test_a_composite_generator_gives_a_non_prime_ideal(build, name, generator) -
 
 def test_gaussian_primes(build) -> None:
     gaussian = build("ZZ[i]")
-    i = gaussian.fraction_field().primitive_element()
-    assert gaussian.ideal(gaussian(1 + i)).is_prime()
+    fractions = gaussian.fraction_field()
+    i = fractions.primitive_element()
+    assert gaussian.ideal(gaussian(fractions.one() + i)).is_prime()
     assert gaussian.ideal(gaussian(7)).is_prime()
     assert not gaussian.ideal(gaussian(5)).is_prime()
-    assert gaussian.ideal(gaussian(1 + i)).quotient_ring().cardinality() == 2
-    assert gaussian.ideal(gaussian(7)).quotient_ring().cardinality() == 49
+    assert gaussian.ideal(gaussian(fractions.one() + i)).quotient_ring().cardinality() == cardinal(2)
+    assert gaussian.ideal(gaussian(7)).quotient_ring().cardinality() == cardinal(49)
 
 
 def test_direct_integer_mod_ring_refines_prime_moduli_to_fields() -> None:
@@ -477,17 +478,17 @@ def test_quotient_rings_of_the_integers() -> None:
 
     assert twelve in ArtinianRings()
     assert twelve not in IntegralDomains()
-    assert twelve.cardinality() == 12
+    assert twelve.cardinality() == cardinal(12)
     assert twelve.characteristic() == 12
     assert seven in Fields()
-    assert seven.cardinality() == 7
+    assert seven.cardinality() == cardinal(7)
     assert twelve.quotient_map()(13) == twelve.one()
 
 
 def test_quotient_of_a_polynomial_ring_by_an_irreducible_is_a_field() -> None:
     polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
-    gaussian_rationals = polynomials.quotient_ring(polynomials.ideal(x**2 + 1))
+    gaussian_rationals = polynomials.quotient_ring(polynomials.ideal(x**2 + polynomials.one()))
 
     assert gaussian_rationals in Fields()
     assert gaussian_rationals.characteristic() == 0
@@ -499,7 +500,7 @@ def test_quotient_of_a_polynomial_ring_by_an_irreducible_is_a_field() -> None:
 def test_quotient_of_the_integer_polynomials_by_x_squared_plus_one_is_a_domain() -> None:
     polynomials = ZZ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
-    gaussian = polynomials.quotient_ring(polynomials.ideal(x**2 + 1))
+    gaussian = polynomials.quotient_ring(polynomials.ideal(x**2 + polynomials.one()))
 
     assert gaussian in IntegralDomains()
     assert gaussian not in Fields()
@@ -512,7 +513,7 @@ def test_localizing_the_integers_at_a_prime_gives_a_discrete_valuation_ring() ->
     assert local in LocalRings()
     assert local in PrincipalIdealDomains()
     assert local not in Fields()
-    assert local.residue_field().cardinality() == 7
+    assert local.residue_field().cardinality() == cardinal(7)
     assert local(3).is_unit()
     assert not local(7).is_unit()
     assert local.maximal_ideal() == local.ideal(local(7))
@@ -543,7 +544,7 @@ def test_localizing_at_a_maximal_ideal(build, name, prime_generators, residue_si
 
     def element(datum):
         if datum == "1+s":
-            return ring(1 + ring.fraction_field().primitive_element())
+            return ring(ring.fraction_field().one() + ring.fraction_field().primitive_element())
         if datum in ("x", "y"):
             return ring.algebra_generator(datum)
         return ring(ZZ(datum))
@@ -559,14 +560,14 @@ def test_localizing_at_a_maximal_ideal(build, name, prime_generators, residue_si
     if residue_size is aleph0:
         assert local.residue_field().cardinality() == aleph0
     else:
-        assert local.residue_field().cardinality() == residue_size
+        assert local.residue_field().cardinality() == cardinal(residue_size)
 
 
 def test_completing_the_integers_at_a_prime() -> None:
     completion = ZZ.adic_completion(ZZ.ideal(3))
     assert completion in CompleteLocalRings()
     assert completion in PrincipalIdealDomains()
-    assert completion.residue_field().cardinality() == 3
+    assert completion.residue_field().cardinality() == cardinal(3)
     assert completion.characteristic() == 0
     assert completion.completion_map()(5).is_unit()
     assert not completion.completion_map()(3).is_unit()
@@ -580,7 +581,7 @@ def test_the_p_adic_integers_and_numbers() -> None:
     assert integers not in Fields()
     assert numbers in Fields()
     assert integers.fraction_field() == numbers
-    assert integers.residue_field().cardinality() == 3
+    assert integers.residue_field().cardinality() == cardinal(3)
     assert integers.maximal_ideal() == integers.ideal(integers(3))
     assert integers(2).is_unit()
     assert not integers(3).is_unit()
@@ -624,8 +625,8 @@ def test_points_of_the_spectrum_of_the_integers() -> None:
     assert not spectrum.le(five, generic)
     assert generic.specializes_to(five)
     assert five.local_ring() in LocalRings()
-    assert five.local_ring().residue_field().cardinality() == 5
-    assert five.residue_field().cardinality() == 5
+    assert five.local_ring().residue_field().cardinality() == cardinal(5)
+    assert five.residue_field().cardinality() == cardinal(5)
     assert generic.residue_field() is QQ
     assert five in spectrum.closed_set(ZZ.ideal(10))
     assert five not in spectrum.distinguished_open(5)
@@ -671,9 +672,9 @@ def test_number_field_invariants(
 )
 def test_real_and_complex_embeddings_of_a_number_field(build, name, degree, real_places) -> None:
     field = build(name)
-    assert field.embeddings(AA).cardinality() == real_places
-    assert field.embeddings(RR).cardinality() == real_places
-    assert field.embeddings(CC).cardinality() == degree
+    assert field.embeddings(AA).cardinality() == cardinal(real_places)
+    assert field.embeddings(RR).cardinality() == cardinal(real_places)
+    assert field.embeddings(CC).cardinality() == cardinal(degree)
 
 
 def test_ring_of_integers_of_every_number_field(number_field) -> None:
@@ -685,7 +686,7 @@ def test_ring_of_integers_of_every_number_field(number_field) -> None:
     assert order in IntegralDomains()
     assert order in NoetherianRings()
     assert order.fraction_field() is field
-    assert order.module_rank() == field.degree()
+    assert order.module_rank() == cardinal(field.degree())
     assert order.integral_basis().cardinality() == cardinal(field.degree())
     framing = order.framing_morphism()
     assert framing.codomain() is order
@@ -722,7 +723,7 @@ def test_ring_of_integers_of_every_number_field(number_field) -> None:
 def test_primes_above_a_rational_prime(build, name, prime, count) -> None:
     field = build(name)
     primes = field.primes_above(prime)
-    assert primes.cardinality() == count
+    assert primes.cardinality() == cardinal(count)
     for prime_ideal in primes:
         assert prime_ideal.is_prime()
         assert prime_ideal.is_maximal()
@@ -741,7 +742,7 @@ def test_primes_above_a_rational_prime(build, name, prime, count) -> None:
 )
 def test_ramified_primes(build, name, ramified) -> None:
     primes = build(name).ramified_primes()
-    assert primes.cardinality() == len(ramified)
+    assert primes.cardinality() == cardinal(len(ramified))
     for prime in ramified:
         assert ZZ(prime) in primes
 
@@ -765,7 +766,7 @@ def test_normal_closure_of_a_non_galois_cubic(build) -> None:
 def test_the_rationals_are_their_own_number_field() -> None:
     assert QQ.ring_of_integers() is ZZ
     assert QQ.degree() == 1
-    assert QQ.primes_above(7).cardinality() == 1
+    assert QQ.primes_above(7).cardinality() == cardinal(1)
 
 
 # ---------------------------------------------------------------------------
@@ -780,16 +781,16 @@ def test_finite_field_is_a_finite_field(finite_field) -> None:
     assert field in FiniteSets()
     assert field in ArtinianRings()
     generator = field.multiplicative_generator()
-    assert generator.multiplicative_order() == size - 1
+    assert generator.multiplicative_order() == size.finite_value() - 1
     element = field.an_element()
     assert element ** int(size.finite_value()) == element
 
 
 def test_finite_field_extensions_and_their_morphisms() -> None:
-    assert GF(4).Mor(GF(16)).cardinality() == 2
-    assert GF(4).Mor(GF(8)).cardinality() == 0
-    assert GF(2).Mor(GF(8)).cardinality() == 1
-    assert GF(9).Mor(GF(81)).cardinality() == 2
+    assert GF(4).Mor(GF(16)).cardinality() == cardinal(2)
+    assert GF(4).Mor(GF(8)).cardinality() == cardinal(0)
+    assert GF(2).Mor(GF(8)).cardinality() == cardinal(1)
+    assert GF(9).Mor(GF(81)).cardinality() == cardinal(2)
 
 
 def test_a_subring_cut_out_by_a_predicate() -> None:
@@ -798,7 +799,7 @@ def test_a_subring_cut_out_by_a_predicate() -> None:
     )
     assert integers_in_rationals in OwnedRings()
     assert QQ(3) in integers_in_rationals
-    assert QQ(1) / 2 not in integers_in_rationals
+    assert QQ(1) / QQ(2) not in integers_in_rationals
     assert integers_in_rationals.ambient_ring() is QQ
     inclusion = integers_in_rationals.inclusion()
     assert inclusion.codomain() is QQ

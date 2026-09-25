@@ -58,8 +58,8 @@ def test_a_plane_curve_session(name) -> None:
     assert not axes.intersection(cusp_ideal).is_prime()
     assert cusp_ideal.sum(origin) == origin
     assert origin.power(2) == fat_point
-    assert axes.primary_decomposition().cardinality() == 2
-    assert axes.associated_primes().cardinality() == 2
+    assert axes.primary_decomposition().cardinality() == cardinal(2)
+    assert axes.associated_primes().cardinality() == cardinal(2)
     assert origin.quotient_ring() in Fields()
 
     # The coordinate ring of the cusp.
@@ -73,7 +73,7 @@ def test_a_plane_curve_session(name) -> None:
     assert cusp.krull_dimension() == 1
     assert ybar**2 == xbar**3
     assert ybar != xbar
-    assert cusp.cardinality() == max(field.cardinality(), aleph0)
+    assert cusp.cardinality() == cardinal(max(field.cardinality(), aleph0))
     fractions = cusp.fraction_field()
     rendered(fractions)
     assert fractions in Fields()
@@ -86,7 +86,7 @@ def test_a_plane_curve_session(name) -> None:
     rendered(spectrum)
     generic = spectrum.generic_point()
     singular = spectrum(cusp.ideal(xbar, ybar))
-    smooth_point = spectrum(cusp.ideal(xbar - 1, ybar - 1))
+    smooth_point = spectrum(cusp.ideal(xbar - cusp.one(), ybar - cusp.one()))
     rendered(singular)
     assert generic.specializes_to(singular)
     assert generic.specializes_to(smooth_point)
@@ -118,7 +118,7 @@ def test_a_plane_curve_session(name) -> None:
     assert curve.dimension() == 1
     assert (cusp).affine_spectrum() in AffineSchemes(field)
     assert (cusp).affine_spectrum().relative_dimension() == 1
-    assert curve.coordinate_ring().Mor(cusp).cardinality() >= 1
+    assert curve.coordinate_ring().Mor(cusp).cardinality() >= cardinal(1)
 
     # Kähler differentials and the de Rham complex of the cusp.
     omega = cusp.kahler_differentials()
@@ -134,7 +134,7 @@ def test_a_plane_curve_session(name) -> None:
     de_rham = cusp.de_rham_algebra()
     rendered(de_rham)
     assert de_rham.differential()(de_rham(xbar)) == de_rham(dx)
-    assert de_rham.cohomology(0).module_rank() == 1
+    assert de_rham.cohomology(0).module_rank() == cardinal(1)
     rendered(de_rham.cohomology(1))
 
     # Over the smooth affine line the Poincaré lemma holds in characteristic zero.
@@ -142,6 +142,6 @@ def test_a_plane_curve_session(name) -> None:
     line_de_rham = line.de_rham_algebra()
     rendered(line_de_rham)
     if field.characteristic() == 0:
-        assert line_de_rham.cohomology(1).cardinality() == 1
+        assert line_de_rham.cohomology(1).cardinality() == cardinal(1)
     else:
-        assert line_de_rham.cohomology(1).cardinality() != 1
+        assert line_de_rham.cohomology(1).cardinality() != cardinal(1)

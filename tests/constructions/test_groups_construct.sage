@@ -52,7 +52,7 @@ def test_finite_catalogue_groups_have_their_orders(finite_group) -> None:
     assert group in FinitelyGeneratedGroups()
     assert group in FinitelyPresentedGroups()
     assert group.order() == order
-    assert group.cardinality() == order
+    assert group.cardinality() == cardinal(order)
     assert group.is_finite()
     assert group.is_abelian() == (name in ABELIAN)
     assert (group in AbelianGroups()) == (name in ABELIAN)
@@ -107,12 +107,12 @@ def test_subgroups_cosets_and_centralizers_of_the_symmetric_group() -> None:
     assert subgroup.order() == 2
     assert subgroup.supergroup() is group
     assert subgroup.inclusion().is_injective()
-    assert group.left_cosets(subgroup).cardinality() == 3
-    assert group.right_cosets(subgroup).cardinality() == 3
+    assert group.left_cosets(subgroup).cardinality() == cardinal(3)
+    assert group.right_cosets(subgroup).cardinality() == cardinal(3)
     assert group.centralizer(transposition).order() == 2
     assert group.centralizer(group.one()) == group
-    assert group.conjugacy_classes_representatives().cardinality() == 3
-    assert Groups.S(4).conjugacy_classes_representatives().cardinality() == 5
+    assert group.conjugacy_classes_representatives().cardinality() == cardinal(3)
+    assert Groups.S(4).conjugacy_classes_representatives().cardinality() == cardinal(5)
 
 
 @pytest.mark.parametrize(
@@ -139,7 +139,7 @@ def test_counting_group_homomorphisms(source, target, count) -> None:
         return FINITE[name][0]()
 
     homset = group(source).Mor(group(target))
-    assert homset.cardinality() == count
+    assert homset.cardinality() == cardinal(count)
     trivial = homset.an_element()
     assert trivial(group(source).one()) == group(target).one()
 
@@ -147,8 +147,8 @@ def test_counting_group_homomorphisms(source, target, count) -> None:
 def test_the_free_group_maps_freely() -> None:
     free = Groups.Free(1)
     for name, order in (("S3", 6), ("Q8", 8), ("C6", 6)):
-        assert free.Mor(FINITE[name][0]()).cardinality() == order
-    assert Groups.Free(2).Mor(Groups.C(2)).cardinality() == 4
+        assert free.Mor(FINITE[name][0]()).cardinality() == cardinal(order)
+    assert Groups.Free(2).Mor(Groups.C(2)).cardinality() == cardinal(4)
 
 
 def test_presentations() -> None:
@@ -157,13 +157,13 @@ def test_presentations() -> None:
     symmetric = free.quotient_by_relators([a**2, b**3, (a * b) ** 2])
 
     assert free in GroupsWithChosenFinitePresentation()
-    assert free.group_generators().cardinality() == 2
+    assert free.group_generators().cardinality() == cardinal(2)
     assert symmetric in GroupsWithChosenFinitePresentation()
     assert symmetric.order() == 6
     assert symmetric.is_isomorphic_to(Groups.S(3))
     assert not symmetric.is_abelian()
     assert symmetric.presenting_free_group() is free
-    assert symmetric.defining_relations().cardinality() == 3
+    assert symmetric.defining_relations().cardinality() == cardinal(3)
     native_symmetric = Groups.S(3)
     assert native_symmetric in FinitelyPresentedGroups()
     assert native_symmetric not in GroupsWithChosenFinitePresentation()
@@ -180,9 +180,9 @@ def test_the_natural_action_of_the_symmetric_group_is_transitive() -> None:
 
     assert natural in FiniteGSets(group)
     assert natural.acting_group() is group
-    assert natural.fixed_points().cardinality() == 0
-    assert trivial.fixed_points().cardinality() == 3
-    assert natural.point_set().cardinality() == 3
+    assert natural.fixed_points().cardinality() == cardinal(0)
+    assert trivial.fixed_points().cardinality() == cardinal(3)
+    assert natural.point_set().cardinality() == cardinal(3)
     generator = group.group_generators()[0]
     assert natural.act(generator, 1) == generator(1)
 
@@ -205,8 +205,8 @@ def test_group_modules_and_their_invariants(pid) -> None:
     assert not acted.is_invariant(e0)
     invariants = acted.module_invariants()
     coinvariants = acted.module_coinvariants()
-    assert invariants.module_rank() == 1
-    assert coinvariants.module_rank() == 1
+    assert invariants.module_rank() == cardinal(1)
+    assert coinvariants.module_rank() == cardinal(1)
     assert invariants in Modules(ring)
 
 
@@ -219,7 +219,7 @@ def test_absolute_galois_groups() -> None:
     assert finite.is_profinite()
     assert finite.is_abelian()
     assert not finite.is_finite()
-    assert finite.topological_group_generators().cardinality() == 1
+    assert finite.topological_group_generators().cardinality() == cardinal(1)
     assert finite.characteristic() == 5
     assert rational in ProfiniteGroups()
     assert not rational.is_abelian()

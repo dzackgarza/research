@@ -25,21 +25,21 @@ def test_the_standard_simplex_and_the_square() -> None:
     assert simplex in LatticePolytopes(lattice)
     assert simplex.dimension() == 2
     assert simplex.n_vertices() == 3
-    assert simplex.volume() == QQ(1) / 2
+    assert simplex.volume() == QQ(1) / QQ(2)
     assert simplex.normalized_volume() == 1
-    assert simplex.n_integral_points() == 3
-    assert simplex.n_interior_points() == 0
-    assert simplex.n_boundary_points() == 3
+    assert simplex.n_integral_points() == cardinal(3)
+    assert simplex.n_interior_points() == cardinal(0)
+    assert simplex.n_boundary_points() == cardinal(3)
     assert simplex.is_lattice_polytope()
     assert simplex.is_compact()
     assert not simplex.is_reflexive()
-    assert simplex.facets().cardinality() == 3
-    assert square.volume() == 4
-    assert square.n_interior_points() == 1
-    assert square.n_boundary_points() == 8
+    assert simplex.facets().cardinality() == cardinal(3)
+    assert square.volume() == QQ(4)
+    assert square.n_interior_points() == cardinal(1)
+    assert square.n_boundary_points() == cardinal(8)
     assert square.is_reflexive()
     assert square.polar_dual().n_vertices() == 4
-    assert square.polar_dual().volume() == 2
+    assert square.polar_dual().volume() == QQ(2)
     assert square.polar_dual().is_reflexive()
     assert square.contains_point((0, 0))
     assert not square.contains_point((2, 0))
@@ -52,9 +52,9 @@ def test_ehrhart_polynomial_of_the_square() -> None:
     square = LatticePolygons(lattice)([[0, 0], [1, 0], [1, 1], [0, 1]])
     ehrhart = square.ehrhart_polynomial()
     t = ehrhart.parent().algebra_generator("t")
-    assert ehrhart == (t + 1) ** 2
+    assert ehrhart == (t + ehrhart.parent().one()) ** 2
     assert ehrhart(2) == 9
-    assert square.h_star_vector().cardinality() == 3
+    assert square.h_star_vector().cardinality() == cardinal(3)
 
 
 def test_a_three_dimensional_polytope() -> None:
@@ -64,14 +64,14 @@ def test_a_three_dimensional_polytope() -> None:
     tetrahedron = ConvexPolytopes(lattice)([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])
     assert cube.dimension() == 3
     assert cube.n_vertices() == 8
-    assert cube.facets().cardinality() == 6
-    assert cube.volume() == 1
-    assert cube.n_integral_points() == 8
+    assert cube.facets().cardinality() == cardinal(6)
+    assert cube.volume() == QQ(1)
+    assert cube.n_integral_points() == cardinal(8)
     assert cube.is_smooth()
-    assert tetrahedron.volume() == QQ(1) / 6
+    assert tetrahedron.volume() == QQ(1) / QQ(6)
     assert tetrahedron.normalized_volume() == 1
-    assert tetrahedron.n_integral_points() == 4
-    assert ConvexPolygons(plane_lattice)([[0, 0], [QQ(1) / 2, 0], [0, QQ(1) / 2]]).is_lattice_polytope() is False
+    assert tetrahedron.n_integral_points() == cardinal(4)
+    assert ConvexPolygons(plane_lattice)([[0, 0], [QQ(1) / QQ(2), 0], [0, QQ(1) / QQ(2)]]).is_lattice_polytope() is False
 
 
 # ---------------------------------------------------------------------------
@@ -88,7 +88,7 @@ def test_finite_coxeter_diagrams_groups_and_root_lattices(cartan_type, order, ra
     group = Groups.Coxeter(cartan_type)
     root_lattice = Lattices(ZZ)(cartan_type[0] + str(cartan_type[1]))
 
-    assert diagram.cardinality() == rank
+    assert diagram.cardinality() == cardinal(rank)
     assert diagram.is_elliptic()
     assert not diagram.is_parabolic()
     assert not diagram.is_hyperbolic()
@@ -99,16 +99,16 @@ def test_finite_coxeter_diagrams_groups_and_root_lattices(cartan_type, order, ra
     assert group.order() == order
     assert Groups.Coxeter(diagram.coxeter_matrix()).order() == order
     assert root_lattice in RootLattices()
-    assert root_lattice.module_rank() == rank
-    assert root_lattice.roots().cardinality() == root_count
-    assert root_lattice.simple_roots().cardinality() == rank
+    assert root_lattice.module_rank() == cardinal(rank)
+    assert root_lattice.roots().cardinality() == cardinal(root_count)
+    assert root_lattice.simple_roots().cardinality() == cardinal(rank)
     assert root_lattice.coxeter_number() == coxeter_number
-    assert root_lattice.fundamental_weights().cardinality() == rank
-    assert root_lattice.simple_reflections().cardinality() == rank
+    assert root_lattice.fundamental_weights().cardinality() == cardinal(rank)
+    assert root_lattice.simple_reflections().cardinality() == cardinal(rank)
     assert root_lattice.highest_root().is_root()
     assert root_lattice.highest_root().height() == coxeter_number - 1
     assert root_lattice.O().order() % order == 0
-    assert root_lattice.cartan_type().module_rank() == rank
+    assert root_lattice.cartan_type().module_rank() == cardinal(rank)
 
 
 def test_affine_and_hyperbolic_coxeter_diagrams() -> None:
@@ -116,11 +116,11 @@ def test_affine_and_hyperbolic_coxeter_diagrams() -> None:
     hyperbolic = CoxeterDiagrams().from_coxeter_matrix([[1, 3, 3], [3, 1, 4], [3, 4, 1]])
     assert affine.is_parabolic()
     assert not affine.is_elliptic()
-    assert affine.zero_inertia_index() == 1
+    assert affine.zero_inertia_index() == cardinal(1)
     assert hyperbolic.is_hyperbolic()
     assert hyperbolic.negative_inertia_index() == 1
     assert hyperbolic.positive_inertia_index() == 2
-    assert hyperbolic.elliptic_subdiagrams().cardinality() >= 3
+    assert hyperbolic.elliptic_subdiagrams().cardinality() >= cardinal(3)
     assert Groups.Coxeter(hyperbolic.coxeter_matrix()) not in FiniteGroups()
     assert Groups.Coxeter(["A", 2, 1]) not in FiniteGroups()
     assert hyperbolic.induced_subdiagram([0, 1]).is_elliptic()
@@ -131,7 +131,7 @@ def test_a_rooted_diagram_from_a_root_lattice() -> None:
     a2 = Lattices(ZZ)("A2")
     diagram = CoxeterDiagrams().from_cartan_type(["A", 2], rooted=True)
     assert diagram.is_rooted()
-    assert diagram.roots().cardinality() == 2
+    assert diagram.roots().cardinality() == cardinal(2)
     assert diagram.root_gram_tensor() == a2.gram_tensor()
     reflection = a2.reflection(a2.simple_roots()[0])
     assert reflection * reflection == a2.O().one()
@@ -154,7 +154,7 @@ def test_smooth_functions_on_the_real_line() -> None:
     assert f.derivative().derivative() == smooth(2)
     assert smooth.integral(f, RR(0)) == smooth(x**3 / 3 + x)
     assert f.compose(smooth(x + 1)) == smooth((x + 1) ** 2 + 1)
-    assert f.maclaurin_series().coefficient(2) == 1
+    assert f.maclaurin_series().coefficient(2) == RR(1)
     assert smooth.cardinality() > aleph0
     assert smooth.one() * f == f
 
@@ -165,7 +165,7 @@ def test_lebesgue_and_sequence_spaces() -> None:
     sequences = ell(2, NN, RR)
     assert square_integrable in Modules(RR)
     assert square_integrable.conjugate_lebesgue_space() is square_integrable
-    assert cubic.conjugate_lebesgue_space().integrability_exponent() == QQ(3) / 2
+    assert cubic.conjugate_lebesgue_space().integrability_exponent() == QQ(3) / QQ(2)
     assert square_integrable.integrability_exponent() == 2
     assert sequences.conjugate_sequence_space() is sequences
     assert ell(1, NN, RR).conjugate_sequence_space().integrability_exponent() == Infinity
@@ -176,8 +176,8 @@ def test_indexed_families_of_special_functions() -> None:
     hermite = HermitePolynomials()
     assert characters.cardinality() == aleph0
     assert hermite.cardinality() == aleph0
-    assert characters.ranking_map()(characters[3]) == 3
-    assert hermite.ranking_map()(hermite[4]) == 4
+    assert characters.ranking_map()(characters[3]) == NN(3)
+    assert hermite.ranking_map()(hermite[4]) == NN(4)
     assert hermite[2] != hermite[3]
 
 
@@ -193,7 +193,7 @@ def test_a_gram_tensor_and_its_pullback() -> None:
     assert gram.is_symmetric()
     assert not tensor(ZZ, (), (1, 1), [[0, 1], [-1, 0]]).is_symmetric()
     assert gram.tensor_space() in Modules(ZZ)
-    assert gram.tensor_space().module_rank() == 4
+    assert gram.tensor_space().module_rank() == cardinal(4)
     assert gram.change_ring(QQ).tensor_space() in Modules(QQ)
     module = Lattices(ZZ)([[2, 1], [1, 2]]).unformed_module()
     scaling = module.Mor(module)({0: 2 * module.module_generator(0), 1: 2 * module.module_generator(1)})
@@ -217,10 +217,10 @@ def test_divisor_groups_on_a_finite_set_of_points() -> None:
     assert divisors in DivisorGroups()
     assert picard in PicardGroups()
     assert classes in ClassGroups()
-    assert divisors.module_rank() == 3
+    assert divisors.module_rank() == cardinal(3)
     formal = FormalDivisorGroups(ZZ).from_terms({"p": 2, "q": -1})
     assert formal.parent() in FormalDivisorGroups(ZZ)
-    assert formal.parent().terms(formal).cardinality() == 2
+    assert formal.parent().terms(formal).cardinality() == cardinal(2)
     assert formal + formal == FormalDivisorGroups(ZZ).from_terms({"p": 4, "q": -2})
 
 
@@ -235,7 +235,7 @@ def test_exact_real_numbers_and_algebraic_numbers() -> None:
     assert root_two > RR(1)
     assert root_two < RR(2)
     assert RR(4).sqrt() == RR(2)
-    assert RR(1) / 2 in UnitInterval
+    assert RR(1) / RR(2) in UnitInterval
     assert RR(2) not in UnitInterval
     assert RR(3) in NonNegativeReals
     assert -RR(1) not in NonNegativeReals

@@ -36,8 +36,9 @@ def _quotient(ring, *generators):
 
 
 def _rationals_cube_root_of_two():
-    x = _polynomial_ring(QQ, "x").algebra_generator("x")
-    return (x**3 - 2).number_field("c")
+    polynomials = _polynomial_ring(QQ, "x")
+    x = polynomials.algebra_generator("x")
+    return (x**3 - polynomials(2)).number_field("c")
 
 
 def _cusp():

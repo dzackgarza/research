@@ -35,11 +35,11 @@ def test_decomposition_and_inertia_groups(build, name, prime) -> None:
     decomposition = galois.decomposition_group(prime_above)
     inertia = galois.inertia_group(prime_above)
 
-    assert primes.cardinality() == count
+    assert primes.cardinality() == cardinal(count)
     assert count * ramification * residue_degree == field.degree()
     assert decomposition.order() == ramification * residue_degree
     assert inertia.order() == ramification
-    assert galois.left_cosets(decomposition).cardinality() == count
+    assert galois.left_cosets(decomposition).cardinality() == cardinal(count)
     if ramification == 1:
         frobenius = galois.frobenius_class(prime, prime_above)
         assert frobenius.representative().order() == residue_degree
@@ -61,8 +61,9 @@ def test_the_absolute_galois_group_of_the_rationals_and_its_open_subgroups() -> 
     assert open_subgroup.fixed_field() is gaussian
     assert open_subgroup.inclusion().is_injective()
     assert galois.one() in open_subgroup
-    x = QQ.polynomial_ring("x").algebra_generator("x")
-    cubic = (x**3 - 2).number_field("c")
+    polynomials = QQ.polynomial_ring("x")
+    x = polynomials.algebra_generator("x")
+    cubic = (x**3 - polynomials(2)).number_field("c")
     assert galois.open_subgroup(cubic).index() == 3
 
 
@@ -90,27 +91,28 @@ def test_the_absolute_galois_group_of_a_finite_field() -> None:
     assert galois in AbsoluteGaloisGroupsOfFiniteFields()
     assert galois.is_abelian()
     assert not galois.is_finite()
-    assert galois.topological_group_generators().cardinality() == 1
+    assert galois.topological_group_generators().cardinality() == cardinal(1)
     assert frobenius in galois
     assert frobenius != galois.one()
     assert frobenius * frobenius.inverse() == galois.one()
-    assert galois.finite_extension(3).cardinality() == 125
+    assert galois.finite_extension(3).cardinality() == cardinal(125)
     assert galois.characteristic() == 5
 
 
 def test_embeddings_between_number_fields() -> None:
-    x = QQ.polynomial_ring("x").algebra_generator("x")
+    polynomials = QQ.polynomial_ring("x")
+    x = polynomials.algebra_generator("x")
     quadratic = QuadraticField(2, "s")
-    quartic = (x**4 - 2).number_field("t")
+    quartic = (x**4 - polynomials(2)).number_field("t")
     embeddings = quadratic.exact_embeddings(quartic)
     first = quadratic.first_exact_embedding(quartic)
 
-    assert embeddings.cardinality() == 2
+    assert embeddings.cardinality() == cardinal(2)
     assert first.domain() is quadratic
     assert first.codomain() is quartic
     assert first(quadratic.primitive_element()) ** 2 == quartic(2)
     assert first.is_injective()
-    assert quartic.exact_embeddings(quadratic).cardinality() == 0
-    eighth_roots = (x**4 + 1).number_field("z")
-    assert QuadraticField(-1, "i").exact_embeddings(eighth_roots).cardinality() == 2
-    assert QuadraticField(3, "s").exact_embeddings(eighth_roots).cardinality() == 0
+    assert quartic.exact_embeddings(quadratic).cardinality() == cardinal(0)
+    eighth_roots = (x**4 + polynomials.one()).number_field("z")
+    assert QuadraticField(-1, "i").exact_embeddings(eighth_roots).cardinality() == cardinal(2)
+    assert QuadraticField(3, "s").exact_embeddings(eighth_roots).cardinality() == cardinal(0)

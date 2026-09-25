@@ -37,7 +37,7 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     de_rham = algebra.de_rham_algebra()
     rendered(omega)
     rendered(de_rham)
-    assert omega.module_rank() == dimension
+    assert omega.module_rank() == cardinal(dimension)
     assert de_rham in StrictlyCommutativeDifferentialGradedAlgebras(field)
     d = de_rham.differential()
     differentials = [de_rham(omega.differential_generator(label)) for label in names]
@@ -51,8 +51,8 @@ def test_a_differential_calculus_session(name, dimension) -> None:
         top = top * form
     assert top != de_rham.zero()
     assert top * dx == de_rham.zero()
-    assert de_rham.graded_piece(dimension).module_rank() == 1
-    assert de_rham.graded_piece(dimension + 1).module_rank() == 0
+    assert de_rham.graded_piece(dimension).module_rank() == cardinal(1)
+    assert de_rham.graded_piece(dimension + 1).module_rank() == cardinal(0)
     for degree in range(dimension + 1):
         rendered(de_rham.graded_piece(degree))
 
@@ -74,7 +74,7 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     assert d_dx.lie_bracket(d_dy)(x * y) == algebra.zero()
     assert d_dx.lie_bracket(euler)(x) == algebra.one()
     assert rotation.lie_bracket(euler)(x) == algebra.zero()
-    assert algebra.derivations(values).module_rank() == dimension
+    assert algebra.derivations(values).module_rank() == cardinal(dimension)
     assert d_dx.interior_product()(dx) == de_rham.one()
     assert rotation.interior_product()(dx) == de_rham(-y)
     assert euler.interior_product()(dx * dy) == de_rham(x) * dy - de_rham(y) * dx
@@ -103,14 +103,14 @@ def test_a_differential_calculus_session(name, dimension) -> None:
     # De Rham cohomology of affine space and of the punctured plane.
     for degree in range(dimension + 1):
         rendered(de_rham.cohomology(degree))
-    assert de_rham.cohomology(0).module_rank() == 1
+    assert de_rham.cohomology(0).module_rank() == cardinal(1)
     if field.characteristic() == 0:
         for degree in range(1, dimension + 1):
-            assert de_rham.cohomology(degree).cardinality() == 1
+            assert de_rham.cohomology(degree).cardinality() == cardinal(1)
         punctured = field.laurent_polynomial_ring(names).de_rham_algebra()
         rendered(punctured)
-        assert punctured.cohomology(0).module_rank() == 1
-        assert punctured.cohomology(1).module_rank() == dimension
-        assert punctured.cohomology(dimension).module_rank() == 1
+        assert punctured.cohomology(0).module_rank() == cardinal(1)
+        assert punctured.cohomology(1).module_rank() == cardinal(dimension)
+        assert punctured.cohomology(dimension).module_rank() == cardinal(1)
     else:
-        assert de_rham.cohomology(1).module_rank() >= 1
+        assert de_rham.cohomology(1).module_rank() >= cardinal(1)

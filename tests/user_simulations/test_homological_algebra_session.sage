@@ -34,7 +34,7 @@ def test_a_homological_algebra_session(name) -> None:
     rendered(ring)
     if n is None:
         t = ring.algebra_generator(ring.variable_names()[0])
-        n, m, g = t**2 * (t + 1), t**2, t**2
+        n, m, g = t**2 * (t + ring.one()), t**2, t**2
 
     # A cyclic torsion module and its free resolution.
     torsion = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(n),))
@@ -43,9 +43,9 @@ def test_a_homological_algebra_session(name) -> None:
     resolution = torsion.free_resolution()
     rendered(resolution)
     assert resolution.is_exact()
-    assert resolution.term(0).module_rank() == 1
-    assert resolution.term(1).module_rank() == 1
-    assert resolution.term(2).module_rank() == 0
+    assert resolution.term(0).module_rank() == cardinal(1)
+    assert resolution.term(1).module_rank() == cardinal(1)
+    assert resolution.term(2).module_rank() == cardinal(0)
     multiplication = resolution.differential(1)
     assert multiplication.is_injective()
     assert multiplication(resolution.term(1).module_generator(0)) == ring(n) * resolution.term(0).module_generator(0)
@@ -58,12 +58,12 @@ def test_a_homological_algebra_session(name) -> None:
     assert dual_map.codomain() == dualize(resolution.term(1))
     dual_complex = CochainComplexes(ring)({0: dual_map.domain(), 1: dual_map.codomain()}, {0: dual_map})
     rendered(dual_complex)
-    assert dual_complex.cohomology(0).cardinality() == 1
+    assert dual_complex.cohomology(0).cardinality() == cardinal(1)
     ext = dual_complex.cohomology(1)
     rendered(ext)
     assert ext.cardinality() == torsion.cardinality()
     assert ext.annihilator() == ring.ideal(ring(n))
-    assert torsion.Mor(ring.regular_module()).cardinality() == 1
+    assert torsion.Mor(ring.regular_module()).cardinality() == cardinal(1)
 
     # Tor_1(R/n, R/m) = R/gcd(n, m), by tensoring the resolution with R/m.
     other = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(m),))
@@ -85,7 +85,7 @@ def test_a_homological_algebra_session(name) -> None:
     projection = plane.Mor(line)({0: line.zero(), 1: line.module_generator(0)})
     complex_ = CochainComplexes(ring)({0: line, 1: plane, 2: line}, {0: inclusion, 1: projection})
     rendered(complex_)
-    assert complex_.cohomology(0).cardinality() == 1
+    assert complex_.cohomology(0).cardinality() == cardinal(1)
     assert complex_.cohomology(1).cardinality() == torsion.cardinality()
-    assert complex_.cohomology(2).cardinality() == 1
+    assert complex_.cohomology(2).cardinality() == cardinal(1)
     assert (projection * inclusion)(line.module_generator(0)) == line.zero()

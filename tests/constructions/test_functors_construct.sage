@@ -32,16 +32,16 @@ def test_a_nullary_functor_sends_an_object_into_its_codomain(name) -> None:
 
 def test_known_values_of_the_nullary_functors() -> None:
     assert Groups().abelianization()(Groups.S(3)).order() == 2
-    assert Sets().cardinality_functor()(Sets.Δ[2]) == 3
-    assert FiniteSets().power_set_functor()(Sets.Δ[2]).cardinality() == 8
+    assert Sets().cardinality_functor()(Sets.Δ[2]) == cardinal(3)
+    assert FiniteSets().power_set_functor()(Sets.Δ[2]).cardinality() == cardinal(8)
     assert Sets().free_group()(Sets.Δ[1]).is_isomorphic_to(Groups.Free(2))
-    assert Groups().underlying_set()(Groups.S(3)).cardinality() == 6
+    assert Groups().underlying_set()(Groups.S(3)).cardinality() == cardinal(6)
     assert NumberFields().ring_of_integers()(QQ) is ZZ
     assert IntegralDomains().fraction_field()(ZZ) is QQ
     gaussian = NumberFields().ring_of_integers()(QuadraticField(-1, "i"))
     assert gaussian in OwnedOrders()
     assert gaussian.is_maximal()
-    assert gaussian.module_rank() == 2
+    assert gaussian.module_rank() == cardinal(2)
 
 
 def test_functors_over_every_commutative_ring(commutative_ring) -> None:
@@ -51,12 +51,12 @@ def test_functors_over_every_commutative_ring(commutative_ring) -> None:
 
     free = Sets().free_module(ring)(Sets.Δ[2])
     assert free in FreeModules(ring)
-    assert free.module_rank() == 3
+    assert free.module_rank() == cardinal(3)
     assert Modules(ring).underlying_set()(module) in Sets()
-    assert Modules(ring).dualization()(module).module_rank() == 2
+    assert Modules(ring).dualization()(module).module_rank() == cardinal(2)
     assert Modules(ring).symmetric_algebra()(module) in Algebras(ring).Associative().Unital().Commutative()
     assert Modules(ring).tensor_algebra()(module) in Algebras(ring)
-    assert Modules(ring).exterior_algebra()(module).graded_piece(2).module_rank() == 1
+    assert Modules(ring).exterior_algebra()(module).graded_piece(2).module_rank() == cardinal(1)
     assert Algebras(ring).Associative().Unital().Commutative().spectrum()(polynomials) in AffineSchemes(ring)
     assert Algebras(ring).Associative().Unital().Commutative().spectrum()(polynomials).relative_dimension() == 1
     assert Algebras(ring).Associative().Unital().Commutative().de_rham()(polynomials) in StrictlyCommutativeDifferentialGradedAlgebras(ring)

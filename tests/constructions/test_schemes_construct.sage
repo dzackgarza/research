@@ -61,7 +61,7 @@ def test_affine_space_over_every_commutative_ring(commutative_ring) -> None:
     assert plane in AffineSchemes(ring)
     assert plane in SmoothSchemes(ring)
     assert plane in Schemes(ring)
-    assert plane.relative_dimension() == 2
+    assert plane.relative_dimension() == cardinal(2)
     assert plane.coordinate_ring() in Algebras(ring).Associative().Unital().Commutative()
     assert plane.coordinate_ring().krull_dimension() == ring.krull_dimension() + 2
     assert (plane in IntegralSchemes(ring)) == (ring in IntegralDomains())
@@ -112,7 +112,7 @@ def test_closed_subschemes_of_the_affine_plane(commutative_ring) -> None:
     assert cusp not in SmoothSchemes(ring)
     assert origin.codimension() == 2
     assert origin.relative_dimension() == 0
-    assert origin.coordinate_ring().Mor(ring).cardinality() == 1
+    assert origin.coordinate_ring().Mor(ring).cardinality() == cardinal(1)
 
 
 def test_closed_subscheme_over_a_field_is_a_curve(field) -> None:
@@ -136,9 +136,9 @@ def test_products_of_schemes(commutative_ring) -> None:
 
     assert plane in ProductSchemes(ring)
     assert plane in AffineSchemes(ring)
-    assert plane.relative_dimension() == 2
-    assert plane.factors().cardinality() == 2
-    assert plane.projections().cardinality() == 2
+    assert plane.relative_dimension() == cardinal(2)
+    assert plane.factors().cardinality() == cardinal(2)
+    assert plane.projections().cardinality() == cardinal(2)
     assert plane.projection(0).codomain() is line
     assert quadric in ProductSchemes(ring)
     assert quadric in ProjectiveSchemes(ring)
@@ -213,5 +213,5 @@ def test_spec_of_a_field_is_a_point_and_spec_of_the_integers_is_not(build) -> No
     integers = (ZZ).affine_spectrum()
     assert integers.relative_dimension() == 0
     assert integers.underlying_space().generic_point().residue_field() is QQ
-    assert (ZZ).affine_spectrum().Mor((QQ).affine_spectrum()).cardinality() == 0
-    assert (QQ).affine_spectrum().Mor((ZZ).affine_spectrum()).cardinality() == 1
+    assert (ZZ).affine_spectrum().Mor((QQ).affine_spectrum()).cardinality() == cardinal(0)
+    assert (QQ).affine_spectrum().Mor((ZZ).affine_spectrum()).cardinality() == cardinal(1)

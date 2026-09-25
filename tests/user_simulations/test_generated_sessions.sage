@@ -33,7 +33,7 @@ def test_a_generated_quadratic_field_session(d) -> None:
     rendered(field)
     integers = field.ring_of_integers()
     rendered(integers)
-    assert integers.module_rank() == 2
+    assert integers.module_rank() == cardinal(2)
     assert field.discriminant() == quadratic_field_discriminant(d)
     for p in (2, 3, 5, 7, 11):
         primes_above = field.primes_above(p)
@@ -41,7 +41,7 @@ def test_a_generated_quadratic_field_session(d) -> None:
         for prime_ideal in primes_above:
             rendered(prime_ideal)
             assert prime_ideal.is_prime()
-            assert prime_ideal.quotient_ring().cardinality() in (p, p * p)
+            assert prime_ideal.quotient_ring().cardinality() in (cardinal(p), cardinal(p * p))
     first = next(iter(field.primes_above(2)))
     local = integers.localize_at_prime(first)
     rendered(local)
@@ -54,7 +54,7 @@ def test_a_generated_quadratic_field_session(d) -> None:
     rendered(galois)
     assert galois.order() == 2
     unit_rank = 1 if d > 0 else 0
-    assert field.unit_group().module_rank() == unit_rank
+    assert field.unit_group().module_rank() == cardinal(unit_rank)
     rendered(field.class_group())
     assert field.class_group().order() == field.class_number()
 
@@ -71,18 +71,18 @@ def test_a_generated_lattice_session(gram) -> None:
     rendered(dual)
     discriminant = lattice.discriminant_group()
     rendered(discriminant)
-    assert discriminant.cardinality() == abs(det)
+    assert discriminant.cardinality() == cardinal(abs(det))
     rendered(lattice.discriminant_bilinear_form())
     if lattice.is_even():
         rendered(lattice.discriminant_quadratic_form())
     line = lattice.subobject_on([lattice.basis_vector(0)])
     rendered(line)
     rendered(line.orthogonal_complement())
-    assert line.module_rank() + line.orthogonal_complement().module_rank() == 2
+    assert line.module_rank() + line.orthogonal_complement().module_rank() == cardinal(2)
     bigger = lattice + Lattices(ZZ)("U")
     rendered(bigger)
-    assert bigger.module_rank() == 4
-    assert bigger.discriminant_group().cardinality() == abs(det)
+    assert bigger.module_rank() == cardinal(4)
+    assert bigger.discriminant_group().cardinality() == cardinal(abs(det))
     rendered(lattice.genus())
     assert lattice.genus().representative().genus() == lattice.genus()
     rendered(lattice.O())
@@ -119,17 +119,17 @@ def test_a_generated_finite_group_session(n) -> None:
     rendered(rotations)
     assert rotations.order() == n
     assert rotations.is_normal()
-    assert dihedral.left_cosets(rotations).cardinality() == 2
+    assert dihedral.left_cosets(rotations).cardinality() == cardinal(2)
     assert rotations.inclusion().cokernel().order() == 2
     rendered(dihedral.conjugacy_classes_representatives())
-    assert dihedral.conjugacy_classes_representatives().cardinality() == ((n + 6) // 2 if n % 2 == 0 else (n + 3) // 2)
+    assert dihedral.conjugacy_classes_representatives().cardinality() == cardinal((n + 6) // 2 if n % 2 == 0 else (n + 3) // 2)
     points = tuple(range(1, n + 1))
     polygon = FiniteGSets(dihedral)(points, lambda g, point: g(point))
     rendered(polygon)
-    assert FiniteGSets(dihedral).orbits_functor()(polygon).cardinality() == 1
-    assert polygon.fixed_points().cardinality() == 0
+    assert FiniteGSets(dihedral).orbits_functor()(polygon).cardinality() == cardinal(1)
+    assert polygon.fixed_points().cardinality() == cardinal(0)
     assert Groups.S(n).order() == factorial(n)
-    assert dihedral.Mor(Groups.S(n)).cardinality() >= 1
+    assert dihedral.Mor(Groups.S(n)).cardinality() >= cardinal(1)
 
 
 @session
@@ -139,20 +139,20 @@ def test_a_generated_local_session(p) -> None:
     rendered(local)
     assert local in LocalRings()
     assert local in PrincipalIdealDomains()
-    assert local.residue_field().cardinality() == p
+    assert local.residue_field().cardinality() == cardinal(p)
     completion = local.adic_completion(local.maximal_ideal())
     rendered(completion)
     assert completion in CompleteLocalRings()
     assert completion == Zp(p)
-    assert completion.residue_field().cardinality() == p
+    assert completion.residue_field().cardinality() == cardinal(p)
     field = GF(p)
     rendered(field)
     assert field.multiplicative_generator().multiplicative_order() == p - 1
     extension = GF(p**2)
     rendered(extension)
-    assert extension.cardinality() == p * p
-    assert extension.Mor(extension).cardinality() == 2
-    assert field.Mor(extension).cardinality() == 1
+    assert extension.cardinality() == cardinal(p * p)
+    assert extension.Mor(extension).cardinality() == cardinal(2)
+    assert field.Mor(extension).cardinality() == cardinal(1)
     line = AffineSpaces(field)(1)
     rendered(line)
     assert line.point_count() == p
@@ -163,8 +163,8 @@ def test_a_generated_local_session(p) -> None:
     assert lattice.is_nondegenerate() == (p != 3)
     torsion = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((p, p * p))
     rendered(torsion)
-    assert torsion.cardinality() == p**3
-    assert torsion.localize_at_prime(ZZ.spectrum()(ZZ.ideal(p))).cardinality() == p**3
+    assert torsion.cardinality() == cardinal(p**3)
+    assert torsion.localize_at_prime(ZZ.spectrum()(ZZ.ideal(p))).cardinality() == cardinal(p**3)
     other = 2 if p != 2 else 3
-    assert torsion.localize_at_prime(ZZ.spectrum()(ZZ.ideal(other))).cardinality() == 1
+    assert torsion.localize_at_prime(ZZ.spectrum()(ZZ.ideal(other))).cardinality() == cardinal(1)
     assert is_prime(p) and prime_factorization(p) == {p: 1}

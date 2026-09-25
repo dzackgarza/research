@@ -57,16 +57,16 @@ def test_a_galois_theory_session(name) -> None:
         residue_degree = decomposition.order() // ramification
         assert primes.cardinality() * ramification * residue_degree == degree
         assert (ramification > 1) == (prime in ramified)
-        assert prime_above.quotient_ring().cardinality() == prime**residue_degree
+        assert prime_above.quotient_ring().cardinality() == cardinal(prime**residue_degree)
         assert prime_above.quotient_ring() in Fields()
         if prime not in ramified:
             frobenius = galois.frobenius_class(prime, prime_above)
             rendered(frobenius)
             assert frobenius.representative().order() == residue_degree
             assert frobenius.representative() in decomposition
-    assert field.primes_above(split_prime).cardinality() == degree
+    assert field.primes_above(split_prime).cardinality() == cardinal(degree)
     if inert_prime is not None:
-        assert field.primes_above(inert_prime).cardinality() == 1
+        assert field.primes_above(inert_prime).cardinality() == cardinal(1)
         assert galois.inertia_group(next(iter(field.primes_above(inert_prime)))).order() == 1
 
     # The field inside the absolute Galois group of the rationals.
@@ -106,12 +106,12 @@ def test_the_absolute_galois_group_of_a_finite_field_session() -> None:
     rendered(frobenius)
     assert galois.is_abelian()
     assert not galois.is_finite()
-    assert galois.topological_group_generators().cardinality() == 1
+    assert galois.topological_group_generators().cardinality() == cardinal(1)
     assert frobenius in galois
     for degree in (2, 3, 4):
         extension = galois.finite_extension(degree)
         rendered(extension)
-        assert extension.cardinality() == 7**degree
+        assert extension.cardinality() == cardinal(7**degree)
         assert extension in Fields()
         assert extension.characteristic() == 7
         assert (frobenius**degree)(extension.an_element()) == extension.an_element()

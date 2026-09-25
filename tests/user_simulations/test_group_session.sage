@@ -36,12 +36,12 @@ def test_a_finite_group_session(name) -> None:
     assert group in Groups()
     assert group in FiniteGroups()
     assert group.order() == order
-    assert group.cardinality() == order
+    assert group.cardinality() == cardinal(order)
     assert group in FinitelyPresentedGroups()
     assert group not in GroupsWithChosenFinitePresentation()
     assert group.presentation() in GroupsWithChosenFinitePresentation()
-    assert group.group_generators().cardinality() >= 1
-    assert group.conjugacy_classes_representatives().cardinality() == classes
+    assert group.group_generators().cardinality() >= cardinal(1)
+    assert group.conjugacy_classes_representatives().cardinality() == cardinal(classes)
     assert (group in AbelianGroups()) == (classes == order)
 
     # Elements, orders, cyclic subgroups.
@@ -87,9 +87,9 @@ def test_a_finite_group_session(name) -> None:
     assert inner(g) in group
     signs = group.Mor(Groups.C(2))
     rendered(signs)
-    assert signs.cardinality() >= 1
+    assert signs.cardinality() >= cardinal(1)
     assert group.Mor(group).identity()(g) == g
-    assert group.End().cardinality() >= automorphisms.order()
+    assert group.End().cardinality() >= cardinal(automorphisms.order())
     assert group.is_isomorphic_to(group)
     assert not group.is_isomorphic_to(Groups.C(order + 1))
 
@@ -102,13 +102,13 @@ def test_a_finite_group_session(name) -> None:
     g_set = FiniteGSets(group)(points, action)
     rendered(g_set)
     assert g_set in FiniteGSets(group)
-    assert g_set.point_set().cardinality() == degree
+    assert g_set.point_set().cardinality() == cardinal(degree)
     fixed = g_set.fixed_points()
     rendered(fixed)
     if name in ("S3", "S4", "A4", "D4"):
-        assert fixed.cardinality() == 0
+        assert fixed.cardinality() == cardinal(0)
     else:
-        assert fixed.cardinality() == degree
+        assert fixed.cardinality() == cardinal(degree)
     assert g_set.act(group.one(), points[0]) == points[0]
 
     # The permutation representation over ZZ, QQ and GF(2), with invariants.
@@ -131,9 +131,9 @@ def test_a_finite_group_session(name) -> None:
         rendered(invariants)
         assert invariants in Modules(ring)
         if name in ("S3", "S4", "A4", "D4"):
-            assert invariants.module_rank() == 1
+            assert invariants.module_rank() == cardinal(1)
         else:
-            assert invariants.module_rank() == degree
+            assert invariants.module_rank() == cardinal(degree)
         coinvariants = representation.module_coinvariants()
         rendered(coinvariants)
         assert coinvariants.module_rank() == invariants.module_rank()

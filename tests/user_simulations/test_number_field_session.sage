@@ -60,23 +60,23 @@ def test_a_number_field_session(name) -> None:
     assert integers in IntegralDomains()
     assert integers in NoetherianRings()
     assert integers.is_maximal()
-    assert integers.module_rank() == degree
+    assert integers.module_rank() == cardinal(degree)
     basis = integers.integral_basis()
     rendered(basis)
-    assert basis.cardinality() == degree
+    assert basis.cardinality() == cardinal(degree)
     assert integers.fraction_field() is field
     assert (integers in PrincipalIdealDomains()) == (class_number == 1)
     assert integers.krull_dimension() == 1
 
     # Ramification, and the primes above the first few rational primes.
-    assert field.ramified_primes().cardinality() == len(ramified)
+    assert field.ramified_primes().cardinality() == cardinal(len(ramified))
     for prime in ramified:
         assert prime in field.ramified_primes()
     for prime in (2, 3, 5, 7):
         primes = field.primes_above(prime)
         rendered(primes)
-        assert primes.cardinality() >= 1
-        assert primes.cardinality() <= degree
+        assert primes.cardinality() >= cardinal(1)
+        assert primes.cardinality() <= cardinal(degree)
         for prime_ideal in primes:
             rendered(prime_ideal)
             assert prime_ideal.is_prime()
@@ -84,7 +84,7 @@ def test_a_number_field_session(name) -> None:
             residue = prime_ideal.quotient_ring()
             assert residue in Fields()
             assert residue.characteristic() == prime
-            assert residue.cardinality() <= prime**degree
+            assert residue.cardinality() <= cardinal(prime**degree)
 
     # Localize at the first prime above 2, then complete.
     first = next(iter(field.primes_above(2)))
@@ -113,8 +113,8 @@ def test_a_number_field_session(name) -> None:
         assert field.normal_closure_galois_group().order() == 6
 
     # Embeddings into the reals and the complex numbers.
-    assert field.embeddings(RR).cardinality() == real_places
-    assert field.embeddings(CC).cardinality() == degree
+    assert field.embeddings(RR).cardinality() == cardinal(real_places)
+    assert field.embeddings(CC).cardinality() == cardinal(degree)
     for embedding in field.embeddings(CC):
         rendered(embedding)
         assert embedding(field.one()) == CC.one()
@@ -122,7 +122,7 @@ def test_a_number_field_session(name) -> None:
     # Kähler differentials of the integers over ZZ are finite of order |disc|.
     omega = integers.as_algebra_over(ZZ).kahler_differentials()
     rendered(omega)
-    assert omega.cardinality() == abs(discriminant)
+    assert omega.cardinality() == cardinal(abs(discriminant))
 
     # The arithmetic curve Spec O_K.
     curve = (integers).affine_spectrum()

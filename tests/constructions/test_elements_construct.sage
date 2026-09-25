@@ -100,19 +100,20 @@ def test_number_field_element_invariants(build) -> None:
     gaussian = build("QQ(i)")
     i = gaussian.primitive_element()
     assert i * i == -gaussian.one()
-    assert i.norm() == 1
-    assert i.trace() == 0
-    assert (i + 1).norm() == 2
-    assert (i + 1).trace() == 2
+    assert i.norm() == QQ(1)
+    assert i.trace() == QQ(0)
+    assert (i + gaussian.one()).norm() == QQ(2)
+    assert (i + gaussian.one()).trace() == QQ(2)
     assert i.minpoly().degree() == 2
     assert i in gaussian.ring_of_integers()
-    assert (i / 2) not in gaussian.ring_of_integers()
-    assert (i + 1).is_unit() is False
-    assert gaussian(i + 1).inverse_of_unit() * (i + 1) == gaussian.one()
-    root_five = build("QQ(sqrt5)").primitive_element()
-    golden = (1 + root_five) / 2
-    assert golden.norm() == -1
-    assert golden.trace() == 1
+    assert (i / gaussian(2)) not in gaussian.ring_of_integers()
+    assert (i + gaussian.one()).is_unit() is False
+    assert gaussian(i + gaussian.one()).inverse_of_unit() * (i + gaussian.one()) == gaussian.one()
+    real_quadratic = build("QQ(sqrt5)")
+    root_five = real_quadratic.primitive_element()
+    golden = (real_quadratic.one() + root_five) / real_quadratic(2)
+    assert golden.norm() == QQ(-1)
+    assert golden.trace() == QQ(1)
     assert golden in build("QQ(sqrt5)").ring_of_integers()
     assert golden.is_unit()
 
@@ -173,5 +174,5 @@ def test_elements_of_finite_and_infinite_sets() -> None:
     assert NN.an_element() in NN
     assert NN(5) + NN(7) == NN(12)
     assert NN(3) in ZZ
-    assert QQ(1) / 2 not in ZZ
+    assert QQ(1) / QQ(2) not in ZZ
     assert ZZ.cardinality() == aleph0

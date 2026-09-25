@@ -18,8 +18,8 @@ def test_lattices_over_orders_and_over_p_adics(build) -> None:
         lattice = Lattices(ring)([[2, 1], [1, 2]])
         assert lattice in Lattices(ring)
         assert lattice.determinant() == 3 * ring.one()
-        assert lattice.dual_lattice().module_rank() == 2
-        assert lattice.discriminant_module().cardinality() == size
+        assert lattice.dual_lattice().module_rank() == cardinal(2)
+        assert lattice.discriminant_module().cardinality() == cardinal(size)
 
 
 def test_polynomials_over_quotients_orders_and_polynomial_rings(build) -> None:
@@ -44,21 +44,21 @@ def test_matrices_over_polynomial_rings_and_modules_over_matrix_algebras() -> No
     jordan = matrices.from_rows([[x, 1], [0, x]])
     assert jordan.determinant() == x**2
     assert (jordan * jordan).matrix_entry(0, 1) == 2 * x
-    assert jordan.transpose().matrix_entry(1, 0) == 1
+    assert jordan.transpose().matrix_entry(1, 0) == polynomials.one()
     over_matrices = QQ.matrix_space(2).free_module(2)
     assert over_matrices in Modules(QQ.matrix_space(2))
-    assert over_matrices.module_rank() == 2
+    assert over_matrices.module_rank() == cardinal(2)
 
 
 def test_quotients_of_quotients_and_localizations_of_quotients() -> None:
     twelve = Zmod(12)
     four = twelve.quotient_ring(twelve.ideal(twelve(4)))
     local = twelve.localize_at_prime(twelve.ideal(twelve(2)))
-    assert four.cardinality() == 4
+    assert four.cardinality() == cardinal(4)
     assert four.characteristic() == 4
     assert local in LocalRings()
-    assert local.cardinality() == 4
-    assert local.residue_field().cardinality() == 2
+    assert local.cardinality() == cardinal(4)
+    assert local.residue_field().cardinality() == cardinal(2)
     assert twelve.spectrum().closed_set(twelve.ideal(twelve(2)))
     polynomials = QQ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
@@ -73,12 +73,12 @@ def test_completions_of_localizations_and_fraction_fields_of_quotients() -> None
     local = ZZ.localize_at_prime(5)
     completion = local.adic_completion(local.maximal_ideal())
     assert completion in CompleteLocalRings()
-    assert completion.residue_field().cardinality() == 5
+    assert completion.residue_field().cardinality() == cardinal(5)
     assert completion.characteristic() == 0
     assert local.fraction_field() is QQ
     polynomials = ZZ.polynomial_ring("x")
     x = polynomials.algebra_generator("x")
-    gaussian = polynomials.quotient_ring(polynomials.ideal(x**2 + 1))
+    gaussian = polynomials.quotient_ring(polynomials.ideal(x**2 + polynomials.one()))
     fractions = gaussian.fraction_field()
     assert fractions in Fields()
     assert fractions.characteristic() == 0
@@ -92,27 +92,27 @@ def test_completions_of_localizations_and_fraction_fields_of_quotients() -> None
 )
 def test_the_underlying_space_of_the_spectrum_of_a_small_ring(build, name, points) -> None:
     ring = build(name)
-    assert (ring).affine_spectrum().underlying_space().cardinality() == points
-    assert ring.spectrum().cardinality() == points
+    assert (ring).affine_spectrum().underlying_space().cardinality() == cardinal(points)
+    assert ring.spectrum().cardinality() == cardinal(points)
 
 
 def test_spectra_with_infinitely_many_points(build) -> None:
     for name in ("ZZ", "ZZ[i]", "QQ[x]", "ZZ[x]", "QQ[x,y]"):
         assert build(name).spectrum().cardinality() == aleph0
-    assert build("RR").spectrum().cardinality() == 1
+    assert build("RR").spectrum().cardinality() == cardinal(1)
 
 
 def test_kahler_differentials_of_localizations_and_quotients(build) -> None:
     local = build("ZZ_(5)").as_algebra_over(ZZ).kahler_differentials()
     dual = build("GF(2)[t]/(t^2)").as_algebra_over(GF(2)).kahler_differentials()
     finite = Zmod(12).as_algebra_over(ZZ).kahler_differentials()
-    assert local.cardinality() == 1
-    assert dual.cardinality() == 4
-    assert finite.cardinality() == 1
+    assert local.cardinality() == cardinal(1)
+    assert dual.cardinality() == cardinal(4)
+    assert finite.cardinality() == cardinal(1)
     integers = ZZ.polynomial_ring("x")
     x = integers.algebra_generator("x")
-    quotient = integers.quotient_ring(integers.ideal(x**2 + 1))
-    assert quotient.as_algebra_over(ZZ).kahler_differentials().cardinality() == 4
+    quotient = integers.quotient_ring(integers.ideal(x**2 + integers.one()))
+    assert quotient.as_algebra_over(ZZ).kahler_differentials().cardinality() == cardinal(4)
 
 
 def test_tensor_products_and_pushouts_of_algebras() -> None:
@@ -153,19 +153,19 @@ def test_the_trace_form_of_a_number_field_is_a_lattice(build) -> None:
         basis = field.ring_of_integers().integral_basis()
         gram = [[(a * b).trace() for b in basis] for a in basis]
         trace_form = Lattices(ZZ)(gram)
-        assert trace_form.module_rank() == field.degree()
+        assert trace_form.module_rank() == cardinal(field.degree())
         assert trace_form.determinant() == discriminant
-        assert trace_form.discriminant_group().cardinality() == abs(discriminant)
+        assert trace_form.discriminant_group().cardinality() == cardinal(abs(discriminant))
         assert trace_form.is_nondegenerate()
 
 
 def test_a_torsion_module_with_a_form_and_a_lattice_over_it() -> None:
     values = FractionFieldQuotients(ZZ)(1)
-    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram([[4]], [[QQ(1) / 4]], values)
-    assert form.cardinality() == 4
+    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram([[4]], [[QQ(1) / QQ(4)]], values)
+    assert form.cardinality() == cardinal(4)
     torsion = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4,))
     assert torsion.cardinality() == form.cardinality()
-    assert form.unformed_module().cardinality() == 4
+    assert form.unformed_module().cardinality() == cardinal(4)
 
 
 def test_module_morphisms_as_matrices_and_back(commutative_ring) -> None:
@@ -189,7 +189,7 @@ def test_schemes_over_orders_and_over_quotients(build) -> None:
     line = AffineSpaces(gaussian)(1)
     projective = ProjectiveSpaces(Zmod(12))(1)
     assert line in AffineSchemes(gaussian)
-    assert line.relative_dimension() == 1
+    assert line.relative_dimension() == cardinal(1)
     assert line.coordinate_ring().krull_dimension() == 2
     assert projective.relative_dimension() == 1
     assert (Zp(3)).affine_spectrum().relative_dimension() == 0

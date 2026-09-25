@@ -48,7 +48,7 @@ def test_extension_of_scalars_of_a_free_module(ring_map) -> None:
 
     assert extended in Modules(target)
     assert extended in FinitelyGeneratedModules(target)
-    assert extended.module_rank() == 3
+    assert extended.module_rank() == cardinal(3)
     assert extended.base_ring() is target
     assert functorial == extended
     if target in Fields():
@@ -63,10 +63,10 @@ def test_extension_of_scalars_of_a_torsion_module_over_the_integers() -> None:
         phi = ZZ.Mor(target)(lambda element, target=target: target(element))
         extended = torsion.base_change(phi)
         assert extended in Modules(target)
-        assert extended.cardinality() == size
+        assert extended.cardinality() == cardinal(size)
     two = ZZ.Mor(GF(2))(lambda element: GF(2)(element))
-    assert torsion.base_change(two).cardinality() == 2
-    assert torsion.base_change(two).module_rank() == 1
+    assert torsion.base_change(two).cardinality() == cardinal(2)
+    assert torsion.base_change(two).module_rank() == cardinal(1)
 
 
 def test_scalar_extension_distinguishes_surviving_and_vanishing_torsion_and_maps() -> None:
@@ -140,7 +140,7 @@ def test_restriction_of_scalars(ring_map) -> None:
     assert also in Modules(source)
     assert restricted.cardinality() == module.cardinality()
     if target.cardinality().is_finite():
-        assert restricted.cardinality() == target.cardinality() ** 2
+        assert restricted.cardinality() == cardinal(target.cardinality() ** 2)
 
 
 def test_restriction_of_scalars_of_the_gaussian_integers_to_the_integers() -> None:
@@ -148,7 +148,7 @@ def test_restriction_of_scalars_of_the_gaussian_integers_to_the_integers() -> No
     phi = ZZ.Mor(gaussian)(lambda element: gaussian(element))
     restricted = gaussian.free_module(1).restrict_scalars(phi)
     assert restricted in Modules(ZZ)
-    assert restricted.module_rank() == 2
+    assert restricted.module_rank() == cardinal(2)
     assert restricted in FinitelyGeneratedModules(ZZ)
     rationals = QQ.free_module(1).restrict_scalars(ZZ.Mor(QQ)(lambda element: QQ(element)))
     assert rationals in Modules(ZZ)
@@ -187,7 +187,7 @@ def test_extension_of_scalars_of_an_algebra(ring_map) -> None:
     polynomials = source.polynomial_ring("x")
     extended = Algebras(source).Associative().Unital().Commutative().scalar_extension(phi)(polynomials)
     assert extended in Algebras(target).Associative().Unital().Commutative()
-    assert extended.algebra_generators().cardinality() == 1
+    assert extended.algebra_generators().cardinality() == cardinal(1)
     assert (extended in IntegralDomains()) == (target in IntegralDomains())
     adjunction = Algebras(source).Associative().Unital().Commutative().base_change_adjunction(phi)
     assert adjunction.left_adjoint()(polynomials) == extended
@@ -201,7 +201,7 @@ def test_base_change_of_a_lattice_and_of_a_form(ring_map) -> None:
     changed = lattice.base_change(phi)
     assert changed in Lattices(target)
     assert changed in BilinearFormModules(target)
-    assert changed.module_rank() == 2
+    assert changed.module_rank() == cardinal(2)
     assert changed.determinant() == 3 * target.one()
     assert changed.is_nondegenerate() == (3 * target.one() != target.zero())
 
@@ -213,8 +213,8 @@ def test_localization_of_modules_at_a_prime_of_the_integers() -> None:
     free = ZZ.free_module(2)
 
     assert localize(torsion) in Modules(local)
-    assert localize(torsion).cardinality() == 25
-    assert localize(free).module_rank() == 2
+    assert localize(torsion).cardinality() == cardinal(25)
+    assert localize(free).module_rank() == cardinal(2)
     assert localize(free).base_ring() is local
     doubling = free.Mor(free)({0: 2 * free.module_generator(0), 1: free.module_generator(1)})
     assert localize(doubling).is_surjective()
@@ -228,7 +228,7 @@ def test_twisting_a_module_by_frobenius() -> None:
     twisted = module.twist_scalar_action(frobenius)
     generator = field.multiplicative_generator()
     assert twisted in Modules(field)
-    assert twisted.module_rank() == 2
+    assert twisted.module_rank() == cardinal(2)
     assert twisted.scalar_multiple(generator, twisted.module_generator(0)) == generator**2 * twisted.module_generator(0)
     assert frobenius * frobenius == field.Mor(field).identity()
 
@@ -244,8 +244,8 @@ def test_the_tensor_hom_adjunction_over_every_commutative_ring(commutative_ring)
     homs = adjunction.right_adjoint()(other)
     assert tensored == module.tensor_product(fixed)
     assert homs == fixed.Mor(other)
-    assert tensored.module_rank() == 6
-    assert homs.module_rank() == 2
+    assert tensored.module_rank() == cardinal(6)
+    assert homs.module_rank() == cardinal(2)
     assert adjunction.unit(module).domain() is module
     assert adjunction.counit(other).codomain() is other
     evaluation = tensored.Mor(other)({label: other.zero() for label in range(6)})

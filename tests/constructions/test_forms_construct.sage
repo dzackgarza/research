@@ -33,7 +33,7 @@ def test_a_symmetric_bilinear_form_from_a_gram_matrix(commutative_ring) -> None:
     assert form.determinant() == 3 * ring.one()
     assert form.is_nondegenerate() == (3 * ring.one() != ring.zero())
     assert form.correlation_morphism().is_injective() == (3 * ring.one() != ring.zero())
-    assert form.dual_module().module_rank() == 2
+    assert form.dual_module().module_rank() == cardinal(2)
     assert form.twist(2).determinant() == 12 * ring.one()
     assert ring.one() in form.scale_submodule()
 
@@ -78,7 +78,7 @@ def test_a_pairing_between_two_modules(commutative_ring) -> None:
     left = ring.free_module(2)
     right = ring.free_module(3)
     pairing = left.pairings_with(right, ring)([[1, 0, 2], [0, 1, 0]])
-    assert pairing.domain().tensor_factors().cardinality() == 2
+    assert pairing.domain().tensor_factors().cardinality() == cardinal(2)
     assert pairing(pairing.domain().pure_tensor(left.module_generator(0), right.module_generator(2))) == 2 * ring.one()
     assert pairing(pairing.domain().pure_tensor(left.module_generator(1), right.module_generator(0))) == ring.zero()
 
@@ -104,7 +104,7 @@ def test_the_free_form_adjunctions_over_every_commutative_ring(commutative_ring)
         free = adjunction.left_adjoint()(module)
         assert free in category
         assert adjunction.right_adjoint()(free) in Modules(ring)
-        assert adjunction.right_adjoint()(free).module_rank() == 2
+        assert adjunction.right_adjoint()(free).module_rank() == cardinal(2)
         unit = adjunction.unit(module)
         assert unit.domain() is module
         assert unit.codomain() == adjunction.right_adjoint()(free)
@@ -119,7 +119,7 @@ def test_base_change_of_a_form(build) -> None:
     mod_five = form.base_change(ZZ.Mor(GF(5))(lambda n: GF(5)(n)))
 
     assert rational in BilinearFormModules(QQ)
-    assert rational.determinant() == 3
+    assert rational.determinant() == QQ(3)
     assert rational.is_nondegenerate()
     assert mod_three in BilinearFormModules(GF(3))
     assert not mod_three.is_nondegenerate()
@@ -141,8 +141,8 @@ def test_fraction_field_quotients(build, name, modulus, size) -> None:
     assert quotient in Modules(ring)
     assert quotient.base_ring() is ring
     assert quotient.fraction_field() is ring.fraction_field()
-    assert quotient.cardinality() == size
-    assert quotient.modulus() == element
+    assert quotient.cardinality() == cardinal(size)
+    assert quotient.modulus() == quotient.fraction_field()(element)
     generator = quotient.module_generator(0)
     assert element * generator == quotient.zero()
 
@@ -150,26 +150,26 @@ def test_fraction_field_quotients(build, name, modulus, size) -> None:
 def test_discriminant_forms_from_relations_and_gram() -> None:
     r"""The discriminant form of $A_1 = \langle -2\rangle$ and the form $u(2)$."""
     values = FractionFieldQuotients(ZZ)(2)
-    a1 = TorsionQuadraticFormModules(ZZ).from_relations_and_gram([[2]], [[-QQ(1) / 2]], values)
+    a1 = TorsionQuadraticFormModules(ZZ).from_relations_and_gram([[2]], [[-QQ(1) / QQ(2)]], values)
     u2 = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
-        [[2, 0], [0, 2]], [[0, QQ(1) / 2], [QQ(1) / 2, 0]], values
+        [[2, 0], [0, 2]], [[0, QQ(1) / QQ(2)], [QQ(1) / QQ(2), 0]], values
     )
     generator = a1.module_generator(0)
 
     assert a1 in TorsionQuadraticFormModules(ZZ)
-    assert a1.cardinality() == 2
-    assert a1.q(generator) == values(-QQ(1) / 2)
+    assert a1.cardinality() == cardinal(2)
+    assert a1.q(generator) == values(-QQ(1) / QQ(2))
     assert a1.q(2 * generator) == values.zero()
     assert a1.is_anisotropic()
     assert not a1.is_metabolic()
     assert a1.O().order() == 1
     assert a1.brown_invariant() == 7
     assert a1.is_isometric_to(Lattices(ZZ)("A1").discriminant_quadratic_form())
-    assert u2.cardinality() == 4
+    assert u2.cardinality() == cardinal(4)
     assert u2.is_metabolic()
     assert not u2.is_anisotropic()
-    assert u2.lagrangian_subgroups().cardinality() == 2
-    assert u2.isotropic_elements().cardinality() == 3
+    assert u2.lagrangian_subgroups().cardinality() == cardinal(2)
+    assert u2.isotropic_elements().cardinality() == cardinal(3)
     assert u2.brown_invariant() == 0
     assert u2.O().order() == 2
     assert not u2.is_isometric_to(a1 + a1)
@@ -177,16 +177,16 @@ def test_discriminant_forms_from_relations_and_gram() -> None:
 
 def test_a_torsion_bilinear_form() -> None:
     values = FractionFieldQuotients(ZZ)(1)
-    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram([[4]], [[QQ(1) / 4]], values)
+    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram([[4]], [[QQ(1) / QQ(4)]], values)
     generator = form.module_generator(0)
     assert form in TorsionBilinearFormModules(ZZ)
-    assert form.cardinality() == 4
-    assert form.b(generator, generator) == values(QQ(1) / 4)
+    assert form.cardinality() == cardinal(4)
+    assert form.b(generator, generator) == values(QQ(1) / QQ(4))
     assert form.b(2 * generator, 2 * generator) == values.zero()
     assert form.O().order() == 2
     assert form.is_isometric_to(form)
     assert form.is_anti_isometric(form.twist(-1))
-    assert form.normal_form().cardinality() == 4
+    assert form.normal_form().cardinality() == cardinal(4)
 
 
 def test_form_embeddings_between_lattices() -> None:
@@ -197,19 +197,19 @@ def test_form_embeddings_between_lattices() -> None:
     assert embedding.codomain() is a2
     assert embedding.is_injective()
     assert embedding.is_primitive()
-    assert embedding.orthogonal_complement().module_rank() == 1
+    assert embedding.orthogonal_complement().module_rank() == cardinal(1)
     assert embedding.orthogonal_complement().determinant() == 6
     assert embedding in a1.Emb(a2)
 
 
 def test_determinant_lines_and_exterior_forms(commutative_ring) -> None:
     module = commutative_ring.free_module(3)
-    assert module.determinant_line().module_rank() == 1
-    assert module.exterior_forms(0).module_rank() == 1
-    assert module.exterior_forms(1).module_rank() == 3
-    assert module.exterior_forms(2).module_rank() == 3
-    assert module.exterior_forms(3).module_rank() == 1
-    assert module.exterior_forms(4).module_rank() == 0
+    assert module.determinant_line().module_rank() == cardinal(1)
+    assert module.exterior_forms(0).module_rank() == cardinal(1)
+    assert module.exterior_forms(1).module_rank() == cardinal(3)
+    assert module.exterior_forms(2).module_rank() == cardinal(3)
+    assert module.exterior_forms(3).module_rank() == cardinal(1)
+    assert module.exterior_forms(4).module_rank() == cardinal(0)
 
 
 def test_forms_over_a_polynomial_ring_and_over_a_field() -> None:
@@ -217,10 +217,10 @@ def test_forms_over_a_polynomial_ring_and_over_a_field() -> None:
     x = polynomials.algebra_generator("x")
     form = polynomials.free_module(2).equip_bilinear_form(polynomials, [[x, 1], [1, x]])
     e0, e1 = form.module_generator(0), form.module_generator(1)
-    assert form.determinant() == x**2 - 1
+    assert form.determinant() == x**2 - polynomials.one()
     assert form.is_nondegenerate()
     assert form.b(e0, e0) == x
     specialized = form.base_change(polynomials.Mor(QQ)({"x": QQ(1)}))
     assert specialized in BilinearFormModules(QQ)
     assert not specialized.is_nondegenerate()
-    assert specialized.radical().module_rank() == 1
+    assert specialized.radical().module_rank() == cardinal(1)

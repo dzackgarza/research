@@ -35,8 +35,8 @@ def test_cartan_type_ingress_accepts_the_owned_integer_emitted_by_the_session() 
     diagram = CoxeterDiagrams().from_cartan_type(["A", rank])
     rooted = CoxeterDiagrams().from_cartan_type(["A", rank], scale=scale)
 
-    assert diagram.cardinality() == rank
-    assert rooted.cardinality() == rank
+    assert diagram.cardinality() == cardinal(rank)
+    assert rooted.cardinality() == cardinal(rank)
     assert rooted.is_rooted()
 
 
@@ -45,13 +45,13 @@ def test_a_finite_coxeter_session(name) -> None:
     cartan_type, weyl_order, root_count, coxeter_number, isometry_order = FINITE[name]
     diagram = CoxeterDiagrams().from_cartan_type(cartan_type)
     rendered(diagram)
-    assert diagram.cardinality() == cartan_type[1]
+    assert diagram.cardinality() == cardinal(cartan_type[1])
     assert diagram.is_elliptic()
     assert diagram.is_connected()
-    assert diagram.connected_components().cardinality() == 1
-    assert diagram.elliptic_subdiagrams(connected=True).cardinality() >= cartan_type[1]
-    assert diagram.parabolic_subdiagrams().cardinality() == 0
-    assert diagram.positive_inertia_index() == cartan_type[1]
+    assert diagram.connected_components().cardinality() == cardinal(1)
+    assert diagram.elliptic_subdiagrams(connected=True).cardinality() >= cardinal(cartan_type[1])
+    assert diagram.parabolic_subdiagrams().cardinality() == cardinal(0)
+    assert diagram.positive_inertia_index() == cardinal(cartan_type[1])
 
     weyl = Groups.Coxeter(cartan_type)
     from_matrix = Groups.Coxeter(diagram.coxeter_matrix())
@@ -60,7 +60,7 @@ def test_a_finite_coxeter_session(name) -> None:
     assert weyl.order() == weyl_order
     assert from_matrix.order() == weyl_order
     assert weyl.is_isomorphic_to(from_matrix)
-    assert weyl.group_generators().cardinality() == cartan_type[1]
+    assert weyl.group_generators().cardinality() == cardinal(cartan_type[1])
     for generator in weyl.group_generators():
         assert generator.order() == 2
 
@@ -68,16 +68,16 @@ def test_a_finite_coxeter_session(name) -> None:
     rendered(lattice)
     assert lattice in RootLattices()
     assert lattice in EvenLattices(ZZ)
-    assert lattice.module_rank() == cartan_type[1]
+    assert lattice.module_rank() == cardinal(cartan_type[1])
     assert lattice.is_definite()
-    assert lattice.roots().cardinality() == root_count
-    assert lattice.simple_roots().cardinality() == cartan_type[1]
+    assert lattice.roots().cardinality() == cardinal(root_count)
+    assert lattice.simple_roots().cardinality() == cardinal(cartan_type[1])
     assert lattice.coxeter_number() == coxeter_number
     assert lattice.highest_root().height() == coxeter_number - 1
     assert lattice.O().order() == isometry_order
     reflections = lattice.simple_reflections()
     rendered(reflections)
-    assert reflections.cardinality() == cartan_type[1]
+    assert reflections.cardinality() == cardinal(cartan_type[1])
     generated = lattice.O().subgroup(list(reflections))
     rendered(generated)
     assert generated.order() == weyl_order
@@ -103,22 +103,22 @@ def test_affine_and_hyperbolic_coxeter_sessions() -> None:
     ideal = CoxeterDiagrams().from_coxeter_matrix([[1, 3, 4], [3, 1, 4], [4, 4, 1]])
     for diagram in (affine, hyperbolic, ideal):
         rendered(diagram)
-        assert diagram.cardinality() == 3
+        assert diagram.cardinality() == cardinal(3)
         assert diagram.is_connected()
     assert affine.is_parabolic()
-    assert affine.zero_inertia_index() == 1
+    assert affine.zero_inertia_index() == cardinal(1)
     assert hyperbolic.is_hyperbolic()
     assert ideal.is_hyperbolic()
     assert hyperbolic.negative_inertia_index() == 1
-    assert hyperbolic.elliptic_subdiagrams(connected=True).cardinality() == 6
-    assert affine.elliptic_subdiagrams().cardinality() == 7
+    assert hyperbolic.elliptic_subdiagrams(connected=True).cardinality() == cardinal(6)
+    assert affine.elliptic_subdiagrams().cardinality() == cardinal(7)
     affine_group = Groups.Coxeter(["A", 2, 1])
     hyperbolic_group = Groups.Coxeter(hyperbolic.coxeter_matrix())
     rendered(affine_group)
     rendered(hyperbolic_group)
     assert affine_group not in FiniteGroups()
     assert hyperbolic_group not in FiniteGroups()
-    assert affine_group.group_generators().cardinality() == 3
+    assert affine_group.group_generators().cardinality() == cardinal(3)
     a, b, c = hyperbolic_group.group_generators()
     assert (a * b).order() == 3
     assert (b * c).order() == 4
