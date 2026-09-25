@@ -57,7 +57,11 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import _object_of
-from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.preamble.tensors.tensor import (
+    Tensor,
+    _covariant_bilinear_coordinate_rows,
+    tensor,
+)
 
 # Historical form vocabulary now names the universal module-Mor owners.
 # These are aliases, not parallel form implementations.
@@ -598,6 +602,25 @@ class _CallableFormSpace:
         if element_parent(datum) is self:
             return datum
         name = f"Callable {self.kind()} coordinate input"
+        match datum:
+            case Tensor():
+                left_labels = _finite_framing(self.left_module())
+                right_labels = _finite_framing(self.right_module())
+                return self._from_coordinate_values(
+                    _coordinate_family_from_rows(
+                        left_labels,
+                        right_labels,
+                        self.codomain(),
+                        _covariant_bilinear_coordinate_rows(
+                            datum,
+                            left_labels.cardinality(),
+                            right_labels.cardinality(),
+                        ),
+                        name=name,
+                    )
+                )
+            case _:
+                pass
         if isinstance(datum, IndexedFamily):
             return self._from_coordinate_values(
                 _coordinate_family_from_family(

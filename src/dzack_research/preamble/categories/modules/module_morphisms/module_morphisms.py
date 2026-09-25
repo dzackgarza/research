@@ -2811,6 +2811,20 @@ class TensorProductModuleMor(ModuleMor):
         left_labels = left.module_generating_set()
         right_labels = right.module_generating_set()
 
+        from dzack_research.preamble.tensors.tensor import (
+            Tensor,
+            _covariant_bilinear_coordinate_rows,
+        )
+
+        match images:
+            case Tensor():
+                images = _covariant_bilinear_coordinate_rows(
+                    images,
+                    left_labels.cardinality(),
+                    right_labels.cardinality(),
+                )
+            case _:
+                pass
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             raw_family = images

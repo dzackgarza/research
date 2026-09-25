@@ -38,6 +38,19 @@ def test_a_symmetric_bilinear_form_from_a_gram_matrix(commutative_ring) -> None:
     assert ring.one() in form.scale_submodule()
 
 
+def test_a_covariant_two_tensor_is_gram_data_for_a_bilinear_form(commutative_ring) -> None:
+    r"""A type-$(0,2)$ tensor supplies $b(e_i,e_j)$; its variance is not erased when the form is constructed."""
+    ring = commutative_ring
+    module = ring.free_module(2)
+    gram = tensor(ring, (), (2, 2), A2_GRAM)
+    form = module.equip_bilinear_form(ring, gram)
+    e0, e1 = form.module_generator(0), form.module_generator(1)
+
+    assert form.gram_tensor() == gram
+    assert form.b(e0, e0) == 2 * ring.one()
+    assert form.b(e0, e1) == ring.one()
+
+
 def test_the_form_is_a_morphism_out_of_the_tensor_square(commutative_ring) -> None:
     ring = commutative_ring
     module = ring.free_module(2)

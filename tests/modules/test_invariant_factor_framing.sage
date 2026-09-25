@@ -57,7 +57,9 @@ def test_the_a2_discriminant_quadratic_form_lives_on_z_mod_3_and_normalization_p
     discriminant = Lattices(ZZ)("A2").discriminant_quadratic_form()
     normalization = discriminant.invariant_factor_form()
     normalized = normalization.codomain()
+    generator = discriminant.module_generator(0)
     assert discriminant.cardinality() == 3
+    assert generator.q() == discriminant.value_module()(QQ(4) / 3)
     assert tuple(normalized.invariant_factors()) == (3,)
     assert normalization.is_isomorphism()
     for generator in discriminant.module_generators():

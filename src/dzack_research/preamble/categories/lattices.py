@@ -1675,10 +1675,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                     return Lattices(ring)(self.gram_tensor().dual_gram_on(dual))
 
             fraction_field = ring.fraction_field()
-            dual_tensor = self.gram_tensor().change_ring(fraction_field).dual_tensor()
+            dual_gram = self.gram_tensor().change_ring(fraction_field).dual_pairing()
             rank = int(self.module_rank())
             match all(
-                dual_tensor[row, column] in ring
+                dual_gram[row, column] in ring
                 for row in range(rank)
                 for column in range(rank)
             ):
@@ -1688,7 +1688,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                         (),
                         (rank, rank),
                         [
-                            [ring(dual_tensor[row, column]) for column in range(rank)]
+                            [ring(dual_gram[row, column]) for column in range(rank)]
                             for row in range(rank)
                         ],
                     )
@@ -1697,7 +1697,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                         module_generators=self.module_generating_set(),
                     )
                 case False:
-                    rational = self.dual_module().equip_bilinear_form(fraction_field, dual_tensor)
+                    rational = self.dual_module().equip_bilinear_form(fraction_field, dual_gram)
                     return refine(rational, FormModules(ring).Nondegenerate())
 
         def metric_dual(self):

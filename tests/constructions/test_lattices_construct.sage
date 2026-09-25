@@ -202,8 +202,10 @@ def test_discriminant_forms_of_integral_lattices() -> None:
     a2 = Lattices(ZZ)("A2")
     form = a2.discriminant_quadratic_form()
     bilinear = a2.discriminant_bilinear_form()
+    generator = form.module_generator(0)
     assert form.cardinality() == 3
     assert bilinear.cardinality() == 3
+    assert generator.q() == form.value_module()(QQ(4) / 3)
     assert form.O().order() == 2
     assert a2.discriminant_representation().domain() is a2.O()
     assert a2.discriminant_representation_is_surjective()
