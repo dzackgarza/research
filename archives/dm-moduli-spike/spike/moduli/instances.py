@@ -1134,6 +1134,199 @@ def _genus4_compact_M40_covering_space(base: AffineScheme) -> AlgebraicSpace:
     return Genus4CompactCanonicalAlgebraicSpace(base, "Mbar_4_ntrig_via_petri")
 
 
+def _genus4_open_M4n_point_names(n_marks: int) -> tuple[str, ...]:
+    r"""Coordinate names for ``n_marks`` affine points in the canonical ``ℙ³``."""
+    if n_marks == 1:
+        return ("s", "t", "u")
+    names: list[str] = []
+    for i in range(1, n_marks + 1):
+        names.extend((f"s{i}", f"t{i}", f"u{i}"))
+    return tuple(names)
+
+
+def _genus4_open_M4n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Parametric marked Petri chart for open non-trigonal ``M_{4,n}``.
+
+    Forgetful to the non-trigonal locus of ``M_4``; fiber is ``n`` residual
+    marked points in the canonical ``ℙ³`` model over the owned ``(2,3)``-CI
+    chart :func:`_genus4_open_M40_affine_scheme`. Requires ``2 ∈ Rˣ``. No
+    residual finite groupoid.
+
+    * ``n = 0``: :func:`_genus4_open_M40_affine_scheme`.
+    * ``n ≥ 1``: ``Spec(R[c₁,…,c₉,sᵢ,tᵢ,uᵢ]_S)`` with ``S`` the product of the
+      unmarked general-coefficient denominators and pairwise differences of
+      marking coordinates (canonical incidence of markings lives in the stack
+      map / gluing, parallel to marked del Pezzo).
+
+    Coverage: dense open of the non-trigonal locus of open ``M_{4,n}`` — not
+    the trigonal cone-cubic locus.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 0, f"open Petri M_{{4,n}} chart requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "genus-4 marked Petri chart requires 2 invertible"
+    if n_int == 0:
+        return _genus4_open_M40_affine_scheme(base)
+
+    names = tuple(f"c{i}" for i in range(1, 10)) + _genus4_open_M4n_point_names(n_int)
+    poly = PolynomialRing(base.ring(), names=names)
+    gens = poly.gens()
+    coeffs = gens[:9]
+    marks = gens[9:]
+    denom = poly.one()
+    for c in coeffs:
+        denom *= c
+    for i, ci in enumerate(coeffs):
+        for cj in coeffs[i + 1 :]:
+            denom *= ci - cj
+    for i, mi in enumerate(marks):
+        for mj in marks[i + 1 :]:
+            denom *= mi - mj
+    return AffineScheme(poly.localization(denom))
+
+
+def _genus4_trigonal_open_M4n_affine_scheme(base: AffineScheme, n: int) -> AffineScheme:
+    r"""Parametric marked cone-cubic chart for the trigonal locus of open ``M_{4,n}``.
+
+    Forgetful to the trigonal locus of ``M_4``; fiber is ``n`` residual marked
+    points in the cone / Maroni model over
+    :func:`_genus4_trigonal_open_M40_affine_scheme`. Requires ``2 ∈ Rˣ``.
+    Locus-only (does not own ``etale_atlas``).
+
+    * ``n = 0``: :func:`_genus4_trigonal_open_M40_affine_scheme`.
+    * ``n ≥ 1``: ``Spec(R[d₁,…,d₈,sᵢ,tᵢ,uᵢ]_S)``.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    n_int = int(n)
+    assert n_int >= 0, f"open trigonal M_{{4,n}} chart requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "genus-4 marked trigonal chart requires 2 invertible"
+    if n_int == 0:
+        return _genus4_trigonal_open_M40_affine_scheme(base)
+
+    names = tuple(f"d{i}" for i in range(1, 9)) + _genus4_open_M4n_point_names(n_int)
+    poly = PolynomialRing(base.ring(), names=names)
+    gens = poly.gens()
+    coeffs = gens[:8]
+    marks = gens[8:]
+    denom = poly.one()
+    for d in coeffs:
+        denom *= d
+    for i, di in enumerate(coeffs):
+        for dj in coeffs[i + 1 :]:
+            denom *= di - dj
+    for i, mi in enumerate(marks):
+        for mj in marks[i + 1 :]:
+            denom *= mi - mj
+    return AffineScheme(poly.localization(denom))
+
+
+def _genus4_compact_M4n_covering_space(base: AffineScheme, n: int) -> AlgebraicSpace:
+    r"""Compactified marked Petri / fiber-product cover of non-trigonal ``Mbar_{4,n}``.
+
+    Pullback of :func:`_genus4_compact_M40_covering_space` along forgetful
+    ``Mbar_{4,n} → Mbar_4``. Covering space is
+    :class:`~dm_moduli_spike.geometry.stacks.Genus4CompactMarkedM4nAlgebraicSpace`.
+    Requires ``2 ∈ Rˣ``. Lazy sample certs.
+
+    * ``n = 0``: :func:`_genus4_compact_M40_covering_space`.
+    * ``n ≥ 1``: marked fibers over compact Petri ``ℙ⁹`` charts.
+    """
+    from ..geometry.stacks import Genus4CompactMarkedM4nAlgebraicSpace
+
+    n_int = int(n)
+    assert n_int >= 0, f"compact Petri Mbar_{{4,n}} requires n ≥ 0; got {n!r}"
+    assert _two_is_invertible(base), "genus-4 compact marked Petri cover requires 2 invertible"
+    if n_int == 0:
+        return _genus4_compact_M40_covering_space(base)
+    return Genus4CompactMarkedM4nAlgebraicSpace(base, n_int, f"Mbar_4_{n_int}_ntrig_via_petri")
+
+
+def _genus5_open_M50_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Canonical three-quadrics chart for open unmarked non-special ``M_{5,0}``.
+
+    A general non-hyperelliptic genus-5 curve is the complete intersection of
+    three quadrics in ``ℙ⁴`` (canonical model). After ``PGL₅``-normalization of
+    a general 3-plane in ``H⁰(𝒪_{ℙ⁴}(2)) ≅ k¹⁵``, residual moduli are
+    12-dimensional (``dim Gr(3,15) - dim PGL₅ = 36 - 24 = 12 = dim M_5``).
+
+    This chart is a dense open of that normal-form coefficient space:
+
+    ``Spec(R[c₁,…,c₁₂]_S)``
+
+    with ``S`` the product of the coordinates and pairwise differences (general-
+    coefficient open). Requires ``2 ∈ Rˣ``. No residual finite groupoid
+    (continuous ``PGL₅`` already quotiented; ``groupoid=none``).
+
+    Coverage: **dense open of the non-special (non-trigonal, non-hyperelliptic)
+    locus of open ``M_5``**. Not proper ``Mbar_5``, not the trigonal scroll
+    divisor, not hyperelliptic.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _two_is_invertible(base), "genus-5 canonical CI M_{5,0} chart requires 2 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=tuple(f"c{i}" for i in range(1, 13)))
+    gens = poly.gens()
+    denom = poly.one()
+    for c in gens:
+        denom *= c
+    for i, ci in enumerate(gens):
+        for cj in gens[i + 1 :]:
+            denom *= ci - cj
+    return AffineScheme(poly.localization(denom))
+
+
+def _genus5_trigonal_open_M50_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Scroll / Maroni chart for the trigonal locus of open ``M_5``.
+
+    A trigonal genus-5 curve lies on a rational normal scroll of degree ``3``
+    in ``ℙ⁴`` (equivalently: a ``g¹₃``). The Hurwitz space of simply branched
+    triple covers of ``ℙ¹`` has dimension ``2g+1 = 11``, matching
+    ``dim(trigonal locus) = dim M_5 - 1``.
+
+    This chart is a dense open of a normal-form coefficient space:
+
+    ``Spec(R[d₁,…,d₁₁]_S)``
+
+    with ``S`` the product of the coordinates and pairwise differences.
+    Requires ``2 ∈ Rˣ``. No residual finite groupoid. Coverage: **trigonal
+    locus of open ``M_5`` only** — not the non-special dense open (three-
+    quadrics chart), not hyperelliptic.
+    """
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    assert _two_is_invertible(base), "genus-5 trigonal scroll chart requires 2 invertible"
+    ring = base.ring()
+    poly = PolynomialRing(ring, names=tuple(f"d{i}" for i in range(1, 12)))
+    gens = poly.gens()
+    denom = poly.one()
+    for d in gens:
+        denom *= d
+    for i, di in enumerate(gens):
+        for dj in gens[i + 1 :]:
+            denom *= di - dj
+    return AffineScheme(poly.localization(denom))
+
+
+def _genus5_hyperelliptic_open_M50_affine_scheme(base: AffineScheme) -> AffineScheme:
+    r"""Binary-twelvic / Knudsen ``M_{0,12}`` chart for the hyperelliptic locus of open ``M_5``.
+
+    A hyperelliptic genus-5 curve is ``y² = f₁₂(x)`` with twelve distinct branch
+    points. After ``PGL₂``-normalizing three to ``{0,1,∞}``, a dense open of
+    ordered branch configurations is the Knudsen chart
+
+    ``Spec(R[t₁,…,t₉]_S) ≅`` open ``M_{0,12}``.
+
+    Requires ``2 ∈ Rˣ``. Finite étale groupoid ``S₁₂`` of degree ``479001600``.
+    Coverage: **hyperelliptic locus only** — not the non-special dense open
+    (three-quadrics / ``PGL₅``), and not trigonal.
+    """
+    assert _two_is_invertible(base), "hyperelliptic binary-twelvic M_5 chart requires 2 invertible"
+    return _knudsen_open_M0n_affine_scheme(base, 12)
+
+
 def _hyperelliptic_open_M30_affine_scheme(base: AffineScheme) -> AffineScheme:
     r"""Binary-octic / Knudsen ``M_{0,8}`` chart for the hyperelliptic locus of open ``M_3``.
 
@@ -1256,6 +1449,18 @@ def _hyperelliptic_compact_M3n_covering_space(base: AffineScheme, n: int) -> Alg
     if n_int == 0:
         return _hyperelliptic_compact_M30_covering_space(base)
     return HyperellipticCompactMarkedM3nAlgebraicSpace(base, n_int, f"Mbar_3_{n_int}_hyp_via_Mbar_0_8")
+
+
+def _hyperelliptic_genus5_galois_group() -> object:
+    r"""Symmetric group ``S₁₂`` acting on ordered branch points of a genus-5 hyperelliptic cover.
+
+    Degree ``479001600``. Coarse space of the locus is ``M_{0,12}/S₁₂``.
+    """
+    from typing import Any, cast
+
+    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+    return cast(Any, SymmetricGroup(12))
 
 
 def _hyperelliptic_galois_group() -> object:
@@ -1869,23 +2074,55 @@ class ModuliStack(DeligneMumfordStack):
         }
 
     def genus4_canonical_quotient_presentation(self) -> dict[str, object] | None:
-        r"""Inspectable Petri ``(2,3)``-CI chart data when unmarked genus-4 is owned.
+        r"""Inspectable Petri ``(2,3)``-CI chart data when genus-4 is owned.
 
-        Returns ``None`` unless this is unmarked genus ``4`` over a base with
-        ``2`` invertible:
+        Returns ``None`` unless this is genus ``4`` over a base with ``2``
+        invertible:
 
         - Open ``M_{4,0}``: :func:`_genus4_open_M40_affine_scheme`.
+        - Open marked ``M_{4,n}`` (``n ≥ 1``): :func:`_genus4_open_M4n_affine_scheme`.
         - Proper ``Mbar_4``: :func:`_genus4_compact_M40_covering_space`.
+        - Proper marked ``Mbar_{4,n}`` (``n ≥ 1``):
+          :func:`_genus4_compact_M4n_covering_space`.
 
         No residual finite groupoid (Knudsen-style). Coverage: dense open of the
         non-trigonal locus.
         """
-        if self.genus() != 4 or int(self.number_of_markings()) != 0:
+        if self.genus() != 4:
+            return None
+        n = int(self.number_of_markings())
+        if n < 0:
             return None
         if not _two_is_invertible(self.base_scheme()):
             return None
         if self.is_proper():
-            covering = _genus4_compact_M40_covering_space(self.base_scheme())
+            covering = _genus4_compact_M4n_covering_space(self.base_scheme(), n)
+            if n == 0:
+                return {
+                    "covering_space": covering,
+                    "group": None,
+                    "group_order": None,
+                    "finite_etale_groupoid": False,
+                    "covering_unramified_stamp": True,
+                    "covering_smooth_stamp": True,
+                    "covering_formally_etale_stamp": True,
+                    "degree": 1,
+                    "level_structure": "genus4_canonical_ci_P3_compact",
+                    "presentation": "Mbar_4_ntrig ≅ [P9_petri_U] (dense open)",
+                    "construction": "genus4_compact_canonical_petri_P9",
+                    "coverage": "dense_open_nontrigonal_of_proper_Mbar_4",
+                    "excludes": "trigonal_divisor_and_hyperelliptic_locus",
+                }
+            if n == 1:
+                presentation = "Mbar_4_1_ntrig ≅ [P9_petri_univ_curve_U] (dense open)"
+                level_structure = "genus4_canonical_ci_P3_compact_universal_curve"
+                construction = "genus4_compact_universal_curve"
+                coverage = "dense_open_nontrigonal_of_proper_Mbar_4_1"
+            else:
+                presentation = f"Mbar_4_{n}_ntrig ≅ [P9_petri_marked_config_U] (dense open)"
+                level_structure = "genus4_canonical_ci_P3_compact_marked_configuration"
+                construction = "genus4_compact_marked_configuration"
+                coverage = f"dense_open_nontrigonal_of_proper_Mbar_4_{n}"
             return {
                 "covering_space": covering,
                 "group": None,
@@ -1895,12 +2132,128 @@ class ModuliStack(DeligneMumfordStack):
                 "covering_smooth_stamp": True,
                 "covering_formally_etale_stamp": True,
                 "degree": 1,
-                "level_structure": "genus4_canonical_ci_P3_compact",
-                "presentation": "Mbar_4_ntrig ≅ [P9_petri_U] (dense open)",
-                "construction": "genus4_compact_canonical_petri_P9",
-                "coverage": "dense_open_nontrigonal_of_proper_Mbar_4",
+                "level_structure": level_structure,
+                "presentation": presentation,
+                "construction": construction,
+                "coverage": coverage,
                 "excludes": "trigonal_divisor_and_hyperelliptic_locus",
             }
+        domain = _moduli_etale_atlas_domain(self)
+        if domain is None:
+            return None
+        if n == 0:
+            presentation = "M_4_ntrig ≅ Spec(R[c1..c9]_S) (PGL4-normalized dense open)"
+            level_structure = "genus4_canonical_ci_P3"
+            construction = "genus4_canonical_quadric_cubic_P3"
+            coverage = "dense_open_nontrigonal_of_open_M_4"
+        elif n == 1:
+            presentation = "M_4_1_ntrig ≅ Spec(R[c1..c9,s,t,u]_S) (Petri universal curve)"
+            level_structure = "genus4_canonical_ci_P3_universal_curve"
+            construction = "genus4_universal_curve"
+            coverage = "dense_open_nontrigonal_of_open_M_4_1"
+        else:
+            presentation = f"M_4_{n}_ntrig ≅ Spec(R[c1..c9,marks]_S) (Petri marked config)"
+            level_structure = "genus4_canonical_ci_P3_marked_configuration"
+            construction = "genus4_marked_configuration"
+            coverage = f"dense_open_nontrigonal_of_open_M_4_{n}"
+        return {
+            "covering_space": domain,
+            "group": None,
+            "group_order": None,
+            "finite_etale_groupoid": False,
+            "covering_unramified_stamp": True,
+            "covering_smooth_stamp": True,
+            "covering_formally_etale_stamp": True,
+            "degree": 1,
+            "level_structure": level_structure,
+            "presentation": presentation,
+            "construction": construction,
+            "coverage": coverage,
+            "excludes": "trigonal_divisor_and_hyperelliptic_locus",
+        }
+
+    def trigonal_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable trigonal-locus chart data when a cone-cubic / scroll cover is owned.
+
+        Returns ``None`` unless this is open genus ``4`` or ``5`` over a base with
+        ``2`` invertible:
+
+        - Open unmarked / marked ``M_{4,n}``: cone-cubic / Maroni
+          (:func:`_genus4_trigonal_open_M4n_affine_scheme`).
+        - Open unmarked ``M_{5,0}``: scroll / Maroni
+          (:func:`_genus5_trigonal_open_M50_affine_scheme`).
+
+        Coverage is the **trigonal locus only** — not the non-trigonal /
+        non-special dense open.
+        """
+        if self.is_proper():
+            return None
+        if not _two_is_invertible(self.base_scheme()):
+            return None
+        g = self.genus()
+        n = int(self.number_of_markings())
+        if g == 4 and n >= 0:
+            domain = AffineAlgebraicSpace(_genus4_trigonal_open_M4n_affine_scheme(self.base_scheme(), n))
+            if n == 0:
+                presentation = "Trig(M_4) ≅ Spec(R[d1..d8]_S) (cone XY=Z² cubic normal form)"
+                level_structure = "genus4_trigonal_cone_cubic_maroni"
+                construction = "genus4_trigonal_cone_cubic_P3"
+                coverage = "trigonal_locus_of_open_M_4"
+            elif n == 1:
+                presentation = "Trig(M_4_1) ≅ Spec(R[d1..d8,s,t,u]_S) (cone-cubic universal curve)"
+                level_structure = "genus4_trigonal_cone_cubic_universal_curve"
+                construction = "genus4_trigonal_universal_curve"
+                coverage = "trigonal_locus_of_open_M_4_1"
+            else:
+                presentation = f"Trig(M_4_{n}) ≅ Spec(R[d1..d8,marks]_S) (cone-cubic marked config)"
+                level_structure = "genus4_trigonal_cone_cubic_marked_configuration"
+                construction = "genus4_trigonal_marked_configuration"
+                coverage = f"trigonal_locus_of_open_M_4_{n}"
+            return {
+                "covering_space": domain,
+                "group": None,
+                "group_order": None,
+                "finite_etale_groupoid": False,
+                "covering_unramified_stamp": True,
+                "covering_smooth_stamp": True,
+                "covering_formally_etale_stamp": True,
+                "degree": 1,
+                "level_structure": level_structure,
+                "presentation": presentation,
+                "construction": construction,
+                "coverage": coverage,
+                "excludes": "nontrigonal_dense_open_petri",
+            }
+        if g == 5 and n == 0:
+            domain = AffineAlgebraicSpace(_genus5_trigonal_open_M50_affine_scheme(self.base_scheme()))
+            return {
+                "covering_space": domain,
+                "group": None,
+                "group_order": None,
+                "finite_etale_groupoid": False,
+                "covering_unramified_stamp": True,
+                "covering_smooth_stamp": True,
+                "covering_formally_etale_stamp": True,
+                "degree": 1,
+                "level_structure": "genus5_trigonal_scroll_maroni",
+                "presentation": "Trig(M_5) ≅ Spec(R[d1..d11]_S) (scroll / Maroni normal form)",
+                "construction": "genus5_trigonal_scroll_P4",
+                "coverage": "trigonal_locus_of_open_M_5",
+                "excludes": "nonspecial_dense_open_three_quadrics",
+            }
+        return None
+
+    def genus5_canonical_quotient_presentation(self) -> dict[str, object] | None:
+        r"""Inspectable three-quadrics chart data when open unmarked ``M_{5,0}`` is owned.
+
+        Returns ``None`` unless this is open unmarked genus ``5`` over a base with
+        ``2`` invertible. Covering space: :func:`_genus5_open_M50_affine_scheme`.
+        Coverage: dense open of the non-special locus.
+        """
+        if self.genus() != 5 or self.is_proper() or int(self.number_of_markings()) != 0:
+            return None
+        if not _two_is_invertible(self.base_scheme()):
+            return None
         domain = _moduli_etale_atlas_domain(self)
         if domain is None:
             return None
@@ -1913,67 +2266,53 @@ class ModuliStack(DeligneMumfordStack):
             "covering_smooth_stamp": True,
             "covering_formally_etale_stamp": True,
             "degree": 1,
-            "level_structure": "genus4_canonical_ci_P3",
-            "presentation": "M_4_ntrig ≅ Spec(R[c1..c9]_S) (PGL4-normalized dense open)",
-            "construction": "genus4_canonical_quadric_cubic_P3",
-            "coverage": "dense_open_nontrigonal_of_open_M_4",
+            "level_structure": "genus5_canonical_three_quadrics_P4",
+            "presentation": "M_5_nonspecial ≅ Spec(R[c1..c12]_S) (PGL5-normalized dense open)",
+            "construction": "genus5_canonical_three_quadrics_P4",
+            "coverage": "dense_open_nonspecial_of_open_M_5",
             "excludes": "trigonal_divisor_and_hyperelliptic_locus",
         }
 
-    def trigonal_quotient_presentation(self) -> dict[str, object] | None:
-        r"""Inspectable cone-cubic / Maroni data when the trigonal ``M_4`` locus is owned.
-
-        Returns ``None`` unless this is open unmarked ``M_{4,0}`` over a base with
-        ``2`` invertible. Covering space:
-        :func:`_genus4_trigonal_open_M40_affine_scheme`. Coverage is the
-        **trigonal locus only** — not the non-trigonal dense open.
-        """
-        if self.genus() != 4 or self.is_proper() or int(self.number_of_markings()) != 0:
-            return None
-        if not _two_is_invertible(self.base_scheme()):
-            return None
-        domain = AffineAlgebraicSpace(_genus4_trigonal_open_M40_affine_scheme(self.base_scheme()))
-        return {
-            "covering_space": domain,
-            "group": None,
-            "group_order": None,
-            "finite_etale_groupoid": False,
-            "covering_unramified_stamp": True,
-            "covering_smooth_stamp": True,
-            "covering_formally_etale_stamp": True,
-            "degree": 1,
-            "level_structure": "genus4_trigonal_cone_cubic_maroni",
-            "presentation": "Trig(M_4) ≅ Spec(R[d1..d8]_S) (cone XY=Z² cubic normal form)",
-            "construction": "genus4_trigonal_cone_cubic_P3",
-            "coverage": "trigonal_locus_of_open_M_4",
-            "excludes": "nontrigonal_dense_open_petri",
-        }
-
     def hyperelliptic_quotient_presentation(self) -> dict[str, object] | None:
-        r"""Inspectable ``(U, S₈)`` data when a hyperelliptic binary-octic cover is owned.
+        r"""Inspectable hyperelliptic-locus chart data when a binary-octic / twelvic cover is owned.
 
-        Returns ``None`` unless this is genus ``3`` over a base with ``2`` invertible
-        and a hyperelliptic presentation applies:
+        Returns ``None`` unless a hyperelliptic presentation applies over a base
+        with ``2`` invertible:
 
-        - Open unmarked ``M_{3,0}``: locus chart
-          :func:`_hyperelliptic_open_M30_affine_scheme` (parallel to del Pezzo
-          étale-atlas ownership of the non-hyperelliptic dense open).
-        - Open marked ``M_{3,n}`` (``n ≥ 1``):
-          :func:`_hyperelliptic_open_M3n_affine_scheme`.
-        - Proper unmarked ``Mbar_3``:
-          :func:`_hyperelliptic_compact_M30_covering_space`.
-        - Proper marked ``Mbar_{3,n}`` (``n ≥ 1``):
-          :func:`_hyperelliptic_compact_M3n_covering_space`.
+        - Genus ``3``: binary-octic / ``M_{0,8}/S₈`` (open/compact, marked/unmarked).
+        - Open unmarked genus ``5``: binary-twelvic / ``M_{0,12}/S₁₂``
+          (:func:`_genus5_hyperelliptic_open_M50_affine_scheme`).
 
-        ``G = S₈`` of order ``40320``. Coverage is always the **hyperelliptic
-        locus** — never the non-hyperelliptic dense open.
+        Coverage is always the **hyperelliptic locus** — never the non-
+        hyperelliptic / non-special dense open.
         """
-        if self.genus() != 3:
-            return None
-        n = int(self.number_of_markings())
-        if n < 0:
-            return None
         if not _two_is_invertible(self.base_scheme()):
+            return None
+        g = self.genus()
+        n = int(self.number_of_markings())
+        if g == 5 and (not self.is_proper()) and n == 0:
+            from typing import Any, cast
+
+            group = _hyperelliptic_genus5_galois_group()
+            covering_g5 = AffineAlgebraicSpace(_genus5_hyperelliptic_open_M50_affine_scheme(self.base_scheme()))
+            return {
+                "covering_space": covering_g5,
+                "group": group,
+                "group_order": int(cast(Any, group).order()),
+                "finite_etale_groupoid": True,
+                "covering_unramified_stamp": True,
+                "covering_smooth_stamp": True,
+                "covering_formally_etale_stamp": True,
+                "degree": 479001600,
+                "level_structure": "hyperelliptic_binary_twelvic_S12",
+                "presentation": "Hyp(M_5) ≅ [M_0_12 / S12] (binary twelvic)",
+                "construction": "genus5_hyperelliptic_m012_s12",
+                "coverage": "hyperelliptic_locus_of_open_M_5",
+                "excludes": "nonspecial_dense_open_three_quadrics",
+            }
+        if g != 3:
+            return None
+        if n < 0:
             return None
         group = _hyperelliptic_galois_group()
         from typing import Any, cast

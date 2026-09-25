@@ -1542,6 +1542,109 @@ class Genus4CompactCanonicalAlgebraicSpace(AlgebraicSpace):
         return tuple(self.affine_chart(i) for i in range(self.affine_cover_cardinality()))
 
 
+class Genus4CompactMarkedM4nAlgebraicSpace(AlgebraicSpace):
+    r"""Compactified marked Petri cover of non-trigonal proper ``Mbar_{4,n}``.
+
+    Pullback of :class:`Genus4CompactCanonicalAlgebraicSpace` along forgetful
+    ``Mbar_{4,n} → Mbar_4``: each of the ``10`` standard affine charts of the
+    compact Petri ``ℙ⁹`` carries ``n`` residual marked points in the canonical
+    ``ℙ³`` model,
+
+    ``Spec(R[u₁,…,u₉, s₁,t₁,u₁,…,sₙ,tₙ,uₙ])``,
+
+    localized only at pairwise differences of marking coordinates (nodal /
+    trigonal-cone / stable-limit fibers of the Petri chart stay — same honesty
+    as unmarked compact Petri). No residual finite groupoid. Requires ``2 ∈ Rˣ``.
+
+    Coverage: **dense open of the non-trigonal locus of proper ``Mbar_{4,n}``**
+    — not the trigonal cone-cubic locus presentation. Charts are lazy / cached;
+    prefer :meth:`affine_cover_sample` (two charts).
+    """
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type,
+        base: AffineScheme,
+        n: int,
+        role: str,
+    ) -> Genus4CompactMarkedM4nAlgebraicSpace:
+        assert isinstance(base, AffineScheme), f"Genus4CompactMarkedM4nAlgebraicSpace requires AffineScheme base; found {type(base)!r}"
+        n_int = int(n)
+        assert n_int >= 1, f"compact marked Petri cover requires n ≥ 1; got {n!r}"
+        assert isinstance(role, str) and role, f"role must be a nonempty str; found {role!r}"
+        result = UniqueRepresentation.__classcall__(cls, base, n_int, role)
+        assert isinstance(result, Genus4CompactMarkedM4nAlgebraicSpace), f"classcall must return Genus4CompactMarkedM4nAlgebraicSpace; found {type(result)!r}"
+        return result
+
+    def __init__(self, base: AffineScheme, n: int, role: str) -> None:
+        self._n = int(n)
+        self._role = role
+        self._petri = Genus4CompactCanonicalAlgebraicSpace(base, "Mbar_4_ntrig_via_petri")
+        self._affine_chart_cache: dict[int, AffineScheme] = {}
+        AlgebraicSpace.__init__(
+            self,
+            base,
+            name=f"Genus4CompactMarkedM4n({role}/{base!r})",
+            axioms=frozenset({"FiniteType", "Separated"}),
+        )
+
+    def number_of_markings(self) -> int:
+        r"""Marking count ``n`` for this non-trigonal ``Mbar_{4,n}`` cover."""
+        return self._n
+
+    def role(self) -> str:
+        r"""Literature role tag (e.g. ``Mbar_4_1_ntrig_via_petri``)."""
+        return self._role
+
+    def petri_base(self) -> Genus4CompactCanonicalAlgebraicSpace:
+        r"""Underlying unmarked compact Petri ``Mbar_4`` cover."""
+        return self._petri
+
+    def affine_cover_cardinality(self) -> int:
+        r"""Combinatorial chart count ``10`` (one marked fiber per Petri chart)."""
+        return 10
+
+    def affine_chart(self, index: int) -> AffineScheme:
+        r"""Materialize (and cache) the marked fiber over the ``index``-th Petri chart."""
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+        idx = int(index)
+        n_total = self.affine_cover_cardinality()
+        assert 0 <= idx < n_total, f"affine chart index out of range: {idx!r} not in [0, {n_total})"
+        cached = self._affine_chart_cache.get(idx)
+        if cached is not None:
+            return cached
+        base_chart = self._petri.affine_chart(idx)
+        r9 = cast(Any, base_chart.ring())
+        gens9 = tuple(r9.gens())
+        assert len(gens9) == 9, f"Petri compact chart must be 𝔸⁹; found {len(gens9)} gens"
+        coeff = r9.base_ring()
+        old_names = tuple(str(g) for g in gens9)
+        mark_names: tuple[str, ...]
+        if self._n == 1:
+            mark_names = ("s", "t", "u")
+        else:
+            mark_names = tuple(name for i in range(1, self._n + 1) for name in (f"s{i}", f"t{i}", f"u{i}"))
+        poly = PolynomialRing(coeff, names=old_names + mark_names)
+        gens = poly.gens()
+        marks = gens[9:]
+        denom = poly.one()
+        for i, mi in enumerate(marks):
+            for mj in marks[i + 1 :]:
+                denom *= mi - mj
+        chart = AffineScheme(poly.localization(denom) if denom != poly.one() else poly)
+        self._affine_chart_cache[idx] = chart
+        return chart
+
+    def affine_cover_sample(self) -> tuple[AffineScheme, ...]:
+        r"""Two marked fibers witnessing the uniform shape (indices ``0`` and ``9``)."""
+        return (self.affine_chart(0), self.affine_chart(9))
+
+    def affine_cover(self) -> tuple[AffineScheme, ...]:
+        r"""Full affine cover (``10`` charts; prefer sample for QC certs)."""
+        return tuple(self.affine_chart(i) for i in range(self.affine_cover_cardinality()))
+
+
 class AtlasChart(AlgebraicSpace):
     r"""Algebraic-space chart serving as the domain of an atlas morphism ``U → X``.
 
@@ -2156,6 +2259,8 @@ def _affine_cover_of(domain: object) -> tuple[AffineScheme, ...]:
         return domain.affine_cover_sample()
     if isinstance(domain, Genus4CompactCanonicalAlgebraicSpace):
         return domain.affine_cover_sample()
+    if isinstance(domain, Genus4CompactMarkedM4nAlgebraicSpace):
+        return domain.affine_cover_sample()
     if isinstance(
         domain,
         (
@@ -2438,6 +2543,10 @@ class AtlasEvidence:
                 return False
             if not all(len(tuple(cast(Any, chart.ring()).gens())) == 9 for chart in cover):
                 return False
+        elif isinstance(self._domain, Genus4CompactMarkedM4nAlgebraicSpace):
+            cover = self._domain.affine_cover_sample()
+            if not cover or self._domain.affine_cover_cardinality() < 1:
+                return False
         else:
             cover = self.domain_affine_cover()
             if not cover:
@@ -2566,6 +2675,10 @@ class AtlasMorphism(StackMorphism):
                 g4 = cast(Genus4CompactCanonicalAlgebraicSpace, self.domain())
                 data["domain_affine_cover_cardinality"] = g4.affine_cover_cardinality()
                 data["domain_affine_cover"] = g4.affine_cover_sample()
+            elif isinstance(self.domain(), Genus4CompactMarkedM4nAlgebraicSpace):
+                g4m = cast(Genus4CompactMarkedM4nAlgebraicSpace, self.domain())
+                data["domain_affine_cover_cardinality"] = g4m.affine_cover_cardinality()
+                data["domain_affine_cover"] = g4m.affine_cover_sample()
             else:
                 data["domain_affine_cover"] = self._evidence.domain_affine_cover()
         else:
@@ -2607,6 +2720,15 @@ class AtlasMorphism(StackMorphism):
             "genus4_canonical_ci_affine_chart",
             "genus4_compact_canonical_ci_affine_cover",
             "genus4_trigonal_cone_cubic_affine_chart",
+            "genus4_universal_curve_finite_etale_cover",
+            "genus4_marked_configuration_finite_etale_cover",
+            "genus4_compact_universal_curve_finite_etale_cover",
+            "genus4_compact_marked_configuration_finite_etale_cover",
+            "genus4_trigonal_universal_curve_affine_chart",
+            "genus4_trigonal_marked_configuration_affine_chart",
+            "genus5_canonical_ci_affine_chart",
+            "genus5_trigonal_scroll_affine_chart",
+            "genus5_hyperelliptic_binary_twelvic_finite_etale_cover",
             "hyperelliptic_binary_octic_finite_etale_cover",
             "hyperelliptic_compact_finite_etale_cover",
             "hyperelliptic_universal_curve_finite_etale_cover",

@@ -1030,9 +1030,11 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     # + compact del Pezzo Mbar3 + hyp locus Mbar3 + parametric open del Pezzo M3n
     # + parametric open hyp locus M3n + parametric compact del Pezzo M3n
     # + parametric compact hyp locus M3n + open canonical M40 + trigonal locus M40
-    # + compact Petri Mbar4 = 21.
-    assert owned_etale_atlas_cardinality() == 21
-    assert len(rows) == 21
+    # + compact Petri Mbar4 + parametric open Petri M4n + trigonal locus M4n
+    # + parametric compact Petri M4n + open three-quadrics M50 + trigonal locus M50
+    # + hyp locus M50 = 27.
+    assert owned_etale_atlas_cardinality() == 27
+    assert len(rows) == 27
     assert all(isinstance(r, OwnedAtlasPresentation) for r in rows)
     assert sum(1 for r in rows if r.parametric_open_m0n) == 1
     assert sum(1 for r in rows if r.parametric_open_m1n) == 2
@@ -1049,9 +1051,14 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert sum(1 for r in rows if r.construction == "genus4_canonical_quadric_cubic_P3") == 1
     assert sum(1 for r in rows if r.construction == "genus4_trigonal_cone_cubic_P3") == 1
     assert sum(1 for r in rows if r.construction == "genus4_compact_canonical_petri_P9") == 1
+    assert sum(1 for r in rows if r.construction == "genus5_canonical_three_quadrics_P4") == 1
+    assert sum(1 for r in rows if r.construction == "genus5_trigonal_scroll_P4") == 1
+    assert sum(1 for r in rows if r.construction == "genus5_hyperelliptic_m012_s12") == 1
     assert sum(1 for r in rows if r.parametric_open_m3n) == 2
     assert sum(1 for r in rows if r.parametric_compact_m3n) == 2
-    assert sum(1 for r in rows if r.locus_only) == 5
+    assert sum(1 for r in rows if r.parametric_open_m4n) == 2
+    assert sum(1 for r in rows if r.parametric_compact_m4n) == 1
+    assert sum(1 for r in rows if r.locus_only) == 8
     expanded = owned_etale_atlas_presentations(
         expand_open_m0n_through=8,
         expand_open_m1n_through=4,
@@ -1061,6 +1068,8 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         expand_compact_m2n_through=4,
         expand_open_m3n_through=4,
         expand_compact_m3n_through=4,
+        expand_open_m4n_through=4,
+        expand_compact_m4n_through=4,
     )
     assert (
         owned_etale_atlas_cardinality(
@@ -1072,10 +1081,12 @@ def test_stack_fiber_and_hom_2_isomorphisms():
             expand_compact_m2n_through=4,
             expand_open_m3n_through=4,
             expand_compact_m3n_through=4,
+            expand_open_m4n_through=4,
+            expand_compact_m4n_through=4,
         )
-        == 61
+        == 76
     )
-    assert len(expanded) == 61
+    assert len(expanded) == 76
     assert all(
         not r.parametric_open_m0n
         and not r.parametric_open_m1n
@@ -1085,14 +1096,17 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         and not r.parametric_compact_m2n
         and not r.parametric_open_m3n
         and not r.parametric_compact_m3n
+        and not r.parametric_open_m4n
+        and not r.parametric_compact_m4n
         for r in expanded
     )
     type_keys = owned_etale_atlas_type_keys()
     # Open M0n n=3..8 + open M1n n=1..4 + compact M1n n=1..4 + proper (0,3..8)
     # + (2,0,False) + (2,0,True) + open M2n n=1..4 + compact M2n n=1..4
     # + (3,0,False) + (3,0,True) + open M3n n=1..4 + compact M3n n=1..4
-    # + (4,0,False) + (4,0,True).
-    assert len(type_keys) == 42
+    # + (4,0,False) + (4,0,True) + open M4n n=1..4 + compact M4n n=1..4
+    # + (5,0,False).
+    assert len(type_keys) == 51
     assert type_keys == (
         (0, 3, False),
         (0, 4, False),
@@ -1136,6 +1150,15 @@ def test_stack_fiber_and_hom_2_isomorphisms():
         (3, 4, True),
         (4, 0, False),
         (4, 0, True),
+        (4, 1, False),
+        (4, 2, False),
+        (4, 3, False),
+        (4, 4, False),
+        (4, 1, True),
+        (4, 2, True),
+        (4, 3, True),
+        (4, 4, True),
+        (5, 0, False),
     )
     assert is_owned_etale_atlas_type(0, 4, proper=False)
     assert is_owned_etale_atlas_type(1, 1, proper=True)
@@ -1162,7 +1185,12 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert is_owned_etale_atlas_type(3, 9, proper=True)  # parametric marked compact
     assert is_owned_etale_atlas_type(4, 0, proper=False)  # canonical CI open M_{4,0}
     assert is_owned_etale_atlas_type(4, 0, proper=True)  # compact Petri Mbar_4
-    assert not is_owned_etale_atlas_type(4, 1, proper=False)
+    assert is_owned_etale_atlas_type(4, 1, proper=False)  # marked Petri open
+    assert is_owned_etale_atlas_type(4, 9, proper=False)  # parametric marked open
+    assert is_owned_etale_atlas_type(4, 1, proper=True)  # marked Petri compact
+    assert is_owned_etale_atlas_type(4, 9, proper=True)  # parametric marked compact
+    assert is_owned_etale_atlas_type(5, 0, proper=False)  # three-quadrics open M_{5,0}
+    assert not is_owned_etale_atlas_type(5, 1, proper=False)
     assert is_owned_etale_atlas_type(0, 6, proper=True)
     assert is_owned_etale_atlas_type(0, 7, proper=True)
     assert is_owned_etale_atlas_type(0, 8, proper=True)
@@ -1207,6 +1235,12 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert lookup_owned_etale_atlas(4, 0, proper=False).groupoid == "none"
     assert lookup_owned_etale_atlas(4, 0, proper=True).construction == "genus4_compact_canonical_petri_P9"
     assert lookup_owned_etale_atlas(4, 0, proper=True).covering_kind == "genus4_compact_canonical_ci_affine_cover"
+    assert lookup_owned_etale_atlas(4, 1, proper=False).construction == "genus4_universal_curve"
+    assert lookup_owned_etale_atlas(4, 2, proper=False).construction == "genus4_marked_configuration"
+    assert lookup_owned_etale_atlas(4, 1, proper=True).construction == "genus4_compact_universal_curve"
+    assert lookup_owned_etale_atlas(4, 2, proper=True).construction == "genus4_compact_marked_configuration"
+    assert lookup_owned_etale_atlas(5, 0, proper=False).construction == "genus5_canonical_three_quadrics_P4"
+    assert lookup_owned_etale_atlas(5, 0, proper=False).covering_kind == "genus5_canonical_ci_affine_chart"
     assert lookup_owned_etale_atlas(3, 1, proper=False).construction == "del_pezzo_universal_curve"
     assert lookup_owned_etale_atlas(3, 2, proper=False).construction == "del_pezzo_marked_configuration"
     assert lookup_owned_etale_atlas(3, 1, proper=True).construction == "del_pezzo_compact_universal_curve"
@@ -1390,15 +1424,55 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert len(mbar40_etale.domain().affine_cover_sample()) == 2
     mbar40_pres = Mbar40.genus4_canonical_quotient_presentation()
     assert mbar40_pres["coverage"] == "dense_open_nontrigonal_of_proper_Mbar_4"
-    # g≥5 stays fail-closed with registry alts.
+    # Marked open/compact M_{4,1}: Petri fiber product (trigonal locus-only).
+    from dm_moduli_spike.geometry.stacks import Genus4CompactMarkedM4nAlgebraicSpace
+
+    M41 = M_gn(4, 1, base=k)
+    m41_etale = M41.etale_atlas()
+    assert M41.etale_atlas_gap() is None
+    assert m41_etale.has_equation_level_etale_certificate()
+    assert m41_etale.covering_kind() == "genus4_universal_curve_finite_etale_cover"
+    assert len(m41_etale.domain().affine_cover()[0].ring().gens()) == 12  # c1..c9,s,t,u
+    m41_pres = M41.genus4_canonical_quotient_presentation()
+    assert m41_pres["coverage"] == "dense_open_nontrigonal_of_open_M_4_1"
+    trig_m41 = M41.trigonal_quotient_presentation()
+    assert trig_m41["coverage"] == "trigonal_locus_of_open_M_4_1"
+    Mbar41 = Mbar_gn(4, 1, base=k)
+    mbar41_etale = Mbar41.etale_atlas()
+    assert Mbar41.etale_atlas_gap() is None
+    assert isinstance(mbar41_etale.domain(), Genus4CompactMarkedM4nAlgebraicSpace)
+    assert mbar41_etale.has_equation_level_etale_certificate()
+    assert mbar41_etale.covering_kind() == "genus4_compact_universal_curve_finite_etale_cover"
+    assert len(mbar41_etale.domain().affine_cover_sample()) == 2
+    # Open M_{5,0}: owned three-quadrics non-special dense open (2 invertible).
     M50 = M_gn(5, 0, base=k)
-    gap_gen = M50.etale_atlas_gap()
+    m50_etale = M50.etale_atlas()
+    assert M50.etale_atlas_gap() is None
+    assert isinstance(m50_etale.domain(), AffineAlgebraicSpace)
+    assert m50_etale.has_equation_level_etale_certificate()
+    assert m50_etale.covering_kind() == "genus5_canonical_ci_affine_chart"
+    assert M50.owned_etale_atlas_presentation().construction == "genus5_canonical_three_quadrics_P4"
+    assert len(m50_etale.domain().affine_cover()[0].ring().gens()) == 12  # c1..c12
+    m50_pres = M50.genus5_canonical_quotient_presentation()
+    assert m50_pres is not None
+    assert m50_pres["coverage"] == "dense_open_nonspecial_of_open_M_5"
+    trig_m50 = M50.trigonal_quotient_presentation()
+    assert trig_m50["coverage"] == "trigonal_locus_of_open_M_5"
+    assert len(trig_m50["covering_space"].affine_cover()[0].ring().gens()) == 11  # d1..d11
+    hyp_m50 = M50.hyperelliptic_quotient_presentation()
+    assert hyp_m50["coverage"] == "hyperelliptic_locus_of_open_M_5"
+    assert hyp_m50["degree"] == 479001600
+    # g≥6 stays fail-closed with registry alts.
+    M60 = M_gn(6, 0, base=k)
+    gap_gen = M60.etale_atlas_gap()
     assert gap_gen is not None
     assert gap_gen["reason"] == "no_owned_affine_etale_presentation"
     alts_gen = gap_gen["alternate_proving_sets"]
     assert alts_gen[0]["name"] == "general_dm_moduli_etale_atlas"
     assert alts_gen[0]["parametric_open_m3n"] is True
     assert alts_gen[0]["parametric_compact_m3n"] is True
+    assert alts_gen[0]["parametric_open_m4n"] is True
+    assert alts_gen[0]["parametric_compact_m4n"] is True
     assert alts_gen[0]["open_m30_del_pezzo"] is True
     assert alts_gen[0]["open_m30_hyperelliptic_locus"] is True
     assert alts_gen[0]["compact_m30_del_pezzo"] is True
@@ -1406,13 +1480,17 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert alts_gen[0]["open_m40_canonical"] is True
     assert alts_gen[0]["open_m40_trigonal_locus"] is True
     assert alts_gen[0]["compact_m40_canonical"] is True
-    assert alts_gen[0]["owned_registry_cardinality"] == 21
+    assert alts_gen[0]["open_m50_canonical"] is True
+    assert alts_gen[0]["owned_registry_cardinality"] == 27
     assert (3, 0, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (3, 0, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (3, 1, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (3, 1, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (4, 0, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert (4, 0, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (4, 1, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (4, 1, True) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
+    assert (5, 0, False) in [tuple(t) for t in alts_gen[0]["owned_registry_type_keys"]]
     assert alts_gen[0]["proper_m0n_owned_max"] == 8
     # Open M_{2,0}: owned Igusa / Rosenhain finite étale cover (2 invertible).
     M20_open = M_gn(2, 0, base=k)
@@ -1498,6 +1576,11 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert M40_Z.genus4_canonical_quotient_presentation() is None
     Mbar40_Z = Mbar_gn(4, 0, base=Z)
     assert Mbar40_Z.etale_atlas_gap()["reason"] == "genus4_canonical_requires_two_invertible"
+    M41_Z = M_gn(4, 1, base=Z)
+    assert M41_Z.etale_atlas_gap()["reason"] == "genus4_canonical_requires_two_invertible"
+    M50_Z = M_gn(5, 0, base=Z)
+    assert M50_Z.etale_atlas_gap()["reason"] == "genus5_canonical_requires_two_invertible"
+    assert M50_Z.genus5_canonical_quotient_presentation() is None
 
     # Owned proving-set stacks expose no gap record.
     assert XS.etale_atlas_gap() is None
@@ -1563,9 +1646,9 @@ def test_stack_fiber_and_hom_2_isomorphisms():
     assert prod_mbar05_etale.has_equation_level_etale_certificate()
 
     # Product fails closed when a factor still has a formal AtlasChart (unowned (g,n)).
-    M50_formal = M_gn(5, 0, base=k)
-    assert isinstance(M50_formal.etale_atlas().domain(), AtlasChart)
-    prod_formal = ProductStack((M50_formal, YS), base=k)
+    M60_formal = M_gn(6, 0, base=k)
+    assert isinstance(M60_formal.etale_atlas().domain(), AtlasChart)
+    prod_formal = ProductStack((M60_formal, YS), base=k)
     prod_formal_etale = prod_formal.etale_atlas()
     assert prod_formal_etale.factor_atlases()[0].has_equation_level_etale_certificate() is False
     assert prod_formal_etale.factor_atlases()[1].has_equation_level_etale_certificate() is True
