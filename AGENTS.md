@@ -92,6 +92,35 @@ running it. Remove disposable scratch in the same unit that consumes it. The
 same applies to log captures that run to megabytes: keep the finding, not the
 capture.
 
+## One line of record: `origin/main` (always-on)
+
+There is one line of work, `origin/main`, one DAG, and one `TODO.md`.  This
+repository is cloned on more than one host (this workstation and `rack`),
+and each clone's local `main` is only a copy.  So:
+
+- Before selecting work, `git pull origin main`.  A session that has been
+  running for hours pulls again before each new node.
+- Push every commit to `origin main` as soon as it is made.  A refused push
+  means the other host has committed, and the next act is
+  `git pull origin main` and a merge, not more commits.
+- Never trim, fork or keep a host-local `TODO.md`.  A node closed on one
+  host is closed by the commit that reaches `origin/main`.
+
+On 2026-09-25 `rack`'s session committed to its local `main` for a day
+without pushing.  Its copy of `TODO.md` had shrunk to six nodes, with
+`terminal-session` marked ready, while `origin/main` held 48 nodes.  The
+two copies then took four merges and several repairs to reconcile.
+
+## Architecture before tests (always-on)
+
+When failures share a structural cause, the unit of work is the node that
+repairs the cause, never the individual failing test.  Patching tests one
+at a time while the category architecture is wrong costs the patch, the
+later removal of the patch, and the signal the failure was giving.  Select
+from the DAG in its priority order, and let failing tests serve as the
+specimens of the structural node that owns them.  A test that fails for a
+reason no node names is a finding: file the node, then repair it.
+
 ## Bank before you wait
 
 Work that is written but uncommitted lives only in this chat's working tree, and a turn that
