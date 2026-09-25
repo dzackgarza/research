@@ -3140,6 +3140,21 @@ class _PredicateSubringElement(_OwnedRingElement):
 
         return latex(self.parent().inclusion()(self))
 
+    def __call__(self, *arguments, **options):
+        r"""Apply this element when its ambient ring element is itself callable.
+
+        A predicate subring changes the parent that records membership; it does
+        not erase operations intrinsic to the selected ambient element. This is
+        needed, for example, for central elements of an endomorphism ring, whose
+        ambient elements are morphisms and therefore evaluate on module
+        elements. Non-callable ambient elements retain ordinary Python's
+        TypeError behavior.
+        """
+        ambient = self.parent().inclusion()(self)
+        if not callable(ambient):
+            raise TypeError(f"{ambient!r} is not callable")
+        return ambient(*arguments, **options)
+
     def is_zero(self):
         return self == self.parent().zero()
 
