@@ -18,7 +18,9 @@ def test_closed_immersion_pushes_prime_cycle_to_same_support_with_same_multiplic
 
     assert pushed.parent().cycle_scheme() is plane
     assert pushed.parent().cycle_dimension() == 1
-    assert pushed.parent().framing_coefficients(pushed) == {ambient_generic: ZZ(3)}
+    pushed_coordinates = pushed.to_vector()
+    assert pushed_coordinates.support().domain().cardinality() == 1
+    assert pushed_coordinates(ambient_generic) == ZZ(3)
 
 
 def test_distinguished_open_flat_pullback_drops_disjoint_component_and_preserves_the_other() -> None:
@@ -38,4 +40,6 @@ def test_distinguished_open_flat_pullback_drops_disjoint_component_and_preserves
 
     assert pulled.parent().cycle_scheme() is away_from_y_axis
     assert pulled.parent().cycle_dimension() == 1
-    assert pulled.parent().framing_coefficients(pulled) == {x_axis_away: ZZ(2)}
+    pulled_coordinates = pulled.to_vector()
+    assert pulled_coordinates.support().domain().cardinality() == 1
+    assert pulled_coordinates(x_axis_away) == ZZ(2)

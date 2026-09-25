@@ -1499,10 +1499,13 @@ class Modules(OwnedCategoryOverBaseRing):
         def _framing_lift(self, element):
             r"""The chosen preimage of ``element`` under the framing ``F_R(S) ->> M``.
 
-            Protected contract of ``Modules(R)`` behind
-            ``framing_morphism().lift``.  On a basis the preimage is unique and
-            it is the coordinate vector of ``element``; on a quotient it is the
-            preimage the construction chose.
+            Protected contract of ``Modules(R)``.  Its callers are
+            ``FramingMorphism.lift`` and ``ModuleMorphism._call_``, which
+            evaluates ``f(v) = sum_s a(s) f(m_s)`` on this preimage ``a``:
+            evaluation must not construct the framing morphism, whose Mor set
+            evaluates morphisms while it is built.  On a basis the preimage is
+            unique and it is the coordinate vector of ``element``; on a quotient
+            it is the preimage the construction chose.
             """
             native = self._native_module_presentation()
             if native is not None and native.module_basis() is not None:

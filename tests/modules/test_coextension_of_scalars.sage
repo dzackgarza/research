@@ -27,9 +27,9 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
     one_label, i_label = labels[0], labels[1]
 
     def action(scalar):
-        coefficients = scalars.framing_coefficients(scalar)
-        constant = coefficients.get(one_label, QQ.zero())
-        imaginary = coefficients.get(i_label, QQ.zero())
+        coefficients = scalars.framing_morphism().lift(scalar)
+        constant = coefficients(one_label)
+        imaginary = coefficients(i_label)
         return endomorphisms.scalar_multiple(
             constant,
             identity,
@@ -115,8 +115,8 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     def swap(group_element, vector):
         if group_element == group.one():
             return vector
-        coefficients = plane.framing_coefficients(vector)
-        return coefficients.get(second, ZZ.zero()) * e0 + coefficients.get(first, ZZ.zero()) * e1
+        coefficients = vector.to_vector()
+        return coefficients(second) * e0 + coefficients(first) * e1
 
     swapped = Modules(group_algebra)(plane, swap)
     adjunction = Modules(group_algebra).restriction_coextension_adjunction(structure_map)

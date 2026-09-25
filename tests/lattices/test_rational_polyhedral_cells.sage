@@ -15,10 +15,10 @@ def test_square_voronoi_cell_retains_facets_incidence_and_stabilizers() -> None:
     labels = tuple(lattice.module_generating_set())
     vertices = {tuple(vertex) for vertex in cell.vertices()}
     for isometry in lattice.O():
-        images = [lattice.framing_coefficients(isometry(lattice.module_generator(label))) for label in labels]
+        images = [isometry(lattice.module_generator(label)).to_vector() for label in labels]
         for vertex in vertices:
             image = tuple(
-                sum(coordinate * column.get(label, 0) for coordinate, column in zip(vertex, images))
+                sum(coordinate * column(label) for coordinate, column in zip(vertex, images))
                 for label in labels
             )
             assert image in vertices

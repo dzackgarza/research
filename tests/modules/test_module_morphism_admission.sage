@@ -11,10 +11,7 @@ from dzack_research.preamble.all import *
 
 
 def _coefficient(module, element, label):
-    return module.framing_coefficients(module(element)).get(
-        label,
-        module.base_ring().zero(),
-    )
+    return module(element).to_vector()(label)
 
 
 def test_frobenius_on_the_gf4_line_is_additive_but_not_gf4_linear() -> None:

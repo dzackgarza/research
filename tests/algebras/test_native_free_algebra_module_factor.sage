@@ -43,7 +43,7 @@ def test_free_forgetful_counits_evaluate_the_full_polynomial_module():
         # The generator labelled by 1 in U(A) is not the unit of F(U(A)).
         # Evaluation sends both to 1; identifying them at construction would
         # not give the free algebra on the underlying module.
-        constant_label, = algebra.framing_coefficients(algebra.one())
+        constant_label, = algebra.framing_morphism().lift(algebra.one()).support().domain()
         constant_generator = formal.algebra_generator(constant_label)
         assert constant_generator != formal.one()
         assert counit(constant_generator) == algebra.one()

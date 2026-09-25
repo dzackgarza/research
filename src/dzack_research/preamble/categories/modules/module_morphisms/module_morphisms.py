@@ -785,7 +785,7 @@ class ModuleMorphism(Morphism):
             image = self._element_function(element)
             return image if image.parent() is self.codomain() else self.codomain()(image)
         return self._linear_combination_of_generator_images(
-            self.domain().framing_morphism().lift(element)
+            self.domain()._framing_lift(element)
         )
 
     def alternating_extension(self):
