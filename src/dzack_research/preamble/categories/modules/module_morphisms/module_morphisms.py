@@ -1180,7 +1180,19 @@ class ModuleMorphism(Morphism):
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
 
     def lift(self, element):
-        r"""Return the unique preimage of ``element``; an element outside the image is rejected with ``ValueError``."""
+        r"""Return the unique preimage of ``element``; an element outside the image is rejected with ``ValueError``.
+
+        Along the codomain's own framing ``F(S) ->> M`` -- the augmentation of
+        its chosen resolution, the identity when ``M`` is its own framing
+        source -- the preimage is the one the codomain's construction chose,
+        read through its ``_framing_lift`` contract rather than solved for.
+        """
+        codomain = self.codomain()
+        match codomain.has_selected_module_resolution() and self is codomain.framing_morphism():
+            case True:
+                return codomain._framing_lift(codomain(element))
+            case False:
+                pass
         preimage = self._preimage_or_none(element)
         if preimage is None:
             raise ValueError(f"{element} is not in the image of {self}")
@@ -2581,7 +2593,13 @@ class TensorProductModuleMorphism(ModuleMorphism):
                 morphism(morphism.domain().module_generator(pair.component(1))),
             )
         )
-        return source.module_category().Mor(source, self.codomain())(self * induced)
+        # b o (f tensor f) is the bilinear map with these values on the
+        # framing e_i tensor e_j of the source tensor square; constructing it
+        # from them makes it an element of that Mor, where a composite whose
+        # parent is already that Mor would be returned as a bare composite.
+        return source.module_category().Mor(source, self.codomain())(
+            lambda pair: self(induced(source.module_generator(pair)))
+        )
 
     def polar_form(self):
         if self.left_module() is not self.right_module():

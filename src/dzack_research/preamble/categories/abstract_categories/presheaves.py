@@ -663,6 +663,7 @@ def _covering_family(category: Category, target: Parent, members, overlaps, **da
     return _object_of(
         category,
         functor=_walking_arrow_functor(Cat(), Cat().arrow(presentation)),
+        fixed_mor_category=category,
         covered_object=target,
         members=family,
         overlaps=overlap_family,
@@ -1500,13 +1501,14 @@ class Sheaves(OwnedCategoryBase):
                 _engine=engine,
                 functor=functor,
                 descent_data=descent_data,
+                fixed_mor_category=self,
                 **data,
             )
         return self._object_on(functor, descent_data)
 
     @cached_method(key=lambda self, functor, descent_data: (id(functor), id(descent_data)))
     def _object_on(self, functor: Functor, descent_data: DescentData):
-        return _object_of(self, functor=functor, descent_data=descent_data)
+        return _object_of(self, functor=functor, descent_data=descent_data, fixed_mor_category=self)
 
     __call__ = object
 

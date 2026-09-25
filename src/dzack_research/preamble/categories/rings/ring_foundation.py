@@ -319,8 +319,8 @@ def _selected_engine_ring_morphism(morphism):
     return morphism._engine_morphism
 
 
-class RingMor(CategoricalMor):
-    r"""The owned set ``Hom_Ring(A,B)``."""
+class RngMor(CategoricalMor):
+    r"""The owned set ``Hom_Rng(A,B)`` of maps preserving sum and product."""
 
     Element = RingMorphism
 
@@ -504,6 +504,15 @@ def _ring_morphisms_equal(left, right):
         return bool(left._engine_morphism == right._engine_morphism)
     return Unknown
 
+
+
+class RingMor(RngMor):
+    r"""The owned set ``Hom_Ring(A,B)``: rng morphisms that also preserve ``1``.
+
+    Unital rings are not a full subcategory of rngs, so this is a subset of
+    ``Hom_Rng(A,B)`` and never the same object: the Mor family of rings
+    builds it rather than inheriting the rng Mor.
+    """
 
 class PredicateSubrings(OwnedCategory):
     def an_object(self):

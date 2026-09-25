@@ -399,7 +399,7 @@ class _SubcategoryOfArrows(OwnedCategory):
 
     @cached_method(key=lambda self, functor: id(functor))
     def _object_on(self, functor: Functor):
-        return _object_of(self, functor=functor)
+        return _object_of(self, functor=functor, fixed_mor_category=self)
 
     def Mor(self, source: Parent, target: Parent) -> ArrowMor:
         if source not in self or target not in self:
@@ -1269,6 +1269,7 @@ class SetSubobjectCategory(SliceCategory):
             category,
             _engine=None if _engine is None else (self, _engine, None),
             functor=_walking_arrow_functor(self.base_category(), arrow),
+            fixed_mor_category=self,
             **dict(construction_data or {}),
         )
 

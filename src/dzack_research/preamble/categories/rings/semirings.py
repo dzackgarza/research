@@ -91,6 +91,15 @@ class RingMorCategoryConstruction(MorCategoryConstruction):
         return RingMor
 
 
+class RngMorCategoryConstruction(MorCategoryConstruction):
+    r"""The owned family ``(A,B) |-> Hom_Rng(A,B)``."""
+
+    def fixed_category_class(self):
+        from dzack_research.preamble.categories.rings.ring_foundation import RngMor
+
+        return RngMor
+
+
 class OwnedSemirings(OwnedCategory):
     """Semirings on the owned operation spine."""
 
@@ -141,7 +150,7 @@ class OwnedSemirings(OwnedCategory):
 class OwnedRngs(OwnedCategory):
     """Rngs on the owned operation spine."""
 
-    _MorCategory = RingMorCategoryConstruction
+    _MorCategory = RngMorCategoryConstruction
 
     def an_object(self):
         r"""The integers, which happen to be unital."""

@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.modules.graded_modules import (
     _grading_identity,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModulesWithChosenComponentPresentation,
@@ -371,15 +372,29 @@ class _FramedDirectSumOfModules(_DirectSumOfModules):
 
 def _direct_sum_of_modules(
     ring, grading_monoid, pieces, *, extra_categories=(), construction_data=None,
-    _realization=None,
+    _realization=None, componentwise_framing=None,
 ):
+    r"""The direct sum of ``pieces``, graded by ``grading_monoid``.
+
+    It carries the componentwise chosen generators exactly when every piece
+    carries chosen generators.  Over an infinite grading set that is not
+    decided by visiting the pieces: the caller that supplies framed pieces
+    states it with ``componentwise_framing=True``.  Over a finite grading set
+    the pieces are asked.
+    """
     graded = GradedModules(ring, grading_monoid)
     assert pieces.index_set() is grading_monoid, (
         f"cannot form a direct sum graded by {grading_monoid}: the summands are indexed by "
         f"{pieces.index_set()}, not by the grading monoid"
     )
     category = Cat().meet((graded, *extra_categories))
-    framed = all(piece.has_selected_module_resolution() for piece in pieces)
+    match componentwise_framing:
+        case None if grading_monoid in FiniteSets():
+            framed = all(piece.has_selected_module_resolution() for piece in pieces)
+        case None:
+            framed = False
+        case stated:
+            framed = stated
     if framed:
         category = Cat().meet((
             category,

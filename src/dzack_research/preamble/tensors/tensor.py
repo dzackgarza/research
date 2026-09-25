@@ -1946,6 +1946,7 @@ def _mixed_tensor_algebra(module):
         pieces,
         construction_data={"mixed_tensor_module": module},
         _realization=(_MixedTensorDirectSum, MixedTensorAlgebraElement),
+        componentwise_framing=True,
     )
 
     def component_product(left_degree, left, right_degree, right):

@@ -1535,7 +1535,8 @@ class Modules(OwnedCategoryOverBaseRing):
             return False
 
         def is_framed_module(self) -> bool:
-            return False
+            r"""Whether this module was constructed with chosen generators, a degree-zero resolution."""
+            return self.has_selected_module_resolution()
 
         def is_finite(self):
             return Unknown
@@ -1629,7 +1630,7 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""The chosen preimage of ``element`` under the framing ``F_R(S) ->> M``.
 
             Protected contract of ``Modules(R)``.  Its callers are
-            ``FramingMorphism.lift``, ``FramedFreeModules`` elements'
+            ``FramingMorphism.lift``, ``ModuleMorphism.lift`` along the framing, ``FramedFreeModules`` elements'
             ``to_vector``, and ``ModuleMorphism._call_``, which
             evaluates ``f(v) = sum_s a(s) f(m_s)`` on this preimage ``a``:
             evaluation must not construct the framing morphism, whose Mor set
@@ -3326,7 +3327,9 @@ def _fix_selected_module_resolution(
                         f"{source.module_generating_set()}, not on {labels}"
                     )
                 case True:
-                    pass
+                    # The free module holds its own copy of S; the generator
+                    # map and the augmentation start at that set.
+                    labels = source.module_generating_set()
     match callable(generator_function):
         case False:
             raise TypeError(

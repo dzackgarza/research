@@ -174,10 +174,20 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
             finite free module) decides them on its algebra generators.
             See Mathlib Algebra/Module/LinearMap/End, Module.toModuleEnd.
             """
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
             morphism = self(morphism)
             if _scalar_identity_coefficient(morphism) is not None:
                 return True
-            return super().is_central(morphism)
+            match self in Algebras(self.base_ring()) and self.is_framed_algebra():
+                case True:
+                    return all(
+                        morphism * self.algebra_generator(label)
+                        == self.algebra_generator(label) * morphism
+                        for label in self.algebra_generating_set()
+                    )
+                case False:
+                    return super().is_central(morphism)
 
         def scalar_multiple(self, scalar, morphism):
             return self._owned_scalar_multiple(scalar, morphism)
