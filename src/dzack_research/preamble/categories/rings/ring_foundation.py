@@ -2292,7 +2292,15 @@ def _engine_krull_dimension(ring):
         case PolynomialQuotientRing_generic():
             dimension = engine.krull_dimension()
         case QuotientRing_generic():
-            dimension = engine.defining_ideal().dimension()
+            cover = engine.cover_ring()
+            defining = engine.defining_ideal()
+            match cover in SagePrincipalIdealDomains(), defining.is_zero():
+                case (True, True):
+                    dimension = cover.krull_dimension()
+                case (True, False):
+                    dimension = SageZZ.zero()
+                case _:
+                    dimension = defining.dimension()
         case _:
             dimension = engine.krull_dimension()
     return _owned_engine_element(SageZZ, SageZZ(dimension))

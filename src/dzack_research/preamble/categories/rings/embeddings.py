@@ -1,6 +1,7 @@
 r"""Exact embeddings of number fields and number-field orders."""
 
 from sage.categories.map import Map
+from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.rings.rational_field import QQ as SageQQ
@@ -86,7 +87,7 @@ class NumberFieldEmbedding(Morphism):
         source = other.domain()
         if _engine_ring(source) is SageQQ:
             return source.Mor(target)(
-                _engine_ring(source).mor(_engine_ring(target))
+                _engine_ring(target).coerce_map_from(_engine_ring(source))
             )
         primitive = source.primitive_element()
         return source.Mor(target)(self(other(primitive)))
@@ -112,7 +113,14 @@ class NumberFieldMor(CategoricalMor):
         engine_domain = _engine_ring(self.domain())
         engine_codomain = _engine_ring(self.codomain())
         if engine_domain is SageQQ:
-            return self.element_class(self, engine_domain.mor(engine_codomain))
+            return self.element_class(
+                self,
+                (
+                    Hom(engine_domain, engine_domain).identity()
+                    if engine_domain is engine_codomain
+                    else engine_codomain.coerce_map_from(engine_domain)
+                ),
+            )
         image = datum(self.domain().primitive_element()) if callable(datum) else datum
         owned_image = self.codomain()(image)
         backend_image = _engine_element(self.codomain(), owned_image)
@@ -126,7 +134,7 @@ class NumberFieldMor(CategoricalMor):
             raise ValueError("identity is defined on an endomorphism Mor")
         engine = _engine_ring(self.domain())
         if engine is SageQQ:
-            return self(engine.mor(engine))
+            return self(Hom(engine, engine).identity())
         return self(self.domain().primitive_element())
 
     def embeddings(self):
