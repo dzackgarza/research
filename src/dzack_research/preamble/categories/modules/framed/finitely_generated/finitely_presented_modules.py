@@ -1379,6 +1379,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
             return normalized_projection * normalization.forward()
 
+        def torsion_submodule(self):
+            r"""Return Tor(M) from the invariant-factor quotient over a PID."""
+            if self.base_ring() not in PrincipalIdealDomains():
+                return super().torsion_submodule()
+            return self.torsion_free_quotient_projection().kernel()
+
         def torsion_free_quotient(self):
             r"""Return ``M/Tor(M)``."""
             return self.torsion_free_quotient_projection().codomain()
