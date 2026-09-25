@@ -64,25 +64,39 @@ test in construction admission.
 were found only where profiling of the star import led. The audit of the
 whole preamble for engine behaviour re-implemented locally is the TODO node
 `engine-wiring-audit`.
-### A ring is not placed as a framed algebra over itself
+### Chosen generators are encoded as a global axiom instead of a resolution
 
-A commutative ring `R` is an `R`-algebra, and it is framed as one by the
-empty generating set: the free `R`-algebra on no generators is `R`, and its
-unit map onto `R` is surjective. The algebra-framing contract separated from
-module framing (`09215fd7e`) places an algebra in
-`Algebras(R).Associative().Unital().Framed()` only when a constructor fixes
-that framing, and the ring constructors never fix it for `R` over itself.
-Sage's category meet does not know about the gap. The meet of `ZZ.category()`
-and `RR.category()` contains the framed-algebra category over `ZZ`, so
-coercion discovery builds a Hom in a category that `ZZ` fails, and
-`RR.coerce_map_from(ZZ)` raises `ValueError`.
+A chosen generating epimorphism, a chosen presentation and a chosen syzygy
+tower are truncations of one datum, a resolution of the object by free (or
+`P`-projective) objects, and they belong to a category of resolutions over
+`C` (`CAT-29`). The tree encodes the first of them as a global `Framed`
+axiom on `Objects`, with `FramedModules(R)` and `FramedAlgebras(R)` as its
+specializations, and decides membership by whether a framing was stored on
+the object. Every object is resolvable -- the counit `F(UX) ->> X` starts the
+canonical comonadic resolution -- so the axiom names no property, and Sage's
+joins, which close under axioms, propagate it across branches as if it were
+one.
 
-**Consumers:** every coercion of the session integers into the owned reals
-(`4 / pi**2`), the Lebesgue-space and convolution tests under
-`tests/functions/`, and the D4 Gaussian heuristic.
-**Coverage boundary:** observed for `ZZ` into `RR` on `main` and on rack's
-head `72650e04f`. Other pairs of rings were not surveyed. Repair:
-`rings-are-framed-algebras-over-themselves` in [TODO.md](TODO.md).
+Observed on 2026-09-25: the meet of `ZZ.category()` and `RR.category()`
+contains `Algebras(ZZ).Associative().Unital().Framed()`, `ZZ` is not placed
+there, and `RR.coerce_map_from(ZZ)` raises `ValueError`, so `4 / pi**2`
+fails. Placing `ZZ` with its empty algebra framing moves the failure to
+`QQ.coerce_map_from(ZZ)`: the meet then carries `Framed` on `Modules(ZZ)`.
+Rack's separation of algebra framing from module framing (`09215fd7e`) made
+framings relative to their category, which the global axiom cannot express.
+
+**Dependency path:** resolutions over `C` (`lean-categories` `FOUNDATIONS.md`
+§76-77 for the additive case; simplicial objects over a projective class in
+general) -> truncations and finiteness properties -> chosen generators and
+presentations -> coercion and every consumer of chosen generators.
+**Consumers:** coercion of session integers into `QQ` and `RR`; algebra
+generators, presentation display, module generators, the matrix-unit algebra
+structure of `End_R(F)`; the `tests/functions` Lebesgue tests and the D4
+Gaussian heuristic.
+**Coverage boundary:** the `Framed` population was counted by the `rg` in the
+`framed-axiom-retired` node; the coercion was observed for `ZZ` into `QQ` and
+`RR` only. Repair: `categories-of-resolutions`, `framed-axiom-retired`,
+`integers-coerce-into-rationals-and-reals` in [TODO.md](TODO.md).
 
 ## Workflow Papercuts
 
